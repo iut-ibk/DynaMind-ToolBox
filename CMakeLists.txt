@@ -11,8 +11,8 @@ include(${QT_USE_FILE})
 
 
 include_directories(src/core ${Boost_INCLUDE_DIRS} ${QT_QTCORE_INCLUDE_DIR} ${PYTHON_INCLUDE_PATH})
-set(LIBRARY_OUTPUT_PATH ${vibe2_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${vibe2_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${vibe2core_BINARY_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${vibe2core_BINARY_DIR})
 
 
 add_subdirectory(src/core)
