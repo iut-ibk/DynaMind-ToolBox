@@ -1,6 +1,6 @@
 Source: vibe2core
-Section: Science
-Priority: extra
+Section: science
+Priority: optional
 Maintainer: Christian Urich <christian@gmail.com>
 Build-Depends: debhelper (>= 7.0.50~), cmake, python(>=2.6.0~), python-dev(>=2.6.0~), libboost-python-dev(>=1.36.0~), libboost-program-options1.42-dev(>=1.36.0~), libboost-date-time1.42-dev(>=1.36.0~), libqt4-dev(>=4.6.0~)
 Standards-Version: 3.9.1
