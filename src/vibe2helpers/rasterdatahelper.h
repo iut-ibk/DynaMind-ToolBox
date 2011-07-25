@@ -34,7 +34,7 @@ class RasterDataHelper
 {
 public:
    // RasterDataHelper();
-    static double sumOverArea (RasterData * rdata, std::vector<Point>   & points, RasterData * blocker);
+    static double sumOverArea (RasterData * rdata, std::vector<Point>   & points, RasterData * blocker=0);
     static double meanOverAreaWithBlocker (RasterData * rdata, std::vector<Point>   & points, RasterData * blocker);
     static double meanOverArea (RasterData * rdata, std::vector<Point>   & points);
 };
