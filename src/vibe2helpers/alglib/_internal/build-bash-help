@@ -1,0 +1,18 @@
+Bash script for building ALGLIB as a static library
+For compilation with *nix compilers
+
+SYNTAX: build compiler [options]
+    compiler    compiler name (see below)
+                Windows/Bash scripts support different compilers
+    options     optional string enclosed in quotes
+                additional options to be passed to compiler
+
+COMPILERS SUPPORTED:
+         gcc    Original GCC under Linux
+       mingw    MinGW port of GCC
+
+EXAMPLES:
+    build msvc
+    build mingw "-m32 -msse3 -mfpmath=sse"
+
+See reference manual for more information about ALGLIB compilation
