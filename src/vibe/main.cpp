@@ -41,6 +41,7 @@
 #include <vibe_log.h>
 #include <vibe_logger.h>
 #include <vibe_logsink.h>
+#include <QThreadPool>
 
 using namespace std;
 using namespace boost::python;

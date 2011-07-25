@@ -17,5 +17,6 @@ set(EXECUTABLE_OUTPUT_PATH ${vibe2core_BINARY_DIR})
 
 add_subdirectory(src/core)
 add_subdirectory(src/vibe)
+add_subdirectory(src/vibe2helpers)
 
 

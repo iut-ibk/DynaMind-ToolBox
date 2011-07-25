@@ -41,13 +41,12 @@
 #include <boost/python.hpp>
 #include <iostream>
 #include <resultobserver.h>
-#include <QThreadPool>
 #include <vibe_log.h>
 #include <vibe_logger.h>
 #include <vibe_logsink.h>
 
-//using namespace boost;
 
+class QThreadPool;
 class PortObserver;
 
 namespace vibens {
@@ -124,6 +123,7 @@ class ModuleContainer;
 class Port;
 class Group;
 class Simulation;
+
 
 /**
   * @brief Basic module class

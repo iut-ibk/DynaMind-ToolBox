@@ -34,7 +34,9 @@
 #include <QThreadPool>
 #include <modulerunnable.h>
 #include <QMutexLocker>
-
+#include <QRunnable>
+#include <QMutex>
+#include <porttuple.h>
 
 using namespace boost;
 

@@ -28,16 +28,22 @@
 #include "compilersettings.h"
 #include <module.h>
 #include <vector>
-#include <QMutex>
-#include <porttuple.h>
+
+
+class QMutex;
+class QRunnable;
+
+
+
 namespace vibens {
 
-   // class PortTuple;
+    class PortTuple;
+
 
     class VIBE_HELPER_DLL_EXPORT  Group : public Module
     {
     private:
-        QMutex * mutex;
+        ::QMutex * mutex;
         std::vector<Module*> modules;
         std::vector<PortTuple * > inPortTuple;
         std::vector<PortTuple * > outPortTuple;
