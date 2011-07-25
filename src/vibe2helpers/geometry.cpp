@@ -32,6 +32,7 @@
 #include <iostream>
 #include "vibe_logger.h"
 #include "vectordatahelper.h"
+#include "alglib/src/spline1d.h"
 namespace VIBeH {
 
 void Geometry::VectorDataToRasterData() {

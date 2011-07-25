@@ -54,7 +54,6 @@ using namespace boost;
 #include <CGAL/partition_2.h>
 #include <CGAL/Partition_traits_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include "alglib/src/spline1d.h"
 #include <CGAL/convex_hull_2.h>
 #include <CGAL/bounding_box.h>
 #include <CGAL/Aff_transformation_2.h>
