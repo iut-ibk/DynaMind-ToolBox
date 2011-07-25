@@ -4,7 +4,7 @@ project(vibe2core)
 set(Boost_USE_STATIC_LIBS   OFF)
 find_package(Boost 1.38.0 COMPONENTS python program_options date_time REQUIRED)
 find_package(PythonLibs REQUIRED)
-find_package(Qt4 COMPONENTS QtCore)
+find_package(Qt4 COMPONENTS QtCore QtGui)
 
 set(QT_USE_QTXML 1)
 include(${QT_USE_FILE})

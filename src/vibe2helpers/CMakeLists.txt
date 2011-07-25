@@ -3,15 +3,11 @@ file(GLOB VIBEHELPER_CPPS *.h)
 
 find_package(CGAL)
 include_directories(${CGAL_INCLUDE_DIRS})
-
-add_library(vibe2helper SHARED ${VIBELIB_CPPS})
 include_directories(alglib/src)
 
-if(WIN32)
-        target_link_libraries(vibe2helper vibe2core ${QT_LIBRARIES} ${CGAL_LIBRARIES})
-else()
-        target_link_libraries(vibe2helper vibe2core ${QT_LIBRARIES} ${CGAL_LIBRARIES})
-endif()
+add_library(vibe2helper SHARED ${VIBELIB_CPPS})
+target_link_libraries(vibe2helper vibe2core ${QT_LIBRARIES} ${CGAL_LIBRARIES})
+
 if(WIN32)
 	GET_TARGET_PROPERTY(LIB_NAME vibe2helper LOCATION)
 	SET(NEW_LIB_NAME  ${CMAKE_BINARY_DIR}/vibe2helper.pyd)
