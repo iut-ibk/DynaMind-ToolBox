@@ -10,5 +10,11 @@ Homepage: https://github.com/christianurich/VIBe2Core
 
 Package: vibe2core
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python(>=2.6.0~), libboost-python(>=1.36), libboost-program-options1.42(>=1.36), libqt4(>=4.6.0~)
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Core of the VIBe2 Framework
+
+Package: vibe2core-dev
+Section: science
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Core of the VIBe2 Framework
