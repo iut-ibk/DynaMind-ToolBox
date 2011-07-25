@@ -1,6 +1,9 @@
 file(GLOB VIBELIB_CPPS *.cpp alglib/src/*.cpp)
 file(GLOB VIBEHELPER_CPPS *.h)
 
+find_package(CGAL)
+include_directories(${CGAL_INCLUDE_DIRS})
+
 add_library(vibe2helper SHARED ${VIBELIB_CPPS})
 include_directories(alglib/src)
 
