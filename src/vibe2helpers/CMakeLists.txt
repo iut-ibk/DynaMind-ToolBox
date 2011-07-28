@@ -15,12 +15,12 @@ if(WIN32)
 	   TARGET vibe2helper
 	   POST_BUILD
 	   COMMAND ${CMAKE_COMMAND} -E copy ${LIB_NAME} ${NEW_LIB_NAME})
-else()
-	set_target_properties(vibe2helper
-	PROPERTIES
-	OUTPUT_NAME "vibe2helper"
-	PREFIX ""
-)
+#else()
+	#set_target_properties(vibe2helper
+	#PROPERTIES
+	#OUTPUT_NAME "vibe2helper"
+	#PREFIX ""
+#)
 endif()
 
 INSTALL(TARGETS vibe2helper
