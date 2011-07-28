@@ -186,12 +186,13 @@ Simulation::Simulation() {
         }
 
     }
-    moduleRegistry->addNativePlugin("modules");
-    moduleRegistry->addNativePlugin("vibemodule");
-    moduleRegistry->addNativePlugin("vibecsg");
-    moduleRegistry->addNativePlugin("urbansimmodules");
-    moduleRegistry->addNativePlugin("dance4watermodules");
-    moduleRegistry->addNativePlugin("powervibe");
+
+    text = settings.value("nativeModules").toString();
+    list = text.replace("\\","/").split(",");
+    foreach (QString s, list) {
+        std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
+        moduleRegistry->addNativePlugin(s.toStdString());
+    }
 
 
 }
@@ -413,7 +414,7 @@ bool Simulation::checkConnections() const {
     Logger(Debug) << "Check Connections ";
 
     foreach(Module * m, this->Modules) {
-        std::vector<Port *> ports   = m->getInPorts();        
+        std::vector<Port *> ports   = m->getInPorts();
         foreach(Port * p, ports) {
             if (p->getLinks().size() < 1) {
                 Logger(Error) << m->getUuid() << " " << m->getName() << "Module Not fully Connected";
