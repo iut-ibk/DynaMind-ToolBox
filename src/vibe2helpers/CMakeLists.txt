@@ -1,12 +1,17 @@
 file(GLOB VIBELIB_CPPS *.cpp alglib/src/*.cpp)
 file(GLOB VIBEHELPER_CPPS *.h)
 
-find_package(CGAL)
+
 include_directories(${CGAL_INCLUDE_DIRS})
+
 include_directories(alglib/src)
+include(${CGAL_USE_FILE})
+
+find_package(GMP)
+find_package(CORE)
 
 add_library(vibe2helper SHARED ${VIBELIB_CPPS})
-target_link_libraries(vibe2helper vibe2core ${QT_LIBRARIES} ${CGAL_LIBRARIES})
+target_link_libraries(vibe2helper vibe2core ${QT_LIBRARIES} ${CGAL_LIBRARIES} ${CORE_LIBRARIES})
 
 if(WIN32)
 	GET_TARGET_PROPERTY(LIB_NAME vibe2helper LOCATION)
