@@ -191,4 +191,9 @@ Attribute VectorDataHelper::findAttributeFromPoints(const VectorData &vec, const
 
 }
 
+double VectorDataHelper::calculateLength(const Edge &e, const std::vector<Point> &pl) {
+    Point p_length = pl[e.getID1()] - pl[e.getID2()];
+    return sqrt(p_length.x * p_length.x + p_length.y* p_length.y + p_length.z* p_length.z);
+
+}
 

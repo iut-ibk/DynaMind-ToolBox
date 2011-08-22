@@ -47,6 +47,7 @@ public:
     static Attribute findAttributeFromPoints(const VectorData & vec, const Point & p, std::string identifier, double offset = 0);
     static double calculateArea(const Face & f, const std::vector<Point> & pl);
     static Point caclulateCentroid(const Face & f, const std::vector<Point> & pl);
+    static double calculateLength(const Edge & e, const std::vector<Point> & pl);
 
     static QMutex mutex;
 };
