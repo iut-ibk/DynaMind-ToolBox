@@ -62,8 +62,8 @@ public:
     Edge(long id1, long id2){this->id1 = id1; this->id2 = id2;}
     long  id1;
     long  id2;
-    long getID1(){return id1;}
-    long getID2(){return id2;}
+    long  getID1() const {return id1;}
+    long  getID2() const {return id2;}
 
 };
 
