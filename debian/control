@@ -2,7 +2,7 @@ Source: vibe2core
 Section: science
 Priority: optional
 Maintainer: Christian Urich <christian@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, libcgal-dev(>=3.6.0~), python(>=2.6.0~), python-dev(>=2.6.0~), libboost-python-dev(>=1.36.0~), libboost-program-options1.42-dev(>=1.36.0~), libboost-date-time1.42-dev(>=1.36.0~), libqt4-dev(>=4.6.0~), libcore++-dev(>=1.7), libgmp3-dev
+Build-Depends: debhelper (>= 7.0.50~), cmake, libcgal-dev(>=3.6.0~), python(>=2.6.0~), python-dev(>=2.6.0~), libboost-python-dev, libboost-program-options-dev, libboost-date-time-dev, libqt4-dev(>=4.6.0~), libcore++-dev(>=1.7), libgmp3-dev
 Standards-Version: 3.9.1
 Homepage: https://github.com/christianurich/VIBe2Core
 #Vcs-Git: git://git.debian.org/collab-maint/vibe2core.git
