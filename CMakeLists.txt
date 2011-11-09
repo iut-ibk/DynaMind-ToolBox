@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(vibe2core)
 
-set(CMAKE_MODULE_PATH 
-  "${vibe2gui_SOURCE_DIR}/CMake"
-  "${vibe2gui_SOURCE_DIR}/CMake/Utils" 
-  "${vibe2gui_SOURCE_DIR}/CMake/Packages"
-)
-
 set(Boost_USE_STATIC_LIBS   OFF)
 find_package(Boost 1.38.0 COMPONENTS python program_options date_time REQUIRED)
 find_package(PythonLibs REQUIRED)
@@ -24,6 +18,8 @@ set(EXECUTABLE_OUTPUT_PATH ${vibe2core_BINARY_DIR})
 add_subdirectory(src/core)
 add_subdirectory(src/vibe)
 add_subdirectory(src/vibe2helpers)
+add_subdirectory(src/DMTestModules)
+add_subdirectory(src/DMTest)
 
 
 

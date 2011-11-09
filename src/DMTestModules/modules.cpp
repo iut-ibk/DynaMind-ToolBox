@@ -23,34 +23,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "datamanagement.h"
-#include <database.h>
-#include <vibe_logger.h>
-namespace vibens {
+#include "nodefactory.h"
+#include "moduleregistry.h"
+#include "testmodule.h"
 
-    DataManagement *DataManagement::instance = 0;
+using namespace std;
 
-    DataManagement::DataManagement()
-    {
-    };
-    DataManagement::~DataManagement()
-    {
-    };
-    DataManagement& DataManagement::getInstance()
-    {
-        if (!instance) {
-            Logger(Error) << "ERROR no Database instance registerd";
-        }
-        return *(instance);
-    };
 
-    void DataManagement::registerDataBase(DataBase *database) {
-        this->database = database;
-    }
-    DataBase * DataManagement::getDataBase() {
-        return this->database;
-    }
-    void DataManagement::init(){
-        instance = new DataManagement();
-    }
+
+extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+    registry->addNodeFactory(new NodeFactory<TestModule>());
 }
+
