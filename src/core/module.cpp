@@ -88,8 +88,9 @@ Module::Module() {
 
 Module::~Module() {
     Logger(Debug) << "Remove " << this->getClassName() << " " << this->getUuid();
-    this->Destructor();
     this->getSimulation()->deregisterModule(this->getUuid());
+    this->Destructor();
+
 
 }
 Port * Module::getInPort( std::string name)  {
