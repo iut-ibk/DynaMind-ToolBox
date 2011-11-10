@@ -23,34 +23,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "datamanagement.h"
-#include <database.h>
-#include <vibe_logger.h>
-namespace vibens {
+#include "testmodule.h"
+#include "rasterdata.h"
+#include <iostream>
+//#include <omp.h>
+#include <cmath>
+#include <iostream>
+VIBe_DECLARE_NODE_NAME( TestModule,Modules )
+TestModule::TestModule() {
+    Logger(Debug) << "Create Testmodule";
+}
 
-    DataManagement *DataManagement::instance = 0;
 
-    DataManagement::DataManagement()
-    {
-    };
-    DataManagement::~DataManagement()
-    {
-    };
-    DataManagement& DataManagement::getInstance()
-    {
-        if (!instance) {
-            Logger(Error) << "ERROR no Database instance registerd";
-        }
-        return *(instance);
-    };
 
-    void DataManagement::registerDataBase(DataBase *database) {
-        this->database = database;
-    }
-    DataBase * DataManagement::getDataBase() {
-        return this->database;
-    }
-    void DataManagement::init(){
-        instance = new DataManagement();
-    }
+void TestModule::run() {
+    Logger(Debug) << "Run Testmodule";
+
+}
+
+TestModule::~TestModule() {
+    Logger(Debug) << "Destructor Testmodule";
+
 }

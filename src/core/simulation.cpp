@@ -81,8 +81,8 @@ Module * Simulation::addModule(std::string ModuleName) {
     Logger(Debug) << "Add Module" << ModuleName << " " << module->getUuid();
     module->setSimulation(this);
     if (module->getGroup() == 0)
-        module->setGroup(&this->rootGroup);
-    this->Modules.push_back(module);
+        module->setGroup(this->rootGroup);
+    this->Modules[module->getUuid()] = module;
     module->setSimulation(this);
     return module;
 
@@ -96,7 +96,7 @@ DataBase * Simulation::getDataBase() {
 
 Simulation::~Simulation() {
     Logger(Debug)  << "Remove Modules";
-    this->removeModule(this->rootGroup.getUuid());
+    delete this->rootGroup;
 
     delete data;
 }
@@ -152,7 +152,9 @@ Simulation::Simulation() {
     data->simObserver = 0;
     data->observer = 0;
     data->counter = 0;
-
+    this->rootGroup = new RootGroup();
+    this->rootGroup->setSimulation(this);
+    //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
     vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
     QSettings settings("IUT", "VIBe2");
@@ -187,15 +189,21 @@ Simulation::Simulation() {
 
     }
 
-    text = settings.value("nativeModules").toString();
+    /* text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
     foreach (QString s, list) {
         std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
         moduleRegistry->addNativePlugin(s.toStdString());
-    }
+    }*/
 
 
 }
+
+void Simulation::registerNativeModules(string Filename) {
+    std::cout << "Loading Native Modules " << Filename << std::endl;
+    moduleRegistry->addNativePlugin(Filename);
+}
+
 ModuleRegistry * Simulation::getModuleRegistry() {
     return this->moduleRegistry;
 }
@@ -224,7 +232,7 @@ std::vector<Group*> Simulation::getGroups() {
 
     std::vector<Group*> groups;
 
-    BOOST_FOREACH(Module * m, this->Modules) {
+    BOOST_FOREACH(Module * m, this->getModules()) {
         if (m->isGroup())
             groups.push_back((Group * ) m);
     }
@@ -234,7 +242,7 @@ std::vector<Group*> Simulation::getGroups() {
 
 void Simulation::resetModules() {
     this->database->resetDataBase();
-    foreach (Module * m, this->Modules) {
+    foreach (Module * m, this->getModules()) {
         this->resetModule(m->getUuid());
     }
 }
@@ -247,10 +255,11 @@ void Simulation::run(bool check) {
         isConnected = this->checkConnections();
     if (isConnected) {
         Logger(Debug) << "Reset Steps";
-        this->rootGroup.resetSteps();
+        this->rootGroup->resetSteps();
         Logger(Debug) << "Start Simulations";
-        this->rootGroup.run();
+        this->rootGroup->run();
     }
+    Logger(Standard) << "End Simulation";
 }
 void Simulation::registerDataBase(DataBase * database) {
     this->database = database;
@@ -258,52 +267,39 @@ void Simulation::registerDataBase(DataBase * database) {
 //moduleFinished()
 
 void Simulation::removeModule(std::string UUid) {
-    Module * moduleToRemove = 0;
-    BOOST_FOREACH (Module * m, this->Modules)  {
-        if (!m->getUuid().compare(UUid)) {
-            moduleToRemove = m;
-        }
-    }
-    for (std::vector<Module * >::iterator it = this->Modules.begin(); it != Modules.end();) {
-        if (*it == moduleToRemove) {
-            //it = Modules.erase(it);
-            delete moduleToRemove;
+    for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) {
+        if (!it->first.compare(UUid)) {
+            delete it->second;
             return;
-        } else {
-            ++it;
         }
     }
 
 }
 void Simulation::deregisterModule(std::string UUID) {
-    Module * moduleToRemove;
-    BOOST_FOREACH (Module * m, this->Modules)  {
-        if (!m->getUuid().compare(UUID)) {
-            moduleToRemove = m;
+
+    for(std::map<std::string, Module*>::iterator it = Modules.begin(); it != Modules.end(); ++it) {
+        std::string id = it->first;
+        if (id.compare(UUID) == 0 ) {
+            Modules.erase(it);
+            return;
         }
+
     }
-    for (std::vector<Module * >::iterator it = this->Modules.begin(); it != Modules.end();) {
-        if (*it == moduleToRemove) {
-            it = Modules.erase(it);
-            //delete moduleToRemove;
-        } else {
-            ++it;
-        }
-    }
+
 }
 
 void Simulation::writeSimulation(std::string filename) {
     SimulaitonWriter::writeSimulation(filename, this);
 }
 Module * Simulation::getModuleByName(std::string name) {
-    BOOST_FOREACH (Module * m, this->Modules) {
+    BOOST_FOREACH (Module * m, this->getModules()) {
         if (name.compare(m->getName()) == 0)
             return m;
     }
 }
 
 Module * Simulation::getModuleWithUUID(std::string UUID) {
-    BOOST_FOREACH (Module * m, this->Modules){
+    BOOST_FOREACH (Module * m, this->getModules()){
         if (UUID.compare(m->getUuid()) == 0)
             return m;
     }
@@ -311,7 +307,7 @@ Module * Simulation::getModuleWithUUID(std::string UUID) {
 }
 std::vector<Module * > Simulation::getModulesFromType(std::string name) {
     std::vector<Module * > ress;
-    foreach (Module * m, Modules) {
+    foreach (Module * m, this->getModules()) {
         std::string n(m->getClassName());
         if (n.compare(name) == 0)
             ress.push_back(m);
@@ -412,8 +408,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
 }
 bool Simulation::checkConnections() const {
     Logger(Debug) << "Check Connections ";
-
-    foreach(Module * m, this->Modules) {
+    foreach(Module * m, this->getModules()) {
         std::vector<Port *> ports   = m->getInPorts();
         foreach(Port * p, ports) {
             if (p->getLinks().size() < 1) {
@@ -454,7 +449,7 @@ Module * Simulation::resetModule(std::string UUID) {
     Logger(Debug) << "Reset Module " << UUID;
     Module * m = this->getModuleWithUUID(UUID);
     Module * new_m = this->addModule(m->getClassName());
-    Modules.erase(std::find(Modules.begin(), Modules.end(),new_m));
+    //Modules.erase(std::find(Modules.begin(), Modules.end(),new_m));
     new_m->copyParameterFromOtherModule(m);
 
 
@@ -516,15 +511,17 @@ Module * Simulation::resetModule(std::string UUID) {
 
     }
 
-    std::replace(Modules.begin(), Modules.end(), m, new_m);
+
+    //std::replace(Modules.begin(), Modules.end(), m, new_m);
     delete m;
+    Modules[new_m->getUuid()] = new_m;
     return new_m;
 
 
 }
 std::vector<ModuleLink*> Simulation::getLinks() {
     std::vector<ModuleLink*> links;
-    foreach (Module * m, this->Modules) {
+    foreach (Module * m, this->getModules()) {
         foreach(Port * p, m->getInPorts()) {
             foreach(ModuleLink * l, p->getLinks()) {
                 links.push_back(l);
@@ -551,4 +548,13 @@ std::vector<ModuleLink*> Simulation::getLinks() {
 
     return links;
 }
+std::vector<Module*> Simulation::getModules() const{
+    std::vector<Module*> ms;
+
+    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
+        ms.push_back(it->second);
+    return ms;
 }
+}
+
+

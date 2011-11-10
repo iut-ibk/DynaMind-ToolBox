@@ -56,7 +56,7 @@ namespace vibens {
         void addDataObserver(DataObserver*  observer);
         void addSimulationObserver(SimulationObserver * simulationObserver);
         DataBase * getDataBase();
-        Module * getRootGroup(){return &rootGroup;}
+        Module * getRootGroup(){return rootGroup;}
 
         ModuleLink * addLink(Port * OutPort,Port * InPort);
         void removeLink(ModuleLink * );
@@ -67,7 +67,7 @@ namespace vibens {
 
         std::vector<Group*> getGroups();
         void writeSimulation(std::string filename);
-        std::vector<Module*> getModules() {return this->Modules;}
+        std::vector<Module*> getModules() const;
         std::map<std::string, std::string>  loadSimulation(std::string FileName);
         Module * getModuleWithUUID(std::string UUID);
         Module * getModuleByName(std::string name);
@@ -78,10 +78,11 @@ namespace vibens {
         void reloadModules();
         std::vector<Module*> getModulesFromType(std::string name);
         void deregisterModule(std::string UUID);
+        void registerNativeModules(std::string Filename);
 
     private:
-        RootGroup rootGroup;
-        std::vector<Module*> Modules;
+        RootGroup * rootGroup;
+        std::map<std::string, Module*> Modules;
         //std::vector<ModuleLink * > Links;
         SimulationPrivate *data;
         DataBase * database;
