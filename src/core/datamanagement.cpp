@@ -24,7 +24,7 @@
  *
  */
 #include "datamanagement.h"
-#include <database.h>
+#include <idatabase.h>
 #include <vibe_logger.h>
 namespace vibens {
 
@@ -32,7 +32,7 @@ namespace vibens {
 
     DataManagement::DataManagement()
     {
-    };
+    }
     DataManagement::~DataManagement()
     {
     };
@@ -42,12 +42,12 @@ namespace vibens {
             Logger(Error) << "ERROR no Database instance registerd";
         }
         return *(instance);
-    };
+    }
 
-    void DataManagement::registerDataBase(DataBase *database) {
+    void DataManagement::registerDataBase(IDataBase *database) {
         this->database = database;
     }
-    DataBase * DataManagement::getDataBase() {
+    IDataBase *DataManagement::getDataBase() {
         return this->database;
     }
     void DataManagement::init(){

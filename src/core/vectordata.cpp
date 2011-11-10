@@ -30,6 +30,7 @@
 #include <QThread>
 #include <vibe_logger.h>
 #include <math.h>
+#include <DMnode.h>
 using vibens::Debug;
 using vibens::Error;
 
@@ -75,6 +76,9 @@ std::string Attribute::getStringAttribute(const std::string & name) const
 
 }
 
+
+
+
 void Attribute::setAttribute(std::string name, double value) {
     std::stringstream ss;
     ss << value;
@@ -91,12 +95,20 @@ std::vector<std::string> Attribute::getAttributeNames() {
         names.push_back(it->first);
     return names;
 }
-VectorData::VectorData()
+
+VectorData::VectorData() {
+    this->system = new DM::System("VectorData", "Root");
+
+}
+
+VectorData::VectorData(DM::System *system)
 {
+    this->system = system;
 }
 
 VectorData::~VectorData()
 {
+    //delete this->system;
 }
 
 void VectorData::addVectorData(const VectorData &vec) {
@@ -117,11 +129,21 @@ void VectorData::addVectorData(const VectorData &vec) {
     }
 }
 
-void VectorData::setPoints(const std::string & name, const std::vector<Point> & points) {    
-    boost::unordered_map<std::string, std::vector<Point> >::iterator n = this->vData.find(name);
-    if (n == vData.end())
-        this->VectorDataNames.push_back(name);    
-    this->vData[name] = points;
+void VectorData::setPoints(const std::string & name, const std::vector<Point> & points) {
+
+
+
+    stringstream ids;
+    ids << "Point*|*"<< name << "*|*";
+
+    for (int i = 0; i < points.size(); i++) {
+        stringstream id;
+        id <<  ids.str() << i;
+        system->addNode(new DM::Node( id.str(),"ID", points[i].x,  points[i].y, points[i].z));
+    }
+
+
+
 }
 
 void VectorData::setDoubleAttributes(const std::string & name, const std::vector<double> & attributes) {
@@ -160,6 +182,8 @@ void VectorData::setAttributes(const std::string & name, const Attribute & attri
 
 
 const std::vector<Point>  & VectorData::getPoints(const std::string & name) const{
+
+
     if (vData.find(name) != vData.end())
         return  vData.at(name);
     return errorPointAttribute;
@@ -228,4 +252,14 @@ std::ostream& operator<<(std::ostream& out, const VectorData& vec) {
 
     return out;
 
+}
+
+const std::vector<std::string> VectorData::getPointsNames() const {
+    std::map<std::string, DM::Node*> nodes = this->system->getAllNodes();
+    std::vector<std::string> names;
+    for (std::map<std::string, DM::Node*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        names.push_back(it->first);
+    }
+
+    return names;
 }

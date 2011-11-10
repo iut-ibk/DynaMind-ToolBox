@@ -31,13 +31,28 @@
 #include <iostream>
 VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
+
     Logger(Debug) << "Create Testmodule";
+    //this->addParameter("Import", VIBe2::VECTORDATA_OUT, & this->vec_in);
+    this->addParameter("SomeImport", VIBe2::VECTORDATA_OUT, & this->vec_out);
+
 }
 
 
 
 void TestModule::run() {
     Logger(Debug) << "Run Testmodule";
+
+    std::vector<Point> points;
+    Point p(0,1,2);
+    points.push_back(p);
+
+    this->vec_out->setPoints("Points", points);
+
+    std::vector<std::string> names = this->vec_out->getPointsNames();
+
+    int i = 0;
+    i=1;
 
 }
 

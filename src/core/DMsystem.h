@@ -70,6 +70,8 @@ namespace DM {
         std::map<std::string, System*> getAllSubSystems();
         System* createSuccessor();
         Component* clone();
+
+        const std::map<std::string, Node*> & getAllNodes() const {return nodes;}
     };
 }
 #endif // SYSTEM_H

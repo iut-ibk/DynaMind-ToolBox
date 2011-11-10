@@ -38,6 +38,10 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 
+#include <DMcomponent.h>
+#include <DMsystem.h>
+
+
 class VIBE_HELPER_DLL_EXPORT Point {
 public:
     Point(){}
@@ -160,6 +164,9 @@ private:
     std::vector<Face> errorFaceAttribute;
     std::vector<Link> errorLinkAttribute;
 
+    DM::System * system;
+
+
 public:
     void setName(std::string name) {this->name = name;}
     std::string getName() const {return this->name;}
@@ -177,14 +184,14 @@ public:
     void clear();
 
     const std::vector<Point>  & getPoints(const std::string &name) const;
-    const std::vector<double> &  getDoubleAttributes(const std::string &name) const;
+    const std::vector<double> & getDoubleAttributes(const std::string &name) const;
     const Attribute & getAttributes(const std::string &name) const;
     const std::vector<Edge> & getEdges(const std::string &name) const;
     const std::vector<Face> & getFaces(const std::string &name) const;
     const std::vector<Link> & getLinks(const std::string &name) const;
 
 
-    const std::vector<std::string> & getPointsNames() const {return VectorDataNames;}
+    const std::vector<std::string>  getPointsNames() const;
     const std::vector<std::string> & getEdgeNames() const {return EdgeNames;}
     const std::vector<std::string> & getFaceNames() const {return FaceNames;}
     const std::vector<std::string> & getLinkNames() const {return LinkNames;}
@@ -193,6 +200,7 @@ public:
 
 
 
+    VectorData(DM::System * system);
     VectorData();
     ~VectorData();
 

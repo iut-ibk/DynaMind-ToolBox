@@ -38,11 +38,12 @@
 #include <vectordata.h>
 #include <map>
 #include <dataobserver.h>
+#include <idatabase.h>
 
 namespace vibens {
     class Module;
 
-    class VIBE_HELPER_DLL_EXPORT  DataBase
+    class VIBE_HELPER_DLL_EXPORT  DataBase : public IDataBase
     {
 
     private:

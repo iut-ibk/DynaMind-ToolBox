@@ -28,18 +28,18 @@
 
 #include "compilersettings.h"
 namespace vibens {
-class DataBase;
+class IDataBase;
 class VIBE_HELPER_DLL_EXPORT  DataManagement
 {
 private:
     DataManagement();
-    DataBase * database;
+    IDataBase * database;
     static DataManagement * instance;
 public:
     ~DataManagement();
     static DataManagement & getInstance();
-    void  registerDataBase(DataBase * database);
-    DataBase * getDataBase();
+    void  registerDataBase(IDataBase * database);
+    IDataBase * getDataBase();
     static void init();
 };
 }

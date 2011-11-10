@@ -33,6 +33,7 @@ class VIBE_HELPER_DLL_EXPORT TestModule : public  Module {
 VIBe_DECLARE_NODE( TestModule)
 
     public:
+        VectorData * vec_out;
 
         TestModule();
         void run();

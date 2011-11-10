@@ -41,7 +41,7 @@ namespace vibens {
     class SimulationObserver;
     class Module;
     class Port;
-    class DataBase;
+    class IDataBase;
     class ModuleRegistry;
     class ModuleLink;
     class Group;
@@ -55,14 +55,14 @@ namespace vibens {
         void run(bool check = true);
         void addDataObserver(DataObserver*  observer);
         void addSimulationObserver(SimulationObserver * simulationObserver);
-        DataBase * getDataBase();
+        IDataBase * getDataBase();
         Module * getRootGroup(){return rootGroup;}
 
         ModuleLink * addLink(Port * OutPort,Port * InPort);
         void removeLink(ModuleLink * );
         Module * addModule(std::string ModuleName);
         void removeModule(std::string UUid);
-        void registerDataBase(DataBase * database);
+        void registerDataBase(IDataBase * database);
         ModuleRegistry * getModuleRegistry();
 
         std::vector<Group*> getGroups();
@@ -79,13 +79,14 @@ namespace vibens {
         std::vector<Module*> getModulesFromType(std::string name);
         void deregisterModule(std::string UUID);
         void registerNativeModules(std::string Filename);
+        void registerPythonModules(std::string path);
 
     private:
         RootGroup * rootGroup;
         std::map<std::string, Module*> Modules;
         //std::vector<ModuleLink * > Links;
         SimulationPrivate *data;
-        DataBase * database;
+        IDataBase * database;
         ModuleRegistry * moduleRegistry;
         void removeLinksFromModule(Module *);
 

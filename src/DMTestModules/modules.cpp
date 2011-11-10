@@ -26,12 +26,13 @@
 #include "nodefactory.h"
 #include "moduleregistry.h"
 #include "testmodule.h"
-
+#include "inoutmodule.h"
 using namespace std;
 
 
 
 extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
     registry->addNodeFactory(new NodeFactory<TestModule>());
+    registry->addNodeFactory(new NodeFactory<InOut>());
 }
 

@@ -589,7 +589,7 @@ void wrap_module() {
             .def("getAttributes", &VectorData::getAttributes, return_value_policy<copy_const_reference>())
             .def("getLinks", &VectorData::getLinks, return_value_policy<copy_const_reference>())
             .def("getFaces", &VectorData::getFaces, return_value_policy<copy_const_reference>())
-            .def("getPointsNames", &VectorData::getPointsNames, return_value_policy<copy_const_reference>())
+            .def("getPointsNames", &VectorData::getPointsNames)
             .def("getEdgeNames", &VectorData::getEdgeNames, return_value_policy<copy_const_reference>())
             .def("getFaceNames", &VectorData::getFaceNames, return_value_policy<copy_const_reference>())
             .def("getLinkNames", &VectorData::getLinkNames, return_value_policy<copy_const_reference>())

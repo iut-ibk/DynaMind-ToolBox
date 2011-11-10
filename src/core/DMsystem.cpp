@@ -29,15 +29,18 @@
 #include <DMedge.h>
 #include <DMsystem.h>
 
+#include <vibe_logger.h>
+
 using namespace DM;
 
 System::System(std::string name, std::string id) : Component(name,id)
 {
-
+    vibens::Logger(vibens::Debug) << "Create System " << name << " " << id;
 }
 
 System::System(const System& s) : Component(s)
 {
+
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;

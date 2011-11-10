@@ -89,7 +89,7 @@ Module * Simulation::addModule(std::string ModuleName) {
 
 }
 
-DataBase * Simulation::getDataBase() {
+IDataBase * Simulation::getDataBase() {
     return this->database;
 }
 
@@ -167,27 +167,13 @@ Simulation::Simulation() {
 
 
 
-    QDir pythonDir;
+    /*QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
     QStringList list = text.replace("\\","/").split(",");
     foreach (QString s, list){
-        vibens::PythonEnv::getInstance()->addPythonPath(s.toStdString());
-        pythonDir = QDir(s);
-        QStringList filters;
-        filters << "*.py";
-        QStringList files = pythonDir.entryList(filters);
-        foreach(QString file, files) {
-            try{
-                std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-                Logger(Debug) << n;
 
-            } catch(...) {
-                Logger(Warning)  << "Can't load Module " << file.toStdString();
-                std::cout << file.toStdString() << std::endl;
-            }
-        }
 
-    }
+    }*/
 
     /* text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
@@ -200,8 +186,26 @@ Simulation::Simulation() {
 }
 
 void Simulation::registerNativeModules(string Filename) {
-    std::cout << "Loading Native Modules " << Filename << std::endl;
+    Logger(Standard) << "Loading Native Modules " << Filename ;
     moduleRegistry->addNativePlugin(Filename);
+}
+
+void Simulation::registerPythonModules(std::string path) {
+    vibens::PythonEnv::getInstance()->addPythonPath(path);
+    QDir pythonDir = QDir(QString::fromStdString(path));
+    QStringList filters;
+    filters << "*.py";
+    QStringList files = pythonDir.entryList(filters);
+    foreach(QString file, files) {
+        try{
+            std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+            Logger(Debug) << n;
+
+        } catch(...) {
+            Logger(Warning)  << "Can't load Module " << file.toStdString();
+            std::cout << file.toStdString() << std::endl;
+        }
+    }
 }
 
 ModuleRegistry * Simulation::getModuleRegistry() {
@@ -261,10 +265,10 @@ void Simulation::run(bool check) {
     }
     Logger(Standard) << "End Simulation";
 }
-void Simulation::registerDataBase(DataBase * database) {
+void Simulation::registerDataBase(IDataBase * database) {
     this->database = database;
 }
-//moduleFinished()
+
 
 void Simulation::removeModule(std::string UUid) {
     for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) {
