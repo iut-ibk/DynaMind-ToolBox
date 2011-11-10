@@ -16,6 +16,11 @@ System::System(const System& s) : Component(s)
     nodes=s.nodes;
     edges=s.edges;
 
+    std::map<std::string,System*>::iterator its;
+
+    for ( its=subsystems.begin() ; its != subsystems.end(); its++ )
+        subsystems[(*its).first]=static_cast<System*>(ownedchilds[(*its).first]);
+
     std::map<std::string,Node*>::iterator itn;
 
     for ( itn=nodes.begin() ; itn != nodes.end(); itn++ )
@@ -80,7 +85,7 @@ bool System::removeNode(std::string name)
 
 bool System::addSubSystem(System *newsystem)
 {
-    if(subsystems.find(newsystem->getName())!=subsystems.end())
+    if(!addChild(newsystem))
         return false;
 
     subsystems[newsystem->getName()]=newsystem;
@@ -89,7 +94,7 @@ bool System::addSubSystem(System *newsystem)
 
 bool System::removeSubSystem(std::string name)
 {
-    if(subsystems.find(name)==subsystems.end())
+    if(!removeChild(name))
         return false;
 
     subsystems.erase(name);
@@ -116,5 +121,6 @@ System* System::createSuccessor()
 
 Component* System::clone()
 {
+    return new System(*this);
 }
 
