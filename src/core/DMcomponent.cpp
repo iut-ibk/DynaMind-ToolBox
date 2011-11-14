@@ -30,6 +30,9 @@
 
 #include <assert.h>
 
+#include <vibe_logger.h>
+
+using namespace vibens;
 using namespace DM;
 
 Component::Component(std::string name, std::string id)
@@ -43,6 +46,7 @@ Component::Component(const Component& c)
     this->name=c.name;
     this->id=c.id;
     attributesview=c.attributesview;
+    ownedchilds=c.ownedchilds;
 
     std::map<std::string,Component*>::iterator it;
 
@@ -58,13 +62,13 @@ Component::~Component()
     while(ownedchilds.size())
     {
         delete (*ownedchilds.begin()).second;
-        ownedchilds.erase(0);
+        ownedchilds.erase(ownedchilds.begin());
     }
 
     while(ownedattributes.size())
     {
         delete (*ownedattributes.begin()).second;
-        ownedattributes.erase(0);
+        ownedattributes.erase(ownedattributes.begin());
     }
 }
 
@@ -134,6 +138,8 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
+    if(attributesview.find(name)==attributesview.end())
+        return 0;
     return attributesview[name];
 }
 
@@ -188,6 +194,8 @@ bool Component::removeChild(std::string name)
 
 Component* Component::getChild(std::string name)
 {
+    if(childsview.find(name)==childsview.end())
+        return 0;
     return childsview[name];
 }
 

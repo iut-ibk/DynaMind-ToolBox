@@ -27,16 +27,9 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-
-
-
 #include <map>
 #include <vector>
 
-
-/**
-  @todo if someone wants to include system he has to include the component header first. Should be changed.
-  **/
 namespace DM {
 
     class Component;

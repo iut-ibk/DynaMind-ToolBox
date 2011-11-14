@@ -30,8 +30,10 @@
 #include <DMsystem.h>
 
 #include <vibe_logger.h>
+#include <vibe_logger.h>
 
 using namespace DM;
+using namespace vibens;
 
 System::System(std::string name, std::string id) : Component(name,id)
 {
@@ -89,16 +91,26 @@ bool System::addEdge(Edge* edge)
 
 Node* System::getNode(std::string name)
 {
+    if(nodes.find(name)==nodes.end())
+        return 0;
+
     return nodes[name];
 }
 
 Edge* System::getEdge(std::string name)
 {
+    if(edges.find(name)==edges.end())
+        return 0;
+
     return edges[name];
 }
 
 bool System::removeEdge(std::string name)
 {
+    //check if name is a edge instance
+    if(edges.find(name)==edges.end())
+        return false;
+
     if(!removeChild(name))
         return false;
 
@@ -108,8 +120,37 @@ bool System::removeEdge(std::string name)
 
 bool System::removeNode(std::string name)
 {
-    //TODO implement
-    return false;
+    //check if name is a node instance
+    if(nodes.find(name)==nodes.end())
+        return false;
+
+    //remove node
+    if(!removeChild(name))
+        return false;
+
+    nodes.erase(name);
+
+    //find all connected edges and remove them
+    std::vector<std::string> connectededges;
+
+    std::map<std::string,Edge*>::iterator ite;
+
+
+    for ( ite=edges.begin() ; ite != edges.end(); ite++ )
+    {
+        Edge* tmpedge = edges[(*ite).first];
+
+        if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
+            connectededges.push_back(tmpedge->getName());
+    }
+
+    for(int index=0; index<connectededges.size(); index++)
+    {
+        if(!removeEdge(connectededges[index]))
+            return false;
+    }
+
+    return true;
 }
 
 bool System::addSubSystem(System *newsystem)
@@ -133,6 +174,9 @@ bool System::removeSubSystem(std::string name)
 
 System* System::getSubSystem(std::string name)
 {
+    if(subsystems.find(name)==subsystems.end())
+        return 0;
+
     return subsystems[name];
 }
 
