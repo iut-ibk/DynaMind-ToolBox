@@ -35,7 +35,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <simulation.h>
-#include <database.h>
+
+#include <dmdatabase.h>
 #include <datamanagement.h>
 #include <porttuple.h>
 #include <vibe_log.h>
@@ -104,7 +105,7 @@ int main(int argc, char *argv[], char *envp[]) {
     //modified
 
 
-    Simulation s;
+    /*Simulation s;
     DataManagement::init();
     DataBase * db = new DataBase();
     DataManagement::getInstance().registerDataBase(db);
@@ -112,7 +113,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
     s.loadSimulation(simulationfile);
     s.run();
-    QThreadPool::globalInstance()->waitForDone();
+    QThreadPool::globalInstance()->waitForDone();*/
 
 }
 

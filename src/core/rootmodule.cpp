@@ -46,9 +46,9 @@ const RasterData &RootModule::getRasterData(const std::string &name, int T) cons
     throw 0;
     //assert(false);
 }
-const VectorData &RootModule::getVectorData(const std::string &name) const {
+/*const VectorData &RootModule::getVectorData(const std::string &name) const {
     (void) name;
     std::cerr << "VectorData " << name << " could not be found" << std::endl;
     throw 0;
     //assert(false);
-}
+}*/

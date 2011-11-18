@@ -30,7 +30,6 @@
 #include "compilersettings.h"
 #include <iostream>
 #include <rasterdata.h>
-#include <vectordata.h>
 #include <map>
 #include <dataobserver.h>
 #include <idatabase.h>
@@ -59,10 +58,6 @@ private:
     std::map<std::string, RasterData *> RasterDataMaps_1;
     std::map<std::string,int> RasterDataMaps_Switch;
 
-    std::map<std::string, VectorData *> VectorDataMaps_0;
-    std::map<std::string, VectorData *> VectorDataMaps_1;
-    std::map<std::string,int> VectorDataMaps_Switch;
-
 
     std::map<std::string, double> DoubleDataMaps_0;
     std::map<std::string, double> DoubleDataMaps_1;
@@ -73,6 +68,9 @@ private:
 
     std::vector<DataObserver*> observer;
 
+
+    DM::System * system;
+
 public:
     DMDatabase();
     ~DMDatabase();
@@ -81,10 +79,6 @@ public:
     RasterData & getRasterData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
     RasterData & createRasterData(std::string UUID, std::string Name);
 
-    void setVectorData(std::string UUID, std::string Name, VectorData & v);
-    VectorData & getVectorData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
-    VectorData & createVectorData(std::string UUID, std::string Name);
-    VectorData & getVectorData(std::string Name);
     void setDoubleData(std::string UUID, std::string Name, double v);
     double getDoubleData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
     void createDoubleData(std::string UUID, std::string Name);

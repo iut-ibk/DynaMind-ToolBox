@@ -46,7 +46,7 @@
 #include <module.h>
 #include <modulelink.h>
 #include <port.h>
-#include <database.h>
+#include <idatabase.h>
 #include <moduleregistry.h>
 #include <QSettings>
 #include <QDir>

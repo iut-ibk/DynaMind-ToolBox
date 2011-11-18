@@ -49,12 +49,12 @@ int main(int argc, char *argv[], char *envp[]) {
     vibens::Log::init(new OStreamLogSink(*out), vibens::Debug);
     vibens::Logger(vibens::Debug) << "Start";
 
-//    if(!DynaMiteTest())
-//        Logger(Error) << "DynaMiteTest FAILED";
-//    else
-//        Logger() << "DynaMiteTest DONE";
+    if(!DynaMiteTest())
+       Logger(Error) << "DynaMiteTest FAILED";
+   else
+        Logger() << "DynaMiteTest DONE";
 
-    if(!DMBaseTest())
+  /*  if(!DMBaseTest())
         Logger(Error) << "DMBaseTest FAILED";
     else
         Logger() << "DMBaseTest DONE";
@@ -62,7 +62,7 @@ int main(int argc, char *argv[], char *envp[]) {
     if(!DMBaseTest())
         Logger(Error) << "DMBaseTest_2 FAILED";
     else
-        Logger() << "DMBaseTest_2 DONE";
+        Logger() << "DMBaseTest_2 DONE";*/
 
     return 1;
 }
@@ -78,7 +78,7 @@ bool DynaMiteTest()
     vibens::Module * in = sim->addModule("TestModule");
     vibens::Module * outm =sim->addModule("InOut");
 
-    sim->addLink(in->getOutPort("SomeImport"), outm->getInPort("Inport"));
+    sim->addLink(in->getOutPort("Points"), outm->getInPort("Inport"));
     sim->run();
 
     QThreadPool::globalInstance()->waitForDone();

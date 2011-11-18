@@ -34,7 +34,6 @@
 #include <boost/foreach.hpp>
 #include "module.h"
 #include "rasterdata.h"
-#include "vectordata.h"
 
 #include <vector>
 
@@ -199,11 +198,11 @@ void ModuleWrapper::addParameter_all(python::object self,std::string Name, int T
 
     }
     if (Type == VIBe2::USER_DEFINED_VECTORDATA_IN) {
-        python::extract<VectorDataMap> map(param[Name]);
+        /*python::extract<VectorDataMap> map(param[Name]);
         VectorDataMap vmap= map;
         std::map<std::string,VectorData*> val = vmap.getVectorData();
         user_defined_vectordata_in[Name] = val;
-        ref = new std::map<std::string,VectorData*> (val);
+        ref = new std::map<std::string,VectorData*> (val);*/
 
     }
 
@@ -216,10 +215,10 @@ void ModuleWrapper::addParameter_all(python::object self,std::string Name, int T
         //this->addPort(Name, VIBe2::INRASTER);
     }
     if (Type == VIBe2::VECTORDATA_OUT) {
-        vectordata_out.push_back(Name);
+        //vectordata_out.push_back(Name);
     }
     if (Type == VIBe2::VECTORDATA_IN) {
-        vectordata_in.push_back(Name);
+        //vectordata_in.push_back(Name);
     }
     if (Type == VIBe2::DOUBLEDATA_OUT) {
         doubledata_out.push_back(Name);
@@ -238,11 +237,11 @@ void ModuleWrapper::setParameter() {
         this->setRasterData(s,r);
 
     }
-    BOOST_FOREACH(string s, vectordata_out) {
+    /*BOOST_FOREACH(string s, vectordata_out) {
         VectorData v;
         this->setVectorData(s, v);
 
-    }
+    }*/
     BOOST_FOREACH(string s,doubledata_out) {
         python::extract<double> dx(param[s]);
         this->setDoubleData(s, dx);
@@ -348,16 +347,16 @@ void ModuleWrapper::updateParameter() {
         }
         BOOST_FOREACH(string name, vectordata_in) {
             try {
-                this->getVectorData(name);
+                //this->getVectorData(name);
             } catch (...) {
                 Logger(Debug) << "No Vector for Port " << name ;
             }
             int error = self_dict.has_key(name);
             if (self_dict.has_key(name)) {
-                VectorDataIn  rin;
-                rin.setVectorData(& this->getVectorData(name));
+                //VectorDataIn  rin;
+                //rin.setVectorData(& this->getVectorData(name));
 
-                self_dict[name] = rin;
+                //self_dict[name] = rin;
             } else {
                 Logger(Debug)  << "No Parameter for " << name ;
             }
@@ -382,16 +381,16 @@ void ModuleWrapper::updateParameter() {
         }
         BOOST_FOREACH(string name, vectordata_out) {
             try {
-                this->getVectorData_Write(name);
+                //this->getVectorData_Write(name);
             } catch (...) {
                 Logger(Debug)  << "No VectorData for Port " << name;
             }
             int error = self_dict.has_key(name);
             if (self_dict.has_key(name)) {
-                VectorDataIn  rin;
-                rin.setVectorData(& this->getVectorData_Write(name));
+                //VectorDataIn  rin;
+                //rin.setVectorData(& this->getVectorData_Write(name));
 
-                self_dict[name] = rin;
+                //self_dict[name] = rin;
             } else {
                 Logger(Debug)  << "No Parameter for " << name;
             }
@@ -415,7 +414,7 @@ void ModuleWrapper::updateParameter() {
             self_dict[it->first] = rdataMap;
 
         }
-        for(map<string, VECTORDATA_MAP>::const_iterator it=user_defined_vectordata_in.begin(); it!=user_defined_vectordata_in.end(); ++it) {
+        /*for(map<string, VECTORDATA_MAP>::const_iterator it=user_defined_vectordata_in.begin(); it!=user_defined_vectordata_in.end(); ++it) {
             std::string name = it->first;
             map<string, VectorData*> val= this->getParameter< map<string, VectorData*>  >(name);
 
@@ -432,7 +431,7 @@ void ModuleWrapper::updateParameter() {
             vdataMap.setVectorData(val);
             self_dict[it->first] = vdataMap;
 
-        }
+        }*/
 
     } catch(error_already_set const &) {
         // handle the exception in some way
@@ -455,18 +454,18 @@ void wrap_module() {
             .def("get", &RasterDataMap::get, return_internal_reference<>())
             .def("getNames", &RasterDataMap::getNames)
             ;
-    class_<VectorDataMap>("VectorDataMap")
+    /*class_<VectorDataMap>("VectorDataMap")
             .def("__len__", &VectorDataMap::size)
             .def("getItem", &VectorDataMap::getItem, return_internal_reference<>())
             .def("get", &VectorDataMap::get, return_internal_reference<>())
             .def("getNames", &VectorDataMap::getNames)
-            ;
+            ;*/
     class_<RasterDataIn>("RasterDataIn")
             .def("getItem", &RasterDataIn::getItem, return_internal_reference<>())
             ;
-    class_<VectorDataIn>("VectorDataIn")
+    /*class_<VectorDataIn>("VectorDataIn")
             .def("getItem", &VectorDataIn::getItem, return_internal_reference<>())
-            ;
+            ;*/
 
 
     enum_<VIBe2::DATATYPES>("VIBe2")
@@ -487,7 +486,7 @@ void wrap_module() {
             .value("USER_DEFINED_VECTORDATA_IN",  VIBe2::USER_DEFINED_VECTORDATA_IN)
             ;
 
-    class_<std::vector<Face> >("FaceList")
+    /*class_<std::vector<Face> >("FaceList")
             .def("__len__", &std::vector<Face>::size)
             .def("clear", &std::vector<Face>::clear)
             .def("append", &std_item<std::vector<Face> >::add,
@@ -496,7 +495,7 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("__setitem__", &std_item<std::vector<Face> >::set,
                  with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &std_item<std::vector<Face> >::del)
+            .def("__delitem__", &std_item<std::vector<Face> >::del)*/
             ;
     class_<std::vector<long> >("LongList")
             .def("__len__", &std::vector<long>::size)
@@ -529,7 +528,7 @@ void wrap_module() {
                  with_custodian_and_ward<1,2>()) // to let container keep value
             .def("__delitem__", &std_item<std::vector<std::string> >::del)
             ;
-    class_<std::vector<Point> >("PointList")
+    /*class_<std::vector<Point> >("PointList")
             .def("__len__", &std::vector<Point>::size)
             .def("clear", &std::vector<Point>::clear)
             .def("append", &std_item<std::vector<Point> >::add,
@@ -538,9 +537,9 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("__setitem__", &std_item<std::vector<Point> >::set,
                  with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &std_item<std::vector<Point> >::del)
+            .def("__delitem__", &std_item<std::vector<Point> >::del)*/
             ;
-    class_<std::vector<Edge> >("EdgeList")
+    /*class_<std::vector<Edge> >("EdgeList")
             .def("__len__", &std::vector<Edge>::size)
             .def("clear", &std::vector<Edge>::clear)
             .def("append", &std_item<std::vector<Edge> >::add,
@@ -549,9 +548,9 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("__setitem__", &std_item<std::vector<Edge> >::set,
                  with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &std_item<std::vector<Edge> >::del)
+            .def("__delitem__", &std_item<std::vector<Edge> >::del)*/
             ;
-    class_<std::vector<double> >("DoubleAttributesList")
+    /*class_<std::vector<double> >("DoubleAttributesList")
             .def("__len__", &std::vector<double>::size)
             .def("clear", &std::vector<double>::clear)
             .def("append", &std_item<std::vector<double> >::add,
@@ -560,10 +559,10 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("__setitem__", &std_item<std::vector<double> >::set,
                  with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &std_item<std::vector<double> >::del)
+            .def("__delitem__", &std_item<std::vector<double> >::del)*/
             ;
 
-    class_<std::vector<Link> >("LinkList")
+    /*class_<std::vector<Link> >("LinkList")
             .def("__len__", &std::vector<Link>::size)
             .def("clear", &std::vector<Link>::clear)
             .def("append", &std_item<std::vector<Link> >::add,
@@ -572,7 +571,7 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("__setitem__", &std_item<std::vector<Link> >::set,
                  with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &std_item<std::vector<Link> >::del)
+            .def("__delitem__", &std_item<std::vector<Link> >::del)*/
             ;
     class_<std::map<std::string, std::string> >("StringMap")
             .def("__len__", &std::map<std::string, std::string>::size)
@@ -582,7 +581,7 @@ void wrap_module() {
                  return_value_policy<copy_non_const_reference>())
             .def("keys", &map_item<std::string, std::string>::keys)
         ;
-    class_<VectorData>("VectorData", init<>())
+    /*class_<VectorData>("VectorData", init<>())
             .def("getPoints", &VectorData::getPoints, return_value_policy<copy_const_reference>())
             .def("getEdges", &VectorData::getEdges, return_value_policy<copy_const_reference>())
             .def("getDoubleAttributes", &VectorData::getDoubleAttributes, return_value_policy<copy_const_reference>())
@@ -601,9 +600,9 @@ void wrap_module() {
             .def("setFaces", &VectorData::setFaces)
             .def("setDoubleAttributes", &VectorData::setDoubleAttributes)
             .def("addVectorData", &VectorData::addVectorData)
-            .def("clean", &VectorData::clear)
+            .def("clean", &VectorData::clear)*/
             ;
-    class_<Point>("Point", init<double, double, double>())
+    /*class_<Point>("Point", init<double, double, double>())
             .def("getX", &Point::getX)
             .def("getY", &Point::getY)
             .def("getZ", &Point::getZ)
@@ -625,7 +624,7 @@ void wrap_module() {
             .def("setAttribute", &Attribute::setAttribute_string)
             .def("getAttributeNames", &Attribute::getAttributeNames)
             .def("getStringAttribute", &Attribute::getStringAttribute)
-            ;
+            ;*/
     class_<ModuleWrapper, ModuleWrapper *, boost::noncopyable >("Module")
             .def("run", pure_virtual(&Module::run))
             .def("addParameter", &ModuleWrapper::addParameter)
@@ -636,9 +635,9 @@ void wrap_module() {
             .def("appendToUserDefinedParameter", &Module::appendToUserDefinedParameter)
             .def("init",  &ModuleWrapper::init)
             .def("getRasterData", &Module::getRasterData, return_internal_reference<>())
-            .def("getVectorData", &Module::getVectorData, return_internal_reference<>())
+            //.def("getVectorData", &Module::getVectorData, return_internal_reference<>())
             .def("setRasterData", &ModuleWrapper::setRasterData)
-            .def("setVectorData", &Module::setVectorData)
+            //.def("setVectorData", &Module::setVectorData)
             .def("getClassName", &Module::getClassName)
             .def("getID", &Module::getID)
             .def("updateParameter", &ModuleWrapper::updateParameter)

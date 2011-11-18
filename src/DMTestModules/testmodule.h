@@ -26,15 +26,21 @@
 #ifndef TESTMODULE_H
 #define TESTMODULE_H
 #include "compilersettings.h"
+#include "DMcomponent.h"
+#include "DMsystem.h"
+
+
 #include "module.h"
 using namespace vibens;
 class VIBE_HELPER_DLL_EXPORT TestModule : public  Module {
 
 VIBe_DECLARE_NODE( TestModule)
+private:
+
 
     public:
-        VectorData * vec_out;
 
+        DM::System * outputData;
         TestModule();
         void run();
         virtual ~TestModule();

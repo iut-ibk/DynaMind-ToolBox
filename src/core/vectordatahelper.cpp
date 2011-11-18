@@ -26,7 +26,7 @@
 #include "vectordatahelper.h"
 #include "boost/foreach.hpp"
 #include <QMutexLocker>
-std::vector<std::string> VectorDataHelper::findElementsWithIdentifier(const std::string &  Identifier, const std::vector<std::string> & names) {
+/*std::vector<std::string> VectorDataHelper::findElementsWithIdentifier(const std::string &  Identifier, const std::vector<std::string> & names) {
     std::vector<std::string> elements;
 
     if (Identifier.compare("") == 0) {
@@ -195,5 +195,5 @@ double VectorDataHelper::calculateLength(const Edge &e, const std::vector<Point>
     Point p_length = pl[e.getID1()] - pl[e.getID2()];
     return sqrt(p_length.x * p_length.x + p_length.y* p_length.y + p_length.z* p_length.z);
 
-}
+}*/
 

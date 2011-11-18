@@ -42,12 +42,14 @@
 #include <QUuid>
 #include <sstream>
 #include <group.h>
-#include <database.h>
+#include <idatabase.h>
 #include <modulelink.h>
 #include <simulation.h>
 #include <datamanagement.h>
 #include <portobserver.h>
 #include <sstream>
+#include <DMcomponent.h>
+#include <DMsystem.h>
 
 using namespace std;
 namespace vibens {
@@ -122,16 +124,22 @@ void Module::updateParameter() {
             *r = & this->getRasterData(s);
         }
         if (it->second == VIBe2::VECTORDATA_IN) {
-            VectorData ** v = (VectorData**) this->parameter_vals[s];
-            *v = &this->getVectorData(s);
+            //VectorData ** v = (VectorData**) this->parameter_vals[s];
+            //*v = &this->getVectorData(s);
         }
+
+        if (it->second == VIBe2::SYSTEM_IN) {
+            DM::System ** v = (DM::System**) this->parameter_vals[s];
+            *v = &this->getSystemData(s);
+        }
+
         if (it->second == VIBe2::RASTERDATA_OUT) {
             RasterData ** r =  (RasterData**) this->parameter_vals[s];
             *r = & this->getRasterData_Write(s);
         }
         if (it->second == VIBe2::VECTORDATA_OUT) {
-            VectorData ** v = (VectorData**) this->parameter_vals[s];
-            *v = &this->getVectorData_Write(s);
+            //VectorData ** v = (VectorData**) this->parameter_vals[s];
+            //*v = &this->getVectorData_Write(s);
         }
         if (it->second == VIBe2::DOUBLEDATA_IN) {
             double * d = (double*) this->parameter_vals[s];
@@ -149,7 +157,10 @@ void Module::updateParameter() {
             *ref = ref_new;
         }
 
-        if (it->second == VIBe2::USER_DEFINED_VECTORDATA_IN) {
+
+
+
+        /*if (it->second == VIBe2::USER_DEFINED_VECTORDATA_IN) {
             //OPTIMIZAZION POSSIBLE
             std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[s];
             std::map<std::string, VectorData*>  ref_new;
@@ -158,14 +169,14 @@ void Module::updateParameter() {
                 ref_new.insert(std::pair<std::string, VectorData*>(name,& this->getVectorData(name)));
             }
             *ref = ref_new;
-        }
+        }*/
 
 
 
         QString ss = "DoubleIn_" + QString::fromStdString(s);
-        for (std::map<std::string, double>::iterator it = this->InputDoubleData.begin(); it != InputDoubleData.end(); ++it ){
+        for (std::map<std::string, double>::iterator it1 = this->InputDoubleData.begin(); it1 != InputDoubleData.end(); ++it1 ){
 
-            if (ss.toStdString().compare(it->first) == 0) {
+            if (ss.toStdString().compare(it1->first) == 0) {
                 if (parameter[s] == VIBe2::LONG) {
                     long * d = (long*) this->parameter_vals[s];
                     *d = (long) this->getDoubleData(ss.toStdString());
@@ -287,7 +298,7 @@ void Module::setParameterValue(std::string name, std::string v) {
         }
         return;
     }
-    if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN) {
+    /*if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN) {
         std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
         if (ref == 0)
             return;
@@ -301,7 +312,7 @@ void Module::setParameterValue(std::string name, std::string v) {
             }
         }
         return;
-    }
+    }*/
     if (parameter[name] == VIBe2::STRING_MAP) {
         std::map<std::string, std::string> * ref = (std::map<std::string, std::string> *)this->parameter_vals[name];
         if (ref == 0)
@@ -325,12 +336,12 @@ void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
         ref->erase(element_to_erase);
         this->removePort(v, VIBe2::INRASTER);
     }
-    if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN ) {
+    /*if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN ) {
         std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
         std::map<std::string, VectorData*>::iterator element_to_erase = ref->find(v);
         ref->erase(element_to_erase);
         this->removePort(v, VIBe2::INVECTOR);
-    }
+    }*/
     if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN ) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         std::map<std::string, double>::iterator element_to_erase = ref->find(v);
@@ -358,7 +369,7 @@ void Module::appendToUserDefinedParameter(std::string name, std::string  v){
         return;
     }
     if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN ) {
-        std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
+        /*std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
             if (! s.isEmpty()) {
@@ -368,7 +379,7 @@ void Module::appendToUserDefinedParameter(std::string name, std::string  v){
                 this->addPort(ss.str(), VIBe2::INVECTOR);
             }
         }
-        return;
+        return;*/
     }
     if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
@@ -397,9 +408,9 @@ void Module::setParameter() {
 
         }
         if (it->second == VIBe2::VECTORDATA_OUT) {
-            std::string s = it->first;
+            /*std::string s = it->first;
             VectorData v;
-            this->setVectorData(s, v);
+            this->setVectorData(s, v);*/
         }
         if (it->second == VIBe2::DOUBLEDATA_OUT) {
             double val;
@@ -433,10 +444,10 @@ std::string Module::getParameterAsString(std::string Name) {
         }
     }
     if (ID == VIBe2::USER_DEFINED_VECTORDATA_IN) {
-        std::map<std::string, VectorData*> map = this->getParameter<std::map<std::string, VectorData*> >(Name);
+        /*std::map<std::string, VectorData*> map = this->getParameter<std::map<std::string, VectorData*> >(Name);
         for (std::map<std::string, VectorData*>::iterator it = map.begin(); it != map.end(); ++it) {
             ss << it->first << "*|*";
-        }
+        }*/
     }
     if (ID == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> map = this->getParameter<std::map<std::string, double> >(Name);
@@ -596,7 +607,6 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
     }
     if (type == VIBe2::VECTORDATA_OUT) {
         this->addPort(name, VIBe2::OUTVECTOR);
-        this->createVectorData(name);
     }
     if (type == VIBe2::VECTORDATA_IN) {
         this->addPort(name, VIBe2::INVECTOR);
@@ -607,6 +617,12 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
     }
     if (type == VIBe2::DOUBLEDATA_IN) {
         this->addPort(name, VIBe2::INDOUBLEDATA);
+    }
+    if (type == VIBe2::SYSTEM_IN) {
+        this->addPort(name, VIBe2::INSYSTEM);
+    }
+    if (type == VIBe2::SYSTEM_OUT) {
+        this->addPort(name, VIBe2::OUTSYSTEM);
     }
 }
 
@@ -660,13 +676,13 @@ void Module::convertValus(void * value, int Type, QString val) {
         }
     }
     if (Type== VIBe2::USER_DEFINED_VECTORDATA_IN) {
-        std::map<std::string, VectorData*> * map =  (std::map<std::string, VectorData*> *) value;
+       /* std::map<std::string, VectorData*> * map =  (std::map<std::string, VectorData*> *) value;
         QStringList list = val.split(QRegExp("\\s+"));
         foreach(QString s, list) {
             if (! s.isEmpty()) {
                 map->insert(std::pair<std::string, VectorData*>(s.toStdString(), 0));
             }
-        }
+        }*/
     }
     if (Type== VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * map =  (std::map<std::string, double> *) value;
@@ -769,16 +785,58 @@ RasterData   &Module::getRasterData(const std::string &name)  {
     return simulation->getDataBase()->getRasterData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
 
 }
+
+DM::System   &Module::getSystemData(const std::string &name)  {
+    Port * p = this->getInPort(name);
+    p->getLinks();
+
+    int LinkId = -1;
+    int BackId = -1;
+    int counter = 0;
+    foreach (ModuleLink * l, p->getLinks()) {
+        if (!l->isBackLink()) {
+            LinkId = counter;
+        } else {
+            BackId = counter;
+        }
+        counter++;
+    }
+    ModuleLink *l = p->getLinks()[LinkId];
+    if (this->internalCounter > 0 && BackId != -1){
+        l = p->getLinks()[BackId];
+        Logger(Debug) << "BackLink for " << name;
+    }
+    Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
+
+
+    Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
+    return m->getSystemState(l->getDataNameFromOutPort());
+    //return simulation->getDataBase()->getRasterData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
+
+}
+
+DM::System & Module::getSystemState(const std::string &name) {
+
+
+
+    DM::System  * sys= *(DM::System**) this->parameter_vals[name];
+
+
+
+    return *sys->createSuccessor();
+
+}
+
 RasterData   &Module::getRasterData_Write(const std::string &name)  {
 
     return simulation->getDataBase()->getRasterData(this->getUuid(), name, false);
 
 }
-VectorData   &Module::getVectorData_Write(const std::string &name)  {
+/*VectorData   &Module::getVectorData_Write(const std::string &name)  {
 
     return simulation->getDataBase()->getVectorData(this->getUuid(), name, false);
 
-}
+}*/
 void Module::sendImageToResultViewer(std::string filename) {
     BOOST_FOREACH(ResultObserver * ro, resultobserver) {
         ro->addResultImage(this->uuid,filename);
@@ -796,21 +854,21 @@ void Module::sendRasterDataToResultViewer(std::map<std::string , std::string > m
         ro->addRasterDataToViewer(r);
     }
 }
-void Module::sendVectorDataToResultViewer(std::vector<VectorData> maps) {
+/*void Module::sendVectorDataToResultViewer(std::vector<VectorData> maps) {
     QVector<VectorData> r;
     foreach (VectorData v, maps)
         r.push_back(v);
-   /* for (std::map<std::string, std::string>::iterator it=maps.begin(); it != maps.end(); ++it) {
+    for (std::map<std::string, std::string>::iterator it=maps.begin(); it != maps.end(); ++it) {
         std::string uuid_name = it->first;
         r.append(DataManagement::getInstance().getDataBase()->getVectorData(uuid_name.substr(0,uuid_name.find("%")), it->second));
-    }*/
+    }
 
     BOOST_FOREACH(ResultObserver * ro, resultobserver) {
         Attribute attr = r[0].getAttributes("GRID_1");
         std::vector<std::string> names = attr.getAttributeNames();
         ro->addVectorDataToViewer(r);
     }
-}
+}*/
 
 
 void Module::sendDoubleValueToPlot(double x, double y) {
@@ -826,20 +884,18 @@ RasterData & Module::createRasterData(std::string name) {
 void Module::createDoubleData(std::string name) {
     DataManagement::getInstance().getDataBase()->createDoubleData(this->uuid, name);
 }
-VectorData & Module::createVectorData(std::string name) {
+/*VectorData & Module::createVectorData(std::string name) {
     return  DataManagement::getInstance().getDataBase()->createVectorData(this->uuid, name);
-}
+}*/
 void Module::setRasterData( const std::string &name, RasterData &r) {
     simulation->getDataBase()->setRasterData(uuid, name, r);
 }
 
-void Module::setVectorData(const std::string &name, VectorData &v) {
-    simulation->getDataBase()->setVectorData(uuid, name, v);
-}
+
 void Module::setDoubleData(const std::string &name, const double v) {
     simulation->getDataBase()->setDoubleData(uuid, name, v);
 }
-VectorData &Module::getVectorData(const std::string &name)  {
+/*VectorData &Module::getVectorData(const std::string &name)  {
     Port * p = this->getInPort(name);
     p->getLinks();
 
@@ -864,7 +920,7 @@ VectorData &Module::getVectorData(const std::string &name)  {
     }
 
     return simulation->getDataBase()->getVectorData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
-}
+}*/
 
 
 

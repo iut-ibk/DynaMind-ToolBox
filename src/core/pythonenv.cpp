@@ -77,13 +77,13 @@ BOOST_PYTHON_MODULE(pyvibe) {
 
 }
 
-BOOST_PYTHON_MODULE(pyvibehelper) {
+/*BOOST_PYTHON_MODULE(pyvibehelper) {
 
 
     def("findElementsWithIdentifier", &VectorDataHelper::findElementsWithIdentifier);
     def("calculateArea", &VectorDataHelper::calculateArea);
 
-}
+}*/
 
 struct PythonEnvPriv {
     object main_module, main_namespace;
@@ -105,7 +105,7 @@ PythonEnv::PythonEnv() {
 
 
     initpyvibe();
-    initpyvibehelper();
+    //initpyvibehelper();
     priv->main_module = import("__main__");
     priv->main_namespace = priv->main_module.attr("__dict__");
 }

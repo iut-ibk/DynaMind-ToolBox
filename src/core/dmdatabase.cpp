@@ -31,6 +31,7 @@
 
 DMDatabase::DMDatabase()
 {
+    this->system = new DM::System("root", "id");
 }
 DMDatabase::~DMDatabase()
 {
@@ -61,14 +62,14 @@ void DMDatabase::setRasterData(std::string UUID, std::string Name,  RasterData &
 std::vector<std::string> DMDatabase::getRegisteredDatasets() const {
     std::vector<std::string> names;
 
-    for (std::map<std::string, VectorData *>::const_iterator it = this->VectorDataMaps_0.begin();
+    /*for (std::map<std::string, VectorData *>::const_iterator it = this->VectorDataMaps_0.begin();
          it != this->VectorDataMaps_0.end();
          ++it) {
         std::string name = it->first;
         names.push_back(name);
 
     }
-    return names;
+    return names;*/
 }
 
 RasterData & DMDatabase::getRasterData(std::string UUID, std::string Name, bool read, bool fromBack) {
@@ -128,13 +129,13 @@ RasterData & DMDatabase::createRasterData(std::string UUID, std::string Name) {
 }
 
 //VectorData
-VectorData & DMDatabase::getVectorData(std::string Name) {
+/*VectorData & DMDatabase::getVectorData(std::string Name) {
     QStringList sl = QString::fromStdString(Name).split("_");
     QString rest = QString::fromStdString(Name).remove(sl[0]+ "_");
     return this->getVectorData(sl[0].toStdString(),rest.toStdString());
-}
+}*/
 
-VectorData & DMDatabase::getVectorData(std::string UUID, std::string Name, bool read, bool fromBack) {
+/*VectorData & DMDatabase::getVectorData(std::string UUID, std::string Name, bool read, bool fromBack) {
     if (fromBack) {
         Logger(Debug) << "From Back";
         VectorData * v0 = VectorDataMaps_0[createName(UUID, Name)];
@@ -179,7 +180,7 @@ void DMDatabase::setVectorData(std::string UUID, std::string Name,  VectorData &
 
     this->VectorDataMaps_1[createName(UUID, Name)] = v0;
     this->VectorDataMaps_0[createName(UUID, Name)] = v1;
-}
+}*/
 
 //DoubleData
 double DMDatabase::getDoubleData(std::string UUID, std::string Name, bool read, bool fromBack) {
@@ -218,7 +219,7 @@ void DMDatabase::resetDataBase() {
     }
     this->RasterDataMaps_0.clear();
     this->RasterDataMaps_1.clear();
-    for (std::map<std::string, VectorData *>::iterator it = this->VectorDataMaps_0.begin(); it != this->VectorDataMaps_0.end(); ++it) {
+    /*for (std::map<std::string, VectorData *>::iterator it = this->VectorDataMaps_0.begin(); it != this->VectorDataMaps_0.end(); ++it) {
         std::string name = it->first;
         VectorData * r = it->second;
         if (this->VectorDataMaps_1[name] != r) {
@@ -227,7 +228,7 @@ void DMDatabase::resetDataBase() {
         delete r;
     }
     this->VectorDataMaps_0.clear();
-    this->VectorDataMaps_1.clear();
+    this->VectorDataMaps_1.clear();*/
 }
 
 std::string DMDatabase::createName(std::string UUID, std::string Name) {
@@ -241,7 +242,7 @@ std::string DMDatabase::createName(std::string UUID, std::string Name) {
 std::vector<std::string> DMDatabase::getRegisteredDatasetForModule(std::string identifier) const {
     std::vector<std::string> names;
 
-    for (std::map<std::string, VectorData *>::const_iterator it = this->VectorDataMaps_0.begin();
+    /*for (std::map<std::string, VectorData *>::const_iterator it = this->VectorDataMaps_0.begin();
          it != this->VectorDataMaps_0.end();
          ++it) {
         std::string name = it->first;
@@ -250,7 +251,7 @@ std::vector<std::string> DMDatabase::getRegisteredDatasetForModule(std::string i
         std::string id = name.substr(0,pos);
         if (id.compare(identifier) == 0)
             names.push_back(name.substr(pos+1, name.size()-1));
-    }
+    }*/
     return names;
 }
 

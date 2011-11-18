@@ -5,7 +5,7 @@
 #include "compilersettings.h"
 #include <iostream>
 #include <rasterdata.h>
-#include <vectordata.h>
+//#include <vectordata.h>
 #include <map>
 #include <dataobserver.h>
 
@@ -22,10 +22,10 @@ public:
     virtual RasterData & getRasterData(std::string UUID, std::string Name, bool read = true, bool fromBack = false) = 0;
     virtual RasterData & createRasterData(std::string UUID, std::string Name) = 0;
 
-    virtual void setVectorData(std::string UUID, std::string Name, VectorData & v) = 0;
-    virtual VectorData & getVectorData(std::string UUID, std::string Name, bool read = true, bool fromBack = false) = 0;
+    //virtual void setVectorData(std::string UUID, std::string Name, VectorData & v) = 0;
+    /*virtual VectorData & getVectorData(std::string UUID, std::string Name, bool read = true, bool fromBack = false) = 0;
     virtual VectorData & createVectorData(std::string UUID, std::string Name) = 0;
-    virtual VectorData & getVectorData(std::string Name) = 0;
+    virtual VectorData & getVectorData(std::string Name) = 0;*/
     virtual void setDoubleData(std::string UUID, std::string Name, double v) = 0;
     virtual double getDoubleData(std::string UUID, std::string Name, bool read = true, bool fromBack = false) = 0;
     virtual  void createDoubleData(std::string UUID, std::string Name) = 0;

@@ -36,7 +36,7 @@ public:
 
     boost::shared_ptr<vibens::Module> clone() const;
     const RasterData &getRasterData(const std::string &name, int T) const;
-    const VectorData &getVectorData(const std::string &name) const;
+    //const VectorData &getVectorData(const std::string &name) const;
     void run();
 };
 

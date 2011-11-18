@@ -9,8 +9,8 @@ class VIBE_HELPER_DLL_EXPORT InOut : public  Module {
 VIBe_DECLARE_NODE( InOut )
 
     public:
-        VectorData * vec_in;
-        VectorData * vec_out;
+        //VectorData * vec_in;
+        DM::System * sys_in;
 
         InOut();
         void run();

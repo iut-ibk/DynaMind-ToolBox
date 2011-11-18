@@ -26,7 +26,7 @@
 #ifndef VECTORDATAHELPER_H
 #define VECTORDATAHELPER_H
 #include "compilersettings.h"
-#include "vectordata.h"
+//#include "vectordata.h"
 #include "QMutex"
 
 enum VDH{
@@ -35,7 +35,7 @@ enum VDH{
     BOTH
 
 };
-class VIBE_HELPER_DLL_EXPORT VectorDataHelper
+/*class VIBE_HELPER_DLL_EXPORT VectorDataHelper
 {
 public:
     //VectorDataHelper(){};
@@ -50,6 +50,6 @@ public:
     static double calculateLength(const Edge & e, const std::vector<Point> & pl);
 
     static QMutex mutex;
-};
+};*/
 
 #endif // VECTORDATAHELPER_H

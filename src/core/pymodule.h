@@ -39,7 +39,7 @@ using namespace std;
 
 namespace vibens {
 typedef std::map<std::string, RasterData*> RASTERDATA_MAP;
-typedef std::map<std::string, VectorData*> VECTORDATA_MAP;
+//typedef std::map<std::string, VectorData*> VECTORDATA_MAP;
 
 void wrap_module();
 
@@ -80,7 +80,7 @@ struct VIBE_HELPER_DLL_EXPORT  ModuleWrapper : Module, boost::python::wrapper<Mo
     vector<string> doubledata_in;
     vector<string> doubledata_out;
     map<string, RASTERDATA_MAP> user_defined_rasterdata_in;
-    map<string, VECTORDATA_MAP> user_defined_vectordata_in;
+    //map<string, VECTORDATA_MAP> user_defined_vectordata_in;
 
 
 };
@@ -120,7 +120,7 @@ public:
 
 };
 
-class VIBE_HELPER_DLL_EXPORT  VectorDataMap {
+/*class VIBE_HELPER_DLL_EXPORT  VectorDataMap {
 
 private:
     VECTORDATA_MAP vdatamap;
@@ -153,7 +153,7 @@ public:
     int size() {return this->vdatamap.size();}
 
 
-};
+};*/
 
 class VIBE_HELPER_DLL_EXPORT  RasterDataIn {
 private:
@@ -162,13 +162,13 @@ public:
     RasterData * getItem() {return rdata;}
     void setRasterData(RasterData * rdata) {this->rdata = rdata;}
 };
-class VIBE_HELPER_DLL_EXPORT  VectorDataIn {
+/*class VIBE_HELPER_DLL_EXPORT  VectorDataIn {
 private:
     VectorData * vdata;
 public:
     VectorData * getItem() {return vdata;}
     void setVectorData(VectorData * vdata) {this->vdata = vdata;}
-};
+};*/
 }
 
 

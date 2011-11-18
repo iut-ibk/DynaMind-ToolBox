@@ -32,7 +32,7 @@
 
 #include "compilersettings.h"
 #include <rasterdata.h>
-#include <vectordata.h>
+//#include <vectordata.h>
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include <map>
@@ -48,6 +48,9 @@
 
 class QThreadPool;
 class PortObserver;
+namespace DM {
+    class System;
+}
 
 namespace vibens {
 
@@ -84,13 +87,17 @@ public:
         VECTORDATA_IN,
 
         DOUBLEDATA_OUT,
-        DOUBLEDATA_IN
+        DOUBLEDATA_IN,
+
+        SYSTEM_OUT,
+        SYSTEM_IN
     };
 
     enum PORTTYPES {
         OUTRASTER,
         OUTTUPLERASTER,
         OUTVECTOR,
+        OUTSYSTEM,
         OUTTUPLEVECTOR,
         OUTDOUBLEDATA,
         OUTTUPLEDOUBLEDATA,
@@ -98,6 +105,7 @@ public:
         INRASTER,
         INTUPLERASTER,
         INVECTOR,
+        INSYSTEM,
         INTUPLEVECTOR,
         INDOUBLEDATA,
         INTUPLEDOUBLEDATA,
@@ -193,15 +201,16 @@ public:
     virtual void init(const parameter_type &parameters);
     virtual void run() = 0;
 
-
+    virtual DM::System & getSystemState(const std::string &name);
+    virtual  DM::System & getSystemData(const std::string &name) ;
     virtual  RasterData   &getRasterData(const std::string &name) ;
     virtual  RasterData   &getRasterData_Write(const std::string &name) ;
     virtual void setRasterData( const std::string &name, RasterData &r);
 
 
-    virtual  VectorData &getVectorData(const std::string &name) ;
+    /*virtual  VectorData &getVectorData(const std::string &name) ;
     virtual  VectorData &getVectorData_Write(const std::string &name) ;
-    virtual void setVectorData(const std::string &name, VectorData &r);
+    virtual void setVectorData(const std::string &name, VectorData &r);*/
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);
@@ -253,7 +262,7 @@ public:
     std::string getUuid(){return this->uuid;}
     void setSimulation(Simulation * simulation);
     RasterData & createRasterData(std::string name);
-    VectorData & createVectorData(std::string name);
+    //VectorData & createVectorData(std::string name);
     void createDoubleData(std::string name);
     void setName(std::string name) {
         this->name = name;
@@ -264,7 +273,7 @@ public:
     std::string getUrlToHelpFile(){return this->urlToHelpFile;}
     void sendImageToResultViewer(std::string);
     void sendRasterDataToResultViewer(std::map<std::string , std::string > maps);
-    void sendVectorDataToResultViewer(std::vector<VectorData> maps);
+    //void sendVectorDataToResultViewer(std::vector<VectorData> maps);
     void sendDoubleValueToPlot(double, double);
     void addResultObserver(ResultObserver * ro) {this->resultobserver.push_back(ro);}
     void resetParameter();

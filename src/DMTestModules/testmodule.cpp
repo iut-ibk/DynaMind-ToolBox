@@ -29,30 +29,34 @@
 //#include <omp.h>
 #include <cmath>
 #include <iostream>
+#include <DMcomponent.h>
+#include <DMnode.h>
 VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
+    outputData = new DM::System("Points", "Points");
+
+
+    this->addParameter("Points", VIBe2::SYSTEM_OUT, &outputData);
+
     Logger(Debug) << "Create Testmodule";
-    //this->addParameter("Import", VIBe2::VECTORDATA_OUT, & this->vec_in);
-    this->addParameter("SomeImport", VIBe2::VECTORDATA_OUT, & this->vec_out);
 
 }
 
 
 
 void TestModule::run() {
+
+
+
+
+    Logger(Debug) << "Run Testmodule";
+    outputData->addNode(new DM::Node("Point_1", "Points", 0,0,0));
+    outputData->addNode(new DM::Node("Point_2", "Points", 1,0,0));
+    outputData->addNode(new DM::Node("Point_3", "Points", 2,0,0));
     Logger(Debug) << "Run Testmodule";
 
-    std::vector<Point> points;
-    Point p(0,1,2);
-    points.push_back(p);
 
-    this->vec_out->setPoints("Points", points);
-
-    std::vector<std::string> names = this->vec_out->getPointsNames();
-
-    int i = 0;
-    i=1;
 
 }
 
