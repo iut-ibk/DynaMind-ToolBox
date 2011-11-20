@@ -35,16 +35,16 @@
 using namespace vibens;
 using namespace DM;
 
-Component::Component(std::string name, std::string id)
+Component::Component(std::string name, std::string view)
 {
     this->name=name;
-    this->id=id;
+    this->view=view;
 }
 
 Component::Component(const Component& c)
 {
     this->name=c.name;
-    this->id=c.id;
+    this->view=c.view;
     attributesview=c.attributesview;
     ownedchilds=c.ownedchilds;
 
@@ -82,14 +82,14 @@ std::string Component::getName()
     return name;
 }
 
-void Component::setID(std::string id)
+void Component::setView(std::string view)
 {
-    this->id=id;
+    this->view=view;
 }
 
-std::string Component::getID()
+std::string Component::getView()
 {
-    return id;
+    return view;
 }
 
 bool Component::addAttribute(Attribute *newattribute)

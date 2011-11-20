@@ -35,9 +35,9 @@
 using namespace DM;
 using namespace vibens;
 
-System::System(std::string name, std::string id) : Component(name,id)
+System::System(std::string name, std::string view) : Component(name,view)
 {
-    vibens::Logger(vibens::Debug) << "Create System " << name << " " << id;
+    vibens::Logger(vibens::Debug) << "Create System " << name << " " << view;
 }
 
 System::System(const System& s) : Component(s)
@@ -46,6 +46,7 @@ System::System(const System& s) : Component(s)
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;
+    views = s.views;
 
     std::map<std::string,System*>::iterator its;
 
@@ -61,6 +62,8 @@ System::System(const System& s) : Component(s)
 
     for ( ite=edges.begin() ; ite != edges.end(); ite++ )
         edges[(*ite).first]=static_cast<Edge*>(ownedchilds[(*ite).first]);
+
+
 }
 
 System::~System()
@@ -197,3 +200,8 @@ Component* System::clone()
     return new System(*this);
 }
 
+bool System::addView(View view)
+{
+    this->views[view.getName()] = view;
+    return true;
+}

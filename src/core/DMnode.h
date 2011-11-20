@@ -38,8 +38,8 @@ namespace DM {
         double z;
 
     public:
-        Node(std::string name, std::string id, double x, double y, double z);
-        Node(std::string name, std::string id);
+        Node(std::string name, std::string view, double x, double y, double z);
+        Node(std::string name, std::string view);
         Node(const Node& n);
         double getX();
         double getY();

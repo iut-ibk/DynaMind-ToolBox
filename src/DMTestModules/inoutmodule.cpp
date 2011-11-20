@@ -13,9 +13,6 @@ InOut::InOut() {
 
 
 
-    //this->addParameter("Inport", VIBe2::VECTORDATA_IN, & this->vec_in);
-    //this->addParameter("Outport", VIBe2::VECTORDATA_OUT, & this->vec_out);
-
 }
 
 

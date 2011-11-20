@@ -29,14 +29,14 @@
 
 using namespace DM;
 
-Node::Node(std::string name, std::string id, double x, double y, double z) : Component(name,id)
+Node::Node(std::string name, std::string view, double x, double y, double z) : Component(name,view)
 {
     this->x=x;
     this->y=y;
     this->z=z;
 }
 
-Node::Node(std::string name, std::string id) : Component(name, id)
+Node::Node(std::string name, std::string view) : Component(name, view)
 {
     this->x=0;
     this->y=0;

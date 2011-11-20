@@ -30,14 +30,20 @@
 #include <cmath>
 #include <iostream>
 #include <DMcomponent.h>
+#include <DMedge.h>
+#include <DMattribute.h>
 #include <DMnode.h>
+#include <DMview.h>
+
 VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
-    outputData = new DM::System("Points", "Points");
+    DM::View points = DM::View("Points", 0);
+        points.setAttributes("A");
+        points.setAttributes("B");
 
 
-    this->addParameter("Points", VIBe2::SYSTEM_OUT, &outputData);
+    this->addData("Points", VIBe2::SYSTEM_OUT, points, &outputData);
 
     Logger(Debug) << "Create Testmodule";
 

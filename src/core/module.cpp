@@ -132,7 +132,10 @@ void Module::updateParameter() {
             DM::System ** v = (DM::System**) this->parameter_vals[s];
             *v = &this->getSystemData(s);
         }
-
+        if (it->second == VIBe2::SYSTEM_OUT) {
+            DM::System ** v = (DM::System**) this->parameter_vals[s];
+            *v = &this->getSystem_Write(s);
+        }
         if (it->second == VIBe2::RASTERDATA_OUT) {
             RasterData ** r =  (RasterData**) this->parameter_vals[s];
             *r = & this->getRasterData_Write(s);
@@ -591,6 +594,19 @@ std::string Module::generateHelp() {
     return out.str();
 }
 
+void Module::addData(std::string name, int type, DM::View view, void * ref) {
+    this->parameter[name] = type;
+    this->parameter_vals[name] = ref;
+    this->parameterList.push_back(name);
+    this->views[name] = view;
+
+    if (type == VIBe2::SYSTEM_IN) {
+        this->addPort(name, VIBe2::INSYSTEM);
+    }
+    if (type == VIBe2::SYSTEM_OUT) {
+        this->addPort(name, VIBe2::OUTSYSTEM);
+    }
+}
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) {
     this->parameter[name] = type;
@@ -824,6 +840,14 @@ DM::System & Module::getSystemState(const std::string &name) {
 
 
     return *sys->createSuccessor();
+
+}
+DM::System   &Module::getSystem_Write(const std::string &name)  {
+
+    DM::System * sys = new DM::System(name, name);
+    sys->addView(this->views[name]);
+
+    return *sys;
 
 }
 

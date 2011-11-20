@@ -29,7 +29,7 @@
 
 #include <map>
 #include <vector>
-
+#include <DMview.h>
 namespace DM {
 
     class Component;
@@ -42,9 +42,10 @@ namespace DM {
         std::map<std::string, Node* > nodes;
         std::map<std::string, Edge* > edges;
         std::map<std::string, System*> subsystems;
+        std::map<std::string, View> views;
 
     public:
-        System(std::string name, std::string id);
+        System(std::string name, std::string view);
         System(const System& s);
         ~System();
 
@@ -62,6 +63,8 @@ namespace DM {
         System* getSubSystem(std::string name);
         std::map<std::string, System*> getAllSubSystems();
         System* createSuccessor();
+        bool addView(DM::View view);
+
 
 
 

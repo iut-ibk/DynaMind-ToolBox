@@ -50,6 +50,7 @@ class QThreadPool;
 class PortObserver;
 namespace DM {
     class System;
+    class View;
 }
 
 namespace vibens {
@@ -203,6 +204,7 @@ public:
 
     virtual DM::System & getSystemState(const std::string &name);
     virtual  DM::System & getSystemData(const std::string &name) ;
+     virtual  DM::System & getSystem_Write(const std::string &name) ;
     virtual  RasterData   &getRasterData(const std::string &name) ;
     virtual  RasterData   &getRasterData_Write(const std::string &name) ;
     virtual void setRasterData( const std::string &name, RasterData &r);
@@ -220,8 +222,14 @@ public:
     virtual int getID();
     void setID(const int id);
     void addParameter(std::string name, int type, void * ref, std::string description = "");
+
+    void addData(std::string name, int type, DM::View view, void * ref);
+
     std::vector<Port*> getInPorts();
     std::vector<Port*> getOutPorts();
+
+
+
     std::vector<std::string> getParameterListAsVector()  {return this->parameterList;}
     boost::unordered_map<std::string, int> getParameterList()  {return this->parameter;}
     template<class T>
@@ -286,6 +294,7 @@ public:
     std::vector<ResultObserver * > getResultObserver(){return this->resultobserver;}
     Simulation * getSimulation(){return this->simulation;}
 
+
 private:
     boost::python::object self;
     bool PythonModule;
@@ -293,6 +302,7 @@ private:
     void convertValus( void *value, int Type, QString val);
     std::vector<Port*> InPorts;
     std::vector<Port*> OutPorts;
+
     std::string uuid;
     std::string name;
     std::string urlToHelpFile;
@@ -310,6 +320,7 @@ protected:
     boost::unordered_map<std::string, int> parameter;
     boost::unordered_map<std::string, std::string> parameter_description;
     boost::unordered_map<std::string, void *> parameter_vals;
+    boost::unordered_map<std::string,DM::View> views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
     int internalCounter;

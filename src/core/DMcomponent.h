@@ -40,20 +40,20 @@ namespace DM {
     {
     protected:
         std::string name;
-        std::string id;
+        std::string view;
         std::map<std::string,Component*> childsview;
         std::map<std::string,Attribute*> attributesview;
         std::map<std::string,Component*> ownedchilds;
         std::map<std::string,Attribute*> ownedattributes;
 
     public:
-        Component(std::string name, std::string id);
+        Component(std::string name, std::string view);
         Component(const Component& s);
         virtual ~Component();
         void setName(std::string name);
         std::string getName();
-        void setID(std::string id);
-        std::string getID();
+        void setView(std::string view);
+        std::string getView();
         bool addAttribute(Attribute *newattribute);
         bool changeAttribute(Attribute *newattribute);
         bool removeAttribute(std::string name);
