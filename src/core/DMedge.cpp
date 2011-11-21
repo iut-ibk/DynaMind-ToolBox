@@ -29,7 +29,7 @@
 
 using namespace DM;
 
-Edge::Edge(std::string name, std::string id, std::string startpoint, std::string endpoint) : Component(name,id)
+Edge::Edge(std::string startpoint, std::string endpoint) : Component()
 {
     start=startpoint;
     end=endpoint;

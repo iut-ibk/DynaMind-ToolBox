@@ -29,21 +29,14 @@
 
 using namespace DM;
 
-Node::Node(std::string name, std::string view, double x, double y, double z) : Component(name,view)
+Node::Node( double x, double y, double z) : Component()
 {
     this->x=x;
     this->y=y;
     this->z=z;
 }
 
-Node::Node(std::string name, std::string view) : Component(name, view)
-{
-    this->x=0;
-    this->y=0;
-    this->z=0;
-}
-
-Node::Node(const Node& n) : Component(n)
+Node::Node(const Node& n) : Component()
 {
     x=n.x;
     y=n.y;

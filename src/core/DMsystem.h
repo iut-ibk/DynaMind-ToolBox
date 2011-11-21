@@ -31,6 +31,11 @@
 #include <vector>
 #include <DMview.h>
 namespace DM {
+    enum Components {
+        NODE,
+        EDGE,
+        SUBSYSTEM
+    };
 
     class Component;
     class Node;
@@ -42,15 +47,22 @@ namespace DM {
         std::map<std::string, Node* > nodes;
         std::map<std::string, Edge* > edges;
         std::map<std::string, System*> subsystems;
-        std::map<std::string, View> views;
+        std::map<std::string, View> viewdefinitions;
+
+        std::map<std::string, std::map<std::string, Component*> > views;
+
+        void updateViews (Component * c);
 
     public:
         System(std::string name, std::string view);
         System(const System& s);
         ~System();
 
-        bool addNode(Node* node);
-        bool addEdge(Edge* edge);
+        Node * addNode(Node* node);
+        Node * addNode(double x, double y, double z, std::string view = "");
+        Edge* addEdge(Edge* edge);
+        Edge* addEdge(Node * start, Node * end, std::string view = "");
+
         bool addPredecessor(System* system);
         Node* getNode(std::string name);
         Edge* getEdge(std::string name);

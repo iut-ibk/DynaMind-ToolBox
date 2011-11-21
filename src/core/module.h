@@ -223,7 +223,7 @@ public:
     void setID(const int id);
     void addParameter(std::string name, int type, void * ref, std::string description = "");
 
-    void addData(std::string name, int type, DM::View view, void * ref);
+    void addData(std::string name, std::vector<DM::View> view, void * ref);
 
     std::vector<Port*> getInPorts();
     std::vector<Port*> getOutPorts();
@@ -320,7 +320,7 @@ protected:
     boost::unordered_map<std::string, int> parameter;
     boost::unordered_map<std::string, std::string> parameter_description;
     boost::unordered_map<std::string, void *> parameter_vals;
-    boost::unordered_map<std::string,DM::View> views;
+    boost::unordered_map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
     int internalCounter;

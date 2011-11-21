@@ -35,9 +35,17 @@
 using namespace DM;
 using namespace vibens;
 
-System::System(std::string name, std::string view) : Component(name,view)
+System::System(std::string name, std::string view) : Component()
 {
     vibens::Logger(vibens::Debug) << "Create System " << name << " " << view;
+
+}
+
+
+void System::updateViews(Component * c) {
+    foreach (std::string view, c->getInViews()) {
+        this->views[view][c->getName()] = c;
+    }
 }
 
 System::System(const System& s) : Component(s)
@@ -46,23 +54,35 @@ System::System(const System& s) : Component(s)
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;
-    views = s.views;
+    viewdefinitions = s.viewdefinitions;
 
+    //Update SubSystem
     std::map<std::string,System*>::iterator its;
 
-    for ( its=subsystems.begin() ; its != subsystems.end(); its++ )
-        subsystems[(*its).first]=static_cast<System*>(ownedchilds[(*its).first]);
+    for ( its=subsystems.begin() ; its != subsystems.end(); its++ ) {
+        System * s = static_cast<System*>(ownedchilds[(*its).first]);
+        subsystems[(*its).first]=s;
+        this->updateViews(s);
 
+    }
+
+    //Update Nodes
     std::map<std::string,Node*>::iterator itn;
 
-    for ( itn=nodes.begin() ; itn != nodes.end(); itn++ )
-        nodes[(*itn).first]=static_cast<Node*>(ownedchilds[(*itn).first]);
+    for ( itn=nodes.begin() ; itn != nodes.end(); itn++ ) {
+        Node * n = static_cast<Node*>(ownedchilds[(*itn).first]);
+        nodes[(*itn).first] = n;
+        this->updateViews(n);
+    }
 
+    //Update Edges
     std::map<std::string,Edge*>::iterator ite;
 
-    for ( ite=edges.begin() ; ite != edges.end(); ite++ )
-        edges[(*ite).first]=static_cast<Edge*>(ownedchilds[(*ite).first]);
-
+    for ( ite=edges.begin() ; ite != edges.end(); ite++ ) {
+        Edge * e = static_cast<Edge*>(ownedchilds[(*ite).first]);
+        edges[(*ite).first]= e;
+        this->updateViews(e);
+    }
 
 }
 
@@ -71,25 +91,51 @@ System::~System()
 
 }
 
-bool System::addNode(Node* node)
+Node * System::addNode(Node* node)
 {
     if(!addChild(node))
-        return false;
+        return 0;
 
     nodes[node->getName()]=node;
-    return true;
+    return node;
+}
+Node * System::addNode(double x, double y, double z, std::string view) {
+
+    Node * n = this->addNode(new Node(x, y, z));
+
+    if (n == 0)
+        return 0;
+    if (!view.empty()) {
+        this->views[view][n->getName()] = n;
+        n->addView(view);
+    }
+
+
+    return n;
 }
 
-bool System::addEdge(Edge* edge)
+Edge * System::addEdge(Edge* edge)
 {
     if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName()))
-        return false;
+        return 0;
 
     if(!addChild(edge))
-        return false;
+        return 0;
 
     edges[edge->getName()]=edge;
-    return true;
+    return edge;
+}
+Edge * System::addEdge(Node * start, Node * end, std::string view)
+{
+    Edge * e = this->addEdge(new Edge(start->getName(), end->getName()));
+
+    if (e == 0)
+        return 0;
+    if (!view.empty()) {
+        this->views[view][e->getName()] = e;
+        e->addView(view);
+    }
+    return e;
 }
 
 Node* System::getNode(std::string name)
@@ -202,6 +248,6 @@ Component* System::clone()
 
 bool System::addView(View view)
 {
-    this->views[view.getName()] = view;
+    this->viewdefinitions[view.getName()] = view;
     return true;
 }

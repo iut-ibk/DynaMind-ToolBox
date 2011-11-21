@@ -1,11 +1,25 @@
 #include "DMview.h"
 namespace DM {
-View::View(std::string name,int type)
+View::View(std::string name)
 {
-    this->type = type;
     this->name = name;
+
+    this->readType = -1;
+    this->writeType = -1;
+
 }
-void View::setAttributes(std::string name) {
-    this->Attributes.push_back(name);
+
+
+void View::addAttributes(std::string name) {
+    this->WriteAttributes.push_back(name);
+}
+void View::getAttributes(std::string name) {
+    this->WriteAttributes.push_back(name);
+}
+void View::addComponent(int Type) {
+    this->writeType = Type;
+}
+void View::getComponent(int Type) {
+    this->readType = Type;
 }
 }

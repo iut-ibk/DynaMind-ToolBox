@@ -38,14 +38,22 @@
 VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
-    DM::View points = DM::View("Points", 0);
-        points.setAttributes("A");
-        points.setAttributes("B");
+    DM::View inlets = DM::View("Inlets");
+    inlets.addComponent(DM::NODE);
+    inlets.addAttributes("A");
+    inlets.addAttributes("B");
+    DM::View conduits = DM::View("Conduits");
+    conduits.addComponent(DM::EDGE);
+
+    std::vector<DM::View> views;
+
+    views.push_back(inlets);
+    views.push_back(conduits);
 
 
-    this->addData("Points", VIBe2::SYSTEM_OUT, points, &outputData);
+    this->addData("Sewer",views, &outputData);
 
-    Logger(Debug) << "Create Testmodule";
+
 
 }
 
@@ -53,13 +61,11 @@ TestModule::TestModule() {
 
 void TestModule::run() {
 
+    DM::Node * n1 = outputData->addNode(0,0,0, "Inlets");
+    DM::Node * n2 = outputData->addNode(0,0,1, "Inlets");
 
+    outputData->addEdge(n1, n2, "Conduits");
 
-
-    Logger(Debug) << "Run Testmodule";
-    outputData->addNode(new DM::Node("Point_1", "Points", 0,0,0));
-    outputData->addNode(new DM::Node("Point_2", "Points", 1,0,0));
-    outputData->addNode(new DM::Node("Point_3", "Points", 2,0,0));
     Logger(Debug) << "Run Testmodule";
 
 

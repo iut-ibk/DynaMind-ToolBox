@@ -27,6 +27,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <string>
 namespace DM {
     class Component;
 
@@ -38,8 +39,8 @@ namespace DM {
         double z;
 
     public:
-        Node(std::string name, std::string view, double x, double y, double z);
-        Node(std::string name, std::string view);
+        Node( double x, double y, double z );
+
         Node(const Node& n);
         double getX();
         double getY();

@@ -32,19 +32,19 @@
 
 #include <vibe_logger.h>
 
+#include <QUuid>
+
 using namespace vibens;
 using namespace DM;
 
-Component::Component(std::string name, std::string view)
+Component::Component()
 {
-    this->name=name;
-    this->view=view;
+    this->name = QUuid::createUuid().toString().toStdString();
 }
 
 Component::Component(const Component& c)
 {
     this->name=c.name;
-    this->view=c.view;
     attributesview=c.attributesview;
     ownedchilds=c.ownedchilds;
 
@@ -80,16 +80,6 @@ void Component::setName(std::string name)
 std::string Component::getName()
 {
     return name;
-}
-
-void Component::setView(std::string view)
-{
-    this->view=view;
-}
-
-std::string Component::getView()
-{
-    return view;
 }
 
 bool Component::addAttribute(Attribute *newattribute)
@@ -199,6 +189,15 @@ Component* Component::getChild(std::string name)
     return childsview[name];
 }
 
+void Component::addView(std::string view)
+{
+    this->inViews.insert(view);
+}
+
+std::set<std::string> const & Component::getInViews() const {
+    return this->inViews;
+
+}
 std::map<std::string, Component*> Component::getAllChilds()
 {
     return childsview;

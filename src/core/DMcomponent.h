@@ -31,6 +31,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <set>
 
 namespace DM {
 
@@ -40,20 +41,18 @@ namespace DM {
     {
     protected:
         std::string name;
-        std::string view;
         std::map<std::string,Component*> childsview;
         std::map<std::string,Attribute*> attributesview;
         std::map<std::string,Component*> ownedchilds;
         std::map<std::string,Attribute*> ownedattributes;
+        std::set<std::string> inViews;
 
     public:
-        Component(std::string name, std::string view);
+        Component();
         Component(const Component& s);
         virtual ~Component();
         void setName(std::string name);
         std::string getName();
-        void setView(std::string view);
-        std::string getView();
         bool addAttribute(Attribute *newattribute);
         bool changeAttribute(Attribute *newattribute);
         bool removeAttribute(std::string name);
@@ -64,6 +63,8 @@ namespace DM {
         bool removeChild(std::string name);
         Component* getChild(std::string name);
         std::map<std::string, Component*> getAllChilds();
+        void addView(std::string);
+        std::set<std::string> const &  getInViews() const;
         virtual Component* clone()=0;
     };
 }
