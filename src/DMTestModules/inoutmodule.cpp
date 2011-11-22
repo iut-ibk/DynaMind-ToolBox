@@ -9,7 +9,19 @@ InOut::InOut() {
 
     Logger(Debug) << "Create InOut";
 
-    this->addParameter("Inport", VIBe2::SYSTEM_IN, &this->sys_in);
+    DM::View inlets = DM::View("Inlets");
+    inlets.getComponent(DM::NODE);
+    inlets.getAttributes("A");
+    inlets.getAttributes("B");
+    DM::View conduits = DM::View("Conduits");
+    conduits.addComponent(DM::EDGE);
+
+    std::vector<DM::View> views;
+
+    views.push_back(inlets);
+    views.push_back(conduits);
+
+    this->addData("Inport", views, &this->sys_in);
 
 
 
@@ -26,33 +38,11 @@ void InOut::run() {
        Logger(Debug) << n->getName() << n->getX() << n->getY() << n->getZ();
     }
 
+    DM::Node * n1 = sys_in->addNode(0,0,2, "Inlets");
+    DM::Node * n2 = sys_in->addNode(0,0,3, "Inlets");
 
+    sys_in->addEdge(n1, n2, "Conduits");
 
-    /*std::vector<std::string> names = vec_in->getPointsNames();
-
-    foreach (std::string name, names) {
-        Logger(Debug) << name;
-        std::vector<DM::Node> points = this->vec_in->getPoints(name);
-        foreach (DM::Node p, points) {
-            //Logger(Debug) << p;
-        }
-
-    };
-
-    names = vec_in->getEdgeNames();
-
-    foreach (std::string name, names) {
-        Logger(Debug) << name;
-        std::vector<DM::Node> points = this->vec_in->getPoints(name);
-        std::vector<Edge> edges = this->vec_in->getEdges(name);
-        foreach (Edge e, edges) {
-            Logger(Debug) << e.getID1() << "/" << e.getID2();
-            //Logger(Debug) << points[e.getID1()] << "-" <<  points[e.getID2()];
-        }
-
-
-
-    };*/
 
 }
 

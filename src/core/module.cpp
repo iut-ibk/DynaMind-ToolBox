@@ -119,6 +119,34 @@ Port * Module::getOutPort(std::string name) {
 void Module::updateParameter() {
     for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
+
+        if (it->second == VIBe2::SYSTEM) {
+            DM::System ** v = (DM::System**) this->parameter_vals[s];
+            std::vector<DM::View> views= this->views[s];
+            bool reads = false;
+            bool writes = false;
+            foreach (DM::View view,  views)  {
+                if (reads == true)
+                    continue;
+                reads = view.reads();
+            }
+            foreach (DM::View view,  views)  {
+                if (writes == true)
+                    continue;
+                writes = view.writes();
+            }
+
+            if (reads) {
+                *v = &this->getSystemData(s);
+            }
+            //Creats a new Dataset
+            if (writes && !reads) {
+                *v = &this->getSystem_Write(s);
+            }
+
+        }
+
+
         if (it->second == VIBe2::RASTERDATA_IN) {
             RasterData ** r =  (RasterData**) this->parameter_vals[s];
             *r = & this->getRasterData(s);
@@ -594,19 +622,30 @@ std::string Module::generateHelp() {
     return out.str();
 }
 
-void Module::addData(std::string name,  std::vector<DM::View> view, void * ref) {
-    //this->parameter[name] = type;
+void Module::addData(std::string name,  std::vector<DM::View> views, void * ref) {
     this->parameter_vals[name] = ref;
     this->parameterList.push_back(name);
-    this->views[name] = view;
+    this->views[name] = views;
+    this->parameter[name] = VIBe2::SYSTEM;
 
-
-    /*if (type == VIBe2::SYSTEM_IN) {
+    bool reads = false;
+    bool writes = false;
+    foreach (DM::View view,  views)  {
+        if (reads == true)
+            continue;
+        reads = view.reads();
+    }
+    foreach (DM::View view,  views)  {
+        if (writes == true)
+            continue;
+        writes = view.writes();
+    }
+    if (reads) {
         this->addPort(name, VIBe2::INSYSTEM);
     }
-    if (type == VIBe2::SYSTEM_OUT) {
+    if (writes) {
         this->addPort(name, VIBe2::OUTSYSTEM);
-    }*/
+    }
 }
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) {

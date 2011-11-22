@@ -77,8 +77,10 @@ bool DynaMiteTest()
     sim->registerNativeModules("dmtestmodule");
     vibens::Module * in = sim->addModule("TestModule");
     vibens::Module * outm =sim->addModule("InOut");
+    vibens::Module * outm2 =sim->addModule("InOut");
 
     sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
+    sim->addLink(outm->getOutPort("Inport"), outm2->getInPort("Inport"));
     sim->run();
 
     QThreadPool::globalInstance()->waitForDone();

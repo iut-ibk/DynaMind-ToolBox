@@ -29,6 +29,9 @@ public:
     int const  & getReadType  () const {return readType;}
     int const  & getWriteType  () const {return writeType;}
 
+    bool reads();
+    bool writes();
+
 };
 }
 

@@ -91,7 +91,8 @@ public:
         DOUBLEDATA_IN,
 
         SYSTEM_OUT,
-        SYSTEM_IN
+        SYSTEM_IN,
+        SYSTEM
     };
 
     enum PORTTYPES {

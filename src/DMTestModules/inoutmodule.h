@@ -12,6 +12,7 @@ VIBe_DECLARE_NODE( InOut )
         //VectorData * vec_in;
         DM::System * sys_in;
 
+
         InOut();
         void run();
         virtual ~InOut();
