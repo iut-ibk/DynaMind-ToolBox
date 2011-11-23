@@ -37,17 +37,6 @@ namespace vibens {
         int portOutType;
         int portInType;
 
-
-        if(PortType == VIBe2::OUTTUPLERASTER ||PortType == VIBe2::INTUPLERASTER ) {
-            portOutType = VIBe2::OUTRASTER;
-            portInType = VIBe2::INRASTER;
-
-        }
-        if(PortType == VIBe2::OUTTUPLEVECTOR ||PortType == VIBe2::INTUPLEVECTOR ) {
-            portOutType = VIBe2::OUTVECTOR;
-            portInType = VIBe2::INVECTOR;
-
-        }
         if(PortType == VIBe2::OUTTUPLEDOUBLEDATA ||PortType == VIBe2::INTUPLEDOUBLEDATA ) {
             portOutType = VIBe2::OUTDOUBLEDATA;
             portInType = VIBe2::INDOUBLEDATA;

@@ -49,11 +49,15 @@ TestModule::TestModule() {
 
     views.push_back(inlets);
     views.push_back(conduits);
+    value = 10;
 
 
+
+
+    this->addParameter("Value", VIBe2::DOUBLE , &value);
+
+    ////////Datasets
     this->addData("Sewer",views, &outputData);
-
-
 
 }
 

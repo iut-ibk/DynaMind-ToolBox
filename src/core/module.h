@@ -31,8 +31,6 @@
 #define MODULE_H
 
 #include "compilersettings.h"
-#include <rasterdata.h>
-//#include <vectordata.h>
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include <map>
@@ -67,25 +65,12 @@ public:
         BOOL,
         LASTPRIMITIVETYPE,
         //Port Types
-        USER_DEFINED_RASTERDATA_IN,
-        USER_DEFINED_VECTORDATA_IN,
         USER_DEFINED_DOUBLEDATA_IN,
-
-        USER_DEFINED_RASTER_TUPLE_IN,
-        USER_DEFINED_VECTORDATA_TUPLE_IN,
         USER_DEFINED_DOUBLEDATA_TUPLE_IN,
-
-        USER_DEFINED_RASTER_TUPLE_OUT,
-        USER_DEFINED_VECTORDATA_TUPLE_OUT,
         USER_DEFINED_DOUBLEDATA_TUPLE_OUT,
 
         USER_DEFINED_INPUT,
 
-        RASTERDATA_OUT,
-        RASTERDATA_IN,
-
-        VECTORDATA_OUT,
-        VECTORDATA_IN,
 
         DOUBLEDATA_OUT,
         DOUBLEDATA_IN,
@@ -96,23 +81,17 @@ public:
     };
 
     enum PORTTYPES {
-        OUTRASTER,
-        OUTTUPLERASTER,
-        OUTVECTOR,
         OUTSYSTEM,
-        OUTTUPLEVECTOR,
+        OUTTUPLESYSTEM,
         OUTDOUBLEDATA,
         OUTTUPLEDOUBLEDATA,
         OUTPORTS,
-        INRASTER,
-        INTUPLERASTER,
-        INVECTOR,
+
         INSYSTEM,
-        INTUPLEVECTOR,
+        INTUPLEVSYSTEM,
         INDOUBLEDATA,
         INTUPLEDOUBLEDATA,
         INPORTS
-
     };
 
     enum CORINE {
@@ -125,11 +104,10 @@ public:
     };
 };
 
-class ModuleContainer;
 struct ModulePrivate;
 
 typedef boost::unordered_map<std::string, std::string> parameter_type;
-class ModuleContainer;
+
 class Port;
 class Group;
 class Simulation;
@@ -206,14 +184,6 @@ public:
     virtual DM::System & getSystemState(const std::string &name);
     virtual  DM::System & getSystemData(const std::string &name) ;
      virtual  DM::System & getSystem_Write(const std::string &name) ;
-    virtual  RasterData   &getRasterData(const std::string &name) ;
-    virtual  RasterData   &getRasterData_Write(const std::string &name) ;
-    virtual void setRasterData( const std::string &name, RasterData &r);
-
-
-    /*virtual  VectorData &getVectorData(const std::string &name) ;
-    virtual  VectorData &getVectorData_Write(const std::string &name) ;
-    virtual void setVectorData(const std::string &name, VectorData &r);*/
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);

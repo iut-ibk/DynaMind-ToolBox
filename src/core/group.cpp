@@ -186,11 +186,7 @@ PortTuple * Group::getOutPortTuple(std::string name) {
 PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     PortTuple * pt = 0;
     int debug = VIBe2::INTUPLEDOUBLEDATA;
-    if (PortType == VIBe2::OUTTUPLERASTER ||
-            PortType == VIBe2::INTUPLERASTER ||
-            PortType == VIBe2::OUTTUPLEVECTOR||
-            PortType == VIBe2::INTUPLEVECTOR ||
-            PortType == VIBe2::OUTTUPLEDOUBLEDATA||
+    if (PortType == VIBe2::OUTTUPLEDOUBLEDATA||
             PortType == VIBe2::INTUPLEDOUBLEDATA) {
         Logger(Debug) << "Add Tuple Port" << LinkedDataName;
         pt = new PortTuple(this, LinkedDataName, PortType);
@@ -206,11 +202,7 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
 }
 void  Group::setParameterValue(std::string name, std::string v){
     QString value = QString::fromStdString(v);
-    if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_OUT ||
-            parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_OUT||
-            parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+    if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
             parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT) {
         std::vector<std::string> * ref = (std::vector<std::string> *)this->parameter_vals[name];
         QStringList l = value.split("*|*");
@@ -220,14 +212,6 @@ void  Group::setParameterValue(std::string name, std::string v){
                 ref->push_back(s.toStdString());
                 std::stringstream ss;
                 ss  << s.toStdString();
-                if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_IN)
-                    this->addTuplePort(ss.str(), VIBe2::INTUPLERASTER);
-                if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_OUT)
-                    this->addTuplePort(ss.str(), VIBe2::OUTTUPLERASTER);
-                if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_IN)
-                    this->addTuplePort(ss.str(), VIBe2::INTUPLEVECTOR);
-                if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_OUT)
-                    this->addTuplePort(ss.str(), VIBe2::OUTTUPLEVECTOR);
                 if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
                     this->addTuplePort(ss.str(), VIBe2::INTUPLEDOUBLEDATA);
                 if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
@@ -241,11 +225,7 @@ void  Group::setParameterValue(std::string name, std::string v){
 void Group::appendToUserDefinedParameter(std::string name, std::string v) {
     QString value = QString::fromStdString(v);
     Logger(Debug) << "append userdefined tuple";
-    if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_OUT ||
-            parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_OUT ||
-            parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+    if (parameter[name]  == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
             parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT
 
             ) {
@@ -253,14 +233,6 @@ void Group::appendToUserDefinedParameter(std::string name, std::string v) {
         ref->push_back(value.toStdString());
         std::stringstream ss;
         ss <<  value.toStdString();
-        if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_IN)
-            this->addTuplePort(ss.str(), VIBe2::INTUPLERASTER);
-        if (parameter[name] == VIBe2::USER_DEFINED_RASTER_TUPLE_OUT)
-            this->addTuplePort(ss.str(), VIBe2::OUTTUPLERASTER);
-        if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_IN)
-            this->addTuplePort(ss.str(), VIBe2::INTUPLEVECTOR);
-        if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_OUT)
-            this->addTuplePort(ss.str(), VIBe2::OUTTUPLEVECTOR);
         if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
             this->addTuplePort(ss.str(), VIBe2::INTUPLEDOUBLEDATA);
         if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
@@ -272,12 +244,8 @@ void Group::appendToUserDefinedParameter(std::string name, std::string v) {
 std::string Group::getParameterAsString(std::string Name) {
     int ID = this->parameter[Name];
     std::stringstream ss;
-    if (ID == VIBe2::USER_DEFINED_RASTER_TUPLE_IN ||
-            ID == VIBe2::USER_DEFINED_RASTER_TUPLE_OUT ||
-            ID == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_IN ||
-            ID == VIBe2::USER_DEFINED_VECTORDATA_TUPLE_OUT  ||
-            ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
-            ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
+    if (ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+        ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
     {
         std::vector<std::string> vec = this->getParameter< std::vector<std::string> >(Name);
         BOOST_FOREACH(std::string name, vec) {

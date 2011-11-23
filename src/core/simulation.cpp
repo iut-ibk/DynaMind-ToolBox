@@ -40,7 +40,6 @@
 #include "vector"
 #include <boost/python.hpp>
 #include "moduleregistry.h"
-#include "pythonenv.h"
 #include <QThread>
 #include "simulationobserver.h"
 #include <module.h>
@@ -113,7 +112,7 @@ Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModu
 }
 void Simulation::reloadModules() {
     //Init Python
-    QSettings settings("IUT", "VIBe2");
+    /*QSettings settings("IUT", "VIBe2");
     Logger(Standard) << "Reload Modules";
 
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
@@ -143,7 +142,7 @@ void Simulation::reloadModules() {
             }
         }
 
-    }
+    }*/
 }
 
 Simulation::Simulation() {
@@ -156,31 +155,13 @@ Simulation::Simulation() {
     this->rootGroup->setSimulation(this);
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
-    vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
+    //vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
     QSettings settings("IUT", "VIBe2");
-    //settings.beginGroup("Preferences");
 
     //Init Python
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-    for (int index = 0; index < pythonhome.size(); index++)
-        vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
-
-
-
-    /*QDir pythonDir;
-    QString text = settings.value("pythonModules").toString();
-    QStringList list = text.replace("\\","/").split(",");
-    foreach (QString s, list){
-
-
-    }*/
-
-    /* text = settings.value("nativeModules").toString();
-    list = text.replace("\\","/").split(",");
-    foreach (QString s, list) {
-        std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
-        moduleRegistry->addNativePlugin(s.toStdString());
-    }*/
+    //for (int index = 0; index < pythonhome.size(); index++)
+        //vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
 
 }
@@ -191,7 +172,7 @@ void Simulation::registerNativeModules(string Filename) {
 }
 
 void Simulation::registerPythonModules(std::string path) {
-    vibens::PythonEnv::getInstance()->addPythonPath(path);
+    /*vibens::PythonEnv::getInstance()->addPythonPath(path);
     QDir pythonDir = QDir(QString::fromStdString(path));
     QStringList filters;
     filters << "*.py";
@@ -205,7 +186,7 @@ void Simulation::registerPythonModules(std::string path) {
             Logger(Warning)  << "Can't load Module " << file.toStdString();
             std::cout << file.toStdString() << std::endl;
         }
-    }
+    }*/
 }
 
 ModuleRegistry * Simulation::getModuleRegistry() {

@@ -33,7 +33,6 @@
 #include <vector>
 #include <QString>
 #include <QStringList>
-#include <Python.h>
 #include <typeinfo>
 #include <boost/foreach.hpp>
 #include <boost/python/wrapper.hpp>
@@ -50,6 +49,7 @@
 #include <sstream>
 #include <DMcomponent.h>
 #include <DMsystem.h>
+
 
 using namespace std;
 namespace vibens {
@@ -72,7 +72,7 @@ Module::Module() {
     init_called = false;
     PythonModule = false;
     internalCounter = 0;
-    this->addParameter("InputDouble", VIBe2::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
+    //this->addParameter("InputDouble", VIBe2::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
 
 
     InPorts = std::vector<Port*>();
@@ -146,16 +146,6 @@ void Module::updateParameter() {
 
         }
 
-
-        if (it->second == VIBe2::RASTERDATA_IN) {
-            RasterData ** r =  (RasterData**) this->parameter_vals[s];
-            *r = & this->getRasterData(s);
-        }
-        if (it->second == VIBe2::VECTORDATA_IN) {
-            //VectorData ** v = (VectorData**) this->parameter_vals[s];
-            //*v = &this->getVectorData(s);
-        }
-
         if (it->second == VIBe2::SYSTEM_IN) {
             DM::System ** v = (DM::System**) this->parameter_vals[s];
             *v = &this->getSystemData(s);
@@ -164,29 +154,12 @@ void Module::updateParameter() {
             DM::System ** v = (DM::System**) this->parameter_vals[s];
             *v = &this->getSystem_Write(s);
         }
-        if (it->second == VIBe2::RASTERDATA_OUT) {
-            RasterData ** r =  (RasterData**) this->parameter_vals[s];
-            *r = & this->getRasterData_Write(s);
-        }
-        if (it->second == VIBe2::VECTORDATA_OUT) {
-            //VectorData ** v = (VectorData**) this->parameter_vals[s];
-            //*v = &this->getVectorData_Write(s);
-        }
+
         if (it->second == VIBe2::DOUBLEDATA_IN) {
             double * d = (double*) this->parameter_vals[s];
             *d = this->getDoubleData(s);
         }
 
-        if (it->second == VIBe2::USER_DEFINED_RASTERDATA_IN) {
-            //OPTIMIZAZION POSSIBLE
-            std::map<std::string, RasterData*> * ref = (std::map<std::string, RasterData*> *)this->parameter_vals[s];
-            std::map<std::string, RasterData*>  ref_new;
-            for (std::map<std::string, RasterData*>::const_iterator it = ref->begin(); it != ref->end(); ++it) {
-                std::string name = it->first;
-                ref_new.insert(std::pair<std::string, RasterData*>(name,& this->getRasterData(name)));
-            }
-            *ref = ref_new;
-        }
 
 
 
@@ -237,11 +210,6 @@ void Module::updateParameter() {
                     dmap[name] = this->getDoubleData(name);
                 }
             }
-            /*  std::map<std::string, double>  ref_new;
-            for (std::map<std::string, double>::const_iterator it = ref->begin(); it != ref->end(); ++it) {
-                std::string name = it->first;
-                ref_new.insert(std::pair<std::string, double>(name,this->getDoubleData(name)));
-            }*/
         }
     }
 
@@ -299,21 +267,6 @@ void Module::setParameterValue(std::string name, std::string v) {
         *ref =  value.toStdString();
         return;
     }
-    if (parameter[name] == VIBe2::USER_DEFINED_RASTERDATA_IN) {
-        std::map<std::string, RasterData*> * ref = (std::map<std::string, RasterData*> *)this->parameter_vals[name];
-        if (ref == 0)
-            return;
-        QStringList list = value.split("*|*");
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,RasterData*>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INRASTER);
-            }
-        }
-        return;
-    }
     if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         if (ref == 0)
@@ -360,19 +313,7 @@ void Module::setParameterValue(std::string name, std::string v) {
 
 }
 void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
-    QString value = QString::fromStdString(v);
-    if (parameter[name] == VIBe2::USER_DEFINED_RASTERDATA_IN ) {
-        std::map<std::string, RasterData*> * ref = (std::map<std::string, RasterData*> *)this->parameter_vals[name];
-        std::map<std::string, RasterData*>::iterator element_to_erase = ref->find(v);
-        ref->erase(element_to_erase);
-        this->removePort(v, VIBe2::INRASTER);
-    }
-    /*if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN ) {
-        std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
-        std::map<std::string, VectorData*>::iterator element_to_erase = ref->find(v);
-        ref->erase(element_to_erase);
-        this->removePort(v, VIBe2::INVECTOR);
-    }*/
+
     if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN ) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         std::map<std::string, double>::iterator element_to_erase = ref->find(v);
@@ -386,32 +327,6 @@ void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
 void Module::appendToUserDefinedParameter(std::string name, std::string  v){
 
     QString value = QString::fromStdString(v);
-    if (parameter[name] == VIBe2::USER_DEFINED_RASTERDATA_IN ) {
-        std::map<std::string, RasterData*> * ref = (std::map<std::string, RasterData*> *)this->parameter_vals[name];
-        QStringList list = value.split("*|*");
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,RasterData*>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INRASTER);
-            }
-        }
-        return;
-    }
-    if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN ) {
-        /*std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
-        QStringList list = value.split("*|*");
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,VectorData*>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INVECTOR);
-            }
-        }
-        return;*/
-    }
     if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         QStringList list = value.split("*|*");
@@ -432,17 +347,6 @@ void Module::appendToUserDefinedParameter(std::string name, std::string  v){
 void Module::setParameter() {
     this->internalCounter++;
     for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        if (it->second == VIBe2::RASTERDATA_OUT) {
-            std::string s = it->first;
-            RasterData r;
-            this->setRasterData(s,r);
-
-        }
-        if (it->second == VIBe2::VECTORDATA_OUT) {
-            /*std::string s = it->first;
-            VectorData v;
-            this->setVectorData(s, v);*/
-        }
         if (it->second == VIBe2::DOUBLEDATA_OUT) {
             double val;
             std::string s = it->first;
@@ -468,18 +372,7 @@ std::string Module::getParameterAsString(std::string Name) {
         ss << this->getParameter<std::string>(Name);
     if (ID == VIBe2::LONG)
         ss << this->getParameter<long>(Name);
-    if (ID == VIBe2::USER_DEFINED_RASTERDATA_IN) {
-        std::map<std::string, RasterData*> map = this->getParameter<std::map<std::string, RasterData*> >(Name);
-        for (std::map<std::string, RasterData*>::iterator it = map.begin(); it != map.end(); ++it) {
-            ss << it->first << "*|*";
-        }
-    }
-    if (ID == VIBe2::USER_DEFINED_VECTORDATA_IN) {
-        /*std::map<std::string, VectorData*> map = this->getParameter<std::map<std::string, VectorData*> >(Name);
-        for (std::map<std::string, VectorData*>::iterator it = map.begin(); it != map.end(); ++it) {
-            ss << it->first << "*|*";
-        }*/
-    }
+
     if (ID == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> map = this->getParameter<std::map<std::string, double> >(Name);
         for (std::map<std::string, double>::iterator it = map.begin(); it != map.end(); ++it) {
@@ -496,131 +389,7 @@ std::string Module::getParameterAsString(std::string Name) {
 
     return ss.str();
 }
-std::string Module::generateHelp() {
-    std::stringstream out;
 
-    out << this->getClassName();
-
-    out << "\n";
-
-
-
-    std::stringstream Parameter;
-    std::stringstream Input;
-    std::stringstream OutPut;
-    std::stringstream UserDef;
-    for (boost::unordered_map<std::string, std::string>::iterator it = this->parameter_description.begin(); it != this->parameter_description.end(); ++it) {
-        std::string name = it->first;
-
-        if (name.compare("InputDouble") != 0) {
-
-
-            if (this->parameter[name] < VIBe2::LASTPRIMITIVETYPE) {
-                Parameter << "\t" << it->first;
-                switch(this->parameter[name]) {
-                case VIBe2::INT :
-                    Parameter << "|" << "INTEGER";
-                    break;
-                case VIBe2::LONG :
-                    Parameter << "|" << "LONG";
-                    break;
-                case VIBe2::DOUBLE :
-                    Parameter << "|" << "DOUBLE";
-                    break;
-                case VIBe2::STRING :
-                    Parameter << "|" << "STRING";
-                    break;
-                case VIBe2::BOOL :
-                    Parameter << "|" << "BOOL";
-                    break;
-                }
-
-                Parameter        <<":"
-
-                                 << "\t" << it->second << "\n";
-
-            }
-
-            if (this->parameter[name] == VIBe2::RASTERDATA_IN ||
-                    this->parameter[name] == VIBe2::VECTORDATA_IN ||
-                    this->parameter[name] == VIBe2::DOUBLEDATA_IN ) {
-                Input << "\t" << it->first;
-                switch(this->parameter[name]) {
-                case VIBe2::RASTERDATA_IN :
-                    Input << "|" << "RASTERDATA";
-                    break;
-                case VIBe2::VECTORDATA_IN :
-                    Input << "|" << "VECTORDATA";
-                    break;
-                case VIBe2::DOUBLEDATA_IN :
-                    Input << "|" << "DOUBLE";
-                    break;
-
-                }
-                Input<<":" << "\t" << it->second << "\n";
-
-            }
-
-
-            if (this->parameter[name] == VIBe2::RASTERDATA_OUT ||
-                    this->parameter[name] == VIBe2::VECTORDATA_OUT ||
-                    this->parameter[name] == VIBe2::DOUBLEDATA_OUT) {
-                OutPut << "\t" << it->first ;
-
-                switch(this->parameter[name]) {
-                case VIBe2::RASTERDATA_OUT :
-                    OutPut << "|" << "RASTERDATA";
-                    break;
-                case VIBe2::VECTORDATA_OUT:
-                    OutPut << "|" << "VECTORDATA";
-                    break;
-                case VIBe2::DOUBLEDATA_OUT :
-                    OutPut << "|" << "DOUBLE";
-                    break;
-
-                }
-
-                OutPut<<":" << "\t" << it->second << "\n";
-
-            }
-
-            if (this->parameter[name] < VIBe2::USER_DEFINED_INPUT && this->parameter[name] > VIBe2::LASTPRIMITIVETYPE) {
-                UserDef << "\t" << it->first <<":" << "\t" << it->second << "\n";
-
-            }
-
-        }
-
-    }
-    if(!Parameter.str().empty()) {
-        out << "Parameter:" << "\n";
-
-        out << Parameter.str();
-        out << "\n";
-    }
-    if(!Input.str().empty()) {
-        out << "Input:" << "\n";
-        out << Input.str();
-        out << "\n";
-    }
-    if(!OutPut.str().empty()) {
-        out << "OutPut: "<< "\n";
-        out << OutPut.str();
-        out << "\n";
-    }
-    if(!UserDef.str().empty()) {
-        out << "UserDefined:" << "\n";
-        out << UserDef.str();
-        out << "\n";
-    }
-
-    out << "Detailed Description: " << "\n";
-    out << this->description;
-    out << "\n";
-
-
-    return out.str();
-}
 
 void Module::addData(std::string name,  std::vector<DM::View> views, void * ref) {
     this->parameter_vals[name] = ref;
@@ -649,24 +418,12 @@ void Module::addData(std::string name,  std::vector<DM::View> views, void * ref)
 }
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) {
+
     this->parameter[name] = type;
     this->parameter_vals[name] = ref;
     this->parameterList.push_back(name);
     this->parameter_description[name] = description;
 
-    if (type == VIBe2::RASTERDATA_OUT) {
-        this->addPort(name, VIBe2::OUTRASTER);
-        this->createRasterData(name);
-    }
-    if (type == VIBe2::RASTERDATA_IN) {
-        this->addPort(name, VIBe2::INRASTER);
-    }
-    if (type == VIBe2::VECTORDATA_OUT) {
-        this->addPort(name, VIBe2::OUTVECTOR);
-    }
-    if (type == VIBe2::VECTORDATA_IN) {
-        this->addPort(name, VIBe2::INVECTOR);
-    }
     if (type == VIBe2::DOUBLEDATA_OUT) {
         this->addPort(name, VIBe2::OUTDOUBLEDATA);
         this->createDoubleData(name);
@@ -674,12 +431,7 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
     if (type == VIBe2::DOUBLEDATA_IN) {
         this->addPort(name, VIBe2::INDOUBLEDATA);
     }
-    if (type == VIBe2::SYSTEM_IN) {
-        this->addPort(name, VIBe2::INSYSTEM);
-    }
-    if (type == VIBe2::SYSTEM_OUT) {
-        this->addPort(name, VIBe2::OUTSYSTEM);
-    }
+
 }
 
 void Module::Destructor() {
@@ -722,24 +474,7 @@ void Module::convertValus(void * value, int Type, QString val) {
         *(v) =  val.toStdString();
         return;
     }
-    if (Type== VIBe2::USER_DEFINED_RASTERDATA_IN) {
-        std::map<std::string, RasterData*> * map =  (std::map<std::string, RasterData*> *) value;
-        QStringList list = val.split(QRegExp("\\s+"));
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                map->insert(std::pair<std::string, RasterData*>(s.toStdString(), 0));
-            }
-        }
-    }
-    if (Type== VIBe2::USER_DEFINED_VECTORDATA_IN) {
-       /* std::map<std::string, VectorData*> * map =  (std::map<std::string, VectorData*> *) value;
-        QStringList list = val.split(QRegExp("\\s+"));
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                map->insert(std::pair<std::string, VectorData*>(s.toStdString(), 0));
-            }
-        }*/
-    }
+
     if (Type== VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * map =  (std::map<std::string, double> *) value;
         QStringList list = val.split(QRegExp("\\s+"));
@@ -817,30 +552,6 @@ void Module::init(const parameter_type &parameters) {
 
 }
 
-RasterData   &Module::getRasterData(const std::string &name)  {
-    Port * p = this->getInPort(name);
-    p->getLinks();
-
-    int LinkId = -1;
-    int BackId = -1;
-    int counter = 0;
-    foreach (ModuleLink * l, p->getLinks()) {
-        if (!l->isBackLink()) {
-            LinkId = counter;
-        } else {
-            BackId = counter;
-        }
-        counter++;
-    }
-    ModuleLink *l = p->getLinks()[LinkId];
-    if (this->internalCounter > 0 && BackId != -1){
-        l = p->getLinks()[BackId];
-        Logger(Debug) << "BackLink for " << name;
-    }
-    Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
-    return simulation->getDataBase()->getRasterData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
-
-}
 
 DM::System   &Module::getSystemData(const std::string &name)  {
     Port * p = this->getInPort(name);
@@ -891,16 +602,7 @@ DM::System   &Module::getSystem_Write(const std::string &name)  {
 
 }
 
-RasterData   &Module::getRasterData_Write(const std::string &name)  {
 
-    return simulation->getDataBase()->getRasterData(this->getUuid(), name, false);
-
-}
-/*VectorData   &Module::getVectorData_Write(const std::string &name)  {
-
-    return simulation->getDataBase()->getVectorData(this->getUuid(), name, false);
-
-}*/
 void Module::sendImageToResultViewer(std::string filename) {
     BOOST_FOREACH(ResultObserver * ro, resultobserver) {
         ro->addResultImage(this->uuid,filename);
@@ -918,21 +620,7 @@ void Module::sendRasterDataToResultViewer(std::map<std::string , std::string > m
         ro->addRasterDataToViewer(r);
     }
 }
-/*void Module::sendVectorDataToResultViewer(std::vector<VectorData> maps) {
-    QVector<VectorData> r;
-    foreach (VectorData v, maps)
-        r.push_back(v);
-    for (std::map<std::string, std::string>::iterator it=maps.begin(); it != maps.end(); ++it) {
-        std::string uuid_name = it->first;
-        r.append(DataManagement::getInstance().getDataBase()->getVectorData(uuid_name.substr(0,uuid_name.find("%")), it->second));
-    }
 
-    BOOST_FOREACH(ResultObserver * ro, resultobserver) {
-        Attribute attr = r[0].getAttributes("GRID_1");
-        std::vector<std::string> names = attr.getAttributeNames();
-        ro->addVectorDataToViewer(r);
-    }
-}*/
 
 
 void Module::sendDoubleValueToPlot(double x, double y) {
@@ -942,52 +630,17 @@ void Module::sendDoubleValueToPlot(double x, double y) {
     }
 }
 
-RasterData & Module::createRasterData(std::string name) {
-    return  DataManagement::getInstance().getDataBase()->createRasterData(this->uuid, name);
-}
+
 void Module::createDoubleData(std::string name) {
     DataManagement::getInstance().getDataBase()->createDoubleData(this->uuid, name);
 }
-/*VectorData & Module::createVectorData(std::string name) {
-    return  DataManagement::getInstance().getDataBase()->createVectorData(this->uuid, name);
-}*/
-void Module::setRasterData( const std::string &name, RasterData &r) {
-    simulation->getDataBase()->setRasterData(uuid, name, r);
-}
+
+
 
 
 void Module::setDoubleData(const std::string &name, const double v) {
     simulation->getDataBase()->setDoubleData(uuid, name, v);
 }
-/*VectorData &Module::getVectorData(const std::string &name)  {
-    Port * p = this->getInPort(name);
-    p->getLinks();
-
-    int LinkId = -1;
-    int BackId = -1;
-    int counter = 0;
-    foreach (ModuleLink * l, p->getLinks()) {
-        if (!l->isBackLink()) {
-            LinkId = counter;
-        } else {
-            BackId = counter;
-        }
-        counter++;
-    }
-    ModuleLink *l = p->getLinks()[LinkId];
-    if (this->internalCounter > 0 && BackId != -1 && counter > 1){
-        l = p->getLinks()[BackId];
-    }
-   // if (BackId != -1 && counter == 1){
-     else if (BackId != -1 && counter == 1){
-        l = p->getLinks()[BackId];
-    }
-
-    return simulation->getDataBase()->getVectorData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
-}*/
-
-
-
 
 double Module::getDoubleData(const std::string &name)  {
     Port * p = this->getInPort(name);
@@ -1061,9 +714,6 @@ void Module::copyParameterFromOtherModule(Module * m) {
     } else {
         Logger(Error) << "Can't Copy Model Parameter from different Type of Module";
     }
-
-
-
 
 }
 
