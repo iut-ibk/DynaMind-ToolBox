@@ -1,0 +1,21 @@
+INCLUDE(${SWIG_USE_FILE})
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -external-runtime swigruntime.h)
+
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+
+
+ADD_CUSTOM_COMMAND(
+        OUTPUT ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp
+        COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
+        )
+
+ADD_CUSTOM_TARGET(pycalimerogen DEPENDS ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp)
+
+SET(CMAKE_SWIG_FLAGS "")
+SET_SOURCE_FILES_PROPERTIES(pydynamite.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(pydynamite.i PROPERTIES SWIG_FLAGS "-threads")
+SWIG_ADD_MODULE(pydynamite python pydynamite.i)
+# SWIG_ADD_MODULE(pydynamite python pydynamite.i PyFunctionLoader.cpp PyEnv.cpp)
+SWIG_LINK_LIBRARIES(pydynamite vibe2core ${PYTHON_LIBRARIES})
+

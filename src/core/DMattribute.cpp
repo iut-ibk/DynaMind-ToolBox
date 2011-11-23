@@ -32,28 +32,12 @@ using namespace DM;
 
 Attribute::Attribute(std::string name, std::string id)
 {
-    this->value=0;
     this->name=name;
     this->id=id;
 }
 
 Attribute::~Attribute()
 {
-    if(!value)
-        delete value;
-}
-
-void Attribute::setValue(QVariant* value)
-{
-    if(!value)
-        delete value;
-
-    this->value=value;
-}
-
-QVariant* Attribute::getValue()
-{
-    return value;
 }
 
 void Attribute::setName(std::string name)
@@ -72,4 +56,33 @@ std::string Attribute::getName()
 std::string Attribute::getID()
 {
     return id;
+}
+
+void Attribute::setValue(double v)
+{
+
+}
+double Attribute::getDouble(){
+    return 0;
+}
+void Attribute::setValue(std::string s)
+{
+
+}
+std::string Attribute::getString(){
+    return "";
+}
+void Attribute::setValue(std::vector<double> v)
+{
+}
+std::vector<double> Attribute::getDoubleVector()
+{
+    return vector<double>(2,2);
+}
+void Attribute::setValue(std::vector<std::string> s)
+{
+}
+std::vector<std::string> Attribute::getStringVector()
+{
+    return vector<string>(2,"");
 }

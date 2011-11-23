@@ -44,11 +44,11 @@ namespace DM {
     class System : public Component
     {
     private:
+        std::vector<System*> predecessors;
         std::map<std::string, Node* > nodes;
         std::map<std::string, Edge* > edges;
         std::map<std::string, System*> subsystems;
         std::map<std::string, View> viewdefinitions;
-
         std::map<std::string, std::map<std::string, Component*> > views;
 
         void updateViews (Component * c);
@@ -63,12 +63,10 @@ namespace DM {
         Edge* addEdge(Edge* edge);
         Edge* addEdge(Node * start, Node * end, std::string view = "");
 
-        bool addPredecessor(System* system);
         Node* getNode(std::string name);
         Edge* getEdge(std::string name);
         bool removeEdge(std::string name);
         bool removeNode(std::string name);
-        bool addPredecessorState(System* system);
         std::vector<System*> getPredecessorStates();
         bool addSubSystem(System *newsystem);
         bool removeSubSystem(std::string name);

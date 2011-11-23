@@ -28,17 +28,12 @@
 #include <DMnode.h>
 #include <DMedge.h>
 #include <DMsystem.h>
-
-#include <vibe_logger.h>
 #include <vibe_logger.h>
 
 using namespace DM;
-using namespace vibens;
 
 System::System(std::string name, std::string view) : Component()
 {
-    vibens::Logger(vibens::Debug) << "Create System " << name << " " << view;
-
 }
 
 
@@ -237,7 +232,7 @@ std::map<std::string, System*> System::getAllSubSystems()
 System* System::createSuccessor()
 {
     System* result = new System(*this);
-
+    predecessors.push_back(this);
     return result;
 }
 
@@ -250,4 +245,9 @@ bool System::addView(View view)
 {
     this->viewdefinitions[view.getName()] = view;
     return true;
+}
+
+std::vector<System*> System::getPredecessorStates()
+{
+    return predecessors;
 }

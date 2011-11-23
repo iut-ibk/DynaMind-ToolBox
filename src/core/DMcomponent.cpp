@@ -30,11 +30,8 @@
 
 #include <assert.h>
 
-#include <vibe_logger.h>
-
 #include <QUuid>
 
-using namespace vibens;
 using namespace DM;
 
 Component::Component()
