@@ -34,7 +34,7 @@ class VIBE_HELPER_DLL_EXPORT ResultObserver
 public:
     ResultObserver();
     virtual void addResultImage(std::string UUID, std::string filename) = 0;
-    virtual void addRasterDataToViewer( QVector<RasterData>) = 0;
+    //virtual void addRasterDataToViewer( QVector<RasterData>) = 0;
     //virtual void addVectorDataToViewer(QVector<VectorData>) = 0;
     virtual void addDoubleDataToPlot(std::string UUID, double x, double y) = 0;
 };
