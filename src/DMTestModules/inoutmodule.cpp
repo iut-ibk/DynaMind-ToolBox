@@ -21,16 +21,19 @@ InOut::InOut() {
     views.push_back(inlets);
     views.push_back(conduits);
 
-    this->addData("Inport", views, &this->sys_in);
-
-
-
+    this->addData("Inport", views);
+    a = 0;
+    this->addParameter("a",VIBe2::DOUBLE, &a);
+    a = 5;
 }
 
 
 
 void InOut::run() {
     Logger(Debug) << "Run InOut";
+    Logger(Debug) << this->getParameterAsString("a");
+    sys_in = this->getData("Inport");
+
     std::map<std::string, DM::Node*> all_nodes = sys_in->getAllNodes();
 
     for (std::map<std::string, DM::Node*>::const_iterator it = all_nodes.begin(); it != all_nodes.end(); ++it) {

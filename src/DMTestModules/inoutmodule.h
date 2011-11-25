@@ -11,6 +11,7 @@ VIBe_DECLARE_NODE( InOut )
     public:
         //VectorData * vec_in;
         DM::System * sys_in;
+        double a;
 
 
         InOut();

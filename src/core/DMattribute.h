@@ -42,13 +42,13 @@ namespace DM {
     public:
         Attribute(std::string name, std::string id);
         ~Attribute();
-        void setValue(double v);
+        void setDouble(double v);
         double getDouble();
-        void setValue(std::string s);
+        void setString(std::string s);
         std::string getString();
-        void setValue(std::vector<double> v);
+        void setDoubleVector(std::vector<double> v);
         std::vector<double> getDoubleVector();
-        void setValue(std::vector<std::string> s);
+        void setStringVector(std::vector<std::string> s);
         std::vector<std::string> getStringVector();
         void setName(std::string name);
         void setID(std::string ID);

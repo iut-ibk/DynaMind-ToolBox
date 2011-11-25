@@ -54,17 +54,17 @@ TestModule::TestModule() {
 
 
 
-    this->addParameter("Value", VIBe2::DOUBLE , &value);
+    this->addParameter("Value", VIBe2::DOUBLE, &value);
 
     ////////Datasets
-    this->addData("Sewer",views, &outputData);
+    this->addData("Sewer",views);
 
 }
 
 
 
 void TestModule::run() {
-
+    outputData = this->getData("Sewer");
     DM::Node * n1 = outputData->addNode(0,0,0, "Inlets");
     DM::Node * n2 = outputData->addNode(0,0,1, "Inlets");
 

@@ -31,7 +31,3 @@ ADD_SUBDIRECTORY(src/python-swig)
 #add_subdirectory(src/vibe2helpers)
 add_subdirectory(src/DMTestModules)
 add_subdirectory(src/DMTest)
-
-
-
-

@@ -49,39 +49,49 @@ void Attribute::setID(std::string ID)
 {
     this->id=ID;
 }
+
 std::string Attribute::getName()
 {
     return name;
 }
+
 std::string Attribute::getID()
 {
     return id;
 }
 
-void Attribute::setValue(double v)
+void Attribute::setDouble(double v)
 {
 
 }
-double Attribute::getDouble(){
+
+double Attribute::getDouble()
+{
     return 0;
 }
-void Attribute::setValue(std::string s)
+
+void Attribute::setString(std::string s)
 {
 
 }
+
 std::string Attribute::getString(){
     return "";
 }
-void Attribute::setValue(std::vector<double> v)
+
+void Attribute::setDoubleVector(std::vector<double> v)
 {
 }
+
 std::vector<double> Attribute::getDoubleVector()
 {
     return vector<double>(2,2);
 }
-void Attribute::setValue(std::vector<std::string> s)
+
+void Attribute::setStringVector(std::vector<std::string> s)
 {
 }
+
 std::vector<std::string> Attribute::getStringVector()
 {
     return vector<string>(2,"");

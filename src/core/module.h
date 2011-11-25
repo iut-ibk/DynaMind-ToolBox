@@ -181,9 +181,9 @@ public:
     virtual void init(const parameter_type &parameters);
     virtual void run() = 0;
 
-    virtual DM::System & getSystemState(const std::string &name);
-    virtual  DM::System & getSystemData(const std::string &name) ;
-     virtual  DM::System & getSystem_Write(const std::string &name) ;
+    virtual DM::System* getSystemState(const std::string &name);
+    virtual  DM::System* getSystemData(const std::string &name) ;
+     virtual  DM::System* getSystem_Write(const std::string &name) ;
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);
@@ -194,7 +194,9 @@ public:
     void setID(const int id);
     void addParameter(std::string name, int type, void * ref, std::string description = "");
 
-    void addData(std::string name, std::vector<DM::View> view, void * ref);
+    void addData(std::string name, std::vector<DM::View> view);
+
+    DM::System * getData(std::string dataname);
 
     std::vector<Port*> getInPorts();
     std::vector<Port*> getOutPorts();
@@ -290,6 +292,7 @@ protected:
     boost::unordered_map<std::string, std::string> paramRaw;
     boost::unordered_map<std::string, int> parameter;
     boost::unordered_map<std::string, std::string> parameter_description;
+    boost::unordered_map<std::string, DM::System *> data_vals;
     boost::unordered_map<std::string, void *> parameter_vals;
     boost::unordered_map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;

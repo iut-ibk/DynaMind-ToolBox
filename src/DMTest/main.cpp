@@ -35,6 +35,7 @@
 #include <module.h>
 #include <DM.h>
 #include <sstream>
+#include <pythonenv.h>
 
 using namespace std;
 using namespace vibens;
@@ -86,6 +87,8 @@ bool DynaMiteTest()
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
     vibens::Logger(vibens::Debug) << "End";
+
+    //vibens::PythonEnv *env = vibens::PythonEnv::getInstance();
 
     return true;
 }

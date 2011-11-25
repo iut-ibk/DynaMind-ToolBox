@@ -251,3 +251,13 @@ std::vector<System*> System::getPredecessorStates()
 {
     return predecessors;
 }
+
+std::map<std::string, Node*> System::getAllNodes()
+{
+    return nodes;
+}
+
+std::map<std::string, Edge*> System::getAllEdges()
+{
+    return edges;
+}

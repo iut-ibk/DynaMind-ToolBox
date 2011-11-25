@@ -121,7 +121,6 @@ void Module::updateParameter() {
         std::string s = it->first;
 
         if (it->second == VIBe2::SYSTEM) {
-            DM::System ** v = (DM::System**) this->parameter_vals[s];
             std::vector<DM::View> views= this->views[s];
             bool reads = false;
             bool writes = false;
@@ -137,80 +136,22 @@ void Module::updateParameter() {
             }
 
             if (reads) {
-                *v = &this->getSystemData(s);
+                this->data_vals[s] = this->getSystemData(s);
             }
             //Creats a new Dataset
             if (writes && !reads) {
-                *v = &this->getSystem_Write(s);
+                this->data_vals[s] = this->getSystem_Write(s);
             }
 
         }
 
         if (it->second == VIBe2::SYSTEM_IN) {
-            DM::System ** v = (DM::System**) this->parameter_vals[s];
-            *v = &this->getSystemData(s);
+            this->data_vals[s] = this->getSystemData(s);
         }
         if (it->second == VIBe2::SYSTEM_OUT) {
-            DM::System ** v = (DM::System**) this->parameter_vals[s];
-            *v = &this->getSystem_Write(s);
+            this->data_vals[s] = this->getSystem_Write(s);
         }
 
-        if (it->second == VIBe2::DOUBLEDATA_IN) {
-            double * d = (double*) this->parameter_vals[s];
-            *d = this->getDoubleData(s);
-        }
-
-
-
-
-
-        /*if (it->second == VIBe2::USER_DEFINED_VECTORDATA_IN) {
-            //OPTIMIZAZION POSSIBLE
-            std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[s];
-            std::map<std::string, VectorData*>  ref_new;
-            for (std::map<std::string, VectorData*>::const_iterator it = ref->begin(); it != ref->end(); ++it) {
-                std::string name = it->first;
-                ref_new.insert(std::pair<std::string, VectorData*>(name,& this->getVectorData(name)));
-            }
-            *ref = ref_new;
-        }*/
-
-
-
-        QString ss = "DoubleIn_" + QString::fromStdString(s);
-        for (std::map<std::string, double>::iterator it1 = this->InputDoubleData.begin(); it1 != InputDoubleData.end(); ++it1 ){
-
-            if (ss.toStdString().compare(it1->first) == 0) {
-                if (parameter[s] == VIBe2::LONG) {
-                    long * d = (long*) this->parameter_vals[s];
-                    *d = (long) this->getDoubleData(ss.toStdString());
-                }
-                if (parameter[s] == VIBe2::INT) {
-                    int * d = (int*) this->parameter_vals[s];
-                    *d = (int) this->getDoubleData(ss.toStdString());
-                    Logger(Debug) << "Singel Value From OutSide" << s <<" INT" << *d;
-                }
-                if (parameter[s] == VIBe2::DOUBLE) {
-                    double * d = (double*) this->parameter_vals[s];
-                    *d = (double) this->getDoubleData(ss.toStdString());
-                    Logger(Debug) << "Singel Value From OutSide" << s << *d;
-                }
-                //Logger(Debug) << "Singel Value From OutSide" << s << *d;
-
-            }
-        }
-        if (it->second == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
-            //this->parameter_vals[s] = this->getDoubleData(name);
-
-            std::map<std::string, double> & dmap = *((std::map<std::string, double> *) this->parameter_vals[s]);
-            if (&dmap != &InputDoubleData) { // already done in DoubleIn lines see above
-
-                for (std::map<std::string, double>::const_iterator it = dmap.begin(); it != dmap.end(); ++it) {
-                    std::string name = it->first;
-                    dmap[name] = this->getDoubleData(name);
-                }
-            }
-        }
     }
 
 }
@@ -391,8 +332,8 @@ std::string Module::getParameterAsString(std::string Name) {
 }
 
 
-void Module::addData(std::string name,  std::vector<DM::View> views, void * ref) {
-    this->parameter_vals[name] = ref;
+void Module::addData(std::string name,  std::vector<DM::View> views) {
+    this->data_vals[name] = 0;
     this->parameterList.push_back(name);
     this->views[name] = views;
     this->parameter[name] = VIBe2::SYSTEM;
@@ -415,6 +356,11 @@ void Module::addData(std::string name,  std::vector<DM::View> views, void * ref)
     if (writes) {
         this->addPort(name, VIBe2::OUTSYSTEM);
     }
+}
+
+DM::System* Module::getData(std::string dataname)
+{
+    return this->data_vals[dataname];
 }
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) {
@@ -553,7 +499,7 @@ void Module::init(const parameter_type &parameters) {
 }
 
 
-DM::System   &Module::getSystemData(const std::string &name)  {
+DM::System*   Module::getSystemData(const std::string &name)  {
     Port * p = this->getInPort(name);
     p->getLinks();
 
@@ -582,23 +528,18 @@ DM::System   &Module::getSystemData(const std::string &name)  {
 
 }
 
-DM::System & Module::getSystemState(const std::string &name) {
+DM::System* Module::getSystemState(const std::string &name)
+{
+    DM::System  * sys= this->data_vals[name];
 
-
-
-    DM::System  * sys= *(DM::System**) this->parameter_vals[name];
-
-
-
-    return *sys->createSuccessor();
-
+    return sys->createSuccessor();
 }
-DM::System   &Module::getSystem_Write(const std::string &name)  {
+DM::System*   Module::getSystem_Write(const std::string &name)  {
 
     DM::System * sys = new DM::System(name, name);
     //sys->addView(this->views[name]);
 
-    return *sys;
+    return sys;
 
 }
 

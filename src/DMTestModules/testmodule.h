@@ -36,10 +36,9 @@ class VIBE_HELPER_DLL_EXPORT TestModule : public  Module {
 
 VIBe_DECLARE_NODE(TestModule)
 private:
-
+    double value;
 
     public:
-        double value;
         DM::System * outputData;
         TestModule();
         void run();
