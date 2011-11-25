@@ -128,6 +128,13 @@ public:
     void sendImageToResultViewer(std::string);
     void sendRasterDataToResultViewer(std::map<std::string , std::string > maps);
     void sendDoubleValueToPlot(double, double);
+    %pythoncode {
+        def getClassName(self):
+            return self.__class__.__name__
+
+        def getFileName(self):
+            return self.__module__.split(".")[0]
+    }
 
 };
 
