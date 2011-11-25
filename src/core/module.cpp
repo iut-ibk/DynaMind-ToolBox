@@ -72,7 +72,7 @@ Module::Module() {
     init_called = false;
     PythonModule = false;
     internalCounter = 0;
-    //this->addParameter("InputDouble", VIBe2::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
+    this->addParameter("InputDouble", VIBe2::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
 
 
     InPorts = std::vector<Port*>();
@@ -558,7 +558,7 @@ void Module::sendRasterDataToResultViewer(std::map<std::string , std::string > m
 
     BOOST_FOREACH(ResultObserver * ro, resultobserver) {
 
-        ro->addRasterDataToViewer(r);
+        //ro->addRasterDataToViewer(r);
     }
 }
 
