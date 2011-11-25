@@ -33,3 +33,9 @@ class WhiteNoise(Module):
         def run(self):
             print "Hello World!"
 	    print self.__module__.split(".")[0]
+
+        def getClassName(self):
+            return self.__class__.__name__
+
+        def getFileName(self):
+            return self.__module__.split(".")[0]
