@@ -70,25 +70,28 @@ int main(int argc, char *argv[], char *envp[]) {
 
 bool DynaMiteTest()
 {
+    vibens::PythonEnv *env = vibens::PythonEnv::getInstance();
+    env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
+
     QThreadPool::globalInstance()->setMaxThreadCount(1);
     DataManagement::init();
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
+    sim->registerPythonModules("/home/csae6550/work/VIBe2Core/scripts");
     vibens::Module * in = sim->addModule("TestModule");
     vibens::Module * outm =sim->addModule("InOut");
     vibens::Module * outm2 =sim->addModule("InOut");
-
+    vibens::Module * outm3 = sim->addModule("WhiteNoise");
     sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
     sim->addLink(outm->getOutPort("Inport"), outm2->getInPort("Inport"));
+    sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
     sim->run();
 
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
     vibens::Logger(vibens::Debug) << "End";
-
-    //vibens::PythonEnv *env = vibens::PythonEnv::getInstance();
 
     return true;
 }

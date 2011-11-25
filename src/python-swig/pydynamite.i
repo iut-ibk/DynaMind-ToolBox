@@ -9,6 +9,7 @@
     #include <module.h>
     #include <DMview.h>
     #include <nodefactory.h>
+    #include <moduleregistry.h>
 
     #include <simulation.h>
 
@@ -41,6 +42,63 @@ namespace std {
     %template(edgemap) map<string, DM::Edge* >;
     %template(stringmap) map<string, string >;
 }
+
+%feature("director:except") {
+    if ($error != NULL) {
+                PyErr_Print();
+    }
+}
+
+class VIBe2 {
+public:
+    enum  DATATYPES {
+        INT,
+        LONG,
+        DOUBLE,
+        STRING,
+        FILENAME,
+        STRING_MAP,
+        BOOL,
+        LASTPRIMITIVETYPE,
+        //Port Types
+        USER_DEFINED_DOUBLEDATA_IN,
+        USER_DEFINED_DOUBLEDATA_TUPLE_IN,
+        USER_DEFINED_DOUBLEDATA_TUPLE_OUT,
+
+        USER_DEFINED_INPUT,
+
+
+        DOUBLEDATA_OUT,
+        DOUBLEDATA_IN,
+
+        SYSTEM_OUT,
+        SYSTEM_IN,
+        SYSTEM
+    };
+
+    enum PORTTYPES {
+        OUTSYSTEM,
+        OUTTUPLESYSTEM,
+        OUTDOUBLEDATA,
+        OUTTUPLEDOUBLEDATA,
+        OUTPORTS,
+
+        INSYSTEM,
+        INTUPLEVSYSTEM,
+        INDOUBLEDATA,
+        INTUPLEDOUBLEDATA,
+        INPORTS
+    };
+
+    enum CORINE {
+        ContUrbanFabric = 2,
+        DisContUrbanFabric = 3,
+        RoadRailNetwork = 4,
+        AgriculturalAreas = 5,
+        ForestsSemiNatural = 6,
+        WaterBodies = 7
+    };
+};
 
 class Module {
 
@@ -82,6 +140,17 @@ class INodeFactory
         virtual std::string getFileName() = 0;
 };
 
+class ModuleRegistry
+{
+public:
+    ModuleRegistry();
+    bool addNodeFactory(INodeFactory *factory);
+    void addNativePlugin(const std::string &plugin_path);
+    Module * createModule(const std::string & name) const;
+    std::list<std::string> getRegisteredModules() const;
+    bool contains(const std::string &name) const;
+};
+
 %pythoncode %{
 class NodeFactory(INodeFactory):
     def __init__(self, klass):
@@ -95,9 +164,9 @@ class NodeFactory(INodeFactory):
         return self.klass.__name__
 
     def getFileName(self):
-        return self.klass
+        return self.klass.__module__.split(".")[0]
 
-def registerFunctions(registry):
+def registerNodes(registry):
     for klass in Module.__subclasses__():
-        registry.registerFunction(NodeFactory(klass).__disown__())
+        registry.addNodeFactory(NodeFactory(klass).__disown__())
 %}

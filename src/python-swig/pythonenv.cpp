@@ -23,6 +23,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
+#define SWIG_PYTHON_THREADS
+
 #include <Python.h>
 #include "pythonenv.h"
 #include <moduleregistry.h>
@@ -98,7 +101,10 @@ PythonEnv::PythonEnv() {
     #endif
 }
 
-PythonEnv::~PythonEnv() {
+PythonEnv::~PythonEnv()
+{
+    if(!Py_IsInitialized())
+        Py_Finalize();
     delete priv;
 }
 
@@ -110,23 +116,8 @@ PythonEnv *PythonEnv::getInstance() {
     return instance;
 }
 
-void PythonEnv::freeInstance() {
-    /*if (instance == 0)
-        return;
-    ScopedGILRelease scoped;
-    exec("import gc\n"
-         "print gc.collect()\n"
-         "print 'where is the garbage'\n"
-         "print gc.garbage\n",
-         instance->priv->main_namespace,instance->priv->main_namespace);
-
-    delete instance;
-    Py_Finalize();
-    */
-}
-
 void PythonEnv::addOverWriteStdCout() {
-    /*
+
     boost::format fmt( "import sys\n"
                       "import pyvibe\n"
                       "class Logger_VIBe:\n"
@@ -165,7 +156,7 @@ void PythonEnv::addOverWriteStdCout() {
         PyErr_Print();
         return;
     }
-    */
+
 }
 
 void PythonEnv::addPythonPath(std::string path) {
@@ -203,7 +194,6 @@ void PythonEnv::startEditra(std::string filename) {
     skript << "src.Editra.Main('"<< filename <<"')\n";
 
 
-    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
         PyErr_Print();
@@ -216,7 +206,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyObject *pydynamite_module = PyImport_ImportModule("pydynamite");
     if (PyErr_Occurred()) {
-        Logger(Error) << "Could not import pycalimero module";
+        Logger(Error) << "Could not import pydynamite module";
         PyErr_Print();
         return module;
     }
@@ -240,7 +230,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     skript << "import pydynamite\n";
     skript << "import site\n";
     skript << "import inspect\n";
-    skript << "sys.stderr = cStringIO.StringIO()\n";
+    //skript << "sys.stderr = cStringIO.StringIO()\n";
     skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
     skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
     skript << "os.environ['PYTHONPATH']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
@@ -253,7 +243,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     }
     else
         skript << "__import__('" << module << "')\n";
-    skript << "clss = pydynamite.Module.__subclasses__()\n";
+    //skript << "clss = pydynamite.Module.__subclasses__()\n";
     //skript << "print clss\n";
 
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
@@ -261,15 +251,14 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     {
         PyErr_Print();
         //throw CalimeroException("Error in python module: " + module);
-        return module;
+        return "ERROR1";
     }
-
 
     PyObject *pydynamite_dict = PyModule_GetDict(pydynamite_module);
     Py_XDECREF(pydynamite_module);
-    PyObject *callback = PyDict_GetItemString(pydynamite_dict, "registerFunctions");
+    PyObject *callback = PyDict_GetItemString(pydynamite_dict, "registerNodes");
 
-    swig_type_info *reg_type_info = SWIG_TypeQuery("ModulRegistry *");
+    swig_type_info *reg_type_info = SWIG_TypeQuery("ModuleRegistry *");
 
     PyObject *py_this = SWIG_NewPointerObj(registry, reg_type_info, 0);
 
@@ -282,7 +271,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     if (PyErr_Occurred())
     {
         PyErr_Print();
-        return module;
+        return "ERROR2";
     }
 
     loadedModules.push_back(module);

@@ -45,7 +45,6 @@ class VIBE_HELPER_DLL_EXPORT PythonEnv {
 public:
         virtual ~PythonEnv();
         static PythonEnv *getInstance();
-        static void freeInstance();
         void addPythonPath(std::string path);
         std::string registerNodes(ModuleRegistry *registry,
                                   const std::string &module);

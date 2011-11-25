@@ -55,6 +55,7 @@
 #include <omp.h>
 #include <vibe_logger.h>
 #include <porttuple.h>
+#include <pythonenv.h>
 
 namespace vibens {
 struct SimulationPrivate {
@@ -112,7 +113,7 @@ Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModu
 }
 void Simulation::reloadModules() {
     //Init Python
-    /*QSettings settings("IUT", "VIBe2");
+    QSettings settings("IUT", "VIBe2");
     Logger(Standard) << "Reload Modules";
 
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
@@ -142,7 +143,7 @@ void Simulation::reloadModules() {
             }
         }
 
-    }*/
+    }
 }
 
 Simulation::Simulation() {
@@ -172,21 +173,21 @@ void Simulation::registerNativeModules(string Filename) {
 }
 
 void Simulation::registerPythonModules(std::string path) {
-    /*vibens::PythonEnv::getInstance()->addPythonPath(path);
+    vibens::PythonEnv::getInstance()->addPythonPath(path);
     QDir pythonDir = QDir(QString::fromStdString(path));
     QStringList filters;
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
     foreach(QString file, files) {
-        try{
+        //try{
+            Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
             std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-            Logger(Debug) << n;
 
-        } catch(...) {
-            Logger(Warning)  << "Can't load Module " << file.toStdString();
-            std::cout << file.toStdString() << std::endl;
-        }
-    }*/
+        //} catch(...) {
+        //    Logger(Warning)  << "Can't load Module: " << file.toStdString();
+        //    std::cout << file.toStdString() << std::endl;
+        //}
+    }
 }
 
 ModuleRegistry * Simulation::getModuleRegistry() {
