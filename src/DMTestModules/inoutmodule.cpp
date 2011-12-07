@@ -30,7 +30,7 @@ InOut::InOut() {
 void InOut::run() {
 
 
-    int test = 1500;
+    int test = a;
     Logger(Debug) << "Run InOut";
     Logger(Debug) << this->getParameterAsString("a");
     sys_in = this->getData("Inport");

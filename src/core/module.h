@@ -181,9 +181,9 @@ public:
     virtual void init(const parameter_type &parameters);
     virtual void run() = 0;
 
-    virtual DM::System* getSystemState(const std::string &name);
+    virtual  DM::System* getSystemState(const std::string &name);
     virtual  DM::System* getSystemData(const std::string &name) ;
-     virtual  DM::System* getSystem_Write(const std::string &name) ;
+    virtual  DM::System* getSystem_Write(const std::string &name) ;
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);

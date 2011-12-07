@@ -45,10 +45,15 @@ TestModule::TestModule() {
     DM::View conduits = DM::View("Conduits");
     conduits.addComponent(DM::EDGE);
 
+    DM::View SomeRandomInformation = DM::View("SomeRandomInformation");
+    SomeRandomInformation.addComponent(DM::EDGE);
+
     std::vector<DM::View> views;
 
     views.push_back(inlets);
     views.push_back(conduits);
+    views.push_back(SomeRandomInformation);
+
     value = 10;
 
 
@@ -69,6 +74,8 @@ void TestModule::run() {
     DM::Node * n2 = outputData->addNode(0,0,1, "Inlets");
 
     outputData->addEdge(n1, n2, "Conduits");
+
+    outputData->addEdge(n1, n2, "SomeRandomInformation");
 
     Logger(Debug) << "Run Testmodule";
 

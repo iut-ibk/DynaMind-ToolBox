@@ -43,6 +43,17 @@ void System::updateViews(Component * c) {
     }
 }
 
+std::vector<std::string> System::getNamesOfViews() {
+    std::vector<std::string> names;
+
+    for ( std::map<std::string, std::map<std::string, Component* > >::const_iterator it = this->views.begin(); it != this->views.end(); ++it  ) {
+        names.push_back(it->first);
+    }
+
+    return names;
+
+}
+
 System::System(const System& s) : Component(s)
 {
 
@@ -243,7 +254,28 @@ Component* System::clone()
 
 bool System::addView(View view)
 {
-    this->viewdefinitions[view.getName()] = view;
+
+    //For each view one dummy element will be created
+    //Check for existing View
+    DM::View existingView = this->viewdefinitions[view.getName()];
+    foreach(std::string a, existingView.getWriteAttributes()) {
+        existingView.addAvalibleAttribute(a);
+    }
+
+    if (view.getWriteType() == DM::NODE) {
+        //Add Dummy Node
+        //Copy all writen Attributes to the Avalible
+
+    }
+
+    foreach (std::string a , view.getWriteAttributes()) {
+        existingView.getAttributes(a);
+    }
+    foreach (std::string a , view.getReadAttributes()) {
+        existingView.addAttributes(a);
+    }
+    this->viewdefinitions[view.getName()] = existingView;
+
     return true;
 }
 

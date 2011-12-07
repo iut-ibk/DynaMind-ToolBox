@@ -11,6 +11,7 @@ class View
     std::string name;
     std::vector<std::string> WriteAttributes;
     std::vector<std::string> ReadAttributes;
+    std::vector<std::string> AvailableAttributes;
     int readType;
     int writeType;
 
@@ -20,11 +21,13 @@ public:
     View(){}
     void addAttributes(std::string name);
     void getAttributes(std::string name);
+    void addAvalibleAttribute(std::string name);
     void addComponent(int Type);
     void getComponent(int Type);
     std::string getName(){return this->name;}
     std::vector<std::string> const & getWriteAttributes  () const {return WriteAttributes;}
     std::vector<std::string> const & getReadAttributes  () const {return ReadAttributes;}
+    std::vector<std::string> const & getAvailableAttributes  () const {return AvailableAttributes;}
 
     int const  & getReadType  () const {return readType;}
     int const  & getWriteType  () const {return writeType;}
