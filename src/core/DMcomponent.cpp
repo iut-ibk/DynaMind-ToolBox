@@ -79,29 +79,23 @@ std::string Component::getName()
     return name;
 }
 
-bool Component::addAttribute(Attribute *newattribute)
+bool Component::addAttribute(Attribute newattribute)
 {
-    if(!newattribute)
+    if(attributesview.find(newattribute.getName())!=attributesview.end())
         return false;
 
-    if(attributesview.find(newattribute->getName())!=attributesview.end())
-        return false;
-
-    attributesview[newattribute->getName()] = newattribute;
-    ownedattributes[newattribute->getName()] = newattribute;
+    attributesview[newattribute.getName()] = new Attribute(newattribute);
+    ownedattributes[newattribute.getName()] = new Attribute(newattribute);
     return true;
 }
 
-bool Component::changeAttribute(Attribute *newattribute)
+bool Component::changeAttribute(Attribute newattribute)
 {
-    if(!newattribute)
-        return false;
+    if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
+        delete ownedattributes[newattribute.getName()];
 
-    if(ownedattributes.find(newattribute->getName())!=ownedattributes.end())
-        delete ownedattributes[newattribute->getName()];
-
-    ownedattributes[newattribute->getName()] = newattribute;
-    attributesview[newattribute->getName()] = newattribute;
+    ownedattributes[newattribute.getName()] = new Attribute(newattribute);
+    attributesview[newattribute.getName()] = new Attribute(newattribute);
 
     return true;
 }

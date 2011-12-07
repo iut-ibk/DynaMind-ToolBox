@@ -94,6 +94,14 @@ Node * System::addNode(Node* node)
     nodes[node->getName()]=node;
     return node;
 }
+
+System* System::createSubSystem(std::string name, std::string view)
+{
+    System* newsystem = new System(name, view);
+    this->addSubSystem(newsystem);
+    return newsystem;
+}
+
 Node * System::addNode(double x, double y, double z, std::string view) {
 
     Node * n = this->addNode(new Node(x, y, z));
@@ -203,6 +211,7 @@ bool System::addSubSystem(System *newsystem)
         return false;
 
     subsystems[newsystem->getName()]=newsystem;
+    updateViews(newsystem);
     return true;
 }
 

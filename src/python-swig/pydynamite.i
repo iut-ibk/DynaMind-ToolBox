@@ -10,7 +10,9 @@
     #include <DMview.h>
     #include <nodefactory.h>
     #include <moduleregistry.h>
-
+    #include <vibe_log.h>
+    #include <vibe_logger.h>
+    #include <vibe_logsink.h>
     #include <simulation.h>
 
     using namespace std;
@@ -38,6 +40,7 @@ namespace std {
     %template(systemmap) map<string, DM::System* >;
     %template(edgevector) vector<DM::Edge* >;
     %template(nodevector) vector<DM::Node* >;
+    %template(viewvector) vector<DM::View >;
     %template(nodemap) map<string, DM::Node* >;
     %template(edgemap) map<string, DM::Edge* >;
     %template(stringmap) map<string, string >;
@@ -112,7 +115,7 @@ public:
     virtual void setDoubleData(const std::string &name, const double r);
 
     void addData(std::string name, std::vector<DM::View> view);
-    void * getData(std::string dataname);
+    DM::System * getData(std::string dataname);
 
     std::vector<std::string> getParameterListAsVector();
     virtual std::string getParameterAsString(std::string Name);
@@ -131,8 +134,28 @@ public:
 
     virtual const char *getClassName() ;
     virtual const char *getFileName() ;
-
 };
+
+enum LogLevel {
+        Debug = 0,
+        Standard = 1,
+        Warning = 2,
+        Error = 3
+};
+
+%inline %{
+void log(std::string s, LogLevel l) {
+    Logger(l) << s;
+}
+
+void initlog(){
+//Init Logger
+ostream *out = &cout;
+vibens::Log::init(new OStreamLogSink(*out), vibens::Debug);
+vibens::Logger(vibens::Debug) << "Start";
+}
+
+%}
 
 class INodeFactory
 {

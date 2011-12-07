@@ -30,6 +30,10 @@
 
 using namespace DM;
 
+Attribute::Attribute(const Attribute &newattribute)
+{
+}
+
 Attribute::Attribute(std::string name, std::string id)
 {
     this->name=name;
@@ -62,37 +66,40 @@ std::string Attribute::getID()
 
 void Attribute::setDouble(double v)
 {
-
+    doublevalue=v;
 }
 
 double Attribute::getDouble()
 {
-    return 0;
+    return doublevalue;
 }
 
 void Attribute::setString(std::string s)
 {
-
+    stringvalue=s;
 }
 
-std::string Attribute::getString(){
-    return "";
+std::string Attribute::getString()
+{
+    return stringvalue;
 }
 
 void Attribute::setDoubleVector(std::vector<double> v)
 {
+    doublevector=v;
 }
 
 std::vector<double> Attribute::getDoubleVector()
 {
-    return vector<double>(2,2);
+    return doublevector;
 }
 
 void Attribute::setStringVector(std::vector<std::string> s)
 {
+    stringvector=s;
 }
 
 std::vector<std::string> Attribute::getStringVector()
 {
-    return vector<string>(2,"");
+    return stringvector;
 }

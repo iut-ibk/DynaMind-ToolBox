@@ -53,8 +53,8 @@ namespace DM {
         virtual ~Component();
         void setName(std::string name);
         std::string getName();
-        bool addAttribute(Attribute *newattribute);
-        bool changeAttribute(Attribute *newattribute);
+        bool addAttribute(Attribute newattribute);
+        bool changeAttribute(Attribute newattribute);
         bool removeAttribute(std::string name);
         Attribute* getAttribute(std::string name);
         std::map<std::string, Attribute*> getAllAttributes();

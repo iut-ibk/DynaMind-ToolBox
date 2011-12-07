@@ -71,6 +71,7 @@ namespace DM {
         std::map<std::string, Edge*> getAllEdges();
         std::vector<System*> getPredecessorStates();
         bool addSubSystem(System *newsystem);
+        System* createSubSystem(std::string name, std::string view);
         bool removeSubSystem(std::string name);
         System* getSubSystem(std::string name);
         std::map<std::string, System*> getAllSubSystems();

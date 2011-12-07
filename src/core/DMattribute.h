@@ -38,8 +38,13 @@ namespace DM {
     private:
         std::string id;
         std::string name;
+        double doublevalue;
+        std::string stringvalue;
+        std::vector<double> doublevector;
+        std::vector<std::string> stringvector;
 
     public:
+        Attribute(const Attribute &newattribute);
         Attribute(std::string name, std::string id);
         ~Attribute();
         void setDouble(double v);

@@ -84,7 +84,9 @@ bool DynaMiteTest()
     vibens::Module * outm =sim->addModule("InOut");
     vibens::Module * outm2 =sim->addModule("InOut");
     vibens::Module * outm3 = sim->addModule("WhiteNoise");
-    sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
+    vibens::Module * outm4 = sim->addModule("ImportShapeFile");
+    sim->addLink(outm4->getOutPort("Network"),outm->getInPort("Inport"));
+    //sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
     sim->addLink(outm->getOutPort("Inport"), outm2->getInPort("Inport"));
     sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
     sim->run();
