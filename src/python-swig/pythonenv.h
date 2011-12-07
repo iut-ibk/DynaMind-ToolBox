@@ -49,7 +49,7 @@ public:
         std::string registerNodes(ModuleRegistry *registry,
                                   const std::string &module);
         void addOverWriteStdCout();
-        void startEditra(std::string = "");
+        void startEditra(std::string filename = "");
 private:
         PythonEnv();
         PythonEnvPriv *priv;
@@ -57,7 +57,6 @@ private:
         std::vector<std::string> loadedModules;
 };
 
-void handle_python_exception();
 }
 #endif
 #endif // PYTHONENV_H

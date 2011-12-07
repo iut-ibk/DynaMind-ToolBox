@@ -52,10 +52,17 @@ class ImportShapeFile(Module):
             
             #self.addParameter(self,"FileName", pydynamite.VIBe2.FILENAME, pointer(self.FileName) ,"")
             #self.addParameter(self, "Identifier", VIBe2.STRING)
+
+	def getClassName(self):
+            return self.__class__.__name__
+
+        def getFileName(self):
+            return self.__module__.split(".")[0]
             
             
             
         def run(self):
+            print "DAS IST EIN TEST############"
             vec = self.getData("Network")
             sourcePath =  self.FileName
             sf = shapefile.Reader(sourcePath)

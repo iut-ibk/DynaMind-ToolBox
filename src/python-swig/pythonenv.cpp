@@ -119,7 +119,7 @@ PythonEnv *PythonEnv::getInstance() {
 void PythonEnv::addOverWriteStdCout() {
 
     boost::format fmt( "import sys\n"
-                      "import pyvibe\n"
+                      "import pydynamite\n"
                       "class Logger_VIBe:\n"
                       "    def __init__(self, stdout,error):\n"
                       "        self.stdout = stdout\n"
@@ -136,9 +136,9 @@ void PythonEnv::addOverWriteStdCout() {
                       "        self.currentstring=self.currentstring.replace(\"\\n\",\"\")\n"
                       "        self.currentstring=self.currentstring.replace(\"\\r\",\"\")\n"
                       "        if self.error:\n"
-                      "                pyvibe.log(str(self.currentstring))\n"
+                      "                pydynamite.log(str(self.currentstring),pydynamite.Standard)\n"
                       "        else:\n"
-                      "                pyvibe.log(str(self.currentstring))\n"
+                      "                pydynamite.log(str(self.currentstring),pydynamite.Standard)\n"
                       "        self.currentstring=\"\"\n"
                       "\n"
                       "    def close(self):\n"
@@ -156,7 +156,6 @@ void PythonEnv::addOverWriteStdCout() {
         PyErr_Print();
         return;
     }
-
 }
 
 void PythonEnv::addPythonPath(std::string path) {
@@ -177,22 +176,41 @@ void PythonEnv::startEditra(std::string filename) {
     if (PathtoEditra[PathtoEditra.size()-1] == '/') {
         PathtoEditra.remove(PathtoEditra.size()-1,1);
     }
-    object main_module = import("__main__");
-    object main_namespace = main_module.attr("__dict__");
 
     ostringstream skript;
-    skript << "import cStringIO\n";
     skript << "import sys\n";
     skript << "import os\n";
-    skript << "import pyvibe\n";
-    skript << "import site\n";
-
-    skript << "sys.stderr = cStringIO.StringIO()\n";
-    skript << "sys.path.append('" << PathtoEditra.toStdString() << "')\n";
-    skript << "import site\n";
-    skript << "import src.Editra\n";
-    skript << "src.Editra.Main('"<< filename <<"')\n";
-
+    skript << "\n";
+    skript << "try:\n";
+    skript << "    import src as esrc\n";
+    skript << "    IS_LOCAL = True\n";
+    skript << "except ImportError:\n";
+    skript << "    try:\n";
+    skript << "        import Editra as esrc\n";
+    skript << "        IS_LOCAL = False\n";
+    skript << "    except ImportError, msg:\n";
+    skript << "        print \"There was an error while tring to import Editra\"\n";
+    skript << "        print (\"Make sure that Editra is on your PYTHONPATH and that \"\n";
+    skript << "               \"you have wxPython installed.\")\n";
+    skript << "        print \"ERROR MSG: \"\n";
+    skript << "        print str(msg)\n";
+    skript << "SRC_DIR = os.path.dirname(esrc.__file__)\n";
+    skript << "if not IS_LOCAL:\n";
+    skript << "    SRC_DIR = os.path.join(SRC_DIR, 'src')\n";
+    skript << "\n";
+    skript << "if not IS_LOCAL:\n";
+    skript << "    torem = [ key for key in sys.modules.keys()\n";
+    skript << "              if key.startswith('Editra') ]\n";
+    skript << "    for key in torem:\n";
+    skript << "        del sys.modules[key]\n";
+    skript << "else:\n";
+    skript << "    if 'src' in sys.modules:\n";
+    skript << "        del sys.modules['src']\n";
+    skript << "\n";
+    skript << "sys.path.insert(0, SRC_DIR)\n";
+    skript << "sys.argv = [\"\",\"" << filename << "\"]\n";
+    skript << "import Editra\n";
+    skript << "Editra.Main()\n";
 
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
@@ -219,18 +237,21 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
 
     QSettings settings("IUT", "VIBe2");
     QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
-    if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
-        PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
+
+    if(PathtoUrbanSim.size())
+    {
+        if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
+            PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
+        }
     }
+
     ostringstream skript;
     skript << "import reimport\n";
-    skript << "import cStringIO\n";
     skript << "import sys\n";
     skript << "import os\n";
     skript << "import pydynamite\n";
     skript << "import site\n";
     skript << "import inspect\n";
-    //skript << "sys.stderr = cStringIO.StringIO()\n";
     skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
     skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
     skript << "os.environ['PYTHONPATH']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
@@ -250,8 +271,6 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     if (PyErr_Occurred())
     {
         PyErr_Print();
-        //throw CalimeroException("Error in python module: " + module);
-        return "ERROR1";
     }
 
     PyObject *pydynamite_dict = PyModule_GetDict(pydynamite_module);
@@ -271,27 +290,10 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     if (PyErr_Occurred())
     {
         PyErr_Print();
-        return "ERROR2";
     }
 
     loadedModules.push_back(module);
 
     return module;
-}
-
-void handle_python_exception() {
-    try {
-        throw ;
-    } catch(boost::python::error_already_set const &) {
-        PyObject* type, *value, *traceback;
-        PyErr_Fetch(&type, &value, &traceback);
-        boost::python::handle<> ty(type), v(value), tr(traceback);
-        boost::python::str format("%s|%s|%s");//fucking dirty hack because python error handling sucks soooo much
-        boost::python::object ret = format % boost::python::make_tuple(ty, v, tr);
-        string error = boost::python::extract<string>(ret);
-        Logger(Error) << error;
-        std::cout  << error << std::endl;
-        throw ;
-    }
 }
 }
