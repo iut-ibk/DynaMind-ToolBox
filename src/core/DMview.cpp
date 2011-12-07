@@ -19,6 +19,10 @@ void View::getAttributes(std::string name) {
 void View::addComponent(int Type) {
     this->writeType = Type;
 }
+void View::addAvalibleAttribute(std::string name) {
+    this->AvailableAttributes.push_back(name);
+}
+
 void View::getComponent(int Type) {
     this->readType = Type;
 }

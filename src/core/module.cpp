@@ -537,8 +537,12 @@ DM::System* Module::getSystemState(const std::string &name)
 DM::System*   Module::getSystem_Write(const std::string &name)  {
 
     DM::System * sys = new DM::System(name, name);
-    //sys->addView(this->views[name]);
 
+    for (boost::unordered_map<std::string,std::vector<DM::View> >::const_iterator it = views.begin(); it != views.end(); ++it) {
+        foreach (DM::View view, it->second) {
+            sys->addView(view);
+        }
+    }
     return sys;
 
 }

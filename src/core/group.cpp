@@ -30,7 +30,6 @@
 #include <porttuple.h>
 #include <time.h>
 #include <QStringList>
-#include <omp.h>
 #include <QThreadPool>
 #include <modulerunnable.h>
 #include <QMutexLocker>

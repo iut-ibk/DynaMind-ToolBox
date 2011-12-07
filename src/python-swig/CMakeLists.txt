@@ -5,15 +5,15 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 INCLUDE(${SWIG_USE_FILE})
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -external-runtime swigruntime.h)
-
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -c++ -threads -external-runtime swigruntime.h)
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 
-ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp
+ADD_CUSTOM_COMMAND(        
         COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
+        OUTPUT ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp
         )
 
 ADD_CUSTOM_TARGET(pydynamitegen DEPENDS ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp)

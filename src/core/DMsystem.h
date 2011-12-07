@@ -77,6 +77,7 @@ namespace DM {
         std::map<std::string, System*> getAllSubSystems();
         System* createSuccessor();
         bool addView(DM::View view);
+        std::vector<std::string> getNamesOfViews();
         Component* clone();
 
     };

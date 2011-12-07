@@ -52,7 +52,6 @@
 #include <group.h>
 #include <simulaitonwriter.h>
 #include <simulationreader.h>
-#include <omp.h>
 #include <vibe_logger.h>
 #include <porttuple.h>
 #include <pythonenv.h>
