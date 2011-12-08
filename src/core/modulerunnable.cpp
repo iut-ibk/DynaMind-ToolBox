@@ -46,7 +46,7 @@ void ModuleRunnable::run() {
     start = clock();
 
     m->updateParameter();
-    if (!m->getSimulation()->isVirtualRun() || !m->isGroup())
+    if (!m->getSimulation()->isVirtualRun() || m->isGroup())
         m->run();
     m->setParameter();
     finish = clock();

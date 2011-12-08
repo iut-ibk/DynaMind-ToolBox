@@ -42,6 +42,7 @@ namespace vibens {
         std::vector<ModuleLink *> links;
         int PortType;
         bool tuplePort;
+        bool fullyLinked;
     public:
 
         Port(Module * module, int PortType,  std::string linkedDataName, bool tuplePort = false);
@@ -53,6 +54,8 @@ namespace vibens {
         int getPortType(){return this->PortType;}
         void removeLink(ModuleLink * l);
         bool isPortTuple() {return tuplePort;}
+        bool isFullyLinked() {return this->fullyLinked;}
+        void setFullyLinked(bool linked) {this->fullyLinked = linked;}
 
 
 
