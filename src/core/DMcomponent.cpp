@@ -52,6 +52,8 @@ Component::Component(const Component& c)
         ownedchilds[(*it).first]=(*it).second->clone();
         childsview[(*it).first]=ownedchilds[(*it).first];
     }
+
+
 }
 
 Component::~Component()
@@ -83,9 +85,9 @@ bool Component::addAttribute(Attribute newattribute)
 {
     if(attributesview.find(newattribute.getName())!=attributesview.end())
         return false;
-
-    attributesview[newattribute.getName()] = new Attribute(newattribute);
-    ownedattributes[newattribute.getName()] = new Attribute(newattribute);
+    Attribute * a = new Attribute(newattribute);
+    attributesview[newattribute.getName()] = a;
+    ownedattributes[newattribute.getName()] = a;
     return true;
 }
 
@@ -93,9 +95,9 @@ bool Component::changeAttribute(Attribute newattribute)
 {
     if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
         delete ownedattributes[newattribute.getName()];
-
-    ownedattributes[newattribute.getName()] = new Attribute(newattribute);
-    attributesview[newattribute.getName()] = new Attribute(newattribute);
+    Attribute * b = new Attribute(newattribute);
+    ownedattributes[newattribute.getName()] = b;
+    attributesview[newattribute.getName()] = b;
 
     return true;
 }

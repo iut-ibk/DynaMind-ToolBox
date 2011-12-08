@@ -30,11 +30,14 @@
 #include <group.h>
 #include <time.h>
 #include <vibe_logger.h>
+#include <simulation.h>
 
 ModuleRunnable::ModuleRunnable(vibens::Module * m)
 {
     this-> m = m;
     this->setAutoDelete(true);
+
+
 }
 
 void ModuleRunnable::run() {
@@ -43,8 +46,8 @@ void ModuleRunnable::run() {
     start = clock();
 
     m->updateParameter();
-    m->run();
-
+    if (!m->getSimulation()->isVirtualRun() || !m->isGroup())
+        m->run();
     m->setParameter();
     finish = clock();
     vibens::Logger(vibens::Standard) << "Success\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );

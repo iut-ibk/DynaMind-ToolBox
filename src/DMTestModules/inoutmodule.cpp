@@ -11,12 +11,12 @@ InOut::InOut() {
     std::vector<DM::View> views;
     DM::View inlets = DM::View("Inlets");
     inlets.getComponent(DM::NODE);
-    inlets.getComponent(DM::SUBSYSTEM);
     inlets.getAttributes("A");
     inlets.getAttributes("B");
+    inlets.addAttributes("C");
     DM::View conduits = DM::View("Conduits");
     conduits.addComponent(DM::EDGE);
-
+    conduits.addAttributes("D");
     views.push_back(inlets);
     views.push_back(conduits);
 

@@ -36,8 +36,9 @@ class ModuleRunnable : public QRunnable
 {
 private:
     vibens::Module * m;
+
 public:
-    ModuleRunnable(vibens::Module *);
+    ModuleRunnable(vibens::Module *m);
 
     virtual void run();
 };

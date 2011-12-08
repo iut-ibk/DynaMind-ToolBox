@@ -52,7 +52,7 @@ namespace vibens {
         Simulation();
         virtual ~Simulation();
 
-        void run(bool check = true);
+        void run(bool virtualRun = false, bool check = true);
         void addDataObserver(DataObserver*  observer);
         void addSimulationObserver(SimulationObserver * simulationObserver);
         IDataBase * getDataBase();
@@ -80,6 +80,7 @@ namespace vibens {
         void deregisterModule(std::string UUID);
         void registerNativeModules(std::string Filename);
         void registerPythonModules(std::string path);
+        bool isVirtualRun(){return this->virtualRun;}
 
     private:
         RootGroup * rootGroup;
@@ -89,6 +90,10 @@ namespace vibens {
         IDataBase * database;
         ModuleRegistry * moduleRegistry;
         void removeLinksFromModule(Module *);
+
+
+
+        bool virtualRun;
 
 
 

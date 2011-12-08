@@ -24,6 +24,7 @@
  *
  */
 
+#include <DMattribute.h>
 #include <DMcomponent.h>
 #include <DMnode.h>
 #include <DMedge.h>
@@ -34,6 +35,7 @@ using namespace DM;
 
 System::System(std::string name, std::string view) : Component()
 {
+
 }
 
 
@@ -46,12 +48,16 @@ void System::updateViews(Component * c) {
 std::vector<std::string> System::getNamesOfViews() {
     std::vector<std::string> names;
 
-    for ( std::map<std::string, std::map<std::string, Component* > >::const_iterator it = this->views.begin(); it != this->views.end(); ++it  ) {
+    for ( std::map<std::string, View>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
         names.push_back(it->first);
     }
 
     return names;
 
+}
+DM::View System::getViewDefinition(string name) {
+
+    return viewdefinitions[name];
 }
 
 System::System(const System& s) : Component(s)
@@ -168,6 +174,17 @@ Edge* System::getEdge(std::string name)
     return edges[name];
 }
 
+Component * System::getComponent(std::string name) {
+    if(nodes.find(name)!=nodes.end())
+        return nodes[name];
+    if(subsystems.find(name)!=subsystems.end())
+        return subsystems[name];
+    if(edges.find(name)!=edges.end())
+        return edges[name];
+    return 0;
+
+}
+
 bool System::removeEdge(std::string name)
 {
     //check if name is a edge instance
@@ -271,12 +288,29 @@ bool System::addView(View view)
         existingView.addAvalibleAttribute(a);
     }
 
-    if (view.getWriteType() == DM::NODE) {
-        //Add Dummy Node
-        //Copy all writen Attributes to the Avalible
+
+
+    DM::Component * dummy  = 0;
+    if (!existingView.getIdOfDummyComponent().empty()) {
+        dummy = this->getComponent(existingView.getIdOfDummyComponent());
+    } else {
+        switch (view.getWriteType())
+        {
+        case DM::NODE:
+            dummy = this->addNode(0,0,0);
+            break;
+        case DM::EDGE:
+            DM::Node * n1 =this->addNode(0,0,0);
+            DM::Node * n2 =this->addNode(0,0,0);
+            dummy = this->addEdge(n1,n2);
+            break;
+        }
+        existingView.setIdOfDummyComponent(dummy->getName());
 
     }
-
+    foreach (std::string a , view.getWriteAttributes()) {
+        dummy->addAttribute(DM::Attribute(a, ""));
+    }
     foreach (std::string a , view.getWriteAttributes()) {
         existingView.getAttributes(a);
     }

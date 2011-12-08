@@ -54,7 +54,7 @@ namespace DM {
         void updateViews (Component * c);
 
     public:
-        System(std::string name, std::string view);
+        System(std::string name, std::string view = "");
         System(const System& s);
         ~System();
 
@@ -78,6 +78,8 @@ namespace DM {
         System* createSuccessor();
         bool addView(DM::View view);
         std::vector<std::string> getNamesOfViews();
+        Component * getComponent(std::string name);
+        DM::View getViewDefinition(std::string name);
         Component* clone();
 
     };

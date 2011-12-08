@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <string>
+
 namespace DM {
 class View
 {
@@ -15,6 +16,7 @@ class View
     int readType;
     int writeType;
 
+    std::string idOfDummyComponent;
 
 public:
     View(std::string name);
@@ -24,6 +26,7 @@ public:
     void addAvalibleAttribute(std::string name);
     void addComponent(int Type);
     void getComponent(int Type);
+
     std::string getName(){return this->name;}
     std::vector<std::string> const & getWriteAttributes  () const {return WriteAttributes;}
     std::vector<std::string> const & getReadAttributes  () const {return ReadAttributes;}
@@ -34,6 +37,9 @@ public:
 
     bool reads();
     bool writes();
+
+    std::string getIdOfDummyComponent() {return this->idOfDummyComponent;}
+    void setIdOfDummyComponent(std::string id) {this->idOfDummyComponent = id;}
 
 };
 }

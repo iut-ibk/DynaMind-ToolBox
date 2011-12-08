@@ -137,6 +137,11 @@ void Module::updateParameter() {
 
             if (reads) {
                 this->data_vals[s] = this->getSystemData(s);
+
+                foreach (DM::View view,  views) {
+                    this->data_vals[s]->addView(view);
+                }
+
             }
             //Creats a new Dataset
             if (writes && !reads) {
@@ -530,9 +535,13 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 
 DM::System* Module::getSystemState(const std::string &name)
 {
-    DM::System  * sys= this->data_vals[name];
+    DM::System  * sys = this->data_vals[name];
 
-    return sys->createSuccessor();
+    sys =  sys->createSuccessor();
+
+
+    return sys;
+
 }
 DM::System*   Module::getSystem_Write(const std::string &name)  {
 
