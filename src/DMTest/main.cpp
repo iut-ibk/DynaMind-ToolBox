@@ -44,7 +44,6 @@ bool DynaMiteTest();
 bool DMBaseTest();
 
 int main(int argc, char *argv[], char *envp[]) {
-
     //Init Logger
     ostream *out = &cout;
     vibens::Log::init(new OStreamLogSink(*out), vibens::Debug);
@@ -55,7 +54,7 @@ int main(int argc, char *argv[], char *envp[]) {
    else
         Logger() << "DynaMiteTest DONE";
 
-  /*  if(!DMBaseTest())
+   if(!DMBaseTest())
         Logger(Error) << "DMBaseTest FAILED";
     else
         Logger() << "DMBaseTest DONE";
@@ -63,33 +62,65 @@ int main(int argc, char *argv[], char *envp[]) {
     if(!DMBaseTest())
         Logger(Error) << "DMBaseTest_2 FAILED";
     else
-        Logger() << "DMBaseTest_2 DONE";*/
+        Logger() << "DMBaseTest_2 DONE";
 
     return 1;
+}
+bool DMBaseTest() {
+    DM::System * s = new DM::System("test");
+    DM::Node * n = s->addNode(0,0,0);
+    n->addAttribute(DM::Attribute("a","a"));
+    n->addAttribute(DM::Attribute("b","b"));
+    std::string name = n->getName();
+
+
+    s = s->createSuccessor();
+    n = s->getNode(name);
+    n->addAttribute(DM::Attribute("c","c"));
+
+    for (std::map<std::string, DM::Attribute*>::const_iterator it = n->getAllAttributes().begin(); it != n->getAllAttributes().end(); ++it) {
+        std::cout << it->first << std::endl;
+
+
+    }
+    return true;
+
 }
 
 bool DynaMiteTest()
 {
     vibens::PythonEnv *env = vibens::PythonEnv::getInstance();
-    env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
+    //env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
+    env->addPythonPath("/home/c8451045/Documents/VIBe2Core/build/debug/");
 
-    QThreadPool::globalInstance()->setMaxThreadCount(1);
+
     DataManagement::init();
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
-    sim->registerPythonModules("/home/csae6550/work/VIBe2Core/scripts");
+    //sim->registerPythonModules("/home/csae6550/work/VIBe2Core/scripts");
+    sim->registerPythonModules("/home/c8451045/Documents/VIBe2Core/scripts");
     vibens::Module * in = sim->addModule("TestModule");
     vibens::Module * outm =sim->addModule("InOut");
     vibens::Module * outm2 =sim->addModule("InOut");
     vibens::Module * outm3 = sim->addModule("WhiteNoise");
-    vibens::Module * outm4 = sim->addModule("ImportShapeFile");
-    sim->addLink(outm4->getOutPort("Network"),outm->getInPort("Inport"));
-    //sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
+    //vibens::Module * outm4 = sim->addModule("ImportShapeFile");
+    //sim->addLink(outm4->getOutPort("Network"),outm->getInPort("Inport"));
+    sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
     sim->addLink(outm->getOutPort("Inport"), outm2->getInPort("Inport"));
     sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
     sim->run();
+
+
+
+
+    QThreadPool::globalInstance()->waitForDone();
+
+    sim->run(true);
+
+
+
 
     QThreadPool::globalInstance()->waitForDone();
     delete sim;

@@ -136,20 +136,66 @@ void Module::updateParameter() {
             }
 
             if (reads) {
-                this->data_vals[s] = this->getSystemData(s);
+
+
+
+
+                DM::System * sys = this->getSystemData(s);
+
+                //Check if all Data for read are really avalible
+                if (sys != 0) {
+                    foreach (DM::View view,  views) {
+                        DM::View checkView = sys->getViewDefinition(view.getName());
+                        DM::Component * c = sys->getComponent(checkView.getIdOfDummyComponent());
+                        //Check if attributes are avalible
+                        if (c == 0) {
+                            delete sys;
+                            sys = 0;
+                            break;
+                        }
+                        foreach (std::string a, view.getReadAttributes()) {
+                            bool exists = false;
+                            for (std::map<std::string, DM::Attribute*>::const_iterator it = c->getAllAttributes().begin(); it != c->getAllAttributes().end(); ++it) {
+                                std::string a_existing = it->first;
+                                if (a.compare(a_existing) == 0) {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists) {
+                                delete sys;
+                                sys = 0;
+                                break;
+                            }
+                        }
+                        if (sys == 0)
+                            break;
+                    }
+
+                }
+
+                this->data_vals[s] = sys;
+                if (sys == 0) {
+                    Logger(Error) << this->getUuid() << " "<< this->getName() << " Missing Data";
+                    this->getInPort(s)->setFullyLinked(false);
+                    if (this->getOutPort(s) != 0)
+                        this->getOutPort(s)->setFullyLinked(false);
+                    continue;
+                }
+
+                foreach (DM::View view,  views) {
+                    this->data_vals[s]->addView(view);
+                }
+                this->getInPort(s)->setFullyLinked(true);
+                if (this->getOutPort(s) != 0)
+                    this->getOutPort(s)->setFullyLinked(true);
             }
             //Creats a new Dataset
             if (writes && !reads) {
                 this->data_vals[s] = this->getSystem_Write(s);
+                this->getOutPort(s)->setFullyLinked(true);
             }
 
-        }
-
-        if (it->second == VIBe2::SYSTEM_IN) {
-            this->data_vals[s] = this->getSystemData(s);
-        }
-        if (it->second == VIBe2::SYSTEM_OUT) {
-            this->data_vals[s] = this->getSystem_Write(s);
         }
 
     }
@@ -501,7 +547,8 @@ void Module::init(const parameter_type &parameters) {
 
 DM::System*   Module::getSystemData(const std::string &name)  {
     Port * p = this->getInPort(name);
-    p->getLinks();
+    if (p->getLinks().size() == 0)
+        return 0;
 
     int LinkId = -1;
     int BackId = -1;
@@ -514,6 +561,8 @@ DM::System*   Module::getSystemData(const std::string &name)  {
         }
         counter++;
     }
+    if (LinkId < 0)
+        return 0;
     ModuleLink *l = p->getLinks()[LinkId];
     if (this->internalCounter > 0 && BackId != -1){
         l = p->getLinks()[BackId];
@@ -530,9 +579,15 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 
 DM::System* Module::getSystemState(const std::string &name)
 {
-    DM::System  * sys= this->data_vals[name];
+    DM::System  * sys = this->data_vals[name];
+    if (sys == 0) {
+        return 0;
+    }
+    sys =  sys->createSuccessor();
 
-    return sys->createSuccessor();
+
+    return sys;
+
 }
 DM::System*   Module::getSystem_Write(const std::string &name)  {
 

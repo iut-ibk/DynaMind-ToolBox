@@ -35,6 +35,7 @@ namespace vibens {
         this->PortType = PortType;
         this->linkedDataName = linkedDataName;
         this->tuplePort = tuplePort;
+        this->fullyLinked = false;
     }
     Module * Port::getModule() {
         return this->module;
@@ -50,6 +51,7 @@ namespace vibens {
         while (this->links.size() > 0)
             delete *(this->links.begin());
     }
+
     void Port::removeLink(ModuleLink * l) {
         Logger(Debug) << this->links.size();
         for (std::vector<ModuleLink* >::iterator it = this->links.begin(); it!=this->links.end();) {

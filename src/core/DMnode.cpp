@@ -36,7 +36,7 @@ Node::Node( double x, double y, double z) : Component()
     this->z=z;
 }
 
-Node::Node(const Node& n) : Component()
+Node::Node(const Node& n) : Component(n)
 {
     x=n.x;
     y=n.y;

@@ -1,11 +1,11 @@
-#include "inoutmodule.h"
+#include "inout2.h"
 #include <DMcomponent.h>
 #include <DMsystem.h>
 #include <DMnode.h>
 
 
-VIBe_DECLARE_NODE_NAME( InOut,Modules )
-InOut::InOut() {
+VIBe_DECLARE_NODE_NAME( InOut2,Modules )
+InOut2::InOut2() {
 
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
@@ -13,10 +13,10 @@ InOut::InOut() {
     inlets.getComponent(DM::NODE);
     inlets.getAttributes("A");
     inlets.getAttributes("B");
-    inlets.addAttributes("C");
+    inlets.getAttributes("C");
     DM::View conduits = DM::View("Conduits");
     conduits.addComponent(DM::EDGE);
-    conduits.addAttributes("D");
+    conduits.addAttributes("F");
     views.push_back(inlets);
     views.push_back(conduits);
 
@@ -28,7 +28,7 @@ InOut::InOut() {
 
 
 
-void InOut::run() {
+void InOut2::run() {
 
 
     int test = a;
@@ -76,6 +76,6 @@ void InOut::run() {
 
 }
 
-InOut::~InOut() {
+InOut2::~InOut2() {
     Logger(Debug) << "Destructor InOut";
 }

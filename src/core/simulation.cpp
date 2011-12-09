@@ -261,7 +261,8 @@ void Simulation::resetModules() {
     }
 }
 
-void Simulation::run(bool check) {
+void Simulation::run(bool virtualRun, bool check) {
+    this->virtualRun = virtualRun;
     this->registerDataBase(DataManagement::getInstance().getDataBase());
     Logger(Standard) << "Run Simulation";
     bool isConnected = true;

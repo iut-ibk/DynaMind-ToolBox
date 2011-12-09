@@ -30,9 +30,9 @@
 
 using namespace DM;
 
-Attribute::Attribute(const Attribute &newattribute)
+/*Attribute::Attribute(const Attribute &newattribute)
 {
-}
+}*/
 
 Attribute::Attribute(std::string name, std::string id)
 {
