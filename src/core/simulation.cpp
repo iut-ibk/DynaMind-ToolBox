@@ -155,15 +155,44 @@ Simulation::Simulation() {
     this->rootGroup->setSimulation(this);
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
-    //vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
+
     QSettings settings("IUT", "VIBe2");
 
     //Init Python
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-    //for (int index = 0; index < pythonhome.size(); index++)
-        //vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+    for (int index = 0; index < pythonhome.size(); index++)
+        vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
+    vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
 
+    QDir pythonDir;
+    QString text = settings.value("pythonModules").toString();
+    QStringList list = text.replace("\\","/").split(",");
+    foreach (QString s, list){
+        vibens::PythonEnv::getInstance()->addPythonPath(s.toStdString());
+        pythonDir = QDir(s);
+        QStringList filters;
+        filters << "*.py";
+        QStringList files = pythonDir.entryList(filters);
+        foreach(QString file, files) {
+            try{
+                std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+                Logger(Debug) << n;
+
+            } catch(...) {
+                Logger(Warning)  << "Can't load Module " << file.toStdString();
+                std::cout << file.toStdString() << std::endl;
+            }
+        }
+
+    }
+
+    text = settings.value("nativeModules").toString();
+    list = text.replace("\\","/").split(",");
+    foreach (QString s, list) {
+        std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
+        moduleRegistry->addNativePlugin(s.toStdString());
+    }
 }
 
 void Simulation::registerNativeModules(string Filename) {

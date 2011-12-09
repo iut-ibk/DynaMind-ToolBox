@@ -28,14 +28,16 @@ from pydynamite import *
 class WhiteNoise(Module):
         def __init__(self):
             Module.__init__(self)
+	    self.test = p_string()
+	    self.test.assign("das ist ja super")
+	    self.addParameter("test",VIBe2.STRING,self.test,"hallo")
+	    
+ 
 	    print "GUGUG"
     
         def run(self):
-            print "Hello World!"
+            print "Hello World1!"
+	    print self.test.value()
+	    print "Hello World1 ende!"
 	    print self.__module__.split(".")[0]
 
-        def getClassName(self):
-            return self.__class__.__name__
-
-        def getFileName(self):
-            return self.__module__.split(".")[0]

@@ -39,32 +39,27 @@ class ImportShapeFile(Module):
 	"""
         def __init__(self):
             Module.__init__(self)
+
+	    self.FileName = p_string()
+	    self.FileName.assign("/home/csae6550/Desktop/pipes")
+	    self.addParameter("FileName",VIBe2.FILENAME,self.FileName,"Sample Description")
+                
+	    self.Identifier = p_string()
+	    self.Identifier.assign("")
+	    self.addParameter("Identifier",VIBe2.STRING,self.Identifier,"Sample Description")
+
             view = pydynamite.View("Shape")
             view.addComponent(pydynamite.SUBSYSTEM)
-            
-            self.FileName = "/home/csae6550/Desktop/pipes"
-            self.Identifier = ""
-                
+
             views = pydynamite.viewvector()
             views.push_back(view)
             
             self.addData("Network",views)
             
-            #self.addParameter(self,"FileName", pydynamite.VIBe2.FILENAME, pointer(self.FileName) ,"")
-            #self.addParameter(self, "Identifier", VIBe2.STRING)
-
-	def getClassName(self):
-            return self.__class__.__name__
-
-        def getFileName(self):
-            return self.__module__.split(".")[0]
-            
-            
-            
         def run(self):
-            print "DAS IST EIN TEST############"
+            print "DAS IST EIN TEST#####"
             vec = self.getData("Network")
-            sourcePath =  self.FileName
+            sourcePath =  self.FileName.value()
             sf = shapefile.Reader(sourcePath)
             shaperecords = sf.shapeRecords()
             fields = sf.fields
