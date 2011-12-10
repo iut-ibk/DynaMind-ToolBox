@@ -29,10 +29,13 @@
 #include <DMattribute.h>
 
 #include <assert.h>
+#include <vibe_logger.h>
 
 #include <QUuid>
 
 using namespace DM;
+using namespace vibens;
+
 
 Component::Component()
 {
@@ -123,6 +126,8 @@ Attribute* Component::getAttribute(std::string name)
 {
     if(attributesview.find(name)==attributesview.end())
         return 0;
+
+    Logger(Debug) << "Attribute found: " << name ;
     return attributesview[name];
 }
 

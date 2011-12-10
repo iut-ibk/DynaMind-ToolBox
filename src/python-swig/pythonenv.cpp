@@ -1,4 +1,4 @@
-/**
+    /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @version 1.0
@@ -236,18 +236,17 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     skript << "site.addsitedir(\""<< QDir::currentPath().toStdString() << "\") \n";
     if (exists){
         skript << "reimport.reimport(*reimport.modified())\n";
-        Logger(Standard) << "SUPER GUAT";
     }
     else
     {
         skript << "__import__('" << module << "')\n";
-        Logger(Standard) << "SUPER GUAT2";
     }
 
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred())
     {
         PyErr_Print();
+        return module;
     }
 
     PyObject *pydynamite_dict = PyModule_GetDict(pydynamite_module);
@@ -267,6 +266,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     if (PyErr_Occurred())
     {
         PyErr_Print();
+        return module;
     }
 
     loadedModules.push_back(module);
