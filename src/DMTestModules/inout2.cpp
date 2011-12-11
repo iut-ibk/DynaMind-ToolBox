@@ -6,7 +6,6 @@
 
 VIBe_DECLARE_NODE_NAME( InOut2,Modules )
 InOut2::InOut2() {
-
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
     DM::View inlets = DM::View("Inlets");
@@ -24,6 +23,7 @@ InOut2::InOut2() {
     a = 0;
     this->addParameter("a",VIBe2::DOUBLE, &a);
     a = 5;
+
 }
 
 

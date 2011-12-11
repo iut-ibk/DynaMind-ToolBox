@@ -24,6 +24,10 @@ InOut::InOut() {
     a = 0;
     this->addParameter("a",VIBe2::DOUBLE, &a);
     a = 5;
+
+
+
+
 }
 
 
