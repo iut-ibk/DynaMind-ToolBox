@@ -1,4 +1,5 @@
 %module(directors="1", allprotected="1") pydynamite
+
 %feature("director");
 %{
     #include <DMcomponent.h>
@@ -14,17 +15,18 @@
     #include <vibe_logger.h>
     #include <vibe_logsink.h>
     #include <simulation.h>
+    #include <iostream>
 
     using namespace std;
     using namespace DM;
     using namespace vibens;
+
 %}
 
-%include cpointer.i
 %include std_vector.i
 %include std_string.i
 %include std_map.i
-#include typemaps.i
+%include cpointer.i
 
 %include "../core/DMcomponent.h"
 %include "../core/DMsystem.h"
@@ -45,6 +47,10 @@ namespace std {
     %template(edgemap) map<string, DM::Edge* >;
     %template(stringmap) map<string, string >;
 }
+
+%pointer_class(std::string,p_string)
+%pointer_class(int,p_int)
+%pointer_class(double,p_double)
 
 %feature("director:except") {
     if ($error != NULL) {
@@ -103,6 +109,8 @@ public:
     };
 };
 
+
+
 class Module {
 
 public:
@@ -122,7 +130,8 @@ public:
 
     virtual void updateParameter();
 
-    void addParameter(std::string name, int type, void * ref, std::string description = "");
+    void addParameter(std::string name, int type, void * ref, std::string description);
+
     virtual void setParameterValue(std::string name, std::string value);
     virtual void appendToUserDefinedParameter(std::string name, std::string  value);
     virtual void removeFromUserDefinedParameter(std::string name, std::string  value);
@@ -132,8 +141,19 @@ public:
     void sendRasterDataToResultViewer(std::map<std::string , std::string > maps);
     void sendDoubleValueToPlot(double, double);
 
-    virtual const char *getClassName() ;
-    virtual const char *getFileName() ;
+    virtual const char *getClassName();
+    virtual const char *getFileName();
+
+    %pythoncode %{
+    def getClassName(self):
+            return self.__class__.__name__
+
+    def getFileName(self):
+            return self.__module__.split(".")[0]
+
+    %}
+
+
 };
 
 enum LogLevel {
@@ -144,6 +164,7 @@ enum LogLevel {
 };
 
 %inline %{
+
 void log(std::string s, LogLevel l) {
     Logger(l) << s;
 }
@@ -195,4 +216,5 @@ class NodeFactory(INodeFactory):
 def registerNodes(registry):
     for klass in Module.__subclasses__():
         registry.addNodeFactory(NodeFactory(klass).__disown__())
+
 %}

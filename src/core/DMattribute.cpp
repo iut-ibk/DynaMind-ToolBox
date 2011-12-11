@@ -30,9 +30,15 @@
 
 using namespace DM;
 
-/*Attribute::Attribute(const Attribute &newattribute)
+Attribute::Attribute(const Attribute &newattribute)
 {
-}*/
+    this->name=newattribute.name;
+    this->id=newattribute.id;
+    this->doublevalue=newattribute.doublevalue;
+    this->stringvalue=newattribute.stringvalue;
+    this->doublevector=newattribute.doublevector;
+    this->stringvector=newattribute.stringvector;
+}
 
 Attribute::Attribute(std::string name, std::string id)
 {

@@ -1,7 +1,3 @@
-import sys
-sys.path.append('/home/csae6550/work/VIBe2Core/build/Release')
-
-
 """
 @author  Chrisitan Urich <christian.urich@gmail.com>
 @version 1.0
@@ -39,39 +35,42 @@ class ImportShapeFile(Module):
 	"""
         def __init__(self):
             Module.__init__(self)
-            view = pydynamite.View("Shape")
-            view.addComponent(pydynamite.SUBSYSTEM)
-            
-            self.FileName = "/home/csae6550/Desktop/pipes"
-            self.Identifier = ""
+
+	    self.FileName = p_string()
+	    self.FileName.assign("/home/csae6550/Desktop/pipes")
+	    self.addParameter("FileName",VIBe2.FILENAME,self.FileName,"Sample Description")
                 
+	    self.Identifier = p_string()
+	    self.Identifier.assign("")
+	    self.addParameter("Identifier",VIBe2.STRING,self.Identifier,"Sample Description")
+
+            shape = pydynamite.View("Shape")
+            shape.addComponent(NODE)
+            shape.addComponent(EDGE)
+            shape.addAttributes("Shapelist")
+            
             views = pydynamite.viewvector()
-            views.push_back(view)
+            views.push_back(shape)
             
-            self.addData("Network",views)
-            
-            #self.addParameter(self,"FileName", pydynamite.VIBe2.FILENAME, pointer(self.FileName) ,"")
-            #self.addParameter(self, "Identifier", VIBe2.STRING)
-
-	def getClassName(self):
-            return self.__class__.__name__
-
-        def getFileName(self):
-            return self.__module__.split(".")[0]
-            
-            
+            self.addData("Shapefile",views)
             
         def run(self):
-            print "DAS IST EIN TEST############"
-            vec = self.getData("Network")
-            sourcePath =  self.FileName
+            vec = self.getData("Shapefile")
+            
+            if vec == None :
+                pydynamite.log("Cannot get a valid system object",pydynamite.Error)
+                return False
+            
+            sourcePath =  self.FileName.value()
             sf = shapefile.Reader(sourcePath)
             shaperecords = sf.shapeRecords()
             fields = sf.fields
+            shapevec = pydynamite.stringvector()
             
             for r in shaperecords:
                 shp = r.shape.points
                 subsys = vec.createSubSystem("newsystem","Shape")
+                shapevec.append(subsys.getName())
                 points = pydynamite.nodevector()
                 attr = r.record
                 
@@ -103,15 +102,12 @@ class ImportShapeFile(Module):
                             if r.shape.shapeType == shapefile.POLYGON:
                                 p2 = points[0]
                                 subsys.addEdge(p1,p2)
-            
-            pydynamite.log("Imported " + str(vec.getAllSubSystems().__len__()) + " shapes",pydynamite.Standard)
+  
+            newattr = pydynamite.Attribute("Shapelist","Shapelist")
+            newattr.setStringVector(shapevec)
+            if not vec.addAttribute(newattr) :
+                pydynamite.log("Cannot add new attribute",pydynamite.Error)
+            else:
+                print vec.getAttribute("Shapelist").getName()
                 
-                                        
-def main():
-    #pydynamite.Log.init()
-    pydynamite.initlog()
-    test = ImportShapeFile()
-    test.run()
-
-if __name__ == "__main__":
-    main()
+            pydynamite.log("Imported " + str(vec.getAllSubSystems().__len__()) + " shapes",pydynamite.Standard)

@@ -44,7 +44,7 @@ namespace DM {
         std::vector<std::string> stringvector;
 
     public:
-        //Attribute(const Attribute &newattribute);
+        Attribute(const Attribute &newattribute);
         Attribute(std::string name, std::string id);
         ~Attribute();
         void setDouble(double v);

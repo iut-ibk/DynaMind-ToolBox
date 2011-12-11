@@ -36,11 +36,14 @@ namespace vibens {
     ModuleRegistry::ModuleRegistry() {
     }
 
-bool ModuleRegistry::addNodeFactory(INodeFactory *factory) {
-
-    std::vector<std::string> m = moduleMap[factory->getFileName()];
-    m.push_back(factory->getNodeName());
-    moduleMap[factory->getFileName()] = m;
+bool ModuleRegistry::addNodeFactory(INodeFactory *factory)
+{
+    if(!contains(factory->getNodeName()))
+    {
+        std::vector<std::string> m = moduleMap[factory->getFileName()];
+        m.push_back(factory->getNodeName());
+        moduleMap[factory->getFileName()] = m;
+    }
     registry[factory->getNodeName()] = factory;
     return true;
 }

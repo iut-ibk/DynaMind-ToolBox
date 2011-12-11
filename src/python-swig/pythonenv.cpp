@@ -1,4 +1,4 @@
-/**
+    /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @version 1.0
@@ -181,36 +181,11 @@ void PythonEnv::startEditra(std::string filename) {
     skript << "import sys\n";
     skript << "import os\n";
     skript << "\n";
-    skript << "try:\n";
-    skript << "    import src as esrc\n";
-    skript << "    IS_LOCAL = True\n";
-    skript << "except ImportError:\n";
-    skript << "    try:\n";
-    skript << "        import Editra as esrc\n";
-    skript << "        IS_LOCAL = False\n";
-    skript << "    except ImportError, msg:\n";
-    skript << "        print \"There was an error while tring to import Editra\"\n";
-    skript << "        print (\"Make sure that Editra is on your PYTHONPATH and that \"\n";
-    skript << "               \"you have wxPython installed.\")\n";
-    skript << "        print \"ERROR MSG: \"\n";
-    skript << "        print str(msg)\n";
-    skript << "SRC_DIR = os.path.dirname(esrc.__file__)\n";
-    skript << "if not IS_LOCAL:\n";
-    skript << "    SRC_DIR = os.path.join(SRC_DIR, 'src')\n";
-    skript << "\n";
-    skript << "if not IS_LOCAL:\n";
-    skript << "    torem = [ key for key in sys.modules.keys()\n";
-    skript << "              if key.startswith('Editra') ]\n";
-    skript << "    for key in torem:\n";
-    skript << "        del sys.modules[key]\n";
-    skript << "else:\n";
-    skript << "    if 'src' in sys.modules:\n";
-    skript << "        del sys.modules['src']\n";
-    skript << "\n";
-    skript << "sys.path.insert(0, SRC_DIR)\n";
+    skript << "sys.path.append('" << PathtoEditra.toStdString() << "')\n";
+    skript << "import site\n";
     skript << "sys.argv = [\"\",\"" << filename << "\"]\n";
-    skript << "import Editra\n";
-    skript << "Editra.Main()\n";
+    skript << "import src.Editra\n";
+    skript << "src.Editra.Main()\n";
 
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
@@ -263,14 +238,15 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
         skript << "reimport.reimport(*reimport.modified())\n";
     }
     else
+    {
         skript << "__import__('" << module << "')\n";
-    //skript << "clss = pydynamite.Module.__subclasses__()\n";
-    //skript << "print clss\n";
+    }
 
     PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred())
     {
         PyErr_Print();
+        return module;
     }
 
     PyObject *pydynamite_dict = PyModule_GetDict(pydynamite_module);
@@ -290,6 +266,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     if (PyErr_Occurred())
     {
         PyErr_Print();
+        return module;
     }
 
     loadedModules.push_back(module);

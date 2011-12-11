@@ -66,6 +66,7 @@ System::System(const System& s) : Component(s)
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;
+
     viewdefinitions = s.viewdefinitions;
 
     //Update SubSystem
