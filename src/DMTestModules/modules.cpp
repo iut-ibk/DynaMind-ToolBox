@@ -28,12 +28,9 @@
 #include "testmodule.h"
 #include "inoutmodule.h"
 #include "inout2.h"
-<<<<<<< HEAD
 #include "userdefineddata.h"
-=======
 #include "checkshape.h"
 
->>>>>>> 41798387892b46e8f71d22788b107472712d963d
 using namespace std;
 
 
@@ -42,10 +39,7 @@ extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry
     registry->addNodeFactory(new NodeFactory<TestModule>());
     registry->addNodeFactory(new NodeFactory<InOut>());
     registry->addNodeFactory(new NodeFactory<InOut2>());
-<<<<<<< HEAD
     registry->addNodeFactory(new NodeFactory<UserdefinedData>());
-=======
     registry->addNodeFactory(new NodeFactory<CheckShape>());
->>>>>>> 41798387892b46e8f71d22788b107472712d963d
 }
 
