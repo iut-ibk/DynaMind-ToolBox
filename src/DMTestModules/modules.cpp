@@ -30,6 +30,7 @@
 #include "inout2.h"
 #include "userdefineddata.h"
 #include "checkshape.h"
+#include "comparenetworks.h"
 
 using namespace std;
 
@@ -41,5 +42,6 @@ extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry
     registry->addNodeFactory(new NodeFactory<InOut2>());
     registry->addNodeFactory(new NodeFactory<UserdefinedData>());
     registry->addNodeFactory(new NodeFactory<CheckShape>());
+    registry->addNodeFactory(new NodeFactory<CompareNetworks>());
 }
 

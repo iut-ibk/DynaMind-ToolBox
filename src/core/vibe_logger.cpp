@@ -33,20 +33,22 @@ namespace vibens {
         : sink(*Log::getInstance()->sink), level(level) {
         dirty = false;
         this->max = Log::getInstance()->max;
+        logstring="";
         if (level >= max) {
-            sink << logLevel() << " " << date() << "|";
+            logstring += logLevel() + " " + date() + "|";
             dirty = true;
         }
     }
 
     Logger::~Logger() {
+        sink << logstring;
         if (dirty)
             sink << LSEndl();
     }
 
     Logger &Logger::operator <<(LogLevel new_level) {
         level = new_level;
-        sink << "\n" << logLevel() << " " << date() << "|";
+        logstring += "\n" + logLevel() + " " + date() + "|";
         dirty = true;
         return *this;
     }
@@ -58,7 +60,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << s;
+        logstring +=  " " + QString(s).toStdString();
         dirty = true;
         return *this;
     }
@@ -68,7 +70,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << i;
+        logstring +=  " " + QString::number(i).toStdString();
         dirty = true;
         return *this;
     }
@@ -78,7 +80,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << i;
+        logstring +=  " " + QString::number(i).toStdString();
         dirty = true;
         return *this;
     }
@@ -88,7 +90,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << i;
+        logstring +=  " " + QString::number(i).toStdString();
         dirty = true;
         return *this;
     }
@@ -98,7 +100,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << f;
+        logstring +=  " " + QString::number(f).toStdString();
         dirty = true;
         return *this;
     }
@@ -108,7 +110,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << f;
+        logstring +=  " " + QString::number(f).toStdString();
         dirty = true;
         return *this;
     }
@@ -118,7 +120,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << s;
+        logstring +=  " " + s;
         dirty = true;
         return *this;
     }
@@ -128,7 +130,7 @@ namespace vibens {
         if (level < max) {
             return *this;
         }
-        sink << " " << s.toStdString();
+        logstring +=  " " + s.toStdString();
         dirty = true;
         return *this;
     }
@@ -137,15 +139,15 @@ namespace vibens {
     string Logger::logLevel() const {
         switch (level) {
         case Debug:
-            return "DEBUG";
+            return "DEBUG\t";
         case Warning:
-            return "WARN";
+            return "WARN\t";
         case Standard:
-            return "STANDARD";
+            return "STANDARD\t";
         case Error:
-            return "ERROR";
+            return "ERROR\t";
         }
-        return "UNKNOWN";
+        return "UNKNOWN\t";
     }
 
     string Logger::date() const {
