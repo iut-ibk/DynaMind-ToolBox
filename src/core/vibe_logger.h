@@ -55,9 +55,11 @@ namespace vibens {
     private:
         string logLevel() const;
         string date() const;
+
         LogSink &sink;
         LogLevel level, max;
         QMutex mutex;
+        string logstring;
         bool dirty;
     };
 }

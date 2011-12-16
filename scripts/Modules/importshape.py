@@ -39,15 +39,15 @@ class ImportShapeFile(Module):
 	    self.FileName = p_string()
 	    self.FileName.assign("/home/csae6550/Desktop/pipes")
 	    self.addParameter("FileName",VIBe2.FILENAME,self.FileName,"Sample Description")
-                
-	    self.Identifier = p_string()
-	    self.Identifier.assign("")
-	    self.addParameter("Identifier",VIBe2.STRING,self.Identifier,"Sample Description")
+            
+            self.type = p_string()
+	    self.type.assign("e.g.: Streetnetwork_id")
+	    self.addParameter("Type",VIBe2.STRING,self.type,"Sample Description")
 
             shape = pydynamite.View("Shape")
-            shape.addComponent(NODE)
-            shape.addComponent(EDGE)
+	    shape.addComponent(EDGE)
             shape.addAttributes("Shapelist")
+            shape.addAttributes("Type")
             
             views = pydynamite.viewvector()
             views.push_back(shape)
@@ -102,12 +102,20 @@ class ImportShapeFile(Module):
                             if r.shape.shapeType == shapefile.POLYGON:
                                 p2 = points[0]
                                 subsys.addEdge(p1,p2)
-  
+
             newattr = pydynamite.Attribute("Shapelist","Shapelist")
             newattr.setStringVector(shapevec)
-            if not vec.addAttribute(newattr) :
+            newattr2 = pydynamite.Attribute("Type","Type")
+            newattr2.setString(self.type.value())
+
+	    if not vec.addAttribute(newattr) :
                 pydynamite.log("Cannot add new attribute",pydynamite.Error)
             else:
                 print vec.getAttribute("Shapelist").getName()
+
+	    if not vec.addAttribute(newattr2) :
+                pydynamite.log("Cannot add new attribute",pydynamite.Error)
+            else:
+                print vec.getAttribute("Type").getName()
                 
             pydynamite.log("Imported " + str(vec.getAllSubSystems().__len__()) + " shapes",pydynamite.Standard)
