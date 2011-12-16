@@ -36,6 +36,7 @@
 #include <DM.h>
 #include <sstream>
 #include <pythonenv.h>
+#include <complexgeometry.h>
 
 using namespace std;
 using namespace vibens;
@@ -50,11 +51,11 @@ int main(int argc, char *argv[], char *envp[]) {
     vibens::Logger(vibens::Debug) << "Start";
 
     if(!DynaMiteTest())
-       Logger(Error) << "DynaMiteTest FAILED";
-   else
+        Logger(Error) << "DynaMiteTest FAILED";
+    else
         Logger() << "DynaMiteTest DONE";
 
-   if(!DMBaseTest())
+    if(!DMBaseTest())
         Logger(Error) << "DMBaseTest FAILED";
     else
         Logger() << "DMBaseTest DONE";
@@ -64,19 +65,31 @@ int main(int argc, char *argv[], char *envp[]) {
     else
         Logger() << "DMBaseTest_2 DONE";
 
+    if(!DMBaseTest())
+        Logger(Error) << "DMBaseTest_2 FAILED";
+    else
+        Logger() << "DMBaseTest_2 DONE";
+
+    Logger() << "ComplexGeomtry START";
+    if (!ComplexGeometry()) {
+        Logger(Error) << "ComplexGeomtry FAILED";
+
+    }else {
+        Logger() << "ComplexGeomtry DONE";
+    }
     return 1;
 }
 bool DMBaseTest() {
     DM::System * s = new DM::System("test");
     DM::Node * n = s->addNode(0,0,0);
-    n->addAttribute(DM::Attribute("a","a"));
-    n->addAttribute(DM::Attribute("b","b"));
+    n->addAttribute(DM::Attribute("a"));
+    n->addAttribute(DM::Attribute("b"));
     std::string name = n->getName();
 
 
     s = s->createSuccessor();
     n = s->getNode(name);
-    n->addAttribute(DM::Attribute("c","c"));
+    n->addAttribute(DM::Attribute("c"));
 
     for (std::map<std::string, DM::Attribute*>::const_iterator it = n->getAllAttributes().begin(); it != n->getAllAttributes().end(); ++it) {
         std::cout << it->first << std::endl;
