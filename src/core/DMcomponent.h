@@ -63,7 +63,7 @@ namespace DM {
         bool removeChild(std::string name);
         Component* getChild(std::string name);
         std::map<std::string, Component*> getAllChilds();
-        void addView(std::string);
+        void setView(std::string);
         std::set<std::string> const &  getInViews() const;
         virtual Component* clone()=0;
     };

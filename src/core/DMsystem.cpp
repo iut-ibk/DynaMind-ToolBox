@@ -39,6 +39,7 @@ System::System(std::string name, std::string view) : Component()
 }
 
 
+
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getName()] = c;
@@ -128,7 +129,7 @@ Node * System::addNode(double x, double y, double z, std::string view) {
         return 0;
     if (!view.empty()) {
         this->views[view][n->getName()] = n;
-        n->addView(view);
+        n->setView(view);
     }
 
 
@@ -154,7 +155,7 @@ Edge * System::addEdge(Node * start, Node * end, std::string view)
         return 0;
     if (!view.empty()) {
         this->views[view][e->getName()] = e;
-        e->addView(view);
+        e->setView(view);
     }
     return e;
 }
@@ -234,13 +235,22 @@ bool System::removeNode(std::string name)
     return true;
 }
 
-bool System::addSubSystem(System *newsystem)
+bool System::addSubSystem(System *newsystem, string view)
 {
+    //TODO add View to subsystem
     if(!addChild(newsystem))
         return false;
 
     subsystems[newsystem->getName()]=newsystem;
-    updateViews(newsystem);
+
+
+
+    if (!view.empty()) {
+        this->views[view][newsystem->getName()] = newsystem;
+        newsystem->setView(view);
+    }
+
+    //updateViews(newsystem);
     return true;
 }
 
@@ -252,6 +262,10 @@ bool System::removeSubSystem(std::string name)
     subsystems.erase(name);
 
     return true;
+}
+std::map<std::string, Component*> System::getAllComponentsInView(std::string view) {
+
+    return views[view];
 }
 
 System* System::getSubSystem(std::string name)
@@ -295,22 +309,26 @@ bool System::addView(View view)
     if (!existingView.getIdOfDummyComponent().empty()) {
         dummy = this->getComponent(existingView.getIdOfDummyComponent());
     } else {
-        switch (view.getWriteType())
-        {
-        case DM::NODE:
+
+        if ( DM::NODE == view.getWriteType()) {
             dummy = this->addNode(0,0,0);
-            break;
-        case DM::EDGE:
+        }
+        if (  DM::EDGE == view.getWriteType()) {
             DM::Node * n1 =this->addNode(0,0,0);
             DM::Node * n2 =this->addNode(0,0,0);
             dummy = this->addEdge(n1,n2);
-            break;
         }
-        existingView.setIdOfDummyComponent(dummy->getName());
-
+        if (  DM::SUBSYSTEM == view.getWriteType()) {
+            dummy = new DM::System(view.getName());
+            this->addSubSystem((DM::System*) dummy);
+        }
     }
+    existingView.setIdOfDummyComponent(dummy->getName());
+
+
+
     foreach (std::string a , view.getWriteAttributes()) {
-        dummy->addAttribute(DM::Attribute(a, ""));
+        dummy->addAttribute(DM::Attribute(a));
     }
     foreach (std::string a , view.getWriteAttributes()) {
         existingView.getAttributes(a);
@@ -336,4 +354,17 @@ std::map<std::string, Node*> System::getAllNodes()
 std::map<std::string, Edge*> System::getAllEdges()
 {
     return edges;
+}
+
+const std::vector<std::string> System::getViews()  {
+
+    std::vector<std::string> viewlist;
+
+    for (std::map<std::string, View>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
+        viewlist.push_back(it->first);
+    }
+
+
+    return viewlist;
+
 }

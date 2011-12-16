@@ -33,17 +33,15 @@ using namespace DM;
 Attribute::Attribute(const Attribute &newattribute)
 {
     this->name=newattribute.name;
-    this->id=newattribute.id;
     this->doublevalue=newattribute.doublevalue;
     this->stringvalue=newattribute.stringvalue;
     this->doublevector=newattribute.doublevector;
     this->stringvector=newattribute.stringvector;
 }
 
-Attribute::Attribute(std::string name, std::string id)
+Attribute::Attribute(std::string name)
 {
     this->name=name;
-    this->id=id;
 }
 
 Attribute::~Attribute()
@@ -55,20 +53,12 @@ void Attribute::setName(std::string name)
     this->name=name;
 }
 
-void Attribute::setID(std::string ID)
-{
-    this->id=ID;
-}
 
 std::string Attribute::getName()
 {
     return name;
 }
 
-std::string Attribute::getID()
-{
-    return id;
-}
 
 void Attribute::setDouble(double v)
 {

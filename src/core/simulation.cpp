@@ -190,6 +190,8 @@ Simulation::Simulation() {
     text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
     foreach (QString s, list) {
+        if (s.isEmpty())
+            continue;
         std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
         moduleRegistry->addNativePlugin(s.toStdString());
     }

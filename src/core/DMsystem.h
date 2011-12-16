@@ -70,7 +70,7 @@ namespace DM {
         std::map<std::string, Node*> getAllNodes();
         std::map<std::string, Edge*> getAllEdges();
         std::vector<System*> getPredecessorStates();
-        bool addSubSystem(System *newsystem);
+        bool addSubSystem(System *newsystem, std::string view = "");
         System* createSubSystem(std::string name, std::string view);
         bool removeSubSystem(std::string name);
         System* getSubSystem(std::string name);
@@ -81,6 +81,9 @@ namespace DM {
         Component * getComponent(std::string name);
         DM::View getViewDefinition(std::string name);
         Component* clone();
+        const std::vector<std::string> getViews();
+
+       std::map<std::string, Component*> getAllComponentsInView(std::string view);
 
     };
 }

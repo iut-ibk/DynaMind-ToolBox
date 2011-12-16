@@ -36,7 +36,6 @@ namespace DM {
     class Attribute
     {
     private:
-        std::string id;
         std::string name;
         double doublevalue;
         std::string stringvalue;
@@ -45,7 +44,7 @@ namespace DM {
 
     public:
         Attribute(const Attribute &newattribute);
-        Attribute(std::string name, std::string id);
+        Attribute(std::string name);
         ~Attribute();
         void setDouble(double v);
         double getDouble();
@@ -56,9 +55,7 @@ namespace DM {
         void setStringVector(std::vector<std::string> s);
         std::vector<std::string> getStringVector();
         void setName(std::string name);
-        void setID(std::string ID);
         std::string getName();
-        std::string getID();
     };
 }
 #endif // ATTRIBUTE_H

@@ -187,10 +187,11 @@ Component* Component::getChild(std::string name)
     return childsview[name];
 }
 
-void Component::addView(std::string view)
+void Component::setView(std::string view)
 {
     this->inViews.insert(view);
 }
+
 
 std::set<std::string> const & Component::getInViews() const {
     return this->inViews;
