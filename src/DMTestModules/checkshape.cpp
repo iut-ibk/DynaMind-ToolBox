@@ -9,46 +9,26 @@ VIBe_DECLARE_NODE_NAME( CheckShape,Modules )
 CheckShape::CheckShape() {
     std::vector<DM::View> views;
     DM::View shape = DM::View("Shape");
-    shape.getAttributes("Shapelist");
-
+    shape.getComponent(DM::SUBSYSTEM);
+    shape.getAttributes("Type");
     views.push_back(shape);
 
-    this->addData("KUMMSTDUNITREIN", views);
+    this->addData("Shapefile", views);
 }
 
 
 
 void CheckShape::run()
 {
-    sys_in = this->getData("KUMMSTDUNITREIN");
+    sys_in = this->getData("Shapefile");
+    std::map<std::string, DM::Component*> comp = sys_in->getAllComponentsInView("Shape");
 
-    DM::Attribute *attr = sys_in->getAttribute("Shapelist");
+    Logger(Standard) << "Found Components: " << comp.size();
+    Logger(Standard) << "Found Subsystems: " << sys_in->getAllSubSystems().size();
+    Logger(Standard) << "Found Views: " << sys_in->getViews().size();
 
-    if(!attr)
-    {
-        Logger(Error) << "No attribute found with name \"Shapelist\"";
-        std::map<std::string, DM::Attribute*> attrs = sys_in->getAllAttributes();
-        for (std::map<std::string, DM::Attribute*>::const_iterator it = attrs.begin(); it != attrs.end(); ++it)
-        {
-            DM::Attribute * s = it->second;
-            Logger(Error) << "Possible Attribute name: " << s->getName();
-        }
-
-        return;
-    }
-    else
-    {
-       Logger(Standard) << "Shapelist attribute gefunden";
-    }
-
-    vector<string> shapes = attr->getStringVector();
-
-    for(int index=0; index<shapes.size(); index++)
-        if(!sys_in->getSubSystem(shapes[index]))
-        {
-            Logger(Error) << "Cannot extract subsystem: " << shapes[index];
-            return;
-        }
+    if(sys_in->getViews().size())
+        Logger(Standard) << "Name of 1st view: " << sys_in->getViews()[0];
 
     Logger(Standard) << "Check well done :-)";
 }

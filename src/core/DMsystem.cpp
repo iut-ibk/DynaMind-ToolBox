@@ -117,7 +117,7 @@ Node * System::addNode(Node* node)
 System* System::createSubSystem(std::string name, std::string view)
 {
     System* newsystem = new System(name, view);
-    this->addSubSystem(newsystem);
+    this->addSubSystem(newsystem,view);
     return newsystem;
 }
 
@@ -250,7 +250,6 @@ bool System::addSubSystem(System *newsystem, string view)
         newsystem->setView(view);
     }
 
-    //updateViews(newsystem);
     return true;
 }
 

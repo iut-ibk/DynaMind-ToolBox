@@ -45,8 +45,7 @@ class ImportShapeFile(Module):
 	    self.addParameter("Type",VIBe2.STRING,self.type,"Sample Description")
 
             shape = pydynamite.View("Shape")
-	    shape.addComponent(EDGE)
-            shape.addAttributes("Shapelist")
+	    shape.addComponent(SUBSYSTEM)
             shape.addAttributes("Type")
             
             views = pydynamite.viewvector()
@@ -65,19 +64,17 @@ class ImportShapeFile(Module):
             sf = shapefile.Reader(sourcePath)
             shaperecords = sf.shapeRecords()
             fields = sf.fields
-            shapevec = pydynamite.stringvector()
             
             for r in shaperecords:
                 shp = r.shape.points
                 subsys = vec.createSubSystem("newsystem","Shape")
-                shapevec.append(subsys.getName())
                 points = pydynamite.nodevector()
                 attr = r.record
                 
                 #Add all attribute at the current shape
                 for index, value in enumerate(attr):
                     name = fields[index+1]
-                    newattr = pydynamite.Attribute(name[0],name[0])
+                    newattr = pydynamite.Attribute(name[0])
                     
                     if name[1]=='C':
                         newattr.setString(str(attr[index]))
@@ -103,19 +100,16 @@ class ImportShapeFile(Module):
                                 p2 = points[0]
                                 subsys.addEdge(p1,p2)
 
-            newattr = pydynamite.Attribute("Shapelist","Shapelist")
-            newattr.setStringVector(shapevec)
-            newattr2 = pydynamite.Attribute("Type","Type")
+            newattr2 = pydynamite.Attribute("Type")
             newattr2.setString(self.type.value())
-
-	    if not vec.addAttribute(newattr) :
-                pydynamite.log("Cannot add new attribute",pydynamite.Error)
-            else:
-                print vec.getAttribute("Shapelist").getName()
 
 	    if not vec.addAttribute(newattr2) :
                 pydynamite.log("Cannot add new attribute",pydynamite.Error)
             else:
                 print vec.getAttribute("Type").getName()
                 
+            regviews = vec.getViews().size()
+            regsysinview = vec.getAllComponentsInView("Shape").__len__()
+            pydynamite.log("Registered views : " + str(regviews),pydynamite.Standard)
+            pydynamite.log("Registered systems in views : " + str(regsysinview),pydynamite.Standard)
             pydynamite.log("Imported " + str(vec.getAllSubSystems().__len__()) + " shapes",pydynamite.Standard)

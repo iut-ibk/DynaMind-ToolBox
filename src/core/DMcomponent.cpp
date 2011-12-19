@@ -47,6 +47,7 @@ Component::Component(const Component& c)
     this->name=c.name;
     attributesview=c.attributesview;
     ownedchilds=c.ownedchilds;
+    inViews = c.inViews;
 
     std::map<std::string,Component*>::iterator it;
 

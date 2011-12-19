@@ -43,6 +43,8 @@ namespace std {
     %template(edgevector) vector<DM::Edge* >;
     %template(nodevector) vector<DM::Node* >;
     %template(viewvector) vector<DM::View >;
+    %template(componentector) vector<DM::Component* >;
+    %template(componentmap) map<string, DM::Component* >;
     %template(nodemap) map<string, DM::Node* >;
     %template(edgemap) map<string, DM::Edge* >;
     %template(stringmap) map<string, string >;
