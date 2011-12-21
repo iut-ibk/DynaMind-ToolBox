@@ -214,6 +214,7 @@ public:
     template<class T>
     void setParameterNative(std::string name, T val)  {
         T * ref =(T * ) parameter_vals[name];
+
         *ref = val;
     }
 

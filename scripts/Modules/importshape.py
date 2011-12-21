@@ -35,14 +35,13 @@ class ImportShapeFile(Module):
 	"""
         def __init__(self):
             Module.__init__(self)
+	    
 
-	    self.FileName = p_string()
-	    self.FileName.assign("/home/csae6550/Desktop/pipes")
-	    self.addParameter("FileName",VIBe2.FILENAME,self.FileName,"Sample Description")
-            
-            self.type = p_string()
-	    self.type.assign("e.g.: Streetnetwork_id")
-	    self.addParameter("Type",VIBe2.STRING,self.type,"Sample Description")
+	    self.createParameter("FileName",VIBe2.FILENAME,"Sample Description")
+            self.FileName = "/home/csae6550/Desktop/pipes"
+
+	    self.createParameter("Type",VIBe2.STRING,"Sample Description")
+	    self.Type = "e.g. Sewer"
 
             shape = pydynamite.View("Shape")
 	    shape.addComponent(SUBSYSTEM)
@@ -50,7 +49,6 @@ class ImportShapeFile(Module):
             
             views = pydynamite.viewvector()
             views.push_back(shape)
-            
             self.addData("Shapefile",views)
             
         def run(self):
@@ -60,7 +58,7 @@ class ImportShapeFile(Module):
                 pydynamite.log("Cannot get a valid system object",pydynamite.Error)
                 return False
             
-            sourcePath =  self.FileName.value()
+            sourcePath =  self.FileName
             sf = shapefile.Reader(sourcePath)
             shaperecords = sf.shapeRecords()
             fields = sf.fields
@@ -101,7 +99,7 @@ class ImportShapeFile(Module):
                                 subsys.addEdge(p1,p2)
 
             newattr2 = pydynamite.Attribute("Type")
-            newattr2.setString(self.type.value())
+            newattr2.setString(self.Type)
 
 	    if not vec.addAttribute(newattr2) :
                 pydynamite.log("Cannot add new attribute",pydynamite.Error)

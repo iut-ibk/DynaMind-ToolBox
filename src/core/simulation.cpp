@@ -77,6 +77,13 @@ struct SimulationPrivate {
 Module * Simulation::addModule(std::string ModuleName) {
 
     Module *module = this->moduleRegistry->createModule(ModuleName);
+
+    if(!module)
+    {
+        Logger(Error) << "Not able to add new module";
+        return 0;
+    }
+
     Logger(Debug) << "Add Module" << ModuleName << " " << module->getUuid();
     module->setSimulation(this);
     if (module->getGroup() == 0)
@@ -294,6 +301,9 @@ void Simulation::removeModule(std::string UUid) {
 }
 void Simulation::deregisterModule(std::string UUID) {
 
+    if(!this)
+        return;
+
     for(std::map<std::string, Module*>::iterator it = Modules.begin(); it != Modules.end(); ++it) {
         std::string id = it->first;
         if (id.compare(UUID) == 0 ) {
@@ -465,7 +475,13 @@ bool Simulation::checkConnections() const {
 Module * Simulation::resetModule(std::string UUID) {
     Logger(Debug) << "Reset Module " << UUID;
     Module * m = this->getModuleWithUUID(UUID);
+    if(!m)
+        return 0;
+
     Module * new_m = this->addModule(m->getClassName());
+    if(!new_m)
+        return m;
+
     //Modules.erase(std::find(Modules.begin(), Modules.end(),new_m));
     new_m->copyParameterFromOtherModule(m);
 

@@ -134,6 +134,7 @@ public:
 
     void addParameter(std::string name, int type, void * ref, std::string description);
 
+
     virtual void setParameterValue(std::string name, std::string value);
     virtual void appendToUserDefinedParameter(std::string name, std::string  value);
     virtual void removeFromUserDefinedParameter(std::string name, std::string  value);
@@ -145,18 +146,49 @@ public:
 
     virtual const char *getClassName();
     virtual const char *getFileName();
+};
 
+%extend Module {
     %pythoncode %{
+    _data = {'d':'Module'}
     def getClassName(self):
             return self.__class__.__name__
 
     def getFileName(self):
             return self.__module__.split(".")[0]
 
+    def __getattr__(self, name):
+            if name in self._data:
+                return self._data[name].value()
+
+    def __setattr__(self, name, value):
+            if name in self._data:
+                return self._data[name].assign(value)
+
+            return super(Module, self).__setattr__(name, value)
+
+    def createParameter(self,name, DN_type, description):
+            if 'd' in self._data:
+                if self._data['d'] == 'Module':
+                    self._data = {}
+
+            if DN_type == VIBe2.STRING:
+                self._data[name] = p_string()
+            if DN_type == VIBe2.FILENAME:
+                self._data[name] = p_string()
+            if DN_type == VIBe2.DOUBLE:
+                self._data[name] = p_double()
+            if DN_type == VIBe2.LONG:
+                self._data[name] = p_double()
+            if DN_type == VIBe2.INT:
+                self._data[name] = p_int()
+            if DN_type == VIBe2.BOOL:
+                self._data[name] = p_int()
+
+            self.addParameter(name,DN_type,self._data[name],description)
+
     %}
-
-
-};
+    };
 
 enum LogLevel {
         Debug = 0,

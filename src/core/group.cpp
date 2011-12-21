@@ -49,6 +49,8 @@ Group::Group()
 
 }
 void Group::addModule(Module *module) {
+    if(!module)
+        return;
     this->modules.push_back(module);
 }
 Group::~Group() {

@@ -82,7 +82,19 @@ Module *ModuleRegistry::createModule(const std::string &name) const {
         QThread::currentThread()->exit();
     }
 
-    return registry.find(name)->second->createNode();
+    Module *newmod = 0;
+
+    try
+    {
+        newmod = registry.find(name)->second->createNode();
+    }
+    catch(...)
+    {
+        Logger(Error) << "Cannot create Module";
+        return 0;
+    }
+
+    return newmod;
 }
 
 bool ModuleRegistry::contains(const std::string &name) const {

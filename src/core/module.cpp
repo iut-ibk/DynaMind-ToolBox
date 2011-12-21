@@ -90,6 +90,8 @@ Module::Module() {
 
 Module::~Module() {
     Logger(Debug) << "Remove " << this->getClassName() << " " << this->getUuid();
+    if(!this)
+        return;
     this->getSimulation()->deregisterModule(this->getUuid());
     this->Destructor();
 
