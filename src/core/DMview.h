@@ -5,41 +5,44 @@
 #include <vector>
 #include <string>
 
+
+
 namespace DM {
+
+
+enum {
+    READ,
+    MODIFY,
+    WRITE
+};
 class View
 {
+private:
+
     int type;
     std::string name;
-    std::vector<std::string> WriteAttributes;
-    std::vector<std::string> ReadAttributes;
-    std::vector<std::string> AvailableAttributes;
-    int readType;
-    int writeType;
+    std::string IdofDummyComponent;
+    int accesstypeGeometry;
 
-    std::string idOfDummyComponent;
+    std::map<std::string, int> ownedAttributes;
 
 public:
-    View(std::string name);
+    View(std::string name, int type, int accesstypeGeometry = READ);
     View(){}
-    void addAttributes(std::string name);
-    void getAttributes(std::string name);
-    void addAvalibleAttribute(std::string name);
-    void addComponent(int Type);
-    void getComponent(int Type);
 
+    void addAttributes(std::string name, int accesstype);
+
+
+    void setIdOfDummyComponent(std::string UUID);
+    std::string getIdOfDummyComponent();
     std::string getName(){return this->name;}
-    std::vector<std::string> const & getWriteAttributes  () const {return WriteAttributes;}
-    std::vector<std::string> const & getReadAttributes  () const {return ReadAttributes;}
-    std::vector<std::string> const & getAvailableAttributes  () const {return AvailableAttributes;}
+    std::vector<std::string>  getWriteAttributes  () const;
+    std::vector<std::string>  getReadAttributes  () const;
 
-    int const  & getReadType  () const {return readType;}
-    int const  & getWriteType  () const {return writeType;}
-
+    int const & getType() const {return type;}
+    int const & getAccessType() const{return accesstypeGeometry;}
     bool reads();
     bool writes();
-
-    std::string getIdOfDummyComponent() {return this->idOfDummyComponent;}
-    void setIdOfDummyComponent(std::string id) {this->idOfDummyComponent = id;}
 
 };
 }

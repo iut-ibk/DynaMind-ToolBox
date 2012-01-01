@@ -29,8 +29,9 @@
 
 #include <iostream>
 #include <vector>
-
+#include <set>
 using namespace std;
+
 
 namespace DM {
     class Attribute
@@ -41,6 +42,7 @@ namespace DM {
         std::string stringvalue;
         std::vector<double> doublevector;
         std::vector<std::string> stringvector;
+        std::set<std::string> inViews;
 
     public:
         Attribute(const Attribute &newattribute);

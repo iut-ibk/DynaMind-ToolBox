@@ -38,15 +38,14 @@
 VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
-    DM::View inlets = DM::View("Inlets");
-    inlets.addComponent(DM::NODE);
-    inlets.addAttributes("A");
-    inlets.addAttributes("B");
-    DM::View conduits = DM::View("Conduits");
-    conduits.addComponent(DM::EDGE);
+    DM::View inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
+    inlets.addAttributes("A", DM::WRITE);
+    inlets.addAttributes("B", DM::WRITE);
+    DM::View conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
 
-    DM::View SomeRandomInformation = DM::View("SomeRandomInformation");
-    SomeRandomInformation.addComponent(DM::EDGE);
+
+    DM::View SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
+
 
     std::vector<DM::View> views;
 
@@ -61,7 +60,7 @@ TestModule::TestModule() {
 
     this->addParameter("Value", VIBe2::DOUBLE, &value);
 
-    ////////Datasets
+
     this->addData("Sewer",views);
 }
 

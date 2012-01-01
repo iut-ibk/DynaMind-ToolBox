@@ -9,14 +9,13 @@ InOut::InOut() {
 
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
-    DM::View inlets = DM::View("Inlets");
-    inlets.getComponent(DM::NODE);
-    inlets.getAttributes("A");
-    inlets.getAttributes("B");
-    inlets.addAttributes("C");
-    DM::View conduits = DM::View("Conduits");
-    conduits.addComponent(DM::EDGE);
-    conduits.addAttributes("D");
+    DM::View inlets = DM::View("Inlets",DM::NODE, DM::MODIFY);
+    inlets.addAttributes("A", DM::READ);
+    inlets.addAttributes("B", DM::READ);
+    inlets.addAttributes("C", DM::WRITE);
+    DM::View conduits = DM::View("Conduits", DM::EDGE, DM::MODIFY);
+    conduits.addAttributes("D", DM::WRITE);
+
     views.push_back(inlets);
     views.push_back(conduits);
 

@@ -8,12 +8,14 @@ bool ComplexGeometry()
 {
     DM::System * sys = new DM::System("Environment");
 
+
+
+
     //Create Parcel View
-    DM::View parcelview("Parcels");
+    DM::View parcelview("Parcels", DM::SUBSYSTEM, DM::WRITE);
 
     //The Parcel is described as a subsystem
-    parcelview.addComponent(DM::SUBSYSTEM);
-    parcelview.addAttributes("Area");
+    parcelview.addAttributes("Area", DM::WRITE);
 
     sys->addView(parcelview);
 
@@ -37,7 +39,7 @@ bool ComplexGeometry()
     parcel->addEdge(E2);
     parcel->addEdge(E3);
     parcel->addEdge(E4);
-    DM::Attribute attr("A");
+    DM::Attribute attr("Area");
     attr.setDouble(10);
 
     parcel->addAttribute(attr);

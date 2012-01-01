@@ -6,16 +6,17 @@
 
 VIBe_DECLARE_NODE_NAME( InOut2,Modules )
 InOut2::InOut2() {
+
+
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
-    DM::View inlets = DM::View("Inlets");
-    inlets.getComponent(DM::NODE);
-    inlets.getAttributes("A");
-    inlets.getAttributes("B");
-    inlets.getAttributes("C");
-    DM::View conduits = DM::View("Conduits");
-    conduits.addComponent(DM::EDGE);
-    conduits.addAttributes("F");
+    DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
+    inlets.addAttributes("A", DM::READ);
+    inlets.addAttributes("B", DM::READ);
+    inlets.addAttributes("C", DM::READ);
+    DM::View conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
+    conduits.addAttributes("F",  DM::WRITE);
+
     views.push_back(inlets);
     views.push_back(conduits);
 

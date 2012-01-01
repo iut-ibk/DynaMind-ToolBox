@@ -298,44 +298,41 @@ bool System::addView(View view)
     //For each view one dummy element will be created
     //Check for existing View
     DM::View existingView = this->viewdefinitions[view.getName()];
-    foreach(std::string a, existingView.getWriteAttributes()) {
+    /*foreach(std::string a, existingView.getWriteAttributes()) {
         existingView.addAvalibleAttribute(a);
+    }*/
+
+
+    if (!view.writes()) {
+        return true;
     }
-
-
-
     DM::Component * dummy  = 0;
     if (!existingView.getIdOfDummyComponent().empty()) {
         dummy = this->getComponent(existingView.getIdOfDummyComponent());
     } else {
 
-        if ( DM::NODE == view.getWriteType()) {
+        if ( DM::NODE == view.getType()) {
             dummy = this->addNode(0,0,0);
         }
-        if (  DM::EDGE == view.getWriteType()) {
+        if (  DM::EDGE == view.getType()) {
             DM::Node * n1 =this->addNode(0,0,0);
             DM::Node * n2 =this->addNode(0,0,0);
             dummy = this->addEdge(n1,n2);
         }
-        if (  DM::SUBSYSTEM == view.getWriteType()) {
+        if (  DM::SUBSYSTEM == view.getType()) {
             dummy = new DM::System(view.getName());
             this->addSubSystem((DM::System*) dummy);
         }
     }
-    existingView.setIdOfDummyComponent(dummy->getName());
+    view.setIdOfDummyComponent(dummy->getName());
 
 
-
+    //extend Dummy Attribute
     foreach (std::string a , view.getWriteAttributes()) {
         dummy->addAttribute(DM::Attribute(a));
     }
-    foreach (std::string a , view.getWriteAttributes()) {
-        existingView.getAttributes(a);
-    }
-    foreach (std::string a , view.getReadAttributes()) {
-        existingView.addAttributes(a);
-    }
-    this->viewdefinitions[view.getName()] = existingView;
+
+    this->viewdefinitions[view.getName()] = view;
 
     return true;
 }

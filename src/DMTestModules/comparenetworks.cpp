@@ -7,16 +7,17 @@
 
 VIBe_DECLARE_NODE_NAME( CompareNetworks,Modules )
 CompareNetworks::CompareNetworks() {
+    //TODO Activate again
     std::vector<DM::View> views;
     std::vector<DM::View> views2;
 
-    DM::View network1 = DM::View("Shape");
-    network1.getAttributes("Shapelist");
-    network1.getAttributes("Type");
+    DM::View network1 = DM::View("Shape", DM::SUBSYSTEM, DM::READ);
+    network1.addAttributes("Shapelist", DM::READ);
+    network1.addAttributes("Type", DM::READ);
 
-    DM::View network2 = DM::View("Shape");
-    network2.getAttributes("Shapelist");
-    network2.getAttributes("Type");
+    DM::View network2 = DM::View("Shape", DM::SUBSYSTEM, DM::READ);
+    network2.addAttributes("Shapelist", DM::READ);
+    network2.addAttributes("Type", DM::READ);
 
     views.push_back(network1);
     views2.push_back(network2);

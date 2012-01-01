@@ -8,9 +8,8 @@
 VIBe_DECLARE_NODE_NAME( CheckShape,Modules )
 CheckShape::CheckShape() {
     std::vector<DM::View> views;
-    DM::View shape = DM::View("Shape");
-    shape.getComponent(DM::SUBSYSTEM);
-    shape.getAttributes("Type");
+    DM::View shape = DM::View("Shape", DM::SUBSYSTEM, DM::READ);
+    shape.addAttributes("Type", DM::READ);
     views.push_back(shape);
 
     this->addData("Shapefile", views);
@@ -20,6 +19,7 @@ CheckShape::CheckShape() {
 
 void CheckShape::run()
 {
+    //TODO Aactivate
     sys_in = this->getData("Shapefile");
     std::map<std::string, DM::Component*> comp = sys_in->getAllComponentsInView("Shape");
 
