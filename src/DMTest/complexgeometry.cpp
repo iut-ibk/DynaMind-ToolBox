@@ -15,7 +15,7 @@ bool ComplexGeometry()
     DM::View parcelview("Parcels", DM::SUBSYSTEM, DM::WRITE);
 
     //The Parcel is described as a subsystem
-    parcelview.addAttributes("Area", DM::WRITE);
+    parcelview.addAttribute("Area");
 
     sys->addView(parcelview);
 

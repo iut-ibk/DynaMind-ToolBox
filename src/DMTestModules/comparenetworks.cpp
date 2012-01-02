@@ -12,12 +12,12 @@ CompareNetworks::CompareNetworks() {
     std::vector<DM::View> views2;
 
     DM::View network1 = DM::View("Shape", DM::SUBSYSTEM, DM::READ);
-    network1.addAttributes("Shapelist", DM::READ);
-    network1.addAttributes("Type", DM::READ);
+    network1.getAttribute("Shapelist");
+    network1.getAttribute("Type");
 
     DM::View network2 = DM::View("Shape", DM::SUBSYSTEM, DM::READ);
-    network2.addAttributes("Shapelist", DM::READ);
-    network2.addAttributes("Type", DM::READ);
+    network2.getAttribute("Shapelist");
+    network2.getAttribute("Type");
 
     views.push_back(network1);
     views2.push_back(network2);

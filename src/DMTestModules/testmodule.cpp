@@ -39,8 +39,8 @@ VIBe_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
-    inlets.addAttributes("A", DM::WRITE);
-    inlets.addAttributes("B", DM::WRITE);
+    inlets.addAttribute("A");
+    inlets.addAttribute("B");
     DM::View conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
 
 

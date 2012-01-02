@@ -11,11 +11,11 @@ InOut2::InOut2() {
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
-    inlets.addAttributes("A", DM::READ);
-    inlets.addAttributes("B", DM::READ);
-    inlets.addAttributes("C", DM::READ);
+    inlets.getAttribute("A");
+    inlets.getAttribute("B");
+    inlets.getAttribute("C");
     DM::View conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
-    conduits.addAttributes("F",  DM::WRITE);
+    conduits.addAttribute("F");
 
     views.push_back(inlets);
     views.push_back(conduits);
