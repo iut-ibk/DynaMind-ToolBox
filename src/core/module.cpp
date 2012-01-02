@@ -139,9 +139,6 @@ void Module::updateParameter() {
 
             if (reads) {
 
-
-
-
                 DM::System * sys = this->getSystemData(s);
 
                 //Check if all Data for read are really avalible
