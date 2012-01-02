@@ -44,7 +44,7 @@ void ModuleRunnable::run() {
     clock_t start, finish;
     vibens::Logger(vibens::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
     start = clock();
-
+    m->init();
     m->updateParameter();
     if (!m->getSimulation()->isVirtualRun() || m->isGroup())
         m->run();

@@ -178,7 +178,7 @@ public:
     virtual ~Module();
     virtual bool createInputDialog(){return false;}
     virtual void Destructor();
-    virtual void init(const parameter_type &parameters);
+    virtual void init();
     virtual void run() = 0;
 
     virtual  DM::System* getSystemState(const std::string &name);

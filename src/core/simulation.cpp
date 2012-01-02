@@ -482,9 +482,11 @@ Module * Simulation::resetModule(std::string UUID) {
     if(!new_m)
         return m;
 
-    //Modules.erase(std::find(Modules.begin(), Modules.end(),new_m));
+
     new_m->copyParameterFromOtherModule(m);
 
+    //Need to call the oinit function from the module after the parameters are copied to create the ports
+    new_m->init();
 
 
     foreach(Port * p, m->getInPorts()) {

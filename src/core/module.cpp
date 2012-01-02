@@ -398,11 +398,15 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
             continue;
         writes = view.writes();
     }
-    if (reads) {
-        this->addPort(name, VIBe2::INSYSTEM);
+
+
+
+    if (reads && getInPort(name) == 0) {
+            this->addPort(name, VIBe2::INSYSTEM);
+
     }
-    if (writes) {
-        this->addPort(name, VIBe2::OUTSYSTEM);
+    if (writes && getOutPort(name) == 0) {
+            this->addPort(name, VIBe2::OUTSYSTEM);
     }
 }
 
@@ -531,18 +535,7 @@ std::vector<Port*> Module::getOutPorts() {
     return this->OutPorts;
 }
 
-void Module::init(const parameter_type &parameters) {
-
-    init_called = true;
-    paramRaw = parameters;
-
-    for (boost::unordered_map<std::string, int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        std::string s = it->first;
-        if (parameters.find(s) != parameters.end()) {
-            QString val = QString::fromStdString(parameters.at(s));
-            this->convertValus(this->parameter_vals[s], parameter[s], val);
-        }
-    }
+void Module::init() {
 
 }
 
