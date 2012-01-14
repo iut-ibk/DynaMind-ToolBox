@@ -3,17 +3,17 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 file(GLOB VIBE_CPPS *.cpp)
 
-SET_SOURCE_FILES_PROPERTIES(${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp PROPERTIES GENERATED 1)
-SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/pythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp)
+SET_SOURCE_FILES_PROPERTIES(${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
+SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/pythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
 
 
-add_executable(dynamite ${VIBE_CPPS})
+add_executable(dynamind ${VIBE_CPPS})
 
-ADD_DEPENDENCIES(dynamite pydynamitegen)
+ADD_DEPENDENCIES(dynamind pydynamindgen)
 
-target_link_libraries(dynamite vibe2core ${Boost_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(dynamind dynamindcore ${Boost_LIBRARIES} ${QT_LIBRARIES})
 
 # Installation of the program
-INSTALL(TARGETS dynamite
+INSTALL(TARGETS dynamind
         DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

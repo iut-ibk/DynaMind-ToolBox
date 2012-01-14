@@ -25,7 +25,7 @@
  */
 #include "dataobserver.h"
 #include "module.h"
-using namespace vibens;
+using namespace DM;
 DataObserver::DataObserver()
 {
 }

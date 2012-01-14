@@ -28,7 +28,7 @@
 #include <module.h>
 #include <group.h>
 #include <porttuple.h>
-namespace vibens {
+namespace DM {
 ModuleLink::ModuleLink(Port * InPort, Port * OutPort, bool isBackPort)
 {
     this->InPort = InPort;

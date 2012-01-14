@@ -31,7 +31,7 @@
 //#include "module.h"
 #include <rasterdata.h>
 
-namespace vibens {
+namespace DM {
 class Module;
 
 //using namespace boost;

@@ -27,7 +27,7 @@
 #define DATAMANAGEMENT_H
 
 #include "compilersettings.h"
-namespace vibens {
+namespace DM {
 class IDataBase;
 class VIBE_HELPER_DLL_EXPORT  DataManagement
 {

@@ -28,7 +28,7 @@
 #define USERDEFINEDDATA_H
 #include "compilersettings.h"
 #include <module.h>
-using namespace vibens;
+using namespace DM;
 
 
 class VIBE_HELPER_DLL_EXPORT UserdefinedData : public Module {

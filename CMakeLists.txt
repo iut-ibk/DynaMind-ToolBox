@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(vibe2core)
+project(dynamindcore)
 
 set(Boost_USE_STATIC_LIBS   OFF)
 find_package(Boost 1.38.0 COMPONENTS python program_options date_time REQUIRED)
@@ -21,13 +21,12 @@ else ()
         MESSAGE(STATUS Release)
 endif()
 
-set(LIBRARY_OUTPUT_PATH ${vibe2core_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${vibe2core_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${dynamindcore_BINARY_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${dynamindcore_BINARY_DIR})
 
 
 add_subdirectory(src/core)
-add_subdirectory(src/vibe)
-ADD_SUBDIRECTORY(src/python-swig)
-#add_subdirectory(src/vibe2helpers)
+#add_subdirectory(src/console)
+add_subdirectory(src/python-swig)
 add_subdirectory(src/DMTestModules)
 add_subdirectory(src/DMTest)

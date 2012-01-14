@@ -51,7 +51,7 @@ namespace DM {
     class View;
 }
 
-namespace vibens {
+namespace DM {
 
 class VIBE_HELPER_DLL_EXPORT VIBe2 {
 public:

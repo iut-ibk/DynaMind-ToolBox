@@ -31,7 +31,7 @@
 #include "QVariant"
 
 #include "module.h"
-using namespace vibens;
+using namespace DM;
 class VIBE_HELPER_DLL_EXPORT TestModule : public  Module {
 
 VIBe_DECLARE_NODE(TestModule)

@@ -3,7 +3,7 @@
 
 #include "compilersettings.h"
 #include "module.h"
-using namespace vibens;
+using namespace DM;
 class VIBE_HELPER_DLL_EXPORT InOut2 : public  Module {
 
 VIBe_DECLARE_NODE( InOut2 )

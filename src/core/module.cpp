@@ -52,7 +52,7 @@
 
 
 using namespace std;
-namespace vibens {
+namespace DM {
 struct ModulePrivate {
 
 };

@@ -34,7 +34,7 @@
 #include <QUuid>
 
 using namespace DM;
-using namespace vibens;
+using namespace DM;
 
 
 Component::Component()

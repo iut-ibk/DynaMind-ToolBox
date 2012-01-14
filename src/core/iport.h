@@ -30,7 +30,7 @@
 #include <iostream>
 #include <vector>
 
-namespace vibens {
+namespace DM {
 
     class Module;
     class ModuleLink;

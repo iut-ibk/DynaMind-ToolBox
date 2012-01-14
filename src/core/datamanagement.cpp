@@ -26,7 +26,7 @@
 #include "datamanagement.h"
 #include <idatabase.h>
 #include <vibe_logger.h>
-namespace vibens {
+namespace DM {
 
     DataManagement *DataManagement::instance = 0;
 

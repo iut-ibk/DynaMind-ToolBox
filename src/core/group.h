@@ -35,7 +35,7 @@ class QRunnable;
 
 
 
-namespace vibens {
+namespace DM {
 
     class PortTuple;
 

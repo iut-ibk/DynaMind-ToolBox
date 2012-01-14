@@ -3,7 +3,7 @@
 
 #include "module.h"
 
-using namespace vibens;
+using namespace DM;
 
 class VIBE_HELPER_DLL_EXPORT MyModule : public Module
 {

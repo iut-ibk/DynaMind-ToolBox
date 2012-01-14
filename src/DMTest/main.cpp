@@ -39,7 +39,7 @@
 #include <complexgeometry.h>
 
 using namespace std;
-using namespace vibens;
+using namespace DM;
 
 bool DynaMiteTest();
 bool DMBaseTest();
@@ -47,8 +47,8 @@ bool DMBaseTest();
 int main(int argc, char *argv[], char *envp[]) {
     //Init Logger
     ostream *out = &cout;
-    vibens::Log::init(new OStreamLogSink(*out), vibens::Debug);
-    vibens::Logger(vibens::Debug) << "Start";
+    DM::Log::init(new OStreamLogSink(*out), DM::Debug);
+    DM::Logger(DM::Debug) << "Start";
 
     if(!DynaMiteTest())
         Logger(Error) << "DynaMiteTest FAILED";
@@ -102,7 +102,7 @@ bool DMBaseTest() {
 
 bool DynaMiteTest()
 {
-    vibens::PythonEnv *env = vibens::PythonEnv::getInstance();
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
     //env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
     env->addPythonPath("/home/c8451045/Documents/VIBe2Core/build/debug/");
 
@@ -114,10 +114,10 @@ bool DynaMiteTest()
     sim->registerNativeModules("dmtestmodule");
     //sim->registerPythonModules("/home/csae6550/work/VIBe2Core/scripts");
     sim->registerPythonModules("/home/c8451045/Documents/VIBe2Core/scripts");
-    vibens::Module * in = sim->addModule("TestModule");
-    vibens::Module * outm =sim->addModule("InOut");
-    vibens::Module * outm2 =sim->addModule("InOut");
-    vibens::Module * outm3 = sim->addModule("WhiteNoise");
+    DM::Module * in = sim->addModule("TestModule");
+    DM::Module * outm =sim->addModule("InOut");
+    DM::Module * outm2 =sim->addModule("InOut");
+    DM::Module * outm3 = sim->addModule("WhiteNoise");
     //vibens::Module * outm4 = sim->addModule("ImportShapeFile");
     //sim->addLink(outm4->getOutPort("Network"),outm->getInPort("Inport"));
     sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
@@ -137,7 +137,7 @@ bool DynaMiteTest()
 
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
-    vibens::Logger(vibens::Debug) << "End";
+    DM::Logger(DM::Debug) << "End";
 
     return true;
 }

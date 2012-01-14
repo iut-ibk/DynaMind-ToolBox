@@ -41,7 +41,7 @@
 #include <DMsystem.h>
 
 
-using namespace vibens;
+using namespace DM;
 using namespace DM;
 
 

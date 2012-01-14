@@ -9,7 +9,7 @@
 #include <map>
 #include <dataobserver.h>
 
-namespace vibens {
+namespace DM {
 class Module;
 
 class VIBE_HELPER_DLL_EXPORT  IDataBase

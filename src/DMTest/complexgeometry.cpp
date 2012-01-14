@@ -51,20 +51,20 @@ bool ComplexGeometry()
     std::vector<std::string> NamesOfViews = sys->getViews();
     for (std::vector<std::string>::const_iterator it = NamesOfViews.begin(); it != NamesOfViews.end(); ++it) {
         std::string s = *it;
-        vibens::Logger(vibens::Debug) << s;
+        DM::Logger(DM::Debug) << s;
     }
 
     std::map<std::string, DM::Component*> components_view = sys->getAllComponentsInView("Parcels");
     for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it) {
-        vibens::Logger(vibens::Debug) << it->first;
+        DM::Logger(DM::Debug) << it->first;
          DM::Component * c  = it->second;
          std::map<std::string, DM::Attribute*> attributes = c->getAllAttributes();
 
 
          for (std::map<std::string, DM::Attribute*> ::const_iterator itattribute = attributes.begin(); itattribute != attributes.end(); ++itattribute ) {
              DM::Attribute * a = itattribute->second;
-             vibens::Logger(vibens::Debug) << a->getName();
-             vibens::Logger(vibens::Debug) << a->getDouble();
+             DM::Logger(DM::Debug) << a->getName();
+             DM::Logger(DM::Debug) << a->getDouble();
          }
     }
 

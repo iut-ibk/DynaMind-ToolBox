@@ -39,7 +39,7 @@
 
 using namespace boost;
 
-namespace vibens {
+namespace DM {
 Group::Group()
 {
     mutex = new QMutex(QMutex::Recursive );
