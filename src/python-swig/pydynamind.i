@@ -1,4 +1,4 @@
-%module(directors="1", allprotected="1") pydynamite
+%module(directors="1", allprotected="1") pydynamind
 
 %feature("director");
 %{

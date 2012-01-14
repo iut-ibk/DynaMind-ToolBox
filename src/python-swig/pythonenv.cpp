@@ -45,7 +45,7 @@
 #include <swigruntime.h>
 
 extern "C" {
-void init_pydynamite(void);
+void init_pydynamind(void);
 }
 
 using namespace boost::python;
@@ -78,7 +78,7 @@ PythonEnv::PythonEnv() {
     if(!Py_IsInitialized()) {
         Py_Initialize();
         SWIG_PYTHON_INITIALIZE_THREADS;
-        init_pydynamite();
+        init_pydynamind();
         PyThreadState *pts = PyGILState_GetThisThreadState();
         PyEval_ReleaseThread(pts);
     }
@@ -119,7 +119,7 @@ PythonEnv *PythonEnv::getInstance() {
 void PythonEnv::addOverWriteStdCout() {
 
     boost::format fmt( "import sys\n"
-                      "import pydynamite\n"
+                      "import pydynamind\n"
                       "class Logger_VIBe:\n"
                       "    def __init__(self, stdout,error):\n"
                       "        self.stdout = stdout\n"
@@ -136,9 +136,9 @@ void PythonEnv::addOverWriteStdCout() {
                       "        self.currentstring=self.currentstring.replace(\"\\n\",\"\")\n"
                       "        self.currentstring=self.currentstring.replace(\"\\r\",\"\")\n"
                       "        if self.error:\n"
-                      "                pydynamite.log(str(self.currentstring),pydynamite.Standard)\n"
+                      "                pydynamind.log(str(self.currentstring),pydynamind.Standard)\n"
                       "        else:\n"
-                      "                pydynamite.log(str(self.currentstring),pydynamite.Standard)\n"
+                      "                pydynamind.log(str(self.currentstring),pydynamind.Standard)\n"
                       "        self.currentstring=\"\"\n"
                       "\n"
                       "    def close(self):\n"
@@ -197,9 +197,9 @@ void PythonEnv::startEditra(std::string filename) {
 std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    PyObject *pydynamite_module = PyImport_ImportModule("pydynamite");
+    PyObject *pydynamind_module = PyImport_ImportModule("pydynamind");
     if (PyErr_Occurred()) {
-        Logger(Error) << "Could not import pydynamite module";
+        Logger(Error) << "Could not import pydynamind module";
         PyErr_Print();
         return module;
     }
@@ -224,7 +224,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
     skript << "import reimport\n";
     skript << "import sys\n";
     skript << "import os\n";
-    skript << "import pydynamite\n";
+    skript << "import pydynamind\n";
     skript << "import site\n";
     skript << "import inspect\n";
     skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
@@ -249,9 +249,9 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
         return module;
     }
 
-    PyObject *pydynamite_dict = PyModule_GetDict(pydynamite_module);
-    Py_XDECREF(pydynamite_module);
-    PyObject *callback = PyDict_GetItemString(pydynamite_dict, "registerNodes");
+    PyObject *pydynamind_dict = PyModule_GetDict(pydynamind_module);
+    Py_XDECREF(pydynamind_module);
+    PyObject *callback = PyDict_GetItemString(pydynamind_dict, "registerNodes");
 
     swig_type_info *reg_type_info = SWIG_TypeQuery("ModuleRegistry *");
 

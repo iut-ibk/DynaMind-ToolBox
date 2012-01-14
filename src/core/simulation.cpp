@@ -163,7 +163,7 @@ Simulation::Simulation() {
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
 
-    QSettings settings("IUT", "VIBe2");
+    QSettings settings("IUT", "DYNAMIND");
 
     //Init Python
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
