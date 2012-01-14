@@ -28,17 +28,17 @@
 
 #include <QRunnable>
 
-namespace vibens {
+namespace DM {
     class Module;
 };
 
 class ModuleRunnable : public QRunnable
 {
 private:
-    vibens::Module * m;
+    DM::Module * m;
 
 public:
-    ModuleRunnable(vibens::Module *m);
+    ModuleRunnable(DM::Module *m);
 
     virtual void run();
 };

@@ -33,7 +33,7 @@
 #include <QMutexLocker>
 
 
-namespace vibens {
+namespace DM {
     class LSEndl {};
 
 

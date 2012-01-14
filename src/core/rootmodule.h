@@ -29,12 +29,12 @@
 #include "compilersettings.h"
 #include "module.h"
 
-class VIBE_HELPER_DLL_EXPORT RootModule : public vibens::Module
+class VIBE_HELPER_DLL_EXPORT RootModule : public DM::Module
 {
 public:
     RootModule();
 
-    boost::shared_ptr<vibens::Module> clone() const;
+    boost::shared_ptr<DM::Module> clone() const;
     const RasterData &getRasterData(const std::string &name, int T) const;
     //const VectorData &getVectorData(const std::string &name) const;
     void run();

@@ -29,7 +29,7 @@
 #include <nodefactory.h>
 #include <boost/python.hpp>
 #include "compilersettings.h"
-namespace vibens {
+namespace DM {
 struct PNodeFactoryPriv;
 
 class VIBE_HELPER_DLL_EXPORT  PythonNodeFactory : public INodeFactory

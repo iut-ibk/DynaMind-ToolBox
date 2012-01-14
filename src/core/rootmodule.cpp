@@ -30,12 +30,12 @@ RootModule::RootModule() {
 
 }
 
-boost::shared_ptr<vibens::Module> RootModule::clone() const {
+boost::shared_ptr<DM::Module> RootModule::clone() const {
     return boost::shared_ptr<Module>(new RootModule());
 }
 
 void RootModule::run() {
-      vibens::Logger(vibens::Debug) << "Run Root";
+      DM::Logger(DM::Debug) << "Run Root";
 
 }
 

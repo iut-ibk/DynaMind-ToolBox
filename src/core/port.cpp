@@ -28,7 +28,7 @@
 #include <module.h>
 #include <boost/foreach.hpp>
 using namespace boost;
-namespace vibens {
+namespace DM {
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort)
     {
         this->module = module;
@@ -47,7 +47,7 @@ namespace vibens {
         this->links.push_back(link);
     }
     Port::~Port() {
-       vibens::Logger(vibens::Debug) << "delete Port " << this->linkedDataName;
+       DM::Logger(DM::Debug) << "delete Port " << this->linkedDataName;
         while (this->links.size() > 0)
             delete *(this->links.begin());
     }

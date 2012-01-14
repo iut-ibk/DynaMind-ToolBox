@@ -29,7 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <iport.h>
-namespace vibens {
+namespace DM {
 
     class Module;
     class ModuleLink;

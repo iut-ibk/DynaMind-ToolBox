@@ -25,7 +25,7 @@
  */
 #include <vibe_logsink.h>
 
-namespace vibens {
+namespace DM {
     OStreamLogSink::OStreamLogSink(std::ostream &ostream) : out(ostream) {
         mutex = new QMutex(QMutex::Recursive);
     }

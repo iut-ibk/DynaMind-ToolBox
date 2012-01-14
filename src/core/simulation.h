@@ -35,7 +35,7 @@
 #include <rootgroup.h>
 
 
-namespace vibens {
+namespace DM {
     struct SimulationPrivate;
     class DataObserver;
     class SimulationObserver;

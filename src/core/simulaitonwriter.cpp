@@ -38,7 +38,7 @@
 #include <sstream>
 using namespace boost;
 
-namespace vibens {
+namespace DM {
     SimulaitonWriter::SimulaitonWriter()
     {
     }

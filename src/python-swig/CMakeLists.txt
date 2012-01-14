@@ -6,41 +6,41 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 INCLUDE(${SWIG_USE_FILE})
 EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -c++ -threads -external-runtime swigruntime.h)
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i)
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 
 ADD_CUSTOM_COMMAND(        
-        COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydynamite.i
-        OUTPUT ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp
+        COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
+        OUTPUT ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp
         )
 
-ADD_CUSTOM_TARGET(pydynamitegen DEPENDS ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp)
+ADD_CUSTOM_TARGET(pydynamindgen DEPENDS ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
 
 SET(CMAKE_SWIG_FLAGS "")
-SET_SOURCE_FILES_PROPERTIES(pydynamite.i PROPERTIES CPLUSPLUS ON)
-SET_SOURCE_FILES_PROPERTIES(pydynamite.i PROPERTIES SWIG_FLAGS "-threads")
-#SWIG_ADD_MODULE(pydynamite python pydynamite.i)
-SWIG_ADD_MODULE(pydynamite python pydynamite.i pythonenv.cpp)
-SWIG_LINK_LIBRARIES(pydynamite vibe2core ${PYTHON_LIBRARIES})
+SET_SOURCE_FILES_PROPERTIES(pydynamind.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(pydynamind.i PROPERTIES SWIG_FLAGS "-threads")
+#SWIG_ADD_MODULE(pydynamind python pydynamind.i)
+SWIG_ADD_MODULE(pydynamind python pydynamind.i pythonenv.cpp)
+SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
 
-INSTALL(TARGETS _pydynamite
+INSTALL(TARGETS _pydynamind
         DESTINATION "lib"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamite.py
+INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamind.py
         DESTINATION "lib"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
 INSTALL(FILES ${PYTHON_HEADER}
-        DESTINATION "include/vibe2core"
+        DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamiteWRAP.cpp
-        DESTINATION "include/vibe2core"
+INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp
+        DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamiteWRAP.h
-        DESTINATION "include/vibe2core"
+INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamindWRAP.h
+        DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 

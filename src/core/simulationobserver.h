@@ -28,7 +28,7 @@
 
 #include "compilersettings.h"
 
-namespace vibens {
+namespace DM {
 class VIBE_HELPER_DLL_EXPORT SimulationObserver
 {
 public:

@@ -32,7 +32,7 @@
 #include <vibe_logger.h>
 #include <simulation.h>
 
-ModuleRunnable::ModuleRunnable(vibens::Module * m)
+ModuleRunnable::ModuleRunnable(DM::Module * m)
 {
     this-> m = m;
     this->setAutoDelete(true);
@@ -42,7 +42,7 @@ ModuleRunnable::ModuleRunnable(vibens::Module * m)
 
 void ModuleRunnable::run() {
     clock_t start, finish;
-    vibens::Logger(vibens::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
+    DM::Logger(DM::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
     start = clock();
     m->init();
     m->updateParameter();
@@ -50,8 +50,8 @@ void ModuleRunnable::run() {
         m->run();
     m->setParameter();
     finish = clock();
-    vibens::Logger(vibens::Standard) << "Success\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
-    vibens::Group * g = m->getGroup();
+    DM::Logger(DM::Standard) << "Success\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
+    DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);
 }

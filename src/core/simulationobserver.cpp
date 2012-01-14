@@ -24,7 +24,7 @@
  *
  */
 #include "simulationobserver.h"
-using namespace vibens;
+using namespace DM;
 SimulationObserver::SimulationObserver()
 {
 }

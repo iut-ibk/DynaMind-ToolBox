@@ -29,7 +29,7 @@
 #include <port.h>
 
 
-namespace vibens {
+namespace DM {
     PortTuple::PortTuple(Module * m, std::string Name, int PortType)
     {
         this->name = Name;

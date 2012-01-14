@@ -35,7 +35,7 @@
 using namespace std;
 
 class QString;
-namespace vibens {
+namespace DM {
     //class Variable;
 
     class VIBE_HELPER_DLL_EXPORT Logger {

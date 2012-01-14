@@ -32,7 +32,7 @@
 
 using namespace std;
 
-namespace vibens{
+namespace DM{
 Log *Log::instance = 0;
 
 Log *Log::getInstance() {

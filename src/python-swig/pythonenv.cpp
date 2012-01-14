@@ -51,19 +51,19 @@ void init_pydynamite(void);
 using namespace boost::python;
 
 void init() {
-    vibens::OStreamLogSink *sink = new vibens::OStreamLogSink(cout);
-    vibens::Log::init(sink, vibens::Debug);
+    DM::OStreamLogSink *sink = new DM::OStreamLogSink(cout);
+    DM::Log::init(sink, DM::Debug);
 }
 
 void logdebug(std::string msg) {
-    vibens::Logger(vibens::Debug) << msg;
+    DM::Logger(DM::Debug) << msg;
 }
 
-void logwithlevel(std::string msg, vibens::LogLevel logl) {
-    vibens::Logger(logl) << msg;
+void logwithlevel(std::string msg, DM::LogLevel logl) {
+    DM::Logger(logl) << msg;
 }
 
-namespace vibens {
+namespace DM {
 
 
 struct PythonEnvPriv {

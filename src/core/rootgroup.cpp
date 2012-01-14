@@ -24,7 +24,7 @@
  *
  */
 #include "rootgroup.h"
-namespace vibens {
+namespace DM {
     RootGroup::RootGroup()
     {
         this->group = 0;

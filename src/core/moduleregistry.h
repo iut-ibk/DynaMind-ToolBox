@@ -34,12 +34,12 @@
 #include <boost/unordered_map.hpp>
 
 //using namespace boost;
-namespace vibens {
+namespace DM {
     class INodeFactory;
     class Module;
 }
 
-namespace vibens {
+namespace DM {
 class VIBE_HELPER_DLL_EXPORT ModuleRegistry
 {
 public:

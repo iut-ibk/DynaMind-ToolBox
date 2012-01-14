@@ -32,7 +32,7 @@
 #include <boost/foreach.hpp>
 #include <module.h>
 using namespace std;
-namespace vibens {
+namespace DM {
     ModuleRegistry::ModuleRegistry() {
     }
 

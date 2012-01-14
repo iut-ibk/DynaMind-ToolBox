@@ -56,7 +56,7 @@
 #include <porttuple.h>
 #include <pythonenv.h>
 
-namespace vibens {
+namespace DM {
 struct SimulationPrivate {
     //ModuleContainer * root;
     ModuleRegistry registry;
@@ -124,7 +124,7 @@ void Simulation::reloadModules() {
 
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
     for (int index = 0; index < pythonhome.size(); index++)
-        vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
 
 
@@ -133,14 +133,14 @@ void Simulation::reloadModules() {
     QStringList list = text.replace("\\","/").split(",");
     //settings.endGroup();
     foreach (QString s, list){
-        vibens::PythonEnv::getInstance()->addPythonPath(s.toStdString());
+        DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
         pythonDir = QDir(s);
         QStringList filters;
         filters << "*.py";
         QStringList files = pythonDir.entryList(filters);
         foreach(QString file, files) {
             try{
-                std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
                 Logger(Debug) << n;
 
             } catch(...) {
@@ -168,22 +168,22 @@ Simulation::Simulation() {
     //Init Python
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
     for (int index = 0; index < pythonhome.size(); index++)
-        vibens::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
-    vibens::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
+    DM::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
 
     QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
     QStringList list = text.replace("\\","/").split(",");
     foreach (QString s, list){
-        vibens::PythonEnv::getInstance()->addPythonPath(s.toStdString());
+        DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
         pythonDir = QDir(s);
         QStringList filters;
         filters << "*.py";
         QStringList files = pythonDir.entryList(filters);
         foreach(QString file, files) {
             try{
-                std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
                 Logger(Debug) << n;
 
             } catch(...) {
@@ -210,7 +210,7 @@ void Simulation::registerNativeModules(string Filename) {
 }
 
 void Simulation::registerPythonModules(std::string path) {
-    vibens::PythonEnv::getInstance()->addPythonPath(path);
+    DM::PythonEnv::getInstance()->addPythonPath(path);
     QDir pythonDir = QDir(QString::fromStdString(path));
     QStringList filters;
     filters << "*.py";
@@ -218,7 +218,7 @@ void Simulation::registerPythonModules(std::string path) {
     foreach(QString file, files) {
         //try{
             Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
-            std::string n = vibens::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
 
         //} catch(...) {
         //    Logger(Warning)  << "Can't load Module: " << file.toStdString();
@@ -367,8 +367,8 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     foreach (LinkEntry le, simreader.getLinks()) {
         std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];
         std::string inPortUUID = UUIDTranslator[le.InPort.UUID.toStdString()];
-        vibens::Port * p_out = 0;
-        vibens::Port * p_in = 0;
+        DM::Port * p_out = 0;
+        DM::Port * p_in = 0;
         if (!inPortUUID.empty() && !outPortUUID.empty() ) {
 
             if (le.OutPort.isTuplePort == 1) {

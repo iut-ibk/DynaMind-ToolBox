@@ -28,7 +28,7 @@
 #include "compilersettings.h"
 #include <iostream>
 
-namespace vibens {
+namespace DM {
     class Port;
     class VIBE_HELPER_DLL_EXPORT  ModuleLink
     {

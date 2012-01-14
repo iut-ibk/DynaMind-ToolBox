@@ -28,7 +28,7 @@
 #include <QString>
 #include <vibe_logsink.h>
 
-namespace vibens {
+namespace DM {
     Logger::Logger(LogLevel level)
         : sink(*Log::getInstance()->sink), level(level) {
         dirty = false;

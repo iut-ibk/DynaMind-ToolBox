@@ -29,7 +29,7 @@
 #include "compilersettings.h"
 #include <string>
 #include <port.h>
-namespace vibens {
+namespace DM {
     class Simulation;
     class VIBE_HELPER_DLL_EXPORT SimulaitonWriter
     {

@@ -19,7 +19,7 @@
 
     using namespace std;
     using namespace DM;
-    using namespace vibens;
+    using namespace DM;
 
 %}
 
@@ -206,8 +206,8 @@ void log(std::string s, LogLevel l) {
 void initlog(){
 //Init Logger
 ostream *out = &cout;
-vibens::Log::init(new OStreamLogSink(*out), vibens::Debug);
-vibens::Logger(vibens::Debug) << "Start";
+DM::Log::init(new OStreamLogSink(*out), DM::Debug);
+DM::Logger(DM::Debug) << "Start";
 }
 
 %}

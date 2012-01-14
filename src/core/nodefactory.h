@@ -31,7 +31,7 @@
 #include <boost/utility.hpp>
 #include "compilersettings.h"
 
-namespace vibens {
+namespace DM {
 
     class Module;
 

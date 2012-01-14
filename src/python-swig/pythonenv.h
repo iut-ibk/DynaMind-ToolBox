@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 //using namespace std;
-namespace vibens {
+namespace DM {
 class ModuleRegistry;
 #ifdef __cplusplus
 extern "C" {
