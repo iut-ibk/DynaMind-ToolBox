@@ -268,6 +268,8 @@ public:
     std::vector<ResultObserver * > getResultObserver(){return this->resultobserver;}
     Simulation * getSimulation(){return this->simulation;}
 
+    DM::RasterData * getRasterData(std::string dataname, std::string view);
+
 
 private:
     boost::python::object self;

@@ -1,4 +1,4 @@
-from pydynamite import *
+from pydynamind import *
 
 
 class WhiteNoise2(Module):

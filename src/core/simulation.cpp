@@ -67,7 +67,7 @@ struct SimulationPrivate {
     std::vector<std::string> pythonModules;
     std::string filename;
     DataObserver * observer;
-    SimulationObserver * simObserver;
+    std::vector<SimulationObserver *>  simObserver;
     int counter;
 };
 
@@ -110,7 +110,7 @@ Simulation::~Simulation() {
 Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModules) {
     this->setTerminationEnabled(true);
     data = new SimulationPrivate();
-    data->simObserver = 0;
+    //data->simObserver = 0;
     data->workingDirectory = QFileInfo(QString::fromStdString(fileName)).absolutePath().toStdString();
     data->pythonModules = pythonModules;
     data->filename = fileName;
@@ -155,7 +155,7 @@ void Simulation::reloadModules() {
 Simulation::Simulation() {
     this->setTerminationEnabled(true);
     data = new SimulationPrivate();
-    data->simObserver = 0;
+    //data->simObserver;
     data->observer = 0;
     data->counter = 0;
     this->rootGroup = new RootGroup();
@@ -217,8 +217,8 @@ void Simulation::registerPythonModules(std::string path) {
     QStringList files = pythonDir.entryList(filters);
     foreach(QString file, files) {
         //try{
-            Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
-            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+        Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
+        std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
 
         //} catch(...) {
         //    Logger(Warning)  << "Can't load Module: " << file.toStdString();
@@ -232,7 +232,7 @@ ModuleRegistry * Simulation::getModuleRegistry() {
 }
 
 void Simulation::addSimulationObserver(SimulationObserver * simulationObserver) {
-    data->simObserver = simulationObserver;
+    data->simObserver.push_back(simulationObserver);
 }
 
 void Simulation::addDataObserver(DataObserver * observer) {
@@ -284,6 +284,13 @@ void Simulation::run(bool virtualRun, bool check) {
         this->rootGroup->run();
     }
     Logger(Standard) << "End Simulation";
+
+    if (virtualRun) {
+        foreach (SimulationObserver * so, data->simObserver) {
+            so->VirtualRunDone();
+        }
+    }
+
 }
 void Simulation::registerDataBase(IDataBase * database) {
     this->database = database;

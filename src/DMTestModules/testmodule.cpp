@@ -46,12 +46,16 @@ TestModule::TestModule() {
 
     DM::View SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
 
+    DM::View rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
 
     std::vector<DM::View> views;
 
     views.push_back(inlets);
     views.push_back(conduits);
     views.push_back(SomeRandomInformation);
+
+    std::vector<DM::View> rdataviews;
+    rdataviews.push_back(rdata);
 
     value = 10;
 
@@ -62,6 +66,8 @@ TestModule::TestModule() {
 
 
     this->addData("Sewer",views);
+
+    this->addData("RasterData",rdataviews);
 }
 
 
@@ -75,6 +81,15 @@ void TestModule::run() {
 
     outputData->addEdge(n1, n2, "SomeRandomInformation");
 
+    outputRasterData = this->getRasterData("RasterData", "RasterData");
+
+    outputRasterData->setSize(200, 200, 20);
+    for (int i = 0; i < outputRasterData->getWidth(); i++) {
+        for (int j = 0; j < outputRasterData->getHeight(); j++) {
+            outputRasterData->setValue(i,j,15);
+        }
+
+    }
     Logger(Debug) << "Run Testmodule";
 
 

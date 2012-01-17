@@ -39,13 +39,13 @@ void RootModule::run() {
 
 }
 
-const RasterData &RootModule::getRasterData(const std::string &name, int T) const {
+/*const RasterData &RootModule::getRasterData(const std::string &name, int T) const {
     (void) name;
     (void) T;
     std::cerr << "RasterData " << name << " could not be found" << std::endl;
     throw 0;
     //assert(false);
-}
+}*/
 /*const VectorData &RootModule::getVectorData(const std::string &name) const {
     (void) name;
     std::cerr << "VectorData " << name << " could not be found" << std::endl;

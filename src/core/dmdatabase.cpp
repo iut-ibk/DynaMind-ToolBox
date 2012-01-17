@@ -39,7 +39,7 @@ DMDatabase::~DMDatabase()
 }
 //RasterData
 void DMDatabase::setRasterData(std::string UUID, std::string Name,  RasterData &r) {
-    Logger(Debug) << "Set Switch" << Name;
+    /*Logger(Debug) << "Set Switch" << Name;
 
     RasterData * r0 =  this->RasterDataMaps_0[createName(UUID, Name)];
     RasterData * r1 =  this->RasterDataMaps_1[createName(UUID, Name)];
@@ -56,7 +56,7 @@ void DMDatabase::setRasterData(std::string UUID, std::string Name,  RasterData &
 
 
     foreach(DataObserver * ob, observer)
-        ob->observeNewRasterData(*this->RasterDataMaps_1[createName(UUID, Name)]);
+        ob->observeNewRasterData(*this->RasterDataMaps_1[createName(UUID, Name)]);*/
 }
 
 std::vector<std::string> DMDatabase::getRegisteredDatasets() const {
@@ -75,7 +75,7 @@ std::vector<std::string> DMDatabase::getRegisteredDatasets() const {
 RasterData & DMDatabase::getRasterData(std::string UUID, std::string Name, bool read, bool fromBack) {
 
 
-    if (fromBack) {
+   /*if (fromBack) {
         Logger(Debug) << "Split RasterData" << Name;
         RasterData * r0 = RasterDataMaps_0[createName(UUID, Name)];
         RasterData * r1 = RasterDataMaps_1[createName(UUID, Name)];
@@ -112,19 +112,19 @@ RasterData & DMDatabase::getRasterData(std::string UUID, std::string Name, bool 
         Logger(Debug) << ss.str();
         return *(RasterDataMaps_1[createName(UUID, Name)]);
     }
-    return *(RasterDataMaps_0[createName(UUID, Name)]);
+    return *(RasterDataMaps_0[createName(UUID, Name)]);*/
 
 
 
 }
 RasterData & DMDatabase::createRasterData(std::string UUID, std::string Name) {
-    RasterData * r = new RasterData();
+    /*RasterData * r = new RasterData();
     r->setName(Name);
     r->setUUID(UUID);
     RasterDataMaps_0[createName(UUID, Name)] = r;
     RasterDataMaps_1[createName(UUID, Name)] = r;
     RasterDataMaps_Switch[createName(UUID, Name)] = 0;
-    return *(RasterDataMaps_0[createName(UUID, Name)]);
+    return *(RasterDataMaps_0[createName(UUID, Name)]);*/
 
 }
 

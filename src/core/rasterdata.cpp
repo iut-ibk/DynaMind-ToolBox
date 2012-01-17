@@ -23,15 +23,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#include <DMcomponent.h>
 #include "rasterdata.h"
 #include <QPointF>
 #include <boost/foreach.hpp>
 #include <time.h>
 #include <QMutex>
 #include <vibe_logger.h>
-using namespace boost;
 
-RasterData::RasterData(long  width, long  height, double  cellSize)
+
+using namespace boost;
+using namespace DM;
+
+
+RasterData::RasterData(long  width, long  height, double  cellSize) : Component()
 {
     this->width = width;
     this->height = height;
@@ -260,15 +265,13 @@ ublas::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 }
 
 
-RasterData::RasterData() {
+RasterData::RasterData() : Component() {
     this->cellSize = 0;
     this->width = 0;
     this->height = 0;
-    this->name = "";
-    this->uuid = "";
     this->data = 0;
 }
-RasterData::RasterData(const RasterData &other) {
+RasterData::RasterData(const RasterData &other) : Component(other) {
 
     this->cellSize = 0;
     this->width = 0;
@@ -276,8 +279,6 @@ RasterData::RasterData(const RasterData &other) {
     this->NoValue = -9999;
     this->minValue = -9999;
     this->maxValue = -9999;
-    this->name = other.getName();
-    this->uuid = other.getUUID();
     //RasterData r;
     this->setSize(other.getWidth(), other.getHeight(), other.getCellSize());
 
@@ -332,3 +333,6 @@ void RasterData::clear() {
     }
 }
 
+Component * RasterData::clone() {
+    return new RasterData(*this);
+}

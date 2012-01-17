@@ -32,6 +32,7 @@
 #include "checkshape.h"
 #include "comparenetworks.h"
 #include "dynamicinout.h"
+#include "dostuffwithrasterdata.h"
 
 using namespace std;
 
@@ -45,5 +46,6 @@ extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry
     registry->addNodeFactory(new NodeFactory<CheckShape>());
     registry->addNodeFactory(new NodeFactory<CompareNetworks>());
     registry->addNodeFactory(new NodeFactory<DynamicInOut>());
+    registry->addNodeFactory(new NodeFactory<DoStuffWithRasterData>());
 }
 

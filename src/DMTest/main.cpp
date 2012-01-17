@@ -104,7 +104,7 @@ bool DynaMiteTest()
 {
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     //env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
-    env->addPythonPath("/home/c8451045/Documents/VIBe2Core/build/debug/");
+    env->addPythonPath("/usr/local/lib/");
 
 
     DataManagement::init();
@@ -112,17 +112,20 @@ bool DynaMiteTest()
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
-    //sim->registerPythonModules("/home/csae6550/work/VIBe2Core/scripts");
-    sim->registerPythonModules("/home/c8451045/Documents/VIBe2Core/scripts");
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMindCore/scripts");
     DM::Module * in = sim->addModule("TestModule");
     DM::Module * outm =sim->addModule("InOut");
     DM::Module * outm2 =sim->addModule("InOut");
     DM::Module * outm3 = sim->addModule("WhiteNoise");
+    DM::Module * doraster = sim->addModule("DoStuffWithRasterData");
+
     //vibens::Module * outm4 = sim->addModule("ImportShapeFile");
     //sim->addLink(outm4->getOutPort("Network"),outm->getInPort("Inport"));
     sim->addLink(in->getOutPort("Sewer"), outm->getInPort("Inport"));
     sim->addLink(outm->getOutPort("Inport"), outm2->getInPort("Inport"));
     sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
+    sim->addLink(in->getOutPort("RasterData"), doraster->getInPort("RasterData"));
+
     sim->run();
 
 

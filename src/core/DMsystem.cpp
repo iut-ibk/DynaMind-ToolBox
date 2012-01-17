@@ -28,6 +28,7 @@
 #include <DMcomponent.h>
 #include <DMnode.h>
 #include <DMedge.h>
+#include <rasterdata.h>
 #include <DMsystem.h>
 #include <vibe_logger.h>
 
@@ -67,6 +68,7 @@ System::System(const System& s) : Component(s)
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;
+    rasterdata = s.rasterdata;
 
     viewdefinitions = s.viewdefinitions;
 
@@ -112,6 +114,15 @@ Node * System::addNode(Node* node)
 
     nodes[node->getName()]=node;
     return node;
+}
+
+RasterData * System::addRasterData(RasterData *r)
+{
+    if(!addChild(r))
+        return 0;
+
+    rasterdata[r->getName()] = r;
+    return r;
 }
 
 System* System::createSubSystem(std::string name, std::string view)
@@ -183,6 +194,8 @@ Component * System::getComponent(std::string name) {
         return subsystems[name];
     if(edges.find(name)!=edges.end())
         return edges[name];
+    if(rasterdata.find(name)!=rasterdata.end())
+        return rasterdata[name];
     return 0;
 
 }
@@ -298,9 +311,6 @@ bool System::addView(View view)
     //For each view one dummy element will be created
     //Check for existing View
     DM::View existingView = this->viewdefinitions[view.getName()];
-    /*foreach(std::string a, existingView.getWriteAttributes()) {
-        existingView.addAvalibleAttribute(a);
-    }*/
 
 
     if (!view.writes()) {
@@ -322,6 +332,10 @@ bool System::addView(View view)
         if (  DM::SUBSYSTEM == view.getType()) {
             dummy = new DM::System(view.getName());
             this->addSubSystem((DM::System*) dummy);
+        }
+        if (  DM::RASTERDATA == view.getType()) {
+            dummy = new DM::RasterData();
+            this->addRasterData((DM::RasterData*) dummy);
         }
     }
     view.setIdOfDummyComponent(dummy->getName());

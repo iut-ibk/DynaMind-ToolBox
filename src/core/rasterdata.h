@@ -27,14 +27,15 @@
 #define RASTERDATA_H
 
 #include "compilersettings.h"
-//#include "vectordata.h"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
-
+#include <DMcomponent.h>
 
 namespace   ublas = boost::numeric::ublas;
 
-class VIBE_HELPER_DLL_EXPORT RasterData
+namespace DM {
+
+class VIBE_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
     RasterData(long  width, long  height, double  cellSize);
@@ -48,23 +49,20 @@ public:
     unsigned long getHeight() const {return height;}
     double getCellSize() const {return cellSize;}
     double getNoValue() const {return NoValue;}
-    void setNoValue(double NoValue)  {this->NoValue = NoValue;}    
+    void setNoValue(double NoValue)  {this->NoValue = NoValue;}
     double getMinValue() const {return minValue;}
     double getMaxValue() const {return maxValue;}
     double getSum() const;
     ublas::vector<double> getMoorNeighbourhood(long x, long y) const;
     void setSize(long width, long height, double cellsize);
     void getNeighboorhood(double** d, int width, int height, int x, int y);
-    void setName(std::string name) {this->name = name;}
-    std::string  getName() const{return this->name;}
 
-    void setUUID(std::string UUID){this->uuid = UUID;}
-    std::string  getUUID() const {return this->uuid;}
     void getMoorNeighbourhood(ublas::vector<double> & neigh, long x, long y);
+
+    Component * clone();
 private:
 
-    std::string name;    
-    std::string uuid;
+
     long width;
     long height;
     double cellSize;
@@ -76,4 +74,5 @@ private:
 
 
 };
+}
 #endif // RASTERDATA_H

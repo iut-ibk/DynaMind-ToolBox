@@ -399,17 +399,25 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
 
 
     if (reads && getInPort(name) == 0) {
-            this->addPort(name, VIBe2::INSYSTEM);
+        this->addPort(name, VIBe2::INSYSTEM);
 
     }
     if (writes && getOutPort(name) == 0) {
-            this->addPort(name, VIBe2::OUTSYSTEM);
+        this->addPort(name, VIBe2::OUTSYSTEM);
     }
 }
 
 DM::System* Module::getData(std::string dataname)
 {
     return this->data_vals[dataname];
+}
+
+DM::RasterData* Module::getRasterData(string dataname, string nameOfview) {
+
+    DM::System * sys = data_vals[dataname];
+    DM::View view =  sys->getViewDefinition(nameOfview);
+    return (RasterData*) sys->getComponent(view.getIdOfDummyComponent());
+
 }
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) {

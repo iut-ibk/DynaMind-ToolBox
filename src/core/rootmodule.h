@@ -35,7 +35,7 @@ public:
     RootModule();
 
     boost::shared_ptr<DM::Module> clone() const;
-    const RasterData &getRasterData(const std::string &name, int T) const;
+    //const RasterData &getRasterData(const std::string &name, int T) const;
     //const VectorData &getVectorData(const std::string &name) const;
     void run();
 };

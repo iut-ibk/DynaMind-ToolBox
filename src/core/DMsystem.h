@@ -34,12 +34,14 @@ namespace DM {
     enum Components {
         NODE,
         EDGE,
-        SUBSYSTEM
+        SUBSYSTEM,
+        RASTERDATA
     };
 
     class Component;
     class Node;
     class Edge;
+    class RasterData;
 
     class System : public Component
     {
@@ -47,10 +49,11 @@ namespace DM {
         std::vector<System*> predecessors;
         std::map<std::string, Node* > nodes;
         std::map<std::string, Edge* > edges;
+        std::map<std::string, RasterData *> rasterdata;
         std::map<std::string, System*> subsystems;
         std::map<std::string, View> viewdefinitions;
         std::map<std::string, std::map<std::string, Component*> > views;
-
+        RasterData * addRasterData(RasterData * r);
         void updateViews (Component * c);
 
     public:
@@ -83,7 +86,10 @@ namespace DM {
         Component* clone();
         const std::vector<std::string> getViews();
 
-       std::map<std::string, Component*> getAllComponentsInView(std::string view);
+        std::map<std::string, Component*> getAllComponentsInView(std::string view);
+
+
+
 
     };
 }

@@ -34,6 +34,7 @@ class VIBE_HELPER_DLL_EXPORT SimulationObserver
 public:
     SimulationObserver();
     virtual void SimulationCounter() = 0;
+    virtual void VirtualRunDone() = 0;
 };
 }
 #endif // SIMULATIONOBSERVER_H

@@ -21,8 +21,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-from pydynamite import *
-import pydynamite
+from pydynamind import *
+import pydynamind
 import shapefile
 
 class ImportShapeFile(Module):
