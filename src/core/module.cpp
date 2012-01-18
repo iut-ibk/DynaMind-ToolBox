@@ -145,6 +145,11 @@ void Module::updateParameter() {
                 if (sys != 0) {
                     foreach (DM::View view,  views) {
                         DM::View checkView = sys->getViewDefinition(view.getName());
+
+                        //Check Type
+                        if (checkView.getType() != view.getType()){
+                            break;
+                        }
                         DM::Component * c = sys->getComponent(checkView.getIdOfDummyComponent());
                         //Check if attributes are avalible
                         if (c == 0) {
@@ -152,6 +157,9 @@ void Module::updateParameter() {
                             sys = 0;
                             break;
                         }
+
+
+
                         foreach (std::string a, view.getReadAttributes()) {
                             bool exists = false;
                             for (std::map<std::string, DM::Attribute*>::const_iterator it = c->getAllAttributes().begin(); it != c->getAllAttributes().end(); ++it) {
@@ -592,12 +600,12 @@ DM::System* Module::getSystemState(const std::string &name)
 DM::System*   Module::getSystem_Write(const std::string &name)  {
 
     DM::System * sys = new DM::System(name, name);
-
-    for (boost::unordered_map<std::string,std::vector<DM::View> >::const_iterator it = views.begin(); it != views.end(); ++it) {
-        foreach (DM::View view, it->second) {
+    std::vector<DM::View> views = this->views[name];
+    //for (boost::unordered_map<std::string,std::vector<DM::View> >::const_iterator it = views.begin(); it != views.end(); ++it) {
+        foreach (DM::View view,views) {
             sys->addView(view);
         }
-    }
+    //}
     return sys;
 
 }

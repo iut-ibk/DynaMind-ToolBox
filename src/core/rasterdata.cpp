@@ -101,7 +101,8 @@ RasterData::~RasterData() {
     for (long i = 0; i < width; i++) {
         delete this->data[i];
     }
-    delete data;
+    if (height != 0)
+        delete data;
 
 }
 
