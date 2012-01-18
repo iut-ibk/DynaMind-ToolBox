@@ -33,6 +33,7 @@
 #include "comparenetworks.h"
 #include "dynamicinout.h"
 #include "dostuffwithrasterdata.h"
+#include "grouptest.h"
 
 using namespace std;
 
@@ -47,5 +48,6 @@ extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry
     registry->addNodeFactory(new NodeFactory<CompareNetworks>());
     registry->addNodeFactory(new NodeFactory<DynamicInOut>());
     registry->addNodeFactory(new NodeFactory<DoStuffWithRasterData>());
+    registry->addNodeFactory(new NodeFactory<GroupTest>());
 }
 

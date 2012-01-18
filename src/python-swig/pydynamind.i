@@ -19,7 +19,6 @@
 
     using namespace std;
     using namespace DM;
-    using namespace DM;
 
 %}
 
@@ -60,8 +59,7 @@ namespace std {
     }
 }
 
-class VIBe2 {
-public:
+
     enum  DATATYPES {
         INT,
         LONG,
@@ -109,7 +107,7 @@ public:
         ForestsSemiNatural = 6,
         WaterBodies = 7
     };
-};
+
 
 
 
@@ -172,17 +170,17 @@ public:
                 if self._data['d'] == 'Module':
                     self._data = {}
 
-            if DN_type == VIBe2.STRING:
+            if DN_type == DM.STRING:
                 self._data[name] = p_string()
-            if DN_type == VIBe2.FILENAME:
+            if DN_type == DM.FILENAME:
                 self._data[name] = p_string()
-            if DN_type == VIBe2.DOUBLE:
+            if DN_type == DM.DOUBLE:
                 self._data[name] = p_double()
-            if DN_type == VIBe2.LONG:
+            if DN_type == DM.LONG:
                 self._data[name] = p_double()
-            if DN_type == VIBe2.INT:
+            if DN_type == DM.INT:
                 self._data[name] = p_int()
-            if DN_type == VIBe2.BOOL:
+            if DN_type == DM.BOOL:
                 self._data[name] = p_int()
 
             self.addParameter(name,DN_type,self._data[name],description)

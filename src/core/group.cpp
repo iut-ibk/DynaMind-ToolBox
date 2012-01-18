@@ -186,12 +186,12 @@ PortTuple * Group::getOutPortTuple(std::string name) {
 }
 PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     PortTuple * pt = 0;
-    int debug = VIBe2::INTUPLEDOUBLEDATA;
-    if (PortType == VIBe2::OUTTUPLEDOUBLEDATA||
-            PortType == VIBe2::INTUPLEDOUBLEDATA) {
+    int debug = DM::INTUPLEDOUBLEDATA;
+    if (PortType == DM::OUTTUPLEDOUBLEDATA||
+            PortType == DM::INTUPLEDOUBLEDATA) {
         Logger(Debug) << "Add Tuple Port" << LinkedDataName;
         pt = new PortTuple(this, LinkedDataName, PortType);
-        if (PortType < VIBe2::OUTPORTS) {
+        if (PortType < DM::OUTPORTS) {
             this->outPortTuple.push_back(pt);
         } else {
             this->inPortTuple.push_back(pt);
@@ -203,8 +203,8 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
 }
 void  Group::setParameterValue(std::string name, std::string v){
     QString value = QString::fromStdString(v);
-    if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT) {
+    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+            parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT) {
         std::vector<std::string> * ref = (std::vector<std::string> *)this->parameter_vals[name];
         QStringList l = value.split("*|*");
         foreach(QString s, l) {
@@ -213,10 +213,10 @@ void  Group::setParameterValue(std::string name, std::string v){
                 ref->push_back(s.toStdString());
                 std::stringstream ss;
                 ss  << s.toStdString();
-                if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
-                    this->addTuplePort(ss.str(), VIBe2::INTUPLEDOUBLEDATA);
-                if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
-                    this->addTuplePort(ss.str(), VIBe2::OUTTUPLEDOUBLEDATA);
+                if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
+                    this->addTuplePort(ss.str(), DM::INTUPLEDOUBLEDATA);
+                if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
+                    this->addTuplePort(ss.str(), DM::OUTTUPLEDOUBLEDATA);
             }
         }
         return;
@@ -226,18 +226,18 @@ void  Group::setParameterValue(std::string name, std::string v){
 void Group::appendToUserDefinedParameter(std::string name, std::string v) {
     QString value = QString::fromStdString(v);
     Logger(Debug) << "append userdefined tuple";
-    if (parameter[name]  == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
-            parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT
+    if (parameter[name]  == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+            parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT
 
             ) {
         std::vector<std::string> * ref = (std::vector<std::string> *)this->parameter_vals[name];
         ref->push_back(value.toStdString());
         std::stringstream ss;
         ss <<  value.toStdString();
-        if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
-            this->addTuplePort(ss.str(), VIBe2::INTUPLEDOUBLEDATA);
-        if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
-            this->addTuplePort(ss.str(), VIBe2::OUTTUPLEDOUBLEDATA);
+        if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
+            this->addTuplePort(ss.str(), DM::INTUPLEDOUBLEDATA);
+        if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
+            this->addTuplePort(ss.str(), DM::OUTTUPLEDOUBLEDATA);
         return;
     }
     Module::appendToUserDefinedParameter(name, value.toStdString());
@@ -245,8 +245,8 @@ void Group::appendToUserDefinedParameter(std::string name, std::string v) {
 std::string Group::getParameterAsString(std::string Name) {
     int ID = this->parameter[Name];
     std::stringstream ss;
-    if (ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
-        ID == VIBe2::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
+    if (ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
+        ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
     {
         std::vector<std::string> vec = this->getParameter< std::vector<std::string> >(Name);
         BOOST_FOREACH(std::string name, vec) {
@@ -315,7 +315,10 @@ QVector<QRunnable *>  Group::getNextJobs() {
 }
 
 void Group::run() {
-    notUsedModules  = this->getModules();
+    notUsedModules  = this->modules;
+    if (notUsedModules.size() == 0) {
+        this->step = Steps;
+    }
     UsedModules.clear();
     currentRunning.clear();
     UsedModules.push_back(this);

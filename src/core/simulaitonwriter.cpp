@@ -116,7 +116,7 @@ namespace DM {
             }
 
             for (unordered_map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-                if (it->second < VIBe2::USER_DEFINED_INPUT) {
+                if (it->second < DM::USER_DEFINED_INPUT) {
                     out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(it->first) <<"\"" << ">"
                             << "\n" "\t\t\t\t<![CDATA["
                             <<  QString::fromStdString(m->getParameterAsString(it->first))

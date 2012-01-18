@@ -22,7 +22,7 @@ InOut2::InOut2() {
 
     this->addData("Inport", views);
     a = 0;
-    this->addParameter("a",VIBe2::DOUBLE, &a);
+    this->addParameter("a",DM::DOUBLE, &a);
     a = 5;
 
 }

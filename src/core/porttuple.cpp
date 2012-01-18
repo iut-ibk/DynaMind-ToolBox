@@ -37,9 +37,9 @@ namespace DM {
         int portOutType;
         int portInType;
 
-        if(PortType == VIBe2::OUTTUPLEDOUBLEDATA ||PortType == VIBe2::INTUPLEDOUBLEDATA ) {
-            portOutType = VIBe2::OUTDOUBLEDATA;
-            portInType = VIBe2::INDOUBLEDATA;
+        if(PortType == DM::OUTTUPLEDOUBLEDATA ||PortType == DM::INTUPLEDOUBLEDATA ) {
+            portOutType = DM::OUTDOUBLEDATA;
+            portInType = DM::INDOUBLEDATA;
 
         }
             inPort = new Port(m, portInType, name, true);

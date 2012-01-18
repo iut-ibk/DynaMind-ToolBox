@@ -62,7 +62,7 @@ TestModule::TestModule() {
 
 
 
-    this->addParameter("Value", VIBe2::DOUBLE, &value);
+    this->addParameter("Value", DM::DOUBLE, &value);
 
 
     this->addData("Sewer",views);

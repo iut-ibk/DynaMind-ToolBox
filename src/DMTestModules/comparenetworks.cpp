@@ -27,8 +27,8 @@ CompareNetworks::CompareNetworks() {
 
     n1i="";
     n2i="";
-    this->addParameter("Network1-Type",VIBe2::STRING, &n1i);
-    this->addParameter("Network2-Type",VIBe2::STRING, &n2i);
+    this->addParameter("Network1-Type",DM::STRING, &n1i);
+    this->addParameter("Network2-Type",DM::STRING, &n2i);
 }
 
 

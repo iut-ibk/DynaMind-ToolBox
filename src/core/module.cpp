@@ -72,7 +72,7 @@ Module::Module() {
     init_called = false;
     PythonModule = false;
     internalCounter = 0;
-    this->addParameter("InputDouble", VIBe2::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
+    this->addParameter("InputDouble", DM::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
 
 
     InPorts = std::vector<Port*>();
@@ -122,7 +122,7 @@ void Module::updateParameter() {
     for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
 
-        if (it->second == VIBe2::SYSTEM) {
+        if (it->second == DM::SYSTEM) {
             std::vector<DM::View> views= this->views[s];
             bool reads = false;
             bool writes = false;
@@ -226,42 +226,42 @@ void Module::setParameterValue(std::string name, std::string v) {
 
 
     QString value = QString::fromStdString(v);
-    if(parameter[name] == VIBe2::LONG) {
+    if(parameter[name] == DM::LONG) {
         long * ref = (long * )this->parameter_vals[name];
         if (ref == 0)
             return;
         *ref =  value.toLong();
         return;
     }
-    if(parameter[name] == VIBe2::INT) {
+    if(parameter[name] == DM::INT) {
         int * ref = (int * )this->parameter_vals[name];
         if (ref == 0)
             return;
         *ref =  value.toInt();
         return;
     }
-    if(parameter[name] == VIBe2::BOOL) {
+    if(parameter[name] == DM::BOOL) {
         bool * ref = (bool * )this->parameter_vals[name];
         if (ref == 0)
             return;
         *ref =  (bool) value.toInt();
         return;
     }
-    if(parameter[name] == VIBe2::DOUBLE) {
+    if(parameter[name] == DM::DOUBLE) {
         double * ref = (double * )this->parameter_vals[name];
         if (ref == 0)
             return;
         *ref =  value.toDouble();
         return;
     }
-    if(parameter[name] == VIBe2::STRING || parameter[name] == VIBe2::FILENAME) {
+    if(parameter[name] == DM::STRING || parameter[name] == DM::FILENAME) {
         std::string * ref = (std::string * )this->parameter_vals[name];
         if (ref == 0)
             return;
         *ref =  value.toStdString();
         return;
     }
-    if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
+    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         if (ref == 0)
             return;
@@ -271,12 +271,12 @@ void Module::setParameterValue(std::string name, std::string v) {
                 ref->insert( std::pair<std::string,double>(s.toStdString(),0) );
                 std::stringstream ss;
                 ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INDOUBLEDATA);
+                this->addPort(ss.str(), DM::INDOUBLEDATA);
             }
         }
         return;
     }
-    /*if (parameter[name] == VIBe2::USER_DEFINED_VECTORDATA_IN) {
+    /*if (parameter[name] == DM::USER_DEFINED_VECTORDATA_IN) {
         std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
         if (ref == 0)
             return;
@@ -286,12 +286,12 @@ void Module::setParameterValue(std::string name, std::string v) {
                 ref->insert( std::pair<std::string,VectorData*>(s.toStdString(),0) );
                 std::stringstream ss;
                 ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INVECTOR);
+                this->addPort(ss.str(), DM::INVECTOR);
             }
         }
         return;
     }*/
-    if (parameter[name] == VIBe2::STRING_MAP) {
+    if (parameter[name] == DM::STRING_MAP) {
         std::map<std::string, std::string> * ref = (std::map<std::string, std::string> *)this->parameter_vals[name];
         if (ref == 0)
             return;
@@ -308,11 +308,11 @@ void Module::setParameterValue(std::string name, std::string v) {
 }
 void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
 
-    if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN ) {
+    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN ) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         std::map<std::string, double>::iterator element_to_erase = ref->find(v);
         ref->erase(element_to_erase);
-        this->removePort(v, VIBe2::INDOUBLEDATA);
+        this->removePort(v, DM::INDOUBLEDATA);
     }
 
 
@@ -321,7 +321,7 @@ void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
 void Module::appendToUserDefinedParameter(std::string name, std::string  v){
 
     QString value = QString::fromStdString(v);
-    if (parameter[name] == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
+    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
@@ -329,7 +329,7 @@ void Module::appendToUserDefinedParameter(std::string name, std::string  v){
                 ref->insert( std::pair<std::string,double>(s.toStdString(),0) );
                 std::stringstream ss;
                 ss << s.toStdString();
-                this->addPort(ss.str(), VIBe2::INDOUBLEDATA);
+                this->addPort(ss.str(), DM::INDOUBLEDATA);
             }
         }
         return;
@@ -341,7 +341,7 @@ void Module::appendToUserDefinedParameter(std::string name, std::string  v){
 void Module::setParameter() {
     this->internalCounter++;
     for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        if (it->second == VIBe2::DOUBLEDATA_OUT) {
+        if (it->second == DM::DOUBLEDATA_OUT) {
             double val;
             std::string s = it->first;
             val = this->getParameter<double>(s);
@@ -356,24 +356,24 @@ std::string Module::getParameterAsString(std::string Name) {
     int ID = this->parameter[Name];
     std::stringstream ss;
     ss.precision(16);
-    if (ID == VIBe2::DOUBLE)
+    if (ID == DM::DOUBLE)
         ss << this->getParameter<double>(Name);
-    if (ID == VIBe2::INT)
+    if (ID == DM::INT)
         ss << this->getParameter<int>(Name);
-    if (ID == VIBe2::BOOL)
+    if (ID == DM::BOOL)
         ss << this->getParameter<bool>(Name);
-    if (ID == VIBe2::STRING || ID  == VIBe2::FILENAME)
+    if (ID == DM::STRING || ID  == DM::FILENAME)
         ss << this->getParameter<std::string>(Name);
-    if (ID == VIBe2::LONG)
+    if (ID == DM::LONG)
         ss << this->getParameter<long>(Name);
 
-    if (ID == VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
+    if (ID == DM::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> map = this->getParameter<std::map<std::string, double> >(Name);
         for (std::map<std::string, double>::iterator it = map.begin(); it != map.end(); ++it) {
             ss << it->first << "*|*";
         }
     }
-    if (ID == VIBe2::STRING_MAP) {
+    if (ID == DM::STRING_MAP) {
         std::map<std::string, std::string> map = this->getParameter<std::map<std::string, std::string> >(Name);
         for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); ++it) {
             ss << it->first << "*|*" << it->second << "*||*" ;
@@ -389,7 +389,7 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
     this->data_vals[name] = 0;
     this->parameterList.push_back(name);
     this->views[name] = views;
-    this->parameter[name] = VIBe2::SYSTEM;
+    this->parameter[name] = DM::SYSTEM;
 
     bool reads = false;
     bool writes = false;
@@ -407,11 +407,11 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
 
 
     if (reads && getInPort(name) == 0) {
-        this->addPort(name, VIBe2::INSYSTEM);
+        this->addPort(name, DM::INSYSTEM);
 
     }
     if (writes && getOutPort(name) == 0) {
-        this->addPort(name, VIBe2::OUTSYSTEM);
+        this->addPort(name, DM::OUTSYSTEM);
     }
 }
 
@@ -435,12 +435,12 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
     this->parameterList.push_back(name);
     this->parameter_description[name] = description;
 
-    if (type == VIBe2::DOUBLEDATA_OUT) {
-        this->addPort(name, VIBe2::OUTDOUBLEDATA);
+    if (type == DM::DOUBLEDATA_OUT) {
+        this->addPort(name, DM::OUTDOUBLEDATA);
         this->createDoubleData(name);
     }
-    if (type == VIBe2::DOUBLEDATA_IN) {
-        this->addPort(name, VIBe2::INDOUBLEDATA);
+    if (type == DM::DOUBLEDATA_IN) {
+        this->addPort(name, DM::INDOUBLEDATA);
     }
 
 }
@@ -465,28 +465,28 @@ void Module::Destructor() {
 
 void Module::convertValus(void * value, int Type, QString val) {
 
-    if (Type == VIBe2::INT) {
+    if (Type == DM::INT) {
         int * v = (int*) value;
         *(v) =  val.toInt();
         return;
     }
-    if (Type == VIBe2::LONG) {
+    if (Type == DM::LONG) {
         long * v = (long*) value;
         *(v) =  val.toLong();
         return;
     }
-    if (Type == VIBe2::DOUBLE) {
+    if (Type == DM::DOUBLE) {
         double * v = (double*) value;
         *(v) =  val.toDouble();
         return;
     }
-    if (Type== VIBe2::STRING || Type== VIBe2::FILENAME) {
+    if (Type== DM::STRING || Type== DM::FILENAME) {
         std::string * v = (std::string *) value;
         *(v) =  val.toStdString();
         return;
     }
 
-    if (Type== VIBe2::USER_DEFINED_DOUBLEDATA_IN) {
+    if (Type== DM::USER_DEFINED_DOUBLEDATA_IN) {
         std::map<std::string, double> * map =  (std::map<std::string, double> *) value;
         QStringList list = val.split(QRegExp("\\s+"));
         foreach(QString s, list) {
@@ -500,7 +500,7 @@ void Module::convertValus(void * value, int Type, QString val) {
 void Module::removePort(std::string LinkedDataName, int PortType) {
     Logger(Debug) << "RemovePort" << LinkedDataName;
 
-    if (PortType < VIBe2::OUTPORTS) {
+    if (PortType < DM::OUTPORTS) {
         std::vector<Port *>::iterator portToDelete;
         for (std::vector<Port * >::iterator it = this->OutPorts.begin(); it != this->OutPorts.end(); ++it) {
             Port * p = *it;
@@ -531,7 +531,7 @@ void Module::removePort(std::string LinkedDataName, int PortType) {
 void Module::addPort(std::string LinkedDataName, int PortType) {
     Logger(Debug) << "AddPort" << LinkedDataName;
     Port * p = new Port(this, PortType, LinkedDataName);
-    if (PortType < VIBe2::OUTPORTS) {
+    if (PortType < DM::OUTPORTS) {
         this->OutPorts.push_back(p);
     } else {
         this->InPorts.push_back(p);
@@ -705,7 +705,7 @@ void Module::copyParameterFromOtherModule(Module * m) {
         boost::unordered_map<std::string, int> parameterList = m->getParameterList();
 
         for ( boost::unordered_map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-            if (it->second < VIBe2::USER_DEFINED_INPUT) {
+            if (it->second < DM::USER_DEFINED_INPUT) {
                 this->setParameterValue(it->first, m->getParameterAsString(it->first));
             }
         }

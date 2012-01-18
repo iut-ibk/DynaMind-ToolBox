@@ -53,8 +53,8 @@ namespace DM {
 
 namespace DM {
 
-class VIBE_HELPER_DLL_EXPORT VIBe2 {
-public:
+
+
     enum  DATATYPES {
         INT,
         LONG,
@@ -102,7 +102,7 @@ public:
         ForestsSemiNatural = 6,
         WaterBodies = 7
     };
-};
+
 
 struct ModulePrivate;
 
