@@ -677,7 +677,7 @@ void Module::setID(const int id) {
     this->id = id;
 }
 
-int Module::getID() {
+int Module::getID() const {
     return id;
 }
 

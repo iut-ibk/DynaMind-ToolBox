@@ -281,7 +281,8 @@ void Simulation::run(bool virtualRun, bool check) {
         Logger(Debug) << "Reset Steps";
         this->rootGroup->resetSteps();
         Logger(Debug) << "Start Simulations";
-        this->rootGroup->run();
+        if (this->rootGroup->getModules().size() > 0)
+            this->rootGroup->run();
     }
     Logger(Standard) << "End Simulation";
 

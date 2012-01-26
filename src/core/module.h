@@ -190,7 +190,7 @@ public:
 
 
     void setInitCalled(){this->init_called=true;}
-    virtual int getID();
+    virtual int getID() const;
     void setID(const int id);
     void addParameter(std::string name, int type, void * ref, std::string description = "");
 
@@ -238,10 +238,10 @@ public:
     virtual Port * getOutPort(std::string Name);
     virtual  const char * getClassName()  {return "OVERWRITE getClassName";}
     virtual  const char * getFileName()  {return "OVERWRITE getFileName";}
-    virtual bool isGroup(){return false;}
+    virtual bool isGroup()const {return false;}
     void setGroup(Group * group);
     Group * getGroup();
-    std::string getUuid(){return this->uuid;}
+    std::string getUuid() const {return this->uuid;}
     void setSimulation(Simulation * simulation);
     RasterData & createRasterData(std::string name);
     //VectorData & createVectorData(std::string name);
@@ -250,7 +250,7 @@ public:
         this->name = name;
     }
 
-    std::string getName() {return this->name;}
+    std::string getName() const {return this->name;}
     void addUrlToHelpFile(std::string s) {this->urlToHelpFile = s;}
     std::string getUrlToHelpFile(){return this->urlToHelpFile;}
     void sendImageToResultViewer(std::string);
