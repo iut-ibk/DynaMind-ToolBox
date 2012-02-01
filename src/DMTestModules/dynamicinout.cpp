@@ -26,7 +26,7 @@
 
 #include "dynamicinout.h"
 #include <DM.h>
-
+#include <guidynamicinout.h>
 VIBe_DECLARE_NODE_NAME (DynamicInOut, Modules)
 
 DynamicInOut::DynamicInOut()
@@ -40,15 +40,63 @@ void DynamicInOut::run() {
 
 void DynamicInOut::init() {
     Logger(Debug) << "Init Called";
-    std::vector<DM::View> views;
+
+    foreach (DM::View v,this->views) {
+        if (v.getName().compare("Inlets")==0) {
+            return;
+        }
+    }
+
+
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
     inlets.getAttribute("A");
     inlets.getAttribute("B");
     inlets.getAttribute("C");
-
     views.push_back(inlets);
 
     this->addData("Inport", views);
 
+}
 
+void DynamicInOut::getAttribute(std::string n) {
+    //Get View
+    std::vector<View> views;
+    DM::View view;
+    foreach (DM::View v,this->views) {
+        if (v.getName().compare("Inlets")==0) {
+            view = v;
+        }
+    }
+
+    view.getAttribute(n);
+
+    views.push_back(view);
+    this->views = views;
+
+    this->addData("Inport", views);
+}
+
+void DynamicInOut::addAttribute(std::string n) {
+    //Get View
+    std::vector<View> views;
+    DM::View view;
+    foreach (DM::View v,this->views) {
+        if (v.getName().compare("Inlets")==0) {
+            view = v;
+        }
+    }
+
+    view.addAttribute(n);
+
+    views.push_back(view);
+    this->views = views;
+
+    this->addData("Inport", views);
+}
+
+bool DynamicInOut::createInputDialog() {
+    std::cout << "Show GUI " << std::endl;
+    QWidget * w = new GUIDynamicInOut(this);
+    w->show();
+    return true;
 }

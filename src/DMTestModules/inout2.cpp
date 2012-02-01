@@ -14,6 +14,7 @@ InOut2::InOut2() {
     inlets.getAttribute("A");
     inlets.getAttribute("B");
     inlets.getAttribute("C");
+    inlets.addAttribute("D");
     DM::View conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
     conduits.addAttribute("F");
 

@@ -15,6 +15,7 @@ InOut::InOut() {
     inlets.addAttribute("C");
     DM::View conduits = DM::View("Conduits", DM::EDGE, DM::MODIFY);
     conduits.addAttribute("D");
+    conduits.addAttribute("F");
 
     views.push_back(inlets);
     views.push_back(conduits);
@@ -82,3 +83,5 @@ void InOut::run() {
 InOut::~InOut() {
     Logger(Debug) << "Destructor InOut";
 }
+
+

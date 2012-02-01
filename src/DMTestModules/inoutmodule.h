@@ -17,6 +17,7 @@ VIBe_DECLARE_NODE( InOut )
         InOut();
         void run();
         virtual ~InOut();
+
 };
 
 

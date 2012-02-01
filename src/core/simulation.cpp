@@ -90,6 +90,7 @@ Module * Simulation::addModule(std::string ModuleName) {
         module->setGroup(this->rootGroup);
     this->Modules[module->getUuid()] = module;
     module->setSimulation(this);
+    module->init();
     return module;
 
 

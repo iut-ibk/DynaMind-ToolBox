@@ -162,7 +162,8 @@ void Module::updateParameter() {
 
                         foreach (std::string a, view.getReadAttributes()) {
                             bool exists = false;
-                            for (std::map<std::string, DM::Attribute*>::const_iterator it = c->getAllAttributes().begin(); it != c->getAllAttributes().end(); ++it) {
+                            std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
+                            for (std::map<std::string, DM::Attribute*>::const_iterator it =existing_attributes.begin(); it != existing_attributes.end(); ++it) {
                                 std::string a_existing = it->first;
                                 if (a.compare(a_existing) == 0) {
                                     exists = true;
@@ -224,7 +225,6 @@ void Module::setParameterValue(std::string name, std::string v) {
 
     }
 
-
     QString value = QString::fromStdString(v);
     if(parameter[name] == DM::LONG) {
         long * ref = (long * )this->parameter_vals[name];
@@ -261,36 +261,17 @@ void Module::setParameterValue(std::string name, std::string v) {
         *ref =  value.toStdString();
         return;
     }
-    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN) {
-        std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
+    if(parameter[name] == DM::STRING_LIST) {
+        std::vector<std::string> * ref = (std::vector<std::string> * )this->parameter_vals[name];
         if (ref == 0)
             return;
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,double>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), DM::INDOUBLEDATA);
-            }
+                ref->push_back(s.toStdString());
         }
+
         return;
     }
-    /*if (parameter[name] == DM::USER_DEFINED_VECTORDATA_IN) {
-        std::map<std::string, VectorData*> * ref = (std::map<std::string, VectorData*> *)this->parameter_vals[name];
-        if (ref == 0)
-            return;
-        QStringList list = value.split("*|*");
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,VectorData*>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), DM::INVECTOR);
-            }
-        }
-        return;
-    }*/
     if (parameter[name] == DM::STRING_MAP) {
         std::map<std::string, std::string> * ref = (std::map<std::string, std::string> *)this->parameter_vals[name];
         if (ref == 0)
@@ -366,12 +347,12 @@ std::string Module::getParameterAsString(std::string Name) {
         ss << this->getParameter<std::string>(Name);
     if (ID == DM::LONG)
         ss << this->getParameter<long>(Name);
-
-    if (ID == DM::USER_DEFINED_DOUBLEDATA_IN) {
-        std::map<std::string, double> map = this->getParameter<std::map<std::string, double> >(Name);
-        for (std::map<std::string, double>::iterator it = map.begin(); it != map.end(); ++it) {
-            ss << it->first << "*|*";
+    if (ID == DM::STRING_LIST) {
+        std::vector<std::string> vec = this->getParameter<std::vector<std::string> >(Name);
+        foreach (std::string s, vec) {
+            ss << s << "*|*" ;
         }
+
     }
     if (ID == DM::STRING_MAP) {
         std::map<std::string, std::string> map = this->getParameter<std::map<std::string, std::string> >(Name);

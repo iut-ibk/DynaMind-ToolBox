@@ -24,36 +24,37 @@
  *
  */
 
-#ifndef DYNAMICINOUT_H
-#define DYNAMICINOUT_H
+namespace DM {
+class Module;
+}
+#ifndef GUIDYNAMICINOUT_H
+#define GUIDYNAMICINOUT_H
 
-#include "compilersettings.h"
-#include "module.h"
+#include <QDialog>
 
-using namespace DM;
+class DynamicInOut;
 
-class VIBE_HELPER_DLL_EXPORT DynamicInOut : public  Module
+namespace Ui {
+class GUIDynamicInOut;
+}
+
+class GUIDynamicInOut : public QDialog
 {
-    VIBe_DECLARE_NODE(DynamicInOut)
-
-   private:
-        std::vector<DM::View> views;
+    Q_OBJECT
+    
 public:
-    DynamicInOut();
-    DM::System * sys_in;
+    explicit GUIDynamicInOut(DM::Module * m, QWidget *parent = 0);
+    ~GUIDynamicInOut();
 
-    void init();
-    virtual bool  createInputDialog();
+    
+private:
+    Ui::GUIDynamicInOut *ui;
+    DynamicInOut * module;
 
-
-    void run();
-    void getAttribute(std::string name);
-    void addAttribute(std::string name);
-    std::vector<DM::View> getViews(){return this->views;}
-
-
-
+protected slots:
+    void addAttribute();
+    void getAttribute();
 
 };
 
-#endif // DYNAMICINOUT_H
+#endif // GUIDYNAMICINOUT_H

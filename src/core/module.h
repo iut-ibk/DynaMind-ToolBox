@@ -61,6 +61,7 @@ namespace DM {
         DOUBLE,
         STRING,
         FILENAME,
+        STRING_LIST,
         STRING_MAP,
         BOOL,
         LASTPRIMITIVETYPE,
