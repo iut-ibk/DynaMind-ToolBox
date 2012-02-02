@@ -55,14 +55,16 @@ Port * ModuleLink::getOutPort() {
 }
 std::string ModuleLink::getUuidFromOutPort() {
     if (this->OutPort->isPortTuple()) {
-        return getPortFromTuplePort(this)->getOutPort()->getModule()->getUuid();
+        if (getPortFromTuplePort(this) != 0 )
+            return getPortFromTuplePort(this)->getOutPort()->getModule()->getUuid();
     }
 
     return this->OutPort->getModule()->getUuid();
 }
 std::string ModuleLink::getDataNameFromOutPort() {
     if (this->OutPort->isPortTuple()) {
-        return getPortFromTuplePort(this)->getOutPort()->getLinkedDataName();
+        if (getPortFromTuplePort(this) != 0 )
+            return getPortFromTuplePort(this)->getOutPort()->getLinkedDataName();
     }
     return this->OutPort->getLinkedDataName();
 }
@@ -86,6 +88,9 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin) {
             BackId = counter;
         }
         counter++;
+    }
+    if (LinkId < 0) {
+        return 0;
     }
     ModuleLink *l = p->getLinks()[LinkId];
     if (g->getInternalCounter() > 1 && BackId != -1){
