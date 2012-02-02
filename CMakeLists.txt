@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
-project(dynamindcore)
+project(dynamind)
+
+set(CMAKE_MODULE_PATH 
+  "${dynamind_SOURCE_DIR}/CMake"
+  "${dynamind_SOURCE_DIR}/CMake/Utils" 
+  "${dynamind_SOURCE_DIR}/CMake/Packages"
+)
+
 
 set(Boost_USE_STATIC_LIBS   OFF)
 find_package(Boost 1.38.0 COMPONENTS python program_options date_time REQUIRED)
@@ -21,8 +28,8 @@ else ()
         MESSAGE(STATUS Release)
 endif()
 
-set(LIBRARY_OUTPUT_PATH ${dynamindcore_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${dynamindcore_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${dynamind_BINARY_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${dynamind_BINARY_DIR})
 
 
 add_subdirectory(src/core)
@@ -30,3 +37,5 @@ add_subdirectory(src/core)
 add_subdirectory(src/python-swig)
 add_subdirectory(src/DMTestModules)
 add_subdirectory(src/DMTest)
+add_subdirectory(src/libdynamind-gui)
+add_subdirectory(src/dynamind-gui)
