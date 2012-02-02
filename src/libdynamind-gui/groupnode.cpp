@@ -127,28 +127,17 @@ void GroupNode::updatePorts () {
 void GroupNode::addTuplePort(DM::PortTuple * p) {
     QStringList ExistingPorts;
 
-    if (p->getPortType() == DM::INTUPLEDOUBLEDATA)
-        ExistingPorts = this->ExistingInPorts;
-    if (p->getPortType() == DM::OUTTUPLEDOUBLEDATA)
-        ExistingPorts = this->ExistingOutPorts;
     foreach (QString pname, ExistingPorts) {
         if (pname.compare(QString::fromStdString(p->getName())) == 0) {
             return;
         }
     }
-    if  (p->getPortType() > DM::OUTPORTS) {
-        GUIPortTuple * gui_pt = new GUIPortTuple();
+    if  (p->getPortType() > DM::OUTPORTS) {          
         ExistingInPorts << QString::fromStdString(p->getName());
         GUIPort * gui_p = new  GUIPort(this, p->getInPort());
-        gui_pt->inPort = gui_p;
         this->ports.append(gui_p);
-        gui_p->setPos(-gui_p->boundingRect().width(),gui_p->boundingRect().height()*this->inputCounter);
+        gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter);
 
-        gui_p = new  GUIPort(this, p->getOutPort());
-        gui_pt->outPort = gui_p;
-        this->ports.append(gui_p);
-        gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter++);
-        this->InPortTuplePorts.append(gui_pt);
     } else {
         ExistingOutPorts << QString::fromStdString(p->getName());
         GUIPortTuple * gui_pt = new GUIPortTuple();
@@ -177,8 +166,8 @@ GUIPort *  GroupNode::getGUIPort(DM::Port * p) {
     foreach(GUIPortTuple * gui_pt,this->InPortTuplePorts) {
         if (gui_pt->inPort->getVIBePort() == p)
             return gui_pt->inPort;
-        if (gui_pt->outPort->getVIBePort() == p)
-            return gui_pt->outPort;
+        /*if (gui_pt->outPort->getVIBePort() == p)
+            return gui_pt->outPort;*/
     }
 
 
@@ -223,28 +212,8 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     w = w < 140 ? 140 : w;
     l = w+4;
     h =  this->simpleTextItem->boundingRect().height()+65;
-    unordered_map<std::string, int> parameter;
     std::cout << "L "<< l << std::endl;
     std::cout << "H"  << h << std::endl;
-
-    //QStringList list = module.parameter.keys();
-    QStringList list;
-    /*foreach (QString s, list)
-        parameter[s.toStdString()] = module.parameter[s];*/
-
-    for (unordered_map<std::string, int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        QString name = QString::fromStdString(it->first);
-        int type = it->second;
-
-        if (type == DM::DOUBLEDATA_IN) {
-            //module.inputDouble.append(name);
-        }
-        if (type == DM::DOUBLEDATA_OUT) {
-            //module.outputDouble.append(name);
-        }
-
-    }
-
 
     minimizeButton = new ModelNodeButton(this);
     minimizeButton->moveBy(w-16, 4 );
@@ -253,6 +222,8 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     Color = COLOR_MODULE;
     connect( minimizeButton, SIGNAL( Maximize() ), this, SLOT( maximize() ), Qt::DirectConnection );
     connect( minimizeButton, SIGNAL( Minimize() ), this, SLOT( minimize() ), Qt::DirectConnection );
+
+    this->updatePorts();
 
 }
 
@@ -295,6 +266,8 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         } else {
             painter->setBrush(Qt::white);
         }
+        if (h< 65)
+            h = 65;
         this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->VIBeModule->getName())+" " +QString::number(this->zValue()));
         if (simpleTextItem->boundingRect().width()+40 > l)
                 l = simpleTextItem->boundingRect().width()+40;
@@ -360,6 +333,8 @@ void GroupNode::recalculateLandH() {
         l = 100;
         h = 85;
     }
+    if (h< 65)
+        h = 65;
     if (l > 500 || h > 500) {
         std::cout << "errer!" << std::endl;
     }

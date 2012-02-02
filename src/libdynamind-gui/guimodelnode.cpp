@@ -322,8 +322,7 @@ void GUIModelNode::addTuplePort() {
             GroupNode * gn = (GroupNode * )this->module;
 
             DM::PortTuple * pt;
-            if (TypeInfo.compare("InputTupleDouble") == 0)
-                DM::PortTuple * pt = g->addTuplePort(text.toStdString(), DM::INTUPLEDOUBLEDATA);
+
             gn->addTuplePort(pt);
         }
     }
@@ -343,7 +342,7 @@ void GUIModelNode::addUserDefinedItem() {
             ls.append(text);
             // if (!this->modelNode->isGroup()) {
             DM::Logger(DM::Debug) << "addUserDefinedItem" << text.toStdString();
-            this->module->appendToUserDefinedParameter(stds,text.toStdString());
+            //this->module->appendToUserDefinedParameter(stds,text.toStdString());
 
             if (this->modelnode != 0)
                 this->modelnode->updatePorts();
@@ -376,9 +375,9 @@ void GUIModelNode::addUserDefinedDoubleItem() {
         Type = INDOUBLE;
     if (b->checkState ()) {
         if (Type != 0) {
-            this->module->appendToUserDefinedParameter(ls1[0].toStdString(),ls1[1].toStdString());
+            /*this->module->appendToUserDefinedParameter(ls1[0].toStdString(),ls1[1].toStdString());
             if (this->modelnode != 0)
-                this->modelnode->updatePorts();
+                this->modelnode->updatePorts();*/
         }
     } else {
         //this->modelNode->removePort(Type, ls1[1]);
@@ -398,7 +397,7 @@ void GUIModelNode::removeUserDefinedItem() {
     std::string stds = ls1[1].toStdString();
 
     //DM::Logger(DM::Debug) << "addUserDefinedItem" << text.toStdString();
-    this->module->removeFromUserDefinedParameter(ls1[0].toStdString(),ls1[1].toStdString());
+    //this->module->removeFromUserDefinedParameter(ls1[0].toStdString(),ls1[1].toStdString());
     //this->modelNode->updatePorts();
 
     QPushButton * p= (QPushButton * ) QObject::sender();

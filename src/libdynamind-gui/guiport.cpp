@@ -69,9 +69,8 @@ GUIPort::GUIPort(ModelNode *modelNode, DM::Port *p) : QGraphicsItem(modelNode)
 
     if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
-    if (p->getPortType() == DM::INDOUBLEDATA || p->getPortType() == DM::OUTDOUBLEDATA)
-        color = COLOR_DOUBLEPORT
-                hoverElement = 0;
+
+    hoverElement = 0;
 
 
 }
@@ -129,9 +128,8 @@ void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 
     if (this->p->getPortType() == DM::INSYSTEM|| this->p->getPortType() == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
-    if (p->getPortType() == DM::INDOUBLEDATA || p->getPortType() == DM::OUTDOUBLEDATA)
-        color = COLOR_DOUBLEPORT
-                prepareGeometryChange ();
+
+    prepareGeometryChange ();
     l = this->simpleTextItem->boundingRect().width()+4;
     h = this->simpleTextItem->boundingRect().height()+4;
     x1 = 0;
@@ -146,8 +144,7 @@ void GUIPort::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
 
         if (p->getPortType()  == DM::INSYSTEM || p->getPortType()  == DM::OUTSYSTEM)
             color = COLOR_VECTORPORT;
-        if (p->getPortType() == DM::INDOUBLEDATA || p->getPortType() == DM::OUTDOUBLEDATA)
-            color = COLOR_DOUBLEPORT
+
     }
     prepareGeometryChange ();
     this->update(this->boundingRect());
@@ -184,13 +181,6 @@ void GUIPort::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
                 this->hoverElement = link;
                 setHover = true;
             }
-            if (getPortType() == DM::OUTDOUBLEDATA &&  link->getPortType() == DM::INDOUBLEDATA ) {
-                link->setHover(true);
-                link->prepareGeometryChange();
-                link->update();
-                this->hoverElement = link;
-                setHover = true;
-            }
         }
     }
     if(!setHover) {
@@ -207,16 +197,15 @@ void GUIPort::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
 
     if (getPortType() == DM::INSYSTEM || getPortType() == DM::OUTSYSTEM )
         color = COLOR_VECTORPORT;
-    if (p->getPortType() == DM::INDOUBLEDATA || p->getPortType() == DM::OUTDOUBLEDATA)
-        color = COLOR_DOUBLEPORT
 
 
-                if (getPortType() < DM::OUTPORTS) {
-                LinkMode = true;
-    this->tmp_link = new GUILink();
-    this->tmp_link->setOutPort(this);
-    this->scene()->addItem(this->tmp_link);
-}
+
+    if (getPortType() < DM::OUTPORTS) {
+        LinkMode = true;
+        this->tmp_link = new GUILink();
+        this->tmp_link->setOutPort(this);
+        this->scene()->addItem(this->tmp_link);
+    }
 
 }
 DM::Port * GUIPort::getVIBePort() {

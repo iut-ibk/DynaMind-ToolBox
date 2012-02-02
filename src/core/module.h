@@ -84,14 +84,10 @@ namespace DM {
     enum PORTTYPES {
         OUTSYSTEM,
         OUTTUPLESYSTEM,
-        OUTDOUBLEDATA,
-        OUTTUPLEDOUBLEDATA,
         OUTPORTS,
 
         INSYSTEM,
-        INTUPLEVSYSTEM,
-        INDOUBLEDATA,
-        INTUPLEDOUBLEDATA,
+        INTUPLESYSTEM,
         INPORTS
     };
 
@@ -230,8 +226,7 @@ public:
 
     virtual void setParameter();
     virtual void setParameterValue(std::string name, std::string value);
-    virtual void appendToUserDefinedParameter(std::string name, std::string  value);
-    virtual void removeFromUserDefinedParameter(std::string name, std::string  value);
+
     virtual void addPort(std::string LinkedDataName, int PortType);
     virtual void removePort(std::string LinkedDataName, int PortType);
     void addPortObserver(PortObserver * portobserver);

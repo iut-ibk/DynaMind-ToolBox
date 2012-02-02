@@ -69,8 +69,7 @@ namespace DM {
         PortTuple * getOutPortTuple(std::string name);
         virtual void Destructor();
         virtual bool isGroup() const{return true;}
-        virtual void setParameterValue(std::string name, std::string value);
-        virtual void appendToUserDefinedParameter(std::string name, std::string value);
+
         virtual std::string getParameterAsString(std::string Name);
         virtual Port * getInPort(std::string Name);
         virtual Port * getOutPort(std::string Name);

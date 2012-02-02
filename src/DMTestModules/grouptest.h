@@ -29,6 +29,8 @@
 
 #include "compilersettings.h"
 #include "group.h"
+#include "DM.h"
+#include "DMview.h"
 #include <iostream>
 #include <vector>
 using namespace DM;
@@ -39,10 +41,13 @@ VIBe_DECLARE_GROUP(GroupTest)
         GroupTest();
         virtual ~GroupTest(){}
         void run();
-        std::vector<std::string> DataIn;
-        std::vector<std::string> DataOut;
+        void init();
+        std::vector<DM::View> InViews;
+        std::vector<DM::View> OutViews;
         int Runs;
         int i;
+
+        void addOutView (std::string view);
 };
 
 

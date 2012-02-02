@@ -70,15 +70,8 @@ namespace std {
         BOOL,
         LASTPRIMITIVETYPE,
         //Port Types
-        USER_DEFINED_DOUBLEDATA_IN,
-        USER_DEFINED_DOUBLEDATA_TUPLE_IN,
-        USER_DEFINED_DOUBLEDATA_TUPLE_OUT,
 
         USER_DEFINED_INPUT,
-
-
-        DOUBLEDATA_OUT,
-        DOUBLEDATA_IN,
 
         SYSTEM_OUT,
         SYSTEM_IN,
@@ -88,14 +81,11 @@ namespace std {
     enum PORTTYPES {
         OUTSYSTEM,
         OUTTUPLESYSTEM,
-        OUTDOUBLEDATA,
-        OUTTUPLEDOUBLEDATA,
         OUTPORTS,
 
         INSYSTEM,
-        INTUPLEVSYSTEM,
-        INDOUBLEDATA,
-        INTUPLEDOUBLEDATA,
+        INTUPLESYSTEM,
+
         INPORTS
     };
 
@@ -134,8 +124,6 @@ public:
 
 
     virtual void setParameterValue(std::string name, std::string value);
-    virtual void appendToUserDefinedParameter(std::string name, std::string  value);
-    virtual void removeFromUserDefinedParameter(std::string name, std::string  value);
 
 
     void sendImageToResultViewer(std::string);

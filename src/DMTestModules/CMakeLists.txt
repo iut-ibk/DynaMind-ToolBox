@@ -1,6 +1,6 @@
 file(GLOB MODULE_CPPS *.cpp)
 file(GLOB MODULE_UI_FILES *.ui)
-set(MOC_MODULE_FILES guidynamicinout.h )
+set(MOC_MODULE_FILES guidynamicinout.h guigrouptest.h)
 
 QT4_WRAP_UI(MODULE_CPPS ${MODULE_UI_FILES})
 QT4_WRAP_CPP(MODULE_CPPS ${MOC_MODULE_FILES})

@@ -30,45 +30,37 @@
 
 
 namespace DM {
-    PortTuple::PortTuple(Module * m, std::string Name, int PortType)
-    {
-        this->name = Name;
-        this->PortType = PortType;
-        int portOutType;
-        int portInType;
-
-        if(PortType == DM::OUTTUPLEDOUBLEDATA ||PortType == DM::INTUPLEDOUBLEDATA ) {
-            portOutType = DM::OUTDOUBLEDATA;
-            portInType = DM::INDOUBLEDATA;
-
-        }
-            inPort = new Port(m, portInType, name, true);
-            outPort = new Port (m, portOutType, name, true);
-    }
+PortTuple::PortTuple(Module * m, std::string Name, int PortType)
+{
+    this->name = Name;
+    this->PortType = PortType;
+    inPort = new Port(m, DM::INSYSTEM, name, true);
+    outPort = new Port (m, DM::OUTSYSTEM, name, true);
+}
 
 
-    Module * PortTuple::getModule() {
-        return this->m;
-    }
+Module * PortTuple::getModule() {
+    return this->m;
+}
 
-    std::vector<ModuleLink * > PortTuple::getLinks() {
-        return  std::vector<ModuleLink * >();
-    }
+std::vector<ModuleLink * > PortTuple::getLinks() {
+    return  std::vector<ModuleLink * >();
+}
 
 
-    std::string PortTuple::getLinkedDataName() {
-        return "";
-    }
-    Port * PortTuple::getInPort() {
-        return this->inPort;
-    }
-    Port * PortTuple::getOutPort() {
-        return this->outPort;
-    }
-    PortTuple::~PortTuple() {
-        delete this->inPort;
-        delete this->outPort;
-        this->inPort = 0;
-        this->outPort = 0;
-    }
+std::string PortTuple::getLinkedDataName() {
+    return "";
+}
+Port * PortTuple::getInPort() {
+    return this->inPort;
+}
+Port * PortTuple::getOutPort() {
+    return this->outPort;
+}
+PortTuple::~PortTuple() {
+    delete this->inPort;
+    delete this->outPort;
+    this->inPort = 0;
+    this->outPort = 0;
+}
 }

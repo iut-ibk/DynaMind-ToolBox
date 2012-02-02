@@ -287,37 +287,7 @@ void Module::setParameterValue(std::string name, std::string v) {
     }
 
 }
-void Module::removeFromUserDefinedParameter(std::string name, std::string v) {
 
-    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN ) {
-        std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
-        std::map<std::string, double>::iterator element_to_erase = ref->find(v);
-        ref->erase(element_to_erase);
-        this->removePort(v, DM::INDOUBLEDATA);
-    }
-
-
-}
-
-void Module::appendToUserDefinedParameter(std::string name, std::string  v){
-
-    QString value = QString::fromStdString(v);
-    if (parameter[name] == DM::USER_DEFINED_DOUBLEDATA_IN) {
-        std::map<std::string, double> * ref = (std::map<std::string, double> *)this->parameter_vals[name];
-        QStringList list = value.split("*|*");
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                ref->insert( std::pair<std::string,double>(s.toStdString(),0) );
-                std::stringstream ss;
-                ss << s.toStdString();
-                this->addPort(ss.str(), DM::INDOUBLEDATA);
-            }
-        }
-        return;
-    }
-
-
-}
 
 void Module::setParameter() {
     this->internalCounter++;
@@ -385,8 +355,6 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
         writes = view.writes();
     }
 
-
-
     if (reads && getInPort(name) == 0) {
         this->addPort(name, DM::INSYSTEM);
 
@@ -415,14 +383,6 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
     this->parameter_vals[name] = ref;
     this->parameterList.push_back(name);
     this->parameter_description[name] = description;
-
-    if (type == DM::DOUBLEDATA_OUT) {
-        this->addPort(name, DM::OUTDOUBLEDATA);
-        this->createDoubleData(name);
-    }
-    if (type == DM::DOUBLEDATA_IN) {
-        this->addPort(name, DM::INDOUBLEDATA);
-    }
 
 }
 

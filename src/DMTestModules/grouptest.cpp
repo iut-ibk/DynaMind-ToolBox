@@ -34,6 +34,7 @@ GroupTest::GroupTest() {
     Runs = 1;
 
     this->addParameter("Runs", DM::INT, &Runs);
+    this->addTuplePort("Test", DM::INTUPLESYSTEM);
 
 
 }
@@ -44,4 +45,14 @@ void GroupTest::run() {
 
 
     Group::run();
+}
+
+void GroupTest::init() {
+
+
+
+}
+
+void GroupTest::addOutView(std::string n) {
+
 }

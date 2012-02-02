@@ -35,7 +35,6 @@
 #include <groupnode.h>
 #include <rootgroupnode.h>
 #include <sstream>
-#include <fixedgroupports.h>
 #include <guisimulation.h>
 
 using namespace boost;

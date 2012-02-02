@@ -126,29 +126,19 @@ void RootGroupNode::updatePorts () {
 
 void RootGroupNode::addTuplePort(DM::PortTuple * p) {
     QStringList ExistingPorts;
-
-    if (p->getPortType() == DM::INTUPLEDOUBLEDATA)
-        ExistingPorts = this->ExistingInPorts;
-    if (p->getPortType() == DM::OUTTUPLEDOUBLEDATA)
-        ExistingPorts = this->ExistingOutPorts;
     foreach (QString pname, ExistingPorts) {
         if (pname.compare(QString::fromStdString(p->getName())) == 0) {
             return;
         }
     }
     if  (p->getPortType() > DM::OUTPORTS) {
-        GUIPortTuple * gui_pt = new GUIPortTuple();
-        ExistingInPorts << QString::fromStdString(p->getName());
-        GUIPort * gui_p = new  GUIPort(this, p->getInPort());
-        gui_pt->inPort = gui_p;
-        this->ports.append(gui_p);
-        gui_p->setPos(-gui_p->boundingRect().width(),gui_p->boundingRect().height()*this->inputCounter);
 
-        gui_p = new  GUIPort(this, p->getOutPort());
-        gui_pt->outPort = gui_p;
+        ExistingInPorts << QString::fromStdString(p->getName());
+        GUIPort * gui_p = new  GUIPort(this, p->getOutPort());
         this->ports.append(gui_p);
         gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter++);
-        this->InPortTuplePorts.append(gui_pt);
+
+
     } else {
         ExistingOutPorts << QString::fromStdString(p->getName());
         GUIPortTuple * gui_pt = new GUIPortTuple();
@@ -254,6 +244,7 @@ RootGroupNode::RootGroupNode(  DM::Module *module, GUISimulation * s): ModelNode
     connect( minimizeButton, SIGNAL( Maximize() ), this, SLOT( maximize() ), Qt::DirectConnection );
     connect( minimizeButton, SIGNAL( Minimize() ), this, SLOT( minimize() ), Qt::DirectConnection );
 
+    updatePorts();
 }
 
 void RootGroupNode::RePosTuplePorts() {
