@@ -34,7 +34,7 @@ namespace DM {
     class Module;
     class ModuleLink;
 
-    class VIBE_HELPER_DLL_EXPORT  Port : public IPort
+    class DM_HELPER_DLL_EXPORT  Port : public IPort
     {
     private:
         std::string linkedDataName;

@@ -34,7 +34,7 @@ namespace DM {
     class ModuleLink;
     class Port;
 
-    class VIBE_HELPER_DLL_EXPORT  PortTuple : IPort
+    class DM_HELPER_DLL_EXPORT  PortTuple : IPort
     {
     private:
         int PortType;

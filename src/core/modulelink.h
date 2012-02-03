@@ -30,7 +30,7 @@
 
 namespace DM {
     class Port;
-    class VIBE_HELPER_DLL_EXPORT  ModuleLink
+    class DM_HELPER_DLL_EXPORT  ModuleLink
     {
     private:
         Port * InPort;

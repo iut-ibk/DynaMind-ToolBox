@@ -40,7 +40,7 @@ namespace DM {
 }
 
 namespace DM {
-class VIBE_HELPER_DLL_EXPORT ModuleRegistry
+class DM_HELPER_DLL_EXPORT ModuleRegistry
 {
 public:
     ModuleRegistry();

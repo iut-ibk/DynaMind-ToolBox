@@ -36,6 +36,7 @@
 #include <QRunnable>
 #include <QMutex>
 #include <porttuple.h>
+#include <portobserver.h>
 
 using namespace boost;
 
@@ -193,21 +194,19 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     } else {
         this->inPortTuple.push_back(pt);
     }
+    foreach(PortObserver * po, this->portobserver) {
+        po->changedPorts();
+    }
+
     return pt;
+
+
 }
 
 std::string Group::getParameterAsString(std::string Name) {
     int ID = this->parameter[Name];
     std::stringstream ss;
-    if (ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN ||
-            ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
-    {
-        std::vector<std::string> vec = this->getParameter< std::vector<std::string> >(Name);
-        BOOST_FOREACH(std::string name, vec) {
-            ss <<name << "*|*";
-        }
 
-    }
     ss << Module::getParameterAsString(Name);
     return ss.str();
 

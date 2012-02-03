@@ -29,7 +29,7 @@
 #include <compilersettings.h>
 
 
-    class VIBE_HELPER_DLL_EXPORT PortObserver
+    class DM_HELPER_DLL_EXPORT PortObserver
     {
     public:
         PortObserver();

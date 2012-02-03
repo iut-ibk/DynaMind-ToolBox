@@ -40,7 +40,7 @@ namespace DM {
     class PortTuple;
 
 
-    class VIBE_HELPER_DLL_EXPORT  Group : public Module
+    class DM_HELPER_DLL_EXPORT  Group : public Module
     {
     private:
         ::QMutex * mutex;

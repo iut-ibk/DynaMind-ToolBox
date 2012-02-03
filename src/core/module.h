@@ -65,16 +65,8 @@ namespace DM {
         STRING_MAP,
         BOOL,
         LASTPRIMITIVETYPE,
-        //Port Types
-        USER_DEFINED_DOUBLEDATA_IN,
-        USER_DEFINED_DOUBLEDATA_TUPLE_IN,
-        USER_DEFINED_DOUBLEDATA_TUPLE_OUT,
 
         USER_DEFINED_INPUT,
-
-
-        DOUBLEDATA_OUT,
-        DOUBLEDATA_IN,
 
         SYSTEM_OUT,
         SYSTEM_IN,
@@ -129,9 +121,9 @@ class Simulation;
   * #include "module.h"
   *
   * using namespace vibens;
-  * class VIBE_HELPER_DLL_EXPORT MyModule : public Module
+  * class DM_HELPER_DLL_EXPORT MyModule : public Module
   * {
-  *     VIBe_DECLARE_NODE(MyModule)
+  *     DM_DECLARE_NODE(MyModule)
   *     public:
   *         MyModule();
   *         void run();
@@ -143,7 +135,7 @@ class Simulation;
   *
   * #include "mymodule.h"
   *
-  * VIBe_DECLARE_NODE_NAME(MyModule, MyModuleGroup)
+  * DM_DECLARE_NODE_NAME(MyModule, MyModuleGroup)
   * MyModule::MyModule()
   * {
   * }
@@ -159,7 +151,7 @@ class Simulation;
   * #include "moduleregistry.h"
   * #include "mymodule.h"
   * #include "mymodule2.h"
-  * extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+  * extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
   *      registry->addNodeFactory(new NodeFactory<MyModule>());
   *      registry->addNodeFactory(new NodeFactory<MyModule2>());
   * }
@@ -167,7 +159,7 @@ class Simulation;
   * @author Christian Urich
   *
   */
-class VIBE_HELPER_DLL_EXPORT  Module {
+class DM_HELPER_DLL_EXPORT  Module {
 
 
 public:
@@ -279,8 +271,7 @@ private:
     std::string name;
     std::string urlToHelpFile;
     std::string description;
-    std::vector<PortObserver *> portobserver;
-    std::vector<ResultObserver * > resultobserver;
+
 
     Simulation * simulation;
 
@@ -299,11 +290,13 @@ protected:
     int internalCounter;
     bool init_called;
     Group * group;
+    std::vector<PortObserver *> portobserver;
+    std::vector<ResultObserver * > resultobserver;
 };
 }
 
 
-#define VIBe_DECLARE_NODE(node)  \
+#define DM_DECLARE_NODE(node)  \
     public: \
     static const char *classname; \
     static const char *filename; \
@@ -311,7 +304,7 @@ protected:
     virtual const char *getFileName() ; \
     private:
 
-#define  VIBe_DECLARE_NODE_NAME(nodename, module) \
+#define  DM_DECLARE_NODE_NAME(nodename, module) \
     const char *nodename::classname = #nodename; \
     const char *nodename::getClassName()  { return nodename::classname; } \
     const char *nodename::filename = #module; \

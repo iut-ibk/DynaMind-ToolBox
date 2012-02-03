@@ -35,7 +35,7 @@ namespace DM {
 
     class Module;
 
-    class VIBE_HELPER_DLL_EXPORT INodeFactory {
+    class DM_HELPER_DLL_EXPORT INodeFactory {
     public:
         virtual ~INodeFactory(){}
         virtual Module *createNode() const = 0;
@@ -44,7 +44,7 @@ namespace DM {
     };
 
     template <typename T>
-            class VIBE_HELPER_DLL_EXPORT NodeFactory
+            class DM_HELPER_DLL_EXPORT NodeFactory
                 : public INodeFactory {
                 public:
         NodeFactory();

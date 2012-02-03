@@ -35,7 +35,7 @@ namespace DM {
     class Module;
     class ModuleLink;
 
-    class VIBE_HELPER_DLL_EXPORT  IPort {
+    class DM_HELPER_DLL_EXPORT  IPort {
     public:
         virtual ~IPort() {}
         virtual int getPortType() = 0;

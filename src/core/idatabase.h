@@ -12,7 +12,7 @@
 namespace DM {
 class Module;
 
-class VIBE_HELPER_DLL_EXPORT  IDataBase
+class DM_HELPER_DLL_EXPORT  IDataBase
 {
 
 

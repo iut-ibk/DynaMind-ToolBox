@@ -72,9 +72,6 @@ Module::Module() {
     init_called = false;
     PythonModule = false;
     internalCounter = 0;
-    this->addParameter("InputDouble", DM::USER_DEFINED_DOUBLEDATA_IN, &InputDoubleData);
-
-
     InPorts = std::vector<Port*>();
     OutPorts = std::vector<Port*>();
     name = "";
@@ -291,14 +288,6 @@ void Module::setParameterValue(std::string name, std::string v) {
 
 void Module::setParameter() {
     this->internalCounter++;
-    for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        if (it->second == DM::DOUBLEDATA_OUT) {
-            double val;
-            std::string s = it->first;
-            val = this->getParameter<double>(s);
-            this->setDoubleData(s, val);
-        }
-    }
 
 }
 
@@ -427,15 +416,6 @@ void Module::convertValus(void * value, int Type, QString val) {
         return;
     }
 
-    if (Type== DM::USER_DEFINED_DOUBLEDATA_IN) {
-        std::map<std::string, double> * map =  (std::map<std::string, double> *) value;
-        QStringList list = val.split(QRegExp("\\s+"));
-        foreach(QString s, list) {
-            if (! s.isEmpty()) {
-                map->insert(std::pair<std::string, double>(s.toStdString(), 0));
-            }
-        }
-    }
     return;
 }
 void Module::removePort(std::string LinkedDataName, int PortType) {

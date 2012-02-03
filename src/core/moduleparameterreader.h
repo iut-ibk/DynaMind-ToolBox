@@ -34,7 +34,7 @@
 
 //using namespace boost;
 
-class VIBE_HELPER_DLL_EXPORT ModuleParameterReader : public QXmlDefaultHandler
+class DM_HELPER_DLL_EXPORT ModuleParameterReader : public QXmlDefaultHandler
 {
 public:
     ModuleParameterReader(QString fileName, QString workingDir);
