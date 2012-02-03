@@ -25,6 +25,7 @@
  */
 
 #include "grouptest.h"
+#include <guigrouptest.h>
 
 
 
@@ -34,7 +35,7 @@ GroupTest::GroupTest() {
     Runs = 1;
 
     this->addParameter("Runs", DM::INT, &Runs);
-    this->addTuplePort("Test", DM::INTUPLESYSTEM);
+
 
 
 }
@@ -53,6 +54,22 @@ void GroupTest::init() {
 
 }
 
-void GroupTest::addOutView(std::string n) {
+void GroupTest::addInPort(std::string n) {
 
+    this->addTuplePort(n, DM::INTUPLESYSTEM);
+
+}
+
+void GroupTest::addOutPort(std::string n) {
+
+    this->addTuplePort(n, DM::OUTTUPLESYSTEM);
+
+}
+
+
+bool GroupTest::createInputDialog() {
+
+    QWidget * w = new GUIGroupTest(this);
+    w->show();
+    return true;
 }

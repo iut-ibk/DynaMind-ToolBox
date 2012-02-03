@@ -34,7 +34,7 @@
 #include <iostream>
 #include <vector>
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT GroupTest : public  Group {
+class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
 VIBe_DECLARE_GROUP(GroupTest)
 
     public:
@@ -42,12 +42,14 @@ VIBe_DECLARE_GROUP(GroupTest)
         virtual ~GroupTest(){}
         void run();
         void init();
+        bool createInputDialog();
         std::vector<DM::View> InViews;
         std::vector<DM::View> OutViews;
         int Runs;
         int i;
 
-        void addOutView (std::string view);
+        void addInPort (std::string in);
+        void addOutPort (std::string in);
 };
 
 

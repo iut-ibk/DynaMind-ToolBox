@@ -26,15 +26,43 @@
 
 #include "guigrouptest.h"
 #include "ui_guigrouptest.h"
+#include <grouptest.h>
+#include <QInputDialog>
 
-GUIGroupTest::GUIGroupTest(QWidget *parent) :
+GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIGroupTest)
 {
     ui->setupUi(this);
+
+    this->m = (GroupTest *) m;
+
+    connect(ui->addInport, SIGNAL(pressed()), this, SLOT(addInPort()));
+    connect(ui->addOutport, SIGNAL(pressed()), this, SLOT(addOutPort()));
+
 }
 
 GUIGroupTest::~GUIGroupTest()
 {
     delete ui;
+}
+
+void GUIGroupTest::addInPort() {
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("Name"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty())
+        this->m->addInPort(text.toStdString());
+
+}
+
+void GUIGroupTest::addOutPort() {
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("Name"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty())
+        this->m->addOutPort(text.toStdString());
+
 }

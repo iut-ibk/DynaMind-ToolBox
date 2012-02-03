@@ -29,6 +29,11 @@
 
 #include <QDialog>
 
+namespace DM {
+class Module;
+}
+
+class GroupTest;
 namespace Ui {
 class GUIGroupTest;
 }
@@ -38,11 +43,17 @@ class GUIGroupTest : public QDialog
     Q_OBJECT
     
 public:
-    explicit GUIGroupTest(QWidget *parent = 0);
+    explicit GUIGroupTest(DM::Module * m, QWidget *parent = 0);
     ~GUIGroupTest();
     
 private:
     Ui::GUIGroupTest *ui;
+    GroupTest * m;
+
+
+protected slots:
+    void addInPort();
+    void addOutPort();
 };
 
 #endif // GUIGROUPTEST_H
