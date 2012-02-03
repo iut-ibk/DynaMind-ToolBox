@@ -27,7 +27,7 @@
 #include "dostuffwithrasterdata.h"
 #include <DM.h>
 
-VIBe_DECLARE_NODE_NAME (DoStuffWithRasterData, Modules)
+DM_DECLARE_NODE_NAME (DoStuffWithRasterData, Modules)
 
 DoStuffWithRasterData::DoStuffWithRasterData()
 {

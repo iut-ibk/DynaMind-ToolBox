@@ -32,9 +32,9 @@
 
 using namespace DM;
 
-class VIBE_HELPER_DLL_EXPORT DynamicInOut : public  Module
+class DM_HELPER_DLL_EXPORT DynamicInOut : public  Module
 {
-    VIBe_DECLARE_NODE(DynamicInOut)
+    DM_DECLARE_NODE(DynamicInOut)
 
    private:
         std::vector<DM::View> views;
@@ -50,7 +50,6 @@ public:
     void getAttribute(std::string name);
     void addAttribute(std::string name);
     std::vector<DM::View> getViews(){return this->views;}
-
 
 
 

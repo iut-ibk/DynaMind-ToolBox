@@ -5,7 +5,7 @@
 #include <DMnode.h>
 
 
-VIBe_DECLARE_NODE_NAME( CheckShape,Modules )
+DM_DECLARE_NODE_NAME( CheckShape,Modules )
 CheckShape::CheckShape() {
     std::vector<DM::View> views;
     DM::View shape = DM::View("Shape", DM::SUBSYSTEM, DM::READ);

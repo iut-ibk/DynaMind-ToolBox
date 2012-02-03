@@ -35,7 +35,7 @@
 #include <DMnode.h>
 #include <DMview.h>
 
-VIBe_DECLARE_NODE_NAME( TestModule,Modules )
+DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::WRITE);

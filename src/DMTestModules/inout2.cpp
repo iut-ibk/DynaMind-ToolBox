@@ -4,7 +4,7 @@
 #include <DMnode.h>
 
 
-VIBe_DECLARE_NODE_NAME( InOut2,Modules )
+DM_DECLARE_NODE_NAME( InOut2,Modules )
 InOut2::InOut2() {
 
 

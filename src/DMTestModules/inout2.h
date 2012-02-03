@@ -4,9 +4,9 @@
 #include "compilersettings.h"
 #include "module.h"
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT InOut2 : public  Module {
+class DM_HELPER_DLL_EXPORT InOut2 : public  Module {
 
-VIBe_DECLARE_NODE( InOut2 )
+DM_DECLARE_NODE( InOut2 )
 
     public:
         DM::System * sys_in;

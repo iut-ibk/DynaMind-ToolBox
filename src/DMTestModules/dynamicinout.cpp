@@ -27,7 +27,7 @@
 #include "dynamicinout.h"
 #include <DM.h>
 #include <guidynamicinout.h>
-VIBe_DECLARE_NODE_NAME (DynamicInOut, Modules)
+DM_DECLARE_NODE_NAME (DynamicInOut, Modules)
 
 DynamicInOut::DynamicInOut()
 {

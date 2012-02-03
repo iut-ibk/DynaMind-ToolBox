@@ -5,7 +5,7 @@
 #include <DMnode.h>
 
 
-VIBe_DECLARE_NODE_NAME( CompareNetworks,Modules )
+DM_DECLARE_NODE_NAME( CompareNetworks,Modules )
 CompareNetworks::CompareNetworks() {
     //TODO Activate again
     std::vector<DM::View> views;

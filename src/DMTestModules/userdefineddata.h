@@ -31,8 +31,8 @@
 using namespace DM;
 
 
-class VIBE_HELPER_DLL_EXPORT UserdefinedData : public Module {
-    VIBe_DECLARE_NODE( UserdefinedData  )
+class DM_HELPER_DLL_EXPORT UserdefinedData : public Module {
+    DM_DECLARE_NODE( UserdefinedData  )
     public:
         UserdefinedData();
 

@@ -39,7 +39,7 @@ using namespace std;
 
 
 
-extern "C" void VIBE_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
     registry->addNodeFactory(new NodeFactory<TestModule>());
     registry->addNodeFactory(new NodeFactory<InOut>());
     registry->addNodeFactory(new NodeFactory<InOut2>());

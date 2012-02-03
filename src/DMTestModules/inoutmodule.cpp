@@ -4,7 +4,7 @@
 #include <DMnode.h>
 
 
-VIBe_DECLARE_NODE_NAME( InOut,Modules )
+DM_DECLARE_NODE_NAME( InOut,Modules )
 InOut::InOut() {
 
     Logger(Debug) << "Create InOut";

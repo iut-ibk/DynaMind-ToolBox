@@ -33,7 +33,7 @@ using namespace DM;
 
 class DoStuffWithRasterData : public Module
 {
-    VIBe_DECLARE_NODE(DoStuffWithRasterData)
+    DM_DECLARE_NODE(DoStuffWithRasterData)
 public:
     DoStuffWithRasterData();
     DM::RasterData * rasterdatain;

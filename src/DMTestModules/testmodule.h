@@ -32,9 +32,9 @@
 
 #include "module.h"
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT TestModule : public  Module {
+class DM_HELPER_DLL_EXPORT TestModule : public  Module {
 
-VIBe_DECLARE_NODE(TestModule)
+DM_DECLARE_NODE(TestModule)
 private:
     double value;
 

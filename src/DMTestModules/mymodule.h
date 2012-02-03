@@ -5,9 +5,9 @@
 
 using namespace DM;
 
-class VIBE_HELPER_DLL_EXPORT MyModule : public Module
+class DM_HELPER_DLL_EXPORT MyModule : public Module
 {
-    VIBe_DECLARE_NODE(MyModule)
+    DM_DECLARE_NODE(MyModule)
     private:
         //List of parameters used in the module
         int MyParameter1;

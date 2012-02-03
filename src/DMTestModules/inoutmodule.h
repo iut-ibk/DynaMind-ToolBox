@@ -4,9 +4,9 @@
 #include "compilersettings.h"
 #include "module.h"
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT InOut : public  Module {
+class DM_HELPER_DLL_EXPORT InOut : public  Module {
 
-VIBe_DECLARE_NODE( InOut )
+DM_DECLARE_NODE( InOut )
 
     public:
         //VectorData * vec_in;

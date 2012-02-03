@@ -4,9 +4,9 @@
 #include "compilersettings.h"
 #include "module.h"
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT CompareNetworks : public  Module {
+class DM_HELPER_DLL_EXPORT CompareNetworks : public  Module {
 
-VIBe_DECLARE_NODE( CompareNetworks )
+DM_DECLARE_NODE( CompareNetworks )
 
     public:
         DM::System *n1, *n2;

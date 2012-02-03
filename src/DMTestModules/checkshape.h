@@ -4,9 +4,9 @@
 #include "compilersettings.h"
 #include "module.h"
 using namespace DM;
-class VIBE_HELPER_DLL_EXPORT CheckShape : public  Module {
+class DM_HELPER_DLL_EXPORT CheckShape : public  Module {
 
-VIBe_DECLARE_NODE( CheckShape )
+DM_DECLARE_NODE( CheckShape )
 
     public:
         DM::System * sys_in;
