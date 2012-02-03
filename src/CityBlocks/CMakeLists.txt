@@ -1,0 +1,14 @@
+file(GLOB MODULE_CPPS *.cpp)
+
+include_directories(.)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(cityblock SHARED ${MODULE_CPPS})
+
+target_link_libraries(cityblock ${VIBE2CORE_LIBRARIES} ${VIBE2HELPER_LIBRARIES} ${QT_LIBRARIES})
+
+INSTALL(TARGETS cityblock
+        DESTINATION "lib"
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+
