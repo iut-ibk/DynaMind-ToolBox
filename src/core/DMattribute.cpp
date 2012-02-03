@@ -44,6 +44,13 @@ Attribute::Attribute(std::string name)
     this->name=name;
 }
 
+Attribute::Attribute(std::string name, double val)
+{
+    this->doublevalue = val;
+    this->name=name;
+
+}
+
 Attribute::~Attribute()
 {
 }

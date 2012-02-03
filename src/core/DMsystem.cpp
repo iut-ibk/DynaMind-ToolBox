@@ -28,6 +28,7 @@
 #include <DMcomponent.h>
 #include <DMnode.h>
 #include <DMedge.h>
+#include <dmface.h>
 #include <rasterdata.h>
 #include <DMsystem.h>
 #include <vibe_logger.h>
@@ -68,6 +69,7 @@ System::System(const System& s) : Component(s)
     subsystems=s.subsystems;
     nodes=s.nodes;
     edges=s.edges;
+    faces = s.faces;
     rasterdata = s.rasterdata;
 
     viewdefinitions = s.viewdefinitions;
@@ -98,6 +100,15 @@ System::System(const System& s) : Component(s)
         Edge * e = static_cast<Edge*>(ownedchilds[(*ite).first]);
         edges[(*ite).first]= e;
         this->updateViews(e);
+    }
+
+    //Update Faces
+    std::map<std::string,Face*>::iterator itf;
+
+    for ( itf=faces.begin() ; itf != faces.end(); itf++ ) {
+        Face * f = static_cast<Face*>(ownedchilds[(*itf).first]);
+        faces[(*itf).first]= f;
+        this->updateViews(f);
     }
 
 }
@@ -171,6 +182,35 @@ Edge * System::addEdge(Node * start, Node * end, std::string view)
     return e;
 }
 
+Face * System::addFace(Face *f) {
+    if(!addChild(f))
+        return 0;
+
+    faces[f->getName()]=f;
+    return f;
+}
+
+Face * System::addFace(std::vector<Edge*> edges, std::string view)
+{
+
+
+    std::vector<std::string> stringEdges;
+
+    foreach (Edge* e, edges)
+        stringEdges.push_back(e->getName());
+
+
+    Face * f = this->addFace(new Face(stringEdges));
+
+    if (f == 0)
+        return 0;
+    if (!view.empty()) {
+        this->views[view][f->getName()] = f;
+        f->setView(view);
+    }
+    return f;
+}
+
 Node* System::getNode(std::string name)
 {
     if(nodes.find(name)==nodes.end())
@@ -186,18 +226,41 @@ Edge* System::getEdge(std::string name)
 
     return edges[name];
 }
+Face* System::getFace(std::string name)
+{
+    if(faces.find(name)==faces.end())
+        return 0;
+
+    return faces[name];
+}
+
 
 Component * System::getComponent(std::string name) {
     if(nodes.find(name)!=nodes.end())
         return nodes[name];
-    if(subsystems.find(name)!=subsystems.end())
-        return subsystems[name];
     if(edges.find(name)!=edges.end())
         return edges[name];
+    if(faces.find(name)!=faces.end())
+        return faces[name];
+    if(subsystems.find(name)!=subsystems.end())
+        return subsystems[name];
     if(rasterdata.find(name)!=rasterdata.end())
         return rasterdata[name];
     return 0;
 
+}
+
+bool System::removeFace(std::string name)
+{
+    //check if name is a edge instance
+    if(faces.find(name)==faces.end())
+        return false;
+
+    if(!removeChild(name))
+        return false;
+
+    faces.erase(name);
+    return true;
 }
 
 bool System::removeEdge(std::string name)
@@ -279,7 +342,19 @@ std::map<std::string, Component*> System::getAllComponentsInView(std::string vie
 
     return views[view];
 }
+std::vector<std::string> System::getNamesOfComponentsInView(std::string view) {
 
+
+
+    std::vector<std::string> names;
+
+
+    std::map<std::string, DM::Component*> components_view = this->getAllComponentsInView(view);
+    for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it) {
+        names.push_back(it->first);
+    }
+    return names;
+}
 System* System::getSubSystem(std::string name)
 {
     if(subsystems.find(name)==subsystems.end())
@@ -329,6 +404,14 @@ bool System::addView(View view)
             DM::Node * n2 =this->addNode(0,0,0);
             dummy = this->addEdge(n1,n2);
         }
+        if (  DM::FACE == view.getType()) {
+            DM::Node * n1 =this->addNode(0,0,0);
+            DM::Node * n2 =this->addNode(0,0,0);
+            DM::Edge * e1 = this->addEdge(n1,n2);
+            std::vector<Edge*> ve;
+            ve.push_back(e1);
+            dummy = this->addFace(ve);
+        }
         if (  DM::SUBSYSTEM == view.getType()) {
             dummy = new DM::System(view.getName());
             this->addSubSystem((DM::System*) dummy);
@@ -364,6 +447,11 @@ std::map<std::string, Node*> System::getAllNodes()
 std::map<std::string, Edge*> System::getAllEdges()
 {
     return edges;
+}
+
+std::map<std::string, Face*> System::getAllFaces()
+{
+    return faces;
 }
 
 const std::vector<std::string> System::getViews()  {

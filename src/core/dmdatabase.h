@@ -48,7 +48,7 @@ using namespace DM;
 
 class Module;
 
-class VIBE_HELPER_DLL_EXPORT  DMDatabase : public IDataBase
+class DM_HELPER_DLL_EXPORT  DMDatabase : public IDataBase
 {
 
 

@@ -85,6 +85,12 @@ std::string Component::getName()
     return name;
 }
 
+bool Component::addAttribute(std::string name, double val) {
+    Attribute  attr = Attribute(name, val);
+    return this->addAttribute(attr);
+
+}
+
 bool Component::addAttribute(Attribute newattribute)
 {
     if(attributesview.find(newattribute.getName())!=attributesview.end())

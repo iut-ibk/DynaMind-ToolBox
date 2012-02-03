@@ -29,7 +29,7 @@
 #include "compilersettings.h"
 namespace DM {
 class IDataBase;
-class VIBE_HELPER_DLL_EXPORT  DataManagement
+class DM_HELPER_DLL_EXPORT  DataManagement
 {
 private:
     DataManagement();

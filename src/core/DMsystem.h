@@ -34,6 +34,7 @@ namespace DM {
     enum Components {
         NODE,
         EDGE,
+        FACE,
         SUBSYSTEM,
         RASTERDATA
     };
@@ -41,6 +42,7 @@ namespace DM {
     class Component;
     class Node;
     class Edge;
+    class Face;
     class RasterData;
 
     class System : public Component
@@ -49,6 +51,7 @@ namespace DM {
         std::vector<System*> predecessors;
         std::map<std::string, Node* > nodes;
         std::map<std::string, Edge* > edges;
+        std::map<std::string, Face* > faces;
         std::map<std::string, RasterData *> rasterdata;
         std::map<std::string, System*> subsystems;
         std::map<std::string, View> viewdefinitions;
@@ -65,13 +68,17 @@ namespace DM {
         Node * addNode(double x, double y, double z, std::string view = "");
         Edge* addEdge(Edge* edge);
         Edge* addEdge(Node * start, Node * end, std::string view = "");
-
+        Face * addFace(Face * f);
+        Face * addFace(std::vector<Edge*> edges, std::string view = "");
         Node* getNode(std::string name);
         Edge* getEdge(std::string name);
+        Face * getFace(std::string name);
         bool removeEdge(std::string name);
         bool removeNode(std::string name);
+        bool removeFace(std::string name);
         std::map<std::string, Node*> getAllNodes();
         std::map<std::string, Edge*> getAllEdges();
+        std::map<std::string, Face*> getAllFaces();
         std::vector<System*> getPredecessorStates();
         bool addSubSystem(System *newsystem, std::string view = "");
         System* createSubSystem(std::string name, std::string view);
@@ -87,6 +94,7 @@ namespace DM {
         const std::vector<std::string> getViews();
 
         std::map<std::string, Component*> getAllComponentsInView(std::string view);
+        std::vector<std::string> getNamesOfComponentsInView(std::string view);
 
 
 

@@ -32,5 +32,7 @@
 #include <DMattribute.h>
 #include <DMedge.h>
 #include <DMnode.h>
+#include <dmface.h>
+#include <DMview.h>
 
 #endif // DM_H

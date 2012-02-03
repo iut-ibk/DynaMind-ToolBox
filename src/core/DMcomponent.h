@@ -54,6 +54,7 @@ namespace DM {
         void setName(std::string name);
         std::string getName();
         bool addAttribute(Attribute newattribute);
+        bool addAttribute(std::string, double val);
         bool changeAttribute(Attribute newattribute);
         bool removeAttribute(std::string name);
         Attribute* getAttribute(std::string name);
