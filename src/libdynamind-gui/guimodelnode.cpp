@@ -102,13 +102,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
             layout1->addWidget(l, layout1->rowCount(),0);
             layout1->addWidget(le,layout1->rowCount()-1,1);
             layout1->addWidget(cb,layout1->rowCount()-1,2);
-            QString s2 = "DoubleIn_" + s;
-            std::map<std::string, double> doublemap = m->getParameter<std::map<std::string, double> >("InputDouble");
-            for (std::map<std::string, double>::iterator it = doublemap.begin(); it != doublemap.end(); ++it) {
-                if (s2.toStdString().compare(it->first) == 0)
-                    cb->setChecked(true);
-            }
-            connect(cb, SIGNAL(clicked()), this, SLOT(addUserDefinedDoubleItem()));
+
 
         }
         if ( ID == DM::BOOL) {
@@ -190,64 +184,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
 
         }
-        if (
-                ID == DM::USER_DEFINED_DOUBLEDATA_IN ||
-                ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT ||
-                ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN) {
 
-            QString s  = QString().fromStdString(name);
-            if (s.compare("InputDouble") == 0)
-                continue;
-            QGroupBox * box= new QGroupBox;
-            QGridLayout * layout_grid = new QGridLayout;
-            box->setLayout( layout_grid);
-            this->UserDefinedContainer.insert(s, layout_grid);
-            box->setTitle(s);
-            QPushButton * pb = new QPushButton;
-            pb->setText("+");
-            QString s1;
-
-            if(ID == DM::USER_DEFINED_DOUBLEDATA_IN)
-                s1= "InputDouble|" + s;
-            if(ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN)
-                s1= "InputTupleDouble|" + s;
-            if(ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT)
-                s1= "OutputTupleDouble|" + s;
-            layout_grid->addWidget(pb, 0,0,1,3);
-            pb->setObjectName(s1);
-            connect(pb, SIGNAL(clicked()), this, SLOT(addUserDefinedItem()));
-            std::string stds = s.toStdString();
-            QStringList ls;
-            if (ID == DM::USER_DEFINED_DOUBLEDATA_IN ){
-                std::map<std::string, double> map = m->getParameter<std::map<std::string, double> >(stds);
-
-                for (std::map<std::string, double>::const_iterator it = map.begin(); it != map.end(); ++it ) {
-                    std::string name=it->first;
-                    ls.append(QString::fromStdString(name));
-                }
-            }
-
-            if (
-                    ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_OUT ||
-                    ID == DM::USER_DEFINED_DOUBLEDATA_TUPLE_IN
-                    ){
-                foreach(std::string name, m->getParameter<std::vector<std::string> >(stds)) {
-                    ls.append(QString::fromStdString(name));
-                }
-
-            }
-            foreach (QString s1, ls) {
-                QLabel * l = new QLabel;
-                QPushButton * delp = new QPushButton ;
-                delp->setObjectName(s + "|" + s1);
-                delp->setText("-");
-                l->setText(s1);
-                connect(delp, SIGNAL(clicked()), this, SLOT(removeUserDefinedItem()));
-                layout_grid->addWidget(l, layout_grid->rowCount(),1);
-                layout_grid->addWidget(delp, layout_grid->rowCount()-1,0);
-            }
-            layout1->addWidget(box, layout1->rowCount(),0,1,3);
-        }
 
     }
 

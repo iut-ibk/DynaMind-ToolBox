@@ -41,7 +41,7 @@ extern "C" {
 
 struct PythonEnvPriv;
 
-class VIBE_HELPER_DLL_EXPORT PythonEnv {
+class DM_HELPER_DLL_EXPORT PythonEnv {
 public:
         virtual ~PythonEnv();
         static PythonEnv *getInstance();

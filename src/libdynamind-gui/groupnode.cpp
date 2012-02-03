@@ -125,33 +125,33 @@ void GroupNode::updatePorts () {
 }
 
 void GroupNode::addTuplePort(DM::PortTuple * p) {
-    QStringList ExistingPorts;
 
-    foreach (QString pname, ExistingPorts) {
-        if (pname.compare(QString::fromStdString(p->getName())) == 0) {
-            return;
+
+
+    //Inport
+    if  (p->getPortType() > DM::OUTPORTS) {
+        foreach (QString pname, ExistingInPorts) {
+            if (pname.compare(QString::fromStdString(p->getName())) == 0) {
+                return;
+            }
         }
-    }
-    if  (p->getPortType() > DM::OUTPORTS) {          
         ExistingInPorts << QString::fromStdString(p->getName());
         GUIPort * gui_p = new  GUIPort(this, p->getInPort());
         this->ports.append(gui_p);
-        gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter);
+        gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter++);
 
-    } else {
+    } else {//Outport
+        foreach (QString pname, ExistingOutPorts) {
+            if (pname.compare(QString::fromStdString(p->getName())) == 0) {
+                return;
+            }
+        }
         ExistingOutPorts << QString::fromStdString(p->getName());
-        GUIPortTuple * gui_pt = new GUIPortTuple();
 
-        GUIPort * gui_p = new  GUIPort(this, p->getInPort());
-        this->ports.append(gui_p);
-        gui_pt->inPort = gui_p;
-        gui_p->setPos( this->boundingRect().width()-gui_p->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter);
-
-        gui_p = new  GUIPort(this, p->getOutPort());
-        gui_pt->outPort = gui_p;
+        GUIPort * gui_p = new  GUIPort(this,p->getOutPort());
         this->ports.append(gui_p);
         gui_p->setPos(  this->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter++);
-        this->OutputTuplePorts.append(gui_pt);
+
     }
 
 

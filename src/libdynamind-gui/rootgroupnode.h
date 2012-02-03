@@ -38,7 +38,7 @@ class LinkNode;
 struct LinkNodeTuple;
 struct GUIPortTuple;
 
-class VIBE_HELPER_DLL_EXPORT  RootGroupNode : public ModelNode
+class DM_HELPER_DLL_EXPORT  RootGroupNode : public ModelNode
 {
     Q_OBJECT
 
@@ -46,8 +46,6 @@ private:
     QVector<GUIPortTuple * > OutputTuplePorts;
     QVector<GUIPortTuple * > InPortTuplePorts;
 
-    ModuleDescription module;
-    ModelNodeButton * minimizeButton;
     bool RePosFlag;
     std::string name;
     QVector<ModelNode * > childnodes;
@@ -62,32 +60,21 @@ public:
     void removeTuplePort(int Type, QString s);
     RootGroupNode( DM::Module *module, GUISimulation * s);
      virtual GUIPort * getGUIPort(DM::Port * p);
-    /*QVector<LinkNodeTuple * > getInputTupleRaster(){return this->InputTupleRaster;}
-    QVector<LinkNodeTuple * > getOutputTupleRaster(){return this->OutputTupleRaster;}
-    QVector<LinkNodeTuple * > getInputTupleVector(){return this->InputTupleVector;}
-    QVector<LinkNodeTuple * > getOutputTupleVector(){return this->OutputTupleVector;}
-    QVector<LinkNodeTuple * > getInputTupleDouble(){return this->InputTupleDouble;}
-    QVector<LinkNodeTuple * > getOutputTupleDouble(){return this->OutputTupleDouble;}*/
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
-    void setSelected ( bool selected );
+
     void RePosTuplePorts();
     void recalculateLandH() ;
     bool isGroup(){return true;}
-    virtual void setMinimized(bool b);
 
     void addModelNode(ModelNode * m) ;
 
     void changeGroupID(QString Name);
     void setGroupZValue();
     void removeModelNode(ModelNode *m);
-
+    void setSelected ( bool selected );
     virtual void updatePorts();
 
-public slots:
-    void minimize();
-    void maximize();
 };
 
 #endif // ROOTGROUPNODE_H

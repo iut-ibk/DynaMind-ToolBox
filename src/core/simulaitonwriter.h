@@ -31,7 +31,7 @@
 #include <port.h>
 namespace DM {
     class Simulation;
-    class VIBE_HELPER_DLL_EXPORT SimulaitonWriter
+    class DM_HELPER_DLL_EXPORT SimulaitonWriter
     {
     private:
         static std::string  writeLink(Port * p);

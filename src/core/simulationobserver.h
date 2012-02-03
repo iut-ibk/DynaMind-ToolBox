@@ -29,7 +29,7 @@
 #include "compilersettings.h"
 
 namespace DM {
-class VIBE_HELPER_DLL_EXPORT SimulationObserver
+class DM_HELPER_DLL_EXPORT SimulationObserver
 {
 public:
     SimulationObserver();

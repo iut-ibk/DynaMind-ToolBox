@@ -29,7 +29,7 @@
 #include <iostream>
 #include <rasterdata.h>
 #include <QVector>
-class VIBE_HELPER_DLL_EXPORT ResultObserver
+class DM_HELPER_DLL_EXPORT ResultObserver
 {
 public:
     ResultObserver();

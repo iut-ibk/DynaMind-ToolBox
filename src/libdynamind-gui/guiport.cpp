@@ -65,7 +65,7 @@ GUIPort::GUIPort(ModelNode *modelNode, DM::Port *p) : QGraphicsItem(modelNode)
     this->LinkMode = false;
     this->modelNode = modelNode;
     this->PortType = p->getPortType();
-    this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
+    //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
@@ -104,21 +104,21 @@ void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         painter->strokePath(path, pen);
 
     }
-    QGraphicsSimpleTextItem portname(this->getPortName());
-    //portname.setScale(0.8);
+    portname_graphics.setText(this->getPortName());
+
     if (this->getPortType() > DM::OUTPORTS)
-        painter->drawText(QPoint(10,portname.boundingRect().height()/2+10), this->getPortName());
+        painter->drawText(QPoint(10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
     if (this->getPortType() < DM::OUTPORTS)
-        painter->drawText(QPoint(-portname.boundingRect().width()-10,portname.boundingRect().height()/2+10), this->getPortName());
+        painter->drawText(QPoint(-portname_graphics.boundingRect().width()-10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
     painter->setBrush(Qt::NoBrush);
 }
 
 QRectF GUIPort::boundingRect() const {
-    if(isHover){
-        QRect r (-10, 10,20,20);
+    if(p->getPortType() < DM::OUTPORTS){
+        QRect r (-10, 10,20+this->portname_graphics.boundingRect().width(),20);
         return r;
     } else {
-        QRect r (-10, 10,20,20);
+        QRect r (-10-this->portname_graphics.boundingRect().width(), 10,20+this->portname_graphics.boundingRect().width(),20);
         return r;
     }
 }
@@ -130,8 +130,9 @@ void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
         color = COLOR_VECTORPORT;
 
     prepareGeometryChange ();
-    l = this->simpleTextItem->boundingRect().width()+4;
-    h = this->simpleTextItem->boundingRect().height()+4;
+    l = this->portname_graphics.boundingRect().width()+4;
+
+    h = this->portname_graphics.boundingRect().height()+4;
     x1 = 0;
     if (p->getPortType()  > DM::OUTPORTS  )
         x1 = -l+14;

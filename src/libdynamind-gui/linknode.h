@@ -61,12 +61,12 @@ class GUILink;
 class ModelNode;
 class LinkNode;
 
-struct VIBE_HELPER_DLL_EXPORT LinkNodeTuple {
+struct DM_HELPER_DLL_EXPORT LinkNodeTuple {
     LinkNode * Port1;
     LinkNode * Port2;
 };
 
-class  VIBE_HELPER_DLL_EXPORT LinkNode :  public QGraphicsItem
+class  DM_HELPER_DLL_EXPORT LinkNode :  public QGraphicsItem
 {
     enum { Type = UserType + 2 };
 private:

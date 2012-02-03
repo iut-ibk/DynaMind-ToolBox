@@ -37,7 +37,7 @@ class ModuleDescription;
 
 
 
-class VIBE_HELPER_DLL_EXPORT  GUIModelNode : public QWidget
+class DM_HELPER_DLL_EXPORT  GUIModelNode : public QWidget
 {
     Q_OBJECT
 private:

@@ -31,7 +31,7 @@
 #include <QMap>
 #include <QVector>
 
-struct VIBE_HELPER_DLL_EXPORT ModuleEntry {
+struct DM_HELPER_DLL_EXPORT ModuleEntry {
     QString ClassName;
     QString UUID;
     QString Name;
@@ -39,7 +39,7 @@ struct VIBE_HELPER_DLL_EXPORT ModuleEntry {
     QMap<QString, QString> ParemterList;
 };
 
-class VIBE_HELPER_DLL_EXPORT PortEntry {
+class DM_HELPER_DLL_EXPORT PortEntry {
 public:
     QString UUID;
     QString PortName;
@@ -51,7 +51,7 @@ public:
 
 };
 
-struct VIBE_HELPER_DLL_EXPORT LinkEntry {
+struct DM_HELPER_DLL_EXPORT LinkEntry {
 
     PortEntry InPort;
     PortEntry OutPort;
@@ -59,13 +59,13 @@ struct VIBE_HELPER_DLL_EXPORT LinkEntry {
 
 };
 
-struct VIBE_HELPER_DLL_EXPORT GroupEntry {
+struct DM_HELPER_DLL_EXPORT GroupEntry {
     QString id;
     QString desc_file;
     QString name;
 };
 
-class VIBE_HELPER_DLL_EXPORT SimulationReader : QXmlDefaultHandler {
+class DM_HELPER_DLL_EXPORT SimulationReader : QXmlDefaultHandler {
 public:
     SimulationReader(const QString &fileName);
     QVector<ModuleEntry> getModules()  {

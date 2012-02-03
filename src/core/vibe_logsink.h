@@ -37,7 +37,7 @@ namespace DM {
     class LSEndl {};
 
 
-    class VIBE_HELPER_DLL_EXPORT LogSink
+    class DM_HELPER_DLL_EXPORT LogSink
     {
     public:
         virtual ~LogSink() {}
@@ -49,7 +49,7 @@ namespace DM {
         virtual LogSink &operator<<(LSEndl) = 0;
     };
 
-    class VIBE_HELPER_DLL_EXPORT OStreamLogSink : public LogSink {
+    class DM_HELPER_DLL_EXPORT OStreamLogSink : public LogSink {
     public:
         OStreamLogSink(std::ostream &ostream);
         ~OStreamLogSink();

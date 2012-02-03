@@ -31,7 +31,7 @@
 #include <QObject>
 
 
-class VIBE_HELPER_DLL_EXPORT SimulationManagment :public QObject, public DM::SimulationObserver
+class DM_HELPER_DLL_EXPORT SimulationManagment :public QObject, public DM::SimulationObserver
 {
     Q_OBJECT
 public:

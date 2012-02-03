@@ -30,7 +30,7 @@
 #include "compilersettings.h"
 #include <QGraphicsItem>
 
-class VIBE_HELPER_DLL_EXPORT ModelNodeButton : public  QObject, public QGraphicsItem
+class DM_HELPER_DLL_EXPORT ModelNodeButton : public  QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)

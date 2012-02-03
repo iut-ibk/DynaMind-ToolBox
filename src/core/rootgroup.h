@@ -27,7 +27,7 @@
 #define ROOTGROUP_H
 #include <group.h>
 namespace DM {
-    class VIBE_HELPER_DLL_EXPORT  RootGroup : public Group
+    class DM_HELPER_DLL_EXPORT  RootGroup : public Group
     {
     public:
         RootGroup();

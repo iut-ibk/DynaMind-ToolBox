@@ -42,11 +42,11 @@ class Port;
 class ModelNode;
 class GUILink;
 
-class VIBE_HELPER_DLL_EXPORT GUIPort : public QGraphicsItem
+class DM_HELPER_DLL_EXPORT GUIPort : public QGraphicsItem
 {
 private:
 
-    QGraphicsSimpleTextItem * simpleTextItem;
+
     QColor color;
     ModelNode * modelNode;
     GUILink * tmp_link;
@@ -60,6 +60,7 @@ private:
     float l;
     float h;
     float x1;
+     QGraphicsSimpleTextItem portname_graphics;
 
 public:
     GUIPort(ModelNode * modelNode, DM::Port * p);

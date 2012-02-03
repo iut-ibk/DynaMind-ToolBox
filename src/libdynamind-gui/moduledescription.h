@@ -34,7 +34,7 @@
 #include <QVariant>
 #include <QStringList>
 
-class VIBE_HELPER_DLL_EXPORT Points {
+class DM_HELPER_DLL_EXPORT Points {
 public:
 
     Points(){}
@@ -48,7 +48,7 @@ public:
 
 };
 Q_DECLARE_METATYPE(Points);
-struct  VIBE_HELPER_DLL_EXPORT VectorDataDescription {
+struct  DM_HELPER_DLL_EXPORT VectorDataDescription {
     QString Name;
     QStringList Points;
     QStringList Edges;
@@ -57,7 +57,7 @@ struct  VIBE_HELPER_DLL_EXPORT VectorDataDescription {
     QStringList Attributes;
 };
 
-class  VIBE_HELPER_DLL_EXPORT ModuleDescription {
+class  DM_HELPER_DLL_EXPORT ModuleDescription {
 public:
     QString name;
     QString filename;

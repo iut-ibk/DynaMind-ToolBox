@@ -35,7 +35,7 @@ enum VDH{
     BOTH
 
 };
-/*class VIBE_HELPER_DLL_EXPORT VectorDataHelper
+/*class DM_HELPER_DLL_EXPORT VectorDataHelper
 {
 public:
     //VectorDataHelper(){};

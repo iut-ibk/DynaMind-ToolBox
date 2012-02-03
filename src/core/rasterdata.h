@@ -35,7 +35,7 @@ namespace   ublas = boost::numeric::ublas;
 
 namespace DM {
 
-class VIBE_HELPER_DLL_EXPORT RasterData : public Component
+class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
     RasterData(long  width, long  height, double  cellSize);

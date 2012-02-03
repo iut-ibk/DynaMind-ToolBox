@@ -31,7 +31,7 @@
 #include <QString>
 #include "moduledescription.h"
 
-class  VIBE_HELPER_DLL_EXPORT ModuleReader : public QXmlDefaultHandler
+class  DM_HELPER_DLL_EXPORT ModuleReader : public QXmlDefaultHandler
 {
     
 public:

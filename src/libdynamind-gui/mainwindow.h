@@ -63,7 +63,7 @@ namespace DM {
 
 
 
-class VIBE_HELPER_DLL_EXPORT MainWindow : public QMainWindow, public Ui::MainWindow
+class DM_HELPER_DLL_EXPORT MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 public:

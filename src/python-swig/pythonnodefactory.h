@@ -32,7 +32,7 @@
 namespace DM {
 struct PNodeFactoryPriv;
 
-class VIBE_HELPER_DLL_EXPORT  PythonNodeFactory : public INodeFactory
+class DM_HELPER_DLL_EXPORT  PythonNodeFactory : public INodeFactory
 {
 public:
     PythonNodeFactory(boost::python::object klass, std::string filename);

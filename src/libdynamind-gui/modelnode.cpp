@@ -436,7 +436,9 @@ void ModelNode::printData() {
             DM::Logger(DM::Debug) << name;
             DM::View view = sys->getViewDefinition(name);
             DM::Component * c = sys->getComponent(view.getIdOfDummyComponent());
-
+            if (c == 0) {
+                continue;
+            }
             std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
             for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
                 DM::Logger(DM::Debug) << it->first;

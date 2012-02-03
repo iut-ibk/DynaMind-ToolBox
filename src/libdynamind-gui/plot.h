@@ -38,7 +38,7 @@
 #include <math.h>
 #include <QVector>
 
-class  VIBE_HELPER_DLL_EXPORT Plot : public QwtPlot
+class  DM_HELPER_DLL_EXPORT Plot : public QwtPlot
 {
     Q_OBJECT
 public:

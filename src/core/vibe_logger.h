@@ -38,7 +38,7 @@ class QString;
 namespace DM {
     //class Variable;
 
-    class VIBE_HELPER_DLL_EXPORT Logger {
+    class DM_HELPER_DLL_EXPORT Logger {
     public:
         Logger(LogLevel level = Standard);
         virtual ~Logger();

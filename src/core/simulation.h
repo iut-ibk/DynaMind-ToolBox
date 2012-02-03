@@ -46,7 +46,7 @@ namespace DM {
     class ModuleLink;
     class Group;
 
-    class VIBE_HELPER_DLL_EXPORT Simulation:public QThread {
+    class DM_HELPER_DLL_EXPORT Simulation:public QThread {
     public:
         Simulation(std::string fileName, std::vector<std::string> pythonModules);
         Simulation();

@@ -32,7 +32,7 @@
 #include <QTextCursor>
 #include <cstdio>
 
-class  VIBE_HELPER_DLL_EXPORT Q_DebugStream : public QObject, public std::basic_streambuf<char>
+class  DM_HELPER_DLL_EXPORT Q_DebugStream : public QObject, public std::basic_streambuf<char>
 {
     Q_OBJECT
 public:

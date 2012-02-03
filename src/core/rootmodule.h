@@ -29,7 +29,7 @@
 #include "compilersettings.h"
 #include "module.h"
 
-class VIBE_HELPER_DLL_EXPORT RootModule : public DM::Module
+class DM_HELPER_DLL_EXPORT RootModule : public DM::Module
 {
 public:
     RootModule();

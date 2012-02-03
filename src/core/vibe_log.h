@@ -50,7 +50,7 @@ namespace DM {
     if (level <= max) return *this;\
             out << logLevel() << ": " << "\n"
 
-            class VIBE_HELPER_DLL_EXPORT Log
+            class DM_HELPER_DLL_EXPORT Log
     {
     public:
         static void init(LogSink *sink, LogLevel max = Debug);

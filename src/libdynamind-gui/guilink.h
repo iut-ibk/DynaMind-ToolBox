@@ -37,7 +37,7 @@
 class GUIPort;
 class GUISimulation;
 
-class  VIBE_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
+class  DM_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)

@@ -33,7 +33,7 @@
 #include "moduledescription.h"
 #include "modelnode.h"
 #include <QXmlDefaultHandler>
-struct  VIBE_HELPER_DLL_EXPORT LoadLink {
+struct  DM_HELPER_DLL_EXPORT LoadLink {
     int FromID;
     int ToID;
     QString FromName;
@@ -43,7 +43,7 @@ struct  VIBE_HELPER_DLL_EXPORT LoadLink {
     bool Visibile;
 };
 
-class  VIBE_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
+class  DM_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
 {
 public:
     SimulationIO();

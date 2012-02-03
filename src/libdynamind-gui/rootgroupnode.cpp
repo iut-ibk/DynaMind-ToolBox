@@ -27,7 +27,7 @@
 #include <linknode.h>
 #include <moduledescription.h>
 #include <QGraphicsDropShadowEffect>
-#include <modelnodebutton.h>
+
 #include <ColorPalette.h>
 
 #include <group.h>
@@ -72,43 +72,8 @@ void RootGroupNode::changeGroupID(QString Name) {
     std::cout << this->getName().toStdString() << std::endl;
     this->getName() = Name;
 }
-void RootGroupNode::minimize() {
-    this->minimized = true;
-    foreach(ModelNode * m, this->childnodes) {
-        if (m->isGroup()) {
-            RootGroupNode * g = (RootGroupNode*) m;
-            g->setMinimized( true );
-            g->minimize();            
-        } else {
-            m->setMinimized( true );
-            m->update();
-        }
-    }
-    recalculateLandH();
-    if(this->scene() != 0)
-        this->scene()->update();
-
-}
 
 
-void RootGroupNode::maximize() {
-    this->minimized = false;
-    foreach(ModelNode * m, this->childnodes) {
-        if (m->isGroup()) {
-            RootGroupNode * g = (RootGroupNode*) m;
-            //g->maximize();
-            g->setMinimized (false);
-        } else {
-            m->setMinimized (false);
-            m->update();
-        }
-    }
-    recalculateLandH();
-    if(this->scene() != 0)
-        this->scene()->update();
-
-
-}
 
 void RootGroupNode::updatePorts () {
     DM::Group * g = (DM::Group*)this->VIBeModule;
@@ -125,34 +90,31 @@ void RootGroupNode::updatePorts () {
 }
 
 void RootGroupNode::addTuplePort(DM::PortTuple * p) {
-    QStringList ExistingPorts;
-    foreach (QString pname, ExistingPorts) {
-        if (pname.compare(QString::fromStdString(p->getName())) == 0) {
-            return;
-        }
-    }
+
+    //Inport
     if  (p->getPortType() > DM::OUTPORTS) {
+        foreach (QString pname, ExistingInPorts) {
+            if (pname.compare(QString::fromStdString(p->getName())) == 0) {
+                return;
+            }
+        }
 
         ExistingInPorts << QString::fromStdString(p->getName());
         GUIPort * gui_p = new  GUIPort(this, p->getOutPort());
         this->ports.append(gui_p);
         gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter++);
 
-
+        //Outport
     } else {
+        foreach (QString pname, ExistingOutPorts) {
+            if (pname.compare(QString::fromStdString(p->getName())) == 0) {
+                return;
+            }
+        }
         ExistingOutPorts << QString::fromStdString(p->getName());
-        GUIPortTuple * gui_pt = new GUIPortTuple();
-
-        GUIPort * gui_p = new  GUIPort(this, p->getInPort());
+        GUIPort *gui_p = new  GUIPort(this, p->getInPort());
         this->ports.append(gui_p);
-        gui_pt->inPort = gui_p;
-        gui_p->setPos( this->boundingRect().width()-gui_p->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter);
-
-        gui_p = new  GUIPort(this, p->getOutPort());
-        gui_pt->outPort = gui_p;
-        this->ports.append(gui_p);
-        gui_p->setPos(  this->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter++);
-        this->OutputTuplePorts.append(gui_pt);
+        gui_p->setPos(  l,gui_p->boundingRect().height()*this->outputCounter++);
     }
 
 
@@ -213,53 +175,18 @@ RootGroupNode::RootGroupNode(  DM::Module *module, GUISimulation * s): ModelNode
     w = w < 140 ? 140 : w;
     l = w+4;
     h =  this->simpleTextItem->boundingRect().height()+65;
-    unordered_map<std::string, int> parameter;
-    std::cout << "L "<< l << std::endl;
-    std::cout << "H"  << h << std::endl;
-
-    //QStringList list = module.parameter.keys();
-    QStringList list;
-    /*foreach (QString s, list)
-        parameter[s.toStdString()] = module.parameter[s];*/
-
-    for (unordered_map<std::string, int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        QString name = QString::fromStdString(it->first);
-        int type = it->second;
-
-        if (type == DM::DOUBLEDATA_IN) {
-            //module.inputDouble.append(name);
-        }
-        if (type == DM::DOUBLEDATA_OUT) {
-            //module.outputDouble.append(name);
-        }
-
-    }
-
-
-    minimizeButton = new ModelNodeButton(this);
-    minimizeButton->moveBy(w-16, 4 );
-    minimizeButton->setVisible(true);
-
     Color = COLOR_MODULE;
-    connect( minimizeButton, SIGNAL( Maximize() ), this, SLOT( maximize() ), Qt::DirectConnection );
-    connect( minimizeButton, SIGNAL( Minimize() ), this, SLOT( minimize() ), Qt::DirectConnection );
-
     updatePorts();
 }
 
 void RootGroupNode::RePosTuplePorts() {
-    foreach(GUIPortTuple * pt, this->OutputTuplePorts) {
-        GUIPort * gui_p = pt->inPort;
-
-        gui_p->setPos(l-gui_p->boundingRect().width(), gui_p->pos().y());
-        gui_p = pt->outPort;
-        gui_p->setPos( l, gui_p->pos().y());
-
+    foreach(GUIPort * p, this->ports) {
+        if (p->getPortType() > DM::OUTPORTS) {
+            p->setPos(l, p->pos().y());
+        }
     }
-    minimizeButton->setPos(l-18, 4);
-
-
 }
+
 void RootGroupNode::setSelected(  bool selected ) {
     foreach(ModelNode * m, this->childnodes) {
         m->setSelected(true);
@@ -273,89 +200,42 @@ void RootGroupNode::setSelected(  bool selected ) {
 
 
 }
-void RootGroupNode::setMinimized(bool b) {
-    this->minimized = b;
 
-    bool visible = true;
-
-    if  (b) {
-        if (this->parentGroup != 0) {
-            if (this->parentGroup->isMinimized()) {
-                visible = false;
-
-            }
-        }
-    }
-    this->visible = visible;
-
-    foreach(GUIPortTuple * pt, OutputTuplePorts) {
-        if (this->isMinimized()) {
-            pt->inPort->setVisible(false);
-        } else {
-            pt->inPort->setVisible(true);
-            pt->outPort->setVisible(true);
-        }
-        if (this->parentGroup != 0) {
-            if (this->parentGroup->isMinimized()) {
-                pt->outPort->setVisible(false);
-            }
-        }
-    }
-    foreach(GUIPortTuple * pt, InPortTuplePorts) {
-        if (this->parentGroup != 0) {
-            if (this->parentGroup->isMinimized()) {
-                pt->inPort->setVisible(false);
-            }
-        }
-        if (this->isMinimized()) {
-            pt->outPort->setVisible(false);
-        } else {
-            pt->outPort->setVisible(true);
-            pt->inPort->setVisible(true);
-        }
-    }
-
-    foreach(ModelNode * m, this->childnodes) {
-        m->setMinimized( b );
-    }
-}
 void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
     QString name;
     //DM::Group;
     this->setGroupZValue();
     std::cout << l << "/" << h << std::endl;
-    if (this->visible) {
-        recalculateLandH();
-        minimizeButton->setVisible(true);
-        if(this->isSelected()== true) {
-            painter->setBrush(Qt::gray);
 
-        } else {
-            painter->setBrush(Qt::white);
-        }
-        this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->VIBeModule->getName()));
-        if (simpleTextItem->boundingRect().width()+40 > l)
-                l = simpleTextItem->boundingRect().width()+40;
-        painter->drawRect(0, 0, l,h);
-        if (this->childnodes.size() > 0)
-            this->setPos(x1-40, y1-20);
+    recalculateLandH();
 
-        painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->VIBeModule->getName()));
-
-
-        if((RePosFlag) != 0) {
-            RePosTuplePorts();
-            RePosFlag = false;
-        }
+    if(this->isSelected()== true) {
+        painter->setBrush(Qt::gray);
 
     } else {
-        minimizeButton->setVisible(false);
+        painter->setBrush(Qt::white);
     }
+    this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->VIBeModule->getName()));
+    if (simpleTextItem->boundingRect().width()+40 > l)
+        l = simpleTextItem->boundingRect().width()+40;
+    painter->drawRect(0, 0, l,h);
+    //if (this->childnodes.size() > 0)
+        this->setPos(x1-40, y1-20);
+
+    painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->VIBeModule->getName()));
+
+
+    if((RePosFlag) != 0) {
+        RePosTuplePorts();
+        RePosFlag = false;
+    }
+
+
 
 }
 QRectF RootGroupNode::boundingRect() const {
-    return QRect(0, 0, l, h);
+    return QRect(-100, -100, l+200, h+200);
 
 }
 void RootGroupNode::addModelNode(ModelNode *m) {

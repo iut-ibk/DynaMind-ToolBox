@@ -42,7 +42,7 @@ class ModelNode;
 class GroupNode;
 class RootGroupNode;
 
-class  VIBE_HELPER_DLL_EXPORT ProjectViewer :public QGraphicsScene
+class  DM_HELPER_DLL_EXPORT ProjectViewer :public QGraphicsScene
 {
     Q_OBJECT
 public:

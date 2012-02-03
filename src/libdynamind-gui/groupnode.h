@@ -41,7 +41,7 @@ struct GUIPortTuple {
     GUIPort * outPort;
 };
 
-class VIBE_HELPER_DLL_EXPORT  GroupNode : public ModelNode
+class DM_HELPER_DLL_EXPORT  GroupNode : public ModelNode
 {
     Q_OBJECT
 

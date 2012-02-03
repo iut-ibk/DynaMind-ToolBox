@@ -29,7 +29,7 @@
 #include "compilersettings.h"
 #include <ui_preferences.h>
 
-class VIBE_HELPER_DLL_EXPORT Preferences :public QDialog, public Ui::Preferences
+class DM_HELPER_DLL_EXPORT Preferences :public QDialog, public Ui::Preferences
 {
     Q_OBJECT
 public:
