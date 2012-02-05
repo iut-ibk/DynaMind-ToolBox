@@ -45,7 +45,7 @@ bool ComplexGeometry()
     parcel->addAttribute(attr);
 
     //Add parcel to the system
-    sys->addSubSystem(parcel, "Parcels");
+    sys->addSubSystem(parcel, parcelview);
 
     //Get Component and Test if it is working
     std::vector<std::string> NamesOfViews = sys->getViews();
@@ -54,7 +54,7 @@ bool ComplexGeometry()
         DM::Logger(DM::Debug) << s;
     }
 
-    std::map<std::string, DM::Component*> components_view = sys->getAllComponentsInView("Parcels");
+    std::map<std::string, DM::Component*> components_view = sys->getAllComponentsInView(parcelview);
     for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it) {
         DM::Logger(DM::Debug) << it->first;
          DM::Component * c  = it->second;

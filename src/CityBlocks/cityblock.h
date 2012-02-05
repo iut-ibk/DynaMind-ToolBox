@@ -24,20 +24,26 @@
  *
  */
 
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef CREATEPARCELS_H
+#define CREATEPARCELS_H
 
 #include <module.h>
-
-class Block : public  DM::Module
+#include <DM.h>
+class CityBlock : public DM::Module
 {
-    DM_DECLARE_NODE( Block )
-public:
-    Block();
+    DM_DECLARE_NODE(CityBlock)
+    public:
+        CityBlock();
     void run();
 
+private:
+    double height;
+    double width;
 
-
+    DM::View superblock;
+    DM::View  intersections;
+    DM::View cityblock;
+    DM::View streets;
 };
 
-#endif // BLOCK_H
+#endif // CREATEPARCELS_H

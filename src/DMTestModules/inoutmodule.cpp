@@ -9,11 +9,11 @@ InOut::InOut() {
 
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
-    DM::View inlets = DM::View("Inlets",DM::NODE, DM::MODIFY);
+    inlets = DM::View("Inlets",DM::NODE, DM::MODIFY);
     inlets.getAttribute("A");
     inlets.getAttribute("B");
     inlets.addAttribute("C");
-    DM::View conduits = DM::View("Conduits", DM::EDGE, DM::MODIFY);
+    conduits = DM::View("Conduits", DM::EDGE, DM::MODIFY);
     conduits.addAttribute("D");
     conduits.addAttribute("F");
 
@@ -48,8 +48,8 @@ void InOut::run() {
         //Logger(Debug) << n->getName() << n->getX() << n->getY() << n->getZ();
     }
 
-    DM::Node * n1 = sys_in->addNode(0,0,2, "Inlets");
-    DM::Node * n2 = sys_in->addNode(0,0,3, "Inlets");
+    DM::Node * n1 = sys_in->addNode(0,0,2, inlets);
+    DM::Node * n2 = sys_in->addNode(0,0,3, inlets);
 
     double b = 0;
 
@@ -75,7 +75,7 @@ void InOut::run() {
     Logger(Debug) << b;
     */
 
-    sys_in->addEdge(n1, n2, "Conduits");
+    sys_in->addEdge(n1, n2, conduits);
 
 
 }

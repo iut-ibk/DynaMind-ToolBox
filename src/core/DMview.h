@@ -54,7 +54,7 @@ private:
 
 public:
     View(std::string name, int type, int accesstypeGeometry = READ);
-    View(){}
+    View();
 
     void addAttribute(std::string name);
     void getAttribute(std::string name);
@@ -63,7 +63,7 @@ public:
 
     void setIdOfDummyComponent(std::string UUID);
     std::string getIdOfDummyComponent();
-    std::string getName(){return this->name;}
+    std::string const & getName() const {return this->name;}
     std::vector<std::string>  getWriteAttributes  () const;
     std::vector<std::string>  getReadAttributes  () const;
 
@@ -71,8 +71,10 @@ public:
     int const & getAccessType() const{return accesstypeGeometry;}
     bool reads();
     bool writes();
+    bool operator<(const View & other) const;
 
 };
 }
+
 
 #endif // DMVIEW_H

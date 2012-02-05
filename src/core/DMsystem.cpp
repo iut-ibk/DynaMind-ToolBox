@@ -35,7 +35,7 @@
 
 using namespace DM;
 
-System::System(std::string name, std::string view) : Component()
+System::System(std::string name, const DM::View & view ) : Component()
 {
 
 }
@@ -58,7 +58,7 @@ std::vector<std::string> System::getNamesOfViews() {
     return names;
 
 }
-DM::View System::getViewDefinition(string name) {
+DM::View  System::getViewDefinition(string name) {
 
     return viewdefinitions[name];
 }
@@ -136,22 +136,22 @@ RasterData * System::addRasterData(RasterData *r)
     return r;
 }
 
-System* System::createSubSystem(std::string name, std::string view)
+System* System::createSubSystem(std::string name,const DM::View & view)
 {
     System* newsystem = new System(name, view);
     this->addSubSystem(newsystem,view);
     return newsystem;
 }
 
-Node * System::addNode(double x, double y, double z, std::string view) {
+Node * System::addNode(double x, double y, double z,  const DM::View & view) {
 
     Node * n = this->addNode(new Node(x, y, z));
 
     if (n == 0)
         return 0;
-    if (!view.empty()) {
-        this->views[view][n->getName()] = n;
-        n->setView(view);
+    if (!view.getName().empty()) {
+        this->views[view.getName()][n->getName()] = n;
+        n->setView(view.getName());
     }
 
 
@@ -169,15 +169,15 @@ Edge * System::addEdge(Edge* edge)
     edges[edge->getName()]=edge;
     return edge;
 }
-Edge * System::addEdge(Node * start, Node * end, std::string view)
+Edge * System::addEdge(Node * start, Node * end, const View &view)
 {
     Edge * e = this->addEdge(new Edge(start->getName(), end->getName()));
 
     if (e == 0)
         return 0;
-    if (!view.empty()) {
-        this->views[view][e->getName()] = e;
-        e->setView(view);
+    if (!view.getName().empty()) {
+        this->views[view.getName()][e->getName()] = e;
+        e->setView(view.getName());
     }
     return e;
 }
@@ -190,7 +190,7 @@ Face * System::addFace(Face *f) {
     return f;
 }
 
-Face * System::addFace(std::vector<Edge*> edges, std::string view)
+Face * System::addFace(std::vector<Edge*> edges,  const DM::View & view)
 {
 
 
@@ -204,9 +204,9 @@ Face * System::addFace(std::vector<Edge*> edges, std::string view)
 
     if (f == 0)
         return 0;
-    if (!view.empty()) {
-        this->views[view][f->getName()] = f;
-        f->setView(view);
+    if (!view.getName().empty()) {
+        this->views[view.getName()][f->getName()] = f;
+        f->setView(view.getName());
     }
     return f;
 }
@@ -310,8 +310,12 @@ bool System::removeNode(std::string name)
 
     return true;
 }
+bool System::addComponentToView(Component *comp, const View &view) {
+    this->views[view.getName()][comp->getName()] = comp;
+    comp->setView(view.getName());
+}
 
-bool System::addSubSystem(System *newsystem, string view)
+bool System::addSubSystem(System *newsystem,  const DM::View & view)
 {
     //TODO add View to subsystem
     if(!addChild(newsystem))
@@ -321,9 +325,9 @@ bool System::addSubSystem(System *newsystem, string view)
 
 
 
-    if (!view.empty()) {
-        this->views[view][newsystem->getName()] = newsystem;
-        newsystem->setView(view);
+    if (!view.getName().empty()) {
+        this->views[view.getName()][newsystem->getName()] = newsystem;
+        newsystem->setView(view.getName());
     }
 
     return true;
@@ -338,11 +342,11 @@ bool System::removeSubSystem(std::string name)
 
     return true;
 }
-std::map<std::string, Component*> System::getAllComponentsInView(std::string view) {
+std::map<std::string, Component*> System::getAllComponentsInView(DM::View & view) {
 
-    return views[view];
+    return views[view.getName()];
 }
-std::vector<std::string> System::getNamesOfComponentsInView(std::string view) {
+std::vector<std::string> System::getNamesOfComponentsInView(DM::View & view) {
 
 
 
@@ -385,7 +389,7 @@ bool System::addView(View view)
 
     //For each view one dummy element will be created
     //Check for existing View
-    DM::View existingView = this->viewdefinitions[view.getName()];
+    DM::View  existingView = this->viewdefinitions[view.getName()];
 
 
     if (!view.writes()) {

@@ -24,23 +24,25 @@
  *
  */
 
-#include "block.h"
+#include "superblock.h"
 #include <DM.h>
 #include <DMview.h>
 //Creates a Block with 1 per 1 meter
 
 
-DM_DECLARE_NODE_NAME( Block,BlockCity )
-Block::Block()
+DM_DECLARE_NODE_NAME( SuperBlock,BlockCity )
+SuperBlock::SuperBlock()
 {
     std::vector<DM::View> views;
-    DM::View block = DM::View("BLOCK", DM::FACE, DM::WRITE);
+    block = DM::View("SUPERBLOCK", DM::FACE, DM::WRITE);
+    block.addAttribute("Height");
+    block.addAttribute("Width");
     views.push_back(block);
 
     this->addData("City", views);
 
 }
-void Block::run() {
+void SuperBlock::run() {
 
     DM::System * blocks = this->getData("City");
 
@@ -64,7 +66,9 @@ void Block::run() {
     ve.push_back(e4);
 
 
-    DM::Face * f = blocks->addFace(ve, "BLOCK");
+    DM::Face * f = blocks->addFace(ve, block);
+    f->addAttribute("Height", 1000);
+    f->addAttribute("Width", 1000);
 
 
 }

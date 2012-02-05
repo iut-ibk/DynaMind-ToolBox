@@ -1,14 +1,13 @@
 file(GLOB MODULE_CPPS *.cpp)
 
 include_directories(.)
-include_directories(../DMToolboxes)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(cityblock SHARED ${MODULE_CPPS})
+add_library(dynamindsewer SHARED ${MODULE_CPPS})
 
-target_link_libraries(cityblock dynamindtoolbox dynamindcore ${QT_LIBRARIES})
+target_link_libraries (dynamindsewer dynamindtoolbox dynamindcore ${QT_LIBRARIES})
 
-INSTALL(TARGETS cityblock
+INSTALL(TARGETS dynamindsewer
         DESTINATION "lib"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 

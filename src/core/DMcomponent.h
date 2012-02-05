@@ -32,7 +32,7 @@
 #include <vector>
 #include <list>
 #include <set>
-
+#include <DMview.h>
 namespace DM {
 
     class Attribute;
@@ -46,6 +46,8 @@ namespace DM {
         std::map<std::string,Component*> ownedchilds;
         std::map<std::string,Attribute*> ownedattributes;
         std::set<std::string> inViews;
+
+
 
     public:
         Component();
@@ -64,7 +66,8 @@ namespace DM {
         bool removeChild(std::string name);
         Component* getChild(std::string name);
         std::map<std::string, Component*> getAllChilds();
-        void setView(std::string);
+        void setView(std::string view);
+        void setView(const DM::View & view);
         std::set<std::string> const &  getInViews() const;
         virtual Component* clone()=0;
     };

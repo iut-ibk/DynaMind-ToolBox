@@ -23,31 +23,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef TESTMODULE_H
-#define TESTMODULE_H
-#include "compilersettings.h"
-#include "DMcomponent.h"
-#include "DMsystem.h"
-#include "QVariant"
+#ifndef TIMEAREAMETHOD_H
+#define TIMEAREAMETHOD_H
 
-#include "module.h"
-#include "DM.h"
-using namespace DM;
-class DM_HELPER_DLL_EXPORT TestModule : public  Module {
+#include <module.h>
+#include <DM.h>
 
-DM_DECLARE_NODE(TestModule)
+
+/*
+* @ingroup Sewer
+* @brief TimeAreaMethod
+*
+* @author Christian Urich
+*/
+class DM_HELPER_DLL_EXPORT TimeAreaMethod : public  DM::Module {
+
+DM_DECLARE_NODE (TimeAreaMethod)
+
+public:
+    TimeAreaMethod();
+void run();
 private:
-    double value;
-    DM::View inlets;
-    DM::View conduits;
-    DM::View SomeRandomInformation;
-    DM::View rdata;
-    public:
-        DM::System * outputData;
-        DM::RasterData * outputRasterData;
-        TestModule();
-        void run();
-        virtual ~TestModule();
+    DM::View conduit;
+    DM::View inlet;
+    DM::View shaft;
+    DM::View endnodes;
+    DM::View catchment;
+
+    std::vector<DM::Node *> PointList;
+    std::vector<DM::Edge *> EdgeList;
+
+    std::vector<DM::Node*> EndPointList;
+
+    double v;
+    double r15;
+    bool checkPoint(DM::Node *p);
+    std::vector<DM::Edge *> findConnectedEdges(DM::System * city, DM::Node* ID);
+    DM::Node* findDownStreamNode(DM::System *city, DM::Node * ID);
+    double chooseDiameter(double diameter);
+    double caluclateAPhi(DM::Component *  attr, double r15) const;
+
+
+
+
+
 };
 
-#endif // TESTMODULE_H
+#endif // TIMEAREAMETHOD_H

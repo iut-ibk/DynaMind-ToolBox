@@ -23,21 +23,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
+#include "compilersettings.h"
 #include "nodefactory.h"
 #include "moduleregistry.h"
-#include "superblock.h"
-#include "cityblock.h"
-#include "simplesewerlayout.h"
+#include "timeareamethod.h"
+/*#include "generatesewernetwork.h"
+#include "extractnetwork.h"
 
+#include "networkanalysis.h"
+
+#include "vibeswmm.h"
+#include "pickstartpoints.h"
+#include "outfallplacement.h"
+#include "infiltrationtrench.h"
+#include "selectinfiltration.h"*/
+
+#include <iostream>
 
 using namespace std;
 
-
+/**
+  * @addtogroup Sewer
+  * @brief Sewer Modules
+  * @author Christian Urich
+  */
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<SuperBlock>());
-    registry->addNodeFactory(new DM::NodeFactory<CityBlock>());
-    registry->addNodeFactory(new DM::NodeFactory<SimpleSewerLayout>());
+    registry->addNodeFactory(new DM::NodeFactory<TimeAreaMethod>());
+    /*registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
+    registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
+    registry->addNodeFactory(new NodeFactory<NetworkAnalysis>());
+
+    registry->addNodeFactory(new NodeFactory<VibeSWMM>());
+    registry->addNodeFactory(new NodeFactory<PickStartPoints>());
+    registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
+    registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());
+    registry->addNodeFactory(new NodeFactory<SelectInfiltration>());*/
 
 }
-

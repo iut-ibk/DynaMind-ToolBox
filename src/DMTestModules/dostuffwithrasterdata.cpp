@@ -35,9 +35,9 @@ DoStuffWithRasterData::DoStuffWithRasterData()
     std::vector<View> views;
 
 
-    View RasterDataView("RasterData", DM::RASTERDATA, DM::READ);
+    rdata =  View("RasterData", DM::RASTERDATA, DM::READ);
 
-    views.push_back(RasterDataView);
+    views.push_back(rdata);
 
     this->addData("RasterData", views);
 
@@ -46,7 +46,7 @@ DoStuffWithRasterData::DoStuffWithRasterData()
 }
 
 void DoStuffWithRasterData::run() {
-    rasterdatain = this->getRasterData("RasterData", "RasterData");
+    rasterdatain = this->getRasterData("RasterData", rdata);
     Logger(Debug) << "Cellsize: " << rasterdatain->getCellSize();
 
 

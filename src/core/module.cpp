@@ -358,10 +358,10 @@ DM::System* Module::getData(std::string dataname)
     return this->data_vals[dataname];
 }
 
-DM::RasterData* Module::getRasterData(string dataname, string nameOfview) {
+DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
 
     DM::System * sys = data_vals[dataname];
-    DM::View view =  sys->getViewDefinition(nameOfview);
+    DM::View view =  sys->getViewDefinition(v.getName());
     return (RasterData*) sys->getComponent(view.getIdOfDummyComponent());
 
 }
@@ -520,7 +520,7 @@ DM::System* Module::getSystemState(const std::string &name)
 }
 DM::System*   Module::getSystem_Write(const std::string &name)  {
 
-    DM::System * sys = new DM::System(name, name);
+    DM::System * sys = new DM::System(name);
     std::vector<DM::View> views = this->views[name];
     //for (boost::unordered_map<std::string,std::vector<DM::View> >::const_iterator it = views.begin(); it != views.end(); ++it) {
         foreach (DM::View view,views) {

@@ -31,7 +31,7 @@
 
 DMDatabase::DMDatabase()
 {
-    this->system = new DM::System("root", "id");
+    this->system = new DM::System("root");
 }
 DMDatabase::~DMDatabase()
 {

@@ -256,7 +256,7 @@ public:
     std::vector<ResultObserver * > getResultObserver(){return this->resultobserver;}
     Simulation * getSimulation(){return this->simulation;}
 
-    DM::RasterData * getRasterData(std::string dataname, std::string view);
+    DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 
 
 private:

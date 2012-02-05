@@ -30,7 +30,13 @@
 #include <map>
 #include <vector>
 #include <DMview.h>
+
+
+
+
 namespace DM {
+    typedef std::map<std::string, DM::Component*> ComponentMap;
+
     enum Components {
         NODE,
         EDGE,
@@ -60,16 +66,16 @@ namespace DM {
         void updateViews (Component * c);
 
     public:
-        System(std::string name, std::string view = "");
+        System(std::string name,const DM::View & view = DM::View());
         System(const System& s);
         ~System();
 
         Node * addNode(Node* node);
-        Node * addNode(double x, double y, double z, std::string view = "");
+        Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
         Edge* addEdge(Edge* edge);
-        Edge* addEdge(Node * start, Node * end, std::string view = "");
+        Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
         Face * addFace(Face * f);
-        Face * addFace(std::vector<Edge*> edges, std::string view = "");
+        Face * addFace(std::vector<Edge*> edges,  const DM::View & view = DM::View());
         Node* getNode(std::string name);
         Edge* getEdge(std::string name);
         Face * getFace(std::string name);
@@ -80,8 +86,8 @@ namespace DM {
         std::map<std::string, Edge*> getAllEdges();
         std::map<std::string, Face*> getAllFaces();
         std::vector<System*> getPredecessorStates();
-        bool addSubSystem(System *newsystem, std::string view = "");
-        System* createSubSystem(std::string name, std::string view);
+        bool addSubSystem(System *newsystem, const DM::View & view = DM::View());
+        System* createSubSystem(std::string name,const DM::View & view);
         bool removeSubSystem(std::string name);
         System* getSubSystem(std::string name);
         std::map<std::string, System*> getAllSubSystems();
@@ -89,12 +95,14 @@ namespace DM {
         bool addView(DM::View view);
         std::vector<std::string> getNamesOfViews();
         Component * getComponent(std::string name);
-        DM::View getViewDefinition(std::string name);
+        View getViewDefinition(std::string name);
         Component* clone();
         const std::vector<std::string> getViews();
 
-        std::map<std::string, Component*> getAllComponentsInView(std::string view);
-        std::vector<std::string> getNamesOfComponentsInView(std::string view);
+        bool addComponentToView(Component * comp, const DM::View & view);
+
+        std::map<std::string, Component*> getAllComponentsInView(View & view);
+        std::vector<std::string> getNamesOfComponentsInView(DM::View & view);
 
 
 

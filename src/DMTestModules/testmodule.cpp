@@ -38,16 +38,16 @@
 DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
-    DM::View inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
+    inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
     inlets.addAttribute("A");
     inlets.addAttribute("B");
-    DM::View conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
+    conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
 
 
 
-    DM::View SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
+    SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
 
-    DM::View rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
+     rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
 
     std::vector<DM::View> views;
 
@@ -75,14 +75,14 @@ TestModule::TestModule() {
 
 void TestModule::run() {
     outputData = this->getData("Sewer");
-    DM::Node * n1 = outputData->addNode(0,0,0, "Inlets");
-    DM::Node * n2 = outputData->addNode(0,0,1, "Inlets");
+    DM::Node * n1 = outputData->addNode(0,0,0, inlets);
+    DM::Node * n2 = outputData->addNode(0,0,1, inlets);
 
-    outputData->addEdge(n1, n2, "Conduits");
+    outputData->addEdge(n1, n2, conduits);
 
-    outputData->addEdge(n1, n2, "SomeRandomInformation");
+    outputData->addEdge(n1, n2, SomeRandomInformation);
 
-    outputRasterData = this->getRasterData("RasterData", "RasterData");
+    outputRasterData = this->getRasterData("RasterData", rdata);
 
     outputRasterData->setSize(200, 200, 20);
     for (int i = 0; i < outputRasterData->getWidth(); i++) {

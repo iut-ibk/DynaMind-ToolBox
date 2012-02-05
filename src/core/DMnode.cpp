@@ -26,8 +26,10 @@
 
 #include <DMcomponent.h>
 #include <DMnode.h>
+#include <cstdlib>
 
 using namespace DM;
+
 
 Node::Node( double x, double y, double z) : Component()
 {
@@ -43,17 +45,17 @@ Node::Node(const Node& n) : Component(n)
     z=n.z;
 }
 
-double Node::getX()
+double Node::getX() const
 {
     return x;
 }
 
-double Node::getY()
+double Node::getY() const
 {
     return y;
 }
 
-double Node::getZ()
+double Node::getZ() const
 {
     return z;
 }
@@ -76,4 +78,28 @@ void Node::setZ(double z)
 Component* Node::clone()
 {
     return new Node(*this);
+}
+
+
+bool Node::operator ==(const Node & other) const {
+
+    return this->x == other.getX() && this->y == other.getY() && this->z == other.getZ();
+}
+Node Node::operator -(const Node & other) const {
+    return(Node(this->x - other.getX(), this->y - other.getY(), this->z - other.getZ()));
+}
+
+Node Node::operator +(const Node & other) const {
+    return(Node(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ()));
+}
+
+
+bool Node::compare2d(const Node &other, double round ) const {
+
+    return abs( this->x - other.getX() ) <= round   &&  abs( this->y - other.getY() ) <= round;
+}
+
+bool Node::compare2d(const Node * other , double round ) const {
+
+    return abs( this->x - other->getX() ) <= round   &&  abs( this->y - other->getY() ) <= round;
 }

@@ -34,6 +34,10 @@ View::View(std::string name, int type, int accesstypeGeometry)
     this->accesstypeGeometry = accesstypeGeometry;
 
 }
+View::View() {
+    this->name = "";
+    this->type = -1;
+}
 
 void View::setIdOfDummyComponent(std::string UUID) {
     this->IdofDummyComponent = UUID;
@@ -98,7 +102,11 @@ bool View::writes() {
 
     return false;
 }
-
+    bool View::operator<(const View & other) const {
+         if (this->getName().compare(other.getName()) < 0)
+             return true;
+         return false;
+    }
 }
 
 

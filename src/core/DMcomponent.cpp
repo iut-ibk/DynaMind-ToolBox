@@ -131,9 +131,10 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
-    if(attributesview.find(name)==attributesview.end())
-        return 0;
-
+    if(attributesview.find(name)==attributesview.end()) {
+        this->addAttribute(Attribute(name));
+        //return attributesview[name]
+    }
     Logger(Debug) << "Attribute found: " << name ;
     return attributesview[name];
 }
@@ -199,8 +200,12 @@ void Component::setView(std::string view)
     this->inViews.insert(view);
 }
 
+void Component::setView(const DM::View & view)
+{
+    this->inViews.insert(view.getName());
+}
 
-std::set<std::string> const & Component::getInViews() const {
+const set<std::string> &Component::getInViews() const {
     return this->inViews;
 
 }

@@ -24,21 +24,28 @@
  *
  */
 
-#include "createparcels.h"
+#include "cityblock.h"
 #include <DM.h>
 #include <math.h>
-DM_DECLARE_NODE_NAME(CreateParcels,BlockCity)
+#include <tbvectordata.h>
 
-CreateParcels::CreateParcels()
+DM_DECLARE_NODE_NAME(CityBlock,BlockCity)
+
+CityBlock::CityBlock()
 {
     std::vector<DM::View> views;
-    DM::View block = DM::View("BLOCK", DM::FACE, DM::READ);
-    block.addAttribute("Parcel_Width");
-    block.addAttribute("Parcel_Height");
-    DM::View parcels = DM::View("PARCEL", DM::FACE, DM::WRITE);
+    superblock = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
+    superblock.addAttribute("CityBlock_Width");
+    superblock.addAttribute("CityBlock_Height");
+    cityblock = DM::View("CITYBLOCK", DM::FACE, DM::WRITE);
 
-    views.push_back(block);
-    views.push_back(parcels);
+    streets = DM::View("STREET", DM::EDGE, DM::WRITE);
+    intersections = DM::View("INTERSECTION", DM::NODE, DM::WRITE);
+
+    views.push_back(superblock);
+    views.push_back(cityblock);
+    views.push_back(streets);
+    views.push_back(intersections);
 
 
     this->width = 100;
@@ -51,13 +58,13 @@ CreateParcels::CreateParcels()
     this->addData("City", views);
 }
 
-void CreateParcels::run() {
+void CityBlock::run() {
 
     DM::System * city = this->getData("City");
 
 
 
-    std::vector<std::string> blockids = city->getNamesOfComponentsInView("BLOCK");
+    std::vector<std::string> blockids = city->getNamesOfComponentsInView(superblock);
 
     foreach (std::string blockid, blockids) {
         //calulculate height;
@@ -69,6 +76,9 @@ void CreateParcels::run() {
         double maxY = 0;
         for (int i = 0; i < fblock->getEdges().size(); i++){
             DM::Edge * e = city->getEdge(fblock->getEdges()[i]);
+
+
+
             DM::Node * n1 = city->getNode(e->getStartpointName());
             DM::Node * n2 = city->getNode(e->getEndpointName());
 
@@ -112,21 +122,57 @@ void CreateParcels::run() {
         int elements_y = blockHeight/this->width;
         double realwidth = blockWidth / elements_x;
         double realheight = blockHeight / elements_y;
-        fblock->addAttribute("Parcel_Width",realwidth);
-        fblock->addAttribute("Parcel_Height",realheight);
+        fblock->addAttribute("CityBlock_Width",realwidth);
+        fblock->addAttribute("CityBlock_Height",realheight);
 
 
         for (int x = 0; x < elements_x; x++) {
             for (int y = 0; y < elements_y; y++) {
-                DM::Node * n1 = city->addNode(minX + realwidth*x,minY + realheight*y,0);
-                DM::Node * n2 = city->addNode(minX + realwidth*(x+1),minY + realheight*y,0);
-                DM::Node * n3 = city->addNode(minX + realwidth*(x+1),minY + realheight*(y+1),0);
-                DM::Node * n4 = city->addNode(minX + realwidth*x,minY + realheight*(y+1),0);
+
+                DM::Node * n1 = TBVectorData::addNodeToSystem2D(city,
+                                                                intersections,
+                                                                DM::Node(minX + realwidth*x,minY + realheight*y,0),
+                                                                true,
+                                                                .001);
+                DM::Node * n2 = TBVectorData::addNodeToSystem2D(city,
+                                                                intersections,
+                                                                DM::Node(minX + realwidth*(x+1),minY + realheight*y,0),
+                                                                true,
+                                                                .001);
+                DM::Node * n3 = TBVectorData::addNodeToSystem2D(city,
+                                                                intersections,
+                                                                DM::Node(minX + realwidth*(x+1),minY + realheight*(y+1),0),
+                                                                true,
+                                                                .001);
+                DM::Node * n4 = TBVectorData::addNodeToSystem2D(city,
+                                                                intersections,
+                                                                DM::Node (minX + realwidth*x,minY + realheight*(y+1),0),
+                                                                true,
+                                                                .001);
 
                 DM::Edge * e1 = city->addEdge(n1, n2);
                 DM::Edge * e2 = city->addEdge(n2, n3);
                 DM::Edge * e3 = city->addEdge(n3, n4);
                 DM::Edge * e4 = city->addEdge(n4, n1);
+
+                //Every Edge is also a Street
+                if (TBVectorData::getEdge(city, streets, e1, false) == 0) {
+                    city->addComponentToView(e1, streets);
+
+
+                }
+                if (TBVectorData::getEdge(city, streets, e2, false) == 0) {
+                    city->addComponentToView(e2, streets);
+
+                }
+                if (TBVectorData::getEdge(city, streets, e3, false) == 0) {
+                    city->addComponentToView(e3, streets);
+
+                }
+                if (TBVectorData::getEdge(city, streets, e4, false) == 0) {
+                    city->addComponentToView(e4, streets);
+
+                }
 
                 std::vector<DM::Edge*> ve;
                 ve.push_back(e1);
@@ -135,10 +181,11 @@ void CreateParcels::run() {
                 ve.push_back(e4);
 
 
-                DM::Face * f = city->addFace(ve, "PARCEL");
+                DM::Face * f = city->addFace(ve, cityblock);
             }
         }
     }
-    DM::Logger(DM::Debug) << "Number of Parcels " << city->getAllComponentsInView("PARCEL").size();
+    DM::Logger(DM::Debug) << "Number of CityBlocks " << city->getAllComponentsInView(cityblock).size();
+    DM::Logger(DM::Debug) << "Number of Streets " << city->getAllComponentsInView(streets).size();
 
 }

@@ -34,9 +34,12 @@ using namespace DM;
 class DoStuffWithRasterData : public Module
 {
     DM_DECLARE_NODE(DoStuffWithRasterData)
-public:
-    DoStuffWithRasterData();
+    private:
+        DM::View rdata;
+    public:
+        DoStuffWithRasterData();
     DM::RasterData * rasterdatain;
+
 
     void run();
 };

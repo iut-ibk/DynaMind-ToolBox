@@ -42,12 +42,19 @@ namespace DM {
         Node( double x, double y, double z );
 
         Node(const Node& n);
-        double getX();
-        double getY();
-        double getZ();
+        double getX() const;
+        double getY() const;
+        double getZ() const;
         void setX(double x);
         void setY(double y);
         void setZ(double z);
+
+        bool operator==(const Node & other) const;
+        Node operator-(const Node & other) const;
+        Node operator+(const Node & other) const;
+        bool compare2d(const Node &other, double round = 0) const;
+        bool compare2d(const Node * other, double round = 0) const;
+
         Component* clone();
     };
 }

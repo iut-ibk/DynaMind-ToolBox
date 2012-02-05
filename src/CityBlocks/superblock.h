@@ -24,21 +24,22 @@
  *
  */
 
-#ifndef CREATEPARCELS_H
-#define CREATEPARCELS_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
 #include <module.h>
-
-class CreateParcels : public DM::Module
+#include <DM.h>
+class SuperBlock : public  DM::Module
 {
-    DM_DECLARE_NODE(CreateParcels)
+    DM_DECLARE_NODE( SuperBlock )
+    private:
+        DM::View block ;
 public:
-    CreateParcels();
+    SuperBlock();
     void run();
 
-private:
-    double height;
-    double width;
+
+
 };
 
-#endif // CREATEPARCELS_H
+#endif // BLOCK_H
