@@ -66,6 +66,12 @@ void SimpleSewerLayout::run() {
 
 
     std::vector<DM::Edge*> edg;
+    DM::Face * f1= city->addFace(edg, catchment);
+    f1->addAttribute("Population", 1000);
+    f1->addAttribute("Area", 1000);
+    f1->addAttribute("Impervious", 1);
+    f1->addAttribute("WasteWater", 100);
+
     DM::Face * f= city->addFace(edg, catchment);
     f->addAttribute("Population", 1000);
     f->addAttribute("Area", 1000);
@@ -83,10 +89,12 @@ void SimpleSewerLayout::run() {
     DM::Attribute  attr1 = DM::Attribute("ID_CATCHMENT");
     attr1.setString(f->getName());
     n2->addAttribute(attr1);
+    city->addComponentToView(n2, shaft);
     DM::Node * n3 = city->addNode(100, 0,0, inlets);
     DM::Attribute attr =  DM::Attribute("ID_CATCHMENT");
-    attr.setString(f->getName());
+    attr.setString(f1->getName());
     n3->addAttribute(attr);
+    city->addComponentToView(n3, shaft);
     city->addEdge(n1, EndNode, conduits);
     city->addEdge(n2, n1, conduits);
     city->addEdge(n3, n1, conduits);

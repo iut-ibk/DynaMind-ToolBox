@@ -28,12 +28,13 @@
 #include "nodefactory.h"
 #include "moduleregistry.h"
 #include "timeareamethod.h"
+#include "dmswmm.h"
 /*#include "generatesewernetwork.h"
 #include "extractnetwork.h"
 
 #include "networkanalysis.h"
 
-#include "vibeswmm.h"
+
 #include "pickstartpoints.h"
 #include "outfallplacement.h"
 #include "infiltrationtrench.h"
@@ -51,11 +52,12 @@ using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
     registry->addNodeFactory(new DM::NodeFactory<TimeAreaMethod>());
+    registry->addNodeFactory(new DM::NodeFactory<DMSWMM>());
     /*registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
     registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
     registry->addNodeFactory(new NodeFactory<NetworkAnalysis>());
 
-    registry->addNodeFactory(new NodeFactory<VibeSWMM>());
+
     registry->addNodeFactory(new NodeFactory<PickStartPoints>());
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());

@@ -40,6 +40,7 @@ class SimpleSewerLayout : public DM::Module
     DM::View endnode;
     DM::View catchment;
     DM::View shaft;
+    DM::View wwtp;
 public:
     SimpleSewerLayout();
     void run();
