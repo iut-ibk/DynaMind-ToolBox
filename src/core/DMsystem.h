@@ -100,6 +100,7 @@ namespace DM {
         const std::vector<std::string> getViews();
 
         bool addComponentToView(Component * comp, const DM::View & view);
+        bool removeComponentFromView(Component * comp, const DM::View & view);
 
         std::map<std::string, Component*> getAllComponentsInView(View & view);
         std::vector<std::string> getNamesOfComponentsInView(DM::View & view);

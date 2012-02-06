@@ -167,6 +167,10 @@ Edge * System::addEdge(Edge* edge)
         return 0;
 
     edges[edge->getName()]=edge;
+    foreach (std::string v, edge->getInViews()) {
+        views[v][edge->getName()]=edge;
+    }
+
     return edge;
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
@@ -313,6 +317,13 @@ bool System::removeNode(std::string name)
 bool System::addComponentToView(Component *comp, const View &view) {
     this->views[view.getName()][comp->getName()] = comp;
     comp->setView(view.getName());
+}
+
+bool System::removeComponentFromView(Component *comp, const View &view) {
+    std::map<std::string, Component*> entries = this->views[view.getName()];
+    entries.erase(comp->getName());
+    comp->removeView(view);
+    this->views[view.getName()] = entries;
 }
 
 bool System::addSubSystem(System *newsystem,  const DM::View & view)
