@@ -27,12 +27,16 @@
 #ifndef TBVECTORDATA_H
 #define TBVECTORDATA_H
 #include <compilersettings.h>
+#include <vector>
 namespace DM {
     class System;
     class Node;
     class Edge;
+    class Face;
     class View;
 }
+
+
 
 class DM_HELPER_DLL_EXPORT TBVectorData
 {
@@ -43,12 +47,15 @@ public:
       **/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters = true);
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
-
+    static std::vector<DM::Edge* > getConnectedEdges(DM::System *sys,  DM::View & view,DM::Node   n1,double err=0);
 
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
     static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view,DM::Node   n1, bool CheckForExisting = true, double err=0);
 
+    static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
+
+    static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
 
 
 

@@ -26,6 +26,7 @@
 
 #include "tbvectordata.h"
 #include "DM.h"
+#include <QtGlobal>
 
 DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
 
@@ -78,4 +79,64 @@ DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::No
     new_Node =  sys->addNode(n1.getX(), n1.getY(), n1.getZ(), view);
 
     return new_Node;
+}
+
+
+std::vector<DM::Edge*> TBVectorData::getConnectedEdges(DM::System *sys, DM::View &view, DM::Node n1, double err) {
+
+    std::vector<DM::Edge*> result;
+    std::vector<std::string> names = sys->getNamesOfComponentsInView(view);
+
+    foreach (std::string id, names ) {
+        std::vector<DM::Node * > nodes;
+        DM::Edge * e = sys->getEdge(id);
+        nodes.push_back(sys->getNode(e->getStartpointName()));
+        nodes.push_back(sys->getNode(e->getEndpointName()));
+
+        foreach (DM::Node * n, nodes) {
+            if (n->compare2d(n1, err))
+                result.push_back(e);
+        }
+    }
+
+    return result;
+
+}
+
+
+std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
+    std::vector<DM::Node*> result;
+    std::vector<std::string> edgelist = face->getEdges();
+    foreach (std::string eid, edgelist) {
+        DM::Edge * e = sys->getEdge(eid);
+        result.push_back(sys->getNode(e->getStartpointName()));
+
+    }
+    return result;
+}
+
+void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
+
+    DM::Edge * e1 = new DM::Edge(*e);
+    std::set<std::string> views = e1->getInViews();
+    sys->addEdge(e1);
+    foreach (std::string v, views) {
+        sys->removeComponentFromView(e1, sys->getViewDefinition(v));
+
+    }
+    e1->setEndpointName(n->getName());
+    sys->addComponentToView(e1, view);
+
+    DM::Edge * e2 = new DM::Edge(*e);
+    sys->addEdge(e2);
+    views = e2->getInViews();
+    foreach (std::string v, views) {
+        sys->removeComponentFromView(e2, sys->getViewDefinition(v));
+    }
+    e2->setStartpointName(n->getName());
+    sys->addComponentToView(e2, view);
+
+    sys->removeComponentFromView(e, view);
+
+
 }
