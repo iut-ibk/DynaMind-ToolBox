@@ -2,6 +2,7 @@ file(GLOB MODULE_CPPS *.cpp)
 
 include_directories(.)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(../DMToolboxes)
 
 add_library(dynamindsewer SHARED ${MODULE_CPPS})
 

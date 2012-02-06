@@ -24,7 +24,7 @@
  *
  */
 #include "timeareamethod.h"
-
+#include "tbvectordata.h"
 DM_DECLARE_NODE_NAME(TimeAreaMethod, Sewer)
 TimeAreaMethod::TimeAreaMethod()
 {
@@ -164,22 +164,7 @@ void TimeAreaMethod::run() {
 
         this->EdgeList.push_back(e);
 
-        /*Edge e_new;
-        e_new.id1 = this->findNewID(p1);
-        e_new.id2 = this->findNewID(p2);*/
-
-        //Check
-        /*bool error = false;
-        foreach(Edge e, this->EdgeList) {
-            if (e.getID1() == e_new.getID2() && e.getID2() == e_new.getID1()) {
-                Logger(vibens::Error) << "ARGHS";
-                error = true;
-            }
-        }
-        //if (!error)
-        this->EdgeList.push_back(e_new);*/
-
-    }
+   }
 
     std::vector<double> WasteWaterPerShaft;
     std::vector<double> AreaPerShaft;
@@ -208,6 +193,7 @@ void TimeAreaMethod::run() {
     }
 
     foreach(std::string name, InletNames) {
+
         DM::Component * inlet_attr;
         inlet_attr = city->getComponent(name);
 
@@ -299,7 +285,7 @@ void TimeAreaMethod::run() {
     for (int i = 0; i < this->PointList.size(); i++) {
         DM::Node * p = this->PointList[i];
 
-        p->getAttribute("Time")->setDouble( p->getAttribute("StrandLength")->getDouble()/this->v +  p->getAttribute("AreaPerShaft")->getDouble());
+        p->getAttribute("Time")->setDouble( p->getAttribute("StrandLength")->getDouble()/this->v + 1*60);
 
         p->addAttribute("APhi", this->caluclateAPhi(p, this->r15));
         p->addAttribute("QrKrit_total", p->getAttribute("QrKritPerShaft_total")->getDouble() * (45./(p->getAttribute("Time")->getDouble()/60 + 30)));
@@ -338,10 +324,11 @@ void TimeAreaMethod::run() {
         Attribute attr_cond = this->Network_out->getAttributes(id_cond);
         if (attr_cond.getAttribute("Diameter") == 0  || attr_cond.getAttribute("Redesign") == 1)
         {*/
-        DM::Component * attr = city->getComponent(e->getStartpointName());
+        DM::Node * attr = city->getNode(e->getStartpointName());
         double QWasteWater = attr->getAttribute("WasterWater")->getDouble() +  attr->getAttribute("InfitrationWater")->getDouble();
         double QRainWater =  attr->getAttribute("Area_total")->getDouble()*attr->getAttribute("APhi")->getDouble()*this->r15/10000. +  attr->getAttribute("QrKrit_total")->getDouble();
-
+        double Area_tot = attr->getAttribute("Area_total")->getDouble();
+        double APhi = attr->getAttribute("APhi")->getDouble();
         double QBem = (QRainWater + QWasteWater)/1000.; //m³
 
         e->addAttribute("Diameter", this->chooseDiameter(sqrt((QBem)/3.14*4))); //in mm
@@ -369,11 +356,11 @@ double TimeAreaMethod::chooseDiameter(double diameter) {
     //vd.append(150);
     //vd.append(200);
     //vd.append(250);
-    vd.append(300);
-    vd.append(350);
-    vd.append(400);
-    vd.append(450);
-    vd.append(500);
+    //vd.append(300);
+    //vd.append(350);
+    //vd.append(400);
+    //vd.append(450);
+    //vd.append(500);
     vd.append(600);
     vd.append(700);
     vd.append(800);

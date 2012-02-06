@@ -377,6 +377,7 @@ void DMSWMM::writeJunctions(std::fstream &inp)
 
     QStringList l;
     std::vector<std::string> names = city->getNamesOfComponentsInView(shaft);
+
     foreach (std::string name, names) {
         QString s = QString::fromStdString(name);
         if (l.indexOf(s) >= 0) {
@@ -390,7 +391,10 @@ void DMSWMM::writeJunctions(std::fstream &inp)
     inp<<";;============================================================================\n";
     foreach(std::string name, names) {
         DM::Node * p = city->getNode(name);
-
+        if (p->isInView( wwtp ))
+            continue;
+        if (p->isInView( outfalls ))
+            continue;
         if (p->getAttribute("Storage")->getDouble() == 1)
             continue;
         //SewerTree::Node *node = this->sewerTree.getNodes().at(i);
@@ -455,10 +459,13 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
         Component * catchment_attr = city->getComponent(id_catchment);
 
         int id = this->UUIDtoINT[inlet_attr->getName()];
+        if (id == 0) {
+            continue;
+        }
         double area = catchment_attr->getAttribute("Area")->getDouble()/10000.;// node->area/10000.;
         double with = sqrt(area*10000.);
-        double gradient = abs(catchment_attr->getAttribute("Gradient")->getDouble()/10000.);
-        double imp = catchment_attr->getAttribute("Impervious")->getDouble()/10000.;
+        double gradient = abs(catchment_attr->getAttribute("Gradient")->getDouble());
+        double imp = catchment_attr->getAttribute("Impervious")->getDouble();
         if (imp < 0.2)
             imp = 0.2;
         if (gradient > 0.01)
@@ -507,6 +514,10 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
     foreach(std::string name, InletNames) {
         DM::Node * inlet_attr = city->getNode(name);
         std::string id_catchment = inlet_attr->getAttribute("ID_CATCHMENT")->getString();
+        int id = this->UUIDtoINT[inlet_attr->getName()];
+        if (id == 0) {
+            continue;
+        }
 
         inp<<"  sub"<<UUIDtoINT[id_catchment]<<"\t\t0.015\t0.2\t1.8\t5\t0\tOUTLET\n";
     }
@@ -521,6 +532,10 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
     inp<<";;============================================================================\n";
     foreach(std::string name, InletNames) {
         DM::Node * inlet_attr = city->getNode(name);
+        int id = this->UUIDtoINT[inlet_attr->getName()];
+        if (id == 0) {
+            continue;
+        }
         std::string id_catchment = inlet_attr->getAttribute("ID_CATCHMENT")->getString();
         inp<<"  sub"<<UUIDtoINT[id_catchment]<<"\t60\t6.12\t3\t6\t0\n";
     }
@@ -622,29 +637,29 @@ void DMSWMM::writeDWF(std::fstream &inp) {
     }
 }*/
 
-/*void DMSWMM:: writeOutfalls(std::fstream &inp) {
+void DMSWMM:: writeOutfalls(std::fstream &inp) {
     //OUTFALLS
     //-------------------------//
     inp<<"[OUTFALLS]\n";
     inp<<";;Name	Elev	Stage	Gate\n";
     inp<<";;============================================================================\n";
 
-    std::vector<std::string> OutfallNames = VectorDataHelper::findElementsWithIdentifier(this->IdentifierOutfall,this->Network->getPointsNames());
+    std::vector<std::string> OutfallNames = city->getNamesOfComponentsInView(outfalls);
     for ( int i = 0; i < OutfallNames.size(); i++ ) {
-        Point p = this->Network->getPoints(OutfallNames[i])[0];
+        DM::Node * p = city->getNode(OutfallNames[i]);
 
-        double z = p.getZ()-4.;
+        double z = p->getZ()-4.;
         inp<<"OUTFALL"<<i<<"\t"<< z <<"\tFREE\tNO\n";
     }
-    std::vector<std::string> WWTPs = VectorDataHelper::findElementsWithIdentifier("WWTP_",this->Network->getPointsNames());
+    std::vector<std::string> WWTPs = city->getNamesOfComponentsInView(wwtp);
     for ( int i = 0; i < WWTPs.size(); i++ ) {
-        Point p = this->Network->getPoints(WWTPs[i])[0];
+        DM::Node * p = city->getNode(WWTPs[i]);
 
-        double z = p.getZ()-1.1;
-        inp<<"WWTP"<<i<<"\t"<< z <<"\tFREE\tNO\n";
+        double z = p->getZ()-1.1;
+        inp<<"NODE"<<this->UUIDtoINT[p->getName()]<<"\t"<< z <<"\tFREE\tNO\n";
     }
 
-}*/
+}
 void DMSWMM::writeConduits(std::fstream &inp) {
     inp<<"\n";
     inp<<"[CONDUITS]\n";
@@ -682,42 +697,6 @@ void DMSWMM::writeConduits(std::fstream &inp) {
             inp<<"LINK"<<counter<<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"<<length<<"\t"<<"0.01	" << diameter  <<"\t"	<< diameter << "\n";
 
         counter++;
-
-
-
-
-
-    }
-    std::vector<std::string> WWTPNames = city->getNamesOfComponentsInView(wwtp);
-    counter = 0;
-    foreach(std::string name, WWTPNames) {
-        DM::Edge * link = city->getEdge(name);
-
-
-
-        DM::Node * nStartNode = city->getNode(link->getStartpointName());
-        DM::Node * nEndNode = city->getNode(link->getEndpointName());
-
-
-        double x = nStartNode->getX()  - nEndNode->getX();
-        double y = nStartNode->getY() - nEndNode->getY();
-
-        double length = sqrt(x*x +y*y);
-
-        if (UUIDtoINT[nStartNode->getName()] == 0) {
-            UUIDtoINT[nStartNode->getName()] = GLOBAL_Counter++;
-        }
-        if (UUIDtoINT[nEndNode->getName()] == 0) {
-            UUIDtoINT[nEndNode->getName()] = GLOBAL_Counter++;
-        }
-
-        int EndNode = UUIDtoINT[nEndNode->getName()];
-        int StartNode =  UUIDtoINT[nStartNode->getName()];
-
-        inp<<"WWTPConduit"<<counter<<"\tNODE"<<EndNode<<"\tWWTP"<<counter<<"\t"<<length<<"\t"<<"0.01	0	0\n";
-
-        counter++;
-
     }
 }
 //void DMSWMM::writeLID_Controlls(std::fstream &inp) {
@@ -844,14 +823,6 @@ void DMSWMM::writeXSection(std::fstream &inp) {
 
     }
 
-    for (int i = 0; i < WWTPNames.size(); i++) {
-        Component * attr = city->getComponent(WWTPNames[i]);
-        double d = attr->getAttribute("Diameter")->getDouble()/1000;
-        inp << "WWTPConduit" <<i<< "\tCIRCULAR\t"<< d <<" \t0\t0\t0\n";
-        counter++;
-
-    }
-
     inp<<"\n";
 }
 
@@ -943,7 +914,7 @@ void DMSWMM::writeCoordinates(std::fstream &inp)
         inp << "\n";
     }
 
-    for ( int i = 0; i < WWTPs.size(); i++ ) {
+    /*for ( int i = 0; i < WWTPs.size(); i++ ) {
         DM::Node * node = city->getNode(WWTPs[i]);
         double x = node->getX();
         double y = node->getY();
@@ -955,7 +926,7 @@ void DMSWMM::writeCoordinates(std::fstream &inp)
         inp << "\t";
         inp << y;
         inp << "\n";
-    }
+    }*/
 
 }
 
@@ -968,7 +939,7 @@ void DMSWMM::writeSWMMFile() {
     //writeLID_Controlls(inp);
     //writeLID_Usage(inp);
     writeJunctions(inp);
-    //writeOutfalls(inp);
+    writeOutfalls(inp);
     //writeStorage(inp);
     writeConduits(inp);
     //writeWeir(inp);
@@ -1002,15 +973,20 @@ void DMSWMM::writeSWMMheader(std::fstream &inp)
     //inp<<"REPORT_STEP  00:01:00\n";
     //inp<<"REPORT_START_DATE 1/1/2000\n";
     //inp<<"REPORT_START_TIME 00:00\n\n";
+
     inp<<"FLOW_UNITS\t\tLPS\n";
     inp<<"INFILTRATION\t\tHORTON\n";
     inp<<"FLOW_ROUTING\t\tDYNWAVE\n";
-    inp<<"START_DATE\t\t7/1/2008\n";
+    //inp<<"START_DATE\t\t7/1/2008\n";
+    inp<<"START_DATE\t\t1/1/2000\n";
     inp<<"START_TIME\t\t00:00\n";
-    inp<<"END_DATE\t\t7/31/2008\n";
+    //inp<<"END_DATE\t\t7/31/2008\n";
+    inp<<"END_DATE\t\t1/2/2000\n";
     inp<<"END_TIME\t\t00:00\n";
-    inp<<"REPORT_START_DATE\t7/1/2008\n";
+    inp<<"REPORT_START_DATE\t1/1/2000\n";
     inp<<"REPORT_START_TIME\t00:00\n";
+
+
     inp<<"SWEEP_START\t\t01/01\n";
     inp<<"SWEEP_END\t\t12/31\n";
     inp<<"DRY_DAYS\t\t0\n";
