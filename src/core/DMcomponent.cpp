@@ -42,6 +42,15 @@ Component::Component()
     this->name = QUuid::createUuid().toString().toStdString();
 }
 
+bool Component::isInView(View view) const {
+    foreach (std::string s, inViews) {
+        if (view.getName().compare(s) == 0)
+            return true;
+    }
+
+    return false;
+}
+
 Component::Component(const Component& c)
 {
     this->name=c.name;
@@ -203,6 +212,11 @@ void Component::setView(std::string view)
 void Component::setView(const DM::View & view)
 {
     this->inViews.insert(view.getName());
+}
+
+void Component::removeView(const View &view)
+{
+    this->inViews.erase(view.getName());
 }
 
 const set<std::string> &Component::getInViews() const {

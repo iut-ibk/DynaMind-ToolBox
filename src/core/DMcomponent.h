@@ -35,41 +35,45 @@
 #include <DMview.h>
 namespace DM {
 
-    class Attribute;
+class Attribute;
 
-    class Component
-    {
-    protected:
-        std::string name;
-        std::map<std::string,Component*> childsview;
-        std::map<std::string,Attribute*> attributesview;
-        std::map<std::string,Component*> ownedchilds;
-        std::map<std::string,Attribute*> ownedattributes;
-        std::set<std::string> inViews;
+class Component
+{
+    friend class System;
+protected:
+    std::string name;
+    std::map<std::string,Component*> childsview;
+    std::map<std::string,Attribute*> attributesview;
+    std::map<std::string,Component*> ownedchilds;
+    std::map<std::string,Attribute*> ownedattributes;
+    std::set<std::string> inViews;
 
+    void removeView(const DM::View & view);
 
+public:
+    Component();
+    Component(const Component& s);
+    virtual ~Component();
+    void setName(std::string name);
+    std::string getName();
+    bool addAttribute(Attribute newattribute);
+    bool addAttribute(std::string, double val);
+    bool changeAttribute(Attribute newattribute);
+    bool removeAttribute(std::string name);
+    Attribute* getAttribute(std::string name);
+    std::map<std::string, Attribute*> getAllAttributes();
+    bool addChild(Component *newcomponent);
+    bool changeChild(Component *newcomponent);
+    bool removeChild(std::string name);
+    Component* getChild(std::string name);
+    std::map<std::string, Component*> getAllChilds();
+    void setView(std::string view);
+    void setView(const DM::View & view);
 
-    public:
-        Component();
-        Component(const Component& s);
-        virtual ~Component();
-        void setName(std::string name);
-        std::string getName();
-        bool addAttribute(Attribute newattribute);
-        bool addAttribute(std::string, double val);
-        bool changeAttribute(Attribute newattribute);
-        bool removeAttribute(std::string name);
-        Attribute* getAttribute(std::string name);
-        std::map<std::string, Attribute*> getAllAttributes();
-        bool addChild(Component *newcomponent);
-        bool changeChild(Component *newcomponent);
-        bool removeChild(std::string name);
-        Component* getChild(std::string name);
-        std::map<std::string, Component*> getAllChilds();
-        void setView(std::string view);
-        void setView(const DM::View & view);
-        std::set<std::string> const &  getInViews() const;
-        virtual Component* clone()=0;
-    };
+    std::set<std::string> const &  getInViews() const;
+    bool isInView(DM::View view) const;
+    virtual Component* clone()=0;
+
+};
 }
 #endif // COMPONENT_H
