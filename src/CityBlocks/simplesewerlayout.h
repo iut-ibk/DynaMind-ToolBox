@@ -41,8 +41,11 @@ class SimpleSewerLayout : public DM::Module
     DM::View catchment;
     DM::View shaft;
     DM::View wwtp;
+    DM::View cityblock;
 public:
     SimpleSewerLayout();
+    DM::Node * connectNextInlet(DM::System *city, DM::Node *n1, int direction);
+    void addConduit(DM::System *city, DM::Node *n, int direction);
     void run();
 };
 

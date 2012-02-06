@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2012  Christian Urich
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,26 +24,24 @@
  *
  */
 
-#ifndef CREATEPARCELS_H
-#define CREATEPARCELS_H
+#ifndef PARCELS_H
+#define PARCELS_H
 
 #include <module.h>
 #include <DM.h>
-class CityBlock : public DM::Module
+
+class Parcels : public DM::Module
 {
-    DM_DECLARE_NODE(CityBlock)
-    public:
-        CityBlock();
+     DM_DECLARE_NODE(Parcels)
+private:
+    DM::View cityblock;
+    DM::View parcels;
+    DM::View streets;
+    DM::View intersections;
+public:
+    Parcels();
     void run();
 
-private:
-    double height;
-    double width;
-
-    DM::View superblock;
-    DM::View intersections;
-    DM::View cityblock;
-    DM::View streets;
 };
 
-#endif // CREATEPARCELS_H
+#endif // PARCELS_H
