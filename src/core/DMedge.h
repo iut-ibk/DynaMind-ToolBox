@@ -42,6 +42,8 @@ namespace DM {
         Edge(const Edge& e);
         std::string getStartpointName();
         std::string getEndpointName();
+        void setStartpointName(std::string name);
+        void setEndpointName(std::string name);
         Component* clone();
     };
 }

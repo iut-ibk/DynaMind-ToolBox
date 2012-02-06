@@ -51,6 +51,14 @@ std::string Edge::getEndpointName()
     return end;
 }
 
+void Edge::setStartpointName(std::string name) {
+    this->start = name;
+}
+
+void Edge::setEndpointName(std::string name) {
+    this->end = name;
+}
+
 Component* Edge::clone()
 {
     return new Edge(*this);
