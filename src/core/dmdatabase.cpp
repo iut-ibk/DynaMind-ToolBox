@@ -127,6 +127,8 @@ RasterData & DMDatabase::createRasterData(std::string UUID, std::string Name) {
     RasterDataMaps_1[createName(UUID, Name)] = r;
     RasterDataMaps_Switch[createName(UUID, Name)] = 0;
     return *(RasterDataMaps_0[createName(UUID, Name)]);*/
+    RasterData r;
+    return r;
 
 }
 
@@ -162,6 +164,7 @@ RasterData & DMDatabase::createRasterData(std::string UUID, std::string Name) {
 
 
     return *(VectorDataMaps_0[createName(UUID, Name)]);
+
 }
 
 VectorData & DMDatabase::createVectorData(std::string UUID, std::string Name) {
