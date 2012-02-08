@@ -28,16 +28,22 @@ from pydynamind import *
 class WhiteNoise(Module):
         def __init__(self):
             Module.__init__(self)
-	    self.test = p_string()
-	    self.test.assign("das ist ja super")
-	    self.addParameter("test",VIBe2.STRING,self.test,"hallo")
-	    
- 
-	    print "GUGUG"
-    
+            self.test = p_string()
+            self.test.assign("das ist ja super")
+            self.addParameter("test",STRING,self.test,"hallo")
+            
+            views = []
+            self.streets = View("STREET", FACE, READ)
+            views.append(streets)
+            self.addData("City", views)
+
+
         def run(self):
-            print "Hello World1!"
-	    print self.test.value()
-	    print "Hello World1 ende!"
-	    print self.__module__.split(".")[0]
+            city = self.getData("City")
+            nstreets = city.getNamesOfComponentsInView(self.streets)
+            for s in nstreets:
+                edge = city.getEdge(s)
+                print edge.getStartpointName()
+            
+
 
