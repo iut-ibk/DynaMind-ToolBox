@@ -71,7 +71,7 @@ System::System(const System& s) : Component(s)
     edges=s.edges;
     faces = s.faces;
     rasterdata = s.rasterdata;
-
+    EdgeNodeMap = s.EdgeNodeMap;
     viewdefinitions = s.viewdefinitions;
 
     //Update SubSystem
@@ -158,6 +158,12 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view) {
     return n;
 }
 
+Node * System::addNode(Node n,  const DM::View & view) {
+
+    return this->addNode(n.getX(), n.getY(), n.getZ(), view);
+
+}
+
 Edge * System::addEdge(Edge* edge)
 {
     if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName()))
@@ -170,7 +176,7 @@ Edge * System::addEdge(Edge* edge)
     foreach (std::string v, edge->getInViews()) {
         views[v][edge->getName()]=edge;
     }
-
+    this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
     return edge;
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
@@ -183,6 +189,9 @@ Edge * System::addEdge(Node * start, Node * end, const View &view)
         this->views[view.getName()][e->getName()] = e;
         e->setView(view.getName());
     }
+
+    this->EdgeNodeMap[std::pair<std::string, std::string>(start->getName(), end->getName())] = e;
+
     return e;
 }
 
@@ -230,6 +239,15 @@ Edge* System::getEdge(std::string name)
 
     return edges[name];
 }
+
+Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
+{
+    std::pair<std::string, std::string> key(startnode, endnode);
+    if(EdgeNodeMap.find(key)==EdgeNodeMap.end())
+        return 0;
+    return EdgeNodeMap[key];
+}
+
 Face* System::getFace(std::string name)
 {
     if(faces.find(name)==faces.end())
@@ -275,7 +293,8 @@ bool System::removeEdge(std::string name)
 
     if(!removeChild(name))
         return false;
-
+    DM::Edge * e  = this->getEdge(name);
+    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getName(), e->getName()));
     edges.erase(name);
     return true;
 }

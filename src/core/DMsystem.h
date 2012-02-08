@@ -62,6 +62,12 @@ namespace DM {
         std::map<std::string, System*> subsystems;
         std::map<std::string, View> viewdefinitions;
         std::map<std::string, std::map<std::string, Component*> > views;
+
+
+        //Get Edge Based on otherwise takes ages
+        std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
+
+
         RasterData * addRasterData(RasterData * r);
         void updateViews (Component * c);
 
@@ -72,12 +78,14 @@ namespace DM {
 
         Node * addNode(Node* node);
         Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
+        Node * addNode(Node node,  const DM::View & view = DM::View());
         Edge* addEdge(Edge* edge);
         Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
         Face * addFace(Face * f);
         Face * addFace(std::vector<Edge*> edges,  const DM::View & view = DM::View());
         Node* getNode(std::string name);
         Edge* getEdge(std::string name);
+        Edge* getEdge(const std::string &startnode, const std::string &endnode);
         Face * getFace(std::string name);
         bool removeEdge(std::string name);
         bool removeNode(std::string name);
