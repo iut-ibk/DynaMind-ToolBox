@@ -171,7 +171,7 @@ void PythonEnv::addPythonPath(std::string path) {
 }
 void PythonEnv::startEditra(std::string filename) {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    QSettings settings("IUT", "VIBe2");
+    QSettings settings("IUT", "DYNAMIND");
     QString PathtoEditra = settings.value("Editra").toString().replace("\\","/");
     if (PathtoEditra[PathtoEditra.size()-1] == '/') {
         PathtoEditra.remove(PathtoEditra.size()-1,1);
@@ -210,7 +210,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
         exists = true;
     }
 
-    QSettings settings("IUT", "VIBe2");
+    QSettings settings("IUT", "DYNAMIND");
     QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
 
     if(PathtoUrbanSim.size())
