@@ -120,7 +120,7 @@ Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModu
 }
 void Simulation::reloadModules() {
     //Init Python
-    QSettings settings("IUT", "VIBe2");
+    QSettings settings("IUT", "DYNAMIND");
     Logger(Standard) << "Reload Modules";
 
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");

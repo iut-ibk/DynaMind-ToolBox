@@ -118,8 +118,8 @@ void CityBlock::run() {
 
         //Create Parcels
 
-        int elements_x = blockWidth/this->height;
-        int elements_y = blockHeight/this->width;
+        int elements_x = blockWidth/this->width;
+        int elements_y = blockHeight/this->height;
         double realwidth = blockWidth / elements_x;
         double realheight = blockHeight / elements_y;
         fblock->addAttribute("CityBlock_Width",realwidth);
@@ -150,28 +150,29 @@ void CityBlock::run() {
                                                                 true,
                                                                 .001);
 
-                DM::Edge * e1 = city->addEdge(n1, n2);
-                DM::Edge * e2 = city->addEdge(n2, n3);
-                DM::Edge * e3 = city->addEdge(n3, n4);
-                DM::Edge * e4 = city->addEdge(n4, n1);
+
+
+                DM::Edge * e1 = TBVectorData::getEdge(city, streets, n1, n2, false);
+                DM::Edge * e2 = TBVectorData::getEdge(city, streets, n2, n3, false);
+                DM::Edge * e3 = TBVectorData::getEdge(city, streets, n3, n4, false);
+                DM::Edge * e4 = TBVectorData::getEdge(city, streets, n4, n1, false);
 
                 //Every Edge is also a Street
-                if (TBVectorData::getEdge(city, streets, e1, false) == 0) {
+                if (e1 == 0) {
+                    e1 = city->addEdge(n1, n2);
                     city->addComponentToView(e1, streets);
-
-
                 }
-                if (TBVectorData::getEdge(city, streets, e2, false) == 0) {
+                if (e2 == 0) {
+                    e2 = city->addEdge(n2, n3);
                     city->addComponentToView(e2, streets);
-
                 }
-                if (TBVectorData::getEdge(city, streets, e3, false) == 0) {
+                if (e3 == 0) {
+                    e3 = city->addEdge(n3, n4);
                     city->addComponentToView(e3, streets);
-
                 }
-                if (TBVectorData::getEdge(city, streets, e4, false) == 0) {
+                if (e4 == 0) {
+                    e4 = city->addEdge(n4, n1);
                     city->addComponentToView(e4, streets);
-
                 }
 
                 std::vector<DM::Edge*> ve;

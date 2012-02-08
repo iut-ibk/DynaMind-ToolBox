@@ -63,6 +63,7 @@ int main(int argc, char *argv[], char *envp[]) {
     //Load Modules
     DM::Module * sb = sim->addModule("SuperBlock");
     DM::Module * cb = sim->addModule("CityBlock");
+    DM::Module * cp = sim->addModule("Parcels");
     DM::Module * ssl = sim->addModule("SimpleSewerLayout");
     DM::Module * tm = sim->addModule("TimeAreaMethod");
     DM::Module * swmm = sim->addModule("DMSWMM");
@@ -72,7 +73,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
 
     sim->addLink(sb->getOutPort("City"), cb->getInPort("City"));
-    sim->addLink(cb->getOutPort("City"), ssl->getInPort("City"));
+    sim->addLink(cb->getOutPort("City"), cp->getInPort("City"));
+    sim->addLink(cp->getOutPort("City"), ssl->getInPort("City"));
     sim->addLink(ssl->getOutPort("City"), tm->getInPort("City"));
     sim->addLink(tm->getOutPort("City"), swmm->getInPort("City"));
     sim->run();

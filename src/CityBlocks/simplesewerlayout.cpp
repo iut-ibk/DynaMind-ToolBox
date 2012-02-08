@@ -118,7 +118,8 @@ void SimpleSewerLayout::addConduit(DM::System* city, DM::Node * n, int direction
         this->addConduit(city, n, 3);
     }
     n = this->connectNextInlet(city, n, direction);
-
+    if (n == 0)
+        return;
     if (direction == 2 || direction == 4) {
         if( n->getX() == prev->getX()) {
             n = 0;
@@ -204,13 +205,13 @@ DM::Node * SimpleSewerLayout::connectNextInlet(DM::System * city, DM::Node * n1,
 
 
     if (searchList.size() != 0) {
-        if (direction == 1)
+        if (direction == 1 && maxy > n1->getY())
             return searchList[IDmaxy];
-        if (direction == 2)
+        if (direction == 2 && maxx > n1->getX())
             return searchList[IDmaxx];
-        if (direction == 3)
+        if (direction == 3 && miny < n1->getY())
             return searchList[IDminy];
-        if (direction == 4)
+        if (direction == 4 && minx < n1->getX())
             return searchList[IDminx];
 
     }

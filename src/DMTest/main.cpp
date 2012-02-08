@@ -104,7 +104,7 @@ bool DynaMiteTest()
 {
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     //env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
-    env->addPythonPath("/usr/local/lib/");
+    env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
 
 
     DataManagement::init();
@@ -112,7 +112,7 @@ bool DynaMiteTest()
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
-    sim->registerPythonModules("/home/c8451045/Documents/DynaMindCore/scripts");
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
     DM::Module * in = sim->addModule("TestModule");
     DM::Module * outm =sim->addModule("InOut");
     DM::Module * outm2 =sim->addModule("InOut");
