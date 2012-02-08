@@ -28,9 +28,8 @@ from pydynamind import *
 class WhiteNoise(Module):
         def __init__(self):
             Module.__init__(self)
-            self.test = p_string()
-            self.test.assign("das ist ja super")
-            self.addParameter("test",STRING,self.test,"hallo")
+            self.createParameter("Test",FILENAME,"Sample Description")
+            self.Test = "Test"
             
             views = []
             self.streets = View("STREET", FACE, READ)
