@@ -29,7 +29,7 @@
 #include <Python.h>
 #include "pythonenv.h"
 #include <moduleregistry.h>
-#include "pythonnodefactory.h"
+//#include "pythonnodefactory.h"
 //#include <pymodule.h>
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
