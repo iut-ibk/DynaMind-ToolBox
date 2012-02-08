@@ -68,8 +68,8 @@ std::vector<std::string> DMDatabase::getRegisteredDatasets() const {
         std::string name = it->first;
         names.push_back(name);
 
-    }
-    return names;*/
+    }*/
+    return names;
 }
 
 RasterData & DMDatabase::getRasterData(std::string UUID, std::string Name, bool read, bool fromBack) {
@@ -113,6 +113,8 @@ RasterData & DMDatabase::getRasterData(std::string UUID, std::string Name, bool 
         return *(RasterDataMaps_1[createName(UUID, Name)]);
     }
     return *(RasterDataMaps_0[createName(UUID, Name)]);*/
+    RasterData r;
+    return r;
 
 
 

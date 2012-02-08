@@ -336,6 +336,7 @@ bool System::removeNode(std::string name)
 bool System::addComponentToView(Component *comp, const View &view) {
     this->views[view.getName()][comp->getName()] = comp;
     comp->setView(view.getName());
+    return true;
 }
 
 bool System::removeComponentFromView(Component *comp, const View &view) {
@@ -343,6 +344,7 @@ bool System::removeComponentFromView(Component *comp, const View &view) {
     entries.erase(comp->getName());
     comp->removeView(view);
     this->views[view.getName()] = entries;
+    return true;
 }
 
 bool System::addSubSystem(System *newsystem,  const DM::View & view)
