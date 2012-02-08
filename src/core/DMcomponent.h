@@ -33,11 +33,13 @@
 #include <list>
 #include <set>
 #include <DMview.h>
+#include <compilersettings.h>
+
 namespace DM {
 
 class Attribute;
 
-class Component
+class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 protected:

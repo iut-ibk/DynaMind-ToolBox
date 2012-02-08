@@ -31,7 +31,7 @@
 
 using namespace DM;
 
-class DoStuffWithRasterData : public Module
+class DM_HELPER_DLL_EXPORT DoStuffWithRasterData : public Module
 {
     DM_DECLARE_NODE(DoStuffWithRasterData)
     private:

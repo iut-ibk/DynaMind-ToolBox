@@ -30,7 +30,7 @@
 #include <map>
 #include <vector>
 #include <string>
-
+#include <compilersettings.h>
 
 
 namespace DM {
@@ -41,7 +41,7 @@ enum {
     MODIFY,
     WRITE
 };
-class View
+class DM_HELPER_DLL_EXPORT View
 {
 private:
 

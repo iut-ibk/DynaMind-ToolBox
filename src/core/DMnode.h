@@ -27,9 +27,11 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <compilersettings.h>
+
 #include <string>
 namespace DM {
-    class Component;
+    class DM_HELPER_DLL_EXPORT Component;
 
     class Node : public Component
     {

@@ -26,12 +26,13 @@
 
 #ifndef EDGE_H
 #define EDGE_H
+#include <compilersettings.h>
 
 namespace DM {
 
     class Component;
 
-    class Edge : public Component
+    class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
         std::string start;

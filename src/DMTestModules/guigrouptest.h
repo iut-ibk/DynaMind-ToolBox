@@ -28,6 +28,7 @@
 #define GUIGROUPTEST_H
 
 #include <QDialog>
+#include <compilersettings.h>
 
 namespace DM {
 class Module;
@@ -38,7 +39,7 @@ namespace Ui {
 class GUIGroupTest;
 }
 
-class GUIGroupTest : public QDialog
+class DM_HELPER_DLL_EXPORT GUIGroupTest : public QDialog
 {
     Q_OBJECT
     

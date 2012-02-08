@@ -26,13 +26,14 @@
 
 #ifndef DMFACE_H
 #define DMFACE_H
+#include <compilersettings.h>
 
 #include <vector>
 #include <string>
 
 namespace DM {
 class Component;
-class Face :  public Component
+class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
     std::vector<std::string> edges;

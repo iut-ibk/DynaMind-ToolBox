@@ -31,6 +31,7 @@ class Module;
 #define GUIDYNAMICINOUT_H
 
 #include <QDialog>
+#include <compilersettings.h>
 
 class DynamicInOut;
 
@@ -38,7 +39,7 @@ namespace Ui {
 class GUIDynamicInOut;
 }
 
-class GUIDynamicInOut : public QDialog
+class DM_HELPER_DLL_EXPORT GUIDynamicInOut : public QDialog
 {
     Q_OBJECT
     

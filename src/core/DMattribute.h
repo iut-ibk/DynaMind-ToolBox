@@ -30,11 +30,12 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <compilersettings.h>
 using namespace std;
 
 
 namespace DM {
-    class Attribute
+    class DM_HELPER_DLL_EXPORT Attribute
     {
     private:
         std::string name;

@@ -30,7 +30,7 @@
 #include <map>
 #include <vector>
 #include <DMview.h>
-
+#include <compilersettings.h>
 
 
 
@@ -51,7 +51,7 @@ namespace DM {
     class Face;
     class RasterData;
 
-    class System : public Component
+    class DM_HELPER_DLL_EXPORT System : public Component
     {
     private:
         std::vector<System*> predecessors;
