@@ -87,5 +87,8 @@
 #        pragma warning( disable : 4251 )    // like warning above but for templates (like std::string)
 #endif
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
 
 #endif //COMPILERSETTINGS_H

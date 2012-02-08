@@ -26,12 +26,14 @@
 
 #ifndef SYSTEM_H
 #define SYSTEM_H
-
+#include <compilersettings.h>
 #include <map>
 #include <vector>
 #include <DMview.h>
-#include <compilersettings.h>
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
 
 
 namespace DM {
@@ -51,7 +53,7 @@ namespace DM {
     class Face;
     class RasterData;
 
-    class DM_HELPER_DLL_EXPORT System : public Component
+    class  DM_HELPER_DLL_EXPORT System : public Component
     {
     private:
         std::vector<System*> predecessors;
