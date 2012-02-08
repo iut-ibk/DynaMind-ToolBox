@@ -42,7 +42,9 @@ namespace std {
     %template(edgevector) vector<DM::Edge* >;
     %template(nodevector) vector<DM::Node* >;
     %template(viewvector) vector<DM::View >;
-    %template(componentector) vector<DM::Component* >;
+    %template(componentvector) vector<DM::Component* >;
+    %template(attributevector) vector<DM::Attribute* >;
+    %template(attributemap) map<string, DM::Attribute* >;
     %template(componentmap) map<string, DM::Component* >;
     %template(nodemap) map<string, DM::Node* >;
     %template(edgemap) map<string, DM::Edge* >;
@@ -120,8 +122,9 @@ public:
 
     virtual void updateParameter();
 
-    void addParameter(std::string name, int type, void * ref, std::string description);
 
+    void addParameter(std::string name, int type, void * ref, std::string description);
+    //void addParameter(std::string name, int type, std::string * ref);
 
     virtual void setParameterValue(std::string name, std::string value);
 
@@ -158,17 +161,17 @@ public:
                 if self._data['d'] == 'Module':
                     self._data = {}
 
-            if DN_type == DM.STRING:
+            if DN_type == STRING:
                 self._data[name] = p_string()
-            if DN_type == DM.FILENAME:
+            if DN_type == FILENAME:
                 self._data[name] = p_string()
-            if DN_type == DM.DOUBLE:
+            if DN_type == DOUBLE:
                 self._data[name] = p_double()
-            if DN_type == DM.LONG:
+            if DN_type == LONG:
                 self._data[name] = p_double()
-            if DN_type == DM.INT:
+            if DN_type == INT:
                 self._data[name] = p_int()
-            if DN_type == DM.BOOL:
+            if DN_type == BOOL:
                 self._data[name] = p_int()
 
             self.addParameter(name,DN_type,self._data[name],description)

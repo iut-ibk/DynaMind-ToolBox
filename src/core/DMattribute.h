@@ -48,6 +48,7 @@ namespace DM {
         Attribute(const Attribute &newattribute);
         Attribute(std::string name);
         Attribute(std::string name, double val);
+        Attribute(){}
         ~Attribute();
         void setDouble(double v);
         double getDouble();
