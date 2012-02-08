@@ -50,6 +50,7 @@ protected:
 
     void removeView(const DM::View & view);
 
+
 public:
     Component();
     Component(const Component& s);
@@ -69,7 +70,7 @@ public:
     std::map<std::string, Component*> getAllChilds();
     void setView(std::string view);
     void setView(const DM::View & view);
-
+    void createNewUUID();
     std::set<std::string> const &  getInViews() const;
     bool isInView(DM::View view) const;
     virtual Component* clone()=0;

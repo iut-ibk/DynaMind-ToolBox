@@ -42,6 +42,10 @@ Component::Component()
     this->name = QUuid::createUuid().toString().toStdString();
 }
 
+void Component::createNewUUID() {
+    this->name = QUuid::createUuid().toString().toStdString();
+}
+
 bool Component::isInView(View view) const {
     foreach (std::string s, inViews) {
         if (view.getName().compare(s) == 0)
