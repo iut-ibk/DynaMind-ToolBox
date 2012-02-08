@@ -31,10 +31,11 @@
 #include <vector>
 #include <DMview.h>
 
+
+
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
 #endif
-
 
 namespace DM {
     typedef std::map<std::string, DM::Component*> ComponentMap;

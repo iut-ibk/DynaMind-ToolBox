@@ -35,6 +35,10 @@
 #include <DMview.h>
 #include <compilersettings.h>
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
+
 namespace DM {
 
 class Attribute;

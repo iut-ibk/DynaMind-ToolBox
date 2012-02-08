@@ -29,6 +29,10 @@
 
 #include <compilersettings.h>
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
+
 #include <string>
 namespace DM {
     class DM_HELPER_DLL_EXPORT Component;

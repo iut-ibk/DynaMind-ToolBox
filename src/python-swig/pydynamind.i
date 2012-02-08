@@ -1,5 +1,5 @@
 %module(directors="1", allprotected="1") pydynamind
-
+%ignore "DM_HELPER_DLL_EXPORT";
 %feature("director");
 %{
     #include <DMcomponent.h>
