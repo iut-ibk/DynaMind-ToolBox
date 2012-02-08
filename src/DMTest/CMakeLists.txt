@@ -11,7 +11,7 @@ add_executable(dynamind ${VIBE_CPPS})
 
 ADD_DEPENDENCIES(dynamind pydynamindgen)
 
-target_link_libraries(dynamind dynamindcore ${Boost_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(dynamind dynamindcore ${Boost_LIBRARIES} ${QT_LIBRARIES} ${PYTHON_LIBRARIES})
 
 # Installation of the program
 INSTALL(TARGETS dynamind
