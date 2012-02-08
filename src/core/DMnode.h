@@ -35,9 +35,9 @@
 
 #include <string>
 namespace DM {
-    class DM_HELPER_DLL_EXPORT Component;
+    class  Component;
 
-    class Node : public Component
+    class DM_HELPER_DLL_EXPORT Node : public Component
     {
     private:
         double x;
