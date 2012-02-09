@@ -127,7 +127,7 @@ public:
 
     DM::Module * getVIBeModel(){return this->VIBeModule;}
     GUISimulation * getSimulation() {return this->simulation;}
-    void * setSimulation(GUISimulation *s) {this->simulation = s;}
+    void  setSimulation(GUISimulation *s) {this->simulation = s;}
 
     virtual void updatePorts();
 
