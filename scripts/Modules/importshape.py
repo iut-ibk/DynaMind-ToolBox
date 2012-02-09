@@ -3,8 +3,8 @@
 @version 1.0
 @section LICENSE
 
-This file is part of VIBe2
-Copyright (C) 2011  Christian Urich
+This file is part of DynaMind
+Copyright (C) 2011-2012  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,92 +22,97 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 from pydynamind import *
-import pydynamind
-import shapefile
+from osgeo import ogr, osr
+from shapely import wkb, geometry, coords
+import itertools
+from shapely.geometry import asShape
 
 class ImportShapeFile(Module):
-	"""Import Shapefiles
-	
-	Import for Shapfiles. All data and attributes are imported. The data are saved in the Dynamite Sytem format. 
-	The elements are saved with Identifier_ID
-	@ingroup Modules
-	@author Christian Urich
-	"""
-        def __init__(self):
-            Module.__init__(self)
-	    
-
-	    self.createParameter("FileName",VIBe2.FILENAME,"Sample Description")
-            self.FileName = "/home/csae6550/Desktop/pipes"
-
-	    self.createParameter("Type",VIBe2.STRING,"Sample Description")
-	    self.Type = "e.g. Sewer"
-
-            shape = pydynamite.View("Shape")
-	    shape.addComponent(SUBSYSTEM)
-            shape.addAttributes("Type")
-            
-            views = pydynamite.viewvector()
-            views.push_back(shape)
-            self.addData("Shapefile",views)
-            
+        def __init__(self):            
+            Module.__init__(self)            
+            self.createParameter("FileName", FILENAME, "filename")
+            self.FileName = ""
+            self.createParameter("Identifier", STRING, "Name")
+            self.Identifier = ""
+            self.vec = View("STREET", EDGE, WRITE)
+            views = []
+            views.append(self.vec)
+            self.addData("Vec", views)
         def run(self):
-            vec = self.getData("Shapefile")
-            
-            if vec == None :
-                pydynamite.log("Cannot get a valid system object",pydynamite.Error)
-                return False
-            
-            sourcePath =  self.FileName
-            sf = shapefile.Reader(sourcePath)
-            shaperecords = sf.shapeRecords()
-            fields = sf.fields
-            
-            for r in shaperecords:
-                shp = r.shape.points
-                subsys = vec.createSubSystem("newsystem","Shape")
-                points = pydynamite.nodevector()
-                attr = r.record
+            city = self.getData("Vec")
+            shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
+            sourcePath = self.FileName
+            dataSource = ogr.Open(sourcePath)
+            layer = dataSource.GetLayer()
+            featureDefinition = layer.GetLayerDefn()
+            fieldIndices = xrange(featureDefinition.GetFieldCount())
+            #print fieldIndices
+            for fieldIndex in fieldIndices:
+                    fieldDefinition = featureDefinition.GetFieldDefn(fieldIndex)
+                    fieldDefinitions.append((fieldDefinition.GetName(), fieldDefinition.GetType()))
+            feature = layer.GetNextFeature()
+            #print layer.GetFeatureCount()
+            #while there are more features,
+            while feature:
+                    shapelyGeometries.append(wkb.loads(feature.GetGeometryRef().ExportToWkb()))
+                    fieldPacks.append([feature.GetField(x) for x in fieldIndices])
+                    # Get the next feature
+                    feature = layer.GetNextFeature()
+         
+            counter = 1
+
+            for i in range(len(shapelyGeometries)):
+                shapelyGeometry = shapelyGeometries[i]
+                geoms = []
+                #print shapelyGeometry.type
+                if shapelyGeometry.type == 'Point':            
+                        n = city.addNode(shapelyGeometry.x , shapelyGeometry.y, 0, View())                    
+                        for j in range(len(fieldDefinitions)):
+                            attr = Attribute(fieldDefinitions[j][0])
+                            print type(fieldPacks[i][j])
+                            if type(fieldPacks[i][j]) is 'string':                            
+                                attr.setString(str(fieldPacks[i][j]))
+                            if type(fieldPacks[i][j]) is 'float':                            
+                                attr.setDouble(fieldPacks[i][j])
                 
-                #Add all attribute at the current shape
-                for index, value in enumerate(attr):
-                    name = fields[index+1]
-                    newattr = pydynamite.Attribute(name[0])
-                    
-                    if name[1]=='C':
-                        newattr.setString(str(attr[index]))
-                        
-                    if name[1]=='N':
-                        newattr.setDouble(float(attr[index]))
-                        
-                    subsys.addAttribute(newattr)
-                
-                #Add this state only save points
-                for point in shp:
-                    points.push_back(subsys.addNode(point[0],point[1],0,""))
-                
-                if r.shape.shapeType != shapefile.POINT:
-                    for index, p1 in enumerate(points):
-                        if(points.__len__()>index+1):
-                            #Add this state no differenct between POLYLINE and POLYGON shape type
-                            p2 = points[index+1]
-                            subsys.addEdge(p1,p2)
+                elif shapelyGeometry.type == 'Polygon' or shapelyGeometry.type == 'LineString':
+                        geoms.append(shapelyGeometry)
+                else:
+                        geoms = list(shapelyGeometry.geoms)
+                if shapelyGeometry.type != 'Point':            
+                    for geo in geoms:
+                        if shapelyGeometry.type != 'LineString':
+                            r = geo.exterior
+                            coordinates = list(r.coords)
                         else:
-                            #If shape type is POLYGON close the current shape  
-                            if r.shape.shapeType == shapefile.POLYGON:
-                                p2 = points[0]
-                                subsys.addEdge(p1,p2)
+                            coordinates = geo.coords
+                        numberOfPoints = 0
+                        pl = []
+                        el = edgevector()
+                        for coords in coordinates:
+                            n = city.addNode(coords[0], coords[1], 0, View())
+                            pl.append(n)
+                            if numberOfPoints > 0:
+                                e = city.addEdge(pl[numberOfPoints - 1], pl[numberOfPoints], self.vec)
+                                el.append(e)
+                                counter += 1
+                            numberOfPoints += 1     
+                        
+                        #print counter
 
-            newattr2 = pydynamite.Attribute("Type")
-            newattr2.setString(self.Type)
-
-	    if not vec.addAttribute(newattr2) :
-                pydynamite.log("Cannot add new attribute",pydynamite.Error)
-            else:
-                print vec.getAttribute("Type").getName()
-                
-            regviews = vec.getViews().size()
-            regsysinview = vec.getAllComponentsInView("Shape").__len__()
-            pydynamite.log("Registered views : " + str(regviews),pydynamite.Standard)
-            pydynamite.log("Registered systems in views : " + str(regsysinview),pydynamite.Standard)
-            pydynamite.log("Imported " + str(vec.getAllSubSystems().__len__()) + " shapes",pydynamite.Standard)
+                        for j in range(len(fieldDefinitions)):
+                            attr = Attribute(fieldDefinitions[j][0])
+                            #print type(fieldPacks[i][j])
+                            if type(fieldPacks[i][j]) is 'string':                            
+                                attr.setString(str(fieldPacks[i][j]))
+                            if type(fieldPacks[i][j]) is 'float' or type(fieldPacks[i][j]) is 'int':                            
+                                attr.setDouble(fieldPacks[i][j])
+                            e.addAttribute(attr)
+                        if shapelyGeometry.type is 'LineString':
+                            continue
+                        #Create Faces
+                        
+                        city.addFace(el, self.vec)
+            print "Importet elements: " + str( len(city.getNamesOfComponentsInView(self.vec)) )
+            print "Edges Created: " + str( counter )
+            

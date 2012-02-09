@@ -4,8 +4,8 @@
 @version 1.0
 @section LICENSE
 
-This file is part of VIBe2
-Copyright (C) 2011  Christian Urich
+This file is part of DynaMind
+Copyright (C) 2011-2012  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,17 +44,17 @@ class ExportToShapeFile(Module):
                 self.Lines = True
                 self.createParameter("Faces", BOOL,  "test")
                 self.Faces = True
-		self.vec = View("STREET", EDGE, READ)
-		views = []
-		views.append(self.vec)
-		self.addData("vec", views)
+                self.vec = View("STREET", EDGE, READ)
+                views = []
+                views.append(self.vec)
+                self.addData("vec", views)
                 
             def run(self):
                 if self.Lines:
                     self.exportPolyline()      
                 
             def exportPolyline(self):
-            	city = self.getData("vec")
+                city = self.getData("vec")
                 spatialReference = osgeo.osr.SpatialReference()
                 spatialReference.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
                 
@@ -74,7 +74,7 @@ class ExportToShapeFile(Module):
                 if len(names) > 0:
                     attributemap = city.getComponent(names[0]).getAllAttributes()
                     for key in attributemap.keys():
-                        attr.append(attr)
+                        attr.append(key)
                 for i in range(len(names)): 
                     #Append Attributes
                     if names[i] in attr:
@@ -91,8 +91,8 @@ class ExportToShapeFile(Module):
                     
                             
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbLineString)
+                    print names[i]
                     edge = city.getEdge(names[i])
-                    Edge.getStartpointName
                     p1 = city.getNode(edge.getStartpointName())
                     p2 = city.getNode(edge.getEndpointName())
                     line.AddPoint(p1.getX(),p1.getY())
