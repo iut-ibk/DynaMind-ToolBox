@@ -1,0 +1,30 @@
+Windows batch file for execution of examples
+For compilation with Windows compilers
+
+EXECUTE EXAMPLE:  example compiler filename [options]
+    compiler    compiler name (see below)
+                Windows/Bash scripts support different compilers
+    filename    example name
+    options     optional string enclosed in quotes
+                additional options to be passed to compiler
+
+
+VIEW EXAMPLE SOURCE:  example view filename
+    filename    example name
+
+
+LIST OF EXAMPLES:  example list unitname
+    unitname    name of the unit (from /src directory)
+
+
+COMPILERS SUPPORTED:
+        msvc    Microsoft C++ (32/64-bit, depending on what is in your PATH)
+       mingw    MinGW port of GCC
+
+EXAMPLES:
+    example list spline1d
+    example msvc spline1d_cubic
+    example mingw spline1d_cubic "-m32 -msse3 -mfpmath=sse"
+    example view spline1d_cubic
+
+See reference manual for more information

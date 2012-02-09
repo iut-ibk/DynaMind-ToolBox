@@ -1,0 +1,571 @@
+if [ "$1" == "" ] ; then
+cat _internal/example-bash-help
+exit 1
+fi
+if [ "$4" != "" ] ; then
+echo Too many parameters specified
+echo Did you enclose parameters to be passed to the compiler in double quotes?
+exit 1
+fi
+if [ "$1" == "list" ] ; then
+case $2 in
+dforest)
+echo No examples for this unit
+;;
+tsort)
+echo No examples for this unit
+;;
+descriptivestatistics)
+echo No examples for this unit
+;;
+bdss)
+echo No examples for this unit
+;;
+kmeans)
+echo No examples for this unit
+;;
+blas)
+echo No examples for this unit
+;;
+lda)
+echo No examples for this unit
+;;
+rotations)
+echo No examples for this unit
+;;
+tdevd)
+echo No examples for this unit
+;;
+sblas)
+echo No examples for this unit
+;;
+reflections)
+echo No examples for this unit
+;;
+tridiagonal)
+echo No examples for this unit
+;;
+sevd)
+echo No examples for this unit
+;;
+cholesky)
+echo No examples for this unit
+;;
+spdinverse)
+echo No examples for this unit
+;;
+linreg)
+echo No examples for this unit
+;;
+gammafunc)
+echo No examples for this unit
+;;
+normaldistr)
+echo No examples for this unit
+;;
+igammaf)
+echo No examples for this unit
+;;
+bidiagonal)
+echo No examples for this unit
+;;
+qr)
+echo No examples for this unit
+;;
+lq)
+echo No examples for this unit
+;;
+bdsvd)
+echo No examples for this unit
+;;
+svd)
+echo No examples for this unit
+;;
+logit)
+echo No examples for this unit
+;;
+mlpbase)
+echo mlp_process         MLPProcess\(\) example
+echo mlp_process_cls     MLPProcess\(\) example
+echo mlp_randomize       MLPRandomize\(\) example
+echo mlp_serialize       MLPSerialize\(\)/MLPUnserialize\(\) example
+;;
+spdsolve)
+echo No examples for this unit
+;;
+mlpe)
+echo No examples for this unit
+;;
+trinverse)
+echo No examples for this unit
+;;
+lbfgs)
+echo lbfgs_min           L-BFGS optimization
+;;
+mlptrain)
+echo No examples for this unit
+;;
+pca)
+echo No examples for this unit
+;;
+fft)
+echo No examples for this unit
+;;
+ftbase)
+echo No examples for this unit
+;;
+fht)
+echo No examples for this unit
+;;
+conv)
+echo No examples for this unit
+;;
+corr)
+echo No examples for this unit
+;;
+correlationtests)
+echo No examples for this unit
+;;
+ibetaf)
+echo No examples for this unit
+;;
+studenttdistr)
+echo No examples for this unit
+;;
+correlation)
+echo No examples for this unit
+;;
+jarquebera)
+echo No examples for this unit
+;;
+mannwhitneyu)
+echo No examples for this unit
+;;
+stest)
+echo No examples for this unit
+;;
+nearunityunit)
+echo No examples for this unit
+;;
+binomialdistr)
+echo No examples for this unit
+;;
+studentttests)
+echo No examples for this unit
+;;
+variancetests)
+echo No examples for this unit
+;;
+fdistr)
+echo No examples for this unit
+;;
+chisquaredistr)
+echo No examples for this unit
+;;
+wsr)
+echo No examples for this unit
+;;
+poissondistr)
+echo No examples for this unit
+;;
+hqrnd)
+echo No examples for this unit
+;;
+gkq)
+echo No examples for this unit
+;;
+gq)
+echo No examples for this unit
+;;
+autogk)
+echo autogk_singular     1-dimensional integration of singular functions
+echo autogk_smooth       1-dimensional integration
+;;
+spline2d)
+echo No examples for this unit
+;;
+spline3)
+echo No examples for this unit
+;;
+minlm)
+echo minlm_fj            Levenberg-Marquardt optimization, FJ scheme
+echo minlm_fgh           Levenberg-Marquardt optimization, FGH scheme
+echo minlm_fgj           Levenberg-Marquardt optimization, FGJ scheme
+echo minlm_fj2           Levenberg-Marquardt optimization, FJ scheme
+;;
+lu)
+echo No examples for this unit
+;;
+trlinsolve)
+echo No examples for this unit
+;;
+rcond)
+echo No examples for this unit
+;;
+leastsquares)
+echo No examples for this unit
+;;
+lsfit)
+echo No examples for this unit
+;;
+spline1d)
+echo spline1d_calc       1-dimensional spline operations
+echo spline1d_cubic      cubic spline interpolation
+echo spline1d_fit        1-dimensional spline fitting
+echo spline1d_fitc       1-dimensional constrained spline fitting
+echo spline1d_hermite    1-dimensional Hermite spline interpolation
+echo spline1d_linear     1-dimensional linear spline interpolation
+;;
+ratint)
+echo No examples for this unit
+;;
+ratinterpolation)
+echo No examples for this unit
+;;
+polint)
+echo No examples for this unit
+;;
+taskgen)
+echo No examples for this unit
+;;
+airyf)
+echo No examples for this unit
+;;
+bessel)
+echo No examples for this unit
+;;
+betaf)
+echo No examples for this unit
+;;
+dawson)
+echo No examples for this unit
+;;
+elliptic)
+echo No examples for this unit
+;;
+expintegrals)
+echo No examples for this unit
+;;
+fresnel)
+echo No examples for this unit
+;;
+jacobianelliptic)
+echo No examples for this unit
+;;
+psif)
+echo No examples for this unit
+;;
+trigintegrals)
+echo No examples for this unit
+;;
+chebyshev)
+echo No examples for this unit
+;;
+hermite)
+echo No examples for this unit
+;;
+laguerre)
+echo No examples for this unit
+;;
+legendre)
+echo No examples for this unit
+;;
+odesolver)
+echo No examples for this unit
+;;
+hbisinv)
+echo No examples for this unit
+;;
+cblas)
+echo No examples for this unit
+;;
+creflections)
+echo No examples for this unit
+;;
+hblas)
+echo No examples for this unit
+;;
+htridiagonal)
+echo No examples for this unit
+;;
+tdbisinv)
+echo No examples for this unit
+;;
+hevd)
+echo No examples for this unit
+;;
+nsevd)
+echo No examples for this unit
+;;
+hsschur)
+echo No examples for this unit
+;;
+hessenberg)
+echo No examples for this unit
+;;
+spdgevd)
+echo No examples for this unit
+;;
+sbisinv)
+echo No examples for this unit
+;;
+cdet)
+echo No examples for this unit
+;;
+clu)
+echo No examples for this unit
+;;
+cinverse)
+echo No examples for this unit
+;;
+ctrinverse)
+echo No examples for this unit
+;;
+cqr)
+echo No examples for this unit
+;;
+crcond)
+echo No examples for this unit
+;;
+ctrlinsolve)
+echo No examples for this unit
+;;
+det)
+echo No examples for this unit
+;;
+inv)
+echo No examples for this unit
+;;
+inverseupdate)
+echo No examples for this unit
+;;
+schur)
+echo No examples for this unit
+;;
+hcholesky)
+echo No examples for this unit
+;;
+spddet)
+echo No examples for this unit
+;;
+sdet)
+echo No examples for this unit
+;;
+ldlt)
+echo No examples for this unit
+;;
+sinverse)
+echo No examples for this unit
+;;
+spdrcond)
+echo No examples for this unit
+;;
+estnorm)
+echo No examples for this unit
+;;
+srcond)
+echo No examples for this unit
+;;
+ssolve)
+echo No examples for this unit
+;;
+matgen)
+echo No examples for this unit
+;;
+densesolver)
+echo No examples for this unit
+;;
+xblas)
+echo No examples for this unit
+;;
+csolve)
+echo No examples for this unit
+;;
+*)
+echo unknown unit
+exit 1
+;;
+esac
+exit 0
+fi
+if [ "$1" == "view" ] ; then
+case $2 in
+minlm_fj)
+cat examples/_demo_minlm_fj.*
+;;
+autogk_singular)
+cat examples/_demo_autogk_singular.*
+;;
+autogk_smooth)
+cat examples/_demo_autogk_smooth.*
+;;
+spline1d_calc)
+cat examples/_demo_spline1d_calc.*
+;;
+spline1d_cubic)
+cat examples/_demo_spline1d_cubic.*
+;;
+spline1d_fit)
+cat examples/_demo_spline1d_fit.*
+;;
+spline1d_fitc)
+cat examples/_demo_spline1d_fitc.*
+;;
+spline1d_hermite)
+cat examples/_demo_spline1d_hermite.*
+;;
+spline1d_linear)
+cat examples/_demo_spline1d_linear.*
+;;
+lbfgs_min)
+cat examples/_demo_lbfgs_min.*
+;;
+minlm_fgh)
+cat examples/_demo_minlm_fgh.*
+;;
+minlm_fgj)
+cat examples/_demo_minlm_fgj.*
+;;
+minlm_fj2)
+cat examples/_demo_minlm_fj2.*
+;;
+mlp_process)
+cat examples/_demo_mlp_process.*
+;;
+mlp_process_cls)
+cat examples/_demo_mlp_process_cls.*
+;;
+mlp_randomize)
+cat examples/_demo_mlp_randomize.*
+;;
+mlp_serialize)
+cat examples/_demo_mlp_serialize.*
+;;
+*)
+echo unknown example
+exit 1
+;;
+esac
+exit 0
+fi
+cd _tmp
+rm -f *
+cd ..
+case $1 in
+gcc)
+cp out/libalglib.a _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+cp out/*.h _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+;;
+mingw)
+cp out/libalglib.a _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+cp out/*.h _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+;;
+*)
+echo unknown compiler
+exit 1
+;;
+esac
+case $2 in
+minlm_fj)
+cp examples/_demo_minlm_fj.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+autogk_singular)
+cp examples/_demo_autogk_singular.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+autogk_smooth)
+cp examples/_demo_autogk_smooth.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_calc)
+cp examples/_demo_spline1d_calc.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_cubic)
+cp examples/_demo_spline1d_cubic.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_fit)
+cp examples/_demo_spline1d_fit.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_fitc)
+cp examples/_demo_spline1d_fitc.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_hermite)
+cp examples/_demo_spline1d_hermite.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+spline1d_linear)
+cp examples/_demo_spline1d_linear.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+lbfgs_min)
+cp examples/_demo_lbfgs_min.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+minlm_fgh)
+cp examples/_demo_minlm_fgh.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+minlm_fgj)
+cp examples/_demo_minlm_fgj.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+minlm_fj2)
+cp examples/_demo_minlm_fj2.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+mlp_process)
+cp examples/_demo_mlp_process.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+mlp_process_cls)
+cp examples/_demo_mlp_process_cls.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+mlp_randomize)
+cp examples/_demo_mlp_randomize.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+mlp_serialize)
+cp examples/_demo_mlp_serialize.cpp _tmp/_demo.cpp >> log.txt 2>> log.txt
+;;
+*)
+echo unknown example
+exit 1
+;;
+esac
+case $1 in
+gcc)
+cd _tmp
+gcc -I. -L. -o _demo *.cpp $3  -lalglib -lm -lstdc++ >> ../log.txt 2>> ../log.txt
+if [ $? -ne 0 ] ; then
+echo Error while compiling \(see ../log.txt for more info\)
+exit 1
+fi
+cd ..
+pushd _tmp > /dev/null
+./_demo
+popd > /dev/null
+;;
+mingw)
+cd _tmp
+g++ -I. -o _demo.exe $3 *.cpp  libalglib.a >> ../log.txt 2>> ../log.txt
+if [ $? -ne 0 ] ; then
+echo Error while compiling \(see ../log.txt for more info\)
+exit 1
+fi
+cd ..
+pushd _tmp > /dev/null
+./_demo
+popd > /dev/null
+;;
+*)
+echo unknown compiler
+exit 1
+;;
+esac
+exit 0
