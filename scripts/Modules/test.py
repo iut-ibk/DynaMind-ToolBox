@@ -32,8 +32,8 @@ class WhiteNoise(Module):
             self.Test = "Test"
             
             views = []
-            self.streets = View("STREET", FACE, READ)
-            views.append(streets)
+            self.vec = View("STREET", FACE, READ)
+            views.append(self.vec)
             self.addData("City", views)
 
 

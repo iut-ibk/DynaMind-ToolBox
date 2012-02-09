@@ -17,9 +17,11 @@ InOut2::InOut2() {
     inlets.addAttribute("D");
     conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
     conduits.addAttribute("F");
+    streets = DM::View("STREET", DM::EDGE,  DM::READ);
 
     views.push_back(inlets);
     views.push_back(conduits);
+    views.push_back(streets);
 
     this->addData("Inport", views);
     a = 0;
@@ -59,21 +61,14 @@ void InOut2::run() {
         Logger(Debug) << s->getName() << " " << s->getAllNodes().size() << " " << s->getAllEdges().size();
     }
 
-    /*for (int i = 0; i < test; i++) {
-        for (int j = 0; j < test; j++) {
-            for (int k = 0; k < test; k++)            {
-
-
-                        b++;
-
-
-            }
-        }
-    }
-    Logger(Debug) << b;
-    */
 
     sys_in->addEdge(n1, n2, conduits);
+
+    std::vector<std::string> nstreets = sys_in->getNamesOfComponentsInView(streets);
+    foreach (std::string str, nstreets) {
+        Edge * e = sys_in->getEdge(str);
+        e->getAllAttributes();
+    }
 
 
 }

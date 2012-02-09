@@ -43,14 +43,15 @@ using namespace DM;
 
 bool DynaMiteTest();
 bool DMBaseTest();
-
+bool MemDynaMiteTestPython();
+bool MemDynaMiteTestC();
 int main(int argc, char *argv[], char *envp[]) {
     //Init Logger
     ostream *out = &cout;
     DM::Log::init(new OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Debug) << "Start";
 
-    if(!DynaMiteTest())
+    /*if(!DynaMiteTest())
         Logger(Error) << "DynaMiteTest FAILED";
     else
         Logger() << "DynaMiteTest DONE";
@@ -76,6 +77,13 @@ int main(int argc, char *argv[], char *envp[]) {
 
     }else {
         Logger() << "ComplexGeomtry DONE";
+    }*/
+
+    if (!MemDynaMiteTestC()) {
+        Logger(Error) << "MemDynaMiteTest FAILED";
+
+    }else {
+        Logger() << "MemDynaMiteTest DONE";
     }
     return 1;
 }
@@ -126,6 +134,73 @@ bool DynaMiteTest()
     sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
     sim->addLink(in->getOutPort("RasterData"), doraster->getInPort("RasterData"));
 
+    sim->run();
+
+
+
+
+    QThreadPool::globalInstance()->waitForDone();
+
+    sim->run(true);
+
+
+
+
+    QThreadPool::globalInstance()->waitForDone();
+    delete sim;
+    DM::Logger(DM::Debug) << "End";
+
+    return true;
+}
+
+bool MemDynaMiteTestC()
+{
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
+
+
+    DataManagement::init();
+    DMDatabase * db = new DMDatabase();
+    DataManagement::getInstance().registerDataBase(db);   //Init Logger
+    Simulation * sim = new Simulation;
+    sim->registerNativeModules("dmtestmodule");
+        DM::Module * in = sim->addModule("MemoryTest");
+    sim->run();
+
+
+
+
+    QThreadPool::globalInstance()->waitForDone();
+
+    sim->run(true);
+
+
+
+
+    QThreadPool::globalInstance()->waitForDone();
+    delete sim;
+    DM::Logger(DM::Debug) << "End";
+
+    return true;
+}
+
+
+bool MemDynaMiteTestPython()
+{
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
+
+
+    DataManagement::init();
+    DMDatabase * db = new DMDatabase();
+    DataManagement::getInstance().registerDataBase(db);   //Init Logger
+    Simulation * sim = new Simulation;
+    sim->registerNativeModules("dmtestmodule");
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
+    DM::Module * in = sim->addModule("MemTestSystem");
+    //DM::Module * in = sim->addModule("ImportShapeFile");
+    //in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/Drains.shp");
+    //in->setParameterValue("FileName","/home/c8451045/Documents/DynaMind/build/debug/Shapefile_lines.shp");
     sim->run();
 
 

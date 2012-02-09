@@ -278,8 +278,8 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 ModelNode::~ModelNode() {
-    int index = this->nodes->indexOf(this);
-    this->nodes->remove(index);
+    //int index = this->nodes->indexOf(this);
+    //this->nodes->remove(index);
     if (this->VIBeModule != 0)
         this->simulation->removeModule(this->VIBeModule->getUuid());
     this->VIBeModule = 0;

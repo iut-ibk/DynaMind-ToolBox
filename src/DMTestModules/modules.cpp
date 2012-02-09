@@ -34,6 +34,7 @@
 #include "dynamicinout.h"
 #include "dostuffwithrasterdata.h"
 #include "grouptest.h"
+#include "memorytest.h"
 
 using namespace std;
 
@@ -49,5 +50,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<DynamicInOut>());
     registry->addNodeFactory(new NodeFactory<DoStuffWithRasterData>());
     registry->addNodeFactory(new NodeFactory<GroupTest>());
+    registry->addNodeFactory(new NodeFactory<MemoryTest>());
 }
 

@@ -12,6 +12,7 @@ DM_DECLARE_NODE( InOut2 )
     private:
          DM::View inlets;
          DM::View conduits;
+         DM::View streets;
 
     public:
         DM::System * sys_in;
