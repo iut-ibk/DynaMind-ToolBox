@@ -1,0 +1,97 @@
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VIBe2 Virtual Infrastructure Benchmarking")
+SET(CPACK_PACKAGE_NAME "vibe2")
+SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "11")
+#SET(CPACK_RESOURCE_FILE_LICENSE "/home/andy/vtk/CMake/Copyright.txt")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Urich <christian.urich@gmail.com>")
+IF(WIN32 AND NOT UNIX)
+          # There is a bug in NSI that does not handle full unix paths properly. Make
+          # sure there is at least one set of four (4) backlasshes.
+          SET(CPACK_GENERATOR "NSIS")
+          #SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
+          #SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+          SET(CPACK_NSIS_DISPLAY_NAME "VIBe2")
+          SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
+          SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
+          SET(CPACK_NSIS_CONTACT "christian.urich@uibk.ac.at")
+          IF(CMAKE_BUILD_TYPE STREQUAL Release)
+                  file(GLOB DLLS C:/Users/c815/.hudson/jobs/vibe2/workspace/build/*.dll*
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/build/*.pyd
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/build/*.exe*
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/winlibs/QGLViewer/QGLViewer/release/*.dll
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/winlibs/*.dll
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/winlibs/*.exe
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/winlibs/cgal/*.dll
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/src/3dparty/cd3-1/windows/release/*.dll*
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/src/3dparty/cd3-1/windows/release/*.pyd
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/data/raindata/default.sinp
+                        C:/Users/c815/.hudson/jobs/vibe2/workspace/data/raindata/euler_II_133_120_5.dat
+                        ${QT_BINARY_DIR}/QtCore4.dll
+                        ${QT_BINARY_DIR}/QtGui4.dll
+                        ${QT_BINARY_DIR}/QtXml4.dll
+                        ${QT_BINARY_DIR}/QtXmlPatterns4.dll
+                        ${QT_BINARY_DIR}/QtNetwork4.dll
+                        ${QT_BINARY_DIR}/QtWebKit4.dll
+                        ${QT_BINARY_DIR}/phonon4.dll
+                        ${QT_BINARY_DIR}/QtOpenGL4.dll
+                        ${QT_BINARY_DIR}/QtSVG4.dll
+                        ${QT_BINARY_DIR}/QtSql4.dll
+                        ${Boost_LIBRARY_DIRS}/boost_python-*-mt-1_*.dll
+                        ${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
+                        ${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
+                        ${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
+                        ${Boost_LIBRARY_DIRS}/boost_filesystem-*-mt-1_*.dll
+                        ${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll)
+             ENDIF()
+
+                file( GLOB GWHPTABLE  C:/Users/c815/.hudson/jobs/vibe2/workspace/data/GWHPtables/*.*)
+
+                #file( GLOB SAMPLEDATA  C:/Users/c815/.hudson/jobs/vibe2/workspace/data/maps/*.*)
+                file( GLOB POLYGON  C:/Users/c815/.hudson/jobs/vibe2/workspace/data/scripts/Polygon/*.*)
+
+    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" pythonhome \\\"$INSTDIR\\\\bin\\\\DLLs\\\\,$INSTDIR\\\\bin\\\\lib\\\\,$INSTDIR\\\\bin\\\\lib\\\\plat-win\\\\,$INSTDIR\\\\bin\\\\lib\\\\lib-tk\\\\,$INSTDIR\\\\bin\\\\lib\\\\site-packages,$INSTDIR\\\\bin\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" pythonModules \\\"$INSTDIR\\\\data\\\\scripts\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" VIBeModules \\\"$INSTDIR\\\\data\\\\modules\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" UrbanSim \\\"$INSTDIR\\\\data\\\\3dparty\\\\opus\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\data\\\\3dparty\\\\Editra\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" SWMM \\\"$INSTDIR\\\\data\\\\swmm\\\\\\\"
+        ClearErrors
+        ")
+     SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        DeleteRegKey HKCU \\\"Software\\\\IUT\\\\VIBe2\\\"
+      ")
+
+  install(FILES ${DLLS} DESTINATION bin)
+  install(FILES "${PYTHON_LIBRARIES}" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../DLLs" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../Lib" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../Scripts" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../Tools" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../tcl" DESTINATION bin)
+  install(DIRECTORY "${PYTHON_INCLUDE_PATH}/../GDAL" DESTINATION bin)
+  install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/src/3dparty/opus/" DESTINATION data/3dparty/opus)
+  install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/src/3dparty/Editra" DESTINATION data/3dparty)
+  install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/data/modules/" DESTINATION data/modules/)
+  #install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/data/scripts/" DESTINATION data/scripts/)
+  install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/data/swmm/" DESTINATION data/swmm/)
+  #install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/data/icons/" DESTINATION data/icons/)
+  #install(DIRECTORY "C:/Users/c815/.hudson/jobs/vibe2/workspace/data/dance4water/" DESTINATION data/dancewater/)
+  INSTALL(FILES ${QT_BINARY_DIR}/../plugins/sqldrivers/qsqlmysql4.dll DESTINATION bin/plugins/sqldrivers)
+
+  install(FILES ${GWHPTABLE} DESTINATION data/resources/GWHP)
+  #install(FILES ${SAMPLEDATA} DESTINATION data/resources/sampledata)
+  install(FILES ${POLYGON} DESTINATION data/scripts/Polygon)
+  #install(FILES ${SAMPLESIMS} DESTINATION data/simulations/)
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
+
+  #set(CPACK_NSIS_MENU_LINKS "bin/cd3-gui.exe" "Run CityDrain3 GUI")
+  #SET(CPACK_NSIS_MODIFY_PATH ON) 
+  set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind")
+  #set(CPACK_PACKAGE_EXECUTABLES "dance4water;DAnCE4Water")
+ENDIF()
+INCLUDE(CPack)

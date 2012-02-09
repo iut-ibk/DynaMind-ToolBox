@@ -43,3 +43,6 @@ add_subdirectory(src/DMToolboxes)
 add_subdirectory(src/CityBlocks)
 add_subdirectory(src/DMSewer)
 add_subdirectory(src/DMExampleSimulations)
+
+
+INCLUDE(DynaMindCPack.txt)
