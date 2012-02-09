@@ -10,7 +10,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(dmtestmodule SHARED ${MODULE_CPPS})
 
-target_link_libraries(dmtestmodule ${VIBE2CORE_LIBRARIES} ${VIBE2HELPER_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(dmtestmodule dynamindtoolbox dynamindcore ${QT_LIBRARIES})
 
 INSTALL(TARGETS dmtestmodule
         DESTINATION "lib"
