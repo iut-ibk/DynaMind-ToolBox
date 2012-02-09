@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     splash1->showMessage("Loading Modules");
     app.processEvents();
 
-    MainWindow * mw = new MainWindow;
+    MainWindow * mw = new MainWindow();
 
     mw->show();
 

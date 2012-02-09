@@ -90,7 +90,7 @@ private:
     QTreeWidgetItem * rootItemModelTree;
     DM::ModuleRegistry registry;
     void writeGUIInformation(QString FileName);
-    //QwtPlotMarker * points;
+
 
 
 public slots:
