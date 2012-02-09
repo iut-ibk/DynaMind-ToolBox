@@ -104,7 +104,7 @@ void MainWindow::registerPlotWindow(GUIResultObserver * ress, double x, double y
     w->updateImage(f);
 
     //Update Windows*/
-    Plot * p = new Plot();
+    //Plot * p = new Plot();
     // QDockWidget *dw = new QDockWidget(this);
     //dw->setAllowedAreas(Qt::BottomDockWidgetArea);
 
@@ -113,11 +113,11 @@ void MainWindow::registerPlotWindow(GUIResultObserver * ress, double x, double y
     //this->addDockWidget(Qt::BottomDockWidgetArea, dw);
     // dw->show();
 
-    this->tabWidget->addTab(p,QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()) );
+    //this->tabWidget->addTab(p,QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()) );
 
-    DM::Logger(DM::Debug) << "Register Plot";
-    connect(ress, SIGNAL(newDoubleDataForPlot(double, double)), p, SLOT(appendData(double, double)), Qt::BlockingQueuedConnection);
-    p->appendData( x,y);
+    //DM::Logger(DM::Debug) << "Register Plot";
+    //connect(ress, SIGNAL(newDoubleDataForPlot(double, double)), p, SLOT(appendData(double, double)), Qt::BlockingQueuedConnection);
+    //p->appendData( x,y);
 }
 
 

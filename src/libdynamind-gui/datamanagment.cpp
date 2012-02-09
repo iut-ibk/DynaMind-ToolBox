@@ -62,7 +62,7 @@ void DataManagment::observeNewVectorData(DM::Module * module, std::string name) 
 
 
 }
-DataManagment::DataManagment(QTreeWidgetItem * rootItem, Plot *plot)
+DataManagment::DataManagment(QTreeWidgetItem * rootItem)
 {
     x = 10;
     this->rootVectorItem = new QTreeWidgetItem();
@@ -72,7 +72,7 @@ DataManagment::DataManagment(QTreeWidgetItem * rootItem, Plot *plot)
 
     rootItem->addChild(rootVectorItem);
     rootItem->addChild(rootRasterItem);
-    this->plot = plot;
+    //this->plot = plot;
 
 }
 DataManagment::~DataManagment() {

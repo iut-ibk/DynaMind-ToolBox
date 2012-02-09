@@ -36,7 +36,7 @@
 #include "moduleregistry.h"
 #include <QMainWindow>
 
-#include "plot.h"
+//#include "plot.h"
 
 
 #include <QMap>
@@ -90,7 +90,7 @@ private:
     QTreeWidgetItem * rootItemModelTree;
     DM::ModuleRegistry registry;
     void writeGUIInformation(QString FileName);
-    QwtPlotMarker * points;
+    //QwtPlotMarker * points;
 
 
 public slots:

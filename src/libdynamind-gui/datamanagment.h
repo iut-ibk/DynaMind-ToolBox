@@ -49,7 +49,7 @@ class  DM_HELPER_DLL_EXPORT DataManagment : public DM::DataObserver
 private:
     QTreeWidgetItem * rootVectorItem;
     QTreeWidgetItem * rootRasterItem;
-    Plot * plot;
+    //Plot * plot;
 
     std::string currentScene;
     void deleteTreeWidgetItem(QTreeWidgetItem* item);
@@ -59,7 +59,7 @@ private:
 
 
 public:
-    DataManagment(QTreeWidgetItem * rootItem,  Plot * plot);
+    DataManagment(QTreeWidgetItem * rootItem);
 
     void observeNewRasterData(DM::Module * module, std::string name);
     void observeNewVectorData(DM::Module * module, std::string name);

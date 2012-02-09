@@ -26,7 +26,7 @@
 #include "plot.h"
 #include <qwt_symbol.h>
 
-Plot::Plot(QWidget * parent)
+/*Plot::Plot(QWidget * parent)
 {
 
     this->counter = 0;
@@ -59,5 +59,5 @@ void Plot::appendData( double x, double y) {
     data->setData(d_x, d_y);
     emit update();
     QCoreApplication::processEvents();
-}
+}*/
 

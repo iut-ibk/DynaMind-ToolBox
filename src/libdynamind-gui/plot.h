@@ -38,7 +38,7 @@
 #include <math.h>
 #include <QVector>
 
-class  DM_HELPER_DLL_EXPORT Plot : public QwtPlot
+/*class  DM_HELPER_DLL_EXPORT Plot : public QwtPlot
 {
     Q_OBJECT
 public:
@@ -56,6 +56,6 @@ public:
         void appendData(double x, double y);
 
 
-};
+};*/
 
 #endif // PLOT_H
