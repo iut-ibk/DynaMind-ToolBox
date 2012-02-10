@@ -73,7 +73,19 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e
 
 DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, double err) {
 
+
+
+    if (view.getName().empty()) {
+        DM::NodeMap nmap = sys->getAllNodes();
+        for (DM::NodeMap::const_iterator it = nmap.begin(); it != nmap.end(); ++it) {
+            DM::Node * n_1 = it->second;
+            if (n_1->compare2d(n, err))
+                return n_1;
+        }
+    }
+
     DM::ComponentMap cmap = sys->getAllComponentsInView(view);
+
     for (DM::ComponentMap::const_iterator it = cmap.begin(); it != cmap.end(); ++it) {
         DM::Node * n_1 = (DM::Node *) it->second;
         if (n_1->compare2d(n, err))

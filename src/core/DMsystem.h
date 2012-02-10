@@ -30,7 +30,7 @@
 #include <map>
 #include <vector>
 #include <DMview.h>
-
+#include <DMnode.h>
 
 
 #ifdef SWIG
@@ -39,6 +39,8 @@
 
 namespace DM {
     typedef std::map<std::string, DM::Component*> ComponentMap;
+    typedef std::map<std::string, DM::Node*> NodeMap;
+
 
     enum Components {
         NODE,

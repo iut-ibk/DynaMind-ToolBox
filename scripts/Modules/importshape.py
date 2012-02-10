@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 from pydynamind import *
+from pydmtoolbox import *
 from osgeo import ogr, osr
 from shapely import wkb, geometry, coords
 import itertools
@@ -90,7 +91,7 @@ class ImportShapeFile(Module):
                         pl = []
                         el = edgevector()
                         for coords in coordinates:
-                            n = city.addNode(coords[0], coords[1], 0, View())
+                            n = TBVectorData_addNodeToSystem2D(city,View(), Node(coords[0], coords[1], 0), 0.1)
                             pl.append(n)
                             if numberOfPoints > 0:
                                 e = city.addEdge(pl[numberOfPoints - 1], pl[numberOfPoints], self.vec)
@@ -113,6 +114,7 @@ class ImportShapeFile(Module):
                         #Create Faces
                         
                         city.addFace(el, self.vec)
-            print "Importet elements: " + str( len(city.getNamesOfComponentsInView(self.vec)) )
+            print "Imported points: " + str( len(city.getAllNodes()))
+            print "Imported elements: " + str( len(city.getNamesOfComponentsInView(self.vec)) )
             print "Edges Created: " + str( counter )
             

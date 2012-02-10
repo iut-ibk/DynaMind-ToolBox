@@ -79,7 +79,7 @@ int main(int argc, char *argv[], char *envp[]) {
         Logger() << "ComplexGeomtry DONE";
     }*/
 
-    if (!MemDynaMiteTestC()) {
+    if (!MemDynaMiteTestPython()) {
         Logger(Error) << "MemDynaMiteTest FAILED";
 
     }else {
@@ -197,18 +197,13 @@ bool MemDynaMiteTestPython()
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
     sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
-    DM::Module * in = sim->addModule("MemTestSystem");
-    //DM::Module * in = sim->addModule("ImportShapeFile");
+    //DM::Module * in = sim->addModule("MemTestSystem");
+    DM::Module * in = sim->addModule("ImportShapeFile");
     //in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/Drains.shp");
+    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/ScreekDrains_Part1.shp");
     //in->setParameterValue("FileName","/home/c8451045/Documents/DynaMind/build/debug/Shapefile_lines.shp");
     sim->run();
 
-
-
-
-    QThreadPool::globalInstance()->waitForDone();
-
-    sim->run(true);
 
 
 

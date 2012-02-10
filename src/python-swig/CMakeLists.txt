@@ -3,10 +3,12 @@ file(GLOB PYTHON_HEADER *.h)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
+include_directories(../DMToolboxes)
 INCLUDE(${SWIG_USE_FILE})
 EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -c++ -threads -external-runtime swigruntime.h)
 EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i)
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i)
+
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 
@@ -16,14 +18,28 @@ ADD_CUSTOM_COMMAND(
         OUTPUT ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp
         )
 
-ADD_CUSTOM_TARGET(pydynamindgen DEPENDS ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
+ADD_CUSTOM_COMMAND(
+        COMMAND ${SWIG_EXECUTABLE} -python -threads -c++ -o ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i
+        OUTPUT ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp
+        )
 
+ADD_CUSTOM_TARGET(pydynamindgen DEPENDS ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
+ADD_CUSTOM_TARGET(pydmtoolboxgen DEPENDS ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp)
 SET(CMAKE_SWIG_FLAGS "")
 SET_SOURCE_FILES_PROPERTIES(pydynamind.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(pydynamind.i PROPERTIES SWIG_FLAGS "-threads")
+
+SET_SOURCE_FILES_PROPERTIES(pydmtoolbox.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(pydmtoolbox.i PROPERTIES SWIG_FLAGS "-threads")
+
 #SWIG_ADD_MODULE(pydynamind python pydynamind.i)
 SWIG_ADD_MODULE(pydynamind python pydynamind.i pythonenv.cpp)
 SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
+
+
+SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i pythonenv.cpp)
+SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore ${PYTHON_LIBRARIES})
 
 INSTALL(TARGETS _pydynamind
         DESTINATION "lib"

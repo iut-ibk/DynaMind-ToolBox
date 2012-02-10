@@ -44,7 +44,30 @@ using namespace DM;
 
 
 int main(int argc, char *argv[], char *envp[]) {
-    //Init Logger
+    DM::Node n10(0,0,0);
+    std::cout << sizeof(n10) << std::endl;
+
+    DM::System * city = new DM::System("");
+    DM::Node * n1 = city->addNode(0,0,0);
+    DM::Node * n2 = city->addNode(0,0,0);
+    for (int j = 0; j < 100000; j++) {
+        DM::Edge * e = city->addEdge(n1,n2);
+        for (int k = 0; k < 32; k++) {
+            std::stringstream ss;
+            ss<< "k" << k;
+            DM::Attribute attr(ss.str());
+            e->addAttribute(attr);
+
+        }
+    }
+    delete city;
+
+    int i = 0;
+    //DM::Face f(ed);
+    //std::cout<< sizeof(f);
+
+
+    /*//Init Logger
     ostream *out = &cout;
     DM::Log::init(new OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Debug) << "Start";
@@ -91,7 +114,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 
     QThreadPool::globalInstance()->waitForDone();
-    delete sim;
+    delete sim;*/
     /*DM::Logger(DM::Debug) << "End";
 
     Simulation * loadsim = new Simulation;
