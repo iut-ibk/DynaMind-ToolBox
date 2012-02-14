@@ -35,12 +35,28 @@ class ImportShapeFile(Module):
             self.FileName = ""
             self.createParameter("Identifier", STRING, "Name")
             self.Identifier = ""
-            self.vec = View("STREET", EDGE, WRITE)
-            views = []
-            views.append(self.vec)
-            self.addData("Vec", views)
+            
+            
+        def init(self):
+            pass
         def run(self):
             city = self.getData("Vec")
+            registeredViews = self.getViews()
+            self.NodeView = View();
+            self.EdgeView = View();
+            self.FaceView = View();
+            
+            for key in registeredViews.keys():
+                for view in registeredViews[key]:
+                    if view.getType() == NODE:
+                        self.NodeView = view;
+                    if view.getType() == EDGE:
+                        self.EdgeView = view;
+                    if view.getType() == FACE:
+                        self.FaceView = view;
+            print self.NodeView.getName()
+            print self.EdgeView.getName()
+            print self.FaceView.getName()
             shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
             sourcePath = self.FileName
             dataSource = ogr.Open(sourcePath)
@@ -61,13 +77,14 @@ class ImportShapeFile(Module):
                     feature = layer.GetNextFeature()
          
             counter = 1
-
+            InlcudedEdges = {}
             for i in range(len(shapelyGeometries)):
                 shapelyGeometry = shapelyGeometries[i]
                 geoms = []
                 #print shapelyGeometry.type
                 if shapelyGeometry.type == 'Point':            
-                        n = city.addNode(shapelyGeometry.x , shapelyGeometry.y, 0, View())                    
+                        n = city.addNode(shapelyGeometry.x , shapelyGeometry.y, 0, View())       
+                        city.addComponentToView(n, self.NodeView)
                         for j in range(len(fieldDefinitions)):
                             attr = Attribute(fieldDefinitions[j][0])
                             print type(fieldPacks[i][j])
@@ -87,34 +104,46 @@ class ImportShapeFile(Module):
                             coordinates = list(r.coords)
                         else:
                             coordinates = geo.coords
-                        numberOfPoints = 0
+                            
+                        numberOfPoints = -1
+                        offset = -1
                         pl = []
                         el = edgevector()
                         for coords in coordinates:
-                            n = TBVectorData_addNodeToSystem2D(city,View(), Node(coords[0], coords[1], 0), 0.1)
+                            n = TBVectorData_addNodeToSystem2D(city, self.NodeView, Node(coords[0], coords[1], 0), 0.1)
                             pl.append(n)
-                            if numberOfPoints > 0:
-                                e = city.addEdge(pl[numberOfPoints - 1], pl[numberOfPoints], self.vec)
-                                el.append(e)
-                                counter += 1
                             numberOfPoints += 1     
-                        
-                        #print counter
-
-                        for j in range(len(fieldDefinitions)):
-                            attr = Attribute(fieldDefinitions[j][0])
-                            #print type(fieldPacks[i][j])
-                            if type(fieldPacks[i][j]) is 'string':                            
-                                attr.setString(str(fieldPacks[i][j]))
-                            if type(fieldPacks[i][j]) is 'float' or type(fieldPacks[i][j]) is 'int':                            
-                                attr.setDouble(fieldPacks[i][j])
-                            e.addAttribute(attr)
+                            offset +=1
+                            if numberOfPoints > 0:
+                                if pl[numberOfPoints - offset].getName() != pl[numberOfPoints].getName(): 
+                                    startnode =   pl[numberOfPoints - offset]
+                                    endnode = pl[numberOfPoints]
+                                    """if InlcudedEdges.has_key(startnode.getName()):
+                                        if InlcudedEdges[startnode.getName()] is endnode.getName():
+                                            print "Edge already exits"
+                                            continue
+                                    if InlcudedEdges.has_key(endnode.getName()):
+                                        if InlcudedEdges[endnode.getName()] is startnode.getName():
+                                            print "Edge already exits"
+                                            continue"""
+                                    e = city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
+                                    el.append(e)
+                                    InlcudedEdges[startnode.getName()] = endnode.getName()
+                                    offset = 0
+                                    for j in range(len(fieldDefinitions)):                           
+                                        attr = Attribute(fieldDefinitions[j][0])
+                                        if type(fieldPacks[i][j]).__name__ == 'str':                            
+                                            attr.setString(str(fieldPacks[i][j]))
+                                        if type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
+                                            attr.setDouble(fieldPacks[i][j])
+                                        e.addAttribute(attr)
+                                        
                         if shapelyGeometry.type is 'LineString':
                             continue
                         #Create Faces
                         
                         city.addFace(el, self.vec)
             print "Imported points: " + str( len(city.getAllNodes()))
-            print "Imported elements: " + str( len(city.getNamesOfComponentsInView(self.vec)) )
+            print "Imported elements: " + str( len(city.getNamesOfComponentsInView( self.EdgeView)) )
             print "Edges Created: " + str( counter )
             

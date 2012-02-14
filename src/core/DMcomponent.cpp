@@ -148,7 +148,7 @@ Attribute* Component::getAttribute(std::string name)
         this->addAttribute(Attribute(name));
         //return attributesview[name]
     }
-    Logger(Debug) << "Attribute found: " << name ;
+   // Logger(Debug) << "Attribute found: " << name ;
     return attributesview[name];
 }
 

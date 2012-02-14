@@ -184,6 +184,8 @@ public:
     void addParameter(std::string name, int type, void * ref, std::string description = "");
 
     void addData(std::string name, std::vector<DM::View> view);
+    std::map<std::string, std::vector<DM::View> >  getViews();
+
 
     DM::System * getData(std::string dataname);
 
@@ -284,7 +286,7 @@ protected:
     boost::unordered_map<std::string, std::string> parameter_description;
     boost::unordered_map<std::string, DM::System *> data_vals;
     boost::unordered_map<std::string, void *> parameter_vals;
-    boost::unordered_map<std::string,std::vector<DM::View> > views;
+    std::map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
     int internalCounter;

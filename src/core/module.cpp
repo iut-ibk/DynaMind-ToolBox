@@ -358,6 +358,10 @@ DM::System* Module::getData(std::string dataname)
     return this->data_vals[dataname];
 }
 
+std::map<std::string, std::vector<DM::View> > Module::getViews() {
+    return this->views;
+}
+
 DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
 
     DM::System * sys = data_vals[dataname];

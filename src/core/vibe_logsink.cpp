@@ -47,11 +47,11 @@ namespace DM {
         return *this;
     }
 
-    /*LogSink &OStreamLogSink::operator<<(int i) {
+    LogSink &OStreamLogSink::operator<<(int i) {
         QMutexLocker locker(mutex);
         out << i;
         return *this;
-    }*/
+    }
 
 
     LogSink &OStreamLogSink::operator<<(double f) {

@@ -33,6 +33,10 @@
 %include "../core/DMedge.h"
 %include "../core/DMnode.h"
 %include "../core/DMview.h"
+%include "../core/simulation.h"
+%include "../core/vibe_log.h"
+%include "../core/vibe_logger.h"
+%include "../core/vibe_logsink.h"
 
 namespace std {
     %template(stringvector) vector<string>;
@@ -42,6 +46,7 @@ namespace std {
     %template(edgevector) vector<DM::Edge* >;
     %template(nodevector) vector<DM::Node* >;
     %template(viewvector) vector<DM::View >;
+    %template(viewmap) map<string, vector<DM::View > >;
     %template(componentvector) vector<DM::Component* >;
     %template(attributevector) vector<DM::Attribute* >;
     %template(attributemap) map<string, DM::Attribute* >;
@@ -110,11 +115,13 @@ public:
     virtual ~Module();
     virtual bool createInputDialog();
     virtual void run() = 0;
-
+    virtual void init();
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);
 
+
     void addData(std::string name, std::vector<DM::View> view);
+    std::map<std::string, std::vector<DM::View> >  getViews();
     DM::System * getData(std::string dataname);
 
     std::vector<std::string> getParameterListAsVector();

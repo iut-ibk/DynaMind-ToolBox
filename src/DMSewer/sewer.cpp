@@ -29,10 +29,12 @@
 #include "moduleregistry.h"
 #include "timeareamethod.h"
 #include "dmswmm.h"
+#include "networkanalysis.h"
+#include "directnetwork.h"
 /*#include "generatesewernetwork.h"
 #include "extractnetwork.h"
 
-#include "networkanalysis.h"
+
 
 
 #include "pickstartpoints.h"
@@ -53,6 +55,8 @@ using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
     registry->addNodeFactory(new DM::NodeFactory<TimeAreaMethod>());
     registry->addNodeFactory(new DM::NodeFactory<DMSWMM>());
+    registry->addNodeFactory(new DM::NodeFactory<NetworkAnalysis>());
+    registry->addNodeFactory(new DM::NodeFactory<DirectNetwork>());
     /*registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
     registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
     registry->addNodeFactory(new NodeFactory<NetworkAnalysis>());

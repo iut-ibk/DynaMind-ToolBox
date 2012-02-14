@@ -164,7 +164,7 @@ bool MemDynaMiteTestC()
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
-        DM::Module * in = sim->addModule("MemoryTest");
+    DM::Module * in = sim->addModule("MemoryTest");
     sim->run();
 
 
@@ -195,13 +195,45 @@ bool MemDynaMiteTestPython()
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim = new Simulation;
-    sim->registerNativeModules("dmtestmodule");
+    sim->registerNativeModules("dynamindsewer");
     sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
     //DM::Module * in = sim->addModule("MemTestSystem");
     DM::Module * in = sim->addModule("ImportShapeFile");
+    std::vector<DM::View> views;
+    DM::View conduit("CONDUIT", DM::EDGE, DM::MODIFY);
+
+    views.push_back(conduit);
+    in->addData("Vec", views);
     //in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/Drains.shp");
-    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/ScreekDrains_Part1.shp");
+    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/interseted1.shp");
     //in->setParameterValue("FileName","/home/c8451045/Documents/DynaMind/build/debug/Shapefile_lines.shp");
+
+    DM::View outlet("OUTLET", DM::NODE, DM::WRITE);
+
+    DM::Module * in1 = sim->addModule("ImportShapeFile");
+    views.clear();
+    views.push_back(outlet);
+    in1->addData("Vec", views);
+
+    in1->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/Outlets.shp");
+
+    DM::Module * directNetwork = sim->addModule("DirectNetwork");
+
+    DM::Module * netan = sim->addModule("NetworkAnalysis");
+
+
+
+
+
+    sim->addLink(in1->getOutPort("Vec"), in->getInPort("Vec"));
+    sim->addLink(in->getOutPort("Vec"), directNetwork->getInPort("Vec"));
+    sim->addLink(directNetwork->getOutPort("Vec"), netan->getInPort("City"));
+
+    DM::Module * out = sim->addModule("ExportToShapeFile");
+    //out->setParameterValue("FileName", );
+
+    sim->addLink(netan->getOutPort("City"), out->getInPort("vec"));
+
     sim->run();
 
 

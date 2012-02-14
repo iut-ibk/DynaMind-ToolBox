@@ -39,12 +39,12 @@ class ExportToShapeFile(Module):
                 self.createParameter("Name", STRING,  "test")
                 self.Name = ""    
                 self.createParameter("Points", BOOL,  "test")
-                self.Points = True
+                self.Points = False
                 self.createParameter("Lines", BOOL,  "test")
                 self.Lines = True
                 self.createParameter("Faces", BOOL,  "test")
-                self.Faces = True
-                self.vec = View("STREET", EDGE, READ)
+                self.Faces = False
+                self.vec = View("CONDUIT", EDGE, READ)
                 views = []
                 views.append(self.vec)
                 self.addData("vec", views)
@@ -52,7 +52,7 @@ class ExportToShapeFile(Module):
             def run(self):
                 if self.Lines:
                     self.exportPolyline()      
-                
+                    
             def exportPolyline(self):
                 city = self.getData("vec")
                 spatialReference = osgeo.osr.SpatialReference()
@@ -73,25 +73,27 @@ class ExportToShapeFile(Module):
                 names = city.getNamesOfComponentsInView(self.vec)
                 if len(names) > 0:
                     attributemap = city.getComponent(names[0]).getAllAttributes()
+                    print attributemap
                     for key in attributemap.keys():
                         attr.append(key)
                 for i in range(len(names)): 
                     #Append Attributes
-                    if names[i] in attr:
-                        alist = city.getComponent(names[0]).getAllAttributes().keys()
-                        #Check if attribute exists             
-                        for j in range(len(alist)):
-                            hasAttribute = True                                  
-                            if (alist[j] in AttributeList) == False:
-                                fielddef = osgeo.ogr.FieldDefn(alist[j], osgeo.ogr.OFTReal)
-                                layer.CreateField(fielddef)
-                                layerDefinition = layer.GetLayerDefn()  
-                                log(alist[j])
-                                AttributeList.append(alist[j]) 
+                    alist = city.getComponent(names[i]).getAllAttributes().keys()
+                    #print alist
+                    #rint city.getComponent(names[i]).getAllAttributes().keys()  
+                    #print city.getComponent(names[i]).getAllAttributes()     
+                    for j in range(len(alist)):
+                        hasAttribute = True                                  
+                        if (alist[j] in AttributeList) == False:
+                            attribute = city.getComponent(names[0]).getAttribute(alist[j])
+                            fielddef = osgeo.ogr.FieldDefn(alist[j], osgeo.ogr.OFTReal)
+                            layer.CreateField(fielddef)
+                            layerDefinition = layer.GetLayerDefn()  
+                            AttributeList.append(alist[j]) 
                     
                             
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbLineString)
-                    print names[i]
+                    #print names[i]
                     edge = city.getEdge(names[i])
                     p1 = city.getNode(edge.getStartpointName())
                     p2 = city.getNode(edge.getEndpointName())
@@ -103,8 +105,12 @@ class ExportToShapeFile(Module):
                     feature.SetGeometry(line)
                     feature.SetFID(featureIndex)  
                     #Append Attributes
-                    if hasAttribute:        
+                    #print "HH"
+                    #print hasAttribute
+                    hasAttribute = True
+                    if hasAttribute == True:        
                         for k in range(len(alist)):
+                            #print alist[k]
                             value = edge.getAttribute(alist[k]).getDouble()
                             feature.SetField(alist[k],value)
                     layer.CreateFeature(feature)    
