@@ -29,19 +29,26 @@
 
 #include "qgisplugin.h"
 
+#include <QObject>
 
-class QGisDynaMind : public QgisPlugin
+class QAction;
+
+class QGisDynaMind : public QObject, public QgisPlugin
 {
+    Q_OBJECT
 public:
     QGisDynaMind(QgisInterface* iface);
     ~QGisDynaMind();
+
 
     void initGui();
     void unload();
 private:
     QgisInterface* mIface;
 
-
+    QAction* mAction;
+    private slots:
+    void convertToPoint();
 
 };
 

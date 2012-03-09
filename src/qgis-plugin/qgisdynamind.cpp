@@ -25,6 +25,9 @@
  */
 
 #include "qgisdynamind.h"
+#include "qgisinterface.h"
+
+#include <QAction>
 
 #ifdef WIN32
 #define QGISEXTERN extern "C" __declspec( dllexport )
@@ -39,9 +42,22 @@ QGisDynaMind::~QGisDynaMind()
 }
 void QGisDynaMind::initGui()
 {
+    mAction = new QAction(tr("&Convert to point"), this);
+    connect(mAction, SIGNAL(activated()), this, SLOT(convertToPoint()));
+    mIface->addToolBarIcon(mAction);
+    mIface->addPluginToMenu(tr("&DynaMind"), mAction);
 }
 void QGisDynaMind::unload()
 {
+    mIface->removeToolBarIcon(mAction);
+    mIface->removePluginMenu(tr("&DynaMind"), mAction);
+    delete mAction;
+}
+
+void QGisDynaMind::convertToPoint()
+{
+    qWarning("in method convertToPoint");
+
 }
 QGISEXTERN QgisPlugin* classFactory(QgisInterface* iface)
 {
