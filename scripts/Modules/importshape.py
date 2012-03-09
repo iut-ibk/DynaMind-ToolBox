@@ -87,7 +87,7 @@ class ImportShapeFile(Module):
                         city.addComponentToView(n, self.NodeView)
                         for j in range(len(fieldDefinitions)):
                             attr = Attribute(fieldDefinitions[j][0])
-                            print type(fieldPacks[i][j])
+                            #print type(fieldPacks[i][j])
                             if type(fieldPacks[i][j]) is 'string':                            
                                 attr.setString(str(fieldPacks[i][j]))
                             if type(fieldPacks[i][j]) is 'float':                            
@@ -132,9 +132,20 @@ class ImportShapeFile(Module):
                                     offset = 0
                                     for j in range(len(fieldDefinitions)):                           
                                         attr = Attribute(fieldDefinitions[j][0])
-                                        if type(fieldPacks[i][j]).__name__ == 'str':                            
+                                        attributename = str(fieldDefinitions[j][0])
+                                        if attributename == 'PLAN_DATE':
+                                            stringvalue = str(fieldPacks[i][j])
+                                            stringvec = stringvalue.split("/")                                            
+                                            try:
+                                                srtingval = stringvec[len(stringvec)-1]
+                                                val = int(srtingval)
+                                                attr.setDouble(val)
+                                            except ValueError:
+                                                pass
+                                            
+                                        elif type(fieldPacks[i][j]).__name__ == 'str':                            
                                             attr.setString(str(fieldPacks[i][j]))
-                                        if type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
+                                        elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
                                             attr.setDouble(fieldPacks[i][j])
                                         e.addAttribute(attr)
                                         

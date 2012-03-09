@@ -45,6 +45,7 @@ bool DynaMiteTest();
 bool DMBaseTest();
 bool MemDynaMiteTestPython();
 bool MemDynaMiteTestC();
+bool StoryLine();
 int main(int argc, char *argv[], char *envp[]) {
     //Init Logger
     ostream *out = &cout;
@@ -77,8 +78,14 @@ int main(int argc, char *argv[], char *envp[]) {
 
     }else {
         Logger() << "ComplexGeomtry DONE";
-    }*/
+    }
 
+    if (!StoryLine()) {
+        Logger(Error) << "StoryLine FAILED";
+
+    }else {
+        Logger() << "StoryLine DONE";
+    }*/
     if (!MemDynaMiteTestPython()) {
         Logger(Error) << "MemDynaMiteTest FAILED";
 
@@ -184,8 +191,7 @@ bool MemDynaMiteTestC()
     return true;
 }
 
-
-bool MemDynaMiteTestPython()
+bool StoryLine()
 {
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
@@ -205,7 +211,7 @@ bool MemDynaMiteTestPython()
     views.push_back(conduit);
     in->addData("Vec", views);
     //in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/Drains.shp");
-    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/interseted1.shp");
+    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/drain_1.shp");
     //in->setParameterValue("FileName","/home/c8451045/Documents/DynaMind/build/debug/Shapefile_lines.shp");
 
     DM::View outlet("OUTLET", DM::NODE, DM::WRITE);
@@ -234,12 +240,60 @@ bool MemDynaMiteTestPython()
 
     sim->addLink(netan->getOutPort("City"), out->getInPort("vec"));
 
+
+
+
+
+    DM::Module * plot = sim->addModule("PlotVectorData");
+    sim->addLink(netan->getOutPort("City"), plot->getInPort("Vec"));
+
     sim->run();
+    QThreadPool::globalInstance()->waitForDone();
+    delete sim;
+    DM::Logger(DM::Debug) << "End";
+
+    return true;
+}
+
+bool MemDynaMiteTestPython()
+{
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
 
 
+    DataManagement::init();
+    DMDatabase * db = new DMDatabase();
+    DataManagement::getInstance().registerDataBase(db);   //Init Logger
+    Simulation * sim = new Simulation;
+    sim->registerNativeModules("dynamindsewer");
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
+    //DM::Module * in = sim->addModule("MemTestSystem");
+    DM::Module * in = sim->addModule("ImportShapeFile");
+    std::vector<DM::View> views;
+    DM::View conduit("CONDUIT", DM::EDGE, DM::MODIFY);
+
+    views.push_back(conduit);
+    in->addData("Vec", views);
+    //in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/drainagedata/Drains.shp");
+    in->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/drain_1.shp");
+    //in->setParameterValue("FileName","/home/c8451045/Documents/DynaMind/build/debug/Shapefile_lines.shp");
+
+    DM::View outlet("OUTLET", DM::NODE, DM::WRITE);
+
+    DM::Module * in1 = sim->addModule("ImportShapeFile");
+    views.clear();
+    views.push_back(outlet);
+    in1->addData("Vec", views);
+
+    in1->setParameterValue("FileName", "/home/c8451045/Documents/GIS Data/Scotchmans Creek Drainage/Outlets.shp");
 
 
+    DM::Module * plot = sim->addModule("PlotVectorData");
+    sim->addLink(in1->getOutPort("Vec"), in->getInPort("Vec"));
+    sim->addLink(in->getOutPort("Vec"), plot->getInPort("Vec"));
 
+
+    sim->run();
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
     DM::Logger(DM::Debug) << "End";
