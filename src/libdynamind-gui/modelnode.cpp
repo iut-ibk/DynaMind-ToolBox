@@ -149,9 +149,9 @@ void ModelNode::addPort(DM::Port * p) {
         foreach (QString pname, ExistingInPorts) {
             if (pname.compare(QString::fromStdString(p->getLinkedDataName())) == 0) {
                 return;
-            }
-            ExistingInPorts << QString::fromStdString(p->getLinkedDataName());
+            }            
         }
+        ExistingInPorts << QString::fromStdString(p->getLinkedDataName());
     } else {
         foreach (QString pname, ExistingOutPorts) {
             if (pname.compare(QString::fromStdString(p->getLinkedDataName())) == 0) {

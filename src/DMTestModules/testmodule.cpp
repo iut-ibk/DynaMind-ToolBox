@@ -74,7 +74,7 @@ TestModule::TestModule() {
 
 
 void TestModule::run() {
-    outputData = this->getData("Sewer");
+    outputData = this->getData("Inlets");
     DM::Node * n1 = outputData->addNode(0,0,0, inlets);
     DM::Node * n2 = outputData->addNode(0,0,1, inlets);
 

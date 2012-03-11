@@ -4,6 +4,7 @@
 %{
     #include <DMcomponent.h>
     #include <DMsystem.h>
+    #include <rasterdata.h>
     #include <DMattribute.h>
     #include <DMedge.h>
     #include <DMnode.h>
@@ -31,6 +32,7 @@
 %include "../core/DMsystem.h"
 %include "../core/DMattribute.h"
 %include "../core/DMedge.h"
+%include "../core/rasterdata.h"
 %include "../core/DMnode.h"
 %include "../core/DMview.h"
 %include "../core/simulation.h"
@@ -58,6 +60,7 @@ namespace std {
 
 %pointer_class(std::string,p_string)
 %pointer_class(int,p_int)
+%pointer_class(long,p_long)
 %pointer_class(double,p_double)
 
 %feature("director:except") {
@@ -123,6 +126,9 @@ public:
     void addData(std::string name, std::vector<DM::View> view);
     std::map<std::string, std::vector<DM::View> >  getViews();
     DM::System * getData(std::string dataname);
+    DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
+
+
 
     std::vector<std::string> getParameterListAsVector();
     virtual std::string getParameterAsString(std::string Name);
@@ -175,7 +181,7 @@ public:
             if DN_type == DOUBLE:
                 self._data[name] = p_double()
             if DN_type == LONG:
-                self._data[name] = p_double()
+                self._data[name] = p_long()
             if DN_type == INT:
                 self._data[name] = p_int()
             if DN_type == BOOL:

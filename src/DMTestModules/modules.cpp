@@ -33,6 +33,7 @@
 #include "comparenetworks.h"
 #include "dynamicinout.h"
 #include "dostuffwithrasterdata.h"
+#include "cellularautomata.h"
 #include "grouptest.h"
 #include "memorytest.h"
 
@@ -51,5 +52,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<DoStuffWithRasterData>());
     registry->addNodeFactory(new NodeFactory<GroupTest>());
     registry->addNodeFactory(new NodeFactory<MemoryTest>());
+    registry->addNodeFactory(new NodeFactory<CellularAutomata>());
 }
 

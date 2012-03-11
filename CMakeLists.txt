@@ -43,7 +43,7 @@ add_subdirectory(src/DMToolboxes)
 add_subdirectory(src/CityBlocks)
 add_subdirectory(src/DMSewer)
 add_subdirectory(src/DMExampleSimulations)
-add_subdirectory(src/qgis-plugin)
+#add_subdirectory(src/qgis-plugin)
 
 
 INCLUDE(DynaMindCPack.txt)

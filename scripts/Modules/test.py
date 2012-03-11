@@ -23,26 +23,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 from pydynamind import *
-
+from numpy import *
+from os import  *
 
 class WhiteNoise(Module):
         def __init__(self):
             Module.__init__(self)
-            self.createParameter("Test",FILENAME,"Sample Description")
-            self.Test = "Test"
-            
+            self.createParameter("Height",LONG,"Sample Description")
+            self.createParameter("Width",LONG,"Sample Description")
+            self.createParameter("CellSize",DOUBLE,"Sample Description")
+            self.Height = 200
+            self.Width = 200
+            self.CellSize = 20
+
             views = []
-            self.vec = View("STREET", FACE, READ)
-            views.append(self.vec)
-            self.addData("City", views)
+            self.r = View("OUT", RASTERDATA, WRITE)
+            views.append(self.r)
+            self.addData("OUT", views)
 
-
+    
         def run(self):
-            city = self.getData("City")
-            nstreets = city.getNamesOfComponentsInView(self.streets)
-            for s in nstreets:
-                edge = city.getEdge(s)
-                print edge.getStartpointName()
+            r = self.getRasterData("OUT", self.r)
+            a = random.random((self.Width,self.Height))
+            r.setSize(200,200, self.CellSize)
+            for i in range(self.Width):
+                for j in range(self.Height):
+                    r.setValue(i,j,a[i,j])
             
 
 
