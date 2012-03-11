@@ -25,7 +25,7 @@
  */
 
 /**
-  * @addtogroup VIBe2Core
+  * @addtogroup DynaMind-Core
   */
 #ifndef MODULE_H
 #define MODULE_H
@@ -102,63 +102,7 @@ class Group;
 class Simulation;
 
 
-/**
-  * @brief Basic module class
-  *
-  * @ingroup VIBe2Core
-  *
-  * @section Development
-  * To create a new VIBe2 module the new module has to be derived from the module class
-  *
-  * @subsection C++
-  *
-  *
-  * Example Code
-  *
-  * mymodule.h
-  * @code
-  *
-  * #include "module.h"
-  *
-  * using namespace vibens;
-  * class DM_HELPER_DLL_EXPORT MyModule : public Module
-  * {
-  *     DM_DECLARE_NODE(MyModule)
-  *     public:
-  *         MyModule();
-  *         void run();
-  * };
-  * @endcode
-  *
-  * mymodule.cpp
-  * @code
-  *
-  * #include "mymodule.h"
-  *
-  * DM_DECLARE_NODE_NAME(MyModule, MyModuleGroup)
-  * MyModule::MyModule()
-  * {
-  * }
-  * void MyModule::run();
-  * {
-  * }
-  * @endcode
-  *
-  * To add the Module to VIBe2
-  * mymodules.cpp
-  * @code
-  * #include "nodefactory.h"
-  * #include "moduleregistry.h"
-  * #include "mymodule.h"
-  * #include "mymodule2.h"
-  * extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
-  *      registry->addNodeFactory(new NodeFactory<MyModule>());
-  *      registry->addNodeFactory(new NodeFactory<MyModule2>());
-  * }
-  * @endcode
-  * @author Christian Urich
-  *
-  */
+
 class DM_HELPER_DLL_EXPORT  Module {
 
 
@@ -172,7 +116,7 @@ public:
 
     virtual  DM::System* getSystemState(const std::string &name);
     virtual  DM::System* getSystemData(const std::string &name) ;
-    virtual  DM::System* getSystem_Write(const std::string &name) ;
+    virtual  DM::System* getSystem_Write(View view) ;
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);

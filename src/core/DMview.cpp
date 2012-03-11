@@ -26,6 +26,48 @@
 
 
 #include "DMview.h"
+
+/**
+  * @class DM::View
+  *
+  * @brief Data in DynaMind are organised in views. A view provides a description of a
+  * component and its attributes and how they are accessed in the module.
+  *
+  * @ingroup DynaMind-Core
+  *
+  *
+  * A view is defined by:
+  *
+  * @section Type
+  * Following Type are supported in DynaMind:
+  *
+  * -   NODE
+  * -   EDGE
+  * -   FACE
+  * -   SUBSYSTEM
+  * -   RASTERDATA
+ *
+  * @section AccessType
+  * The AccessType defines the assecctype geometric component.
+  * Following AccessTypes are supported:
+  * - Read: Geometry stays the same and no new components are added to the view
+  * - Write: Gemetroy of existing components can be changed and new components can be added to the view
+  * - Modify: Gemeotry can be modified but no new components are added to the view
+  *
+  * @section Attributes
+  * Every component can hold attributes. In the view the access to the attributes of the component is defined.
+  * Following methods can be used to access attributes within a module
+  *
+  * - addAttribute(std::string name)
+  * - getAttribute(std::string name)
+  * - modifyAttribute(std::string name)
+  *
+  * @section Dummy Component
+  * To every View a Dummy Component is created. The dummy component is used to track the changes made by the modules.
+  * @author Christian Urich
+  * @date 11.03.2012
+  */
+
 namespace DM {
 View::View(std::string name, int type, int accesstypeGeometry)
 {
@@ -81,6 +123,10 @@ std::vector<std::string> View::getReadAttributes() const {
 
 }
 
+/**
+  * @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read
+  *
+  */
 bool View::reads() {
     if (this->accesstypeGeometry < WRITE)
         return true;
@@ -92,6 +138,10 @@ bool View::reads() {
     return false;
 }
 
+/**
+  * @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write
+  *
+  */
 bool View::writes() {
     if (this->accesstypeGeometry > READ)
         return true;
@@ -102,7 +152,8 @@ bool View::writes() {
 
     return false;
 }
-    bool View::operator<(const View & other) const {
+
+bool View::operator<(const View & other) const {
          if (this->getName().compare(other.getName()) < 0)
              return true;
          return false;

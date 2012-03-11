@@ -50,7 +50,67 @@
 #include <DMcomponent.h>
 #include <DMsystem.h>
 
-
+/**
+* @class DM::Module
+*
+*
+* @ingroup DynaMind-Core
+*
+* @brief Basic module class
+* @section Implementation
+* @todo write stuff here
+* @section Development
+* To create a new DynaMind module the new module has to be derived from the module class
+*
+* @subsection C++
+*
+*
+* Example Code
+*
+* mymodule.h
+* @code
+*
+* #include "module.h"
+*
+* using namespace vibens;
+* class DM_HELPER_DLL_EXPORT MyModule : public Module
+* {
+*     DM_DECLARE_NODE(MyModule)
+*     public:
+*         MyModule();
+*         void run();
+* };
+* @endcode
+*
+* mymodule.cpp
+* @code
+*
+* #include "mymodule.h"
+*
+* DM_DECLARE_NODE_NAME(MyModule, MyModuleGroup)
+* MyModule::MyModule()
+* {
+* }
+* void MyModule::run();
+* {
+* }
+* @endcode
+*
+* To add the Module to DynaMind
+* mymodules.cpp
+* @code
+* #include "nodefactory.h"
+* #include "moduleregistry.h"
+* #include "mymodule.h"
+* #include "mymodule2.h"
+* extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+*      registry->addNodeFactory(new NodeFactory<MyModule>());
+*      registry->addNodeFactory(new NodeFactory<MyModule2>());
+* }
+* @endcode
+* @author Christian Urich
+*
+*/
 using namespace std;
 namespace DM {
 struct ModulePrivate {
@@ -115,96 +175,94 @@ Port * Module::getOutPort(std::string name) {
     return 0;
 }
 
+/**
+  *@brief update parameter and data used in the module.
+  *
+  * Based on the data used in the module the pointer to the data are updated.
+  * If the module reads data from, the method tries to get the system from linked module.
+  * Therefore the getSystemData method is called. If the module changes the data a new state of the system
+  * is created.
+  *
+  */
 void Module::updateParameter() {
     for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
+        if (it->second != DM::SYSTEM) {
+            continue;
+        }
+        std::vector<DM::View> views= this->views[s];
 
-        if (it->second == DM::SYSTEM) {
-            std::vector<DM::View> views= this->views[s];
-            bool reads = false;
-            bool writes = false;
-            foreach (DM::View view,  views)  {
-                if (reads == true)
-                    continue;
-                reads = view.reads();
+        //check for reads data. For read access only no new system state is created.
+        foreach (DM::View view,  views)  {
+            if ( !view.reads() )
+                continue;
+
+            //Default links are not fulfilled
+            this->data_vals[view.getName()] = 0;
+            this->getInPort(view.getName())->setFullyLinked(false);
+            if (this->getOutPort(view.getName()) != 0)
+                this->getOutPort(view.getName())->setFullyLinked(false);
+
+            DM::System * sys = this->getSystemData(view.getName());
+
+            //Check if all Data for read are really avalible
+            if (sys == 0)
+                continue;
+
+            //Get View saved in System
+            DM::View checkView = sys->getViewDefinition(view.getName());
+
+            //Check Type
+            if (checkView.getType() != view.getType())
+                continue;
+
+            //Get DummyComponent
+            DM::Component * c = sys->getComponent(checkView.getIdOfDummyComponent());
+            //Check if attributes are avalible
+            if (c == 0) {
+                continue;
             }
-            foreach (DM::View view,  views)  {
-                if (writes == true)
-                    continue;
-                writes = view.writes();
-            }
 
-            if (reads) {
-
-                DM::System * sys = this->getSystemData(s);
-
-                //Check if all Data for read are really avalible
-                if (sys != 0) {
-                    foreach (DM::View view,  views) {
-                        DM::View checkView = sys->getViewDefinition(view.getName());
-
-                        //Check Type
-                        if (checkView.getType() != view.getType()){
-                            break;
-                        }
-                        DM::Component * c = sys->getComponent(checkView.getIdOfDummyComponent());
-                        //Check if attributes are avalible
-                        if (c == 0) {
-                            delete sys;
-                            sys = 0;
-                            break;
-                        }
-
-
-
-                        foreach (std::string a, view.getReadAttributes()) {
-                            bool exists = false;
-                            std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
-                            for (std::map<std::string, DM::Attribute*>::const_iterator it =existing_attributes.begin(); it != existing_attributes.end(); ++it) {
-                                std::string a_existing = it->first;
-                                if (a.compare(a_existing) == 0) {
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                            if (!exists) {
-                                delete sys;
-                                sys = 0;
-                                break;
-                            }
-                        }
-                        if (sys == 0)
-                            break;
-                    }
-
+            //Check if attributes to read are avalible in component
+            foreach (std::string a, view.getReadAttributes()) {
+                std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
+                if (existing_attributes.find(a) == existing_attributes.end()) {
+                    sys = 0;
+                    break;
                 }
-
-                this->data_vals[s] = sys;
-                if (sys == 0) {
-                    Logger(Error) << this->getUuid() << " "<< this->getName() << " Missing Data";
-                    this->getInPort(s)->setFullyLinked(false);
-                    if (this->getOutPort(s) != 0)
-                        this->getOutPort(s)->setFullyLinked(false);
-                    continue;
-                }
-
-                foreach (DM::View view,  views) {
-                    this->data_vals[s]->addView(view);
-                }
-                this->getInPort(s)->setFullyLinked(true);
-                if (this->getOutPort(s) != 0)
-                    this->getOutPort(s)->setFullyLinked(true);
             }
-            //Creats a new Dataset
-            if (writes && !reads) {
-                this->data_vals[s] = this->getSystem_Write(s);
-                this->getOutPort(s)->setFullyLinked(true);
+            if (sys == 0) {
+                continue;
             }
 
+            //All Checks successful -> update data
+            this->data_vals[view.getName()] = sys;
+            this->getInPort(view.getName())->setFullyLinked(true);
+            if (this->getOutPort(view.getName()) != 0)
+                this->getOutPort(view.getName())->setFullyLinked(true);
         }
 
-    }
+        //update data for read and write
+        foreach (DM::View view,  views)  {
+            if (!view.writes())
+                continue;
 
+            //Creats a new Dataset for a complet new dataset
+            if (!view.reads()) {
+                this->data_vals[view.getName()] = this->getSystem_Write(view);
+                this->getOutPort(view.getName())->setFullyLinked(true);
+                continue;
+            }
+            //Create new system state for data that get modified
+            if (view.reads()) {
+                DM::System * sys_old = this->data_vals[view.getName()];
+                if (sys_old != 0) {
+                    this->data_vals[view.getName()] = sys_old->createSuccessor();
+                    this->data_vals[view.getName()]->addView(view);
+                }
+            }
+        }
+    }
 }
 
 void Module::setParameterValue(std::string name, std::string v) {
@@ -264,7 +322,7 @@ void Module::setParameterValue(std::string name, std::string v) {
             return;
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
-                ref->push_back(s.toStdString());
+            ref->push_back(s.toStdString());
         }
 
         return;
@@ -291,7 +349,16 @@ void Module::setParameter() {
 
 }
 
-
+/**
+  * @brief Returns the parameter as string value
+  *
+  * As seperator for STRING_LIST *|* is used and for maps also *||*
+  *
+  * 1*|*2*|*3*|4*||*
+  *
+  * 5*|*6*|*7*|*8*||*
+  *
+*/
 std::string Module::getParameterAsString(std::string Name) {
     int ID = this->parameter[Name];
     std::stringstream ss;
@@ -324,35 +391,44 @@ std::string Module::getParameterAsString(std::string Name) {
     return ss.str();
 }
 
-
+/**
+  * @brief Used to define the data that are used in the module.
+  *
+  * The data are defined as a vetor of views. For every view in the vector a port according to the AccessType is created.
+  * - AccessType Read: Inport
+  * - AccessType Write: Outport
+  * - AccessType Modify: In and Outport
+  *
+  * The name of the port is defined by the name of the View. If a port already exists no new port is added.
+  *
+  **/
 void Module::addData(std::string name,  std::vector<DM::View> views) {
-    this->data_vals[name] = 0;
+
+    foreach (View v, views) {
+        this->data_vals[v.getName()] = 0;
+    }
+
     this->parameterList.push_back(name);
     this->views[name] = views;
     this->parameter[name] = DM::SYSTEM;
 
-    bool reads = false;
-    bool writes = false;
+    //Add Ports
     foreach (DM::View view,  views)  {
-        if (reads == true)
-            continue;
-        reads = view.reads();
+        if (view.reads())
+            this->addPort(view.getName(), DM::INSYSTEM);
     }
     foreach (DM::View view,  views)  {
-        if (writes == true)
-            continue;
-        writes = view.writes();
-    }
-
-    if (reads && getInPort(name) == 0) {
-        this->addPort(name, DM::INSYSTEM);
-
-    }
-    if (writes && getOutPort(name) == 0) {
-        this->addPort(name, DM::OUTSYSTEM);
+        if (view.writes())
+            this->addPort(view.getName(), DM::OUTSYSTEM);
     }
 }
 
+/**
+  * @brief Returns a pointer to the system where the view is stored
+  *
+  * The pointer to the system is updated by the updateParameter method. The updateParameter
+  * method is always called before the run method.
+  */
 DM::System* Module::getData(std::string dataname)
 {
     return this->data_vals[dataname];
@@ -477,7 +553,14 @@ void Module::init() {
 
 }
 
-
+/**
+  * @brief Returns a pointer to the system that is linked to the inport of the module.
+  * If no system can be found the method returns 0
+  *
+  * I ports have to be linked to a standard link and in additionally to a back link. If the internal counter of a the module is 0 (the module is)
+  * called the first time. The method tries to get the data from the standard link. If the counter > 0 the back link is used.
+  *
+  */
 DM::System*   Module::getSystemData(const std::string &name)  {
     Port * p = this->getInPort(name);
     if (p->getLinks().size() == 0)
@@ -486,6 +569,8 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     int LinkId = -1;
     int BackId = -1;
     int counter = 0;
+
+    //Identify Positions in the Link Vector
     foreach (ModuleLink * l, p->getLinks()) {
         if (!l->isBackLink()) {
             LinkId = counter;
@@ -506,33 +591,31 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
     return m->getSystemState(l->getDataNameFromOutPort());
-    //return simulation->getDataBase()->getRasterData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
+
 
 }
 
+/** @brief Returns the current system state
+  *
+  * If the succeeding module changes the data a new state of the system has to be created!
+  */
 DM::System* Module::getSystemState(const std::string &name)
 {
     DM::System  * sys = this->data_vals[name];
     if (sys == 0) {
         return 0;
     }
-    sys =  sys->createSuccessor();
-
-
     return sys;
 
 }
-DM::System*   Module::getSystem_Write(const std::string &name)  {
 
-    DM::System * sys = new DM::System(name);
-    std::vector<DM::View> views = this->views[name];
-    //for (boost::unordered_map<std::string,std::vector<DM::View> >::const_iterator it = views.begin(); it != views.end(); ++it) {
-        foreach (DM::View view,views) {
-            sys->addView(view);
-        }
-    //}
+/**
+  * @brief Creates a new system and adds the corresponding view
+  */
+DM::System*   Module::getSystem_Write(View view)  {
+    DM::System * sys = new DM::System(view.getName());
+    sys->addView(view);
     return sys;
-
 }
 
 

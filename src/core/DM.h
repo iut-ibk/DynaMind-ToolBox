@@ -34,6 +34,7 @@
 #include <DMnode.h>
 #include <dmface.h>
 #include <DMview.h>
+#include <rasterdata.h>
 
 
 #endif // DM_H

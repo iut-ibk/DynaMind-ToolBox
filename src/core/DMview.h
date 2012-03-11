@@ -41,6 +41,7 @@ enum {
     MODIFY,
     WRITE
 };
+
 class DM_HELPER_DLL_EXPORT View
 {
 private:
