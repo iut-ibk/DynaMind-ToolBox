@@ -28,7 +28,7 @@
 #define DOSTUFFWITHRASTERDATA_H
 
 #include "module.h"
-
+#include "DM.h"
 using namespace DM;
 
 class DM_HELPER_DLL_EXPORT DoStuffWithRasterData : public Module

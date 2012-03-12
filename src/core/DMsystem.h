@@ -56,6 +56,9 @@ namespace DM {
     class Face;
     class RasterData;
 
+    /** @ingroup DynaMind_Core
+      * @todo add stuff here
+      */
     class  DM_HELPER_DLL_EXPORT System : public Component
     {
     private:
@@ -108,7 +111,10 @@ namespace DM {
         bool addView(DM::View view);
         std::vector<std::string> getNamesOfViews();
         Component * getComponent(std::string name);
+
+        /** @brief Retrun View */
         View getViewDefinition(std::string name);
+
         Component* clone();
         const std::vector<std::string> getViews();
 

@@ -47,50 +47,50 @@
 class QThreadPool;
 class PortObserver;
 namespace DM {
-    class System;
-    class View;
+class System;
+class View;
 }
 
 namespace DM {
 
 
 
-    enum  DATATYPES {
-        INT,
-        LONG,
-        DOUBLE,
-        STRING,
-        FILENAME,
-        STRING_LIST,
-        STRING_MAP,
-        BOOL,
-        LASTPRIMITIVETYPE,
+enum  DATATYPES {
+    INT,
+    LONG,
+    DOUBLE,
+    STRING,
+    FILENAME,
+    STRING_LIST,
+    STRING_MAP,
+    BOOL,
+    LASTPRIMITIVETYPE,
 
-        USER_DEFINED_INPUT,
+    USER_DEFINED_INPUT,
 
-        SYSTEM_OUT,
-        SYSTEM_IN,
-        SYSTEM
-    };
+    SYSTEM_OUT,
+    SYSTEM_IN,
+    SYSTEM
+};
 
-    enum PORTTYPES {
-        OUTSYSTEM,
-        OUTTUPLESYSTEM,
-        OUTPORTS,
+enum PORTTYPES {
+    OUTSYSTEM,
+    OUTTUPLESYSTEM,
+    OUTPORTS,
 
-        INSYSTEM,
-        INTUPLESYSTEM,
-        INPORTS
-    };
+    INSYSTEM,
+    INTUPLESYSTEM,
+    INPORTS
+};
 
-    enum CORINE {
-        ContUrbanFabric = 2,
-        DisContUrbanFabric = 3,
-        RoadRailNetwork = 4,
-        AgriculturalAreas = 5,
-        ForestsSemiNatural = 6,
-        WaterBodies = 7
-    };
+enum CORINE {
+    ContUrbanFabric = 2,
+    DisContUrbanFabric = 3,
+    RoadRailNetwork = 4,
+    AgriculturalAreas = 5,
+    ForestsSemiNatural = 6,
+    WaterBodies = 7
+};
 
 
 struct ModulePrivate;
@@ -100,23 +100,97 @@ typedef boost::unordered_map<std::string, std::string> parameter_type;
 class Port;
 class Group;
 class Simulation;
+class RasterData;
 
 
-
+/**
+* @class DM::Module
+*
+*
+* @ingroup DynaMind-Core
+*
+* @brief Basic module class
+* @section Implementation
+* @todo write stuff here
+* @section Development
+* To create a new DynaMind module the new module has to be derived from the module class
+*
+* @subsection C++
+*
+*
+* Example Code
+*
+* mymodule.h
+* @code
+*
+* #include "module.h"
+*
+* using namespace vibens;
+* class DM_HELPER_DLL_EXPORT MyModule : public Module
+* {
+*     DM_DECLARE_NODE(MyModule)
+*     public:
+*         MyModule();
+*         void run();
+* };
+* @endcode
+*
+* mymodule.cpp
+* @code
+*
+* #include "mymodule.h"
+*
+* DM_DECLARE_NODE_NAME(MyModule, MyModuleGroup)
+* MyModule::MyModule()
+* {
+* }
+* void MyModule::run();
+* {
+* }
+* @endcode
+*
+* To add the Module to DynaMind
+* mymodules.cpp
+* @code
+* #include "nodefactory.h"
+* #include "moduleregistry.h"
+* #include "mymodule.h"
+* #include "mymodule2.h"
+* extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+*      registry->addNodeFactory(new NodeFactory<MyModule>());
+*      registry->addNodeFactory(new NodeFactory<MyModule2>());
+* }
+* @endcode
+* @author Christian Urich
+*
+*/
 class DM_HELPER_DLL_EXPORT  Module {
 
 
 public:
     Module();
     virtual ~Module();
-    virtual bool createInputDialog(){return false;}
+
     virtual void Destructor();
     virtual void init();
     virtual void run() = 0;
 
+    /** @brief Returns the current system state
+      *
+      * If the succeeding module changes the data a new state of the system has to be created! */
     virtual  DM::System* getSystemState(const std::string &name);
+
+
+    /** @brief Returns a pointer to the system that is linked to the inport of the module.
+      * If no system can be found the method returns 0
+      *
+      * I ports have to be linked to a standard link and in additionally to a back link. If the internal counter of a the module is 0 (the module is)
+      * called the first time. The method tries to get the data from the standard link. If the counter > 0 the back link is used.
+      */
     virtual  DM::System* getSystemData(const std::string &name) ;
-    virtual  DM::System* getSystem_Write(View view) ;
+
+    /** @brief Creates a new system and adds the corresponding views */
+    virtual  DM::System* getSystem_Write(string name, std::vector<View> view);
 
     virtual double getDoubleData(const std::string &name);
     virtual void setDoubleData(const std::string &name, const double r);
@@ -125,15 +199,53 @@ public:
     void setInitCalled(){this->init_called=true;}
     virtual int getID() const;
     void setID(const int id);
+
+    /** @brief adds a Parameter to the module.
+      *
+      * Parameters can be:
+      * - DM::DOUBLE
+      * - DM::INT
+      * - DM::BOOL
+      * - DM::STRING
+      * - DM::FILENAME
+      * - DM::LONG
+      * - DM::STRING_LIST<
+      * - DM::STRING_MAP
+      */
     void addParameter(std::string name, int type, void * ref, std::string description = "");
 
-    void addData(std::string name, std::vector<DM::View> view);
-    std::map<std::string, std::vector<DM::View> >  getViews();
 
+    /** @brief Used to define the data that are used in the module.
+      *
+      * The data are defined as a vetor of views. For every view in the vector a port according to the AccessType is created.
+      * - AccessType Read:   Inport
+      * - AccessType Write:  Outport
+      * - AccessType Modify: In and Outport
+      *
+      * The name of the port is defined by the name of the View. If a port already exists no new port is added.
+      */
+
+    void addData(std::string name, std::vector<DM::View> view);
+    /** @brief Returns a pointer to the system where the view is stored
+      *
+      * The pointer to the system is updated by the updateParameter method. The updateParameter
+      * method is always called before the run method.
+      * Follwing system states are returnet. T is the system state before at the outport of the
+      * module that provides the data
+      * - AccessType Read:   T
+      * - AccessType Write:  T+1
+      * - AccessType Modify: T+1
+      */
 
     DM::System * getData(std::string dataname);
 
+    /** @brief Returns all views used in the module */
+    std::map<std::string, std::vector<DM::View> >  getViews();
+
+    /** @brief Returns all inports */
     std::vector<Port*> getInPorts();
+
+    /** @brief Returns all outports */
     std::vector<Port*> getOutPorts();
 
 
@@ -155,11 +267,30 @@ public:
 
 
     virtual void submitRunnables(QThreadPool* pool) {}
+
+    /** @brief Returns the parameter as string value
+      *
+      * As seperator for STRING_LIST *|* is used and for maps also *||*
+      *
+      * 1*|*2*|*3*|4*||*
+      *
+      * 5*|*6*|*7*|*8*||*
+      *
+    */
     virtual std::string getParameterAsString(std::string Name);
 
     void setSelf(boost::python::object self);
     void setPythonModule(bool b) {this->PythonModule = b;}
     bool isPythonModule(){return PythonModule;}
+
+    /** @brief update parameter and data used in the module.
+      *
+      * Based on the data used in the module the pointer to the data are updated.
+      * If the module reads data from, the method tries to get the system from linked module.
+      * Therefore the getSystemData method is called. If the module changes the data a new state of the system
+      * is created.
+      *
+      */
     virtual void updateParameter();
 
     virtual void setParameter();
@@ -204,6 +335,13 @@ public:
 
     DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 
+    /** @brief Returns if the module comes with its own GUI.
+      *
+      * The default value is false. If you develop your own GUI for the module the GUI is
+      * overwrite this method in the module implementation, call the GUI within the method
+      * an return true.
+      */
+    virtual bool createInputDialog(){return false;}
 
 private:
     boost::python::object self;

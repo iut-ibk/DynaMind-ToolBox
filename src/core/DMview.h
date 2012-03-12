@@ -42,6 +42,46 @@ enum {
     WRITE
 };
 
+/**
+  * @class DM::View
+  *
+  * @brief Data in DynaMind are organised in views. A view provides a description of a
+  * component and its attributes and how they are accessed in the module.
+  *
+  * @ingroup DynaMind-Core
+  *
+  *
+  * A view is defined by:
+  *
+  * @section Type
+  * Following Type are supported in DynaMind:
+  *
+  * -   NODE
+  * -   EDGE
+  * -   FACE
+  * -   SUBSYSTEM
+  * -   RASTERDATA
+ *
+  * @section AccessType
+  * The AccessType defines the assecctype geometric component.
+  * Following AccessTypes are supported:
+  * - Read: Geometry stays the same and no new components are added to the view
+  * - Write: Gemetroy of existing components can be changed and new components can be added to the view
+  * - Modify: Gemeotry can be modified but no new components are added to the view
+  *
+  * @section Attributes
+  * Every component can hold attributes. In the view the access to the attributes of the component is defined.
+  * Following methods can be used to access attributes within a module
+  *
+  * - addAttribute(std::string name)
+  * - getAttribute(std::string name)
+  * - modifyAttribute(std::string name)
+  *
+  * @section Dummy Component
+  * To every View a Dummy Component is created. The dummy component is used to track the changes made by the modules.
+  * @author Christian Urich
+  * @date 11.03.2012
+  */
 class DM_HELPER_DLL_EXPORT View
 {
 private:
@@ -70,8 +110,14 @@ public:
 
     int const & getType() const {return type;}
     int const & getAccessType() const{return accesstypeGeometry;}
+
+
+    /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
     bool reads();
+
+    /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
     bool writes();
+
     bool operator<(const View & other) const;
 
 };

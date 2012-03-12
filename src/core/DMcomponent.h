@@ -40,7 +40,8 @@
 #endif
 
 namespace DM {
-
+/** @ingroup DynaMind_Core
+  */
 class Attribute;
 
 class DM_HELPER_DLL_EXPORT Component
@@ -68,7 +69,9 @@ public:
     bool changeAttribute(Attribute newattribute);
     bool removeAttribute(std::string name);
     Attribute* getAttribute(std::string name);
-    std::map<std::string, Attribute*> getAllAttributes();
+
+    /** @brief Returns a map of all Attributes */
+    const std::map<std::string, Attribute*> & getAllAttributes() const;
     bool addChild(Component *newcomponent);
     bool changeChild(Component *newcomponent);
     bool removeChild(std::string name);

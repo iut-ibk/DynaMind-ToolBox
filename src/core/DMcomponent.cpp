@@ -152,7 +152,7 @@ Attribute* Component::getAttribute(std::string name)
     return attributesview[name];
 }
 
-std::map<std::string, Attribute*> Component::getAllAttributes()
+const std::map<std::string, Attribute*> & Component::getAllAttributes() const
 {
     return attributesview;
 }

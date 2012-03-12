@@ -27,7 +27,6 @@
 #define RESULTOBSERVER_H
 #include <compilersettings.h>
 #include <iostream>
-#include <rasterdata.h>
 #include <QVector>
 class DM_HELPER_DLL_EXPORT ResultObserver
 {
