@@ -39,16 +39,16 @@
 #include "ColorPalette.h"
 #include "modelnodebutton.h"
 
-#include <module.h>
+#include <dmmodule.h>
 #include <guiport.h>
 #include <boost/foreach.hpp>
-#include <simulation.h>
+#include <dmsimulation.h>
 #include <QApplication>
 #include <QInputDialog>
 #include <rootgroupnode.h>
 #include <guisimulation.h>
-#include <DMcomponent.h>
-#include <DMsystem.h>
+#include <dmcomponent.h>
+#include <dmsystem.h>
 
 using namespace boost;
 std::string ModelNode::getParameterAsString(std::string name) {

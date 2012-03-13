@@ -26,7 +26,7 @@
 #ifndef SIMULATIONIO_H
 #define SIMULATIONIO_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 //#include <QMap>
 //#include <QString>
 #include <QVector>

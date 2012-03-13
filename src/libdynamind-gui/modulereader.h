@@ -26,7 +26,7 @@
 #ifndef MODULEREADER_H
 #define MODULEREADER_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QXmlSimpleReader>
 #include <QString>
 #include "moduledescription.h"

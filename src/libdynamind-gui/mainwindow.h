@@ -32,8 +32,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "compilersettings.h"
-#include "moduleregistry.h"
+#include "dmcompilersettings.h"
+#include "dmmoduleregistry.h"
 #include <QMainWindow>
 
 //#include "plot.h"

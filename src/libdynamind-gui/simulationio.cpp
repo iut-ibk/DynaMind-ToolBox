@@ -37,7 +37,6 @@
 #include <map>
 #include <groupnode.h>
 #include <guisimulation.h>
-
 SimulationIO::SimulationIO()
 {
 }

@@ -27,7 +27,7 @@
 #ifndef GUISIMULATIONOBSERVER_H
 #define GUISIMULATIONOBSERVER_H
 
-#include <simulationobserver.h>
+#include <dmsimulationobserver.h>
 #include <projectviewer.h>
 
 class GUISimulationObserver : public DM::SimulationObserver

@@ -27,7 +27,7 @@
 #ifndef MDMODULE_H
 #define MDMODULE_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QString>
 #include <QVector>
 #include <QMap>

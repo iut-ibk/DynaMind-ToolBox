@@ -27,7 +27,7 @@
 #ifndef MODELNODE_H
 #define MODELNODE_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include "moduledescription.h"
 
 #include <QGraphicsItem>
@@ -39,9 +39,9 @@
 #include <QMap>
 #include <QVariant>
 #include <QVector>
-#include <module.h>
-#include <port.h>
-#include <simulation.h>
+#include <dmmodule.h>
+#include <dmport.h>
+#include <dmsimulation.h>
 #include <guiportobserver.h>
 #include <guiresultobserver.h>
 #include <QWidget>

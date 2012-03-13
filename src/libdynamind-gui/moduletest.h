@@ -26,7 +26,7 @@
 #ifndef MODULETEST_H
 #define MODULETEST_H
 
-#include "module.h"
+#include "dmmodule.h"
 
 
 class ModuleTest

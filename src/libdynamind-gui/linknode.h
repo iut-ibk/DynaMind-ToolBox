@@ -26,7 +26,7 @@
 #ifndef LINKNODE_H
 #define LINKNODE_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QString>

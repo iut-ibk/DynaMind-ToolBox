@@ -28,7 +28,7 @@
 #include <QThread>
 #include <QApplication>
 #include <mainwindow.h>
-#include <vibe_logger.h>
+#include <dmlogger.h>
 
 GUIResultObserver::GUIResultObserver()
 {

@@ -26,7 +26,7 @@
 #ifndef PREFERENCES_H
 #define PREFERENCES_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <ui_preferences.h>
 
 class DM_HELPER_DLL_EXPORT Preferences :public QDialog, public Ui::Preferences

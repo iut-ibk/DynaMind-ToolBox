@@ -26,7 +26,7 @@
 #ifndef GUIPORT_H
 #define GUIPORT_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QString>
@@ -34,7 +34,7 @@
 #include <QPainter>
 #include <QColor>
 #include <QObject>
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 namespace DM {
 class Port;
 }

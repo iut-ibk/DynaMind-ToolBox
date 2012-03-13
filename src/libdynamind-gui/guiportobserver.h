@@ -27,7 +27,7 @@
 #define GUIPORTOBSERVER_H
 
 #include <QWidget>
-#include <portobserver.h>
+#include <dmportobserver.h>
 #include <QObject>
 class ModelNode;
 

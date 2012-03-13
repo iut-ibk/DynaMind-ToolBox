@@ -25,10 +25,10 @@
  */
 #ifndef GUIRESULTOBSERVER_H
 #define GUIRESULTOBSERVER_H
-#include <resultobserver.h>
+#include <dmresultobserver.h>
 #include <QWidget>
 #include <QObject>
-#include <rasterdata.h>
+#include <dmrasterdata.h>
 
 #include <QVector>
 

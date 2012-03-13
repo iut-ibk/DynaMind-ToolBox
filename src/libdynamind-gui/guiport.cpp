@@ -25,12 +25,12 @@
  */
 #include "guiport.h"
 #include <modelnode.h>
-#include <port.h>
+#include <dmport.h>
 #include "ColorPalette.h"
 #include <guilink.h>
 #include <QGraphicsSceneMouseEvent>
-#include <simulation.h>
-#include <modulelink.h>
+#include <dmsimulation.h>
+#include <dmmodulelink.h>
 #include <guisimulation.h>
 GUIPort::~GUIPort () {
     foreach(GUILink *l, this->links) {

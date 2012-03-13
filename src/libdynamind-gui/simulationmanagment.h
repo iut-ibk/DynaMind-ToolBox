@@ -26,8 +26,8 @@
 #ifndef SIMULATIONMANAGMENT_H
 #define SIMULATIONMANAGMENT_H
 
-#include "compilersettings.h"
-#include <simulationobserver.h>
+#include "dmcompilersettings.h"
+#include <dmsimulationobserver.h>
 #include <QObject>
 
 

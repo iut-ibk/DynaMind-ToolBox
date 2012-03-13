@@ -27,7 +27,7 @@
 #ifndef GUISIMULATION_H
 #define GUISIMULATION_H
 
-#include <simulation.h>
+#include <dmsimulation.h>
 #include <QVector>
 #include <QString>
 #include <QPointF>

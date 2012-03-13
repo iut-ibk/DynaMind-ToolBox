@@ -27,7 +27,7 @@
 #ifndef MODELNODEBUTTON_H
 #define MODELNODEBUTTON_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QGraphicsItem>
 
 class DM_HELPER_DLL_EXPORT ModelNodeButton : public  QObject, public QGraphicsItem

@@ -34,11 +34,11 @@ SET_SOURCE_FILES_PROPERTIES(pydmtoolbox.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(pydmtoolbox.i PROPERTIES SWIG_FLAGS "-threads")
 
 #SWIG_ADD_MODULE(pydynamind python pydynamind.i)
-SWIG_ADD_MODULE(pydynamind python pydynamind.i pythonenv.cpp)
+SWIG_ADD_MODULE(pydynamind python pydynamind.i dmpythonenv.cpp)
 SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
 
 
-SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i pythonenv.cpp)
+SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i dmpythonenv.cpp)
 SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore ${PYTHON_LIBRARIES})
 
 INSTALL(TARGETS _pydynamind

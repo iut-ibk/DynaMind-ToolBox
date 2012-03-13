@@ -30,13 +30,12 @@
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <boost/foreach.hpp>
-#include <moduleregistry.h>
+#include <dmmoduleregistry.h>
 #include <modelnode.h>
 #include <groupnode.h>
 #include <rootgroupnode.h>
 #include <sstream>
 #include <guisimulation.h>
-
 using namespace boost;
 ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(parent)
 

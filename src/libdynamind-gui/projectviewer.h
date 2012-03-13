@@ -26,7 +26,7 @@
 #ifndef PROJECTVIEWER_H
 #define PROJECTVIEWER_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QGraphicsView>
 #include <QWidget>
 
@@ -34,10 +34,10 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <linknode.h>
 
-#include <moduleregistry.h>
-#include <module.h>
+#include <dmmoduleregistry.h>
+#include <dmmodule.h>
 #include <mainwindow.h>
-#include <simulation.h>
+#include <dmsimulation.h>
 class ModelNode;
 class GroupNode;
 class RootGroupNode;

@@ -26,7 +26,7 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <qapplication.h>
 #include <qwt_plot.h>
 #include <qwt_plot_marker.h>
