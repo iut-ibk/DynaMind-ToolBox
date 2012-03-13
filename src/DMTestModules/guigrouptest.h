@@ -28,7 +28,7 @@
 #define GUIGROUPTEST_H
 
 #include <QDialog>
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 
 namespace DM {
 class Module;

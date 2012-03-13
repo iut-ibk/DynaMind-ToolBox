@@ -1,7 +1,7 @@
 #ifndef MYMODULE_H
 #define MYMODULE_H
 
-#include "module.h"
+#include "dmmodule.h"
 
 using namespace DM;
 

@@ -25,9 +25,9 @@
  */
 #include "guicellularautomata_neighbourhood.h"
 #include "ui_guicellularautomata_neighbourhood.h"
-#include <module.h>
+#include <dmmodule.h>
 #include <sstream>
-#include <DM.h>
+#include <dm.h>
 using namespace DM;
 GUICellularAutomata_Neighbourhood::GUICellularAutomata_Neighbourhood(GUICellularAutomata * GUICellular, QWidget *parent) :
         QDialog(parent),

@@ -23,9 +23,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include "muParser.h"
-#include "module.h"
+#include "dmmodule.h"
 #ifndef USERDEFINEDFUNCTIONS_H
 #define USERDEFINEDFUNCTIONS_H
 

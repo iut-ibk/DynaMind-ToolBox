@@ -1,9 +1,9 @@
 #ifndef INOUT2MODULE_H
 #define INOUT2MODULE_H
 
-#include "compilersettings.h"
-#include "module.h"
-#include <DM.h>
+#include "dmcompilersettings.h"
+#include "dmmodule.h"
+#include <dm.h>
 using namespace DM;
 class DM_HELPER_DLL_EXPORT InOut2 : public  Module {
 

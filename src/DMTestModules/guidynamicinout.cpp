@@ -27,9 +27,9 @@
 #include "guidynamicinout.h"
 #include "ui_guidynamicinout.h"
 #include <dynamicinout.h>
-#include <module.h>
-#include <DMview.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dmview.h>
+#include <dm.h>
 #include "qtreewidget.h"
 #include "qinputdialog.h"
 

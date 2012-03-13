@@ -25,13 +25,13 @@
  */
 #ifndef TESTMODULE_H
 #define TESTMODULE_H
-#include "compilersettings.h"
-#include "DMcomponent.h"
-#include "DMsystem.h"
+#include "dmcompilersettings.h"
+#include "dmcomponent.h"
+#include "dmsystem.h"
 #include "QVariant"
 
-#include "module.h"
-#include "DM.h"
+#include "dmmodule.h"
+#include "dm.h"
 using namespace DM;
 class DM_HELPER_DLL_EXPORT TestModule : public  Module {
 

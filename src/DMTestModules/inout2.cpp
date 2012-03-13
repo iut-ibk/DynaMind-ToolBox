@@ -1,7 +1,7 @@
 #include "inout2.h"
-#include <DMcomponent.h>
-#include <DMsystem.h>
-#include <DMnode.h>
+#include <dmcomponent.h>
+#include <dmsystem.h>
+#include <dmnode.h>
 
 
 DM_DECLARE_NODE_NAME( InOut2,Modules )

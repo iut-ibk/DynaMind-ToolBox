@@ -25,7 +25,7 @@
  */
 
 #include "memorytest.h"
-#include <DM.h>
+#include <dm.h>
 DM_DECLARE_NODE_NAME( MemoryTest,Modules)
 
 MemoryTest::MemoryTest()

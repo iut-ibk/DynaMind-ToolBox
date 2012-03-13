@@ -25,7 +25,7 @@
  */
 
 #include "tbvectordata.h"
-#include "DM.h"
+#include "dm.h"
 #include <QtGlobal>
 
 DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {

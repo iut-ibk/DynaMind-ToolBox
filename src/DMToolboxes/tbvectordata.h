@@ -26,7 +26,7 @@
 
 #ifndef TBVECTORDATA_H
 #define TBVECTORDATA_H
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 #include <vector>
 namespace DM {
     class System;

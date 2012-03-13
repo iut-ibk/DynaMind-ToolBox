@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB VIBE_CPPS *.cpp)
 file(GLOB VIBE_HEADER *.h)
 
-SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/pythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
+SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
 
 add_library(dynamindcore  SHARED ${VIBE_CPPS})
 target_link_libraries(dynamindcore ${Boost_LIBRARIES} ${QT_LIBRARIES} ${PYTHON_LIBRARIES})

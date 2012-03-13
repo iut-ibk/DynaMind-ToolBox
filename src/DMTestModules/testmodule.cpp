@@ -24,16 +24,16 @@
  *
  */
 #include "testmodule.h"
-#include "rasterdata.h"
+#include "dmrasterdata.h"
 #include <iostream>
 //#include <omp.h>
 #include <cmath>
 #include <iostream>
-#include <DMcomponent.h>
-#include <DMedge.h>
-#include <DMattribute.h>
-#include <DMnode.h>
-#include <DMview.h>
+#include <dmcomponent.h>
+#include <dmedge.h>
+#include <dmattribute.h>
+#include <dmnode.h>
+#include <dmview.h>
 
 DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {

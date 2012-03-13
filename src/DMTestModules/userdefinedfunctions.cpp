@@ -29,7 +29,7 @@
 #include <cstdlib> 
 #include <ctime> 
 #include <cmath>
-#include "module.h"
+#include "dmmodule.h"
 
 using namespace std;
 

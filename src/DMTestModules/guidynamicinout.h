@@ -31,7 +31,7 @@ class Module;
 #define GUIDYNAMICINOUT_H
 
 #include <QDialog>
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 
 class DynamicInOut;
 

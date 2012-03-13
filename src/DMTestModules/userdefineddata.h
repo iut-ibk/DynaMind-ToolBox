@@ -26,8 +26,8 @@
 
 #ifndef USERDEFINEDDATA_H
 #define USERDEFINEDDATA_H
-#include "compilersettings.h"
-#include <module.h>
+#include "dmcompilersettings.h"
+#include <dmmodule.h>
 using namespace DM;
 
 
