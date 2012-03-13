@@ -1,12 +1,12 @@
 %module(directors="1", allprotected="1") pydmtoolbox
 %feature("director");
 %{
-    #include <DMcomponent.h>
-    #include <DMsystem.h>
-    #include <DMattribute.h>
-    #include <DMedge.h>
-    #include <DMnode.h>
-    #include <DMview.h>
+    #include <dmcomponent.h>
+    #include <dmsystem.h>
+    #include <dmattribute.h>
+    #include <dmedge.h>
+    #include <dmnode.h>
+    #include <dmview.h>
     #include <tbvectordata.h>
     using namespace std;
     using namespace DM;
@@ -18,12 +18,12 @@
 %include std_map.i
 
 
-%include "../core/DMcomponent.h"
-%include "../core/DMsystem.h"
-%include "../core/DMattribute.h"
-%include "../core/DMedge.h"
-%include "../core/DMnode.h"
-%include "../core/DMview.h"
+%include "../core/dmcomponent.h"
+%include "../core/dmsystem.h"
+%include "../core/dmattribute.h"
+%include "../core/dmedge.h"
+%include "../core/dmnode.h"
+%include "../core/dmview.h"
 %include "../DMToolboxes/tbvectordata.h"
 
 namespace std {

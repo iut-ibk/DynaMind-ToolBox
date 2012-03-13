@@ -2,20 +2,20 @@
 %ignore "DM_HELPER_DLL_EXPORT";
 %feature("director");
 %{
-    #include <DMcomponent.h>
-    #include <DMsystem.h>
-    #include <rasterdata.h>
-    #include <DMattribute.h>
-    #include <DMedge.h>
-    #include <DMnode.h>
-    #include <module.h>
-    #include <DMview.h>
-    #include <nodefactory.h>
-    #include <moduleregistry.h>
-    #include <vibe_log.h>
-    #include <vibe_logger.h>
-    #include <vibe_logsink.h>
-    #include <simulation.h>
+    #include <dmcomponent.h>
+    #include <dmsystem.h>
+    #include <dmrasterdata.h>
+    #include <dmattribute.h>
+    #include <dmedge.h>
+    #include <dmnode.h>
+    #include <dmmodule.h>
+    #include <dmview.h>
+    #include <dmnodefactory.h>
+    #include <dmmoduleregistry.h>
+    #include <dmlog.h>
+    #include <dmlogger.h>
+    #include <dmlogsink.h>
+    #include <dmsimulation.h>
     #include <iostream>
 
     using namespace std;
@@ -28,17 +28,17 @@
 %include std_map.i
 %include cpointer.i
 
-%include "../core/DMcomponent.h"
-%include "../core/DMsystem.h"
-%include "../core/DMattribute.h"
-%include "../core/DMedge.h"
-%include "../core/rasterdata.h"
-%include "../core/DMnode.h"
-%include "../core/DMview.h"
-%include "../core/simulation.h"
-%include "../core/vibe_log.h"
-%include "../core/vibe_logger.h"
-%include "../core/vibe_logsink.h"
+%include "../core/dmcomponent.h"
+%include "../core/dmsystem.h"
+%include "../core/dmattribute.h"
+%include "../core/dmedge.h"
+%include "../core/dmrasterdata.h"
+%include "../core/dmnode.h"
+%include "../core/dmview.h"
+%include "../core/dmsimulation.h"
+%include "../core/dmlog.h"
+%include "../core/dmlogger.h"
+%include "../core/dmlogsink.h"
 
 namespace std {
     %template(stringvector) vector<string>;

@@ -26,7 +26,7 @@
 
 #ifndef PYTHONENV_H
 #define PYTHONENV_H
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <string>
 #include <vector>
 //using namespace std;
