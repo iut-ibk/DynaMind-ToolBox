@@ -23,19 +23,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef RESULTOBSERVER_H
-#define RESULTOBSERVER_H
-#include <compilersettings.h>
-#include <iostream>
-#include <QVector>
-class DM_HELPER_DLL_EXPORT ResultObserver
-{
-public:
-    ResultObserver();
-    virtual void addResultImage(std::string UUID, std::string filename) = 0;
-    //virtual void addRasterDataToViewer( QVector<RasterData>) = 0;
-    //virtual void addVectorDataToViewer(QVector<VectorData>) = 0;
-    virtual void addDoubleDataToPlot(std::string UUID, double x, double y) = 0;
-};
+#ifndef SIMULAITONWRITER_H
+#define SIMULAITONWRITER_H
 
-#endif // RESULTOBSERVER_H
+#include "dmcompilersettings.h"
+#include <string>
+#include <dmport.h>
+namespace DM {
+    class Simulation;
+    class DM_HELPER_DLL_EXPORT SimulaitonWriter
+    {
+    private:
+        static std::string  writeLink(Port * p);
+    public:
+        SimulaitonWriter();
+        static void writeSimulation(std::string filename, Simulation * sim);
+
+
+
+    };
+}
+
+#endif // SIMULAITONWRITER_H

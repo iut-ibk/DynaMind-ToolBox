@@ -23,11 +23,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef SIMULATIONWRAPPER_H
-#define SIMULATIONWRAPPER_H
-
-#include "compilersettings.h"
-
-void wrap_simulation();
-
-#endif // SIMULATIONWRAPPER_H
+#ifndef ROOTGROUP_H
+#define ROOTGROUP_H
+#include <dmgroup.h>
+namespace DM {
+    class DM_HELPER_DLL_EXPORT  RootGroup : public Group
+    {
+    public:
+        RootGroup();
+        void run() {Group::run();  Logger(Debug)<<"Finished RootGroup"; }
+        const char * getClassName(){return "RootGroup";}
+    };
+}
+#endif // ROOTGROUP_H

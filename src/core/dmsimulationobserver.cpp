@@ -23,12 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "rootgroup.h"
-namespace DM {
-    RootGroup::RootGroup()
-    {
-        this->group = 0;
-        this->Steps = 1;
-
-    }
+#include "dmsimulationobserver.h"
+using namespace DM;
+SimulationObserver::SimulationObserver()
+{
 }

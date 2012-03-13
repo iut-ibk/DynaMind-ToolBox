@@ -24,14 +24,14 @@
  *
  */
 
-#include <DMattribute.h>
-#include <DMcomponent.h>
-#include <DMnode.h>
-#include <DMedge.h>
+#include <dmattribute.h>
+#include <dmcomponent.h>
+#include <dmnode.h>
+#include <dmedge.h>
 #include <dmface.h>
-#include <rasterdata.h>
-#include <DMsystem.h>
-#include <vibe_logger.h>
+#include <dmrasterdata.h>
+#include <dmsystem.h>
+#include <dmlogger.h>
 
 using namespace DM;
 

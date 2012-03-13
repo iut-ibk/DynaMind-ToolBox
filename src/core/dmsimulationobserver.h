@@ -23,42 +23,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "vibe_log.h"
-#include <iostream>
-#include <vibe_logger.h>
-#include <vibe_logsink.h>
-#include <ostream>
-#include <assert.h>
+#ifndef SIMULATIONOBSERVER_H
+#define SIMULATIONOBSERVER_H
 
-using namespace std;
+#include "dmcompilersettings.h"
 
-namespace DM{
-Log *Log::instance = 0;
+namespace DM {
+class DM_HELPER_DLL_EXPORT SimulationObserver
+{
+public:
+    SimulationObserver();
+    virtual void SimulationCounter() = 0;
+    virtual void VirtualRunDone() = 0;
 
-Log *Log::getInstance() {
-        if (!instance) {
-                cerr << "log not initialed, call Log::init" << endl;
-                assert(instance);
-        }
-        return instance;
+};
 }
-
-void Log::init(LogSink *sink, LogLevel max) {
-        if (!instance) {
-                instance = new Log();
-        }
-        instance->sink = sink;
-        instance->max = max;
-}
-
-void Log::shutDown() {
-        instance->sink->close();
-        delete instance->sink;
-        instance->sink = 0;
-        delete instance;
-}
-
-Log::Log(){}
-
-Log::~Log(){}
-}
+#endif // SIMULATIONOBSERVER_H

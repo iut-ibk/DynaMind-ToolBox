@@ -30,7 +30,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 
 
 namespace DM {

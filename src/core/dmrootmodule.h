@@ -23,8 +23,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "simulationobserver.h"
-using namespace DM;
-SimulationObserver::SimulationObserver()
+#ifndef ROOTMODULE_H
+#define ROOTMODULE_H
+
+#include "dmcompilersettings.h"
+#include "dmmodule.h"
+
+class DM_HELPER_DLL_EXPORT RootModule : public DM::Module
 {
-}
+public:
+    RootModule();
+
+    boost::shared_ptr<DM::Module> clone() const;
+    //const RasterData &getRasterData(const std::string &name, int T) const;
+    //const VectorData &getVectorData(const std::string &name) const;
+    void run();
+};
+
+#endif // ROOTMODULE_H

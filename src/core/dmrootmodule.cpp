@@ -23,16 +23,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef ROOTGROUP_H
-#define ROOTGROUP_H
-#include <group.h>
-namespace DM {
-    class DM_HELPER_DLL_EXPORT  RootGroup : public Group
-    {
-    public:
-        RootGroup();
-        void run() {Group::run();  Logger(Debug)<<"Finished RootGroup"; }
-        const char * getClassName(){return "RootGroup";}
-    };
+#include "dmrootmodule.h"
+#include <iostream>
+
+RootModule::RootModule() {
+
 }
-#endif // ROOTGROUP_H
+
+boost::shared_ptr<DM::Module> RootModule::clone() const {
+    return boost::shared_ptr<Module>(new RootModule());
+}
+
+void RootModule::run() {
+      DM::Logger(DM::Debug) << "Run Root";
+
+}
+
+/*const RasterData &RootModule::getRasterData(const std::string &name, int T) const {
+    (void) name;
+    (void) T;
+    std::cerr << "RasterData " << name << " could not be found" << std::endl;
+    throw 0;
+    //assert(false);
+}*/
+/*const VectorData &RootModule::getVectorData(const std::string &name) const {
+    (void) name;
+    std::cerr << "VectorData " << name << " could not be found" << std::endl;
+    throw 0;
+    //assert(false);
+}*/
