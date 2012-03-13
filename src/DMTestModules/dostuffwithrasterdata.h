@@ -27,8 +27,8 @@
 #ifndef DOSTUFFWITHRASTERDATA_H
 #define DOSTUFFWITHRASTERDATA_H
 
-#include "module.h"
-#include "DM.h"
+#include "dmmodule.h"
+#include "dm.h"
 using namespace DM;
 
 class DM_HELPER_DLL_EXPORT DoStuffWithRasterData : public Module

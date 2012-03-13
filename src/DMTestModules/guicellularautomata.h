@@ -26,7 +26,7 @@
 #ifndef GUICELLULARAUTOMATA_H
 #define GUICELLULARAUTOMATA_H
 
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 #include <QDialog>
 #include <QStringList>
 namespace DM{

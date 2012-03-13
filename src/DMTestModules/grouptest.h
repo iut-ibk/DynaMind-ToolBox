@@ -27,10 +27,10 @@
 #ifndef GROUPTEST_H
 #define GROUPTEST_H
 
-#include "compilersettings.h"
-#include "group.h"
-#include "DM.h"
-#include "DMview.h"
+#include "dmcompilersettings.h"
+#include "dmgroup.h"
+#include "dm.h"
+#include "dmview.h"
 #include <iostream>
 #include <vector>
 using namespace DM;

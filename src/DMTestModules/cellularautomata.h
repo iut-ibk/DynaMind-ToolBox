@@ -26,11 +26,11 @@
 #ifndef CELLULARAUTOMATA_H
 #define CELLULARAUTOMATA_H
 
-#include "compilersettings.h"
-#include "module.h"
+#include "dmcompilersettings.h"
+#include "dmmodule.h"
 #include "muParser.h"
 #include <boost/unordered_map.hpp>
-#include <DM.h>
+#include <dm.h>
 using namespace boost;
 
 using namespace mu;

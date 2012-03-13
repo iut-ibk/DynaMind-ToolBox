@@ -25,12 +25,12 @@
  */
 #include "guicellularautomata.h"
 #include "ui_guicellularautomata.h"
-#include <module.h>
+#include <dmmodule.h>
 #include <QInputDialog>
 #include <guicellularautomata_neighbourhood.h>
 #include <guiequationeditor.h>
 #include <QTableWidgetSelectionRange>
-#include <DM.h>
+#include <dm.h>
 using namespace DM;
 bool GUICellularAutomata::checkIfFromOutSide(QString name) {
     QString s2 = "DoubleIn_" + name;

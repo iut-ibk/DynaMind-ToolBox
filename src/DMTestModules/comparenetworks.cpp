@@ -1,8 +1,8 @@
 #include "comparenetworks.h"
-#include <DMcomponent.h>
-#include <DMsystem.h>
-#include <DMattribute.h>
-#include <DMnode.h>
+#include <dmcomponent.h>
+#include <dmsystem.h>
+#include <dmattribute.h>
+#include <dmnode.h>
 
 
 DM_DECLARE_NODE_NAME( CompareNetworks,Modules )

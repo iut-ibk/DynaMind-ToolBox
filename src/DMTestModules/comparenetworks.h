@@ -1,8 +1,8 @@
 #ifndef COMPARENETWORKSMODULE_H
 #define COMPARENETWORKSMODULE_H
 
-#include "compilersettings.h"
-#include "module.h"
+#include "dmcompilersettings.h"
+#include "dmmodule.h"
 using namespace DM;
 class DM_HELPER_DLL_EXPORT CompareNetworks : public  Module {
 

@@ -27,8 +27,8 @@
 #ifndef DYNAMICINOUT_H
 #define DYNAMICINOUT_H
 
-#include "compilersettings.h"
-#include "module.h"
+#include "dmcompilersettings.h"
+#include "dmmodule.h"
 
 using namespace DM;
 
