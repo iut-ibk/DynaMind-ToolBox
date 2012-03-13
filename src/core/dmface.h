@@ -26,7 +26,7 @@
 
 #ifndef DMFACE_H
 #define DMFACE_H
-#include <compilersettings.h>
+#include <dmcompilersettings.h>
 
 #include <vector>
 #include <string>

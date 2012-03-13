@@ -1,23 +1,23 @@
 /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Michael Mair <abroxos@gmail.com>
  * @version 1.0
  * @section LICENSE
+ * This file is part of DynaMite
  *
- * This file is part of VIBe2
- *
- * Copyright (C) 2011  Christian Urich
- 
+ * Copyright (C) 2011  Christian Urich, Michael Mair
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- 
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -25,24 +25,42 @@
  */
 
 #include <dmcomponent.h>
-#include "dmface.h"
-#include "dmedge.h"
-
+#include <dmedge.h>
 
 using namespace DM;
 
-Face::Face(std::vector<std::string> edges) : Component()
+Edge::Edge(std::string startpoint, std::string endpoint) : Component()
 {
-    this->edges = edges;
+    start=startpoint;
+    end=endpoint;
 }
-Face::Face(const Face& e) : Component(e)
+
+Edge::Edge(const Edge& e) : Component(e)
 {
-    this->edges=e.edges;
+    start=e.start;
+    end=e.end;
 }
-std::vector<std::string> Face::getEdges() {
-    return this->edges;
-}
-Component* Face::clone()
+
+std::string Edge::getStartpointName()
 {
-    return new Face(*this);
+    return start;
 }
+
+std::string Edge::getEndpointName()
+{
+    return end;
+}
+
+void Edge::setStartpointName(std::string name) {
+    this->start = name;
+}
+
+void Edge::setEndpointName(std::string name) {
+    this->end = name;
+}
+
+Component* Edge::clone()
+{
+    return new Edge(*this);
+}
+

@@ -27,18 +27,18 @@
 #ifndef DMDATABASE_H
 #define DMDATABASE_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <iostream>
-#include <rasterdata.h>
+#include <dmrasterdata.h>
 #include <map>
-#include <dataobserver.h>
-#include <idatabase.h>
+#include <dmdataobserver.h>
+#include <dmidatabase.h>
 
 
-#include <DMcomponent.h>
-#include <DMnode.h>
-#include <DMedge.h>
-#include <DMsystem.h>
+#include <dmcomponent.h>
+#include <dmnode.h>
+#include <dmedge.h>
+#include <dmsystem.h>
 
 
 using namespace DM;

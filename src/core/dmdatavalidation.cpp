@@ -1,6 +1,6 @@
 #include "dmdatavalidation.h"
-#include "DMcomponent.h"
-#include "DMview.h"
+#include "dmcomponent.h"
+#include "dmview.h"
 #include <QtGlobal>
 namespace DM {
 bool DataValidation::isVectorOfViewRead(std::vector<DM::View> views) {

@@ -25,7 +25,7 @@
  */
 
 #include "dmdatabase.h"
-#include <vibe_logger.h>
+#include <dmlogger.h>
 #include <QStringList>
 
 
