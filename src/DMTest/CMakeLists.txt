@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB VIBE_CPPS *.cpp)
 
 SET_SOURCE_FILES_PROPERTIES(${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
-SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/pythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
+SET(VIBE_CPPS ${VIBE_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
 
 
 add_executable(dynamind ${VIBE_CPPS})

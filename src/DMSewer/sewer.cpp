@@ -24,9 +24,9 @@
  *
  */
 
-#include "compilersettings.h"
-#include "nodefactory.h"
-#include "moduleregistry.h"
+#include "dmcompilersettings.h"
+#include "dmnodefactory.h"
+#include "dmmoduleregistry.h"
 #include "timeareamethod.h"
 #include "dmswmm.h"
 #include "networkanalysis.h"

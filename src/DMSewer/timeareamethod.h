@@ -26,8 +26,8 @@
 #ifndef TIMEAREAMETHOD_H
 #define TIMEAREAMETHOD_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 
 
 /*

@@ -26,8 +26,8 @@
 
 #ifndef DIRECTNETWORK_H
 #define DIRECTNETWORK_H
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 class DirectNetwork : public DM::Module
 {
     DM_DECLARE_NODE (DirectNetwork)

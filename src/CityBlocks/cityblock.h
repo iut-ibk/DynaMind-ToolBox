@@ -27,8 +27,8 @@
 #ifndef CREATEPARCELS_H
 #define CREATEPARCELS_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 class CityBlock : public DM::Module
 {
     DM_DECLARE_NODE(CityBlock)

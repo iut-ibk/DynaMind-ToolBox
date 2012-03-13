@@ -27,8 +27,8 @@
 #ifndef PARCELS_H
 #define PARCELS_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 
 class Parcels : public DM::Module
 {

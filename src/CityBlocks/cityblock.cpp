@@ -25,7 +25,7 @@
  */
 
 #include "cityblock.h"
-#include <DM.h>
+#include <dm.h>
 #include <math.h>
 #include <tbvectordata.h>
 

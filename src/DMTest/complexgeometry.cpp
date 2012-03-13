@@ -1,8 +1,8 @@
 
 #include "complexgeometry.h"
 
-#include <DM.h>
-#include <vibe_logger.h>
+#include <dm.h>
+#include <dmlogger.h>
 
 bool ComplexGeometry()
 {

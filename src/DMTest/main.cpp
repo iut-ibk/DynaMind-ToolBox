@@ -24,18 +24,18 @@
  *
  */
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 
 #include <iostream>
-#include <simulation.h>
+#include <dmsimulation.h>
 #include <dmdatabase.h>
-#include <vibe_log.h>
-#include <datamanagement.h>
+#include <dmlog.h>
+#include <dmdatamanagement.h>
 #include <QThreadPool>
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 #include <sstream>
-#include <pythonenv.h>
+#include <dmpythonenv.h>
 #include <complexgeometry.h>
 
 using namespace std;

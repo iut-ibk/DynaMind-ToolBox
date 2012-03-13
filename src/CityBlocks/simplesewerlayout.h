@@ -27,8 +27,8 @@
 #ifndef SIMPLESEWERLAYOUT_H
 #define SIMPLESEWERLAYOUT_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 class SimpleSewerLayout : public DM::Module
 {
     DM_DECLARE_NODE(SimpleSewerLayout)

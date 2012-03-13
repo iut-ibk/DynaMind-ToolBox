@@ -26,8 +26,8 @@
 #ifndef VIBESWMM_H
 #define VIBESWMM_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 #include <QDir>
 
 class DM_HELPER_DLL_EXPORT DMSWMM : public  DM::Module {

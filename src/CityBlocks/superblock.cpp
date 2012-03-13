@@ -25,8 +25,8 @@
  */
 
 #include "superblock.h"
-#include <DM.h>
-#include <DMview.h>
+#include <dm.h>
+#include <dmview.h>
 //Creates a Block with 1 per 1 meter
 
 

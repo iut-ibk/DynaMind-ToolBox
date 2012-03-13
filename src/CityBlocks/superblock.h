@@ -27,8 +27,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include <module.h>
-#include <DM.h>
+#include <dmmodule.h>
+#include <dm.h>
 class SuperBlock : public  DM::Module
 {
     DM_DECLARE_NODE( SuperBlock )

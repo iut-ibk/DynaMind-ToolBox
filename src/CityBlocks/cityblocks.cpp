@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "nodefactory.h"
-#include "moduleregistry.h"
+#include "dmnodefactory.h"
+#include "dmmoduleregistry.h"
 #include "superblock.h"
 #include "cityblock.h"
 #include "simplesewerlayout.h"
