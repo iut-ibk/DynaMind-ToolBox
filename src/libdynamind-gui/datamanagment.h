@@ -26,8 +26,8 @@
 #ifndef DATAMANAGMENT_H
 #define DATAMANAGMENT_H
 
-#include "compilersettings.h"
-#include "dataobserver.h"
+#include "dmcompilersettings.h"
+#include "dmdataobserver.h"
 #include "QTreeWidgetItem"
 #include <boost/unordered_map.hpp>
 #include <string>

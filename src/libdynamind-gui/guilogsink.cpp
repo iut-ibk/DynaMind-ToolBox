@@ -26,7 +26,7 @@
 #include "guilogsink.h"
 #include <QPlainTextEdit>
 #include <sstream>
-#include <vibe_log.h>
+#include <dmlog.h>
 
 GuiLogSink::GuiLogSink() {
     mutex = new QMutex(QMutex::Recursive);
@@ -48,11 +48,11 @@ DM::LogSink &GuiLogSink::operator<<(const char *string) {
 	return *this;
 }
 
-/*DM::LogSink &GuiLogSink::operator<<(int i) {
+DM::LogSink &GuiLogSink::operator<<(int i) {
         QMutexLocker locker(mutex);
 	buf += QString("%0").arg(i);
 	return *this;
-}*/
+}
 DM::LogSink &GuiLogSink::operator<<(double f) {
         QMutexLocker locker(mutex);
         buf += QString("%2").arg(f);

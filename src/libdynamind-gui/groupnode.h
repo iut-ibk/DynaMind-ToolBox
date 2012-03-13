@@ -28,7 +28,7 @@
 
 #include <modelnode.h>
 #include <moduledescription.h>
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 namespace DM {
     class Module;
     class PortTuple;

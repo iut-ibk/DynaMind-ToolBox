@@ -29,10 +29,10 @@
 #include <QWidget>
 #include <QMap>
 #include <QGridLayout>
-#include <module.h>
+#include <dmmodule.h>
 #include <modelnode.h>
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 class ModuleDescription;
 
 

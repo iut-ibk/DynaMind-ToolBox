@@ -46,11 +46,11 @@
 #include <QMessageBox>
 #include <QWebView>
 #include <QUrl>
-#include <module.h>
-#include <group.h>
+#include <dmmodule.h>
+#include <dmgroup.h>
 #include <groupnode.h>
 #include <boost/foreach.hpp>
-#include <porttuple.h>
+#include <dmporttuple.h>
 #include <QTextEdit>
 using namespace boost;
 

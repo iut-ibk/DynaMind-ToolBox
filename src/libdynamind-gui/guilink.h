@@ -26,14 +26,14 @@
 #ifndef GUILINK_H
 #define GUILINK_H
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <QGraphicsItem>
 #include <QLineF>
 #include <QPainterPath>
-#include <modulelink.h>
-#include <simulation.h>
+#include <dmmodulelink.h>
+#include <dmsimulation.h>
 
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 class GUIPort;
 class GUISimulation;
 

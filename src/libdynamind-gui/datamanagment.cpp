@@ -26,7 +26,7 @@
 #include "datamanagment.h"
 #include <iostream>
 #include <QString>
-#include <module.h>
+#include <dmmodule.h>
 #include <boost/foreach.hpp>
 #include <sstream>
 

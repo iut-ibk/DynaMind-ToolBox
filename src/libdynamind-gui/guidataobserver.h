@@ -28,7 +28,7 @@
 
 
 #include <QObject>
-#include "dataobserver.h"
+#include "dmdataobserver.h"
 #include <QVector>
 
 

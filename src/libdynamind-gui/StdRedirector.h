@@ -26,7 +26,7 @@
 
 #ifndef STDREDIRECTOR_H
 #define STDREDIRECTOR_H
-#include "compilersettings.h"
+#include "dmcompilersettings.h"
 #include <qdebug.h>
 #include <QPlainTextEdit>
 #include <QTextCursor>

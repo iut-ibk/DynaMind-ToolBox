@@ -30,13 +30,13 @@
 #include <modelnodebutton.h>
 #include <ColorPalette.h>
 
-#include <group.h>
-#include <module.h>
-#include <simulation.h>
+#include <dmgroup.h>
+#include <dmmodule.h>
+#include <dmsimulation.h>
 #include <guiport.h>
-#include <porttuple.h>
+#include <dmporttuple.h>
 #include <boost/foreach.hpp>
-#include <group.h>
+#include <dmgroup.h>
 #include <iostream>
 
 using namespace boost;
