@@ -47,7 +47,13 @@ include_directories(../3dparty/qwt-5.2.0/src)
 include_directories(../3dparty/alglib/src)
 
 add_library(dynamindgui SHARED ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
-target_link_libraries(dynamindgui dynamindcore  ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+
+
+IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+       TARGET_LINK_LIBRARIES(dynamindgui dynamindcore ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+ELSE()
+       TARGET_LINK_LIBRARIES(dynamindgui dynamindcore ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+ENDIF()
 
 
 INSTALL(TARGETS dynamindgui
