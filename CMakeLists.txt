@@ -15,7 +15,7 @@ find_package(Qt4 COMPONENTS QtCore QtGui)
 find_package(CGAL QUIET COMPONENTS Core )
 set(QT_USE_QTXML 1)
 include(${QT_USE_FILE})
-include(${CGAL_USE_FILE})
+#include(${CGAL_USE_FILE})
 
 include_directories(src/core src/python-swig ${Boost_INCLUDE_DIRS} ${QT_QTCORE_INCLUDE_DIR} ${PYTHON_INCLUDE_PATH})
 FIND_PACKAGE(SWIG REQUIRED)
