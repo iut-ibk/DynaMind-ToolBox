@@ -25,9 +25,8 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libdynamind-gui)
 
+set(MOC_FILES application.h  groupnode.h guidataobserver.h guiimageresultview.h guilink.h guilogsink.h guimodelnode.h guiresultobserver.h guisimulation.h mainwindow.h  modelnode.h modelnodebutton.h plot.h preferences.h projectviewer.h rootgroupnode.h simulationmanagment.h StdRedirector.h )
 
-
-set(MOC_FILES  projectviewer.h guilogsink.h guisimulation.h  mainwindow.h plot.h preferences.h guimodelnode.h modelnode.h guilink.h StdRedirector.h application.h modelnodebutton.h simulationmanagment.h groupnode.h rootgroupnode.h guiresultobserver.h guiimageresultview.h guidataobserver.h)
 file (GLOB CPP_GUI_FILES *.cpp)
 file (GLOB UI_FILES *.ui)
 
