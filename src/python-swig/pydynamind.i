@@ -16,8 +16,7 @@
     #include <dmlogger.h>
     #include <dmlogsink.h>
     #include <dmsimulation.h>
-    #include <iostream>
-
+    #include <iostream>    
     using namespace std;
     using namespace DM;
 
@@ -192,12 +191,7 @@ public:
     %}
     };
 
-enum LogLevel {
-        Debug = 0,
-        Standard = 1,
-        Warning = 2,
-        Error = 3
-};
+
 
 %inline %{
 

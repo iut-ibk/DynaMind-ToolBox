@@ -31,6 +31,7 @@
 #include <QMutex>
 #include <dmlogger.h>
 
+namespace   ublas = boost::numeric::ublas;
 
 using namespace boost;
 using namespace DM;
