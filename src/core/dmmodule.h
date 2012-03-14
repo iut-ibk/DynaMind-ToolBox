@@ -42,13 +42,12 @@
 #include <dmlog.h>
 #include <dmlogger.h>
 #include <dmlogsink.h>
-
+#include <dmview.h>
 
 class QThreadPool;
 class PortObserver;
 namespace DM {
 class System;
-class View;
 }
 
 namespace DM {
