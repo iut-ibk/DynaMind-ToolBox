@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef PORTTUPLE_H
-#define PORTTUPLE_H
+#ifndef DMPORTTUPLE_H
+#define DMPORTTUPLE_H
 #include "dmcompilersettings.h"
 #include <dmiport.h>
 #include <iostream>

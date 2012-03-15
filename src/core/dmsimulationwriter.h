@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef SIMULAITONWRITER_H
-#define SIMULAITONWRITER_H
+#ifndef DMSIMULAITONWRITER_H
+#define DMSIMULAITONWRITER_H
 
 #include "dmcompilersettings.h"
 #include <string>

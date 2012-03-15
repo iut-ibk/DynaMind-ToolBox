@@ -37,6 +37,8 @@
 #include <QMutex>
 #include <dmporttuple.h>
 #include <dmportobserver.h>
+#include <dmrootgroup.h>
+#include <QThreadPool>
 
 using namespace boost;
 
@@ -97,7 +99,7 @@ void Group::finishedModule(Module *m) {
     }
     QVector<QRunnable * > modules = this->getNextJobs();
     foreach (QRunnable * r, modules) {
-        QThreadPool::globalInstance()->start(r);
+         DMRootGroup::getThreadPool()->start(r);
     }
 
 
@@ -284,7 +286,8 @@ void Group::run() {
                 return;
 
             }
-            QThreadPool::globalInstance()->start(r);
+
+            DMRootGroup::getThreadPool()->start(r);
         }
 
         this->step++;

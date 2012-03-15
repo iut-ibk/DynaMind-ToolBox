@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef NODEFACTORY_H
-#define NODEFACTORY_H
+#ifndef DMNODEFACTORY_H
+#define DMNODEFACTORY_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>

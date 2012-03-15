@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef LOGSINK_H
-#define LOGSINK_H
+#ifndef DMLOGSINK_H
+#define DMLOGSINK_H
 
 #include <string>
 #include <ostream>

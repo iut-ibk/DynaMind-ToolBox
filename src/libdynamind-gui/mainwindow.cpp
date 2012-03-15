@@ -337,7 +337,7 @@ void MainWindow::runSimulation() {
         m->resetModel();
     }
     //connect(simobserver, SIGNAL(finished()), this , SLOT(SimulationFinished()), Qt::DirectConnection);
-    simulation->run();
+    simulation->start();
 
     return;
 

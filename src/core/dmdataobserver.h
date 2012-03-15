@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef DATAOBSERVER_H
-#define DATAOBSERVER_H
+#ifndef DMDATAOBSERVER_H
+#define DMDATAOBSERVER_H
 #include "dmcompilersettings.h"
 #include <boost/shared_ptr.hpp>
 #include <string>

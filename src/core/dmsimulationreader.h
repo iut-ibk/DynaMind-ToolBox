@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef SIMULATIONREADER_H
-#define SIMULATIONREADER_H
+#ifndef DMSIMULATIONREADER_H
+#define DMSIMULATIONREADER_H
 
 #include "dmcompilersettings.h"
 #include <QXmlDefaultHandler>

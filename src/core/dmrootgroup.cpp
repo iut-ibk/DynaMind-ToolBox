@@ -24,11 +24,39 @@
  *
  */
 #include "dmrootgroup.h"
+#include <QThreadPool>
 namespace DM {
-    RootGroup::RootGroup()
-    {
-        this->group = 0;
-        this->Steps = 1;
+QThreadPool * DMRootGroup::pool = NULL;
+
+DMRootGroup::DMRootGroup()
+{
+    this->group = 0;
+    this->Steps = 1;
+
+}
+void DMRootGroup::run() {
+    Group::run();
+    DMRootGroup::getThreadPool()->waitForDone();
+
+
+    Logger(Debug)<<"Finished RootGroup";
+}
+
+DMRootGroup::~DMRootGroup() {
+    std::cout << "Call Dectructor RootGroup" << std::endl;
+}
+void DMRootGroup::showstats() {
+
+    Logger(Debug) <<  "POOL TIMEOUT: " << pool->expiryTimeout();
+    Logger(Debug) <<  "POOL THREADCOUNT: "  << pool->maxThreadCount() ;
+    Logger(Debug) <<  "POOL ACTIVE THREADCOUNT: "  << pool->activeThreadCount() ;
+}
+
+QThreadPool * DMRootGroup::getThreadPool() {
+    if(pool == NULL){
+        pool = new QThreadPool();
 
     }
+    return pool;
+}
 }

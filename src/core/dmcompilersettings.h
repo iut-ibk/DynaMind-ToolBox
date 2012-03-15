@@ -25,8 +25,8 @@
  */
 
 
-#ifndef COMPILERSETTINGS_H
-#define COMPILERSETTINGS_H
+#ifndef DMCOMPILERSETTINGS_H
+#define DMCOMPILERSETTINGS_H
 // @see http://gcc.gnu.org/wiki/Visibility
 // @see http://people.redhat.com/drepper/dsohowto.pdf
 // @see http://www.eventhelix.com/RealtimeMantra/HeaderFileIncludePatterns.htm

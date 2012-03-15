@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef MODULEPARAMETERREADER_H
-#define MODULEPARAMETERREADER_H
+#ifndef DMMODULEPARAMETERREADER_H
+#define DMMODULEPARAMETERREADER_H
 #include "dmcompilersettings.h"
 
 #include <QXmlDefaultHandler>

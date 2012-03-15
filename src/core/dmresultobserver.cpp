@@ -25,6 +25,6 @@
  */
 #include "dmresultobserver.h"
 
-ResultObserver::ResultObserver()
+DM::ResultObserver::ResultObserver()
 {
 }

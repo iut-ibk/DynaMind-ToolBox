@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef GROUP_H
-#define GROUP_H
+#ifndef DMGROUP_H
+#define DMGROUP_H
 #include "dmcompilersettings.h"
 #include <dmmodule.h>
 #include <vector>
@@ -84,7 +84,7 @@ namespace DM {
     };
 }
 
-#define VIBe_DECLARE_GROUP(node)  \
+#define DM_DECLARE_GROUP(node)  \
         public: \
             static const char *classname; \
             static const char *filename; \
@@ -92,7 +92,7 @@ namespace DM {
             const char *getFileName(); \
         private:
 
-#define  VIBe_DECLARE_GROUP_NAME(nodename, module) \
+#define  DM_DECLARE_GROUP_NAME(nodename, module) \
             const char *nodename::classname = #nodename; \
                                               const char *nodename::getClassName()  { return nodename::classname; } \
                                               const char *nodename::filename = #module; \

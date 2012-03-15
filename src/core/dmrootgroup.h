@@ -23,16 +23,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef ROOTGROUP_H
-#define ROOTGROUP_H
+#ifndef DMROOTGROUP_H
+#define DMROOTGROUP_H
 #include <dmgroup.h>
 namespace DM {
-    class DM_HELPER_DLL_EXPORT  RootGroup : public Group
+    class DM_HELPER_DLL_EXPORT  DMRootGroup : public Group
     {
+    private:
+        static QThreadPool * pool;
     public:
-        RootGroup();
-        void run() {Group::run();  Logger(Debug)<<"Finished RootGroup"; }
+        DMRootGroup();
+        virtual void run();
         const char * getClassName(){return "RootGroup";}
+        static QThreadPool * getThreadPool();
+        static void showstats();
+        virtual ~DMRootGroup();
     };
 }
 #endif // ROOTGROUP_H

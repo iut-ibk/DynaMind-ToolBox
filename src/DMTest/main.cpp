@@ -141,14 +141,14 @@ bool DynaMiteTest()
     sim->addLink(in->getOutPort("Sewer"),outm3->getInPort("Inport"));
     sim->addLink(in->getOutPort("RasterData"), doraster->getInPort("RasterData"));
 
-    sim->run();
+    sim->startSimulation();
 
 
 
 
     QThreadPool::globalInstance()->waitForDone();
 
-    sim->run(true);
+    sim->startSimulation(true);
 
 
 
@@ -172,14 +172,14 @@ bool MemDynaMiteTestC()
     Simulation * sim = new Simulation;
     sim->registerNativeModules("dmtestmodule");
     DM::Module * in = sim->addModule("MemoryTest");
-    sim->run();
+    sim->startSimulation();
 
 
 
 
     QThreadPool::globalInstance()->waitForDone();
 
-    sim->run(true);
+    sim->startSimulation(true);
 
 
 
@@ -247,7 +247,7 @@ bool StoryLine()
     DM::Module * plot = sim->addModule("PlotVectorData");
     sim->addLink(netan->getOutPort("City"), plot->getInPort("Vec"));
 
-    sim->run();
+    sim->startSimulation();
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
     DM::Logger(DM::Debug) << "End";
@@ -293,7 +293,7 @@ bool MemDynaMiteTestPython()
     sim->addLink(in->getOutPort("Vec"), plot->getInPort("Vec"));
 
 
-    sim->run();
+    sim->startSimulation();
     QThreadPool::globalInstance()->waitForDone();
     delete sim;
     DM::Logger(DM::Debug) << "End";

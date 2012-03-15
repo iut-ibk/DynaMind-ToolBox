@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef MODULEREGISTRY_H
-#define MODULEREGISTRY_H
+#ifndef DMMODULEREGISTRY_H
+#define DMMODULEREGISTRY_H
 
 #include "dmcompilersettings.h"
 #include <map>

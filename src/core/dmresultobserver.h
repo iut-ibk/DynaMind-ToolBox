@@ -23,11 +23,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef RESULTOBSERVER_H
-#define RESULTOBSERVER_H
+#ifndef DMRESULTOBSERVER_H
+#define DMRESULTOBSERVER_H
 #include <dmcompilersettings.h>
 #include <iostream>
 #include <QVector>
+namespace DM {
 class DM_HELPER_DLL_EXPORT ResultObserver
 {
 public:
@@ -37,5 +38,6 @@ public:
     //virtual void addVectorDataToViewer(QVector<VectorData>) = 0;
     virtual void addDoubleDataToPlot(std::string UUID, double x, double y) = 0;
 };
+}
 
 #endif // RESULTOBSERVER_H

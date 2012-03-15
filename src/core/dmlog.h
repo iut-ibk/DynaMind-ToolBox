@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef LOG_H
-#define LOG_H
+#ifndef DMLOG_H
+#define DMLOG_H
 
 #include <boost/lexical_cast.hpp>
 #include <iostream>

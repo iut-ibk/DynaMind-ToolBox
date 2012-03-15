@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef DMSIMULATION_H
+#define DMSIMULATION_H
 
 #include "dmcompilersettings.h"
 #include <string>
@@ -52,7 +52,8 @@ namespace DM {
         Simulation();
         virtual ~Simulation();
 
-        void run(bool virtualRun = false, bool check = true);
+        void startSimulation(bool virtualRun = false, bool check = true);
+        virtual void run();
         void addDataObserver(DataObserver*  observer);
         void addSimulationObserver(SimulationObserver * simulationObserver);
         IDataBase * getDataBase();
@@ -83,7 +84,7 @@ namespace DM {
         bool isVirtualRun(){return this->virtualRun;}
 
     private:
-        RootGroup * rootGroup;
+        DMRootGroup * rootGroup;
         std::map<std::string, Module*> Modules;
         //std::vector<ModuleLink * > Links;
         SimulationPrivate *data;

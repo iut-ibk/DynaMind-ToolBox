@@ -34,7 +34,6 @@
 %include "../core/dmrasterdata.h"
 %include "../core/dmnode.h"
 %include "../core/dmview.h"
-%include "../core/dmsimulation.h"
 %include "../core/dmlog.h"
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"

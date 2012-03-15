@@ -90,6 +90,6 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 
 void GUISimulation::updateSimulation()
 {
-    this->run(true, false);
+    this->startSimulation(true, false);
 
 }

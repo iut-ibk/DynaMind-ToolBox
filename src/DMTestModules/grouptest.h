@@ -35,7 +35,7 @@
 #include <vector>
 using namespace DM;
 class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
-VIBe_DECLARE_GROUP(GroupTest)
+DM_DECLARE_GROUP(GroupTest)
 
     public:
         GroupTest();

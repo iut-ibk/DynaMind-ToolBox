@@ -28,6 +28,7 @@
 #include <dmlogger.h>
 #include <QStringList>
 
+using namespace DM;
 
 DMDatabase::DMDatabase()
 {

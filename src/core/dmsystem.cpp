@@ -35,7 +35,7 @@
 
 using namespace DM;
 
-System::System(std::string name, const DM::View & view ) : Component()
+System::System(std::string name) : Component()
 {
 
 }
@@ -136,10 +136,10 @@ RasterData * System::addRasterData(RasterData *r)
     return r;
 }
 
-System* System::createSubSystem(std::string name,const DM::View & view)
+System* System::createSubSystem(std::string name)
 {
-    System* newsystem = new System(name, view);
-    this->addSubSystem(newsystem,view);
+    System* newsystem = new System(name);
+    this->addSubSystem(newsystem);
     return newsystem;
 }
 

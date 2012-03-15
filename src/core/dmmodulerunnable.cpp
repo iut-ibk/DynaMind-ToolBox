@@ -32,7 +32,7 @@
 #include <dmlogger.h>
 #include <dmsimulation.h>
 
-ModuleRunnable::ModuleRunnable(DM::Module * m)
+DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 {
     this-> m = m;
     this->setAutoDelete(true);
@@ -40,7 +40,7 @@ ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 }
 
-void ModuleRunnable::run() {
+void DM::ModuleRunnable::run() {
     clock_t start, finish;
     DM::Logger(DM::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
     start = clock();

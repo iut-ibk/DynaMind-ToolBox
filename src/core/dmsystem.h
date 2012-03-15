@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef DMSYSTEM_H
+#define DMSYSTEM_H
 #include <dmcompilersettings.h>
 #include <map>
 #include <vector>
@@ -80,11 +80,12 @@ namespace DM {
         void updateViews (Component * c);
 
     public:
-        System(std::string name,const DM::View & view = DM::View());
+        System(std::string name);
         System(const System& s);
         ~System();
 
         Node * addNode(Node* node);
+
         Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
         Node * addNode(Node node,  const DM::View & view = DM::View());
         Edge* addEdge(Edge* edge);
@@ -103,7 +104,7 @@ namespace DM {
         std::map<std::string, Face*> getAllFaces();
         std::vector<System*> getPredecessorStates();
         bool addSubSystem(System *newsystem, const DM::View & view = DM::View());
-        System* createSubSystem(std::string name,const DM::View & view);
+        System* createSubSystem(std::string name);
         bool removeSubSystem(std::string name);
         System* getSubSystem(std::string name);
         std::map<std::string, System*> getAllSubSystems();

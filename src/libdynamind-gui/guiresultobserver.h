@@ -33,7 +33,7 @@
 #include <QVector>
 
 class MainWindow;
-class GUIResultObserver :public QObject, public ResultObserver
+class GUIResultObserver :public QObject, public DM::ResultObserver
 {
     Q_OBJECT
 private:

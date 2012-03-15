@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef NODE_H
-#define NODE_H
+#ifndef DMNODE_H
+#define DMNODE_H
 
 #include <dmcompilersettings.h>
 

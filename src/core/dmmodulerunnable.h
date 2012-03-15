@@ -23,15 +23,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef MODULERUNNABLE_H
-#define MODULERUNNABLE_H
+#ifndef DMMODULERUNNABLE_H
+#define DMMODULERUNNABLE_H
 
 #include <QRunnable>
 
 namespace DM {
-    class Module;
-};
+class Module;
+}
 
+namespace DM {
 class ModuleRunnable : public QRunnable
 {
 private:
@@ -42,5 +43,6 @@ public:
 
     virtual void run();
 };
+}
 
 #endif // MODULERUNNABLE_H

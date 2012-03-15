@@ -158,7 +158,7 @@ Simulation::Simulation() {
     //data->simObserver;
     data->observer = 0;
     data->counter = 0;
-    this->rootGroup = new RootGroup();
+    this->rootGroup = new DMRootGroup();
     this->rootGroup->setSimulation(this);
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
@@ -269,8 +269,12 @@ void Simulation::resetModules() {
         this->resetModule(m->getUuid());
     }
 }
+void Simulation::run() {
+    this->startSimulation(false, true);
 
-void Simulation::run(bool virtualRun, bool check) {
+}
+
+void Simulation::startSimulation(bool virtualRun, bool check) {
     this->virtualRun = virtualRun;
     this->registerDataBase(DataManagement::getInstance().getDataBase());
     Logger(Standard) << "Run Simulation";
@@ -281,10 +285,13 @@ void Simulation::run(bool virtualRun, bool check) {
         Logger(Debug) << "Reset Steps";
         this->rootGroup->resetSteps();
         Logger(Debug) << "Start Simulations";
-        if (this->rootGroup->getModules().size() > 0)
+        if (this->rootGroup->getModules().size() > 0) {
             this->rootGroup->run();
+        }
     }
-    Logger(Standard) << "End Simulation";
+    if (!virtualRun) {
+        Logger(Standard) << "End Simulation";
+    }
 
     if (virtualRun) {
         foreach (SimulationObserver * so, data->simObserver) {

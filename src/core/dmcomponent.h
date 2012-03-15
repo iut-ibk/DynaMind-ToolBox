@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef DMCOMPONENT_H
+#define DMCOMPONENT_H
 
 #include <iostream>
 #include <map>

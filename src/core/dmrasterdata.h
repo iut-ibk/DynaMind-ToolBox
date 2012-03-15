@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef RASTERDATA_H
-#define RASTERDATA_H
+#ifndef DMRASTERDATA_H
+#define DMRASTERDATA_H
 
 #include "dmcompilersettings.h"
 #include <boost/numeric/ublas/matrix.hpp>

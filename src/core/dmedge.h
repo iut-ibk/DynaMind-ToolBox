@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef EDGE_H
-#define EDGE_H
+#ifndef DMEDGE_H
+#define DMEDGE_H
 #include <dmcompilersettings.h>
 
 namespace DM {

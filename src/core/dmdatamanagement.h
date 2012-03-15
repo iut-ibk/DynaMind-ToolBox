@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef DATAMANAGEMENT_H
-#define DATAMANAGEMENT_H
+#ifndef DMDATAMANAGEMENT_H
+#define DMDATAMANAGEMENT_H
 
 #include "dmcompilersettings.h"
 namespace DM {

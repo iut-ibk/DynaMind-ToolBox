@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef DMLOGGER_H
+#define DMLOGGER_H
 
 #include <dmlog.h>
 #include <dmcompilersettings.h>

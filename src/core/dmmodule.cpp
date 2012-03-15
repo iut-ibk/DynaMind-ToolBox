@@ -194,12 +194,14 @@ void Module::updateParameter() {
             DM::System * sys_old = this->data_vals[s];
             if (sys_old != 0) {
                 this->data_vals[s] = sys_old->createSuccessor();
+
                 foreach (DM::View v, views)
                     this->data_vals[s]->addView(v);
             }
         }
     }
 }
+
 
 
 void Module::setParameterValue(std::string name, std::string v) {

@@ -27,8 +27,8 @@
 /**
   * @addtogroup DynaMind-Core
   */
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef DMMODULE_H
+#define DMMODULE_H
 
 #include "dmcompilersettings.h"
 #include <boost/shared_ptr.hpp>
@@ -122,9 +122,9 @@ class RasterData;
 * mymodule.h
 * @code
 *
-* #include "module.h"
+* #include "dmmodule.h"
 *
-* using namespace vibens;
+* using namespace DM;
 * class DM_HELPER_DLL_EXPORT MyModule : public Module
 * {
 *     DM_DECLARE_NODE(MyModule)
@@ -143,7 +143,7 @@ class RasterData;
 * MyModule::MyModule()
 * {
 * }
-* void MyModule::run();
+* void MyModule::run()
 * {
 * }
 * @endcode
@@ -171,7 +171,9 @@ public:
     virtual ~Module();
 
     virtual void Destructor();
+
     virtual void init();
+    /** @brief The pure virtual run method is where the fun is happening */
     virtual void run() = 0;
 
     /** @brief Returns the current system state
@@ -208,7 +210,7 @@ public:
       * - DM::STRING
       * - DM::FILENAME
       * - DM::LONG
-      * - DM::STRING_LIST<
+      * - DM::STRING_LIST
       * - DM::STRING_MAP
       */
     void addParameter(std::string name, int type, void * ref, std::string description = "");

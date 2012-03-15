@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef SIMULATIONOBSERVER_H
-#define SIMULATIONOBSERVER_H
+#ifndef DMSIMULATIONOBSERVER_H
+#define DMSIMULATIONOBSERVER_H
 
 #include "dmcompilersettings.h"
 

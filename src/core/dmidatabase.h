@@ -1,5 +1,5 @@
-#ifndef IDATABASE_H
-#define IDATABASE_H
+#ifndef DMIDATABASE_H
+#define DMIDATABASE_H
 
 
 #include "dmcompilersettings.h"

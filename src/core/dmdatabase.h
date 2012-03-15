@@ -41,21 +41,19 @@
 #include <dmsystem.h>
 
 
-using namespace DM;
-using namespace DM;
 
-
-
+namespace DM {
 class Module;
+}
 
-class DM_HELPER_DLL_EXPORT  DMDatabase : public IDataBase
+class DM_HELPER_DLL_EXPORT  DMDatabase : public DM::IDataBase
 {
 
 
 private:
 
-    std::map<std::string, RasterData *> RasterDataMaps_0;
-    std::map<std::string, RasterData *> RasterDataMaps_1;
+    std::map<std::string, DM::RasterData *> RasterDataMaps_0;
+    std::map<std::string, DM::RasterData *> RasterDataMaps_1;
     std::map<std::string,int> RasterDataMaps_Switch;
 
 
@@ -66,7 +64,7 @@ private:
 
     std::string createName(std::string UUID, std::string Name);
 
-    std::vector<DataObserver*> observer;
+    std::vector<DM::DataObserver*> observer;
 
 
     DM::System * system;
@@ -75,16 +73,16 @@ public:
     DMDatabase();
     ~DMDatabase();
 
-    void setRasterData(std::string UUID, std::string Name,  RasterData & r);
-    RasterData & getRasterData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
-    RasterData & createRasterData(std::string UUID, std::string Name);
+    void setRasterData(std::string UUID, std::string Name,  DM::RasterData & r);
+    DM::RasterData & getRasterData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
+    DM::RasterData & createRasterData(std::string UUID, std::string Name);
 
     void setDoubleData(std::string UUID, std::string Name, double v);
     double getDoubleData(std::string UUID, std::string Name, bool read = true, bool fromBack = false);
     void createDoubleData(std::string UUID, std::string Name);
 
     void resetDataBase();
-    void registerDataObserver(DataObserver * ob) {this->observer.push_back(ob);}
+    void registerDataObserver(DM::DataObserver * ob) {this->observer.push_back(ob);}
 
     std::vector<std::string> getRegisteredDatasets() const;
 

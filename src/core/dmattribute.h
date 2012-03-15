@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef ATTRIBUTE_H
-#define ATTRIBUTE_H
+#ifndef DMATTRIBUTE_H
+#define DMATTRIBUTE_H
 
 #include <iostream>
 #include <vector>

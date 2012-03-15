@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef IPORT_H
-#define IPORT_H
+#ifndef DMIPORT_H
+#define DMIPORT_H
 #include "dmcompilersettings.h"
 #include <iostream>
 #include <vector>

@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef PYTHONENV_H
-#define PYTHONENV_H
+#ifndef DMPYTHONENV_H
+#define DMPYTHONENV_H
 #include "dmcompilersettings.h"
 #include <string>
 #include <vector>
