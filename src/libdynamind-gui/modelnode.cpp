@@ -312,9 +312,12 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 }
 
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
+
     if(this->visible){
+        this->simulation->updateSimulation();
         if (this->VIBeModule->createInputDialog() == false )
         {
+
             QWidget * gui  = new GUIModelNode(this->getVIBeModel(), this);
             gui->show();
         }
