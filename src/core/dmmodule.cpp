@@ -442,8 +442,18 @@ void Module::addPort(std::string LinkedDataName, int PortType) {
     Logger(Debug) << "AddPort" << LinkedDataName;
     Port * p = new Port(this, PortType, LinkedDataName);
     if (PortType < DM::OUTPORTS) {
+        //Check if port with the same name already exists
+        foreach (Port *p_existing, this->getOutPorts()) {
+            if (p_existing->getLinkedDataName().compare(p->getLinkedDataName()) == 0)
+                return;
+        }
         this->OutPorts.push_back(p);
     } else {
+
+        foreach (Port *p_existing, this->getInPorts()) {
+            if (p_existing->getLinkedDataName().compare(p->getLinkedDataName()) == 0)
+                return;
+        }
         this->InPorts.push_back(p);
     }
     foreach(PortObserver * po, this->portobserver) {
@@ -515,6 +525,7 @@ DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> vi
     DM::System * sys = new DM::System(name);
     foreach (DM::View v, views)
         sys->addView(v);
+    sys->addView(DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE));
     return sys;
 }
 

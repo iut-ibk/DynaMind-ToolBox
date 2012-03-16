@@ -171,7 +171,10 @@ public:
     virtual ~Module();
 
     virtual void Destructor();
-
+    /** @brief Is used to update the initalisation of the module dynamically during the runtime
+     *
+     * TODO: Include detailed description of the init function
+     */
     virtual void init();
     /** @brief The pure virtual run method is where the fun is happening */
     virtual void run() = 0;
@@ -297,7 +300,7 @@ public:
     virtual void setParameter();
     virtual void setParameterValue(std::string name, std::string value);
 
-    virtual void addPort(std::string LinkedDataName, int PortType);
+
     virtual void removePort(std::string LinkedDataName, int PortType);
     void addPortObserver(PortObserver * portobserver);
     virtual Port * getInPort(std::string Name);
@@ -345,6 +348,8 @@ public:
     virtual bool createInputDialog(){return false;}
 
 private:
+
+
     boost::python::object self;
     bool PythonModule;
     long id;
@@ -377,6 +382,9 @@ protected:
     Group * group;
     std::vector<PortObserver *> portobserver;
     std::vector<ResultObserver * > resultobserver;
+
+    /** @brief Add a new Port to the Module */
+    virtual void addPort(std::string LinkedDataName, int PortType);
 };
 }
 
