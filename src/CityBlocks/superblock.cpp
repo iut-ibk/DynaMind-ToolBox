@@ -38,7 +38,11 @@ SuperBlock::SuperBlock()
     block.addAttribute("Height");
     block.addAttribute("Width");
     views.push_back(block);
+    height = 4000;
+    width = 8000;
 
+    this->addParameter("Height", DM::LONG, &height);
+    this->addParameter("Width", DM::LONG, &width);
     this->addData("City", views);
 
 }
@@ -50,8 +54,8 @@ void SuperBlock::run() {
 
 
     DM::Node * n1 = blocks->addNode(0,0,0);
-    DM::Node * n2 = blocks->addNode(1000,0,0);
-    DM::Node * n3 = blocks->addNode(1000,1000,0);
+    DM::Node * n2 = blocks->addNode(width,0,0);
+    DM::Node * n3 = blocks->addNode(width,height,0);
     DM::Node * n4 = blocks->addNode(0,1000,0);
 
     DM::Edge * e1 = blocks->addEdge(n1, n2);
@@ -67,8 +71,8 @@ void SuperBlock::run() {
 
 
     DM::Face * f = blocks->addFace(ve, block);
-    f->addAttribute("Height", 1000);
-    f->addAttribute("Width", 1000);
+    f->addAttribute("Height", height);
+    f->addAttribute("Width", width);
 
 
 }

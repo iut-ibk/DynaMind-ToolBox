@@ -323,6 +323,8 @@ std::string Module::getParameterAsString(std::string Name) {
 
 
 void Module::addData(std::string name,  std::vector<DM::View> views) {
+    if (views.size() == 0)
+        Logger(Error) << "No views added data not created";
     this->data_vals[name] = 0;
     this->parameterList.push_back(name);
     this->views[name] = views;

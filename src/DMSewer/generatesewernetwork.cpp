@@ -164,9 +164,11 @@ GenerateSewerNetwork::GenerateSewerNetwork()
     std::vector<DM::View> city;
 
     Inlets = DM::View("INLET", DM::NODE, DM::READ);
+    Inlets.getAttribute("New");
 
     city.push_back(Topology);
     city.push_back(Inlets);
+
     this->addData("City", city);
 
     ConnectivityField = DM::View("ConnectivityField", DM::RASTERDATA, DM::WRITE);
@@ -177,11 +179,11 @@ GenerateSewerNetwork::GenerateSewerNetwork()
 
 
     std::vector<DM::View> sewerGeneration;
-    city.push_back(ConnectivityField);
-    city.push_back(Path);
-    city.push_back(ConnectivityField_in);
-    city.push_back(Goals);
-    city.push_back(ForbiddenAreas);
+    sewerGeneration.push_back(ConnectivityField);
+    sewerGeneration.push_back(Path);
+    sewerGeneration.push_back(ConnectivityField_in);
+    sewerGeneration.push_back(ForbiddenAreas);
+    sewerGeneration.push_back(Goals);
     this->addData("sewerGeneration", sewerGeneration);
 
 

@@ -34,6 +34,8 @@ class SuperBlock : public  DM::Module
     DM_DECLARE_NODE( SuperBlock )
     private:
         DM::View block ;
+    long height;
+    long width;
 public:
     SuperBlock();
     void run();
