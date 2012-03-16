@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,67 +37,67 @@ using namespace mu;
 
 using namespace DM;
 class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
-DM_DECLARE_NODE( CellularAutomata)
-        struct Dimension {
-    int widht;
-    int height;
-    int elements;
-};
-struct Parameter {
-    long Width;
-    long Height;
-    double CellSize;
-    int Steps;
-    RasterData * OutputMap;
-    std::string Desicion;
-    std::map<std::string, std::string> neighs;
-    std::map<std::string, std::string> rules;
+    DM_DECLARE_NODE( CellularAutomata)
+    struct Dimension {
+        int widht;
+        int height;
+        int elements;
+    };
+    struct Parameter {
+        long Width;
+        long Height;
+        double CellSize;
+        int Steps;
+        RasterData * OutputMap;
+        std::string Desicion;
+        std::map<std::string, std::string> neighs;
+        std::map<std::string, std::string> rules;
 
-    std::string CellularMap;
+        std::string CellularMap;
 
-    std::vector<std::string> Neighbourhoods;
-    std::vector<std::string> Values;
+        std::vector<std::string> Neighbourhoods;
+        std::vector<std::string> Values;
 
-    //unordered_map<std::string, std::string> rules;
+        //unordered_map<std::string, std::string> rules;
 
-};
+    };
 
-         public:
-CellularAutomata();
-void  initRuntime();
-void run();
-virtual bool  createInputDialog();
+public:
+    CellularAutomata();
+    void  initRuntime();
+    void run();
+    virtual bool  createInputDialog();
 
-         private:
-bool runinit;
-std::map<std::string, RasterData * > landscapes;
-
-
-std::map<std::string, double**> NeighboorhoodMaps;
-std::map<std::string, int**> NeighboorhoodStamps;
-std::map<std::string, double** > NeighboorhoodPointerMap;
-std::map<std::string, Dimension> NeighboohoodDimensions;
-std::map<std::string, std::string> NeighboorhoodMapName;
-
-std::vector<std::string> NeighboorhoodList;
-std::vector<double*> RulesResults;
-std::vector<Parser*> Rules;
-Parser * Desicion;
+private:
+    bool runinit;
+    std::map<std::string, RasterData * > landscapes;
 
 
+    std::map<std::string, double**> NeighboorhoodMaps;
+    std::map<std::string, int**> NeighboorhoodStamps;
+    std::map<std::string, double** > NeighboorhoodPointerMap;
+    std::map<std::string, Dimension> NeighboohoodDimensions;
+    std::map<std::string, std::string> NeighboorhoodMapName;
 
-unordered_map <std::string, RasterData > neighbourhoods;
-unordered_map <std::string, RasterData > values;
-unordered_map <std::string, double * > nbPointerMap;
-unordered_map <std::string, double * > ValuePointerMap;
-std::vector<double *> pRessults;
-std::vector<Parser> vParser;
+    std::vector<std::string> NeighboorhoodList;
+    std::vector<double*> RulesResults;
+    std::vector<Parser*> Rules;
+    Parser * Desicion;
 
-int nbnumber;
-double * repeater;
 
-Parameter param;
-parameter_type paramRaw;
+
+    unordered_map <std::string, RasterData > neighbourhoods;
+    unordered_map <std::string, RasterData > values;
+    unordered_map <std::string, double * > nbPointerMap;
+    unordered_map <std::string, double * > ValuePointerMap;
+    std::vector<double *> pRessults;
+    std::vector<Parser> vParser;
+
+    int nbnumber;
+    double * repeater;
+
+    Parameter param;
+    parameter_type paramRaw;
 
 };
 
