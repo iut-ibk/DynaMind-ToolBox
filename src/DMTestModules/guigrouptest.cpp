@@ -37,6 +37,8 @@ GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
 
     this->m = (GroupTest *) m;
 
+    ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("Runs")));
+
     connect(ui->addInport, SIGNAL(pressed()), this, SLOT(addInPort()));
     connect(ui->addOutport, SIGNAL(pressed()), this, SLOT(addOutPort()));
 
@@ -65,4 +67,9 @@ void GUIGroupTest::addOutPort() {
     if (ok && !text.isEmpty())
         this->m->addOutPort(text.toStdString());
 
+}
+
+void GUIGroupTest::accept() {
+    this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
+    QDialog::accept();
 }
