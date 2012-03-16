@@ -76,7 +76,7 @@ IF(WIN32 AND NOT UNIX)
   #install(FILES ${SAMPLEDATA} DESTINATION data/resources/sampledata)
   #install(FILES ${POLYGON} DESTINATION data/scripts/Polygon)
   #install(FILES ${SAMPLESIMS} DESTINATION data/simulations/)
-  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
+  #install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
 
   #set(CPACK_NSIS_MENU_LINKS "bin/cd3-gui.exe" "Run CityDrain3 GUI")
   #SET(CPACK_NSIS_MODIFY_PATH ON) 
