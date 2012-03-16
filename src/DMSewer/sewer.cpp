@@ -31,8 +31,8 @@
 #include "dmswmm.h"
 #include "networkanalysis.h"
 #include "directnetwork.h"
-/*#include "generatesewernetwork.h"
-#include "extractnetwork.h"
+#include "generatesewernetwork.h"
+/*#include "extractnetwork.h"
 
 
 
@@ -49,6 +49,14 @@ using namespace std;
 /**
   * @addtogroup Sewer
   * @brief Sewer Modules
+  * @section Data Structure
+  * @subsection Nodes
+  * - INLET
+  * - CONDUIT
+  * - JUNCTION
+  * - OUTFALL
+  * @subsection Edges
+  * - CONDUIT
   * @author Christian Urich
   */
 
@@ -57,11 +65,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<DMSWMM>());
     registry->addNodeFactory(new DM::NodeFactory<NetworkAnalysis>());
     registry->addNodeFactory(new DM::NodeFactory<DirectNetwork>());
-    /*registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
-    registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
-    registry->addNodeFactory(new NodeFactory<NetworkAnalysis>());
-
-
+    registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
+    /*registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
     registry->addNodeFactory(new NodeFactory<PickStartPoints>());
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());

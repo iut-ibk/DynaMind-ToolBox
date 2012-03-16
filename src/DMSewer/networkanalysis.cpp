@@ -31,7 +31,7 @@ NetworkAnalysis::NetworkAnalysis()
 {
 
     this->network = DM::View("CONDUIT", DM::EDGE, DM::READ);
-    this->network.addAttribute("Strahler");
+    //this->network.addAttribute("Strahler");
     std::vector<DM::View> views;
     views.push_back(this->network);
     this->addData("City", views);

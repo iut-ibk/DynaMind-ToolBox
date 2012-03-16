@@ -23,40 +23,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
+//
+// C++ Interface: position
+//
+// Description: 
+//
+//
+// Author: Christian Urich <christian.urich@gmail.com>, (C) 2008
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef CSG_S_POSITION_H
+#define CSG_S_POSITION_H
 #include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace csg_s
+{
 
-#ifdef __cplusplus
-}
-
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
+/**@brief Datenklasse
+ * @author Christian Urich <christian.urich@uibk.ac.at>
+*/
+class DM_HELPER_DLL_EXPORT Position{
 private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
-};
+	long width;
+	long height;
+	double depth;
+public:
+        Position();
+    	Position(long width, long height);
+	Position(long width, long height, double depth){this->width = width; this->height=height; this->depth=depth;}
+    	~Position();
+	long getWidth();
+	long getHeight();
+	double getDepth(){return this->depth;}	
 
+	void setHeight(long height){this->height = height;}
+	void setWidth(long width){ this->width = width;}
+	void setDepth(double depth){this->depth = depth;}
+};
 }
 #endif
-#endif // PYTHONENV_H

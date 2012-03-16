@@ -23,40 +23,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
-#include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
+//
+// C++ Implementation: position
+//
+// Description: 
+//
+//
+// Author: Christian Urich <christian.urich@gmail.com>, (C) 2008
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "csg_s_position.h"
+namespace csg_s {
+Position::Position() {
+        this->height = 0;
+        this->width = 0;
 };
 
+Position::Position(long width, long height)
+{
+	this->height = height;
+	this->width = width;
 }
-#endif
-#endif // PYTHONENV_H
+
+
+Position::~Position()
+{
+}
+
+
+/**
+*Geter and Seter
+**/
+long Position::getHeight(){
+	return this->height;
+}
+
+long Position::getWidth(){
+	return this->width;
+}
+
+}

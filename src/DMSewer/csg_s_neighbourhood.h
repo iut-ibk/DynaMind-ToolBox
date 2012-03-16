@@ -23,40 +23,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
+#ifndef CSG_S_NEIGHBOURHOOD_H
+#define CSG_S_NEIGHBOURHOOD_H
 #include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "dataLayer.h"
+#include "def.h"
+#include <iostream>
 
-#ifdef __cplusplus
-}
+namespace csg_s
+{
 
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
+/**@brief enthält die Nachbarschaftsbezieung nach Moore
+ * @author Christian Urich <christian.urich@uibk.ac.at>
+*/
+class DM_HELPER_DLL_EXPORT neighbourhood
+{
 private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
-};
+    double* nMoore3x3;
 
+public:
+    /**@brief gibt die Werte der Landschaft der benachbarten Elemente zurück
+                 *@param [out] Zeiger auf Vektor mit den Werten der benachbarten Elementen
+                 *Nummerierung des Rückgabevektors
+                 *<br>
+                 *6 7 8<br>
+                 *3(4)5<br>
+                 *0 1 2<br>
+                 */
+    double* Moore3x3(int x, int y, DM::dataLayer *pL);
+    neighbourhood();
+    ~neighbourhood();
+    DM::dataLayer *layer__;
+    void setLayer(DM::dataLayer *layer_) {layer__=layer_;};
+};
 }
+
 #endif
-#endif // PYTHONENV_H

@@ -21,6 +21,16 @@ class DM_HELPER_DLL_EXPORT DMVibe2 : public DM::Module
         long height;
         long width;
         double cellsize;
+
+        DM::View landuse;
+        DM::View population;
+        DM::View topology;
+
+        DM::View mainSewer;
+        DM::View wwtp;
+
+        DM::View conduit;
+
     public:
         DMVibe2();
     void run();

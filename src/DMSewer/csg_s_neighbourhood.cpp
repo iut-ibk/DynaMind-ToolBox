@@ -23,40 +23,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#include "dataLayer.h"
+#include "csg_s_neighbourhood.h"
+#include <iostream>
 
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
-#include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace csg_s
+{
 
-#ifdef __cplusplus
-}
-
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
+double* neighbourhood::Moore3x3(int x, int y,DM::dataLayer *pLayer)
+{
+		
+	int i=0;	
+	for(int j=0;j<3;j++)
+	{
+		for(int k=0;k<3;k++)
+		{
+			i=j*3+k;
+			{				
+				nMoore3x3[i]=pLayer->neighbour(((x-1)+k),(y-1)+j);
+				//Neighbour definition:
+				//6 7 8
+				//3(4)5
+				//0 1 2
+			}
+		}	
+	}
+	return nMoore3x3;
 };
 
+
+neighbourhood::neighbourhood()
+{
+	nMoore3x3 = new double[9];
+};
+neighbourhood::~neighbourhood()
+{
+        delete [] nMoore3x3;
+        nMoore3x3 = 0;
+
+};
+
+
 }
-#endif
-#endif // PYTHONENV_H

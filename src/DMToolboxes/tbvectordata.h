@@ -36,8 +36,18 @@ namespace DM {
     class View;
 }
 
+/**
+  * @addtogroup ToolBoxes
+  */
 
 
+/**
+*
+* @ingroup ToolBoxes
+* @brief Lots of useful functions that make live easier
+* @author Christian Urich
+*
+*/
 class DM_HELPER_DLL_EXPORT TBVectorData
 {
 public:
@@ -49,9 +59,11 @@ public:
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
     static std::vector<DM::Edge* > getConnectedEdges(DM::System *sys,  DM::View & view,DM::Node   n1,double err=0);
 
+
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
-    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view,DM::Node   n1, bool CheckForExisting = true, double err=0);
+     /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
+    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, bool CheckForExisting = true, double err=0);
 
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
 

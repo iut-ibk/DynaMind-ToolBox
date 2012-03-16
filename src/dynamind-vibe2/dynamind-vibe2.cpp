@@ -23,40 +23,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#include "dmnodefactory.h"
+#include "dmmoduleregistry.h"
+#include "dmvibe2.h"
 
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
-#include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+using namespace std;
 
-#ifdef __cplusplus
+
+/**
+  * @addtogroup Dynamind-Vibe2
+  */
+
+extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
+    registry->addNodeFactory(new DM::NodeFactory<DMVibe2>());
 }
 
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
-};
-
-}
-#endif
-#endif // PYTHONENV_H

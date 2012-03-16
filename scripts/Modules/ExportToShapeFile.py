@@ -47,41 +47,35 @@ class ExportToShapeFile(Module):
                 self.vec = View("CONDUIT", EDGE, READ)
                 views = []
                 views.append(self.vec)
-                self.addData("vec", views)
+                self.addData("City", views)
                 
             def run(self):
-                if self.Lines:
-                    self.exportPolyline()      
+                self.exportPolyline()   
                     
             def exportPolyline(self):
-                city = self.getData("vec")
+                city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
                 spatialReference.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-                
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
                 if os.path.exists(str(self.FileName+'_lines.shp')): os.remove(self.FileName+'_lines.shp')
                 shapeData = driver.CreateDataSource(self.FileName+'_lines.shp')
-                
                 layer = shapeData.CreateLayer('layer1', spatialReference, osgeo.ogr.wkbLineString)
                 layerDefinition = layer.GetLayerDefn()               
                 AttributeList = []
                 attr = []
                 hasAttribute = False
                 #Get Data 
-                System
                 names = city.getNamesOfComponentsInView(self.vec)
                 if len(names) > 0:
                     attributemap = city.getComponent(names[0]).getAllAttributes()
                     print attributemap
                     for key in attributemap.keys():
                         attr.append(key)
-                for i in range(len(names)): 
+                for i in range(len(names)):
+                    print names[i]
                     #Append Attributes
-                    alist = city.getComponent(names[i]).getAllAttributes().keys()
-                    #print alist
-                    #rint city.getComponent(names[i]).getAllAttributes().keys()  
-                    #print city.getComponent(names[i]).getAllAttributes()     
+                    alist = city.getComponent(names[i]).getAllAttributes().keys() 
                     for j in range(len(alist)):
                         hasAttribute = True                                  
                         if (alist[j] in AttributeList) == False:
@@ -93,7 +87,6 @@ class ExportToShapeFile(Module):
                     
                             
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbLineString)
-                    #print names[i]
                     edge = city.getEdge(names[i])
                     p1 = city.getNode(edge.getStartpointName())
                     p2 = city.getNode(edge.getEndpointName())
@@ -104,15 +97,11 @@ class ExportToShapeFile(Module):
                     feature = osgeo.ogr.Feature(layerDefinition)
                     feature.SetGeometry(line)
                     feature.SetFID(featureIndex)  
-                    #Append Attributes
-                    #print "HH"
-                    #print hasAttribute
                     hasAttribute = True
                     if hasAttribute == True:        
                         for k in range(len(alist)):
-                            #print alist[k]
-                            value = edge.getAttribute(alist[k]).getDouble()
-                            feature.SetField(alist[k],value)
+                                 value = edge.getAttribute(alist[k]).getDouble()
+                                 feature.SetField(alist[k],value)
                     layer.CreateFeature(feature)    
                 shapeData.Destroy()               
                

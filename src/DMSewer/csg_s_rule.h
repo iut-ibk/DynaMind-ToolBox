@@ -24,39 +24,56 @@
  *
  */
 
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
+#ifndef __csg_s_rule
+#define __csg_s_rule
+
 #include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+//
+// C++ Implementation: csg_s_rule
+//
+// Description: 
+//
+//
+// Author: Christian Urich <christian.urich@gmail.com>, (C) 2008
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "dataLayer.h"
+#include "csg_s_neighbourhood.h"
+#include <iostream>
+#include "csg_s_position.h"
 
-#ifdef __cplusplus
-}
+//class dataLayer;
 
-struct PythonEnvPriv;
+namespace csg_s
+{
 
-class DM_HELPER_DLL_EXPORT PythonEnv {
+
+/**@brief Basisklasse für die Regeln
+ * @author Christian Urich <christian.urich@uibk.ac.at>
+*/
+class DM_HELPER_DLL_EXPORT rule
+{
+
+    friend class DM::dataLayer;
+
 public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        //void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
-};
+    //void setRuleLayer(dataLayer&);
+    rule(DM::dataLayer *layer_);
+    ~rule();
+    virtual double run(Position* pos) = 0;
+    void setRuleLayer(DM::dataLayer *l) {layer_=l;};
 
+
+
+protected:
+    void applySwitch_1();
+    void applySwitch_2();
+    DM::dataLayer *layer_;
+    neighbourhood neighbours;
+    double *nMoore3x3;
+
+};
 }
 #endif
-#endif // PYTHONENV_H

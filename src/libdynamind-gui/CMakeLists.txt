@@ -46,7 +46,7 @@ include_directories( ${QT_QTGUI_INCLUDE_DIR})
 include_directories(../3dparty/qwt-5.2.0/src)
 include_directories(../3dparty/alglib/src)
 
-add_library(dynamindgui SHARED ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
+add_library(dynamindgui STATIC ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
 
 
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)

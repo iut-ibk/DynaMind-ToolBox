@@ -170,7 +170,7 @@ Simulation::Simulation() {
     for (int index = 0; index < pythonhome.size(); index++)
         DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
-    DM::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
+    //DM::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
 
     QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
