@@ -92,7 +92,7 @@ void Group::finishedModule(Module *m) {
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
         if (m->isGroup()) {
             Group * g = (Group * )m;
-            g->resetModules();
+            //g->resetModules();
             //g->resetParameter();
             g->resetSteps();
         }
@@ -267,6 +267,11 @@ QVector<QRunnable *>  Group::getNextJobs() {
 
     }
     return RunnedModulesInStep;
+}
+void Group::resetSteps()
+{
+    this->step = 0;
+    this->resetModules();
 }
 
 void Group::run() {
