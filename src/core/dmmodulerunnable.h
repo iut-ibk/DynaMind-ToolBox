@@ -33,6 +33,10 @@ class Module;
 }
 
 namespace DM {
+/**
+ * @ingroup DynaMind-Core
+ * @brief
+ */
 class ModuleRunnable : public QRunnable
 {
 private:

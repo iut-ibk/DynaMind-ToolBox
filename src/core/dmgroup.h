@@ -39,7 +39,26 @@ namespace DM {
 
     class PortTuple;
 
-
+    /**
+     * @ingroup DynaMind-Core
+     * @brief Groups are used to enable grouping and repeated execution
+     * of modules.
+     *
+     * It is derived from DM::Module. To enable the grouping of modules
+     * a module container has been added. Since DM::Group is derived from
+     * DM::Module also a DM::Group can be added.
+     * To repeatedly executed a Group the member variable Steps can be set.
+     * The member variable step is used as counter. A group is executed as
+     * long as step > Steps. @TODO: Check is the interalCounter of the module
+     * can be used as step variable.
+     *
+     * The Group is also used to (or misused) to execute the containing modules.
+     * To enable multi threading the modules - as well as the derived groups -
+     * The module is put in a  DM::ModuleRunnable object. DM::Modulerunnable not
+     * only calls the run method of the module it also handels the pre and post
+     * processing needed for the module execution.
+     *
+     */
     class DM_HELPER_DLL_EXPORT  Group : public Module
     {
     private:
@@ -76,7 +95,7 @@ namespace DM {
         void finishedModule(Module * m);
         virtual void run();
         bool isRunnable(){return step < Steps;}
-        void resetSteps(){this->step = 0;}
+        void resetSteps();
         void clearModules();
         void resetModules();
         virtual ~Group();

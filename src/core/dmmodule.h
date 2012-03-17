@@ -108,9 +108,10 @@ class RasterData;
 *
 * @ingroup DynaMind-Core
 *
-* @brief Basic module class
+* @brief all the fun happens in here.
+*
 * @section Implementation
-* @todo write stuff here
+* @TODO: write stuff here
 * @section Development
 * To create a new DynaMind module the new module has to be derived from the module class
 *
@@ -377,6 +378,10 @@ protected:
     std::map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
+
+    /** @brief the internalCounter is increased by on everytime the
+     * run method is called.
+     */
     int internalCounter;
     bool init_called;
     Group * group;
