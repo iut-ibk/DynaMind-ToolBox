@@ -127,9 +127,10 @@ void Module::updateParameter() {
 
         //Check Reads
         if (DataValidation::isVectorOfViewRead(views)) {
-
+            //If the internal counter is > 0 data could be need for back link!
+            if (this->internalCounter == 0)
+                this->data_vals[s] = 0;
             //Default links are not fulfilled
-            this->data_vals[s] = 0;
             this->getInPort(s)->setFullyLinked(false);
             if (this->getOutPort(s) != 0)
                 this->getOutPort(s)->setFullyLinked(false);
@@ -499,9 +500,8 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     if (this->internalCounter > 0 && BackId != -1){
         l = p->getLinks()[BackId];
         Logger(Debug) << "BackLink for " << name;
+        Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
     }
-    Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
-
 
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
     return m->getSystemState(l->getDataNameFromOutPort());
