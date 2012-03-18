@@ -49,7 +49,7 @@ public:
     void run();
     bool createInputDialog();
     DM::System * getSystemIn();
-    void addView(DM::View view);
+    void addView();
     void addAttribute(std::string s);
     std::vector<std::string> getAttriutes(){return this->newAttributes;}
 };

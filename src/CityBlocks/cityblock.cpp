@@ -42,10 +42,13 @@ CityBlock::CityBlock()
     streets = DM::View("STREET", DM::EDGE, DM::WRITE);
     intersections = DM::View("INTERSECTION", DM::NODE, DM::WRITE);
 
+    centercityblock = DM::View("CENTERCITYBLOCK", DM::NODE, DM::WRITE);
+
     views.push_back(superblock);
     views.push_back(cityblock);
     views.push_back(streets);
     views.push_back(intersections);
+    views.push_back(centercityblock);
 
 
     this->width = 100;
@@ -183,6 +186,9 @@ void CityBlock::run() {
 
 
                 DM::Face * f = city->addFace(ve, cityblock);
+
+                city->addNode(minX + realwidth*(x+0.5),minY + realheight*(y+0.5),0, centercityblock);
+
             }
         }
     }

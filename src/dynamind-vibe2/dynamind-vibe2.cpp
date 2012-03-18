@@ -31,10 +31,10 @@ using namespace std;
 
 
 /**
-  * @addtogroup Dynamind-DynaMind
+  * @addtogroup VIBe2-DynaMind
   */
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<DMDynaMind>());
+    registry->addNodeFactory(new DM::NodeFactory<DMVIBe2>());
 }
 

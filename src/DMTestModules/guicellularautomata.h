@@ -36,19 +36,21 @@ namespace Ui {
     class GUICellularAutomata;
 }
 
+class CellularAutomata;
+
 class DM_HELPER_DLL_EXPORT GUICellularAutomata : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit GUICellularAutomata(DM::Module * m ,QWidget *parent = 0);
-    DM::Module * getModule() {return this->m;}
+    DM::Module * getModule() {return (DM::Module * )this->m;}
     ~GUICellularAutomata();
 
 
 private:
     Ui::GUICellularAutomata *ui;
-    DM::Module * m;
+    CellularAutomata * m;
     QStringList variables;
     QStringList values;
     QStringList vectors;

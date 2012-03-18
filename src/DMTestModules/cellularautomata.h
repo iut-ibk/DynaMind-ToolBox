@@ -58,6 +58,8 @@ class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
         std::vector<std::string> Neighbourhoods;
         std::vector<std::string> Values;
 
+        std::vector<std::string> ListOfLandscapes;
+
         //unordered_map<std::string, std::string> rules;
 
     };
@@ -65,8 +67,11 @@ class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
 public:
     CellularAutomata();
     void  initRuntime();
+    void init();
     void run();
     virtual bool  createInputDialog();
+    void addLandscape(std::string s);
+    std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
 
 private:
     bool runinit;

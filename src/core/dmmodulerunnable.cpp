@@ -43,9 +43,9 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 void DM::ModuleRunnable::run() {
     clock_t start, finish;
     DM::Logger(DM::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
-    start = clock();
-    m->init();
+    start = clock();    
     m->updateParameter();
+    m->init();
     if (!m->getSimulation()->isVirtualRun() || m->isGroup())
         m->run();
     m->setParameter();

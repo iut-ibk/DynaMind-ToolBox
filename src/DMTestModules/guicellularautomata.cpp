@@ -31,6 +31,8 @@
 #include <guiequationeditor.h>
 #include <QTableWidgetSelectionRange>
 #include <dm.h>
+#include <cellularautomata.h>
+
 using namespace DM;
 bool GUICellularAutomata::checkIfFromOutSide(QString name) {
     QString s2 = "DoubleIn_" + name;
@@ -47,27 +49,18 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::GUICellularAutomata)
 {
-    this->m = m;
+    this->m = (CellularAutomata*) m;
     ui->setupUi(this);
     ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
     ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
     std::map<std::string, std::vector<DM::View> > views =  m->getViews();
-    std::vector<View> data = views["RasterDataIn"];
-    foreach (View v, data)
-        ui->listWidget_landscapes->addItem(QString::fromStdString(v.getName()));
+
+    foreach (std::string s, this->m->getLandscapes())
+        ui->listWidget_landscapes->addItem(QString::fromStdString(s));
     ui->lineEdit_descision->setText(QString::fromStdString(m->getParameterAsString("Desicion")));
     ui->spinBox_Steps->setValue(m->getParameter<int>("Steps"));
-    //Check for Parameters from Outside
-    /*if (checkIfFromOutSide("Height")) {
-        ui->checkBox_Height->setChecked(true);
-    }
-    if (checkIfFromOutSide("Width")) {
-        ui->checkBox_Width->setChecked(true);
-    }
-    if (checkIfFromOutSide("CellSize")) {
-        ui->checkBox_CellSize->setChecked(true);
-    }*/
+
     QObject::connect(ui->pushButton_addLandscape, SIGNAL(clicked()), this, SLOT(addRasterData()));
     QObject::connect(ui->pushButton_addNeigh, SIGNAL(clicked()), this, SLOT(addVariable()));
     QObject::connect(ui->pushButton_formula, SIGNAL(clicked()), this, SLOT(addFormula()));
@@ -159,14 +152,7 @@ void GUICellularAutomata::addRasterData() {
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name:"), QLineEdit::Normal, "" , &ok);
     if (ok && !text.isEmpty()) {
-        View rdata(text.toStdString(), DM::RASTERDATA, DM::READ);
-        std::map<std::string, std::vector<DM::View> > views =  m->getViews();
-        std::vector<View> data = views["RasterDataIn"];
-        data.push_back(rdata);
-        m->addData("RasterDataIn", data);
-
-        //m->appendToUserDefinedParameter("Landscapes", text.toStdString());
-        std::cout << text.toStdString() << std::endl;
+        m->addLandscape(text.toStdString());
         ui->listWidget_landscapes->addItem(text);
     }
 

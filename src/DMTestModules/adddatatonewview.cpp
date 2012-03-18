@@ -71,6 +71,52 @@ void AddDataToNewView::init()
 
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;
+
+
+    if (this->NameOfExistingView.empty())
+        return;
+
+    if (this->NameOfNewView.empty())
+        return;
+
+
+
+
+    DM::View view = sys_in->getViewDefinition(NameOfExistingView);
+
+    DM::View newView(getParameterAsString("NameOfNewView"), view.getType(), DM::WRITE);
+
+    //Try to get Existing View
+    foreach (DM::View v, data) {
+        if (v.getName().compare(newView.getName()) == 0) {
+            newView = v;
+        }
+    }
+
+    bool changed = false;
+    foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) {
+        std::vector<std::string>  writes_already = newView.getWriteAttributes();
+        if (find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
+            continue;
+        newView.addAttribute(s);
+        changed = true;
+    }
+
+
+
+    if (changed == true) {
+        std::vector<DM::View> new_data;
+        foreach (DM::View v, this->data) {
+            if (v.getName().compare(newView.getName()) != 0)
+                new_data.push_back(v);
+            new_data.push_back(newView);
+        }
+        data = new_data;
+        this->addData("Data", data);
+
+    }
+
+
 }
 bool AddDataToNewView::createInputDialog() {
     QWidget * w = new GUIAddDatatoNewView(this);
@@ -82,10 +128,10 @@ DM::System * AddDataToNewView::getSystemIn() {
     return this->sys_in;
 }
 
-void AddDataToNewView::addView(DM::View view)
+void AddDataToNewView::addView()
 {
-    this->data.push_back(view);
-    this->addData("Data", data);
+
+
 }
 
 void AddDataToNewView::addAttribute(string s) {

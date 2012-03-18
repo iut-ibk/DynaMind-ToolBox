@@ -8,12 +8,12 @@
 
 /**
 *
-* @ingroup Dynamind-DynaMind
+* @ingroup VIBe2-DynaMind
 * @brief Integrates the DynaMind VIBe simulation in the DynaMind Framework
 * @author Christian Urich
 *
 */
-class DM_HELPER_DLL_EXPORT DMDynaMind : public DM::Module
+class DM_HELPER_DLL_EXPORT DMVIBe2 : public DM::Module
 {
     DM_DECLARE_NODE(DMDynaMind)
 
@@ -32,7 +32,7 @@ class DM_HELPER_DLL_EXPORT DMDynaMind : public DM::Module
         DM::View conduit;
 
     public:
-        DMDynaMind();
+        DMVIBe2();
     void run();
 };
 

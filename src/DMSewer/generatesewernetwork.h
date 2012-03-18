@@ -40,6 +40,19 @@ using namespace DM;
 /**
    * @ingroup Sewer
    * @brief Generates the layout of a sewer network
+   *
+   * Following data views are requiered:
+   * @subsection City
+   * @subsubsection RasterData: Topology
+   * @subsubsection Node: INLET
+   * - New
+   * @subsection sewerGeneration
+   * @subsubsection RasterData: ConnectivityField_in
+   * @subsubsection RasterData: ForbiddenAreas
+   * 0... Allowed
+   * 1... Not Allowed
+   * @subsubsection RasterData: Goals
+   * 1... Goal
    */
 class DM_HELPER_DLL_EXPORT GenerateSewerNetwork : public  Module {
     DM_DECLARE_NODE (GenerateSewerNetwork)

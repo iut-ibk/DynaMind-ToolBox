@@ -39,22 +39,20 @@ namespace   ublas = boost::numeric::ublas;
 
 DM_DECLARE_NODE_NAME( CellularAutomata, Modules )
 
-        CellularAutomata::CellularAutomata()
+CellularAutomata::CellularAutomata()
 {
     runinit = false;
     param.Width = 200;
     param.Height = 200;
-    param.CellSize = 20;    
+    param.CellSize = 20;
     param.Steps = 1;
-    //param.OutputMap = & this->createRasterData("OutputMap");
     this->addParameter("Width", DM::LONG, &this->param.Width);
     this->addParameter("Height", DM::LONG, &this->param.Height);
     this->addParameter("CellSize", DM::DOUBLE, &this->param.CellSize);
     this->addParameter("Steps", DM::INT, &this->param.Steps);
     this->addParameter("Neighs", DM::STRING_MAP, &this->param.neighs);
     this->addParameter("Rules", DM::STRING_MAP, &this->param.rules);
-    //this->addParameter("Landscapes", DM::USER_DEFINED_RASTERDATA_IN, &this->landscapes);
-    //this->addParameter("OutputMap", DM::RASTERDATA_OUT, &this->param.OutputMap);
+    this->addParameter("ListOfLandscapes", DM::STRING_LIST, &param.ListOfLandscapes);
     View output("result", DM::RASTERDATA, DM::WRITE);
     std::vector<DM::View> data;
     data.push_back(output);
@@ -62,10 +60,23 @@ DM_DECLARE_NODE_NAME( CellularAutomata, Modules )
     this->addParameter("Desicion", DM::STRING, &this->param.Desicion);
 }
 
+void CellularAutomata::addLandscape(string s) {
+    this->param.ListOfLandscapes.push_back(s);
+    this->init();
+}
+
 bool CellularAutomata::createInputDialog() {
     QWidget * w = new GUICellularAutomata(this);
     w->show();
     return true;
+}
+void CellularAutomata::init() {
+    std::vector<View> data;
+    foreach (std::string s, param.ListOfLandscapes) {
+        View rdata(s, DM::RASTERDATA, DM::READ);
+        data.push_back(rdata);
+    }
+    this->addData("RasterDataIn", data);
 }
 
 void CellularAutomata::run()  {
@@ -74,9 +85,11 @@ void CellularAutomata::run()  {
 
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
     std::vector<View> data = views["RasterDataIn"];
-    foreach (View v, data)
-        this->landscapes[v.getName()] = this->getRasterData("RasterDataIn",v);
 
+    foreach (std::string s, param.ListOfLandscapes) {
+        View rdata(s, DM::RASTERDATA, DM::READ);
+        this->landscapes[s] = this->getRasterData("RasterDataIn",rdata);
+    }
 
     if (runinit == false) {
         this->initRuntime();
@@ -102,13 +115,15 @@ void CellularAutomata::run()  {
                     *(this->RulesResults.at(counter)) = val;
                 } catch (Parser::exception_type &e)
                 {
-                     Logger(Error) << p->GetExpr()  ;
-                     Logger(Error) << e.GetMsg()  ;
+                    Logger(Error) << p->GetExpr()  ;
+                    Logger(Error) << e.GetMsg()  ;
                 }
             }
             this->param.OutputMap->setValue(x,y,this->Desicion->Eval());
         }
     }
+
+
 }
 
 
@@ -133,7 +148,7 @@ void CellularAutomata::initRuntime() {
         int height;
         int i = 0;
         foreach(QString s, rows) {
-             //Logger(Debug) << s.toStdString()  ;
+            //Logger(Debug) << s.toStdString()  ;
             height = s.split(",").size();
             Neighbourhood[i] = new double[height];
             Neighbourhood_Stamp[i] = new int[height];
@@ -160,7 +175,7 @@ void CellularAutomata::initRuntime() {
                 sum = sum + Neighbourhood_Stamp[x][y];
             }
         }
-         //Logger(Debug) << sum  ;
+        //Logger(Debug) << sum  ;
         double **d = new double*[sum];
         i = 0;
         for (int x = 0; x < width; x++) {
@@ -218,7 +233,7 @@ void CellularAutomata::initRuntime() {
         i++;
     }
     Desicion->SetExpr(param.Desicion);
-     //Logger(Debug) << "Descision"  ;
+    //Logger(Debug) << "Descision"  ;
 }
 
 

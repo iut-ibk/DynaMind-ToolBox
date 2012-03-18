@@ -44,6 +44,7 @@ private:
     DM::View intersections;
     DM::View cityblock;
     DM::View streets;
+    DM::View centercityblock;
 };
 
 #endif // CREATEPARCELS_H

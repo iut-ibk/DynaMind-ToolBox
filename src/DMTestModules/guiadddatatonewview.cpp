@@ -70,14 +70,8 @@ void GUIAddDatatoNewView::accept() {
     }
 
     this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
-    DM::View view = sys->getViewDefinition(nameofExistingView);
 
-    DM::View newView(m->getParameterAsString("NameOfNewView"), view.getType(), DM::WRITE);
 
-    foreach (std::string s, this->m->getParameter<std::vector<std::string> >("newAttributes")) {
-        newView.addAttribute(s);
-    }
-
-    this->m->addView(newView);
+    this->m->addView();
     QDialog::accept();
 }
