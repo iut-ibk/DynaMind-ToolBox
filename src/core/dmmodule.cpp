@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -262,7 +262,8 @@ void Module::setParameterValue(std::string name, std::string v) {
             return;
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
-            ref->push_back(s.toStdString());
+            if (! s.isEmpty())
+                ref->push_back(s.toStdString());
         }
 
         return;

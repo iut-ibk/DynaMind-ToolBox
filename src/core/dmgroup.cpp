@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -192,8 +192,17 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     Logger(Debug) << "Add Tuple Port" << LinkedDataName;
     pt = new PortTuple(this, LinkedDataName, PortType);
     if (PortType < DM::OUTPORTS) {
+        //Check if port with the same name already exists
+        foreach (PortTuple *pt_existing, outPortTuple) {
+            if (pt_existing->getName().compare(pt->getName()) == 0)
+                return 0;
+        }
         this->outPortTuple.push_back(pt);
     } else {
+        foreach (PortTuple *pt_existing, inPortTuple) {
+            if (pt_existing->getName().compare(pt->getName()) == 0)
+                return 0;
+        }
         this->inPortTuple.push_back(pt);
     }
     foreach(PortObserver * po, this->portobserver) {
