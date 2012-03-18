@@ -11,12 +11,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(muparser/include ../3dparty/qwt-5.2.0/src)
-file(GLOB VIBE2 *.cpp)
+file(GLOB DynaMind *.cpp)
 
 
-QT4_ADD_RESOURCES(VIBE2 icons.qrc)
+QT4_ADD_RESOURCES(DynaMind icons.qrc)
 
-add_executable(dynamind-gui ${VIBE2} )
+add_executable(dynamind-gui ${DynaMind} )
 
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
        TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui dynamindcore ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})

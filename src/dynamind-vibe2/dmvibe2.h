@@ -1,5 +1,5 @@
-#ifndef DMVIBE2_H
-#define DMVIBE2_H
+#ifndef DMDynaMind_H
+#define DMDynaMind_H
 #include "dmcompilersettings.h"
 #include <dmmodule.h>
 #include "dmcomponent.h"
@@ -8,14 +8,14 @@
 
 /**
 *
-* @ingroup Dynamind-Vibe2
-* @brief Integrates the VIBe2 VIBe simulation in the DynaMind Framework
+* @ingroup Dynamind-DynaMind
+* @brief Integrates the DynaMind VIBe simulation in the DynaMind Framework
 * @author Christian Urich
 *
 */
-class DM_HELPER_DLL_EXPORT DMVibe2 : public DM::Module
+class DM_HELPER_DLL_EXPORT DMDynaMind : public DM::Module
 {
-    DM_DECLARE_NODE(DMVibe2)
+    DM_DECLARE_NODE(DMDynaMind)
 
     private:
         long height;
@@ -32,8 +32,8 @@ class DM_HELPER_DLL_EXPORT DMVibe2 : public DM::Module
         DM::View conduit;
 
     public:
-        DMVibe2();
+        DMDynaMind();
     void run();
 };
 
-#endif // DMVIBE2_H
+#endif // DMDynaMind_H

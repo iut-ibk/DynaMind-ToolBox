@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -31,10 +31,10 @@ using namespace std;
 
 
 /**
-  * @addtogroup Dynamind-Vibe2
+  * @addtogroup Dynamind-DynaMind
   */
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<DMVibe2>());
+    registry->addNodeFactory(new DM::NodeFactory<DMDynaMind>());
 }
 

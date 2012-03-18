@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -84,9 +84,9 @@ namespace DM {
         QFile file(QString::fromStdString(filename));
         file.open(QIODevice::WriteOnly);
         QTextStream out(&file);
-        out << "<VIBe2>" << "\n";
+        out << "<DynaMind>" << "\n";
         out << "\t"<<"<Info Version=\"0.3/\">" << "\n";
-        out << "<VIBe2Core>" << "\n";
+        out << "<DynaMindCore>" << "\n";
         out << "\t"<<"<Nodes>" << "\n";
         out  << "\t" << "\t"<<"<RootNode>" << "\n";
         out << "\t" << "\t"<< "\t" << "<UUID value=\""
@@ -150,8 +150,8 @@ namespace DM {
 
         out << "\t" << "</Links>" << "\n";
 
-        out << "</VIBe2Core>" << "\n";
-        //out << "</VIBe2>"<< "\n";
+        out << "</DynaMindCore>" << "\n";
+        //out << "</DynaMind>"<< "\n";
 
         file.close();
 

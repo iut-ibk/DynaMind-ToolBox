@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -378,6 +378,12 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
             m->setGroup(g);
         }
     }
+
+    //Call init Functions of the modules
+    foreach (ModuleEntry me, simreader.getModules()) {
+            Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
+            m->init();
+        }
 
     foreach (LinkEntry le, simreader.getLinks()) {
         std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];

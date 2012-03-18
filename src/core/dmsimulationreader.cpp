@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -55,9 +55,9 @@ bool SimulationReader::startElement(const QString & namespaceURI,
 
     Q_UNUSED(namespaceURI)
     Q_UNUSED(localName)
-    if (qName == "VIBe2")
+    if (qName == "DynaMind")
         return true;
-    if (qName == "VIBe2Core")
+    if (qName == "DynaMindCore")
         return true;
     if (qName == "Nodes") {
         ParentName = "Nodes";

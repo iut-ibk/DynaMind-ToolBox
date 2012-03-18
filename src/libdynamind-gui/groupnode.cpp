@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -209,7 +209,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
 
     this->simpleTextItem = new QGraphicsSimpleTextItem (QString::number(id));
     double w = this->simpleTextItem->boundingRect().width()+40;
-    w = w < 140 ? 140 : w;
+    w = w < 80 ? 80 : w;
     l = w+4;
     h =  this->simpleTextItem->boundingRect().height()+65;
     std::cout << "L "<< l << std::endl;

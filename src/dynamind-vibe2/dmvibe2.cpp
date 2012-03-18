@@ -18,9 +18,9 @@
 
 #include "dmvibe2.h"
 
-DM_DECLARE_NODE_NAME(DMVibe2, Dynamind-Vibe2)
+DM_DECLARE_NODE_NAME(DMDynaMind, Dynamind-DynaMind)
 
-DMVibe2::DMVibe2()
+DMDynaMind::DMDynaMind()
 {
     height = 250;
     width = 400;
@@ -52,7 +52,7 @@ DMVibe2::DMVibe2()
     this->addData("City", viewsvec);
 
 }
-void DMVibe2::run()
+void DMDynaMind::run()
 {
 
     //Init Logger
