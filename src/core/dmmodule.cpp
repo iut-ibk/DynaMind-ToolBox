@@ -325,9 +325,11 @@ std::string Module::getParameterAsString(std::string Name) {
 
 
 void Module::addData(std::string name,  std::vector<DM::View> views) {
-    if (views.size() == 0)
+    if (views.size() == 0) {
         Logger(Error) << "No views added data not created";
-    this->data_vals[name] = 0;
+        return;
+    }
+    this->data_vals[name]= 0;
     this->parameterList.push_back(name);
     this->views[name] = views;
     this->parameter[name] = DM::SYSTEM;
@@ -342,6 +344,8 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
 
 DM::System* Module::getData(std::string dataname)
 {
+    if (data_vals.find(dataname) == data_vals.end())
+        return 0;
     return this->data_vals[dataname];
 }
 
