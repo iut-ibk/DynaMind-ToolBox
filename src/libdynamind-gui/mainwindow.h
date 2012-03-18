@@ -26,7 +26,7 @@
  *
  * @section DESCRIPTION
  *
- * The class contains the main window for the VIBe2 Framework
+ * The class contains the main window for the DynaMind Framework
  */
 
 #ifndef MAINWINDOW_H
@@ -45,6 +45,7 @@
 #include <moduledescription.h>
 #include <guiresultobserver.h>
 #include <ui_mainwindow.h>
+#include <simulationio.h>
 class QTreeWidgetItem;
 
 
@@ -90,6 +91,7 @@ private:
     QTreeWidgetItem * rootItemModelTree;
     DM::ModuleRegistry registry;
     void writeGUIInformation(QString FileName);
+    void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
 
 
 

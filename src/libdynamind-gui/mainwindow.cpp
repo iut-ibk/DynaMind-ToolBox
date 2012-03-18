@@ -66,7 +66,9 @@
 #include <dmpythonenv.h>
 #include <guisimulationobserver.h>
 #include <guisimulation.h>
+#include <rootgroupnode.h>
 #include "preferences.h"
+#include "projectviewer.h"
 using namespace boost;
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
@@ -281,7 +283,7 @@ void MainWindow::createModuleListView() {
 
     //Add VIBe Modules
     QStringList filters;
-    filters << "*.vib";
+    filters << "*.dyn";
     QSettings settings("IUT", "DYNAMIND");
     QStringList moduleshome = settings.value("VIBeModules",QStringList()).toString().replace("\\","/").split(",");
     for (int index = 0; index < moduleshome.size(); index++) {
@@ -361,10 +363,10 @@ void MainWindow::sceneChanged() {
 }
 void MainWindow::saveAsSimulation() {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Save VIBe File"), "", tr("VIBe Files (*.vib)"));
+                                                    tr("Save DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
     if (!fileName.isEmpty()) {
-        if (!fileName.contains(".vib"))
-            fileName+=".vib";
+        if (!fileName.contains(".dyn"))
+            fileName+=".dyn";
         this->simulation->writeSimulation(fileName.toStdString());
         this->writeGUIInformation(fileName);
         this->currentDocument = fileName;
@@ -385,54 +387,63 @@ void MainWindow::writeGUIInformation(QString FileName) {
     //Find upper left corner;
     float minx;
     float miny;
-    for (int i = 0; i < this->mnodes->size(); i++) {
-        ModelNode * m = this->mnodes->at(i);
-        if (i == 0)        {
-            minx = m->pos().x();
-            miny = m->pos().y();
-            continue;
-        }
-        if (minx > m->pos().x()) {
-            minx =  m->pos().x();
-        }
-        if (miny > m->pos().y()) {
-            miny =  m->pos().y();
-        }
-    }
 
-    std::cout << "Save File" << std::endl;
+    //Write GUI Informations for every Groupscene
 
     QFile file(FileName);
     file.open(QIODevice::Append);
     QTextStream out(&file);
-    out << "<VIBe2GUI>" << "\n";
+    out << "<DynaMindGUI>" << "\n";
     out << "\t"<<"<GUI_Nodes>" << "\n";
 
-    BOOST_FOREACH(ModelNode * m, *(this->mnodes)) {
-        out  << "\t" << "\t"<<"<GUI_Node>" << "\n";
-        out << "\t" << "\t"<< "\t" << "<GUI_UUID value=\""
-            << QString::fromStdString(m->getVIBeModel()->getUuid()) << "\"/>" << "\n";
-
-        out << "\t" << "\t"<< "\t" << "<GUI_PosX value=\""
-            << m->scenePos().x() - minx << "\"/>" << "\n";
+    foreach (int scene, this->groupscenes.keys() ) {
+        ProjectViewer * viewer = this->groupscenes[scene];
 
 
+        for (int i = 0; i < viewer->getRootNode()->getChildNodes().size(); i++) {
+            ModelNode * m = viewer->getRootNode()->getChildNodes()[i];
+            if (i == 0)        {
+                minx = m->pos().x();
+                miny = m->pos().y();
+                continue;
+            }
+            if (minx > m->pos().x()) {
+                minx =  m->pos().x();
+            }
+            if (miny > m->pos().y()) {
+                miny =  m->pos().y();
+            }
+        }
 
-        out << "\t" << "\t"<< "\t" << "<GUI_PosY value=\""
-            << m->scenePos().y() - miny << "\"/>" << "\n";
 
-        out << "\t" << "\t"<< "\t" << "<GUI_Minimized value=\""
-            << m->isMinimized() << "\"/>" << "\n";
 
-        out  << "\t" << "\t"<<"</GUI_Node>" << "\n";
+        BOOST_FOREACH(ModelNode * m, viewer->getRootNode()->getChildNodes()) {
+            out  << "\t" << "\t"<<"<GUI_Node>" << "\n";
+            out << "\t" << "\t"<< "\t" << "<GUI_UUID value=\""
+                << QString::fromStdString(m->getVIBeModel()->getUuid()) << "\"/>" << "\n";
 
+            out << "\t" << "\t"<< "\t" << "<GUI_PosX value=\""
+                << m->scenePos().x() - minx << "\"/>" << "\n";
+
+
+
+            out << "\t" << "\t"<< "\t" << "<GUI_PosY value=\""
+                << m->scenePos().y() - miny << "\"/>" << "\n";
+
+            out << "\t" << "\t"<< "\t" << "<GUI_Minimized value=\""
+                << m->isMinimized() << "\"/>" << "\n";
+
+            out  << "\t" << "\t"<<"</GUI_Node>" << "\n";
+
+        }
     }
     out << "\t"<<"</GUI_Nodes>" << "\n";
 
-    out << "</VIBe2GUI>" << "\n";
-    out << "</VIBe2>"<< "\n";
+    out << "</DynaMindGUI>" << "\n";
+    out << "</DynaMind>"<< "\n";
 
     file.close();
+
 }
 
 void MainWindow::clearSimulation() {
@@ -451,7 +462,7 @@ void MainWindow::clearSimulation() {
 void MainWindow::importSimulation(QString fileName, QPointF offset) {
     if (fileName.compare("") == 0)
         fileName = QFileDialog::getOpenFileName(this,
-                                                tr("Open VIBe File"), "", tr("VIBe Files (*.vib)"));
+                                                tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
 
     if (!fileName.isEmpty()){
 
@@ -552,10 +563,48 @@ void MainWindow::importSimulation(QString fileName, QPointF offset) {
 
 }
 
+void MainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation, QVector<LoadModule> posmodules) {
+
+    std::map<std::string, std::string> reveredUUID_Translation;
+    for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
+         it != UUID_Translation.end();
+         ++it) {
+        reveredUUID_Translation[it->second] = it->first;
+    }
+    ProjectViewer * currentView = 0;
+    foreach(int i, this->groupscenes.keys()) {
+        ProjectViewer * view = this->groupscenes[i];
+        if (g->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+            currentView = view;
+    }
+    if (currentView == 0)
+        return;
+
+    foreach (DM::Module * m , g->getModules()) {
+
+        //GetPos
+        QPointF p;
+        foreach (LoadModule lm, posmodules) {
+            if (lm.tmpUUID.compare(reveredUUID_Translation[m->getUuid()]) == 0) {
+                p.setX(lm.PosX);
+                p.setY(lm.PosY);
+            }
+        }
+
+
+        this->simulation->GUIaddModule(m, p);
+
+        if (m->isGroup())
+            this->loadGUIModules((DM::Group * )m,  UUID_Translation,posmodules);
+
+    }
+
+}
+
 void MainWindow::loadSimulation(int id) {
 
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open VIBe File"), "", tr("VIBe Files (*.vib)"));
+                                                    tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
 
     if (!fileName.isEmpty()){
         this->clearSimulation();
@@ -563,67 +612,85 @@ void MainWindow::loadSimulation(int id) {
         std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
-        for (int i = 0; i < this->mnodes->size(); i++) {
+        UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
+        this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
 
-            ModelNode * module = this->mnodes->at(i);
-            module->setResultWidget(this);
-
-            std::string GroupUUID = module->getVIBeModel()->getGroup()->getUuid();
-            //this->scene->addItem(module);
-            foreach (ModelNode * m, *(this->mnodes)) {
-                if (m->getVIBeModel()->isGroup()) {
-                    if (m->getVIBeModel()->getUuid().compare(GroupUUID) == 0) {
-                        GroupNode * gn = (GroupNode * ) m;
-                        gn->addModelNode(module);
-                        //module->setParentGroup(gn);
-
-                    }
-                }
-            }
-            module->updatePorts();
-
-
-        }
 
 
         BOOST_FOREACH(DM::ModuleLink * l,this->simulation->getLinks()) {
-            std::cout << "link" << std::endl;
             GUILink * gui_link  = new GUILink();
-            ModelNode * outmodule;
-            ModelNode * inmodule;
-            foreach(ModelNode * mn, *(mnodes)) {
-                if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
-                    outmodule = mn;
+            ModelNode * outmodule = 0;
+            ModelNode * inmodule = 0;
+
+            ProjectViewer * currentView = 0;
+
+            foreach(int i, this->groupscenes.keys()) {
+                ProjectViewer * view = this->groupscenes[i];
+                if (l->getInPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+                    currentView = view;
+            }
+            ProjectViewer * currentView_out = 0;
+            foreach(int i, this->groupscenes.keys()) {
+                ProjectViewer * view = this->groupscenes[i];
+                if (l->getOutPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+                    currentView_out = view;
+            }
+
+
+
+            if (currentView == 0)
+                continue;
+
+            //TODO: Remove dirty hack
+            //The Problem is with links that are conncet to the root group.
+            //If so the outport module can not be find with current view.
+            //In this Loop the view is switch to the view of the
+            //Inport and then it works.
+            for (int i = 0; i < 2; i++) {
+                if (i == 1)
+                    currentView = currentView_out;
+
+                if (currentView->getRootNode()->getVIBeModel() == l->getOutPort()->getModule()) {
+                    outmodule = currentView->getRootNode() ;
+
+                }
+
+                foreach (ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
+                    if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
+                        outmodule = mn;
+                        break;
+                    }
+                }
+
+                if (currentView->getRootNode()->getVIBeModel() == l->getInPort()->getModule()) {
+                    inmodule = currentView->getRootNode();
+
+                }
+
+                foreach(ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
+                    if (mn->getVIBeModel() == l->getInPort()->getModule()) {
+                        inmodule = mn;
+                        break;
+                    }
+                }
+
+                if (inmodule != 0 && outmodule != 0) {
                     break;
                 }
             }
-            foreach(ModelNode * mn, *(mnodes)) {
-                if (mn->getVIBeModel() == l->getInPort()->getModule()) {
-                    inmodule = mn;
-                    break;
-                }
-            }
+
             gui_link->setOutPort(outmodule->getGUIPort(l->getOutPort()));
             gui_link->setInPort(inmodule->getGUIPort(l->getInPort()));
             gui_link->setVIBeLink(l);
             gui_link->setSimulation(this->simulation);
-            //this->scene->addItem(gui_link);
+
+            currentView->addItem(gui_link);
+            currentView->update();
 
         }
-    }
-    for (int i = 0; i < this->mnodes->size(); i++) {
-        ModelNode * m = this->mnodes->at(i);
-        if (m->isMinimized())
-            m->setMinimized(m->isMinimized());
-    }
-    for (int i = 0; i < this->gnodes->size(); i++) {
-        GroupNode * m = this->gnodes->at(i);
-        if (m->isMinimized())
-            m->setMinimized(m->isMinimized());
+
     }
 
-
-    //this->scene->update();
 
 }
 MainWindow::~MainWindow() {
