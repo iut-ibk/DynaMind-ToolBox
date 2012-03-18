@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
  
@@ -35,6 +35,8 @@ GroupTest::GroupTest() {
     Runs = 1;
 
     this->addParameter("Runs", DM::INT, &Runs);
+    this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInViews);
+    this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutViews);
 
 
 
@@ -50,20 +52,34 @@ void GroupTest::run() {
 
 void GroupTest::init() {
 
+    foreach (std::string s, nameOfInViews)
+        this->addTuplePort(s, DM::INTUPLESYSTEM);
 
+    foreach (std::string s, nameOfOutViews)
+        this->addTuplePort(s, DM::OUTTUPLESYSTEM);
 
 }
 
 void GroupTest::addInPort(std::string n) {
 
-    this->addTuplePort(n, DM::INTUPLESYSTEM);
-
+    if (n.empty())
+        return;
+    //CheckIfPortAlreadyExists
+    if (find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
+        return;
+    nameOfInViews.push_back(n);
+    this->init();
 }
 
 void GroupTest::addOutPort(std::string n) {
 
-    this->addTuplePort(n, DM::OUTTUPLESYSTEM);
-
+    if (n.empty())
+        return;
+    //CheckIfPortAlreadyExists
+    if (find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
+        return;
+    nameOfOutViews.push_back(n);
+    this->init();
 }
 
 

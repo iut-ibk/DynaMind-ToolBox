@@ -118,7 +118,7 @@ bool DMBaseTest() {
 bool DynaMiteTest()
 {
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
-    //env->addPythonPath("/home/csae6550/work/VIBe2Core/build/Release/");
+    //env->addPythonPath("/home/csae6550/work/DynaMindCore/build/Release/");
     env->addPythonPath("/home/c8451045/Documents/DynaMind/build/debug/");
 
 

@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -51,12 +51,12 @@ inline void addCorineConstants(mu::Parser * p){
 
 
 
-    /*  p->DefineVar("ContUrbanFabric", new double( vibens::VIBe2::ContUrbanFabric ));
-        p->DefineVar("DisContUrbanFabric", new double(vibens::VIBe2::DisContUrbanFabric ));
-        p->DefineVar("RoadRailNetwork", new double(vibens::VIBe2::RoadRailNetwork ));
-        p->DefineVar("AgriculturalAreas", new double(vibens::VIBe2::AgriculturalAreas ));
-        p->DefineVar("ForestsSemiNatural", new double(vibens::VIBe2::ForestsSemiNatural ));
-        p->DefineVar("WaterBodies",new double( vibens::VIBe2::WaterBodies ));*/
+    /*  p->DefineVar("ContUrbanFabric", new double( vibens::DynaMind::ContUrbanFabric ));
+        p->DefineVar("DisContUrbanFabric", new double(vibens::DynaMind::DisContUrbanFabric ));
+        p->DefineVar("RoadRailNetwork", new double(vibens::DynaMind::RoadRailNetwork ));
+        p->DefineVar("AgriculturalAreas", new double(vibens::DynaMind::AgriculturalAreas ));
+        p->DefineVar("ForestsSemiNatural", new double(vibens::DynaMind::ForestsSemiNatural ));
+        p->DefineVar("WaterBodies",new double( vibens::DynaMind::WaterBodies ));*/
 
     p->DefineVar("ContUrbanFabric", & mu::ContUrbanFabric);
     p->DefineVar("DisContUrbanFabric",& mu::DisContUrbanFabric);

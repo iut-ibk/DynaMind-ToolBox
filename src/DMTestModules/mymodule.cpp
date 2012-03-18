@@ -5,8 +5,8 @@ DM_DECLARE_NODE_NAME( MyModule,Modules )
 MyModule::MyModule() {
 
    /* //Add Parameter to Module
-    this->addParameter("Parameter1", VIBe2::INT, &this->MyParameter1);
-    this->addParameter("Parameter2", VIBe2::STRING, &this->MyParameter2);
+    this->addParameter("Parameter1", DynaMind::INT, &this->MyParameter1);
+    this->addParameter("Parameter2", DynaMind::STRING, &this->MyParameter2);
 
     //View Definitions
     DM::View inlets = DM::View("Inlets");
@@ -30,7 +30,7 @@ MyModule::MyModule() {
 
 
 
-    this->addParameter("Value", VIBe2::DOUBLE, &value);
+    this->addParameter("Value", DynaMind::DOUBLE, &value);
 
     ////////Datasets
     this->addData("Sewer",views);*/
