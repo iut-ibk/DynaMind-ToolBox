@@ -39,6 +39,7 @@
 #include "adddatatonewview.h"
 #include "exportrasterdata.h"
 #include "appendviewfromsystem.h"
+#include "marker.h"
 
 using namespace std;
 
@@ -59,5 +60,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
     registry->addNodeFactory(new NodeFactory<ExportRasterData>());
     registry->addNodeFactory(new NodeFactory<AppendViewFromSystem>());
+    registry->addNodeFactory(new NodeFactory<Marker>());
 }
 
