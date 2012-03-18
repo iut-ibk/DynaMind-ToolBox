@@ -14,7 +14,7 @@ IF(WIN32 AND NOT UNIX)
           SET(CPACK_GENERATOR "NSIS")
           #SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
           #SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-          SET(CPACK_NSIS_DISPLAY_NAME "VIBe2")
+          SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
           SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
           SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
           SET(CPACK_NSIS_CONTACT "christian.urich@uibk.ac.at")
@@ -53,7 +53,7 @@ IF(WIN32 AND NOT UNIX)
         ClearErrors
         ")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        DeleteRegKey HKCU \\\"Software\\\\IUT\\\\VIBe2\\\"
+        DeleteRegKey HKCU \\\"Software\\\\IUT\\\\DynaMind\\\"
       ")
 
   install(FILES ${DLLS} DESTINATION bin)

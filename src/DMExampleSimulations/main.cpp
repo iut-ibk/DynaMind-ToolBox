@@ -92,7 +92,7 @@ int main(int argc, char *argv[], char *envp[]) {
     DM::Module * swmm = sim->addModule("DMSWMM");
 
     //Set Parameter
-    swmm->setParameterValue("RainFile", "/home/c8451045/Documents/vibe2/data/raindata/euler_II_133_120_5.dat");
+    swmm->setParameterValue("RainFile", "/home/c8451045/Documents/DynaMind/data/raindata/euler_II_133_120_5.dat");
 
 
     sim->addLink(sb->getOutPort("City"), cb->getInPort("City"));

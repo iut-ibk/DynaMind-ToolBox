@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -194,20 +194,20 @@ GenerateSewerNetwork::GenerateSewerNetwork()
 
 
 
-    /*this->addParameter("Topology", VIBe2::RASTERDATA_IN, &this->Topology);
-    this->addParameter("StartPoints", VIBe2::VECTORDATA_IN, &this->StartPoints);
-    this->addParameter("IdentifierStartPoins", VIBe2::STRING, &this->IdentifierStartPoins);
-    this->addParameter("Path", VIBe2::RASTERDATA_OUT, &this->Path);
-    this->addParameter("MaxDeph", VIBe2::DOUBLE, &this->Hmin);
-    this->addParameter("ConnectivityField", VIBe2::RASTERDATA_OUT, &this->ConnectivityField);
-    this->addParameter("ConnectivityField_in", VIBe2::RASTERDATA_IN, &this->ConnectivityField_in);
-    this->addParameter("ConnectivityWidth", VIBe2::LONG, & this->ConnectivityWidth);
-    this->addParameter("AttractionTopology", VIBe2::DOUBLE, & this->AttractionTopology);
-    this->addParameter("AttractionConnectivity", VIBe2::DOUBLE, & this->AttractionConnectivity);
-    this->addParameter("Goals", VIBe2::RASTERDATA_IN, & this->Goals);
-    this->addParameter("Steps", VIBe2::LONG, & this->steps);
-    this->addParameter("Path", VIBe2::RASTERDATA_OUT, &this->Path);
-    this->addParameter("ForbiddenAreas", VIBe2::RASTERDATA_IN, & this->ForbiddenAreas);*/
+    /*this->addParameter("Topology", DynaMind::RASTERDATA_IN, &this->Topology);
+    this->addParameter("StartPoints", DynaMind::VECTORDATA_IN, &this->StartPoints);
+    this->addParameter("IdentifierStartPoins", DynaMind::STRING, &this->IdentifierStartPoins);
+    this->addParameter("Path", DynaMind::RASTERDATA_OUT, &this->Path);
+    this->addParameter("MaxDeph", DynaMind::DOUBLE, &this->Hmin);
+    this->addParameter("ConnectivityField", DynaMind::RASTERDATA_OUT, &this->ConnectivityField);
+    this->addParameter("ConnectivityField_in", DynaMind::RASTERDATA_IN, &this->ConnectivityField_in);
+    this->addParameter("ConnectivityWidth", DynaMind::LONG, & this->ConnectivityWidth);
+    this->addParameter("AttractionTopology", DynaMind::DOUBLE, & this->AttractionTopology);
+    this->addParameter("AttractionConnectivity", DynaMind::DOUBLE, & this->AttractionConnectivity);
+    this->addParameter("Goals", DynaMind::RASTERDATA_IN, & this->Goals);
+    this->addParameter("Steps", DynaMind::LONG, & this->steps);
+    this->addParameter("Path", DynaMind::RASTERDATA_OUT, &this->Path);
+    this->addParameter("ForbiddenAreas", DynaMind::RASTERDATA_IN, & this->ForbiddenAreas);*/
 
 
 }
