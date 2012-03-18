@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -58,6 +58,8 @@ void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation, 
     r.setContentHandler(this);
     r.parse(QXmlInputSource(&f));
 
+    //CreateAllGroups
+
 
 
     int i = 0;
@@ -97,17 +99,24 @@ bool SimulationIO::endElement(const QString & namespaceURI,
     Q_UNUSED(namespaceURI)
     Q_UNUSED(localName)
     if (qName == "GUI_Node") {
-        DM::Module * VIBe2m;
-        VIBe2m = sim->getModuleWithUUID(UUIDTransation[tmpUUID]);
-        if (VIBe2m != 0) {
-            ModelNode * m;
-            if (!VIBe2m->isGroup())
-                m = new ModelNode(VIBe2m, sim);
-            if (VIBe2m->isGroup())
-                m = new GroupNode(VIBe2m, sim);
-            mnodes->append(m);
-            m->setPos(PosX, PosY);
-            m->setMinimized(minimized);
+        DM::Module * DynaMindm;
+        DynaMindm = sim->getModuleWithUUID(UUIDTransation[tmpUUID]);
+        if (DynaMindm != 0) {
+            //ModelNode * m;
+            //if (!DynaMindm->isGroup())
+            //m = new ModelNode(DynaMindm, sim);
+            //if (DynaMindm->isGroup())
+            //m = new GroupNode(DynaMindm, sim);
+            //mnodes->append(m);
+            //m->setPos(PosX, PosY);
+            //m->setMinimized(minimized);
+            LoadModule lm;
+            lm.minimized = minimized;
+            lm.tmpUUID = tmpUUID;
+            lm.PosX = PosX;
+            lm.PosY = PosY;
+            this->modules.push_back(lm);
+
         }
 
         return true;

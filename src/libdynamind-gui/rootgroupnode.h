@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -62,7 +62,7 @@ public:
      virtual GUIPort * getGUIPort(DM::Port * p);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
-
+    QVector<ModelNode * > getChildNodes(){return this->childnodes;}
     void RePosTuplePorts();
     void recalculateLandH() ;
     bool isGroup(){return true;}

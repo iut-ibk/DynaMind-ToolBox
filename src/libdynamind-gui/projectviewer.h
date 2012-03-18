@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -49,7 +49,10 @@ public:
     int id;
     ProjectViewer(  GroupNode * g, QWidget * parent = 0);
     void setResultViewer(MainWindow * w){this->ResultViewer = w;}
-    //void setSimulation(GUISimulation * simulation){this->simulation = simulation;}
+    //QVector<ModelNode* > getModelNodes () {return this->mnodes;}
+    //QVector<GroupNode* > getGroupNodes () {return this->gnodes;}
+
+    RootGroupNode * getRootNode(){return this->rootGroup;}
 
     ~ProjectViewer(){}
 
@@ -72,7 +75,7 @@ private:
 
     RootGroupNode * rootGroup;
 
- signals:
+signals:
     void NewGroupAdded(GroupNode  *);
     void NewModule(QString name, QPointF pos, DM::Module* group);
 

@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -91,10 +91,7 @@ void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
     QString classname =  lw->currentItem()->text(0);
     std::string type = lw->currentItem()->text(1).toStdString();
     if (type.compare("Module") == 0) {
-        //ss << module << "_" << this->id++;
         emit NewModule(classname, event->scenePos(), this->rootGroup->getVIBeModel());
-
-
     } else {
         this->ResultViewer->importSimulation( lw->currentItem()->text(2), event->scenePos());
     }

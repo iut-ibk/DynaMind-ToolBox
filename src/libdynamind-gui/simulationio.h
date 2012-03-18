@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -43,6 +43,13 @@ struct  DM_HELPER_DLL_EXPORT LoadLink {
     bool Visibile;
 };
 
+struct DM_HELPER_DLL_EXPORT LoadModule {
+    std::string tmpUUID;
+    double PosX;
+    double PosY;
+    bool minimized;
+};
+
 class  DM_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
 {
 public:
@@ -51,7 +58,7 @@ public:
     void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation, QVector<ModelNode * > * mnodes);
     QVector<ModelNode * > * getModelNodes(){return this->mnodes;}
     QVector<LoadLink> getLinks(){return this->links;}
-
+    QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
 
 private:
     //Groups * groups;
@@ -70,11 +77,13 @@ private:
     QVector<LoadLink> links;
     std::map<std::string, std::string> UUIDTransation;
     GUISimulation * sim;
+
     std::string tmpUUID;
     double PosX;
     double PosY;
     bool minimized;
 
+    QVector<LoadModule> modules;
 };
 
 #endif // SIMULATIONIO_H
