@@ -38,6 +38,14 @@ Node::Node( double x, double y, double z) : Component()
     this->z=z;
 }
 
+Node::Node() : Component()
+{
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+}
+
+
 Node::Node(const Node& n) : Component(n)
 {
     x=n.x;

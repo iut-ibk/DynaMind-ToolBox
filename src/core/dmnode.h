@@ -47,7 +47,7 @@ namespace DM {
 
     public:
         Node( double x, double y, double z );
-
+        Node();
         Node(const Node& n);
         double getX() const;
         double getY() const;
