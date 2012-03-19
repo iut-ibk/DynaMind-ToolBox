@@ -39,6 +39,7 @@ class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
     RasterData(long  width, long  height, double  cellSize);
+
     RasterData(const RasterData &other);
     RasterData();
     virtual ~RasterData();
@@ -74,5 +75,6 @@ private:
 
 
 };
+typedef std::map<std::string, DM::RasterData*> RasterDataMap;
 }
 #endif // RASTERDATA_H

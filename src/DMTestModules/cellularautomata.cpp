@@ -46,6 +46,8 @@ CellularAutomata::CellularAutomata()
     param.Height = 200;
     param.CellSize = 20;
     param.Steps = 1;
+    NameOfOutput = "";
+    NameOfOutput_old  = "";
     this->addParameter("Width", DM::LONG, &this->param.Width);
     this->addParameter("Height", DM::LONG, &this->param.Height);
     this->addParameter("CellSize", DM::DOUBLE, &this->param.CellSize);
@@ -53,10 +55,7 @@ CellularAutomata::CellularAutomata()
     this->addParameter("Neighs", DM::STRING_MAP, &this->param.neighs);
     this->addParameter("Rules", DM::STRING_MAP, &this->param.rules);
     this->addParameter("ListOfLandscapes", DM::STRING_LIST, &param.ListOfLandscapes);
-    View output("result", DM::RASTERDATA, DM::WRITE);
-    std::vector<DM::View> data;
-    data.push_back(output);
-    this->addData("result", data);
+    this->addParameter("NameOfOutput", DM::STRING, &NameOfOutput);
     this->addParameter("Desicion", DM::STRING, &this->param.Desicion);
 }
 
@@ -70,24 +69,58 @@ bool CellularAutomata::createInputDialog() {
     w->show();
     return true;
 }
+void CellularAutomata::updateInport() {
+    if(this->NameOfOutput.compare(this->NameOfOutput_old) == 0)
+        return;
+
+
+    View output(this->NameOfOutput, DM::RASTERDATA, DM::WRITE);
+    std::vector<DM::View> data_out;
+    data_out.push_back(output);
+    this->NameOfOutput_old = NameOfOutput;
+    this->addData(this->NameOfOutput, data_out);
+
+}
+
 void CellularAutomata::init() {
-    std::vector<View> data;
+
+    updateInport();
+
+    bool changed = false;
+    foreach (std::string s, param.ListOfLandscapes) {
+        if (find(vExistingData.begin(), vExistingData.end(), s) != vExistingData.end()) {
+            continue;
+        }
+        changed = true;
+
+    }
+    if (changed == false)
+        return;
+    std::vector<DM::View> data;
     foreach (std::string s, param.ListOfLandscapes) {
         View rdata(s, DM::RASTERDATA, DM::READ);
         data.push_back(rdata);
+        vExistingData.push_back(s);
     }
-    this->addData("RasterDataIn", data);
+
+    if (changed == true)
+        this->addData("RasterDataIn", data);
+
+
 }
 
 void CellularAutomata::run()  {
-    this->param.OutputMap = this->getRasterData("result",View("result", DM::RASTERDATA, DM::WRITE));
+    this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
     this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize);
-
+    DM::System * systest1 = this->getData(this->NameOfOutput);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
     std::vector<View> data = views["RasterDataIn"];
 
     foreach (std::string s, param.ListOfLandscapes) {
         View rdata(s, DM::RASTERDATA, DM::READ);
+        DM::System * systest = this->getData("RasterDataIn");
+
+        DM::RasterData * r = this->getRasterData("RasterDataIn",rdata);
         this->landscapes[s] = this->getRasterData("RasterDataIn",rdata);
     }
 
@@ -102,6 +135,7 @@ void CellularAutomata::run()  {
 
 
             BOOST_FOREACH(std::string s, this->NeighboorhoodList) {
+
                 RasterData * r = landscapes[this->NeighboorhoodMapName[s]];
                 r->getNeighboorhood(this->NeighboorhoodMaps[s], this->NeighboohoodDimensions[s].widht,this->NeighboohoodDimensions[s].height, x, y );
             }
@@ -129,7 +163,6 @@ void CellularAutomata::run()  {
 
 void CellularAutomata::initRuntime() {
     runinit =true;
-    //init Pointer Maps;
 
     for ( std::map<std::string, std::string>::iterator it = param.neighs.begin(); it != param.neighs.end(); ++it) {
         std::string name= it->first;
@@ -225,15 +258,14 @@ void CellularAutomata::initRuntime() {
     Desicion = new Parser();
     Desicion->DefineFun("nov", numberOfValues);
     Desicion->DefineFun("rand", random, false);
-    mu::addCorineConstants(Desicion);
     int i = 0;
+    mu::addCorineConstants(Desicion);
     for(std::map<std::string, std::string>::iterator it = param.rules.begin(); it != param.rules.end(); ++it) {
         std::string Name = it->first;
         Desicion->DefineVar(Name, RulesResults.at(i));
         i++;
     }
     Desicion->SetExpr(param.Desicion);
-    //Logger(Debug) << "Descision"  ;
 }
 
 

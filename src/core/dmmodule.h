@@ -286,6 +286,7 @@ public:
 
     void setSelf(boost::python::object self);
     void setPythonModule(bool b) {this->PythonModule = b;}
+    /** @brief returns true if module is written in Python*/
     bool isPythonModule(){return PythonModule;}
 
     /** @brief update parameter and data used in the module.
@@ -297,8 +298,8 @@ public:
       *
       */
     virtual void updateParameter();
-
-    virtual void setParameter();
+    /** @brief called after the module is executed */
+    virtual void postRun();
     virtual void setParameterValue(std::string name, std::string value);
 
 
@@ -374,6 +375,7 @@ protected:
     boost::unordered_map<std::string, int> parameter;
     boost::unordered_map<std::string, std::string> parameter_description;
     boost::unordered_map<std::string, DM::System *> data_vals;
+    boost::unordered_map<std::string, DM::System *> data_vals_prev;
     boost::unordered_map<std::string, void *> parameter_vals;
     std::map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;

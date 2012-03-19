@@ -45,5 +45,6 @@ public:
     Component * clone();
 
 };
+typedef std::map<std::string, DM::Face*> FaceMap;
 }
 #endif // DMFACE_H

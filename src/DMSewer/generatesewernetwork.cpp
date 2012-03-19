@@ -115,7 +115,7 @@ void GenerateSewerNetwork::Agent::run() {
         } else {
             currentPos.h=hcurrent-deltaH;
         }
-#
+
 
         MarkPath->setValue(currentPos.x, currentPos.y, 1);
 
@@ -144,6 +144,8 @@ void GenerateSewerNetwork::Agent::run() {
 }
 GenerateSewerNetwork::GenerateSewerNetwork()
 {
+
+
     this->ConnectivityWidth = 9;
     this->AttractionTopology = 1;
     this->AttractionConnectivity = 1;
@@ -171,7 +173,7 @@ GenerateSewerNetwork::GenerateSewerNetwork()
 
     this->addData("City", city);
 
-    ConnectivityField = DM::View("ConnectivityField", DM::RASTERDATA, DM::WRITE);
+    ConnectivityField = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::WRITE);
     Path = DM::View("Path", DM::RASTERDATA, DM::WRITE);
     ConnectivityField_in = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::READ);
     ForbiddenAreas = DM::View("ForbiddenAreas", DM::RASTERDATA, DM::READ);
@@ -352,6 +354,7 @@ int GenerateSewerNetwork::indexOfMinValue(const ublas::vector<double> &vec) {
 
 void GenerateSewerNetwork::run() {
     this->city = this->getData("City");
+    DM::System * sewerGeneration = this->getData("sewerGeneration");
     this->sewerGeneration = this->getData("sewerGeneration");
 
     rTopology = this->getRasterData("City", Topology);
@@ -360,7 +363,7 @@ void GenerateSewerNetwork::run() {
     rConnectivityField_in = this->getRasterData("sewerGeneration", ConnectivityField_in);
     rGoals = this->getRasterData("sewerGeneration", Goals);
 
-    rPath  = this->getRasterData("sewerGeneration", Goals);
+    rPath  = this->getRasterData("sewerGeneration", Path);
     rForbiddenAreas  = this->getRasterData("sewerGeneration", ForbiddenAreas);
 
     long width = this->rTopology->getWidth();
@@ -368,6 +371,8 @@ void GenerateSewerNetwork::run() {
     double cellSize = this->rTopology->getCellSize();
 
     this->rConnectivityField->setSize(width, height, cellSize);
+    Logger(Debug) << "Conn Max " << this->rConnectivityField_in->getMaxValue();
+    Logger(Debug) << "Conn Min " << this->rConnectivityField_in->getMinValue();
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++ ) {
             this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j));
@@ -381,7 +386,7 @@ void GenerateSewerNetwork::run() {
     std::vector<DM::Node*> StartPos;
     foreach (std::string inlet, city->getNamesOfComponentsInView(Inlets))  {
         DM::Node * n = city->getNode(inlet);
-        if (n->getAttribute("New")->getDouble() > 0) {
+        if (n->getAttribute("New")->getDouble() > -1) {
             StartPos.push_back(n);
         }
     }
@@ -394,8 +399,8 @@ void GenerateSewerNetwork::run() {
         a->MarkPath = this->rPath;
         a->ConnectivityField = this->rConnectivityField;
         a->Goals = this->rGoals;
-        a->AttractionTopology = this->AttractionTopology;
-        a->AttractionConnectivity = this->AttractionConnectivity;
+        a->AttractionTopology = this->AttractionTopology - this->internalCounter;
+        a->AttractionConnectivity = this->AttractionConnectivity + this->internalCounter;
         a->steps = this->steps;
         a->Hmin = this->Hmin;
         a->ForbiddenAreas = this->rForbiddenAreas;

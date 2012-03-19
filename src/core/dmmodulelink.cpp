@@ -93,6 +93,7 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin) {
         return 0;
     }
     ModuleLink *l = p->getLinks()[LinkId];
+
     if (g->getInternalCounter() > 1 && BackId != -1){
         l = p->getLinks()[BackId];
         Logger(Debug)<< "Internal Counter" << g->getInternalCounter();
@@ -102,10 +103,13 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin) {
         Logger(Debug) << "Set Back link From Origin" << origin->getInPort()->getLinkedDataName();
 
     }
-
+    if (l == 0)
+        return 0;
     if (l->getOutPort()->isPortTuple()) {
         l = l->getPortFromTuplePort(origin);
     }
+    if (l == 0)
+        return 0;
 
     if (origin->isBackLinkFromOrigin)
         l->isBackLinkFromOrigin = true;

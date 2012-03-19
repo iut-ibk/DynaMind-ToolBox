@@ -285,8 +285,10 @@ void Module::setParameterValue(std::string name, std::string v) {
 }
 
 
-void Module::setParameter() {
+void Module::postRun() {
     this->internalCounter++;
+    //To make sure that a module gets the right data when used in backlinks
+    this->data_vals_prev = data_vals;
 
 }
 
@@ -356,8 +358,17 @@ std::map<std::string, std::vector<DM::View> > Module::getViews() {
 DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
 
     DM::System * sys = data_vals[dataname];
-    DM::View view =  sys->getViewDefinition(v.getName());
-    return (RasterData*) sys->getComponent(view.getIdOfDummyComponent());
+    if (v.getAccessType() == DM::WRITE) {
+        return sys->addRasterData(new RasterData(), v);
+    }
+    DM::ComponentMap cmp = sys->getAllComponentsInView(v);
+    DM::RasterData * r = 0;
+    for (DM::ComponentMap::const_iterator it = cmp.begin();
+         it != cmp.end();
+         ++it) {
+        r = (DM::RasterData *) it->second;
+    }
+    return r;
 
 }
 
@@ -517,7 +528,7 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 
 DM::System* Module::getSystemState(const std::string &name)
 {
-    DM::System  * sys = this->data_vals[name];
+    DM::System  * sys = this->data_vals_prev[name];
     if (sys == 0) {
         return 0;
     }

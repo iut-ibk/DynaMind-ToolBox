@@ -33,7 +33,7 @@ AddDataToNewView::AddDataToNewView()
     sys_in = 0;
     this->NameOfNewView = "";
 
-    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::READ) );
+    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 
     this->addParameter("NameOfNewView", DM::STRING, &this->NameOfNewView);
     this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
@@ -55,8 +55,8 @@ void AddDataToNewView::run()
         DM::Component * c = it->second;
         foreach (std::string attr, newAttributes) {
             c->addAttribute(attr, 0);
-            sys->addComponentToView(c, v_new);
         }
+        sys->addComponentToView(c, v_new);
     }
 
 
@@ -64,6 +64,7 @@ void AddDataToNewView::run()
 
 void AddDataToNewView::init()
 {
+
     sys_in = this->getData("Data");
     if (sys_in == 0)
         return;
@@ -102,7 +103,10 @@ void AddDataToNewView::init()
         changed = true;
     }
 
-
+    if (NameOfNewView.compare(NameOfNewView_old) != 0) {
+        changed = true;
+        NameOfNewView_old = NameOfNewView;
+    }
 
     if (changed == true) {
         std::vector<DM::View> new_data;

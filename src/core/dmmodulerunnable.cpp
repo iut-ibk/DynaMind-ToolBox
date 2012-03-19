@@ -48,7 +48,7 @@ void DM::ModuleRunnable::run() {
     m->init();
     if (!m->getSimulation()->isVirtualRun() || m->isGroup())
         m->run();
-    m->setParameter();
+    m->postRun();
     finish = clock();
     DM::Logger(DM::Standard) << "Success\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
     DM::Group * g = m->getGroup();

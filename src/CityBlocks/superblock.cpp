@@ -56,7 +56,7 @@ void SuperBlock::run() {
     DM::Node * n1 = blocks->addNode(0,0,0);
     DM::Node * n2 = blocks->addNode(width,0,0);
     DM::Node * n3 = blocks->addNode(width,height,0);
-    DM::Node * n4 = blocks->addNode(0,1000,0);
+    DM::Node * n4 = blocks->addNode(0,height,0);
 
     DM::Edge * e1 = blocks->addEdge(n1, n2);
     DM::Edge * e2 = blocks->addEdge(n2, n3);

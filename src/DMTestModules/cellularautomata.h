@@ -74,6 +74,7 @@ public:
     std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
 
 private:
+    void updateInport();
     bool runinit;
     std::map<std::string, RasterData * > landscapes;
 
@@ -89,7 +90,8 @@ private:
     std::vector<Parser*> Rules;
     Parser * Desicion;
 
-
+    std::string NameOfOutput;
+    std::string NameOfOutput_old;
 
     unordered_map <std::string, RasterData > neighbourhoods;
     unordered_map <std::string, RasterData > values;
@@ -97,6 +99,8 @@ private:
     unordered_map <std::string, double * > ValuePointerMap;
     std::vector<double *> pRessults;
     std::vector<Parser> vParser;
+
+    std::vector<std::string> vExistingData;
 
     int nbnumber;
     double * repeater;

@@ -6,6 +6,7 @@
 /**
  * @ingroup Modules
  * @brief The AppendViewFromSystem class
+ * @TODO: This module is a dirty hack at the moment!
  */
 
 class DM_HELPER_DLL_EXPORT AppendViewFromSystem : public DM::Module

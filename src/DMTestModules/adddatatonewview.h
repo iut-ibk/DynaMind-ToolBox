@@ -39,7 +39,7 @@ class DM_HELPER_DLL_EXPORT AddDataToNewView : public DM::Module{
         DM::System * sys_in;
     std::string NameOfNewView;
     std::string NameOfExistingView;
-
+    std::string NameOfNewView_old;
     std::vector<std::string> newAttributes;
 
     std::vector<DM::View> data;

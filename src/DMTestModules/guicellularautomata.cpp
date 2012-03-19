@@ -41,23 +41,28 @@ bool GUICellularAutomata::checkIfFromOutSide(QString name) {
         if (s2.toStdString().compare(it->first) == 0)
             return true;
     }
-   return false;
+    return false;
 
 }
 
 GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
-        QDialog(parent),
-        ui(new Ui::GUICellularAutomata)
+    QDialog(parent),
+    ui(new Ui::GUICellularAutomata)
 {
     this->m = (CellularAutomata*) m;
     ui->setupUi(this);
     ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
     ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
+    ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("NameOfOutput")) );
     std::map<std::string, std::vector<DM::View> > views =  m->getViews();
 
     foreach (std::string s, this->m->getLandscapes())
         ui->listWidget_landscapes->addItem(QString::fromStdString(s));
+
+
+
+
     ui->lineEdit_descision->setText(QString::fromStdString(m->getParameterAsString("Desicion")));
     ui->spinBox_Steps->setValue(m->getParameter<int>("Steps"));
 
@@ -97,7 +102,7 @@ void GUICellularAutomata::fromOutSide() {
     QString name;
     name = "DoubleIn_" + s1[1];
     if (b->checkState ()) {
-            //this->m->appendToUserDefinedParameter("InputDouble",name.toStdString());
+        //this->m->appendToUserDefinedParameter("InputDouble",name.toStdString());
     } else {
         //this->m->de("InputDouble","DoubleIn_Width");
     }
@@ -129,9 +134,9 @@ void GUICellularAutomata::updateEntries() {
     }
 
     std::map<std::string, std::string> r = m->getParameter< std::map<std::string, std::string> >("Rules");
-     ui->tableWidget_rules->clear();
-     ui->tableWidget_rules->setRowCount(0);
-     rules.clear();
+    ui->tableWidget_rules->clear();
+    ui->tableWidget_rules->setRowCount(0);
+    rules.clear();
     for (std::map<std::string, std::string>::iterator it = r.begin(); it != r.end(); ++it) {
         QString name = QString::fromStdString(it->first);
         QString value = QString::fromStdString(it->second);
@@ -213,9 +218,9 @@ void GUICellularAutomata::addRule(QStringList list) {
 
 
 void GUICellularAutomata::accept() {
-   this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
-   this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
-   this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
-
-   QDialog::accept();
+    this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
+    this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
+    this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
+    this->m->setParameterValue("NameOfOutput", ui->lineEdit_resultName->text().toStdString());
+    QDialog::accept();
 }

@@ -38,6 +38,10 @@
 namespace DM {
     class  Component;
 
+    /**
+     * @ingroup DynaMind-Core
+     * @brief The Node Object
+     */
     class DM_HELPER_DLL_EXPORT Node : public Component
     {
     private:
@@ -48,6 +52,7 @@ namespace DM {
     public:
         Node( double x, double y, double z );
         Node();
+        /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
         Node(const Node& n);
         double getX() const;
         double getY() const;
@@ -64,5 +69,7 @@ namespace DM {
 
         Component* clone();
     };
+
+    typedef std::map<std::string, DM::Node*> NodeMap;
 }
 #endif // NODE_H

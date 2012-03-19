@@ -40,8 +40,6 @@ System::System(std::string name) : Component()
 
 }
 
-
-
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getName()] = c;
@@ -111,6 +109,14 @@ System::System(const System& s) : Component(s)
         this->updateViews(f);
     }
 
+    //Update RasterData
+    std::map<std::string,RasterData*>::iterator itr;
+    for ( itr=rasterdata.begin() ; itr != rasterdata.end(); itr++ ) {
+        RasterData * r = static_cast<RasterData*>(ownedchilds[(*itr).first]);
+        rasterdata[(*itr).first]= r;
+        this->updateViews(r);
+    }
+
 }
 
 System::~System()
@@ -127,12 +133,18 @@ Node * System::addNode(Node* node)
     return node;
 }
 
-RasterData * System::addRasterData(RasterData *r)
+RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
     if(!addChild(r))
         return 0;
 
     rasterdata[r->getName()] = r;
+
+    if (!view.getName().empty()) {
+        this->views[view.getName()][r->getName()] = r;
+        r->setView(view.getName());
+    }
+
     return r;
 }
 
@@ -374,7 +386,7 @@ bool System::removeSubSystem(std::string name)
 
     return true;
 }
-std::map<std::string, Component*> System::getAllComponentsInView(DM::View & view) {
+std::map<std::string, Component*> System::getAllComponentsInView(const DM::View & view) {
 
     return views[view.getName()];
 }
@@ -404,10 +416,15 @@ std::map<std::string, System*> System::getAllSubSystems()
     return subsystems;
 }
 
+std::map<std::string, RasterData*> System::getAllRasterData()
+{
+    return rasterdata;
+}
+
 System* System::createSuccessor()
 {
     System* result = new System(*this);
-    predecessors.push_back(this);
+    //predecessors.push_back(this);
     return result;
 }
 

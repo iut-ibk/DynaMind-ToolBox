@@ -15,6 +15,7 @@ GUIAppendViewFromSystem::GUIAppendViewFromSystem(DM::Module *m, QWidget *parent)
     foreach (std::string in, systemlist)
         ui->listWidget->addItem(QString::fromStdString(in));
 
+
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addSystem()));
 }
 

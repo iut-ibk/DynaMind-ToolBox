@@ -19,6 +19,13 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     foreach (std::string s, sys_in) {
         ui->comboBox_views->addItem(QString::fromStdString(s));
     }
+
+    std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
+    if (!nameofexview.empty()) {
+        int index = ui->comboBox_views->findText(QString::fromStdString(nameofexview));
+        ui->comboBox_views->setCurrentIndex(index);
+    }
+
     if (ui->comboBox_views->count() == 0) {
         ui->comboBox_views->addItem("Connect Inport");
     }

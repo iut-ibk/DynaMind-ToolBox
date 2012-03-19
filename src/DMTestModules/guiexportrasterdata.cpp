@@ -18,9 +18,17 @@ GUIExportRasterData::GUIExportRasterData(DM::Module *m, QWidget *parent) :
     ui->comboBox->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("FileName")));
     foreach (std::string s, sys_in) {
-
-        ui->comboBox->addItem(QString::fromStdString(s));
+        if (sys->getViewDefinition(s).getType() == DM::RASTERDATA)
+            ui->comboBox->addItem(QString::fromStdString(s));
     }
+
+    std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
+    if (!nameofexview.empty()) {
+        int index = ui->comboBox->findText(QString::fromStdString(nameofexview));
+        ui->comboBox->setCurrentIndex(index);
+    }
+
+
     if (ui->comboBox->count() == 0) {
         ui->comboBox->addItem("Connect Inport");
     }

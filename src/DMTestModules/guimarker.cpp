@@ -76,6 +76,13 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     foreach (std::string s, sys_in) {
         ui->comboBox->addItem(QString::fromStdString(s));
     }
+
+    std::string nameofexview = this->m->getParameterAsString("Identifier");
+    if (!nameofexview.empty()) {
+        int index = ui->comboBox->findText(QString::fromStdString(nameofexview));
+        ui->comboBox->setCurrentIndex(index);
+    }
+
     if (ui->comboBox->count() == 0) {
         ui->comboBox->addItem("Connect Inport");
     }

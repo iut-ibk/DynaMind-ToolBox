@@ -28,6 +28,7 @@
 #define DMEDGE_H
 #include <dmcompilersettings.h>
 
+
 namespace DM {
 
     class Component;
@@ -47,5 +48,6 @@ namespace DM {
         void setEndpointName(std::string name);
         Component* clone();
     };
+    typedef std::map<std::string, DM::Edge*> EdgeMap;
 }
 #endif // Edge_H

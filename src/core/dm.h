@@ -36,5 +36,4 @@
 #include <dmview.h>
 #include <dmrasterdata.h>
 
-
 #endif // DM_H

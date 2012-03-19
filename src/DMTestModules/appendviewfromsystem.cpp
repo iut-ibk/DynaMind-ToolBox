@@ -15,7 +15,34 @@ AppendViewFromSystem::AppendViewFromSystem()
 
 
 void AppendViewFromSystem::run() {
-    //TODO: Action
+    DM::System * sys_out = this->getData("Combined");
+    //Copy all Components from Views
+    foreach (std::string d, Inports) {
+        DM::System * sys = this->getData(d);
+        if (sys == 0)
+            continue;
+        DM::NodeMap nm = sys->getAllNodes();
+        for (DM::NodeMap::const_iterator it = nm.begin(); it != nm.end(); ++it ){
+            sys_out->addNode(new DM::Node(*(it->second)));
+        }
+        DM::EdgeMap em = sys->getAllEdges();
+        for (DM::EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it ){
+            sys_out->addEdge(new DM::Edge(*(it->second)));
+        }
+        DM::FaceMap fm = sys->getAllFaces();
+        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it ){
+            sys_out->addFace(new DM::Face(*(it->second)));
+        }
+        DM::SystemMap sm = sys->getAllSubSystems();
+        for (DM::SystemMap::const_iterator it = sm.begin(); it != sm.end(); ++it ){
+            sys_out->addSubSystem(new DM::System(*(it->second)));
+        }
+        DM::RasterDataMap rm = sys->getAllRasterData();
+        for (DM::RasterDataMap::const_iterator it = rm.begin(); it != rm.end(); ++it ){
+            sys_out->addRasterData(new DM::RasterData(*(it->second)));
+        }
+    }
+
 }
 
 void AppendViewFromSystem::init()
@@ -49,7 +76,7 @@ void AppendViewFromSystem::init()
         data.push_back(dummy);
         this->addData(s, data);
     }
-    sizeold == Inports.size();
+    sizeold = Inports.size();
 
 
 }

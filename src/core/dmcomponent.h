@@ -85,5 +85,6 @@ public:
     virtual Component* clone()=0;
 
 };
+typedef std::map<std::string, DM::Component*> ComponentMap;
 }
 #endif // COMPONENT_H
