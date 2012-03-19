@@ -32,12 +32,12 @@
 #include "networkanalysis.h"
 #include "directnetwork.h"
 #include "generatesewernetwork.h"
-/*#include "extractnetwork.h"
+#include "extractnetwork.h"
 
 
 
 
-#include "pickstartpoints.h"
+/*#include "pickstartpoints.h"
 #include "outfallplacement.h"
 #include "infiltrationtrench.h"
 #include "selectinfiltration.h"*/
@@ -66,8 +66,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<NetworkAnalysis>());
     registry->addNodeFactory(new DM::NodeFactory<DirectNetwork>());
     registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
-    /*registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
-    registry->addNodeFactory(new NodeFactory<PickStartPoints>());
+    //registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
+    /*registry->addNodeFactory(new NodeFactory<PickStartPoints>());
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());
     registry->addNodeFactory(new NodeFactory<SelectInfiltration>());*/
