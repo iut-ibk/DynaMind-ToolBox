@@ -63,6 +63,7 @@ class DM_HELPER_DLL_EXPORT GenerateSewerNetwork : public  Module {
         long y;
         double z;
         double h;
+
         Pos(long x, long y) {this->x = x; this->y = y;}
         Pos() {}
     };
@@ -71,6 +72,7 @@ public:
 
     public:
         Pos StartPos;
+        Node * startNode;
         std::vector<Pos> path;
         Pos currentPos;
         virtual void run();

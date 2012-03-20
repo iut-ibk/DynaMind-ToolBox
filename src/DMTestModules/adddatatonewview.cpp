@@ -82,42 +82,42 @@ void AddDataToNewView::init()
 
 
 
-
-    DM::View view = sys_in->getViewDefinition(NameOfExistingView);
-
-    DM::View newView(getParameterAsString("NameOfNewView"), view.getType(), DM::WRITE);
-
-    //Try to get Existing View
-    foreach (DM::View v, data) {
-        if (v.getName().compare(newView.getName()) == 0) {
-            newView = v;
-        }
-    }
-
+    DM::View v = sys_in->getViewDefinition(NameOfExistingView);
+    readView = DM::View(v.getName(), v.getType(), DM::READ);
+    bool modify = false;
     bool changed = false;
-    foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) {
-        std::vector<std::string>  writes_already = newView.getWriteAttributes();
-        if (find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
-            continue;
-        newView.addAttribute(s);
-        changed = true;
+    if (NameOfNewView.compare(NameOfExistingView) == 0) {
+        modify = true;
     }
-
     if (NameOfNewView.compare(NameOfNewView_old) != 0) {
         changed = true;
         NameOfNewView_old = NameOfNewView;
     }
+    if (changed)
+        writeView = DM::View(getParameterAsString("NameOfNewView"), readView.getType(), DM::WRITE);
+
+
+
+    foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) {
+        std::vector<std::string>  writes_already = writeView.getWriteAttributes();
+        if (find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
+            continue;
+        writeView.addAttribute(s);
+        changed = true;
+    }
+
+
 
     if (changed == true) {
-        std::vector<DM::View> new_data;
-        foreach (DM::View v, this->data) {
-            if (v.getName().compare(newView.getName()) != 0)
-                new_data.push_back(v);
-            new_data.push_back(newView);
+        std::vector<DM::View> data;
+        if (modify) {
+            this->writeView.setAccessType(DM::MODIFY);
+        } else {
+            data.push_back(readView);
         }
-        data = new_data;
-        this->addData("Data", data);
 
+        data.push_back(writeView);
+        this->addData("Data", data);
     }
 
 

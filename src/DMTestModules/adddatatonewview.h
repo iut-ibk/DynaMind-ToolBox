@@ -43,6 +43,9 @@ class DM_HELPER_DLL_EXPORT AddDataToNewView : public DM::Module{
     std::vector<std::string> newAttributes;
 
     std::vector<DM::View> data;
+
+    DM::View readView;
+    DM::View writeView;
 public:
     AddDataToNewView();
     void init();

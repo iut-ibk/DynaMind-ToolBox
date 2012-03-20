@@ -33,9 +33,10 @@ DMVIBe2::DMVIBe2()
     wwtp = DM::View("WWTP", DM::EDGE, DM::WRITE);
 
     conduit = DM::View("CONDUIT", DM::EDGE, DM::WRITE);
-
     this->addParameter("Height", DM::LONG, &height);
     this->addParameter("Width", DM::LONG, &width);
+
+    junction = DM::View("JUNCTION", DM::NODE, DM::WRITE);
 
     std::vector<DM::View> views;
     views.push_back(landuse);
@@ -46,6 +47,7 @@ DMVIBe2::DMVIBe2()
     viewsvec.push_back(mainSewer);
     viewsvec.push_back(wwtp);
     viewsvec.push_back(conduit);
+    viewsvec.push_back(junction);
 
     this->addData("City_RasterData", views);
 
@@ -124,14 +126,30 @@ void DMVIBe2::run()
 
             DM::Edge * ed = sys->addEdge(n1, n2, mainSewer);
             sys->addComponentToView(ed, conduit);
+        }
+    }
 
-
+    std::vector<std::string> shafts = VectorDataHelper::findElementsWithIdentifier("Shaft_", vec.getPointsNames());
+    foreach (std::string sh, shafts) {
+        std::vector<Point> points = vec.getPoints(sh);
+        foreach (Point p, points) {
+            sys->addNode(p.getX(), p.getY(), p.getZ(), junction);
         }
     }
 
 
-    DM::Logger(DM::Debug) << "Number of added Pipes " << sys->getNamesOfComponentsInView(mainSewer).size();
 
+
+    VectorData wwtpv = g->getVectorData("WWTP");
+    shafts = VectorDataHelper::findElementsWithIdentifier("WWTP", wwtpv.getPointsNames());
+    foreach (std::string sh, shafts) {
+        std::vector<Point> points = vec.getPoints(sh);
+        foreach (Point p, points) {
+            sys->addNode(p.getX(), p.getY(), p.getZ(), wwtp);
+        }
+    }
+
+    DM::Logger(DM::Debug) << "Number of added Pipes " << sys->getNamesOfComponentsInView(mainSewer).size();
 
 }
 

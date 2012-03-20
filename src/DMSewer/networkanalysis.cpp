@@ -31,7 +31,7 @@ NetworkAnalysis::NetworkAnalysis()
 {
 
     this->network = DM::View("CONDUIT", DM::EDGE, DM::READ);
-    //this->network.addAttribute("Strahler");
+    this->network.addAttribute("Strahler");
     std::vector<DM::View> views;
     views.push_back(this->network);
     this->addData("City", views);
@@ -71,8 +71,6 @@ std::vector<int> NetworkAnalysis::findConnectedEdges(int ID) {
 void NetworkAnalysis::run() {
     DM::System * city = this->getData("City");
 
-    //PointList.clear();
-    //EdgeList.clear();
     std::vector<std::string> names = city->getNamesOfComponentsInView(this->network);
     double offset = 10;
 
@@ -161,13 +159,7 @@ void NetworkAnalysis::run() {
         v.push_back(e);
         EndNodeSortedEdges[Endnode] = v;
 
-
-
     }
-
-
-
-
 
     foreach(std::string name , names)  {
         DM::Edge * e = city->getEdge(name);

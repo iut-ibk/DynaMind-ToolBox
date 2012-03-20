@@ -66,7 +66,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<NetworkAnalysis>());
     registry->addNodeFactory(new DM::NodeFactory<DirectNetwork>());
     registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
-    //registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
+    registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
     /*registry->addNodeFactory(new NodeFactory<PickStartPoints>());
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());

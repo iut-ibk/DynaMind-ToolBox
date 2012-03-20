@@ -78,6 +78,7 @@ private:
 
 public:
     System(std::string name);
+    System();
     System(const System& s);
     ~System();
 

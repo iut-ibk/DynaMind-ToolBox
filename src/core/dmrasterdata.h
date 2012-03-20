@@ -59,6 +59,8 @@ public:
     void getNeighboorhood(double** d, int width, int height, int x, int y);
 
     void getMoorNeighbourhood(boost::numeric::ublas::vector<double> & neigh, long x, long y);
+    void setDebugValue(int val){debugValue = val;}
+    int getDebugValue() {return debugValue;}
 
     Component * clone();
 private:
@@ -72,6 +74,8 @@ private:
     double minValue;
     double maxValue;
     double ** data;
+
+    int debugValue;
 
 
 };

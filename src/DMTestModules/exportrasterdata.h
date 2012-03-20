@@ -18,6 +18,7 @@ class DM_HELPER_DLL_EXPORT ExportRasterData : public DM::Module
     std::vector<DM::View> data;
     std::string FileName;
     bool flip_h;
+    int counter;
 public:
     ExportRasterData();
     void run();

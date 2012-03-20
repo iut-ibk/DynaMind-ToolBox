@@ -45,6 +45,7 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
     this->NoValue = -9999;
     this->minValue = -9999;
     this->maxValue = -9999;
+    this->debugValue = 0;
     data = new double*[width];
     for (long i = 0; i < width; i++) {
         data[i] = new double[height];
@@ -281,6 +282,7 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
     this->NoValue = -9999;
     this->minValue = -9999;
     this->maxValue = -9999;
+    this->debugValue = other.debugValue;
     //RasterData r;
     this->setSize(other.getWidth(), other.getHeight(), other.getCellSize());
 

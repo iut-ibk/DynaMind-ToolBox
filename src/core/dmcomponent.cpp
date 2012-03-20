@@ -125,6 +125,12 @@ bool Component::changeAttribute(Attribute newattribute)
     return true;
 }
 
+bool Component::changeAttribute(std::string s, double val)
+{
+    return this->changeAttribute(Attribute(s, val));
+}
+
+
 bool Component::removeAttribute(std::string name)
 {
     if(attributesview.find(name)!=attributesview.end())

@@ -111,8 +111,8 @@ void CityBlock::run() {
                 maxY = n2->getY();
 
         }
-        double blockHeight = maxX - minX;
-        double blockWidth = maxY - minY;
+        double blockWidth = maxX - minX;
+        double blockHeight = maxY - minY;
 
 
         DM::Logger(DM::Debug) << blockHeight;

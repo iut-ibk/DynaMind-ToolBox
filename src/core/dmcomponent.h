@@ -67,6 +67,7 @@ public:
     bool addAttribute(Attribute newattribute);
     bool addAttribute(std::string, double val);
     bool changeAttribute(Attribute newattribute);
+    bool changeAttribute(std::string, double val);
     bool removeAttribute(std::string name);
     Attribute* getAttribute(std::string name);
 

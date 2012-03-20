@@ -26,8 +26,9 @@
 #include "extractnetwork.h"
 #include <sstream>
 #include "csg_s_operations.h"
+#include "tbvectordata.h"
 
-/*DM_DECLARE_NODE_NAME(ExtractNetwork, Sewer)
+DM_DECLARE_NODE_NAME(ExtractNetwork, Sewer)
 void ExtractNetwork::AgentExtraxtor::run() {
 
     this->path.clear();
@@ -100,144 +101,110 @@ ExtractNetwork::ExtractNetwork()
 {
     this->steps = 1000;
     this->ConduitLength = 200;
-    //this->Identifier = "";
-    this->IdentifierConduit = "Conduit_";
+    /*this->IdentifierConduit = "Conduit_";
     this->IdentifierEnd = "EndPoint_";
     this->IdentifierInlet = "Inlet_";
-    this->IdentifierShaft = "Shaft_";
-    //this->addParameter("StartPoints", VIBe2::VECTORDATA_IN, &this->StartPoints);
-    //this->addParameter("IdentifierEnd", VIBe2::STRING, &this->IdentifierEnd);
-    //this->addParameter("IdentifierConduit", VIBe2::STRING, &this->IdentifierConduit);
-    //this->addParameter("IdentifierInlet", VIBe2::STRING, &this->IdentifierInlet);
-    //this->addParameter("IdentifierShaft", VIBe2::STRING, &this->IdentifierShaft);
-    //this->addParameter("ConnectivityField", VIBe2::RASTERDATA_IN, &this->ConnectivityField);
-    //this->addParameter("Goals", VIBe2::RASTERDATA_IN, & this->Goals);
+    this->IdentifierShaft = "Shaft_";*/
     this->addParameter("Steps", DM::LONG, & this->steps);
-    //this->addParameter("Path", VIBe2::RASTERDATA_OUT, &this->Path);
-    //this->addParameter("ExportPath", VIBe2::VECTORDATA_OUT, & this->ExportPath,"Shaft_Number_Number|Points  Conduit_Number_Number|Lines ");
-    //this->addParameter("ExistingNetwork", VIBe2::VECTORDATA_IN, & this->existingNetwork);
-    //this->addParameter("StartPointsOut", VIBe2::VECTORDATA_OUT, & this->StartPointsOut);
-    //this->addParameter("Topology", VIBe2::RASTERDATA_IN, &this->Topology);
-    //this->addParameter("ForbiddenAreas", VIBe2::RASTERDATA_IN, &this->ForbiddenAreas);
+
     this->addParameter("ConduitLength", DM::DOUBLE, &this->ConduitLength);
+
+    confield = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::READ);
+    path =DM::View("Path", DM::RASTERDATA, DM::READ);
+    forb = DM::View("ForbiddenAreas", DM::RASTERDATA, DM::READ);
+    goals = DM::View("Goals", DM::RASTERDATA, DM::READ);
+
+    std::vector<DM::View> sewerGen;
+    sewerGen.push_back(confield);
+    sewerGen.push_back(path);
+    sewerGen.push_back(forb);
+    sewerGen.push_back(goals);
+    this->addData("sewerGeneration", sewerGen);
+
+    std::vector<DM::View> city;
+    topo = DM::View("Topology", DM::RASTERDATA, DM::READ);
+    Conduits = DM::View("CONDUIT", DM::EDGE, DM::MODIFY);
+    Conduits.modifyAttribute("New");
+    Inlets= DM::View("INLET",  DM::NODE, DM::READ);
+    Inlets.modifyAttribute("New");
+    Inlets.modifyAttribute("Used");
+    Junction= DM::View("JUNCTION",  DM::NODE, DM::MODIFY);
+    Junction.modifyAttribute("D");
+
+    city.push_back(topo);
+    city.push_back(Conduits);
+    city.push_back(Inlets);
+    city.push_back(Junction);
+
+    this->addData("City", city);
 
 }
 void ExtractNetwork::run() {
+
+    this->city = this->getData("City");
+
+
+    this->ConnectivityField = this->getRasterData("sewerGeneration", confield);
+    this->Goals = this->getRasterData("sewerGeneration", goals);
+    this->Path =  this->getRasterData("sewerGeneration", path);
+    this->ForbiddenAreas = this->getRasterData("sewerGeneration", forb);
+    this->Topology = this->getRasterData("City", topo);
+
     long width = this->ConnectivityField->getWidth();
     long height = this->ConnectivityField->getHeight();
     double cellSize = this->ConnectivityField->getCellSize();
 
     this->Path->setSize(width, height, cellSize);
     this->Path->clear();
+
     std::vector<AgentExtraxtor * > agents;
-    std::vector<std::string> StartPosNames_tmp;
-    StartPosNames_tmp = this->StartPoints->getPointsNames();
-    std::vector<std::string> StartPosNames;
-    foreach(std::string name, StartPosNames_tmp) {
-        if (name.find(this->IdentifierInlet,0) == 0) {
-            Attribute attr = this->StartPoints->getAttributes(name);
-            if ((int)attr.getAttribute("New")  == 1)
-                StartPosNames.push_back(name);
+
+    std::vector<DM::Node*> StartPos;
+    foreach (std::string inlet, city->getNamesOfComponentsInView(Inlets))  {
+        DM::Node * n = city->getNode(inlet);
+        if (n->getAttribute("New")->getDouble() > -1) {
+            StartPos.push_back(n);
         }
     }
 
     //Create Agents
-    foreach(std::string name, StartPosNames) {
-        std::vector<Point> points = this->StartPoints->getPoints(name);
-        Attribute attr = this->StartPoints->getAttributes(name);
 
-        foreach(Point p, points) {
-            long x = (long) p.getX()/cellSize;
-            long y = (long) p.getY()/cellSize;
-            AgentExtraxtor * a = new AgentExtraxtor(GenerateSewerNetwork::Pos(x,y));
-            a->Topology = this->Topology;
-            a->MarkPath = this->Path;
-            a->ConnectivityField = this->ConnectivityField;
-            a->ForbiddenAreas = this->ForbiddenAreas;
-            a->Goals = this->Goals;
-            a->AttractionTopology = 0;
-            a->AttractionConnectivity =0;
-            a->steps = this->steps;
-            agents.push_back(a);
+    foreach(DM::Node * p, StartPos) {
+        long x = (long) p->getX()/cellSize;
+        long y = (long) p->getY()/cellSize;
+        AgentExtraxtor * a = new AgentExtraxtor(GenerateSewerNetwork::Pos(x,y));
+        a->startNode = p;
+        a->Topology = this->Topology;
+        a->MarkPath = this->Path;
+        a->ConnectivityField = this->ConnectivityField;
+        a->ForbiddenAreas = this->ForbiddenAreas;
+        a->Goals = this->Goals;
+        a->AttractionTopology = 0;
+        a->AttractionConnectivity =0;
+        a->steps = this->steps;
+        agents.push_back(a);
 
-        }
     }
     long successfulAgents = 0;
     double multiplier;
     multiplier = this->ConnectivityField->getCellSize();
     double offset = this->ConnectivityField->getCellSize() /2.;
-    this->ExportPath->clear();
-
-
-    *(this->ExportPath) = *(this->existingNetwork);
-    *(this->StartPointsOut) = *(this->StartPoints);
 
     //Extract Conduits
 
-    std::vector<std::string> ExistingConduits = VectorDataHelper::findElementsWithIdentifier(this->IdentifierConduit, this->ExportPath->getEdgeNames());
-    foreach(std::string name, ExistingConduits) {
-        Attribute attr = this->ExportPath->getAttributes(name);
-        attr.setAttribute("Existing", 1);
-        this->ExportPath->setAttributes(name, attr);
+    foreach(std::string name, city->getNamesOfComponentsInView(Conduits)) {
+        DM::Component * c = city->getComponent(name);
+        c->changeAttribute(DM::Attribute("New", 1));
     }
 
     //CreateEndPointList
-    std::vector<Point> EndPointList;
-    std::vector<std::string>EndPosNames = VectorDataHelper::findElementsWithIdentifier(this->IdentifierEnd, this->existingNetwork->getPointsNames());
-    foreach(std::string name, EndPosNames) {
-        std::vector<Point> ps = this->existingNetwork->getPoints(name);
-        foreach(Point p, ps) {
-            EndPointList.push_back(p);
-        }
+    std::vector<DM::Node*> EndPointList;
+    foreach(std::string name, this->city->getNamesOfComponentsInView(Junction)) {
+        EndPointList.push_back(this->city->getNode(name));
     }
-    std::vector<Point> EndPoints;
-    int conduitcounter = 0;
-    int inletcounter = 0;
-    int shaftcounter = 0;
-    int endpointcounter = 0;
 
 
-    std::vector<std::string> names = VectorDataHelper::findElementsWithIdentifier(this->IdentifierConduit, this->ExportPath->getEdgeNames());
-    foreach (std::string name, names) {
-        name.erase(0, this->IdentifierConduit.size());
-        int n = atoi(name.c_str());
-        if (conduitcounter < n)
-            conduitcounter = n;
-    }
-    conduitcounter++;
-
-    names = VectorDataHelper::findElementsWithIdentifier(this->IdentifierEnd, this->ExportPath->getPointsNames());
-    foreach (std::string name, names) {
-        name.erase(0, this->IdentifierEnd.size());
-        int n = atoi(name.c_str());
-        if (endpointcounter < n)
-            endpointcounter = n;
-    }
-    endpointcounter++;
-
-    names = VectorDataHelper::findElementsWithIdentifier(this->IdentifierInlet, this->ExportPath->getPointsNames());
-    foreach (std::string name, names) {
-        name.erase(0, this->IdentifierInlet.size());
-        int n = atoi(name.c_str());
-        if (inletcounter < n)
-            inletcounter = n;
-    }
-    inletcounter++;
-    names = VectorDataHelper::findElementsWithIdentifier(this->IdentifierShaft, this->ExportPath->getPointsNames());
-    foreach (std::string name, names) {
-        name.erase(0, this->IdentifierShaft.size());
-        int n = atoi(name.c_str());
-        if (shaftcounter < n)
-            shaftcounter = n;
-    }
-    shaftcounter++;
-
-    Logger(vibens::Debug) << "Conduits" << conduitcounter;
-    Logger(vibens::Debug) << "End" << endpointcounter;
-    Logger(vibens::Debug) << "Shaft" << shaftcounter;
-    Logger(vibens::Debug) << "Inlet" << inletcounter;
-
-    std::vector<std::vector<Point> > Points_After_Agent_Extraction;
+    std::vector<std::vector<Node> > Points_After_Agent_Extraction;
     //Extract Netoworks
     for (int j = 0; j < agents.size(); j++) {
         AgentExtraxtor * a = agents[j];
@@ -246,151 +213,70 @@ void ExtractNetwork::run() {
         }
         if (a->successful) {
             successfulAgents++;
-            std::vector<Point> points_for_total;
+            std::vector<Node> points_for_total;
             for (int i = 0; i < a->path.size(); i++) {
                 this->Path->setValue(a->path[i].x, a->path[i].y, 1);
-                points_for_total.push_back(Point(a->path[i].x * multiplier + offset, a->path[i].y * multiplier + offset,a->path[i].h));
+                points_for_total.push_back(Node(a->path[i].x * multiplier + offset, a->path[i].y * multiplier + offset,a->path[i].h));
             }
             Points_After_Agent_Extraction.push_back(points_for_total);
             //Set Inlet Point to Used
-            Attribute attr = this->StartPointsOut->getAttributes(StartPosNames[j]);
-            attr.setAttribute("Used", 1);
-            attr.setAttribute("New", 0);
-            this->StartPointsOut->setAttributes(StartPosNames[j], attr);
 
+            Node * start = a->startNode;
+            start->changeAttribute("Used",1);
+            start->changeAttribute("New", 0);
         }
 
     }
 
 
-    std::vector<std::vector<Point> > PointsToPlace = this->SimplifyNetwork(Points_After_Agent_Extraction, this->ConduitLength/cellSize, offset);
+    std::vector<std::vector<DM::Node> > PointsToPlace = this->SimplifyNetwork(Points_After_Agent_Extraction, this->ConduitLength/cellSize, offset);
 
     //Export Inlets
     Logger(Debug) << "Export Inlets";
-    foreach (std::vector<Point> pl, PointsToPlace) {        
-        Point point(pl[0]);
-        std::stringstream ss1;
-        ss1 << this->IdentifierInlet << inletcounter;
-        std::vector<Point> inlets;
-        inlets.push_back(point);
-        Attribute attr = VectorDataHelper::findAttributeFromPoints(*(this->ExportPath), point, this->IdentifierInlet, offset);
-
-
-        foreach(std::string name, StartPosNames) {
-            std::vector<Point> points = this->StartPoints->getPoints(name);
-            //Find Existing Inlets and Append Data
-            foreach(Point p, points) {
-                if (p.compare2d(point, offset)) {
-                    Attribute att;
-                    att = this->StartPoints->getAttributes(name);
-                    std::vector<std::string> attrNames = att.getAttributeNames();
-                    foreach (std::string name, attrNames) {
-                        attr.setAttribute(name, att.getAttribute(name));
-                    }
-                }
-            }
-        }
-        this->ExportPath->setPoints(ss1.str(), inlets);
-        this->ExportPath->setAttributes(ss1.str(), attr);
-        inletcounter++;
+    std::vector<std::vector<Node *> > Points_For_Conduits;
+    foreach (std::vector<Node> pl, PointsToPlace) {
+        TBVectorData::addNodeToSystem2D(city, Junction, pl[0], true, 0.1);
+        Node * n = this->city->addNode(pl[0], Inlets);
+        this->city->addComponentToView(n, Inlets);
+        std::vector<DM::Node * > nl;
+        nl.push_back(n);
+        Points_For_Conduits.push_back(nl);
     }
-    //Export Shafts
-    Logger(Debug) << "Export Shafts";
-    foreach (std::vector<Point> pl, PointsToPlace) {
-
-        for (int i = 0; i < pl.size(); i++) {
-
+    std::vector<std::vector<Node *> > Points_For_Conduits_tmp;
+    for(int j = 0; j < PointsToPlace.size(); j++){
+        std::vector<Node> pl = PointsToPlace[j];
+        std::vector<DM::Node * > nl = Points_For_Conduits[j];
+        for (int i = 1; i < pl.size(); i++) {
             //Check if Point is already placed
             //If name = 0 Point doesnt exist
-            std::string name = VectorDataHelper::findPointID(*(this->ExportPath), pl[i], this->IdentifierShaft);
-            if (name.size() == 0) {
-                std::stringstream ss;
-                ss << this->IdentifierShaft<< shaftcounter;
-                std::vector<Point> pl_new;
-                pl_new.push_back(pl[i]);
-                //Get Height
+            DM::Node * n = TBVectorData::addNodeToSystem2D(city, Junction, pl[i], true, 0.1);
 
-                name = ss.str();
-                this->ExportPath->setPoints(name,pl_new);
-
-            } else {
-                if (  this->ExportPath->getAttributes(name).getAttribute("D") > pl[i].getZ()) {
-                    Point p =  pl[i];
-                    p.z = this->ExportPath->getAttributes(name).getAttribute("D");
-                    pl[i] = p;
-
-
-                }
+            if (n->getAttribute("D")->getDouble() > pl[i].getZ()) {
+                n->setZ(n->getAttribute("D")->getDouble());
             }
+
             int x = pl[i].getX()/cellSize;
             int y = pl[i].getY()/cellSize;
             double z = this->Topology->getValue(x,y);
-            Attribute attr = this->ExportPath->getAttributes(name);
-            attr.setAttribute("Z", z);
-            attr.setAttribute("D", pl[i].getZ());
-            this->ExportPath->setAttributes(name, attr);
-
-            shaftcounter++;
+            n->changeAttribute("Z", z);
+            n->changeAttribute("D", pl[i].getZ());
+            nl.push_back(n);
         }
+        Points_For_Conduits_tmp.push_back(nl);
     }
+    Points_For_Conduits = Points_For_Conduits_tmp;
 
-    //Export EndPoints
-    Logger(Debug) << "Export Endpoints";
-    foreach (std::vector<Point> pl, PointsToPlace) {
-        Point point = *pl.end();
-        foreach(Point p, EndPointList) {
-            if (p.compare2d(point) == true) {
-
-                //Check if Point Exists
-                bool exists = false;
-                foreach (Point ep, EndPoints) {
-                    if (ep.compare2d(point))
-                        exists = true;
-                }
-                if (!exists) {
-                    std::stringstream ss1;
-                    ss1 << "EndPoint_"   << endpointcounter;
-                    std::vector<Point> endpoints;
-                    endpoints.push_back(point);
-
-                    Attribute attr;
-                    foreach(std::string name, EndPosNames) {
-                        std::vector<Point> points = this->existingNetwork->getPoints(name);
-                        foreach(Point p, points) {
-                            if (p.compare2d(point, offset))
-                                attr = this->existingNetwork->getAttributes(name);
-                        }
-
-                    }
-                    this->ExportPath->setPoints(ss1.str(), endpoints);
-                    this->ExportPath->setAttributes(ss1.str(), attr);
-                    endpointcounter++;
-                }
-            }
-        }
-    }
-    //Export Conduits
-    Logger(Debug) << "Export Conduits";
-    foreach (std::vector<Point> pl, PointsToPlace) {
+    foreach (std::vector<Node*> pl, Points_For_Conduits) {
         for (int i = 1; i < pl.size(); i++) {
-            //Check if Point exists
-            if (VectorDataHelper::findEdgeID(*(this->ExportPath), pl[i-1], pl[i], this->IdentifierConduit, offset).size() > 0)
+            if (TBVectorData::getEdge(this->city, Conduits, pl[i-1], pl[i]) != 0)
                 continue;
-            std::stringstream ss;
-            ss << this->IdentifierConduit << conduitcounter;
-            std::vector<Point> points;
-            points.push_back(pl[i-1]);
-            points.push_back(pl[i]);
-            std::vector<Edge> edges;
-            edges.push_back(Edge(0,1));
-            this->ExportPath->setPoints(ss.str(),points);
-            this->ExportPath->setEdges(ss.str(),edges );
-            conduitcounter++;
+            DM::Edge * e = this->city->addEdge(pl[i-1], pl[i], Conduits);
+            e->addAttribute("New", 0);
         }
     }
 
 
-    Logger(vibens::Debug) << "Successful " << successfulAgents;
+    Logger(DM::Debug) << "Successful " << successfulAgents;
     this->sendDoubleValueToPlot(this->getInternalCounter(), (double) successfulAgents/agents.size());
 
     for (int j = 0; j < agents.size(); j++) {
@@ -400,29 +286,42 @@ void ExtractNetwork::run() {
     agents.clear();
 
 
-    smoothNetwork();
+    //smoothNetwork();
 
 }
 
-vector ExtractNetwork::SimplifyNetwork(vector &points, int PReduction, double offset) {
-    std::vector<std::vector<Point> > ResultVector;
-    std::vector<Point> StartandEndPointList;
+std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector<std::vector<DM::Node> > &points, int PReduction, double offset) {
+
+    DM::System sys_tmp("");
+    DM::View dummy;
+    foreach (std::vector<Node> pl, points) {
+        foreach (Node node, pl) {
+            Node * n = TBVectorData::addNodeToSystem2D(&sys_tmp, dummy, node, true, offset);
+            double attr = n->getAttribute("Counter")->getDouble();
+            n->changeAttribute("Counter", attr+1);
+        }
+
+    }
+
+    std::vector<std::vector<Node> > ResultVector;
+    std::vector<Node> StartandEndPointList;
     //CreateStartAndEndPointList
-    foreach (std::vector<Point> pl, points) {
-        Point startPoint = pl[0];
-        Point endPoint = pl[pl.size()-1];
+    foreach (std::vector<Node> pl, points) {
+        Node startPoint = pl[0];
+        Node endPoint = pl[pl.size()-1];
         StartandEndPointList.push_back(startPoint);
         StartandEndPointList.push_back(endPoint);
 
     }
 
     int counter = 0;
-    foreach (std::vector<Point> pl, points) {
-        std::vector<Point> pointlist_new;
+    foreach (std::vector<Node> pl, points) {
+        std::vector<Node> pointlist_new;
         for (int i  = 0; i < pl.size(); i++) {
             counter++;
             bool placePoint = false;
-            if (VectorDataHelper::checkIfPointExists(StartandEndPointList, pl[i], offset))
+            Node * n = TBVectorData::getNode2D(&sys_tmp, dummy ,pl[i], offset );
+            if (n->getAttribute("Counter")->getDouble() > 1.1)
                 placePoint = true;
             if (i == 0)
                 placePoint = true;
@@ -430,7 +329,6 @@ vector ExtractNetwork::SimplifyNetwork(vector &points, int PReduction, double of
                 placePoint = true;
             if (counter > PReduction)
                 placePoint = true;
-
 
             if (placePoint) {
                 pointlist_new.push_back(pl[i]);
@@ -444,8 +342,8 @@ vector ExtractNetwork::SimplifyNetwork(vector &points, int PReduction, double of
     return ResultVector;
 
 }
-
-void ExtractNetwork::smoothNetwork() {
+//TODO: Smooth Networks
+/*void ExtractNetwork::smoothNetwork() {
     Logger(Debug) << "Start Smoothing Netowrk";
     //find WWTP
     std::vector<std::string> JunctionNames = VectorDataHelper::findElementsWithIdentifier(this->IdentifierShaft, this->ExportPath->getPointsNames());

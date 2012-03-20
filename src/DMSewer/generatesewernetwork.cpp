@@ -142,77 +142,7 @@ void GenerateSewerNetwork::Agent::run() {
 
     this->alive = false;
 }
-GenerateSewerNetwork::GenerateSewerNetwork()
-{
 
-
-    this->ConnectivityWidth = 9;
-    this->AttractionTopology = 1;
-    this->AttractionConnectivity = 1;
-    this->IdentifierStartPoins = "";
-    this->steps = 1000;
-    this->Hmin = 8;
-
-
-
-    this->addParameter("MaxDeph", DM::DOUBLE, &this->Hmin);
-    this->addParameter("Steps", DM::LONG, & this->steps);
-    this->addParameter("ConnectivityWidth", DM::LONG, & this->ConnectivityWidth);
-    this->addParameter("AttractionTopology", DM::DOUBLE, & this->AttractionTopology);
-    this->addParameter("AttractionConnectivity", DM::DOUBLE, & this->AttractionConnectivity);
-
-
-    Topology = DM::View("Topology", DM::RASTERDATA, DM::READ);
-    std::vector<DM::View> city;
-
-    Inlets = DM::View("INLET", DM::NODE, DM::READ);
-    Inlets.getAttribute("New");
-
-    city.push_back(Topology);
-    city.push_back(Inlets);
-
-    this->addData("City", city);
-
-    ConnectivityField = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::WRITE);
-    Path = DM::View("Path", DM::RASTERDATA, DM::WRITE);
-    ConnectivityField_in = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::READ);
-    ForbiddenAreas = DM::View("ForbiddenAreas", DM::RASTERDATA, DM::READ);
-    Goals = DM::View("Goals", DM::RASTERDATA, DM::READ);
-
-
-    std::vector<DM::View> sewerGeneration;
-    sewerGeneration.push_back(ConnectivityField);
-    sewerGeneration.push_back(Path);
-    sewerGeneration.push_back(ConnectivityField_in);
-    sewerGeneration.push_back(ForbiddenAreas);
-    sewerGeneration.push_back(Goals);
-    this->addData("sewerGeneration", sewerGeneration);
-
-
-
-
-
-    ForbiddenAreas = DM::View("ForbiddenAreas", DM::RASTERDATA, DM::READ);
-
-
-
-    /*this->addParameter("Topology", DynaMind::RASTERDATA_IN, &this->Topology);
-    this->addParameter("StartPoints", DynaMind::VECTORDATA_IN, &this->StartPoints);
-    this->addParameter("IdentifierStartPoins", DynaMind::STRING, &this->IdentifierStartPoins);
-    this->addParameter("Path", DynaMind::RASTERDATA_OUT, &this->Path);
-    this->addParameter("MaxDeph", DynaMind::DOUBLE, &this->Hmin);
-    this->addParameter("ConnectivityField", DynaMind::RASTERDATA_OUT, &this->ConnectivityField);
-    this->addParameter("ConnectivityField_in", DynaMind::RASTERDATA_IN, &this->ConnectivityField_in);
-    this->addParameter("ConnectivityWidth", DynaMind::LONG, & this->ConnectivityWidth);
-    this->addParameter("AttractionTopology", DynaMind::DOUBLE, & this->AttractionTopology);
-    this->addParameter("AttractionConnectivity", DynaMind::DOUBLE, & this->AttractionConnectivity);
-    this->addParameter("Goals", DynaMind::RASTERDATA_IN, & this->Goals);
-    this->addParameter("Steps", DynaMind::LONG, & this->steps);
-    this->addParameter("Path", DynaMind::RASTERDATA_OUT, &this->Path);
-    this->addParameter("ForbiddenAreas", DynaMind::RASTERDATA_IN, & this->ForbiddenAreas);*/
-
-
-}
 void GenerateSewerNetwork::addRadiusValueADD(int x, int y, RasterData *layer, int rmax, double value) {
     int level = rmax;
     if (rmax > 500) {
@@ -351,20 +281,79 @@ int GenerateSewerNetwork::indexOfMinValue(const ublas::vector<double> &vec) {
     return index;
 }
 
+GenerateSewerNetwork::GenerateSewerNetwork()
+{
 
+
+    this->ConnectivityWidth = 9;
+    this->AttractionTopology = 1;
+    this->AttractionConnectivity = 1;
+    this->IdentifierStartPoins = "";
+    this->steps = 1000;
+    this->Hmin = 8;
+
+
+
+    this->addParameter("MaxDeph", DM::DOUBLE, &this->Hmin);
+    this->addParameter("Steps", DM::LONG, & this->steps);
+    this->addParameter("ConnectivityWidth", DM::LONG, & this->ConnectivityWidth);
+    this->addParameter("AttractionTopology", DM::DOUBLE, & this->AttractionTopology);
+    this->addParameter("AttractionConnectivity", DM::DOUBLE, & this->AttractionConnectivity);
+
+
+    Topology = DM::View("Topology", DM::RASTERDATA, DM::READ);
+    std::vector<DM::View> city;
+
+    Inlets = DM::View("INLET", DM::NODE, DM::READ);
+    Inlets.getAttribute("New");
+
+    city.push_back(Topology);
+    city.push_back(Inlets);
+
+    this->addData("City", city);
+
+
+
+
+    ForbiddenAreas = DM::View("ForbiddenAreas", DM::RASTERDATA, DM::READ);
+    Goals = DM::View("Goals", DM::RASTERDATA, DM::READ);
+
+    std::vector<DM::View> sewerGeneration_in;
+    sewerGeneration_in.push_back(ForbiddenAreas);
+    sewerGeneration_in.push_back(Goals);
+    this->addData("sewerGeneration_In", sewerGeneration_in);
+
+    std::vector<DM::View> sewerGeneration_con;
+    ConnectivityField_in = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::READ);
+    sewerGeneration_con.push_back(ConnectivityField_in);
+    this->addData("sewerGeneration_con", sewerGeneration_con);
+
+    std::vector<DM::View> sewerGeneration_out;
+
+    ConnectivityField = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::WRITE);
+    Path = DM::View("Path", DM::RASTERDATA, DM::WRITE);
+    sewerGeneration_out.push_back(Path);
+    sewerGeneration_out.push_back(ConnectivityField);
+    this->addData("sewerGeneration_Out", sewerGeneration_out);
+
+}
 void GenerateSewerNetwork::run() {
     this->city = this->getData("City");
-    DM::System * sewerGeneration = this->getData("sewerGeneration");
-    this->sewerGeneration = this->getData("sewerGeneration");
 
+    DM::System * sewerGeneration_in = this->getData("sewerGeneration_In");
+    DM::System * sewerGeneration_out = this->getData("sewerGeneration_Out");
+
+    DM::System * sewerGeneration_con = this->getData("sewerGeneration_con");
     rTopology = this->getRasterData("City", Topology);
 
-    rConnectivityField = this->getRasterData("sewerGeneration", ConnectivityField);
-    rConnectivityField_in = this->getRasterData("sewerGeneration", ConnectivityField_in);
-    rGoals = this->getRasterData("sewerGeneration", Goals);
 
-    rPath  = this->getRasterData("sewerGeneration", Path);
-    rForbiddenAreas  = this->getRasterData("sewerGeneration", ForbiddenAreas);
+    rConnectivityField_in = this->getRasterData("sewerGeneration_con", ConnectivityField_in);
+    rForbiddenAreas  = this->getRasterData("sewerGeneration_In", ForbiddenAreas);
+    rGoals = this->getRasterData("sewerGeneration_In", Goals);
+
+    rPath  = this->getRasterData("sewerGeneration_Out", Path);
+    rConnectivityField = this->getRasterData("sewerGeneration_Out", ConnectivityField);
+
 
     long width = this->rTopology->getWidth();
     long height = this->rTopology->getHeight();
@@ -373,11 +362,13 @@ void GenerateSewerNetwork::run() {
     this->rConnectivityField->setSize(width, height, cellSize);
     Logger(Debug) << "Conn Max " << this->rConnectivityField_in->getMaxValue();
     Logger(Debug) << "Conn Min " << this->rConnectivityField_in->getMinValue();
+    Logger(Debug) << "DebugVal " << this->rConnectivityField_in->getDebugValue();
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++ ) {
-            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j));
+            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j) * 0.1);
         }
     }
+    this->rConnectivityField->setDebugValue(rConnectivityField_in->getDebugValue()+1);
     this->rPath->setSize(width, height, cellSize);
     this->rPath->clear();
     std::vector<Agent * > agents;

@@ -26,47 +26,52 @@
 
 #ifndef EXTRACTNETWORK_H
 #define EXTRACTNETWORK_H
-/*#include <dmmodule.h>
+#include <dmmodule.h>
 #include <dm.h>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include "generatesewernetwork.h"
 using namespace DM;
 class DM_HELPER_DLL_EXPORT ExtractNetwork : public  Module {
-DM_DECLARE_NODE ( ExtractNetwork )
-public:
-    class AgentExtraxtor : public GenerateSewerNetwork::Agent
-{
+    DM_DECLARE_NODE ( ExtractNetwork )
     public:
-    AgentExtraxtor(GenerateSewerNetwork::Pos pos):GenerateSewerNetwork::Agent(pos){};
-    void run();
-};
+        class AgentExtraxtor : public GenerateSewerNetwork::Agent
+    {
+        public:
+        AgentExtraxtor(GenerateSewerNetwork::Pos pos):GenerateSewerNetwork::Agent(pos){};
+        void run();
+    };
 
 
 private:
 
-RasterData * ConnectivityField;
-DM::View StartPoints;
-RasterData * Goals;
-RasterData * Path;
-RasterData * Topology;
-RasterData * ForbiddenAreas;
-DM::View ExportPath;
-DM::View existingNetwork;
-DM::View StartPointsOut;
-//std::string Identifier;
-std::string IdentifierConduit;
-std::string IdentifierEnd;
-std::string IdentifierInlet;
-std::string IdentifierShaft;
-double ConduitLength;
-long steps;
+    RasterData * ConnectivityField;
+    RasterData * Goals;
+    RasterData * Path;
+    RasterData * Topology;
+    RasterData * ForbiddenAreas;
 
-std::vector<std::vector<DM::Node> > SimplifyNetwork(std::vector<std::vector<DM::Node> >  & points, int PReduction, double offset);
-void smoothNetwork();
+    DM::View confield;
+    DM::View path;
+    DM::View forb;
+    DM::View goals;
+
+    DM::View topo;
+    DM::View Inlets;
+    DM::View Conduits;
+    DM::View Junction;
+
+
+    double ConduitLength;
+    long steps;
+
+    DM::System * city;
+
+    std::vector<std::vector<DM::Node> > SimplifyNetwork(std::vector<std::vector<DM::Node> >  & points, int PReduction, double offset);
+    //void smoothNetwork();
 public:
-ExtractNetwork();
-void run();
-};*/
+    ExtractNetwork();
+    void run();
+};
 
 #endif // EXTRACTNETWORK_H

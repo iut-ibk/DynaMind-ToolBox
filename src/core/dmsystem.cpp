@@ -40,6 +40,11 @@ System::System(std::string name) : Component()
 
 }
 
+System::System() : Component()
+{
+
+}
+
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getName()] = c;

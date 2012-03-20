@@ -16,14 +16,16 @@ ExportRasterData::ExportRasterData()
     this->addParameter("flip_h", DM::BOOL, &this->flip_h);
     this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
     this->addData("Data", data);
+    counter = 0;
 }
 
 void ExportRasterData::run () {
+    counter++;
     DM::View(this->NameOfExistingView, DM::RASTERDATA, DM::READ);
     DM::RasterData * rData = this->getRasterData("Data",DM::View(this->NameOfExistingView, DM::RASTERDATA, DM::READ));
     QString extension=".txt";
     std::stringstream s;
-
+    s << "_"<<counter;
     QString fullFileName =   QString::fromStdString(FileName)+  QString::fromStdString(s.str()) +extension;
 
     std::cout << fullFileName.toStdString() << std::endl;

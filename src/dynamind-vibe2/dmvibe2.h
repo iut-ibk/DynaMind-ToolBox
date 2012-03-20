@@ -30,6 +30,7 @@ class DM_HELPER_DLL_EXPORT DMVIBe2 : public DM::Module
         DM::View wwtp;
 
         DM::View conduit;
+        DM::View junction;
 
     public:
         DMVIBe2();
