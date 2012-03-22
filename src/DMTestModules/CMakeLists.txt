@@ -9,13 +9,15 @@ set(MOC_MODULE_FILES guidynamicinout.h
                      guiadddatatonewview.h
                      guiexportrasterdata.h
                      guiappendviewfromsystem.h
-                     guimarker.h)
+                     guimarker.h
+                     guiappendattributes.h)
 
 QT4_WRAP_UI(MODULE_CPPS ${MODULE_UI_FILES})
 QT4_WRAP_CPP(MODULE_CPPS ${MOC_MODULE_FILES})
 
 include_directories(.)
 include_directories(../3dparty/muparser/include)
+include_directories(../DMToolboxes)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(dmtestmodule SHARED ${MODULE_CPPS})

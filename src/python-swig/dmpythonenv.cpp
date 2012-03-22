@@ -116,7 +116,7 @@ PythonEnv *PythonEnv::getInstance() {
     return instance;
 }
 
-/*void PythonEnv::addOverWriteStdCout() {
+void PythonEnv::addOverWriteStdCout() {
 
     boost::format fmt( "import sys\n"
                       "import pydynamind\n"
@@ -156,7 +156,7 @@ PythonEnv *PythonEnv::getInstance() {
         PyErr_Print();
         return;
     }
-}*/
+}
 
 void PythonEnv::addPythonPath(std::string path) {
     boost::format fmt("import sys\n"

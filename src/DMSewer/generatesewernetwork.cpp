@@ -169,11 +169,8 @@ void GenerateSewerNetwork::addRadiusValueADD(int x, int y, RasterData *layer, in
         }
     }
 }
-void GenerateSewerNetwork::addRadiusValue(int x, int y, RasterData * layer, int rmax, double value) {
+void GenerateSewerNetwork::addRadiusValue(int x, int y, RasterData * layer, int rmax, double value, double ** stamp) {
 
-
-
-    int level = rmax;
     if (rmax > 500) {
         rmax = 500;
     }
@@ -183,28 +180,20 @@ void GenerateSewerNetwork::addRadiusValue(int x, int y, RasterData * layer, int 
     if (i < 0) i = 0;
     if (j < 0) j = 0;
 
-    int imax = 10;
-    int jmax = 10;
-    int k = 0;
-
-    for (i; i < rmax+x;  i++) {
+    int i_small = 0;
+    int limitx =  rmax+x;
+    int limity =  rmax+y;
+    for (i; i < limitx;  i++ ) {
         j = y - rmax;
-
-        for ( j;  j < rmax+y; j++) {
-
-            if (i != x || j != y) {
-                double r = sqrt(double((i-x)*(i-x) + (j-y)*(j-y)));
-                double val = (-level/10. * 1./r*value);
-                if (layer->getValue(i,j) > val ) {
-                    layer->setValue(i,j,val );
-                }
-            } else {
-                double val = (-level/10. *( 2.) * value);
-                if (layer->getValue(i,j) > val) {
-                    layer->setValue(i,j,val);
-                }
+        int j_small = 0;
+        for ( j;  j < limity; j++) {
+            double val =  stamp[i_small][j_small] * value;
+            if (layer->getValue(i,j) > val ) {
+                layer->setValue(i,j,val );
             }
+            j_small++;
         }
+        i_small++;
     }
 }
 
@@ -228,6 +217,34 @@ void GenerateSewerNetwork::MarkPathWithField(const std::vector<Pos> & path, Rast
     double r_opt = sqrt(x * x + y * y);
 
 
+
+
+    //Mark Field
+    int level = ConnectivityWidth;
+    int rmax = ConnectivityWidth;
+    if (rmax > 500) {
+        rmax = 500;
+    }
+
+
+    double** stamp = new double*[rmax*2];
+    for (int i = 0; i < rmax*2; i++) {
+        stamp[i] = new double[rmax*2];
+    }
+    int x_p = rmax;
+    for (int i = 0; i < rmax*2;  i++) {
+        for (int j = 0; j < rmax*2;  j++) {
+            if (i != x_p || j != x_p) {
+                double r = sqrt(double((i-x_p)*(i-x_p) + (j-x_p)*(j-x_p)));
+                double val = (-level/10. * 1./r);
+                stamp[i][j]  = val;
+            } else {
+                double val = (-level/10. *( 2.) );
+                stamp[i][j] = val;
+            }
+        }
+    }
+
     for (int i = 0; i < path.size(); i++) {
 
         double val = 1 - ((double) i / (double) path.size());
@@ -241,10 +258,15 @@ void GenerateSewerNetwork::MarkPathWithField(const std::vector<Pos> & path, Rast
         // GenerateSewerNetwork::addRadiusValueADD(
         //    path[last - i].x,  path[last - i].y, & Buffer, ConnectivityWidth, val);
 
-        GenerateSewerNetwork::addRadiusValue(
-                    path[last - i].x,  path[last - i].y, & Buffer, ConnectivityWidth, val);
+        GenerateSewerNetwork::addRadiusValue(path[last - i].x,  path[last - i].y, & Buffer, ConnectivityWidth,  val, stamp);
 
     }
+
+    for (int i = 0; i < rmax; i++) {
+        delete stamp[i];
+    }
+    delete stamp;
+
     x = path[last].x;
     y = path[last].y;
     for (int i = 0; i < ConnectivityField->getHeight(); i++) {

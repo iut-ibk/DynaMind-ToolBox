@@ -98,50 +98,6 @@ void NetworkAnalysis::run() {
     }
 
     int counterChanged = 0;
-
-    /*foreach (DM::Node * n, nodes) {
-        //Connected Nodes
-        std::vector<DM::Edge * > elements = ConnectedEdges[n];
-        if (elements.size() == 0)
-            continue;
-        double maxDia;
-        for (int i = 0; i < elements.size(); i++) {
-            DM::Edge * e = elements[i];
-            if (i == 0) {
-                maxDia = e->getAttribute("DIAMETER")->getDouble();
-                continue;
-            }
-
-            if (maxDia < e->getAttribute("DIAMETER")->getDouble())
-                maxDia = e->getAttribute("DIAMETER")->getDouble();
-
-            e->addAttribute("CHANGEDDIR", 0);
-        }
-
-        if (maxDia < 1)
-            continue;
-
-        for (int i = 0; i < elements.size(); i++) {
-            DM::Edge * e = elements[i];
-            double diameter = e->getAttribute("DIAMETER")->getDouble();
-
-            if (diameter < 1 || maxDia <= diameter )
-                continue;
-
-            //Change Dir if Startnode is
-            if (city->getNode(e->getStartpointName()) == n && diameter < 700) {
-                std::string endnode = e->getEndpointName();
-                std::string startnode = e->getStartpointName();
-                e->setStartpointName(endnode);
-                e->setEndpointName(startnode);
-                e->addAttribute("CHANGEDDIR", 1);
-                counterChanged++;
-            }
-
-
-
-        }
-    }*/
     DM::Logger(DM::Debug) << "CHANGEDDIR " << counterChanged;
 
 
@@ -165,12 +121,8 @@ void NetworkAnalysis::run() {
         DM::Edge * e = city->getEdge(name);
         e->addAttribute("Strahler", 0);
         DM::Node * startnode = city->getNode(e->getStartpointName());
-        DM::Node * endnode = city->getNode(e->getEndpointName());
         if (EndNodeSortedEdges[startnode].size() == 0)
             StartNodes.push_back(startnode);
-        /*if (TBVectorData::getConnectedEdges(city, this->network, *endnode, 0).size() == 1) {
-            StartNodes.push_back(endnode);
-        }*/
     }
     DM::Logger(DM::Debug) << "Number of StartNodes" << StartNodes.size();
 
@@ -180,10 +132,6 @@ void NetworkAnalysis::run() {
             id->getAttribute("Strahler")->setDouble(1);
         }
     }
-
-
-
-
 
     foreach(DM::Node * StartID, StartNodes) {
         std::vector<DM::Edge*> ids = StartNodeSortedEdges[StartID];

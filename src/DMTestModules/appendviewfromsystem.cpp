@@ -45,6 +45,7 @@ void AppendViewFromSystem::run() {
 
 }
 
+//TODO: Works finw until someone is changing something upstream -> no update downstream!
 void AppendViewFromSystem::init()
 {
     //Define New System
@@ -57,6 +58,13 @@ void AppendViewFromSystem::init()
                     if (find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
                         DM::View old = sys->getViewDefinition(v);
                         DM::View new_v(v, old.getType(), DM::WRITE);
+                        DM::AttributeMap cmp = sys->getComponent(old.getIdOfDummyComponent())->getAllAttributes();
+
+                        for (DM::AttributeMap::const_iterator it = cmp.begin();
+                             it != cmp.end();
+                             ++it) {
+                            new_v.addAttribute(it->first);
+                        }
                         views.push_back(new_v);
                         existingViews.push_back(v);
                         changed = true;

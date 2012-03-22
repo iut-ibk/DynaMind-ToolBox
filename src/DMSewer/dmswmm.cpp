@@ -38,10 +38,21 @@ DMSWMM::DMSWMM()
 
     GLOBAL_Counter = 1;
     conduit = DM::View("CONDUIT", DM::EDGE, DM::READ);
+    conduit.getAttribute("Diameter");
+
     inlet = DM::View("INLET", DM::NODE, DM::READ);
-    shaft = DM::View("SHAFT", DM::NODE, DM::READ);
-    endnodes = DM::View("ENDPOINT", DM::NODE, DM::READ);
-    catchment = DM::View("CATCHMENT", DM::NODE, DM::READ);
+    inlet.getAttribute("ID_CATCHMENT");
+
+
+    shaft = DM::View("JUNCTION", DM::NODE, DM::READ);
+    shaft.getAttribute("D");
+
+    endnodes = DM::View("WWTP", DM::NODE, DM::READ);
+    catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
+    catchment.getAttribute("WasteWater");
+    catchment.getAttribute("Area");
+    catchment.getAttribute("Impervious");
+
     outfalls= DM::View("OUTFALL", DM::NODE, DM::READ);
     weir = DM::View("WEIR", DM::NODE, DM::READ);
     wwtp = DM::View("WWTP", DM::NODE, DM::READ);
@@ -330,7 +341,7 @@ void DMSWMM::RunSWMM() {
     tmpPath.mkdir("vibeswmm");
 
     //Path to SWMM
-    QSettings settings("IUT", "DynaMind");
+    QSettings settings("IUT", "DYNAMIND");
     QString swmmPath = settings.value("SWMM").toString().replace("\\","/");
     if (swmmPath.lastIndexOf("/") != swmmPath.size()) {
         swmmPath.append("/");
@@ -470,6 +481,8 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
             imp = 0.2;
         if (gradient > 0.01)
             gradient = 0.01;
+        if (gradient ==0)
+            gradient = 0.00001;
 
         if ( area > 0 ) {
             inp<<"sub"<<UUIDtoINT[id_catchment]<<"\tRG01"<<"\t\tnode"<<id<<"\t" << area << "\t" <<imp*100 << "\t"<< with << "\t"<<gradient*100<<"\t1\n";
@@ -492,9 +505,8 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
         DM::Face * catchment_attr = city->getFace(id_catchment);
 
 
-        foreach(std::string s,  catchment_attr->getEdges()){
-            DM::Edge * e = city->getEdge(s);
-            DM::Node * n = city->getNode(e->getStartpointName());
+        foreach(std::string s,  catchment_attr->getNodes()){
+            DM::Node * n = city->getNode(s);
 
 
             inp << "sub" << UUIDtoINT[id_catchment] <<"\t" << n->getX() << "\t" << n->getY()<< "\n";
@@ -692,9 +704,9 @@ void DMSWMM::writeConduits(std::fstream &inp) {
 
         int EndNode = UUIDtoINT[nEndNode->getName()];
         int StartNode =  UUIDtoINT[nStartNode->getName()];
-        double diameter =0;// 4-this->Network->getAttributes(name).getAttribute("Diameter")/1000;
+        double offest = 0;
         if (EndNode != -1 && StartNode != -1 && EndNode != StartNode)
-            inp<<"LINK"<<counter<<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"<<length<<"\t"<<"0.01	" << diameter  <<"\t"	<< diameter << "\n";
+            inp<<"LINK"<<counter<<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"<<length<<"\t"<<"0.01	" << offest  <<"\t"	<< offest << "\n";
 
         counter++;
     }

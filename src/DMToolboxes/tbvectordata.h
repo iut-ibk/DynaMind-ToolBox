@@ -63,12 +63,11 @@ public:
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
      /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
-    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, bool CheckForExisting = true, double err=0);
-
+    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
+    /** @brief returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
 
     static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
-
 
 
 };

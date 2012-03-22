@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,39 +24,18 @@
  *
  */
 
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
-#include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef RASTERDATAHELPER_H
+#define RASTERDATAHELPER_H
 
-#ifdef __cplusplus
-}
 
-struct PythonEnvPriv;
+#include <dm.h>
 
-class DM_HELPER_DLL_EXPORT PythonEnv {
+class RasterDataHelper
+{
 public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
+    static double sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker=0);
+    static double meanOverAreaWithBlocker (DM::RasterData  * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker);
+    static double meanOverArea (DM::RasterData  * rdata, std::vector<DM::Node*>   & points);
 };
 
-}
-#endif
-#endif // PYTHONENV_H
+#endif // RASTERDATAHELPER_H

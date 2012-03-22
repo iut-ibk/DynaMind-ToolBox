@@ -220,17 +220,17 @@ Face * System::addFace(Face *f) {
     return f;
 }
 
-Face * System::addFace(std::vector<Edge*> edges,  const DM::View & view)
+Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
 {
 
 
-    std::vector<std::string> stringEdges;
+    std::vector<std::string> stringNodes;
 
-    foreach (Edge* e, edges)
-        stringEdges.push_back(e->getName());
+    foreach (Node* n, nodes)
+        stringNodes.push_back(n->getName());
 
 
-    Face * f = this->addFace(new Face(stringEdges));
+    Face * f = this->addFace(new Face(stringNodes));
 
     if (f == 0)
         return 0;
@@ -464,10 +464,8 @@ bool System::addView(View view)
         }
         if (  DM::FACE == view.getType()) {
             DM::Node * n1 =this->addNode(0,0,0);
-            DM::Node * n2 =this->addNode(0,0,0);
-            DM::Edge * e1 = this->addEdge(n1,n2);
-            std::vector<Edge*> ve;
-            ve.push_back(e1);
+            std::vector<Node*> ve;
+            ve.push_back(n1);
             dummy = this->addFace(ve);
         }
         if (  DM::SUBSYSTEM == view.getType()) {

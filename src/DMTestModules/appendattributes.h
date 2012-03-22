@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaMind
+ * This file is part of VIBe2
  *
  * Copyright (C) 2011  Christian Urich
 
@@ -24,39 +24,40 @@
  *
  */
 
-#ifndef DMPYTHONENV_H
-#define DMPYTHONENV_H
 #include "dmcompilersettings.h"
-#include <string>
-#include <vector>
-//using namespace std;
-namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#ifdef __cplusplus
-}
+#ifndef APPENDATTRIBUTES_H
+#define APPENDATTRIBUTES_H
+#include <dmmodule.h>
 
-struct PythonEnvPriv;
+/** @ingroup Modules
+  * @author Christian Urich
+  */
+class DM_HELPER_DLL_EXPORT AppendAttributes : public  DM::Module {
+    DM_DECLARE_NODE(AppendAttributes)
 
-class DM_HELPER_DLL_EXPORT PythonEnv {
+    private:
+        DM::System * sys_in;
+    std::string NameOfExistingView;
+    std::string newAttribute;
+    std::string newAttribute_old;
+    std::string NameOfRasterData;
+    std::vector<DM::View> data;
+
+    DM::View readView;
+
+    std::map<std::string, DM::RasterData*> attribueMaps;
+
+
+    bool median;
+    double multiplier;
+
 public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        void addOverWriteStdCout();
-        void startEditra(std::string filename = "");
-private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
+    AppendAttributes();
+    void run();
+    void init();
+    bool createInputDialog();
+    DM::System * getSystemIn(){return this->sys_in;}
 };
 
-}
-#endif
-#endif // PYTHONENV_H
+#endif // APPENDATTRIBUTES_H

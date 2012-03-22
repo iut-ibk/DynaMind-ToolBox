@@ -31,17 +31,18 @@
 
 using namespace DM;
 
-Face::Face(std::vector<std::string> edges) : Component()
+Face::Face(std::vector<std::string> nodes) : Component()
 {
-    this->edges = edges;
+    this->nodes = nodes;
 }
 Face::Face(const Face& e) : Component(e)
 {
-    this->edges=e.edges;
+    this->nodes=e.nodes;
 }
-std::vector<std::string> Face::getEdges() {
-    return this->edges;
+std::vector<std::string> Face::getNodes() {
+    return this->nodes;
 }
+
 Component* Face::clone()
 {
     return new Face(*this);

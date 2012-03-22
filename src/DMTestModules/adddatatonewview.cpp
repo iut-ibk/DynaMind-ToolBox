@@ -53,9 +53,9 @@ void AddDataToNewView::run()
          it != cmp.end();
          ++it) {
         DM::Component * c = it->second;
-        foreach (std::string attr, newAttributes) {
-            c->addAttribute(attr, 0);
-        }
+        /*foreach (std::string attr, newAttributes) {
+            DM::Attribute * a = c->getAttribute(attr)
+        }*/
         sys->addComponentToView(c, v_new);
     }
 
@@ -64,7 +64,7 @@ void AddDataToNewView::run()
 
 void AddDataToNewView::init()
 {
-
+    //TODO: Works finw until someone is changing something upstream -> no update downstream!
     sys_in = this->getData("Data");
     if (sys_in == 0)
         return;
@@ -96,6 +96,17 @@ void AddDataToNewView::init()
     if (changed)
         writeView = DM::View(getParameterAsString("NameOfNewView"), readView.getType(), DM::WRITE);
 
+
+    //Get Attributes from existing View
+    if (sys_in->getComponent(v.getIdOfDummyComponent()) == 0)
+        return;
+    DM::AttributeMap cmp = sys_in->getComponent(v.getIdOfDummyComponent())->getAllAttributes();
+
+    for (DM::AttributeMap::const_iterator it = cmp.begin();
+         it != cmp.end();
+         ++it) {
+        writeView.addAttribute(it->first);
+    }
 
 
     foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) {

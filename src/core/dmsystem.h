@@ -92,7 +92,7 @@ public:
     Edge* addEdge(Edge* edge);
     Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
     Face * addFace(Face * f);
-    Face * addFace(std::vector<Edge*> edges,  const DM::View & view = DM::View());
+    Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
     Node* getNode(std::string name);
     Edge* getEdge(std::string name);
     Edge* getEdge(const std::string &startnode, const std::string &endnode);

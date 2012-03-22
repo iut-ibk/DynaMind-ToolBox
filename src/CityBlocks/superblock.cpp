@@ -63,11 +63,11 @@ void SuperBlock::run() {
     DM::Edge * e3 = blocks->addEdge(n3, n4);
     DM::Edge * e4 = blocks->addEdge(n4, n1);
 
-    std::vector<DM::Edge*> ve;
-    ve.push_back(e1);
-    ve.push_back(e2);
-    ve.push_back(e3);
-    ve.push_back(e4);
+    std::vector<DM::Node*> ve;
+    ve.push_back(n1);
+    ve.push_back(n2);
+    ve.push_back(n3);
+    ve.push_back(n4);
 
 
     DM::Face * f = blocks->addFace(ve, block);

@@ -37,6 +37,7 @@
 #include "grouptest.h"
 #include "memorytest.h"
 #include "adddatatonewview.h"
+#include "appendattributes.h"
 #include "exportrasterdata.h"
 #include "appendviewfromsystem.h"
 #include "marker.h"
@@ -61,5 +62,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<ExportRasterData>());
     registry->addNodeFactory(new NodeFactory<AppendViewFromSystem>());
     registry->addNodeFactory(new NodeFactory<Marker>());
+    registry->addNodeFactory(new NodeFactory<AppendAttributes>());
 }
 

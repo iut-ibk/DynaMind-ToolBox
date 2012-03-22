@@ -132,9 +132,9 @@ public:
     GenerateSewerNetwork();
     void run();
 
-    static void MarkPathWithField(const std::vector<Pos> & path, RasterData * ConnectivityField, int ConnectivityWidth);
-    static void addRadiusValueADD(int x, int y, RasterData * layer, int rmax, double value);
-    static void addRadiusValue(int x, int y, RasterData * layer, int rmax, double value);
+    void MarkPathWithField(const std::vector<Pos> & path, RasterData * ConnectivityField, int ConnectivityWidth);
+    void addRadiusValueADD(int x, int y, RasterData * layer, int rmax, double value);
+    void addRadiusValue(int x, int y, RasterData * layer, int rmax, double value, double **);
     static int indexOfMinValue(const ublas::vector<double> & vec);
 };
 

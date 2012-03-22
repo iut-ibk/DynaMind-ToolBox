@@ -30,7 +30,7 @@ DMVIBe2::DMVIBe2()
     topology = DM::View("Topology", DM::RASTERDATA, DM::WRITE);
 
     mainSewer = DM::View("MainSewer", DM::EDGE, DM::WRITE);
-    wwtp = DM::View("WWTP", DM::EDGE, DM::WRITE);
+    wwtp = DM::View("WWTP", DM::NODE, DM::WRITE);
 
     conduit = DM::View("CONDUIT", DM::EDGE, DM::WRITE);
     this->addParameter("Height", DM::LONG, &height);
@@ -112,7 +112,7 @@ void DMVIBe2::run()
     DM::System * sys = this->getData("City");
 
     VectorData vec = g->getVectorData("MainSewer");
-
+    DM::View empty;
     std::vector<std::string> conduits = VectorDataHelper::findElementsWithIdentifier("Conduit_", vec.getEdgeNames());
     foreach (std::string con, conduits) {
         std::vector<Edge> edges = vec.getEdges(con);
@@ -120,10 +120,12 @@ void DMVIBe2::run()
         foreach (Edge e, edges) {
             Point p1 = points[e.getID1()];
             Point p2 = points[e.getID2()];
-            DM::View empty;
-            DM::Node * n1 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p1.getX(), p1.getY(), p1.getZ()), true, 0.01);
-            DM::Node * n2 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p2.getX(), p2.getY(), p2.getZ()), true, 0.01);
 
+            DM::Node * n2 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p1.getX(), p1.getY(), p1.getZ()), 0.01);
+            DM::Node * n1 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p2.getX(), p2.getY(), p2.getZ()), 0.01);
+
+            std::cout << p1.getX() << "\t" << p1.getY() << std::endl;
+            std::cout << p2.getX() << "\t" << p2.getY() << std::endl;
             DM::Edge * ed = sys->addEdge(n1, n2, mainSewer);
             sys->addComponentToView(ed, conduit);
         }
@@ -133,20 +135,38 @@ void DMVIBe2::run()
     foreach (std::string sh, shafts) {
         std::vector<Point> points = vec.getPoints(sh);
         foreach (Point p, points) {
-            sys->addNode(p.getX(), p.getY(), p.getZ(), junction);
+            DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX(), p.getY(), p.getZ()), 0.01);
+            sys->addComponentToView(n, junction);
         }
     }
 
 
 
-
+    DM::Node * wwtp1;
     VectorData wwtpv = g->getVectorData("WWTP");
     shafts = VectorDataHelper::findElementsWithIdentifier("WWTP", wwtpv.getPointsNames());
     foreach (std::string sh, shafts) {
-        std::vector<Point> points = vec.getPoints(sh);
+        std::vector<Point> points = wwtpv.getPoints(sh);
         foreach (Point p, points) {
-            sys->addNode(p.getX(), p.getY(), p.getZ(), wwtp);
+            DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX()+20, p.getY()+20, p.getZ()), 0.01);
+            sys->addComponentToView(n, wwtp);
+            wwtp1 = n;
+            std::cout << p.getX() << "\t" << p.getY() << std::endl;
         }
+    }
+
+    foreach (std::string s, sys->getNamesOfComponentsInView(mainSewer)) {
+        DM::Edge * e = sys->getEdge(s);
+
+
+
+        if (e->getStartpointName().compare(wwtp1->getName()) == 0) {
+            DM::Logger(DM::Debug) << "Found";
+        }
+        if (e->getEndpointName().compare(wwtp1->getName()) == 0) {
+            DM::Logger(DM::Debug) << "Found";
+        }
+
     }
 
     DM::Logger(DM::Debug) << "Number of added Pipes " << sys->getNamesOfComponentsInView(mainSewer).size();

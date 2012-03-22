@@ -42,7 +42,7 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 void DM::ModuleRunnable::run() {
     clock_t start, finish;
-    DM::Logger(DM::Standard) << "Start\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
+    DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
     start = clock();    
     m->updateParameter();
     m->init();
@@ -50,7 +50,7 @@ void DM::ModuleRunnable::run() {
         m->run();
     m->postRun();
     finish = clock();
-    DM::Logger(DM::Standard) << "Success\t" << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
+    DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);

@@ -168,6 +168,7 @@ MainWindow::MainWindow(QWidget * parent)
     this->database = new  DMDatabase();
     DM::DataManagement::getInstance().registerDataBase(this->database);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addOverWriteStdCout();
 
 
 

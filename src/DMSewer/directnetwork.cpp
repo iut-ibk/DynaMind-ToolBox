@@ -29,8 +29,8 @@ DM_DECLARE_NODE_NAME(DirectNetwork, Sewer)
 DirectNetwork::DirectNetwork()
 {
     std::vector<DM::View> views;
-    this->conduits = DM::View("CONDUIT", DM::EDGE, DM::MODIFY);
-    this->outfalls = DM::View("OUTLET", DM::NODE, DM::MODIFY);
+    this->conduits = DM::View("NETWORK", DM::EDGE, DM::MODIFY);
+    this->outfalls = DM::View("ENDPOINT", DM::NODE, DM::MODIFY);
     views.push_back(conduits);
     views.push_back(outfalls);
 

@@ -2,12 +2,14 @@
 %feature("director");
 %{
     #include <dmcomponent.h>
+
     #include <dmsystem.h>
     #include <dmattribute.h>
     #include <dmedge.h>
     #include <dmnode.h>
     #include <dmview.h>
     #include <tbvectordata.h>
+    #include <rasterdatahelper.h>
     using namespace std;
     using namespace DM;
 
@@ -25,6 +27,7 @@
 %include "../core/dmnode.h"
 %include "../core/dmview.h"
 %include "../DMToolboxes/tbvectordata.h"
+%include "../DMToolboxes/rasterdatahelper.h"
 
 namespace std {
     %template(stringvector) vector<string>;

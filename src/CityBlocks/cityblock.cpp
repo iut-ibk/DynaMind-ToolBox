@@ -38,11 +38,13 @@ CityBlock::CityBlock()
     superblock.addAttribute("CityBlock_Width");
     superblock.addAttribute("CityBlock_Height");
     cityblock = DM::View("CITYBLOCK", DM::FACE, DM::WRITE);
+    cityblock.addAttribute("Area");
 
     streets = DM::View("STREET", DM::EDGE, DM::WRITE);
     intersections = DM::View("INTERSECTION", DM::NODE, DM::WRITE);
 
     centercityblock = DM::View("CENTERCITYBLOCK", DM::NODE, DM::WRITE);
+    centercityblock.addAttribute("ID_CATCHMENT");
 
     views.push_back(superblock);
     views.push_back(cityblock);
@@ -77,13 +79,10 @@ void CityBlock::run() {
         double maxX = 0;
         double minY = 0;
         double maxY = 0;
-        for (int i = 0; i < fblock->getEdges().size(); i++){
-            DM::Edge * e = city->getEdge(fblock->getEdges()[i]);
+        for (int i = 0; i < fblock->getNodes().size(); i++){
 
-
-
-            DM::Node * n1 = city->getNode(e->getStartpointName());
-            DM::Node * n2 = city->getNode(e->getEndpointName());
+            DM::Node * n1 = city->getNode(fblock->getNodes()[i]);
+            DM::Node * n2 = city->getNode(fblock->getNodes()[i]);
 
             if (i == 0) {
                 minX = n1->getX();
@@ -135,22 +134,18 @@ void CityBlock::run() {
                 DM::Node * n1 = TBVectorData::addNodeToSystem2D(city,
                                                                 intersections,
                                                                 DM::Node(minX + realwidth*x,minY + realheight*y,0),
-                                                                true,
                                                                 .001);
                 DM::Node * n2 = TBVectorData::addNodeToSystem2D(city,
                                                                 intersections,
                                                                 DM::Node(minX + realwidth*(x+1),minY + realheight*y,0),
-                                                                true,
                                                                 .001);
                 DM::Node * n3 = TBVectorData::addNodeToSystem2D(city,
                                                                 intersections,
                                                                 DM::Node(minX + realwidth*(x+1),minY + realheight*(y+1),0),
-                                                                true,
                                                                 .001);
                 DM::Node * n4 = TBVectorData::addNodeToSystem2D(city,
                                                                 intersections,
                                                                 DM::Node (minX + realwidth*x,minY + realheight*(y+1),0),
-                                                                true,
                                                                 .001);
 
 
@@ -178,16 +173,22 @@ void CityBlock::run() {
                     city->addComponentToView(e4, streets);
                 }
 
-                std::vector<DM::Edge*> ve;
-                ve.push_back(e1);
-                ve.push_back(e2);
-                ve.push_back(e3);
-                ve.push_back(e4);
+                std::vector<DM::Node*> ve;
+                ve.push_back(n1);
+                ve.push_back(n2);
+                ve.push_back(n3);
+                ve.push_back(n4);
 
 
                 DM::Face * f = city->addFace(ve, cityblock);
+                f->addAttribute("Area", realwidth*realheight);
+                DM::Node * n =city->addNode(minX + realwidth*(x+0.5),minY + realheight*(y+0.5),0, centercityblock);
+                DM::Attribute attr("ID_CATCHMENT");
+                attr.setString(f->getName());
+                n->addAttribute(attr);
+                int i = 0;
 
-                city->addNode(minX + realwidth*(x+0.5),minY + realheight*(y+0.5),0, centercityblock);
+
 
             }
         }

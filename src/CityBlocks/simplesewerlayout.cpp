@@ -77,9 +77,9 @@ void SimpleSewerLayout::run() {
         face->addAttribute("Impervious", 1);
         face->addAttribute("WasteWater", 100);
         face->addAttribute("Gradient", 1/5000.);
-        std::vector<std::string> edges = face->getEdges();
+        std::vector<std::string> nodes = face->getNodes();
 
-        DM::Node * n1 = city->getNode(city->getEdge(edges[0])->getStartpointName());
+        DM::Node * n1 = city->getNode(nodes[0]);
 
         city->addComponentToView(n1, inlets);
         DM::Attribute  attr1 = DM::Attribute("ID_CATCHMENT");

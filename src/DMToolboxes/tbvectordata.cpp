@@ -95,14 +95,15 @@ DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, 
 
 }
 
-DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::Node n1,  bool CheckForExisting, double err) {
+DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::Node n1,   double err, bool CreateNewNode) {
     DM::Node * new_Node = 0;
 
 
     new_Node = TBVectorData::getNode2D(sys, view, n1, err);
-    if (new_Node != 0 && CheckForExisting == true) {
+    if (new_Node != 0 || !CreateNewNode) {
         return new_Node;
     }
+
 
     new_Node =  sys->addNode(n1.getX(), n1.getY(), n1.getZ(), view);
 
@@ -134,10 +135,10 @@ std::vector<DM::Edge*> TBVectorData::getConnectedEdges(DM::System *sys, DM::View
 
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
     std::vector<DM::Node*> result;
-    std::vector<std::string> edgelist = face->getEdges();
-    foreach (std::string eid, edgelist) {
-        DM::Edge * e = sys->getEdge(eid);
-        result.push_back(sys->getNode(e->getStartpointName()));
+    std::vector<std::string> nodelist= face->getNodes();
+    foreach (std::string eid, nodelist) {
+        DM::Node * n = sys->getNode(eid);
+        result.push_back(n);
 
     }
     return result;
@@ -185,3 +186,4 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
 
 
 }
+

@@ -130,11 +130,14 @@ ExtractNetwork::ExtractNetwork()
     Inlets.modifyAttribute("Used");
     Junction= DM::View("JUNCTION",  DM::NODE, DM::MODIFY);
     Junction.modifyAttribute("D");
+    Junction.modifyAttribute("Z");
+    EndPoint = DM::View("WWTP", DM::NODE, DM::READ);
 
     city.push_back(topo);
     city.push_back(Conduits);
     city.push_back(Inlets);
     city.push_back(Junction);
+    city.push_back(EndPoint);
 
     this->addData("City", city);
 
@@ -232,12 +235,14 @@ void ExtractNetwork::run() {
     std::vector<std::vector<DM::Node> > PointsToPlace = this->SimplifyNetwork(Points_After_Agent_Extraction, this->ConduitLength/cellSize, offset);
 
     //Export Inlets
-    Logger(Debug) << "Export Inlets";
+    Logger(Debug) << "Export Junctions";
     std::vector<std::vector<Node *> > Points_For_Conduits;
     foreach (std::vector<Node> pl, PointsToPlace) {
-        TBVectorData::addNodeToSystem2D(city, Junction, pl[0], true, 0.1);
-        Node * n = this->city->addNode(pl[0], Inlets);
-        this->city->addComponentToView(n, Inlets);
+        Node * n = 0;
+        n  = TBVectorData::addNodeToSystem2D(city, Inlets, pl[0],0.1, false);
+        if (n == 0)
+            n = city->addNode(pl[0], Junction);
+        city->addComponentToView(n, Junction);
         std::vector<DM::Node * > nl;
         nl.push_back(n);
         Points_For_Conduits.push_back(nl);
@@ -249,16 +254,16 @@ void ExtractNetwork::run() {
         for (int i = 1; i < pl.size(); i++) {
             //Check if Point is already placed
             //If name = 0 Point doesnt exist
-            DM::Node * n = TBVectorData::addNodeToSystem2D(city, Junction, pl[i], true, 0.1);
+            DM::Node * n = TBVectorData::addNodeToSystem2D(city, Junction, pl[i], 0.1);
 
             if (n->getAttribute("D")->getDouble() > pl[i].getZ()) {
                 n->setZ(n->getAttribute("D")->getDouble());
             }
 
-            int x = pl[i].getX()/cellSize;
-            int y = pl[i].getY()/cellSize;
-            double z = this->Topology->getValue(x,y);
-            n->changeAttribute("Z", z);
+            //int x = pl[i].getX()/cellSize;
+            //int y = pl[i].getY()/cellSize;
+            //double z = this->Topology->getValue(x,y);
+            //n->changeAttribute("Z", z);
             n->changeAttribute("D", pl[i].getZ());
             nl.push_back(n);
         }
@@ -285,8 +290,16 @@ void ExtractNetwork::run() {
 
     agents.clear();
 
+    foreach (std::string name, this->city->getNamesOfComponentsInView(Junction)) {
+        DM::Node * n =this->city->getNode(name);
+        int x = n->getX()/cellSize;
+        int y = n->getY()/cellSize;
+        double z = this->Topology->getValue(x,y);
+        n->changeAttribute("Z", z);
 
-    //smoothNetwork();
+    }
+
+    smoothNetwork();
 
 }
 
@@ -295,10 +308,15 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
     DM::System sys_tmp("");
     DM::View dummy;
     foreach (std::vector<Node> pl, points) {
+        bool hitExisting= false;
         foreach (Node node, pl) {
-            Node * n = TBVectorData::addNodeToSystem2D(&sys_tmp, dummy, node, true, offset);
-            double attr = n->getAttribute("Counter")->getDouble();
-            n->changeAttribute("Counter", attr+1);
+            Node * n = TBVectorData::addNodeToSystem2D(&sys_tmp, dummy, node, offset);
+            if (n->getAttribute("Counter")->getDouble() > 0.01) {
+                hitExisting = true;
+                n->changeAttribute("Counter",100);
+                break;
+            }
+            n->changeAttribute("Counter",1);
         }
 
     }
@@ -315,14 +333,19 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
     }
 
     int counter = 0;
+
     foreach (std::vector<Node> pl, points) {
         std::vector<Node> pointlist_new;
+
         for (int i  = 0; i < pl.size(); i++) {
-            counter++;
             bool placePoint = false;
             Node * n = TBVectorData::getNode2D(&sys_tmp, dummy ,pl[i], offset );
-            if (n->getAttribute("Counter")->getDouble() > 1.1)
+
+            if (n->getAttribute("Counter")->getDouble() > 99) {
+                n->changeAttribute("Counter", n->getAttribute("Counter")->getDouble()+100);
                 placePoint = true;
+            }
+
             if (i == 0)
                 placePoint = true;
             if (i == pl.size()-1)
@@ -334,6 +357,9 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
                 pointlist_new.push_back(pl[i]);
                 counter = 0;
             }
+            if (n->getAttribute("Counter")->getDouble() > 201) {
+                break;
+            }
 
         }
         ResultVector.push_back(pointlist_new);
@@ -343,41 +369,71 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
 
 }
 //TODO: Smooth Networks
-/*void ExtractNetwork::smoothNetwork() {
+void ExtractNetwork::smoothNetwork() {
+    std::map<DM::Node *, std::vector<DM::Edge*> > StartNodeSortedEdges;
+    std::map<DM::Node *, std::vector<DM::Edge*> > EndNodeSortedEdges;
+    std::map<DM::Node *, std::vector<DM::Edge*> > ConnectedEdges;
+    std::vector<std::string> InletNames;
+    InletNames = city->getNamesOfComponentsInView(this->Inlets);
+    std::vector<std::string> ConduitNames;
+    ConduitNames = city->getNamesOfComponentsInView(this->Conduits);
+    //Create Connection List
+    foreach(std::string name , ConduitNames)  {
+        DM::Edge * e = city->getEdge(name);
+        DM::Node * startnode = city->getNode(e->getStartpointName());
+        std::vector<DM::Edge*> v = ConnectedEdges[startnode];
+        v.push_back(e);
+        ConnectedEdges[startnode] = v;
+
+        DM::Node * Endnode = city->getNode(e->getEndpointName());
+        v = ConnectedEdges[Endnode];
+        v.push_back(e);
+        ConnectedEdges[Endnode] = v;
+    }
+
+
+    foreach(std::string name , ConduitNames)  {
+        DM::Edge * e = city->getEdge(name);
+        DM::Node * startnode = city->getNode(e->getStartpointName());
+        std::vector<DM::Edge*> v = StartNodeSortedEdges[startnode];
+        v.push_back(e);
+        StartNodeSortedEdges[startnode] = v;
+
+
+        DM::Node * Endnode = city->getNode(e->getEndpointName());
+        v = EndNodeSortedEdges[Endnode];
+        v.push_back(e);
+        EndNodeSortedEdges[Endnode] = v;
+
+    }
+
     Logger(Debug) << "Start Smoothing Netowrk";
     //find WWTP
-    std::vector<std::string> JunctionNames = VectorDataHelper::findElementsWithIdentifier(this->IdentifierShaft, this->ExportPath->getPointsNames());
 
-    std::vector<Point> EndPoints;
-    foreach (std::string name, JunctionNames) {
-        Attribute attr = this->ExportPath->getAttributes(name);
-        if (attr.getAttribute("WWTP") > 0 ) {
-            EndPoints.push_back(this->ExportPath->getPoints(name)[0]);
-        }
-    }
-    double internalcounter = 0;
+
+   double internalcounter = 0;
     Logger(Debug) << "Endpoint Thing";
-    while (EndPoints.size() > 0) {
 
-        std::vector<Point> new_endPointList;
-        foreach (Point p, EndPoints) {
+    std::vector<DM::Node *> EndPoints;
+    foreach (std::string n, this->city->getNamesOfComponentsInView(this->EndPoint))
+        EndPoints.push_back(this->city->getNode(n));
+    while (EndPoints.size() > 0) {
+        std::vector<DM::Node*> new_endPointList;
+        foreach (DM::Node * p, EndPoints) {
             if (internalcounter > 100000) {
                 Logger(Error) << "Endless loop";
                 return;
             }
             internalcounter++;
-            std::string point_id = VectorDataHelper::findPointID(*(this->ExportPath), p, this->IdentifierShaft, 10);
-            Attribute attr = this->ExportPath->getAttributes(point_id);
-            double z_lower = attr.getAttribute("Z") - attr.getAttribute("D");
 
-            std::vector<std::string> identifer_cons = VectorDataHelper::findConnectedEges(*(this->ExportPath), p, 10, UPPER, this->IdentifierConduit);
-            foreach (std::string name, identifer_cons)  {
+            double z_lower = p->getAttribute("Z")->getDouble() - p->getAttribute("D")->getDouble();
 
-                Point p_upper = this->ExportPath->getPoints(name)[0];
-                std::string point_id = VectorDataHelper::findPointID(*(this->ExportPath), p_upper, this->IdentifierShaft, 10);
-                Attribute attr = this->ExportPath->getAttributes(point_id);
-                double z_upper = attr.getAttribute("Z") - attr.getAttribute("D");
+            std::vector<DM::Edge*> upstreamconnections = EndNodeSortedEdges[p];
 
+            foreach (DM::Edge * e, upstreamconnections)  {
+
+                DM::Node * p_upper = this->city->getNode(e->getStartpointName());
+                double z_upper = p_upper->getAttribute("Z")->getDouble() - p_upper->getAttribute("D")->getDouble();
                 if (z_lower >= z_upper) {
                     z_upper = z_lower + 0.05;
                 }
@@ -386,9 +442,8 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
                     Logger(Error) << "Endless loop";
                     return;
                 }
-                attr.setAttribute("D", attr.getAttribute("Z") - z_upper);
-                this->ExportPath->setAttributes(point_id, attr);
-                new_endPointList.push_back(p_upper);
+               p_upper->changeAttribute("D", p_upper->getAttribute("Z")->getDouble() - z_upper);
+               new_endPointList.push_back(p_upper);
             }
         }
         internalcounter++;
@@ -402,4 +457,4 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
 
 
 
-}*/
+}

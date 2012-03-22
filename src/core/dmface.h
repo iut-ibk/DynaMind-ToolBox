@@ -33,15 +33,16 @@
 
 namespace DM {
 class Component;
+class Node;
 class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
-    std::vector<std::string> edges;
-public:
-    Face(std::vector<std::string> edges);
-    Face(const Face& e);
-    std::vector<std::string> getEdges();
+    std::vector<std::string> nodes;
 
+public:
+    Face(std::vector<std::string> nodes);
+    Face(const Face& e);
+    std::vector<std::string> getNodes();
     Component * clone();
 
 };

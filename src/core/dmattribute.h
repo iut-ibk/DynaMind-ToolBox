@@ -30,6 +30,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <map>
 #include <dmcompilersettings.h>
 using namespace std;
 
@@ -49,7 +50,7 @@ namespace DM {
         Attribute(const Attribute &newattribute);
         Attribute(std::string name);
         Attribute(std::string name, double val);
-        Attribute(){}
+        Attribute();
         ~Attribute();
         void setDouble(double v);
         double getDouble();
@@ -62,5 +63,6 @@ namespace DM {
         void setName(std::string name);
         std::string getName();
     };
+    typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }
 #endif // ATTRIBUTE_H

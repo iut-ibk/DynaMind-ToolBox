@@ -193,11 +193,11 @@ void Parcels::run() {
 
                 }*/
 
-                std::vector<DM::Edge*> ve;
-                ve.push_back(e1);
-                ve.push_back(e2);
-                ve.push_back(e3);
-                ve.push_back(e4);
+                std::vector<DM::Node*> ve;
+                ve.push_back(n1);
+                ve.push_back(n2);
+                ve.push_back(n3);
+                ve.push_back(n4);
 
 
                 DM::Face * f = city->addFace(ve, parcels);

@@ -49,6 +49,8 @@ private:
     DM::View shaft;
     DM::View endnodes;
     DM::View catchment;
+    DM::View outfalls;
+    DM::View weir;
 
     std::vector<DM::Node *> PointList;
     std::vector<DM::Edge *> EdgeList;
@@ -63,6 +65,10 @@ private:
     double chooseDiameter(double diameter);
     double caluclateAPhi(DM::Component *  attr, double r15) const;
 
+
+    std::map<DM::Node *, std::vector<DM::Edge*> > StartNodeSortedEdges;
+    std::map<DM::Node *, std::vector<DM::Edge*> > EndNodeSortedEdges;
+    std::map<DM::Node *, std::vector<DM::Edge*> > ConnectedEdges;
 
 
 
