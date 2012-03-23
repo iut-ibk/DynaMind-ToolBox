@@ -30,7 +30,7 @@
 
 #include <dm.h>
 
-class RasterDataHelper
+class DM_HELPER_DLL_EXPORT RasterDataHelper
 {
 public:
     static double sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker=0);

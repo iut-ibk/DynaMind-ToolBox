@@ -70,7 +70,6 @@ class DM_HELPER_DLL_EXPORT MainWindow : public QMainWindow, public Ui::MainWindo
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    //ProjectViewer * getProjectViewer() {return this->scene;}
     QTreeWidgetItem * getRootItemModelTree(){return this->rootItemModelTree;}
     GuiLogSink *log_updater;
 private:
@@ -115,6 +114,8 @@ public slots:
     void startEditor();
     void ReloadSimulation();
     void addNewGroupWindows(GroupNode *);
+    void renameGroupWindow(GroupNode *);
+    void removeGroupWindows(GroupNode *);
 
 
 private slots:

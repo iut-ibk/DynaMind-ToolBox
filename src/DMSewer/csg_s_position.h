@@ -40,9 +40,6 @@
 namespace csg_s
 {
 
-/**@brief Datenklasse
- * @author Christian Urich <christian.urich@uibk.ac.at>
-*/
 class DM_HELPER_DLL_EXPORT Position{
 private:
 	long width;

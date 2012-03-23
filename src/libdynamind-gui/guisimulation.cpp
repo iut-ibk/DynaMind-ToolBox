@@ -31,9 +31,10 @@
 GUISimulation::GUISimulation() : Simulation()
 {
 
+}
 
-
-
+void GUISimulation::changeGroupName(GroupNode * g) {
+    emit GroupNameChanged(g);
 }
 
 GroupNode * GUISimulation::getGroupNode(DM::Group * g) {
@@ -53,19 +54,12 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
         ModelNode * node = new ModelNode(m, this);
         this->modelNodes.append(node);
         node->setPos(pos);
-
-        GroupNode * gn = this->getGroupNode(node->getVIBeModel()->getGroup());
-        if (gn != 0)
-            gn->addModelNode(node);
         emit addedModule(node);
     }
     if (m->isGroup()) {
         GroupNode * node = new GroupNode(m, this);
         this->groupNodes.append(node);
         node->setPos(pos);
-        GroupNode * gn = this->getGroupNode(node->getVIBeModel()->getGroup());
-        if (gn != 0)
-            gn->addModelNode(node);
         emit addedGroup(node);
     }
 

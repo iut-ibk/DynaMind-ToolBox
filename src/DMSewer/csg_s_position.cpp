@@ -53,9 +53,7 @@ Position::~Position()
 }
 
 
-/**
-*Geter and Seter
-**/
+
 long Position::getHeight(){
 	return this->height;
 }

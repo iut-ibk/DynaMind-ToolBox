@@ -50,7 +50,6 @@ private:
     QVector<GUIPortTuple * > InPortTuplePorts;
 
     ModuleDescription module;
-    ModelNodeButton * minimizeButton;
     bool RePosFlag;
     std::string name;
     QVector<ModelNode * > childnodes;
@@ -70,11 +69,8 @@ public:
     QRectF boundingRect() const;
     void setSelected ( bool selected );
     void RePosTuplePorts();
-    void recalculateLandH() ;
+
     bool isGroup(){return true;}
-
-
-    void addModelNode(ModelNode * m) ;
 
     void changeGroupID(QString Name);
 

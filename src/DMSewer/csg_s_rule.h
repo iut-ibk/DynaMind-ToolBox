@@ -49,10 +49,6 @@
 namespace csg_s
 {
 
-
-/**@brief Basisklasse für die Regeln
- * @author Christian Urich <christian.urich@uibk.ac.at>
-*/
 class DM_HELPER_DLL_EXPORT rule
 {
 

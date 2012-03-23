@@ -35,35 +35,25 @@ using namespace std;
 
 namespace csg_s {
 
-/**@brief Allgmeine Funktionen
- * @author Christian Urich <christian.urich@uibk.ac.at>
-*/
+
 class DM_HELPER_DLL_EXPORT csg_s_operations{
     
 public:
-    //csg_s_operations();
 
-    //~csg_s_operations();
-    ///rechnet die Position der Moore Nachbarschaft in X-Koordinate um
     static int returnPositionX(int Position);
-    ///rechnet die Position der Moore Nachbarschaft in Y-Koordinate um
+
     static int returnPositionY(int Position);
     /// sucht nach einem Sammler und überträgt das Ergebniss in eine andere Landschaft
     static void findSewer(DM::dataLayer *Input, DM::dataLayer *Output);
-    ///fügt ein nach außenhin abnehmendes radiales Feld ausgehend vom Standpunkt ein
+
     static void addRadiusValue(int x, int y, DM::dataLayer *Layer, int rmax);
-    /**@brief fügt ein nach außenhin abnehmendes radiales Feld ausgehend vom Standpunkt ein
-      *@param [in] value Multiplikator für das radiale Feld ersetzend hinzugefügt
-      */
+
     static void addRadiusValue(int x, int y, DM::dataLayer *Layer, int rmax, double value);
-    /**@brief fügt ein nach außenhin abnehmendes radiales Feld ausgehend vom Standpunkt ein
-      *@param [in] value Multiplikator für das radiale Feld errodierend hinzugefügt
-      */
+
     static void addRadiusValueADD(int x, int y, DM::dataLayer *Layer, int rmax, double value);
-    /**@brief erzeugt ein Anziehungsfeld um das Initiale Kanalsystem
-      */
+
     static void intSewerNetwork(DM::dataLayer *InitSewer, DM::dataLayer *ResultField);
-    ///erportiert die Landschaft in ein *grd File
+
     static void exportRaster(QString name, DM::dataLayer * Layer_, double multiplikator);
     static void writePath(string Text, QString name);
 };

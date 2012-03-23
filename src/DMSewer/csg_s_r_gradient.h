@@ -33,9 +33,7 @@
 
 
 namespace csg_s {
-/**@brief Regel für die Rückgabe möglicher und Wahrscheinlicher Bewegungsrichtungen
- * @author Christian Urich <christian.urich@uibk.ac.at>
-*/
+
 class DM_HELPER_DLL_EXPORT R_Gradient:public rule {
 private:
 	QVector<int> possible_runoffField(Position* pos, double rel_height);
@@ -45,19 +43,13 @@ public:
         R_Gradient(DM::dataLayer *layer_);
         //liefer tiefste Zelle zurück
 	double run(Position* pos);
-        /**@brief ruft die Funktion possible_runoffField() auf
-          *
-          *@param [out] QVector<int> liefert die möglichen Bewegungsrichtungen zurück
-          */
+
 	QVector<int> run_field(Position* pos);
-        /**@brief ruft die Funktion possible_runoffField() auf
-          *
-          *@param [out] QVector<int> liefert die möglichen Bewegungsrichtungen zurück
-          */
+
 	QVector<int> run_field(Position* pos, double rel_height);
-        ///liefert alle Werte der Nachbarschaft zurück
+
 	QVector<int> number_Field(Position* pos);
-        //~R_Gradient();
+
 };
 
 }

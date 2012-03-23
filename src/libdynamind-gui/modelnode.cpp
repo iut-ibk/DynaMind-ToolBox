@@ -280,6 +280,10 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 ModelNode::~ModelNode() {
     //int index = this->nodes->indexOf(this);
     //this->nodes->remove(index);
+    foreach (GUIPort * p, ports) {
+        delete p;
+        p = 0;
+    }
     if (this->VIBeModule != 0)
         this->simulation->removeModule(this->VIBeModule->getUuid());
     this->VIBeModule = 0;
@@ -287,10 +291,8 @@ ModelNode::~ModelNode() {
     if (this->parentGroup != 0) {
         this->parentGroup->removeModelNode(this);
     }
-    foreach (GUIPort * p, ports) {
-        delete p;
-        p = 0;
-    }
+
+
     ports.clear();
     delete this->simpleTextItem;
 
@@ -386,6 +388,11 @@ void ModelNode::renameModelNode() {
     QString text =QInputDialog::getText(0, "Name", tr("User name:"), QLineEdit::Normal);
     if (!text.isEmpty())
         this->getVIBeModel()->setName(text.toStdString());
+
+    if (this->isGroup())
+    {
+        this->simulation->changeGroupName((GroupNode*) this);
+    }
 }
 
 void ModelNode::deleteModelNode() {
@@ -415,13 +422,32 @@ void ModelNode::addGroup() {
     //Find GroupNode
     QString name = QObject::sender()->objectName();
     GroupNode * gn;
+    DM::Group * g;
     if (name.compare(QString::fromStdString(this->simulation->getRootGroup()->getUuid())) == 0) {
         this->VIBeModule->setGroup((DM::Group * ) this->simulation->getRootGroup());
 
         return;
     }
 
+    foreach (DM::Module * m, this->simulation->getModules()) {
+        if (m->getUuid().compare(name.toStdString()) == 0) {
+            g = (DM::Group *) m;
+        }
+    }
+    if (g == 0)
+        return;
 
+    if (this->getVIBeModel()->getGroup()->getUuid().compare(g->getUuid()) == 0) {
+        return;
+    }
+
+
+
+    this->VIBeModule->setGroup(g);
+
+    this->getSimulation()->GUIaddModule(this->VIBeModule, this->pos());
+    this->VIBeModule = 0;
+    delete this;
 }
 
 void ModelNode::printData() {

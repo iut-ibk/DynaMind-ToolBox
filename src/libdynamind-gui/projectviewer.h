@@ -77,11 +77,13 @@ private:
 
 signals:
     void NewGroupAdded(GroupNode  *);
+
     void NewModule(QString name, QPointF pos, DM::Module* group);
 
 public slots:
     void addModule(ModelNode *m);
     void addGroup(GroupNode* m);
+
 
 };
 

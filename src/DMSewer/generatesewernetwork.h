@@ -41,6 +41,13 @@ using namespace DM;
    * @ingroup Sewer
    * @brief Generates the layout of a sewer network
    *
+   * Tries to connected new Inlets with the existing sewer network.
+   * Objective of the agent is to find a junction of the existing network.
+   * If he finds the junction the path is marked with a connectivity function.
+   * Following agents are attracted by this path. At the end this connectivity
+   * field is exported and can be used by the ExtractNetwork module to
+   * extract the new sewer layout
+   *
    * Following data views are requiered:
    * @subsection City
    * @subsubsection RasterData: Topology

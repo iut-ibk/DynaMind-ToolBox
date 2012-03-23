@@ -33,23 +33,14 @@
 namespace csg_s
 {
 
-/**@brief enthält die Nachbarschaftsbezieung nach Moore
- * @author Christian Urich <christian.urich@uibk.ac.at>
-*/
+
 class DM_HELPER_DLL_EXPORT neighbourhood
 {
 private:
     double* nMoore3x3;
 
 public:
-    /**@brief gibt die Werte der Landschaft der benachbarten Elemente zurück
-                 *@param [out] Zeiger auf Vektor mit den Werten der benachbarten Elementen
-                 *Nummerierung des Rückgabevektors
-                 *<br>
-                 *6 7 8<br>
-                 *3(4)5<br>
-                 *0 1 2<br>
-                 */
+
     double* Moore3x3(int x, int y, DM::dataLayer *pL);
     neighbourhood();
     ~neighbourhood();

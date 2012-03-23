@@ -132,13 +132,33 @@ void MainWindow::ReloadSimulation() {
 void MainWindow::startEditor() {
     DM::PythonEnv::getInstance()->startEditra();
 }
+void MainWindow::removeGroupWindows(GroupNode * g) {
+
+    //Check if already exists
+    foreach(int i, groupscenes.keys()) {
+        ProjectViewer * pv = groupscenes[i];
+        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
+            this->tabWidget_4->removeTab(i);
+            delete pv;
+        }
+    }
+}
 void MainWindow::addNewGroupWindows(GroupNode * g) {
+
+    //Check if already exists
+    foreach(int i, groupscenes.keys()) {
+        ProjectViewer * pv = groupscenes[i];
+        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
+            return;
+        }
+    }
 
     ProjectViewer * newgroup = new ProjectViewer(g );
 
     this->simulation->addSimulationObserver(new GUISimulationObserver(newgroup));
 
     connect(simulation, SIGNAL(addedGroup(GroupNode*)), newgroup, SLOT(addGroup(GroupNode*)));
+    connect(simulation, SIGNAL(GroupNameChanged(GroupNode*)), this, SLOT(renameGroupWindow(GroupNode*)));
     connect(simulation, SIGNAL(addedModule(ModelNode*)), newgroup, SLOT(addModule(ModelNode*)));
     connect(newgroup, SIGNAL(NewModule(QString,QPointF, DM::Module *)), simulation, SLOT(GUIaddModule(QString,QPointF, DM::Module  *)));
 
@@ -150,8 +170,21 @@ void MainWindow::addNewGroupWindows(GroupNode * g) {
     gv->setRenderHints(QPainter::Antialiasing);
     gv->setAcceptDrops(true);
 
-    this->groupscenes[this->tabWidget_4->addTab(gv,g->getName())] = newgroup;
+    QString name = QString::fromStdString(g->getVIBeModel()->getName());
+    if (name.isEmpty()) {
+        name = g->getName();
+    }
+    this->groupscenes[this->tabWidget_4->addTab(gv,name)] = newgroup;
 
+}
+
+void MainWindow::renameGroupWindow(GroupNode * g) {
+    foreach(int i, groupscenes.keys()) {
+        ProjectViewer * pv = groupscenes[i];
+        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
+            this->tabWidget_4->setTabText(i, QString::fromStdString(g->getVIBeModel()->getName()));
+        }
+    }
 }
 
 MainWindow::MainWindow(QWidget * parent)
@@ -705,7 +738,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_actionZoomIn_activated(){
-    int i= this->tabWidget_2->currentIndex();
+    int i= this->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
 
     view->scale(1.2, 1.2);
@@ -714,14 +747,14 @@ void MainWindow::on_actionZoomIn_activated(){
 
 void MainWindow::on_actionZoomOut_activated()
 {
-    int i= this->tabWidget_2->currentIndex();
+    int i= this->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->scale(0.8, 0.8);
 }
 
 void MainWindow::on_actionZoomReset_activated()
 {
-    int i= this->tabWidget_2->currentIndex();
+    int i= this->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
 

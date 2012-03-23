@@ -31,11 +31,13 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <guiport.h>
 #include <guisimulation.h>
+#include <dmport.h>
 GUILink::GUILink(){
 
     inPort = 0;
     outPort = 0;
     hovered = false;
+    VIBelink = 0;
     setAcceptHoverEvents(true);
     this->setZValue(100);
 }
@@ -64,9 +66,12 @@ QRectF GUILink::boundingRect() const {
 GUILink::~GUILink() {
     DM::Logger(DM::Debug) << "Remove GUILink" ;
     if (this->outPort != 0)
+
         this->outPort->removeLink(this);
     if (this->inPort != 0)
         this->inPort->removeLink(this);
+    if (VIBelink != 0)
+        delete this->VIBelink;
 }
 
 void GUILink::setOutPort(GUIPort * outPort)
@@ -109,7 +114,7 @@ void GUILink::refresh() {
 
 }
 void GUILink::deleteLink() {
-    sim->removeLink(this->VIBelink);
+
     delete this;
 
 

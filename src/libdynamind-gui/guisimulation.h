@@ -42,6 +42,7 @@ public:
     GUISimulation();
     void registerRootNode();
     GroupNode * getGroupNode(DM::Group * g);
+    void changeGroupName(GroupNode*);
 
 private:
     QVector<ModelNode*> modelNodes;
@@ -50,6 +51,8 @@ private:
 signals:
     void addedModule(ModelNode*);
     void addedGroup(GroupNode*);
+    void GroupNameChanged(GroupNode*);
+
 
 public slots:
     void GUIaddModule( QString  name, QPointF pos, DM::Module *group);

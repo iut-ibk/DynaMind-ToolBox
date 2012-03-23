@@ -78,7 +78,7 @@ void GroupNode::minimize() {
         if (m->isGroup()) {
             GroupNode * g = (GroupNode*) m;
             g->setMinimized( true );
-            g->minimize();            
+            g->minimize();
         } else {
             m->setMinimized( true );
             m->update();
@@ -126,8 +126,6 @@ void GroupNode::updatePorts () {
 
 void GroupNode::addTuplePort(DM::PortTuple * p) {
 
-
-
     //Inport
     if  (p->getPortType() > DM::OUTPORTS) {
         foreach (QString pname, ExistingInPorts) {
@@ -150,7 +148,7 @@ void GroupNode::addTuplePort(DM::PortTuple * p) {
 
         GUIPort * gui_p = new  GUIPort(this,p->getOutPort());
         this->ports.append(gui_p);
-        gui_p->setPos(  this->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter++);
+        gui_p->setPos( this->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter++);
 
     }
 
@@ -166,8 +164,6 @@ GUIPort *  GroupNode::getGUIPort(DM::Port * p) {
     foreach(GUIPortTuple * gui_pt,this->InPortTuplePorts) {
         if (gui_pt->inPort->getVIBePort() == p)
             return gui_pt->inPort;
-        /*if (gui_pt->outPort->getVIBePort() == p)
-            return gui_pt->outPort;*/
     }
 
 
@@ -215,28 +211,19 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     std::cout << "L "<< l << std::endl;
     std::cout << "H"  << h << std::endl;
 
-    minimizeButton = new ModelNodeButton(this);
-    minimizeButton->moveBy(w-16, 4 );
-    minimizeButton->setVisible(true);
 
     Color = COLOR_MODULE;
-    connect( minimizeButton, SIGNAL( Maximize() ), this, SLOT( maximize() ), Qt::DirectConnection );
-    connect( minimizeButton, SIGNAL( Minimize() ), this, SLOT( minimize() ), Qt::DirectConnection );
 
     this->updatePorts();
 
 }
 
 void GroupNode::RePosTuplePorts() {
-    foreach(GUIPortTuple * pt, this->OutputTuplePorts) {
-        GUIPort * gui_p = pt->inPort;
-
-        gui_p->setPos(l-gui_p->boundingRect().width(), gui_p->pos().y());
-        gui_p = pt->outPort;
-        gui_p->setPos( l, gui_p->pos().y());
-
+    foreach(GUIPort * gui_p, this->ports) {
+        if (gui_p->getPortType()  < DM::OUTPORTS) {
+            gui_p->setPos(this->boundingRect().width(), gui_p->pos().y());
+        }
     }
-    minimizeButton->setPos(l-18, 4);
 
 }
 void GroupNode::setSelected(  bool selected ) {
@@ -255,11 +242,8 @@ void GroupNode::setSelected(  bool selected ) {
 
 void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
-
-    std::cout << l << "/" << h << std::endl;
     if (this->visible) {
         recalculateLandH();
-        minimizeButton->setVisible(true);
         if(this->isSelected()== true) {
             painter->setBrush(Qt::gray);
 
@@ -269,22 +253,22 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         if (h< 65)
             h = 65;
         this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->VIBeModule->getName())+" " +QString::number(this->zValue()));
+        float lold = l;
         if (simpleTextItem->boundingRect().width()+40 > l)
-                l = simpleTextItem->boundingRect().width()+40;
+            l = simpleTextItem->boundingRect().width()+40;
         painter->drawRect(0, 0, l,h);
         if (this->childnodes.size() > 0)
             this->setPos(x1-40, y1-20);
 
         painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->VIBeModule->getName())+" " +QString::number(this->zValue()));
 
-
-        if((RePosFlag) != 0) {
+        if (lold != l)
+            RePosFlag = true;
+        if(RePosFlag) {
             RePosTuplePorts();
             RePosFlag = false;
         }
 
-    } else {
-        minimizeButton->setVisible(false);
     }
 
 }
@@ -292,57 +276,10 @@ QRectF GroupNode::boundingRect() const {
     return QRect(0, 0, l, h);
 
 }
-void GroupNode::addModelNode(ModelNode *m) {
-    //this->childnodes.push_back(m);
-    //m->getVIBeModel()->setGroup((DM::Group *)this->getVIBeModel());
-}
 
 
 
 
 
-void GroupNode::recalculateLandH() {
-    float lold = l;
 
 
-    this->setFlag(QGraphicsItem::ItemIsMovable, true);
-
-
-    if (this->childnodes.size() > 0) {
-        x1 = childnodes[0]->sceneBoundingRect().x();
-        y1 = childnodes[0]->sceneBoundingRect().y();
-        x2 = childnodes[0]->sceneBoundingRect().x() + childnodes[0]->sceneBoundingRect().width();
-        y2 = childnodes[0]->sceneBoundingRect().y() + childnodes[0]->sceneBoundingRect().height();
-        for(int i = 0; i < childnodes.size(); i++) {
-            ModelNode * m = childnodes.at(i);
-            if (m->sceneBoundingRect().x() < x1)
-                x1 = m->sceneBoundingRect().x();
-            if (m->sceneBoundingRect().y() < y1)
-                y1 = m->sceneBoundingRect().y();
-            if (m->sceneBoundingRect().x()+m->sceneBoundingRect().width() > x2)
-                x2 = m->sceneBoundingRect().x()+m->sceneBoundingRect().width();
-            if (m->sceneBoundingRect().y()+m->sceneBoundingRect().height() > y2)
-                y2 = m->sceneBoundingRect().y()+m->sceneBoundingRect().height();
-        }
-    }
-
-    if(!this->minimized) {
-        l = x2-x1+80;
-        h =  y2-y1+40;
-    } else {
-        l = 100;
-        h = 85;
-    }
-    if (h< 65)
-        h = 65;
-    if (l > 500 || h > 500) {
-        std::cout << "errer!" << std::endl;
-    }
-    if((lold - l) != 0) {
-        RePosFlag = true;
-        this->prepareGeometryChange();
-        this->update();
-    }
-
-
-}
