@@ -36,7 +36,7 @@ namespace DM {
         Port * InPort;
         Port * OutPort;
         bool backLink;
-        ModuleLink * getPortFromTuplePort(ModuleLink * origin);
+        ModuleLink * getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple);
 
     public:
         ModuleLink(Port * InPort, Port * OutPort,bool isBackPort = false);

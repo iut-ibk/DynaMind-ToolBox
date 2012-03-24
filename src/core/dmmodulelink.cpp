@@ -55,24 +55,24 @@ Port * ModuleLink::getOutPort() {
 }
 std::string ModuleLink::getUuidFromOutPort() {
     if (this->OutPort->isPortTuple()) {
-        if (getPortFromTuplePort(this) != 0 )
-            return getPortFromTuplePort(this)->getOutPort()->getModule()->getUuid();
+        if (getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
+            return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getModule()->getUuid();
     }
 
     return this->OutPort->getModule()->getUuid();
 }
 std::string ModuleLink::getDataNameFromOutPort() {
     if (this->OutPort->isPortTuple()) {
-        if (getPortFromTuplePort(this) != 0 )
-            return getPortFromTuplePort(this)->getOutPort()->getLinkedDataName();
+        if (getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
+            return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getLinkedDataName();
     }
     return this->OutPort->getLinkedDataName();
 }
-ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin) {
+ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple) {
 
     Group * g = (Group*) this->OutPort->getModule();
     PortTuple * pt = g->getInPortTuple(this->OutPort->getLinkedDataName());
-    if (pt == 0) {
+    if (pt == 0 || !fromInportTuple) {
         pt = g->getOutPortTuple(this->OutPort->getLinkedDataName());
     }
 
@@ -106,7 +106,7 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin) {
     if (l == 0)
         return 0;
     if (l->getOutPort()->isPortTuple()) {
-        l = l->getPortFromTuplePort(origin);
+        l = l->getPortFromTuplePort(origin,l->getOutPort()->isInPortTuple());
     }
     if (l == 0)
         return 0;

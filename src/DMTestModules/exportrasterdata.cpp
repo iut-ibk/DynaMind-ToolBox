@@ -27,8 +27,6 @@ void ExportRasterData::run () {
     std::stringstream s;
     s << "_"<<counter;
     QString fullFileName =   QString::fromStdString(FileName)+  QString::fromStdString(s.str()) +extension;
-
-    std::cout << fullFileName.toStdString() << std::endl;
     std::fstream txtout;
 
     txtout.open(fullFileName.toAscii(),std::ios::out);
@@ -43,7 +41,7 @@ void ExportRasterData::run () {
     txtout<<"nodata_value "<< rData->getNoValue()<<"\n";
 
 
-    if (!flip_h) {
+    if (flip_h) {
         for (int j=0; j<rData->getHeight() ; j++)
         {
             for (int i=0; i<rData->getWidth(); i++)
@@ -54,7 +52,7 @@ void ExportRasterData::run () {
 
         }
     }
-    if (flip_h) {
+    if (!flip_h) {
         for (int j=rData->getHeight() -1 ; j > -1 ; j--)
         {
             for (int i=0; i<rData->getWidth(); i++)

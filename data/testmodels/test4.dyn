@@ -1,0 +1,140 @@
+<DynaMind>
+	<Info Version="0.3/">
+<DynaMindCore>
+	<Nodes>
+		<RootNode>
+			<UUID value="{e9701e20-331f-45c3-abf2-0585acd44a6e}"/>
+		</RootNode>
+		<Node>
+			<ClassName value="TestModule"/>
+			<UUID value="{0f2a640e-7f6e-4188-93c4-da3a2a071222}"/>
+			<Name value=""/>
+			<GroupUUID value="{e9701e20-331f-45c3-abf2-0585acd44a6e}"/>
+			<parameter name="Value">
+				<![CDATA[10]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ClearView"/>
+			<UUID value="{1e5c1c28-58fc-4c2b-9149-7390812dbc99}"/>
+			<Name value=""/>
+			<GroupUUID value="{e9701e20-331f-45c3-abf2-0585acd44a6e}"/>
+			<parameter name="NameOfExistingView">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="AddDataToNewView"/>
+			<UUID value="{40b921e1-8922-42ef-b509-e6d83b9cf201}"/>
+			<Name value=""/>
+			<GroupUUID value="{680c449b-f416-4177-95fa-c89eb430c731}"/>
+			<parameter name="NameOfNewView">
+				<![CDATA[cat]]>
+			</parameter>
+			<parameter name="NameOfExistingView">
+				<![CDATA[Conduits]]>
+			</parameter>
+			<parameter name="newAttributes">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="GroupTest"/>
+			<UUID value="{680c449b-f416-4177-95fa-c89eb430c731}"/>
+			<Name value=""/>
+			<GroupUUID value="{e9701e20-331f-45c3-abf2-0585acd44a6e}"/>
+			<parameter name="Runs">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="nameOfInViews">
+				<![CDATA[city*|*]]>
+			</parameter>
+			<parameter name="nameOfOutViews">
+				<![CDATA[city*|*]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{680c449b-f416-4177-95fa-c89eb430c731}"/>
+				<PortName value = "city"/>
+				<PortType value = "1"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{0f2a640e-7f6e-4188-93c4-da3a2a071222}"/>
+				<PortName value = "Sewer"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{680c449b-f416-4177-95fa-c89eb430c731}"/>
+				<PortName value = "city"/>
+				<PortType value = "1"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{40b921e1-8922-42ef-b509-e6d83b9cf201}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{40b921e1-8922-42ef-b509-e6d83b9cf201}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{680c449b-f416-4177-95fa-c89eb430c731}"/>
+				<PortName value = "city"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{1e5c1c28-58fc-4c2b-9149-7390812dbc99}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{680c449b-f416-4177-95fa-c89eb430c731}"/>
+				<PortName value = "city"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="{680c449b-f416-4177-95fa-c89eb430c731}"/>
+			<GUI_PosX value="589"/>
+			<GUI_PosY value="72"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{0f2a640e-7f6e-4188-93c4-da3a2a071222}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{1e5c1c28-58fc-4c2b-9149-7390812dbc99}"/>
+			<GUI_PosX value="811"/>
+			<GUI_PosY value="130"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{40b921e1-8922-42ef-b509-e6d83b9cf201}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>

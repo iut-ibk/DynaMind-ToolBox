@@ -338,7 +338,7 @@ GUIPort * ModelNode::getGUIPort(DM::Port * p) {
         if (gui_p->getVIBePort() == p)
             return gui_p;
     }
-    std::cout << "NO PORT FOUND" << std::endl;
+
 
     return 0;
 }

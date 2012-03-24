@@ -30,12 +30,12 @@
 
 
 namespace DM {
-PortTuple::PortTuple(Module * m, std::string Name, int PortType)
+PortTuple::PortTuple(Module * m, std::string Name, int PortType, bool Inport)
 {
     this->name = Name;
     this->PortType = PortType;
-    inPort = new Port(m, DM::INSYSTEM, name, true);
-    outPort = new Port (m, DM::OUTSYSTEM, name, true);
+    inPort = new Port(m, DM::INSYSTEM, name, true, Inport);
+    outPort = new Port (m, DM::OUTSYSTEM, name, true, Inport);
 }
 
 

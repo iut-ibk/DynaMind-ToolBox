@@ -103,34 +103,7 @@ void Marker::initRExpression () {
     mu::Parser * p  = new mu::Parser();
     long Vcounter = 0;
     long Rcounter = 0;
-    /*for ( std::vector<std::string>::const_iterator it = param.RVariables.begin(); it != param.RVariables.end(); ++it) {
-        std::cout << "Try: " << *it << std::endl;
-        if (paramRaw.find(*it) != paramRaw.end()) {
-            std::string buf;
-            std::stringstream ss(paramRaw.at(*it));
-            std::vector<std::string> tokens;
-            while (ss >> buf)
-                tokens.push_back(buf);
 
-            if (tokens[0].compare("value") <= 0) {
-                if ( tokens[1].compare("DoubleAttributes")<= 0) {
-                    RDoubleAttributes.push_back(& this->getVectorData(tokens[2]).getDoubleAttributes(tokens[3]) );
-                    RVariables.push_back(new double);
-                    RExpression->DefineVar(*it, RVariables[Vcounter++] );
-
-                }
-            }
-            if (tokens[0].compare("RasterData") <= 0) {
-                RRasterData.push_back(& this->getRasterData(tokens[1], this->getT()) );
-                RRasterVariables.push_back(new double);
-                RExpression->DefineVar(*it, RRasterVariables[Rcounter++] );
-            }
-
-        } else {
-            std::cout << "Error: Variable not defined" << std::endl;
-            QThread::currentThread()->exit();;
-        }
-    }*/
     RRasterData.clear();
     RRasterVariables.clear();
     for ( std::vector<std::string>::const_iterator it = param.RData.begin(); it != param.RData.end(); ++it) {

@@ -296,11 +296,7 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
 }
 
 void RasterData::setSize(long width, long height, double cellsize) {
-    clock_t start, finish;
-    start = clock();
-
     if (width != this->width || height != this->height || this->cellSize != cellsize) {
-       // std::cout << "Resize RasterData" << std::endl;
         this->width = width;
         this->height = height;
         this->cellSize = cellsize;
@@ -308,24 +304,13 @@ void RasterData::setSize(long width, long height, double cellsize) {
         this->minValue = -9999;
         this->maxValue = -9999;
 
-        //this->data = new ublas::matrix<double, ublas::row_major, ublas::unbounded_array<double> >(width, height);
-
         data = new double*[width];
         for (long i = 0; i < width; i++) {
             data[i] = new double[height];
         }
-        //this->data->clear();
-        /*for ( long i = 0; i < width; i++ ) {
-            for (  long j = 0; j < height; j++ ) {
-                data(i,j) = 0;
-            }
-        }*/
-        finish = clock();
-        //std::cout <<   ( double (finish - start)/CLOCKS_PER_SEC ) << std::endl;
 
 
-    } else {
-        //std::cout << "ERROR: Can't resize existing RasterData" << std::endl;
+
     }
 }
 

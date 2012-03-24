@@ -1,0 +1,58 @@
+<DynaMind>
+	<Info Version="0.3/">
+<DynaMindCore>
+	<Nodes>
+		<RootNode>
+			<UUID value="{d1d00713-9fdd-4aac-827f-71207e09478f}"/>
+		</RootNode>
+		<Node>
+			<ClassName value="DMSWMM"/>
+			<UUID value="{28014aff-c193-46ed-b547-80b611a1c6c0}"/>
+			<Name value=""/>
+			<GroupUUID value="{cb4c23fd-1430-44e6-b22b-aeb04f6608ff}"/>
+			<parameter name="ClimateChangeFactor">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="RainFile">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="FileName">
+				<![CDATA[swmmfile]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="GroupTest"/>
+			<UUID value="{cb4c23fd-1430-44e6-b22b-aeb04f6608ff}"/>
+			<Name value=""/>
+			<GroupUUID value="{d1d00713-9fdd-4aac-827f-71207e09478f}"/>
+			<parameter name="Runs">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="nameOfInViews">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="nameOfOutViews">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="{cb4c23fd-1430-44e6-b22b-aeb04f6608ff}"/>
+			<GUI_PosX value="91"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{28014aff-c193-46ed-b547-80b611a1c6c0}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="28"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>

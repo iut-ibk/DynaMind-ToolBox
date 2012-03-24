@@ -82,7 +82,6 @@ void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
     }
 }
 void MainWindow::updateResultImage(QString filename) {
-    std::cout << "From Mainwindow" << filename.toStdString() << std::endl;
 }
 void MainWindow::registerResultWindow(GUIResultObserver * ress) {
     GUIImageResultView * w = new GUIImageResultView();
@@ -95,7 +94,7 @@ void MainWindow::registerResultWindow(GUIResultObserver * ress) {
     connect(ress, SIGNAL(updateImage(QString)), w, SLOT(updateImage(QString)), Qt::BlockingQueuedConnection);
 }
 void MainWindow::updatePlotData(double d) {
-    std::cout << "Update Plot Data" << std::endl;
+
 }
 
 void MainWindow::registerPlotWindow(GUIResultObserver * ress, double x, double y) {
@@ -353,7 +352,7 @@ void MainWindow::createModuleListView() {
 
 }
 void MainWindow::editGroup() {
-    std::cout << "Edit Group" << std::endl;
+
     QTreeWidgetItem * item = this->modelTree->currentItem () ;
     if (item == 0) {
         return;
@@ -372,14 +371,19 @@ void MainWindow::runSimulation() {
         ModelNode * m = this->mnodes->at(i);
         m->resetModel();
     }
+
     //connect(simobserver, SIGNAL(finished()), this , SLOT(SimulationFinished()), Qt::DirectConnection);
+
+    for (int i = 0; i < 20; i++)
+        simulation->startSimulation(true);
+
     simulation->start();
 
     return;
 
 }
 void MainWindow::SimulationFinished() {
-    std::cout << "Finished1111" << std::endl;
+
 }
 
 void MainWindow::preferences() {
@@ -392,7 +396,7 @@ void MainWindow::setRunning() {
 }
 
 void MainWindow::sceneChanged() {
-    std::cout << "Scene Changed" << std::endl;
+
 
 }
 void MainWindow::saveAsSimulation() {
@@ -498,101 +502,16 @@ void MainWindow::importSimulation(QString fileName, QPointF offset) {
         fileName = QFileDialog::getOpenFileName(this,
                                                 tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
 
-    if (!fileName.isEmpty()){
+    if (fileName.isEmpty())
+        return;
 
 
-        std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
-        SimulationIO simio;
-        simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
+    std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
+    SimulationIO simio;
+    simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
+    this->loadGUIModules((DM::Group *)this->simulation->getRootGroup(), UUID_Translation, simio.getPositionOfLoadedModules());
 
-        std::vector<ModelNode*> new_modules;
-
-        for (std::map<std::string, std::string>::iterator it = UUID_Translation.begin(); it != UUID_Translation.end(); ++it ) {
-            std::string uuid = it->second;
-            DM::Module * m = this->simulation->getModuleWithUUID(uuid);
-
-            foreach(ModelNode * mn, *(mnodes)) {
-                if (mn->getVIBeModel() == m ) {
-                    new_modules.push_back(mn);
-                    break;
-                }
-            }
-
-        }
-
-        DM::Logger(DM::Debug) << offset.x();
-        for (int i = 0; i < new_modules.size(); i++) {
-
-            ModelNode * module = new_modules.at(i);
-            module->setResultWidget(this);
-
-
-            std::string GroupUUID = module->getVIBeModel()->getGroup()->getUuid();
-            //Implement new
-            /*this->scene->addItem(module);
-            foreach (ModelNode * m, new_modules) {
-                if (m->getVIBeModel()->isGroup()) {
-                    if (m->getVIBeModel()->getUuid().compare(GroupUUID) == 0) {
-                        GroupNode * gn = (GroupNode * ) m;
-                        gn->addModelNode(module);
-                        module->setParentGroup(gn);
-                    }
-                }
-
-            }
-            module->setPos(module->pos()+offset);
-            DM::Logger(DM::Debug) << module->pos().x();
-            module->updatePorts();*/
-
-
-        }
-
-
-        BOOST_FOREACH(DM::ModuleLink * l,this->simulation->getLinks()) {
-            //Check if Linke is allready places
-
-            std::cout << "link" << std::endl;
-            GUILink * gui_link  = new GUILink();
-            ModelNode * outmodule = 0;
-            ModelNode * inmodule = 0;
-
-            foreach(ModelNode * mn, new_modules) {
-                if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
-                    outmodule = mn;
-                    break;
-                }
-            }
-            foreach(ModelNode * mn, new_modules) {
-                if (mn->getVIBeModel() == l->getInPort()->getModule()) {
-                    inmodule = mn;
-                    break;
-                }
-            }
-            if (outmodule != 0 && inmodule != 0) {
-                gui_link->setOutPort(outmodule->getGUIPort(l->getOutPort()));
-                gui_link->setInPort(inmodule->getGUIPort(l->getInPort()));
-                gui_link->setVIBeLink(l);
-                gui_link->setSimulation(this->simulation);
-                //this->scene->addItem(gui_link);
-            }
-
-
-
-        }
-    }
-    for (int i = 0; i < this->mnodes->size(); i++) {
-        ModelNode * m = this->mnodes->at(i);
-        if (m->isMinimized())
-            m->setMinimized(m->isMinimized());
-    }
-    for (int i = 0; i < this->gnodes->size(); i++) {
-        GroupNode * m = this->gnodes->at(i);
-        if (m->isMinimized())
-            m->setMinimized(m->isMinimized());
-    }
-
-
-    //this->scene->update();
+    this->loadGUILinks(UUID_Translation);
 
 
 }
@@ -615,6 +534,11 @@ void MainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::string
         return;
 
     foreach (DM::Module * m , g->getModules()) {
+
+        //Look if exists in Translation list
+        if(reveredUUID_Translation.find(m->getUuid()) == reveredUUID_Translation.end())
+            continue;
+
 
         //GetPos
         QPointF p;
@@ -648,85 +572,101 @@ void MainWindow::loadSimulation(int id) {
         simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
+        this->loadGUILinks(UUID_Translation);
+    }
+}
+void MainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translation) {
+
+    std::map<std::string, std::string> reveredUUID_Translation;
+    for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
+         it != UUID_Translation.end();
+         ++it) {
+        reveredUUID_Translation[it->second] = it->first;
+    }
+
+    BOOST_FOREACH(DM::ModuleLink * l,this->simulation->getLinks()) {
+
+        ModelNode * outmodule = 0;
+        ModelNode * inmodule = 0;
+
+        ProjectViewer * currentView = 0;
+
+        foreach(int i, this->groupscenes.keys()) {
+            ProjectViewer * view = this->groupscenes[i];
+            if (l->getInPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+                currentView = view;
+        }
+        ProjectViewer * currentView_out = 0;
+        foreach(int i, this->groupscenes.keys()) {
+            ProjectViewer * view = this->groupscenes[i];
+            if (l->getOutPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+                currentView_out = view;
+        }
 
 
 
-        BOOST_FOREACH(DM::ModuleLink * l,this->simulation->getLinks()) {
-            GUILink * gui_link  = new GUILink();
-            ModelNode * outmodule = 0;
-            ModelNode * inmodule = 0;
+        if (currentView == 0)
+            continue;
 
-            ProjectViewer * currentView = 0;
+        //TODO: Remove dirty hack
+        //The Problem is with links that are conncet to the root group.
+        //If so the outport module can not be find with current view.
+        //In this Loop the view is switch to the view of the
+        //Inport and then it works.
+        for (int i = 0; i < 2; i++) {
+            if (i == 1)
+                currentView = currentView_out;
 
-            foreach(int i, this->groupscenes.keys()) {
-                ProjectViewer * view = this->groupscenes[i];
-                if (l->getInPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
-                    currentView = view;
+            if (currentView->getRootNode()->getVIBeModel() == l->getOutPort()->getModule()) {
+                outmodule = currentView->getRootNode() ;
+
             }
-            ProjectViewer * currentView_out = 0;
-            foreach(int i, this->groupscenes.keys()) {
-                ProjectViewer * view = this->groupscenes[i];
-                if (l->getOutPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
-                    currentView_out = view;
-            }
 
-
-
-            if (currentView == 0)
-                continue;
-
-            //TODO: Remove dirty hack
-            //The Problem is with links that are conncet to the root group.
-            //If so the outport module can not be find with current view.
-            //In this Loop the view is switch to the view of the
-            //Inport and then it works.
-            for (int i = 0; i < 2; i++) {
-                if (i == 1)
-                    currentView = currentView_out;
-
-                if (currentView->getRootNode()->getVIBeModel() == l->getOutPort()->getModule()) {
-                    outmodule = currentView->getRootNode() ;
-
-                }
-
-                foreach (ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
-                    if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
-                        outmodule = mn;
-                        break;
-                    }
-                }
-
-                if (currentView->getRootNode()->getVIBeModel() == l->getInPort()->getModule()) {
-                    inmodule = currentView->getRootNode();
-
-                }
-
-                foreach(ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
-                    if (mn->getVIBeModel() == l->getInPort()->getModule()) {
-                        inmodule = mn;
-                        break;
-                    }
-                }
-
-                if (inmodule != 0 && outmodule != 0) {
+            foreach (ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
+                if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
+                    outmodule = mn;
                     break;
                 }
             }
 
-            gui_link->setOutPort(outmodule->getGUIPort(l->getOutPort()));
-            gui_link->setInPort(inmodule->getGUIPort(l->getInPort()));
-            gui_link->setVIBeLink(l);
-            gui_link->setSimulation(this->simulation);
+            if (currentView->getRootNode()->getVIBeModel() == l->getInPort()->getModule()) {
+                inmodule = currentView->getRootNode();
 
-            currentView->addItem(gui_link);
-            currentView->update();
+            }
 
+            foreach(ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
+                if (mn->getVIBeModel() == l->getInPort()->getModule()) {
+                    inmodule = mn;
+                    break;
+                }
+            }
+
+            if (inmodule != 0 && outmodule != 0) {
+                break;
+            }
         }
+
+        //Look if exists in Translation list
+        if(reveredUUID_Translation.find(inmodule->getVIBeModel()->getUuid()) == reveredUUID_Translation.end())
+            continue;
+        if(reveredUUID_Translation.find(inmodule->getVIBeModel()->getUuid()) == reveredUUID_Translation.end())
+            continue;
+
+
+        GUILink * gui_link  = new GUILink();
+
+        gui_link->setOutPort(outmodule->getGUIPort(l->getOutPort()));
+        gui_link->setInPort(inmodule->getGUIPort(l->getInPort()));
+        gui_link->setVIBeLink(l);
+        gui_link->setSimulation(this->simulation);
+
+        currentView->addItem(gui_link);
+        currentView->update();
 
     }
 
-
 }
+
 MainWindow::~MainWindow() {
     for ( int i = 0; i < mnodes->size(); i++ ) {
         ModelNode * m = mnodes->at(i);

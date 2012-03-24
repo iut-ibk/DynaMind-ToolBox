@@ -95,7 +95,6 @@ void DynamicInOut::addAttribute(std::string n) {
 }
 
 bool DynamicInOut::createInputDialog() {
-    std::cout << "Show GUI " << std::endl;
     QWidget * w = new GUIDynamicInOut(this);
     w->show();
     return true;

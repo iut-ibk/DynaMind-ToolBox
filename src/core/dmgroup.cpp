@@ -190,15 +190,17 @@ PortTuple * Group::getOutPortTuple(std::string name) {
 PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     PortTuple * pt = 0;
     Logger(Debug) << "Add Tuple Port" << LinkedDataName;
-    pt = new PortTuple(this, LinkedDataName, PortType);
+
     if (PortType < DM::OUTPORTS) {
         //Check if port with the same name already exists
+        pt = new PortTuple(this, LinkedDataName, PortType, false);
         foreach (PortTuple *pt_existing, outPortTuple) {
             if (pt_existing->getName().compare(pt->getName()) == 0)
                 return 0;
         }
         this->outPortTuple.push_back(pt);
     } else {
+        pt = new PortTuple(this, LinkedDataName, PortType, true);
         foreach (PortTuple *pt_existing, inPortTuple) {
             if (pt_existing->getName().compare(pt->getName()) == 0)
                 return 0;

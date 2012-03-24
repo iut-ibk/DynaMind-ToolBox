@@ -122,7 +122,10 @@ public:
     Component* clone();
     const std::vector<std::string> getViews();
 
+    /** @brief add a component to a view */
     bool addComponentToView(Component * comp, const DM::View & view);
+
+    /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
 
     std::map<std::string, Component*> getAllComponentsInView(const View &view);

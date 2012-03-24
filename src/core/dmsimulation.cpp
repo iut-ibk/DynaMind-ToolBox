@@ -216,14 +216,9 @@ void Simulation::registerPythonModules(std::string path) {
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
     foreach(QString file, files) {
-        //try{
         Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
         std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
 
-        //} catch(...) {
-        //    Logger(Warning)  << "Can't load Module: " << file.toStdString();
-        //    std::cout << file.toStdString() << std::endl;
-        //}
     }
 }
 

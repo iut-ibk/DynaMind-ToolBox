@@ -281,7 +281,6 @@ QVariant LinkNode::itemChange(GraphicsItemChange change, const QVariant &value) 
 }
 
 void LinkNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
-    std::cout << "mouseReleaseEvent " << std::endl;
     if (this->LinkType == OUTRASTER || LinkType ==  OUTVEC || LinkType == OUTPOINT || LinkType == OUTEDGE || LinkType ==  OUTDOUBLE) {
         LinkMode = false;
         if (LinkType == INRASTER)

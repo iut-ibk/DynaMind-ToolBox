@@ -32,7 +32,6 @@ GUIPortObserver::GUIPortObserver()
 {
 }
 void GUIPortObserver::changedPorts() {
-    std::cout << "Port Chagned" << std::endl;
     mn->updatePorts();
 }
 void GUIPortObserver::setModelNode(ModelNode * mn) {

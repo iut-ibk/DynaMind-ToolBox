@@ -63,13 +63,6 @@ void GroupNode::removeModelNode(ModelNode *m) {
 }
 
 void GroupNode::changeGroupID(QString Name) {
-    QVector<ModelNode*> ms;// =this->groups->getModelNodes(this->getName() );
-    foreach (ModelNode * m, ms) {
-        //std::cout << m->getGroupID().toStdString() << std::endl;
-        //m->setGroupID(Name);
-    }
-    std::cout << "Change" << std::endl;
-    std::cout << this->getName().toStdString() << std::endl;
     this->getName() = Name;
 }
 void GroupNode::minimize() {
@@ -169,7 +162,7 @@ GUIPort *  GroupNode::getGUIPort(DM::Port * p) {
 
 
     return ModelNode::getGUIPort( p);
-    std::cout << "NO PORT FOUND" << std::endl;
+
     return 0;
 }
 
@@ -208,8 +201,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     w = w < 80 ? 80 : w;
     l = w+4;
     h =  this->simpleTextItem->boundingRect().height()+65;
-    std::cout << "L "<< l << std::endl;
-    std::cout << "H"  << h << std::endl;
+
 
 
     Color = COLOR_MODULE;

@@ -240,7 +240,7 @@ void csg_s::csg_s_operations::findSewer(DM::dataLayer * Input, DM::dataLayer * O
 
 void csg_s::csg_s_operations::intSewerNetwork(DM::dataLayer * InitSewer, DM::dataLayer * ResultField)
 {
-    cout << InitSewer->getheight() << "\n"<< flush;
+
     for (int i = 0; i < InitSewer->getheight(); i++) {
 		for (int j = 0; j < InitSewer->getwidth(); j++){
 

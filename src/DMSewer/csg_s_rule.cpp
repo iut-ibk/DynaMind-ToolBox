@@ -45,12 +45,11 @@ rule::rule(DM::dataLayer *layer_)//:ruleLayer()
     }
     //-------------------------//
 
-};
+}
 
 rule::~rule()
 {
-    //cout << "delete Moore\n";
-    //
+
     delete []nMoore3x3;
     nMoore3x3=0;
 

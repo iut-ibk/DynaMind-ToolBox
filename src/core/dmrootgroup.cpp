@@ -43,7 +43,7 @@ void DMRootGroup::run() {
 }
 
 DMRootGroup::~DMRootGroup() {
-    std::cout << "Call Dectructor RootGroup" << std::endl;
+
 }
 void DMRootGroup::showstats() {
 

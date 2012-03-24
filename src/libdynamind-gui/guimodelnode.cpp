@@ -369,7 +369,6 @@ void GUIModelNode::removeUserDefinedTuple() {
     QMap<QString, QVariant>  ms =  va.value<QMap<QString, QVariant> >();
     QString name = ls1[1];
     if (options.indexOf("withRulePrefix") >= 0) {
-        std::cout << "withRulePrefix" << std::endl;
         name = "Rule_"+ name;
     }
 

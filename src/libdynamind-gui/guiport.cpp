@@ -214,7 +214,6 @@ DM::Port * GUIPort::getVIBePort() {
 }
 
 void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
-    std::cout << "mouseReleaseEvent " << std::endl;
     if (getPortType() < DM::OUTPORTS) {
         LinkMode = false;
 

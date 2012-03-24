@@ -415,6 +415,17 @@ void TimeAreaMethod::run() {
         this->Network_out->setAttributes(name, attr_cond);
     }
     Logger(vibens::Standard) << "Sum over Population " << Population_sum;*/
+
+
+    //TODO: Seperate Module
+    foreach (std::string nc, city->getNamesOfComponentsInView(conduit)) {
+        DM::Edge * e = city->getEdge(nc);
+        if (e->getAttribute("Strahler")->getDouble()  < 2) {
+            city->removeComponentFromView(e, conduit);
+            DM::Node * start = city->getNode(e->getStartpointName());
+            city->removeComponentFromView(start, shaft);
+        }
+    }
 }
 
 double TimeAreaMethod::chooseDiameter(double diameter) {

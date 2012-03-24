@@ -29,13 +29,14 @@
 #include <boost/foreach.hpp>
 using namespace boost;
 namespace DM {
-    Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort)
+    Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
         this->module = module;
         this->PortType = PortType;
         this->linkedDataName = linkedDataName;
         this->tuplePort = tuplePort;
         this->fullyLinked = false;
+        this->tupleInPort = tupleInPort;
     }
     Module * Port::getModule() {
         return this->module;

@@ -231,7 +231,7 @@ void ExtractNetwork::run() {
 
     }
 
-
+    Logger(Debug) << "Done with the agents Junctions";
     std::vector<std::vector<DM::Node> > PointsToPlace = this->SimplifyNetwork(Points_After_Agent_Extraction, this->ConduitLength/cellSize, offset);
 
     //Export Inlets

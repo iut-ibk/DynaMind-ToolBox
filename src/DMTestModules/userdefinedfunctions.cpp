@@ -50,10 +50,8 @@ double mu::numberOfValues(const double* values, int index)
 
 double mu::random(double value)
 {
-        //std::cout << (unsigned)time(0) << std::endl;
-        //srand((unsigned)time(0));
+
     double val = rand() % (int) value;
-    //std::cout << val << std::endl;
     return  val;
 }
 

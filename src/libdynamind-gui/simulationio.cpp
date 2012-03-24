@@ -51,7 +51,6 @@ void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation, 
     this->mnodes = mnodes;
     QXmlSimpleReader r;
     if (!QFile::exists(FileName)) {
-        std::cout << "Error: File" << FileName.toStdString() << " not found" << std::endl;
         return;
     }
     QFile f(FileName);
@@ -78,7 +77,6 @@ bool SimulationIO::startElement(const QString & namespaceURI,
         return true;
     }
     if (qName == "GUI_PosX") {
-        std::cout << atts.value("value").toStdString();
         PosX = atts.value("value").toDouble();
         return true;
     }

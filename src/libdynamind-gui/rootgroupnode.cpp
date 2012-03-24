@@ -63,13 +63,6 @@ void RootGroupNode::removeModelNode(ModelNode *m) {
 }
 
 void RootGroupNode::changeGroupID(QString Name) {
-    QVector<ModelNode*> ms;// =this->groups->getModelNodes(this->getName() );
-    foreach (ModelNode * m, ms) {
-        //std::cout << m->getGroupID().toStdString() << std::endl;
-        //m->setGroupID(Name);
-    }
-    std::cout << "Change" << std::endl;
-    std::cout << this->getName().toStdString() << std::endl;
     this->getName() = Name;
 }
 
@@ -136,7 +129,7 @@ GUIPort *  RootGroupNode::getGUIPort(DM::Port * p) {
 
 
     return ModelNode::getGUIPort( p);
-    std::cout << "NO PORT FOUND" << std::endl;
+
     return 0;
 }
 
@@ -206,7 +199,6 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     QString name;
     //DM::Group;
     this->setGroupZValue();
-    std::cout << l << "/" << h << std::endl;
 
     recalculateLandH();
 
@@ -220,8 +212,8 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     if (simpleTextItem->boundingRect().width()+40 > l)
         l = simpleTextItem->boundingRect().width()+40;
     painter->drawRect(0, 0, l,h);
-    //if (this->childnodes.size() > 0)
-        this->setPos(x1-40, y1-20);
+
+    this->setPos(x1-40, y1-20);
 
     painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->VIBeModule->getName()));
 
@@ -307,9 +299,6 @@ void RootGroupNode::recalculateLandH() {
     } else {
         l = 100;
         h = 85;
-    }
-    if (l > 500 || h > 500) {
-        std::cout << "errer!" << std::endl;
     }
     if((lold - l) != 0) {
         RePosFlag = true;

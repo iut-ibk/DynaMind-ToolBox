@@ -410,10 +410,6 @@ void DMSWMM::writeJunctions(std::fstream &inp)
             continue;
         //SewerTree::Node *node = this->sewerTree.getNodes().at(i);
 
-        /* double z = node->z;
-             if (z < 1) {
-                 std::cout << "Height Error" << endl;
-             }*/
         double depht = p->getZ();
         int id = UUIDtoINT[p->getName()];
 

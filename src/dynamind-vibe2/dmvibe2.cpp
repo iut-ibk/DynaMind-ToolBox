@@ -123,9 +123,6 @@ void DMVIBe2::run()
 
             DM::Node * n2 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p1.getX(), p1.getY(), p1.getZ()), 0.01);
             DM::Node * n1 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p2.getX(), p2.getY(), p2.getZ()), 0.01);
-
-            std::cout << p1.getX() << "\t" << p1.getY() << std::endl;
-            std::cout << p2.getX() << "\t" << p2.getY() << std::endl;
             DM::Edge * ed = sys->addEdge(n1, n2, mainSewer);
             sys->addComponentToView(ed, conduit);
         }
@@ -151,7 +148,6 @@ void DMVIBe2::run()
             DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX()+20, p.getY()+20, p.getZ()), 0.01);
             sys->addComponentToView(n, wwtp);
             wwtp1 = n;
-            std::cout << p.getX() << "\t" << p.getY() << std::endl;
         }
     }
 

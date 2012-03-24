@@ -37,6 +37,7 @@ GenerateSewerNetwork::Agent::Agent(Pos StartPos) {
     this->currentPos.y = StartPos.y;
     this->currentPos.z = 0;
     this->currentPos.h = 3;
+    this->lastdir = -1;
     this->neigh = ublas::vector<double>(9);
     this->decissionVector = ublas::vector<double>(9);
     this->ProbabilityVector = ublas::vector<double>(9);
@@ -63,7 +64,7 @@ void GenerateSewerNetwork::Agent::run() {
                 decissionVector[i] = 0;
             }
             if (index == i )
-                decissionVector[i] += 1*this->AttractionTopology;
+                decissionVector[i] += MultiplyerCenterTop*this->AttractionTopology;
         }
 
         //Influence Topology
@@ -77,7 +78,7 @@ void GenerateSewerNetwork::Agent::run() {
                 decissionVector[i] += 0;
             }
             if (index == i)
-                decissionVector[i] += 5*this->AttractionConnectivity;
+                decissionVector[i] += MultiplyerCenterCon*this->AttractionConnectivity;
 
         }
 
@@ -87,7 +88,23 @@ void GenerateSewerNetwork::Agent::run() {
         for (int i = 0; i < 9; i++) {
             decissionVector[i]*=neigh[i];
         }
+        if (lastdir > -1){
+            decissionVector[lastdir]= 5*decissionVector[lastdir];
+        }
 
+        double neumann[9];
+        neumann[0] = 0;
+        neumann[1] = 1;
+        neumann[2] = 0;
+        neumann[3] = 1;
+        neumann[4] = 1;
+        neumann[5] = 1;
+        neumann[6] = 0;
+        neumann[7] = 1;
+        neumann[8] = 0;
+        for (int i = 0; i < 9; i++) {
+            decissionVector[i]*=neumann[i];
+        }
 
 
         ProbabilityVector = decissionVector / ublas::sum(decissionVector) * 100;
@@ -104,6 +121,9 @@ void GenerateSewerNetwork::Agent::run() {
                 break;
             }
         }
+
+        lastdir = direction;
+
         this->currentPos.x+=csg_s::csg_s_operations::returnPositionX(direction);
         this->currentPos.y+=csg_s::csg_s_operations::returnPositionY(direction);
         double deltaH = Hcurrent - this->Topology->getValue(currentPos.x, currentPos.y);
@@ -313,6 +333,8 @@ GenerateSewerNetwork::GenerateSewerNetwork()
     this->IdentifierStartPoins = "";
     this->steps = 1000;
     this->Hmin = 8;
+    MultiplyerCenterCon = 1;
+    MultiplyerCenterTop = 1;
 
 
 
@@ -321,6 +343,8 @@ GenerateSewerNetwork::GenerateSewerNetwork()
     this->addParameter("ConnectivityWidth", DM::LONG, & this->ConnectivityWidth);
     this->addParameter("AttractionTopology", DM::DOUBLE, & this->AttractionTopology);
     this->addParameter("AttractionConnectivity", DM::DOUBLE, & this->AttractionConnectivity);
+    this->addParameter("MultiplyerCenterCon", DM::DOUBLE, & this->MultiplyerCenterCon);
+    this->addParameter("MultiplyerCenterTop", DM::DOUBLE, & this->MultiplyerCenterTop);
 
 
     Topology = DM::View("Topology", DM::RASTERDATA, DM::READ);
@@ -387,7 +411,7 @@ void GenerateSewerNetwork::run() {
     Logger(Debug) << "DebugVal " << this->rConnectivityField_in->getDebugValue();
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++ ) {
-            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j) * 0.1);
+            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j));
         }
     }
     this->rConnectivityField->setDebugValue(rConnectivityField_in->getDebugValue()+1);
@@ -404,6 +428,12 @@ void GenerateSewerNetwork::run() {
         }
     }
     //Create Agents
+    int attrtopo = this->AttractionTopology - this->internalCounter;
+    if (attrtopo < 0)
+        attrtopo = 0;
+    int attrcon = this->AttractionConnectivity + this->internalCounter;
+    if (attrcon < 0)
+        attrcon = 0;
     foreach(DM::Node * p, StartPos) {
         long x = (long) p->getX()/cellSize;
         long y = (long) p->getY()/cellSize;
@@ -412,8 +442,10 @@ void GenerateSewerNetwork::run() {
         a->MarkPath = this->rPath;
         a->ConnectivityField = this->rConnectivityField;
         a->Goals = this->rGoals;
-        a->AttractionTopology = this->AttractionTopology - this->internalCounter;
-        a->AttractionConnectivity = this->AttractionConnectivity + this->internalCounter;
+        a->AttractionTopology = attrtopo;
+        a->AttractionConnectivity = attrcon;
+        a->MultiplyerCenterCon = MultiplyerCenterCon;
+        a->MultiplyerCenterTop = MultiplyerCenterTop;
         a->steps = this->steps;
         a->Hmin = this->Hmin;
         a->ForbiddenAreas = this->rForbiddenAreas;

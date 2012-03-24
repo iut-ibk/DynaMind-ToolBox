@@ -95,7 +95,6 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
 
 }
 void GUICellularAutomata::fromOutSide() {
-    std::cout << "From Outside" << std::endl;
     QCheckBox * b = (QCheckBox *)QObject::sender();
     QString s =b->objectName();
     QStringList s1 = s.split("_");
@@ -153,7 +152,6 @@ void GUICellularAutomata::updateEntries() {
 
 void GUICellularAutomata::addRasterData() {
     bool ok;
-    std::cout << "AddRasterData" << std::endl;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name:"), QLineEdit::Normal, "" , &ok);
     if (ok && !text.isEmpty()) {
@@ -208,7 +206,6 @@ void GUICellularAutomata::addRule(QStringList list) {
 
     std::string name = list[0].toStdString();
     neighs[name] =list[1].toStdString();
-    std::cout << "Update" << name << list[1].toStdString() << std::endl;
     m->setParameterNative< std::map<std::string, std::string> >("Rules", neighs);
 
     this->updateEntries();

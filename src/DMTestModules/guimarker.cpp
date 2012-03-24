@@ -33,7 +33,6 @@
 using namespace DM;
 
 void GUIMarker::fromOutSide() {
-    std::cout << "From Outside" << std::endl;
     QCheckBox * b = (QCheckBox *)QObject::sender();
     QString s =b->objectName();
     QStringList s1 = s.split("_");
@@ -162,12 +161,10 @@ void GUIMarker::addMaxtoVIBe(QStringList list) {
 }
 void GUIMarker::addRasterData() {
     bool ok;
-    std::cout << "AddRasterData" << std::endl;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name:"), QLineEdit::Normal, "" , &ok);
     if (ok && !text.isEmpty()) {
         //m->appendToUserDefinedParameter("InputRasterData", text.toStdString());
-        std::cout << text.toStdString() << std::endl;
         ui->listWidget_InputRasterData->addItem(text);
     }
 

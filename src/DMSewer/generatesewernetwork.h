@@ -93,7 +93,10 @@ public:
         long steps;
         double AttractionTopology;
         double AttractionConnectivity;
+        double MultiplyerCenterCon;
+        double MultiplyerCenterTop;
         double Hmin;
+        int lastdir;
         Agent(Pos);
     protected:
         ublas::vector<double> neigh;
@@ -131,6 +134,8 @@ private:
     int ConnectivityWidth;
     double AttractionTopology;
     double AttractionConnectivity;
+    double MultiplyerCenterCon;
+    double MultiplyerCenterTop;
     long steps;
     double Hmin;
     std::string IdentifierStartPoins;

@@ -37,7 +37,6 @@ ModuleReader::ModuleReader(QString fileName)
 {
     QXmlSimpleReader r;
     if (!QFile::exists(fileName)) {
-        std::cout << "Error: File" << fileName.toStdString() << " not found" << std::endl;
         return;
     }
     QFile f(fileName);

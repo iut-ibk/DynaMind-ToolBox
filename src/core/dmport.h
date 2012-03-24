@@ -42,10 +42,11 @@ namespace DM {
         std::vector<ModuleLink *> links;
         int PortType;
         bool tuplePort;
+        bool tupleInPort;
         bool fullyLinked;
     public:
 
-        Port(Module * module, int PortType,  std::string linkedDataName, bool tuplePort = false);
+        Port(Module * module, int PortType,  std::string linkedDataName, bool tuplePort = false,  bool tupleInPort = false);
         virtual ~Port();
         Module * getModule();
         std::vector<ModuleLink*> getLinks();
@@ -54,11 +55,10 @@ namespace DM {
         int getPortType(){return this->PortType;}
         void removeLink(ModuleLink * l);
         bool isPortTuple() {return tuplePort;}
+        bool isInPortTuple() {return tupleInPort;}
         bool isFullyLinked() {return this->fullyLinked;}
         void setFullyLinked(bool linked) {this->fullyLinked = linked;}
-
-
-
+        void setIsInPortTuple(bool tupleInPort) {this->tupleInPort = tupleInPort;}
 
     };
 }

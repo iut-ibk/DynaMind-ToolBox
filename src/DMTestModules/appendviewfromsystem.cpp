@@ -58,6 +58,8 @@ void AppendViewFromSystem::init()
                     if (find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
                         DM::View old = sys->getViewDefinition(v);
                         DM::View new_v(v, old.getType(), DM::WRITE);
+                        if (old.getIdOfDummyComponent().empty())
+                            continue;
                         DM::AttributeMap cmp = sys->getComponent(old.getIdOfDummyComponent())->getAllAttributes();
 
                         for (DM::AttributeMap::const_iterator it = cmp.begin();
