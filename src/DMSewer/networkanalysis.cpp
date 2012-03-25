@@ -37,37 +37,6 @@ NetworkAnalysis::NetworkAnalysis()
     this->addData("City", views);
 }
 
-/*bool NetworkAnalysis::checkPoint(DM::Node &p, double offset) {
-    foreach (Point p1, this->PointList) {
-        if (p.compare2d(p1, offset))
-            return true;
-    }
-    return false;
-}
-int NetworkAnalysis::findNewID(DM::Node &p, double offset) {
-    int counter = 0;
-    foreach (Point p1, this->PointList) {
-        if (p.compare2d(p1, offset))
-            return counter;
-        counter++;
-    }
-
-    return -1;
-}
-std::vector<int> NetworkAnalysis::findConnectedEdges(int ID) {
-    std::vector<int> ress;
-    int counter = 0;
-    foreach(Edge e, this->EdgeList) {
-        if (e.getID1() == ID|| e.getID2() == ID) {
-            ress.push_back(counter);
-        }
-        counter++;
-    }
-
-    return ress;
-}*/
-
-
 void NetworkAnalysis::run() {
     DM::System * city = this->getData("City");
 

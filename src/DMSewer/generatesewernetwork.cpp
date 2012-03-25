@@ -89,10 +89,10 @@ void GenerateSewerNetwork::Agent::run() {
             decissionVector[i]*=neigh[i];
         }
         if (lastdir > -1){
-            decissionVector[lastdir]= 5*decissionVector[lastdir];
+            decissionVector[lastdir]= decissionVector[lastdir]* StablizierLastDir;
         }
 
-        double neumann[9];
+        /*double neumann[9];
         neumann[0] = 0;
         neumann[1] = 1;
         neumann[2] = 0;
@@ -104,7 +104,7 @@ void GenerateSewerNetwork::Agent::run() {
         neumann[8] = 0;
         for (int i = 0; i < 9; i++) {
             decissionVector[i]*=neumann[i];
-        }
+        }*/
 
 
         ProbabilityVector = decissionVector / ublas::sum(decissionVector) * 100;
@@ -150,7 +150,7 @@ void GenerateSewerNetwork::Agent::run() {
         }
 
         //Check current Pos is < 3 to secure connections
-        if (Goals->getValue(currentPos.x, currentPos.y ) > 0 && currentPos.h < 3.1) {
+        if (Goals->getValue(currentPos.x, currentPos.y ) > 0 && currentPos.h < this->Hmin) {
             this->alive = false;
             this->successful = true;
             this->path.push_back(currentPos);
@@ -335,6 +335,7 @@ GenerateSewerNetwork::GenerateSewerNetwork()
     this->Hmin = 8;
     MultiplyerCenterCon = 1;
     MultiplyerCenterTop = 1;
+    StablizierLastDir = 1;
 
 
 
@@ -345,6 +346,7 @@ GenerateSewerNetwork::GenerateSewerNetwork()
     this->addParameter("AttractionConnectivity", DM::DOUBLE, & this->AttractionConnectivity);
     this->addParameter("MultiplyerCenterCon", DM::DOUBLE, & this->MultiplyerCenterCon);
     this->addParameter("MultiplyerCenterTop", DM::DOUBLE, & this->MultiplyerCenterTop);
+    this->addParameter("StablizierLastDir", DM::INT, &this->StablizierLastDir);
 
 
     Topology = DM::View("Topology", DM::RASTERDATA, DM::READ);
@@ -411,7 +413,7 @@ void GenerateSewerNetwork::run() {
     Logger(Debug) << "DebugVal " << this->rConnectivityField_in->getDebugValue();
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++ ) {
-            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j));
+            this->rConnectivityField->setValue(i,j, this->rConnectivityField_in->getValue(i,j)*0.5);
         }
     }
     this->rConnectivityField->setDebugValue(rConnectivityField_in->getDebugValue()+1);
@@ -449,6 +451,7 @@ void GenerateSewerNetwork::run() {
         a->steps = this->steps;
         a->Hmin = this->Hmin;
         a->ForbiddenAreas = this->rForbiddenAreas;
+        a->StablizierLastDir = this->StablizierLastDir;
         agents.push_back(a);
 
     }

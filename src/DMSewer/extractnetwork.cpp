@@ -239,7 +239,7 @@ void ExtractNetwork::run() {
     std::vector<std::vector<Node *> > Points_For_Conduits;
     foreach (std::vector<Node> pl, PointsToPlace) {
         Node * n = 0;
-        n  = TBVectorData::addNodeToSystem2D(city, Inlets, pl[0],0.1, false);
+        n  = TBVectorData::addNodeToSystem2D(city, Inlets, pl[0],offset, false);
         if (n == 0)
             n = city->addNode(pl[0], Junction);
         city->addComponentToView(n, Junction);

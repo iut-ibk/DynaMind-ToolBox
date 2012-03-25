@@ -41,9 +41,11 @@ TimeAreaMethod::TimeAreaMethod()
     inlet.getAttribute("ID_CATCHMENT");
 
     shaft = DM::View("JUNCTION", DM::NODE, DM::READ);
-    endnodes = DM::View("WWTP", DM::NODE, DM::READ);
+    wwtps = DM::View("WWTP", DM::NODE, DM::READ);
     catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
-
+    storage = DM::View("STORAGE", DM::NODE, DM::WRITE);
+    storage.addAttribute("StorageV");
+    storage.addAttribute("Storage");
     catchment.getAttribute("Population");
     catchment.getAttribute("Area");
     catchment.getAttribute("Impervious");
@@ -60,10 +62,11 @@ TimeAreaMethod::TimeAreaMethod()
     views.push_back(conduit);
     views.push_back(inlet);
     views.push_back(shaft);
-    views.push_back(endnodes);
+    views.push_back(wwtps);
     views.push_back(catchment);
     views.push_back(outfalls);
     views.push_back(weir);
+    views.push_back(storage);
 
     this->v = 1;
     this->r15 = 150;
@@ -94,37 +97,6 @@ double TimeAreaMethod::caluclateAPhi(DM::Component * attr, double r15)  const {
 
 }
 
-bool TimeAreaMethod::checkPoint(DM::Node *p) {
-    foreach (DM::Node * p1, this->PointList) {
-        if (p->compare2d(p1))
-            return true;
-    }
-    return false;
-
-}
-
-
-DM::Node * TimeAreaMethod::findDownStreamNode(DM::System * city, DM::Node  * ID) {
-    std::vector<DM::Edge *> ids = this->findConnectedEdges(city, ID);
-    foreach(DM::Edge * e, ids) {
-
-        if (city->getComponent(e->getEndpointName()) != ID)
-            return (DM::Node *)city->getComponent(e->getEndpointName());
-    }
-
-    return 0;
-
-}
-
-std::vector<DM::Edge *> TimeAreaMethod::findConnectedEdges(DM::System * city, DM::Node *ID) {
-    std::vector<DM::Edge *> ress;
-    foreach(DM::Edge * e, this->EdgeList) {
-        if (city->getComponent(e->getStartpointName()) == ID || city->getComponent(e->getEndpointName()) == ID) {
-            ress.push_back(e);
-        }
-    }
-    return ress;
-}
 
 void TimeAreaMethod::run() {
 
@@ -133,6 +105,7 @@ void TimeAreaMethod::run() {
     InletNames = city->getNamesOfComponentsInView(inlet);
     std::vector<std::string> ConduitNames;
     ConduitNames = city->getNamesOfComponentsInView(conduit);
+
     //Create Connection List
     foreach(std::string name , ConduitNames)  {
         DM::Edge * e = city->getEdge(name);
@@ -196,44 +169,8 @@ void TimeAreaMethod::run() {
         Population_sum += catchment_attr->getAttribute("Population")->getDouble();
 
     }
-    //Create Point List
 
-    foreach(std::string name , city->getNamesOfComponentsInView(conduit)) {
-        DM::Edge * e = city->getEdge(name);
-
-        DM::Node * p1 = city->getNode(e->getStartpointName());
-        DM::Node * p2 = city->getNode(e->getEndpointName());
-        if (!this->checkPoint(p1))
-            this->PointList.push_back(p1);
-        if (!this->checkPoint(p2))
-            this->PointList.push_back(p2);
-
-        this->EdgeList.push_back(e);
-
-    }
-
-    std::vector<double> WasteWaterPerShaft;
-    std::vector<double> AreaPerShaft;
-    std::vector<double> InfiltrartionWaterPerShaft;
-    std::vector<double> QrKritPerShaft;
-    std::vector<double> QrKritPerShaft_total;
-    std::vector<double> Area_total;
-    std::vector<double> Lengths;
-    std::vector<std::vector<string> > ConnectedInletNodes;
-
-    for (int i = 0; i < this->PointList.size(); i++) {
-        WasteWaterPerShaft.push_back(0);
-        InfiltrartionWaterPerShaft.push_back(0);
-        AreaPerShaft.push_back(0);
-        Lengths.push_back(0);
-        QrKritPerShaft.push_back(0);
-        QrKritPerShaft_total.push_back(0);
-        Area_total.push_back(0);
-        std::vector<std::string> vec;
-        ConnectedInletNodes.push_back(vec);
-
-    }
-    std::vector<std::string> endPointNames = city->getNamesOfComponentsInView(endnodes);
+    std::vector<std::string> endPointNames = city->getNamesOfComponentsInView(wwtps);
     foreach(std::string name, endPointNames) {
         this->EndPointList.push_back(city->getNode(name));
     }
@@ -247,9 +184,6 @@ void TimeAreaMethod::run() {
         double infiltreationwater = inlet_attr->getAttribute("InfiltrationWater")->getDouble();
         double area = inlet_attr->getAttribute("Area")->getDouble();
         double QrKrit = inlet_attr->getAttribute("QrKrit")->getDouble();
-        if (wastewater < 0) {
-            int i = 100;
-        }
         DM::Node * id = city->getNode(name);
         bool ReachedEndPoint = false;
         DM::Node * idPrev = 0;
@@ -257,13 +191,6 @@ void TimeAreaMethod::run() {
         double QKrit = 0;
         double DeltaA = 0;
         do {
-
-
-            //Check if Endpoint is reached
-            //std::vector<std::string> nodes = ConnectedInletNodes[id];
-            //nodes.push_back( name );
-            //ConnectedInletNodes[id] = nodes;
-
             id->getAttribute("WasteWaterPerShaft")->setDouble(id->getAttribute("WasteWaterPerShaft")->getDouble() + wastewater);
             id->getAttribute("InfiltrationWaterPerShaft")->setDouble(id->getAttribute("InfiltrationWaterPerShaft")->getDouble() + infiltreationwater);
             id->getAttribute("AreaPerShaft")->setDouble(id->getAttribute("AreaPerShaft")->getDouble() + area);
@@ -275,13 +202,11 @@ void TimeAreaMethod::run() {
             }
 
             //Search for Outfall
-            /*std::string name = VectorDataHelper::findPointID(*(this->Network), this->PointList[id], this->IdentifierShaft);
-            Attribute attr = this->Network->getAttributes(name);
-            if ((int) attr.getAttribute("Outfall") == 1) {
+            if ((int) id->getAttribute("Outfall")->getDouble() == 1) {
                 StrangL = 0;
-                QKrit = QrKritPerShaft[id];
-                DeltaA = AreaPerShaft[id];
-            }*/
+                QKrit =  id->getAttribute("QrKritPerShaft")->getDouble();
+                DeltaA = id->getAttribute("AreaPerShaft")->getDouble();
+            }
 
             if ( id->getAttribute("StrandLength")->getDouble() < StrangL)
                 id->getAttribute("StrandLength")->setDouble(StrangL);
@@ -290,8 +215,6 @@ void TimeAreaMethod::run() {
             id->getAttribute("QrKritPerShaft_total")->setDouble(QKrit);
             id->getAttribute("Area_total")->setDouble(id->getAttribute("AreaPerShaft")->getDouble() -DeltaA);
 
-            //QrKritPerShaft_total[id] = QKrit;
-            //Area_total[id] = AreaPerShaft[id] - DeltaA;
 
             idPrev = id;
 
@@ -345,8 +268,10 @@ void TimeAreaMethod::run() {
     }
 
     //Write Data to shaft
-    for (int i = 0; i < this->PointList.size(); i++) {
-        DM::Node * p = this->PointList[i];
+    std::vector<std::string> junctionnames = city->getNamesOfComponentsInView(shaft);
+
+    for (int i = 0; i <junctionnames.size(); i++) {
+        DM::Node * p = city->getNode(junctionnames[i]);
 
         p->getAttribute("Time")->setDouble( p->getAttribute("StrandLength")->getDouble()/this->v + 1*60);
 
@@ -355,38 +280,19 @@ void TimeAreaMethod::run() {
 
         p->addAttribute("StorageV",0);
         p->addAttribute("Storage",0);
-        /*if (attr.getAttribute("WWTP") == 1) {
-            attr.setAttribute("Storage",1);
-            attr.setAttribute("StorageV",attr.getAttribute("QrKrit_total"));
+
+        if (p->isInView(wwtps)) {
+            p->addAttribute("Storage",1);
+            city->addComponentToView(p,storage);
         }
 
-        this->Network_out->setAttributes(id, attr);*/
 
     }
 
     //Dimensioning
-    foreach(DM::Edge * e, EdgeList) {
-        /*Point p = this->PointList[e.getID1()];
-        std::string id;
-        foreach(std::string name,VectorDataHelper::findElementsWithIdentifier(this->IdentifierShaft,this->Network->getPointsNames())) {
-            Point p_tmp = this->Network->getPoints(name)[0];
-            if (p.compare2d(p_tmp)) {
-                id = name;
-                break;
-            }
-        }
-
-        Attribute attr;
-        attr = this->Network_out->getAttributes(id);
-
-
-        std::string id_cond = VectorDataHelper::findEdgeID(*(this->Network_out), p, this->PointList[e.getID2()], this->IdentifierConduit);
-
-        //Get Existing Attribute
-        //Only change Diamater if Dimaeter = 0 -> newly placed Pipe, or if redesign is set true
-        Attribute attr_cond = this->Network_out->getAttributes(id_cond);
-        if (attr_cond.getAttribute("Diameter") == 0  || attr_cond.getAttribute("Redesign") == 1)
-        {*/
+    std::vector<std::string> edgesname = city->getNamesOfComponentsInView(conduit);
+    foreach(std::string  en, edgesname) {
+        DM::Edge * e = city->getEdge(en);
         DM::Node * attr = city->getNode(e->getStartpointName());
         double QWasteWater = attr->getAttribute("WasterWater")->getDouble() +  attr->getAttribute("InfitrationWater")->getDouble();
         double QRainWater =  attr->getAttribute("Area_total")->getDouble()*attr->getAttribute("APhi")->getDouble()*this->r15/10000. +  attr->getAttribute("QrKrit_total")->getDouble();
@@ -396,15 +302,12 @@ void TimeAreaMethod::run() {
 
         e->addAttribute("Diameter", this->chooseDiameter(sqrt((QBem)/3.14*4))); //in mm
         e->addAttribute("QBem", QBem);
-        if (QBem < 0) {
-            int i = 100;
-        }
+
         DM::Logger(DM::Debug) <<  "Area total: " <<attr->getAttribute("Area_total")->getDouble();
-        //}
 
     }
     //Create Storage Building at the End
-    /*   std::vector<std::string> wwtp_con_names = VectorDataHelper::findElementsWithIdentifier("WWTPConduit", this->Network_out->getEdgeNames());
+    /*std::vector<std::string> wwtp_con_names = VectorDataHelper::findElementsWithIdentifier("WWTPConduit", this->Network_out->getEdgeNames());
     foreach(std::string name, wwtp_con_names) {
         std::vector<Point> points = this->Network_out->getPoints(name);
         Point p = points[0];
@@ -418,14 +321,14 @@ void TimeAreaMethod::run() {
 
 
     //TODO: Seperate Module
-    foreach (std::string nc, city->getNamesOfComponentsInView(conduit)) {
+    /*foreach (std::string nc, city->getNamesOfComponentsInView(conduit)) {
         DM::Edge * e = city->getEdge(nc);
         if (e->getAttribute("Strahler")->getDouble()  < 2) {
             city->removeComponentFromView(e, conduit);
             DM::Node * start = city->getNode(e->getStartpointName());
             city->removeComponentFromView(start, shaft);
         }
-    }
+    }*/
 }
 
 double TimeAreaMethod::chooseDiameter(double diameter) {

@@ -95,6 +95,7 @@ public:
         double AttractionConnectivity;
         double MultiplyerCenterCon;
         double MultiplyerCenterTop;
+        double StablizierLastDir;
         double Hmin;
         int lastdir;
         Agent(Pos);
@@ -138,6 +139,7 @@ private:
     double MultiplyerCenterTop;
     long steps;
     double Hmin;
+    int StablizierLastDir;
     std::string IdentifierStartPoins;
 
 public:

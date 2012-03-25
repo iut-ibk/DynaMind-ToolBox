@@ -44,12 +44,13 @@ class DM_HELPER_DLL_EXPORT DMSWMM : public  DM::Module {
         DM::View outfalls;
         DM::View weir;
         DM::View wwtp;
+        DM::View storage;
 
 
     std::string RainFile;
     std::string FileName;
     std::vector<DM::Node*> PointList;
-    std::vector<DM::Edge*> EdgeList;
+    //std::vector<DM::Edge*> EdgeList;
 
     double Vp;
     double Vr;
@@ -65,7 +66,7 @@ class DM_HELPER_DLL_EXPORT DMSWMM : public  DM::Module {
 
     void writeSWMMFile();
     void RunSWMM();
-    //void readInReportFile();
+    void readInReportFile();
 
     void writeSubcatchments(std::fstream &inp);
     void writeJunctions(std::fstream &inp);

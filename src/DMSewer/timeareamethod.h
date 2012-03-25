@@ -47,21 +47,16 @@ private:
     DM::View conduit;
     DM::View inlet;
     DM::View shaft;
-    DM::View endnodes;
+    DM::View wwtps;
     DM::View catchment;
     DM::View outfalls;
     DM::View weir;
-
-    std::vector<DM::Node *> PointList;
-    std::vector<DM::Edge *> EdgeList;
+    DM::View storage;
 
     std::vector<DM::Node*> EndPointList;
 
     double v;
     double r15;
-    bool checkPoint(DM::Node *p);
-    std::vector<DM::Edge *> findConnectedEdges(DM::System * city, DM::Node* ID);
-    DM::Node* findDownStreamNode(DM::System *city, DM::Node * ID);
     double chooseDiameter(double diameter);
     double caluclateAPhi(DM::Component *  attr, double r15) const;
 

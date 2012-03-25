@@ -31,13 +31,14 @@ DMVIBe2::DMVIBe2()
 
     mainSewer = DM::View("MainSewer", DM::EDGE, DM::WRITE);
     wwtp = DM::View("WWTP", DM::NODE, DM::WRITE);
-
+    wwtp.addAttribute("D");
     conduit = DM::View("CONDUIT", DM::EDGE, DM::WRITE);
+
     this->addParameter("Height", DM::LONG, &height);
     this->addParameter("Width", DM::LONG, &width);
 
     junction = DM::View("JUNCTION", DM::NODE, DM::WRITE);
-
+    junction.addAttribute("D");
     std::vector<DM::View> views;
     views.push_back(landuse);
     views.push_back(population);
@@ -124,7 +125,9 @@ void DMVIBe2::run()
             DM::Node * n2 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p1.getX(), p1.getY(), p1.getZ()), 0.01);
             DM::Node * n1 = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p2.getX(), p2.getY(), p2.getZ()), 0.01);
             DM::Edge * ed = sys->addEdge(n1, n2, mainSewer);
+
             sys->addComponentToView(ed, conduit);
+
         }
     }
 
@@ -134,6 +137,7 @@ void DMVIBe2::run()
         foreach (Point p, points) {
             DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX(), p.getY(), p.getZ()), 0.01);
             sys->addComponentToView(n, junction);
+            n->addAttribute("D", 3);
         }
     }
 
@@ -148,6 +152,7 @@ void DMVIBe2::run()
             DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX()+20, p.getY()+20, p.getZ()), 0.01);
             sys->addComponentToView(n, wwtp);
             wwtp1 = n;
+            n->addAttribute("D", 3);
         }
     }
 
