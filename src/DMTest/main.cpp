@@ -306,42 +306,44 @@ bool MemDynaMiteTestPython()
 bool UDM()
 {
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
-    env->addPythonPath("/home/c8451045/Documents/DynaMind/build/release/");
+    env->addPythonPath("/home/christian/Documents/DynaMind/build/release/");
 
 
     DataManagement::init();
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
-    Simulation * sim = new Simulation;
-    /*sim->registerNativeModules("cityblock");
-    sim->registerNativeModules("dmtestmodule");
-    sim->registerNativeModules("dynamindsewer");
-    sim->registerNativeModules("dynamind-vibe2");*/
-    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
-    sim->loadSimulation("/home/christian/Documents/DynaMind/build/debug/vibe_sewer_2.dyn");
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
 
-    sim->startSimulation();
+    for (int i = 0; i < 1000; i++)
+    {
+        Simulation * sim =  new Simulation;
 
+        sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
+        sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_3.dyn");
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+        sim->startSimulation(true);
+
+        sim->startSimulation();
+
+        delete sim;
+    }
 
     return true;
 }

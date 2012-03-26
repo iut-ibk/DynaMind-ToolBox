@@ -64,7 +64,9 @@ public:
     virtual ~Component();
     void setName(std::string name);
     std::string getName();
+
     bool addAttribute(Attribute newattribute);
+    /** @brief add attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, double val);
     bool changeAttribute(Attribute newattribute);
     bool changeAttribute(std::string, double val);

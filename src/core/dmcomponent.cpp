@@ -99,6 +99,9 @@ std::string Component::getName()
 }
 
 bool Component::addAttribute(std::string name, double val) {
+    if(attributesview.find(name)!=attributesview.end()) {
+        return this->changeAttribute(name, val);
+    }
     Attribute  attr = Attribute(name, val);
     return this->addAttribute(attr);
 
@@ -116,11 +119,20 @@ bool Component::addAttribute(Attribute newattribute)
 
 bool Component::changeAttribute(Attribute newattribute)
 {
-    if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
+    /*if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
         delete ownedattributes[newattribute.getName()];
     Attribute * b = new Attribute(newattribute);
     ownedattributes[newattribute.getName()] = b;
-    attributesview[newattribute.getName()] = b;
+    attributesview[newattribute.getName()] = b;*/
+
+    if(attributesview.find(newattribute.getName())==attributesview.end()) {
+        return this->addAttribute(newattribute);
+    }
+    Attribute * attr = attributesview[newattribute.getName()];
+    attr->setDouble(newattribute.getDouble());
+    attr->setDoubleVector(newattribute.getDoubleVector());
+    attr->setString(newattribute.getString());
+    attr->setStringVector(newattribute.getStringVector());
 
     return true;
 }
@@ -152,9 +164,7 @@ Attribute* Component::getAttribute(std::string name)
 {
     if(attributesview.find(name)==attributesview.end()) {
         this->addAttribute(Attribute(name));
-        //return attributesview[name]
     }
-   // Logger(Debug) << "Attribute found: " << name ;
     return attributesview[name];
 }
 

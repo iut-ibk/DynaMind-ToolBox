@@ -298,7 +298,13 @@ void ExtractNetwork::run() {
         n->changeAttribute("Z", z);
 
     }
-
+    foreach (std::string name, this->city->getNamesOfComponentsInView(EndPoint)) {
+        DM::Node * n =this->city->getNode(name);
+        int x = n->getX()/cellSize;
+        int y = n->getY()/cellSize;
+        double z = this->Topology->getValue(x,y);
+        n->changeAttribute("Z", z-3);
+    }
     smoothNetwork();
 
 }
@@ -411,7 +417,7 @@ void ExtractNetwork::smoothNetwork() {
     //find WWTP
 
 
-   double internalcounter = 0;
+    double internalcounter = 0;
     Logger(Debug) << "Endpoint Thing";
 
     std::vector<DM::Node *> EndPoints;
@@ -442,8 +448,8 @@ void ExtractNetwork::smoothNetwork() {
                     Logger(Error) << "Endless loop";
                     return;
                 }
-               p_upper->changeAttribute("D", p_upper->getAttribute("Z")->getDouble() - z_upper);
-               new_endPointList.push_back(p_upper);
+                p_upper->changeAttribute("D", p_upper->getAttribute("Z")->getDouble() - z_upper);
+                new_endPointList.push_back(p_upper);
             }
         }
         internalcounter++;

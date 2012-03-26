@@ -55,6 +55,7 @@ DMSWMM::DMSWMM()
 
     outfalls= DM::View("OUTFALL", DM::NODE, DM::READ);
     weir = DM::View("WEIR", DM::NODE, DM::READ);
+    weir.getAttribute("InletOffset");
     wwtp = DM::View("WWTP", DM::NODE, DM::READ);
 
     storage = DM::View("STORAGE", DM::NODE, DM::READ);
@@ -246,8 +247,10 @@ void DMSWMM::readInReportFile() {
                     id_asstring.remove("NODE");
                     int id = id_asstring.toInt();
                     DM::Node * p = this->city->getNode(revUUIDtoINT[id]);
-                    if (p->getAttribute("WWTP")->getDouble() > 0.01)
+                    if (p->getAttribute("WWTP")->getDouble() > 0.01) {
                         p->changeAttribute("OutfallVolume",  QString(data[4]).toDouble());
+                        Vwwtp +=QString(data[4]).toDouble();
+                    }
                 }
 
 
@@ -298,6 +301,14 @@ void DMSWMM::readInReportFile() {
     this->sendDoubleValueToPlot(years, 1.-Vp/SurfaceRunOff);
 
     years++;
+
+
+
+    QString fileName = "/home/christian/ress2.dat";
+    std::fstream out;
+    out.open(fileName.toAscii(),fstream::out | fstream::app);
+    out << Vp << "\t"<< Vwwtp << "\t"<< SurfaceRunOff << "\n";
+    out.close();
 
 }
 
@@ -394,7 +405,13 @@ void DMSWMM::writeJunctions(std::fstream &inp)
         inp << "\t";
         inp << "100000";
         inp << "\n";
+
+        DM::Logger(DM::Debug) <<  "QrKritPerShaft_1" << p->getAttribute("QrKritPerShaft")->getDouble();
+        DM::Logger(DM::Debug) <<  "QrKritPerShaft_total_1" << p->getAttribute("QrKritPerShaft_total")->getDouble();
+        DM::Logger(DM::Debug) <<  "AreaPerShaft_1" << p->getAttribute("QrKritPerShaft_total")->getDouble();
     }
+
+
 }
 
 
@@ -565,16 +582,6 @@ void DMSWMM::writeStorage(std::fstream &inp) {
     foreach(std::string name, storages) {
         Node * p = this->city->getNode(name);
 
-        //if ((int) p->getAttribute("Storage")->getDouble() != 1)
-        //continue;
-        //std::vector<std::string> n_es = VectorDataHelper::findConnectedEges(*this->Network, p);
-        double diameter = 4;
-        /*foreach (std::string n_e, n_es) {
-            Attribute attr_e = this->Network->getAttributes(n_e);
-            if (attr_e.getAttribute("Diameter") > diameter)
-                diameter = attr_e.getAttribute("Diameter");
-        }*/
-
         int id = this->UUIDtoINT[p->getName()];
 
         inp << "NODE";
@@ -586,18 +593,17 @@ void DMSWMM::writeStorage(std::fstream &inp) {
 
 
         inp << "\t";
-        inp <<   p->getAttribute("D")->getDouble()+1;
+        inp <<   p->getAttribute("D")->getDouble();
         inp << "\t";
         inp << "0";
         inp << "\t";
         inp << "FUNCTIONAL";
         inp << "\t";
-        inp << "1000";
+        inp << "0";
         inp << "\t";
         inp << "0";
         inp << "\t";
-
-        inp << p->getAttribute("StorageV")->getDouble()/diameter*1000*0.6;
+        inp << p->getAttribute("StorageA")->getDouble();
         inp << "\t";
         inp << "1000";
         inp << "0";
@@ -621,7 +627,7 @@ void DMSWMM:: writeOutfalls(std::fstream &inp) {
             this->PointList.push_back(p);
         }
 
-        double z = p->getZ()-4.;
+        double z = p->getAttribute("Z")->getDouble();
         inp<<"NODE"<<this->UUIDtoINT[p->getName()]<<"\t"<< z <<"\tFREE\tNO\n";
     }
 
@@ -791,14 +797,16 @@ void DMSWMM::writeXSection(std::fstream &inp) {
             int EndNode = UUIDtoINT[nEndNode->getName()];
             int StartNode =  UUIDtoINT[nStartNode->getName()];
 
-            double d = link->getAttribute("Diameter")->getDouble()/1000;
-            if (EndNode != -1 && StartNode != -1 && EndNode != StartNode) {
-                if (condie.getName().compare(conduit.getName()) == 0)
-                    inp << "LINK" << UUIDtoINT[link->getName()] << "\tCIRCULAR\t"<< d <<" \t0\t0\t0\n";
-
-                if (condie.getName().compare(weir.getName()) == 0)
-                    inp << "WEIR" << UUIDtoINT[link->getName()] << "\tRECT_OPEN\t"<< "10" <<" \t6\t0\t0\n";
+            if (nStartNode->isInView(wwtp)) {
+                int i = 0;
             }
+
+            double d = link->getAttribute("Diameter")->getDouble()/1000;
+            if (condie.getName().compare(conduit.getName()) == 0)
+                inp << "LINK" << UUIDtoINT[link->getName()] << "\tCIRCULAR\t"<< d <<" \t0\t0\t0\n";
+
+            if (condie.getName().compare(weir.getName()) == 0)
+                inp << "WEIR" << UUIDtoINT[link->getName()] << "\tRECT_OPEN\t"<< "10" <<" \t6\t0\t0\n";
 
         }
     }
@@ -855,11 +863,8 @@ void DMSWMM::writeWeir(std::fstream &inp)
 
         inp<<"WEIR"<<UUIDtoINT[weir->getName()]<<"\tNODE"<<UUIDtoINT[startn->getName()]<<"\tNODE"<<UUIDtoINT[outfall->getName()]<<"\t";
         inp<<"TRANSVERSE" << "\t";
-        if (storage == true ) {
-            inp<< diameter*0.6/1000. << "\t";
-        } else {
-            inp<< diameter*0.85/1000. << "\t";
-        }
+        inp<< weir->getAttribute("InletOffset")->getDouble() << "\t";
+
         inp<<"1.8" << "\t";
         inp<<"NO" << "\t";
         inp<<"0" << "\t";

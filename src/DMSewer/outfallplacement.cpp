@@ -112,7 +112,9 @@ void OutfallPlacement::run() {
     //names = VectorDataHelper::findElementsWithIdentifier(this->Identifier_Inlet, this->Network->getPointsNames());
 
     std::vector<DM::Node * > New_Outfalls;
-    std::vector<DM::Node * > WWTPs_Outfalls;
+    foreach (std::string s, this->city->getNamesOfComponentsInView(WWTP)) {
+        New_Outfalls.push_back(this->city->getNode(s));
+    }
 
     foreach ( std::string name, this->city->getNamesOfComponentsInView(Inlet)) {
         DM::Node * p = this->city->getNode(name);
@@ -157,22 +159,22 @@ void OutfallPlacement::run() {
     foreach(DM::Node * p, New_Outfalls) {
         DM::Node OffestPoint(30,30,0);
         OffestPoint = OffestPoint + *(p);
-
         DM::Node * of = this->city->addNode(OffestPoint, Outfall);
-
+        of->addAttribute("Z", p->getAttribute("Z")->getDouble()-4);
         this->city->addEdge(p, of, ConduitOutfall);
     }
 
+    //Conduit to WWTP
     std::vector<std::string> wwtps = this->city->getNamesOfComponentsInView(WWTP);
     foreach(std::string wwtp, wwtps) {
         DM::Node * p = this->city->getNode(wwtp);
-        DM::Node OffestPoint(30,30,0);
+        DM::Node OffestPoint(-30,-30,0);
         OffestPoint = OffestPoint + *(p);
-
         DM::Node * of = this->city->addNode(OffestPoint, Outfall);
         of->addAttribute("WWTP", 1);
-        this->city->addEdge(p, of, Conduit);
+        of->addAttribute("Z", p->getAttribute("Z")->getDouble()-4);
+        DM::Edge * e = this->city->addEdge(p, of, Conduit);
+        e->addAttribute("WWTP",100);
+
     }
-
-
 }
