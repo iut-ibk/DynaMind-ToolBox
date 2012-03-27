@@ -101,10 +101,7 @@ ExtractNetwork::ExtractNetwork()
 {
     this->steps = 1000;
     this->ConduitLength = 200;
-    /*this->IdentifierConduit = "Conduit_";
-    this->IdentifierEnd = "EndPoint_";
-    this->IdentifierInlet = "Inlet_";
-    this->IdentifierShaft = "Shaft_";*/
+
     this->addParameter("Steps", DM::LONG, & this->steps);
 
     this->addParameter("ConduitLength", DM::DOUBLE, &this->ConduitLength);
@@ -128,6 +125,7 @@ ExtractNetwork::ExtractNetwork()
     Inlets= DM::View("INLET",  DM::NODE, DM::READ);
     Inlets.modifyAttribute("New");
     Inlets.modifyAttribute("Used");
+    Inlets.addAttribute("Connected");
     Junction= DM::View("JUNCTION",  DM::NODE, DM::MODIFY);
     Junction.modifyAttribute("D");
     Junction.modifyAttribute("Z");
@@ -227,6 +225,7 @@ void ExtractNetwork::run() {
             Node * start = a->startNode;
             start->changeAttribute("Used",1);
             start->changeAttribute("New", 0);
+            start->changeAttribute("Connected", 1);
         }
 
     }
@@ -260,10 +259,6 @@ void ExtractNetwork::run() {
                 n->setZ(n->getAttribute("D")->getDouble());
             }
 
-            //int x = pl[i].getX()/cellSize;
-            //int y = pl[i].getY()/cellSize;
-            //double z = this->Topology->getValue(x,y);
-            //n->changeAttribute("Z", z);
             n->changeAttribute("D", pl[i].getZ());
             nl.push_back(n);
         }

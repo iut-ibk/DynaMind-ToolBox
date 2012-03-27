@@ -52,6 +52,7 @@ private:
     DM::View outfalls;
     DM::View weir;
     DM::View storage;
+    DM::View globals;
 
     std::vector<DM::Node*> EndPointList;
 

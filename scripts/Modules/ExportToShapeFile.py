@@ -129,27 +129,25 @@ class ExportToShapeFile(Module):
                 hasAttribute = False
                 #Get Data 
 		unique = 0
+                NewAttriburteNamesForShape = {}  
                 names = city.getNamesOfComponentsInView(View(self.Name, READ, EDGE))
-		NewAttriburteNamesForShape = {}
-                if len(names) > 0:
-                    attributemap = city.getComponent(names[0]).getAllAttributes()
+                for i in range(len(names)): 
+                    attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
-                        attr.append(key)
-                        unique = unique+1
-                        NewAttriburteNamesForShape[key] = key[:7] + str(unique)
-                for i in range(len(names)):
-                    #Append Attributes
-                    alist = city.getComponent(names[i]).getAllAttributes().keys() 
-                    for j in range(len(alist)):
-                        hasAttribute = True                                  
-                        if (alist[j] in AttributeList) == False:                            
-                            attribute = city.getComponent(names[0]).getAttribute(alist[j])
-                            fielddef = osgeo.ogr.FieldDefn(NewAttriburteNamesForShape[alist[j]], osgeo.ogr.OFTReal)
-                            layer.CreateField(fielddef)
-                            layerDefinition = layer.GetLayerDefn()  
-                            AttributeList.append(alist[j]) 
+			if (key in attr) == False:
+                        	attr.append(key)
+				unique = unique +1
+				NewAttriburteNamesForShape[key] = key[:7] + str(unique)
+                for j in range(len(attr)):
+                    hasAttribute = True
+                    if (attr[j] in AttributeList) == False:
+                         attribute = city.getComponent(names[i]).getAttribute(attr[j])
+                         fielddef = osgeo.ogr.FieldDefn(NewAttriburteNamesForShape[attr[j]], osgeo.ogr.OFTReal)
+                         layer.CreateField(fielddef)
+                         layerDefinition = layer.GetLayerDefn()  
+                         AttributeList.append(attr[j]) 
                     
-                            
+		for i in range(len(names)):                             
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbLineString)
                     edge = city.getEdge(names[i])
                     p1 = city.getNode(edge.getStartpointName())
@@ -163,9 +161,9 @@ class ExportToShapeFile(Module):
                     feature.SetFID(featureIndex)  
                     hasAttribute = True
                     if hasAttribute == True:        
-                        for k in range(len(alist)):
-                                 value = edge.getAttribute(alist[k]).getDouble()
-                                 feature.SetField(NewAttriburteNamesForShape[alist[k]],value)
+                        for k in range(len(attr)):
+                                 value = edge.getAttribute(attr[k]).getDouble()
+                                 feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
                     layer.CreateFeature(feature)    
                 shapeData.Destroy()  
  
@@ -224,9 +222,9 @@ class ExportToShapeFile(Module):
                     feature.SetField("Z", node.getZ())
                     #Append Attributes
                     if hasAttribute:        
-                        for k in range(len(alist)):
-                              value = city.getComponent(names[i]).getAttribute(alist[k]).getDouble()
-                              feature.SetField(NewAttriburteNamesForShape[alist[k]],value)
+                        for k in range(len(attr)):
+                              value = city.getComponent(names[i]).getAttribute(attr[k]).getDouble()
+                              feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
                     layer.CreateFeature(feature)  
                 shapeData.Destroy()            
                

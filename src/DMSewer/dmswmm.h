@@ -45,6 +45,7 @@ class DM_HELPER_DLL_EXPORT DMSWMM : public  DM::Module {
         DM::View weir;
         DM::View wwtp;
         DM::View storage;
+        DM::View globals;
 
 
     std::string RainFile;

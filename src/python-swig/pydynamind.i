@@ -135,7 +135,6 @@ public:
 
 
     void addParameter(std::string name, int type, void * ref, std::string description);
-    //void addParameter(std::string name, int type, std::string * ref);
 
     virtual void setParameterValue(std::string name, std::string value);
 
@@ -189,8 +188,6 @@ public:
 
     %}
     };
-
-
 
 %inline %{
 

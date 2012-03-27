@@ -346,9 +346,15 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
 
 DM::System* Module::getData(std::string dataname)
 {
-    if (data_vals.find(dataname) == data_vals.end())
+    DM::System* sys = 0;
+    if (data_vals.find(dataname) == data_vals.end()) {
+        Logger(Debug) << "No System " << dataname;
         return 0;
-    return this->data_vals[dataname];
+    }
+    sys = this->data_vals[dataname];
+    if (sys == 0)
+        Logger(Debug) << "No System " << dataname;
+    return sys;
 }
 
 std::map<std::string, std::vector<DM::View> > Module::getViews() {

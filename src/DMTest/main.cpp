@@ -313,12 +313,10 @@ bool UDM()
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
 
-    for (int i = 0; i < 1000; i++)
-    {
         Simulation * sim =  new Simulation;
 
         sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
-        sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_3.dyn");
+        sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_5.dyn");
         sim->startSimulation(true);
         sim->startSimulation(true);
         sim->startSimulation(true);
@@ -342,8 +340,8 @@ bool UDM()
 
         sim->startSimulation();
 
-        delete sim;
-    }
+
+
 
     return true;
 }

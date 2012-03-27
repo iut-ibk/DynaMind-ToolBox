@@ -62,6 +62,10 @@ DMSWMM::DMSWMM()
     storage.getAttribute("StorageV");
     storage.getAttribute("Storage");
 
+    globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::READ);
+    globals.addAttribute("Vr");
+    globals.addAttribute("Vp");
+    globals.addAttribute("Vwwtp");
 
     std::vector<DM::View> views;
 
@@ -74,6 +78,7 @@ DMSWMM::DMSWMM()
     views.push_back(weir);
     views.push_back(wwtp);
     views.push_back(storage);
+    views.push_back(globals);
 
     this->FileName = "swmmfile";
     this->climateChangeFactor = 1;
@@ -88,6 +93,7 @@ DMSWMM::DMSWMM()
     this->addParameter("ClimateChangeFactor", DM::DOUBLE, & this->climateChangeFactor);
 
     counterRain =0;
+
 
     this->addData("City", views);
 
@@ -302,13 +308,12 @@ void DMSWMM::readInReportFile() {
 
     years++;
 
-
-
-    QString fileName = "/home/christian/ress2.dat";
-    std::fstream out;
-    out.open(fileName.toAscii(),fstream::out | fstream::app);
-    out << Vp << "\t"<< Vwwtp << "\t"<< SurfaceRunOff << "\n";
-    out.close();
+    foreach (std::string s, this->city->getNamesOfComponentsInView(globals)) {
+        DM::Component * c = this->city->getComponent(s);
+        c->addAttribute("Vr", SurfaceRunOff);
+        c->addAttribute("Vwwtp", Vwwtp);
+        c->addAttribute("Vp", Vp);
+    }
 
 }
 

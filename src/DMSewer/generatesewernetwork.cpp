@@ -354,6 +354,10 @@ GenerateSewerNetwork::GenerateSewerNetwork()
 
     Inlets = DM::View("INLET", DM::NODE, DM::READ);
     Inlets.getAttribute("New");
+    Inlets.getAttribute("ID_CATCHMENT");
+
+    catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
+    catchment.getAttribute("Population");
 
     city.push_back(Topology);
     city.push_back(Inlets);
@@ -425,7 +429,9 @@ void GenerateSewerNetwork::run() {
     std::vector<DM::Node*> StartPos;
     foreach (std::string inlet, city->getNamesOfComponentsInView(Inlets))  {
         DM::Node * n = city->getNode(inlet);
-        if (n->getAttribute("New")->getDouble() > -1) {
+        std::string ID_CA = n->getAttribute("ID_CATCHMENT")->getString();
+        DM::Face * catchment = city->getFace(ID_CA);
+        if (catchment->getAttribute("Population")->getDouble() > 10) {
             StartPos.push_back(n);
         }
     }
