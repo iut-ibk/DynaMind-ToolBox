@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,25 +24,47 @@
  *
  */
 #include "outfallplacement.h"
-
+#include <dmhelper.h>
 DM_DECLARE_NODE_NAME(OutfallPlacement, Sewer)
 OutfallPlacement::OutfallPlacement()
 {
-
-
-
-
     Junction = DM::View("JUNCTION", DM::NODE, DM::READ);
-
     Conduit = DM::View("CONDUIT", DM::EDGE, DM::MODIFY);
     Conduit.getAttribute("Strahler");
+    Storage = DM::View("STORAGE", DM::NODE, DM::WRITE);
+    Storage.addAttribute("Storage");
     Inlet = DM::View("INLET", DM::NODE, DM::READ);
     Inlet.addAttribute("Outfall");
     WWTP = DM::View("WWTP", DM::NODE, DM::READ);
     Outfall = DM::View("OUTFALL", DM::NODE, DM::WRITE);
     ConduitOutfall = DM::View("WEIR", DM::EDGE, DM::WRITE);
 
+    MaxStrahler[1] = 100;
+    MaxStrahler[2] = 0;
+    MaxStrahler[3] = 0;
 
+    StrahlerDifferenz[1] = 0;
+    StrahlerDifferenz[2] = 0;
+    StrahlerDifferenz[3] = 100;
+
+
+    MaxStrahlerStorage[1] = 100;
+    MaxStrahlerStorage[2] = 0;
+    MaxStrahlerStorage[3] = 0;
+
+    StrahlerDifferenzStorage[1] = 0;
+    StrahlerDifferenzStorage[2] = 0;
+    StrahlerDifferenzStorage[3] = 100;
+
+    StringMaxStrahler = DMHelper::convertIntMapToStringMap(MaxStrahler);
+    StringStrahlerDifferenz = DMHelper::convertIntMapToStringMap(StrahlerDifferenz);
+
+
+    this->addParameter("MaxStrahler", DM::STRING_MAP, &StringMaxStrahler);
+    this->addParameter("StrahlerDifferenz", DM::STRING_MAP, &StringStrahlerDifferenz);
+
+    this->addParameter("MaxStrahlerStorage", DM::STRING_MAP, &StringMaxStrahlerStorage);
+    this->addParameter("StrahlerDifferenzStorage", DM::STRING_MAP, &StringStrahlerDifferenzStorage);
 
     std::vector<DM::View> sewer;
 
@@ -52,6 +74,7 @@ OutfallPlacement::OutfallPlacement()
     sewer.push_back(WWTP);
     sewer.push_back(Outfall);
     sewer.push_back(ConduitOutfall);
+    sewer.push_back(Storage);
 
 
 
@@ -62,9 +85,18 @@ OutfallPlacement::OutfallPlacement()
     std::vector<DM::View> forbidden;
     forbidden.push_back(ForbiddenAreas);
     this->addData("ForbiddenAreas", forbidden);
+
+
+
 }
 
 void OutfallPlacement::run() {
+    MaxStrahler = DMHelper::convertStringMapToIntMap(StringMaxStrahler);
+    StrahlerDifferenz =  DMHelper::convertStringMapToIntMap(StringStrahlerDifferenz);
+
+    MaxStrahlerStorage = DMHelper::convertStringMapToIntMap(StringMaxStrahlerStorage);
+    StrahlerDifferenzStorage =  DMHelper::convertStringMapToIntMap(StringStrahlerDifferenzStorage);
+
     this->city = this->getData("city");
 
     std::vector<std::string> ConduitNames;
@@ -123,20 +155,23 @@ void OutfallPlacement::run() {
         int prevStrahler = 1;
         //std::vector<std::string> VisitedConduits;
         while (connectedConduits.size() == 1) {
-
-
-            /*if (std::find(VisitedConduits.begin(), VisitedConduits.end(), connectedConduits[0]) != VisitedConduits.end()) {
-                Logger(Error)<< "EndlessLoop";
-                this->Network_out->clear();
-                return;
-            }*/
-            //VisitedConduits.push_back(connectedConduits[0]);
-
-            //Attribute attr = this->Network->getAttributes(connectedConduits[0]);
             DM::Edge * e = connectedConduits[0];
             int currentStrahler = e->getAttribute("Strahler")->getDouble();
+            //Check for Placement after MaxStrahlerNumber
+            int chooser = rand() % 100+1;
+            int deltaStrahler = -1;
+            //Search for biggest difference
+            for (std::map<int, int>::const_iterator it = this->MaxStrahler.begin(); it!= this->MaxStrahler.end(); ++it) {
+                if (it->second < chooser)
+                    continue;
+                if (deltaStrahler == -1 || deltaStrahler < it->first) {
+                    deltaStrahler = it->first;
+                }
+            }
 
-            if (currentStrahler > prevStrahler && Strahler_Max == currentStrahler) {
+
+            if (currentStrahler > prevStrahler
+                    && Strahler_Max - deltaStrahler <= currentStrahler && deltaStrahler > -1) {
                 if (find(New_Outfalls.begin(), New_Outfalls.end(), p) == New_Outfalls.end()) {
                     DM::Logger(DM::Debug) << "Place Outfall";
                     //Check if Outfall Exists
@@ -147,11 +182,90 @@ void OutfallPlacement::run() {
                     }
                 }
             }
+
+            chooser = rand() % 100+1;
+            deltaStrahler = -1;
+            //Search for smallest difference
+            for (std::map<int, int>::const_iterator it = this->StrahlerDifferenz.begin(); it!= this->StrahlerDifferenz.end(); ++it) {
+                if (it->second < chooser)
+                    continue;
+                if (deltaStrahler == -1 || deltaStrahler > it->first) {
+                    deltaStrahler = it->first;
+                }
+            }
+
+            if (currentStrahler > prevStrahler
+                    && deltaStrahler <= currentStrahler-prevStrahler && deltaStrahler > -1 ) {
+                if (find(New_Outfalls.begin(), New_Outfalls.end(), p) == New_Outfalls.end()) {
+                    DM::Logger(DM::Debug) << "Place Outfall";
+                    //Check if Outfall Exists
+                    if (p->getAttribute("Outfall")->getDouble() < 1) {
+                        p->changeAttribute("Outfall", 1);
+                        New_Outfalls.push_back(p);
+                    }
+                }
+            }
+
+            /** Storage **/
+            //Check for Placement after MaxStrahlerNumber
+            chooser = rand() % 100+1;
+            deltaStrahler = -1;
+            //Search for biggest difference
+            for (std::map<int, int>::const_iterator it = this->MaxStrahlerStorage.begin(); it!= this->MaxStrahlerStorage.end(); ++it) {
+                if (it->second < chooser)
+                    continue;
+                if (deltaStrahler == -1 || deltaStrahler < it->first) {
+                    deltaStrahler = it->first;
+                }
+            }
+
+
+            if (currentStrahler > prevStrahler
+                    && Strahler_Max - deltaStrahler <= currentStrahler && deltaStrahler > -1) {
+                    DM::Logger(DM::Debug) << "Place Outfall";
+                    //Check if Outfall Exists
+                    if (p->getAttribute("Outfall")->getDouble() < 1) {
+
+                        New_Outfalls.push_back(p);
+                    }
+                     p->changeAttribute("Outfall", 1);
+                     city->addComponentToView(p, Storage);
+                     p->addAttribute("Storage", 1);
+            }
+
+            chooser = rand() % 100+1;
+            deltaStrahler = -1;
+            //Search for smallest difference
+            for (std::map<int, int>::const_iterator it = this->StrahlerDifferenzStorage.begin(); it!= this->StrahlerDifferenzStorage.end(); ++it) {
+                if (it->second < chooser)
+                    continue;
+                if (deltaStrahler == -1 || deltaStrahler > it->first) {
+                    deltaStrahler = it->first;
+                }
+            }
+
+            if (currentStrahler > prevStrahler
+                    && deltaStrahler <= (currentStrahler-prevStrahler) && deltaStrahler > -1) {
+                    DM::Logger(DM::Debug) << "Place Outfall";
+                    //Check if Outfall Exists
+                    if (p->getAttribute("Outfall")->getDouble() < 1) {
+
+                        New_Outfalls.push_back(p);
+                    }
+                     p->changeAttribute("Outfall", 1);
+                     p->addAttribute("Storage", 1);
+                     city->addComponentToView(p, Storage);
+            }
+
+
+
+
+
+
+
             p = this->city->getNode(e->getEndpointName());
             prevStrahler = currentStrahler;
-
-           connectedConduits = this->StartNodeSortedEdges[p];
-
+            connectedConduits = this->StartNodeSortedEdges[p];
         }
     }
 

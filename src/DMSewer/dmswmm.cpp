@@ -62,6 +62,7 @@ DMSWMM::DMSWMM()
     storage.getAttribute("StorageV");
     storage.getAttribute("Storage");
 
+
     globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::READ);
     globals.addAttribute("Vr");
     globals.addAttribute("Vp");
@@ -411,9 +412,6 @@ void DMSWMM::writeJunctions(std::fstream &inp)
         inp << "100000";
         inp << "\n";
 
-        DM::Logger(DM::Debug) <<  "QrKritPerShaft_1" << p->getAttribute("QrKritPerShaft")->getDouble();
-        DM::Logger(DM::Debug) <<  "QrKritPerShaft_total_1" << p->getAttribute("QrKritPerShaft_total")->getDouble();
-        DM::Logger(DM::Debug) <<  "AreaPerShaft_1" << p->getAttribute("QrKritPerShaft_total")->getDouble();
     }
 
 
@@ -596,9 +594,9 @@ void DMSWMM::writeStorage(std::fstream &inp) {
         //Get Val
         inp << p->getAttribute("Z")->getDouble()-( p->getAttribute("D")->getDouble()-2);
 
-
         inp << "\t";
-        inp <<   p->getAttribute("D")->getDouble();
+        inp <<  p->getAttribute("D")->getDouble()+1;
+        inp << "\t";
         inp << "\t";
         inp << "0";
         inp << "\t";

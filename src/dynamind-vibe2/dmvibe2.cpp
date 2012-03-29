@@ -25,6 +25,32 @@ DMVIBe2::DMVIBe2()
     height = 250;
     width = 400;
 
+    this->addParameter("Height", DM::LONG, &height);
+    this->addParameter("Width", DM::LONG, &width);
+
+
+    maxCPopDensity = 200;
+    maxDCPopDensity = 100;
+    maxOBPopDensity = 30;
+    popChangeLow = 95;
+    popCUFRand = 10;
+    popDCUFRand = 12;
+    popAGRIRand = 19;
+    InitialCityCenter = 3;
+    Steps = 16;
+    PopSteps = 3;
+
+    this->addParameter("maxCPopDensity", DM::DOUBLE, &maxCPopDensity);
+    this->addParameter("maxDCPopDensity", DM::DOUBLE, &maxDCPopDensity);
+    this->addParameter("maxOBPopDensity", DM::DOUBLE, &maxOBPopDensity);
+    this->addParameter("popChangeLow", DM::DOUBLE, &popChangeLow);
+    this->addParameter("popCUFRand", DM::DOUBLE, &popCUFRand);
+    this->addParameter("popDCUFRand", DM::DOUBLE, &popDCUFRand);
+    this->addParameter("popAGRIRand", DM::DOUBLE, &popAGRIRand);
+    this->addParameter("InitialCityCenter", DM::INT, &InitialCityCenter);
+    this->addParameter("Steps", DM::INT, &Steps);
+    this->addParameter("PopSteps", DM::INT, &PopSteps);
+
     landuse = DM::View("Landuse", DM::RASTERDATA, DM::WRITE);
     population = DM::View("Population", DM::RASTERDATA, DM::WRITE);
     topology = DM::View("Topology", DM::RASTERDATA, DM::WRITE);
@@ -34,8 +60,9 @@ DMVIBe2::DMVIBe2()
     wwtp.addAttribute("D");
     conduit = DM::View("CONDUIT", DM::EDGE, DM::WRITE);
 
-    this->addParameter("Height", DM::LONG, &height);
-    this->addParameter("Width", DM::LONG, &width);
+    globals = DM::View("GLOBALS", DM::NODE, DM::WRITE);
+    globals.addAttribute("Population");
+    globals.addAttribute("Area");
 
     junction = DM::View("JUNCTION", DM::NODE, DM::WRITE);
     junction.addAttribute("D");
@@ -44,11 +71,13 @@ DMVIBe2::DMVIBe2()
     views.push_back(population);
     views.push_back(topology);
 
+
     std::vector<DM::View> viewsvec;
     viewsvec.push_back(mainSewer);
     viewsvec.push_back(wwtp);
     viewsvec.push_back(conduit);
     viewsvec.push_back(junction);
+    viewsvec.push_back(globals);
 
     this->addData("City_RasterData", views);
 
@@ -74,7 +103,39 @@ void DMVIBe2::run()
     s1->getModuleByName("Height")->setParameterValue("Value", QString::number(height).toStdString());
     s1->getModuleByName("Width")->setParameterValue("Value", QString::number(width).toStdString());
 
+    vibens::Module * popgrowth = s1->getModuleByName("PopulationGrowthModel_1");
+    popgrowth->setParameterValue("maxCPopDensity",  QString::number(maxCPopDensity).toStdString());
+    popgrowth->setParameterValue("maxDCPopDensity",  QString::number(maxDCPopDensity).toStdString());
+    popgrowth->setParameterValue("maxOBPopDensity",  QString::number(maxOBPopDensity).toStdString());
+    popgrowth->setParameterValue("popChangeLow", QString::number(popChangeLow).toStdString());
+    popgrowth->setParameterValue("popCUFRand", QString::number(popCUFRand).toStdString());
+    popgrowth->setParameterValue("popDCUFRand",  QString::number(popDCUFRand).toStdString());
+    popgrowth->setParameterValue("popAGRIRand",  QString::number(popAGRIRand).toStdString());
+
+
+    vibens::Module * landusegrowth = s1->getModuleByName("LandUseGrowthModel_2");
+    landusegrowth->setParameterValue("maxCPopDensity",  QString::number(maxCPopDensity).toStdString());
+    landusegrowth->setParameterValue("maxDCPopDensity",  QString::number(maxDCPopDensity).toStdString());
+    landusegrowth->setParameterValue("maxOBPopDensity",  QString::number(maxOBPopDensity).toStdString());
+    landusegrowth->setParameterValue("popChangeLow", QString::number(popChangeLow).toStdString());
+    landusegrowth->setParameterValue("popCUFRand", QString::number(popCUFRand).toStdString());
+    landusegrowth->setParameterValue("popDCUFRand",  QString::number(popDCUFRand).toStdString());
+    landusegrowth->setParameterValue("popAGRIRand",  QString::number(popAGRIRand).toStdString());
+
+    vibens::Module * landusegrowthgroup = s1->getModuleByName("PopulationGrowth");
+    landusegrowthgroup->setParameterValue("Runs",  QString::number(PopSteps).toStdString());
+
+    vibens::Module * growth= s1->getModuleByName("Growthmodel");
+    growth->setParameterValue("Runs",  QString::number(Steps).toStdString());
+
+    vibens::Module * initcenters = s1->getModuleByName("InitialCityCenters_0");
+    initcenters->setParameterValue("numberCenters",  QString::number(InitialCityCenter).toStdString());
+
+
+
+    //Start Simulation
     s1->run();
+
 
 
     vibens::Group * g = (vibens::Group *) s1->getModuleByName("VIBe");
@@ -108,10 +169,18 @@ void DMVIBe2::run()
         }
     }
 
-    g = (vibens::Group *) s1->getModuleByName("InitialCity");
+
+
 
     DM::System * sys = this->getData("City");
 
+    DM::Node * gl = sys->addNode(0,0,0,globals);
+    gl->addAttribute("Population", g->getDoubleData("Double_Pop"));
+    gl->addAttribute("Area", g->getDoubleData("Double_Area"));
+
+
+
+    g = (vibens::Group *) s1->getModuleByName("InitialCity");
     VectorData vec = g->getVectorData("MainSewer");
     DM::View empty;
     std::vector<std::string> conduits = VectorDataHelper::findElementsWithIdentifier("Conduit_", vec.getEdgeNames());
@@ -137,7 +206,7 @@ void DMVIBe2::run()
         foreach (Point p, points) {
             DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX(), p.getY(), p.getZ()), 0.01);
             sys->addComponentToView(n, junction);
-            n->addAttribute("D", 3);
+            n->addAttribute("D", 4);
         }
     }
 
@@ -152,15 +221,12 @@ void DMVIBe2::run()
             DM::Node * n = TBVectorData::addNodeToSystem2D(sys, empty, DM::Node(p.getX()+20, p.getY()+20, p.getZ()), 0.01);
             sys->addComponentToView(n, wwtp);
             wwtp1 = n;
-            n->addAttribute("D", 3);
+            n->addAttribute("D", 4);
         }
     }
 
     foreach (std::string s, sys->getNamesOfComponentsInView(mainSewer)) {
         DM::Edge * e = sys->getEdge(s);
-
-
-
         if (e->getStartpointName().compare(wwtp1->getName()) == 0) {
             DM::Logger(DM::Debug) << "Found";
         }
@@ -170,7 +236,7 @@ void DMVIBe2::run()
 
     }
 
-    DM::Logger(DM::Debug) << "Number of added Pipes " << sys->getNamesOfComponentsInView(mainSewer).size();
+
 
 }
 

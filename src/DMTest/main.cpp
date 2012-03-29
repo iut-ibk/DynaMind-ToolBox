@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011-2012  Christian Urich, Michael Mair
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@
  */
 
 #include "dmcompilersettings.h"
+#include "dmhelper.h"
 
 #include <iostream>
 #include <dmsimulation.h>
@@ -47,6 +48,7 @@ bool MemDynaMiteTestPython();
 bool MemDynaMiteTestC();
 bool StoryLine();
 bool UDM();
+bool VIBe();
 int main(int argc, char *argv[], char *envp[]) {
     //Init Logger
     ostream *out = &cout;
@@ -93,7 +95,7 @@ int main(int argc, char *argv[], char *envp[]) {
     }else {
         Logger() << "MemDynaMiteTest DONE";
     }*/
-    UDM();
+    VIBe();
     return 1;
 }
 bool DMBaseTest() {
@@ -313,32 +315,168 @@ bool UDM()
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
 
-        Simulation * sim =  new Simulation;
+    Simulation * sim =  new Simulation;
 
-        sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
-        sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_5.dyn");
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
-        sim->startSimulation(true);
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
+    sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_5.dyn");
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
 
-        sim->startSimulation();
+
+    sim->startSimulation();
+
+
+
+
+    return true;
+}
+
+bool VIBe()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(1);
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addPythonPath("/home/christian/Documents/DynaMind/build/release/");
+
+
+    DataManagement::init();
+    DMDatabase * db = new DMDatabase();
+    DataManagement::getInstance().registerDataBase(db);   //Init Logger
+
+    Simulation * sim =  new Simulation;
+    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
+    sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_5.dyn");
+
+
+
+
+    double maxCPopDensity_max = 200;
+    double maxDCPopDensity_max = 100;
+    double maxOBPopDensity_max = 30;
+    double popCUFRand_max = 10;
+    double popDCUFRand_max = 11;
+    double popAGRIRand_max = 19;
+    int Steps_max = 16;
+
+
+    double maxCPopDensity_min = 100;
+    double maxDCPopDensity_min = 40;
+    double maxOBPopDensity_min = 15;
+    double popCUFRand_min = 5;
+    double popDCUFRand_min = 12;
+    double popAGRIRand_min = 15;
+    int Steps_min = 9;
+
+
+
+    double maxCPopDensity = (int) maxCPopDensity_min + rand() % (int) (maxCPopDensity_max-maxCPopDensity_min)+1;
+    double maxDCPopDensity= (int) maxDCPopDensity_min + rand() %  (int)  (maxDCPopDensity_max-maxDCPopDensity_min)+1;
+    double maxOBPopDensity= (int) maxOBPopDensity_min + rand() %  (int)  (maxOBPopDensity_max-maxOBPopDensity_min)+1;
+    double popCUFRand= (int) popCUFRand_min + rand() %  (int)  (popCUFRand_max-popCUFRand_min)+1;
+    double popDCUFRand= (int) popDCUFRand_min + rand() %  (int)  (popDCUFRand_max-popDCUFRand_min)+1;
+    double popAGRIRand= (int) popAGRIRand_min + rand() % (int)   (popAGRIRand_max-popAGRIRand_min)+1;
+    int Steps =   (int) Steps_min + rand() % (int)   (Steps_max-Steps_min)+1;
+    int PopSteps = 3;
+    int InitialCityCenter = rand() % 3 + 1;
+
+    DM::Module * m = sim->getModuleByName("VIBe");
+
+    m->setParameterValue("maxCPopDensity",  QString::number(maxCPopDensity).toStdString());
+    m->setParameterValue("maxDCPopDensity",  QString::number(maxDCPopDensity).toStdString());
+    m->setParameterValue("maxOBPopDensity",  QString::number(maxOBPopDensity).toStdString());
+    m->setParameterValue("popCUFRand", QString::number(popCUFRand).toStdString());
+    m->setParameterValue("popDCUFRand",  QString::number(popDCUFRand).toStdString());
+    m->setParameterValue("popAGRIRand",  QString::number(popAGRIRand).toStdString());
+    m->setParameterValue("InitialCityCenter",  QString::number(InitialCityCenter).toStdString());
+    m->setParameterValue("PopSteps",  QString::number(PopSteps).toStdString());
+    m->setParameterValue("Steps",  QString::number(Steps).toStdString());
+
+
+    m = sim->getModuleByName("Outfall");
+
+
+    std::map<int, int> MaxStrahler;
+    std::map<int, int> StrahlerDifferenz;
+    std::map<int, int> MaxStrahlerStorage;
+    std::map<int, int> StrahlerDifferenzStorage;
+    MaxStrahler[0] = 100;
+    MaxStrahler[1] = 0;
+    MaxStrahler[2] = 0;
+
+    StrahlerDifferenz[1] = 0;
+    StrahlerDifferenz[2] = 0;
+    StrahlerDifferenz[3] = 0;
+
+    MaxStrahlerStorage[0] = 100;
+    MaxStrahlerStorage[1] = 100;
+    MaxStrahlerStorage[2] = 0;
+
+    StrahlerDifferenzStorage[1] = 0;
+    StrahlerDifferenzStorage[2] = 0;
+    StrahlerDifferenzStorage[3] = 0;
+
+    m->setParameterValue("StrahlerDifferenz", DMHelper::convertIntMapToDMMapString(StrahlerDifferenz));
+    m->setParameterValue("MaxStrahler", DMHelper::convertIntMapToDMMapString(MaxStrahler));
+
+    m->setParameterValue("StrahlerDifferenzStorage", DMHelper::convertIntMapToDMMapString(StrahlerDifferenzStorage));
+    m->setParameterValue("MaxStrahlerStorage", DMHelper::convertIntMapToDMMapString(MaxStrahlerStorage));
+
+    m = sim->getModuleByName("Results");
+    m->setParameterValue("FileName", "/home/christian/Documents/UDM/100x200.res");
+
+
+    m = sim->getModuleByName("catchments");
+    m->setParameterValue("Height", "200");
+    m->setParameterValue("Width", "200");
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+    sim->startSimulation(true);
+
+    sim->startSimulation();
 
 
 

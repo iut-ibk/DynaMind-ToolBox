@@ -185,10 +185,10 @@ class ExportToShapeFile(Module):
                 hasAttribute = False
           	unique = 0
  		NewAttriburteNamesForShape = {}      
-                fielddef = osgeo.ogr.FieldDefn("Z", osgeo.ogr.OFTReal)
-                layer.CreateField(fielddef)
-                layerDefinition = layer.GetLayerDefn()  
-                AttributeList.append("Z") 
+                #fielddef = osgeo.ogr.FieldDefn("Z", osgeo.ogr.OFTReal)
+                #layer.CreateField(fielddef)
+                #layerDefinition = layer.GetLayerDefn()  
+                #AttributeList.append("Z") 
                 
                 names = city.getNamesOfComponentsInView(View(self.Name, READ, NODE))
                 for i in range(len(names)): 
@@ -219,7 +219,7 @@ class ExportToShapeFile(Module):
                     feature = osgeo.ogr.Feature(layerDefinition)
                     feature.SetGeometry(point)
                     feature.SetFID(featureIndex) 
-                    feature.SetField("Z", node.getZ())
+                    #feature.SetField("Z", node.getZ())
                     #Append Attributes
                     if hasAttribute:        
                         for k in range(len(attr)):

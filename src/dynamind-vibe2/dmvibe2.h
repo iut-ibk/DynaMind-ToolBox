@@ -22,6 +22,19 @@ class DM_HELPER_DLL_EXPORT DMVIBe2 : public DM::Module
         long width;
         double cellsize;
 
+        double maxCPopDensity;
+        double maxDCPopDensity;
+        double maxOBPopDensity;
+        double popChangeLow;
+        double popCUFRand;
+        double popDCUFRand;
+        double popAGRIRand;
+        int InitialCityCenter;
+        int Steps;
+        int PopSteps;
+
+
+
         DM::View landuse;
         DM::View population;
         DM::View topology;
@@ -31,6 +44,8 @@ class DM_HELPER_DLL_EXPORT DMVIBe2 : public DM::Module
 
         DM::View conduit;
         DM::View junction;
+
+        DM::View globals;
 
     public:
         DMVIBe2();

@@ -260,6 +260,7 @@ void Module::setParameterValue(std::string name, std::string v) {
         std::vector<std::string> * ref = (std::vector<std::string> * )this->parameter_vals[name];
         if (ref == 0)
             return;
+        ref->clear();
         QStringList list = value.split("*|*");
         foreach(QString s, list) {
             if (! s.isEmpty())
@@ -272,6 +273,7 @@ void Module::setParameterValue(std::string name, std::string v) {
         std::map<std::string, std::string> * ref = (std::map<std::string, std::string> *)this->parameter_vals[name];
         if (ref == 0)
             return;
+        ref->clear();
         QStringList list = value.split("*||*");
         foreach(QString s, list) {
             if (! s.isEmpty()) {

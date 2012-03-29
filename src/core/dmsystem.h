@@ -129,7 +129,7 @@ public:
     bool removeComponentFromView(Component * comp, const DM::View & view);
 
     std::map<std::string, Component*> getAllComponentsInView(const View &view);
-    std::vector<std::string> getNamesOfComponentsInView(DM::View & view);
+    std::vector<std::string> getNamesOfComponentsInView(DM::View  view);
 
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 

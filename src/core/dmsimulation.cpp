@@ -333,6 +333,7 @@ Module * Simulation::getModuleByName(std::string name) {
         if (name.compare(m->getName()) == 0)
             return m;
     }
+    return 0;
 }
 
 Module * Simulation::getModuleWithUUID(std::string UUID) {

@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ class DM_HELPER_DLL_EXPORT OutfallPlacement : public  DM::Module {
     DM::View WWTP;
     DM::View Outfall;
     DM::View ConduitOutfall;
+    DM::View Storage;
 
     DM::View ForbiddenAreas;
 
@@ -47,6 +48,19 @@ class DM_HELPER_DLL_EXPORT OutfallPlacement : public  DM::Module {
     std::map<DM::Node *, std::vector<DM::Edge*> > StartNodeSortedEdges;
     std::map<DM::Node *, std::vector<DM::Edge*> > EndNodeSortedEdges;
     std::map<DM::Node *, std::vector<DM::Edge*> > ConnectedEdges;
+
+
+    std::map<std::string, std::string> StringMaxStrahler;
+    std::map<std::string, std::string> StringStrahlerDifferenz;
+
+    std::map<std::string, std::string> StringMaxStrahlerStorage;
+    std::map<std::string, std::string> StringStrahlerDifferenzStorage;
+
+    std::map<int, int> MaxStrahler;
+    std::map<int, int> StrahlerDifferenz;
+
+    std::map<int, int> MaxStrahlerStorage;
+    std::map<int, int> StrahlerDifferenzStorage;
 
 
 

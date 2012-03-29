@@ -51,11 +51,14 @@ TimeAreaMethod::TimeAreaMethod()
 
     wwtps = DM::View("WWTP", DM::NODE, DM::READ);
     catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
-    storage = DM::View("STORAGE", DM::NODE, DM::WRITE);
+
+
+    storage = DM::View("STORAGE", DM::NODE, DM::READ);
     storage.addAttribute("StorageV");
     storage.addAttribute("Storage");
     storage.addAttribute("StorageA");
     storage.addAttribute("ConnectedStorageArea");
+
     catchment.getAttribute("Population");
     catchment.getAttribute("Area");
     catchment.getAttribute("Impervious");
@@ -69,6 +72,7 @@ TimeAreaMethod::TimeAreaMethod()
 
     globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::WRITE);
     globals.addAttribute("CONNECTEDPOP");
+    globals.addAttribute("CONNECTEDAREA");
 
     views.push_back(conduit);
     views.push_back(inlet);
@@ -151,6 +155,7 @@ void TimeAreaMethod::run() {
     }
     //Calculate Waste Water
     double Population_sum = 0;
+    double area_sum = 0;
 
 
 
@@ -184,13 +189,18 @@ void TimeAreaMethod::run() {
         inlet_attr->addAttribute("Impervious",imp);
 
         Population_sum += catchment_attr->getAttribute("Population")->getDouble();
+        area_sum += catchment_attr->getAttribute("Area")->getDouble();
 
     }
 
     DM::Node sewerGlobal = DM::Node(0,0,0);
     DM::Node * sg = city->addNode(sewerGlobal, this->globals);
     sg->addAttribute("CONNECTEDPOP", Population_sum);
+    sg->addAttribute("CONNECTEDAREA", area_sum);
+    sg->addAttribute("CSOs", city->getNamesOfComponentsInView(outfalls).size());
 
+
+    //AddStorageToWWtp
     std::vector<std::string> endPointNames = city->getNamesOfComponentsInView(wwtps);
     foreach(std::string name, endPointNames) {
         this->EndPointList.push_back(city->getNode(name));
@@ -200,7 +210,7 @@ void TimeAreaMethod::run() {
         city->addComponentToView(p,storage);
     }
 
-    //AddStorageToWWtp
+
     foreach (std::string name, city->getNamesOfComponentsInView(conduit)) {
         DM::Edge * con = city->getEdge(name);
         DM::Node * start = city->getNode(con->getStartpointName());
@@ -229,6 +239,7 @@ void TimeAreaMethod::run() {
         double StrangL_Total = 0;
         double QKrit = 0;
         double DeltaA = 0;
+        double DeltaStorage = 0;
         do {
             id->getAttribute("WasteWaterPerShaft")->setDouble(id->getAttribute("WasteWaterPerShaft")->getDouble() + wastewater);
             id->getAttribute("InfiltrationWaterPerShaft")->setDouble(id->getAttribute("InfiltrationWaterPerShaft")->getDouble() + infiltreationwater);
@@ -251,10 +262,10 @@ void TimeAreaMethod::run() {
                 if (id->isInView(storage)) {
                     //Storage Capacity
                     double capacity = id->getAttribute("Storage")->getDouble();
-                    id->addAttribute("ConnectedStorageArea", DeltaA);
-
                     QKrit =  id->getAttribute("QrKritPerShaft")->getDouble() * (1-capacity);
-                    DeltaA =  id->getAttribute("AreaPerShaft")->getDouble() * (1-capacity);
+                    DeltaStorage =  area * (capacity);
+                    area = area * capacity * (1-capacity);
+                    id->addAttribute("ConnectedStorageArea", DeltaStorage + id->getAttribute("ConnectedStorageArea")->getDouble());
                     StrangL_Total = 0;
 
                 }
@@ -268,8 +279,8 @@ void TimeAreaMethod::run() {
                 id->getAttribute("StrandLengthTotal")->setDouble(StrangL_Total);
 
             id->getAttribute("QrKritPerShaft_total")->setDouble(QKrit);
-            id->getAttribute("Area_total")->setDouble(id->getAttribute("AreaPerShaft")->getDouble() -DeltaA);
-
+            id->getAttribute("Area_total")->setDouble(id->getAttribute("AreaPerShaft")->getDouble() - DeltaA);
+            DeltaStorage = 0;
 
 
             idPrev = id;
@@ -287,9 +298,6 @@ void TimeAreaMethod::run() {
                     outgoing_id = e;
                 }
             }
-
-            DM::Logger(DM::Debug) <<  "QrKritPerShaft" << id->getAttribute("QrKritPerShaft")->getDouble();
-            DM::Logger(DM::Debug) <<  "QrKritPerShaft_total" << id->getAttribute("QrKritPerShaft_total")->getDouble();
 
             id = nextid_tmp;
 
@@ -347,6 +355,8 @@ void TimeAreaMethod::run() {
 
 
 
+
+
     }
 
     //Dimensioning
@@ -354,12 +364,19 @@ void TimeAreaMethod::run() {
     foreach(std::string  en, edgesname) {
         DM::Edge * e = city->getEdge(en);
         DM::Node * attr = city->getNode(e->getStartpointName());
-        double QWasteWater = attr->getAttribute("WasterWater")->getDouble() +  attr->getAttribute("InfitrationWater")->getDouble();
+        double QWasteWater = attr->getAttribute("WasteWaterPerShaft")->getDouble() +  attr->getAttribute("InfiltrationWaterPerShaft")->getDouble();
         double QRainWater =  attr->getAttribute("Area_total")->getDouble()*attr->getAttribute("APhi")->getDouble()*this->r15/10000. +  attr->getAttribute("QrKrit_total")->getDouble();
         double Area_tot = attr->getAttribute("Area_total")->getDouble();
         double APhi = attr->getAttribute("APhi")->getDouble();
+        if (QRainWater < 0)
+            QRainWater = 0;
         double QBem = (QRainWater + QWasteWater)/1000.; //m³
 
+        double QWasteWater_2 = 10*(attr->getAttribute("WasteWaterPerShaft")->getDouble() +  attr->getAttribute("InfiltrationWaterPerShaft")->getDouble())/1000;
+
+        if (QWasteWater_2 > QBem) {
+            QBem = QWasteWater_2;
+        }
         e->addAttribute("Diameter", this->chooseDiameter(sqrt((QBem)/3.14*4))); //in mm
         e->addAttribute("QBem", QBem);
         e->addAttribute("Area_tot", Area_tot);
@@ -379,11 +396,22 @@ void TimeAreaMethod::run() {
         //Get Upstream Nodes
 
         std::vector<DM::Edge*> upstream = EndNodeSortedEdges[StartNode];
+        std::vector<DM::Edge*> downstream = StartNodeSortedEdges[StartNode];
         double maxDiameter = 0;
+        double minDiameter = -1;
         foreach (DM::Edge * c, upstream) {
             if (c->getAttribute("Diameter")->getDouble() > maxDiameter)
                 maxDiameter = c->getAttribute("Diameter")->getDouble();
+            if (c->getAttribute("Diameter")->getDouble() < minDiameter || minDiameter < 0)
+                minDiameter = c->getAttribute("Diameter")->getDouble();
         }
+        foreach (DM::Edge * c, downstream) {
+            if (c->getAttribute("Diameter")->getDouble() > maxDiameter)
+                maxDiameter = c->getAttribute("Diameter")->getDouble();
+            if (c->getAttribute("Diameter")->getDouble() < minDiameter || minDiameter < 0)
+                minDiameter = c->getAttribute("Diameter")->getDouble();
+        }
+
 
 
         double inletOffset = 0;
@@ -394,6 +422,8 @@ void TimeAreaMethod::run() {
         } else {
             inletOffset = 0.85/1000 * maxDiameter;
         }
+        if (minDiameter > inletOffset)
+            inletOffset = maxDiameter*.80/1000;
         weir->addAttribute("InletOffset", inletOffset);
     }
 
@@ -414,21 +444,34 @@ void TimeAreaMethod::run() {
     foreach (std::string nstorage, city->getNamesOfComponentsInView(storage)) {
         DM::Node * storage = city->getNode(nstorage);
         std::vector<DM::Edge*> edges = this->EndNodeSortedEdges[storage];
+        double minDiameter = -1;
         double maxDiameter = 0;
         foreach (DM::Edge * c, edges) {
             if (c->getAttribute("Diameter")->getDouble() > maxDiameter)
                 maxDiameter = c->getAttribute("Diameter")->getDouble();
+            if (c->getAttribute("Diameter")->getDouble() < minDiameter || minDiameter < 0)
+                minDiameter = c->getAttribute("Diameter")->getDouble();
         }
+
+        std::vector<DM::Edge*> upstream = StartNodeSortedEdges[storage];
+        foreach (DM::Edge * c, upstream) {
+            if (c->getAttribute("Diameter")->getDouble() > maxDiameter)
+                maxDiameter = c->getAttribute("Diameter")->getDouble();
+            if (c->getAttribute("Diameter")->getDouble() < minDiameter || minDiameter < 0)
+                minDiameter = c->getAttribute("Diameter")->getDouble();
+        }
+
+
         double VStorage = storage->getAttribute("ConnectedStorageArea")->getDouble() * 15/10000;
 
 
         //Connected Weir
-        double maxdepth = maxDiameter*0.6;
+        double maxdepth = maxDiameter*0.6/1000;
 
-        double area = VStorage / maxdepth;
-        storage->addAttribute("D", 2+maxdepth/1000.);
+        double area = VStorage / (maxdepth);
         storage->addAttribute("StorageA", area);
         storage->addAttribute("StorageV", VStorage);
+
     }
 
 

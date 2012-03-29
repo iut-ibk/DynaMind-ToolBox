@@ -395,7 +395,7 @@ std::map<std::string, Component*> System::getAllComponentsInView(const DM::View 
 
     return views[view.getName()];
 }
-std::vector<std::string> System::getNamesOfComponentsInView(DM::View & view) {
+std::vector<std::string> System::getNamesOfComponentsInView(DM::View view) {
 
 
 
