@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH
 
 
 set(Boost_USE_STATIC_LIBS   OFF)
-find_package(Boost 1.38.0 COMPONENTS python program_options date_time REQUIRED)
+find_package(Boost 1.38.0 COMPONENTS program_options date_time REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(Qt4 COMPONENTS QtCore QtGui)
 find_package(CGAL QUIET COMPONENTS Core )
