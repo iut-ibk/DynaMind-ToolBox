@@ -202,8 +202,8 @@ int main(int argc, char *argv[]) {
 
 
     m = sim->getModuleByName("catchments");
-    m->setParameterValue("Height", "500");
-    m->setParameterValue("Width", "500");
+    m->setParameterValue("Height", "200");
+    m->setParameterValue("Width", "200");
     sim->startSimulation(true);
     sim->startSimulation(true);
     sim->startSimulation(true);
