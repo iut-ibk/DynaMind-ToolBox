@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
 
 
     QStringList parameter;
+    QStringList filename;
     parameter << "MaxStrahler" << "StrahlerDifferenz" << "MaxStrahlerStorage" << "StrahlerDifferenzStorage";
     foreach (QString line, ParameterList) {
         QStringList splitline = line.split("=");
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+            filename << line;
         }
         if (splitline[0] == "StrahlerDifferenz") {
             if (splitline.size() > 1) {
@@ -94,6 +96,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+            filename << line;
         }
         if (splitline[0] == "MaxStrahlerStorage") {
             if (splitline.size() > 1) {
@@ -104,6 +107,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+            filename << line;
         }
         if (splitline[0] == "StrahlerDifferenzStorage") {
             if (splitline.size() > 1) {
@@ -114,6 +118,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+            filename << line;
         }
     }
 
@@ -191,7 +196,9 @@ int main(int argc, char *argv[]) {
     m->setParameterValue("MaxStrahlerStorage", DMHelper::convertIntMapToDMMapString(MaxStrahlerStorage));
 
     m = sim->getModuleByName("Results");
-    m->setParameterValue("FileName", "100x200.res");
+    filename << ".ress";
+    filename.join("");
+    m->setParameterValue("FileName", filename.join("").toStdString());
 
 
     m = sim->getModuleByName("catchments");
