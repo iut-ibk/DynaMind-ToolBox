@@ -32,6 +32,7 @@ class DM_HELPER_DLL_EXPORT DMVIBe2 : public DM::Module
         int InitialCityCenter;
         int Steps;
         int PopSteps;
+        std::string FileInitalVIBeCity;
 
 
 

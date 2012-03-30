@@ -43,6 +43,7 @@ add_subdirectory(src/DMToolboxes)
 add_subdirectory(src/CityBlocks)
 add_subdirectory(src/DMSewer)
 add_subdirectory(src/DMExampleSimulations)
+add_subdirectory(src/UDMSitzenfrei)
 #at the moment just for linux
 if (NOT WIN32)
         add_subdirectory(src/dynamind-vibe2)

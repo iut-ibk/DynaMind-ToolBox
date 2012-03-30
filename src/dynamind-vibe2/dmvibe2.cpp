@@ -24,6 +24,7 @@ DMVIBe2::DMVIBe2()
 {
     height = 250;
     width = 400;
+    FileInitalVIBeCity = "testmodels/InitialCity.vib";
 
     this->addParameter("Height", DM::LONG, &height);
     this->addParameter("Width", DM::LONG, &width);
@@ -50,6 +51,7 @@ DMVIBe2::DMVIBe2()
     this->addParameter("InitialCityCenter", DM::INT, &InitialCityCenter);
     this->addParameter("Steps", DM::INT, &Steps);
     this->addParameter("PopSteps", DM::INT, &PopSteps);
+    this->addParameter("FileInitalVIBeCity", DM::STRING, &FileInitalVIBeCity);
 
     landuse = DM::View("Landuse", DM::RASTERDATA, DM::WRITE);
     population = DM::View("Population", DM::RASTERDATA, DM::WRITE);
@@ -98,7 +100,7 @@ void DMVIBe2::run()
 
     vibens::PythonEnv::getInstance()->addPythonPath("/usr/local/lib");
     s1->registerDataBase(db);
-    s1->loadSimulation("/home/christian/Documents/UDM/InitialCity.vib");
+    s1->loadSimulation(FileInitalVIBeCity);
 
     s1->getModuleByName("Height")->setParameterValue("Value", QString::number(height).toStdString());
     s1->getModuleByName("Width")->setParameterValue("Value", QString::number(width).toStdString());

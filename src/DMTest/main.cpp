@@ -38,6 +38,7 @@
 #include <sstream>
 #include <dmpythonenv.h>
 #include <complexgeometry.h>
+#include <QStringList>
 
 using namespace std;
 using namespace DM;
@@ -48,7 +49,7 @@ bool MemDynaMiteTestPython();
 bool MemDynaMiteTestC();
 bool StoryLine();
 bool UDM();
-bool VIBe();
+bool VIBe(int argc, char *argv[]);
 int main(int argc, char *argv[], char *envp[]) {
     //Init Logger
     ostream *out = &cout;
@@ -95,7 +96,7 @@ int main(int argc, char *argv[], char *envp[]) {
     }else {
         Logger() << "MemDynaMiteTest DONE";
     }*/
-    VIBe();
+    VIBe(argc, argv);
     return 1;
 }
 bool DMBaseTest() {
@@ -359,9 +360,36 @@ bool UDM()
     return true;
 }
 
-bool VIBe()
+
+bool VIBe(int argc, char *argv[])
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(1);
+
+
+    QStringList ParameterList;
+    for (int i=0; i < argc; i++) {
+        ParameterList.push_back(QString::fromStdString(argv[i]));
+    }
+
+    std::map<int, int> MaxStrahler;
+    std::map<int, int> StrahlerDifferenz;
+    std::map<int, int> MaxStrahlerStorage;
+    std::map<int, int> StrahlerDifferenzStorage;
+    MaxStrahler[0] = 100;
+    MaxStrahler[1] = 0;
+    MaxStrahler[2] = 0;
+
+    StrahlerDifferenz[0] = 0;
+    StrahlerDifferenz[1] = 0;
+    StrahlerDifferenz[2] = 0;
+
+    MaxStrahlerStorage[0] = 100;
+    MaxStrahlerStorage[1] = 100;
+    MaxStrahlerStorage[2] = 0;
+
+    StrahlerDifferenzStorage[1] = 0;
+    StrahlerDifferenzStorage[2] = 0;
+    StrahlerDifferenzStorage[3] = 0;
+
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     env->addPythonPath("/home/christian/Documents/DynaMind/build/release/");
 
@@ -369,10 +397,8 @@ bool VIBe()
     DataManagement::init();
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
-
     Simulation * sim =  new Simulation;
-    sim->registerPythonModules("/home/c8451045/Documents/DynaMind/scripts");
-    sim->loadSimulation("/home/christian/Documents/DynaMind/data/testmodels/vibe_sewer_5.dyn");
+    sim->loadSimulation("testmodels/vibe_sewer_5.dyn");
 
 
 
@@ -408,6 +434,7 @@ bool VIBe()
 
     DM::Module * m = sim->getModuleByName("VIBe");
 
+
     m->setParameterValue("maxCPopDensity",  QString::number(maxCPopDensity).toStdString());
     m->setParameterValue("maxDCPopDensity",  QString::number(maxDCPopDensity).toStdString());
     m->setParameterValue("maxOBPopDensity",  QString::number(maxOBPopDensity).toStdString());
@@ -422,25 +449,7 @@ bool VIBe()
     m = sim->getModuleByName("Outfall");
 
 
-    std::map<int, int> MaxStrahler;
-    std::map<int, int> StrahlerDifferenz;
-    std::map<int, int> MaxStrahlerStorage;
-    std::map<int, int> StrahlerDifferenzStorage;
-    MaxStrahler[0] = 100;
-    MaxStrahler[1] = 0;
-    MaxStrahler[2] = 0;
 
-    StrahlerDifferenz[1] = 0;
-    StrahlerDifferenz[2] = 0;
-    StrahlerDifferenz[3] = 0;
-
-    MaxStrahlerStorage[0] = 100;
-    MaxStrahlerStorage[1] = 100;
-    MaxStrahlerStorage[2] = 0;
-
-    StrahlerDifferenzStorage[1] = 0;
-    StrahlerDifferenzStorage[2] = 0;
-    StrahlerDifferenzStorage[3] = 0;
 
     m->setParameterValue("StrahlerDifferenz", DMHelper::convertIntMapToDMMapString(StrahlerDifferenz));
     m->setParameterValue("MaxStrahler", DMHelper::convertIntMapToDMMapString(MaxStrahler));
@@ -449,12 +458,12 @@ bool VIBe()
     m->setParameterValue("MaxStrahlerStorage", DMHelper::convertIntMapToDMMapString(MaxStrahlerStorage));
 
     m = sim->getModuleByName("Results");
-    m->setParameterValue("FileName", "/home/christian/Documents/UDM/100x200.res");
+    m->setParameterValue("FileName", "100x200.res");
 
 
     m = sim->getModuleByName("catchments");
-    m->setParameterValue("Height", "200");
-    m->setParameterValue("Width", "200");
+    m->setParameterValue("Height", "500");
+    m->setParameterValue("Width", "500");
     sim->startSimulation(true);
     sim->startSimulation(true);
     sim->startSimulation(true);
@@ -478,9 +487,8 @@ bool VIBe()
 
     sim->startSimulation();
 
+    delete sim;
 
 
-
-    return true;
 }
 
