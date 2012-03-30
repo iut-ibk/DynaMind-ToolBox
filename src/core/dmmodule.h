@@ -366,6 +366,7 @@ private:
 
 
     Simulation * simulation;
+    std::vector<DM::System *> ownedSystems;
 
 
 
@@ -380,6 +381,7 @@ protected:
     std::map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
+
 
     /** @brief the internalCounter is increased by on everytime the
      * run method is called.

@@ -87,6 +87,8 @@ Module::Module() {
 }
 
 Module::~Module() {
+    foreach (DM::System * sys, ownedSystems)
+        delete sys;
     Logger(Debug) << "Remove " << this->getClassName() << " " << this->getUuid();
     if(!this)
         return;
@@ -545,11 +547,15 @@ DM::System* Module::getSystemState(const std::string &name)
 }
 
 
-DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {
+DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {    
     DM::System * sys = new DM::System(name);
+    if (sys == 0)
+        return sys;
+    this->ownedSystems.push_back(sys);
     foreach (DM::View v, views)
         sys->addView(v);
     sys->addView(DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE));
+
     return sys;
 }
 
