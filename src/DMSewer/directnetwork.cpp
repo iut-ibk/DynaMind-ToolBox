@@ -31,6 +31,8 @@ DirectNetwork::DirectNetwork()
     std::vector<DM::View> views;
     this->conduits = DM::View("NETWORK", DM::EDGE, DM::MODIFY);
     this->outfalls = DM::View("ENDPOINT", DM::NODE, DM::MODIFY);
+    this->startpoints = DM::View("STARTPOINT", DM::NODE, DM::WRITE);
+
     views.push_back(conduits);
     views.push_back(outfalls);
 
@@ -73,12 +75,37 @@ void DirectNetwork::run() {
 
 void DirectNetwork::NextEdge(std::string startnode) {
     std::vector<std::string> connected;
-    std::vector<std::string>  test = ConnectionList[startnode];
+    if (ConnectionList[startnode].size() == 1) {
+        sys->addComponentToView(sys->getNode(startnode), this->startpoints);
+    }
     foreach (std::string s, ConnectionList[startnode]) {
         if (find(visitedEdges.begin(), visitedEdges.end(), s) ==   visitedEdges.end()) {
             connected.push_back(s);
         }
     }
+    //Diameter Sorted max first
+    std::vector<std::string> connected_new;
+    while (connected.size() > 0) {
+        std::string maxID = "";
+        double maxDiameter = 0;
+        for (int i = 0; i < connected.size(); i++) {
+            if (i == 0) {
+                maxID = connected[i];
+            }
+            if (sys->getEdge(connected[i])->getAttribute("DIAMETER")->getDouble() > maxDiameter) {
+                maxDiameter = sys->getEdge(connected[i])->getAttribute("DIAMETER")->getDouble();
+                maxID = connected[i];
+
+            }
+
+        }
+        connected.erase(find(connected.begin(), connected.end(), maxID));
+        connected_new.push_back(maxID);
+    }
+
+
+
+    connected = connected_new;
     foreach (std::string s, connected) {
         DM::Edge * e = sys->getEdge(s);
         e->getAttribute("VISITED")->setDouble(1);

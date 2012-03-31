@@ -35,28 +35,41 @@ class ImportShapeFile(Module):
             self.FileName = ""
             self.createParameter("Identifier", STRING, "Name")
             self.Identifier = ""
+            self.IdentifierOld = ""
+
+            self.dummy = View("dummy", SUBSYSTEM, WRITE)
+
+            data = []
+
+            data.append(self.dummy)
+            
+            self.addData("Vec", data)
+            
             
             
         def init(self):
-            pass
+            if self.Identifier == "":
+                return
+            if self.Identifier == self.IdentifierOld:
+                return
+
+            self.NodeView = View("", NODE, WRITE);
+            self.EdgeView = View(self.Identifier, EDGE, WRITE);
+            self.FaceView = View("", FACE, WRITE);
+            
+            data = []
+            data.append(self.NodeView)
+            data.append(self.EdgeView)
+            data.append(self.FaceView)
+            
+            self.addData("Vec", data)
+            
+            self.IdentifierOld = self.Identifier
+            
+            
         def run(self):
             city = self.getData("Vec")
-            registeredViews = self.getViews()
-            self.NodeView = View();
-            self.EdgeView = View();
-            self.FaceView = View();
-            
-            for key in registeredViews.keys():
-                for view in registeredViews[key]:
-                    if view.getType() == NODE:
-                        self.NodeView = view;
-                    if view.getType() == EDGE:
-                        self.EdgeView = view;
-                    if view.getType() == FACE:
-                        self.FaceView = view;
-            print self.NodeView.getName()
-            print self.EdgeView.getName()
-            print self.FaceView.getName()
+
             shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
             sourcePath = self.FileName
             dataSource = ogr.Open(sourcePath)
@@ -153,7 +166,7 @@ class ImportShapeFile(Module):
                             continue
                         #Create Faces
                         
-                        city.addFace(el, self.vec)
+                        #city.addFace(el, self.vec)
             print "Imported points: " + str( len(city.getAllNodes()))
             print "Imported elements: " + str( len(city.getNamesOfComponentsInView( self.EdgeView)) )
             print "Edges Created: " + str( counter )

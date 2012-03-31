@@ -42,13 +42,6 @@ class DM_HELPER_DLL_EXPORT NetworkAnalysis : public  DM::Module {
         DM::View network;
 
 
-    /* std::vector<DM::Node> PointList;
-    std::vector<DM::Edge> EdgeList;
-    bool checkPoint(DM::Node & p, double offset);
-    std::vector<int> findConnectedEdges(int ID);
-    int findNewID(DM::Node & p, double offset);*/
-
-
 public:
     NetworkAnalysis();
     void run();

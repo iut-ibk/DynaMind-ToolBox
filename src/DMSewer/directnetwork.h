@@ -39,6 +39,7 @@ class DirectNetwork : public DM::Module
 private:
     DM::View conduits;
     DM::View outfalls;
+    DM::View startpoints;
     std::vector<std::string> visitedEdges;
     std::map<std::string, std::vector<std::string> > ConnectionList;
     void NextEdge(std::string startnode);

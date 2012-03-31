@@ -90,7 +90,7 @@ void NetworkAnalysis::run() {
         DM::Edge * e = city->getEdge(name);
         e->addAttribute("Strahler", 0);
         DM::Node * startnode = city->getNode(e->getStartpointName());
-        if (EndNodeSortedEdges[startnode].size() == 0)
+        //if (EndNodeSortedEdges[startnode].size() == 0)
             StartNodes.push_back(startnode);
     }
     DM::Logger(DM::Debug) << "Number of StartNodes" << StartNodes.size();
@@ -104,10 +104,10 @@ void NetworkAnalysis::run() {
 
     foreach(DM::Node * StartID, StartNodes) {
         std::vector<DM::Edge*> ids = StartNodeSortedEdges[StartID];
-        if (ids.size()!= 1) {
+        /*if (ids.size()!= 1) {
             //DM::Logger(DM::Error) << "No Start Node";
             continue;
-        }
+        }*/
         DM::Edge * e = ids[0];
         //DM::Node * n1 = city->getNode(e->getStartpointName());
         DM::Node * n2 = city->getNode(e->getEndpointName());
