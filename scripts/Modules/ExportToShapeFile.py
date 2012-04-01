@@ -35,7 +35,9 @@ class ExportToShapeFile(Module):
                 self.createParameter("FileName", STRING,  "test")
                 self.FileName = "Shapefile"
                 self.createParameter("Name", STRING,  "test")
-                self.Name = ""    
+                self.Name = ""   
+                self.createParameter("offsetX", DOUBLE, "OffsetX")
+                self.createParameter("offsetY", DOUBLE, "OffsetY") 
                 self.createParameter("Points", BOOL,  "test")
                 self.Points = False
                 self.createParameter("Lines", BOOL,  "test")
@@ -43,6 +45,8 @@ class ExportToShapeFile(Module):
                 self.createParameter("Faces", BOOL,  "test")
                 self.Faces = False
                 self.vec = View("dummy", SUBSYSTEM, READ)
+                self.offsetX = 0
+                self.OffsetY = 0                
                 views = []
                 views.append(self.vec)
                 self.addData("City", views)
@@ -98,7 +102,7 @@ class ExportToShapeFile(Module):
                     ring = osgeo.ogr.Geometry(osgeo.ogr.wkbLinearRing)
                     nl =  TBVectorData.getNodeListFromFace(city, face)
                     for p in nl:
-                        ring.AddPoint(p.getX(),p.getY())
+                        ring.AddPoint(p.getX()+ self.offsetX,p.getY()+ self.offsetY)
                     line.AddGeometry(ring)
 
                     featureIndex = 0
@@ -152,8 +156,8 @@ class ExportToShapeFile(Module):
                     edge = city.getEdge(names[i])
                     p1 = city.getNode(edge.getStartpointName())
                     p2 = city.getNode(edge.getEndpointName())
-                    line.AddPoint(p1.getX(),p1.getY())
-                    line.AddPoint(p2.getX(),p2.getY())
+                    line.AddPoint(p1.getX() + self.offsetX ,p1.getY() + self.offsetY)
+                    line.AddPoint(p2.getX()+ self.offsetX ,p2.getY()+ self.offsetY)
 
                     featureIndex = 0
                     feature = osgeo.ogr.Feature(layerDefinition)
@@ -214,7 +218,7 @@ class ExportToShapeFile(Module):
                     #Addend Points
                     node = city.getNode(names[i])
                     point = osgeo.ogr.Geometry(osgeo.ogr.wkbPoint)
-                    point.SetPoint(0, node.getX(),  node.getY())
+                    point.SetPoint(0, node.getX()+ self.offsetX,  node.getY()+ self.offsetY)
                     featureIndex = 0
                     feature = osgeo.ogr.Feature(layerDefinition)
                     feature.SetGeometry(point)

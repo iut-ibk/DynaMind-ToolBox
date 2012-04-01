@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

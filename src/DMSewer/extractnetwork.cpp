@@ -120,8 +120,8 @@ ExtractNetwork::ExtractNetwork()
 
     std::vector<DM::View> city;
     topo = DM::View("Topology", DM::RASTERDATA, DM::READ);
-    Conduits = DM::View("CONDUIT", DM::EDGE, DM::MODIFY);
-    Conduits.modifyAttribute("New");
+    Conduits = DM::View("CONDUIT", DM::EDGE, DM::WRITE);
+    Conduits.addAttribute("New");
     Inlets= DM::View("INLET",  DM::NODE, DM::READ);
     Inlets.modifyAttribute("New");
     Inlets.modifyAttribute("Used");

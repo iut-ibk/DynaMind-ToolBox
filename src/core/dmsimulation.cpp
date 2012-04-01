@@ -271,7 +271,7 @@ void Simulation::run() {
 
 void Simulation::startSimulation(bool virtualRun, bool check) {
     this->virtualRun = virtualRun;
-    this->registerDataBase(DataManagement::getInstance().getDataBase());
+    //this->registerDataBase(DataManagement::getInstance().getDataBase());
     Logger(Standard) << "Run Simulation";
     bool isConnected = true;
     if (check)

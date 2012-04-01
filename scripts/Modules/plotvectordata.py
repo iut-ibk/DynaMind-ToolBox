@@ -54,7 +54,6 @@ class PlotVectorData(Module):
                 
 
     def run(self):
-        print "HUHUPLOT"
         city = self.getData("Vec")
         for year in range(1941, 2011, 5):
             patches = []
@@ -93,9 +92,9 @@ class PlotVectorData(Module):
                         poly = []
                         p1 = city.getNode(edge.getStartpointName())
                         p2 = city.getNode(edge.getEndpointName())
-                        if edge.getAttribute("PLAN_DATE").getDouble() < 1900:
+                        if edge.getAttribute("CONYEAR").getDouble() < 1900:
                             continue
-                        if edge.getAttribute("PLAN_DATE").getDouble() > year:
+                        if edge.getAttribute("CONYEAR").getDouble() > year:
                             continue
                         poly.append([p1.getX(), p1.getY()])
                         poly.append([p1.getX(), p2.getY()])

@@ -2,6 +2,7 @@
 %ignore "DM_HELPER_DLL_EXPORT";
 %feature("director");
 %{
+    #include <dmsimulation.h>
     #include <dmcomponent.h>
     #include <dmsystem.h>
     #include <dmrasterdata.h>
@@ -37,7 +38,7 @@
 %include "../core/dmlog.h"
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
-
+%include "../core/dmsimulation.h"
 namespace std {
     %template(stringvector) vector<string>;
     %template(doublevector) vector<double>;

@@ -34,6 +34,7 @@
 #include "generatesewernetwork.h"
 #include "extractnetwork.h"
 #include "outfallplacement.h"
+#include "reconstructparameter.h"
 
 
 
@@ -68,6 +69,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new NodeFactory<GenerateSewerNetwork>());
     registry->addNodeFactory(new NodeFactory<ExtractNetwork>());
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
+    registry->addNodeFactory(new NodeFactory<ReconstructParameter>());
     /*registry->addNodeFactory(new NodeFactory<PickStartPoints>());
 
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());
