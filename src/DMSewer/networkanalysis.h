@@ -40,6 +40,7 @@ class DM_HELPER_DLL_EXPORT NetworkAnalysis : public  DM::Module {
 
     private:
         DM::View network;
+    DM::View globals;
 
 
 public:

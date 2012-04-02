@@ -46,7 +46,16 @@ namespace DM {
         std::vector<std::string> stringvector;
         std::set<std::string> inViews;
 
+        bool isDouble;
+        bool isString;
+        bool isDoubleVector;
+        bool isStringVector;
+
     public:
+        bool hasDouble();
+        bool hasString();
+        bool hasDoubleVector();
+        bool hasStringVector();
         Attribute(const Attribute &newattribute);
         Attribute(std::string name);
         Attribute(std::string name, double val);

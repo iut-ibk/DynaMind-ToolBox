@@ -458,7 +458,7 @@ void DMSWMM::writeSubcatchments(std::fstream &inp)
             imp = 0.2;
         if (gradient > 0.01)
             gradient = 0.01;
-        if (gradient ==0)
+        if (gradient < 0.001)
             gradient = 0.001;
 
         if ( area > 0 ) {

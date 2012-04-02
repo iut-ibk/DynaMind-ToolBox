@@ -34,19 +34,18 @@ class DM_HELPER_DLL_EXPORT DMSWMM : public  DM::Module {
     DM_DECLARE_NODE (DMSWMM)
 
     private:
-         int GLOBAL_Counter;
-        DM::System * city;
-        DM::View conduit;
-        DM::View inlet;
-        DM::View shaft;
-        DM::View endnodes;
-        DM::View catchment;
-        DM::View outfalls;
-        DM::View weir;
-        DM::View wwtp;
-        DM::View storage;
-        DM::View storage1;
-        DM::View globals;
+        int GLOBAL_Counter;
+    DM::System * city;
+    DM::View conduit;
+    DM::View inlet;
+    DM::View shaft;
+    DM::View endnodes;
+    DM::View catchment;
+    DM::View outfalls;
+    DM::View weir;
+    DM::View wwtp;
+    DM::View storage;
+    DM::View globals;
 
 
     std::string RainFile;

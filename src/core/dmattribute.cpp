@@ -37,22 +37,31 @@ Attribute::Attribute(const Attribute &newattribute)
     this->stringvalue=newattribute.stringvalue;
     this->doublevector=newattribute.doublevector;
     this->stringvector=newattribute.stringvector;
+
+    this->isDouble = newattribute.isDouble;
+    this->isString = newattribute.isString;
+    this->isDoubleVector = newattribute.isDoubleVector;
+    this->isStringVector = newattribute.isStringVector;
 }
 
 Attribute::Attribute(std::string name)
 {
     this->name=name;
-    doublevalue = 0;
 }
 Attribute::Attribute()
 {
-    doublevalue = 0;
+
 }
 
 Attribute::Attribute(std::string name, double val)
 {
     this->doublevalue = val;
     this->name=name;
+
+    isDouble = true;
+    isString = false;
+    isDoubleVector = false;
+    isStringVector = false;
 
 }
 
@@ -75,6 +84,7 @@ std::string Attribute::getName()
 void Attribute::setDouble(double v)
 {
     doublevalue=v;
+    isDouble = true;
 }
 
 double Attribute::getDouble()
@@ -85,6 +95,7 @@ double Attribute::getDouble()
 void Attribute::setString(std::string s)
 {
     stringvalue=s;
+    isString = true;
 }
 
 std::string Attribute::getString()
@@ -95,6 +106,7 @@ std::string Attribute::getString()
 void Attribute::setDoubleVector(std::vector<double> v)
 {
     doublevector=v;
+    isDoubleVector = true;
 }
 
 std::vector<double> Attribute::getDoubleVector()
@@ -105,9 +117,28 @@ std::vector<double> Attribute::getDoubleVector()
 void Attribute::setStringVector(std::vector<std::string> s)
 {
     stringvector=s;
+    isStringVector = true;
 }
 
 std::vector<std::string> Attribute::getStringVector()
 {
     return stringvector;
 }
+
+bool Attribute::hasDouble()
+{
+   return this->isDouble;
+}
+bool Attribute::hasDoubleVector()
+{
+   return this->isDoubleVector;
+}
+bool Attribute::hasString()
+{
+   return this->isString;
+}
+bool Attribute::hasStringVector()
+{
+   return this->isStringVector;
+}
+

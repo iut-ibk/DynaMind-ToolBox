@@ -70,7 +70,7 @@ TimeAreaMethod::TimeAreaMethod()
     weir = DM::View("WEIR", DM::NODE, DM::WRITE);
     weir.addAttribute("InletOffset");
 
-    globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::WRITE);
+    globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::MODIFY);
     globals.addAttribute("CONNECTEDPOP");
     globals.addAttribute("CONNECTEDAREA");
 
@@ -193,11 +193,17 @@ void TimeAreaMethod::run() {
 
     }
 
-    DM::Node sewerGlobal = DM::Node(0,0,0);
-    DM::Node * sg = city->addNode(sewerGlobal, this->globals);
-    sg->addAttribute("CONNECTEDPOP", Population_sum);
-    sg->addAttribute("CONNECTEDAREA", area_sum);
-    sg->addAttribute("CSOs", city->getNamesOfComponentsInView(outfalls).size());
+
+
+    foreach (std::string s, city->getNamesOfComponentsInView(globals)) {
+        DM::Component * sg = city->getComponent(s);
+        sg->addAttribute("CONNECTEDPOP", Population_sum);
+        sg->addAttribute("CONNECTEDAREA", area_sum);
+        sg->addAttribute("CSOs", city->getNamesOfComponentsInView(outfalls).size());
+    }
+
+
+
 
 
     //AddStorageToWWtp
@@ -261,12 +267,14 @@ void TimeAreaMethod::run() {
 
                 if (id->isInView(storage)) {
                     //Storage Capacity
-                    double capacity = id->getAttribute("Storage")->getDouble();
-                    QKrit =  id->getAttribute("QrKritPerShaft")->getDouble() * (1-capacity);
-                    DeltaStorage =  area * (capacity);
-                    area = area * capacity * (1-capacity);
-                    id->addAttribute("ConnectedStorageArea", DeltaStorage + id->getAttribute("ConnectedStorageArea")->getDouble());
-                    StrangL_Total = 0;
+                    if (area > 0.01) {
+                        double capacity = id->getAttribute("Storage")->getDouble();
+                        QKrit =  id->getAttribute("QrKritPerShaft")->getDouble() * (1-capacity);
+                        DeltaStorage =  area * (capacity);
+                        area = area * capacity * (1-capacity);
+                        id->addAttribute("ConnectedStorageArea", DeltaStorage + id->getAttribute("ConnectedStorageArea")->getDouble());
+                        StrangL_Total = 0;
+                    }
 
                 }
 
@@ -417,13 +425,18 @@ void TimeAreaMethod::run() {
         double inletOffset = 0;
         //If storage
 
-        if (StartNode->getAttribute("Storage")->getDouble() > 0.01) {
+        if (StartNode->getAttribute("ConnectedStorageArea")->getDouble() > 0.01) {
             inletOffset = 0.6/1000 * maxDiameter;
         } else {
             inletOffset = 0.85/1000 * maxDiameter;
         }
         if (minDiameter > inletOffset)
             inletOffset = maxDiameter*.80/1000;
+
+        if (StartNode->getAttribute("Area_total")->getDouble() < 0.01) {
+            inletOffset = maxDiameter/1000;
+        }
+
         weir->addAttribute("InletOffset", inletOffset);
     }
 
@@ -474,32 +487,8 @@ void TimeAreaMethod::run() {
 
     }
 
-
     DM::Logger(DM::Standard) << "Sum over Population " << Population_sum;
 
-    //Create Storage Building at the End
-    /*std::vector<std::string> wwtp_con_names = VectorDataHelper::findElementsWithIdentifier("WWTPConduit", this->Network_out->getEdgeNames());
-    foreach(std::string name, wwtp_con_names) {
-        std::vector<Point> points = this->Network_out->getPoints(name);
-        Point p = points[0];
-        Attribute attr = VectorDataHelper::findAttributeFromPoints(*this->Network_out, p, this->IdentifierShaft, 10);
-        double QBem = 2* (attr.getAttribute("WasterWater") +  attr.getAttribute("InfitrationWater"))/1000.;
-        Attribute attr_cond = this->Network_out->getAttributes(name);
-        attr_cond.setAttribute("Diameter", this->choosDiameter(sqrt((QBem)/3.14*4)));
-        this->Network_out->setAttributes(name, attr_cond);
-    }
-    Logger(vibens::Standard) << "Sum over Population " << Population_sum;*/
-
-
-    //TODO: Seperate Module
-    /*foreach (std::string nc, city->getNamesOfComponentsInView(conduit)) {
-        DM::Edge * e = city->getEdge(nc);
-        if (e->getAttribute("Strahler")->getDouble()  < 2) {
-            city->removeComponentFromView(e, conduit);
-            DM::Node * start = city->getNode(e->getStartpointName());
-            city->removeComponentFromView(start, shaft);
-        }
-    }*/
 }
 
 double TimeAreaMethod::chooseDiameter(double diameter) {

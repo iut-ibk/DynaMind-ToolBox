@@ -120,7 +120,7 @@ class CSSCosts(Module):
 		        D = endNode.getAttribute("D").getDouble()            
 		    #Add Diameter to D. the layout generation needs to be changed first
 		    D = D+DN/1000.
-		    CostPerMeter = self.calculateConstructionCostPerMeter(DN, D)            
+		    CostPerMeter = self.calculateConstructionCostPerMeter_Richtline(DN)            
 		    length =  c.getAttribute("Length").getDouble()            
 		    Costs = CostPerMeter*length
 		    print Costs
@@ -167,8 +167,8 @@ class CSSCosts(Module):
             return 10822*V**(-0.42)
         if V >= 2000:
             return 445
-
-    def calculateConstructionCostPerMeter(self, DN, D):
+        
+    def calculateConstructionCostPerMeter_Maurer(self, DN, D):
         """Calulcate construction cost per meter
         DN -- Diameter of the pipe in (mm)
         D  -- Construction depth in (m) 
@@ -185,6 +185,17 @@ class CSSCosts(Module):
         #No Open Trench Construction
         else:
             return self.f_Db * alpha * D + beta + (1 - self.f_Db) * alpha * self.D_b
+        
+    def calculateConstructionCostPerMeter_Richtline(self, DN):
+        """Calulcate construction cost per meter
+        DN -- Diameter of the pipe in (mm)
+        """
+        if DN < 300:
+            return 300
+        if DN >= 300 and DN < 1800:
+            return 0.65*DN+105
+        if DN >= 1800:
+            return 1275
 
     
 

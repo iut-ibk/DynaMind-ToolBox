@@ -25,20 +25,33 @@
  */
 #include "networkanalysis.h"
 #include "tbvectordata.h"
+#include <QUuid>
 
 DM_DECLARE_NODE_NAME(NetworkAnalysis, Sewer)
 NetworkAnalysis::NetworkAnalysis()
 {
 
     this->network = DM::View("CONDUIT", DM::EDGE, DM::READ);
+    this->globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::WRITE);
+
     this->network.addAttribute("Strahler");
     std::vector<DM::View> views;
     views.push_back(this->network);
+    views.push_back(this->globals);
     this->addData("City", views);
 }
 
 void NetworkAnalysis::run() {
     DM::System * city = this->getData("City");
+
+    DM::Node sewerGlobal = DM::Node(0,0,0);
+    DM::Node * sg = city->addNode(sewerGlobal, this->globals);
+
+    DM::Attribute attr("UUID");
+    attr.setString(QUuid::createUuid().toString().toStdString());
+    sg->addAttribute(attr);
+
+
 
     std::vector<std::string> names = city->getNamesOfComponentsInView(this->network);
     double offset = 10;

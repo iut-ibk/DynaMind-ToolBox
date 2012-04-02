@@ -38,6 +38,8 @@
 #include <sstream>
 #include <dmpythonenv.h>
 #include <QStringList>
+#include <dmgroup.h>
+#include <dmporttuple.h>
 
 using namespace std;
 using namespace DM;
@@ -54,89 +56,21 @@ using namespace DM;
  * MaxStrahler=0,100,1,0,2,0 StrahlerDifferenz=1,0,2,0,3,0 MaxStrahlerStorage=0,100,1,0,2,0 StrahlerDifferenzStorage=1,0,2,0,3,0
  *
  **/
-int main(int argc, char *argv[]) {
-
-    QStringList ParameterList;
-    //first parameternot needed
-    for (int i=0; i < argc; i++) {
-        if (i == 0) {
-            continue;
-        }
-        ParameterList.push_back(QString::fromStdString(argv[i]));
-    }
-
-    std::map<int, int> MaxStrahler;
-    std::map<int, int> StrahlerDifferenz;
-    std::map<int, int> MaxStrahlerStorage;
-    std::map<int, int> StrahlerDifferenzStorage;
-
-
-    QStringList parameter;
-    QStringList filename;
-    parameter << "MaxStrahler" << "StrahlerDifferenz" << "MaxStrahlerStorage" << "StrahlerDifferenzStorage";
-    foreach (QString line, ParameterList) {
-        QStringList splitline = line.split("=");
-        if (splitline[0] == "MaxStrahler") {
-            if (splitline.size() > 1) {
-                QStringList values = splitline[1].split(",");
-                for (int i = 0; i < values.size(); i++) {
-                    MaxStrahler[values[i].toInt()] = values[i+1].toInt();
-                    i++;
-                }
-
-            }
-            filename << line;
-        }
-        if (splitline[0] == "StrahlerDifferenz") {
-            if (splitline.size() > 1) {
-                QStringList values = splitline[1].split(",");
-                for (int i = 0; i < values.size(); i++) {
-                    StrahlerDifferenz[values[i].toInt()] = values[i+1].toInt();
-                    i++;
-                }
-
-            }
-            filename << line;
-        }
-        if (splitline[0] == "MaxStrahlerStorage") {
-            if (splitline.size() > 1) {
-                QStringList values = splitline[1].split(",");
-                for (int i = 0; i < values.size(); i++) {
-                    MaxStrahlerStorage[values[i].toInt()] = values[i+1].toInt();
-                    i++;
-                }
-
-            }
-            filename << line;
-        }
-        if (splitline[0] == "StrahlerDifferenzStorage") {
-            if (splitline.size() > 1) {
-                QStringList values = splitline[1].split(",");
-                for (int i = 0; i < values.size(); i++) {
-                    StrahlerDifferenzStorage[values[i].toInt()] = values[i+1].toInt();
-                    i++;
-                }
-
-            }
-            filename << line;
-        }
-    }
-
-
+DM::Simulation * createBasicSim() {
     //Init Logger
     ostream *out = &cout;
     DM::Log::init(new OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Debug) << "Start";
 
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
-    env->addPythonPath("/home/christian/Documents/DynaMind/build/release/");
+    //env->addPythonPath("/home/christian/Documents/DynaMind/build/release/");
 
 
     DataManagement::init();
     DMDatabase * db = new DMDatabase();
     DataManagement::getInstance().registerDataBase(db);   //Init Logger
     Simulation * sim =  new Simulation;
-    sim->loadSimulation("testmodels/vibe_sewer_5.dyn");
+    sim->loadSimulation("testmodels/sitzenfrei_udm.dyn");
 
 
 
@@ -183,51 +117,154 @@ int main(int argc, char *argv[]) {
     m->setParameterValue("PopSteps",  QString::number(PopSteps).toStdString());
     m->setParameterValue("Steps",  QString::number(Steps).toStdString());
 
-
-    m = sim->getModuleByName("Outfall");
-
-
-
-
-    m->setParameterValue("StrahlerDifferenz", DMHelper::convertIntMapToDMMapString(StrahlerDifferenz));
-    m->setParameterValue("MaxStrahler", DMHelper::convertIntMapToDMMapString(MaxStrahler));
-
-    m->setParameterValue("StrahlerDifferenzStorage", DMHelper::convertIntMapToDMMapString(StrahlerDifferenzStorage));
-    m->setParameterValue("MaxStrahlerStorage", DMHelper::convertIntMapToDMMapString(MaxStrahlerStorage));
-
-    m = sim->getModuleByName("Results");
-    filename << ".ress";
-    filename.join("");
-    m->setParameterValue("FileName", filename.join("").toStdString());
-
-
     m = sim->getModuleByName("catchments");
-    m->setParameterValue("Height", "200");
-    m->setParameterValue("Width", "200");
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
-    sim->startSimulation(true);
+    m->setParameterValue("Height", "500");
+    m->setParameterValue("Width", "500");
+
+    return sim;
+}
+
+int main(int argc, char *argv[]) {
+
+    std::vector<std::string> Scenarios;
+    std::string secenario1 = "MaxStrahler=0,0 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+
+    std::string secenario2 = "MaxStrahler=0,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+    std::string secenario3 = "MaxStrahler=0,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,100 StrahlerDifferenzStorage=1,0";
+
+    std::string secenario4 = "MaxStrahler=1,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+    std::string secenario5 = "MaxStrahler=1,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=1,100 StrahlerDifferenzStorage=1,0";
+
+    std::string secenario6 = "MaxStrahler=2,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+    std::string secenario7 = "MaxStrahler=2,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=2,100 StrahlerDifferenzStorage=1,0";
+
+    std::string secenario8 = "MaxStrahler=3,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+    std::string secenario9 = "MaxStrahler=3,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=3,100 StrahlerDifferenzStorage=1,0";
+
+    std::string secenario10 = "MaxStrahler=10,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=0,0 StrahlerDifferenzStorage=1,0";
+    std::string secenario11 = "MaxStrahler=10,100 StrahlerDifferenz=1,0 MaxStrahlerStorage=10,100 StrahlerDifferenzStorage=1,0";
+
+    Scenarios.push_back(secenario1);
+    Scenarios.push_back(secenario2);
+    Scenarios.push_back(secenario3);
+    Scenarios.push_back(secenario4);
+    Scenarios.push_back(secenario5);
+    Scenarios.push_back(secenario6);
+    Scenarios.push_back(secenario7);
+    Scenarios.push_back(secenario8);
+    Scenarios.push_back(secenario9);
+    Scenarios.push_back(secenario10);
+    Scenarios.push_back(secenario11);
+
+    DM::Simulation * sim = createBasicSim();
+    DM::Group * ScenarioGroup = (DM::Group *) sim->getModuleByName("SewerGeneration");
+    DM::Module * linkScenarioGroup = sim->getModuleByName("Network");
+
+    foreach (std::string scenario, Scenarios) {
+
+
+        //Add scenario to simulation
+        sim->loadSimulation("testmodels/sitzenfrei_scenario_udm.dyn");
+
+        DM::Group * g =(DM::Group*)sim->getModuleByName("Scenario");
+        //g->setGroup(ScenarioGroup);
+        g->setName("");
+
+        //Link Module
+        sim->addLink(ScenarioGroup->getOutPortTuple("City")->getOutPort(), g->getInPortTuple("City")->getInPort());
+
+        QStringList ParameterList = QString::fromStdString(scenario).split(" ");
+        //first parameternot needed
+
+
+
+        std::map<int, int> MaxStrahler;
+        std::map<int, int> StrahlerDifferenz;
+        std::map<int, int> MaxStrahlerStorage;
+        std::map<int, int> StrahlerDifferenzStorage;
+
+
+        QStringList parameter;
+        QStringList filename;
+        parameter << "MaxStrahler" << "StrahlerDifferenz" << "MaxStrahlerStorage" << "StrahlerDifferenzStorage";
+        foreach (QString line, ParameterList) {
+            QStringList splitline = line.split("=");
+            if (splitline[0] == "MaxStrahler") {
+                if (splitline.size() > 1) {
+                    QStringList values = splitline[1].split(",");
+                    for (int i = 0; i < values.size(); i++) {
+                        MaxStrahler[values[i].toInt()] = values[i+1].toInt();
+                        i++;
+                    }
+
+                }
+                filename << line;
+            }
+            if (splitline[0] == "StrahlerDifferenz") {
+                if (splitline.size() > 1) {
+                    QStringList values = splitline[1].split(",");
+                    for (int i = 0; i < values.size(); i++) {
+                        StrahlerDifferenz[values[i].toInt()] = values[i+1].toInt();
+                        i++;
+                    }
+
+                }
+                filename << line;
+            }
+            if (splitline[0] == "MaxStrahlerStorage") {
+                if (splitline.size() > 1) {
+                    QStringList values = splitline[1].split(",");
+                    for (int i = 0; i < values.size(); i++) {
+                        MaxStrahlerStorage[values[i].toInt()] = values[i+1].toInt();
+                        i++;
+                    }
+
+                }
+                filename << line;
+            }
+            if (splitline[0] == "StrahlerDifferenzStorage") {
+                if (splitline.size() > 1) {
+                    QStringList values = splitline[1].split(",");
+                    for (int i = 0; i < values.size(); i++) {
+                        StrahlerDifferenzStorage[values[i].toInt()] = values[i+1].toInt();
+                        i++;
+                    }
+
+                }
+                filename << line;
+            }
+        }
+
+
+
+
+
+        DM::Module * m = sim->getModuleByName("Outfall");
+        m->setName("");
+
+
+
+
+        m->setParameterValue("StrahlerDifferenz", DMHelper::convertIntMapToDMMapString(StrahlerDifferenz));
+        m->setParameterValue("MaxStrahler", DMHelper::convertIntMapToDMMapString(MaxStrahler));
+
+        m->setParameterValue("StrahlerDifferenzStorage", DMHelper::convertIntMapToDMMapString(StrahlerDifferenzStorage));
+        m->setParameterValue("MaxStrahlerStorage", DMHelper::convertIntMapToDMMapString(MaxStrahlerStorage));
+
+        m = sim->getModuleByName("Export");
+        m->setName("");
+        filename << "new.ress";
+        filename.join("");
+        m->setParameterValue("FileName", filename.join("").toStdString());
+    }
+
+    for (int i = 0; i < 100; i++)
+        sim->startSimulation(true);
+
 
     sim->startSimulation();
 
-    delete sim;
+    //delete sim;
 
 }
 

@@ -208,7 +208,7 @@ void OutfallPlacement::run() {
 
             /** Storage **/
             //Check for Placement after MaxStrahlerNumber
-            chooser = rand() % 100+1;
+            //chooser = rand() % 100+1;
             deltaStrahler = -1;
             //Search for biggest difference
             for (std::map<int, int>::const_iterator it = this->MaxStrahlerStorage.begin(); it!= this->MaxStrahlerStorage.end(); ++it) {

@@ -38,7 +38,10 @@ void ExportNodesToFile::run() {
         for (DM::AttributeMap::const_iterator it = am.begin(); it != am.end(); ++it) {
             out << it->first << "\t";
             DM::Attribute * attr = it->second;
-            out << attr->getDouble() << "\t";
+            if (attr->hasDouble())
+                out << attr->getDouble() << "\t";
+            if (attr->hasString())
+                out << attr->getString() << "\t";
         }
         out <<  "\n";
 

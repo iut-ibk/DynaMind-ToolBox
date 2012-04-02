@@ -65,6 +65,7 @@ private:
 
     double ConduitLength;
     long steps;
+    double Hmin;
 
     DM::System * city;
 

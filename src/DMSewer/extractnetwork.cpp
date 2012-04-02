@@ -83,7 +83,7 @@ void ExtractNetwork::AgentExtraxtor::run() {
 
         }
         if (Goals->getValue(currentPos.x, currentPos.y ) > 0 || this->MarkPath->getValue(currentPos.x, currentPos.y) > 0) {
-            if (currentPos.h < 3.1) {
+            if (currentPos.h < Hmin) {
                 this->alive = false;
                 this->successful = true;
                 this->path.push_back(currentPos);
@@ -101,9 +101,10 @@ ExtractNetwork::ExtractNetwork()
 {
     this->steps = 1000;
     this->ConduitLength = 200;
+    this->Hmin = 3.1;
 
     this->addParameter("Steps", DM::LONG, & this->steps);
-
+    this->addParameter("MaxDeph", DM::DOUBLE, &this->Hmin);
     this->addParameter("ConduitLength", DM::DOUBLE, &this->ConduitLength);
 
     confield = DM::View("ConnectivityField_in", DM::RASTERDATA, DM::READ);
@@ -183,6 +184,7 @@ void ExtractNetwork::run() {
         a->AttractionTopology = 0;
         a->AttractionConnectivity =0;
         a->steps = this->steps;
+        a->Hmin = this->Hmin;
         agents.push_back(a);
 
     }
