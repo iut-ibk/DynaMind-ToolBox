@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
 
         m = sim->getModuleByName("Export");
         m->setName("");
-        filename << "new.ress";
+        filename << "new_new.ress";
         filename.join("");
         m->setParameterValue("FileName", filename.join("").toStdString());
     }
