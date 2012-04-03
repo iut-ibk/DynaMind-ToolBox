@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
     splash1->show();
     splash1->showMessage("Loading Modules");
     app.processEvents();
+    //QThreadPool::globalInstance()->setMaxThreadCount(1);
 
     MainWindow * mw = new MainWindow();
 

@@ -75,8 +75,29 @@ double RasterData::getValue(long x, long y) const {
     }
 
 }
+void RasterData::createNewDataSet() {
+    double **data_old = this->data;
+    this->minValue = 0;
+    this->maxValue = 0;
+
+    data = new double*[width];
+    for (long i = 0; i < width; i++) {
+        data[i] = new double[height];
+    }
+
+    for (int i = 0; i < getWidth(); i++) {
+        for (int j = 0; j < getHeight();j++) {
+            data[i][j] =  data_old[i][j];
+        }
+    }
+
+    this->isClone = false;
+
+}
 
 bool RasterData::setValue(long x, long y, double value) {
+    if (this->isClone == true)
+        this->createNewDataSet();
 
     if (  x >-1 && y >-1 && x < this->width && y < this->height) {
         data[x][y] = value;
@@ -273,25 +294,21 @@ RasterData::RasterData() : Component() {
     this->width = 0;
     this->height = 0;
     this->data = 0;
+    this->isClone = false;
 }
 RasterData::RasterData(const RasterData &other) : Component(other) {
 
-    this->cellSize = 0;
-    this->width = 0;
-    this->height = 0;
-    this->NoValue = -9999;
-    this->minValue = -9999;
-    this->maxValue = -9999;
+    this->cellSize = other.cellSize;
+    this->width = other.width;
+    this->height = other.height;
+    this->NoValue = other.NoValue;
+    this->minValue = other.minValue;
+    this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
+    this->data = other.data;
     //RasterData r;
-    this->setSize(other.getWidth(), other.getHeight(), other.getCellSize());
 
-    this->setNoValue(other.getNoValue());
-    for (int i = 0; i < other.getWidth(); i++) {
-        for (int j = 0; j < other.getHeight();j++) {
-            this->setValue(i,j, other.getValue(i,j));
-        }
-    }
+    this->isClone = true;
 
 }
 
