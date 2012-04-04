@@ -40,9 +40,12 @@ SuperBlock::SuperBlock()
     views.push_back(block);
     height = 4000;
     width = 8000;
-
+offsetx = 0;
+offsety = 0;
     this->addParameter("Height", DM::LONG, &height);
     this->addParameter("Width", DM::LONG, &width);
+    this->addParameter("offsetx", DM::LONG, &offsetx);
+    this->addParameter("offsety", DM::LONG, &offsety);
     this->addData("City", views);
 
 }
@@ -53,10 +56,10 @@ void SuperBlock::run() {
 
 
 
-    DM::Node * n1 = blocks->addNode(0,0,0);
-    DM::Node * n2 = blocks->addNode(width,0,0);
-    DM::Node * n3 = blocks->addNode(width,height,0);
-    DM::Node * n4 = blocks->addNode(0,height,0);
+    DM::Node * n1 = blocks->addNode(offsetx,offsety,0);
+    DM::Node * n2 = blocks->addNode(offsetx+width,offsety,0);
+    DM::Node * n3 = blocks->addNode(offsetx+width,offsety+height,0);
+    DM::Node * n4 = blocks->addNode(offsetx,height,0);
 
     DM::Edge * e1 = blocks->addEdge(n1, n2);
     DM::Edge * e2 = blocks->addEdge(n2, n3);

@@ -341,14 +341,13 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
         std::vector<Node> pointlist_new;
 
         for (int i  = 0; i < pl.size(); i++) {
+            counter++;
             bool placePoint = false;
             Node * n = TBVectorData::getNode2D(&sys_tmp, dummy ,pl[i], offset );
-
             if (n->getAttribute("Counter")->getDouble() > 99) {
                 n->changeAttribute("Counter", n->getAttribute("Counter")->getDouble()+100);
                 placePoint = true;
             }
-
             if (i == 0)
                 placePoint = true;
             if (i == pl.size()-1)
