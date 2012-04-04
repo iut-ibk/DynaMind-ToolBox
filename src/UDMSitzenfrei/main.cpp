@@ -118,8 +118,8 @@ DM::Simulation * createBasicSim() {
     m->setParameterValue("Steps",  QString::number(Steps).toStdString());
 
     m = sim->getModuleByName("catchments");
-    m->setParameterValue("Height", "500");
-    m->setParameterValue("Width", "500");
+    m->setParameterValue("Height", "200");
+    m->setParameterValue("Width", "200");
 
     return sim;
 }
@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
 
         m = sim->getModuleByName("Export");
         m->setName("");
-        filename << "new.ress";
+        filename << "new_new.ress";
         filename.join("");
         m->setParameterValue("FileName", filename.join("").toStdString());
     }

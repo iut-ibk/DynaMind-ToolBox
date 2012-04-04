@@ -64,6 +64,7 @@ DMSWMM::DMSWMM()
 
 
     globals = DM::View("GLOBALS_SEWER", DM::NODE, DM::READ);
+    globals.addAttribute("SWMM_ID");
     globals.addAttribute("Vr");
     globals.addAttribute("Vp");
     globals.addAttribute("Vwwtp");
@@ -314,6 +315,7 @@ void DMSWMM::readInReportFile() {
         c->addAttribute("Vr", SurfaceRunOff);
         c->addAttribute("Vwwtp", Vwwtp);
         c->addAttribute("Vp", Vp);
+        c->getAttribute("SWMM_ID")->setString(QString(this->SWMMPath.path()).toStdString());
     }
 
 }

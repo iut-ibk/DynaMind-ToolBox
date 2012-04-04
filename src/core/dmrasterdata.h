@@ -76,6 +76,9 @@ private:
     double ** data;
 
     int debugValue;
+    bool isClone;
+
+    void createNewDataSet();
 
 
 };

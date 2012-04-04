@@ -9,6 +9,7 @@
     #include <dmattribute.h>
     #include <dmedge.h>
     #include <dmnode.h>
+    #include <dmface.h>
     #include <dmmodule.h>
     #include <dmview.h>
     #include <dmnodefactory.h>
@@ -32,6 +33,7 @@
 %include "../core/dmsystem.h"
 %include "../core/dmattribute.h"
 %include "../core/dmedge.h"
+%include "../core/dmface.h"
 %include "../core/dmrasterdata.h"
 %include "../core/dmnode.h"
 %include "../core/dmview.h"
@@ -46,6 +48,7 @@ namespace std {
     %template(systemmap) map<string, DM::System* >;
     %template(edgevector) vector<DM::Edge* >;
     %template(nodevector) vector<DM::Node* >;
+    %template(facevector) vector<DM::Face* >;
     %template(viewvector) vector<DM::View >;
     %template(viewmap) map<string, vector<DM::View > >;
     %template(componentvector) vector<DM::Component* >;
@@ -54,6 +57,7 @@ namespace std {
     %template(componentmap) map<string, DM::Component* >;
     %template(nodemap) map<string, DM::Node* >;
     %template(edgemap) map<string, DM::Edge* >;
+    %template(facemap) map<string, DM::Face* >;
     %template(stringmap) map<string, string >;
 }
 
