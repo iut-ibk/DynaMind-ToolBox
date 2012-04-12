@@ -29,7 +29,6 @@
 
 #include <iostream>
 #include <dmsimulation.h>
-#include <dmdatabase.h>
 #include <dmlog.h>
 #include <dmdatamanagement.h>
 #include <QThreadPool>
@@ -43,18 +42,19 @@
 using namespace std;
 using namespace DM;
 
-bool DynaMiteTest();
-bool DMBaseTest();
-bool MemDynaMiteTestPython();
-bool MemDynaMiteTestC();
-bool StoryLine();
-bool UDM();
-bool VIBe(int argc, char *argv[]);
-int main(int argc, char *argv[], char *envp[]) {
-    //Init Logger
+//bool DynaMiteTest();
+//bool DMBaseTest();
+//bool MemDynaMiteTestPython();
+//bool MemDynaMiteTestC();
+//bool StoryLine();
+//bool UDM();
+//bool VIBe(int argc, char *argv[]);
+
+int main(int argc, char *argv[], char *envp[])
+{
     ostream *out = &cout;
     DM::Log::init(new OStreamLogSink(*out), DM::Debug);
-    DM::Logger(DM::Debug) << "Start";
+    DM::Logger(DM::Debug) << "Nothing to test";
 
     /*if(!DynaMiteTest())
         Logger(Error) << "DynaMiteTest FAILED";
@@ -96,9 +96,11 @@ int main(int argc, char *argv[], char *envp[]) {
     }else {
         Logger() << "MemDynaMiteTest DONE";
     }*/
-    VIBe(argc, argv);
+    //VIBe(argc, argv);
     return 1;
 }
+
+/*
 bool DMBaseTest() {
     DM::System * s = new DM::System("test");
     DM::Node * n = s->addNode(0,0,0);
@@ -491,4 +493,4 @@ bool VIBe(int argc, char *argv[])
 
 
 }
-
+*/

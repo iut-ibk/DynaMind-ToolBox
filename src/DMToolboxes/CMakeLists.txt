@@ -1,15 +1,17 @@
-file(GLOB MODULE_CPPS *.cpp)
+FILE(GLOB MODULE_CPPS *.cpp)
+FILE(GLOB MODULE_HEADER *.h)
 
-include_directories(.)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(.)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-file(GLOB ALGLIB_CPP ../3dparty/alglibsrc/*.cpp)
-add_library(dynamindtoolbox SHARED ${MODULE_CPPS})
+ADD_LIBRARY(dynamindtoolbox SHARED ${MODULE_CPPS})
 
-target_link_libraries(dynamindtoolbox dynamindcore ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(dynamindtoolbox dynamindcore ${QT_LIBRARIES})
 
 INSTALL(TARGETS dynamindtoolbox
         DESTINATION "lib"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-
+INSTALL(FILES ${MODULE_HEADER}
+        DESTINATION "include/dynamindcore"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)

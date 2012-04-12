@@ -7,7 +7,8 @@ SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "11")
 #SET(CPACK_RESOURCE_FILE_LICENSE "/home/andy/vtk/CMake/Copyright.txt")
 
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Urich <christian.urich@gmail.com>")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Urich <christian.urich@gmail.com>, Michael Mair <michael.mair@uibk.ac.at>")
 IF(WIN32 AND NOT UNIX)
           # There is a bug in NSI that does not handle full unix paths properly. Make
           # sure there is at least one set of four (4) backlasshes.
@@ -52,9 +53,11 @@ IF(WIN32 AND NOT UNIX)
         WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" SWMM \\\"$INSTDIR\\\\data\\\\swmm\\\\\\\"
         ClearErrors
         ")
+
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
         DeleteRegKey HKCU \\\"Software\\\\IUT\\\\DynaMind\\\"
       ")
+
 
   install(FILES ${DLLS} DESTINATION bin)
   install(FILES "${PYTHON_LIBRARIES}" DESTINATION bin)

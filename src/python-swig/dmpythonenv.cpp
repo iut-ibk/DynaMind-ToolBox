@@ -120,7 +120,7 @@ void PythonEnv::addOverWriteStdCout() {
 
     boost::format fmt( "import sys\n"
                       "import pydynamind\n"
-                      "class Logger_VIBe:\n"
+                      "class Logger:\n"
                       "    def __init__(self, stdout,error):\n"
                       "        self.stdout = stdout\n"
                       "        self.error=error\n"
@@ -146,9 +146,9 @@ void PythonEnv::addOverWriteStdCout() {
                       "    def flush(self):\n"
                       "         pass\n"
                       "\n"
-                      "if not isinstance(sys.stdout,Logger_VIBe):\n"
-                      "        sys.stdout=Logger_VIBe(sys.stdout,False)\n"
-                      "        sys.stderr=Logger_VIBe(sys.stderr,True)\n");
+                      "if not isinstance(sys.stdout,Logger):\n"
+                      "        sys.stdout=Logger(sys.stdout,False)\n"
+                      "        sys.stderr=Logger(sys.stderr,True)\n");
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyRun_String(fmt.str().c_str(), Py_file_input, priv->main_namespace, 0);

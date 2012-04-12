@@ -1,6 +1,5 @@
 
 #include "complexgeometry.h"
-
 #include <dm.h>
 #include <dmlogger.h>
 

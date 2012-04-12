@@ -1,28 +1,31 @@
-file(GLOB MODULE_CPPS *.cpp)
-file(GLOB MODULE_UI_FILES *.ui)
+FILE(GLOB MODULE_CPPS *.cpp)
+FILE(GLOB MODULE_UI_FILES *.ui)
 
-if (NOT WIN32)
-        set(CMAKE_CXX_FLAGS "-frounding-math" )
+IF(NOT WIN32)
+        SET(CMAKE_CXX_FLAGS "-frounding-math" )
+ENDIF()
+
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Packages")
+
+FIND_PACKAGE(vibe2core)
+
+IF(vibe2core_FOUND)
+    MESSAGE("VIBE found")
+
+    INCLUDE_DIRECTORIES(.)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+    INCLUDE_DIRECTORIES(${VIBE2CORE_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(../DMToolboxes)
+
+    ADD_LIBRARY(dynamind-vibe2 SHARED ${MODULE_CPPS})
+
+    TARGET_LINK_LIBRARIES(dynamind-vibe2 dynamindtoolbox dynamindcore  ${VIBE2CORE_LIBRARIES} ${VIBE2HELPER_LIBRARIES} ${QT_LIBRARIES})
+
+    INSTALL(TARGETS dynamind-vibe2
+            DESTINATION "lib"
+            PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ELSE()
+    MESSAGE("VIBE2 not installed - VIBE2 module disabled")
 endif()
-set(CMAKE_MODULE_PATH
-  #"${vibe2modules_SOURCE_DIR}/CMake"
-  #"${vibe2modules_SOURCE_DIR}/CMake/Utils"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Packages"
-)
-
-find_package(vibe2core)
-
-include_directories(.)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${VIBE2CORE_INCLUDE_DIRS})
-include_directories(../DMToolboxes)
-
-add_library(dynamind-vibe2 SHARED ${MODULE_CPPS})
-
-target_link_libraries(dynamind-vibe2 dynamindtoolbox dynamindcore  ${VIBE2CORE_LIBRARIES} ${VIBE2HELPER_LIBRARIES} ${QT_LIBRARIES})
-
-INSTALL(TARGETS dynamind-vibe2
-        DESTINATION "lib"
-        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 
