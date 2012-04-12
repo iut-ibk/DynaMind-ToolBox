@@ -122,9 +122,6 @@ public:
     virtual bool createInputDialog();
     virtual void run() = 0;
     virtual void init();
-    virtual double getDoubleData(const std::string &name);
-    virtual void setDoubleData(const std::string &name, const double r);
-
 
     void addData(std::string name, std::vector<DM::View> view);
     std::map<std::string, std::vector<DM::View> >  getViews();
@@ -142,11 +139,6 @@ public:
     void addParameter(std::string name, int type, void * ref, std::string description);
 
     virtual void setParameterValue(std::string name, std::string value);
-
-
-    void sendImageToResultViewer(std::string);
-    void sendRasterDataToResultViewer(std::map<std::string , std::string > maps);
-    void sendDoubleValueToPlot(double, double);
 
     virtual const char *getClassName();
     virtual const char *getFileName();

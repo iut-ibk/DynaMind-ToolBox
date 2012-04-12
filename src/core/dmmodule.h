@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -197,11 +197,7 @@ public:
     /** @brief Creates a new system and adds the corresponding views */
     virtual  DM::System* getSystem_Write(string name, std::vector<View> view);
 
-    virtual double getDoubleData(const std::string &name);
-    virtual void setDoubleData(const std::string &name, const double r);
 
-
-    void setInitCalled(){this->init_called=true;}
     virtual int getID() const;
     void setID(const int id);
 
@@ -229,8 +225,8 @@ public:
       *
       * The name of the port is defined by the name of the View. If a port already exists no new port is added.
       */
-
     void addData(std::string name, std::vector<DM::View> view);
+
     /** @brief Returns a pointer to the system where the view is stored
       *
       * The pointer to the system is updated by the updateParameter method. The updateParameter
@@ -241,7 +237,6 @@ public:
       * - AccessType Write:  T+1
       * - AccessType Modify: T+1
       */
-
     DM::System * getData(std::string dataname);
 
     /** @brief Returns all views used in the module */
@@ -253,16 +248,20 @@ public:
     /** @brief Returns all outports */
     std::vector<Port*> getOutPorts();
 
-
-
+    /** @bief Retruns a list of parameters used in the module*/
     std::vector<std::string> getParameterListAsVector()  {return this->parameterList;}
+
+    /** @bief Returns a map of parameters <name, type>*/
     boost::unordered_map<std::string, int> getParameterList()  {return this->parameter;}
+
+    /** @bief return native parameter*/
     template<class T>
     T getParameter(std::string name)   {
         T  * val = (T  *)parameter_vals[name];
         return *val;
     }
 
+    /** @bief set native parameter*/
     template<class T>
     void setParameterNative(std::string name, T val)  {
         T * ref =(T * ) parameter_vals[name];
@@ -270,8 +269,6 @@ public:
         *ref = val;
     }
 
-
-    virtual void submitRunnables(QThreadPool* pool) {}
 
     /** @brief Returns the parameter as string value
       *
@@ -284,8 +281,9 @@ public:
     */
     virtual std::string getParameterAsString(std::string Name);
 
-    void setSelf(boost::python::object self);
+    /** @brief Set if module is programmed in python*/
     void setPythonModule(bool b) {this->PythonModule = b;}
+
     /** @brief returns true if module is written in Python*/
     bool isPythonModule(){return PythonModule;}
 
@@ -298,47 +296,83 @@ public:
       *
       */
     virtual void updateParameter();
+
     /** @brief called after the module is executed */
     virtual void postRun();
+
+    /** @brief set parameter as value as string*/
     virtual void setParameterValue(std::string name, std::string value);
 
-
+    /** @brief remove port
+      *
+      * removes a port and its links
+      * method calls the changedPorts method from the PortObserver
+      */
     virtual void removePort(std::string LinkedDataName, int PortType);
+
+    /** @brief add port observer */
     void addPortObserver(PortObserver * portobserver);
+
+    /** @brief return pointer to InPort */
     virtual Port * getInPort(std::string Name);
+
+    /** @brief return pointer to OutPort */
     virtual Port * getOutPort(std::string Name);
+
+    /** @brief return class name */
     virtual  const char * getClassName()  {return "OVERWRITE getClassName";}
+
+    /** @brief return class filename */
     virtual  const char * getFileName()  {return "OVERWRITE getFileName";}
+
+    /** @brief returns if derived from group */
     virtual bool isGroup()const {return false;}
+
+    /** @brief adds the module to a group */
     void setGroup(Group * group);
+
+    /** @brief returns pointer to the group */
     Group * getGroup();
+
+    /** @brief returns uuid */
     std::string getUuid() const {return this->uuid;}
+
+    /** @brief set pointer to simulation */
     void setSimulation(Simulation * simulation);
-    RasterData & createRasterData(std::string name);
-    //VectorData & createVectorData(std::string name);
-    void createDoubleData(std::string name);
+
+    /** @brief set name of module */
     void setName(std::string name) {
         this->name = name;
     }
 
+     /** @brief return name of module */
     std::string getName() const {return this->name;}
-    void addUrlToHelpFile(std::string s) {this->urlToHelpFile = s;}
-    std::string getUrlToHelpFile(){return this->urlToHelpFile;}
-    void sendImageToResultViewer(std::string);
-    void sendRasterDataToResultViewer(std::map<std::string , std::string > maps);
-    //void sendVectorDataToResultViewer(std::vector<VectorData> maps);
-    void sendDoubleValueToPlot(double, double);
+
+    /** @brief add ResultObserver */
     void addResultObserver(ResultObserver * ro) {this->resultobserver.push_back(ro);}
+
+    /** @brief resets the paramter in the module
+     *
+     * Sets the InternalCounter to 0
+     */
     void resetParameter();
+
+    /** @brief returns internal counter */
     int getInternalCounter(){return this->internalCounter;}
+
+    /** @brief copies parameter from module A to B is they are from the same type**/
     void copyParameterFromOtherModule(Module * m);
-    void printParameterList();
-    void addDescription(std::string s){this->description = s;}
-    std::string generateHelp();
+
+    /** @brief returns a list of PortObserver pointers to the set*/
     std::vector<PortObserver *> getPortObserver(){return this->portobserver;}
+
+    /** @brief returns a list of ResultObserver pointers */
     std::vector<ResultObserver * > getResultObserver(){return this->resultobserver;}
+
+    /** @brief Return simulation **/
     Simulation * getSimulation(){return this->simulation;}
 
+    /** @brief Returns a pointer raster data set assigend to a view **/
     DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 
     /** @brief Returns if the module comes with its own GUI.
@@ -361,9 +395,6 @@ private:
 
     std::string uuid;
     std::string name;
-    std::string urlToHelpFile;
-    std::string description;
-
 
     Simulation * simulation;
     std::vector<DM::System *> ownedSystems;
@@ -387,7 +418,6 @@ protected:
      * run method is called.
      */
     int internalCounter;
-    bool init_called;
     Group * group;
     std::vector<PortObserver *> portobserver;
     std::vector<ResultObserver * > resultobserver;

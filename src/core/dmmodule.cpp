@@ -70,17 +70,13 @@ Module::Module() {
     srand((unsigned)time(0));
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->group = 0;
-    init_called = false;
     PythonModule = false;
     internalCounter = 0;
     InPorts = std::vector<Port*>();
     OutPorts = std::vector<Port*>();
     name = "";
-    urlToHelpFile = "";
-    description = "";
     portobserver = std::vector<PortObserver *>();
     resultobserver = std::vector<ResultObserver * >();
-
     simulation = 0;
 
 
@@ -560,68 +556,6 @@ DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> vi
 }
 
 
-void Module::sendImageToResultViewer(std::string filename) {
-    BOOST_FOREACH(ResultObserver * ro, resultobserver) {
-        ro->addResultImage(this->uuid,filename);
-    }
-}
-void Module::sendRasterDataToResultViewer(std::map<std::string , std::string > maps) {
-    QVector<RasterData> r;
-    for (std::map<std::string, std::string>::iterator it=maps.begin(); it != maps.end(); ++it) {
-        std::string uuid_name = it->first;
-        r.append(DataManagement::getInstance().getDataBase()->getRasterData(uuid_name.substr(0,uuid_name.find("%")), it->second));
-    }
-
-    BOOST_FOREACH(ResultObserver * ro, resultobserver) {
-
-        //ro->addRasterDataToViewer(r);
-    }
-}
-
-
-
-void Module::sendDoubleValueToPlot(double x, double y) {
-    BOOST_FOREACH(ResultObserver * ro, resultobserver) {
-        ro->addDoubleDataToPlot(this->uuid, x, y);
-
-    }
-}
-
-
-void Module::createDoubleData(std::string name) {
-    DataManagement::getInstance().getDataBase()->createDoubleData(this->uuid, name);
-}
-
-
-
-
-void Module::setDoubleData(const std::string &name, const double v) {
-    simulation->getDataBase()->setDoubleData(uuid, name, v);
-}
-
-double Module::getDoubleData(const std::string &name)  {
-    Port * p = this->getInPort(name);
-    p->getLinks();
-
-    int LinkId = -1;
-    int BackId = -1;
-    int counter = 0;
-    foreach (ModuleLink * l, p->getLinks()) {
-        if (!l->isBackLink()) {
-            LinkId = counter;
-        } else {
-            BackId = counter;
-        }
-        counter++;
-    }
-    ModuleLink *l = p->getLinks()[LinkId];
-    if (this->internalCounter > 0 && BackId != -1){
-        l = p->getLinks()[BackId];
-    }
-    return simulation->getDataBase()->getDoubleData(l->getUuidFromOutPort(), l->getDataNameFromOutPort(), true, l->isBackLinkInChain());
-}
-
-
 void Module::setID(const int id) {
     this->id = id;
 }
@@ -670,14 +604,6 @@ void Module::copyParameterFromOtherModule(Module * m) {
         }
     } else {
         Logger(Error) << "Can't Copy Model Parameter from different Type of Module";
-    }
-
-}
-
-void Module::printParameterList()  {
-    std::vector<std::string> names = this->getParameterListAsVector();
-    BOOST_FOREACH (std::string name , names) {
-        Logger(Debug) << name << "\t" << this->getParameterAsString(name);
     }
 
 }
