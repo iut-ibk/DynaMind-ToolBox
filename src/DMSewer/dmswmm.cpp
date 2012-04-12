@@ -306,7 +306,6 @@ void DMSWMM::readInReportFile() {
     this->Vp = Vp;
     this->Vwwtp = Vwwtp;
     this->Vr = SurfaceRunOff;
-    this->sendDoubleValueToPlot(years, 1.-Vp/SurfaceRunOff);
 
     years++;
 

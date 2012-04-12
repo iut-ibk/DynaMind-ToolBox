@@ -29,6 +29,7 @@ from osgeo import ogr, osr
 from shapely import wkb, geometry, coords
 import itertools
 from shapely.geometry import asShape
+import sys
 
 class ImportShapeFile(Module):
         def __init__(self):            
@@ -126,7 +127,7 @@ class ImportShapeFile(Module):
                 
         
         def run(self):            
-            try:      
+            try:    
                 while int(self.Snap/self.PointmapTol) is not 0:
                    self.PointmapTol = self.PointmapTol*10
                     
@@ -183,61 +184,56 @@ class ImportShapeFile(Module):
                                 coordinates = list(r.coords)
                             else:
                                 coordinates = geo.coords
-                                
                             numberOfPoints = -1
                             offset = -1
-                            pl = []
+                            pl = nodevector()
                             el = edgevector()
+                            attr = Attribute()
+                            for j in range(len(fieldDefinitions)):                           
+                                attr = Attribute(fieldDefinitions[j][0])
+                                attributename = str(fieldDefinitions[j][0])
+                                if attributename == 'PLAN_DATE':
+                                    stringvalue = str(fieldPacks[i][j])
+                                    stringvec = stringvalue.split("/")                                            
+                                    try:
+                                        srtingval = stringvec[len(stringvec)-1]
+                                        val = int(srtingval)
+                                        if val < 100:
+                                            val = 1900+val
+                                        if val > 2020:
+                                            val = 0
+                                        if val < 1800:
+                                            val = 0
+                                        attr.setDouble(val)
+                                    except ValueError:
+                                            pass
+                                elif type(fieldPacks[i][j]).__name__ == 'str':                            
+                                        attr.setString(str(fieldPacks[i][j]))
+                                elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
+                                        attr.setDouble(fieldPacks[i][j])
+
                             for coords in coordinates:
                                 n = self.addPoint2d(coords[0]+self.offsetX, coords[1]+self.offsetY, self.NodeView, self.Snap)
                                 pl.append(n)
                                 numberOfPoints += 1     
                                 offset +=1
-                                if numberOfPoints > 0:
-                                    if pl[numberOfPoints - offset].getName() != pl[numberOfPoints].getName(): 
-                                        startnode =   pl[numberOfPoints - offset]
-                                        endnode = pl[numberOfPoints]
-                                        """if InlcudedEdges.has_key(startnode.getName()):
-                                            if InlcudedEdges[startnode.getName()] is endnode.getName():
-                                                print "Edge already exits"
-                                                continue
-                                        if InlcudedEdges.has_key(endnode.getName()):
-                                            if InlcudedEdges[endnode.getName()] is startnode.getName():
-                                                print "Edge already exits"
-                                                continue"""
-                                        e = self.city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
-                                        el.append(e)
-                                        InlcudedEdges[startnode.getName()] = endnode.getName()
-                                        offset = 0
-                                        for j in range(len(fieldDefinitions)):                           
-                                            attr = Attribute(fieldDefinitions[j][0])
-                                            attributename = str(fieldDefinitions[j][0])
-                                            if attributename == 'PLAN_DATE':
-                                                stringvalue = str(fieldPacks[i][j])
-                                                stringvec = stringvalue.split("/")                                            
-                                                try:
-                                                    srtingval = stringvec[len(stringvec)-1]
-                                                    val = int(srtingval)
-                                                    if val < 100:
-                                                        val = 1900+val
-                                                    if val > 2020:
-                                                        val = 0
-                                                    if val < 1800:
-                                                        val = 0
-                                                    attr.setDouble(val)
-                                                except ValueError:
-                                                    pass
-                                                
-                                            elif type(fieldPacks[i][j]).__name__ == 'str':                            
-                                                attr.setString(str(fieldPacks[i][j]))
-                                            elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
-                                                attr.setDouble(fieldPacks[i][j])
-                                            e.addAttribute(attr)
-                                            
+                                if numberOfPoints > 0:    
+                                        if self.isEdge:
+                                            if pl[numberOfPoints - offset].getName() != pl[numberOfPoints].getName(): 
+                                                startnode =   pl[numberOfPoints - offset]
+                                                endnode = pl[numberOfPoints]
+                                                e = self.city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
+                                                el.append(e)
+                                                InlcudedEdges[startnode.getName()] = endnode.getName()
+                                                offset = 0
+                                                e.addAttribute(attr)
+                            if self.isFace:
+                                    f = self.city.addFace(pl, self.FaceView)        
+                                    f.addAttribute(attr)
                             if shapelyGeometry.type is 'LineString':
                                 continue
                             #Create Faces
-                            
+                                                            
                             #city.addFace(el, self.vec)
                 print "Imported points: " + str( len(self.city.getAllNodes()))
                 print "Imported elements: " + str( len(self.city.getNamesOfComponentsInView( self.EdgeView)) )
@@ -245,6 +241,7 @@ class ImportShapeFile(Module):
                 
             except Exception, e:
                 print e
+		print sys.exc_info()
                 print "Unexpected error:"
             
             

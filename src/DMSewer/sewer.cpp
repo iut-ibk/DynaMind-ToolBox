@@ -36,7 +36,7 @@
 #include "outfallplacement.h"
 #include "reconstructparameter.h"
 #include "removestrahler.h"
-
+#include "createinlets.h"
 
 /*#include "pickstartpoints.h"
 
@@ -71,6 +71,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new NodeFactory<OutfallPlacement>());
     registry->addNodeFactory(new NodeFactory<ReconstructParameter>());
     registry->addNodeFactory(new NodeFactory<RemoveStrahler>());
+    registry->addNodeFactory(new NodeFactory<CreateInlets>());
     /*registry->addNodeFactory(new NodeFactory<PickStartPoints>());
 
     registry->addNodeFactory(new NodeFactory<InfiltrationTrench>());

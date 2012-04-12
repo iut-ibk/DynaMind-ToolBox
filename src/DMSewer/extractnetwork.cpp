@@ -137,6 +137,8 @@ ExtractNetwork::ExtractNetwork()
     city.push_back(Inlets);
     city.push_back(Junction);
     city.push_back(EndPoint);
+    offset = 10;
+    this->addParameter("Offset", DM::DOUBLE, &offset);
 
     this->addData("City", city);
 
@@ -191,7 +193,7 @@ void ExtractNetwork::run() {
     long successfulAgents = 0;
     double multiplier;
     multiplier = this->ConnectivityField->getCellSize();
-    double offset = this->ConnectivityField->getCellSize() /2.;
+    //double offset = this->ConnectivityField->getCellSize() /2.;
 
     //Extract Conduits
 
@@ -204,7 +206,19 @@ void ExtractNetwork::run() {
     std::vector<DM::Node*> EndPointList;
     foreach(std::string name, this->city->getNamesOfComponentsInView(Junction)) {
         EndPointList.push_back(this->city->getNode(name));
+        DM::Node * tmp_n = city->getNode(name);
+        std::stringstream id;
+        id << (long) tmp_n->getX()/100.;
+        id << "/";
+        id << (long) tmp_n->getY()/100.;
+
+        std::vector<DM::Node*> existingPoints = this->nodeListToCompare[id.str()];
+
+        existingPoints.push_back(tmp_n);
+        this->nodeListToCompare[id.str()] = existingPoints;
     }
+
+
 
 
     std::vector<std::vector<Node> > Points_After_Agent_Extraction;
@@ -272,14 +286,20 @@ void ExtractNetwork::run() {
         for (int i = 1; i < pl.size(); i++) {
             if (TBVectorData::getEdge(this->city, Conduits, pl[i-1], pl[i]) != 0)
                 continue;
+
             DM::Edge * e = this->city->addEdge(pl[i-1], pl[i], Conduits);
             e->addAttribute("New", 0);
+            if (pl[i-1]->isInView(this->Inlets)) {
+                DM::Node * n = pl[i-1];
+                e->addAttribute("PLAN_DATE",  n->getAttribute("BuildYear")->getDouble());
+            }
+
         }
     }
 
 
     Logger(DM::Debug) << "Successful " << successfulAgents;
-    this->sendDoubleValueToPlot(this->getInternalCounter(), (double) successfulAgents/agents.size());
+
 
     for (int j = 0; j < agents.size(); j++) {
         delete agents[j];
@@ -306,6 +326,29 @@ void ExtractNetwork::run() {
 
 }
 
+DM::Node * ExtractNetwork::addNode(System *sys, DM::Node tmp_n, DM::View v,double offset) {
+    //CreateID
+    std::stringstream id;
+    id << (long) tmp_n.getX()/100.;
+    id << "/";
+    id << (long) tmp_n.getY()/100.;
+
+    std::vector<DM::Node*> existingPoints = this->nodeListToCompare[id.str()];
+    foreach (DM::Node * n, existingPoints) {
+        if (n->compare2d(tmp_n, offset))
+            return n;
+    }
+
+    Node * n = sys->addNode(tmp_n, v);
+
+
+    existingPoints.push_back(n);
+    this->nodeListToCompare[id.str()] = existingPoints;
+    return n;
+
+}
+
+
 std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector<std::vector<DM::Node> > &points, int PReduction, double offset) {
 
     DM::System sys_tmp("");
@@ -313,7 +356,8 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
     foreach (std::vector<Node> pl, points) {
         bool hitExisting= false;
         foreach (Node node, pl) {
-            Node * n = TBVectorData::addNodeToSystem2D(&sys_tmp, dummy, node, offset);
+            //Node * n = TBVectorData::addNodeToSystem2D(&sys_tmp, dummy, node, offset);
+            Node * n = this->addNode(&sys_tmp, node, dummy, offset);
             if (n->getAttribute("Counter")->getDouble() > 0.01) {
                 hitExisting = true;
                 n->changeAttribute("Counter",100);
@@ -343,7 +387,7 @@ std::vector<std::vector<DM::Node> >  ExtractNetwork::SimplifyNetwork(std::vector
         for (int i  = 0; i < pl.size(); i++) {
             counter++;
             bool placePoint = false;
-            Node * n = TBVectorData::getNode2D(&sys_tmp, dummy ,pl[i], offset );
+            Node * n = this->addNode(&sys_tmp, pl[i], dummy, offset);
             if (n->getAttribute("Counter")->getDouble() > 99) {
                 n->changeAttribute("Counter", n->getAttribute("Counter")->getDouble()+100);
                 placePoint = true;

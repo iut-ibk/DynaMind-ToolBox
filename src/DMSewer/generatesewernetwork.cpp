@@ -430,10 +430,11 @@ void GenerateSewerNetwork::run() {
     foreach (std::string inlet, city->getNamesOfComponentsInView(Inlets))  {
         DM::Node * n = city->getNode(inlet);
         std::string ID_CA = n->getAttribute("ID_CATCHMENT")->getString();
-        DM::Face * catchment = city->getFace(ID_CA);
-        if (catchment->getAttribute("Population")->getDouble() > 10) {
+        //DM::Face * catchment = city->getFace(ID_CA);
+        //Just For Now
+        //if (catchment->getAttribute("Population")->getDouble() > 10) {
             StartPos.push_back(n);
-        }
+        //}
     }
     //Create Agents
     int attrtopo = this->AttractionTopology - this->internalCounter;
@@ -479,7 +480,7 @@ void GenerateSewerNetwork::run() {
 
     }
     Logger(DM::Debug) << "Successful " << successfulAgents;
-    this->sendDoubleValueToPlot(this->getInternalCounter(), (double) successfulAgents/agents.size());
+
 
     for (int j = 0; j < agents.size(); j++) {
         delete agents[j];

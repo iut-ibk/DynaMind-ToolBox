@@ -42,14 +42,18 @@ class ExportToShapeFile(Module):
                 self.Points = False
                 self.createParameter("Lines", BOOL,  "test")
                 self.Lines = True
-                self.createParameter("Faces", BOOL,  "test")
+                self.createParameter("Faces", BOOL,  "test")		
                 self.Faces = False
+		self.createParameter("CoordinateSystem", STRING, "Coordinate System")
+		self.CoordinateSystem = "+proj=utm +zone=55 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0"
                 self.vec = View("dummy", SUBSYSTEM, READ)
                 self.offsetX = 0
                 self.OffsetY = 0                
                 views = []
                 views.append(self.vec)
                 self.addData("City", views)
+
+
                 
             def run(self):
                 if self.Faces:                       
@@ -62,7 +66,7 @@ class ExportToShapeFile(Module):
             def exportFaces(self):
 		city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
-                spatialReference.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+                spatialReference.ImportFromProj4(self.CoordinateSystem)
                 
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
@@ -94,10 +98,8 @@ class ExportToShapeFile(Module):
 		for i in range(len(names)): 
                     #Append Attributes
                     alist = city.getComponent(names[i]).getAllAttributes().keys() 
-
                     
                     face = city.getFace(names[i])
-                            
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbPolygon)
                     ring = osgeo.ogr.Geometry(osgeo.ogr.wkbLinearRing)
                     nl =  TBVectorData.getNodeListFromFace(city, face)
@@ -121,7 +123,7 @@ class ExportToShapeFile(Module):
             def exportPolyline(self):
                 city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
-                spatialReference.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+                spatialReference.ImportFromProj4(self.CoordinateSystem)
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
                 if os.path.exists(str(self.FileName+'_lines.shp')): os.remove(self.FileName+'_lines.shp')
@@ -174,7 +176,7 @@ class ExportToShapeFile(Module):
             def exportPoints(self):
 		city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
-                spatialReference.ImportFromProj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+                spatialReference.ImportFromProj4(self.CoordinateSystem)
                 
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')

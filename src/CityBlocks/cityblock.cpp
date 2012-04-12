@@ -178,6 +178,7 @@ void CityBlock::run() {
                 ve.push_back(n2);
                 ve.push_back(n3);
                 ve.push_back(n4);
+                ve.push_back(n1);
 
 
                 DM::Face * f = city->addFace(ve, cityblock);
