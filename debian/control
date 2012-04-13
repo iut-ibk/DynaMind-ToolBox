@@ -1,20 +1,32 @@
-Source: vibe2core
+Source: dynamind
 Section: science
-Priority: optional
-Maintainer: Christian Urich <christian@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~), cmake, libcgal-dev(>=3.6.0~), python(>=2.6.0~), python-dev(>=2.6.0~), libboost-python-dev, libboost-program-options-dev, libboost-date-time-dev, libqt4-dev(>=4.6.0~), libcore++-dev(>=1.7), libgmp3-dev
-Standards-Version: 3.9.1
-Homepage: https://github.com/christianurich/VIBe2Core
-#Vcs-Git: git://git.debian.org/collab-maint/vibe2core.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/vibe2core.git;a=summary
+Priority: extra
+Maintainer: Michael Mair <michael.mair@uibk.ac.at>
+Build-Depends: debhelper (>= 8.0.0), cmake, python(>=2.6.0~), python-dev(>=2.6.0~), libboost-python-dev, libboost-program-options-dev, libboost-date-time-dev, libqt4-dev(>=4.6.0~)
+Standards-Version: 3.9.2
+Homepage: https://github.com/iut-ibk/DynaMind
+#Vcs-Git: git://git.debian.org/collab-maint/dynamind.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/dynamind.git;a=summary
 
-Package: vibe2core
+Package: dynamind
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Core of the VIBe2 Framework
+Description: Dynamind
+ The DynaMind Framework is based on VIBe, a tool for generating virtual case studies 
+ including the urban environment and the urban drainage system. In DynaMind the 
+ computational framework has been enhanced and generalised to enable the simulation 
+ of complex dynamic urban environments and their infrastructure. Simulations can be defined 
+ by modules (small working task within a simulation) and the data flow between them. A module
+ has in-ports to receive data from the outside. The data are then processed in the module and 
+ sent to out-ports. As data format raster and vector data can be used. Different modules can 
+ be linked together to a simulation workflow that is executed in parallel by the DynaMind core. 
+ DynaMind comes with a set of basic modules. This includes simple modules for data import and 
+ export, complex modules (for example the generation and adaptation of combined sewer networks 
+ or the placement of ground water heat pump systems) as well as modules for data visualisation. 
+ New modules can easily be integrated in DynaMind by using C++ or Python.
 
-Package: vibe2core-dev
-Section: science
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Core of the VIBe2 Framework
+#Package: dynamind-dev
+#Section: science
+#Architecture: all
+#Depends: ${shlibs:Depends}, ${misc:Depends}
+#Description: dev files for DynaMind

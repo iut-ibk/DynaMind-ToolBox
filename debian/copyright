@@ -1,9 +1,9 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: vibe2core
-Source: https://github.com/christianurich/VIBe2Core
+Upstream-Name: DynaMind
+Source: https://github.com/iut-ibk/DynaMind
 
 Files: debian/*
-Copyright: 2011 Christian Urich christian.urich@gmail.com
+Copyright: 2011 Michael Mair <Michael.Mair@uibk.ac.at>; Christian Urich <christian.urich@gmail.com>
 License: GPL-2+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
