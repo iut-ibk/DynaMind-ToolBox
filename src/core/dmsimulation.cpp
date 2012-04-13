@@ -38,7 +38,6 @@
 #include "dmmoduleregistry.h"
 #include "dmmoduleparameterreader.h"
 #include "vector"
-#include <boost/python.hpp>
 #include "dmmoduleregistry.h"
 #include <QThread>
 #include "dmsimulationobserver.h"

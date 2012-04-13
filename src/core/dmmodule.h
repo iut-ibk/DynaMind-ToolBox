@@ -36,13 +36,13 @@
 #include <map>
 #include <boost/unordered_map.hpp>
 #include <QString>
-#include <boost/python.hpp>
 #include <iostream>
 #include <dmresultobserver.h>
 #include <dmlog.h>
 #include <dmlogger.h>
 #include <dmlogsink.h>
 #include <dmview.h>
+//#include <boost/python.hpp>
 
 class QThreadPool;
 class PortObserver;
@@ -386,7 +386,7 @@ public:
 private:
 
 
-    boost::python::object self;
+    //boost::python::object self;
     bool PythonModule;
     long id;
     void convertValus( void *value, int Type, QString val);

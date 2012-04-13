@@ -34,7 +34,7 @@
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
 #include <QDir>
-#include <boost/python.hpp>
+//#include <boost/python.hpp>
 #include <string>
 #include <dmlog.h>
 #include <dmlogger.h>
@@ -48,7 +48,7 @@ extern "C" {
 void init_pydynamind(void);
 }
 
-using namespace boost::python;
+//using namespace boost::python;
 
 void init() {
     DM::OStreamLogSink *sink = new DM::OStreamLogSink(cout);
@@ -118,7 +118,7 @@ PythonEnv *PythonEnv::getInstance() {
 
 void PythonEnv::addOverWriteStdCout() {
 
-    boost::format fmt( "import sys\n"
+    boost::format fmt("import sys\n"
                       "import pydynamind\n"
                       "class Logger:\n"
                       "    def __init__(self, stdout,error):\n"

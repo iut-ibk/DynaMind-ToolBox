@@ -50,8 +50,16 @@ SWIG_ADD_MODULE(pydynamind python pydynamind.i dmpythonenv.cpp)
 SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
 
 
-SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i dmpythonenv.cpp)
-SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore ${PYTHON_LIBRARIES})
+SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i)
+SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore)
+
+INSTALL(TARGETS _pydmtoolbox
+        DESTINATION "lib"
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+INSTALL(FILES ${CMAKE_BINARY_DIR}/pydmtoolbox.py
+        DESTINATION "lib"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
 INSTALL(TARGETS _pydynamind
         DESTINATION "lib"
