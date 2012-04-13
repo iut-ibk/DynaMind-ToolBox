@@ -1,27 +1,24 @@
+INCLUDE_DIRECTORIES(../libdynamind-gui/)
+INCLUDE_DIRECTORIES(.)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../libdynamind-gui)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../libdynamind-gui)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../dynamind-gui/)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../dynamind-gui)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
-include_directories(../core/)
-include_directories(../libdynamind-gui/)
-include_directories(.)
-MESSAGE(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libdynamind-gui)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/../libdynamind-gui)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/../dynamind-gui/)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../dynamind-gui)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-include_directories(muparser/include ../3dparty/qwt-5.2.0/src)
-file(GLOB DynaMind *.cpp)
+INCLUDE_DIRECTORIES(muparser/include ../3dparty/qwt-5.2.0/src)
+FILE(GLOB DynaMind *.cpp)
 
 
 QT4_ADD_RESOURCES(DynaMind icons.qrc)
 
-add_executable(dynamind-gui ${DynaMind} )
+ADD_EXECUTABLE( dynamind-gui ${DynaMind} )
 
-IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-       TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui dynamindcore ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+       TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
 ELSE()
-       TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui dynamindcore ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+       TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
 ENDIF()
 
 

@@ -1,6 +1,6 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: DynaMind
-Source: https://github.com/iut-ibk/DynaMind
+Upstream-Name: DynaMind-Gui
+Source: https://github.com/iut-ibk/DynaMind-Gui
 
 Files: debian/*
 Copyright: 2011 Michael Mair <Michael.Mair@uibk.ac.at>; Christian Urich <christian.urich@gmail.com>

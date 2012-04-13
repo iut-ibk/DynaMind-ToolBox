@@ -30,7 +30,7 @@
  */
 
 #include "mainwindow.h"
-#include <boost/python.hpp>
+//#include <boost/python.hpp>
 
 #include "QDir"
 #include "QThread"
@@ -53,7 +53,6 @@
 #include <dmgroup.h>
 #include <boost/foreach.hpp>
 #include <dmsimulation.h>
-#include <dmdatabase.h>
 #include <dmdatamanagement.h>
 #include <groupnode.h>
 #include <QWidget>
@@ -196,20 +195,20 @@ MainWindow::MainWindow(QWidget * parent)
     //#endif
     running =  false;
     setupUi(this);
-    DM::DataManagement::init();
-    this->database = new  DMDatabase();
-    DM::DataManagement::getInstance().registerDataBase(this->database);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     env->addOverWriteStdCout();
+
+
+
 
 
 
     //this->graphicsView->setViewport(new QGLWidget());
 
     this->simulation = new GUISimulation();
+
     connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     this->simulation->registerRootNode();
-    this->simulation->registerDataBase(this->database);
 
 
 
@@ -366,7 +365,6 @@ void MainWindow::updateRasterData(QString UUID,  QString Name) {
 }
 
 void MainWindow::runSimulation() {
-    this->database->resetDataBase();
     for (int  i = 0; i < this->mnodes->size(); i++) {
         ModelNode * m = this->mnodes->at(i);
         m->resetModel();
@@ -493,7 +491,6 @@ void MainWindow::clearSimulation() {
         delete this->mnodes->at(0);
     this->currentDocument = "";
 
-    this->database->resetDataBase();
 
 
 }

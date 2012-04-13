@@ -1,58 +1,46 @@
-
-find_package(QGLViewer)
-find_package(OpenGL)
-
-
-find_package(Qt4 COMPONENTS QtCore QtGui QtXml QtOpenGL REQUIRED)
-
-
-find_package(OpenGL REQUIRED)
-set(QT_USE_QTWEBKIT 1)
-set(QT_USE_QTXML 1)
-set(QT_USE_QTOPENGL 1)
-set(QT_USE_QTSQL 1)
-set(QT_USE_QTSVG 1)
-set(QT_USE_QTNETWORK 1)
-include(${QT_USE_FILE})
-
-
-include_directories(.)
-include_directories(../core/)
-include_directories(${dynamind_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR}../libdynamind-gui )
-
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libdynamind-gui)
 
-set(MOC_FILES application.h  groupnode.h guidataobserver.h guiimageresultview.h guilink.h guilogsink.h guimodelnode.h guiresultobserver.h guisimulation.h mainwindow.h  modelnode.h modelnodebutton.h plot.h preferences.h projectviewer.h rootgroupnode.h simulationmanagment.h StdRedirector.h )
+SET(MOC_FILES   application.h
+                groupnode.h
+                guidataobserver.h
+                guiimageresultview.h
+                guilink.h
+                guilogsink.h
+                guimodelnode.h
+                guiresultobserver.h
+                guisimulation.h
+                mainwindow.h
+                modelnode.h
+                modelnodebutton.h
+                preferences.h
+                projectviewer.h
+                rootgroupnode.h
+                simulationmanagment.h
+                StdRedirector.h )
 
-file (GLOB CPP_GUI_FILES *.cpp)
-file (GLOB UI_FILES *.ui)
+FILE(GLOB CPP_GUI_FILES *.cpp)
+FILE(GLOB UI_FILES *.ui)
 
-
-#set (MOC_FILES datamanagment.h)
 QT4_WRAP_UI(CPP_GUI_FILES ${UI_FILES})
 QT4_WRAP_CPP(CPP_GUI_FILES ${MOC_FILES})
 QT4_ADD_RESOURCES(CPP_GUI_FILES icons.qrc splash.qrc)
-file(GLOB QWT_CPPS ../3dparty/qwt-5.2.0/src/*.cpp)
-file(GLOB QWT_H ../3dparty/qwt-5.2.0/src/*.h)
-QT4_WRAP_CPP(QWT_CPPS ${QWT_H})
-#file(GLOB ALGLIB_CPP ../3dparty/alglib/src/*.cpp)
 
-# Find OpenGL
-include_directories( ${QGLVIEWER_INCLUDE_DIR})
-include_directories( ${QT_QTGUI_INCLUDE_DIR})
-include_directories(../3dparty/qwt-5.2.0/src)
-include_directories(../3dparty/alglib/src)
+FILE(GLOB QWT_CPPS ../3dparty/qwt-5.2.0/src/*.cpp)
+FILE(GLOB QWT_H ../3dparty/qwt-5.2.0/src/*.h)
 
-add_library(dynamindgui STATIC ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
+INCLUDE_DIRECTORIES( ${QGLVIEWER_INCLUDE_DIR})
+INCLUDE_DIRECTORIES( ${QT_QTGUI_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(../3dparty/qwt-5.2.0/src)
+INCLUDE_DIRECTORIES(../3dparty/alglib/src)
+
+ADD_LIBRARY(dynamindgui STATIC ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
 
 
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-       TARGET_LINK_LIBRARIES(dynamindgui dynamindcore ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMINDCORE_LIBRARY} ${DANYMINDTOOLBOX_LIBRARY} ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
 ELSE()
-       TARGET_LINK_LIBRARIES(dynamindgui dynamindcore ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMINDCORE_LIBRARY} ${DANYMINDTOOLBOX_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
 ENDIF()
 
 

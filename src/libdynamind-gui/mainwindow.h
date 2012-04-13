@@ -55,7 +55,6 @@ class SimulationManagment;
 class DataManagment;
 class GroupNode;
 class GuiLogSink;
-class DMDatabase;
 class GUISimulationObserver;
 class GUISimulation;
 namespace DM {
@@ -74,7 +73,6 @@ public:
     GuiLogSink *log_updater;
 private:
     GUISimulation * simulation;
-    DMDatabase * database;
     DataManagment * data;
     SimulationManagment * simmanagment;
     GUISimulationObserver * simobserver;
