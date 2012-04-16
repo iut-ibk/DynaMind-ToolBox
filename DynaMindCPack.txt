@@ -38,14 +38,14 @@ IF(WIN32 AND NOT UNIX)
         !include \\\"winmessages.nsh\\\"
         !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
         !define env_hkcu 'HKCU \\\"Environment\\\"'
-        WriteRegExpandStr \${env_hklm} DYNAMIND_DIR $INSTDIR
-        SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\${env_hklm} DYNAMIND_DIR $INSTDIR
+        SendMessage \\${HWND_BROADCAST} \\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
         ClearErrors
         ")
 
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        DeleteRegValue \${env_hklm} DYNAMIND_DIR
-        SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\${env_hklm} DYNAMIND_DIR
+        SendMessage \\${HWND_BROADCAST} \\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
       ")
 
 
