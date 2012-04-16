@@ -9,7 +9,7 @@ SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_RESOURCE_FILE_LICENSE "${dynamind_SOURCE_DIR}/LICENSE")
 
-IF(WIN32 AND NOT UNIX)
+IF(UNIX)
     SET(CPACK_GENERATOR "NSIS")
     SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
@@ -38,14 +38,16 @@ IF(WIN32 AND NOT UNIX)
         !include \\\"winmessages.nsh\\\"
         !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
         !define env_hkcu 'HKCU \\\"Environment\\\"'
-        WriteRegExpandStr  \\${env_hklm} DYNAMIND_DIR $INSTDIR
-        SendMessage \\${HWND_BROADCAST} \\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\$\\{env_hklm\\} DYNAMIND_DIR $INSTDIR
+        SendMessage \\$\\{HWND_BROADCAST\\} \\$\\{WM_WININICHANGE\\} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
         ClearErrors
         ")
 
+     MESSAGE(STATUS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS})
+
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        DeleteRegValue \\${env_hklm} DYNAMIND_DIR
-        SendMessage \\${HWND_BROADCAST} \\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\$\\{env_hklm\\} DYNAMIND_DIR
+        SendMessage \\$\\{HWND_BROADCAST\\} \\$\\{WM_WININICHANGE\\} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
       ")
 
 
