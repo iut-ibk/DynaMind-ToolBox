@@ -59,4 +59,4 @@ ADD_SUBDIRECTORY(src/DMToolboxes)
 #ADD_SUBDIRECTORY(src/qgis-plugin)
 
 
-#INCLUDE(DynaMindCPack.txt)
+INCLUDE(DynaMindCPack.txt)
