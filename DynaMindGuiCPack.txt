@@ -1,0 +1,41 @@
+INCLUDE(InstallRequiredSystemLibraries)
+
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind")
+SET(CPACK_PACKAGE_NAME "DynaMind")
+SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "11")
+SET(CPACK_RESOURCE_FILE_LICENSE "${dynamind-gui_SOURCE_DIR}/LICENSE")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Urich <christian.urich@gmail.com>, Michael Mair <michael.mair@uibk.ac.at>")
+
+IF(WIN32 AND NOT UNIX)
+          SET(CPACK_GENERATOR "NSIS")
+          SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
+          SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
+          SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
+          SET(CPACK_NSIS_CONTACT "christian.urich@uibk.ac.at")
+
+    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" pythonhome \\\"$INSTDIR\\\\bin\\\\DLLs\\\\,$INSTDIR\\\\bin\\\\lib\\\\,$INSTDIR\\\\bin\\\\lib\\\\plat-win\\\\,$INSTDIR\\\\bin\\\\lib\\\\lib-tk\\\\,$INSTDIR\\\\bin\\\\lib\\\\site-packages,$INSTDIR\\\\bin\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" pythonModules \\\"$INSTDIR\\\\data\\\\scripts\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" VIBeModules \\\"$INSTDIR\\\\data\\\\modules\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" UrbanSim \\\"$INSTDIR\\\\data\\\\3dparty\\\\opus\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\data\\\\3dparty\\\\Editra\\\\\\\"
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" SWMM \\\"$INSTDIR\\\\data\\\\swmm\\\\\\\"
+        ClearErrors
+        ")
+
+     SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        DeleteRegKey HKCU \\\"Software\\\\IUT\\\\DynaMind\\\"
+      ")
+
+    DYNAMIND_INSTALL_LIBS("bin")
+    INSTALL(FILES ${QGLVIEWER_LIBRARIES} DESTINATION bin)
+    #INSTALL(FILES ${DLLS} DESTINATION bin)
+    INSTALL(FILES "${DYNAMIND_PYTHON_LIBRARY}" DESTINATION bin)
+
+    SET(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind")
+ENDIF()
+INCLUDE(CPack)

@@ -3,10 +3,22 @@ PROJECT(dynamind-gui)
 
 SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
 
-#FIND_PACKAGE(PythonLibs REQUIRED)
+FIND_PATH(FINDDYN FindDynaMind.cmake
+            PATHS   ENV DYNAMIND_DIR
+                    /usr
+                    /usr/local/
+                    /home/csae6550/work/DynaMind/CMake
+            PATH_SUFFIXES include/dynamindcore/CMake)
+
+
+IF(FINDDYN)
+    INCLUDE(${FINDDYN}/FindDynaMind.cmake)
+ELSE()
+    MESSAGE(FATAL_ERROR "COULD NOT FIND \"FindDynaMind.cmake\" file")
+ENDIF()
+
 FIND_PACKAGE(Boost 1.38.0 COMPONENTS program_options date_time REQUIRED)
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtXml QtOpenGL REQUIRED)
-FIND_PACKAGE(DynaMind REQUIRED)
 FIND_PACKAGE(QGLViewer)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(OpenGL REQUIRED)
@@ -21,7 +33,7 @@ SET(QT_USE_QTNETWORK 1)
 SET(Boost_USE_STATIC_LIBS   OFF)
 
 INCLUDE(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} ${DYNAMIND_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} ${DYNAMIND_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${DYNAMIND_INCLUDE_DIR})
 
 IF(CMAKE_BUILD_TYPE STREQUAL Debug)
         MESSAGE(STATUS "Build Type = Debug")
@@ -36,3 +48,5 @@ SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 
 ADD_SUBDIRECTORY(src/libdynamind-gui)
 ADD_SUBDIRECTORY(src/dynamind-gui)
+
+INCLUDE(DynaMindGuiCPack.txt)
