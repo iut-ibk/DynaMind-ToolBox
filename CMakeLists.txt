@@ -3,13 +3,13 @@ PROJECT(dynamind-gui)
 
 SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
 
+MESSAGE(STATUS "DYNAMIND_DIR $ENV{DYNAMIND_DIR}")
+
 FIND_PATH(FINDDYN FindDynaMind.cmake
             PATHS   ENV DYNAMIND_DIR
                     /usr
                     /usr/local/
-                    /home/csae6550/work/DynaMind/CMake
             PATH_SUFFIXES include/dynamindcore/CMake)
-
 
 IF(FINDDYN)
     INCLUDE(${FINDDYN}/FindDynaMind.cmake)
