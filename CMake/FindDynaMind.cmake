@@ -2,8 +2,7 @@ IF(NOT EXISTS ${dynamind_SOURCE_DIR})
     FIND_PATH(DYNAMIND_INCLUDE_DIR dmmodule.h
                 PATHS   ENV DYNAMIND_INCLUDE
                         /usr/include/dynamindcore
-                        /usr/local/include/dynamindcore
-                NO_DEFAULT_PATH)
+                        /usr/local/include/dynamindcore)
 
     FIND_LIBRARY(DYNAMINDTOOLBOX_LIBRARY NAMES dynamindtoolbox
                 PATHS   ENV DYNAMIND_LIB
@@ -12,15 +11,13 @@ IF(NOT EXISTS ${dynamind_SOURCE_DIR})
 
     FIND_LIBRARY(DYNAMINDCORE_LIBRARY NAMES dynamindcore
                 PATHS   ENV DYNAMIND_LIB
-                        /usr/lib
                         /usr/local/lib
-                NO_DEFAULT_PATH)
+                        /usr/lib)
 
     FIND_PATH(DYNAMINDPYTHON pydynamind.py
                 PATHS   ENV DYNAMIND_PYTHON
                         /usr/lib
-                        /usr/local/lib
-                NO_DEFAULT_PATH)
+                        /usr/local/lib)
 
     IF( DYNAMINDPYTHON )
         IF(UNIX)
@@ -147,5 +144,31 @@ ELSE()
         ENDFUNCTION(DYNAMIND_3RDPARTY_INSTALL_LIBS)
 
         MESSAGE(STATUS "\"DYNAMIND_3RDPARTY_INSTALL_LIBS\" FUNCTION ENABLED")
+
+        SET(NSIS_INSTALL    "!include \\\"winmessages.nsh\\\"
+                            !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
+                            !define env_hkcu 'HKCU \\\"Environment\\\"'
+                            WriteRegExpandStr  \\\${env_hklm} DYNAMIND_DIR $INSTDIR
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            WriteRegExpandStr  \\\${env_hklm} DYNAMIND_LIB $INSTDIR\\\\lib
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            WriteRegExpandStr  \\\${env_hklm} DYNAMIND_INCLUDE_DIR $INSTDIR\\\\include\\\\dynamindcore
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            WriteRegExpandStr  \\\${env_hklm} DYNAMIND_PYTHON $INSTDIR\\\\lib
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            ClearErrors
+                            ")
+        MESSAGE(STATUS "\"NSIS_ISTALL\" VAR SET")
+
+        SET(NSIS_REMOVE "   DeleteRegValue \\\${env_hklm} DYNAMIND_DIR
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            DeleteRegValue \\\${env_hklm} DYNAMIND_LIB
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            DeleteRegValue \\\${env_hklm} DYNAMIND_INCLCUDE_DIR
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            DeleteRegValue \\\${env_hklm} DYNAMIND_PYTHON
+                            SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+                            ")
+        MESSAGE(STATUS "\"NSIS_REMOVE\" VAR SET")
     ENDIF()
 ENDIF()
