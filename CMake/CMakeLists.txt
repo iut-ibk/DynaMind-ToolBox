@@ -1,0 +1,5 @@
+FILE(GLOB FCM *.cmake)
+
+INSTALL(FILES ${FCM}
+        DESTINATION "include/dynamindcore/CMake"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)

@@ -55,6 +55,9 @@ int main(int argc, char *argv[], char *envp[])
     ostream *out = &cout;
     DM::Log::init(new OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Debug) << "Nothing to test";
+    DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addOverWriteStdCout();
+    //env->startEditra("");
 
     /*if(!DynaMiteTest())
         Logger(Error) << "DynaMiteTest FAILED";

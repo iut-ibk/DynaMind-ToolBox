@@ -41,7 +41,7 @@
 #include <dmlogsink.h>
 #include <QSettings>
 #include <algorithm>
-
+#include <QProcessEnvironment>
 #include <swigruntime.h>
 
 extern "C" {
@@ -117,6 +117,16 @@ PythonEnv *PythonEnv::getInstance() {
 }
 
 void PythonEnv::addOverWriteStdCout() {
+    QProcessEnvironment envvars =  QProcessEnvironment::systemEnvironment();
+
+    if(envvars.contains("DYNAMIND_PYTHON"))
+        Logger(Standard) << "DYNAMIND_PYTHON set";
+    else
+        Logger(Warning) << "DYNAMIND_PYTHON not set";
+
+    addPythonPath(envvars.value("DYNAMIND_PYTHON","./").toStdString());
+    addPythonPath("/usr/local/lib");
+    addPythonPath("/usr/lib");
 
     boost::format fmt("import sys\n"
                       "import pydynamind\n"
@@ -136,19 +146,18 @@ void PythonEnv::addOverWriteStdCout() {
                       "        self.currentstring=self.currentstring.replace(\"\\n\",\"\")\n"
                       "        self.currentstring=self.currentstring.replace(\"\\r\",\"\")\n"
                       "        if self.error:\n"
-                      "                pydynamind.log(str(self.currentstring),pydynamind.Standard)\n"
+                      "                pydynamind.log(self.currentstring,pydynamind.Error)\n"
                       "        else:\n"
-                      "                pydynamind.log(str(self.currentstring),pydynamind.Standard)\n"
+                      "                pydynamind.log(self.currentstring,pydynamind.Standard)\n"
                       "        self.currentstring=\"\"\n"
                       "\n"
                       "    def close(self):\n"
                       "        self.stdout.close()\n"
-                      "    def flush(self):\n"
-                      "         pass\n"
                       "\n"
                       "if not isinstance(sys.stdout,Logger):\n"
                       "        sys.stdout=Logger(sys.stdout,False)\n"
-                      "        sys.stderr=Logger(sys.stderr,True)\n");
+                      "        sys.stderr=Logger(sys.stderr,True)\n"
+                      "print \"Redirect python stdout and stderr\"\n");
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyRun_String(fmt.str().c_str(), Py_file_input, priv->main_namespace, 0);

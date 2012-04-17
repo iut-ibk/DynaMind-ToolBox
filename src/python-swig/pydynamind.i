@@ -188,8 +188,8 @@ public:
 
 %inline %{
 
-void log(std::string s, LogLevel l) {
-    Logger(l) << s;
+void log(std::string s, DM::LogLevel l) {
+    DM::Logger(l) << s;
 }
 
 void initlog(){
