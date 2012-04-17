@@ -19,7 +19,31 @@ IF(WIN32 AND NOT UNIX)
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
     SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
     SET(CPACK_NSIS_CONTACT "michael.mair@uibk.ac.at")
-    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS $NSIS_INSTALL)
-    SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS $NSIS_REMOVE)
+
+    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        !include \\\"winmessages.nsh\\\"
+        !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
+        !define env_hkcu 'HKCU \\\"Environment\\\"'
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_DIR $INSTDIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_LIB $INSTDIR\\\\lib
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_INCLUDE_DIR $INSTDIR\\\\include\\\\dynamindcore
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_PYTHON $INSTDIR\\\\lib
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        ClearErrors
+        ")
+
+     SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        DeleteRegValue \\\${env_hklm} DYNAMIND_DIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\\${env_hklm} DYNAMIND_LIB
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\\${env_hklm} DYNAMIND_INCLCUDE_DIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\\${env_hklm} DYNAMIND_PYTHON
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+      ")
 ENDIF()
 INCLUDE(CPack)
