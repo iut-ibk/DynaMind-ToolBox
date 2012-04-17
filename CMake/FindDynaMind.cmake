@@ -1,4 +1,5 @@
 IF(NOT EXISTS ${dynamind_SOURCE_DIR})
+    MESSAGE(STATUS "DYNAMIND_DIR $ENV{DYNAMIND_DIR}")
     FIND_PATH(DYNAMIND_INCLUDE_DIR dmmodule.h
                 PATHS   ENV DYNAMIND_INCLUDE
                         /usr/include/dynamindcore
@@ -16,6 +17,7 @@ IF(NOT EXISTS ${dynamind_SOURCE_DIR})
 
     FIND_PATH(DYNAMINDPYTHON pydynamind.py
                 PATHS   ENV DYNAMIND_PYTHON
+
                         /usr/lib
                         /usr/local/lib)
 
@@ -88,14 +90,20 @@ IF(NOT EXISTS ${dynamind_SOURCE_DIR})
     ENDIF()
 
 
-
-
-    IF( DYNAMIND_INCLUDE_DIR AND
-        DYNAMINDCORE_LIBRARY AND
-        DYNAMINDTOOLBOX_LIBRARY)
-       SET(DYNAMIND_LIBRARY ${DYNAMINDCORE_LIBRARY} ${DYNAMINDTOOLBOX_LIBRARY})
-       SET(DYNAMIND_FOUND TRUE)
+    IF( DYNAMIND_INCLUDE_DIR )
+        MESSAGE(FATAL_ERROR "Could not find Dynamind include dir")
     ENDIF()
+
+    IF( DYNAMINDTOOLBOX_LIBRARY )
+        MESSAGE(FATAL_ERROR "Could not find Dynamind toolbox library")
+    ENDIF()
+
+    IF( DYNAMINDCORE_LIBRARY )
+        MESSAGE(FATAL_ERROR "Could not find Dynamind core library")
+    ENDIF()
+
+    SET(DYNAMIND_LIBRARY ${DYNAMINDCORE_LIBRARY} ${DYNAMINDTOOLBOX_LIBRARY})
+    SET(DYNAMIND_FOUND TRUE)
 
     IF(DYNAMIND_FOUND)
         MESSAGE(STATUS "SET VAR \"DYNAMIND_INCLUDE_DIR\" DONE")
