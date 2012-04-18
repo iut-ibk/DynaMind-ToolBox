@@ -1,12 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-gui)
 
-SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
+################################################
 
 FIND_PACKAGE(PkgConfig)
-FIND_PATH(DYNAMIND_INCLUDE_DIR dmnode.h PATH_SUFFIXES dynamindcore)
-FIND_LIBRARY(DYNAMIND_CORE_LIBRARY dynamindcore)
-FIND_LIBRARY(DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox)
+FIND_PATH(DYNAMIND_INCLUDE_DIR dmnode.h
+            PATHS   $ENV{DYNAMIND_DIR}/include
+            PATH_SUFFIXES dynamindcore)
+FIND_LIBRARY(DYNAMIND_CORE_LIBRARY dynamindcore
+            PATHS   $ENV{DYNAMIND_DIR}/lib
+                    $ENV{DYNAMIND_DIR}/bin)
+FIND_LIBRARY(DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox
+            PATHS   $ENV{DYNAMIND_DIR}/lib
+                    $ENV{DYNAMIND_DIR}/bin)
 
 IF(DYNAMIND_CORE_LIBRARY)
     MESSAGE(STATUS "DYNAMIND_CORE_LIBRARY set to: ${DYNAMIND_CORE_LIBRARY}")
@@ -28,6 +34,10 @@ ELSE()
 ENDIF()
 
 INCLUDE(FindPackageHandleStandardArgs)
+
+###################################################
+
+SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
 
 FIND_PACKAGE(Boost 1.38.0 COMPONENTS program_options date_time REQUIRED)
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtXml QtOpenGL REQUIRED)
