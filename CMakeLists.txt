@@ -8,10 +8,12 @@ FIND_PATH(DYNAMIND_INCLUDE_DIR dmnode.h
             PATHS   $ENV{DYNAMIND_DIR}/include
             PATH_SUFFIXES dynamindcore)
 FIND_LIBRARY(DYNAMIND_CORE_LIBRARY dynamindcore
-            PATHS   $ENV{DYNAMIND_DIR}/lib
+            PATHS   $ENV{DYNAMIND_DIR}
+                    $ENV{DYNAMIND_DIR}/lib
                     $ENV{DYNAMIND_DIR}/bin)
 FIND_LIBRARY(DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox
-            PATHS   $ENV{DYNAMIND_DIR}/lib
+            PATHS   $ENV{DYNAMIND_DIR}
+                    $ENV{DYNAMIND_DIR}/lib
                     $ENV{DYNAMIND_DIR}/bin)
 
 IF(DYNAMIND_CORE_LIBRARY)
