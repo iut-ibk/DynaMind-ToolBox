@@ -5,12 +5,12 @@ IF(NOT EXISTS ${dynamind_SOURCE_DIR})
                         /usr/include/dynamindcore
                         /usr/local/include/dynamindcore)
 
-    FIND_LIBRARY(DYNAMINDTOOLBOX_LIBRARY NAMES dynamindtoolbox
+    FIND_PATH(DYNAMINDTOOLBOX_LIBRARY NAMES dynamindtoolbox.so dynamindtoolbox.dll
                 PATHS   ENV DYNAMIND_LIB
                         /usr/lib
                         /usr/local/lib)
 
-    FIND_LIBRARY(DYNAMINDCORE_LIBRARY NAMES dynamindcore
+    FIND_PATH(DYNAMINDCORE_LIBRARY NAMES dynamindcore.so dynamindcore.dll
                 PATHS   ENV DYNAMIND_LIB
                         /usr/local/lib
                         /usr/lib)

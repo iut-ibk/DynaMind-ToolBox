@@ -125,6 +125,8 @@ void PythonEnv::addOverWriteStdCout() {
         Logger(Warning) << "DYNAMIND_PYTHON not set";
 
     addPythonPath(envvars.value("DYNAMIND_PYTHON","./").toStdString());
+    addPythonPath("/usr/local/bin");
+    addPythonPath("/usr/bin");
     addPythonPath("/usr/local/lib");
     addPythonPath("/usr/lib");
 
