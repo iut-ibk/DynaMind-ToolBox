@@ -1,43 +1,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-gui)
 
-################################################
-
-FIND_PACKAGE(PkgConfig)
-FIND_PATH(DYNAMIND_INCLUDE_DIR dmnode.h
+FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
             PATHS   $ENV{DYNAMIND_DIR}/include
-            PATH_SUFFIXES dynamindcore)
-FIND_LIBRARY(DYNAMIND_CORE_LIBRARY dynamindcore
-            PATHS   $ENV{DYNAMIND_DIR}
-                    $ENV{DYNAMIND_DIR}/lib
-                    $ENV{DYNAMIND_DIR}/bin)
-FIND_LIBRARY(DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox
-            PATHS   $ENV{DYNAMIND_DIR}
-                    $ENV{DYNAMIND_DIR}/lib
-                    $ENV{DYNAMIND_DIR}/bin)
+            PATH_SUFFIXES dynamindcore/CMake)
 
-IF(DYNAMIND_CORE_LIBRARY)
-    MESSAGE(STATUS "DYNAMIND_CORE_LIBRARY set to: ${DYNAMIND_CORE_LIBRARY}")
+IF(DYNAMINDDEV)
+    INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
 ELSE()
-    MESSAGE(STATUS "DYNAMIND_CORE_LIBRARY set to: ${DYNAMIND_CORE_LIBRARY}")
-    MESSAGE(FATAL_ERROR "Could not find dynamind core library")
+    MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
 ENDIF()
-
-IF(DYNAMIND_TOOLBOX_LIBRARY)
-    MESSAGE(STATUS "DYNAMIND_TOOLBOX_LIBRARY set to: ${DYNAMIND_TOOLBOX_LIBRARY}")
-ELSE()
-    MESSAGE(FATAL_ERROR "Could not find dynamind toolbox library")
-ENDIF()
-
-IF(DYNAMIND_INCLUDE_DIR)
-    MESSAGE(STATUS "DYNAMIND_INCLUDE_DIR set to: ${DYNAMIND_INCLUDE_DIR}")
-ELSE()
-    MESSAGE(FATAL_ERROR "Could not find dynamind header files")
-ENDIF()
-
-INCLUDE(FindPackageHandleStandardArgs)
-
-###################################################
 
 SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
 
@@ -73,4 +45,4 @@ SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 ADD_SUBDIRECTORY(src/libdynamind-gui)
 ADD_SUBDIRECTORY(src/dynamind-gui)
 
-#INCLUDE(DynaMindGuiCPack.txt)
+INCLUDE(DynaMindGuiCPack.txt)
