@@ -1,4 +1,4 @@
-FILE(GLOB FCM *.cmake)
+FILE(GLOB FCM *.txt)
 
 INSTALL(FILES ${FCM}
         DESTINATION "include/dynamindcore/CMake"
