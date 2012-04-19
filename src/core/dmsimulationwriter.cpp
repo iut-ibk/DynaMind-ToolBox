@@ -110,12 +110,12 @@ namespace DM {
 
 
 
-            unordered_map<std::string, int> parameterList = m->getParameterList();
-            for (unordered_map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
+           std::map<std::string, int> parameterList = m->getParameterList();
+            for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
                 Logger(Debug) << it->first;
             }
 
-            for (unordered_map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
+            for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
                 if (it->second < DM::USER_DEFINED_INPUT) {
                     out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(it->first) <<"\"" << ">"
                             << "\n" "\t\t\t\t<![CDATA["

@@ -33,7 +33,6 @@
 #include "dmcompilersettings.h"
 #include <list>
 #include <map>
-#include <boost/unordered_map.hpp>
 #include <QString>
 #include <iostream>
 #include <dmresultobserver.h>
@@ -92,7 +91,7 @@ enum CORINE {
 
 struct ModulePrivate;
 
-typedef boost::unordered_map<std::string, std::string> parameter_type;
+typedef std::map<std::string, std::string> parameter_type;
 
 class Port;
 class Group;
@@ -250,7 +249,7 @@ public:
     std::vector<std::string> getParameterListAsVector()  {return this->parameterList;}
 
     /** @bief Returns a map of parameters <name, type>*/
-    boost::unordered_map<std::string, int> getParameterList()  {return this->parameter;}
+    std::map<std::string, int> getParameterList()  {return this->parameter;}
 
     /** @bief return native parameter*/
     template<class T>
@@ -343,7 +342,7 @@ public:
         this->name = name;
     }
 
-     /** @brief return name of module */
+    /** @brief return name of module */
     std::string getName() const {return this->name;}
 
     /** @brief add ResultObserver */
@@ -401,12 +400,12 @@ private:
 
 protected:
     std::map<std::string, int> int_params;
-    boost::unordered_map<std::string, std::string> paramRaw;
-    boost::unordered_map<std::string, int> parameter;
-    boost::unordered_map<std::string, std::string> parameter_description;
-    boost::unordered_map<std::string, DM::System *> data_vals;
-    boost::unordered_map<std::string, DM::System *> data_vals_prev;
-    boost::unordered_map<std::string, void *> parameter_vals;
+    std::map<std::string, std::string> paramRaw;
+    std::map<std::string, int> parameter;
+    std::map<std::string, std::string> parameter_description;
+    std::map<std::string, DM::System *> data_vals;
+    std::map<std::string, DM::System *> data_vals_prev;
+    std::map<std::string, void *> parameter_vals;
     std::map<std::string,std::vector<DM::View> > views;
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;

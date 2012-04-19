@@ -113,7 +113,7 @@ Port * Module::getOutPort(std::string name) {
 
 
 void Module::updateParameter() {
-    for (boost::unordered_map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
         if (it->second != DM::SYSTEM) {
             continue;
@@ -203,7 +203,7 @@ void Module::updateParameter() {
 void Module::setParameterValue(std::string name, std::string v) {
     //Check if parameter exists
     bool exists = false;
-    for (boost::unordered_map<std::string, int>::iterator it = parameter.begin(); it != parameter.end(); ++it) {
+    for (std::map<std::string, int>::iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string paramName = it->first;
         if (paramName.compare(name) == 0)
             exists = true;
@@ -582,9 +582,9 @@ void Module::copyParameterFromOtherModule(Module * m) {
     std::string name_origin = m->getClassName();
     std::string name_this = this->getClassName();
     if (name_origin.compare(name_this) == 0) {
-        boost::unordered_map<std::string, int> parameterList = m->getParameterList();
+       std::map<std::string, int> parameterList = m->getParameterList();
 
-        for ( boost::unordered_map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
+        for ( std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
             if (it->second < DM::USER_DEFINED_INPUT) {
                 this->setParameterValue(it->first, m->getParameterAsString(it->first));
             }
