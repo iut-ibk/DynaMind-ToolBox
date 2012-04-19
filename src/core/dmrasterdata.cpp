@@ -122,10 +122,10 @@ bool RasterData::setValue(long x, long y, double value) {
 RasterData::~RasterData() {
 
     for (long i = 0; i < width; i++) {
-        delete this->data[i];
+        delete[] this->data[i];
     }
     if (height != 0)
-        delete data;
+        delete[] data;
 
 }
 
