@@ -102,6 +102,7 @@ Simulation::~Simulation() {
     delete this->rootGroup;
 
     delete data;
+    delete moduleRegistry;
 }
 
 Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModules) {
@@ -148,17 +149,8 @@ void Simulation::reloadModules() {
 
     }
 }
+bool Simulation::addModulesFromSettings() {
 
-Simulation::Simulation() {
-    this->setTerminationEnabled(true);
-    data = new SimulationPrivate();
-    //data->simObserver;
-    data->observer = 0;
-    data->counter = 0;
-    this->rootGroup = new DMRootGroup();
-    this->rootGroup->setSimulation(this);
-    //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
-    this->moduleRegistry = new ModuleRegistry();
 
     QSettings settings("IUT", "DYNAMIND");
 
@@ -166,8 +158,6 @@ Simulation::Simulation() {
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
     for (int index = 0; index < pythonhome.size(); index++)
         DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
-
-    //DM::PythonEnv::getInstance()->getInstance()->addOverWriteStdCout();
 
     QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
@@ -185,25 +175,40 @@ Simulation::Simulation() {
 
             } catch(...) {
                 Logger(Warning)  << "Can't load Module " << file.toStdString();
-                std::cout << file.toStdString() << std::endl;
             }
         }
 
     }
 
+    // Native Modules
     text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
     foreach (QString s, list) {
         if (s.isEmpty())
             continue;
-        std::cout << "Loading Native Modules " <<s.toStdString() << std::endl;
+        Logger(Standard) << "Loading Native Modules " <<s.toStdString();
         moduleRegistry->addNativePlugin(s.toStdString());
     }
+
+    return true;
 }
 
-void Simulation::registerNativeModules(string Filename) {
+Simulation::Simulation() {
+    this->setTerminationEnabled(true);
+    data = new SimulationPrivate();
+    //data->simObserver;
+    data->observer = 0;
+    data->counter = 0;
+    this->rootGroup = new DMRootGroup();
+    this->rootGroup->setSimulation(this);
+    //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
+    this->moduleRegistry = new ModuleRegistry();
+
+}
+
+bool Simulation::registerNativeModules(string Filename) {
     Logger(Standard) << "Loading Native Modules " << Filename ;
-    moduleRegistry->addNativePlugin(Filename);
+    return moduleRegistry->addNativePlugin(Filename);
 }
 
 void Simulation::registerPythonModules(std::string path) {
@@ -268,7 +273,6 @@ void Simulation::run() {
 
 void Simulation::startSimulation(bool virtualRun, bool check) {
     this->virtualRun = virtualRun;
-    //this->registerDataBase(DataManagement::getInstance().getDataBase());
     Logger(Standard) << "Run Simulation";
     bool isConnected = true;
     if (check)
@@ -374,9 +378,9 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
 
     //Call init Functions of the modules
     foreach (ModuleEntry me, simreader.getModules()) {
-            Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
-            m->init();
-        }
+        Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
+        m->init();
+    }
 
     foreach (LinkEntry le, simreader.getLinks()) {
         std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];
