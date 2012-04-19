@@ -79,9 +79,16 @@ namespace DM {
         void reloadModules();
         std::vector<Module*> getModulesFromType(std::string name);
         void deregisterModule(std::string UUID);
-        void registerNativeModules(std::string Filename);
+
+        /** @brief register a new native module returns if module has been loaded succcessfully*/
+        bool registerNativeModules(std::string Filename);
+
+
         void registerPythonModules(std::string path);
         bool isVirtualRun(){return this->virtualRun;}
+
+        /** @brief Add the modules set in the QSetting **/
+        bool addModulesFromSettings();
 
     private:
         DMRootGroup * rootGroup;
