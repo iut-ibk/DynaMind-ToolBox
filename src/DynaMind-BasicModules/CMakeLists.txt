@@ -18,14 +18,14 @@ QT4_WRAP_CPP(MODULE_CPPS ${MOC_MODULE_FILES})
 
 include_directories(.)
 include_directories(../3dparty/muparser/include)
-include_directories(../DMToolboxes)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(dmtestmodule SHARED ${MODULE_CPPS})
 
-target_link_libraries(dmtestmodule dynamindtoolbox dynamindcore ${QT_LIBRARIES})
+add_library(dynamind-basicmodules SHARED ${MODULE_CPPS})
 
-INSTALL(TARGETS dmtestmodule
+target_link_libraries(dynamind-basicmodules  ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
+
+INSTALL(TARGETS dynamind-basicmodules
         DESTINATION "lib"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
