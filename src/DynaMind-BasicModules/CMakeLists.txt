@@ -26,7 +26,7 @@ add_library(dynamind-basicmodules SHARED ${MODULE_CPPS})
 target_link_libraries(dynamind-basicmodules  ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
 
 INSTALL(TARGETS dynamind-basicmodules
-        DESTINATION "lib"
+        DESTINATION "lib/DynaMind"
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 
