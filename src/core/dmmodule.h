@@ -350,7 +350,7 @@ public:
 
     /** @brief resets the paramter in the module
      *
-     * Sets the InternalCounter to 0
+     * Sets the InternalCounter to 0 and delete owned systems
      */
     void resetParameter();
 

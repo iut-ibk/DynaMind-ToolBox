@@ -60,7 +60,11 @@ void Module::addPortObserver(PortObserver *portobserver) {
 }
 void Module::resetParameter() {
     Logger(Debug) << "Reset Parameter";
-    this->internalCounter = 0;
+    this->internalCounter = 0;    
+    foreach (DM::System * sys, ownedSystems)
+        delete sys;
+    ownedSystems.clear();
+
 }
 Module::Module() {
 
