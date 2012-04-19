@@ -25,7 +25,6 @@
  */
 #include "dmmodule.h"
 #include <list>
-#include <boost/shared_ptr.hpp>
 #include <map>
 #include <iostream>
 #include <ctime>
@@ -34,8 +33,6 @@
 #include <QString>
 #include <QStringList>
 #include <typeinfo>
-#include <boost/foreach.hpp>
-#include <boost/python/wrapper.hpp>
 #include <dmport.h>
 
 #include <QUuid>
@@ -389,10 +386,10 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
 
 void Module::Destructor() {
     if (this->group != 0) {
-        BOOST_FOREACH(Port * p, this->InPorts) {
+        foreach(Port * p, this->InPorts) {
             delete p;
         }
-        BOOST_FOREACH(Port * p, this->OutPorts) {
+        foreach(Port * p, this->OutPorts) {
             delete p;
         }
         this->InPorts.clear();
