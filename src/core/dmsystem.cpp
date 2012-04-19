@@ -37,18 +37,19 @@ using namespace DM;
 
 System::System(std::string name) : Component()
 {
-
+    sucessor = 0;
 }
 
 System::System() : Component()
 {
-
+    sucessor = 0;
 }
 
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getName()] = c;
     }
+
 }
 
 std::vector<std::string> System::getNamesOfViews() {
@@ -76,6 +77,8 @@ System::System(const System& s) : Component(s)
     rasterdata = s.rasterdata;
     EdgeNodeMap = s.EdgeNodeMap;
     viewdefinitions = s.viewdefinitions;
+    predecessors = s.predecessors;
+    sucessor = 0;
 
     //Update SubSystem
     std::map<std::string,System*>::iterator its;
@@ -126,7 +129,8 @@ System::System(const System& s) : Component(s)
 
 System::~System()
 {
-
+    if (sucessor)
+        delete sucessor;
 }
 
 Node * System::addNode(Node* node)
@@ -428,8 +432,10 @@ std::map<std::string, RasterData*> System::getAllRasterData()
 
 System* System::createSuccessor()
 {
+
     System* result = new System(*this);
-    //predecessors.push_back(this);
+    this->sucessor = result;
+    result->addPredecessors(this);
     return result;
 }
 
@@ -493,6 +499,11 @@ bool System::addView(View view)
 std::vector<System*> System::getPredecessorStates()
 {
     return predecessors;
+}
+
+void System::addPredecessors(System *s)
+{
+    this->predecessors.push_back(s);
 }
 
 std::map<std::string, Node*> System::getAllNodes()

@@ -67,6 +67,7 @@ private:
     std::map<std::string, System*> subsystems;
     std::map<std::string, View> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;
+    DM::System * sucessor;
 
 
     //Get Edge Based on otherwise takes ages
@@ -133,6 +134,8 @@ public:
 
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 
+    /** @brief add Predecessor **/
+    void addPredecessors(DM::System * s);
 
 
 
