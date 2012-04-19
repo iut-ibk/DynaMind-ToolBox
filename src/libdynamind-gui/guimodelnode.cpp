@@ -73,7 +73,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
     layout1 = new QGridLayout;
     QGroupBox *gbox = new QGroupBox;
     gbox->setTitle("Parameter");
-    unordered_map<std::string, int> parameter = m->getParameterList();
+    std::map<std::string, int> parameter = m->getParameterList();
     std::vector<std::string> NameList = m->getParameterListAsVector();
     BOOST_FOREACH(std::string name, NameList){
         int ID = parameter[name];//it->second;
@@ -429,7 +429,7 @@ void GUIModelNode::addUserDefinedTuple() {
 
 void GUIModelNode::accept() {
 
-    unordered_map<std::string, int> parameter = this->module->getParameterList();
+    map<std::string, int> parameter = this->module->getParameterList();
 
 
     foreach(QString s,  this->elements.keys()) {

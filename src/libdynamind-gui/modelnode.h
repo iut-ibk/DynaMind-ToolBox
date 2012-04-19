@@ -105,7 +105,7 @@ public:
 
     void addPort(DM::Port * p);
     virtual GUIPort * getGUIPort(DM::Port * p);
-    boost::unordered_map<std::string, int> getParameters(){return this->VIBeModule->getParameterList();}
+    std::map<std::string, int> getParameters(){return this->VIBeModule->getParameterList();}
 
     std::string getParameterAsString(std::string name);
 
