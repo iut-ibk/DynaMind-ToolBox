@@ -25,7 +25,6 @@
  */
 #include "dmgroup.h"
 #include <dmport.h>
-#include <boost/foreach.hpp>
 #include <dmmodulelink.h>
 #include <dmporttuple.h>
 #include <time.h>
@@ -39,6 +38,7 @@
 #include <dmportobserver.h>
 #include <dmrootgroup.h>
 #include <QThreadPool>
+#include <algorithm>
 
 using namespace boost;
 
@@ -66,10 +66,10 @@ void Group::Destructor() {
         delete *(this->modules.begin());
 
     }
-    BOOST_FOREACH(PortTuple * p, this->inPortTuple) {
+    foreach(PortTuple * p, this->inPortTuple) {
         delete p;
     }
-    BOOST_FOREACH(PortTuple * p, this->outPortTuple) {
+    foreach(PortTuple * p, this->outPortTuple) {
         delete p;
     }
     this->inPortTuple.clear();
@@ -228,25 +228,22 @@ std::string Group::getParameterAsString(std::string Name) {
 QVector<QRunnable *>  Group::getNextJobs() {
     QVector<QRunnable * > RunnedModulesInStep;
     for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) {
-
         Module * m = *it;
-
         if (std::find(currentRunning.begin(), currentRunning.end(), m) ==  currentRunning.end()) {
-
             bool runnable = true;
             std::vector<Port*> inPorts = m->getInPorts();
             if (m->isGroup()) {
                 Group * g = (Group*) m;
-                BOOST_FOREACH(PortTuple * pt , g->getInPortTuples()) {
+                foreach(PortTuple * pt , g->getInPortTuples()) {
                     inPorts.push_back(pt->getInPort());
                 }
             }
-            BOOST_FOREACH(Port * p, inPorts) {
-                BOOST_FOREACH( ModuleLink * l, p->getLinks() ) {
+           foreach(Port * p, inPorts) {
+                foreach( ModuleLink * l, p->getLinks() ) {
                     if (!l->isBackLink()) {
                         Module * neededM = l->getOutPort()->getModule();
                         bool ModuleExists = false;
-                        BOOST_FOREACH(Module* usedM, UsedModules) {
+                        foreach(Module* usedM, UsedModules) {
                             if (usedM == neededM) {
                                 ModuleExists = true;
                                 break;
@@ -273,8 +270,6 @@ QVector<QRunnable *>  Group::getNextJobs() {
         if (this->group != 0) {
             this->run();
         }
-
-
 
     }
     return RunnedModulesInStep;
