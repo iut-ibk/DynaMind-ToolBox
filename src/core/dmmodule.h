@@ -31,7 +31,6 @@
 #define DMMODULE_H
 
 #include "dmcompilersettings.h"
-#include <boost/shared_ptr.hpp>
 #include <list>
 #include <map>
 #include <boost/unordered_map.hpp>
@@ -42,7 +41,6 @@
 #include <dmlogger.h>
 #include <dmlogsink.h>
 #include <dmview.h>
-//#include <boost/python.hpp>
 
 class QThreadPool;
 class PortObserver;

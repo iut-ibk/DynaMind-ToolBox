@@ -34,7 +34,6 @@
 #include "dmsimulation.h"
 #include "dmsimulationreader.h"
 #include "dmmodule.h"
-#include "dmrootmodule.h"
 #include "dmmoduleregistry.h"
 #include "dmmoduleparameterreader.h"
 #include "vector"
@@ -56,7 +55,6 @@
 
 namespace DM {
 struct SimulationPrivate {
-    //ModuleContainer * root;
     ModuleRegistry registry;
 
     long simulationCounter;
