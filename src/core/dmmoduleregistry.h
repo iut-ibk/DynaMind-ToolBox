@@ -44,8 +44,11 @@ class DM_HELPER_DLL_EXPORT ModuleRegistry
 {
 public:
     ModuleRegistry();
+
     bool addNodeFactory(INodeFactory *factory);
-    void addNativePlugin(const std::string &plugin_path);
+
+    /** @brief add Native Plugin */
+    bool addNativePlugin(const std::string &plugin_path);
     Module * createModule(const std::string & name) const;
     std::list<std::string> getRegisteredModules() const;
     bool contains(const std::string &name) const;

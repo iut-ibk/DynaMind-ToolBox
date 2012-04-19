@@ -33,8 +33,8 @@
 #include <dmmodule.h>
 using namespace std;
 namespace DM {
-    ModuleRegistry::ModuleRegistry() {
-    }
+ModuleRegistry::ModuleRegistry() {
+}
 
 bool ModuleRegistry::addNodeFactory(INodeFactory *factory)
 {
@@ -48,20 +48,27 @@ bool ModuleRegistry::addNodeFactory(INodeFactory *factory)
     return true;
 }
 
-void ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
+bool ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
 
     QLibrary l(QString::fromStdString(plugin_path));
     bool loaded = l.load();
-    if (!loaded)
+    if (!loaded) {
         std::cout << "Error: Module " << plugin_path << " not loaded" << std::endl;
-    assert(loaded);
+        assert(loaded);
+        return false;
+
+    }
+
     regNodeFunProto regNodeFun = (regNodeFunProto) l.resolve("registerModules");
 
     if (regNodeFun) {
         regNodeFun(this);
     } else {
         Logger(Debug) << plugin_path << " has no node register hook";
+        return false;
     }
+
+    return true;
 }
 
 typedef std::pair<std::string, INodeFactory *> snf;
@@ -76,10 +83,10 @@ std::list<std::string> ModuleRegistry::getRegisteredModules() const {
 }
 
 Module *ModuleRegistry::createModule(const std::string &name) const {
-     Logger(Debug)  << "Try to create " << name;
+    Logger(Debug)  << "Try to create " << name;
     if (registry.count(name) == 0) {
         Logger(Error) << "Error: no such node class registered";
-        QThread::currentThread()->exit();
+        return 0;
     }
 
     Module *newmod = 0;
