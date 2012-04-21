@@ -30,8 +30,9 @@
 #include <dmmodule.h>
 #include <dmsimulation.h>
 #include <dmlog.h>
+#include <dynamicinout.h>
 
-/** @brief Test adding Module */
+
 void TestSimulation::addModuleToSimulationTest(){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -43,7 +44,7 @@ void TestSimulation::addModuleToSimulationTest(){
 }
 
 
-/** @brief Test if the a native module is loaded correctly */
+
 void TestSimulation::loadModuleNativeTest() {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -54,7 +55,7 @@ void TestSimulation::loadModuleNativeTest() {
 
 
 
-/** @brief Test repeated Simulation execution Module */
+
 void TestSimulation::repeatedRunTest() {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -63,12 +64,12 @@ void TestSimulation::repeatedRunTest() {
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * m = sim.addModule("TestModule");
     QVERIFY(m != 0);
-    for (long i = 0; i < 200; i++)
+    for (long i = 0; i < 10; i++) {
         sim.run();
-    QVERIFY(true==true);
-}
+        QVERIFY(sim.getSimulationStatus() == DM::SIM_OK);
+    }
 
-/** @brief Test Linked Modules Module */
+}
 void TestSimulation::linkedModulesTest() {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -76,19 +77,49 @@ void TestSimulation::linkedModulesTest() {
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * m = sim.addModule("TestModule");
-    if (!m)
-        QVERIFY(m != 0);
+
+    QVERIFY(m != 0);
     DM::Module * inout  = sim.addModule("InOut");
-    if (!inout)
-        QVERIFY(inout != 0);
+
+    QVERIFY(inout != 0);
     DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
-    if (!l)
-        QVERIFY(l != 0);
-    for (long i = 0; i < 200; i++)
+
+    QVERIFY(l != 0);
+    for (long i = 0; i < 10; i++){
         sim.run();
-    QVERIFY(true==true);
+        QVERIFY(sim.getSimulationStatus() == DM::SIM_OK);
+    }
+}
+
+void TestSimulation::linkedDynamicModules() {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test Linked Modules";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * m = sim.addModule("TestModule");
+    QVERIFY(m != 0);
+    DM::Module * inout  = sim.addModule("InOut");
+    QVERIFY(inout != 0);
+    DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+    QVERIFY(l != 0);
+    DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
+    QVERIFY(dyinout != 0);
+    dyinout->addAttribute("D");
+
+    //Run Simulation update to create outport and allow linking
+    sim.startSimulation(true);
+    DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
+    QVERIFY(l1 != 0);
+    DM::Module * inout2  = sim.addModule("InOut2");
+    QVERIFY(inout2 != 0);
+    DM::ModuleLink * l2 = sim.addLink(dyinout->getOutPort("Inport"), inout2->getInPort("Inport"));
+    QVERIFY(l2 != 0);
+    sim.run();
+    QVERIFY(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
 
 QTEST_MAIN( TestSimulation )
 #include "testsimulation.moc"
+

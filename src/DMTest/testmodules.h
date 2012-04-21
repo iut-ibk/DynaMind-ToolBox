@@ -24,31 +24,19 @@
  *
  */
 
-
-
-#ifndef TESTSIMULATION_H
-#define TESTSIMULATION_H
+#ifndef TESTMODULES_H
+#define TESTMODULES_H
 
 #include <QObject>
-class TestSimulation : public QObject
+class TestModules : public QObject
 {
     Q_OBJECT
 
-
 private slots:
-    /** @brief Test adding Module */
-    void addModuleToSimulationTest();
-    /** @brief Test if the a native module is loaded correctly */
-    void loadModuleNativeTest();
-    /** @brief Test repeated Simulation execution Module */
-    void repeatedRunTest();
-    /** @brief Test Linked Modules Module */
-    void linkedModulesTest();
-    /** @brief Test DynamicModuleLinkage
-     *
-     * Model setup TestModule - InOut - DynamicInOut - InOut2
-     */
-    void linkedDynamicModules();
+    /** @brief Test adding parameters to modules */
+    void setParameterInModule();
+
+
 };
 
-#endif // TESTSIMULATION_H
+#endif // TESTMODULES_H

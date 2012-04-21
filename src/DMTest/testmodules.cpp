@@ -24,31 +24,26 @@
  *
  */
 
+#include <ostream>
+#include <QtTest/QtTest>
+#include "testsimulation.h"
+#include <dmmodule.h>
+#include <dmsimulation.h>
+#include <dmlog.h>
+#include "testmodules.h"
 
+void TestModules::setParameterInModule() {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Load Native Module";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * m = sim.addModule("TestModule");
+    QVERIFY(m != 0);
+    m->setParameterValue("DoubleValue", "0.1");
+    double val = m->getParameter<double>("DoubleValue");
+    QVERIFY(val == 0.1);
+}
 
-#ifndef TESTSIMULATION_H
-#define TESTSIMULATION_H
-
-#include <QObject>
-class TestSimulation : public QObject
-{
-    Q_OBJECT
-
-
-private slots:
-    /** @brief Test adding Module */
-    void addModuleToSimulationTest();
-    /** @brief Test if the a native module is loaded correctly */
-    void loadModuleNativeTest();
-    /** @brief Test repeated Simulation execution Module */
-    void repeatedRunTest();
-    /** @brief Test Linked Modules Module */
-    void linkedModulesTest();
-    /** @brief Test DynamicModuleLinkage
-     *
-     * Model setup TestModule - InOut - DynamicInOut - InOut2
-     */
-    void linkedDynamicModules();
-};
-
-#endif // TESTSIMULATION_H
+QTEST_MAIN( TestModules )
+#include "testmodules.moc"

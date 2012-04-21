@@ -1,8 +1,13 @@
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
-
+INCLUDE_DIRECTORIES(../DMTestModules)
 SET( TestSimulation_SRCS testsimulation.cpp )
 QT4_AUTOMOC( ${TestSimulation_SRCS} )
 ADD_EXECUTABLE( TestSimulation ${TestSimulation_SRCS} )
-TARGET_LINK_LIBRARIES( TestSimulation dynamindcore ${QT_QTTEST_LIBRARY} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
+TARGET_LINK_LIBRARIES( TestSimulation dynamindcore dynamind-testmodules ${QT_QTTEST_LIBRARY} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
 ADD_TEST( NAME TestSimulation COMMAND TestSimulation )
+
+SET(TestModules_SRCS testmodules.cpp )
+QT4_AUTOMOC( ${TestModules_SRCS} )
+ADD_EXECUTABLE( TestModules ${TestModules_SRCS} )
+TARGET_LINK_LIBRARIES( TestModules dynamindcore dynamind-testmodules ${QT_QTTEST_LIBRARY} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
+ADD_TEST( NAME TestModules COMMAND TestModules )
