@@ -49,6 +49,13 @@ private slots:
      * Model setup TestModule - InOut - DynamicInOut - InOut2
      */
     void linkedDynamicModules();
+
+    /** @brief Test DynamicModuleLinkage
+     *
+     * Model setup TestModule - InOut - |DynamicInOut| - InOut2
+     */
+    void linkedDynamicModulesOverGroups();
+
 };
 
 #endif // TESTSIMULATION_H

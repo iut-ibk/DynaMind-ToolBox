@@ -31,7 +31,8 @@
 #include <dmsimulation.h>
 #include <dmlog.h>
 #include <dynamicinout.h>
-
+#include <grouptest.h>
+#include <dmporttuple.h>
 
 void TestSimulation::addModuleToSimulationTest(){
     ostream *out = &cout;
@@ -108,12 +109,49 @@ void TestSimulation::linkedDynamicModules() {
     dyinout->addAttribute("D");
 
     //Run Simulation update to create outport and allow linking
-    sim.startSimulation(true);
+    //sim.startSimulation(true);
     DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
     QVERIFY(l1 != 0);
     DM::Module * inout2  = sim.addModule("InOut2");
     QVERIFY(inout2 != 0);
     DM::ModuleLink * l2 = sim.addLink(dyinout->getOutPort("Inport"), inout2->getInPort("Inport"));
+    QVERIFY(l2 != 0);
+    sim.run();
+    QVERIFY(sim.getSimulationStatus() == DM::SIM_OK);
+}
+
+void TestSimulation::linkedDynamicModulesOverGroups() {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test Linked Modules";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * m = sim.addModule("TestModule");
+    QVERIFY(m != 0);
+    DM::Module * inout  = sim.addModule("InOut");
+    QVERIFY(inout != 0);
+    DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+    QVERIFY(l != 0);
+    //Here comes the group
+    GroupTest * g = (GroupTest * ) sim.addModule("GroupTest");
+    g->addInPort("In");
+    DM::ModuleLink * l_in = sim.addLink(inout->getOutPort("Inport"),g->getInPortTuple("In")->getInPort());
+    QVERIFY(l_in != 0);
+    g->addOutPort("Out");
+    DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
+    QVERIFY(dyinout != 0);
+    dyinout->setGroup(g);
+    QVERIFY(dyinout != 0);
+    dyinout->addAttribute("D");
+    //Run Simulation update to create outport and allow linking
+    //sim.startSimulation(true);
+    DM::ModuleLink * l1 = sim.addLink(g->getInPortTuple("In")->getOutPort(), dyinout->getInPort("Inport"));
+    QVERIFY(l1 != 0);
+    DM::ModuleLink * l_out = sim.addLink(dyinout->getOutPort("Inport"), g->getOutPortTuple("Out")->getInPort());
+    QVERIFY(l_out != 0);
+    DM::Module * inout2  = sim.addModule("InOut2");
+    QVERIFY(inout2 != 0);
+    DM::ModuleLink * l2 = sim.addLink(g->getOutPortTuple("Out")->getOutPort(), inout2->getInPort("Inport"));
     QVERIFY(l2 != 0);
     sim.run();
     QVERIFY(sim.getSimulationStatus() == DM::SIM_OK);
