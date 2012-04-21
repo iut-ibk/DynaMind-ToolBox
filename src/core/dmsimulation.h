@@ -46,13 +46,30 @@ namespace DM {
     class ModuleLink;
     class Group;
 
+    enum SimuatlonsStatuses {
+        SIM_OK,
+        SIM_ERROR_SYSTEM_NOT_SET
+
+    };
+
+
     class DM_HELPER_DLL_EXPORT Simulation:public QThread {
     public:
         Simulation(std::string fileName, std::vector<std::string> pythonModules);
         Simulation();
         virtual ~Simulation();
 
-        void startSimulation(bool virtualRun = false, bool check = true);
+        /** @brief Starts the Simulation. Returns if model run was executed successful
+         *
+         * If the paramter virtualRun is true only the init methods of the modules are executed.
+         * This is ca be used to update the data model.
+         */
+        bool startSimulation(bool virtualRun = false);
+
+         /** @brief Starts the Simulation. Returns if model run was executed successful
+          *
+          * calles startSimulation with default parameter
+          */
         virtual void run();
         void addDataObserver(DataObserver*  observer);
         void addSimulationObserver(SimulationObserver * simulationObserver);
@@ -75,7 +92,7 @@ namespace DM {
         std::vector<ModuleLink*> getLinks();
         Module * resetModule(std::string UUID);
         void resetModules();
-        bool checkConnections() const;
+        //bool checkConnections() const;
         void reloadModules();
         std::vector<Module*> getModulesFromType(std::string name);
         void deregisterModule(std::string UUID);
@@ -89,6 +106,13 @@ namespace DM {
 
         /** @brief Add the modules set in the QSetting **/
         bool addModulesFromSettings();
+
+
+        /** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
+        int getSimulationStatus();
+
+        /** @brief set Simulation Status */
+        void setSimulationStatus(int Status);
 
     private:
         DMRootGroup * rootGroup;

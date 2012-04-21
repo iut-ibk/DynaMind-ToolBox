@@ -65,6 +65,11 @@ struct SimulationPrivate {
     DataObserver * observer;
     std::vector<SimulationObserver *>  simObserver;
     int counter;
+
+    /** Is used to indicate if simulation run was successful. Parameter is set to ture before a Simulation
+      * starts. If the parameter is false at the end of the simulation something happend in between
+      */
+    int simulationStatus;
 };
 
 
@@ -267,33 +272,31 @@ void Simulation::resetModules() {
     }
 }
 void Simulation::run() {
-    this->startSimulation(false, true);
+    this->startSimulation(false);
 
 }
 
-void Simulation::startSimulation(bool virtualRun, bool check) {
+bool Simulation::startSimulation(bool virtualRun) {
+    this->data->simulationStatus = SIM_OK;
     this->virtualRun = virtualRun;
     Logger(Standard) << "Run Simulation";
-    bool isConnected = true;
-    if (check)
-        isConnected = this->checkConnections();
-    if (isConnected) {
-        Logger(Debug) << "Reset Steps";
-        this->rootGroup->resetSteps();
-        Logger(Debug) << "Start Simulations";
-        if (this->rootGroup->getModules().size() > 0) {
-            this->rootGroup->run();
-        }
-    }
-    if (!virtualRun) {
-        Logger(Standard) << "End Simulation";
+    Logger(Debug) << "Reset Steps";
+    this->rootGroup->resetSteps();
+    Logger(Debug) << "Start Simulations";
+    if (this->rootGroup->getModules().size() > 0) {
+        this->rootGroup->run();
     }
 
-    if (virtualRun) {
-        foreach (SimulationObserver * so, data->simObserver) {
-            so->VirtualRunDone();
-        }
+    if (!virtualRun) {
+        Logger(Standard) << "End Simulation";
+        return true;
     }
+
+    //Execute Simulation Observer
+    foreach (SimulationObserver * so, data->simObserver) {
+        so->VirtualRunDone();
+    }
+    return true;
 
 }
 void Simulation::registerDataBase(IDataBase * database) {
@@ -451,7 +454,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     return UUIDTranslator;
 
 }
-bool Simulation::checkConnections() const {
+/*bool Simulation::checkConnections() const {
     Logger(Debug) << "Check Connections ";
     foreach(Module * m, this->getModules()) {
         std::vector<Port *> ports   = m->getInPorts();
@@ -479,6 +482,7 @@ bool Simulation::checkConnections() const {
                 Port * p = pt->getInPort();
                 if (p->getLinks().size() < 1) {
                     Logger(Error) << m->getUuid() << " " << m->getName() << "Module Not fully Connected";
+
                     return false;
                 }
             }
@@ -488,7 +492,7 @@ bool Simulation::checkConnections() const {
     }
     Logger(Debug) << "Check Connections finished";
     return true;
-}
+}*/
 
 Module * Simulation::resetModule(std::string UUID) {
     Logger(Debug) << "Reset Module " << UUID;
@@ -601,6 +605,15 @@ std::vector<ModuleLink*> Simulation::getLinks() {
 
     return links;
 }
+
+int Simulation::getSimulationStatus() {
+    return this->data->simulationStatus;
+}
+
+void Simulation::setSimulationStatus(int Status) {
+    this->data->simulationStatus = Status;
+}
+
 std::vector<Module*> Simulation::getModules() const{
     std::vector<Module*> ms;
 
