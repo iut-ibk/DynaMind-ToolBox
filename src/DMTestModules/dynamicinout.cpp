@@ -68,6 +68,9 @@ void DynamicInOut::addAttribute(std::string n) {
     //Get View
     this->attributeChanged = true;
     this->NewAttributes.push_back(n);
+
+    //Call the init function after changing adding new attributes
+    this->init();
 }
 
 
