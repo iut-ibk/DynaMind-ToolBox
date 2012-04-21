@@ -42,19 +42,29 @@ using namespace DM;
  */
 class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
 DM_DECLARE_GROUP(GroupTest)
+private:
+    int Runs;
+    int i;
+    std::vector<DM::View> InViews;
+    std::vector<DM::View> OutViews;
+
+    std::vector<std::string> nameOfInViews;
+    std::vector<std::string> nameOfOutViews;
 
     public:
         GroupTest();
         virtual ~GroupTest(){}
+
+        /** @brief The group is executed as long as step < Steps. Steps is set to Runs */
         void run();
+
+        /** @brief if init is called for every entry in nameOfInViews a Inport tuple is added, same for nameOfOutViews */
         void init();
-        std::vector<DM::View> InViews;
-        std::vector<DM::View> OutViews;
-        int Runs;
-        int i;
-        std::vector<std::string> nameOfInViews;
-        std::vector<std::string> nameOfOutViews;
+
+        /** @brief add new Inport tuple to the module The function calls the init function to add the port to the module*/
         void addInPort (std::string in);
+
+        /** @brief add new Outport tuple to the module. The function calls the init function to add the port to the module*/
         void addOutPort (std::string in);
 };
 

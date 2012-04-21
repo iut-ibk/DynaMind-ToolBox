@@ -42,13 +42,12 @@ GroupTest::GroupTest() {
 
 }
 
+
 void GroupTest::run() {
     this->Steps = Runs;
-
-
-
     Group::run();
 }
+
 
 void GroupTest::init() {
 
@@ -60,6 +59,7 @@ void GroupTest::init() {
 
 }
 
+
 void GroupTest::addInPort(std::string n) {
 
     if (n.empty())
@@ -70,6 +70,7 @@ void GroupTest::addInPort(std::string n) {
     nameOfInViews.push_back(n);
     this->init();
 }
+
 
 void GroupTest::addOutPort(std::string n) {
 
