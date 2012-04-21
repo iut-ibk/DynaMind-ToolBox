@@ -23,27 +23,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
-#include "testmodule.h"
-#include "inoutmodule.h"
-#include "inout2.h"
-#include "userdefineddata.h"
-#include "dynamicinout.h"
-#include "grouptest.h"
 
-/**
-  * @addtogroup TestModules
-  */
+#ifndef GROUPTEST_H
+#define GROUPTEST_H
 
-using namespace std;
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
-    registry->addNodeFactory(new NodeFactory<TestModule>());
-    registry->addNodeFactory(new NodeFactory<InOut>());
-    registry->addNodeFactory(new NodeFactory<InOut2>());
-    registry->addNodeFactory(new NodeFactory<UserdefinedData>());
-    registry->addNodeFactory(new NodeFactory<DynamicInOut>());
-    registry->addNodeFactory(new NodeFactory<GroupTest>());
+#include "dmcompilersettings.h"
+#include "dmgroup.h"
+#include "dm.h"
+#include "dmview.h"
+#include <iostream>
+#include <vector>
+using namespace DM;
 
-}
 
+/** @ingroup TestModules
+ * @brief Creates a group. To get data in the group add a dynamic inport, same for out
+ *
+ */
+class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
+DM_DECLARE_GROUP(GroupTest)
+
+    public:
+        GroupTest();
+        virtual ~GroupTest(){}
+        void run();
+        void init();
+        std::vector<DM::View> InViews;
+        std::vector<DM::View> OutViews;
+        int Runs;
+        int i;
+        std::vector<std::string> nameOfInViews;
+        std::vector<std::string> nameOfOutViews;
+        void addInPort (std::string in);
+        void addOutPort (std::string in);
+};
+
+
+#endif // GROUPTEST_H
