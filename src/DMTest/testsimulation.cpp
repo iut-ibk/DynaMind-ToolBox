@@ -107,9 +107,6 @@ void TestSimulation::linkedDynamicModules() {
     DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
     QVERIFY(dyinout != 0);
     dyinout->addAttribute("D");
-
-    //Run Simulation update to create outport and allow linking
-    //sim.startSimulation(true);
     DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
     QVERIFY(l1 != 0);
     DM::Module * inout2  = sim.addModule("InOut2");
@@ -143,8 +140,6 @@ void TestSimulation::linkedDynamicModulesOverGroups() {
     dyinout->setGroup(g);
     QVERIFY(dyinout != 0);
     dyinout->addAttribute("D");
-    //Run Simulation update to create outport and allow linking
-    //sim.startSimulation(true);
     DM::ModuleLink * l1 = sim.addLink(g->getInPortTuple("In")->getOutPort(), dyinout->getInPort("Inport"));
     QVERIFY(l1 != 0);
     DM::ModuleLink * l_out = sim.addLink(dyinout->getOutPort("Inport"), g->getOutPortTuple("Out")->getInPort());
