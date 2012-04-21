@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -97,11 +97,6 @@ Module * Simulation::addModule(std::string ModuleName) {
 
 }
 
-IDataBase * Simulation::getDataBase() {
-    return this->database;
-}
-
-
 Simulation::~Simulation() {
     Logger(Debug)  << "Remove Modules";
     delete this->rootGroup;
@@ -110,16 +105,6 @@ Simulation::~Simulation() {
     delete moduleRegistry;
 }
 
-Simulation::Simulation(std::string fileName, std::vector<std::string> pythonModules) {
-    this->setTerminationEnabled(true);
-    data = new SimulationPrivate();
-    //data->simObserver = 0;
-    data->workingDirectory = QFileInfo(QString::fromStdString(fileName)).absolutePath().toStdString();
-    data->pythonModules = pythonModules;
-    data->filename = fileName;
-
-
-}
 void Simulation::reloadModules() {
     //Init Python
     QSettings settings("IUT", "DYNAMIND");
@@ -134,7 +119,7 @@ void Simulation::reloadModules() {
     QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
     QStringList list = text.replace("\\","/").split(",");
-    //settings.endGroup();
+
     foreach (QString s, list){
         DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
         pythonDir = QDir(s);
@@ -299,10 +284,6 @@ bool Simulation::startSimulation(bool virtualRun) {
     return true;
 
 }
-void Simulation::registerDataBase(IDataBase * database) {
-    this->database = database;
-}
-
 
 void Simulation::removeModule(std::string UUid) {
     for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) {
@@ -468,7 +449,7 @@ Module * Simulation::resetModule(std::string UUID) {
 
     new_m->copyParameterFromOtherModule(m);
 
-    //Need to call the oinit function from the module after the parameters are copied to create the ports
+    //Need to call the init function from the module after the parameters are copied to create the ports
     new_m->init();
 
 
@@ -529,8 +510,6 @@ Module * Simulation::resetModule(std::string UUID) {
 
     }
 
-
-    //std::replace(Modules.begin(), Modules.end(), m, new_m);
     delete m;
     Modules[new_m->getUuid()] = new_m;
     return new_m;
