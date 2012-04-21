@@ -454,45 +454,6 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     return UUIDTranslator;
 
 }
-/*bool Simulation::checkConnections() const {
-    Logger(Debug) << "Check Connections ";
-    foreach(Module * m, this->getModules()) {
-        std::vector<Port *> ports   = m->getInPorts();
-        foreach(Port * p, ports) {
-            if (p->getLinks().size() < 1) {
-                Logger(Error) << m->getUuid() << " " << m->getName() << "Module Not fully Connected";
-                return false;
-            }
-        }
-        //Check Double Ports
-
-        if (m->isGroup()) {
-            Group * g = (Group *) m;
-            std::vector<PortTuple*>  pts = g->getInPortTuples();
-
-            foreach (PortTuple * pt, pts) {
-                Port * p = pt->getInPort();
-                if (p->getLinks().size() < 1) {
-                    Logger(Error) << m->getUuid() << " " << m->getName() << "Module Not fully Connected";
-                    return false;
-                }
-            }
-            pts = g->getOutPortTuples();
-            foreach (PortTuple * pt, pts) {
-                Port * p = pt->getInPort();
-                if (p->getLinks().size() < 1) {
-                    Logger(Error) << m->getUuid() << " " << m->getName() << "Module Not fully Connected";
-
-                    return false;
-                }
-            }
-        }
-
-
-    }
-    Logger(Debug) << "Check Connections finished";
-    return true;
-}*/
 
 Module * Simulation::resetModule(std::string UUID) {
     Logger(Debug) << "Reset Module " << UUID;

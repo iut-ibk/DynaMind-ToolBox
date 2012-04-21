@@ -92,7 +92,6 @@ namespace DM {
         std::vector<ModuleLink*> getLinks();
         Module * resetModule(std::string UUID);
         void resetModules();
-        //bool checkConnections() const;
         void reloadModules();
         std::vector<Module*> getModulesFromType(std::string name);
         void deregisterModule(std::string UUID);
