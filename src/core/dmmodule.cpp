@@ -60,7 +60,7 @@ void Module::addPortObserver(PortObserver *portobserver) {
 }
 void Module::resetParameter() {
     Logger(Debug) << "Reset Parameter";
-    this->internalCounter = 0;    
+    this->internalCounter = 0;
     foreach (DM::System * sys, ownedSystems)
         delete sys;
     ownedSystems.clear();
@@ -200,9 +200,26 @@ void Module::updateParameter() {
             }
         }
     }
+    this->checkIfAllSystemsAreSet();
 }
 
+bool Module::checkIfAllSystemsAreSet() {
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
+        if (it->second != DM::SYSTEM) {
+            continue;
+        }
 
+        std::string name = it->first;
+        if (this->data_vals[name] == 0) {
+            Logger(Error) << name << " " << "Not Set!";
+            this->simulation->setSimulationStatus(SIM_ERROR_SYSTEM_NOT_SET);
+            return false;
+        }
+
+    }
+
+    return true;
+}
 
 void Module::setParameterValue(std::string name, std::string v) {
     //Check if parameter exists
@@ -333,7 +350,10 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
         return;
     }
     this->data_vals[name]= 0;
-    this->parameterList.push_back(name);
+
+    //Only add to parameterList if not already in vector
+    if (find(parameterList.begin(), parameterList.end(), name) == parameterList.end())
+        this->parameterList.push_back(name);
     this->views[name] = views;
     this->parameter[name] = DM::SYSTEM;
 
@@ -544,7 +564,7 @@ DM::System* Module::getSystemState(const std::string &name)
 }
 
 
-DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {    
+DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {
     DM::System * sys = new DM::System(name);
     if (sys == 0)
         return sys;
@@ -586,7 +606,7 @@ void Module::copyParameterFromOtherModule(Module * m) {
     std::string name_origin = m->getClassName();
     std::string name_this = this->getClassName();
     if (name_origin.compare(name_this) == 0) {
-       std::map<std::string, int> parameterList = m->getParameterList();
+        std::map<std::string, int> parameterList = m->getParameterList();
 
         for ( std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
             if (it->second < DM::USER_DEFINED_INPUT) {

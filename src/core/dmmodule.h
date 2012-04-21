@@ -221,6 +221,7 @@ public:
       * - AccessType Modify: In and Outport
       *
       * The name of the port is defined by the name of the View. If a port already exists no new port is added.
+      * Existing definitions are overwritten.
       */
     void addData(std::string name, std::vector<DM::View> view);
 
@@ -245,20 +246,20 @@ public:
     /** @brief Returns all outports */
     std::vector<Port*> getOutPorts();
 
-    /** @bief Retruns a list of parameters used in the module*/
+    /** @brief Retruns a list of parameters used in the module*/
     std::vector<std::string> getParameterListAsVector()  {return this->parameterList;}
 
-    /** @bief Returns a map of parameters <name, type>*/
+    /** @brief Returns a map of parameters <name, type>*/
     std::map<std::string, int> getParameterList()  {return this->parameter;}
 
-    /** @bief return native parameter*/
+    /** @brief return native parameter*/
     template<class T>
     T getParameter(std::string name)   {
         T  * val = (T  *)parameter_vals[name];
         return *val;
     }
 
-    /** @bief set native parameter*/
+    /** @brief set native parameter*/
     template<class T>
     void setParameterNative(std::string name, T val)  {
         T * ref =(T * ) parameter_vals[name];
@@ -293,6 +294,11 @@ public:
       *
       */
     virtual void updateParameter();
+
+    /** @brief check if all systems are set
+     * The run method is only executed when all systems are set.
+     */
+    virtual bool checkIfAllSystemsAreSet();
 
     /** @brief called after the module is executed */
     virtual void postRun();
