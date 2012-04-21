@@ -18,11 +18,9 @@ InOut2::InOut2() {
     inlets.addAttribute("F");
     conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
     conduits.addAttribute("F");
-    //streets = DM::View("STREET", DM::EDGE,  DM::READ);
 
     views.push_back(inlets);
     views.push_back(conduits);
-    //views.push_back(streets);
 
     this->addData("Inport", views);
     a = 0;

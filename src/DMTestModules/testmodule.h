@@ -33,21 +33,41 @@
 #include "dmmodule.h"
 #include "dm.h"
 using namespace DM;
+
+/** @ingroup TestModules
+ * @brief The Module creates an inital data set that a simulation can use for testing
+ *
+ * Data Set:
+ * - Sewer:
+ *      - Inlets|NODE: A, B
+ *      - Conduits|EDGE
+ *      - SomeRandomInformation|EDGE
+ * - RasterData:
+ *      - RasterData|RASTERDATA
+ *
+ */
+
 class DM_HELPER_DLL_EXPORT TestModule : public  Module {
 
-DM_DECLARE_NODE(TestModule)
-private:
-    double value;
+    DM_DECLARE_NODE(TestModule)
+    private:
+        double value;
     DM::View inlets;
     DM::View conduits;
     DM::View SomeRandomInformation;
     DM::View rdata;
-    public:
-        DM::System * outputData;
-        DM::RasterData * outputRasterData;
-        TestModule();
-        void run();
-        virtual ~TestModule();
+
+    DM::System * outputData;
+    DM::RasterData * outputRasterData;
+public:
+    TestModule();
+    /** @brief create initial data set
+         *
+         * The model adds 2 nodes to inlets at (0,0,0) and (0,0,1) and an edge to
+         * Conduits and SomeRandomInformation and a RasterData field(200,200,20) with the cell value 15
+         */
+    void run();
+    virtual ~TestModule();
 };
 
 #endif // TESTMODULE_H

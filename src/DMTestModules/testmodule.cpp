@@ -35,6 +35,8 @@
 #include <dmnode.h>
 #include <dmview.h>
 
+
+
 DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
@@ -42,12 +44,8 @@ TestModule::TestModule() {
     inlets.addAttribute("A");
     inlets.addAttribute("B");
     conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
-
-
-
     SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
-
-     rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
+    rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
 
     std::vector<DM::View> views;
 
@@ -63,7 +61,7 @@ TestModule::TestModule() {
 
 
 
-    this->addParameter("Value", DM::DOUBLE, &value);
+    this->addParameter("DoubleValue", DM::DOUBLE, &value);
 
 
     this->addData("Sewer",views);

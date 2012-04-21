@@ -3,10 +3,8 @@
 #include <dmsystem.h>
 #include <dmnode.h>
 
-
 DM_DECLARE_NODE_NAME( InOut,Modules )
 InOut::InOut() {
-
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
     inlets = DM::View("Inlets",DM::NODE, DM::MODIFY);
@@ -25,15 +23,9 @@ InOut::InOut() {
     this->addParameter("a",DM::DOUBLE, &a);
     a = 5;
 
-
-
-
 }
 
-
-
 void InOut::run() {
-
     int test = a;
     Logger(Debug) << "Run InOut";
     Logger(Debug) << this->getParameterAsString("a");
@@ -54,12 +46,8 @@ void InOut::run() {
     sys_in->addEdge(n1, n2, conduits);
 
     Logger(Debug) <<  "Number of stuff "<< sys_in->getAllEdges().size();
-
-
 }
 
 InOut::~InOut() {
     Logger(Debug) << "Destructor InOut";
 }
-
-
