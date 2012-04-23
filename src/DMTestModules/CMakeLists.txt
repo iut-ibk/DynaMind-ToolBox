@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(dynamind-testmodules SHARED ${MODULE_CPPS})
 
-target_link_libraries (dynamind-testmodules ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
+target_link_libraries (dynamind-testmodules dynamindcore ${QT_LIBRARIES})
 
 INSTALL(TARGETS dynamind-testmodules
         DESTINATION "lib"
