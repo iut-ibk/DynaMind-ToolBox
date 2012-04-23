@@ -27,7 +27,7 @@
 #ifndef TESTMODULES_H
 #define TESTMODULES_H
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <dmsimulation.h>
 #include <dmmodule.h>
 
