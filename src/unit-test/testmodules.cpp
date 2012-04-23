@@ -25,10 +25,9 @@
  */
 
 #include <ostream>
-#include <dmmodule.h>
-#include <dmsimulation.h>
+#include <testmodules.h>
 #include <dmlog.h>
-#include "testmodules.h"
+#include <dmlogger.h>
 
 void TestModules::SetUp()
 {

@@ -1,3 +1,4 @@
+
 SET(gtest_force_shared_crt "ON" CACHE BOOL "")
 ADD_SUBDIRECTORY(gtest-1.6.0)
 MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")

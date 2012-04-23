@@ -28,6 +28,8 @@
 #define TESTMODULES_H
 
 #include "gtest/gtest.h"
+#include <dmsimulation.h>
+#include <dmmodule.h>
 
 namespace {
     class TestModules : public ::testing::Test
