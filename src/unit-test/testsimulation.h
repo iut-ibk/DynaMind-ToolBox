@@ -29,33 +29,22 @@
 #ifndef TESTSIMULATION_H
 #define TESTSIMULATION_H
 
-#include <QObject>
-class TestSimulation : public QObject
-{
-    Q_OBJECT
+#include <gtest/gtest.h>
+#include <dmsimulation.h>
+#include <dmmodule.h>
 
+namespace {
+    class TestSimulation : public ::testing::Test
+    {
 
-private slots:
-    /** @brief Test adding Module */
-    void addModuleToSimulationTest();
-    /** @brief Test if the a native module is loaded correctly */
-    void loadModuleNativeTest();
-    /** @brief Test repeated Simulation execution Module */
-    void repeatedRunTest();
-    /** @brief Test Linked Modules Module */
-    void linkedModulesTest();
-    /** @brief Test DynamicModuleLinkage
-     *
-     * Model setup TestModule - InOut - DynamicInOut - InOut2
-     */
-    void linkedDynamicModules();
+    };
 
-    /** @brief Test DynamicModuleLinkage
-     *
-     * Model setup TestModule - InOut - |DynamicInOut| - InOut2
-     */
-    void linkedDynamicModulesOverGroups();
-
-};
+    /*TEST_F(TestSimulation,addModuleToSimulationTest);
+    TEST_F(TestSimulation,loadModuleNativeTest);
+    TEST_F(TestSimulation,repeatedRunTest);
+    TEST_F(TestSimulation,linkedModulesTest);
+    TEST_F(TestSimulation,linkedDynamicModules);
+    TEST_F(TestSimulation,linkedDynamicModulesOverGroups);*/
+}
 
 #endif // TESTSIMULATION_H

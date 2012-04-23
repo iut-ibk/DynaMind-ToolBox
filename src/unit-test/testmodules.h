@@ -43,14 +43,5 @@ namespace {
             virtual void SetUp();
             virtual void TearDown();
     };
-
-    TEST_F(TestModules,setParameterInModule)
-    {
-        DM::Module * m = sim->addModule("TestModule");
-        EXPECT_TRUE(m!=0);
-        m->setParameterValue("DoubleValue", "0.1");
-        double val = m->getParameter<double>("DoubleValue");
-        EXPECT_EQ(0.1,val);
-    }
 }
 #endif // TESTMODULES_H

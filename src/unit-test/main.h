@@ -26,6 +26,7 @@
 
 #include <gtest/gtest.h>
 #include <testmodules.h>
+#include <testsimulation.h>
 
 namespace {
 
