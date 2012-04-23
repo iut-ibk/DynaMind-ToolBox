@@ -1,5 +1,8 @@
 ENABLE_TESTING()
+SET(gtest_force_shared_crt ON)
 ADD_SUBDIRECTORY(gtest-1.6.0)
+MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB UNIT_CPP *.cpp)
 ADD_EXECUTABLE(unit-test ${UNIT_CPP})
