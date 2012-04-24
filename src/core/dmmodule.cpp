@@ -48,6 +48,7 @@
 #include <dmsystem.h>
 #include <dmdatavalidation.h>
 #include <dmrasterdata.h>
+#include <algorithm>
 
 using namespace std;
 namespace DM {
