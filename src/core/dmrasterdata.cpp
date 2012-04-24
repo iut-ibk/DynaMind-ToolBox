@@ -30,9 +30,6 @@
 #include <QMutex>
 #include <dmlogger.h>
 
-namespace   ublas = boost::numeric::ublas;
-
-using namespace boost;
 using namespace DM;
 
 
@@ -162,7 +159,7 @@ void RasterData::getNeighboorhood(double** d, int width, int height, int x, int 
         k++;
     }
 }
-void RasterData::getMoorNeighbourhood(ublas::vector<double> &neigh, long x, long y) {
+void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y) {
     int counter = 0;
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
@@ -223,8 +220,8 @@ void RasterData::getMoorNeighbourhood(ublas::vector<double> &neigh, long x, long
     }
 
 }
-ublas::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
-    ublas::vector<double> neigh(9);
+std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
+    std::vector<double> neigh(9);
     int counter = 0;
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {

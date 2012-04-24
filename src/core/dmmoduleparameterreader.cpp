@@ -89,6 +89,6 @@ bool ModuleParameterReader::characters(const QString & ch) {
 
 typedef std::pair<std::string, std::string> mpair;
 
-boost::unordered_map<std::string, std::string> ModuleParameterReader::getParameters() const {
+std::map<std::string, std::string> ModuleParameterReader::getParameters() const {
     return parameters;
 }

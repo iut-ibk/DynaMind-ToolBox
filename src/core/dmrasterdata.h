@@ -27,8 +27,6 @@
 #define DMRASTERDATA_H
 
 #include "dmcompilersettings.h"
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
 #include <dmcomponent.h>
 
 
@@ -54,11 +52,11 @@ public:
     double getMinValue() const {return minValue;}
     double getMaxValue() const {return maxValue;}
     double getSum() const;
-    boost::numeric::ublas::vector<double> getMoorNeighbourhood(long x, long y) const;
+    std::vector<double> getMoorNeighbourhood(long x, long y) const;
     void setSize(long width, long height, double cellsize);
     void getNeighboorhood(double** d, int width, int height, int x, int y);
 
-    void getMoorNeighbourhood(boost::numeric::ublas::vector<double> & neigh, long x, long y);
+    void getMoorNeighbourhood(std::vector<double> & neigh, long x, long y);
     void setDebugValue(int val){debugValue = val;}
     int getDebugValue() {return debugValue;}
 

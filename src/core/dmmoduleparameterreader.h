@@ -30,9 +30,6 @@
 #include <QXmlDefaultHandler>
 #include <map>
 #include <string>
-#include <boost/unordered_map.hpp>
-
-//using namespace boost;
 
 class DM_HELPER_DLL_EXPORT ModuleParameterReader : public QXmlDefaultHandler
 {
@@ -49,9 +46,9 @@ public:
                     const QString & qName);
 
     bool characters(const QString & ch);
-    boost::unordered_map<std::string, std::string> getParameters() const;
+    std::map<std::string, std::string> getParameters() const;
 private:
-    boost::unordered_map<std::string, std::string> parameters;
+    std::map<std::string, std::string> parameters;
     std::string value;
     std::string name;
     std::string workingDir;

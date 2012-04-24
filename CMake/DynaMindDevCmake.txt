@@ -49,7 +49,6 @@ ENDIF()
 
 FUNCTION(DYNAMIND_3RDPARTY_INSTALL_LIBS DIRNAME)
     IF(WIN32 AND NOT LINUX)
-        FIND_PACKAGE(Boost 1.38.0 COMPONENTS program_options date_time REQUIRED)
         FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
         FILE(GLOB DLLS  ${QT_BINARY_DIR}/QtCore4.dll
                         ${QT_BINARY_DIR}/QtGui4.dll
@@ -60,13 +59,7 @@ FUNCTION(DYNAMIND_3RDPARTY_INSTALL_LIBS DIRNAME)
                         ${QT_BINARY_DIR}/phonon4.dll
                         ${QT_BINARY_DIR}/QtOpenGL4.dll
                         ${QT_BINARY_DIR}/QtSVG4.dll
-                        ${QT_BINARY_DIR}/QtSql4.dll
-                        ${Boost_LIBRARY_DIRS}/boost_python-*-mt-1_*.dll
-                        ${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
-                        ${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
-                        ${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
-                        ${Boost_LIBRARY_DIRS}/boost_filesystem-*-mt-1_*.dll
-                        ${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll)
+                        ${QT_BINARY_DIR}/QtSql4.dll)
 
         INSTALL(FILES ${DLLS} DESTINATION ${DIRNAME})
         INSTALL(FILES ${QT_BINARY_DIR}/../plugins/sqldrivers/qsqlmysql4.dll DESTINATION ${DIRNAME}/plugins/sqldrivers)
