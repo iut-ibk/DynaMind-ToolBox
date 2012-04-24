@@ -53,7 +53,6 @@ bool ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
     bool loaded = l.load();
     if (!loaded) {
         std::cout << "Error: Module " << plugin_path << " not loaded" << std::endl;
-        assert(loaded);
         return false;
 
     }

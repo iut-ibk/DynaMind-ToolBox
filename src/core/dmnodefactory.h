@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich and Michael Mair
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +27,8 @@
 #ifndef DMNODEFACTORY_H
 #define DMNODEFACTORY_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
 #include "dmcompilersettings.h"
+#include <string>
 
 namespace DM {
 
