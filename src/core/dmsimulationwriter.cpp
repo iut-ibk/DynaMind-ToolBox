@@ -29,14 +29,11 @@
 #include <vector>
 #include <QFile>
 #include <QTextStream>
-#include <boost/foreach.hpp>
-#include <boost/unordered_map.hpp>
 #include <dmport.h>
 #include <dmmodulelink.h>
 #include <dmgroup.h>
 #include <dmporttuple.h>
 #include <sstream>
-using namespace boost;
 
 namespace DM {
     SimulaitonWriter::SimulaitonWriter()
@@ -44,7 +41,7 @@ namespace DM {
     }
     std::string   SimulaitonWriter::writeLink(Port * p) {
         std::stringstream out;
-        BOOST_FOREACH(ModuleLink *l, p->getLinks()) {
+        foreach(ModuleLink *l, p->getLinks()) {
             out << "\t\t" << "<Link>" << "\n";
             out << "\t\t\t" << "<BackLink value = \"";
             out << l->isBackLink();
@@ -93,7 +90,7 @@ namespace DM {
                 << QString::fromStdString(sim->getRootGroup()->getUuid()) << "\"/>" << "\n";
         out  << "\t" << "\t"<<"</RootNode>" << "\n";
          Logger(Debug) << "Number of Modules " << modules.size();
-        BOOST_FOREACH(Module * m, modules) {
+        foreach(Module * m, modules) {
             Logger(Debug) << m->getClassName() << m->getUuid();
             out  << "\t" << "\t"<<"<Node>" << "\n";
 
@@ -133,16 +130,16 @@ namespace DM {
         out << "\t" << "<Links>" << "\n";
 
 
-        BOOST_FOREACH(Module * m, modules) {
-            BOOST_FOREACH(Port * p, m->getOutPorts()) {
+        foreach(Module * m, modules) {
+            foreach(Port * p, m->getOutPorts()) {
                 out << QString::fromStdString(SimulaitonWriter::writeLink(p));
             }
             if (m->isGroup()) {
                 Group * g = (Group * ) m;
-                BOOST_FOREACH(PortTuple * pt, g->getInPortTuples()) {
+                foreach(PortTuple * pt, g->getInPortTuples()) {
                   out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
                 }
-                BOOST_FOREACH(PortTuple * pt, g->getOutPortTuples()) {
+                foreach(PortTuple * pt, g->getOutPortTuples()) {
                   out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
                 }
             }

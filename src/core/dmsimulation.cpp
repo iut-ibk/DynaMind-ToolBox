@@ -26,7 +26,6 @@
 #include <QString>
 #include <QFileInfo>
 
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -242,7 +241,7 @@ std::vector<Group*> Simulation::getGroups() {
 
     std::vector<Group*> groups;
 
-    BOOST_FOREACH(Module * m, this->getModules()) {
+    foreach(Module * m, this->getModules()) {
         if (m->isGroup())
             groups.push_back((Group * ) m);
     }
@@ -314,7 +313,7 @@ void Simulation::writeSimulation(std::string filename) {
     SimulaitonWriter::writeSimulation(filename, this);
 }
 Module * Simulation::getModuleByName(std::string name) {
-    BOOST_FOREACH (Module * m, this->getModules()) {
+    foreach(Module * m, this->getModules()) {
         if (name.compare(m->getName()) == 0)
             return m;
     }
@@ -322,7 +321,7 @@ Module * Simulation::getModuleByName(std::string name) {
 }
 
 Module * Simulation::getModuleWithUUID(std::string UUID) {
-    BOOST_FOREACH (Module * m, this->getModules()){
+    foreach(Module * m, this->getModules()){
         if (UUID.compare(m->getUuid()) == 0)
             return m;
     }
@@ -330,7 +329,7 @@ Module * Simulation::getModuleWithUUID(std::string UUID) {
 }
 std::vector<Module * > Simulation::getModulesFromType(std::string name) {
     std::vector<Module * > ress;
-    foreach (Module * m, this->getModules()) {
+    foreach(Module * m, this->getModules()) {
         std::string n(m->getClassName());
         if (n.compare(name) == 0)
             ress.push_back(m);

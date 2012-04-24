@@ -30,7 +30,6 @@
 #include "dmcompilersettings.h"
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include <QThread>
 #include <dmrootgroup.h>
 

@@ -387,9 +387,6 @@ public:
     virtual bool createInputDialog(){return false;}
 
 private:
-
-
-    //boost::python::object self;
     bool PythonModule;
     long id;
     void convertValus( void *value, int Type, QString val);

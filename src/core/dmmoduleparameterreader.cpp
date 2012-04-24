@@ -26,7 +26,6 @@
 #include "dmmoduleparameterreader.h"
 #include <QXmlSimpleReader>
 #include <iostream>
-#include <boost/foreach.hpp>
 #include <sstream>
 
 ModuleParameterReader::ModuleParameterReader(QString fileName, QString workingDir) {

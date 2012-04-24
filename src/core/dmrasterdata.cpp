@@ -26,7 +26,6 @@
 #include <dmcomponent.h>
 #include "dmrasterdata.h"
 #include <QPointF>
-#include <boost/foreach.hpp>
 #include <time.h>
 #include <QMutex>
 #include <dmlogger.h>

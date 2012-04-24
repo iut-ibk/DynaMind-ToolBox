@@ -29,7 +29,6 @@
 #include <iostream>
 #include "dmnodefactory.h"
 #include <QLibrary>
-#include <boost/foreach.hpp>
 #include <dmmodule.h>
 using namespace std;
 namespace DM {
@@ -75,7 +74,7 @@ typedef std::pair<std::string, INodeFactory *> snf;
 std::list<std::string> ModuleRegistry::getRegisteredModules() const {
     std::list<std::string> names;
 
-    BOOST_FOREACH(snf item, registry) {
+    foreach(snf item, registry) {
         names.push_back(item.first);
     }
 

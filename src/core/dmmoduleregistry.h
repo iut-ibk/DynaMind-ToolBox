@@ -31,9 +31,7 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <boost/unordered_map.hpp>
 
-//using namespace boost;
 namespace DM {
     class INodeFactory;
     class Module;

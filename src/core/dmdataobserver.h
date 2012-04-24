@@ -25,16 +25,14 @@
  */
 #ifndef DMDATAOBSERVER_H
 #define DMDATAOBSERVER_H
+
 #include "dmcompilersettings.h"
-#include <boost/shared_ptr.hpp>
 #include <string>
-//#include "dmmodule.h"
 #include <dmrasterdata.h>
 
 namespace DM {
 class Module;
 
-//using namespace boost;
 using namespace std;
 
 /**

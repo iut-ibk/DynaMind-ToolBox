@@ -26,8 +26,7 @@
 #include "dmport.h"
 #include <dmmodulelink.h>
 #include <dmmodule.h>
-#include <boost/foreach.hpp>
-using namespace boost;
+
 namespace DM {
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
