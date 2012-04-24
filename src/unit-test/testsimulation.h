@@ -38,13 +38,6 @@ namespace {
     {
 
     };
-
-    /*TEST_F(TestSimulation,addModuleToSimulationTest);
-    TEST_F(TestSimulation,loadModuleNativeTest);
-    TEST_F(TestSimulation,repeatedRunTest);
-    TEST_F(TestSimulation,linkedModulesTest);
-    TEST_F(TestSimulation,linkedDynamicModules);
-    TEST_F(TestSimulation,linkedDynamicModulesOverGroups);*/
 }
 
 #endif // TESTSIMULATION_H

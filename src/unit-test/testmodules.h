@@ -38,7 +38,10 @@ namespace {
         DM::Simulation *sim;
 
     protected:
-            TestModules() {}
+            TestModules()
+            {
+                sim = 0;
+            }
             virtual ~TestModules(){}
             virtual void SetUp();
             virtual void TearDown();

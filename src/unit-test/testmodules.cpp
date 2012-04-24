@@ -45,6 +45,7 @@ void TestModules::TearDown()
 
 TEST_F(TestModules,setParameterInModule)
 {
+    ASSERT_TRUE(sim!=0);
     DM::Module * m = sim->addModule("TestModule");
     ASSERT_TRUE(m!=0);
     m->setParameterValue("DoubleValue", "0.1");

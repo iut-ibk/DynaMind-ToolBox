@@ -48,7 +48,7 @@ public:
         void addPythonPath(std::string path);
         std::string registerNodes(ModuleRegistry *registry,
                                   const std::string &module);
-        void addOverWriteStdCout();
+        bool addOverWriteStdCout();
         void startEditra(std::string filename = "");
 private:
         PythonEnv();

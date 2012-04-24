@@ -31,10 +31,7 @@
 #include <dmmoduleregistry.h>
 //#include "pythondmnodefactory.h"
 //#include <pydmmodule.h>
-#include <boost/format.hpp>
-#include <boost/foreach.hpp>
 #include <QDir>
-//#include <boost/python.hpp>
 #include <string>
 #include <dmlog.h>
 #include <dmlogger.h>
@@ -47,8 +44,6 @@
 extern "C" {
 void init_pydynamind(void);
 }
-
-//using namespace boost::python;
 
 void init() {
     DM::OStreamLogSink *sink = new DM::OStreamLogSink(cout);
@@ -116,7 +111,7 @@ PythonEnv *PythonEnv::getInstance() {
     return instance;
 }
 
-void PythonEnv::addOverWriteStdCout() {
+bool PythonEnv::addOverWriteStdCout() {
     QProcessEnvironment envvars =  QProcessEnvironment::systemEnvironment();
 
     if(envvars.contains("DYNAMIND_PYTHON"))
@@ -130,51 +125,57 @@ void PythonEnv::addOverWriteStdCout() {
     addPythonPath("/usr/local/lib");
     addPythonPath("/usr/lib");
 
-    boost::format fmt("import sys\n"
-                      "import pydynamind\n"
-                      "class Logger:\n"
-                      "    def __init__(self, stdout,error):\n"
-                      "        self.stdout = stdout\n"
-                      "        self.error=error\n"
-                      "        self.currentstring=\"\"\n"
-                      "\n"
-                      "    def write(self, text):\n"
-                      "        self.stdout.write(text)\n"
-                      "        self.currentstring = self.currentstring + \" \" + text\n"
-                      "\n"
-                      "        if text.rfind(\"\\n\") == -1:\n"
-                      "                return\n"
-                      "\n"
-                      "        self.currentstring=self.currentstring.replace(\"\\n\",\"\")\n"
-                      "        self.currentstring=self.currentstring.replace(\"\\r\",\"\")\n"
-                      "        if self.error:\n"
-                      "                pydynamind.log(self.currentstring,pydynamind.Error)\n"
-                      "        else:\n"
-                      "                pydynamind.log(self.currentstring,pydynamind.Standard)\n"
-                      "        self.currentstring=\"\"\n"
-                      "\n"
-                      "    def close(self):\n"
-                      "        self.stdout.close()\n"
-                      "\n"
-                      "if not isinstance(sys.stdout,Logger):\n"
-                      "        sys.stdout=Logger(sys.stdout,False)\n"
-                      "        sys.stderr=Logger(sys.stderr,True)\n"
-                      "print \"Redirect python stdout and stderr\"\n");
+    ostringstream script;
+
+    script << "import sys\n";
+    script << "import pydynamind\n";
+    script << "class Logger:\n";
+    script << "    def __init__(self, stdout,error):\n";
+    script << "        self.stdout = stdout\n";
+    script << "        self.error=error\n";
+    script << "        self.currentstring=\"\"\n";
+    script << "\n";
+    script << "    def write(self, text):\n";
+    script << "        self.stdout.write(text)\n";
+    script << "        self.currentstring = self.currentstring + \" \" + text\n";
+    script << "\n";
+    script << "        if text.rfind(\"\\n\") == -1:\n";
+    script << "                return\n";
+    script << "\n";
+    script << "        self.currentstring=self.currentstring.replace(\"\\n\",\"\")\n";
+    script << "        self.currentstring=self.currentstring.replace(\"\\r\",\"\")\n";
+    script << "        if self.error:\n";
+    script << "                pydynamind.log(self.currentstring,pydynamind.Error)\n";
+    script << "        else:\n";
+    script << "                pydynamind.log(self.currentstring,pydynamind.Standard)\n";
+    script << "        self.currentstring=\"\"\n";
+    script << "\n";
+    script << "    def close(self):\n";
+    script << "        self.stdout.close()\n";
+    script << "\n";
+    script << "if not isinstance(sys.stdout,Logger):\n";
+    script << "        sys.stdout=Logger(sys.stdout,False)\n";
+    script << "        sys.stderr=Logger(sys.stderr,True)\n";
+    script << "print \"Redirect python stdout and stderr\"\n";
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    PyRun_String(fmt.str().c_str(), Py_file_input, priv->main_namespace, 0);
+    PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
         PyErr_Print();
-        return;
+        return false;
     }
+
+    return true;
 }
 
 void PythonEnv::addPythonPath(std::string path) {
-    boost::format fmt("import sys\n"
-                      "sys.path.append('%1%')\n");
-    fmt % path;
+    ostringstream script;
+
+    script << "import sys\n";
+    script << "sys.path.append('" << path << "')\n";
+
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    PyRun_String(fmt.str().c_str(), Py_file_input, priv->main_namespace, 0);
+    PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
         PyErr_Print();
         return;
@@ -188,17 +189,17 @@ void PythonEnv::startEditra(std::string filename) {
         PathtoEditra.remove(PathtoEditra.size()-1,1);
     }
 
-    ostringstream skript;
-    skript << "import sys\n";
-    skript << "import os\n";
-    skript << "\n";
-    skript << "sys.path.append('" << PathtoEditra.toStdString() << "')\n";
-    skript << "import site\n";
-    skript << "sys.argv = [\"\",\"" << filename << "\"]\n";
-    skript << "import src.Editra\n";
-    skript << "src.Editra.Main()\n";
+    ostringstream script;
+    script << "import sys\n";
+    script << "import os\n";
+    script << "\n";
+    script << "sys.path.append('" << PathtoEditra.toStdString() << "')\n";
+    script << "import site\n";
+    script << "sys.argv = [\"\",\"" << filename << "\"]\n";
+    script << "import src.Editra\n";
+    script << "src.Editra.Main()\n";
 
-    PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
+    PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred()) {
         PyErr_Print();
         return;
@@ -231,29 +232,29 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
         }
     }
 
-    ostringstream skript;
-    skript << "import reimport\n";
-    skript << "import sys\n";
-    skript << "import os\n";
-    skript << "import pydynamind\n";
-    skript << "import site\n";
-    skript << "import inspect\n";
-    skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
-    skript << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
-    skript << "os.environ['PYTHONPATH']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
-    skript << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+    ostringstream script;
+    script << "import reimport\n";
+    script << "import sys\n";
+    script << "import os\n";
+    script << "import pydynamind\n";
+    script << "import site\n";
+    script << "import inspect\n";
+    script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
+    script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
+    script << "os.environ['PYTHONPATH']  = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+    script << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
 
     std::string f = QDir::currentPath().toStdString();
-    skript << "site.addsitedir(\""<< QDir::currentPath().toStdString() << "\") \n";
+    script << "site.addsitedir(\""<< QDir::currentPath().toStdString() << "\") \n";
     if (exists){
-        skript << "reimport.reimport(*reimport.modified())\n";
+        script << "reimport.reimport(*reimport.modified())\n";
     }
     else
     {
-        skript << "__import__('" << module << "')\n";
+        script << "__import__('" << module << "')\n";
     }
 
-    PyRun_String(skript.str().c_str(), Py_file_input, priv->main_namespace, 0);
+    PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
     if (PyErr_Occurred())
     {
         PyErr_Print();
