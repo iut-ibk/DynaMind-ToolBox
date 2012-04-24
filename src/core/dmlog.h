@@ -26,7 +26,6 @@
 #ifndef DMLOG_H
 #define DMLOG_H
 
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <string>
 #include "dmcompilersettings.h"

@@ -39,8 +39,7 @@
 #include <dmrootgroup.h>
 #include <QThreadPool>
 #include <algorithm>
-
-using namespace boost;
+#include <sstream>
 
 namespace DM {
 Group::Group()

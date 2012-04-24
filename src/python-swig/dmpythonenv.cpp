@@ -40,6 +40,7 @@
 #include <algorithm>
 #include <QProcessEnvironment>
 #include <swigruntime.h>
+#include <sstream>
 
 extern "C" {
 void init_pydynamind(void);

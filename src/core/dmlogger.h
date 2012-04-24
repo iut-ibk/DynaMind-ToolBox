@@ -31,7 +31,6 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-//using namespace boost;
 using namespace std;
 
 class QString;
