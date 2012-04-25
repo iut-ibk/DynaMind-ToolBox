@@ -41,7 +41,6 @@ ENDIF()
 SET(LIBRARY_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 
-
 ADD_SUBDIRECTORY(src/libdynamind-gui)
 ADD_SUBDIRECTORY(src/dynamind-gui)
 
