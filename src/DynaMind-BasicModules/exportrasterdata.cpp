@@ -1,5 +1,6 @@
 #include "exportrasterdata.h"
 #include "guiexportrasterdata.h"
+#include <sstream>
 #include <fstream>
 
 DM_DECLARE_NODE_NAME(ExportRasterData, Modules)
