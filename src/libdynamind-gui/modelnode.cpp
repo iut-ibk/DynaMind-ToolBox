@@ -49,7 +49,7 @@
 #include <guisimulation.h>
 #include <dmcomponent.h>
 #include <dmsystem.h>
-
+#include <sstream>
 using namespace boost;
 std::string ModelNode::getParameterAsString(std::string name) {
 

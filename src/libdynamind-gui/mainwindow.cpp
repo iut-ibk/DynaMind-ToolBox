@@ -38,7 +38,7 @@
 #include "QFileDialog"
 #include "QSettings"
 #include "modulereader.h"
-
+#include <sstream>
 #include "simulationio.h"
 #include "guilink.h"
 #include "StdRedirector.h"
