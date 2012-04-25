@@ -209,6 +209,7 @@ MainWindow::MainWindow(QWidget * parent)
 
     connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     this->simulation->registerRootNode();
+    this->simulation->addModulesFromSettings();
 
 
 
