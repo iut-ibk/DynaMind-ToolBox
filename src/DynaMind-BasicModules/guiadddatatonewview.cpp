@@ -3,6 +3,8 @@
 #include <QInputDialog>
 #include <adddatatonewview.h>
 #include <dm.h>
+#include <algorithm>
+
 GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIAddDatatoNewView)
