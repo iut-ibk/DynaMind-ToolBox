@@ -26,6 +26,7 @@
 
 #include "grouptest.h"
 #include <guigrouptest.h>
+#include <algorithm>
 
 
 
@@ -65,7 +66,7 @@ void GroupTest::addInPort(std::string n) {
     if (n.empty())
         return;
     //CheckIfPortAlreadyExists
-    if (find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
+    if (std::find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
         return;
     nameOfInViews.push_back(n);
     this->init();
@@ -76,7 +77,7 @@ void GroupTest::addOutPort(std::string n) {
     if (n.empty())
         return;
     //CheckIfPortAlreadyExists
-    if (find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
+    if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
         return;
     nameOfOutViews.push_back(n);
     this->init();

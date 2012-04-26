@@ -1,6 +1,7 @@
 /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author Michael Mair <michael.mair@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
@@ -25,6 +26,7 @@
  */
 #include "adddatatonewview.h"
 #include "guiadddatatonewview.h"
+#include <algorithm>
 
 
 DM_DECLARE_NODE_NAME(AddDataToNewView, Modules)
@@ -111,7 +113,7 @@ void AddDataToNewView::init()
 
     foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) {
         std::vector<std::string>  writes_already = writeView.getWriteAttributes();
-        if (find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
+        if (std::find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
             continue;
         writeView.addAttribute(s);
         changed = true;

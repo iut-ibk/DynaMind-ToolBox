@@ -1,5 +1,6 @@
 #include "appendviewfromsystem.h"
 #include "guiappendviewfromsystem.h"
+#include <algorithm>
 
 DM_DECLARE_NODE_NAME(AppendViewFromSystem, Modules)
 
@@ -55,7 +56,7 @@ void AppendViewFromSystem::init()
             DM::System * sys = this->getData(s);
             if (sys != 0) {
                 foreach (std::string v, sys->getViews()) {
-                    if (find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
+                    if (std::find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
                         DM::View old = sys->getViewDefinition(v);
                         DM::View new_v(v, old.getType(), DM::WRITE);
                         if (old.getIdOfDummyComponent().empty())

@@ -26,16 +26,13 @@
 #include "cellularautomata.h"
 #include <QString>
 #include <string>
-#include <boost/numeric/ublas/vector.hpp>
 #include "userdefinedfunctions.h"
 #include <QThread>
 #include <guicellularautomata.h>
 #include <QWidget>
 #include <QStringList>
 #include <boost/foreach.hpp>
-
-using namespace boost;
-namespace   ublas = boost::numeric::ublas;
+#include <algorithm>
 
 DM_DECLARE_NODE_NAME( CellularAutomata, Modules )
 
@@ -88,7 +85,7 @@ void CellularAutomata::init() {
 
     bool changed = false;
     foreach (std::string s, param.ListOfLandscapes) {
-        if (find(vExistingData.begin(), vExistingData.end(), s) != vExistingData.end()) {
+        if (std::find(vExistingData.begin(), vExistingData.end(), s) != vExistingData.end()) {
             continue;
         }
         changed = true;
@@ -134,7 +131,7 @@ void CellularAutomata::run()  {
             //Update RasterData
 
 
-            BOOST_FOREACH(std::string s, this->NeighboorhoodList) {
+            foreach(std::string s, this->NeighboorhoodList) {
 
                 RasterData * r = landscapes[this->NeighboorhoodMapName[s]];
                 r->getNeighboorhood(this->NeighboorhoodMaps[s], this->NeighboohoodDimensions[s].widht,this->NeighboohoodDimensions[s].height, x, y );
@@ -234,7 +231,7 @@ void CellularAutomata::initRuntime() {
         p->DefineFun("nov", numberOfValues);
         p->DefineFun("rand", random, false);
         //Replace Names
-        BOOST_FOREACH(std::string neigh, NeighboorhoodList) {
+        foreach(std::string neigh, NeighboorhoodList) {
             int elements = NeighboohoodDimensions[neigh].elements;
             std::stringstream ss;
             for (int i = 0; i < elements; i++) {

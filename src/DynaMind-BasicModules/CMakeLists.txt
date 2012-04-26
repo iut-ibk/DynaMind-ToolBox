@@ -1,7 +1,7 @@
-file(GLOB MODULE_CPPS *.cpp)
-file(GLOB MODULE_UI_FILES *.ui)
-file(GLOB MODULE_CPPS *.cpp ../3dparty/muparser/src/*.cpp)
-set(MOC_MODULE_FILES guidynamicinout.h
+FILE(GLOB MODULE_CPPS *.cpp)
+FILE(GLOB MODULE_UI_FILES *.ui)
+FILE(GLOB MODULE_CPPS *.cpp ../3dparty/muparser/src/*.cpp)
+SET(MOC_MODULE_FILES guidynamicinout.h
                      guigrouptest.h
                      guicellularautomata.h
                      guicellularautomata_neighbourhood.h
@@ -16,14 +16,13 @@ set(MOC_MODULE_FILES guidynamicinout.h
 QT4_WRAP_UI(MODULE_CPPS ${MODULE_UI_FILES})
 QT4_WRAP_CPP(MODULE_CPPS ${MOC_MODULE_FILES})
 
-include_directories(.)
-include_directories(../3dparty/muparser/include)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(.)
+INCLUDE_DIRECTORIES(../3dparty/muparser/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
+ADD_LIBRARY(dynamind-basicmodules SHARED ${MODULE_CPPS})
 
-add_library(dynamind-basicmodules SHARED ${MODULE_CPPS})
-
-target_link_libraries(dynamind-basicmodules  ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(dynamind-basicmodules  ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
 
 INSTALL(TARGETS dynamind-basicmodules
         DESTINATION "lib/DynaMind"

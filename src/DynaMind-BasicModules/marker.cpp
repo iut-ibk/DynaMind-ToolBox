@@ -28,7 +28,6 @@
 #include <QString>
 #include <sstream>
 #include "userdefinedfunctions.h"
-#include <boost/foreach.hpp>
 #include <QStringList>
 #include <QThread>
 #include <guimarker.h>
