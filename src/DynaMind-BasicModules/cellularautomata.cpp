@@ -31,7 +31,6 @@
 #include <guicellularautomata.h>
 #include <QWidget>
 #include <QStringList>
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 DM_DECLARE_NODE_NAME( CellularAutomata, Modules )
