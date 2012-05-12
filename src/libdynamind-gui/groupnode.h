@@ -53,6 +53,7 @@ private:
     bool RePosFlag;
     std::string name;
     QVector<ModelNode * > childnodes;
+    std::string UUID;
 
 
 
@@ -81,6 +82,9 @@ public:
 public slots:
     void minimize();
     void maximize();
+
+signals:
+  void removeGroupNode(QString UUID);
 };
 
 #endif // GROUPNODE_H

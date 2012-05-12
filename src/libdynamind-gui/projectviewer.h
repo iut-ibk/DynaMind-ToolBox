@@ -47,14 +47,13 @@ class  DM_HELPER_DLL_EXPORT ProjectViewer :public QGraphicsScene
     Q_OBJECT
 public:
     int id;
+    QString UUID;
     ProjectViewer(  GroupNode * g, QWidget * parent = 0);
     void setResultViewer(MainWindow * w){this->ResultViewer = w;}
-    //QVector<ModelNode* > getModelNodes () {return this->mnodes;}
-    //QVector<GroupNode* > getGroupNodes () {return this->gnodes;}
-
     RootGroupNode * getRootNode(){return this->rootGroup;}
+    QString getUUID() {return this->UUID;}
 
-    ~ProjectViewer(){}
+    ~ProjectViewer();
 
 
 protected:
@@ -75,6 +74,7 @@ private:
 
     RootGroupNode * rootGroup;
 
+
 signals:
     void NewGroupAdded(GroupNode  *);
 
@@ -83,6 +83,7 @@ signals:
 public slots:
     void addModule(ModelNode *m);
     void addGroup(GroupNode* m);
+
 
 
 };

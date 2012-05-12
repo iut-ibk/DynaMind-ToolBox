@@ -195,6 +195,17 @@ void GUIPort::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 
 
 void GUIPort::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
+    std::cout << "Mouse Press event" << std::endl;
+    //If currently in link mode delete node and proceed with other stuff
+    if (LinkMode ) {
+        if (this->tmp_link != 0) {
+            delete this->tmp_link;
+            this->tmp_link = 0;
+        }
+        LinkMode = false;
+        return;
+    }
+
 
     if (getPortType() == DM::INSYSTEM || getPortType() == DM::OUTSYSTEM )
         color = COLOR_VECTORPORT;

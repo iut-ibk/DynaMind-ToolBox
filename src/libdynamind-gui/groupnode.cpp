@@ -47,12 +47,14 @@ GroupNode::GroupNode()
 }
 GroupNode::~GroupNode() {
 
-    while (this->childnodes.size() > 0)
-        delete this->childnodes[0];
 
     this->OutputTuplePorts.clear();
     this->InPortTuplePorts.clear();
 
+
+    DM::Logger(DM::Debug) << "Remove GroupNode " << this->UUID;
+
+    emit removeGroupNode(QString::fromStdString(this->UUID));
 
 }
 
@@ -184,6 +186,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     this->y1 = 0;
     this->x2 = 0;
     this->y2 = 0;
+    this->UUID = module->getUuid();
 
 
     this->outputCounter = 1;

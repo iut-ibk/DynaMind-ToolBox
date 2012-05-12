@@ -85,6 +85,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     GUISimulation * simulation;
     MainWindow * ResultWidget;
+    std::string uuid;
 
 public:
     QStringList ExistingInPorts;

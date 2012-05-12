@@ -149,7 +149,7 @@ void ModelNode::addPort(DM::Port * p) {
         foreach (QString pname, ExistingInPorts) {
             if (pname.compare(QString::fromStdString(p->getLinkedDataName())) == 0) {
                 return;
-            }            
+            }
         }
         ExistingInPorts << QString::fromStdString(p->getLinkedDataName());
     } else {
@@ -201,6 +201,7 @@ ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
     this->id = VIBeModule->getID();
     this->simulation = simulation;
     this->nodes = 0;
+    this->uuid = VIBeModule->getUuid();
 
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -278,11 +279,17 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 ModelNode::~ModelNode() {
-    //int index = this->nodes->indexOf(this);
-    //this->nodes->remove(index);
-    foreach (GUIPort * p, ports) {
-        delete p;
-        p = 0;
+
+    DM::Module * m = this->simulation->getModuleWithUUID(this->uuid);
+
+    if (m == 0)
+        this->VIBeModule = 0;
+
+    if (m!=0) {
+        foreach (GUIPort * p, ports) {
+            delete p;
+            p = 0;
+        }
     }
     if (this->VIBeModule != 0)
         this->simulation->removeModule(this->VIBeModule->getUuid());
@@ -362,10 +369,14 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
         }
 
     }
-    if (this->VIBeModule->getGroup()->getUuid().compare(this->simulation->getRootGroup()->getUuid()) != 0) {
-        QAction *a = GroupMenu->addAction("none");
-        a->setObjectName(QString::fromStdString(this->simulation->getRootGroup()->getUuid()));
-        actions.push_back(a);
+    DM::Module * rgroup = this->simulation->getRootGroup();
+    DM::Module * group = this->VIBeModule->getGroup();
+    if (group != 0 && rgroup != 0) {
+        if (this->VIBeModule->getGroup()->getUuid().compare(this->simulation->getRootGroup()->getUuid()) != 0) {
+            QAction *a = GroupMenu->addAction("none");
+            a->setObjectName(QString::fromStdString(this->simulation->getRootGroup()->getUuid()));
+            actions.push_back(a);
+        }
     }
 
     foreach (QAction *a,  actions) {

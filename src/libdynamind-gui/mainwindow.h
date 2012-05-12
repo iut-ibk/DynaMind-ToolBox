@@ -79,6 +79,7 @@ private:
 
     void createModuleListView();
     QMap<QString, ModuleDescription> modules;
+    QMap<ProjectViewer *, QWidget *> tabmap;
     QVector<ModelNode * > * mnodes;
     QVector<GroupNode * > * gnodes;
     QMap<int, ProjectViewer * >  groupscenes;
@@ -102,7 +103,6 @@ public slots:
     void setRunning();
     void saveAsSimulation();
     void importSimulation(QString fileName = "", QPointF = QPointF(0,0));
-    void editGroup();
     void registerResultWindow(GUIResultObserver *);
     void registerPlotWindow(GUIResultObserver *, double, double);
     void updateRasterData(QString,  QString);
@@ -113,7 +113,7 @@ public slots:
     void ReloadSimulation();
     void addNewGroupWindows(GroupNode *);
     void renameGroupWindow(GroupNode *);
-    void removeGroupWindows(GroupNode *);
+    void removeGroupWindows(QString uuid);
 
 
 private slots:

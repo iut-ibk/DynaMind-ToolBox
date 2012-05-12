@@ -83,14 +83,14 @@ void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 void MainWindow::updateResultImage(QString filename) {
 }
 void MainWindow::registerResultWindow(GUIResultObserver * ress) {
-    GUIImageResultView * w = new GUIImageResultView();
+    /*GUIImageResultView * w = new GUIImageResultView();
 
     this->tabWidget_2->addTab(w, QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()));
     QString f = QString::fromStdString(ress->getfirstImage());
     w->updateImage(f);
 
     //Update Windows
-    connect(ress, SIGNAL(updateImage(QString)), w, SLOT(updateImage(QString)), Qt::BlockingQueuedConnection);
+    connect(ress, SIGNAL(updateImage(QString)), w, SLOT(updateImage(QString)), Qt::BlockingQueuedConnection);*/
 }
 void MainWindow::updatePlotData(double d) {
 
@@ -130,16 +130,29 @@ void MainWindow::ReloadSimulation() {
 void MainWindow::startEditor() {
     DM::PythonEnv::getInstance()->startEditra();
 }
-void MainWindow::removeGroupWindows(GroupNode * g) {
+void MainWindow::removeGroupWindows(QString uuid) {
 
+    DM::Logger(DM::Debug) << "Remove ProjectWindow " << uuid.toStdString();
     //Check if already exists
+    QMap<int, ProjectViewer * > groupscenes_tmp;
+    int inew = 0;
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
-        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
-            this->tabWidget_4->removeTab(i);
-            delete pv;
+        if (pv != 0) {
+
+            if ((pv->getUUID()).compare(uuid) == 0) {
+
+                this->tabWidget_4->removeTab(this->tabWidget_4->indexOf(tabmap[pv]));
+
+                delete pv;
+
+            } else {
+                groupscenes_tmp[inew++] = pv;
+            }
         }
+
     }
+    this->groupscenes = groupscenes_tmp;
 }
 void MainWindow::addNewGroupWindows(GroupNode * g) {
 
@@ -153,7 +166,9 @@ void MainWindow::addNewGroupWindows(GroupNode * g) {
 
     ProjectViewer * newgroup = new ProjectViewer(g );
 
-    this->simulation->addSimulationObserver(new GUISimulationObserver(newgroup));
+
+    if (g->getVIBeModel()->getUuid().compare(simulation->getRootGroup()->getUuid()) == 0)
+        this->simulation->addSimulationObserver(new GUISimulationObserver(newgroup));
 
     connect(simulation, SIGNAL(addedGroup(GroupNode*)), newgroup, SLOT(addGroup(GroupNode*)));
     connect(simulation, SIGNAL(GroupNameChanged(GroupNode*)), this, SLOT(renameGroupWindow(GroupNode*)));
@@ -173,6 +188,7 @@ void MainWindow::addNewGroupWindows(GroupNode * g) {
         name = g->getName();
     }
     this->groupscenes[this->tabWidget_4->addTab(gv,name)] = newgroup;
+    tabmap[newgroup] = gv;
 
 }
 
@@ -223,7 +239,7 @@ MainWindow::MainWindow(QWidget * parent)
     connect( actionRun, SIGNAL( activated() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
     connect( actionPreferences, SIGNAL ( activated() ), this, SLOT(preferences() ), Qt::DirectConnection );
     //connect(buildsim, SIGNAL(clicked()), this , SLOT(buildSimulation()), Qt::DirectConnection);
-    connect(runSim, SIGNAL(clicked()), this , SLOT(runSimulation()), Qt::DirectConnection);
+    //connect(runSim, SIGNAL(clicked()), this , SLOT(runSimulation()), Qt::DirectConnection);
     connect(actionSave, SIGNAL(activated()), this , SLOT(saveSimulation()), Qt::DirectConnection);
     connect(actionSaveAs, SIGNAL(activated()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
     connect(actionOpen, SIGNAL(activated()), this , SLOT(loadSimulation()), Qt::DirectConnection);
@@ -231,7 +247,6 @@ MainWindow::MainWindow(QWidget * parent)
     connect(actionImport, SIGNAL(activated()), this , SLOT(importSimulation()), Qt::DirectConnection);
     connect(actionEditor, SIGNAL(activated()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
-    connect(edit_groups, SIGNAL(clicked()), this , SLOT(editGroup()), Qt::DirectConnection);
 
     //runSim->setDisabled(true);
     //treeWidget->setColumnCount(1);
@@ -252,21 +267,13 @@ MainWindow::MainWindow(QWidget * parent)
     this->simmanagment = new SimulationManagment();
 
 
-    connect(this->simmanagment, SIGNAL(valueChanged(int)), this->progressBar, SLOT(setValue(int)));
-    //connect(this->simmanagment, SIGNAL(valueChanged(int)), this, SLOT(test(int)));
-    this->progressBar->setRange(0,1);
-    this->progressBar->setValue(0);
-
     createModuleListView();
 
     this->rootItemModelTree = new QTreeWidgetItem();
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
     this->rootItemModelTree->setExpanded(true);
-    this->modelTree->setColumnCount(2);
-    this->modelTree->addTopLevelItem(this->rootItemModelTree);
-    this->modelTree->headerItem()->setText(0, "Module");
-    this->modelTree->headerItem()->setText(1, "");
+
     //this->scene->setModules(& this->modules);
     //this->scene->setModelNodes(this->mnodes);
     //this->scene->setGroupNodes(this->gnodes);
@@ -351,15 +358,7 @@ void MainWindow::createModuleListView() {
 
 
 }
-void MainWindow::editGroup() {
 
-    QTreeWidgetItem * item = this->modelTree->currentItem () ;
-    if (item == 0) {
-        return;
-    }
-
-
-}
 void MainWindow::updateRasterData(QString UUID,  QString Name) {
     //this->widget->setRasterData(UUID, Name);
 

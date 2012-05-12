@@ -70,8 +70,13 @@ GUILink::~GUILink() {
         this->outPort->removeLink(this);
     if (this->inPort != 0)
         this->inPort->removeLink(this);
+
     if (VIBelink != 0)
         delete this->VIBelink;
+
+    this->VIBelink = 0;
+    this->inPort = 0;
+    this->outPort = 0;
 }
 
 void GUILink::setOutPort(GUIPort * outPort)

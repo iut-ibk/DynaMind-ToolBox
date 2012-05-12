@@ -46,6 +46,7 @@ public:
 
 private:
     QVector<ModelNode*> modelNodes;
+
     QVector<GroupNode*> groupNodes;
 
 signals:

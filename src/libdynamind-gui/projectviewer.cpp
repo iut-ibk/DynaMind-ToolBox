@@ -48,11 +48,15 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
     //Cretae New Visual Representation
 
     RootGroupNode * rg = new RootGroupNode(g->getVIBeModel(),g->getSimulation());
+    this->UUID = QString::fromStdString(g->getVIBeModel()->getUuid());
     rg->setPos(0,0);
     this->rootGroup = rg;
     this->addItem(rg);
 
 
+}
+ProjectViewer::~ProjectViewer() {
+    delete rootGroup;
 }
 
 void ProjectViewer::addModule(ModelNode *m)
@@ -72,9 +76,12 @@ void ProjectViewer::addGroup(GroupNode *g) {
         return;
     }
     this->rootGroup->addModelNode(g);
+
     this->addItem(g);
+    connect(g, SIGNAL(removeGroupNode(QString)), ResultViewer, SLOT(removeGroupWindows(QString)));
 
 }
+
 
 void ProjectViewer::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
@@ -87,7 +94,6 @@ void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
     event->accept();
     std::stringstream ss;
     QTreeWidget * lw = (QTreeWidget*) event->source();
-    //lw->currentItem()->text()
     QString classname =  lw->currentItem()->text(0);
     std::string type = lw->currentItem()->text(1).toStdString();
     if (type.compare("Module") == 0) {

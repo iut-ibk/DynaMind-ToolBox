@@ -47,6 +47,10 @@ RootGroupNode::RootGroupNode()
 }
 RootGroupNode::~RootGroupNode() {
 
+    DM::Logger(DM::Debug) << "Remove RootGroupNode ";
+
+    if (VIBeModule == 0)
+        return;
     while (this->childnodes.size() > 0)
         delete this->childnodes[0];
 
@@ -54,12 +58,15 @@ RootGroupNode::~RootGroupNode() {
     this->InPortTuplePorts.clear();
 
 
+
+
 }
 
 
 void RootGroupNode::removeModelNode(ModelNode *m) {
     int index = childnodes.indexOf(m);
-    this->childnodes.remove(index);
+    if (index > -1)
+        this->childnodes.remove(index);
 }
 
 void RootGroupNode::changeGroupID(QString Name) {

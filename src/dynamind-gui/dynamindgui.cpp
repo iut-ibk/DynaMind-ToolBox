@@ -34,8 +34,8 @@
 int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
-    Q_INIT_RESOURCE(icons);
-    //Q_INIT_RESOURCE(splash);
+    //Q_INIT_RESOURCE(icons);
+    Q_INIT_RESOURCE(splash);
 
     QPixmap pixmap(":/Splash/ressources/logo.png");
     QSplashScreen *splash1 = new QSplashScreen(pixmap);
