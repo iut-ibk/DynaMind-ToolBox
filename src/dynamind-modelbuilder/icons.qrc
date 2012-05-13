@@ -9,5 +9,6 @@
         <file>ressources/document-open.png</file>
         <file>ressources/list-add.png</file>
         <file>ressources/list-remove.png</file>
+        <file>ressources/player_play.png</file>
     </qresource>
 </RCC>

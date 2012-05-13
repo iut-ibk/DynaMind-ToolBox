@@ -48,7 +48,7 @@
           <bool>true</bool>
          </property>
          <attribute name="headerVisible">
-          <bool>true</bool>
+          <bool>false</bool>
          </attribute>
          <attribute name="headerCascadingSectionResizes">
           <bool>false</bool>
@@ -614,9 +614,31 @@
    <addaction name="actionZoomOut"/>
    <addaction name="actionZoomReset"/>
   </widget>
+  <widget class="QToolBar" name="toolBar_3">
+   <property name="windowTitle">
+    <string>toolBar_3</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRun"/>
+  </widget>
   <action name="actionRun">
+   <property name="icon">
+    <iconset resource="../dynamind-gui/icons.qrc">
+     <normaloff>:/Icons/ressources/player_play.png</normaloff>:/Icons/ressources/player_play.png</iconset>
+   </property>
    <property name="text">
     <string>Run</string>
+   </property>
+   <property name="toolTip">
+    <string>Run Simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionPreferences">

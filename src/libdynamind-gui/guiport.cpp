@@ -33,6 +33,7 @@
 #include <dmmodulelink.h>
 #include <guisimulation.h>
 GUIPort::~GUIPort () {
+
     foreach(GUILink *l, this->links) {
         delete l;
         l = 0;

@@ -41,7 +41,7 @@
 
 #include <dmmodule.h>
 #include <guiport.h>
-#include <boost/foreach.hpp>
+
 #include <dmsimulation.h>
 #include <QApplication>
 #include <QInputDialog>
@@ -50,7 +50,7 @@
 #include <dmcomponent.h>
 #include <dmsystem.h>
 #include <sstream>
-using namespace boost;
+
 std::string ModelNode::getParameterAsString(std::string name) {
 
     std::ostringstream val;
@@ -74,10 +74,10 @@ void ModelNode::updatePorts () {
 
     //Add Ports
     //If Port exists is checked by addPort
-    BOOST_FOREACH (DM::Port * p, this->VIBeModule->getInPorts()){
+    foreach (DM::Port * p, this->VIBeModule->getInPorts()){
         this->addPort(p);
     }
-    BOOST_FOREACH (DM::Port * p, this->VIBeModule->getOutPorts()) {
+    foreach (DM::Port * p, this->VIBeModule->getOutPorts()) {
         this->addPort(p);
     }
 
@@ -88,7 +88,7 @@ void ModelNode::updatePorts () {
         if (gp->getPortType()  > DM::OUTPORTS ) {
             bool  portExists = false;
 
-            BOOST_FOREACH (DM::Port * p, this->VIBeModule->getInPorts()){
+            foreach (DM::Port * p, this->VIBeModule->getInPorts()){
                 std::string portname1 = p->getLinkedDataName();
                 std::string portname2 = gp->getPortName().toStdString();
                 if (portname1.compare(portname2) == 0) {
@@ -104,7 +104,7 @@ void ModelNode::updatePorts () {
         if (gp->getPortType()  < DM::OUTPORTS ) {
             bool  portExists = false;
 
-            BOOST_FOREACH (DM::Port * p, this->VIBeModule->getOutPorts()){
+            foreach (DM::Port * p, this->VIBeModule->getOutPorts()){
                 if (p->getLinkedDataName().compare(gp->getPortName().toStdString()) == 0) {
                     portExists = true;
                 }
@@ -361,7 +361,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     GroupMenu->setTitle("Group");
     QVector<QAction *> actions;
     std::vector<DM::Group*> gs = this->simulation->getGroups();
-    BOOST_FOREACH (DM::Group * g, gs) {
+    foreach (DM::Group * g, gs) {
         if (this->VIBeModule->getUuid().compare(g->getUuid())) {
             QAction *a = GroupMenu->addAction(QString::fromStdString(g->getName()));
             a->setObjectName(QString::fromStdString(g->getUuid()));

@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     QSplashScreen *splash1 = new QSplashScreen(pixmap);
 
     splash1->show();
-    splash1->showMessage("Loading Modules");
+    //splash1->showMessage("Loading Modules");
     app.processEvents();
     //QThreadPool::globalInstance()->setMaxThreadCount(1);
 

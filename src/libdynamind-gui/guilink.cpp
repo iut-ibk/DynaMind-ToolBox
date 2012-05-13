@@ -65,12 +65,16 @@ QRectF GUILink::boundingRect() const {
 
 GUILink::~GUILink() {
     DM::Logger(DM::Debug) << "Remove GUILink" ;
-    if (this->outPort != 0)
 
+    if (this->outPort != 0)
         this->outPort->removeLink(this);
     if (this->inPort != 0)
         this->inPort->removeLink(this);
 
+    //Check if Links exists
+    std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
+    if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
+        this->VIBelink = 0;
     if (VIBelink != 0)
         delete this->VIBelink;
 

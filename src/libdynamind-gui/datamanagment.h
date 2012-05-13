@@ -29,7 +29,6 @@
 #include "dmcompilersettings.h"
 #include "dmdataobserver.h"
 #include "QTreeWidgetItem"
-#include <boost/unordered_map.hpp>
 #include <string>
 #include <plot.h>
 //#include <QMutex>
@@ -39,7 +38,7 @@
 //#define RASTERDATA 2
 #define VECTORDATA 1
 
-using namespace boost;
+
 namespace DM {
 class Module;
 }

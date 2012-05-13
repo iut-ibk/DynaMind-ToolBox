@@ -51,7 +51,6 @@
 #include "datamanagment.h"
 #include <dmmodule.h>
 #include <dmgroup.h>
-#include <boost/foreach.hpp>
 #include <dmsimulation.h>
 #include <dmdatamanagement.h>
 #include <groupnode.h>
@@ -68,7 +67,7 @@
 #include <rootgroupnode.h>
 #include "preferences.h"
 #include "projectviewer.h"
-using namespace boost;
+
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
     (void) count;
@@ -311,7 +310,7 @@ void MainWindow::createModuleListView() {
         items->setText(0, QString::fromStdString(name));
         std::vector<std::string> names = it->second;
         std::sort(names.begin(), names.end());
-        BOOST_FOREACH(std::string name, names) {
+        foreach(std::string name, names) {
             QTreeWidgetItem * item;
             item = new QTreeWidgetItem(items);
             item->setText(0,QString::fromStdString(name));
@@ -344,7 +343,7 @@ void MainWindow::createModuleListView() {
             std::vector<std::string> names = it->second;
             std::sort(names.begin(), names.end());
 
-            BOOST_FOREACH(std::string name, names) {
+            foreach(std::string name, names) {
                 QTreeWidgetItem * item;
                 item = new QTreeWidgetItem(items);
                 item->setText(0,QString::fromStdString(name));
@@ -453,7 +452,7 @@ void MainWindow::writeGUIInformation(QString FileName) {
 
 
 
-        BOOST_FOREACH(ModelNode * m, viewer->getRootNode()->getChildNodes()) {
+        foreach(ModelNode * m, viewer->getRootNode()->getChildNodes()) {
             out  << "\t" << "\t"<<"<GUI_Node>" << "\n";
             out << "\t" << "\t"<< "\t" << "<GUI_UUID value=\""
                 << QString::fromStdString(m->getVIBeModel()->getUuid()) << "\"/>" << "\n";
@@ -581,7 +580,7 @@ void MainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translatio
         reveredUUID_Translation[it->second] = it->first;
     }
 
-    BOOST_FOREACH(DM::ModuleLink * l,this->simulation->getLinks()) {
+    foreach(DM::ModuleLink * l,this->simulation->getLinks()) {
 
         ModelNode * outmodule = 0;
         ModelNode * inmodule = 0;

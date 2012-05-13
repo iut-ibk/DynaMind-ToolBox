@@ -49,10 +49,8 @@
 #include <dmmodule.h>
 #include <dmgroup.h>
 #include <groupnode.h>
-#include <boost/foreach.hpp>
 #include <dmporttuple.h>
 #include <QTextEdit>
-using namespace boost;
 
 
 void GUIModelNode::openFileDialog() {
@@ -75,7 +73,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
     gbox->setTitle("Parameter");
     std::map<std::string, int> parameter = m->getParameterList();
     std::vector<std::string> NameList = m->getParameterListAsVector();
-    BOOST_FOREACH(std::string name, NameList){
+    foreach(std::string name, NameList){
         int ID = parameter[name];//it->second;
         if (ID == DM::DOUBLE || ID == DM::LONG || ID == DM::INT) {
             QLabel * l = new QLabel;

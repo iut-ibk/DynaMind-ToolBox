@@ -27,7 +27,6 @@
 #include <iostream>
 #include <QString>
 #include <dmmodule.h>
-#include <boost/foreach.hpp>
 #include <sstream>
 
 void DataManagment::observeNewVectorData(DM::Module * module, std::string name) {

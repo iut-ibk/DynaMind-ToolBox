@@ -35,11 +35,10 @@
 #include <dmsimulation.h>
 #include <guiport.h>
 #include <dmporttuple.h>
-#include <boost/foreach.hpp>
 #include <dmgroup.h>
 #include <iostream>
 #include <groupnode.h>
-using namespace boost;
+
 
 RootGroupNode::RootGroupNode()
 {
@@ -78,11 +77,11 @@ void RootGroupNode::changeGroupID(QString Name) {
 void RootGroupNode::updatePorts () {
     DM::Group * g = (DM::Group*)this->VIBeModule;
 
-    BOOST_FOREACH (DM::PortTuple * p,g->getInPortTuples()){
+    foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
 
     }
-    BOOST_FOREACH (DM::PortTuple * p,g->getOutPortTuples()){
+    foreach (DM::PortTuple * p,g->getOutPortTuples()){
         this->addTuplePort(p);
 
     }
