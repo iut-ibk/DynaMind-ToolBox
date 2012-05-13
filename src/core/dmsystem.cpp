@@ -47,7 +47,7 @@ System::System() : Component()
 
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
-        this->views[view][c->getName()] = c;
+        this->views[view][c->getUUID()] = c;
     }
 
 }
@@ -138,7 +138,7 @@ Node * System::addNode(Node* node)
     if(!addChild(node))
         return 0;
 
-    nodes[node->getName()]=node;
+    nodes[node->getUUID()]=node;
     return node;
 }
 
@@ -147,10 +147,10 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     if(!addChild(r))
         return 0;
 
-    rasterdata[r->getName()] = r;
+    rasterdata[r->getUUID()] = r;
 
     if (!view.getName().empty()) {
-        this->views[view.getName()][r->getName()] = r;
+        this->views[view.getName()][r->getUUID()] = r;
         r->setView(view.getName());
     }
 
@@ -171,7 +171,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view) {
     if (n == 0)
         return 0;
     if (!view.getName().empty()) {
-        this->views[view.getName()][n->getName()] = n;
+        this->views[view.getName()][n->getUUID()] = n;
         n->setView(view.getName());
     }
 
@@ -193,25 +193,25 @@ Edge * System::addEdge(Edge* edge)
     if(!addChild(edge))
         return 0;
 
-    edges[edge->getName()]=edge;
+    edges[edge->getUUID()]=edge;
     foreach (std::string v, edge->getInViews()) {
-        views[v][edge->getName()]=edge;
+        views[v][edge->getUUID()]=edge;
     }
     this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
     return edge;
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
 {
-    Edge * e = this->addEdge(new Edge(start->getName(), end->getName()));
+    Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
 
     if (e == 0)
         return 0;
     if (!view.getName().empty()) {
-        this->views[view.getName()][e->getName()] = e;
+        this->views[view.getName()][e->getUUID()] = e;
         e->setView(view.getName());
     }
 
-    this->EdgeNodeMap[std::pair<std::string, std::string>(start->getName(), end->getName())] = e;
+    this->EdgeNodeMap[std::pair<std::string, std::string>(start->getUUID(), end->getUUID())] = e;
 
     return e;
 }
@@ -220,7 +220,7 @@ Face * System::addFace(Face *f) {
     if(!addChild(f))
         return 0;
 
-    faces[f->getName()]=f;
+    faces[f->getUUID()]=f;
     return f;
 }
 
@@ -231,7 +231,7 @@ Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
     std::vector<std::string> stringNodes;
 
     foreach (Node* n, nodes)
-        stringNodes.push_back(n->getName());
+        stringNodes.push_back(n->getUUID());
 
 
     Face * f = this->addFace(new Face(stringNodes));
@@ -239,7 +239,7 @@ Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
     if (f == 0)
         return 0;
     if (!view.getName().empty()) {
-        this->views[view.getName()][f->getName()] = f;
+        this->views[view.getName()][f->getUUID()] = f;
         f->setView(view.getName());
     }
     return f;
@@ -315,7 +315,7 @@ bool System::removeEdge(std::string name)
     if(!removeChild(name))
         return false;
     DM::Edge * e  = this->getEdge(name);
-    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getName(), e->getName()));
+    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
     edges.erase(name);
     return true;
 }
@@ -343,7 +343,7 @@ bool System::removeNode(std::string name)
         Edge* tmpedge = edges[(*ite).first];
 
         if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
-            connectededges.push_back(tmpedge->getName());
+            connectededges.push_back(tmpedge->getUUID());
     }
 
     for(int index=0; index<connectededges.size(); index++)
@@ -355,14 +355,14 @@ bool System::removeNode(std::string name)
     return true;
 }
 bool System::addComponentToView(Component *comp, const View &view) {
-    this->views[view.getName()][comp->getName()] = comp;
+    this->views[view.getName()][comp->getUUID()] = comp;
     comp->setView(view.getName());
     return true;
 }
 
 bool System::removeComponentFromView(Component *comp, const View &view) {
     std::map<std::string, Component*> entries = this->views[view.getName()];
-    entries.erase(comp->getName());
+    entries.erase(comp->getUUID());
     comp->removeView(view);
     this->views[view.getName()] = entries;
     return true;
@@ -374,12 +374,12 @@ bool System::addSubSystem(System *newsystem,  const DM::View & view)
     if(!addChild(newsystem))
         return false;
 
-    subsystems[newsystem->getName()]=newsystem;
+    subsystems[newsystem->getUUID()]=newsystem;
 
 
 
     if (!view.getName().empty()) {
-        this->views[view.getName()][newsystem->getName()] = newsystem;
+        this->views[view.getName()][newsystem->getUUID()] = newsystem;
         newsystem->setView(view.getName());
     }
 
@@ -483,7 +483,7 @@ bool System::addView(View view)
             this->addRasterData((DM::RasterData*) dummy);
         }
     }
-    view.setIdOfDummyComponent(dummy->getName());
+    view.setIdOfDummyComponent(dummy->getUUID());
 
 
     //extend Dummy Attribute

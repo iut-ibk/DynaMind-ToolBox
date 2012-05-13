@@ -39,11 +39,11 @@ using namespace DM;
 
 Component::Component()
 {
-    this->name = QUuid::createUuid().toString().toStdString();
+    this->uuid = QUuid::createUuid().toString().toStdString();
 }
 
 void Component::createNewUUID() {
-    this->name = QUuid::createUuid().toString().toStdString();
+    this->uuid = QUuid::createUuid().toString().toStdString();
 }
 
 bool Component::isInView(View view) const {
@@ -57,7 +57,7 @@ bool Component::isInView(View view) const {
 
 Component::Component(const Component& c)
 {
-    this->name=c.name;
+    this->uuid=c.uuid;
     attributesview=c.attributesview;
     ownedchilds=c.ownedchilds;
     inViews = c.inViews;
@@ -88,14 +88,14 @@ Component::~Component()
     }
 }
 
-void Component::setName(std::string name)
+void Component::setUUID(std::string uuid)
 {
-    this->name=name;
+    this->uuid=uuid;
 }
 
-std::string Component::getName()
+std::string Component::getUUID()
 {
-    return name;
+    return uuid;
 }
 
 bool Component::addAttribute(std::string name, double val) {
@@ -178,11 +178,11 @@ bool Component::addChild(Component *newcomponent)
     if(!newcomponent)
         return false;
 
-    if(childsview.find(newcomponent->getName())!=childsview.end())
+    if(childsview.find(newcomponent->getUUID())!=childsview.end())
         return false;
 
-    childsview[newcomponent->getName()] = newcomponent;
-    ownedchilds[newcomponent->getName()] = newcomponent;
+    childsview[newcomponent->getUUID()] = newcomponent;
+    ownedchilds[newcomponent->getUUID()] = newcomponent;
     return true;
 }
 
@@ -191,11 +191,11 @@ bool Component::changeChild(Component *newcomponent)
     if(!newcomponent)
         return false;
 
-    if(ownedchilds.find(newcomponent->getName())!=ownedchilds.end())
-        delete ownedchilds[newcomponent->getName()];
+    if(ownedchilds.find(newcomponent->getUUID())!=ownedchilds.end())
+        delete ownedchilds[newcomponent->getUUID()];
 
-    ownedchilds[newcomponent->getName()] = newcomponent;
-    childsview[newcomponent->getName()] = newcomponent;
+    ownedchilds[newcomponent->getUUID()] = newcomponent;
+    childsview[newcomponent->getUUID()] = newcomponent;
 
     return true;
 }

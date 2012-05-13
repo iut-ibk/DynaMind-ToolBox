@@ -116,6 +116,7 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInp
     return l;
 }
 ModuleLink::~ModuleLink() {
+
     Logger(Debug) << "Remove Link";
     if (InPort != 0)
         this->InPort->removeLink(this);

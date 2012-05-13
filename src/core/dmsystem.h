@@ -53,8 +53,8 @@ class Edge;
 class Face;
 class RasterData;
 
-/** @ingroup DynaMind_Core
-      * @todo add stuff here
+/** @ingroup DynaMind-Core
+      *
       */
 class  DM_HELPER_DLL_EXPORT System : public Component
 {

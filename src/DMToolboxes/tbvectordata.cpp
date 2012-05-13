@@ -30,7 +30,7 @@
 
 DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
 
-    DM::Edge * e1 = sys->getEdge(n1->getName(), n2->getName());
+    DM::Edge * e1 = sys->getEdge(n1->getUUID(), n2->getUUID());
 
     if (e1!=0) {
         if (view.getName().empty()) {
@@ -44,7 +44,7 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n
 
     }
     if (!OrientationMatters) {
-        e1 = sys->getEdge(n2->getName(), n1->getName());
+        e1 = sys->getEdge(n2->getUUID(), n1->getUUID());
         if (e1!=0) {
             if (view.getName().empty()) {
                 return e1;
@@ -164,7 +164,7 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
         sys->removeComponentFromView(e1, sys->getViewDefinition(v));
 
     }
-    e1->setEndpointName(n->getName());
+    e1->setEndpointName(n->getUUID());
     sys->addComponentToView(e1, view);
 
     DM::Edge * e2 = new DM::Edge(*e);
@@ -174,7 +174,7 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
     foreach (std::string v, views) {
         sys->removeComponentFromView(e2, sys->getViewDefinition(v));
     }
-    e2->setStartpointName(n->getName());
+    e2->setStartpointName(n->getUUID());
     sys->addComponentToView(e2, view);
 
 

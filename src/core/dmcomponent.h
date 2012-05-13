@@ -40,7 +40,12 @@
 #endif
 
 namespace DM {
-/** @ingroup DynaMind_Core
+/** @ingroup DynaMind-Core
+  * Basic class that contains to store informations in DynaMind
+  *
+  * All Objects like Nodes, Edges and Faces are derived from the component class.
+  * Ever component can be identified by a unique ID created by the QT framework.
+  * Components also manages the attributes.
   */
 class Attribute;
 
@@ -48,7 +53,7 @@ class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 protected:
-    std::string name;
+    std::string uuid;
     std::map<std::string,Component*> childsview;
     std::map<std::string,Attribute*> attributesview;
     std::map<std::string,Component*> ownedchilds;
@@ -62,8 +67,8 @@ public:
     Component();
     Component(const Component& s);
     virtual ~Component();
-    void setName(std::string name);
-    std::string getName();
+    void setUUID(std::string uuid);
+    std::string getUUID();
 
     bool addAttribute(Attribute newattribute);
     /** @brief add attribute to the component. If the Attribute already exists changeAttribute is called */
