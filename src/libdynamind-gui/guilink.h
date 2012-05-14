@@ -32,6 +32,7 @@
 #include <QPainterPath>
 #include <dmmodulelink.h>
 #include <dmsimulation.h>
+#include <algorithm>
 
 #include "dmcompilersettings.h"
 class GUIPort;
