@@ -40,6 +40,10 @@
 #endif
 
 namespace DM {
+
+class Attribute;
+
+
 /** @ingroup DynaMind-Core
   * Basic class that contains to store informations in DynaMind
   *
@@ -47,8 +51,6 @@ namespace DM {
   * Ever component can be identified by a unique ID created by the QT framework.
   * Components also manages the attributes. Components can be part of none or more views.
   */
-class Attribute;
-
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
@@ -123,15 +125,21 @@ public:
     /** @brief Returns true if Component is in the View */
     bool isInView(DM::View view) const;
 
+    /** @brief pure virtual clone method.
+      *
+      * To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
+      * The method returns a pointer to a new data object (including attributes and uuid) */
+    virtual Component* clone()=0;
 
-
-
+    //TODO No idea waht this is
     bool addChild(Component *newcomponent);
     bool changeChild(Component *newcomponent);
     bool removeChild(std::string name);
     Component* getChild(std::string name);
     std::map<std::string, Component*> getAllChilds();
-    virtual Component* clone()=0;
+
+
+
 
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;

@@ -32,7 +32,13 @@
 namespace DM {
 
     class Component;
-
+    /** @ingroup DynaMind-Core
+      * @brief Provides an Edge object. An Edge just contains references to a start and end node.
+      *
+      * Lines are derived from the Component class. Therefore lines are identified by an UUID and can hold an
+      * unlimeted number of Attributes. Edges only contain references to nodes stored in the system. As reference the uuid
+      * of the Node is used.
+      */
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
@@ -40,12 +46,19 @@ namespace DM {
         std::string end;
 
     public:
+        /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         Edge(std::string startpoint, std::string endpoint);
+        /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
         Edge(const Edge& e);
+        /** @brief return uuid to the startpoint */
         std::string getStartpointName();
+        /** @brief return uuid to the endpoint */
         std::string getEndpointName();
+        /** @brief set uuid to that points to the start node */
         void setStartpointName(std::string name);
-        void setEndpointName(std::string name);
+        /** @brief set uuod that points to the end node */
+        void setEndpointName(std::string name);        
+        /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;

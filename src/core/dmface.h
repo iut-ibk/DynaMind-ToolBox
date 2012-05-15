@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,15 +34,30 @@
 namespace DM {
 class Component;
 class Node;
+
+/** @ingroup DynaMind-Core
+  * @brief Provides a Face object. A Face just contains references to a nodes
+  *
+  * A Face is defined by a vector of Nodes. The order in the vector describes the face.
+  * Faces are derived from the Component class. Therefore faces are identified by an UUID and can hold an
+  * unlimeted number of Attributes. Faces only contain references to nodes stored in the system. As reference the uuid
+  * of the Node is used.
+  * @TODO if endnod == startnode or if this doesn't matter
+  * @TODO orientation
+  */
 class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
     std::vector<std::string> nodes;
 
 public:
+    /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
     Face(std::vector<std::string> nodes);
+    /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
+    /** @brief return vector of nodes defining the face */
     std::vector<std::string> getNodes();
+    /** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/
     Component * clone();
 
 };
