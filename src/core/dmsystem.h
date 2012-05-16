@@ -54,7 +54,15 @@ class Face;
 class RasterData;
 
 /** @ingroup DynaMind-Core
+      * @brief The system class provides a description for comlpex objects.
       *
+      * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
+      * Systems are used to describe urban environment - water infrastructure, streets, houses ...
+      *
+      * The System class is derived from the Component class. Therefore every system has a UUID and can hold Attributes.
+      *
+      * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
+      * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
       */
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
@@ -73,72 +81,90 @@ private:
     //Get Edge Based on otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
-
-
     void updateViews (Component * c);
 
 public:
-    System(std::string name);
-    System();
+
+    /** @brief creates a new System */
+    System();    
+    /** @brief Copies a System  */
     System(const System& s);
     ~System();
-
-
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system*/
     Node * addNode(Node* node);
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
-    /** @brief Adds a new node to the system and returns a pointer to the node.  */
+    /** @brief Adds a new node to the system and returns a pointer to the node. */
     Node * addNode(Node node,  const DM::View & view = DM::View());
+    /** @brief Adds a new Edge to the system, the system class takes ownership of the edge */
     Edge* addEdge(Edge* edge);
+    /** @brief Creates a new Edge, based on the UUID of the start and end node */
     Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
+    /** @brief Adds a new Face to the system, the system class takes ownership of the face  */
     Face * addFace(Face * f);
+    /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
-    Node* getNode(std::string name);
-    Edge* getEdge(std::string name);
-    Edge* getEdge(const std::string &startnode, const std::string &endnode);
-    Face * getFace(std::string name);
-    bool removeEdge(std::string name);
-    bool removeNode(std::string name);
-    bool removeFace(std::string name);
+    /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exist*/
+    Node* getNode(std::string uuid);
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
+    Edge* getEdge(std::string uuid);
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
+    Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
+    /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist*/
+    Face * getFace(std::string uuid);
+    /** @brief Removes an Edge. Returns false if the edge doesn't exist */
+    bool removeEdge(std::string uuid);
+    /** @brief Removes a Node. Returns false if the node doesn't exist */
+    bool removeNode(std::string uuid);
+    /** @brief Removes a Face. Returns false if the face doesn't exist */
+    bool removeFace(std::string uuid);
+    /** @brief Returns a map of nodes stored in the system */
     std::map<std::string, Node*> getAllNodes();
+    /** @brief Returns a map of edges stored in the system */
     std::map<std::string, Edge*> getAllEdges();
+    /** @brief Returns a map of faces stored in the system */
     std::map<std::string, Face*> getAllFaces();
+    /** @brief Returns a map of subsystems stored in the system */
     std::map<std::string, System*> getAllSubSystems();
+    /** @brief Returns a map of rasterdata stored in the system */
     std::map<std::string, RasterData*> getAllRasterData();
+    /** @brief Returns the predecessor of the system */
     std::vector<System*> getPredecessorStates();
+    /** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
     bool addSubSystem(System *newsystem, const DM::View & view = DM::View());
-    System* createSubSystem(std::string name);
-    bool removeSubSystem(std::string name);
-    System* getSubSystem(std::string name);
-
+    /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
+    bool removeSubSystem(std::string uuid);
+    /** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist */
+    System* getSubSystem(std::string uuid);
+    /** @brief Creates a new Successor state
+       *
+       * @todo add a more detailed description here
+       */
     System* createSuccessor();
+    /** @brief Adds a new view to the system. At the moment always returns true */
     bool addView(DM::View view);
+    /** @brief return a vector of the names of the views avalible in the system */
     std::vector<std::string> getNamesOfViews();
-    Component * getComponent(std::string name);
-
-    /** @brief Retrun View */
+    /** @brief return a vector of views avalible in the system */
+    const std::vector<DM::View> getViews();
+    /** @brief returns a component */
+    Component * getComponent(std::string uuid);
+    /** @brief Retruns View */
     View getViewDefinition(std::string name);
-
+    /** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
     Component* clone();
-    const std::vector<std::string> getViews();
-
     /** @brief add a component to a view */
     bool addComponentToView(Component * comp, const DM::View & view);
-
     /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
-
+    /** @brief retrun all components related to a view */
     std::map<std::string, Component*> getAllComponentsInView(const View &view);
-    std::vector<std::string> getNamesOfComponentsInView(DM::View  view);
-
+    /** @brief Returns a vector of all uuids stored in a view */
+    std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
+    /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-
     /** @brief add Predecessor **/
     void addPredecessors(DM::System * s);
-
-
-
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

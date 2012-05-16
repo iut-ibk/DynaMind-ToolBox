@@ -114,7 +114,7 @@ DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::No
 std::vector<DM::Edge*> TBVectorData::getConnectedEdges(DM::System *sys, DM::View &view, DM::Node n1, double err) {
 
     std::vector<DM::Edge*> result;
-    std::vector<std::string> names = sys->getNamesOfComponentsInView(view);
+    std::vector<std::string> names = sys->getUUIDsOfComponentsInView(view);
 
     foreach (std::string id, names ) {
         std::vector<DM::Node * > nodes;
@@ -180,7 +180,7 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
 
     sys->removeComponentFromView(e, view);
 
-    std::vector<std::string> test = sys->getNamesOfComponentsInView(view);
+    std::vector<std::string> test = sys->getUUIDsOfComponentsInView(view);
 
     int i =0;
 

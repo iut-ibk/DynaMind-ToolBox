@@ -45,7 +45,7 @@ class Attribute;
 
 
 /** @ingroup DynaMind-Core
-  * Basic class that contains to store informations in DynaMind
+  * @brief Basic class that contains to store informations in DynaMind
   *
   * All Objects like Nodes, Edges and Faces are derived from the component class.
   * Ever component can be identified by a unique ID created by the QT framework.

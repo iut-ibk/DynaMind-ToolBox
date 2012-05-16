@@ -35,10 +35,6 @@
 
 using namespace DM;
 
-System::System(std::string name) : Component()
-{
-    sucessor = 0;
-}
 
 System::System() : Component()
 {
@@ -155,13 +151,6 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     }
 
     return r;
-}
-
-System* System::createSubSystem(std::string name)
-{
-    System* newsystem = new System(name);
-    this->addSubSystem(newsystem);
-    return newsystem;
 }
 
 Node * System::addNode(double x, double y, double z,  const DM::View & view) {
@@ -399,8 +388,7 @@ std::map<std::string, Component*> System::getAllComponentsInView(const DM::View 
 
     return views[view.getName()];
 }
-std::vector<std::string> System::getNamesOfComponentsInView(DM::View view) {
-
+std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
 
 
     std::vector<std::string> names;
@@ -475,7 +463,7 @@ bool System::addView(View view)
             dummy = this->addFace(ve);
         }
         if (  DM::SUBSYSTEM == view.getType()) {
-            dummy = new DM::System(view.getName());
+            dummy = new DM::System();
             this->addSubSystem((DM::System*) dummy);
         }
         if (  DM::RASTERDATA == view.getType()) {
@@ -521,14 +509,13 @@ std::map<std::string, Face*> System::getAllFaces()
     return faces;
 }
 
-const std::vector<std::string> System::getViews()  {
+const std::vector<DM::View> System::getViews()  {
 
-    std::vector<std::string> viewlist;
+    std::vector<DM::View> viewlist;
 
     for (std::map<std::string, View>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
-        viewlist.push_back(it->first);
+        viewlist.push_back(it->second);
     }
-
 
     return viewlist;
 

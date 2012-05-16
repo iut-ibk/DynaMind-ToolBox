@@ -63,7 +63,7 @@ void InOut2::run() {
 
     sys_in->addEdge(n1, n2, conduits);
 
-    std::vector<std::string> nstreets = sys_in->getNamesOfComponentsInView(streets);
+    std::vector<std::string> nstreets = sys_in->getUUIDsOfComponentsInView(streets);
     foreach (std::string str, nstreets) {
         Edge * e = sys_in->getEdge(str);
         e->getAllAttributes();

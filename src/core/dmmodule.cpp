@@ -566,7 +566,7 @@ DM::System* Module::getSystemState(const std::string &name)
 
 
 DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {
-    DM::System * sys = new DM::System(name);
+    DM::System * sys = new DM::System();
     if (sys == 0)
         return sys;
     this->ownedSystems.push_back(sys);
