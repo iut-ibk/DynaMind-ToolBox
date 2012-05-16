@@ -59,7 +59,7 @@ void InOut2::run() {
     for (std::map<std::string, DM::System*>::const_iterator it = subs.begin(); it != subs.end(); ++it)
     {
         DM::System * s = it->second;
-        Logger(Debug) << s->getName() << " " << s->getAllNodes().size() << " " << s->getAllEdges().size();
+        Logger(Debug) << s->getUUID() << " " << s->getAllNodes().size() << " " << s->getAllEdges().size();
     }
 
 
