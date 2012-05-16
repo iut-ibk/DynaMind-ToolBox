@@ -27,6 +27,5 @@ ENDIF()
 SET(LIBRARY_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
 
-
+ADD_SUBDIRECTORY(scripts)
 ADD_SUBDIRECTORY(src/DynaMind-BasicModules)
-

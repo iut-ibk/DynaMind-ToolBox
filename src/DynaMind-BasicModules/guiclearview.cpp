@@ -1,6 +1,7 @@
 #include "guiclearview.h"
 #include "ui_guiclearview.h"
 #include <clearview.h>
+#include <algorithm>
 
 GUIClearView::GUIClearView(DM::Module *m, QWidget *parent) :
     QDialog(parent),

@@ -3,6 +3,8 @@
 #include <QInputDialog>
 #include <exportrasterdata.h>
 #include <dm.h>
+#include <algorithm>
+
 GUIExportRasterData::GUIExportRasterData(DM::Module *m, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIExportRasterData)

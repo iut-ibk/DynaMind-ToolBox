@@ -29,9 +29,7 @@
 #include "dmcompilersettings.h"
 #include "dmmodule.h"
 #include "muParser.h"
-#include <boost/unordered_map.hpp>
 #include <dm.h>
-using namespace boost;
 
 using namespace mu;
 
@@ -93,10 +91,6 @@ private:
     std::string NameOfOutput;
     std::string NameOfOutput_old;
 
-    unordered_map <std::string, RasterData > neighbourhoods;
-    unordered_map <std::string, RasterData > values;
-    unordered_map <std::string, double * > nbPointerMap;
-    unordered_map <std::string, double * > ValuePointerMap;
     std::vector<double *> pRessults;
     std::vector<Parser> vParser;
 
