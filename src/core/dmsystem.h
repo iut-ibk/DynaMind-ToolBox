@@ -40,6 +40,7 @@
 namespace DM {
 
 enum Components {
+    COMPONENT,
     NODE,
     EDGE,
     FACE,
@@ -73,6 +74,7 @@ private:
     std::map<std::string, Face* > faces;
     std::map<std::string, RasterData *> rasterdata;
     std::map<std::string, System*> subsystems;
+    std::map<std::string, Component* > components;
     std::map<std::string, View> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;
     DM::System * sucessor;
@@ -90,6 +92,8 @@ public:
     /** @brief Copies a System  */
     System(const System& s);
     ~System();
+    /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
+    Component * addComponent(Component* c, const DM::View & view = DM::View());
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system*/
     Node * addNode(Node* node);
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
@@ -104,6 +108,8 @@ public:
     Face * addFace(Face * f);
     /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
+    /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist*/
+    Component* getComponent(std::string uuid);
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exist*/
     Node* getNode(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
@@ -116,6 +122,8 @@ public:
     bool removeEdge(std::string uuid);
     /** @brief Removes a Node. Returns false if the node doesn't exist */
     bool removeNode(std::string uuid);
+    /** @brief Removes a Component. Returns false if the component doesn't exist */
+    bool removeComponent(std::string uuid);
     /** @brief Removes a Face. Returns false if the face doesn't exist */
     bool removeFace(std::string uuid);
     /** @brief Returns a map of nodes stored in the system */
@@ -147,8 +155,6 @@ public:
     std::vector<std::string> getNamesOfViews();
     /** @brief return a vector of views avalible in the system */
     const std::vector<DM::View> getViews();
-    /** @brief returns a component */
-    Component * getComponent(std::string uuid);
     /** @brief Retruns View */
     View getViewDefinition(std::string name);
     /** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */

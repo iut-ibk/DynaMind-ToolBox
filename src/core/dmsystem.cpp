@@ -67,6 +67,7 @@ System::System(const System& s) : Component(s)
 {
 
     subsystems=s.subsystems;
+    components = s.components;
     nodes=s.nodes;
     edges=s.edges;
     faces = s.faces;
@@ -84,6 +85,15 @@ System::System(const System& s) : Component(s)
         subsystems[(*its).first]=s;
         this->updateViews(s);
 
+    }
+
+    //Update Components
+    std::map<std::string,Component*>::iterator itc;
+
+    for ( itc=components.begin() ; itc != components.end(); itc++ ) {
+        Component * n = static_cast<Component*>(ownedchilds[(*itc).first]);
+        components[(*itc).first] = n;
+        this->updateViews(n);
     }
 
     //Update Nodes
@@ -128,6 +138,20 @@ System::~System()
     if (sucessor)
         delete sucessor;
 }
+
+Component * System::addComponent(Component* c, const DM::View & view)
+{
+
+    components[c->getUUID()]=c;
+
+    if (!view.getName().empty()) {
+        this->views[view.getName()][c->getUUID()] = c;
+        c->setView(view.getName());
+    }
+
+    return c;
+}
+
 
 Node * System::addNode(Node* node)
 {
@@ -234,20 +258,20 @@ Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
     return f;
 }
 
-Node* System::getNode(std::string name)
+Node* System::getNode(std::string uuid)
 {
-    if(nodes.find(name)==nodes.end())
+    if(nodes.find(uuid)==nodes.end())
         return 0;
 
-    return nodes[name];
+    return nodes[uuid];
 }
 
-Edge* System::getEdge(std::string name)
+Edge* System::getEdge(std::string uuid)
 {
-    if(edges.find(name)==edges.end())
+    if(edges.find(uuid)==edges.end())
         return 0;
 
-    return edges[name];
+    return edges[uuid];
 }
 
 Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
@@ -258,12 +282,12 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
     return EdgeNodeMap[key];
 }
 
-Face* System::getFace(std::string name)
+Face* System::getFace(std::string uuid)
 {
-    if(faces.find(name)==faces.end())
+    if(faces.find(uuid)==faces.end())
         return 0;
 
-    return faces[name];
+    return faces[uuid];
 }
 
 
@@ -278,6 +302,8 @@ Component * System::getComponent(std::string name) {
         return subsystems[name];
     if(rasterdata.find(name)!=rasterdata.end())
         return rasterdata[name];
+    if(components.find(uuid)==components.end())
+        return components[name];
     return 0;
 
 }
@@ -294,6 +320,20 @@ bool System::removeFace(std::string name)
     faces.erase(name);
     return true;
 }
+
+bool System::removeComponent(std::string name)
+{
+    //check if name is a edge instance
+    if(components.find(name)==components.end())
+        return false;
+
+    if(!removeChild(name))
+        return false;
+
+    components.erase(name);
+    return true;
+}
+
 
 bool System::removeEdge(std::string name)
 {
@@ -389,11 +429,7 @@ std::map<std::string, Component*> System::getAllComponentsInView(const DM::View 
     return views[view.getName()];
 }
 std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
-
-
     std::vector<std::string> names;
-
-
     std::map<std::string, DM::Component*> components_view = this->getAllComponentsInView(view);
     for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it) {
         names.push_back(it->first);
@@ -447,7 +483,9 @@ bool System::addView(View view)
     if (!existingView.getIdOfDummyComponent().empty()) {
         dummy = this->getComponent(existingView.getIdOfDummyComponent());
     } else {
-
+        if ( DM::COMPONENT == view.getType()) {
+            dummy = this->addComponent(new Component());
+        }
         if ( DM::NODE == view.getType()) {
             dummy = this->addNode(0,0,0);
         }

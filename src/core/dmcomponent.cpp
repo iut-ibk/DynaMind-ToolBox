@@ -4,7 +4,7 @@
  * @author  Michael Mair <abroxos@gmail.com>
  * @version 1.0
  * @section LICENSE
- * This file is part of DynaMite
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich, Michael Mair
 
@@ -53,6 +53,14 @@ bool Component::isInView(View view) const {
     }
 
     return false;
+}
+
+void Component::setName(std::string name) {
+    this->name = name;
+}
+
+std::string Component::getName() const {
+    return name;
 }
 
 Component::Component(const Component& c)
@@ -184,6 +192,9 @@ bool Component::addChild(Component *newcomponent)
     childsview[newcomponent->getUUID()] = newcomponent;
     ownedchilds[newcomponent->getUUID()] = newcomponent;
     return true;
+}
+Component* Component::clone() {
+     return new Component(*this);
 }
 
 bool Component::changeChild(Component *newcomponent)

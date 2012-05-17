@@ -4,7 +4,7 @@
  * @author  Michael Mair <abroxos@gmail.com>
  * @version 1.0
  * @section LICENSE
- * This file is part of DynaMite
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich, Michael Mair
 
@@ -56,6 +56,7 @@ class DM_HELPER_DLL_EXPORT Component
     friend class System;
 protected:
     std::string uuid;
+    std::string name;
     std::map<std::string,Component*> childsview;
     std::map<std::string,Attribute*> attributesview;
     std::map<std::string,Component*> ownedchilds;
@@ -73,8 +74,8 @@ public:
     Component();
     /** @brief Copies a component, also the UUID is copied! */
     Component(const Component& s);
+    /** @brief Destructor */
     virtual ~Component();
-
     /** @brief setUUID */
     void setUUID(std::string uuid);
 
@@ -125,12 +126,15 @@ public:
     /** @brief Returns true if Component is in the View */
     bool isInView(DM::View view) const;
 
-    /** @brief pure virtual clone method.
+    /** @brief virtual clone method.
       *
       * To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
       * The method returns a pointer to a new data object (including attributes and uuid) */
-    virtual Component* clone()=0;
-
+    virtual Component* clone();
+    /** @brief Sets name */
+    void setName(std::string name);
+    /** @brief Returns name */
+    std::string getName() const;
     //TODO No idea waht this is
     bool addChild(Component *newcomponent);
     bool changeChild(Component *newcomponent);
