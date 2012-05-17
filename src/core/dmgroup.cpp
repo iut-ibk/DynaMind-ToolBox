@@ -91,8 +91,6 @@ void Group::finishedModule(Module *m) {
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
         if (m->isGroup()) {
             Group * g = (Group * )m;
-            //g->resetModules();
-            //g->resetParameter();
             g->resetSteps();
         }
     }
@@ -215,14 +213,6 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
 
 }
 
-std::string Group::getParameterAsString(std::string Name) {
-    int ID = this->parameter[Name];
-    std::stringstream ss;
-
-    ss << Module::getParameterAsString(Name);
-    return ss.str();
-
-}
 
 QVector<QRunnable *>  Group::getNextJobs() {
     QVector<QRunnable * > RunnedModulesInStep;
@@ -296,7 +286,6 @@ void Group::run() {
                 return;
 
             }
-
             DMRootGroup::getThreadPool()->start(r);
         }
 
