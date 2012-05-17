@@ -38,10 +38,8 @@
 #include <QUuid>
 #include <sstream>
 #include <dmgroup.h>
-#include <dmidatabase.h>
 #include <dmmodulelink.h>
 #include <dmsimulation.h>
-#include <dmdatamanagement.h>
 #include <dmportobserver.h>
 #include <sstream>
 #include <dmcomponent.h>

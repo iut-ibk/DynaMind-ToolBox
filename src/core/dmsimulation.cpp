@@ -29,7 +29,6 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include "dmdatamanagement.h"
 #include "dmsimulation.h"
 #include "dmsimulationreader.h"
 #include "dmmodule.h"
@@ -42,7 +41,6 @@
 #include <dmmodule.h>
 #include <dmmodulelink.h>
 #include <dmport.h>
-#include <dmidatabase.h>
 #include <dmmoduleregistry.h>
 #include <QSettings>
 #include <QDir>
@@ -250,7 +248,6 @@ std::vector<Group*> Simulation::getGroups() {
 }
 
 void Simulation::resetModules() {
-    this->database->resetDataBase();
     foreach (Module * m, this->getModules()) {
         this->resetModule(m->getUuid());
     }
