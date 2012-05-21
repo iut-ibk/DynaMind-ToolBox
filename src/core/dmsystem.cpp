@@ -397,11 +397,11 @@ bool System::removeComponentFromView(Component *comp, const View &view) {
     return true;
 }
 
-bool System::addSubSystem(System *newsystem,  const DM::View & view)
+System * System::addSubSystem(System *newsystem,  const DM::View & view)
 {
     //TODO add View to subsystem
     if(!addChild(newsystem))
-        return false;
+        return 0;
 
     subsystems[newsystem->getUUID()]=newsystem;
 
@@ -412,7 +412,7 @@ bool System::addSubSystem(System *newsystem,  const DM::View & view)
         newsystem->setView(view.getName());
     }
 
-    return true;
+    return newsystem;
 }
 
 bool System::removeSubSystem(std::string name)

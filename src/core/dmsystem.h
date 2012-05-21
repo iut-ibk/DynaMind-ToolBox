@@ -139,7 +139,7 @@ public:
     /** @brief Returns the predecessor of the system */
     std::vector<System*> getPredecessorStates();
     /** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
-    bool addSubSystem(System *newsystem, const DM::View & view = DM::View());
+    System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
     /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
     bool removeSubSystem(std::string uuid);
     /** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist */
