@@ -42,5 +42,5 @@ SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 
 ADD_SUBDIRECTORY(src/libdynamind-gui)
 ADD_SUBDIRECTORY(src/dynamind-modelbuilder)
-
+ADD_SUBDIRECTORY(3dparty)
 INCLUDE(DynaMindGuiCPack.txt)
