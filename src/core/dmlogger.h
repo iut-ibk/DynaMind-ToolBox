@@ -35,21 +35,39 @@ using namespace std;
 
 class QString;
 namespace DM {
-    //class Variable;
-
+/**
+ * @ingroup DynaMind-Core
+ * @brief The Logger class is used to get messages from the core, modules, database.
+ *
+ * The Logger sends the messages to the sink defined in Log.
+ **/
     class DM_HELPER_DLL_EXPORT Logger {
     public:
+        /** @brief Creates a new Log entry.
+         *
+         * As default LogLevel the Logger uses Standard. (LogeLevels see Log)
+         * Creates the log string with LogLevel and data
+         */
         Logger(LogLevel level = Standard);
+        /** @brief sends log string to the registed sind */
         virtual ~Logger();
+        /** @brief Sends LogLevel */
         Logger &operator<< (LogLevel level);
-        //Logger &operator<< (const Variable *var);
+        /** @brief Sends a char* to the sink*/
         Logger &operator<< (const char* s);
+        /** @brief Sends an int to the sink*/
         Logger &operator<< (const int i);
-        Logger &operator<< (const size_t i);
+        /** @brief Sends a size_t to the sink*/
+        Logger &operator<< (const size_t i)
+        /** @brief Sends a long to the sink*/;
         Logger &operator<< (const long i);
+        /** @brief Sends a double to the sink*/
         Logger &operator<< (const double f);
+        /** @brief Sends a float to the sink*/
         Logger &operator<< (const float f);
+        /** @brief Sends a string to the sink*/
         Logger &operator<< (const string &i);
+        /** @brief Sends a QString to the sink*/
         Logger &operator<< (const QString &s);
     private:
         string logLevel() const;
