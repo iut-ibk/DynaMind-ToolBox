@@ -248,11 +248,13 @@ std::vector<Group*> Simulation::getGroups() {
 }
 
 void Simulation::resetModules() {
-    foreach (Module * m, this->getModules()) {
+    std::vector<DM::Module *> mv= this->getModules();
+    foreach (Module * m, mv) {
         this->resetModule(m->getUuid());
     }
 }
 void Simulation::run() {
+    this->resetModules();
     this->startSimulation(false);
 
 }
@@ -321,6 +323,10 @@ Module * Simulation::getModuleWithUUID(std::string UUID) {
     foreach(Module * m, this->getModules()){
         if (UUID.compare(m->getUuid()) == 0)
             return m;
+    }
+
+    if (this->getRootGroup()->getUuid().compare(UUID) == 0) {
+        return this->getRootGroup();
     }
     return 0;
 }
@@ -438,7 +444,8 @@ Module * Simulation::resetModule(std::string UUID) {
     if(!m)
         return 0;
 
-    Module * new_m = this->addModule(m->getClassName());
+    Module * new_m =  this->moduleRegistry->createModule(m->getClassName());
+    new_m->setSimulation(this);
     if(!new_m)
         return m;
 
