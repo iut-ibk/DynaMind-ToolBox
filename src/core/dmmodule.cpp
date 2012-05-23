@@ -66,7 +66,6 @@ void Module::resetParameter() {
 
 }
 Module::Module() {
-
     srand((unsigned)time(0));
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->group = 0;
@@ -78,8 +77,6 @@ Module::Module() {
     portobserver = std::vector<PortObserver *>();
     resultobserver = std::vector<ResultObserver * >();
     simulation = 0;
-
-
 }
 
 Module::~Module() {
@@ -113,7 +110,6 @@ Port * Module::getOutPort(std::string name) {
     }
     return 0;
 }
-
 
 void Module::updateParameter() {
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
@@ -604,9 +600,9 @@ void Module::setSimulation(Simulation *simulation) {
 void Module::copyParameterFromOtherModule(Module * m) {
     std::string name_origin = m->getClassName();
     std::string name_this = this->getClassName();
+    this->uuid = m->getUuid();
     if (name_origin.compare(name_this) == 0) {
         std::map<std::string, int> parameterList = m->getParameterList();
-
         for ( std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
             if (it->second < DM::USER_DEFINED_INPUT) {
                 this->setParameterValue(it->first, m->getParameterAsString(it->first));
