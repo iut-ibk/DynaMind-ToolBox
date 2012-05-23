@@ -134,7 +134,10 @@ namespace DM {
          */
         Module * addModule(std::string ModuleName);
 
-        /** @brief remove module */
+        /** @brief Removes module.
+         *
+         * Delets Module. Since the destructor is called the module is also removed from the Modulelist
+         */
         void removeModule(std::string UUid);
 
         /** @brief returns a pointer to the ModuleRegistry */
