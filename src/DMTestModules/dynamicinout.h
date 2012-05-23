@@ -52,6 +52,7 @@ class DM_HELPER_DLL_EXPORT DynamicInOut : public  Module
         std::vector<std::string> NewAttributes;
         bool attributeChanged;
         DM::System * sys_in;
+        int PrevSize;
 public:
     DynamicInOut();
 
@@ -64,6 +65,7 @@ public:
 
     /** @brief add a new attribute during runtime of the model */
     void addAttribute(std::string name);
+
 
 
 

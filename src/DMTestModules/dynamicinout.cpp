@@ -38,6 +38,7 @@ DynamicInOut::DynamicInOut()
     inlets.getAttribute("B");
     inlets.getAttribute("C");
     std::vector<DM::View> views;
+    PrevSize = 0;
     views.push_back(inlets);
     this->addData("Inport", views);
 
@@ -49,8 +50,9 @@ void DynamicInOut::run() {
 }
 
 void DynamicInOut::init() {
-    if (!attributeChanged)
+    if (PrevSize == NewAttributes.size())
         return;
+    PrevSize = NewAttributes.size();
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
     inlets.getAttribute("A");
     inlets.getAttribute("B");
