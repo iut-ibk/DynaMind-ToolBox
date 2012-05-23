@@ -166,6 +166,11 @@ class DM_HELPER_DLL_EXPORT  Module {
 
 public:
     Module();
+    /**
+     * @brief Destructor.
+     *
+     * The Moduel Destructor calls first the deregisterFunction from the simulation to remove the module from the module list
+     */
     virtual ~Module();
 
     virtual void Destructor();
