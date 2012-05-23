@@ -29,8 +29,6 @@
 #include <Python.h>
 #include "dmpythonenv.h"
 #include <dmmoduleregistry.h>
-//#include "pythondmnodefactory.h"
-//#include <pydmmodule.h>
 #include <QDir>
 #include <string>
 #include <dmlog.h>
