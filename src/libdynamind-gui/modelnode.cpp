@@ -54,30 +54,30 @@
 std::string ModelNode::getParameterAsString(std::string name) {
 
     std::ostringstream val;
-    int id = this->VIBeModule->getParameterList()[name];
+    int id = this->getVIBeModel()->getParameterList()[name];
     if (id == DM::DOUBLE || id == DM::LONG || id == DM::STRING) {
         if (id == DM::DOUBLE)
-            val << this->VIBeModule->getParameter<double>(name);
+            val << this->getVIBeModel()->getParameter<double>(name);
         if (id == DM::LONG)
-            val << this->VIBeModule->getParameter<long>(name);
+            val << this->getVIBeModel()->getParameter<long>(name);
         if (id == DM::STRING)
-            val << this->VIBeModule->getParameter<std::string>(name);
+            val << this->getVIBeModel()->getParameter<std::string>(name);
         return val.str();
     }
 }
 
 std::string ModelNode::getGroupUUID() {
-    return this->VIBeModule->getGroup()->getUuid();
+    return this->getVIBeModel()->getGroup()->getUuid();
 }
 
 void ModelNode::updatePorts () {
 
     //Add Ports
     //If Port exists is checked by addPort
-    foreach (DM::Port * p, this->VIBeModule->getInPorts()){
+    foreach (DM::Port * p, this->getVIBeModel()->getInPorts()){
         this->addPort(p);
     }
-    foreach (DM::Port * p, this->VIBeModule->getOutPorts()) {
+    foreach (DM::Port * p, this->getVIBeModel()->getOutPorts()) {
         this->addPort(p);
     }
 
@@ -88,7 +88,7 @@ void ModelNode::updatePorts () {
         if (gp->getPortType()  > DM::OUTPORTS ) {
             bool  portExists = false;
 
-            foreach (DM::Port * p, this->VIBeModule->getInPorts()){
+            foreach (DM::Port * p, this->getVIBeModel()->getInPorts()){
                 std::string portname1 = p->getLinkedDataName();
                 std::string portname2 = gp->getPortName().toStdString();
                 if (portname1.compare(portname2) == 0) {
@@ -104,7 +104,7 @@ void ModelNode::updatePorts () {
         if (gp->getPortType()  < DM::OUTPORTS ) {
             bool  portExists = false;
 
-            foreach (DM::Port * p, this->VIBeModule->getOutPorts()){
+            foreach (DM::Port * p, this->getVIBeModel()->getOutPorts()){
                 if (p->getLinkedDataName().compare(gp->getPortName().toStdString()) == 0) {
                     portExists = true;
                 }
@@ -124,20 +124,20 @@ void ModelNode::updatePorts () {
 
 }
 void ModelNode::resetModel() {
-    DM::Module *oldmodule = this->VIBeModule;
-    this->VIBeModule = this->simulation->resetModule(this->VIBeModule->getUuid());
+    DM::Module *oldmodule = this->getVIBeModel();
+    this->VIBeModuleUUID = this->simulation->resetModule(this->getVIBeModel()->getUuid())->getUuid();
 
-    if(this->VIBeModule==oldmodule)
+    if(this->getVIBeModel()==oldmodule)
     {
-        DM::Logger(DM::Error) << "The code-base has changed for module \"" << this->VIBeModule->getName() << "\". There is an error in the new code-base";
+        DM::Logger(DM::Error) << "The code-base has changed for module \"" << this->getVIBeModel()->getName() << "\". There is an error in the new code-base";
     }
 
     foreach(GUIPort * p, this->ports) {
         DM::Port * po = 0;
-        if ((this->VIBeModule->getInPort( p->getPortName().toStdString()) == 0)) {
-            po = this->VIBeModule->getOutPort( p->getPortName().toStdString());
+        if ((this->getVIBeModel()->getInPort( p->getPortName().toStdString()) == 0)) {
+            po = this->getVIBeModel()->getOutPort( p->getPortName().toStdString());
         } else {
-            po = this->VIBeModule->getInPort( p->getPortName().toStdString());
+            po = this->getVIBeModel()->getInPort( p->getPortName().toStdString());
         }
         p->updatePort( po );
     }
@@ -186,6 +186,10 @@ void ModelNode::addPort(DM::Port * p) {
 
 //ModelNode
 
+DM::Module * ModelNode::getVIBeModel() {
+    return this->simulation->getModuleWithUUID(this->VIBeModuleUUID);
+}
+
 ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
 {
     this->guiPortObserver.setModelNode(this);
@@ -197,11 +201,10 @@ ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
     this->outputCounter = 0;
     this->inputCounter = 0;
     this->parentGroup = 0;
-    this->VIBeModule = VIBeModule;
+    this->VIBeModuleUUID = VIBeModule->getUuid();
     this->id = VIBeModule->getID();
     this->simulation = simulation;
     this->nodes = 0;
-    this->uuid = VIBeModule->getUuid();
 
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -211,7 +214,7 @@ ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
     double w = this->simpleTextItem->boundingRect().width()+40;
 
     double w1 = w;
-    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(this->VIBeModule->getName()));
+    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(VIBeModule->getName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
@@ -255,10 +258,10 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->fillPath(path, brush);
         painter->strokePath(path, pen);
 
-        if (!this->VIBeModule->getName().empty())
-            painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->VIBeModule->getName()));
+        if (!this->getVIBeModel()->getName().empty())
+            painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getVIBeModel()->getName()));
 
-        painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(this->VIBeModule->getClassName()));
+        painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(this->getVIBeModel()->getClassName()));
         /*if (this->parentGroup)
             painter->drawText(QPoint(22,55), "Group: "+ QString::fromStdString(this->parentGroup->getVIBeModel()->getName()));*/
 
@@ -280,10 +283,8 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 ModelNode::~ModelNode() {
 
-    DM::Module * m = this->simulation->getModuleWithUUID(this->uuid);
+    DM::Module * m = this->getVIBeModel();
 
-    if (m == 0)
-        this->VIBeModule = 0;
 
     if (m!=0) {
         foreach (GUIPort * p, ports) {
@@ -291,9 +292,8 @@ ModelNode::~ModelNode() {
             p = 0;
         }
     }
-    if (this->VIBeModule != 0)
-        this->simulation->removeModule(this->VIBeModule->getUuid());
-    this->VIBeModule = 0;
+    if (this->getVIBeModel()!= 0)
+        this->simulation->removeModule(this->VIBeModuleUUID);
 
     if (this->parentGroup != 0) {
         this->parentGroup->removeModelNode(this);
@@ -324,7 +324,7 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
 
     if(this->visible){
         this->simulation->updateSimulation();
-        if (this->VIBeModule->createInputDialog() == false )
+        if (this->getVIBeModel()->createInputDialog() == false )
         {
 
             QWidget * gui  = new GUIModelNode(this->getVIBeModel(), this);
@@ -362,7 +362,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QVector<QAction *> actions;
     std::vector<DM::Group*> gs = this->simulation->getGroups();
     foreach (DM::Group * g, gs) {
-        if (this->VIBeModule->getUuid().compare(g->getUuid())) {
+        if (this->getVIBeModel()->getUuid().compare(g->getUuid())) {
             QAction *a = GroupMenu->addAction(QString::fromStdString(g->getName()));
             a->setObjectName(QString::fromStdString(g->getUuid()));
             actions.push_back(a);
@@ -370,9 +370,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
     }
     DM::Module * rgroup = this->simulation->getRootGroup();
-    DM::Module * group = this->VIBeModule->getGroup();
+    DM::Module * group = this->getVIBeModel()->getGroup();
     if (group != 0 && rgroup != 0) {
-        if (this->VIBeModule->getGroup()->getUuid().compare(this->simulation->getRootGroup()->getUuid()) != 0) {
+        if (this->getVIBeModel()->getGroup()->getUuid().compare(this->simulation->getRootGroup()->getUuid()) != 0) {
             QAction *a = GroupMenu->addAction("none");
             a->setObjectName(QString::fromStdString(this->simulation->getRootGroup()->getUuid()));
             actions.push_back(a);
@@ -435,7 +435,7 @@ void ModelNode::addGroup() {
     GroupNode * gn;
     DM::Group * g;
     if (name.compare(QString::fromStdString(this->simulation->getRootGroup()->getUuid())) == 0) {
-        this->VIBeModule->setGroup((DM::Group * ) this->simulation->getRootGroup());
+        this->getVIBeModel()->setGroup((DM::Group * ) this->simulation->getRootGroup());
 
         return;
     }
@@ -454,10 +454,10 @@ void ModelNode::addGroup() {
 
 
 
-    this->VIBeModule->setGroup(g);
+    this->getVIBeModel()->setGroup(g);
 
-    this->getSimulation()->GUIaddModule(this->VIBeModule, this->pos());
-    this->VIBeModule = 0;
+    this->getSimulation()->GUIaddModule(this->getVIBeModel(), this->pos());
+
     delete this;
 }
 

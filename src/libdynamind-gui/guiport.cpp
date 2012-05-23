@@ -48,7 +48,7 @@ void GUIPort::removeLink(GUILink * l) {
     }
 }
 void GUIPort::updatePort(DM::Port * p) {
-    this->p = p;
+    //this->p = p;
 
 }
 GUIPort::GUIPort(ModelNode *modelNode, DM::Port *p) : QGraphicsItem(modelNode)
@@ -60,12 +60,13 @@ GUIPort::GUIPort(ModelNode *modelNode, DM::Port *p) : QGraphicsItem(modelNode)
     this->PortName = QString::fromStdString(p->getLinkedDataName());
     tmp_link = 0;
     //this->hoverElement = 0;
-    this->p = p;
+    //this->p = p;
     this->x1 = 0;
     this->isHover = false;
     this->LinkMode = false;
     this->modelNode = modelNode;
     this->PortType = p->getPortType();
+    this->simulation = modelNode->getSimulation();
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
@@ -76,15 +77,15 @@ GUIPort::GUIPort(ModelNode *modelNode, DM::Port *p) : QGraphicsItem(modelNode)
 
 }
 bool GUIPort::isLinked() {
-    if (this->p->getLinks().size() > 0)
+    if (this->getVIBePort()->getLinks().size() > 0)
         return true;
     return false;
 }
 
 void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    if (this->p->isFullyLinked())
+    if (this->getVIBePort()->isFullyLinked())
         color = Qt::green;
-    if (!this->p->isFullyLinked())
+    if (!this->getVIBePort()->isFullyLinked())
         color = Qt::red;
     painter->setBrush(color);
 
@@ -115,7 +116,7 @@ void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 }
 
 QRectF GUIPort::boundingRect() const {
-    if(p->getPortType() < DM::OUTPORTS){
+    if(this->PortType < DM::OUTPORTS){
         QRect r (-10, 10,20+this->portname_graphics.boundingRect().width(),20);
         return r;
     } else {
@@ -127,7 +128,7 @@ QRectF GUIPort::boundingRect() const {
 void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = true;
 
-    if (this->p->getPortType() == DM::INSYSTEM|| this->p->getPortType() == DM::OUTSYSTEM)
+    if (this->PortType  == DM::INSYSTEM||this->PortType  == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
 
     prepareGeometryChange ();
@@ -135,7 +136,7 @@ void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 
     h = this->portname_graphics.boundingRect().height()+4;
     x1 = 0;
-    if (p->getPortType()  > DM::OUTPORTS  )
+    if (this->PortType   > DM::OUTPORTS  )
         x1 = -l+14;
     this->update(this->boundingRect());
 }
@@ -144,7 +145,7 @@ void GUIPort::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = false;
     if (!LinkMode) {
 
-        if (p->getPortType()  == DM::INSYSTEM || p->getPortType()  == DM::OUTSYSTEM)
+        if (PortType  == DM::INSYSTEM || PortType == DM::OUTSYSTEM)
             color = COLOR_VECTORPORT;
 
     }
@@ -222,7 +223,13 @@ void GUIPort::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
 
 }
 DM::Port * GUIPort::getVIBePort() {
-    return this->p;
+    DM::Port * p = 0;
+    if (this->PortType > DM::OUTPORTS) {
+        p = this->modelNode->getVIBeModel()->getInPort(this->getPortName().toStdString());
+    } else {
+        p = this->modelNode->getVIBeModel()->getOutPort(this->getPortName().toStdString());
+    }
+   return p;
 }
 
 void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {

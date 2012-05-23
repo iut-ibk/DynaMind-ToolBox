@@ -70,7 +70,7 @@ protected:
     QVector<ModelNode * > * nodes;
     RootGroupNode * parentGroup;
 
-    DM::Module * VIBeModule ;
+    std::string  VIBeModuleUUID ;
     QGraphicsSimpleTextItem * simpleTextItem;
 
     int id;
@@ -85,13 +85,12 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     GUISimulation * simulation;
     MainWindow * ResultWidget;
-    std::string uuid;
 
 public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
     ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
-    ModelNode(DM::Module *VIBeModule, GUISimulation *simulation);
+    ModelNode(DM::Module *VIBeModuleUUID, GUISimulation *simulation);
 
     int type() const {return Type; }
     virtual ~ModelNode();
@@ -101,12 +100,12 @@ public:
     void setResultWidget(MainWindow * widget) {this->ResultWidget = widget; this->guiResultObserver.setResultWidget(widget);}
 
     int getID(){return this->id;}
-    QString getName(){return QString::fromStdString(this->VIBeModule->getClassName());}
-    void setID(int id){this->VIBeModule->setID(id); this->id = id;}
+    QString getName(){return QString::fromStdString(this->getVIBeModel()->getClassName());}
+    void setID(int id){this->getVIBeModel()->setID(id); this->id = id;}
 
     void addPort(DM::Port * p);
     virtual GUIPort * getGUIPort(DM::Port * p);
-    std::map<std::string, int> getParameters(){return this->VIBeModule->getParameterList();}
+    std::map<std::string, int> getParameters(){return this->getVIBeModel()->getParameterList();}
 
     std::string getParameterAsString(std::string name);
 
@@ -120,13 +119,12 @@ public:
 
     bool GroupVisible(){return this->visible;}
 
-
     //View
     virtual void recalculateLandH(){}
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
 
-    DM::Module * getVIBeModel(){return this->VIBeModule;}
+    DM::Module * getVIBeModel();
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 

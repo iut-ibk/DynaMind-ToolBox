@@ -48,7 +48,7 @@ RootGroupNode::~RootGroupNode() {
 
     DM::Logger(DM::Debug) << "Remove RootGroupNode ";
 
-    if (VIBeModule == 0)
+    if (this->getVIBeModel() == 0)
         return;
     while (this->childnodes.size() > 0)
         delete this->childnodes[0];
@@ -75,7 +75,7 @@ void RootGroupNode::changeGroupID(QString Name) {
 
 
 void RootGroupNode::updatePorts () {
-    DM::Group * g = (DM::Group*)this->VIBeModule;
+    DM::Group * g = (DM::Group*)this->getVIBeModel();
 
     foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
@@ -214,14 +214,14 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     } else {
         painter->setBrush(Qt::white);
     }
-    this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->VIBeModule->getName()));
+    this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getVIBeModel()->getName()));
     if (simpleTextItem->boundingRect().width()+40 > l)
         l = simpleTextItem->boundingRect().width()+40;
     painter->drawRect(0, 0, l,h);
 
     this->setPos(x1-40, y1-20);
 
-    painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->VIBeModule->getName()));
+    painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getVIBeModel()->getName()));
 
 
     if((RePosFlag) != 0) {

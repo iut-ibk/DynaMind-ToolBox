@@ -41,6 +41,7 @@ class Port;
 
 class ModelNode;
 class GUILink;
+class GUISimulation;
 
 class DM_HELPER_DLL_EXPORT GUIPort : public QGraphicsItem
 {
@@ -51,7 +52,6 @@ private:
     ModelNode * modelNode;
     GUILink * tmp_link;
     QVector<GUILink * > links;
-    DM::Port * p;
     QString PortName;
     int PortType;
     bool isHover;
@@ -61,6 +61,7 @@ private:
     float h;
     float x1;
      QGraphicsSimpleTextItem portname_graphics;
+     GUISimulation * simulation;
 
 public:
     GUIPort(ModelNode * modelNode, DM::Port * p);
@@ -71,7 +72,6 @@ public:
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
     void setLink(GUILink * l);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
@@ -84,6 +84,8 @@ public:
     DM::Port * getVIBePort();
     void removeLink(GUILink * l);
     void updatePort(DM::Port * p);
+    GUISimulation * getSimulation() {return this->simulation;}
+    void  setSimulation(GUISimulation *s) {this->simulation = s;}
 
 
 

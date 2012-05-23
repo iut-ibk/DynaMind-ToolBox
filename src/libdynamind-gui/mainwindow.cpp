@@ -364,12 +364,6 @@ void MainWindow::updateRasterData(QString UUID,  QString Name) {
 }
 
 void MainWindow::runSimulation() {
-    for (int  i = 0; i < this->mnodes->size(); i++) {
-        ModelNode * m = this->mnodes->at(i);
-        m->resetModel();
-    }
-
-    //connect(simobserver, SIGNAL(finished()), this , SLOT(SimulationFinished()), Qt::DirectConnection);
 
     for (int i = 0; i < 20; i++)
         simulation->startSimulation(true);
