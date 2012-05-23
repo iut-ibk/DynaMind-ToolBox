@@ -38,7 +38,7 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT  IPort {
     public:
         virtual ~IPort() {}
-        virtual int getPortType() = 0;
+        virtual int getPortType() const = 0;
         virtual Module * getModule() = 0;
         virtual std::vector<ModuleLink * > getLinks() = 0;
         virtual std::string getLinkedDataName() = 0;

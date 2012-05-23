@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <dmiport.h>
+
 namespace DM {
 
     class Module;
@@ -37,6 +38,7 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT  Port : public IPort
     {
     private:
+        std::string uuid;
         std::string linkedDataName;
         Module * module;
         std::vector<ModuleLink *> links;
@@ -52,7 +54,7 @@ namespace DM {
         std::vector<ModuleLink*> getLinks();
         void addLink(ModuleLink * link);
         std::string getLinkedDataName(){return this->linkedDataName;}
-        int getPortType(){return this->PortType;}
+        int getPortType() const {return this->PortType;}
         void removeLink(ModuleLink * l);
         bool isPortTuple() {return tuplePort;}
         bool isInPortTuple() {return tupleInPort;}

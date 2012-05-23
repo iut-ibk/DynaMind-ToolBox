@@ -26,10 +26,14 @@
 #include "dmport.h"
 #include <dmmodulelink.h>
 #include <dmmodule.h>
+#include <QUuid>
 
 namespace DM {
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
+
+        srand((unsigned)time(0));
+        this->uuid = QUuid::createUuid().toString().toStdString();
         this->module = module;
         this->PortType = PortType;
         this->linkedDataName = linkedDataName;

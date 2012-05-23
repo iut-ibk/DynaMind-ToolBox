@@ -47,7 +47,7 @@ namespace DM {
     public:
         PortTuple(Module * m, std::string Name, int PortType, bool Inport);
         ~PortTuple();
-        int getPortType() {return this->PortType;}
+        int getPortType() const {return this->PortType;}
         Module * getModule();
         std::vector<ModuleLink * > getLinks();
         std::string getName(){return this->name;}
