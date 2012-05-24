@@ -64,7 +64,7 @@ class ImportShapeFile(Module):
                 return
             if self.Identifier == self.IdentifierOld:
                 return
-
+            print "Init Me" 
             self.NodeView = View("", NODE, WRITE)
             self.EdgeView = View("", EDGE, WRITE)
             self.FaceView = View("", FACE, WRITE)
@@ -114,7 +114,7 @@ class ImportShapeFile(Module):
         """Init PointMap that is used to check is a node already exists"""
         def initNodeList(self):
             nodes = self.city.getAllNodes()
-            
+            self.PointMap = {}
             for n in nodes:
                 n1 = Node(nodes[n])
                 x = n1.getX()
@@ -129,13 +129,13 @@ class ImportShapeFile(Module):
         def run(self):            
             try:    
                 while int(self.Snap/self.PointmapTol) is not 0:
-                   self.PointmapTol = self.PointmapTol*10
-                    
+                   self.PointmapTol = self.PointmapTol*10                   
                        
                 self.city = self.getData("Vec")
+		print len(self.PointMap)
                 if self.AppendToExistingSystem:
                     self.initNodeList()
-
+		print len(self.PointMap)
                 shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
                 sourcePath = self.FileName
                 dataSource = ogr.Open(sourcePath)
@@ -230,15 +230,12 @@ class ImportShapeFile(Module):
                             if self.isFace:
                                     f = self.city.addFace(pl, self.FaceView)        
                                     f.addAttribute(attr)
-                            if shapelyGeometry.type is 'LineString':
-                                continue
-                            #Create Faces
-                                                            
-                            #city.addFace(el, self.vec)
+
                 print "Imported points: " + str( len(self.city.getAllNodes()))
-                print "Imported elements: " + str( len(self.city.getNamesOfComponentsInView( self.EdgeView)) )
+                print "Imported edges: " + str( len(self.city.getUUIDsOfComponentsInView( self.EdgeView)) )
+                print "Imported faces: " + str( len(self.city.getUUIDsOfComponentsInView( self.FaceView)) )
                 print "Edges Created: " + str( counter )
-                
+
             except Exception, e:
                 print e
 		print sys.exc_info()
