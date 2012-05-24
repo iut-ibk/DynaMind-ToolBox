@@ -12,8 +12,7 @@ GUIAppendAttributes::GUIAppendAttributes(DM::Module *m, QWidget *parent) :
 
     std::vector<std::string> sys_in;
     if (sys != 0)
-        sys_in = sys->getViews();
-
+        sys_in = sys->getNamesOfViews();
     foreach (std::string s, sys_in) {
         if (sys->getViewDefinition(s).getType() == DM::RASTERDATA)
             ui->comboBox_raster->addItem(QString::fromStdString(s));

@@ -31,6 +31,17 @@ DM_DECLARE_NODE_NAME (DynamicInOut, Modules)
 
 DynamicInOut::DynamicInOut()
 {
+    PrevSize = 0;
+    this->addParameter("NewAttributes", DM::STRING_LIST, &NewAttributes);
+    DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
+    inlets.getAttribute("A");
+    inlets.getAttribute("B");
+    inlets.getAttribute("C");
+    std::vector<DM::View> views;    
+    views.push_back(inlets);
+    this->addData("Inport", views);
+
+
 }
 
 void DynamicInOut::run() {
@@ -41,19 +52,17 @@ void DynamicInOut::run() {
 void DynamicInOut::init() {
     Logger(Debug) << "Init Called";
 
-    foreach (DM::View v,this->views) {
-        if (v.getName().compare("Inlets")==0) {
-            return;
-        }
-    }
-
-
+    if (PrevSize == NewAttributes.size())
+        return;
+    PrevSize = NewAttributes.size();
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
     inlets.getAttribute("A");
     inlets.getAttribute("B");
     inlets.getAttribute("C");
+    foreach(std::string s, NewAttributes)
+        inlets.addAttribute(s);
+    std::vector<DM::View> views;
     views.push_back(inlets);
-
     this->addData("Inport", views);
 
 }
@@ -78,20 +87,11 @@ void DynamicInOut::getAttribute(std::string n) {
 
 void DynamicInOut::addAttribute(std::string n) {
     //Get View
-    std::vector<View> views;
-    DM::View view;
-    foreach (DM::View v,this->views) {
-        if (v.getName().compare("Inlets")==0) {
-            view = v;
-        }
-    }
 
-    view.addAttribute(n);
+    this->NewAttributes.push_back(n);
 
-    views.push_back(view);
-    this->views = views;
-
-    this->addData("Inport", views);
+    //Call the init function after changing adding new attributes
+    this->init();
 }
 
 bool DynamicInOut::createInputDialog() {

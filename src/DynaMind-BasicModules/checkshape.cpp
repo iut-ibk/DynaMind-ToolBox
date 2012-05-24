@@ -28,7 +28,7 @@ void CheckShape::run()
     Logger(Standard) << "Found Views: " << sys_in->getViews().size();
 
     if(sys_in->getViews().size())
-        Logger(Standard) << "Name of 1st view: " << sys_in->getViews()[0];
+        Logger(Standard) << "Name of 1st view: " << sys_in->getNamesOfViews()[0];
 
     Logger(Standard) << "Check well done :-)";
 }

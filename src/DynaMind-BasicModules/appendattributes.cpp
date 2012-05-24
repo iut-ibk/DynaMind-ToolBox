@@ -63,7 +63,7 @@ void AppendAttributes::run() {
     DM::System * sys = this->getData("Data");
     DM::View v_existing= sys->getViewDefinition(NameOfExistingView);
     DM::RasterData * r = this->getRasterData("Data", DM::View(NameOfRasterData, DM::READ, DM::RASTERDATA));
-    foreach (std::string s, sys->getNamesOfComponentsInView(v_existing)) {
+    foreach (std::string s, sys->getUUIDsOfComponentsInView(v_existing)) {
         DM::Face * f = sys->getFace(s);
         std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
         double dattr = 0;
@@ -88,7 +88,7 @@ void AppendAttributes::init()
     sys_in = this->getData("Data");
     if (sys_in == 0)
         return;
-    std::vector<std::string> views = sys_in->getViews();
+    std::vector<std::string> views = sys_in->getNamesOfViews();
 
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;

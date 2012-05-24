@@ -68,7 +68,7 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys != 0)
-        sys_in = sys->getViews();
+        sys_in = sys->getNamesOfViews();
 
     ui->comboBox->clear();
 

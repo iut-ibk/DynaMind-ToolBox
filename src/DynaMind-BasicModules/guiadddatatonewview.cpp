@@ -14,7 +14,7 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys != 0)
-        sys_in = sys->getViews();
+        sys_in = sys->getNamesOfViews();
 
     ui->comboBox_views->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("NameOfNewView")));
@@ -70,7 +70,7 @@ void GUIAddDatatoNewView::accept() {
         return;
     }
     if (sys != 0)
-        sys_in = sys->getViews();
+        sys_in = sys->getNamesOfViews();
 
     if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
             || (nameofExistingView.compare("Connect Inport") == 0 ) ) {

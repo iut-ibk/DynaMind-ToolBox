@@ -36,11 +36,14 @@ class DM_HELPER_DLL_EXPORT DynamicInOut : public  Module
 {
     DM_DECLARE_NODE(DynamicInOut)
 
-   private:
+    private:
         std::vector<DM::View> views;
+    std::vector<std::string> NewAttributes;
+    int PrevSize;
 public:
     DynamicInOut();
     DM::System * sys_in;
+
 
     void init();
     virtual bool  createInputDialog();

@@ -66,11 +66,11 @@ void AddDataToNewView::run()
 
 void AddDataToNewView::init()
 {
-    //TODO: Works finw until someone is changing something upstream -> no update downstream!
+    //TODO: Works fine until someone is changing something upstream -> no update downstream!
     sys_in = this->getData("Data");
     if (sys_in == 0)
         return;
-    std::vector<std::string> views = sys_in->getViews();
+    std::vector<std::string> views = sys_in->getNamesOfViews();
 
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;

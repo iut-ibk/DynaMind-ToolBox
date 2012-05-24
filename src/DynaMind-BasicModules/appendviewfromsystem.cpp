@@ -55,7 +55,7 @@ void AppendViewFromSystem::init()
         foreach (std::string s, Inports) {
             DM::System * sys = this->getData(s);
             if (sys != 0) {
-                foreach (std::string v, sys->getViews()) {
+                foreach (std::string v, sys->getNamesOfViews()) {
                     if (std::find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
                         DM::View old = sys->getViewDefinition(v);
                         DM::View new_v(v, old.getType(), DM::WRITE);

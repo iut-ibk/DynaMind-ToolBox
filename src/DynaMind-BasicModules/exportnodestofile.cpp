@@ -29,7 +29,7 @@ void ExportNodesToFile::run() {
     std::fstream out;
     out.open(fileName.toAscii(),fstream::out | fstream::app);
 
-    foreach (std::string s, sys->getNamesOfComponentsInView(readview)) {
+    foreach (std::string s, sys->getUUIDsOfComponentsInView(readview)) {
         DM::Node * n = sys->getNode(s);
         out << n->getX() << "\t";
         out << n->getY() << "\t";

@@ -13,7 +13,7 @@ GUIClearView::GUIClearView(DM::Module *m, QWidget *parent) :
     DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys != 0)
-        sys_in = sys->getViews();
+        sys_in = sys->getNamesOfViews();
 
     ui->comboBox->clear();
     foreach (std::string s, sys_in) {
@@ -50,7 +50,7 @@ void GUIClearView::accept() {
     std::string nameofExistingView = ui->comboBox->currentText().toStdString();
 
     if (sys != 0)
-        sys_in = sys->getViews();
+        sys_in = sys->getNamesOfViews();
 
     if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
             || (nameofExistingView.compare("Connect Inport") == 0 ) ) {
