@@ -194,7 +194,6 @@ ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
 {
     this->guiPortObserver.setModelNode(this);
     this->guiResultObserver.setResultWidget(this->ResultWidget);
-    //VIBeModule->addResultObserver(& this->guiResultObserver);
     this->minimized = false;
     this->visible = true;
     this->setParentItem(0);
@@ -213,7 +212,6 @@ ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
     this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(VIBeModule->getClassName()));
     double w = this->simpleTextItem->boundingRect().width()+40;
 
-    double w1 = w;
     QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(VIBeModule->getName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
@@ -432,11 +430,9 @@ void ModelNode::setMinimized(bool b) {
 void ModelNode::addGroup() {
     //Find GroupNode
     QString name = QObject::sender()->objectName();
-    GroupNode * gn;
     DM::Group * g;
     if (name.compare(QString::fromStdString(this->simulation->getRootGroup()->getUuid())) == 0) {
         this->getVIBeModel()->setGroup((DM::Group * ) this->simulation->getRootGroup());
-
         return;
     }
 
@@ -452,13 +448,15 @@ void ModelNode::addGroup() {
         return;
     }
 
-
-
     this->getVIBeModel()->setGroup(g);
-
     this->getSimulation()->GUIaddModule(this->getVIBeModel(), this->pos());
-
+    //Set VIBeModule empty otherwise destructor deletes DynaMind module
+    this->VIBeModuleUUID = "";
     delete this;
+
+
+
+
 }
 
 void ModelNode::printData() {

@@ -238,6 +238,7 @@ QRectF RootGroupNode::boundingRect() const {
 }
 void RootGroupNode::addModelNode(ModelNode *m) {
     this->childnodes.push_back(m);
+    DM::Module * m1 = m->getVIBeModel();
     m->getVIBeModel()->setGroup((DM::Group *)this->getVIBeModel());
     m->setParentGroup(this);
     this->recalculateLandH();
@@ -264,6 +265,7 @@ void  RootGroupNode::setGroupZValue() {
             this->setZValue(this->parentGroup->zValue()+1);
     }
     foreach (ModelNode * m, this->childnodes ){
+        DM::Module * m1 = m->getVIBeModel();
         if(m->getVIBeModel()->isGroup()) {
             GroupNode * g = (GroupNode * ) m;
             //g->setGroupZValue();

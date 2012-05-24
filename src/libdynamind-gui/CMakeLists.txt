@@ -3,7 +3,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 SET(MOC_FILES   application.h
                 groupnode.h
-                guidataobserver.h
                 guiimageresultview.h
                 guilink.h
                 guilogsink.h

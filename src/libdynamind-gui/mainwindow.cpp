@@ -59,7 +59,6 @@
 #include <guiimageresultview.h>
 #include <dmlog.h>
 #include <guilogsink.h>
-#include <guidataobserver.h>
 #include <plot.h>
 #include <dmpythonenv.h>
 #include <guisimulationobserver.h>
