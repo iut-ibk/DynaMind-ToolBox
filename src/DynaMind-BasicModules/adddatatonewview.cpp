@@ -132,9 +132,8 @@ void AddDataToNewView::init()
         data.push_back(writeView);
         this->addData("Data", data);
     }
-
-
 }
+
 bool AddDataToNewView::createInputDialog() {
     QWidget * w = new GUIAddDatatoNewView(this);
     w->show();
