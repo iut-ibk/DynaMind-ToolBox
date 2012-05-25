@@ -195,7 +195,6 @@ void Module::updateParameter() {
             }
         }
     }
-    this->checkIfAllSystemsAreSet();
 }
 
 bool Module::checkIfAllSystemsAreSet() {
