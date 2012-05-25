@@ -44,6 +44,7 @@
 #include "clearview.h"
 #include "exportnodestofile.h"
 #include "importrasterdata.h"
+#include "calculatecentroid.h"
 
 using namespace std;
 
@@ -69,5 +70,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<ClearView>());
     registry->addNodeFactory(new NodeFactory<ExportNodesToFile>());
     registry->addNodeFactory(new NodeFactory<ImportRasterData>());
+    registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
 }
 
