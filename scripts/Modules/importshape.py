@@ -64,7 +64,6 @@ class ImportShapeFile(Module):
                 return
             if self.Identifier == self.IdentifierOld:
                 return
-            print "Init Me" 
             self.NodeView = View("", NODE, WRITE)
             self.EdgeView = View("", EDGE, WRITE)
             self.FaceView = View("", FACE, WRITE)
@@ -76,11 +75,28 @@ class ImportShapeFile(Module):
                 self.FaceView = View(self.Identifier, FACE, WRITE)
             
             data = []
-            
-            data.append(self.NodeView)
-            data.append(self.EdgeView)
-            data.append(self.FaceView)
-            
+
+            shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
+            sourcePath = self.FileName
+            dataSource = ogr.Open(sourcePath)
+            layer = dataSource.GetLayer()
+                      
+            featureDefinition = layer.GetLayerDefn()
+            fieldIndices = xrange(featureDefinition.GetFieldCount())
+            for fieldIndex in fieldIndices:
+                    fieldDefinition = featureDefinition.GetFieldDefn(fieldIndex)
+                    fieldDefinitions.append((fieldDefinition.GetName(), fieldDefinition.GetType()))            
+            for j in range(len(fieldDefinitions)):                           
+                    attributename = str(fieldDefinitions[j][0])
+                    self.NodeView.addAttribute(attributename)
+                    self.EdgeView.addAttribute(attributename)
+                    self.FaceView.addAttribute(attributename)
+            if self.isPoint:
+                data.append(self.NodeView)
+            if self.isEdge:    
+                data.append(self.EdgeView)
+            if self.isFace:
+                data.append(self.FaceView)  
             if self.AppendToExistingSystem:
                 dummy = View("dummy", SUBSYSTEM, MODIFY)
                 data.append(dummy)   
@@ -132,10 +148,8 @@ class ImportShapeFile(Module):
                    self.PointmapTol = self.PointmapTol*10                   
                        
                 self.city = self.getData("Vec")
-		print len(self.PointMap)
                 if self.AppendToExistingSystem:
                     self.initNodeList()
-		print len(self.PointMap)
                 shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
                 sourcePath = self.FileName
                 dataSource = ogr.Open(sourcePath)
@@ -146,15 +160,13 @@ class ImportShapeFile(Module):
                 for fieldIndex in fieldIndices:
                         fieldDefinition = featureDefinition.GetFieldDefn(fieldIndex)
                         fieldDefinitions.append((fieldDefinition.GetName(), fieldDefinition.GetType()))
-                feature = layer.GetNextFeature()
-                #print layer.GetFeatureCount()
                 #while there are more features,
+                feature = layer.GetNextFeature()
                 while feature:
                         shapelyGeometries.append(wkb.loads(feature.GetGeometryRef().ExportToWkb()))
                         fieldPacks.append([feature.GetField(x) for x in fieldIndices])
                         # Get the next feature
-                        feature = layer.GetNextFeature()
-             
+                        feature = layer.GetNextFeature() 
                 counter = 1
                 InlcudedEdges = {}
                 for i in range(len(shapelyGeometries)):
@@ -188,7 +200,7 @@ class ImportShapeFile(Module):
                             offset = -1
                             pl = nodevector()
                             el = edgevector()
-                            attr = Attribute()
+                            attrvec = []
                             for j in range(len(fieldDefinitions)):                           
                                 attr = Attribute(fieldDefinitions[j][0])
                                 attributename = str(fieldDefinitions[j][0])
@@ -206,12 +218,13 @@ class ImportShapeFile(Module):
                                             val = 0
                                         attr.setDouble(val)
                                     except ValueError:
-                                            pass
-                                elif type(fieldPacks[i][j]).__name__ == 'str':                            
+                                            pass                                       
+                                
+                                elif type(fieldPacks[i][j]).__name__ == 'str':                        
                                         attr.setString(str(fieldPacks[i][j]))
-                                elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]) == 'int':                                                          
+                                elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]).__name__ == 'int': 
                                         attr.setDouble(fieldPacks[i][j])
-
+                                attrvec.append(attr)
                             for coords in coordinates:
                                 n = self.addPoint2d(coords[0]+self.offsetX, coords[1]+self.offsetY, self.NodeView, self.Snap)
                                 pl.append(n)
@@ -226,10 +239,12 @@ class ImportShapeFile(Module):
                                                 el.append(e)
                                                 InlcudedEdges[startnode.getName()] = endnode.getName()
                                                 offset = 0
-                                                e.addAttribute(attr)
+                                                for attr in attrvec:      
+                                                    e.addAttribute(attr)
                             if self.isFace:
-                                    f = self.city.addFace(pl, self.FaceView)        
-                                    f.addAttribute(attr)
+                                    f = self.city.addFace(pl, self.FaceView) 
+                                    for attr in attrvec: 
+                                        f.addAttribute(attr)
 
                 print "Imported points: " + str( len(self.city.getAllNodes()))
                 print "Imported edges: " + str( len(self.city.getUUIDsOfComponentsInView( self.EdgeView)) )
