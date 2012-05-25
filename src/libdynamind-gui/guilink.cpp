@@ -70,13 +70,14 @@ GUILink::~GUILink() {
         this->outPort->removeLink(this);
     if (this->inPort != 0)
         this->inPort->removeLink(this);
-
-    //Check if Links exists
-    std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
-    if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
-        this->VIBelink = 0;
-    if (VIBelink != 0)
-        delete this->VIBelink;
+    if (this->VIBelink != 0){
+        //Check if Links exists
+        std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
+        if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
+            this->VIBelink = 0;
+        if (VIBelink != 0)
+            delete this->VIBelink;
+    }
 
     this->VIBelink = 0;
     this->inPort = 0;
