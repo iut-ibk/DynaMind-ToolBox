@@ -79,9 +79,9 @@ class ExportToShapeFile(Module):
                 attr = []
                 hasAttribute = False
                 #Get Data 
+                v = View(self.Name, READ, FACE)
 
-                 
-                names = city.getNamesOfComponentsInView(View(self.Name, READ, FACE))
+                names = city.getUUIDsOfComponentsInView(v)
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
@@ -136,7 +136,7 @@ class ExportToShapeFile(Module):
                 #Get Data 
 		unique = 0
                 NewAttriburteNamesForShape = {}  
-                names = city.getNamesOfComponentsInView(View(self.Name, READ, EDGE))
+                names = city.getUUIDsOfComponentsInView(View(self.Name, READ, EDGE))
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
@@ -196,7 +196,7 @@ class ExportToShapeFile(Module):
                 #layerDefinition = layer.GetLayerDefn()  
                 #AttributeList.append("Z") 
                 
-                names = city.getNamesOfComponentsInView(View(self.Name, READ, NODE))
+                names = city.getUUIDsOfComponentsInView(View(self.Name, READ, NODE))
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
