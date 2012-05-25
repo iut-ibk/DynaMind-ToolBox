@@ -11,7 +11,8 @@ SET(MOC_MODULE_FILES guidynamicinout.h
                      guiappendviewfromsystem.h
                      guimarker.h
                      guiappendattributes.h
-                     guiclearview.h)
+                     guiclearview.h
+                     guicalculatecentroid.h)
 
 QT4_WRAP_UI(MODULE_CPPS ${MODULE_UI_FILES})
 QT4_WRAP_CPP(MODULE_CPPS ${MOC_MODULE_FILES})
