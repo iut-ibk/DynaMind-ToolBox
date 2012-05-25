@@ -145,10 +145,6 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
 }
 
 void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
-
-
-
-
     DM::Edge * e1 = new DM::Edge(*e);
     e1->createNewUUID();
 
@@ -180,10 +176,69 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
 
     sys->removeComponentFromView(e, view);
 
-    std::vector<std::string> test = sys->getUUIDsOfComponentsInView(view);
+}
 
-    int i =0;
+DM::Node TBVectorData::caclulateCentroid(DM::System * sys, DM::Face * f) {
+    //Check if first is last
+    if (f->getNodes().size() < 3)
+        return DM::Node(0,0,0);
+    std::vector<std::string> NodeUUIDs = f->getNodes();
+    std::vector<DM::Node *> nodes;
+    foreach (std::string uuid, NodeUUIDs) {
+        nodes.push_back(sys->getNode(uuid));
+    }
+
+    DM::Node * pend = nodes[nodes.size()-1];
+    DM::Node * pstart = nodes[0];
+    bool startISEnd = true;
+    if (pend != pstart)
+            startISEnd = false;
+    double A6 = TBVectorData::calculateArea(sys, f)*6.;
+    double x = 0;
+    double y = 0;
+    for (int i = 0; i< nodes.size()-1;i++) {
+        DM::Node * p_i = nodes[i];
+        DM::Node * p_i1 = nodes[i+1];
+
+        x+= (p_i->getX() + p_i1->getX())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
+        y+= (p_i->getY() + p_i1->getY())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
 
 
+    }
+    if (!startISEnd) {
+        x+= (pend->getX() + pstart->getX())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
+        y+= (pend->getY() + pstart->getY())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
+
+       }
+    return DM::Node(x/A6,y/A6,0);
+}
+
+double TBVectorData::calculateArea(DM::System * sys, DM::Face * f) {
+    //Check if first is last
+    if (f->getNodes().size() < 3)
+        return 0;
+    std::vector<std::string> NodeUUIDs = f->getNodes();
+    std::vector<DM::Node *> nodes;
+    foreach (std::string uuid, NodeUUIDs) {
+        nodes.push_back(sys->getNode(uuid));
+    }
+
+    DM::Node * pend = nodes[nodes.size()-1];
+    DM::Node * pstart = nodes[0];
+    bool startISEnd = true;
+    if (pend != pstart)
+            startISEnd = false;
+    double A = 0;
+    for (int i = 0; i< nodes.size()-1;i++) {
+        DM::Node * p_i = nodes[i];
+        DM::Node * p_i1 = nodes[i+1];
+
+        A+=p_i->getX()*p_i1->getY() - p_i1->getX()*p_i->getY();
+
+    }
+    if (!startISEnd)
+        A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
+
+    return A/2.;
 }
 

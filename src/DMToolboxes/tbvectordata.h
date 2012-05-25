@@ -69,6 +69,11 @@ public:
 
     static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
 
+    /** @brief calculate centroid of a face */
+    static DM::Node caclulateCentroid(DM::System * sys, DM::Face * f);
+    /** @brief calculate area of a face */
+    static double calculateArea(DM::System * sys, DM::Face * f);
+
 
 };
 
