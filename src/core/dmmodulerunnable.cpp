@@ -46,6 +46,11 @@ void DM::ModuleRunnable::run() {
     start = clock();
     m->updateParameter();
     m->init();
+    //Called twice since the user can change data in the init method!
+    m->updateParameter();
+    if (!m->checkIfAllSystemsAreSet())
+        return;
+
     if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
         if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK)
             m->run();
