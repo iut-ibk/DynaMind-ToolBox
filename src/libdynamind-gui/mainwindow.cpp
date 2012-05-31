@@ -45,13 +45,11 @@
 #include "cstdio"
 #include <QTreeWidget>
 #include "simulationmanagment.h"
-//#include "pythonenv.h"
 #include <projectviewer.h>
 #include <modelnode.h>
 #include <dmmodule.h>
 #include <dmgroup.h>
 #include <dmsimulation.h>
-#include <dmdatamanagement.h>
 #include <groupnode.h>
 #include <QWidget>
 #include <QThreadPool>
