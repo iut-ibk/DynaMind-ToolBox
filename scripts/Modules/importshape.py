@@ -176,14 +176,35 @@ class ImportShapeFile(Module):
                     if shapelyGeometry.type == 'Point':            
                             n = self.addPoint2d(shapelyGeometry.x+self.offsetX , shapelyGeometry.y+self.offsetY,  self.NodeView, self.Snap)       
                             self.city.addComponentToView(n, self.NodeView)
+                            attrvec = []
                             for j in range(len(fieldDefinitions)):
                                 attr = Attribute(fieldDefinitions[j][0])
-                                #print type(fieldPacks[i][j])
-                                if type(fieldPacks[i][j]) is 'string':                            
-                                    attr.setString(str(fieldPacks[i][j]))
-                                if type(fieldPacks[i][j]) is 'float':                            
-                                    attr.setDouble(fieldPacks[i][j])
-                    
+                                attributename = str(fieldDefinitions[j][0])
+                                if attributename == 'PLAN_DATE':
+                                    stringvalue = str(fieldPacks[i][j])
+                                    stringvec = stringvalue.split("/")                                            
+                                    try:
+                                        srtingval = stringvec[len(stringvec)-1]
+                                        val = int(srtingval)
+                                        if val < 100:
+                                            val = 1900+val
+                                        if val > 2020:
+                                            val = 0
+                                        if val < 1800:
+                                            val = 0
+                                        attr.setDouble(val)
+                                    except ValueError:
+                                            pass                                       
+                                
+                                elif type(fieldPacks[i][j]).__name__ == 'str':                        
+                                        attr.setString(str(fieldPacks[i][j]))
+                                elif type(fieldPacks[i][j]).__name__ == 'float' or type(fieldPacks[i][j]).__name__ == 'int': 
+                                        attr.setDouble(fieldPacks[i][j])
+
+                                attrvec.append(attr)
+                            for attr in attrvec: 
+                           	n.addAttribute(attr)     
+              
                     elif shapelyGeometry.type == 'Polygon' or shapelyGeometry.type == 'LineString':
                             geoms.append(shapelyGeometry)
                     else:
