@@ -80,8 +80,9 @@ Module::Module() {
 }
 
 Module::~Module() {
-    foreach (DM::System * sys, ownedSystems)
+    foreach (DM::System * sys, ownedSystems) {
         delete sys;
+    }
     Logger(Debug) << "Remove " << this->getClassName() << " " << this->getUuid();
     if(!this)
         return;
@@ -189,7 +190,6 @@ void Module::updateParameter() {
             DM::System * sys_old = this->data_vals[s];
             if (sys_old != 0) {
                 this->data_vals[s] = sys_old->createSuccessor();
-
                 foreach (DM::View v, views)
                     this->data_vals[s]->addView(v);
             }

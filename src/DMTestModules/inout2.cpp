@@ -44,7 +44,6 @@ void InOut2::run() {
     for (std::map<std::string, DM::Node*>::const_iterator it = all_nodes.begin(); it != all_nodes.end(); ++it)
     {
         DM::Node * n = it->second;
-        //Logger(Debug) << n->getName() << n->getX() << n->getY() << n->getZ();
     }
 
     DM::Node * n1 = sys_in->addNode(0,0,2, inlets);

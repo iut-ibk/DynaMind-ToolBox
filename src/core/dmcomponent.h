@@ -142,9 +142,6 @@ public:
     Component* getChild(std::string name);
     std::map<std::string, Component*> getAllChilds();
 
-
-
-
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }

@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2012  Christian Urich and Michael Mair
+ * Copyright (C) 2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,11 +24,15 @@
  *
  */
 
+#ifndef TESTSYSTEM_H
+#define TESTSYSTEM_H
+
 #include <gtest/gtest.h>
 
-namespace {
+class TestSystem : public ::testing::Test
+{
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+
+};
+
+#endif // TESTSYSTEM_H

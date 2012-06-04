@@ -30,7 +30,7 @@ ADD_SUBDIRECTORY(src/core)
 ADD_SUBDIRECTORY(src/python-swig)
 ADD_SUBDIRECTORY(src/DMTestModules)
 ADD_SUBDIRECTORY(src/DMToolboxes)
-
+ADD_SUBDIRECTORY(scripts)
 ADD_SUBDIRECTORY(src/unit-test)
 
 ADD_SUBDIRECTORY(CMake)

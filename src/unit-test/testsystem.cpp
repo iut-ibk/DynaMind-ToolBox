@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2012  Christian Urich and Michael Mair
+ * Copyright (C) 2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,11 +24,23 @@
  *
  */
 
-#include <gtest/gtest.h>
-
+#include "testsystem.h"
+#include <dm.h>
 namespace {
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    TEST_F(TestSystem,memoryTest){
+        DM::System * sys = new DM::System();
+        DM::Node * n = sys->addNode(new DM::Node(0,0,0));
+        std::string uuid = n->getUUID();
+        n->addAttribute("Attribute1", 0);
+        DM::System * sys1 = sys->createSuccessor();
+        n = sys1->addNode(new DM::Node(0,0,0));
+        n->addAttribute("Attribute2", 0);
+        DM::Component * cmp = sys1->getComponent(uuid);
+        cmp->addAttribute("Attribute1", 0);
+        cmp->addAttribute("Attribute2", 0);
+        cmp->changeAttribute("Attribute1", 0);
+        sys1->createSuccessor();
+        delete sys;
+        ASSERT_TRUE(true);
+    }
 }

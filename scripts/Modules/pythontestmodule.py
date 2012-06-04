@@ -4,8 +4,8 @@
 @version 1.0
 @section LICENSE
 
-This file is part of VIBe2
-Copyright (C) 2011  Christian Urich
+This file is part of DynaMind
+Copyright (C) 2011-2012  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ from pydynamind import *
 from numpy import *
 from os import  *
 
-class WhiteNoise(Module):
+class PythonTestModule(Module):
         def __init__(self):
             Module.__init__(self)
             self.createParameter("Height",LONG,"Sample Description")
@@ -37,18 +37,17 @@ class WhiteNoise(Module):
             self.CellSize = 20
 
             views = []
-            self.r = View("OUT", RASTERDATA, WRITE)
-            views.append(self.r)
+            self.n = View("OUT", NODE, WRITE)
+            views.append(self.n)
             self.addData("OUT", views)
 
     
         def run(self):
-            r = self.getRasterData("OUT", self.r)
-            a = random.random((self.Width,self.Height))
-            r.setSize(200,200, self.CellSize)
-            for i in range(self.Width):
-                for j in range(self.Height):
-                    r.setValue(i,j,a[i,j])
+            sys = self.getData("OUT")
+	    for i in range(1000):
+	    	sys.addNode(0.0,0.1,0.2)
+
+
             
 
 
