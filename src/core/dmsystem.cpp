@@ -73,10 +73,11 @@ System::System(const System& s) : Component(s)
     EdgeNodeMap = s.EdgeNodeMap;
     viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
+    views = s.views;
 
 
     //Update SubSystem
-    std::map<std::string,System*>::iterator its;
+    /*std::map<std::string,System*>::iterator its;
 
     for ( its=subsystems.begin() ; its != subsystems.end(); its++ ) {
         System * s = static_cast<System*>(ownedchilds[(*its).first]);
@@ -127,20 +128,22 @@ System::System(const System& s) : Component(s)
         RasterData * r = static_cast<RasterData*>(ownedchilds[(*itr).first]);
         rasterdata[(*itr).first]= r;
         this->updateViews(r);
-    }
+    }*/
 
 }
 
 System::~System()
 {
     foreach (DM::System * sys, sucessor)
-    if (sys)
-        delete sys;
+        if (sys)
+            delete sys;
 }
 
 Component * System::addComponent(Component* c, const DM::View & view)
 {
 
+    if(!addChild(c))
+        return 0;
     components[c->getUUID()]=c;
 
     if (!view.getName().empty()) {
@@ -261,6 +264,9 @@ Node* System::getNode(std::string uuid)
 {
     if(nodes.find(uuid)==nodes.end())
         return 0;
+    Node * n = static_cast<Node*>(updateChild(nodes[uuid]));
+    nodes[uuid] = n;
+    this->updateViews(n);
 
     return nodes[uuid];
 }
@@ -270,39 +276,43 @@ Edge* System::getEdge(std::string uuid)
     if(edges.find(uuid)==edges.end())
         return 0;
 
+    Edge * e = static_cast<Edge*>(updateChild(edges[uuid]));
+    edges[uuid] = e;
+    this->updateViews(e);
+
     return edges[uuid];
 }
 
-Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
-{
-    std::pair<std::string, std::string> key(startnode, endnode);
-    if(EdgeNodeMap.find(key)==EdgeNodeMap.end())
-        return 0;
-    return EdgeNodeMap[key];
-}
 
 Face* System::getFace(std::string uuid)
 {
     if(faces.find(uuid)==faces.end())
         return 0;
 
+    Face * f = static_cast<Face*>(updateChild(faces[uuid]));
+    faces[uuid] = f;
+    this->updateViews(f);
     return faces[uuid];
 }
 
 
 Component * System::getComponent(std::string name) {
     if(nodes.find(name)!=nodes.end())
-        return nodes[name];
+        return this->getNode(name);
     if(edges.find(name)!=edges.end())
-        return edges[name];
+        return this->getEdge(name);
     if(faces.find(name)!=faces.end())
-        return faces[name];
+        return this->getFace(name);
     if(subsystems.find(name)!=subsystems.end())
-        return subsystems[name];
+        return this->getSubSystem(name);
     if(rasterdata.find(name)!=rasterdata.end())
         return rasterdata[name];
-    if(components.find(uuid)==components.end())
-        return components[name];
+    if(components.find(uuid)==components.end()) {
+        Component * c = static_cast<Component*>(updateChild(components[uuid]));
+        components[uuid] = c;
+        this->updateViews(c);
+        return c;
+    }
     return 0;
 
 }
@@ -435,12 +445,17 @@ std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
     }
     return names;
 }
-System* System::getSubSystem(std::string name)
+System* System::getSubSystem(std::string uuid)
 {
-    if(subsystems.find(name)==subsystems.end())
+    if(subsystems.find(uuid)==subsystems.end())
         return 0;
 
-    return subsystems[name];
+    System * s= static_cast<System*>(updateChild(subsystems[uuid]));
+    subsystems[uuid] = s;
+    this->updateViews(s);
+    return subsystems[uuid];
+
+
 }
 
 std::map<std::string, System*> System::getAllSubSystems()

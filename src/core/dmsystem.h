@@ -114,8 +114,6 @@ public:
     Node* getNode(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
     Edge* getEdge(std::string uuid);
-    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
-    Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
     /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist*/
     Face * getFace(std::string uuid);
     /** @brief Removes an Edge. Returns false if the edge doesn't exist */
