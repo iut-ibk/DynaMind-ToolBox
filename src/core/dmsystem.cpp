@@ -38,14 +38,13 @@ using namespace DM;
 
 System::System() : Component()
 {
-    sucessor = 0;
+
 }
 
 void System::updateViews(Component * c) {
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getUUID()] = c;
     }
-
 }
 
 std::vector<std::string> System::getNamesOfViews() {
@@ -54,10 +53,9 @@ std::vector<std::string> System::getNamesOfViews() {
     for ( std::map<std::string, View>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
         names.push_back(it->first);
     }
-
     return names;
-
 }
+
 DM::View  System::getViewDefinition(string name) {
 
     return viewdefinitions[name];
@@ -75,7 +73,7 @@ System::System(const System& s) : Component(s)
     EdgeNodeMap = s.EdgeNodeMap;
     viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
-    sucessor = 0;
+
 
     //Update SubSystem
     std::map<std::string,System*>::iterator its;
@@ -135,8 +133,9 @@ System::System(const System& s) : Component(s)
 
 System::~System()
 {
-    if (sucessor)
-        delete sucessor;
+    foreach (DM::System * sys, sucessor)
+    if (sys)
+        delete sys;
 }
 
 Component * System::addComponent(Component* c, const DM::View & view)
@@ -458,7 +457,7 @@ System* System::createSuccessor()
 {
 
     System* result = new System(*this);
-    this->sucessor = result;
+    this->sucessor.push_back(result);
     result->addPredecessors(this);
     return result;
 }

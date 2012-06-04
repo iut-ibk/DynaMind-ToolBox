@@ -76,8 +76,8 @@ private:
     std::map<std::string, System*> subsystems;
     std::map<std::string, Component* > components;
     std::map<std::string, View> viewdefinitions;
-    std::map<std::string, std::map<std::string, Component*> > views;
-    DM::System * sucessor;
+    std::map<std::string, std::map<std::string, Component*> > views;    
+    std::vector<DM::System *> sucessor;
 
 
     //Get Edge Based on otherwise takes ages
