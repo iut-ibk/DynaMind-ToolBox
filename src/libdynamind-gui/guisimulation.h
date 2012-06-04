@@ -43,10 +43,10 @@ public:
     void registerRootNode();
     GroupNode * getGroupNode(DM::Group * g);
     void changeGroupName(GroupNode*);
+    void clearSimulation();
 
 private:
     QVector<ModelNode*> modelNodes;
-
     QVector<GroupNode*> groupNodes;
 
 signals:

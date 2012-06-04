@@ -87,3 +87,20 @@ void GUISimulation::updateSimulation()
     this->startSimulation(true);
 
 }
+
+void GUISimulation::clearSimulation() {
+
+    GroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup());
+    foreach (GroupNode * g, this->groupNodes) {
+        if (g != rg)
+        delete g;
+    }
+    this->groupNodes.clear();
+    this->groupNodes.push_back(rg);
+
+    foreach (ModelNode * m, this->modelNodes) {
+        delete m;
+    }
+    this->modelNodes.clear();
+
+}

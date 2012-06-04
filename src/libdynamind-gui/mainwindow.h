@@ -52,7 +52,6 @@ class QTreeWidgetItem;
 class ProjectViewer;
 class ModelNode;
 class SimulationManagment;
-class DataManagment;
 class GroupNode;
 class GuiLogSink;
 class GUISimulationObserver;
@@ -73,15 +72,12 @@ public:
     GuiLogSink *log_updater;
 private:
     GUISimulation * simulation;
-    DataManagment * data;
     SimulationManagment * simmanagment;
     GUISimulationObserver * simobserver;
 
     void createModuleListView();
     QMap<QString, ModuleDescription> modules;
     QMap<ProjectViewer *, QWidget *> tabmap;
-    QVector<ModelNode * > * mnodes;
-    QVector<GroupNode * > * gnodes;
     QMap<int, ProjectViewer * >  groupscenes;
     QString currentDocument;
     int counter;
@@ -103,11 +99,6 @@ public slots:
     void setRunning();
     void saveAsSimulation();
     void importSimulation(QString fileName = "", QPointF = QPointF(0,0));
-    void registerResultWindow(GUIResultObserver *);
-    void registerPlotWindow(GUIResultObserver *, double, double);
-    void updateRasterData(QString,  QString);
-    void updateResultImage(QString);
-    void updatePlotData(double d);
     void SimulationFinished();
     void startEditor();
     void ReloadSimulation();

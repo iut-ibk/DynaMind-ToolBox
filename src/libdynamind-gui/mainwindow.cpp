@@ -41,8 +41,6 @@
 #include <sstream>
 #include "simulationio.h"
 #include "guilink.h"
-#include "StdRedirector.h"
-#include "cstdio"
 #include <QTreeWidget>
 #include "simulationmanagment.h"
 #include <projectviewer.h>
@@ -53,7 +51,6 @@
 #include <groupnode.h>
 #include <QWidget>
 #include <QThreadPool>
-#include <guiimageresultview.h>
 #include <dmlog.h>
 #include <guilogsink.h>
 #include <plot.h>
@@ -75,47 +72,6 @@ void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
         p->appendPlainText( ptr );
     }
 }
-void MainWindow::updateResultImage(QString filename) {
-}
-void MainWindow::registerResultWindow(GUIResultObserver * ress) {
-    /*GUIImageResultView * w = new GUIImageResultView();
-
-    this->tabWidget_2->addTab(w, QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()));
-    QString f = QString::fromStdString(ress->getfirstImage());
-    w->updateImage(f);
-
-    //Update Windows
-    connect(ress, SIGNAL(updateImage(QString)), w, SLOT(updateImage(QString)), Qt::BlockingQueuedConnection);*/
-}
-void MainWindow::updatePlotData(double d) {
-
-}
-
-void MainWindow::registerPlotWindow(GUIResultObserver * ress, double x, double y) {
-    /* GUIImageResultView * w = new GUIImageResultView();
-
-
-    QString f = QString::fromStdString(ress->getfirstImage());
-    w->updateImage(f);
-
-    //Update Windows*/
-    //Plot * p = new Plot();
-    // QDockWidget *dw = new QDockWidget(this);
-    //dw->setAllowedAreas(Qt::BottomDockWidgetArea);
-
-    //dw->setWidget(p);
-    //this->tabWidget->addTab(dw, QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()));
-    //this->addDockWidget(Qt::BottomDockWidgetArea, dw);
-    // dw->show();
-
-    //this->tabWidget->addTab(p,QString::fromStdString(this->simulation->getModuleWithUUID(ress->getUUID())->getName()) );
-
-    //DM::Logger(DM::Debug) << "Register Plot";
-    //connect(ress, SIGNAL(newDoubleDataForPlot(double, double)), p, SLOT(appendData(double, double)), Qt::BlockingQueuedConnection);
-    //p->appendData( x,y);
-}
-
-
 
 void MainWindow::ReloadSimulation() {
     this->simulation->reloadModules();
@@ -199,22 +155,11 @@ void MainWindow::renameGroupWindow(GroupNode * g) {
 MainWindow::MainWindow(QWidget * parent)
 {
     log_updater = new GuiLogSink();
-    //#ifdef _DEBUG
     DM::Log::init(log_updater,DM::Debug);
-    //#else
-    //    DM::Log::init(log_updater,DM::Standard);
-    //#endif
     running =  false;
     setupUi(this);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     env->addOverWriteStdCout();
-
-
-
-
-
-
-    //this->graphicsView->setViewport(new QGLWidget());
 
     this->simulation = new GUISimulation();
 
@@ -222,19 +167,9 @@ MainWindow::MainWindow(QWidget * parent)
     this->simulation->registerRootNode();
     this->simulation->addModulesFromSettings();
 
-
-
-    //addNewGroup((DM::Group*)this->simulation->getRootGroup());
-
-
-    this->mnodes = new QVector<ModelNode*>();
-    this->gnodes = new QVector<GroupNode*>();
-    //this->groups = Groups(this);
     log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
     connect( actionRun, SIGNAL( activated() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
     connect( actionPreferences, SIGNAL ( activated() ), this, SLOT(preferences() ), Qt::DirectConnection );
-    //connect(buildsim, SIGNAL(clicked()), this , SLOT(buildSimulation()), Qt::DirectConnection);
-    //connect(runSim, SIGNAL(clicked()), this , SLOT(runSimulation()), Qt::DirectConnection);
     connect(actionSave, SIGNAL(activated()), this , SLOT(saveSimulation()), Qt::DirectConnection);
     connect(actionSaveAs, SIGNAL(activated()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
     connect(actionOpen, SIGNAL(activated()), this , SLOT(loadSimulation()), Qt::DirectConnection);
@@ -242,15 +177,9 @@ MainWindow::MainWindow(QWidget * parent)
     connect(actionImport, SIGNAL(activated()), this , SLOT(importSimulation()), Qt::DirectConnection);
     connect(actionEditor, SIGNAL(activated()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
-
-    //runSim->setDisabled(true);
-    //treeWidget->setColumnCount(1);
     currentDocument = "";
 
-
-
     QSettings settings("IUT", "DYNAMIND");
-    //settings.beginGroup("Preferences");
     if(settings.value("pythonModules").toString().isEmpty()) {
         counter++;
         this->preferences();
@@ -268,30 +197,6 @@ MainWindow::MainWindow(QWidget * parent)
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
     this->rootItemModelTree->setExpanded(true);
-
-    //this->scene->setModules(& this->modules);
-    //this->scene->setModelNodes(this->mnodes);
-    //this->scene->setGroupNodes(this->gnodes);
-    //this->scene->setModuleRegistry(& this->registry);
-    //this->graphicsView->setScene(root);
-    //this->graphicsView->setAcceptDrops(true);
-
-    // this->points = new QwtPlotMarker();
-    // this->points->attach(this->PlotWindow);
-
-    //QThreadPool::setMaxThreadCount(1);
-
-    //StdRedirector<> *  myRedirector = new StdRedirector<>( std::cout, outcallback, this->plainTextEdit );
-
-
-
-
-    //Init ModuleRegistry
-
-
-    // create3DViewer();
-
-
 
 }
 
@@ -313,8 +218,6 @@ void MainWindow::createModuleListView() {
             item->setText(1,"Module");
         }
     }
-
-
 
     //Add VIBe Modules
     QStringList filters;
@@ -350,22 +253,10 @@ void MainWindow::createModuleListView() {
             }
         }
     }
-
-
-}
-
-void MainWindow::updateRasterData(QString UUID,  QString Name) {
-    //this->widget->setRasterData(UUID, Name);
-
 }
 
 void MainWindow::runSimulation() {
-
-    for (int i = 0; i < 20; i++)
-        simulation->startSimulation(true);
-
     simulation->start();
-
     return;
 
 }
@@ -472,17 +363,10 @@ void MainWindow::writeGUIInformation(QString FileName) {
 }
 
 void MainWindow::clearSimulation() {
-    while (this->gnodes->size() > 0) {
-        delete this->gnodes->at(0);
-        this->gnodes->remove(0);
-    }
-    while (this->mnodes->size() > 0)
-        delete this->mnodes->at(0);
+    this->simulation->clearSimulation();
     this->currentDocument = "";
-
-
-
 }
+
 void MainWindow::importSimulation(QString fileName, QPointF offset) {
     if (fileName.compare("") == 0)
         fileName = QFileDialog::getOpenFileName(this,
@@ -494,7 +378,7 @@ void MainWindow::importSimulation(QString fileName, QPointF offset) {
 
     std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
     SimulationIO simio;
-    simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
+    simio.loadSimluation(fileName, this->simulation, UUID_Translation);
     this->loadGUIModules((DM::Group *)this->simulation->getRootGroup(), UUID_Translation, simio.getPositionOfLoadedModules());
 
     this->loadGUILinks(UUID_Translation);
@@ -555,7 +439,7 @@ void MainWindow::loadSimulation(int id) {
         this->currentDocument = fileName;
         std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
-        simio.loadSimluation(fileName, this->simulation, UUID_Translation, this->mnodes);
+        simio.loadSimluation(fileName, this->simulation, UUID_Translation);
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
         this->loadGUILinks(UUID_Translation);
@@ -654,12 +538,6 @@ void MainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translatio
 }
 
 MainWindow::~MainWindow() {
-    for ( int i = 0; i < mnodes->size(); i++ ) {
-        ModelNode * m = mnodes->at(i);
-        delete m;
-    }
-    //delete this->scene;
-    delete this->mnodes;
     delete this->simulation;
 }
 

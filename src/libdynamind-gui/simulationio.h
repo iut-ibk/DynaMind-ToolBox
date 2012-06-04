@@ -54,9 +54,7 @@ class  DM_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
 {
 public:
     SimulationIO();
-    //static void writeSimulation(QString FileName, QMap<QString, ModuleDescription> & modules,  QVector<ModelNode * > * mnodes);
-    void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation, QVector<ModelNode * > * mnodes);
-    QVector<ModelNode * > * getModelNodes(){return this->mnodes;}
+    void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
     QVector<LoadLink> getLinks(){return this->links;}
     QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
 
@@ -72,7 +70,6 @@ private:
                       const QString & qName);
 
 
-    QVector<ModelNode * > * mnodes;
 
     QVector<LoadLink> links;
     std::map<std::string, std::string> UUIDTransation;

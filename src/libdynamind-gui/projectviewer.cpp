@@ -42,10 +42,8 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
 
     this->setItemIndexMethod(QGraphicsScene::NoIndex);
     this->id = 0;
-    this->mnodes;
 
     //Cretae New Visual Representation
-
     RootGroupNode * rg = new RootGroupNode(g->getVIBeModel(),g->getSimulation());
     this->UUID = QString::fromStdString(g->getVIBeModel()->getUuid());
     rg->setPos(0,0);

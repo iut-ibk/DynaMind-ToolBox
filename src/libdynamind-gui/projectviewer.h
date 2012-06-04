@@ -63,11 +63,6 @@ protected:
 
 
 private:
-    QVector<ModelNode* >  mnodes;
-    QVector<GroupNode* >  gnodes;
-
-
-
     DM::ModuleRegistry * moduleregistry;
     //GUISimulation * simulation;
     MainWindow * ResultViewer;
@@ -77,7 +72,6 @@ private:
 
 signals:
     void NewGroupAdded(GroupNode  *);
-
     void NewModule(QString name, QPointF pos, DM::Module* group);
 
 public slots:

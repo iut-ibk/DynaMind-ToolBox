@@ -41,14 +41,11 @@ SimulationIO::SimulationIO()
 {
 }
 
-void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation, QVector<ModelNode * > * mnodes)
+void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
 {
 
     this->sim = simulation;
-
-
     this->UUIDTransation = UUIDTranslation;
-    this->mnodes = mnodes;
     QXmlSimpleReader r;
     if (!QFile::exists(FileName)) {
         return;
