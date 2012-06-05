@@ -91,6 +91,9 @@ public:
     System();    
     /** @brief Copies a System  */
     System(const System& s);
+    /** @brief Destructor
+     *
+     * The destructor also deletes all successor states */
     ~System();
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
@@ -169,6 +172,8 @@ public:
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
     /** @brief add Predecessor **/
     void addPredecessors(DM::System * s);
+
+
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

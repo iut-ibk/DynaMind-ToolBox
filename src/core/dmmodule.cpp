@@ -607,7 +607,6 @@ void Module::copyParameterFromOtherModule(Module * m) {
                 this->setParameterValue(it->first, m->getParameterAsString(it->first));
             }
         }
-
         //Set Group
         this->setGroup(m->getGroup());
         this->name = m->getName();
