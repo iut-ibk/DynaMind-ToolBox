@@ -47,6 +47,7 @@ namespace DM {
 
     enum SimuatlonsStatuses {
         SIM_OK,
+        SIM_FAILED_LOAD,
         SIM_ERROR_SYSTEM_NOT_SET
 
     };
