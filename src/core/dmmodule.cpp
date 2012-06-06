@@ -194,6 +194,10 @@ void Module::updateParameter() {
                     this->data_vals[s]->addView(v);
             }
         }
+
+    }
+    foreach(PortObserver * po, this->portobserver) {
+        po->changedPorts();
     }
 }
 
