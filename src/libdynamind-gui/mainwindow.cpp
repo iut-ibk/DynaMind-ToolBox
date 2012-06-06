@@ -440,6 +440,10 @@ void MainWindow::loadSimulation(int id) {
         std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation);
+        if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
+            this->simulation->clearSimulation();
+            return;
+        }
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
         this->loadGUILinks(UUID_Translation);

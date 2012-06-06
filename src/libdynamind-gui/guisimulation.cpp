@@ -76,6 +76,10 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
     //Create Module in DynaMind
 
     DM::Module * m = this->addModule(name.toStdString());
+    if (!m) {
+        DM::Logger(DM::Error) << "Couldn't Create Module " << name.toStdString();
+        return;
+    }
     m->setGroup((DM::Group*)group);
     this->GUIaddModule(m, pos);
 
@@ -83,9 +87,8 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 
 
 void GUISimulation::updateSimulation()
-{
+{    
     this->startSimulation(true);
-
 }
 
 void GUISimulation::clearSimulation() {
@@ -102,5 +105,7 @@ void GUISimulation::clearSimulation() {
         delete m;
     }
     this->modelNodes.clear();
+
+    this->setSimulationStatus(DM::SIM_OK);
 
 }

@@ -117,6 +117,7 @@ void ModelNode::updatePorts () {
         }
 
     }
+    this->update();
 
 
 
