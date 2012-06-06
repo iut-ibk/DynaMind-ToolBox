@@ -62,8 +62,8 @@ class ImportShapeFile(Module):
         def init(self):
             if self.Identifier == "":
                 return
-            if self.Identifier == self.IdentifierOld:
-                return
+            #if self.Identifier == self.IdentifierOld:
+                #return
             self.NodeView = View("", NODE, WRITE)
             self.EdgeView = View("", EDGE, WRITE)
             self.FaceView = View("", FACE, WRITE)
@@ -97,18 +97,19 @@ class ImportShapeFile(Module):
                 data.append(self.EdgeView)
             if self.isFace:
                 data.append(self.FaceView)  
+		print self.FaceView
             if self.AppendToExistingSystem:
                 dummy = View("dummy", SUBSYSTEM, MODIFY)
                 data.append(dummy)   
                        
             self.addData("Vec", data)
             
-            self.IdentifierOld = self.Identifier
+            #self.IdentifierOld = self.Identifier
         
         """The method compares the existing nodes with the new Node.
         If a node already exists within the error distance this node is
         returned otherwise a new node is created and returend"""
-        def addPoint2d(self, x, y, view, error):
+        def addPoint2d(self, city, x, y, view, error):
             newNode = Node(x,y,0)
             idx = ('%.0f') % (x/self.PointmapTol)
             idy = ('%.0f') % (y/self.PointmapTol)
@@ -123,13 +124,13 @@ class ImportShapeFile(Module):
             for n in existingPoints:
                 if newNode.compare2d(n, error):
                     return n
-            n = self.city.addNode(x,y,0,view)
+            n = city.addNode(x,y,0,view)
             existingPoints.append(n)
             return n
         
         """Init PointMap that is used to check is a node already exists"""
-        def initNodeList(self):
-            nodes = self.city.getAllNodes()
+        def initNodeList(self, city):
+            nodes = city.getAllNodes()
             self.PointMap = {}
             for n in nodes:
                 n1 = Node(nodes[n])
@@ -147,9 +148,9 @@ class ImportShapeFile(Module):
                 while int(self.Snap/self.PointmapTol) is not 0:
                    self.PointmapTol = self.PointmapTol*10                   
                        
-                self.city = self.getData("Vec")
+                city = self.getData("Vec")
                 if self.AppendToExistingSystem:
-                    self.initNodeList()
+                    self.initNodeList(city)
                 shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
                 sourcePath = self.FileName
                 dataSource = ogr.Open(sourcePath)
@@ -174,8 +175,8 @@ class ImportShapeFile(Module):
                     geoms = []
                     #print shapelyGeometry.type
                     if shapelyGeometry.type == 'Point':            
-                            n = self.addPoint2d(shapelyGeometry.x+self.offsetX , shapelyGeometry.y+self.offsetY,  self.NodeView, self.Snap)       
-                            self.city.addComponentToView(n, self.NodeView)
+                            n = self.addPoint2d(city, shapelyGeometry.x+self.offsetX , shapelyGeometry.y+self.offsetY,  self.NodeView, self.Snap)       
+                            city.addComponentToView(n, self.NodeView)
                             attrvec = []
                             for j in range(len(fieldDefinitions)):
                                 attr = Attribute(fieldDefinitions[j][0])
@@ -247,7 +248,7 @@ class ImportShapeFile(Module):
                                         attr.setDouble(fieldPacks[i][j])
                                 attrvec.append(attr)
                             for coords in coordinates:
-                                n = self.addPoint2d(coords[0]+self.offsetX, coords[1]+self.offsetY, self.NodeView, self.Snap)
+                                n = self.addPoint2d(city, coords[0]+self.offsetX, coords[1]+self.offsetY, self.NodeView, self.Snap)
                                 pl.append(n)
                                 numberOfPoints += 1     
                                 offset +=1
@@ -256,21 +257,23 @@ class ImportShapeFile(Module):
                                             if pl[numberOfPoints - offset].getName() != pl[numberOfPoints].getName(): 
                                                 startnode =   pl[numberOfPoints - offset]
                                                 endnode = pl[numberOfPoints]
-                                                e = self.city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
+                                                e = city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
                                                 el.append(e)
                                                 InlcudedEdges[startnode.getName()] = endnode.getName()
                                                 offset = 0
                                                 for attr in attrvec:      
                                                     e.addAttribute(attr)
                             if self.isFace:
-                                    f = self.city.addFace(pl, self.FaceView) 
+                                    f = city.addFace(pl, self.FaceView) 
                                     for attr in attrvec: 
                                         f.addAttribute(attr)
 
-                print "Imported points: " + str( len(self.city.getAllNodes()))
-                print "Imported edges: " + str( len(self.city.getUUIDsOfComponentsInView( self.EdgeView)) )
-                print "Imported faces: " + str( len(self.city.getUUIDsOfComponentsInView( self.FaceView)) )
+                print "Imported points: " + str( len(city.getAllNodes()))
+                print "Imported edges: " + str( len(city.getUUIDsOfComponentsInView( self.EdgeView)) )
+                print "Imported faces: " + str( len(city.getUUIDsOfComponentsInView( self.FaceView)) )
                 print "Edges Created: " + str( counter )
+		#clear some stuff
+		self.PointMap = {}
 
             except Exception, e:
                 print e

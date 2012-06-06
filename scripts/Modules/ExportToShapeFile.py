@@ -80,21 +80,25 @@ class ExportToShapeFile(Module):
                 hasAttribute = False
                 #Get Data 
                 v = View(self.Name, READ, FACE)
-
-                names = city.getUUIDsOfComponentsInView(v)
+                #Get Data 
+		unique = 0
+                NewAttriburteNamesForShape = {}  
+                names = city.getUUIDsOfComponentsInView(View(self.Name, READ, EDGE))
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
 			if (key in attr) == False:
                         	attr.append(key)
+				unique = unique +1
+				NewAttriburteNamesForShape[key] = key[:7] + str(unique)
                 for j in range(len(attr)):
 		     hasAttribute = True
                      if (attr[j] in AttributeList) == False:
                          attribute = city.getComponent(names[i]).getAttribute(attr[j])
-                         fielddef = osgeo.ogr.FieldDefn(attr[j], osgeo.ogr.OFTReal)
+                         fielddef = osgeo.ogr.FieldDefn(NewAttriburteNamesForShape[attr[j]], osgeo.ogr.OFTReal)
                          layer.CreateField(fielddef)
                          layerDefinition = layer.GetLayerDefn()  
-                         AttributeList.append(attr[j])                         
+                         AttributeList.append(attr[j])                        
 		for i in range(len(names)): 
                     #Append Attributes
                     alist = city.getComponent(names[i]).getAllAttributes().keys() 
@@ -115,7 +119,7 @@ class ExportToShapeFile(Module):
                     if hasAttribute:        
                         for k in range(len(alist)):
                               value = city.getComponent(names[i]).getAttribute(alist[k]).getDouble()
-                              feature.SetField(alist[k],value)
+                              feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
                     layer.CreateFeature(feature)    
 
                 shapeData.Destroy()    
