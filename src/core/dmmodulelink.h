@@ -30,6 +30,17 @@
 
 namespace DM {
     class Port;
+    /**
+    * @ingroup DynaMind-Core
+    *
+    * @brief A ModuleLink is used to Link ports together.
+    *
+    * Out ports can be linked with several in ports. To support
+    * loops (see Groups) module linkes can be marked as back link. A in port can have one module link and one
+    * module link that is defined as back link. If the module is called the first time data
+    * are fetched from the out port connected via the standard link. For the following runs from the ou port connected
+    * via the back link
+    */
     class DM_HELPER_DLL_EXPORT  ModuleLink
     {
     private:
@@ -37,20 +48,40 @@ namespace DM {
         Port * OutPort;
         bool backLink;
         ModuleLink * getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple);
-
-    public:
-        ModuleLink(Port * InPort, Port * OutPort,bool isBackPort = false);
-        Port * getInPort();
-        Port * getOutPort();
-        bool isBackLink();
         bool isBackLinkFromOrigin;
+    public:
+        /** @brief Creats a new ModuleLink*/
+        ModuleLink(Port * InPort, Port * OutPort,bool isBackPort = false);
+        /** @brief Retruns pointer to in port*/
+        Port * getInPort();
+        /** @brief Retruns pointer to out port*/
+        Port * getOutPort();
+        /** @brief Retruns true if module link is back link*/
+        bool isBackLink();
+        /** @brief Retruns true there is a back link in a link chain.
+         *
+         * Link chains are common if a module ports are connected with group ports. Since a module out
+         * port is usally connected with a standard link to an group in port. If the group out port is now connected
+         * with a module in port we have a link chain. If on element in the link chain is a back port
+         * the mtehod returns true
+         */
         bool isBackLinkInChain();
+        /** @brief sets if module link is a back link */
         void setBackLink(bool b){this->backLink = b;}
+        /** @brief Returns name of the data connected to the out port
+         *
+         * If port is tuple port, the link chain is followed to the origin */
         std::string getDataNameFromOutPort();
+        /** @brief Returns module uuid connected to the out port
+         *
+         * If port is tuple port, the link chain is followed to the origin */
         std::string getUuidFromOutPort();
+        /** @brief Sets in port */
         void setInPort(Port *);
+        /** @brief Sets out port */
         void setOutPort(Port *);
         ~ModuleLink();
+
     };
 }
 #endif // LINK_H

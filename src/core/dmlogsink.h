@@ -36,28 +36,42 @@
 namespace DM {
     class LSEndl {};
 
-
+    /** @brief Interface class LogSink
+     *
+     * All messages send to the logger are directed to the LogSink
+     */
     class DM_HELPER_DLL_EXPORT LogSink
     {
     public:
         virtual ~LogSink() {}
         virtual void close() = 0;
+        /** @brief sends a string */
         virtual LogSink &operator<<(const std::string &string) = 0;
+        /** @brief sends a char* */
         virtual LogSink &operator<<(const char *string) = 0;
-        //virtual LogSink &operator<<(int i) = 0;
+        /** @brief sends a double */
         virtual LogSink &operator<<(double f) = 0;
+        /** @brief sends end */
         virtual LogSink &operator<<(LSEndl) = 0;
     };
 
+    /** @brief implements class LogSing
+     *
+     * can be used together with cout see Log for an example */
     class DM_HELPER_DLL_EXPORT OStreamLogSink : public LogSink {
     public:
         OStreamLogSink(std::ostream &ostream);
         ~OStreamLogSink();
         void close() {}
+        /** @brief sends a string to ostream*/
         LogSink &operator<<(const std::string &string);
+        /** @brief sends a char*  to ostream*/
         LogSink &operator<<(const char *string);
+        /** @brief sends an int to ostream*/
         LogSink &operator<<(int i);
+        /** @brief sends a double to ostream*/
         LogSink &operator<<(double f);
+        /** @brief sends std::endl to ostream*/
         LogSink &operator<<(LSEndl e);
 
     private:
