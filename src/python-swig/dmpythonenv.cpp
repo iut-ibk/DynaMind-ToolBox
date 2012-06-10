@@ -1,4 +1,4 @@
-    /**
+/**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @version 1.0
@@ -71,28 +71,29 @@ PythonEnv::PythonEnv() {
 
     if(!Py_IsInitialized()) {
         Py_Initialize();
-        SWIG_PYTHON_INITIALIZE_THREADS;
-        init_pydynamind();
-        PyThreadState *pts = PyGILState_GetThisThreadState();
-        PyEval_ReleaseThread(pts);
     }
+    SWIG_PYTHON_INITIALIZE_THREADS;
+    init_pydynamind();
+    PyThreadState *pts = PyGILState_GetThisThreadState();
+    PyEval_ReleaseThread(pts);
+
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyObject *main = PyImport_ImportModule("__main__");
     priv->main_namespace = PyModule_GetDict(main);
     Py_DECREF(main);
 
-    #if defined(SWIG_PYTHON_THREADS)
-        Logger(Standard) << "Pythonthreads enabled";
-    #else
-        Logger(Standard) << "Pythonthreads disabled";
-    #endif
+#if defined(SWIG_PYTHON_THREADS)
+    Logger(Standard) << "Pythonthreads enabled";
+#else
+    Logger(Standard) << "Pythonthreads disabled";
+#endif
 
-    #if defined(OPENMP_ENABLED)
-        Logger(Standard) << "OMP enabled";
-    #else
-        Logger(Standard) << "OMP disabled";
-    #endif
+#if defined(OPENMP_ENABLED)
+    Logger(Standard) << "OMP enabled";
+#else
+    Logger(Standard) << "OMP disabled";
+#endif
 }
 
 PythonEnv::~PythonEnv()
