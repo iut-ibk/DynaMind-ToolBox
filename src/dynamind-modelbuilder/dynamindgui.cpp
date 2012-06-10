@@ -25,12 +25,13 @@
  */
 #include <iostream>
 #include "application.h"
-#include "mainwindow.h"
+#include "dmmainwindow.h"
 #include <sstream>
 #include <cstdio>
 #include <QApplication>
 #include <QSplashScreen>
 #include <QThreadPool>
+#include <dynamindmainwindow.h>
 int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
     app.processEvents();
     //QThreadPool::globalInstance()->setMaxThreadCount(1);
 
-    MainWindow * mw = new MainWindow();
+    DMMainWindow * mw = new DMMainWindow();
 
     mw->show();
 

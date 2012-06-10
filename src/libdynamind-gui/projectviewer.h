@@ -36,7 +36,7 @@
 
 #include <dmmoduleregistry.h>
 #include <dmmodule.h>
-#include <mainwindow.h>
+#include <dmmainwindow.h>
 #include <dmsimulation.h>
 class ModelNode;
 class GroupNode;
@@ -49,7 +49,7 @@ public:
     int id;
     QString UUID;
     ProjectViewer(  GroupNode * g, QWidget * parent = 0);
-    void setResultViewer(MainWindow * w){this->ResultViewer = w;}
+    void setResultViewer(DMMainWindow * w){this->ResultViewer = w;}
     RootGroupNode * getRootNode(){return this->rootGroup;}
     QString getUUID() {return this->UUID;}
 
@@ -65,7 +65,7 @@ protected:
 private:
     DM::ModuleRegistry * moduleregistry;
     //GUISimulation * simulation;
-    MainWindow * ResultViewer;
+    DMMainWindow * ResultViewer;
 
     RootGroupNode * rootGroup;
 

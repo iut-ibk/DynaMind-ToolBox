@@ -32,14 +32,14 @@
 
 #include <QVector>
 
-class MainWindow;
+class DMMainWindow;
 class GUIResultObserver :public QObject, public DM::ResultObserver
 {
     Q_OBJECT
 private:
-    MainWindow * ResultWidgetParent;
+    DMMainWindow * ResultWidgetParent;
     bool ResultWidget;
-    MainWindow * mw;
+    DMMainWindow * mw;
     std::string UUID;
     bool WidgetCreated;
     bool PlotWidgetCreated;
@@ -55,7 +55,7 @@ public:
     void addDoubleDataToPlot(std::string UUID, double x, double y);
     //void addVectorDataToViewer(QVector<VectorData>);
 
-    void setResultWidget(MainWindow * widget);
+    void setResultWidget(DMMainWindow * widget);
     std::string getUUID(){return UUID;}
     std::string getfirstImage() {return firstImage;}
 

@@ -9,7 +9,7 @@ SET(MOC_FILES   application.h
                 guimodelnode.h
                 guiresultobserver.h
                 guisimulation.h
-                mainwindow.h
+                dmmainwindow.h
                 modelnode.h
                 modelnodebutton.h
                 preferences.h
@@ -25,15 +25,12 @@ QT4_WRAP_UI(CPP_GUI_FILES ${UI_FILES})
 QT4_WRAP_CPP(CPP_GUI_FILES ${MOC_FILES})
 QT4_ADD_RESOURCES(CPP_GUI_FILES icons.qrc splash.qrc)
 
-FILE(GLOB QWT_CPPS ../3dparty/qwt-5.2.0/src/*.cpp)
-FILE(GLOB QWT_H ../3dparty/qwt-5.2.0/src/*.h)
 
 INCLUDE_DIRECTORIES( ${QGLVIEWER_INCLUDE_DIR})
 INCLUDE_DIRECTORIES( ${QT_QTGUI_INCLUDE_DIR})
-INCLUDE_DIRECTORIES(../3dparty/qwt-5.2.0/src)
 INCLUDE_DIRECTORIES(../3dparty/alglib/src)
 
-ADD_LIBRARY(dynamindgui STATIC ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
+ADD_LIBRARY(dynamindgui SHARED ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
 
 
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)

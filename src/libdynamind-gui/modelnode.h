@@ -84,7 +84,7 @@ protected:
     virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     GUISimulation * simulation;
-    MainWindow * ResultWidget;
+    DMMainWindow * ResultWidget;
 
 public:
     QStringList ExistingInPorts;
@@ -97,7 +97,7 @@ public:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
-    void setResultWidget(MainWindow * widget) {this->ResultWidget = widget; this->guiResultObserver.setResultWidget(widget);}
+    void setResultWidget(DMMainWindow * widget) {this->ResultWidget = widget; this->guiResultObserver.setResultWidget(widget);}
 
     int getID(){return this->id;}
     QString getName(){return QString::fromStdString(this->getVIBeModel()->getClassName());}

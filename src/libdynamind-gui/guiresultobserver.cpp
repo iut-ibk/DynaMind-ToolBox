@@ -27,7 +27,7 @@
 #include <QTabWidget>
 #include <QThread>
 #include <QApplication>
-#include <mainwindow.h>
+#include <dmmainwindow.h>
 #include <dmlogger.h>
 
 GUIResultObserver::GUIResultObserver()
@@ -36,7 +36,7 @@ GUIResultObserver::GUIResultObserver()
     PlotWidgetCreated = false;
 
 }
-void GUIResultObserver::setResultWidget(MainWindow *  mainWidget) {
+void GUIResultObserver::setResultWidget(DMMainWindow *  mainWidget) {
     this->ResultWidgetParent = mainWidget;
 
     /*connect(this, SIGNAL(registerWidet(GUIResultObserver * )), this->ResultWidgetParent , SLOT(registerResultWindow(GUIResultObserver *)), Qt::QueuedConnection);
