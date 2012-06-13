@@ -60,8 +60,12 @@ void Module::addPortObserver(PortObserver *portobserver) {
 void Module::resetParameter() {
     Logger(Debug) << "Reset Parameter";
     this->internalCounter = 0;
-    foreach (DM::System * sys, ownedSystems)
-        delete sys;
+
+    while(ownedSystems.size())
+    {
+        delete (*ownedSystems.begin()).second;
+        ownedSystems.erase(ownedSystems.begin());
+    }
     ownedSystems.clear();
 
 }
@@ -80,9 +84,8 @@ Module::Module() {
 }
 
 Module::~Module() {
-    foreach (DM::System * sys, ownedSystems) {
-        delete sys;
-    }
+    resetParameter();
+
     Logger(Debug) << "Remove " << this->getClassName() << " " << this->getUuid();
     if(!this)
         return;
@@ -121,6 +124,9 @@ void Module::updateParameter() {
         std::vector<DM::View> views= this->views[s];
 
         //Check Reads
+        if (s.compare("sewerGeneration_Out") == 0) {
+            std::cout << "wat";
+        }
         if (DataValidation::isVectorOfViewRead(views)) {
             //If the internal counter is > 0 data could be need for back link!
             if (this->internalCounter == 0)
@@ -130,9 +136,11 @@ void Module::updateParameter() {
             if (this->getOutPort(s) != 0)
                 this->getOutPort(s)->setFullyLinked(false);
 
+
             DM::System * sys = this->getSystemData(s);
             if (sys == 0)
                 continue;
+
 
             //check for reads data. For read access only no new system state is created.
             foreach (DM::View view,  views)  {
@@ -142,19 +150,26 @@ void Module::updateParameter() {
                 //Check if all Data for read are really avalible
 
                 //Get View saved in System
-                DM::View checkView = sys->getViewDefinition(view.getName()) ;
+                DM::View * checkView = sys->getViewDefinition(view.getName());
+                if (!checkView) {
+                    DM::Logger(DM::Warning) << "Something weired happend checkview does not exist " << this->getName();
+                    sys = 0;
+                    break;
+                }
 
                 //Check Type
-                if (checkView.getType() != view.getType()) {
+                if (checkView->getType() != view.getType()) {
+                    DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << " type difference";
                     sys = 0;
                     break;
                 }
 
                 //Get DummyComponent
-                DM::Component * c = sys->getComponent(checkView.getIdOfDummyComponent());
+                DM::Component * c = sys->getComponent(checkView->getIdOfDummyComponent());
                 //Check if attributes are avalible
                 if (c == 0) {
                     sys = 0;
+                    DM::Logger(DM::Warning) << "Something weired happend checkview does not exist " << this->getName();
                     break;
                 }
 
@@ -163,6 +178,7 @@ void Module::updateParameter() {
                     std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
                     if (existing_attributes.find(a) == existing_attributes.end()) {
                         sys = 0;
+                        DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << "Attribute missing" << a;
                         break;
                     }
                 }
@@ -182,6 +198,7 @@ void Module::updateParameter() {
         if (!DataValidation::isVectorOfViewRead(views)) {
             this->data_vals[s] = this->getSystem_Write(s, views);
             this->getOutPort(s)->setFullyLinked(true);
+            this->data_vals[s]->setAccessedByModule(this);
             continue;
         }
 
@@ -194,7 +211,10 @@ void Module::updateParameter() {
                     this->data_vals[s]->addView(v);
             }
         }
+        this->data_vals[s]->setAccessedByModule(this);
+
     }
+
 }
 
 bool Module::checkIfAllSystemsAreSet() {
@@ -541,7 +561,8 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     }
 
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
-    return m->getSystemState(l->getDataNameFromOutPort());
+    DM::System * sys =  m->getSystemState(l->getDataNameFromOutPort());
+    return sys;
 
 
 }
@@ -559,14 +580,22 @@ DM::System* Module::getSystemState(const std::string &name)
 
 
 DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  {
-    DM::System * sys = new DM::System();
+
+    if (ownedSystems.find(name) == ownedSystems.end()) {
+        this->ownedSystems[name] = new DM::System();
+    }
+
+    DM::System * sys = this->ownedSystems[name];
     if (sys == 0)
         return sys;
-    this->ownedSystems.push_back(sys);
+
     foreach (DM::View v, views)
         sys->addView(v);
-    sys->addView(DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE));
 
+    sys->addView(DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE));
+    if (name.compare("sewerGeneration_Out") == 0) {
+        std::cout << "HUHU" << std::endl;
+    }
     return sys;
 }
 

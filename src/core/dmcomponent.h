@@ -134,7 +134,7 @@ public:
     /** @brief Sets name */
     void setName(std::string name);
     /** @brief Returns name */
-    std::string getName() const;
+    //std::string getName() const;
     //TODO No idea waht this is
     bool addChild(Component *newcomponent);
     bool changeChild(Component *newcomponent);

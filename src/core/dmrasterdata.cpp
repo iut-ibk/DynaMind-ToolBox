@@ -302,7 +302,6 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
     this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
     this->data = other.data;
-    //RasterData r;
 
     this->isClone = true;
 

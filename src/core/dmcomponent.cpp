@@ -59,9 +59,9 @@ void Component::setName(std::string name) {
     this->name = name;
 }
 
-std::string Component::getName() const {
-    return name;
-}
+//std::string Component::getName() const {
+    //return name;
+//}
 
 Component::Component(const Component& c)
 {

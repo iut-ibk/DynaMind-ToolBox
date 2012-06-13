@@ -53,6 +53,7 @@ class Node;
 class Edge;
 class Face;
 class RasterData;
+class Module;
 
 /** @ingroup DynaMind-Core
       * @brief The system class provides a description for comlpex objects.
@@ -75,7 +76,7 @@ private:
     std::map<std::string, RasterData *> rasterdata;
     std::map<std::string, System*> subsystems;
     std::map<std::string, Component* > components;
-    std::map<std::string, View> viewdefinitions;
+    std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;    
     std::vector<DM::System *> sucessor;
 
@@ -84,6 +85,7 @@ private:
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);
+    DM::Module * lastModule;
 
 public:
 
@@ -156,7 +158,7 @@ public:
     /** @brief return a vector of views avalible in the system */
     const std::vector<DM::View> getViews();
     /** @brief Retruns View */
-    View getViewDefinition(std::string name);
+    View * getViewDefinition(std::string name);
     /** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
     Component* clone();
     /** @brief add a component to a view */
@@ -171,6 +173,8 @@ public:
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
     /** @brief add Predecessor **/
     void addPredecessors(DM::System * s);
+
+    void setAccessedByModule(Module * m);
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

@@ -402,7 +402,7 @@ private:
     std::string name;
 
     Simulation * simulation;
-    std::vector<DM::System *> ownedSystems;
+    std::map<std::string, DM::System *> ownedSystems;
 
 
 

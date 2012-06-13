@@ -96,7 +96,7 @@ void Group::finishedModule(Module *m) {
     }
     QVector<QRunnable * > modules = this->getNextJobs();
     foreach (QRunnable * r, modules) {
-         DMRootGroup::getThreadPool()->start(r);
+        DMRootGroup::getThreadPool()->start(r);
     }
 
 
@@ -227,7 +227,7 @@ QVector<QRunnable *>  Group::getNextJobs() {
                     inPorts.push_back(pt->getInPort());
                 }
             }
-           foreach(Port * p, inPorts) {
+            foreach(Port * p, inPorts) {
                 foreach( ModuleLink * l, p->getLinks() ) {
                     if (!l->isBackLink()) {
                         Module * neededM = l->getOutPort()->getModule();
@@ -266,10 +266,12 @@ QVector<QRunnable *>  Group::getNextJobs() {
 void Group::resetSteps()
 {
     this->step = 0;
-    this->resetModules();
+
 }
 
 void Group::run() {
+    if (this->step ==0)
+        this->resetModules();
     notUsedModules  = this->modules;
     if (notUsedModules.size() == 0) {
         this->step = Steps;

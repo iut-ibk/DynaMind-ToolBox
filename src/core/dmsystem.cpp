@@ -32,6 +32,7 @@
 #include <dmrasterdata.h>
 #include <dmsystem.h>
 #include <dmlogger.h>
+#include <dmmodule.h>
 
 using namespace DM;
 
@@ -41,7 +42,15 @@ System::System() : Component()
 
 }
 
+void System::setAccessedByModule(Module * m) {
+    this->lastModule = m;
+}
+
 void System::updateViews(Component * c) {
+    if (!c) {
+        DM::Logger(DM::Error)  << "Component 0 in updateView";
+        return;
+    }
     foreach (std::string view, c->getInViews()) {
         this->views[view][c->getUUID()] = c;
     }
@@ -50,13 +59,13 @@ void System::updateViews(Component * c) {
 std::vector<std::string> System::getNamesOfViews() {
     std::vector<std::string> names;
 
-    for ( std::map<std::string, View>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
+    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
         names.push_back(it->first);
     }
     return names;
 }
 
-DM::View  System::getViewDefinition(string name) {
+DM::View * System::getViewDefinition(string name) {
 
     return viewdefinitions[name];
 }
@@ -73,6 +82,7 @@ System::System(const System& s) : Component(s)
     EdgeNodeMap = s.EdgeNodeMap;
     viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
+    sucessor = std::vector<DM::System*>();
 
 
     //Update SubSystem
@@ -125,6 +135,9 @@ System::System(const System& s) : Component(s)
     std::map<std::string,RasterData*>::iterator itr;
     for ( itr=rasterdata.begin() ; itr != rasterdata.end(); itr++ ) {
         RasterData * r = static_cast<RasterData*>(ownedchilds[(*itr).first]);
+        if (!r) {
+            Logger(Error) << "Copy Failed";
+        }
         rasterdata[(*itr).first]= r;
         this->updateViews(r);
     }
@@ -472,15 +485,22 @@ bool System::addView(View view)
 
     //For each view one dummy element will be created
     //Check for existing View
-    DM::View  existingView = this->viewdefinitions[view.getName()];
+    if (this->viewdefinitions.find(view.getName()) == this->viewdefinitions.end()) {
+        this->viewdefinitions[view.getName()] = new View(view);
+    }
 
+    DM::View  * existingView = this->viewdefinitions[view.getName()];
+    if (!existingView) {
+        this->viewdefinitions[view.getName()] = new View(view);
+        existingView = this->viewdefinitions[view.getName()];
+    }
 
     if (!view.writes()) {
         return true;
     }
     DM::Component * dummy  = 0;
-    if (!existingView.getIdOfDummyComponent().empty()) {
-        dummy = this->getComponent(existingView.getIdOfDummyComponent());
+    if (!existingView->getIdOfDummyComponent().empty()) {
+        dummy = this->getComponent(existingView->getIdOfDummyComponent());
     } else {
         if ( DM::COMPONENT == view.getType()) {
             dummy = this->addComponent(new Component());
@@ -508,7 +528,7 @@ bool System::addView(View view)
             this->addRasterData((DM::RasterData*) dummy);
         }
     }
-    view.setIdOfDummyComponent(dummy->getUUID());
+    existingView->setIdOfDummyComponent(dummy->getUUID());
 
 
     //extend Dummy Attribute
@@ -516,7 +536,7 @@ bool System::addView(View view)
         dummy->addAttribute(DM::Attribute(a));
     }
 
-    this->viewdefinitions[view.getName()] = view;
+    //this->viewdefinitions[view.getName()] = new View(view);
 
     return true;
 }
@@ -550,8 +570,8 @@ const std::vector<DM::View> System::getViews()  {
 
     std::vector<DM::View> viewlist;
 
-    for (std::map<std::string, View>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
-        viewlist.push_back(it->second);
+    for (std::map<std::string, View*>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
+        viewlist.push_back(View(*it->second));
     }
 
     return viewlist;

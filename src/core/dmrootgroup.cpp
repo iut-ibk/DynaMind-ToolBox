@@ -57,6 +57,7 @@ QThreadPool * DMRootGroup::getThreadPool() {
         pool = new QThreadPool();
 
     }
+    pool->setMaxThreadCount(1);
     return pool;
 }
 }
