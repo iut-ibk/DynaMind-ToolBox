@@ -78,7 +78,7 @@ Module * Simulation::addModule(std::string ModuleName) {
 
     if(!module)
     {
-        Logger(Error) << "Not able to add new module";
+        Logger(Error) << "Not able to add new module" << ModuleName;
         return 0;
     }
 
@@ -260,6 +260,7 @@ void Simulation::run() {
 }
 
 bool Simulation::startSimulation(bool virtualRun) {
+
     this->data->simulationStatus = SIM_OK;
     this->virtualRun = virtualRun;
     Logger(Standard) << "Run Simulation";
@@ -347,6 +348,11 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     SimulationReader simreader(QString::fromStdString(filename));
     foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->addModule(me.ClassName.toStdString());
+        if (!m) {
+            this->setSimulationStatus(SIM_FAILED_LOAD);
+            return std::map<std::string, std::string>();
+        }
+
         m->setName(me.Name.toStdString());
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
         foreach(QString s, me.ParemterList.keys()) {

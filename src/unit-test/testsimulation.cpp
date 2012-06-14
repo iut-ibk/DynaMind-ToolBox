@@ -160,7 +160,7 @@ TEST_F(TestSimulation,loadPythonModule) {
 
 TEST_F(TestSimulation,runSinglePythonModule) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Add Module";
     DM::Simulation sim;
     sim.registerPythonModules("scripts/scripts/");
@@ -190,7 +190,7 @@ TEST_F(TestSimulation,runRepeatedSinglePythonModule) {
     DM::Simulation sim;
     sim.registerPythonModules("scripts/scripts/");
     sim.loadSimulation("/home/c8451045/Documents/DynaMind/data/simulations/importshape.dyn");
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 2; i++)
         sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 

@@ -55,11 +55,6 @@ public:
       Checks if an edged already exists. Per default the Orintation is matters.
       If an edge exists the pointer s returned. If not a  null is returned.
       **/
-    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters = true);
-    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
-    static std::vector<DM::Edge* > getConnectedEdges(DM::System *sys,  DM::View & view,DM::Node   n1,double err=0);
-
-
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
      /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/

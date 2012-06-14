@@ -60,12 +60,8 @@ void Module::addPortObserver(PortObserver *portobserver) {
 void Module::resetParameter() {
     Logger(Debug) << "Reset Parameter";
     this->internalCounter = 0;
-
-    while(ownedSystems.size())
-    {
-        delete (*ownedSystems.begin()).second;
-        ownedSystems.erase(ownedSystems.begin());
-    }
+    foreach (DM::System * sys, ownedSystems)
+        delete sys;
     ownedSystems.clear();
 
 }
@@ -124,9 +120,6 @@ void Module::updateParameter() {
         std::vector<DM::View> views= this->views[s];
 
         //Check Reads
-        if (s.compare("sewerGeneration_Out") == 0) {
-            std::cout << "wat";
-        }
         if (DataValidation::isVectorOfViewRead(views)) {
             //If the internal counter is > 0 data could be need for back link!
             if (this->internalCounter == 0)
@@ -136,11 +129,9 @@ void Module::updateParameter() {
             if (this->getOutPort(s) != 0)
                 this->getOutPort(s)->setFullyLinked(false);
 
-
             DM::System * sys = this->getSystemData(s);
             if (sys == 0)
                 continue;
-
 
             //check for reads data. For read access only no new system state is created.
             foreach (DM::View view,  views)  {
@@ -214,7 +205,9 @@ void Module::updateParameter() {
         this->data_vals[s]->setAccessedByModule(this);
 
     }
-
+    foreach(PortObserver * po, this->portobserver) {
+        po->changedPorts();
+    }
 }
 
 bool Module::checkIfAllSystemsAreSet() {
@@ -561,8 +554,7 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     }
 
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
-    DM::System * sys =  m->getSystemState(l->getDataNameFromOutPort());
-    return sys;
+    return m->getSystemState(l->getDataNameFromOutPort());
 
 
 }
@@ -593,9 +585,7 @@ DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> vi
         sys->addView(v);
 
     sys->addView(DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE));
-    if (name.compare("sewerGeneration_Out") == 0) {
-        std::cout << "HUHU" << std::endl;
-    }
+
     return sys;
 }
 

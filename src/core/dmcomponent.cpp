@@ -74,11 +74,20 @@ Component::Component(const Component& c)
 
     for ( it=ownedchilds.begin() ; it != ownedchilds.end(); it++ )
     {
-        ownedchilds[(*it).first]=(*it).second->clone();
+        //has to be redone!!!
+        //ownedchilds[(*it).first]=(*it).second->clone();
         childsview[(*it).first]=ownedchilds[(*it).first];
     }
+    ownedchilds.clear();
 
+}
+Component * Component::updateChild(Component * c) {
+    if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
+        return c;
+    Component * c_new = c->clone();
+    ownedchilds[c->getUUID()]=c_new;
 
+    return c_new;
 }
 
 Component::~Component()
@@ -127,11 +136,6 @@ bool Component::addAttribute(Attribute newattribute)
 
 bool Component::changeAttribute(Attribute newattribute)
 {
-    /*if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
-        delete ownedattributes[newattribute.getName()];
-    Attribute * b = new Attribute(newattribute);
-    ownedattributes[newattribute.getName()] = b;
-    attributesview[newattribute.getName()] = b;*/
 
     if(attributesview.find(newattribute.getName())==attributesview.end()) {
         return this->addAttribute(newattribute);
@@ -191,10 +195,12 @@ bool Component::addChild(Component *newcomponent)
 
     childsview[newcomponent->getUUID()] = newcomponent;
     ownedchilds[newcomponent->getUUID()] = newcomponent;
+
+
     return true;
 }
 Component* Component::clone() {
-     return new Component(*this);
+    return new Component(*this);
 }
 
 bool Component::changeChild(Component *newcomponent)

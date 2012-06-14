@@ -28,48 +28,6 @@
 #include "dm.h"
 #include <QtGlobal>
 
-DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
-
-    DM::Edge * e1 = sys->getEdge(n1->getUUID(), n2->getUUID());
-
-    if (e1!=0) {
-        if (view.getName().empty()) {
-            return e1;
-        } else {
-            std::set<std::string> inViews = e1->getInViews();
-            if (inViews.find(view.getName()) ==  inViews.end())
-                return 0;
-            return e1;
-        }
-
-    }
-    if (!OrientationMatters) {
-        e1 = sys->getEdge(n2->getUUID(), n1->getUUID());
-        if (e1!=0) {
-            if (view.getName().empty()) {
-                return e1;
-            } else {
-                std::set<std::string> inViews = e1->getInViews();
-                if (inViews.find(view.getName()) ==  inViews.end())
-                    return 0;
-                return e1;
-            }
-
-        }
-    }
-
-
-    return e1;
-}
-
-DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters) {
-
-    return TBVectorData::getEdge(sys,
-                                 view,
-                                 (DM::Node *) sys->getNode(e->getStartpointName()),
-                                 (DM::Node *) sys->getNode(e->getEndpointName()),
-                                 OrientationMatters);
-}
 
 DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, double err) {
 
@@ -110,27 +68,6 @@ DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::No
     return new_Node;
 }
 
-
-std::vector<DM::Edge*> TBVectorData::getConnectedEdges(DM::System *sys, DM::View &view, DM::Node n1, double err) {
-
-    std::vector<DM::Edge*> result;
-    std::vector<std::string> names = sys->getUUIDsOfComponentsInView(view);
-
-    foreach (std::string id, names ) {
-        std::vector<DM::Node * > nodes;
-        DM::Edge * e = sys->getEdge(id);
-        nodes.push_back(sys->getNode(e->getStartpointName()));
-        nodes.push_back(sys->getNode(e->getEndpointName()));
-
-        foreach (DM::Node * n, nodes) {
-            if (n->compare2d(n1, err))
-                result.push_back(e);
-        }
-    }
-
-    return result;
-
-}
 
 
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
