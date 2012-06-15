@@ -29,11 +29,11 @@
 #include <dmcompilersettings.h>
 #include <vector>
 namespace DM {
-    class System;
-    class Node;
-    class Edge;
-    class Face;
-    class View;
+class System;
+class Node;
+class Edge;
+class Face;
+class View;
 }
 
 /**
@@ -51,13 +51,15 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT TBVectorData
 {
 public:
+    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters = true);
+    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
     /**
       Checks if an edged already exists. Per default the Orintation is matters.
       If an edge exists the pointer s returned. If not a  null is returned.
       **/
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
-     /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
+    /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
     static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
     /** @brief returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);

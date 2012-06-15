@@ -29,6 +29,51 @@
 #include <QtGlobal>
 
 
+DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
+
+    DM::Edge * e1 = sys->getEdge(n1->getUUID(), n2->getUUID());
+
+    if (e1!=0) {
+        if (view.getName().empty()) {
+            return e1;
+        } else {
+            std::set<std::string> inViews = e1->getInViews();
+            if (inViews.find(view.getName()) == inViews.end())
+                return 0;
+            return e1;
+        }
+
+    }
+    if (!OrientationMatters) {
+        e1 = sys->getEdge(n2->getUUID(), n1->getUUID());
+        if (e1!=0) {
+            if (view.getName().empty()) {
+                return e1;
+            } else {
+                std::set<std::string> inViews = e1->getInViews();
+                if (inViews.find(view.getName()) == inViews.end())
+                    return 0;
+                return e1;
+            }
+
+        }
+    }
+
+
+    return e1;
+}
+
+DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters) {
+
+    return TBVectorData::getEdge(sys,
+                                 view,
+                                 (DM::Node *) sys->getNode(e->getStartpointName()),
+                                 (DM::Node *) sys->getNode(e->getEndpointName()),
+                                 OrientationMatters);
+}
+
+
+
 DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, double err) {
 
 

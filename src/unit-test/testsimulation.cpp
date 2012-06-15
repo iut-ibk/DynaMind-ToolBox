@@ -153,7 +153,7 @@ TEST_F(TestSimulation,loadPythonModule) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Add Module";
     DM::Simulation sim;
-    sim.registerPythonModules("scripts/scripts/");
+    sim.registerPythonModules("PythonModules/scripts/");
     DM::Module * m = sim.addModule("PythonTestModule");
     ASSERT_TRUE(m != 0);
 }
@@ -163,7 +163,7 @@ TEST_F(TestSimulation,runSinglePythonModule) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Add Module";
     DM::Simulation sim;
-    sim.registerPythonModules("scripts/scripts/");
+    sim.registerPythonModules("PythonModules/scripts/");
     DM::Module * m = sim.addModule("PythonTestModule");
     ASSERT_TRUE(m != 0);
     sim.run();
@@ -175,7 +175,7 @@ TEST_F(TestSimulation,runRepeatedSinglePythonModule) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Add Module";
     DM::Simulation sim;
-    sim.registerPythonModules("scripts/scripts/");
+    sim.registerPythonModules("PythonModules/scripts/");
     DM::Module * m = sim.addModule("PythonTestModule");
     ASSERT_TRUE(m != 0);
     for (int i = 0; i < 100; i++)

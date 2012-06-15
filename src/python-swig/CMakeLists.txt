@@ -17,26 +17,26 @@ ENDIF()
 
 
 EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -c++ -threads -external-runtime swigruntime.h)
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i)
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i)
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i)
+EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i)
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 
 ADD_CUSTOM_COMMAND(        
-        COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
+        COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
-        OUTPUT ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp
+        OUTPUT ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp
         )
 
 ADD_CUSTOM_COMMAND(
-        COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i
+        COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i
-        OUTPUT ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp
+        OUTPUT ${CMAKE_BINARY_DIR}/output/pydmtoolboxWRAP.cpp
         )
 
-ADD_CUSTOM_TARGET(pydynamindgen DEPENDS ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
-ADD_CUSTOM_TARGET(pydmtoolboxgen DEPENDS ${CMAKE_BINARY_DIR}/pydmtoolboxWRAP.cpp)
+ADD_CUSTOM_TARGET(pydynamindgen DEPENDS ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp)
+ADD_CUSTOM_TARGET(pydmtoolboxgen DEPENDS ${CMAKE_BINARY_DIR}/output/pydmtoolboxWRAP.cpp)
 
 SET(CMAKE_SWIG_FLAGS "")
 SET_SOURCE_FILES_PROPERTIES(pydynamind.i PROPERTIES CPLUSPLUS ON)
@@ -52,11 +52,11 @@ SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
 SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i)
 SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydmtoolbox.py
+INSTALL(FILES ${CMAKE_BINARY_DIR}/output/pydmtoolbox.py
         DESTINATION bin
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamind.py
+INSTALL(FILES ${CMAKE_BINARY_DIR}/output/pydynamind.py
         DESTINATION bin
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
@@ -64,11 +64,11 @@ INSTALL(FILES ${PYTHON_HEADER}
         DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp
+INSTALL(FILES ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp
         DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-INSTALL(FILES ${CMAKE_BINARY_DIR}/pydynamindWRAP.h
+INSTALL(FILES ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.h
         DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 

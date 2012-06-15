@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
 
-SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/pydynamindWRAP.cpp)
+SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp)
 
 ADD_LIBRARY(dynamindcore  SHARED ${DYNAMIND_CPPS})
 
