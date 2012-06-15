@@ -5,9 +5,7 @@ project(DynaMind-ToolBox)
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-QGIS)
-SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
-SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
-SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
+
 
 foreach (tool ${TOOLBOX})
 	if (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
@@ -21,5 +19,14 @@ foreach (tool ${TOOLBOX})
 	endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
 
+	
+endforeach(${tool}) 
+
+
+SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
+SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
+SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
+
+foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
 endforeach(${tool}) 
