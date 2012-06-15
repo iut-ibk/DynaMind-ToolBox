@@ -19,13 +19,12 @@ foreach (tool ${TOOLBOX})
 	endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
 
-	
 endforeach(${tool}) 
-
 
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
+SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
