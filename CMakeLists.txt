@@ -1,14 +1,22 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-basicmodules)
 
-FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
-            PATHS   $ENV{DYNAMIND_DIR}/include
-            PATH_SUFFIXES dynamindcore/CMake)
 
-IF(DYNAMINDDEV)
-    INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
+IF(${DYNAMIND_INCLUDE_DIR})
+	FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
+		    PATHS   $ENV{DYNAMIND_DIR}/include
+		    PATH_SUFFIXES dynamindcore/CMake)
+
+	IF(DYNAMINDDEV)
+	    INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
+	ELSE()
+	    MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
+	ENDIF()
 ELSE()
-    MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
+	MESSAGE("Compiled from toolbox")
+	MESSAGE("DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")
+	SET (DYNAMIND_CORE_LIBRARY dynamindcore)
+	MESSAGE("${DYNAMIND_CORE_LIBRARY}")
 ENDIF()
 
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
