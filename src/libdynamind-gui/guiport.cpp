@@ -256,7 +256,7 @@ void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
                     tmp_link = 0;
 
                     //Run Simulation
-                    this->modelNode->getSimulation()->updateSimulation();
+                    //this->modelNode->getSimulation()->updateSimulation();
 
 
                 }

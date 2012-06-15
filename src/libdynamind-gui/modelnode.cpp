@@ -322,7 +322,7 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
 
     if(this->visible){
-        this->simulation->updateSimulation();
+        //this->simulation->updateSimulation();
         if (this->getVIBeModel()->createInputDialog() == false )
         {
 
@@ -473,8 +473,8 @@ void ModelNode::printData() {
         }
         foreach (std::string name, sys->getNamesOfViews()) {
             DM::Logger(DM::Debug) << name;
-            DM::View view = sys->getViewDefinition(name);
-            DM::Component * c = sys->getComponent(view.getIdOfDummyComponent());
+            DM::View * view = sys->getViewDefinition(name);
+            DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
             if (c == 0) {
                 continue;
             }

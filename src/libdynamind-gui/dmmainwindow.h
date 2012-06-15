@@ -106,6 +106,7 @@ public slots:
     void addNewGroupWindows(GroupNode *);
     void renameGroupWindow(GroupNode *);
     void removeGroupWindows(QString uuid);
+    void updateSimulation();
 
 
 private slots:

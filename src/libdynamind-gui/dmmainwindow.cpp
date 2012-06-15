@@ -182,6 +182,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     connect(actionImport, SIGNAL(activated()), this , SLOT(importSimulation()), Qt::DirectConnection);
     connect(actionEditor, SIGNAL(activated()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
+    connect(actionUpdate, SIGNAL(activated()), this , SLOT(updateSimulation()), Qt::DirectConnection);
     currentDocument = "";
 
     QSettings settings("IUT", "DYNAMIND");
@@ -266,6 +267,10 @@ void DMMainWindow::runSimulation() {
     return;
 
 }
+void DMMainWindow::updateSimulation() {
+    this->simulation->updateSimulation();
+}
+
 void DMMainWindow::SimulationFinished() {
 
 }
@@ -446,10 +451,10 @@ void DMMainWindow::loadSimulation(int id) {
         std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation);
-        if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
+        /*if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
             this->simulation->clearSimulation();
             return;
-        }
+        }*/
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
         this->loadGUILinks(UUID_Translation);

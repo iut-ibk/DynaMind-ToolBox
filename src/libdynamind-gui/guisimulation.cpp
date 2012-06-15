@@ -63,7 +63,7 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
         emit addedGroup(node);
     }
 
-    this->updateSimulation();
+    //this->updateSimulation();
 
 }
 
@@ -84,6 +84,7 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
     this->GUIaddModule(m, pos);
 
 }
+
 
 
 void GUISimulation::updateSimulation()
