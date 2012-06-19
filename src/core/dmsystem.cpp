@@ -114,6 +114,7 @@ Node * System::addNode(Node* node)
         return 0;
 
     nodes[node->getUUID()]=node;
+    this->updateViews(node);
     return node;
 }
 
@@ -128,7 +129,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
         this->views[view.getName()][r->getUUID()] = r;
         r->setView(view.getName());
     }
-
+    this->updateViews(r);
     return r;
 }
 
@@ -166,6 +167,7 @@ Edge * System::addEdge(Edge* edge)
         views[v][edge->getUUID()]=edge;
     }
     this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
+    this->updateViews(edge);
     return edge;
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
@@ -189,6 +191,7 @@ Face * System::addFace(Face *f) {
         return 0;
 
     faces[f->getUUID()]=f;
+    this->updateViews(f);
     return f;
 }
 
