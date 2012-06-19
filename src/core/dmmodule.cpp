@@ -58,7 +58,7 @@ void Module::addPortObserver(PortObserver *portobserver) {
     this->portobserver.push_back(portobserver);
 }
 void Module::resetParameter() {
-    Logger(Debug) << "Reset Parameter";
+    Logger(Debug) << this->getUuid() <<" Reset Parameter";
     this->internalCounter = 0;
     while(ownedSystems.size()) {
         delete (*ownedSystems.begin()).second;
@@ -114,6 +114,7 @@ Port * Module::getOutPort(std::string name) {
 }
 
 void Module::updateParameter() {
+    Logger(Debug) << this->getUuid() <<" Update Parameter";
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
         if (it->second != DM::SYSTEM) {
@@ -220,7 +221,7 @@ bool Module::checkIfAllSystemsAreSet() {
 
         std::string name = it->first;
         if (this->data_vals[name] == 0) {
-            Logger(Error) << name << " " << "Not Set!";
+            Logger(Error) << name << " " << "Not Set for module " << this->getUuid() << " " << this->getName();
             this->simulation->setSimulationStatus(SIM_ERROR_SYSTEM_NOT_SET);
             return false;
         }
@@ -404,6 +405,11 @@ DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
          ++it) {
         r = (DM::RasterData *) it->second;
     }
+    if (r == 0) {
+        Logger(Error) << "RasterData don't exists";
+        this->getSimulation()->setSimulationStatus(DM::SIM_ERROR_SYSTEM_NOT_SET);
+    }
+
     return r;
 
 }
