@@ -117,11 +117,15 @@ bool RasterData::setValue(long x, long y, double value) {
 
 RasterData::~RasterData() {
 
+    if (isClone)
+        return;
     for (long i = 0; i < width; i++) {
         delete[] this->data[i];
     }
     if (height != 0)
         delete[] data;
+    data = 0;
+
 
 }
 
@@ -302,7 +306,6 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
     this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
     this->data = other.data;
-
     this->isClone = true;
 
 }
