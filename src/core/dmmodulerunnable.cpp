@@ -52,8 +52,11 @@ void DM::ModuleRunnable::run() {
         return;
 
     if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
-        if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK)
+
+        if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
+            DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
             m->run();
+        }
     }
     m->postRun();
     finish = clock();
