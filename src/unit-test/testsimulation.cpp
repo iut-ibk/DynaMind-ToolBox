@@ -60,7 +60,7 @@ TEST_F(TestSimulation,repeatedRunTest) {
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * m = sim.addModule("TestModule");
     ASSERT_TRUE(m != 0);
-    for (long i = 0; i < 10; i++) {
+    for (long i = 0; i < 1000; i++) {
         sim.run();
         ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
     }
@@ -183,16 +183,4 @@ TEST_F(TestSimulation,runRepeatedSinglePythonModule) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
 }
-/*TEST_F(TestSimulation,runImportShape) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Add Module";
-    DM::Simulation sim;
-    sim.registerPythonModules("scripts/scripts/");
-    sim.loadSimulation("/home/c8451045/Documents/DynaMind/data/simulations/importshape.dyn");
-    for (int i = 0; i < 2; i++)
-        sim.run();
-    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-
-}*/
 }
