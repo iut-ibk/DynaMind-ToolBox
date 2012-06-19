@@ -29,3 +29,7 @@ SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
 endforeach(${tool}) 
+
+
+add_subdirectory(DynaMind-ComplexUnitTests)
+add_subdirectory(Data)
