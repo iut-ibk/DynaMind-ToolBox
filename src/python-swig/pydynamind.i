@@ -50,7 +50,7 @@ namespace std {
     %template(nodevector) vector<DM::Node* >;
     %template(facevector) vector<DM::Face* >;
     %template(viewvector) vector<DM::View >;
-    %template(viewmap) map<string, vector<DM::View > >;
+    %template(viewmap) map<string, vector<DM::View* > >;
     %template(componentvector) vector<DM::Component* >;
     %template(attributevector) vector<DM::Attribute* >;
     %template(attributemap) map<string, DM::Attribute* >;
