@@ -254,7 +254,7 @@ void Simulation::resetModules() {
     }
 }
 void Simulation::run() {
-    //this->resetModules();
+    this->resetModules();
     this->startSimulation(false);
 
 }
