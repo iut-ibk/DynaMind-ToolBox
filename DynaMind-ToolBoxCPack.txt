@@ -11,8 +11,6 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
 
 
 IF(WIN32 AND NOT UNIX)
-    DYNAMIND_3RDPARTY_INSTALL_LIBS("bin")
-
     SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
     SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
