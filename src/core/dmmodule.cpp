@@ -80,7 +80,7 @@ Module::Module() {
     portobserver = std::vector<PortObserver *>();
     resultobserver = std::vector<ResultObserver * >();
     simulation = 0;
-    hasChanged = false;
+    hasBeenExecuted = false;
 }
 
 Module::~Module() {
@@ -678,11 +678,11 @@ void Module::copyParameterFromOtherModule(Module * m) {
 
 }
 bool Module::isExecuted() {
-    return this->hasChanged;
+    return this->hasBeenExecuted;
 }
 
 void Module::setExecuted(bool ex){
-    this->hasChanged = ex;
+    this->hasBeenExecuted = ex;
     if (!ex) {
         if (this->getGroup())
             this->getGroup()->setContentOfModuleHasChanged(true);

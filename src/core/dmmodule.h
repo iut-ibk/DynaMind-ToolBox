@@ -411,7 +411,7 @@ private:
 
     Simulation * simulation;
     std::map<std::string, DM::System *> ownedSystems;
-    bool hasChanged;
+    bool hasBeenExecuted;
 
 
 
