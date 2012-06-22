@@ -4,18 +4,22 @@ project(DynaMind-ToolBox)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-QGIS)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks)
 
 
 foreach (tool ${TOOLBOX})
 	if (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 	    message(STATUS "${tool} submodule already exists")
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule foreach git checkout unstable
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 	    message(STATUS "preparing ${tool} submodule")
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule init
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule foreach git checkout unstable
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
 
