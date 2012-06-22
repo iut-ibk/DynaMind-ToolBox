@@ -37,3 +37,4 @@ endforeach(${tool})
 
 add_subdirectory(DynaMind-ComplexUnitTests)
 add_subdirectory(Data)
+INCLUDE(DynaMind-ToolBoxCPack.txt)
