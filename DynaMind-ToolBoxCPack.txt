@@ -1,0 +1,43 @@
+INCLUDE(InstallRequiredSystemLibraries)
+
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-ToolBox")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-ToolBox")
+SET(CPACK_PACKAGE_NAME "DynaMind")
+SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
+
+
+IF(WIN32 AND NOT UNIX)
+    DYNAMIND_3RDPARTY_INSTALL_LIBS("bin")
+
+    SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
+    SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
+    SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
+    SET(CPACK_NSIS_CONTACT "christian.urich@uibk.ac.at")
+
+    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        !include \\\"winmessages.nsh\\\"
+        !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
+        !define env_hkcu 'HKCU \\\"Environment\\\"'
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_DIR $INSTDIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_PYTHON $INSTDIR\\\\lib
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        ClearErrors
+        ")
+
+     INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
+
+
+     set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
+     SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        DeleteRegValue \\\${env_hklm} DYNAMIND_DIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\\${env_hklm} DYNAMIND_PYTHON
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+      ")
+ENDIF()
+INCLUDE(CPack)
