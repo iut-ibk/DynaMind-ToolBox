@@ -9,6 +9,7 @@ SET(MOC_FILES   application.h
                 guimodelnode.h
                 guiresultobserver.h
                 guisimulation.h
+                guiviewdataformodules.h
                 dmmainwindow.h
                 modelnode.h
                 modelnodebutton.h

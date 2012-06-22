@@ -38,7 +38,7 @@
 #include <QLinearGradient>
 #include "ColorPalette.h"
 #include "modelnodebutton.h"
-
+#include <guiviewdataformodules.h>
 #include <dmmodule.h>
 #include <guiport.h>
 
@@ -464,30 +464,9 @@ void ModelNode::addGroup() {
 }
 
 void ModelNode::printData() {
-    DM::Logger(DM::Debug) << this->getDMModel()->getName();
 
-    foreach (DM::Port * p, this->getDMModel()->getOutPorts())
-    {
-        std::string dataname = p->getLinkedDataName();
-        DM::Logger(DM::Debug) << dataname;
-        DM::System * sys = this->getDMModel()->getData(dataname);
-        if (sys == 0) {
-            continue;
-        }
-        foreach (std::string name, sys->getNamesOfViews()) {
-            DM::Logger(DM::Debug) << name;
-            DM::View * view = sys->getViewDefinition(name);
-            DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
-            if (c == 0) {
-                continue;
-            }
-            std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
-            for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
-                DM::Logger(DM::Debug) << it->first;
-            }
-        }
+    GUIViewDataForModules * gv = new GUIViewDataForModules(this->getDMModel());
+    gv->show();
 
-
-    }
 
 }
