@@ -45,10 +45,9 @@ namespace DM {
 Group::Group()
 {
     mutex = new QMutex(QMutex::Recursive );
+    moduleHasChanged = true;
     step = 0;
-
-
-
+    Steps = 0;
 }
 void Group::addModule(Module *module) {
     if(!module)
@@ -91,6 +90,8 @@ void Group::finishedModule(Module *m) {
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
         if (m->isGroup()) {
             Group * g = (Group * )m;
+            g->setExecuted(true);
+            g->setContentOfModuleHasChanged(false);
             g->resetSteps();
         }
     }
@@ -107,7 +108,8 @@ void Group::clearModules() {
 
 void Group::resetModules() {
     foreach(Module * m, this->modules) {
-        m->resetParameter();
+        if (!m->isExecuted())
+            m->resetParameter();
     }
 }
 
@@ -207,12 +209,8 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     foreach(PortObserver * po, this->portobserver) {
         po->changedPorts();
     }
-
     return pt;
-
-
 }
-
 
 QVector<QRunnable *>  Group::getNextJobs() {
     QVector<QRunnable * > RunnedModulesInStep;
@@ -234,6 +232,8 @@ QVector<QRunnable *>  Group::getNextJobs() {
                         bool ModuleExists = false;
                         foreach(Module* usedM, UsedModules) {
                             if (usedM == neededM) {
+                                if (!neededM->isExecuted())
+                                    m->setExecuted(false);
                                 ModuleExists = true;
                                 break;
                             }
@@ -245,7 +245,6 @@ QVector<QRunnable *>  Group::getNextJobs() {
                     }
                 }
             }
-
             if (runnable) {
                 currentRunning.push_back(m);
                 RunnedModulesInStep.push_back(new ModuleRunnable(m));
@@ -270,8 +269,11 @@ void Group::resetSteps()
 }
 
 void Group::run() {
-    if (this->step ==0)
-        this->resetModules();
+    if (this->step ==0) {
+        if (!this->isExecuted())
+            this->resetModules();
+    }
+
     notUsedModules  = this->modules;
     if (notUsedModules.size() == 0) {
         this->step = Steps;
@@ -290,8 +292,13 @@ void Group::run() {
             }
             DMRootGroup::getThreadPool()->start(r);
         }
-
         this->step++;
+
+        if (this->isRunnable()) {
+            foreach (DM::Module * m, this->modules) {
+                m->setExecuted(false);
+            }
+        }
     } else {
         this->group->finishedModule(this);
     }

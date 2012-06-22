@@ -250,6 +250,7 @@ std::vector<Group*> Simulation::getGroups() {
 void Simulation::resetModules() {
     std::vector<DM::Module *> mv= this->getModules();
     foreach (Module * m, mv) {
+        if (!m->isExecuted())
         this->resetModule(m->getUuid());
     }
 }

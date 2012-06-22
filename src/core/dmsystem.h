@@ -178,6 +178,7 @@ public:
     void addPredecessors(DM::System * s);
 
     void setAccessedByModule(Module * m);
+    Module * getLastModule();
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

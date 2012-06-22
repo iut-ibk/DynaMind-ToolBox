@@ -77,6 +77,7 @@ namespace DM {
          std::vector<Module * > currentRunning;
 
          QVector<QRunnable *> getNextJobs();
+         bool moduleHasChanged;
     protected:
          int Steps;
          int step;
@@ -139,6 +140,18 @@ namespace DM {
         void resetModules();
         /** @brief Calls the Destructor, Module destructor and deletes the mutex*/
         virtual ~Group();
+
+        /** @brief Set Steps */
+        void setStep(int s) {this->step = s;}
+
+        /** @brief Return Steps */
+        int getSteps() {return this->Steps;}
+
+        /** @brief Set true if module within the group has changed */
+        void setContentOfModuleHasChanged(bool c) {this->moduleHasChanged = c;}
+
+        /** @brief Returns true if a module within the has changed */
+        bool HasContaingModuleChanged() {return this->moduleHasChanged;}
 
     };
 }

@@ -42,25 +42,48 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 void DM::ModuleRunnable::run() {
     clock_t start, finish;
-    DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
-    start = clock();
-    m->updateParameter();
-    m->init();
-    //Called twice since the user can change data in the init method!
-    m->updateParameter();
-    if (!m->checkIfAllSystemsAreSet())
-        return;
+    if (!m->checkPreviousModuleUnchanged())
+        m->setExecuted(false);
+    if (!m->isExecuted() || m->isGroup()) {
 
-    if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
 
-        if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
-            DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
-            m->run();
+        m->updateParameter();
+        m->init();
+        //Called twice since the user can change data in the init method!
+        m->updateParameter();
+        if (!m->checkIfAllSystemsAreSet())
+            return;
+
+        if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
+            if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
+                DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
+                /* If simulation is executed in virtual mode loops are just executed ones.
+                 * Therefore steps is set to group step - 1 which means just one step is executed and.
+                 * Same is valid when the modules with a group have not been changed */
+                if (m->isGroup() ) {
+                    DM::Group *  g = (Group*) m;
+                    if (g->getSimulation()->isVirtualRun() || !g->HasContaingModuleChanged()) {
+                        if (g->isRunnable()) {
+                            int steps = g->getSteps()-1;
+                            g->setStep(steps);
+                        }
+                    }
+                }
+                start = clock();
+                DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  << m->isExecuted();
+                m->run();
+                m->setExecuted(true);
+                finish = clock();
+                DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
+            }
         }
+        m->postRun();
+
+
     }
-    m->postRun();
-    finish = clock();
-    DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
+
+
+
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);

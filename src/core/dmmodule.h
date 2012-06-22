@@ -339,16 +339,16 @@ public:
     /** @brief adds the module to a group */
     void setGroup(Group * group);
 
-    /** @brief returns pointer to the group */
+    /** @brief Returns pointer to the parent group */
     Group * getGroup();
 
-    /** @brief returns uuid */
+    /** @brief Returns uuid */
     std::string getUuid() const {return this->uuid;}
 
-    /** @brief set pointer to simulation */
+    /** @brief Set pointer to simulation */
     void setSimulation(Simulation * simulation);
 
-    /** @brief set name of module */
+    /** @brief Set name of module */
     void setName(std::string name) {
         this->name = name;
     }
@@ -391,6 +391,14 @@ public:
       */
     virtual bool createInputDialog(){return false;}
 
+    /** @brief Returns true if module hase been executed */
+    bool isExecuted();
+
+    /** @brief Has been Executed */
+    void setExecuted(bool ex);
+
+    bool checkPreviousModuleUnchanged();
+
 private:
     bool PythonModule;
     long id;
@@ -403,6 +411,7 @@ private:
 
     Simulation * simulation;
     std::map<std::string, DM::System *> ownedSystems;
+    bool hasChanged;
 
 
 

@@ -46,6 +46,10 @@ void System::setAccessedByModule(Module * m) {
     this->lastModule = m;
 }
 
+Module * System::getLastModule() {
+    return this->lastModule;
+}
+
 void System::updateViews(Component * c) {
     if (!c) {
         DM::Logger(DM::Error)  << "Component 0 in updateView";

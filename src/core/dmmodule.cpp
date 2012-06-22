@@ -58,6 +58,7 @@ void Module::addPortObserver(PortObserver *portobserver) {
     this->portobserver.push_back(portobserver);
 }
 void Module::resetParameter() {
+    this->setExecuted(false);
     Logger(Debug) << this->getUuid() <<" Reset Parameter";
     this->internalCounter = 0;
     while(ownedSystems.size()) {
@@ -79,6 +80,7 @@ Module::Module() {
     portobserver = std::vector<PortObserver *>();
     resultobserver = std::vector<ResultObserver * >();
     simulation = 0;
+    hasChanged = false;
 }
 
 Module::~Module() {
@@ -111,6 +113,29 @@ Port * Module::getOutPort(std::string name) {
 
     }
     return 0;
+}
+bool Module::checkPreviousModuleUnchanged() {
+    Logger(Debug) << this->getUuid() <<" Update Parameter";
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
+        std::string s = it->first;
+        if (it->second != DM::SYSTEM) {
+            continue;
+        }
+        std::vector<DM::View> views= this->views[s];
+
+        //Check Reads
+        if (!DataValidation::isVectorOfViewRead(views)) {
+            return true;
+        }
+        DM::System * sys = this->getSystemData(s);
+
+        if (sys == 0)
+            return false;
+        if (!sys->getLastModule()->isExecuted()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Module::updateParameter() {
@@ -232,6 +257,7 @@ bool Module::checkIfAllSystemsAreSet() {
 }
 
 void Module::setParameterValue(std::string name, std::string v) {
+    this->setExecuted(false);
     //Check if parameter exists
     bool exists = false;
     for (std::map<std::string, int>::iterator it = parameter.begin(); it != parameter.end(); ++it) {
@@ -317,6 +343,7 @@ void Module::postRun() {
     this->internalCounter++;
     //To make sure that a module gets the right data when used in backlinks
     this->data_vals_prev = data_vals;
+
 
 }
 
@@ -571,6 +598,7 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 DM::System* Module::getSystemState(const std::string &name)
 {
     DM::System  * sys = this->data_vals_prev[name];
+    sys->setAccessedByModule(this);
     if (sys == 0) {
         return 0;
     }
@@ -648,6 +676,17 @@ void Module::copyParameterFromOtherModule(Module * m) {
         Logger(Error) << "Can't Copy Model Parameter from different Type of Module";
     }
 
+}
+bool Module::isExecuted() {
+    return this->hasChanged;
+}
+
+void Module::setExecuted(bool ex){
+    this->hasChanged = ex;
+    if (!ex) {
+        if (this->getGroup())
+            this->getGroup()->setContentOfModuleHasChanged(true);
+    }
 }
 
 }
