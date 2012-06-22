@@ -48,7 +48,7 @@ RootGroupNode::~RootGroupNode() {
 
     DM::Logger(DM::Debug) << "Remove RootGroupNode ";
 
-    if (this->getVIBeModel() == 0)
+    if (this->getDMModel() == 0)
         return;
     while (this->childnodes.size() > 0)
         delete this->childnodes[0];
@@ -75,7 +75,7 @@ void RootGroupNode::changeGroupID(QString Name) {
 
 
 void RootGroupNode::updatePorts () {
-    DM::Group * g = (DM::Group*)this->getVIBeModel();
+    DM::Group * g = (DM::Group*)this->getDMModel();
 
     foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
@@ -214,14 +214,14 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     } else {
         painter->setBrush(Qt::white);
     }
-    this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getVIBeModel()->getName()));
+    this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getDMModel()->getName()));
     if (simpleTextItem->boundingRect().width()+40 > l)
         l = simpleTextItem->boundingRect().width()+40;
     painter->drawRect(0, 0, l,h);
 
     this->setPos(x1-40, y1-20);
 
-    painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getVIBeModel()->getName()));
+    painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getDMModel()->getName()));
 
 
     if((RePosFlag) != 0) {
@@ -238,8 +238,8 @@ QRectF RootGroupNode::boundingRect() const {
 }
 void RootGroupNode::addModelNode(ModelNode *m) {
     this->childnodes.push_back(m);
-    DM::Module * m1 = m->getVIBeModel();
-    m->getVIBeModel()->setGroup((DM::Group *)this->getVIBeModel());
+    DM::Module * m1 = m->getDMModel();
+    m->getDMModel()->setGroup((DM::Group *)this->getDMModel());
     m->setParentGroup(this);
     this->recalculateLandH();
     this->update();
@@ -265,8 +265,8 @@ void  RootGroupNode::setGroupZValue() {
             this->setZValue(this->parentGroup->zValue()+1);
     }
     foreach (ModelNode * m, this->childnodes ){
-        DM::Module * m1 = m->getVIBeModel();
-        if(m->getVIBeModel()->isGroup()) {
+        DM::Module * m1 = m->getDMModel();
+        if(m->getDMModel()->isGroup()) {
             GroupNode * g = (GroupNode * ) m;
             //g->setGroupZValue();
         } else {

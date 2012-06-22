@@ -110,10 +110,10 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     //Check if already exists
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
-        DM::Module * rg = pv->getRootNode()->getVIBeModel();
+        DM::Module * rg = pv->getRootNode()->getDMModel();
         if (!rg)
             return;
-        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
+        if ((pv->getRootNode()->getDMModel()->getUuid()).compare(g->getDMModel()->getUuid()) == 0) {
             return;
         }
     }
@@ -121,7 +121,7 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     ProjectViewer * newgroup = new ProjectViewer(g );
 
 
-    if (g->getVIBeModel()->getUuid().compare(simulation->getRootGroup()->getUuid()) == 0)
+    if (g->getDMModel()->getUuid().compare(simulation->getRootGroup()->getUuid()) == 0)
         this->simulation->addSimulationObserver(new GUISimulationObserver(newgroup));
 
     connect(simulation, SIGNAL(addedGroup(GroupNode*)), newgroup, SLOT(addGroup(GroupNode*)));
@@ -137,7 +137,7 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     gv->setRenderHints(QPainter::Antialiasing);
     gv->setAcceptDrops(true);
 
-    QString name = QString::fromStdString(g->getVIBeModel()->getName());
+    QString name = QString::fromStdString(g->getDMModel()->getName());
     if (name.isEmpty()) {
         name = g->getName();
     }
@@ -149,8 +149,8 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
 void DMMainWindow::renameGroupWindow(GroupNode * g) {
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
-        if ((pv->getRootNode()->getVIBeModel()->getUuid()).compare(g->getVIBeModel()->getUuid()) == 0) {
-            this->tabWidget_4->setTabText(i, QString::fromStdString(g->getVIBeModel()->getName()));
+        if ((pv->getRootNode()->getDMModel()->getUuid()).compare(g->getDMModel()->getUuid()) == 0) {
+            this->tabWidget_4->setTabText(i, QString::fromStdString(g->getDMModel()->getName()));
         }
     }
 }
@@ -160,7 +160,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
 
     setupUi(this);
     log_updater = new GuiLogSink();
-    DM::Log::init(log_updater,DM::Debug);
+    DM::Log::init(log_updater,DM::Standard);
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
@@ -191,14 +191,9 @@ DMMainWindow::DMMainWindow(QWidget * parent)
         this->preferences();
     }
 
-
-    //this->simulation->addSimulationObserver(this->simobserver );
-
     this->simmanagment = new SimulationManagment();
 
-
     createModuleListView();
-
     this->rootItemModelTree = new QTreeWidgetItem();
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
@@ -347,7 +342,7 @@ void DMMainWindow::writeGUIInformation(QString FileName) {
         foreach(ModelNode * m, viewer->getRootNode()->getChildNodes()) {
             out  << "\t" << "\t"<<"<GUI_Node>" << "\n";
             out << "\t" << "\t"<< "\t" << "<GUI_UUID value=\""
-                << QString::fromStdString(m->getVIBeModel()->getUuid()) << "\"/>" << "\n";
+                << QString::fromStdString(m->getDMModel()->getUuid()) << "\"/>" << "\n";
 
             out << "\t" << "\t"<< "\t" << "<GUI_PosX value=\""
                 << m->scenePos().x() - minx << "\"/>" << "\n";
@@ -408,7 +403,7 @@ void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::stri
     ProjectViewer * currentView = 0;
     foreach(int i, this->groupscenes.keys()) {
         ProjectViewer * view = this->groupscenes[i];
-        if (g->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+        if (g->getUuid().compare( view->getRootNode()->getDMModel()->getUuid()) == 0  )
             currentView = view;
     }
     if (currentView == 0)
@@ -451,10 +446,10 @@ void DMMainWindow::loadSimulation(int id) {
         std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation);
-        /*if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
+        if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
             this->simulation->clearSimulation();
             return;
-        }*/
+        }
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
         this->loadGUILinks(UUID_Translation);
@@ -478,13 +473,13 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
 
         foreach(int i, this->groupscenes.keys()) {
             ProjectViewer * view = this->groupscenes[i];
-            if (l->getInPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+            if (l->getInPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getDMModel()->getUuid()) == 0  )
                 currentView = view;
         }
         ProjectViewer * currentView_out = 0;
         foreach(int i, this->groupscenes.keys()) {
             ProjectViewer * view = this->groupscenes[i];
-            if (l->getOutPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getVIBeModel()->getUuid()) == 0  )
+            if (l->getOutPort()->getModule()->getGroup()->getUuid().compare( view->getRootNode()->getDMModel()->getUuid()) == 0  )
                 currentView_out = view;
         }
 
@@ -502,25 +497,25 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
             if (i == 1)
                 currentView = currentView_out;
 
-            if (currentView->getRootNode()->getVIBeModel() == l->getOutPort()->getModule()) {
+            if (currentView->getRootNode()->getDMModel() == l->getOutPort()->getModule()) {
                 outmodule = currentView->getRootNode() ;
 
             }
 
             foreach (ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
-                if (mn->getVIBeModel() == l->getOutPort()->getModule()) {
+                if (mn->getDMModel() == l->getOutPort()->getModule()) {
                     outmodule = mn;
                     break;
                 }
             }
 
-            if (currentView->getRootNode()->getVIBeModel() == l->getInPort()->getModule()) {
+            if (currentView->getRootNode()->getDMModel() == l->getInPort()->getModule()) {
                 inmodule = currentView->getRootNode();
 
             }
 
             foreach(ModelNode * mn, currentView->getRootNode()->getChildNodes()) {
-                if (mn->getVIBeModel() == l->getInPort()->getModule()) {
+                if (mn->getDMModel() == l->getInPort()->getModule()) {
                     inmodule = mn;
                     break;
                 }
@@ -532,9 +527,9 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
         }
 
         //Look if exists in Translation list
-        if(reveredUUID_Translation.find(inmodule->getVIBeModel()->getUuid()) == reveredUUID_Translation.end())
+        if(reveredUUID_Translation.find(inmodule->getDMModel()->getUuid()) == reveredUUID_Translation.end())
             continue;
-        if(reveredUUID_Translation.find(inmodule->getVIBeModel()->getUuid()) == reveredUUID_Translation.end())
+        if(reveredUUID_Translation.find(inmodule->getDMModel()->getUuid()) == reveredUUID_Translation.end())
             continue;
 
 
