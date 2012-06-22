@@ -47,11 +47,8 @@ TEST_F(TestSimulation,sewerGeneration) {
 
     sim.registerPythonModules("PythonModules/scripts/");
     sim.loadSimulation("Data/Simulations/modell_chse.dyn");
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 100; i++)
         sim.run();
-
-
-
 }
 
 }
