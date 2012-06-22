@@ -24,7 +24,8 @@ endforeach(${tool})
 
 execute_process(COMMAND ${GIT_EXECUTABLE} submodule foreach git checkout unstable
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-
+execute_process(COMMAND ${GIT_EXECUTABLE} submodule foreach git pull
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
