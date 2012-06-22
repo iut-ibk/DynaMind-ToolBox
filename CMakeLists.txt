@@ -42,4 +42,4 @@ ADD_SUBDIRECTORY(src/unit-test)
 
 ADD_SUBDIRECTORY(CMake)
 
-INCLUDE(DynaMindCPack.txt)
+#INCLUDE(DynaMindCPack.txt)
