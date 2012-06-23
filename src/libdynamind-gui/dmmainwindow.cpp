@@ -60,6 +60,7 @@
 #include <rootgroupnode.h>
 #include "preferences.h"
 #include "projectviewer.h"
+#include "guihelpviewer.h"
 
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
@@ -128,7 +129,7 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     connect(simulation, SIGNAL(GroupNameChanged(GroupNode*)), this, SLOT(renameGroupWindow(GroupNode*)));
     connect(simulation, SIGNAL(addedModule(ModelNode*)), newgroup, SLOT(addModule(ModelNode*)));
     connect(newgroup, SIGNAL(NewModule(QString,QPointF, DM::Module *)), simulation, SLOT(GUIaddModule(QString,QPointF, DM::Module  *)));
-
+    connect(simulation, SIGNAL(showHelpForModule(std::string)), this, SLOT(showHelp(std::string)));
     newgroup->setResultViewer(this);
 
 
@@ -171,6 +172,9 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     this->simulation->registerRootNode();
     this->simulation->addModulesFromSettings();
+    this->helpviewer = new GUIHelpViewer();
+    this->verticalLayout->addWidget(helpviewer);
+
 
     log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
     connect( actionRun, SIGNAL( activated() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
@@ -574,4 +578,9 @@ void DMMainWindow::on_actionZoomReset_activated()
 
 
 
+}
+
+void DMMainWindow::showHelp(string classname) {
+    this->helpviewer->show();
+    this->helpviewer->showHelpForModule(classname);
 }

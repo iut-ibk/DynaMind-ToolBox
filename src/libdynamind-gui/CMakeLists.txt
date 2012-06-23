@@ -17,6 +17,7 @@ SET(MOC_FILES   application.h
                 projectviewer.h
                 rootgroupnode.h
                 simulationmanagment.h
+                guihelpviewer.h
                 StdRedirector.h )
 
 FILE(GLOB CPP_GUI_FILES *.cpp)

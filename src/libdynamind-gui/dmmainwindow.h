@@ -54,6 +54,7 @@ class GroupNode;
 class GuiLogSink;
 class GUISimulationObserver;
 class GUISimulation;
+class GUIHelpViewer;
 namespace DM {
     class Group;
 }
@@ -76,6 +77,7 @@ private:
     GUISimulation * simulation;
     SimulationManagment * simmanagment;
     GUISimulationObserver * simobserver;
+    GUIHelpViewer * helpviewer;
 
     void createModuleListView();
     QMap<QString, ModuleDescription> modules;
@@ -107,6 +109,7 @@ public slots:
     void renameGroupWindow(GroupNode *);
     void removeGroupWindows(QString uuid);
     void updateSimulation();
+    void showHelp(std::string classname);
 
 
 private slots:

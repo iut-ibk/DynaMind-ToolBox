@@ -50,6 +50,7 @@
 #include <dmcomponent.h>
 #include <dmsystem.h>
 #include <sstream>
+#include <guihelpviewer.h>
 
 std::string ModelNode::getParameterAsString(std::string name) {
 
@@ -358,6 +359,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QAction * a_rename = menu.addAction("rename");
     QAction * a_delete = menu.addAction("delete");
     QAction * a_showData = menu.addAction("showData");
+    QAction * a_showHelp = menu.addAction("showHelp");
     QMenu * GroupMenu =     menu.addMenu("Groups");
 
     GroupMenu->setTitle("Group");
@@ -389,6 +391,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_edit, SIGNAL( activated() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_rename, SIGNAL(activated() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(activated() ), this, SLOT( printData() ), Qt::DirectConnection);
+    connect( a_showHelp, SIGNAL(activated() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
 
 }
@@ -467,6 +470,13 @@ void ModelNode::printData() {
 
     GUIViewDataForModules * gv = new GUIViewDataForModules(this->getDMModel());
     gv->show();
+
+
+}
+
+void ModelNode::showHelp() {
+
+    this->simulation->showHelp(this->getDMModel()->getClassName());
 
 
 }
