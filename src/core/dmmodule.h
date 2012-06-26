@@ -395,7 +395,7 @@ public:
     bool isExecuted();
 
     /** @brief Has been Executed */
-    void setExecuted(bool ex);
+    virtual void setExecuted(bool ex);
 
     bool checkPreviousModuleUnchanged();
 
@@ -411,6 +411,7 @@ private:
 
     Simulation * simulation;
     std::map<std::string, DM::System *> ownedSystems;
+    std::map<std::string, DM::System *> ownedSystemsToDelete;
     bool hasBeenExecuted;
 
 

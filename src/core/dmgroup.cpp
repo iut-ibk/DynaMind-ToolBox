@@ -108,8 +108,16 @@ void Group::clearModules() {
 
 void Group::resetModules() {
     foreach(Module * m, this->modules) {
-        if (!m->isExecuted())
+        if (!m->isExecuted() || m->isGroup() || !HasContaingModuleChanged()) {
             m->resetParameter();
+            m->setExecuted(false);
+            if (m->isGroup()) {
+                Group * g = (Group *) m;
+                g->setContentOfModuleHasChanged(true);
+                g->resetSteps();
+            }
+        }
+
     }
 }
 
@@ -274,6 +282,7 @@ void Group::run() {
             this->resetModules();
     }
 
+
     notUsedModules  = this->modules;
     if (notUsedModules.size() == 0) {
         this->step = Steps;
@@ -305,5 +314,10 @@ void Group::run() {
 
 
 }
+ void Group::setExecuted(bool ex) {
+     Module::setExecuted(ex);
+     if (!ex)
+     this->resetSteps();
+ }
 
 }

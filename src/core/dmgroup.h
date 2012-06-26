@@ -153,6 +153,8 @@ namespace DM {
         /** @brief Returns true if a module within the has changed */
         bool HasContaingModuleChanged() {return this->moduleHasChanged;}
 
+        virtual void setExecuted(bool ex);
+
     };
 }
 

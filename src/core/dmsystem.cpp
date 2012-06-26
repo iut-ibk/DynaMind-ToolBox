@@ -71,6 +71,10 @@ std::vector<std::string> System::getNamesOfViews() {
 
 DM::View * System::getViewDefinition(string name) {
 
+    if (viewdefinitions.find(name) == viewdefinitions.end()) {
+        Logger(Debug) << "Couldn't find view definition for " << name;
+        return 0;
+    }
     return viewdefinitions[name];
 }
 

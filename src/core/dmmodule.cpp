@@ -61,11 +61,21 @@ void Module::resetParameter() {
     this->setExecuted(false);
     Logger(Debug) << this->getUuid() <<" Reset Parameter";
     this->internalCounter = 0;
+    while(ownedSystemsToDelete.size()) {
+        delete (*ownedSystemsToDelete.begin()).second;
+        ownedSystemsToDelete.erase(ownedSystemsToDelete.begin());
+    }
+    ownedSystemsToDelete.clear();
+
     while(ownedSystems.size()) {
         delete (*ownedSystems.begin()).second;
         ownedSystems.erase(ownedSystems.begin());
     }
     ownedSystems.clear();
+
+
+
+
 
 }
 Module::Module() {
@@ -344,6 +354,15 @@ void Module::postRun() {
     //To make sure that a module gets the right data when used in backlinks
     this->data_vals_prev = data_vals;
 
+    //delete prev data
+    while(ownedSystemsToDelete.size()) {
+        delete (*ownedSystemsToDelete.begin()).second;
+        ownedSystemsToDelete.erase(ownedSystemsToDelete.begin());
+    }
+    ownedSystemsToDelete = ownedSystems;
+    this->ownedSystemsToDelete = this->ownedSystems;
+    ownedSystems.clear();
+
 
 }
 
@@ -464,6 +483,12 @@ void Module::Destructor() {
         this->group->removeModule(this);
         this->group = 0;
     }
+
+    while(ownedSystems.size()) {
+        delete (*ownedSystems.begin()).second;
+        ownedSystemsToDelete.erase(ownedSystems.begin());
+    }
+    ownedSystems.clear();
 
 
 }
@@ -598,10 +623,11 @@ DM::System*   Module::getSystemData(const std::string &name)  {
 DM::System* Module::getSystemState(const std::string &name)
 {
     DM::System  * sys = this->data_vals_prev[name];
-    sys->setAccessedByModule(this);
+
     if (sys == 0) {
         return 0;
     }
+    sys->setAccessedByModule(this);
     return sys;
 
 }
