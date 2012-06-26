@@ -4,7 +4,7 @@ project(DynaMind-ToolBox)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks P8Modules)
 
 
 foreach (tool ${TOOLBOX})

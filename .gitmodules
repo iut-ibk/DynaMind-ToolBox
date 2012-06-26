@@ -16,3 +16,6 @@
 [submodule "DynaMind-QGIS"]
 	path = DynaMind-QGIS
 	url = git@github.com:christianurich/DynaMind-QGIS.git
+[submodule "P8Modules"]
+	path = P8Modules
+	url = git@github.com:iut-ibk/P8Modules.git
