@@ -44,8 +44,8 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
     this->id = 0;
 
     //Cretae New Visual Representation
-    RootGroupNode * rg = new RootGroupNode(g->getVIBeModel(),g->getSimulation());
-    this->UUID = QString::fromStdString(g->getVIBeModel()->getUuid());
+    RootGroupNode * rg = new RootGroupNode(g->getDMModel(),g->getSimulation());
+    this->UUID = QString::fromStdString(g->getDMModel()->getUuid());
     rg->setPos(0,0);
     this->rootGroup = rg;
     this->addItem(rg);
@@ -60,7 +60,7 @@ void ProjectViewer::addModule(ModelNode *m)
 {
 
     //Only add if root group is the same
-    if (m->getVIBeModel()->getGroup() != this->rootGroup->getVIBeModel()) {
+    if (m->getDMModel()->getGroup() != this->rootGroup->getDMModel()) {
         return;
     }
     this->rootGroup->addModelNode(m);
@@ -69,7 +69,7 @@ void ProjectViewer::addModule(ModelNode *m)
 
 void ProjectViewer::addGroup(GroupNode *g) {
     //Only add if root group is the same
-    if (g->getVIBeModel()->getGroup() != this->rootGroup->getVIBeModel()) {
+    if (g->getDMModel()->getGroup() != this->rootGroup->getDMModel()) {
         return;
     }
     this->rootGroup->addModelNode(g);
@@ -94,7 +94,7 @@ void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
     QString classname =  lw->currentItem()->text(0);
     std::string type = lw->currentItem()->text(1).toStdString();
     if (type.compare("Module") == 0) {
-        emit NewModule(classname, event->scenePos(), this->rootGroup->getVIBeModel());
+        emit NewModule(classname, event->scenePos(), this->rootGroup->getDMModel());
     } else {
         this->ResultViewer->importSimulation( lw->currentItem()->text(2), event->scenePos());
     }

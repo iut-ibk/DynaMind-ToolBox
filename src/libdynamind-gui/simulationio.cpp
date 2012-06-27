@@ -97,14 +97,6 @@ bool SimulationIO::endElement(const QString & namespaceURI,
         DM::Module * DynaMindm;
         DynaMindm = sim->getModuleWithUUID(UUIDTransation[tmpUUID]);
         if (DynaMindm != 0) {
-            //ModelNode * m;
-            //if (!DynaMindm->isGroup())
-            //m = new ModelNode(DynaMindm, sim);
-            //if (DynaMindm->isGroup())
-            //m = new GroupNode(DynaMindm, sim);
-            //mnodes->append(m);
-            //m->setPos(PosX, PosY);
-            //m->setMinimized(minimized);
             LoadModule lm;
             lm.minimized = minimized;
             lm.tmpUUID = tmpUUID;

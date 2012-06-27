@@ -104,7 +104,7 @@ void GroupNode::maximize() {
 }
 
 void GroupNode::updatePorts () {
-    DM::Group * g = (DM::Group*)this->getVIBeModel();
+    DM::Group * g = (DM::Group*)this->getDMModel();
 
     foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
@@ -244,7 +244,7 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         }
         if (h< 65)
             h = 65;
-        this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getVIBeModel()->getName())+" " +QString::number(this->zValue()));
+        this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getDMModel()->getName())+" " +QString::number(this->zValue()));
         float lold = l;
         if (simpleTextItem->boundingRect().width()+40 > l)
             l = simpleTextItem->boundingRect().width()+40;
@@ -252,7 +252,7 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         if (this->childnodes.size() > 0)
             this->setPos(x1-40, y1-20);
 
-        painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getVIBeModel()->getName())+" " +QString::number(this->zValue()));
+        painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getDMModel()->getName())+" " +QString::number(this->zValue()));
 
         if (lold != l)
             RePosFlag = true;

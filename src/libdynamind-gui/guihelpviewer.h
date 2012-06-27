@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2012  Christian Urich
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,47 +24,32 @@
  *
  */
 
-#ifndef GUISIMULATION_H
-#define GUISIMULATION_H
+#ifndef GUIHELPVIEWER_H
+#define GUIHELPVIEWER_H
 
-#include <dmsimulation.h>
-#include <QVector>
-#include <QString>
-#include <QPointF>
+#include <QWidget>
+#include <QUrl>
+namespace Ui {
+class GUIHelpViewer;
+}
 
-class ModelNode;
-class GroupNode;
-class GUILink;
-class GUISimulation :  public DM::Simulation
+class GUIHelpViewer : public QWidget
 {
     Q_OBJECT
+    
 public:
-    GUISimulation();
-    void registerRootNode();
-    GroupNode * getGroupNode(DM::Group * g);
-    void changeGroupName(GroupNode*);
-    void clearSimulation();
+    explicit GUIHelpViewer(QWidget *parent = 0);
+    ~GUIHelpViewer();
 
+
+    
 private:
-    QVector<ModelNode*> modelNodes;
-    QVector<GroupNode*> groupNodes;
-
-signals:
-    void addedModule(ModelNode*);
-    void addedGroup(GroupNode*);
-    void GroupNameChanged(GroupNode*);
-    void showHelpForModule(std::string);
-
+    Ui::GUIHelpViewer *ui;
+    QUrl currentUrl;
+    QUrl url_view_not_avaiable;
 
 public slots:
-    void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
-    void GUIaddModule(DM::Module *, QPointF pos);
-    void updateSimulation();
-    void showHelp(std::string classname);
-
-
-
+    void showHelpForModule(std::string className);
 };
 
-#endif // GUISIMULATION_H
-
+#endif // GUIHELPVIEWER_H
