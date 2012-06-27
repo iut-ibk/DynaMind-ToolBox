@@ -5,10 +5,21 @@ FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
             PATHS   $ENV{DYNAMIND_DIR}/include
             PATH_SUFFIXES dynamindcore/CMake)
 
-IF(DYNAMINDDEV)
-    INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
-ELSE()
-    MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
+IF(${DYNAMIND_INCLUDE_DIR})
+	FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
+	PATHS $ENV{DYNAMIND_DIR}/include
+	PATH_SUFFIXES dynamindcore/CMake)
+
+	IF(DYNAMINDDEV)
+		INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
+	ELSE()
+		MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
+	ENDIF()
+	ELSE()
+		MESSAGE("Compiled from toolbox")
+		MESSAGE("DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")
+		SET (DYNAMIND_CORE_LIBRARY dynamindcore)
+		MESSAGE("${DYNAMIND_CORE_LIBRARY}")
 ENDIF()
 
 SET(CMAKE_MODULE_PATH  "${dynamind-gui_SOURCE_DIR}/CMake/Packages")
