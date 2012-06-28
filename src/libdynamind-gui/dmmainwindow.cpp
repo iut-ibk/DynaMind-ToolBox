@@ -161,7 +161,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
 
     setupUi(this);
     log_updater = new GuiLogSink();
-    DM::Log::init(log_updater,DM::Standard);
+    DM::Log::init(log_updater,DM::Debug);
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
@@ -173,7 +173,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     this->simulation->registerRootNode();
     this->simulation->addModulesFromSettings();
     this->helpviewer = new GUIHelpViewer();
-    this->verticalLayout->addWidget(helpviewer);
+
 
 
     log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
