@@ -61,11 +61,11 @@ void Module::resetParameter() {
     this->setExecuted(false);
     Logger(Debug) << this->getUuid() <<" Reset Parameter";
     this->internalCounter = 0;
-    while(ownedSystemsToDelete.size()) {
-        delete (*ownedSystemsToDelete.begin()).second;
-        ownedSystemsToDelete.erase(ownedSystemsToDelete.begin());
+    while(ownedSystems_prev.size()) {
+        delete (*ownedSystems_prev.begin()).second;
+        ownedSystems_prev.erase(ownedSystems_prev.begin());
     }
-    ownedSystemsToDelete.clear();
+    ownedSystems_prev.clear();
 
     while(ownedSystems.size()) {
         delete (*ownedSystems.begin()).second;
@@ -135,7 +135,7 @@ bool Module::checkPreviousModuleUnchanged() {
 
         //Check Reads
         if (!DataValidation::isVectorOfViewRead(views)) {
-            return true;
+            continue;
         }
         DM::System * sys = this->getSystemData(s);
 
@@ -355,12 +355,13 @@ void Module::postRun() {
     this->data_vals_prev = data_vals;
 
     //delete prev data
-    while(ownedSystemsToDelete.size()) {
-        delete (*ownedSystemsToDelete.begin()).second;
-        ownedSystemsToDelete.erase(ownedSystemsToDelete.begin());
+    while(ownedSystems_prev.size()) {
+        delete (*ownedSystems_prev.begin()).second;
+        ownedSystems_prev.erase(ownedSystems_prev.begin());
     }
-    ownedSystemsToDelete = ownedSystems;
-    this->ownedSystemsToDelete = this->ownedSystems;
+
+    ownedSystems_prev = ownedSystems;
+
     ownedSystems.clear();
 
 
@@ -486,7 +487,7 @@ void Module::Destructor() {
 
     while(ownedSystems.size()) {
         delete (*ownedSystems.begin()).second;
-        ownedSystemsToDelete.erase(ownedSystems.begin());
+        ownedSystems_prev.erase(ownedSystems.begin());
     }
     ownedSystems.clear();
 
@@ -714,5 +715,6 @@ void Module::setExecuted(bool ex){
             this->getGroup()->setContentOfModuleHasChanged(true);
     }
 }
+
 
 }
