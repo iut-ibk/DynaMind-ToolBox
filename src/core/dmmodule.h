@@ -397,7 +397,15 @@ public:
     /** @brief Has been Executed */
     virtual void setExecuted(bool ex);
 
+    /** @brief Returns true if a previous module has been changed.
+     *
+     * The Method checks all views. If the module just writes data it also returns true!
+     * To check if a previous module has been changed
+     * the module checks out the current system and checks if the last module that modified the data set
+     * has been executed
+     */
     bool checkPreviousModuleUnchanged();
+
 
 private:
     bool PythonModule;
@@ -411,7 +419,7 @@ private:
 
     Simulation * simulation;
     std::map<std::string, DM::System *> ownedSystems;
-    std::map<std::string, DM::System *> ownedSystemsToDelete;
+    std::map<std::string, DM::System *> ownedSystems_prev;
     bool hasBeenExecuted;
 
 
