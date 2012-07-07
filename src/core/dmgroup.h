@@ -150,7 +150,7 @@ namespace DM {
         /** @brief Set true if module within the group has changed */
         void setContentOfModuleHasChanged(bool c) {this->moduleHasChanged = c;}
 
-        /** @brief Returns true if a module within the has changed */
+        /** @brief Returns true if a module within the group has changed */
         bool HasContaingModuleChanged() {return this->moduleHasChanged;}
 
         virtual void setExecuted(bool ex);
