@@ -1,0 +1,29 @@
+#Model Updates and Simulation Runs
+
+Every simulation consists of a *RootGroup*. This is the starting point for either a model update or simulation run. 
+For model update a simulation run the same method *Simulation::startSimulation(bool virtualRun)* is used. 
+Where **Simulation|virtualRun is *false* ** for a simulation run and  **Simulation|virtualRun *true* ** if the model is updated. Before the run method of the *RootGroup* its steps are reset.
+*RootGroup* also holds the *Threadpool* (based on *QThreadpool*) of the simulation. 
+The run method from the *RootGroup* calls the run method of the father class.
+
+##Groups Steer the Simulation
+The run method of the group checks first if **Group|step is 0**. If so and the **Group|hasBeenExecuted is false**  *resetModules()* is called. Within resetModules() for all childs the group checks if the child has been executed (Module|hasBeenExecuted) or if it is a group  (**Module|isGroup**) or if a child has changed (**Group|moduleHasChanged**). If one of the listed expressions
+is true resetParameters() of the module is called. resetParameters() sets **Module|hasBeenExecuted to false**, sets the internal counter to 0 and deletes the system states that the module owns. If the child is also a group **Group|moduleHasChanged  true** and **Group|step is set to 0**.
+
+The Group has a list of notUsedModules, UsedModules and currentRunningModules. First all child modules are copied to the notUsedModules list. If the group is runnable (step < Steps) the module gets a list of modules that can be executed by calling Group::getNextJobs(). Group::getNextJobs() puts the childs that can be executed in the next step in a *ModuleRunnable* Object. If all childs have been executed the method restarts the group (class run). Every module in the list returned by Group::getNextJobs is now started in its own thread by calling the run method of *ModuleRunnable*.
+
+###Run Module Run ...
+ModuleRunnable::run() checks now if one of the previous modules has been changed by calling Module|checkPreviousModuleUnchanged(). 
+The Method checks all views. To check if a previous module has been changed the module checks out the current system and checks if the last module that modified the data set has been executed (**Module|hasBeenExecuted**). If a previous module has been changed **Module|hasBeenExecuted is set to false** and if the module is a group also **Group|moduleHasChanged to true**.
+If now **Module|hasBeenExecuted is true** or the module is a group the module is prepared to be executed by calling first updateParameter(), init() and updateParameter() again. The updateParameter() method is called twice since within init() the module is able to create the data stream. If now the **Simulation|virtualRun is true** or the module is a group the and the simulation status is ok the run method of the module is called and **Module|hasBeenExecuted is set true**. After updating and executing the module the postRun() of the module is called. At the end of ModuleRunnable::run(),if the **Module|isGroup** is false finishedModule() from the parent group is called. This method removes the module from the currentRunning, notUsedModules list and adds it to UsedModules and the getNextJobs() is called again until getNextJobs finds unused modules otherwise the run method of the group is called again. If step equal or bigger Steps the group adds calls finished modules of its parent group. 
+
+##Control Structures
+
+ - Simulation|virtualRun: the boolean virtual run is used to define if a simulation is performing a model update or an real simulation run.
+ - Group|Steps: the integer defines how often a group is iterated. 
+ - Group|step: current iteration
+ - Group|moduleHasChanged: 
+ - Module|hasBeenExecuted: 
+ - Module|isGroup
+
+
