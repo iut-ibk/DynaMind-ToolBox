@@ -165,12 +165,6 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="Clustering"/>
-			<UUID value="{31dd8ee4-0596-43cf-91d9-76ac8063ab9b}"/>
-			<Name value=""/>
-			<GroupUUID value="{19262394-8be9-4345-baff-86ddceac2242}"/>
-		</Node>
-		<Node>
 			<ClassName value="ExportRasterData"/>
 			<UUID value="{47a48d68-ece6-4fa2-b087-e5ee322af619}"/>
 			<Name value=""/>
