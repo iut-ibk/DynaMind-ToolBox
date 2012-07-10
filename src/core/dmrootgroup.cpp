@@ -37,8 +37,8 @@ DMRootGroup::DMRootGroup()
 void DMRootGroup::run() {
     Group::run();
     DMRootGroup::getThreadPool()->waitForDone();
-
-
+    this->setExecuted(true);
+    this->setContentOfModuleHasChanged(false);
     Logger(Debug)<<"Finished RootGroup";
 }
 
