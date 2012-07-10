@@ -186,8 +186,8 @@ void RootGroupNode::RePosTuplePorts() {
     }
 }
 
-void RootGroupNode::setSelected(  bool selected ) {
-    foreach(ModelNode * m, this->childnodes) {
+void RootGroupNode::setSelected(bool selected ) {
+    /*foreach(ModelNode * m, this->childnodes) {
         m->setSelected(true);
         if (m->isGroup()) {
             GroupNode * g = (GroupNode *) m;
@@ -195,7 +195,7 @@ void RootGroupNode::setSelected(  bool selected ) {
         }
     }
 
-    QGraphicsItem::setSelected ( selected );
+    QGraphicsItem::setSelected ( selected );*/
 
 
 }
@@ -246,14 +246,21 @@ void RootGroupNode::addModelNode(ModelNode *m) {
 
 }
 void RootGroupNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
-    this->setSelected(true);
+    /*this->setSelected(true);
 
     if (this->parentGroup != 0) {
         this->parentGroup->recalculateLandH();
         this->parentGroup->update();
     }
 
-    ModelNode::QGraphicsItem::mouseMoveEvent(event);
+    ModelNode::QGraphicsItem::mouseMoveEvent(event);*/
+}
+
+void RootGroupNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    foreach(ModelNode * m, this->childnodes) {
+        m->setSelected(false);
+    }
 }
 
 
