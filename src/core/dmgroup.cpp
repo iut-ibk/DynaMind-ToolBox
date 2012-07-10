@@ -40,6 +40,7 @@
 #include <QThreadPool>
 #include <algorithm>
 #include <sstream>
+#include <dmsimulation.h>
 
 namespace DM {
 Group::Group()
@@ -59,6 +60,11 @@ Group::~Group() {
     Module::Destructor();
     delete mutex;
 }
+
+void Group::setContentOfModuleHasChanged(bool c)
+{
+    this->moduleHasChanged = c;
+}
 void Group::Destructor() {
     while(this->modules.size() > 0) {
         delete *(this->modules.begin());
@@ -76,6 +82,7 @@ void Group::Destructor() {
 }
 void Group::finishedModule(Module *m) {
     QMutexLocker locker(mutex);
+    currentRunning.erase(std::find(currentRunning.begin(), currentRunning.end(), m));
     bool remove = true;
     if (m->isGroup()) {
         Group * g = (Group *) m;
@@ -84,14 +91,17 @@ void Group::finishedModule(Module *m) {
         }
     }
 
-    currentRunning.erase(std::find(currentRunning.begin(), currentRunning.end(), m));
+
     if (remove) {
         UsedModules.push_back(m);
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
         if (m->isGroup()) {
             Group * g = (Group * )m;
-            g->setExecuted(true);
-            g->setContentOfModuleHasChanged(false);
+            //Don't change status if virtualRun
+            if (!g->getSimulation()->isVirtualRun()) {
+                g->setExecuted(true);
+                g->setContentOfModuleHasChanged(false);
+            }
             g->resetSteps();
         }
     }
@@ -108,7 +118,8 @@ void Group::clearModules() {
 
 void Group::resetModules() {
     foreach(Module * m, this->modules) {
-        if (!m->isExecuted() || m->isGroup() || !HasContaingModuleChanged()) {
+        if (!m->isExecuted() || m->isGroup()){
+            // if (HasContaingModuleChanged()) {
             m->resetParameter();
             m->setExecuted(false);
             if (m->isGroup()) {
@@ -116,8 +127,8 @@ void Group::resetModules() {
                 g->setContentOfModuleHasChanged(true);
                 g->resetSteps();
             }
+            //}
         }
-
     }
 }
 
@@ -224,41 +235,42 @@ QVector<QRunnable *>  Group::getNextJobs() {
     QVector<QRunnable * > RunnedModulesInStep;
     for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) {
         Module * m = *it;
-        if (std::find(currentRunning.begin(), currentRunning.end(), m) ==  currentRunning.end()) {
-            bool runnable = true;
-            std::vector<Port*> inPorts = m->getInPorts();
-            if (m->isGroup()) {
-                Group * g = (Group*) m;
-                foreach(PortTuple * pt , g->getInPortTuples()) {
-                    inPorts.push_back(pt->getInPort());
-                }
+        if (std::find(currentRunning.begin(), currentRunning.end(), m) !=  currentRunning.end())
+            continue;
+
+        bool runnable = true;
+        std::vector<Port*> inPorts = m->getInPorts();
+        if (m->isGroup()) {
+            Group * g = (Group*) m;
+            foreach(PortTuple * pt , g->getInPortTuples()) {
+                inPorts.push_back(pt->getInPort());
             }
-            foreach(Port * p, inPorts) {
-                foreach( ModuleLink * l, p->getLinks() ) {
-                    if (!l->isBackLink()) {
-                        Module * neededM = l->getOutPort()->getModule();
-                        bool ModuleExists = false;
-                        foreach(Module* usedM, UsedModules) {
-                            if (usedM == neededM) {
-                                if (!neededM->isExecuted())
-                                    m->setExecuted(false);
-                                ModuleExists = true;
-                                break;
-                            }
-                        }
-                        if (!ModuleExists) {
-                            runnable = false;
+        }
+        foreach(Port * p, inPorts) {
+            foreach( ModuleLink * l, p->getLinks() ) {
+                if (!l->isBackLink()) {
+                    Module * neededM = l->getOutPort()->getModule();
+                    bool ModuleExists = false;
+                    foreach(Module* usedM, UsedModules) {
+                        if (usedM == neededM) {
+                            if (!neededM->isExecuted())
+                                m->setExecuted(false);
+                            ModuleExists = true;
                             break;
                         }
                     }
+                    if (!ModuleExists) {
+                        runnable = false;
+                        break;
+                    }
                 }
             }
-            if (runnable) {
-                currentRunning.push_back(m);
-                RunnedModulesInStep.push_back(new ModuleRunnable(m));
-            }
-
         }
+        if (runnable) {
+            currentRunning.push_back(m);
+            RunnedModulesInStep.push_back(new ModuleRunnable(m));
+        }
+
     }
     //Run Parallelisation TODO
     int NumberOfRunnables = RunnedModulesInStep.size();
@@ -273,6 +285,10 @@ QVector<QRunnable *>  Group::getNextJobs() {
 void Group::resetSteps()
 {
     this->step = 0;
+    foreach (DM::Module * m, this->modules) {
+        m->setInternalCounter(0);
+    }
+
 
 }
 
@@ -281,7 +297,6 @@ void Group::run() {
         if (!this->isExecuted())
             this->resetModules();
     }
-
 
     notUsedModules  = this->modules;
     if (notUsedModules.size() == 0) {
@@ -301,6 +316,10 @@ void Group::run() {
             }
             DMRootGroup::getThreadPool()->start(r);
         }
+
+        if (this->getSimulation()->isVirtualRun() || this->moduleHasChanged == false)
+            this->step = Steps;
+
         this->step++;
 
         if (this->isRunnable()) {
@@ -314,10 +333,10 @@ void Group::run() {
 
 
 }
- void Group::setExecuted(bool ex) {
-     Module::setExecuted(ex);
-     if (!ex)
-     this->resetSteps();
- }
+void Group::setExecuted(bool ex) {
+    Module::setExecuted(ex);
+    if (!ex)
+        this->resetSteps();
+}
 
 }
