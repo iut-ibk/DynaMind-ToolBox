@@ -25,5 +25,3 @@ If now **Module|hasBeenExecuted is true** or the module is a group the module is
  - Group|moduleHasChanged: 
  - Module|hasBeenExecuted: 
  - Module|isGroup
-
-
