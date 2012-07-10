@@ -406,6 +406,7 @@ public:
      */
     bool checkPreviousModuleUnchanged();
 
+    void setInternalCounter(int counter);
 
 private:
     bool PythonModule;
