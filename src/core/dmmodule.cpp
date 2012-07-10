@@ -148,6 +148,11 @@ bool Module::checkPreviousModuleUnchanged() {
     return true;
 }
 
+void Module::setInternalCounter(int counter)
+{
+    this->internalCounter = counter;
+}
+
 void Module::updateParameter() {
     Logger(Debug) << this->getUuid() <<" Update Parameter";
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
@@ -709,6 +714,7 @@ bool Module::isExecuted() {
 }
 
 void Module::setExecuted(bool ex){
+    Logger(Debug) << "SetExecuted " << ex << this->getClassName() << " " << this->getUuid();
     this->hasBeenExecuted = ex;
     if (!ex) {
         if (this->getGroup())
