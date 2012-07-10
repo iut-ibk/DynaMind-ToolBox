@@ -262,6 +262,8 @@ void Simulation::run() {
 
 bool Simulation::startSimulation(bool virtualRun) {
 
+    if (!virtualRun)
+        this->startSimulation(true);
     this->data->simulationStatus = SIM_OK;
     this->virtualRun = virtualRun;
     Logger(Standard) << "Run Simulation";
