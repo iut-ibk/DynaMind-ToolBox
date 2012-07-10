@@ -36,7 +36,17 @@
 namespace {
     class TestSimulation : public ::testing::Test
     {
+    public:
+        DM::Simulation *sim;
 
+    protected:
+            TestSimulation()
+            {
+                sim = 0;
+            }
+            virtual ~TestSimulation(){}
+            virtual void SetUp();
+            virtual void TearDown();
     };
 }
 
