@@ -23,7 +23,7 @@ foreach (tool ${TOOLBOX})
         endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
         execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
-        execute_process(COMMAND ${GIT_EXECUTABLE} pull WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
+        execute_process(COMMAND ${GIT_EXECUTABLE} pull origin master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
 
 endforeach(${tool}) 
 
