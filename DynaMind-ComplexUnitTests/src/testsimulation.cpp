@@ -32,6 +32,9 @@
 #include <dmporttuple.h>
 #include <dmpythonenv.h>
 #include <QDir>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 namespace {
 void TestSimulation::SetUp()
@@ -99,7 +102,7 @@ TEST_F(TestSimulation,RepeatedUpdatesAndRandomChanges) {
 
 
     std::vector<DM::Module*> vm = sim->getModules();
-    for (int i = 0; i < 2; i++)  {
+    for (int i = 0; i < 200; i++)  {
         for (int j = 0; j < 10; j++)      {
             int r = rand() % vm.size();
             DM::Module * m =  vm[r];
