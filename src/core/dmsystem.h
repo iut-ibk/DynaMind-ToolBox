@@ -79,6 +79,7 @@ private:
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;    
     std::vector<DM::System *> sucessor;
+    std::vector<DM::View *> ownedView;
 
 
     //Get Edge Based on otherwise takes ages

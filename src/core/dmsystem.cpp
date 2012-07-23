@@ -98,6 +98,10 @@ System::~System()
     foreach (DM::System * sys, sucessor)
         if (sys)
             delete sys;
+    foreach (DM::View * v, ownedView) {
+        delete v;
+    }
+    ownedView.clear();
 }
 
 Component * System::addComponent(Component* c, const DM::View & view)
@@ -461,12 +465,14 @@ bool System::addView(View view)
     //Check for existing View
     if (this->viewdefinitions.find(view.getName()) == this->viewdefinitions.end()) {
         this->viewdefinitions[view.getName()] = new View(view);
+        ownedView.push_back(this->viewdefinitions[view.getName()]);
     }
 
     DM::View  * existingView = this->viewdefinitions[view.getName()];
     if (!existingView) {
         this->viewdefinitions[view.getName()] = new View(view);
         existingView = this->viewdefinitions[view.getName()];
+        ownedView.push_back(this->viewdefinitions[view.getName()]);
     }
 
     if (!view.writes()) {

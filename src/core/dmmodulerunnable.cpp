@@ -42,6 +42,7 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 void DM::ModuleRunnable::run() {
     clock_t start, finish;
+
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
     if (!m->isExecuted() || m->isGroup()) {
@@ -57,18 +58,7 @@ void DM::ModuleRunnable::run() {
         if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
             if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
                 DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
-                /* If simulation is executed in virtual mode loops are just executed ones.
-                 * Therefore steps is set to group step - 1 which means just one step is executed and.
-                 * Same is valid when the modules with a group have not been changed */
-                /*if (m->isGroup() ) {
-                    DM::Group *  g = (Group*) m;
-                    if (g->getSimulation()->isVirtualRun() && !g->HasContaingModuleChanged()) {
-                        if (g->isRunnable()) {
-                            int steps = g->getSteps()-1;
-                            g->setStep(steps);
-                        }
-                    }
-                }*/
+
                 start = clock();
                 DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  << m->isExecuted();
                 m->run();
