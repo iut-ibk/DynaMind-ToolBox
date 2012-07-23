@@ -4,7 +4,7 @@ project(DynaMind-ToolBox)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks P8Modules)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks)
 
 
 foreach (tool ${TOOLBOX})
@@ -17,6 +17,8 @@ foreach (tool ${TOOLBOX})
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout -t origin/master
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
 	endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
 
