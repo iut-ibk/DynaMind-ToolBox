@@ -109,7 +109,7 @@ void Marker::initRExpression () {
         std::cout << "Try: " << *it << std::endl;
         if (paramRaw.find(*it) != paramRaw.end()) {
             std::string buf;
-            std::stringstream ss(paramRaw.at(*it));
+            std::stringstream ss(paramRaw[*it]);
             std::vector<std::string> tokens;
             while (ss >> buf)
                 tokens.push_back(buf);
@@ -204,7 +204,9 @@ void Marker::initrExpression () {
         std::cout << "Try: " << *it << std::endl;
         if (paramRaw.find(*it) != paramRaw.end()) {
             std::string buf;
-            std::stringstream ss(paramRaw.at(*it));
+            std::stringstream ss;
+            std::string s = paramRaw[*it];
+            ss << s;
             std::vector<std::string> tokens;
             while (ss >> buf)
                 tokens.push_back(buf);

@@ -62,8 +62,6 @@ class ImportShapeFile(Module):
         def init(self):
             if self.Identifier == "":
                 return
-            #if self.Identifier == self.IdentifierOld:
-                #return
             self.NodeView = View("", NODE, WRITE)
             self.EdgeView = View("", EDGE, WRITE)
             self.FaceView = View("", FACE, WRITE)
@@ -73,7 +71,10 @@ class ImportShapeFile(Module):
                 self.EdgeView = View(self.Identifier, EDGE, WRITE)
             if self.isFace:
                 self.FaceView = View(self.Identifier, FACE, WRITE)
-            
+                self.FaceView.addAttribute("MinX")
+                self.FaceView.addAttribute("MaxX")
+                self.FaceView.addAttribute("MinY")
+                self.FaceView.addAttribute("MaxY")            
             data = []
 
             shapelyGeometries, fieldPacks, fieldDefinitions = [], [], []
@@ -104,6 +105,13 @@ class ImportShapeFile(Module):
                        
             self.addData("Vec", data)
             
+            self.MinX = 0.0
+            self.MaxX = 0.0
+            self.MinY = 0.0
+            self.MaxY = 0.0
+            
+            self.firstPoint = True
+            
             #self.IdentifierOld = self.Identifier
         
         """The method compares the existing nodes with the new Node.
@@ -111,6 +119,25 @@ class ImportShapeFile(Module):
         returned otherwise a new node is created and returend"""
         def addPoint2d(self, city, x, y, view, error):
             newNode = Node(x,y,0)
+            if (self.firstPoint is True):
+                self.MinX = x
+                self.MaxX = x
+                self.MinY = y
+                self.MaxY = y  
+                self.firstPoint = False
+             
+            if (self.MinX > x):
+                self.MinX = x
+                
+            if (self.MinY > y):
+                self.MinY = y
+                
+            if (self.MaxX < x):
+                self.MaxX = x     
+                           
+            if (self.MaxY < y):
+                self.MaxY = y               
+            
             idx = ('%.0f') % (x/self.PointmapTol)
             idy = ('%.0f') % (y/self.PointmapTol)
             id = idx+idy
@@ -145,6 +172,7 @@ class ImportShapeFile(Module):
         
         def run(self):            
             try:    
+                self.firstPoint = True
                 while int(self.Snap/self.PointmapTol) is not 0:
                    self.PointmapTol = self.PointmapTol*10                   
                        
@@ -252,14 +280,15 @@ class ImportShapeFile(Module):
                                 pl.append(n)
                                 numberOfPoints += 1     
                                 offset +=1
+
                                 if numberOfPoints > 0:    
                                         if self.isEdge:
-                                            if pl[numberOfPoints - offset].getName() != pl[numberOfPoints].getName(): 
+                                            if str(pl[numberOfPoints - offset].getUUID()) != str(pl[numberOfPoints].getUUID()):                                                 
                                                 startnode =   pl[numberOfPoints - offset]
                                                 endnode = pl[numberOfPoints]
                                                 e = city.addEdge(pl[numberOfPoints - offset], pl[numberOfPoints],  self.EdgeView)
                                                 el.append(e)
-                                                InlcudedEdges[startnode.getName()] = endnode.getName()
+                                                InlcudedEdges[startnode.getUUID()] = endnode.getUUID()
                                                 offset = 0
                                                 for attr in attrvec:      
                                                     e.addAttribute(attr)
@@ -267,6 +296,16 @@ class ImportShapeFile(Module):
                                     f = city.addFace(pl, self.FaceView) 
                                     for attr in attrvec: 
                                         f.addAttribute(attr)
+                                    f.addAttribute("MinX", self.MinX)
+                                    f.addAttribute("MaxX", self.MaxX)
+                                    f.addAttribute("MinY", self.MinY)
+                                    f.addAttribute("MaxY", self.MaxY)
+                                    print  self.MinX
+                                    print  self.MaxX
+                                    print  self.MinY
+                                    print  self.MaxY
+                                    
+                                    self.firstPoint = True
 
                 print "Imported points: " + str( len(city.getAllNodes()))
                 print "Imported edges: " + str( len(city.getUUIDsOfComponentsInView( self.EdgeView)) )

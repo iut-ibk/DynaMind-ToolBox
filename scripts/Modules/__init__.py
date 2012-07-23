@@ -27,3 +27,4 @@ from importshape import *
 from ExportToShapeFile import *
 from memtestsyste import *
 from plotvectordata import  *
+from plotraster import  *

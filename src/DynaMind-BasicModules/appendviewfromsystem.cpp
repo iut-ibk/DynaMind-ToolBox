@@ -49,19 +49,29 @@ void AppendViewFromSystem::run() {
 //TODO: Works finw until someone is changing something upstream -> no update downstream!
 void AppendViewFromSystem::init()
 {
+    std::cout << "Run init" << std::endl;
     //Define New System
     if (Inports.size() > 0 ) {
         bool changed = false;
         foreach (std::string s, Inports) {
             DM::System * sys = this->getData(s);
+            if (s.compare("ConAfterGen") == 0) {
+                std::cout << "Fuck You" << std::endl;
+
+           }
             if (sys != 0) {
                 foreach (std::string v, sys->getNamesOfViews()) {
                     if (std::find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
-                        DM::View old = sys->getViewDefinition(v);
-                        DM::View new_v(v, old.getType(), DM::WRITE);
-                        if (old.getIdOfDummyComponent().empty())
+                        DM::View * old = sys->getViewDefinition(v);
+                        DM::View new_v(v, old->getType(), DM::WRITE);
+                        if (old->getIdOfDummyComponent().empty())
                             continue;
-                        DM::AttributeMap cmp = sys->getComponent(old.getIdOfDummyComponent())->getAllAttributes();
+                        if (!sys->getComponent(old->getIdOfDummyComponent())) {
+                            DM::Logger(DM::Error) << "Standard dummy Component 0";
+                            sys = 0;
+                            return;
+                        }
+                        DM::AttributeMap cmp = sys->getComponent(old->getIdOfDummyComponent())->getAllAttributes();
 
                         for (DM::AttributeMap::const_iterator it = cmp.begin();
                              it != cmp.end();

@@ -108,15 +108,10 @@ void CellularAutomata::init() {
 void CellularAutomata::run()  {
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
     this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize);
-    DM::System * systest1 = this->getData(this->NameOfOutput);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
-    std::vector<View> data = views["RasterDataIn"];
 
     foreach (std::string s, param.ListOfLandscapes) {
         View rdata(s, DM::RASTERDATA, DM::READ);
-        DM::System * systest = this->getData("RasterDataIn");
-
-        DM::RasterData * r = this->getRasterData("RasterDataIn",rdata);
         this->landscapes[s] = this->getRasterData("RasterDataIn",rdata);
     }
 
@@ -128,7 +123,6 @@ void CellularAutomata::run()  {
     for (int x = 0; x < this->param.Width; x++) {
         for (int y = 0; y < this->param.Height; y++) {
             //Update RasterData
-
 
             foreach(std::string s, this->NeighboorhoodList) {
 
@@ -155,10 +149,53 @@ void CellularAutomata::run()  {
 
 
 }
+CellularAutomata::~CellularAutomata() {
+    this->deinit();
+}
 
+void CellularAutomata::deinit() {
+    if (runinit)
+        return;
+    for ( std::map<std::string, std::string>::iterator it = param.neighs.begin(); it != param.neighs.end(); ++it) {
+
+        std::string name= it->first;
+        int **Neighbourhood_Stamp = NeighboorhoodStamps[name];
+        double **Neighbourhood = NeighboorhoodMaps[name];
+        Dimension dim = this->NeighboohoodDimensions[name];
+        int width = dim.widht;
+        for (int i = 0; i < width; i++) {
+            delete[] Neighbourhood[i];
+            delete[] Neighbourhood_Stamp[i];
+        }
+        delete[] Neighbourhood;
+        delete[] Neighbourhood_Stamp;
+
+        delete this->NeighboorhoodPointerMap[name];
+
+    }
+    NeighboorhoodStamps.clear();
+    NeighboorhoodMaps.clear();
+    NeighboorhoodPointerMap.clear();
+    NeighboohoodDimensions.clear();
+
+
+    foreach (double * rs, RulesResults)
+        delete rs;
+    RulesResults.clear();
+    foreach (Parser * p, Rules )
+        delete p;
+    Rules.clear();
+    foreach (double * d, pRessults) {
+        delete d;
+    }
+    pRessults.clear();
+
+
+    this->runinit = false;
+}
 
 void CellularAutomata::initRuntime() {
-    runinit =true;
+    runinit = true;
 
     for ( std::map<std::string, std::string>::iterator it = param.neighs.begin(); it != param.neighs.end(); ++it) {
         std::string name= it->first;
@@ -183,7 +220,6 @@ void CellularAutomata::initRuntime() {
             Neighbourhood_Stamp[i] = new int[height];
             int j = 0;
             foreach(QString v, s.split(",")) {
-                // Logger(Debug) << v.toInt();
                 Neighbourhood_Stamp[i][j] = v.toInt();
                 j++;
             }
@@ -219,6 +255,8 @@ void CellularAutomata::initRuntime() {
         dim.elements = sum;
         this->NeighboohoodDimensions[name] = dim;
         NeighboorhoodList.push_back(name);
+
+
     }
     //Init Rules;
 

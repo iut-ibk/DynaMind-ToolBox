@@ -58,8 +58,8 @@ void CalculateCentroid::init()
 
     if (this->NameOfExistingView.empty())
         return;
-    DM::View v = city->getViewDefinition(NameOfExistingView);
-    DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
+    DM::View * v = city->getViewDefinition(NameOfExistingView);
+    DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
     writeView.addAttribute("centroid_x");
     writeView.addAttribute("centroid_y");
 

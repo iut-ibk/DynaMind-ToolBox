@@ -70,6 +70,7 @@ public:
     virtual bool  createInputDialog();
     void addLandscape(std::string s);
     std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
+    virtual ~CellularAutomata();
 
 private:
     void updateInport();
@@ -101,6 +102,8 @@ private:
 
     Parameter param;
     parameter_type paramRaw;
+
+    void deinit();
 
 };
 

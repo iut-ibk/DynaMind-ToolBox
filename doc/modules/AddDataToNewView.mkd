@@ -1,0 +1,14 @@
+#AddDataToNewView
+
+[Figure 1]: images/adddatatonewview_module.png "module view" 
+![Alt text][Figure 1] 
+
+The module adds componentes from an existing view to an new user defiend view, including new attributes. The attributes are initales with zero. The module is also used to append a new attribute to an existing view. Therefore the output view has the same name as the input view. 
+
+
+[Figure 2](#Figure 2) shows the input dialog and an example input. Here components assigned to *SuperBlock* are assigned to the new created View *Catchment*. Also an new Attribute is *Impervious* is appended to the component.
+
+[Figure 2]: images/adddatatonewview_gui.png "Gui to define parameter" 
+![Alt text][Figure 2] 
+
+

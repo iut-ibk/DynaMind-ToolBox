@@ -20,7 +20,7 @@ GUIExportRasterData::GUIExportRasterData(DM::Module *m, QWidget *parent) :
     ui->comboBox->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("FileName")));
     foreach (std::string s, sys_in) {
-        if (sys->getViewDefinition(s).getType() == DM::RASTERDATA)
+        if (sys->getViewDefinition(s)->getType() == DM::RASTERDATA)
             ui->comboBox->addItem(QString::fromStdString(s));
     }
 

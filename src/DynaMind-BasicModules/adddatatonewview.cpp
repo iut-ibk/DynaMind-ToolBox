@@ -46,19 +46,23 @@ AddDataToNewView::AddDataToNewView()
 void AddDataToNewView::run()
 {
     DM::System * sys = this->getData("Data");
-    DM::View v_existing= sys->getViewDefinition(NameOfExistingView);
-    DM::ComponentMap cmp = sys->getAllComponentsInView(v_existing);
+    DM::View * v_existing= sys->getViewDefinition(NameOfExistingView);
+    if (!v_existing) {
+        DM::Logger(DM::Error) << "view doesn't exist";
+        return;
+    }
+    DM::ComponentMap cmp = sys->getAllComponentsInView(*v_existing);
 
-    DM::View v_new= sys->getViewDefinition(NameOfNewView);
+    DM::View * v_new= sys->getViewDefinition(NameOfNewView);
 
     for (DM::ComponentMap::const_iterator it = cmp.begin();
          it != cmp.end();
          ++it) {
-        DM::Component * c = it->second;
+        DM::Component * c = sys->getComponent(it->first);
         /*foreach (std::string attr, newAttributes) {
             DM::Attribute * a = c->getAttribute(attr)
         }*/
-        sys->addComponentToView(c, v_new);
+        sys->addComponentToView(c, *v_new);
     }
 
 
@@ -82,10 +86,12 @@ void AddDataToNewView::init()
     if (this->NameOfNewView.empty())
         return;
 
-
-
-    DM::View v = sys_in->getViewDefinition(NameOfExistingView);
-    readView = DM::View(v.getName(), v.getType(), DM::READ);
+    DM::View*  v = sys_in->getViewDefinition(NameOfExistingView);
+    if (!v) {
+        DM::Logger(DM::Warning) << "View does not exist " << NameOfExistingView << this->getName() << this->getUuid();
+        return;
+    }
+    readView = DM::View(v->getName(), v->getType(), DM::READ);
     bool modify = false;
     bool changed = false;
     if (NameOfNewView.compare(NameOfExistingView) == 0) {
@@ -100,9 +106,9 @@ void AddDataToNewView::init()
 
 
     //Get Attributes from existing View
-    if (sys_in->getComponent(v.getIdOfDummyComponent()) == 0)
+    if (sys_in->getComponent(v->getIdOfDummyComponent()) == 0)
         return;
-    DM::AttributeMap cmp = sys_in->getComponent(v.getIdOfDummyComponent())->getAllAttributes();
+    DM::AttributeMap cmp = sys_in->getComponent(v->getIdOfDummyComponent())->getAllAttributes();
 
     for (DM::AttributeMap::const_iterator it = cmp.begin();
          it != cmp.end();

@@ -15,7 +15,7 @@ ClearView::ClearView()
 
 void ClearView::run() {
     DM::System * data = this->getData("Data");
-    DM::View v = DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView).getType(), DM::MODIFY);
+    DM::View v = DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView)->getType(), DM::MODIFY);
     DM::ComponentMap cmp = data->getAllComponentsInView(v);
     for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
         data->removeComponentFromView(it->second, v);
@@ -35,7 +35,7 @@ void ClearView::init() {
         return;
 
     std::vector<DM::View> data;
-    data.push_back(  DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView).getType(), DM::MODIFY) );
+    data.push_back(  DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView)->getType(), DM::MODIFY) );
     this->addData("Data", data);
     NameOfExistingView_old = NameOfExistingView;
 

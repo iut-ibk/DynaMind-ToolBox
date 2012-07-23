@@ -61,9 +61,9 @@ AppendAttributes::AppendAttributes() {
 void AppendAttributes::run() {
 
     DM::System * sys = this->getData("Data");
-    DM::View v_existing= sys->getViewDefinition(NameOfExistingView);
+    DM::View * v_existing= sys->getViewDefinition(NameOfExistingView);
     DM::RasterData * r = this->getRasterData("Data", DM::View(NameOfRasterData, DM::READ, DM::RASTERDATA));
-    foreach (std::string s, sys->getUUIDsOfComponentsInView(v_existing)) {
+    foreach (std::string s, sys->getUUIDsOfComponentsInView(*v_existing)) {
         DM::Face * f = sys->getFace(s);
         std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
         double dattr = 0;
@@ -100,8 +100,9 @@ void AppendAttributes::init()
     if (newAttribute_old.compare(newAttribute) == 0)
         return;
 
-    DM::View v = sys_in->getViewDefinition(NameOfExistingView);
-    readView = DM::View(v.getName(), v.getType(), DM::READ);
+
+    DM::View * v = sys_in->getViewDefinition(NameOfExistingView);
+    readView = DM::View(v->getName(), v->getType(), DM::READ);
     readView.addAttribute(newAttribute);
 
     data.push_back(readView);

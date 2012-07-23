@@ -40,7 +40,7 @@ using namespace DM;
   * @author Christian Urich
   */
 
-class CalculateCentroid : public Module
+class DM_HELPER_DLL_EXPORT CalculateCentroid : public Module
 {
     DM_DECLARE_NODE(CalculateCentroid)
 private:

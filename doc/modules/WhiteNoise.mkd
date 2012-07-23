@@ -1,0 +1,15 @@
+#WhiteNoise
+[Figure 1]: images/whitenoise_module.png "module view" 
+![Alt text][Figure 1] 
+
+White noise creates raster data where each cell contains a random value between 0 and 1. 
+
+[Figure 2]: images/whitenoise_gui.png "Gui to define parameter" 
+![Alt text][Figure 2] 
+
+As parameter *Height* and *Width* in cells and the *CellSize* can be defined. 
+
+##Sample Results
+
+[Figure 3]: images/whitenoise_result.png "Gui to define parameter" 
+![Alt text][Figure 3] 

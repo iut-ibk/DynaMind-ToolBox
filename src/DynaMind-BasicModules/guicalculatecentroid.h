@@ -26,7 +26,6 @@ private:
     CalculateCentroid * m;
 public slots:
     void accept();
-    void addAttribute();
 };
 
 #endif // GUICALCULATECENTROID_H
