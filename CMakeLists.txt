@@ -5,6 +5,7 @@ project(DynaMind-ToolBox)
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks)
+file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
 foreach (tool ${TOOLBOX})
