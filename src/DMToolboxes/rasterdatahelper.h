@@ -33,9 +33,9 @@
 class DM_HELPER_DLL_EXPORT RasterDataHelper
 {
 public:
-    static double sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker=0);
-    static double meanOverAreaWithBlocker (DM::RasterData  * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker);
-    static double meanOverArea (DM::RasterData  * rdata, std::vector<DM::Node*>   & points);
+    static double sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker=0, DM::Node * offset = 0);
+    static double meanOverAreaWithBlocker (DM::RasterData  * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker,  DM::Node * offset = 0);
+    static double meanOverArea (DM::RasterData  * rdata, std::vector<DM::Node*>  & points, DM::Node * offset = 0);
 };
 
 #endif // RASTERDATAHELPER_H

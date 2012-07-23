@@ -28,14 +28,19 @@
 #include <QPolygonF>
 
 
-double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker) {
+double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker, DM::Node * offset) {
     double sum = 0;
     long counter = 0;
     double cellSize = rdata->getCellSize();
 
     QPolygonF area;
     foreach(DM::Node * p , points ) {
-        area.append(QPointF(p->getX(), p->getY()));
+        if (!offset) {
+            area.append(QPointF(p->getX(), p->getY()));
+        }
+        else {
+            area.append(QPointF(p->getX() + offset->getX(), p->getY() + offset->getY()));
+        }
     }
 
     if ( area.size() > 0 ) {
@@ -88,19 +93,25 @@ double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::v
     else return 0;
 }
 
-double RasterDataHelper::meanOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points) {
-    return RasterDataHelper::meanOverAreaWithBlocker(rdata, points,0);
+double RasterDataHelper::meanOverArea (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::Node * offset) {
+    return RasterDataHelper::meanOverAreaWithBlocker(rdata, points,0, offset);
 
 }
 
 
-double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*> &points, DM::RasterData * blocker) {
+double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*> &points,DM::RasterData * blocker, DM::Node * offset) {
     double sum = 0;
     double cellSize = rdata->getCellSize();
 
     QPolygonF area;
+
     foreach(DM::Node * p , points ) {
-        area.append(QPointF(p->getX(), p->getY()));
+        if (!offset) {
+            area.append(QPointF(p->getX(), p->getY()));
+        }
+        else {
+            area.append(QPointF(p->getX() + offset->getX(), p->getY() + offset->getY()));
+        }
     }
 
     if ( area.size() > 0 ) {
