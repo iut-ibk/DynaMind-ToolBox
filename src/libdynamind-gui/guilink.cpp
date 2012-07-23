@@ -93,9 +93,8 @@ void GUILink::setOutPort(GUIPort * outPort)
     outPort->setLink(this);
     source = outPort->getConnectionNode();
     sink = outPort->getConnectionNode();
-    prepareGeometryChange ();
+    prepareGeometryChange();
     updatePaths();
-
     this->update(this->boundingRect());
 }
 
@@ -106,12 +105,13 @@ void GUILink::setInPort(GUIPort * inPort) {
     inPort->setLink(this);
     sink = inPort->getConnectionNode();
     prepareGeometryChange ();
-    updatePaths();
+    updatePaths();    
     this->update(this->boundingRect());
+
 }
 void GUILink::setInPort(QPointF p) {
     sink = p;
-    prepareGeometryChange ();
+    prepareGeometryChange();
     updatePaths();
     this->update(this->boundingRect());
 }
@@ -130,11 +130,9 @@ void GUILink::deleteLink() {
 
 }
 void GUILink::backLink() {
-    //this->back = true;
-
     this->VIBelink->setBackLink(true);
-
 }
+
 void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu menu;
 

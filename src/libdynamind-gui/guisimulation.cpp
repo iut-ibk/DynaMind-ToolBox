@@ -40,7 +40,7 @@ void GUISimulation::changeGroupName(GroupNode * g) {
 GroupNode * GUISimulation::getGroupNode(DM::Group * g) {
 
     foreach (GroupNode * gn, this->groupNodes) {
-        if (gn->getVIBeModel() == g)
+        if (gn->getDMModel() == g)
             return gn;
     }
 
@@ -86,6 +86,7 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 }
 
 
+
 void GUISimulation::updateSimulation()
 {    
     this->startSimulation(true);
@@ -108,4 +109,8 @@ void GUISimulation::clearSimulation() {
 
     this->setSimulationStatus(DM::SIM_OK);
 
+}
+
+void GUISimulation::showHelp(string classname) {
+    emit showHelpForModule(classname);
 }

@@ -9,6 +9,7 @@ SET(MOC_FILES   application.h
                 guimodelnode.h
                 guiresultobserver.h
                 guisimulation.h
+                guiviewdataformodules.h
                 dmmainwindow.h
                 modelnode.h
                 modelnodebutton.h
@@ -16,6 +17,7 @@ SET(MOC_FILES   application.h
                 projectviewer.h
                 rootgroupnode.h
                 simulationmanagment.h
+                guihelpviewer.h
                 StdRedirector.h )
 
 FILE(GLOB CPP_GUI_FILES *.cpp)
@@ -26,17 +28,16 @@ QT4_WRAP_CPP(CPP_GUI_FILES ${MOC_FILES})
 QT4_ADD_RESOURCES(CPP_GUI_FILES icons.qrc splash.qrc)
 
 
-INCLUDE_DIRECTORIES( ${QGLVIEWER_INCLUDE_DIR})
 INCLUDE_DIRECTORIES( ${QT_QTGUI_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(../3dparty/alglib/src)
 
-ADD_LIBRARY(dynamindgui SHARED ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
+ADD_LIBRARY(dynamindgui STATIC ${CPP_GUI_FILES}  ${QWT_CPPS} ${QTGL_CPPS} ${ALGLIB_CPP})
 
 
 IF (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMIND_CORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMIND_CORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES})
 ELSE()
-       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMIND_CORE_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARIES})
+       TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMIND_CORE_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OPENGL_LIBRARIES} ${QT_LIBRARIES})
 ENDIF()
 
 

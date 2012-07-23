@@ -100,12 +100,12 @@ public:
     void setResultWidget(DMMainWindow * widget) {this->ResultWidget = widget; this->guiResultObserver.setResultWidget(widget);}
 
     int getID(){return this->id;}
-    QString getName(){return QString::fromStdString(this->getVIBeModel()->getClassName());}
-    void setID(int id){this->getVIBeModel()->setID(id); this->id = id;}
+    QString getName(){return QString::fromStdString(this->getDMModel()->getClassName());}
+    void setID(int id){this->getDMModel()->setID(id); this->id = id;}
 
     void addPort(DM::Port * p);
     virtual GUIPort * getGUIPort(DM::Port * p);
-    std::map<std::string, int> getParameters(){return this->getVIBeModel()->getParameterList();}
+    std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
 
     std::string getParameterAsString(std::string name);
 
@@ -124,7 +124,7 @@ public:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
 
-    DM::Module * getVIBeModel();
+    DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 
@@ -143,6 +143,7 @@ public slots:
     void editModelNode();
     void renameModelNode();
     void printData();
+    void showHelp();
 
 };
 

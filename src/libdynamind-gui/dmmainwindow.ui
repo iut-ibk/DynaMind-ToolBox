@@ -625,6 +625,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionRun"/>
+   <addaction name="actionUpdate"/>
   </widget>
   <action name="actionRun">
    <property name="icon">
@@ -724,6 +725,11 @@
   <action name="actionReload_Modules">
    <property name="text">
     <string>Reload Modules</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="text">
+    <string>Update</string>
    </property>
   </action>
  </widget>
