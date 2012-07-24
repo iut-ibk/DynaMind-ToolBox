@@ -26,9 +26,20 @@ IF(WIN32 AND NOT UNIX)
         SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
         ClearErrors
         ")
+        FILE(GLOB QTDLLS
+              ${QT_BINARY_DIR}/QtCore4.dll
+              ${QT_BINARY_DIR}/QtGui4.dll
+              ${QT_BINARY_DIR}/QtXml4.dll
+              ${QT_BINARY_DIR}/QtXmlPatterns4.dll
+              ${QT_BINARY_DIR}/QtNetwork4.dll
+              ${QT_BINARY_DIR}/QtWebKit4.dll
+              ${QT_BINARY_DIR}/phonon4.dll
+              ${QT_BINARY_DIR}/QtOpenGL4.dll
+              ${QT_BINARY_DIR}/QtSVG4.dll
+              ${QT_BINARY_DIR}/QtSql4.dll)
 
      INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
-
+     INSTALL(FILES ${QTDLLS} DESTINATION bin)
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
