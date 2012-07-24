@@ -2,7 +2,7 @@ INCLUDE(InstallRequiredSystemLibraries)
 
 SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-ToolBox")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-ToolBox")
-SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox with Python")
 SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
@@ -39,6 +39,7 @@ IF(WIN32 AND NOT UNIX)
               ${QT_BINARY_DIR}/QtSql4.dll)
 
      INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
+     INSTALL (DIRECTORY "C:/winlibs/Python27/" DESTINATION bin)
      INSTALL(FILES ${QTDLLS} DESTINATION bin)
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
