@@ -263,7 +263,8 @@ void DMMainWindow::createModuleListView() {
 }
 
 void DMMainWindow::runSimulation() {
-    simulation->start();
+    simulation->run();
+    //simulation->start();
     return;
 
 }
