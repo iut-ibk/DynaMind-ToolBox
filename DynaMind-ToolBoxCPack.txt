@@ -39,7 +39,7 @@ IF(WIN32 AND NOT UNIX)
               ${QT_BINARY_DIR}/QtSql4.dll)
 
      INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
-     INSTALL (DIRECTORY "C:/winlibs/Python27" DESTINATION bin)
+     INSTALL (DIRECTORY "C:/winlibs/Python27/" DESTINATION bin)
      INSTALL(FILES ${QTDLLS} DESTINATION bin)
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
