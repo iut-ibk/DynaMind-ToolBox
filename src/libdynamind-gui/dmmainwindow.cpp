@@ -165,6 +165,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
+    env->addPythonPath(QApplication::applicationDirPath().toStdString());
     env->addOverWriteStdCout();
 
     this->simulation = new GUISimulation();
