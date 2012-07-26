@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-OPTION(DYNAMIND_UDPATE "update before compile" OFF)
+OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 
 find_package(Git REQUIRED)
@@ -24,7 +24,7 @@ foreach (tool ${TOOLBOX})
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
-	if (DYNAMIND_UDPATE)
+        if (DYNAMIND_UPDATE)
 
         execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
