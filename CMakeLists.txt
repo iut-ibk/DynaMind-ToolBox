@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
+OPTION(DYNAMIND_UDPATE "update before compile" OFF)
+OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 
 find_package(Git REQUIRED)
 
@@ -22,10 +24,12 @@ foreach (tool ${TOOLBOX})
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
+	if (DYNAMIND_UDPATE)
 
         execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         execute_process(COMMAND ${GIT_EXECUTABLE} pull origin master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
+	endif()
 
 endforeach(${tool}) 
 
@@ -41,5 +45,8 @@ endforeach(${tool})
 
 add_subdirectory(DynaMind-ComplexUnitTests)
 add_subdirectory(Data)
-INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
-#INCLUDE(DynaMind-ToolBoxCPack.txt)
+if (WITH_PYTHON_PACKAGE)
+    INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
+else()
+    INCLUDE(DynaMind-ToolBoxCPack.txt)
+endif()
