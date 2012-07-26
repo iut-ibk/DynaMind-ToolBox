@@ -15,12 +15,14 @@ foreach (tool ${TOOLBOX})
 	else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 	    message(STATUS "preparing ${tool} submodule")
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
-		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+                            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
+
+
         execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         execute_process(COMMAND ${GIT_EXECUTABLE} pull origin master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
@@ -40,4 +42,4 @@ endforeach(${tool})
 add_subdirectory(DynaMind-ComplexUnitTests)
 add_subdirectory(Data)
 INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
-INCLUDE(DynaMind-ToolBoxCPack.txt)
+#INCLUDE(DynaMind-ToolBoxCPack.txt)
