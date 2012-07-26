@@ -1,8 +1,8 @@
 INCLUDE(InstallRequiredSystemLibraries)
 
-SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind")
-SET(CPACK_PACKAGE_NAME "DynaMind")
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
@@ -11,10 +11,10 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
 
 
 IF(WIN32 AND NOT UNIX)
-    SET(CPACK_NSIS_DISPLAY_NAME "DynaMind")
-    SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.uibk.ac.at")
-    SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at")
-    SET(CPACK_NSIS_CONTACT "christian.urich@uibk.ac.at")
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
+SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dynamind-toolbox.org")
+SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.dynamind-toolbox.org")
+SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com")
 
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         !include \\\"winmessages.nsh\\\"
