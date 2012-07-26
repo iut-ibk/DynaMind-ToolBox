@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>DynaMind</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/Icons/ressources/dynamind-icon.png</normaloff>:/Icons/ressources/dynamind-icon.png</iconset>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>
@@ -735,6 +739,7 @@
  </widget>
  <resources>
   <include location="../dynamind-modelbuilder/icons.qrc"/>
+  <include location="icons.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -10,5 +10,6 @@
         <file>ressources/list-add.png</file>
         <file>ressources/list-remove.png</file>
         <file>ressources/player_play.png</file>
+        <file>ressources/dynamind-icon.png</file>
     </qresource>
 </RCC>
