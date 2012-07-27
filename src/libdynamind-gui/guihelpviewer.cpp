@@ -50,11 +50,12 @@ void GUIHelpViewer::showHelpForModule(std::string classname) {
     qFilename.replace(" ", "%20");
 
     QFile f(qFilename);
-    if (f.exists()) {
+    //if (f.exists()) {
         stringstream url;
-        url << "file://" << filename.str();
+        url << "file://" << qFilename.toStdString();
+        DM::Logger(DM::Debug) << qFilename.toStdString();
         this->currentUrl = QUrl(QString::fromStdString(url.str()));
-    }
+    //}
     ui->webView->load(this->currentUrl);
 }
 
