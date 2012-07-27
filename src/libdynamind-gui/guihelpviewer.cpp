@@ -46,7 +46,9 @@ void GUIHelpViewer::showHelpForModule(std::string classname) {
     DM::Logger(DM::Debug) << "Helpfile at " << filename.str();
 
     QString qFilename = QString::fromStdString(filename.str());
-    qFilename.replace("c:/", "");
+    qFilename.replace("\\", "/");
+    qFilename.replace(" ", "%20");
+
     QFile f(qFilename);
     if (f.exists()) {
         stringstream url;
