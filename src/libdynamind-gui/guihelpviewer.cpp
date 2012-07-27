@@ -52,7 +52,7 @@ void GUIHelpViewer::showHelpForModule(std::string classname) {
     QFile f(qFilename);
     //if (f.exists()) {
         stringstream url;
-        url << "file://" << qFilename.toStdString();
+        url << "file:///" << qFilename.toStdString();
         DM::Logger(DM::Debug) << qFilename.toStdString();
         this->currentUrl = QUrl(QString::fromStdString(url.str()));
     //}
