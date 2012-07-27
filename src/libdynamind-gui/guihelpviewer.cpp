@@ -36,13 +36,13 @@ GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 {
     ui->setupUi(this);
     stringstream filename;
-    filename << "file://"<< QDir::currentPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
+    filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
     this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
 }
 void GUIHelpViewer::showHelpForModule(std::string classname) {
     this->currentUrl = this->url_view_not_avaiable;
     stringstream filename;
-    filename << QDir::currentPath().toStdString() << "/" <<  "doc/modules/" << classname << ".html";
+    filename << QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << classname << ".html";
     DM::Logger(DM::Debug) << "Helpfile at " << filename.str();
 
     QString qFilename = QString::fromStdString(filename.str());
