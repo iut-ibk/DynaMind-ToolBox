@@ -43,11 +43,14 @@ void GUIHelpViewer::showHelpForModule(std::string classname) {
     this->currentUrl = this->url_view_not_avaiable;
     stringstream filename;
     filename << QDir::currentPath().toStdString() << "/" <<  "doc/modules/" << classname << ".html";
-    QFile f(QString::fromStdString(filename.str()));
+    DM::Logger(DM::Debug) << "Helpfile at " << filename.str();
+
+    QString qFilename = QString::fromStdString(filename.str());
+    qFilename.replace("c:/", "");
+    QFile f(qFilename);
     if (f.exists()) {
         stringstream url;
         url << "file://" << filename.str();
-        DM::Logger(DM::Standard) << "Helpfile at " << url.str();
         this->currentUrl = QUrl(QString::fromStdString(url.str()));
     }
     ui->webView->load(this->currentUrl);
