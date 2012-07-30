@@ -39,8 +39,17 @@ GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
 
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("Runs")));
 
+    foreach (std::string s, this->m->getParameter<std::vector<std::string > >("nameOfInViews") ) {
+        this->ui->listWidget_in->addItem(QString::fromStdString(s));
+    }
+
+
+    foreach (std::string s, this->m->getParameter<std::vector<std::string > >("nameOfOutViews") ) {
+        this->ui->listWidget_out->addItem(QString::fromStdString(s));
+    }
     connect(ui->addInport, SIGNAL(pressed()), this, SLOT(addInPort()));
     connect(ui->addOutport, SIGNAL(pressed()), this, SLOT(addOutPort()));
+    connect(ui->rmInport, SIGNAL(pressed()), this, SLOT(removeInPort()));
 
 }
 
@@ -54,8 +63,10 @@ void GUIGroupTest::addInPort() {
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
                                          "", &ok);
-    if (ok && !text.isEmpty())
+    if (ok && !text.isEmpty()) {
         this->m->addInPort(text.toStdString());
+        this->ui->listWidget_in->addItem(text);
+    }
 
 }
 
@@ -64,8 +75,18 @@ void GUIGroupTest::addOutPort() {
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
                                          "", &ok);
-    if (ok && !text.isEmpty())
+    if (ok && !text.isEmpty()) {
+        this->ui->listWidget_out->addItem(text);
         this->m->addOutPort(text.toStdString());
+    }
+
+}
+void GUIGroupTest::removeInPort() {
+    if (!ui->listWidget_in->currentItem())
+        return;
+    std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
+    this->m->removeInPort(toRemove);
+    this->ui->listWidget_in->removeItemWidget(this->ui->listWidget_in->currentItem());
 
 }
 

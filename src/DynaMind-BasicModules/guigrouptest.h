@@ -55,6 +55,7 @@ private:
 protected slots:
     void addInPort();
     void addOutPort();
+    void removeInPort();
     void accept();
 };
 
