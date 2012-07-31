@@ -1,0 +1,5 @@
+0.1.1 Bug Fixes
+	- Help in Windows is working
+        - Complex Sewer example runs
+0.1.0 First Windows Release
+
