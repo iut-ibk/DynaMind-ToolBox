@@ -20,15 +20,15 @@ foreach (tool ${TOOLBOX})
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
 		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
+	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout viewer-feature
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
         endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
         if (DYNAMIND_UPDATE)
 
-        execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
+        execute_process(COMMAND ${GIT_EXECUTABLE} checkout viewer-feature
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
-        execute_process(COMMAND ${GIT_EXECUTABLE} pull origin master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
+        execute_process(COMMAND ${GIT_EXECUTABLE} pull origin viewer-feature WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
 	endif()
 
 endforeach(${tool}) 
