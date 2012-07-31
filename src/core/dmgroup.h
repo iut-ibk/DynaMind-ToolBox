@@ -95,6 +95,8 @@ namespace DM {
         std::vector<Module*> getModules(){return this->modules;}
         /** @brief Adds new tuple port */
         PortTuple * addTuplePort(std::string LinkedDataName, int PortType);
+        /** @brief Remove tuple port */
+        void removeTuplePort(PortTuple * pt);
         /** @brief Returns pointer to in port tuple by name */
         PortTuple * getInPortTuple(std::string name);
         /** @brief Returns pointer to out port tuple by name */
