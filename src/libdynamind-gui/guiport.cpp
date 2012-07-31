@@ -257,12 +257,8 @@ void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
 
                     //Run Simulation
                     this->modelNode->getSimulation()->updateSimulation();
-
-
                 }
-
             }
-
         }
         if (!newLink ) {
             if (this->tmp_link != 0) {
@@ -271,8 +267,6 @@ void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
             }
         }
     }
-
-
 }
 void GUIPort::refreshLinks() {
     foreach(GUILink * l, this->links) {

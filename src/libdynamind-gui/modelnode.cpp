@@ -74,11 +74,17 @@ void ModelNode::updatePorts () {
     for (int i = this->ports.size()-1; i > -1; i--) {
         GUIPort * gp = this->ports[i];
         if (!gp->getVIBePort()) {
-            ExistingInPorts.removeAt(ExistingInPorts.indexOf(gp->getPortName()));
+            if (gp->getPortType() > DM::OUTPORTS) {
+                ExistingInPorts.removeAt(ExistingInPorts.indexOf(gp->getPortName()));
+                this->inputCounter--;
+            } else {
+                ExistingOutPorts.removeAt(ExistingOutPorts.indexOf(gp->getPortName()));
+                this->outputCounter--;
+            }
+
             this->ports.remove(i);
             delete gp;
             continue;
-
         }
         if (gp->getVIBePort()->isPortTuple())
             continue;
@@ -327,7 +333,7 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
     }
 }
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
-        QGraphicsItem::mousePressEvent(event );
+    QGraphicsItem::mousePressEvent(event );
 }
 
 
