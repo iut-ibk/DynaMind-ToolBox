@@ -47,6 +47,12 @@ Attribute::Attribute(const Attribute &newattribute)
 Attribute::Attribute(std::string name)
 {
     this->name=name;
+    this->doublevalue = 0;
+    this->stringvalue = "";
+    this->doublevector = std::vector<double>();
+    this->stringvector = std::vector<string>();
+
+
 }
 Attribute::Attribute()
 {
