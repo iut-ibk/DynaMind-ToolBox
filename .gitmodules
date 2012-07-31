@@ -19,3 +19,6 @@
 [submodule "P8Modules"]
 	path = P8Modules
 	url = git@github.com:iut-ibk/P8Modules.git
+[submodule "DynaMind-UrbanSim"]
+	path = DynaMind-UrbanSim
+	url = git@github.com:iut-ibk/DynaMind-UrbanSim.git
