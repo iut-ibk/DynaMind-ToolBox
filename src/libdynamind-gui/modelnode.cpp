@@ -24,33 +24,23 @@
  *
  */
 #include <modelnode.h>
+
 #include <iostream>
+#include <sstream>
+
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSimpleTextItem>
-#include <linknode.h>
-#include <guilink.h>
-#include <guimodelnode.h>
 #include <QMenu>
-
-#include "projectviewer.h"
-#include <QGraphicsDropShadowEffect>
-#include <QPen>
-#include <QLinearGradient>
-#include "ColorPalette.h"
-#include "modelnodebutton.h"
-#include <guiviewdataformodules.h>
-#include <dmmodule.h>
-#include <guiport.h>
-
-#include <dmsimulation.h>
-#include <QApplication>
 #include <QInputDialog>
+
+#include "ColorPalette.h"
+#include <guimodelnode.h>
+#include <guiviewdataformodules.h>
+#include <guiport.h>
 #include <rootgroupnode.h>
 #include <guisimulation.h>
-#include <dmcomponent.h>
 #include <dmsystem.h>
-#include <sstream>
-#include <guihelpviewer.h>
+#include "dmviewer.h"
+#include "viewerwindow.h"
 
 std::string ModelNode::getParameterAsString(std::string name) {
 
@@ -119,11 +109,6 @@ void ModelNode::updatePorts () {
 
     }
     this->update();
-
-
-
-
-
 }
 void ModelNode::resetModel() {
     DM::Module *oldmodule = this->getDMModel();
