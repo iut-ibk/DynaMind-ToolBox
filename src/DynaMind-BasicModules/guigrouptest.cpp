@@ -47,9 +47,6 @@ GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
     foreach (std::string s, this->m->getParameter<std::vector<std::string > >("nameOfOutViews") ) {
         this->ui->listWidget_out->addItem(QString::fromStdString(s));
     }
-    connect(ui->addInport, SIGNAL(pressed()), this, SLOT(addInPort()));
-    connect(ui->addOutport, SIGNAL(pressed()), this, SLOT(addOutPort()));
-    connect(ui->rmInport, SIGNAL(pressed()), this, SLOT(removeInPort()));
 
 }
 
@@ -58,7 +55,7 @@ GUIGroupTest::~GUIGroupTest()
     delete ui;
 }
 
-void GUIGroupTest::addInPort() {
+void GUIGroupTest::on_addInPort_clicked() {
     bool ok;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
@@ -70,7 +67,7 @@ void GUIGroupTest::addInPort() {
 
 }
 
-void GUIGroupTest::addOutPort() {
+void GUIGroupTest::on_addOutPort_clicked() {
     bool ok;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
@@ -81,13 +78,22 @@ void GUIGroupTest::addOutPort() {
     }
 
 }
-void GUIGroupTest::removeInPort() {
+void GUIGroupTest::on_rmInport_clicked() {
     if (!ui->listWidget_in->currentItem())
         return;
     std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
     this->m->removeInPort(toRemove);
-    this->ui->listWidget_in->removeItemWidget(this->ui->listWidget_in->currentItem());
+    delete this->ui->listWidget_in->currentItem();
 
+}
+
+void GUIGroupTest::on_rmOutport_clicked()
+{
+    if (!ui->listWidget_out->currentItem())
+        return;
+    std::string toRemove = ui->listWidget_out->currentItem()->text().toStdString();
+    this->m->removeOutPort(toRemove);
+    delete this->ui->listWidget_out->currentItem();
 }
 
 void GUIGroupTest::accept() {
