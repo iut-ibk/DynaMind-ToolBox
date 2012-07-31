@@ -248,7 +248,7 @@ class ExportToShapeFile(Module):
                                     value = at.getString()
                                     feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
                                  else:
-                                    value = edge.getAttribute(attr[k]).getDouble()
+                                    value = node.getAttribute(attr[k]).getDouble()
                                     feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
                     layer.CreateFeature(feature)    
                 shapeData.Destroy()            
