@@ -143,6 +143,7 @@ public slots:
     void editModelNode();
     void renameModelNode();
     void printData();
+    void viewData();
     void showHelp();
 
 };
