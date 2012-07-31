@@ -50,9 +50,10 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-    double x;
-    double y;
-    double z;
+    union {
+        struct { double x, y, z; };
+        double v_[3];
+    };
 
 public:
     /** @brief create new Node object defined by x, y and z */
@@ -67,6 +68,8 @@ public:
     double getY() const;
     /** @brief return z*/
     double getZ() const;
+    /** @brief return array*/
+    const double * const get() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/

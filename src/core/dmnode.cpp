@@ -68,6 +68,11 @@ double Node::getZ() const
     return z;
 }
 
+const double * const
+Node::get() const {
+    return v_;
+}
+
 void Node::setX(double x)
 {
     this->x=x;
