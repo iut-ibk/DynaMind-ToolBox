@@ -4,11 +4,14 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
 
+set_source_files_properties(${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
 SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp)
 
 ADD_LIBRARY(dynamindcore  SHARED ${DYNAMIND_CPPS})
 
 TARGET_LINK_LIBRARIES(dynamindcore ${QT_LIBRARIES} ${PYTHON_LIBRARIES} ${QT_QTMAIN_LIBRARY})
+
+add_dependencies(dynamindcore pydynamindgen pydmtoolboxgen)
 
 INSTALL(TARGETS dynamindcore
         RUNTIME DESTINATION bin

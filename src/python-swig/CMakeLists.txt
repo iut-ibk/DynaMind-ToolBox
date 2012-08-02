@@ -17,13 +17,11 @@ ENDIF()
 
 
 
-
+IF(NOT EXISTS swigruntime.h)
 EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -c++ -threads -external-runtime swigruntime.h)
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i)
-EXECUTE_PROCESS(COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydmtoolboxWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydmtoolbox.i)
+ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-
 
 ADD_CUSTOM_COMMAND(        
         COMMAND ${SWIG_EXECUTABLE} -python ${SWIG_ARGS} -threads -c++ -o ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pydynamind.i
