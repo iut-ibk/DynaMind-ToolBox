@@ -45,6 +45,7 @@
 #include "exportnodestofile.h"
 #include "importrasterdata.h"
 #include "calculatecentroid.h"
+#include "attributecalculator.h"
 
 using namespace std;
 
@@ -71,5 +72,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<ExportNodesToFile>());
     registry->addNodeFactory(new NodeFactory<ImportRasterData>());
     registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
+    registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
 }
 
