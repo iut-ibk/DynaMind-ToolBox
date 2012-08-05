@@ -48,6 +48,7 @@ private:
     DM::System * city;
     bool changed;
     DM::View vData;
+    DM::View newPoints;
 
 public:
     CalculateCentroid();

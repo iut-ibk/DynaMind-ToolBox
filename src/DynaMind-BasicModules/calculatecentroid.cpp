@@ -28,6 +28,7 @@
 #include "calculatecentroid.h"
 #include "tbvectordata.h"
 #include "guicalculatecentroid.h"
+#include <sstream>
 #include <math.h>
 
 
@@ -63,22 +64,30 @@ void CalculateCentroid::init()
     writeView.addAttribute("centroid_x");
     writeView.addAttribute("centroid_y");
 
-    //if (changed == true) {
-        std::vector<DM::View> data;
-        data.push_back(writeView);
-        this->addData("Data", data);
-    //}
-    vData = writeView;
-    //changed = false;
+    std::stringstream ss;
+    ss << v->getName() << "_CENTROIDS";
 
-    //this->updateParameter();
+    newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
+
+    std::stringstream link;
+    link << v->getName() << "_ID";
+    newPoints.addAttribute(link.str());
+
+    std::vector<DM::View> data;
+    data.push_back(writeView);
+    data.push_back(newPoints);
+    this->addData("Data", data);
+    vData = writeView;
+
+    this->updateParameter();
 }
 
 
 void CalculateCentroid::run() {
     city = this->getData("Data");
     std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
-
+    std::stringstream link;
+    link << vData.getName() << "_ID";
     foreach(std::string name, names) {
         Face * f = city->getFace(name);
 
@@ -88,6 +97,11 @@ void CalculateCentroid::run() {
         f->addAttribute("centroid_x", p.getX());
         f->addAttribute("centroid_y", p.getY());
         f->addAttribute("area", area);
+
+        Node * cn = city->addNode(p, newPoints);
+        Attribute attr(link.str());
+        attr.setString(name);
+        cn->addAttribute(attr);
     }
 }
 bool CalculateCentroid::createInputDialog() {
