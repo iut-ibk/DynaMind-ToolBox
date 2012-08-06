@@ -44,6 +44,13 @@ public:
 private:
     Ui::GUIAttributeCalculator *ui;
     AttributeCalculator * attrcalc;
+    void updateAttributeView();
+    QString viewName;
+
+
+protected slots:
+    void on_addButton_clicked();
+    void on_comboView_currentIndexChanged (int);
 };
 
 #endif // GUIATTRIBUTECALCULATOR_H
