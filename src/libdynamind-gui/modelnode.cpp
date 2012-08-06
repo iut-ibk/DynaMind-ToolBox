@@ -412,7 +412,7 @@ void ModelNode::editModelNode() {
 }
 
 void ModelNode::renameModelNode() {
-    QString text =QInputDialog::getText(0, "Name", tr("User name:"), QLineEdit::Normal);
+    QString text =QInputDialog::getText(0, "Name", tr("Input:"), QLineEdit::Normal);
     if (!text.isEmpty())
         this->getDMModel()->setName(text.toStdString());
 
