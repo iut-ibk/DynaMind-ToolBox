@@ -32,7 +32,7 @@
 namespace Ui {
 class GUIAttributeCalculator;
 }
-
+class QTreeWidgetItem;
 class GUIAttributeCalculator : public QDialog
 {
     Q_OBJECT
@@ -48,9 +48,14 @@ private:
     QString viewName;
 
 
+    void createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname);
+
+
 protected slots:
     void on_addButton_clicked();
     void on_comboView_currentIndexChanged (int);
+public slots:
+    void accept();
 };
 
 #endif // GUIATTRIBUTECALCULATOR_H

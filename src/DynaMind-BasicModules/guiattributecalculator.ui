@@ -90,7 +90,13 @@
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QListWidget" name="listAttributes"/>
+         <widget class="QTreeWidget" name="listAttributes">
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>

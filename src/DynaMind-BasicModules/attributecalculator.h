@@ -33,16 +33,25 @@
 using namespace DM;
 class DM_HELPER_DLL_EXPORT AttributeCalculator : public Module
 {
+
     DM_DECLARE_NODE(AttributeCalculator)
+
+private:
+    std::map<std::string, std::string> variablesMap;
+    DM::System * sys_in;
+    std::string nameOfBaseView;
+    std::string nameOfNewAttribute;
+    std::string equation;
+    std::map<std::string, DM::View> viewsmap;
+    std::vector<std::string> varaibleNames;
+
 public:
     AttributeCalculator();
     void run();
     void init();
     bool createInputDialog();
     DM::System * getSystemIn() {return this->sys_in;}
-   private:
-    std::map<std::string, std::string> variables;
-    DM::System * sys_in;
+
 };
 
 #endif // ATTRIBUTECALCULATOR_H

@@ -63,6 +63,7 @@ void CalculateCentroid::init()
     DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
     writeView.addAttribute("centroid_x");
     writeView.addAttribute("centroid_y");
+    writeView.addAttribute("area");
 
     std::stringstream ss;
     ss << v->getName() << "_CENTROIDS";
@@ -70,8 +71,9 @@ void CalculateCentroid::init()
     newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
 
     std::stringstream link;
-    link << v->getName() << "_ID";
+    link << v->getName();
     newPoints.addAttribute(link.str());
+    newPoints.setAttributeType(link.str(), LINK);
 
     std::vector<DM::View> data;
     data.push_back(writeView);
@@ -87,7 +89,7 @@ void CalculateCentroid::run() {
     city = this->getData("Data");
     std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
     std::stringstream link;
-    link << vData.getName() << "_ID";
+    link << vData.getName();
     foreach(std::string name, names) {
         Face * f = city->getFace(name);
 
@@ -100,7 +102,7 @@ void CalculateCentroid::run() {
 
         Node * cn = city->addNode(p, newPoints);
         Attribute attr(link.str());
-        attr.setString(name);
+        attr.setLink(vData.getName(), f->getUUID());
         cn->addAttribute(attr);
     }
 }
