@@ -30,12 +30,25 @@ public:
     }
     
     void draw();
-    void drawWithNames(int start_name);
+    void drawWithNames();
     
     void setOffset(double x, double y, double z) {
         x_off = x;
         y_off = y;
         z_off = z;
+    }
+    
+    void setNameStart(GLuint start) {
+        name_start = start;
+    }
+    
+    GLuint getNameStart() const {
+        return name_start;
+    }
+    
+    bool isNameFromLayer(GLuint name) const {
+        name -= name_start;
+        return name >= 0 && name < vmd.number_of_primitives;
     }
     
 private:
@@ -44,8 +57,9 @@ private:
     std::string attribute;
     double scale_height;
     
-    int list;
+    GLuint list;
     int texture;
+    GLuint name_start;
     
     double x_off, y_off, z_off;
     

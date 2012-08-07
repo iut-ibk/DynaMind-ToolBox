@@ -74,13 +74,14 @@ void combine_callback(GLdouble coords[3],
 struct TesselatedFaceDrawer {
     std::string attr;
     double height_scale, attr_span;
-    GLuint texture;
+    GLuint texture, name_start;
     const ViewMetaData &vmd;
     
     std::vector<GLdouble *> vertices;
     
-    TesselatedFaceDrawer(const ViewMetaData &vmd, std::string attr = "", double height_scale = -1, GLuint texture = -1)
-        : attr(attr), texture(texture), vmd(vmd) {
+    TesselatedFaceDrawer(const ViewMetaData &vmd, GLuint name_start, 
+                         std::string attr = "", double height_scale = -1, GLuint texture = -1)
+        : attr(attr), texture(texture), vmd(vmd), name_start(name_start) {
         
         this->height_scale = 1.0/vmd.attr_max*vmd.radius()*height_scale;
         this->attr_span = vmd.attr_max - vmd.attr_min;
@@ -89,6 +90,7 @@ struct TesselatedFaceDrawer {
     void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Node *n, iterator_pos pos) {
         if (pos == after) {
             render();
+            name_start++;
             return;
         }
         if (pos != in_between) return;
@@ -124,6 +126,7 @@ struct TesselatedFaceDrawer {
         }
         gluTessCallback(tess, GLU_TESS_END, glEnd);
         
+        glPushName(name_start);
         
         gluTessBeginPolygon(tess, &this->texture);
         gluTessBeginContour(tess);
@@ -135,6 +138,8 @@ struct TesselatedFaceDrawer {
         gluTessEndContour(tess);
         gluTessEndPolygon(tess);
         gluDeleteTess(tess);
+        
+        glPopName();
         
         assert(glGetError() == GL_NO_ERROR);
         
@@ -169,7 +174,7 @@ void Layer::draw() {
         glNewList(list, GL_COMPILE);
         
         if (view.getType() == DM::FACE) {
-            TesselatedFaceDrawer drawer(vmd, attribute, scale_height, texture);
+            TesselatedFaceDrawer drawer(vmd, name_start, attribute, scale_height, texture);
             iterate_faces(system, view, drawer);
         }
         if (view.getType() == DM::EDGE) {
@@ -186,7 +191,8 @@ void Layer::draw() {
     glPopMatrix();
 }
 
-void Layer::drawWithNames(int start_name) {
+void Layer::drawWithNames() {
+    draw();
 }
 
 void Layer::systemChanged() {

@@ -6,7 +6,6 @@
 #include "dmlayer.h"
 
 
-#include <QDebug>
 #include <QGLViewer/vec.h>
 
 #include <string>
@@ -26,7 +25,7 @@ void Viewer::init() {
 void Viewer::drawWithNames() {
     CHECK_SYSTEM;
     foreach(Layer *l, layers) {
-        l->drawWithNames(0);
+        l->drawWithNames();
     }
 }
 
@@ -47,6 +46,7 @@ void Viewer::addLayer(Layer *l) {
     if (layers.size() == 1) {
         max_layer_index = 0;
         max_radius = l->getViewMetaData().radius();
+        l->setNameStart(0);
         updateLayerLayout();
         return;
     }
@@ -56,6 +56,8 @@ void Viewer::addLayer(Layer *l) {
         max_layer_index = layers.size() - 1;
     }
     
+    Layer *pred = layers[layers.size()-2];
+    l->setNameStart(pred->getNameStart() + pred->getViewMetaData().number_of_primitives);
     updateLayerLayout();
 }
 
