@@ -5,6 +5,7 @@
 
 namespace DM {
 class System;
+class Layer;
 
 class Viewer : public QGLViewer {
 public:
@@ -16,8 +17,20 @@ public:
         systemChanged();
     }
     
+    void addLayer(Layer *l);
+    
 public slots:
     void systemChanged();
+    void updateLayerLayout();
+    
+    void setLayerOffset(double x, 
+                        double y,
+                        double z) {
+        x_off = x;
+        y_off = y;
+        z_off = z;
+        updateLayerLayout();
+    }
     
 protected:
     virtual void init();
@@ -28,6 +41,10 @@ protected:
 private:
     System *system;
     int list;
+    std::vector<Layer*> layers;
+    double x_off, y_off, z_off;
+    double max_radius;
+    int max_layer_index;
 };
 
 }
