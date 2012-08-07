@@ -26,11 +26,9 @@ ViewMetaData::ViewMetaData(std::string attribute)  : attr(attribute)  {
     max[2] = max[1] = attr_max = max[0];
 }
 
-#include <cassert>
 void ViewMetaData::operator()(DM::System *, DM::View , DM::Face *f, DM::Node *n, iterator_pos pos) {
     if (pos == before) {
         DM::Attribute *a = f->getAttribute(attr);
-        assert(!(a->hasDouble() && a->hasDoubleVector()));
         if (a->hasDouble()) {
             attr_max = std::max(attr_max, a->getDouble());
             attr_min = std::min(attr_min, a->getDouble());
