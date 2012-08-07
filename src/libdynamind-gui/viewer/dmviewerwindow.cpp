@@ -31,8 +31,8 @@ void ViewerWindow::on_actionAdd_Layer_triggered() {
 
 void ViewerWindow::offsetChanged() {
     ui->viewer->setLayerOffset(ui->x_layerOffset->value(),
-                                      ui->y_layerOffset->value(),
-                                      ui->z_layerOffset->value());
+                               ui->y_layerOffset->value(),
+                               ui->z_layerOffset->value());
 }
 
 void ViewerWindow::on_x_layerOffset_valueChanged(double ) {
