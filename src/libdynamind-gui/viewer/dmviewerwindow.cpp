@@ -13,6 +13,7 @@ ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
     this->addAction(ui->actionAdd_Layer);
     this->addAction(ui->actionReset_View);
     offsetChanged();
+    ui->actionAdd_Layer->trigger();
 }
 
 ViewerWindow::~ViewerWindow() {
