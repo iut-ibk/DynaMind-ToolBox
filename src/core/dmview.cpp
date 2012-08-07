@@ -26,7 +26,7 @@
 
 
 #include "dmview.h"
-
+#include <dmmodule.h>
 
 namespace DM {
 View::View(std::string name, int type, int accesstypeGeometry)
@@ -51,13 +51,16 @@ std::string View::getIdOfDummyComponent() {
 
 void View::addAttribute(std::string name) {
     this->ownedAttributes[name] = WRITE;
+    this->attributeTypes[name] = DM::NOTYPE;
 }
 
 void View::getAttribute(std::string name) {
     this->ownedAttributes[name] = READ;
+    this->attributeTypes[name] = DM::NOTYPE;
 }
 void View::modifyAttribute(std::string name) {
     this->ownedAttributes[name] = MODIFY;
+    this->attributeTypes[name] = DM::NOTYPE;
 }
 
 std::vector<std::string> View::getWriteAttributes() const {
@@ -111,7 +114,18 @@ bool View::operator<(const View & other) const {
          if (this->getName().compare(other.getName()) < 0)
              return true;
          return false;
-    }
+}
+
+int View::getAttributeType(std::string name)
+{
+    return attributeTypes[name];
+}
+
+
+void View::setAttributeType(std::string name, int type)
+{
+    this->attributeTypes[name] = type;
+}
 }
 
 

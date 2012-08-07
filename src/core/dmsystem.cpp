@@ -513,7 +513,9 @@ bool System::addView(View view)
 
     //extend Dummy Attribute
     foreach (std::string a , view.getWriteAttributes()) {
-        dummy->addAttribute(DM::Attribute(a));
+        DM::Attribute attr(a);
+        attr.setType(view.getAttributeType(a));
+        dummy->addAttribute(attr);
     }
 
     //this->viewdefinitions[view.getName()] = new View(view);

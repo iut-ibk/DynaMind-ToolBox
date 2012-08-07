@@ -32,6 +32,7 @@
 #include <set>
 #include <map>
 #include <dmcompilersettings.h>
+
 using namespace std;
 
 /** @ingroup DynaMind-Core
@@ -40,6 +41,12 @@ using namespace std;
   * As attributes Double, Striunb DoubleVector and StringVectors can be used.
   */
 namespace DM {
+
+struct LinkAttribute {
+    std::string viewname;
+    std::string uuid;
+};
+
 class DM_HELPER_DLL_EXPORT Attribute
 {
 private:
@@ -50,10 +57,7 @@ private:
     std::vector<std::string> stringvector;
     std::set<std::string> inViews;
 
-    bool isDouble;
-    bool isString;
-    bool isDoubleVector;
-    bool isStringVector;
+    int type;
 
 public:
     /** @brief Returns true if a double value is set **/
@@ -93,6 +97,18 @@ public:
     /** @brief get name */
     std::string getName();
     ~Attribute();
+    /** @brief return datatype*/
+    int getType();
+    /** @brief add link object **/
+    void setLink(std::string viewname, std::string uuid);
+    /** @brief returns link attribute */
+    LinkAttribute getLink();
+    /** @brief add TimeSeries **/
+    void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
+    /** @brief Sets attribute tyoe */
+    void setType(int type);
+
+
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

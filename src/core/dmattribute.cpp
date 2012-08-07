@@ -24,6 +24,7 @@
  *
  */
 
+#include <dmmodule.h>
 #include <dmcomponent.h>
 #include <dmattribute.h>
 #include <QVariant>
@@ -32,26 +33,25 @@ using namespace DM;
 
 Attribute::Attribute(const Attribute &newattribute)
 {
+
     this->name=newattribute.name;
     this->doublevalue=newattribute.doublevalue;
     this->stringvalue=newattribute.stringvalue;
     this->doublevector=newattribute.doublevector;
     this->stringvector=newattribute.stringvector;
-
-    this->isDouble = newattribute.isDouble;
-    this->isString = newattribute.isString;
-    this->isDoubleVector = newattribute.isDoubleVector;
-    this->isStringVector = newattribute.isStringVector;
+    this->type = newattribute.type;
 }
 
 Attribute::Attribute(std::string name)
 {
     this->name=name;
-    isDouble = isString = isDoubleVector = isStringVector = false;
+    this->type = NOTYPE;
 }
 Attribute::Attribute()
 {
-    isDouble = isString = isDoubleVector = isStringVector = false;
+    this->name="";
+    this->type = NOTYPE;
+
 }
 
 Attribute::Attribute(std::string name, double val)
@@ -59,15 +59,17 @@ Attribute::Attribute(std::string name, double val)
     this->doublevalue = val;
     this->name=name;
 
-    isDouble = true;
-    isString = false;
-    isDoubleVector = false;
-    isStringVector = false;
+    this->type = DOUBLE;
 
 }
 
 Attribute::~Attribute()
 {
+}
+
+int Attribute::getType()
+{
+    return type;
 }
 
 void Attribute::setName(std::string name)
@@ -85,7 +87,7 @@ std::string Attribute::getName()
 void Attribute::setDouble(double v)
 {
     doublevalue=v;
-    isDouble = true;
+    this->type = DOUBLE;
 }
 
 double Attribute::getDouble()
@@ -96,7 +98,7 @@ double Attribute::getDouble()
 void Attribute::setString(std::string s)
 {
     stringvalue=s;
-    isString = true;
+    this->type = STRING;
 }
 
 std::string Attribute::getString()
@@ -107,7 +109,7 @@ std::string Attribute::getString()
 void Attribute::setDoubleVector(std::vector<double> v)
 {
     doublevector=v;
-    isDoubleVector = true;
+    this->type = DOUBLEVECTOR;
 }
 
 std::vector<double> Attribute::getDoubleVector()
@@ -118,7 +120,7 @@ std::vector<double> Attribute::getDoubleVector()
 void Attribute::setStringVector(std::vector<std::string> s)
 {
     stringvector=s;
-    isStringVector = true;
+    this->type = STRINGVECTOR;
 }
 
 std::vector<std::string> Attribute::getStringVector()
@@ -128,18 +130,53 @@ std::vector<std::string> Attribute::getStringVector()
 
 bool Attribute::hasDouble()
 {
-   return this->isDouble;
+    if (type == DOUBLE)
+        return true;
+    return false;
 }
 bool Attribute::hasDoubleVector()
 {
-   return this->isDoubleVector;
+    if (type == DOUBLEVECTOR)
+        return true;
+    return false;
 }
 bool Attribute::hasString()
 {
-   return this->isString;
+    if (type == STRING)
+        return true;
+    return false;
 }
 bool Attribute::hasStringVector()
 {
-   return this->isStringVector;
+    if (type == STRINGVECTOR)
+        return true;
+    return false;
 }
 
+void Attribute::setLink(string viewname, string uuid)
+{
+    this->type = LINK;
+    this->stringvector.push_back(viewname);
+    this->stringvector.push_back(uuid);
+}
+
+LinkAttribute Attribute::getLink()
+{
+    LinkAttribute attr;
+    attr.viewname = this->stringvector[0];
+    attr.uuid = this->stringvector[1];
+    return attr;
+
+}
+
+void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
+{
+    this->type = TIMESERIES;
+    this->doublevector = value;
+    this->stringvector = timestamp;
+}
+
+void Attribute::setType(int type)
+{
+    this->type = type;
+}

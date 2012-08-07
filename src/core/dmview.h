@@ -92,6 +92,7 @@ private:
     int accesstypeGeometry;
 
     std::map<std::string, int> ownedAttributes;
+    std::map<std::string, int> attributeTypes;
 
 public:
     View(std::string name, int type, int accesstypeGeometry = READ);
@@ -136,6 +137,12 @@ public:
     void setIdOfDummyComponent(std::string UUID);
     std::string getIdOfDummyComponent();
     bool operator<(const View & other) const;
+
+    /** @brief Returns Attribute Type */
+    int getAttributeType(std::string name);
+
+    /** @brief Sets Attribute Type */
+    void setAttributeType(std::string name, int type);
 
 };
 }

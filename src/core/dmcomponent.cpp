@@ -131,6 +131,7 @@ bool Component::addAttribute(Attribute newattribute)
     Attribute * a = new Attribute(newattribute);
     attributesview[newattribute.getName()] = a;
     ownedattributes[newattribute.getName()] = a;
+
     return true;
 }
 
