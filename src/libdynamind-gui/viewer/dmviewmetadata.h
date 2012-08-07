@@ -26,6 +26,8 @@ struct ViewMetaData {
     
     std::string attr;
     double attr_min, attr_max;
+    
+    int number_of_primitives;
 };
 
 } // namespace DM

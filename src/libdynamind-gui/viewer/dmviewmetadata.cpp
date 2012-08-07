@@ -19,7 +19,8 @@ void ViewMetaData::min_vec(const double *other) {
     min[2] = std::min(other[2], min[2]);
 }
 
-ViewMetaData::ViewMetaData(std::string attribute)  : attr(attribute)  {
+ViewMetaData::ViewMetaData(std::string attribute)  
+    : attr(attribute), number_of_primitives(0)  {
     min[0] = std::numeric_limits<double>::max();
     min[2] = min[1] = attr_min = min[0];
     max[0] = std::numeric_limits<double>::min();
@@ -38,6 +39,7 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Face *f, DM::Node *n,
             attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
             attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
         }
+        number_of_primitives++;
     }
     if (pos != in_between) return;
     min_vec(n->get());
