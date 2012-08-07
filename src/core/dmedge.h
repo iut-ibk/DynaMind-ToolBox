@@ -56,7 +56,7 @@ namespace DM {
         std::string getEndpointName();
         /** @brief set uuid to that points to the start node */
         void setStartpointName(std::string name);
-        /** @brief set uuod that points to the end node */
+        /** @brief set uuid that points to the end node */
         void setEndpointName(std::string name);        
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
