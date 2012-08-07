@@ -231,6 +231,26 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
     return pt;
 }
 
+void Group::removeTuplePort(PortTuple *pt)
+{
+    Logger(Debug) << "Remove Tuple Port" << pt->getName();
+    int PortType = pt->getPortType();
+    if (PortType < DM::OUTPORTS) {
+        std::vector<PortTuple*>::iterator pt_it = find(outPortTuple.begin(), outPortTuple.end(), pt);
+        if (pt_it == outPortTuple.end() )
+            return;
+        this->outPortTuple.erase(pt_it);
+    } else {
+        std::vector<PortTuple*>::iterator pt_it = find(inPortTuple.begin(), inPortTuple.end(), pt);
+        if (pt_it == inPortTuple.end() )
+            return;
+        this->inPortTuple.erase(pt_it);
+    }
+    foreach(PortObserver * po, this->portobserver) {
+        po->changedPorts();
+    }
+}
+
 QVector<QRunnable *>  Group::getNextJobs() {
     QVector<QRunnable * > RunnedModulesInStep;
     for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) {

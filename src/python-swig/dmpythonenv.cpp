@@ -172,6 +172,7 @@ void PythonEnv::addPythonPath(std::string path) {
     ostringstream script;
 
     script << "import sys\n";
+
     script << "sys.path.append('" << path << "')\n";
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
