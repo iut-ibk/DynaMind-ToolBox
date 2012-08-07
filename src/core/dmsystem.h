@@ -30,8 +30,7 @@
 #include <map>
 #include <vector>
 #include <dmview.h>
-
-
+#include <dmcomponent.h>
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -48,7 +47,6 @@ enum Components {
     RASTERDATA
 };
 
-class Component;
 class Node;
 class Edge;
 class Face;
