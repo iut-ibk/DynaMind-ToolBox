@@ -47,10 +47,11 @@ Attribute::Attribute(const Attribute &newattribute)
 Attribute::Attribute(std::string name)
 {
     this->name=name;
+    isDouble = isString = isDoubleVector = isStringVector = false;
 }
 Attribute::Attribute()
 {
-
+    isDouble = isString = isDoubleVector = isStringVector = false;
 }
 
 Attribute::Attribute(std::string name, double val)
