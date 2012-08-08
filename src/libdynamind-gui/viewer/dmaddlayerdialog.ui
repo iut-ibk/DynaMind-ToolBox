@@ -48,6 +48,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QTreeWidget" name="viewList">
+       <attribute name="headerDefaultSectionSize">
+        <number>120</number>
+       </attribute>
        <column>
         <property name="text">
          <string>Name</string>
@@ -62,6 +65,9 @@
      </item>
      <item row="1" column="1">
       <widget class="QTreeWidget" name="attributeList">
+       <attribute name="headerDefaultSectionSize">
+        <number>120</number>
+       </attribute>
        <column>
         <property name="text">
          <string>Name</string>
