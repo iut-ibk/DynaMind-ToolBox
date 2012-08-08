@@ -18,11 +18,7 @@ namespace DM {
 
 template<int SD_GL_PRIMITIVE>
 struct SimpleDrawer {
-    
-    SimpleDrawer() {
-        
-    }
-    
+
     void operator()(DM::System *s, DM::View v, void *f_e, DM::Node *n, iterator_pos pos) {
         if (pos == before) {
             glBegin(SD_GL_PRIMITIVE);
