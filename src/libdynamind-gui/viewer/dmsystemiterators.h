@@ -15,6 +15,18 @@ enum iterator_pos {
 };
 
 template<typename CB> 
+void iterate_nodes(DM::System *system, DM::View v, CB &callback = CB()) {
+    
+    foreach(std::string node_uuid, system->getUUIDsOfComponentsInView(v)) {
+        DM::Node *n = system->getNode(node_uuid);
+        callback(system, v, n, 0, before);
+        callback(system, v, n, n, in_between);
+        callback(system, v, n, 0, after);
+    }
+    
+}
+
+template<typename CB> 
 void iterate_edges(DM::System *system, DM::View v, CB &callback = CB()) {
     foreach(std::string edge_uuid, system->getUUIDsOfComponentsInView(v)) {
         DM::Edge *e = system->getEdge(edge_uuid);

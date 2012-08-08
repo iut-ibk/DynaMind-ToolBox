@@ -32,6 +32,7 @@ struct SimpleDrawer {
             glEnd();
             return;
         }
+        glColor3f(0, 0, 0);
         glVertex3dv(n->get());
     }
 };
@@ -42,7 +43,7 @@ void error_callback(GLenum e) {
 }
 
 void color_callback(GLdouble *d, void *data) {
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.0, 0.0, 0.0);
     glVertex3dv(d);
 }
 
@@ -181,6 +182,10 @@ void Layer::draw() {
             SimpleDrawer<GL_LINES> drawer;
             iterate_edges(system, view, drawer);
         }
+        if (view.getType() == DM::NODE) {
+            SimpleDrawer<GL_POINTS> drawer;
+            iterate_nodes(system, view, drawer);
+        }
         
         glEndList();
     }
@@ -203,6 +208,9 @@ void Layer::systemChanged() {
     }
     if (view.getType() == DM::EDGE) {
         iterate_edges(system, view, vmd);
+    }
+    if (view.getType() == DM::NODE) {
+        iterate_nodes(system, view, vmd);
     }
     
     if (glIsList(list)) {

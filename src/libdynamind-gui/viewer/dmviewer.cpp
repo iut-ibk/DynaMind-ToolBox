@@ -20,6 +20,8 @@ namespace DM {
 void Viewer::init() {
     CHECK_SYSTEM;
     glDisable(GL_CULL_FACE);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glPointSize(2);
 }
 
 void Viewer::drawWithNames() {
