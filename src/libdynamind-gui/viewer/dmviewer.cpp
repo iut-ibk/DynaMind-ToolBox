@@ -21,7 +21,15 @@ void Viewer::init() {
     CHECK_SYSTEM;
     glDisable(GL_CULL_FACE);
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    glPointSize(2);
+    glPointSize(3);
+    glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 }
 
 void Viewer::drawWithNames() {
