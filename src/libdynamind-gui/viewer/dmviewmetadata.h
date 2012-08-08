@@ -7,8 +7,7 @@ namespace DM {
 
 class System;
 class View;
-class Edge;
-class Node;
+class Component;
 
 struct ViewMetaData {
     ViewMetaData(std::string attribute);
@@ -16,8 +15,7 @@ struct ViewMetaData {
     void max_vec(const double *other);
     void min_vec(const double *other);
     
-    void operator()(System *, View , Face *f, Node *n, iterator_pos pos);
-    void operator()(System *s, View v, Edge *f, Node *n, iterator_pos pos);
+    void operator()(System *, View , Component *f, Node *n, iterator_pos pos);
     
     double radius() const;
     

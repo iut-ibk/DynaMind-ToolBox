@@ -27,9 +27,9 @@ ViewMetaData::ViewMetaData(std::string attribute)
     max[2] = max[1] = attr_max = max[0];
 }
 
-void ViewMetaData::operator()(DM::System *, DM::View , DM::Face *f, DM::Node *n, iterator_pos pos) {
+void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Node *n, iterator_pos pos) {
     if (pos == before) {
-        DM::Attribute *a = f->getAttribute(attr);
+        DM::Attribute *a = c->getAttribute(attr);
         if (a->hasDouble()) {
             attr_max = std::max(attr_max, a->getDouble());
             attr_min = std::min(attr_min, a->getDouble());
@@ -41,12 +41,6 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Face *f, DM::Node *n,
         }
         number_of_primitives++;
     }
-    if (pos != in_between) return;
-    min_vec(n->get());
-    max_vec(n->get());
-}
-
-void ViewMetaData::operator()(DM::System *s, DM::View v, DM::Edge *f, DM::Node *n, iterator_pos pos) {
     if (pos != in_between) return;
     min_vec(n->get());
     max_vec(n->get());
