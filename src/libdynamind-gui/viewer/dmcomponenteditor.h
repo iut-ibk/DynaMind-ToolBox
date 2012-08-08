@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class QTreeWidgetItem;
+
 namespace DM {
 
 class Component;
@@ -17,6 +19,9 @@ class ComponentEditor : public QDialog {
 public:
     explicit ComponentEditor(Component *c, QWidget *parent = 0);
     ~ComponentEditor();
+    
+private slots:
+    void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     
 private:
     Ui::ComponentEditor *ui;
