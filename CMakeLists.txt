@@ -25,7 +25,9 @@ ELSE()
 
 ENDIF()
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED)
+FIND_PACKAGE(Git REQUIRED)
+FIND_PACKAGE(PythonLibs REQUIRED)
 
 
 INCLUDE(${QT_USE_FILE})
@@ -44,8 +46,19 @@ IF(DYNAMIND_TOOLBOX_BUILD_DIR)
 ELSE()
     SET(LIBRARY_OUTPUT_PATH ${dynamind-performance-assessment_BINARY_DIR})
     SET(EXECUTABLE_OUTPUT_PATH ${dynamind-performance-assessment_BINARY_DIR})
-    SET(SCRIPT_PATH ${ddynamind-performance-assessment_BINARY_DIR}/PythonModules )
+    SET(SCRIPT_PATH ${dynamind-performance-assessment_BINARY_DIR}/PythonModules )
 ENDIF()
-#ADD_SUBDIRECTORY(scripts)
-ADD_SUBDIRECTORY(src/DynaMind-Performance-Assessment)
 
+IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/cd3/src)
+    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} submodule init cd3)
+    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} submodule update cd3)
+ENDIF()
+
+#ADD_SUBDIRECTORY(scripts)
+ADD_SUBDIRECTORY(cd3)
+INCLUDE_DIRECTORIES(cd3/src/cd3core)
+INCLUDE_DIRECTORIES(cd3/src/app)
+
+MESSAGE(STATUS CD3 ${cd3_INCLUDE_DIRS})
+
+ADD_SUBDIRECTORY(src/DynaMind-Performance-Assessment)
