@@ -48,6 +48,7 @@ void color_callback(GLdouble *d, void *data) {
 }
 
 void texture_callback(GLdouble *d, void *data) {
+    glColor3f(1, 1, 1);
     glTexCoord2dv(&d[3]);
     glVertex3dv(d);
 }
