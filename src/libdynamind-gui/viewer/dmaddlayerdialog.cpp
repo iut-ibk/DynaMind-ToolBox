@@ -96,7 +96,7 @@ void AddLayerDialog::on_color_stop_button_clicked() {
     ui->color_stop_label->setStyleSheet("background-color: " + stop.name());
 }
 
-void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
+void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *) {
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(current);
     ui->attributeList->clear();
     view = system->getViewDefinition(current->text(0).toStdString());
@@ -109,30 +109,17 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     
     foreach(std::string key, attributes.keys()) {
         DM::Attribute *attr = attributes[key];
-        if (attr->hasString() || attr->hasStringVector()) continue;
+        if (! (attr->getType() == Attribute::DOUBLE
+            || attr->getType() == Attribute::DOUBLEVECTOR
+            || attr->getType() == Attribute::TIMESERIES)) {
+            continue;
+        }
         
         QStringList strings;
         strings << QString::fromStdString(key);
-        
-        if (attr->getType() == Attribute::DOUBLE) {
-            strings << "Double";
-            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-            ui->attributeList->addTopLevelItem(item);
-            continue;
-        }
-        if (attr->getType() == Attribute::DOUBLEVECTOR) {
-            strings << "Double Vector";
-            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-            ui->attributeList->addTopLevelItem(item);
-            continue;
-        }
-        if (attr->getType() == Attribute::TIMESERIES) {
-            strings << "Time Series";
-            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-            ui->attributeList->addTopLevelItem(item);
-            continue;
-        }
-        DM::Logger(DM::Warning) << "unkown type for attribute: " << attr->getName();
+        strings << attr->getTypeName();
+        QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+        ui->attributeList->addTopLevelItem(item);
     }
 }
 
