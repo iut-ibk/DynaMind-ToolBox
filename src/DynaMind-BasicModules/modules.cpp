@@ -46,6 +46,7 @@
 #include "importrasterdata.h"
 #include "calculatecentroid.h"
 #include "attributecalculator.h"
+#include "raindance.h"
 
 using namespace std;
 
@@ -73,5 +74,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<ImportRasterData>());
     registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
     registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
+    registry->addNodeFactory(new NodeFactory<RainDance>());
 }
 
