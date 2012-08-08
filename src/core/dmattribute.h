@@ -49,16 +49,6 @@ struct LinkAttribute {
 
 class DM_HELPER_DLL_EXPORT Attribute
 {
-private:
-    std::string name;
-    double doublevalue;
-    std::string stringvalue;
-    std::vector<double> doublevector;
-    std::vector<std::string> stringvector;
-    std::set<std::string> inViews;
-
-    int type;
-
 public:
     enum AttributeType {
         NOTYPE,
@@ -69,7 +59,18 @@ public:
         DOUBLEVECTOR,
         STRINGVECTOR
     };
+    
+private:
+    std::string name;
+    double doublevalue;
+    std::string stringvalue;
+    std::vector<double> doublevector;
+    std::vector<std::string> stringvector;
+    std::set<std::string> inViews;
 
+    AttributeType type;
+
+public:
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/
@@ -121,8 +122,19 @@ public:
     void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
     /** @brief Sets attribute tyoe */
     void setType(AttributeType type);
-
-
+    
+    /**
+     * @brief get a printable name of the type, e.g. for gui displaying
+     * @return the name of the type as string
+     */
+    const char *getTypeName() const;
+    
+    /**
+     * @brief convert @AttributeType to a printabel character e.g. for gui displaying
+     * @param type the requested type
+     * @return the name of the @arg type
+     */
+    static const char*getTypeName(AttributeType type);
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

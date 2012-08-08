@@ -201,3 +201,22 @@ void Attribute::setType(AttributeType type)
 {
     this->type = type;
 }
+
+const char *Attribute::getTypeName() const
+{
+    return Attribute::getTypeName(this->type);
+}
+
+const char *Attribute::getTypeName(Attribute::AttributeType type)
+{
+    const char *arr[] = {
+        "NOTYPE",
+        "DOUBLE",
+        "STRING",
+        "TIMESERIES",
+        "LINK",
+        "DOUBLEVECTOR",
+        "STRINGVECTOR"
+    };
+    return arr[type];
+}
