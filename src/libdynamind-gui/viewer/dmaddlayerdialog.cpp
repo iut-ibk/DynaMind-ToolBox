@@ -102,20 +102,9 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     
     if (!system->getUUIDsOfComponentsInView(*view).size()) return;
     
-    QMap<std::string, DM::Attribute*> attributes;
     std::string uuid = system->getUUIDsOfComponentsInView(*view)[0];
     
-    if (view->getType() == DM::FACE) {
-        attributes = QMap<std::string, DM::Attribute *>(system->getFace(uuid)->getAllAttributes());
-    }
-    
-    if (view->getType() == DM::EDGE) {
-        attributes = QMap<std::string, DM::Attribute *>(system->getEdge(uuid)->getAllAttributes());
-    }
-    
-    if (view->getType() == DM::NODE) {
-        attributes = QMap<std::string, DM::Attribute *>(system->getNode(uuid)->getAllAttributes());
-    }
+    QMap<std::string, DM::Attribute*> attributes(system->getComponent(uuid)->getAllAttributes());
     
     foreach(std::string key, attributes.keys()) {
         DM::Attribute *attr = attributes[key];
