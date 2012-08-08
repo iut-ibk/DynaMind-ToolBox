@@ -8,6 +8,7 @@
 #include "dmattribute.h"
 #include "dmlayer.h"
 #include "dmviewer.h"
+#include "dmlogger.h"
 
 namespace DM {
 
@@ -113,13 +114,25 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
         QStringList strings;
         strings << QString::fromStdString(key);
         
-        if (attr->hasDouble()) 
-            strings << "double";
-        if (attr->hasDoubleVector())
-            strings << "double vector";
-        
-        QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-        ui->attributeList->addTopLevelItem(item);
+        if (attr->getType() == Attribute::DOUBLE) {
+            strings << "Double";
+            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+            ui->attributeList->addTopLevelItem(item);
+            continue;
+        }
+        if (attr->getType() == Attribute::DOUBLEVECTOR) {
+            strings << "Double Vector";
+            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+            ui->attributeList->addTopLevelItem(item);
+            continue;
+        }
+        if (attr->getType() == Attribute::TIMESERIES) {
+            strings << "Time Series";
+            QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+            ui->attributeList->addTopLevelItem(item);
+            continue;
+        }
+        DM::Logger(DM::Warning) << "unkown type for attribute: " << attr->getName();
     }
 }
 
