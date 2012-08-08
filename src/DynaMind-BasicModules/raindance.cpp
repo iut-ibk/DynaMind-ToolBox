@@ -35,7 +35,7 @@ void RainDance::init() {
 
     v_rain = DM::View(v->getName(), v->getType(), READ);
     v_rain.addAttribute("RainSeries");
-    v_rain.setAttributeType("RainSeries", ATTR::TIMESERIES);
+    v_rain.setAttributeType("RainSeries", Attribute::TIMESERIES);
 
     std::vector<DM::View> data;
     data.push_back(v_rain);

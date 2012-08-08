@@ -110,7 +110,7 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
             QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
             item_attribute->setText(0, QString::fromStdString(it->first));
             root_port->addChild(item_attribute);
-            if (attr->getType() == ATTR::LINK) {
+            if (attr->getType() == Attribute::LINK) {
                 createTreeViewEntries(item_attribute,attr->getLink().viewname);
             }
         }
