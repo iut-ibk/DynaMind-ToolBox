@@ -48,11 +48,7 @@ class System;
 }
 
 namespace DM {
-
-
-
-enum  DATATYPES {
-    NOTYPE,
+enum  DATATYPES {    
     INT,
     LONG,
     DOUBLE,
@@ -61,15 +57,8 @@ enum  DATATYPES {
     STRING_LIST,
     STRING_MAP,
     BOOL,
-    ADDITONAL_ATTRIBUTE_TYPES,
-    TIMESERIES,
-    LINK,
     LASTPRIMITIVETYPE,
-    DOUBLEVECTOR,
-    STRINGVECTOR,
-
     USER_DEFINED_INPUT,
-
     SYSTEM_OUT,
     SYSTEM_IN,
     SYSTEM

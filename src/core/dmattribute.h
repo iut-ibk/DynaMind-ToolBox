@@ -47,6 +47,20 @@ struct LinkAttribute {
     std::string uuid;
 };
 
+namespace ATTR {
+    enum ATTRIBUTETYPES{
+        NOTYPE,
+        DOUBLE,
+        STRING,
+        TIMESERIES,
+        LINK,
+        DOUBLEVECTOR,
+        STRINGVECTOR
+    };
+}
+
+
+
 class DM_HELPER_DLL_EXPORT Attribute
 {
 private:
@@ -101,12 +115,16 @@ public:
     int getType();
     /** @brief add link object **/
     void setLink(std::string viewname, std::string uuid);
-    /** @brief returns link attribute */
+    /** @brief Sets attribute links the existing vector is cleared! **/
+    void setLinks(std::vector<LinkAttribute> links);
+    /** @brief Returns the first element in the link attribute vector*/
     LinkAttribute getLink();
+    /** @brief Returns Vector of Links */
+    std::vector<LinkAttribute> getLinks();
     /** @brief add TimeSeries **/
     void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
     /** @brief Sets attribute tyoe */
-    void setType(int type);
+    void setType(ATTR::ATTRIBUTETYPES type);
 
 
 };

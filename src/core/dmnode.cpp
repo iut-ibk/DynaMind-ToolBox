@@ -27,7 +27,7 @@
 #include <dmcomponent.h>
 #include <dmnode.h>
 #include <cstdlib>
-
+#include <math.h>
 using namespace DM;
 
 
@@ -109,10 +109,10 @@ Node Node::operator +(const Node & other) const {
 
 bool Node::compare2d(const Node &other, double round ) const {
 
-    return abs( this->x - other.getX() ) <= round   &&  abs( this->y - other.getY() ) <= round;
+    return fabs( this->x - other.getX() ) <= round   &&  fabs( this->y - other.getY() ) <= round;
 }
 
 bool Node::compare2d(const Node * other , double round ) const {
 
-    return abs( this->x - other->getX() ) <= round   &&  abs( this->y - other->getY() ) <= round;
+    return fabs( this->x - other->getX() ) <= round   &&  fabs( this->y - other->getY() ) <= round;
 }

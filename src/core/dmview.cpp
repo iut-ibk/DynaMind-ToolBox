@@ -27,7 +27,7 @@
 
 #include "dmview.h"
 #include <dmmodule.h>
-
+#include <dmattribute.h>
 namespace DM {
 View::View(std::string name, int type, int accesstypeGeometry)
 {
@@ -51,16 +51,16 @@ std::string View::getIdOfDummyComponent() {
 
 void View::addAttribute(std::string name) {
     this->ownedAttributes[name] = WRITE;
-    this->attributeTypes[name] = DM::NOTYPE;
+    this->attributeTypes[name] = ATTR::NOTYPE;
 }
 
 void View::getAttribute(std::string name) {
     this->ownedAttributes[name] = READ;
-    this->attributeTypes[name] = DM::NOTYPE;
+    this->attributeTypes[name] = ATTR::NOTYPE;
 }
 void View::modifyAttribute(std::string name) {
     this->ownedAttributes[name] = MODIFY;
-    this->attributeTypes[name] = DM::NOTYPE;
+    this->attributeTypes[name] = ATTR::NOTYPE;
 }
 
 std::vector<std::string> View::getWriteAttributes() const {
@@ -111,21 +111,35 @@ bool View::writes() {
 }
 
 bool View::operator<(const View & other) const {
-         if (this->getName().compare(other.getName()) < 0)
-             return true;
-         return false;
+    if (this->getName().compare(other.getName()) < 0)
+        return true;
+    return false;
 }
 
-int View::getAttributeType(std::string name)
+ATTR::ATTRIBUTETYPES View::getAttributeType(std::string name)
 {
     return attributeTypes[name];
 }
 
 
-void View::setAttributeType(std::string name, int type)
+void View::setAttributeType(std::string name, ATTR::ATTRIBUTETYPES type)
 {
     this->attributeTypes[name] = type;
 }
+
+void View::addLinks(string name, View linkto)
+{
+    this->addAttribute(name);
+    this->setAttributeType(name, ATTR::LINK);
+    this->attributeLinks[name] = linkto.getName();
+}
+
+std::string View::getLinkName(string name)
+{
+    return this->attributeLinks[name];
+
+}
+
 }
 
 

@@ -31,6 +31,7 @@
 #include <vector>
 #include <string>
 #include <dmcompilersettings.h>
+#include <dmattribute.h>
 
 
 namespace DM {
@@ -92,7 +93,8 @@ private:
     int accesstypeGeometry;
 
     std::map<std::string, int> ownedAttributes;
-    std::map<std::string, int> attributeTypes;
+    std::map<std::string, ATTR::ATTRIBUTETYPES> attributeTypes;
+    std::map<std::string, std::string> attributeLinks;
 
 public:
     View(std::string name, int type, int accesstypeGeometry = READ);
@@ -139,10 +141,14 @@ public:
     bool operator<(const View & other) const;
 
     /** @brief Returns Attribute Type */
-    int getAttributeType(std::string name);
+    ATTR::ATTRIBUTETYPES getAttributeType(std::string name);
 
     /** @brief Sets Attribute Type */
-    void setAttributeType(std::string name, int type);
+    void setAttributeType(std::string name, ATTR::ATTRIBUTETYPES type);
+
+    void addLinks(std::string name, View linkto);
+
+    std::string getLinkName(std::string name);
 
 };
 }

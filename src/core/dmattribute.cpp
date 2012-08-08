@@ -45,12 +45,12 @@ Attribute::Attribute(const Attribute &newattribute)
 Attribute::Attribute(std::string name)
 {
     this->name=name;
-    this->type = NOTYPE;
+    this->type = ATTR::NOTYPE;
 }
 Attribute::Attribute()
 {
     this->name="";
-    this->type = NOTYPE;
+    this->type = ATTR::NOTYPE;
 
 }
 
@@ -59,7 +59,7 @@ Attribute::Attribute(std::string name, double val)
     this->doublevalue = val;
     this->name=name;
 
-    this->type = DOUBLE;
+    this->type = ATTR::DOUBLE;
 
 }
 
@@ -87,7 +87,7 @@ std::string Attribute::getName()
 void Attribute::setDouble(double v)
 {
     doublevalue=v;
-    this->type = DOUBLE;
+    this->type = ATTR::DOUBLE;
 }
 
 double Attribute::getDouble()
@@ -98,7 +98,7 @@ double Attribute::getDouble()
 void Attribute::setString(std::string s)
 {
     stringvalue=s;
-    this->type = STRING;
+    this->type = ATTR::STRING;
 }
 
 std::string Attribute::getString()
@@ -109,7 +109,7 @@ std::string Attribute::getString()
 void Attribute::setDoubleVector(std::vector<double> v)
 {
     doublevector=v;
-    this->type = DOUBLEVECTOR;
+    this->type = ATTR::DOUBLEVECTOR;
 }
 
 std::vector<double> Attribute::getDoubleVector()
@@ -120,7 +120,7 @@ std::vector<double> Attribute::getDoubleVector()
 void Attribute::setStringVector(std::vector<std::string> s)
 {
     stringvector=s;
-    this->type = STRINGVECTOR;
+    this->type = ATTR::STRINGVECTOR;
 }
 
 std::vector<std::string> Attribute::getStringVector()
@@ -130,34 +130,43 @@ std::vector<std::string> Attribute::getStringVector()
 
 bool Attribute::hasDouble()
 {
-    if (type == DOUBLE)
+    if (type == ATTR::DOUBLE)
         return true;
     return false;
 }
 bool Attribute::hasDoubleVector()
 {
-    if (type == DOUBLEVECTOR)
+    if (type == ATTR::DOUBLEVECTOR)
         return true;
     return false;
 }
 bool Attribute::hasString()
 {
-    if (type == STRING)
+    if (type == ATTR::STRING)
         return true;
     return false;
 }
 bool Attribute::hasStringVector()
 {
-    if (type == STRINGVECTOR)
+    if (type == ATTR::STRINGVECTOR)
         return true;
     return false;
 }
 
 void Attribute::setLink(string viewname, string uuid)
 {
-    this->type = LINK;
+    this->type = ATTR::LINK;
     this->stringvector.push_back(viewname);
     this->stringvector.push_back(uuid);
+}
+
+void Attribute::setLinks(std::vector<LinkAttribute> links)
+{
+    this->stringvector.clear();
+    foreach (LinkAttribute attr, links) {
+        this->stringvector.push_back(attr.viewname);
+        this->stringvector.push_back(attr.uuid);
+    }
 }
 
 LinkAttribute Attribute::getLink()
@@ -169,14 +178,26 @@ LinkAttribute Attribute::getLink()
 
 }
 
+std::vector<LinkAttribute> Attribute::getLinks()
+{
+    std::vector<LinkAttribute> links;
+    for (int i = 0; i < stringvector.size(); i+=2) {
+        LinkAttribute attr;
+        attr.viewname = this->stringvector[i];
+        attr.uuid = this->stringvector[i+1];
+        links.push_back(attr);
+    }
+    return links;
+}
+
 void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
 {
-    this->type = TIMESERIES;
+    this->type = ATTR::TIMESERIES;
     this->doublevector = value;
     this->stringvector = timestamp;
 }
 
-void Attribute::setType(int type)
+void Attribute::setType(ATTR::ATTRIBUTETYPES type)
 {
     this->type = type;
 }
