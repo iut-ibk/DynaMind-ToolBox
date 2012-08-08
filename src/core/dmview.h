@@ -93,7 +93,7 @@ private:
     int accesstypeGeometry;
 
     std::map<std::string, int> ownedAttributes;
-    std::map<std::string, ATTR::ATTRIBUTETYPES> attributeTypes;
+    std::map<std::string, Attribute::AttributeType> attributeTypes;
     std::map<std::string, std::string> attributeLinks;
 
 public:
@@ -141,10 +141,10 @@ public:
     bool operator<(const View & other) const;
 
     /** @brief Returns Attribute Type */
-    ATTR::ATTRIBUTETYPES getAttributeType(std::string name);
+    Attribute::AttributeType getAttributeType(std::string name);
 
     /** @brief Sets Attribute Type */
-    void setAttributeType(std::string name, ATTR::ATTRIBUTETYPES type);
+    void setAttributeType(std::string name, Attribute::AttributeType type);
 
     void addLinks(std::string name, View linkto);
 

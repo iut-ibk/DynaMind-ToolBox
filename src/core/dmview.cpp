@@ -51,16 +51,16 @@ std::string View::getIdOfDummyComponent() {
 
 void View::addAttribute(std::string name) {
     this->ownedAttributes[name] = WRITE;
-    this->attributeTypes[name] = ATTR::NOTYPE;
+    this->attributeTypes[name] = Attribute::NOTYPE;
 }
 
 void View::getAttribute(std::string name) {
     this->ownedAttributes[name] = READ;
-    this->attributeTypes[name] = ATTR::NOTYPE;
+    this->attributeTypes[name] = Attribute::NOTYPE;
 }
 void View::modifyAttribute(std::string name) {
     this->ownedAttributes[name] = MODIFY;
-    this->attributeTypes[name] = ATTR::NOTYPE;
+    this->attributeTypes[name] = Attribute::NOTYPE;
 }
 
 std::vector<std::string> View::getWriteAttributes() const {
@@ -116,13 +116,13 @@ bool View::operator<(const View & other) const {
     return false;
 }
 
-ATTR::ATTRIBUTETYPES View::getAttributeType(std::string name)
+Attribute::AttributeType View::getAttributeType(std::string name)
 {
     return attributeTypes[name];
 }
 
 
-void View::setAttributeType(std::string name, ATTR::ATTRIBUTETYPES type)
+void View::setAttributeType(std::string name, Attribute::AttributeType type)
 {
     this->attributeTypes[name] = type;
 }
@@ -130,7 +130,7 @@ void View::setAttributeType(std::string name, ATTR::ATTRIBUTETYPES type)
 void View::addLinks(string name, View linkto)
 {
     this->addAttribute(name);
-    this->setAttributeType(name, ATTR::LINK);
+    this->setAttributeType(name, Attribute::LINK);
     this->attributeLinks[name] = linkto.getName();
 }
 

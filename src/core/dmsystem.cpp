@@ -515,7 +515,7 @@ bool System::addView(View view)
     foreach (std::string a , view.getWriteAttributes()) {
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
-        if (view.getAttributeType(a) == ATTR::LINK) {
+        if (view.getAttributeType(a) == Attribute::LINK) {
             //UUID in Dummy Object not defined
             //TODO maybe we should do it?
             attr.setLink(view.getLinkName(a), "");

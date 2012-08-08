@@ -47,20 +47,6 @@ struct LinkAttribute {
     std::string uuid;
 };
 
-namespace ATTR {
-    enum ATTRIBUTETYPES{
-        NOTYPE,
-        DOUBLE,
-        STRING,
-        TIMESERIES,
-        LINK,
-        DOUBLEVECTOR,
-        STRINGVECTOR
-    };
-}
-
-
-
 class DM_HELPER_DLL_EXPORT Attribute
 {
 private:
@@ -74,6 +60,16 @@ private:
     int type;
 
 public:
+    enum AttributeType {
+        NOTYPE,
+        DOUBLE,
+        STRING,
+        TIMESERIES,
+        LINK,
+        DOUBLEVECTOR,
+        STRINGVECTOR
+    };
+
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/
@@ -124,7 +120,7 @@ public:
     /** @brief add TimeSeries **/
     void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
     /** @brief Sets attribute tyoe */
-    void setType(ATTR::ATTRIBUTETYPES type);
+    void setType(AttributeType type);
 
 
 };
