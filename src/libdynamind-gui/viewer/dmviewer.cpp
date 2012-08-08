@@ -4,7 +4,7 @@
 #include "dmsystem.h"
 #include "dmnode.h"
 #include "dmlayer.h"
-
+#include "dmcomponenteditor.h"
 
 #include <QGLViewer/vec.h>
 
@@ -36,8 +36,20 @@ void Viewer::draw() {
     }
 }
 
-void Viewer::postSelection(const QPoint &point) {
+void Viewer::postSelection(const QPoint &) {
     CHECK_SYSTEM;
+    int nl = 0;
+    int name = selectedName();
+    foreach (Layer *l, layers) {
+        if (l->isNameFromLayer(selectedName())) {
+            View v = l->getView();
+            GLuint ns = l->getNameStart();
+            std::string uuid = system->getUUIDsOfComponentsInView(v)[name - ns];
+            ComponentEditor ce(system->getComponent(uuid));
+            ce.exec();
+        }
+        nl++;
+    }
 }
 
 void Viewer::addLayer(Layer *l) {

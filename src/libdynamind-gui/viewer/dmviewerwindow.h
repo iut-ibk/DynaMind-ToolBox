@@ -29,7 +29,7 @@ private slots:
     void on_actionReset_View_triggered();
     
 private:
-    Ui::ViewerWindow *ui;
+    ::Ui::ViewerWindow *ui;
     DM::System *system;
 };
 

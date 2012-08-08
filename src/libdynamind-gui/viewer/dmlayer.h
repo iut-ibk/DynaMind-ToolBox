@@ -51,6 +51,10 @@ public:
         return name >= 0 && name < vmd.number_of_primitives;
     }
     
+    View getView() const {
+        return view;
+    }
+    
 private:
     System *system;
     View view;
