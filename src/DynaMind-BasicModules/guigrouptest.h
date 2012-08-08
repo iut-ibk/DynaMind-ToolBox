@@ -53,8 +53,10 @@ private:
 
 
 protected slots:
-    void addInPort();
-    void addOutPort();
+    void on_addInPort_clicked();
+    void on_addOutPort_clicked();
+    void on_rmInport_clicked();
+    void on_rmOutport_clicked();
     void accept();
 };
 

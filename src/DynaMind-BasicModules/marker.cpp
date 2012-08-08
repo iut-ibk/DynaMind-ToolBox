@@ -128,7 +128,7 @@ void Marker::initRExpression () {
 
     p->DefineVar("CellValue", this->CellValue);
     p->DefineFun("nov", mu::numberOfValues);
-    p->DefineFun("rand", mu::random), false;
+    p->DefineFun("rand", mu::random , false);
     p->SetExpr(param.RExpression);
     RExpression = p;
 

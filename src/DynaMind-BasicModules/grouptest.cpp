@@ -27,6 +27,7 @@
 #include "grouptest.h"
 #include <guigrouptest.h>
 #include <algorithm>
+#include <dmporttuple.h>
 
 
 
@@ -38,26 +39,46 @@ GroupTest::GroupTest() {
     this->addParameter("Runs", DM::INT, &Runs);
     this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInViews);
     this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutViews);
-
-
-
 }
 
 void GroupTest::run() {
     this->Steps = Runs;
-
-
-
     Group::run();
 }
 
 void GroupTest::init() {
-
-    foreach (std::string s, nameOfInViews)
+    foreach (std::string s, nameOfInViews) {
         this->addTuplePort(s, DM::INTUPLESYSTEM);
-
-    foreach (std::string s, nameOfOutViews)
+    }
+    foreach (std::string s, nameOfOutViews) {
         this->addTuplePort(s, DM::OUTTUPLESYSTEM);
+    }
+
+    //Remove Ports
+     std::vector<PortTuple * > tuple_in_ports = this->getInPortTuples();
+     std::vector<PortTuple * > tuple_out_ports = this->getOutPortTuples();
+     std::vector<PortTuple * > tuple_remove;
+     foreach (PortTuple * pt, tuple_in_ports) {
+         bool exists = false;
+         foreach (std::string s, nameOfInViews) {
+         if (pt->getName().compare(s) == 0)
+             exists = true;
+         }
+         if (!exists)
+             tuple_remove.push_back(pt);
+     }
+     foreach (PortTuple * pt, tuple_out_ports) {
+         bool exists = false;
+         foreach (std::string s, nameOfOutViews) {
+         if (pt->getName().compare(s) == 0)
+             exists = true;
+         }
+         if (!exists)
+             tuple_remove.push_back(pt);
+     }
+     foreach (PortTuple * pt, tuple_remove) {
+         this->removeTuplePort(pt);
+     }
 
 }
 
@@ -83,6 +104,19 @@ void GroupTest::addOutPort(std::string n) {
     this->init();
 }
 
+void GroupTest::removeInPort(string port) {
+    if (std::find(nameOfInViews.begin(), nameOfInViews.end(), port) == nameOfInViews.end())
+        return;
+    nameOfInViews.erase(std::find(nameOfInViews.begin(), nameOfInViews.end(), port) );
+    this->init();
+}
+
+void GroupTest::removeOutPort(string port) {
+    if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), port) == nameOfOutViews.end())
+        return;
+    nameOfOutViews.erase(std::find(nameOfOutViews.begin(), nameOfOutViews.end(), port) );
+    this->init();
+}
 
 bool GroupTest::createInputDialog() {
 

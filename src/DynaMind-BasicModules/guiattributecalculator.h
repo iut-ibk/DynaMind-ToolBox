@@ -6,57 +6,56 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich
-
+ * Copyright (C) 2012  Christian Urich
+ 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
-#ifndef CALCULATECENTROID_H
-#define CALCULATECENTROID_H
-#include <dmmodule.h>
-#include <dm.h>
-using namespace DM;
-/** @brief Calculates the centroid of the given faces
-  *
-  * Calculates the centroid of the given faces
-  * The centroid is added to the attribute
-  * - Identifer
-  *     - centroid_x
-  *     - centroid_y
-  * @ingroup Modules
-  * @author Christian Urich
-  */
+#ifndef GUIATTRIBUTECALCULATOR_H
+#define GUIATTRIBUTECALCULATOR_H
 
-class DM_HELPER_DLL_EXPORT CalculateCentroid : public Module
+#include <QDialog>
+#include <attributecalculator.h>
+namespace Ui {
+class GUIAttributeCalculator;
+}
+class QTreeWidgetItem;
+class GUIAttributeCalculator : public QDialog
 {
-    DM_DECLARE_NODE(CalculateCentroid)
-private:
-    std::string NameOfExistingView;
-    DM::System * city;
-    bool changed;
-    DM::View vData;
-    DM::View newPoints;
-
+    Q_OBJECT
+    
 public:
-    CalculateCentroid();
-    void run();
-    void init();
-    bool createInputDialog();
-    void setNameOfView(std::string name);
-    DM::System * getSystemIn();
+    explicit GUIAttributeCalculator(DM::Module * m, QWidget *parent = 0);
+    ~GUIAttributeCalculator();
+    
+private:
+    Ui::GUIAttributeCalculator *ui;
+    AttributeCalculator * attrcalc;
+    void updateAttributeView();
+    QString viewName;
+
+
+    void createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname);
+
+
+protected slots:
+    void on_addButton_clicked();
+    void on_comboView_currentIndexChanged (int);
+public slots:
+    void accept();
 };
 
-#endif // CALCULATECENTROID_H
+#endif // GUIATTRIBUTECALCULATOR_H

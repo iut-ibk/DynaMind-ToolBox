@@ -51,6 +51,8 @@ DM_DECLARE_GROUP(GroupTest)
         std::vector<std::string> nameOfOutViews;
         void addInPort (std::string in);
         void addOutPort (std::string in);
+        void removeInPort(std::string port);
+        void removeOutPort(std::string port);
 };
 
 
