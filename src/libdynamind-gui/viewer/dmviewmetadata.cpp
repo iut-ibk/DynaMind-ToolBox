@@ -30,11 +30,13 @@ ViewMetaData::ViewMetaData(std::string attribute)
 void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Node *n, iterator_pos pos) {
     if (pos == before) {
         DM::Attribute *a = c->getAttribute(attr);
-        if (a->hasDouble()) {
+        if (a->getType() == Attribute::DOUBLE) {
             attr_max = std::max(attr_max, a->getDouble());
             attr_min = std::min(attr_min, a->getDouble());
         }
-        if (a->hasDoubleVector()) {
+        if (a->getType() == Attribute::DOUBLEVECTOR ||
+            a->getType() == Attribute::TIMESERIES) {
+            
             std::vector<double> dv = a->getDoubleVector();
             attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
             attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
