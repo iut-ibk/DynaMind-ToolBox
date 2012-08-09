@@ -117,4 +117,11 @@ void Viewer::updateLayerLayout() {
     }
 }
 
+void Viewer::setAttributeVectorName(int name) {
+    foreach (Layer *l, layers) {
+        l->setAttributeVectorName(name);
+    }
+    updateGL();
+}
+
 }

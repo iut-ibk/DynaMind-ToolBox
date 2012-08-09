@@ -55,19 +55,25 @@ public:
         return view;
     }
     
+    void setAttributeVectorName(int name) {
+        attribute_vector_name = name;
+    }
+    
 private:
     System *system;
     View view;
     std::string attribute;
     double scale_height;
     
-    GLuint list;
+    std::vector<GLuint> lists;
     int texture;
     GLuint name_start;
     
     double x_off, y_off, z_off;
     
     ViewMetaData vmd;
+    
+    int attribute_vector_name;
 };
 
 } // namespace DM

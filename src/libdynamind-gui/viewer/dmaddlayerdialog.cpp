@@ -86,6 +86,32 @@ DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
     return l;
 }
 
+QStringList AddLayerDialog::getAttributeVectorNames() const {
+    if (attribute == "")
+        return QStringList();
+    
+    if (!system->getUUIDsOfComponentsInView(*view).size())
+        return QStringList();
+    
+    std::string uuid = system->getUUIDsOfComponentsInView(*view)[0];
+    Attribute *attr = system->getComponent(uuid)->getAttribute(attribute);
+    if (attr->getType() == Attribute::DOUBLEVECTOR) {
+        int len = attr->getDoubleVector().size();
+        QStringList list;
+        for (int i = 0; i < len; i++) {
+            list << QString("%1").arg(i);
+        }
+    }
+    if (attr->getType() == Attribute::TIMESERIES) {
+        QStringList list;
+        foreach(std::string s, attr->getStringVector()) {
+            list << QString::fromStdString(s);
+        }
+        return list;
+    }
+    return QStringList();
+}
+
 void AddLayerDialog::on_color_start_button_clicked() {
     start = QColorDialog::getColor(start, this);
     ui->color_start_label->setStyleSheet("background-color: " + start.name());

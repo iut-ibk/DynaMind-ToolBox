@@ -32,6 +32,8 @@ public slots:
         updateLayerLayout();
     }
     
+    void setAttributeVectorName(int name);
+    
 protected:
     virtual void init();
     virtual void drawWithNames();

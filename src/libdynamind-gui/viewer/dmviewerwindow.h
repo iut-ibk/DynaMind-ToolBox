@@ -22,11 +22,13 @@ private slots:
     void on_actionAdd_Layer_triggered();
     void offsetChanged();
     
-    void on_x_layerOffset_valueChanged(double arg1);    
+    void on_x_layerOffset_valueChanged(double arg1);
     void on_y_layerOffset_valueChanged(double arg1);
     void on_z_layerOffset_valueChanged(double arg1);
     
     void on_actionReset_View_triggered();
+    
+    void on_names_activated(int);
     
 private:
     ::Ui::ViewerWindow *ui;

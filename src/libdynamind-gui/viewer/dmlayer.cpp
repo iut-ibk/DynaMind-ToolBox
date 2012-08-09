@@ -74,12 +74,16 @@ struct TesselatedFaceDrawer {
     double height_scale, attr_span;
     GLuint texture, name_start;
     const ViewMetaData &vmd;
+    int attribute_vector_name;
     
     std::vector<GLdouble *> vertices;
     
     TesselatedFaceDrawer(const ViewMetaData &vmd, GLuint name_start, 
-                         std::string attr = "", double height_scale = -1, GLuint texture = -1)
-        : attr(attr), texture(texture), vmd(vmd), name_start(name_start) {
+                         std::string attr = "", double height_scale = -1, 
+                         GLuint texture = -1, int attribute_vector_name = 0)
+        : attr(attr), texture(texture), 
+          vmd(vmd), name_start(name_start), 
+          attribute_vector_name(attribute_vector_name) {
         
         this->height_scale = 1.0/vmd.attr_max*vmd.radius()*height_scale;
         this->attr_span = vmd.attr_max - vmd.attr_min;
@@ -97,9 +101,24 @@ struct TesselatedFaceDrawer {
         
         d[0] = n->getX();
         d[1] = n->getY();
-        d[2] = height_scale > 0 ? f->getAttribute(attr)->getDouble() * height_scale : 0.0;
+        d[2] = 0.0;
+        if (height_scale > 0) {
+            Attribute *a = f->getAttribute(attr);
+            if (a->getType() == Attribute::DOUBLE) {
+                d[2] = f->getAttribute(attr)->getDouble() * height_scale;
+            } else {
+                double attr_value = a->getDoubleVector()[attribute_vector_name];
+                d[2] = attr_value * height_scale;
+            }
+        }
+        
         if (glIsTexture(texture)) {
-            d[3] = (f->getAttribute(attr)->getDouble() - vmd.attr_min) / attr_span;
+            Attribute *a = f->getAttribute(attr);
+            if (a->getType() == Attribute::DOUBLE) {
+                d[3] = (a->getDouble() - vmd.attr_min) / attr_span;
+            } else {
+                d[3] = (a->getDoubleVector()[attribute_vector_name] - vmd.attr_min) / attr_span;
+            }
             d[4] = 0.5;
         } else {
             d[3] = d[4] = 0.0;
@@ -153,9 +172,9 @@ struct TesselatedFaceDrawer {
 
 
 Layer::Layer(System *s, View v, const std::string &a) 
-    : system(s), 
-      view(v), 
-      attribute(a), vmd(a) {
+    : system(s), view(v), 
+      attribute(a), vmd(a),
+      attribute_vector_name(0) {
 }
 
 void Layer::setColorInterpretation(GLuint texture) {
@@ -167,12 +186,15 @@ void Layer::setHeightInterpretation(float percent) {
 }
 
 void Layer::draw() {
-    if (!glIsList(list)) {
-        list = glGenLists(1);
-        glNewList(list, GL_COMPILE);
+    if (lists.size() <= attribute_vector_name) {
+        lists.resize(attribute_vector_name+1, -1);
+    }
+    if (!glIsList(lists[attribute_vector_name])) {
+        lists[attribute_vector_name] = glGenLists(1);
+        glNewList(lists[attribute_vector_name], GL_COMPILE);
         
         if (view.getType() == DM::FACE) {
-            TesselatedFaceDrawer drawer(vmd, name_start, attribute, scale_height, texture);
+            TesselatedFaceDrawer drawer(vmd, name_start, attribute, scale_height, texture, attribute_vector_name);
             iterate_faces(system, view, drawer);
         }
         if (view.getType() == DM::EDGE) {
@@ -189,7 +211,8 @@ void Layer::draw() {
     
     glPushMatrix();
     glTranslated(x_off, y_off, z_off);
-    glCallList(list);
+    assert(glIsList(lists[attribute_vector_name]));
+    glCallList(lists[attribute_vector_name]);
     glPopMatrix();
 }
 
@@ -210,8 +233,10 @@ void Layer::systemChanged() {
         iterate_nodes(system, view, vmd);
     }
     
-    if (glIsList(list)) {
-        glDeleteLists(list, 1);
+    foreach (GLuint list, lists) {
+        if (glIsList(list)) {
+            glDeleteLists(list, 1);
+        }
     }
 }
 

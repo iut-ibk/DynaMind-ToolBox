@@ -1,19 +1,18 @@
 #include "dmviewerwindow.h"
 #include "ui_dmviewerwindow.h"
 #include "dmaddlayerdialog.h"
+#include "dmlayer.h"
 
 namespace DM {
 
 ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ViewerWindow), system(system)
-{
+    ui(new Ui::ViewerWindow), system(system) {
     ui->setupUi(this);
     ui->viewer->setSystem(system);
     this->addAction(ui->actionAdd_Layer);
     this->addAction(ui->actionReset_View);
     offsetChanged();
-    ui->actionAdd_Layer->trigger();
 }
 
 ViewerWindow::~ViewerWindow() {
@@ -26,6 +25,12 @@ void ViewerWindow::on_actionAdd_Layer_triggered() {
         Layer *l = dialog.getLayer(ui->viewer);
         if (!l) return;
         ui->viewer->addLayer(l);
+        QStringList attr_names = dialog.getAttributeVectorNames();
+        if (attr_names.empty())
+            return;
+        ui->playButton->setEnabled(true);
+        ui->names->setEnabled(true);
+        ui->names->addItems(attr_names);
     }
 }
 
@@ -49,6 +54,10 @@ void ViewerWindow::on_z_layerOffset_valueChanged(double ) {
 
 void ViewerWindow::on_actionReset_View_triggered() {
     ui->viewer->showEntireScene();
+}
+
+void ViewerWindow::on_names_activated(int name) {
+    ui->viewer->setAttributeVectorName(name);
 }
 
 }

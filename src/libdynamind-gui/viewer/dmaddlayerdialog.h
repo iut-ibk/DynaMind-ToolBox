@@ -25,6 +25,8 @@ public:
     ~AddLayerDialog();
     DM::Layer *getLayer(DM::Viewer *v);
     
+    QStringList getAttributeVectorNames() const;
+    
 private slots:
     void on_color_start_button_clicked();
     void on_color_stop_button_clicked();
