@@ -1,12 +1,21 @@
-# Compiled Object files
-*.slo
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+ui_*.h
+*.pro.user
 *.lo
+*.slo
 *.o
-
-# Compiled Dynamic libraries
-*.so
-
-# Compiled Static libraries
 *.lai
 *.la
 *.a
+*~
+*.pyc
+.svn
+.metadata/
+moc_*
+Makefile
+CMakeLists.txt.user
+build
+*.bat
+bin
