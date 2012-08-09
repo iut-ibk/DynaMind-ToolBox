@@ -13,6 +13,9 @@ ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
     this->addAction(ui->actionAdd_Layer);
     this->addAction(ui->actionReset_View);
     offsetChanged();
+    timer.setInterval(40);
+    timer.setSingleShot(false);
+    QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(timerShot()));
 }
 
 ViewerWindow::~ViewerWindow() {
@@ -56,8 +59,22 @@ void ViewerWindow::on_actionReset_View_triggered() {
     ui->viewer->showEntireScene();
 }
 
-void ViewerWindow::on_names_activated(int name) {
+void ViewerWindow::on_names_currentIndexChanged(int name) {
     ui->viewer->setAttributeVectorName(name);
+}
+
+void ViewerWindow::on_playButton_clicked() {
+    if (timer.isActive()) {
+        timer.stop();
+        ui->playButton->setIcon(QIcon::fromTheme("player_play"));
+    } else {
+        timer.start();
+        ui->playButton->setIcon(QIcon::fromTheme("player_pause"));
+    }
+}
+
+void ViewerWindow::timerShot() {
+    ui->names->setCurrentIndex((ui->names->currentIndex()+1) % ui->names->count());
 }
 
 }

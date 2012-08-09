@@ -2,6 +2,7 @@
 #define VIEWERWINDOW_H
 
 #include <QWidget>
+#include <QTimer>
 
 namespace Ui {
 class ViewerWindow;
@@ -28,11 +29,15 @@ private slots:
     
     void on_actionReset_View_triggered();
     
-    void on_names_activated(int);
+    void on_names_currentIndexChanged(int);
+    void on_playButton_clicked();
+    
+    void timerShot();
     
 private:
     ::Ui::ViewerWindow *ui;
     DM::System *system;
+    QTimer timer;
 };
 
 }
