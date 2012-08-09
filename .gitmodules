@@ -22,3 +22,6 @@
 [submodule "DynaMind-UrbanSim"]
 	path = DynaMind-UrbanSim
 	url = git@github.com:iut-ibk/DynaMind-UrbanSim.git
+[submodule "DynaMind-Performance-Assessment"]
+	path = DynaMind-Performance-Assessment
+	url = git@github.com:iut-ibk/DynaMind-Performance-Assessment.git
