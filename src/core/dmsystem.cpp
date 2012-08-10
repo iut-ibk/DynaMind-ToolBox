@@ -282,7 +282,7 @@ Component * System::getComponent(std::string uuid) {
         return this->getSubSystem(uuid);
     if(rasterdata.find(uuid)!=rasterdata.end())
         return rasterdata[uuid];
-    if(components.find(uuid)==components.end()) {
+    if(components.find(uuid)!=components.end()) {
         Component * c = static_cast<Component*>(updateChild(components[uuid]));
         components[uuid] = c;
         this->updateViews(c);
