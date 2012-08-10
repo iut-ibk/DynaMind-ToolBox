@@ -40,6 +40,12 @@ using namespace DM;
 Component::Component()
 {
     this->uuid = QUuid::createUuid().toString().toStdString();
+    name = "";
+    childsview = std::map<std::string,Component*>();
+    attributesview = std::map<std::string,Attribute*>();
+    ownedchilds = std::map<std::string,Component*>();
+    ownedattributes =  std::map<std::string,Attribute*>();
+    inViews = std::set<std::string>();
 }
 
 void Component::createNewUUID() {
@@ -60,7 +66,7 @@ void Component::setName(std::string name) {
 }
 
 //std::string Component::getName() const {
-    //return name;
+//return name;
 //}
 
 Component::Component(const Component& c)
