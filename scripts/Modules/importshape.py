@@ -300,11 +300,7 @@ class ImportShapeFile(Module):
                                     f.addAttribute("MaxX", self.MaxX)
                                     f.addAttribute("MinY", self.MinY)
                                     f.addAttribute("MaxY", self.MaxY)
-                                    print  self.MinX
-                                    print  self.MaxX
-                                    print  self.MinY
-                                    print  self.MaxY
-                                    
+                                        
                                     self.firstPoint = True
 
                 print "Imported points: " + str( len(city.getAllNodes()))
