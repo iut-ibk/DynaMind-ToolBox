@@ -222,6 +222,12 @@ public:
 };
 
 %pythoncode %{
+def my_del(self):
+    print "Force no delete of python garbage collector"
+    self.__disown__()
+
+Component.__del__ = my_del
+
 class NodeFactory(INodeFactory):
     def __init__(self, klass):
         INodeFactory.__init__(self)
