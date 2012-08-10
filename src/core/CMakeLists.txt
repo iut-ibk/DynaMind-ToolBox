@@ -4,8 +4,8 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
 
-set_source_files_properties(${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
-SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${CMAKE_BINARY_DIR}/output/pydynamindWRAP.cpp)
+set_source_files_properties(${OUTPUT_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
+SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${OUTPUT_DIR}/pydynamindWRAP.cpp)
 
 ADD_LIBRARY(dynamindcore  SHARED ${DYNAMIND_CPPS})
 
@@ -19,7 +19,7 @@ INSTALL(TARGETS dynamindcore
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 IF(WIN32)
-    INSTALL(FILES ${CMAKE_BINARY_DIR}/output/dynamindcore.lib
+    INSTALL(FILES ${OUTPUT_DIR}/dynamindcore.lib
             DESTINATION lib
             PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 ENDIF()
