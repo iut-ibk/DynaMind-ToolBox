@@ -34,6 +34,7 @@
 #include <dmlogger.h>
 #include <dmmodule.h>
 
+
 using namespace DM;
 
 
@@ -209,14 +210,10 @@ Face * System::addFace(Face *f) {
 
 Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
 {
-
-
     std::vector<std::string> stringNodes;
 
     foreach (Node* n, nodes)
         stringNodes.push_back(n->getUUID());
-
-
     Face * f = this->addFace(new Face(stringNodes));
 
     if (f == 0)
@@ -232,9 +229,13 @@ Node* System::getNode(std::string uuid)
 {
     if(nodes.find(uuid)==nodes.end())
         return 0;
-    Node * n = static_cast<Node*>(updateChild(nodes[uuid]));
-    nodes[uuid] = n;
-    this->updateViews(n);
+    Node * n = nodes[uuid];
+    if (n->getCurrentSystem() != this) {
+        n = static_cast<Node*>(updateChild(nodes[uuid]));
+        nodes[uuid] = n;
+        this->updateViews(n);
+        n->setCurrentSystem(this);
+    }
 
     return nodes[uuid];
 }
@@ -243,10 +244,13 @@ Edge* System::getEdge(std::string uuid)
 {
     if(edges.find(uuid)==edges.end())
         return 0;
-
-    Edge * e = static_cast<Edge*>(updateChild(edges[uuid]));
-    edges[uuid] = e;
-    this->updateViews(e);
+    Edge * e = edges[uuid];
+    if (e->getCurrentSystem() != this) {
+        e = static_cast<Edge*>(updateChild(edges[uuid]));
+        edges[uuid] = e;
+        this->updateViews(e);
+        e->setCurrentSystem(this);
+    }
 
     return edges[uuid];
 }
@@ -263,11 +267,15 @@ Face* System::getFace(std::string uuid)
 {
     if(faces.find(uuid)==faces.end())
         return 0;
-
-    Face * f = static_cast<Face*>(updateChild(faces[uuid]));
-    faces[uuid] = f;
-    this->updateViews(f);
+    Face * f = faces[uuid];
+    if (f->getCurrentSystem() != this) {
+        f = static_cast<Face*>(updateChild(faces[uuid]));
+        faces[uuid] = f;
+        this->updateViews(f);
+        f->setCurrentSystem(this);
+    }
     return faces[uuid];
+
 }
 
 
@@ -283,9 +291,13 @@ Component * System::getComponent(std::string uuid) {
     if(rasterdata.find(uuid)!=rasterdata.end())
         return rasterdata[uuid];
     if(components.find(uuid)!=components.end()) {
-        Component * c = static_cast<Component*>(updateChild(components[uuid]));
-        components[uuid] = c;
-        this->updateViews(c);
+         Component * c = components[uuid];
+        if (c->getCurrentSystem() != this) {
+            c = static_cast<Component*>(updateChild(components[uuid]));
+            components[uuid] = c;
+            this->updateViews(c);
+            c->setCurrentSystem(this);
+        }
         return c;
     }
     return 0;

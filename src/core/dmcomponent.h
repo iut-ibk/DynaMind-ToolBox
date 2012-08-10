@@ -42,7 +42,7 @@
 namespace DM {
 
 class Attribute;
-
+class System;
 
 /** @ingroup DynaMind-Core
   * @brief Basic class that contains to store informations in DynaMind
@@ -62,6 +62,7 @@ protected:
     std::map<std::string,Component*> ownedchilds;
     std::map<std::string,Attribute*> ownedattributes;
     std::set<std::string> inViews;
+    System * currentSys;
 
     void removeView(const DM::View & view);
 
@@ -143,6 +144,9 @@ public:
     std::map<std::string, Component*> getAllChilds();
 
     Component * updateChild(Component * c);
+
+    System * getCurrentSystem();
+    void setCurrentSystem(System * sys);
 
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
