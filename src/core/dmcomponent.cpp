@@ -27,7 +27,7 @@
 #include <QtCore>
 #include <dmcomponent.h>
 #include <dmattribute.h>
-
+#include <dmsystem.h>
 #include <assert.h>
 #include <dmlogger.h>
 
@@ -46,6 +46,7 @@ Component::Component()
     ownedchilds = std::map<std::string,Component*>();
     ownedattributes =  std::map<std::string,Attribute*>();
     inViews = std::set<std::string>();
+    currentSys = 0;
 }
 
 void Component::createNewUUID() {
@@ -271,3 +272,12 @@ std::map<std::string, Component*> Component::getAllChilds()
 {
     return childsview;
 }
+
+System * Component::getCurrentSystem() {
+    return this->currentSys;
+}
+
+void Component::setCurrentSystem(System *sys) {
+    this->currentSys = sys;
+}
+
