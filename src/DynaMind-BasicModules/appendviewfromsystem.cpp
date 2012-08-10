@@ -55,10 +55,6 @@ void AppendViewFromSystem::init()
         bool changed = false;
         foreach (std::string s, Inports) {
             DM::System * sys = this->getData(s);
-            if (s.compare("ConAfterGen") == 0) {
-                std::cout << "Fuck You" << std::endl;
-
-           }
             if (sys != 0) {
                 foreach (std::string v, sys->getNamesOfViews()) {
                     if (std::find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
