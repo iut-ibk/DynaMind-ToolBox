@@ -44,10 +44,7 @@ AttributeCalculator::AttributeCalculator()
     sys_in = 0;
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
-
-
     this->addData("Data", data);
-
 }
 
 void AttributeCalculator::init() {
@@ -68,8 +65,6 @@ void AttributeCalculator::init() {
     DM::View writeView = DM::View(baseView->getName(), baseView->getType(), DM::READ);
     writeView.addAttribute(nameOfNewAttribute);
     viewsmap[nameOfBaseView] = writeView;
-
-
     for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
          it != variablesMap.end();
          ++it) {
@@ -95,10 +90,29 @@ void AttributeCalculator::init() {
          ++it) {
         data.push_back(it->second);
     }
-
     this->addData("Data", data);
+}
 
+void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_container, Component *currentcmp,std::string name ) {
+    QString viewNametotal = QString::fromStdString(name);
+    QStringList viewNameList = viewNametotal.split(".");
+    //Remove First Element, is already what comes with currentcmp
+    viewNameList.removeFirst();
+    //If viewNameList > 1
+    //Unit.Area
+    Attribute * attr = currentcmp->getAttribute(viewNameList.front().toStdString());
 
+    if (attr->getType() == Attribute::LINK) {
+        std::string newSearchName = viewNameList.join(".").toStdString();
+        foreach (LinkAttribute l, attr->getLinks()) {
+            Component * nextcmp = this->sys_in->getComponent(l.uuid);
+            this->getLinkedAttriubte(varaible_container, nextcmp, newSearchName);
+        }
+    }
+
+    if (attr->getType() == Attribute::DOUBLE) {
+        varaible_container->push_back(attr->getDouble());
+    }
 }
 
 void AttributeCalculator::run() {
@@ -116,23 +130,30 @@ void AttributeCalculator::run() {
     p->SetExpr(equation);
 
     std::vector<std::string> uuids =   this->sys_in->getUUIDsOfComponentsInView(viewsmap[nameOfBaseView]);
+
     foreach (std::string uuid, uuids) {
         //UpdateParameters
-        DM::Component * cmp = this->sys_in->getComponent(uuid);
+        //House.Unit.Area
+        DM::Component * cmp = this->sys_in->getComponent(uuid); //House
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
              it != variablesMap.end();
              ++it) {
-            QString viewNametotal = QString::fromStdString(it->first);
-            QStringList viewNameList = viewNametotal.split(".");
-            DM::Component * currentComponent = cmp;
-            while (viewNameList.size() > 2) {
-                std::string linkID = viewNameList[1].toStdString();
-                std::string newUUID = currentComponent->getAttribute(linkID)->getLink().uuid;
-                currentComponent = this->sys_in->getComponent(newUUID);
-                viewNameList.removeFirst();
+
+            //All attributes are stored in one container that is evaluated Later.
+            std::vector<double> * varaible_container = new std::vector<double>();
+
+            //Can be later replaced by a function
+            double val;
+            getLinkedAttriubte(varaible_container, cmp, it->first);
+
+            foreach (double v, *varaible_container) {
+                val+=v;
             }
+
             double * var = doubleVaraibles[it->second];
-            (*var) = currentComponent->getAttribute(viewNameList.last().toStdString())->getDouble();
+            (*var) = val;
+
+            delete varaible_container;
         }
         cmp->addAttribute(nameOfNewAttribute, p->Eval());
     }

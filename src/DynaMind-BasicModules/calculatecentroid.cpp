@@ -89,9 +89,10 @@ void CalculateCentroid::run() {
     city = this->getData("Data");
     std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
     std::stringstream link;
-    link << vData.getName() << "_ID";
-    foreach(std::string name, names) {
-        Face * f = city->getFace(name);
+    link << vData.getName();
+    int elements = names.size();
+    for (int i = 0; i < elements; i++){
+        Face * f = city->getFace(names[i]);
 
         Node p = TBVectorData::caclulateCentroid(this->city, f);
         double area = fabs(TBVectorData::calculateArea(this->city, f));

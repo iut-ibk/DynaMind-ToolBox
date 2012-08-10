@@ -39,7 +39,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     if (!this->attrcalc->getSystemIn())
         return;
 
-
     QStringList headers;
     headers << "Name" << "Landscape";
     ui->varaibleTable->setHorizontalHeaderLabels(headers);
@@ -56,11 +55,11 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
         ui->comboView->addItem(QString::fromStdString(v.getName()));
     }
     if (views.size() > 0) {
-        std::string nameOfBaseView = this->attrcalc->getParameter<std::string>("NameOfBaseView");
-        if (nameOfBaseView.empty()) {
+        std::string n = this->attrcalc->getParameterAsString("NameOfBaseView");
+        if (n.empty()) {
             viewName =QString::fromStdString(views[0].getName());
         } else {
-            int index = ui->comboView->findText(QString::fromStdString(nameOfBaseView));
+            int index = ui->comboView->findText(QString::fromStdString(n));
             if (index != -1) {
                 ui->comboView->setCurrentIndex(index);
             }
@@ -103,11 +102,21 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
         if (c == 0) {
             continue;
         }
+        //Check if View has already a parent with the same name
+        QTreeWidgetItem * parent = root_port->parent();
+        while (parent) {
+            std::string sparent = parent->text(0).toStdString();
+            if (sparent.compare(viewname) == 0)
+                return;
+            parent  = parent->parent();
+        }
         std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
         for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
             DM::Logger(DM::Debug) << it->first;
             Attribute * attr = it->second;
-            QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
+            QTreeWidgetItem * item_attribute = new QTreeWidgetItem();            
+
+
             item_attribute->setText(0, QString::fromStdString(it->first));
             root_port->addChild(item_attribute);
             if (attr->getType() == Attribute::LINK) {
@@ -182,13 +191,12 @@ void GUIAttributeCalculator::on_addButton_clicked() {
 void GUIAttributeCalculator::on_comboView_currentIndexChanged (int val)
 {
     viewName = ui->comboView->currentText();
-    this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
     this->updateAttributeView();
 
 }
 
 void GUIAttributeCalculator::accept() {
-    this->attrcalc->setParameterValue("NameOfBaseView", ui->comboView->currentText().toStdString());
+    this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
     this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
     this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
 
