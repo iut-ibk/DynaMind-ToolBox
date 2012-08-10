@@ -271,18 +271,18 @@ Face* System::getFace(std::string uuid)
 }
 
 
-Component * System::getComponent(std::string name) {
-    if(nodes.find(name)!=nodes.end())
-        return this->getNode(name);
-    if(edges.find(name)!=edges.end())
-        return this->getEdge(name);
-    if(faces.find(name)!=faces.end())
-        return this->getFace(name);
-    if(subsystems.find(name)!=subsystems.end())
-        return this->getSubSystem(name);
-    if(rasterdata.find(name)!=rasterdata.end())
-        return rasterdata[name];
-    if(components.find(uuid)==components.end()) {
+Component * System::getComponent(std::string uuid) {
+    if(nodes.find(uuid)!=nodes.end())
+        return this->getNode(uuid);
+    if(edges.find(uuid)!=edges.end())
+        return this->getEdge(uuid);
+    if(faces.find(uuid)!=faces.end())
+        return this->getFace(uuid);
+    if(subsystems.find(uuid)!=subsystems.end())
+        return this->getSubSystem(uuid);
+    if(rasterdata.find(uuid)!=rasterdata.end())
+        return rasterdata[uuid];
+    if(components.find(uuid)!=components.end()) {
         Component * c = static_cast<Component*>(updateChild(components[uuid]));
         components[uuid] = c;
         this->updateViews(c);
