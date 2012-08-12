@@ -109,7 +109,7 @@ public:
     std::string getName();
     ~Attribute();
     /** @brief return datatype*/
-    int getType();
+    AttributeType getType();
     /** @brief add link object **/
     void setLink(std::string viewname, std::string uuid);
     /** @brief Sets attribute links the existing vector is cleared! **/
