@@ -48,6 +48,7 @@
 #include "attributecalculator.h"
 #include "raindance.h"
 #include "spatiallinking.h"
+#include "importwithgdal.h"
 
 using namespace std;
 
@@ -77,5 +78,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
     registry->addNodeFactory(new NodeFactory<RainDance>());
     registry->addNodeFactory(new NodeFactory<SpatialLinking>());
+    registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
 }
 
