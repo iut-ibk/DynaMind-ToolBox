@@ -224,3 +224,17 @@ double TBVectorData::calculateArea(DM::System * sys, DM::Face * f) {
     return A/2.;
 }
 
+QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
+{
+    QPolygonF poly;
+
+    std::vector<std::string> uuids = f->getNodes();
+    foreach (std::string uuid, uuids) {
+        DM::Node * n = sys->getNode(uuid);
+        QPointF pf(n->getX(), n->getY());
+        poly.push_back(pf);
+    }
+
+    return poly;
+}
+

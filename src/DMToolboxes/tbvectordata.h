@@ -28,6 +28,8 @@
 #define TBVECTORDATA_H
 #include <dmcompilersettings.h>
 #include <vector>
+#include <QPolygonF>
+
 namespace DM {
 class System;
 class Node;
@@ -70,6 +72,8 @@ public:
     static DM::Node caclulateCentroid(DM::System * sys, DM::Face * f);
     /** @brief calculate area of a face */
     static double calculateArea(DM::System * sys, DM::Face * f);
+
+    static QPolygonF FaceAsQPolgonF(DM::System * sys, DM::Face * f);
 
 
 };
