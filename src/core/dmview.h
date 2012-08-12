@@ -120,7 +120,8 @@ public:
 
     /** @brief Return a list of attributes that are read */
     std::vector<std::string>  getReadAttributes  () const;
-
+    /** @brief Set Type */
+    void setType(int type) {this->type=type;}
      /** @brief Return Type */
     int const & getType() const {return type;}
 
