@@ -67,7 +67,7 @@ Attribute::~Attribute()
 {
 }
 
-int Attribute::getType()
+Attribute::AttributeType Attribute::getType()
 {
     return type;
 }
