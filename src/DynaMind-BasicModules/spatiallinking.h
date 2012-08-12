@@ -34,11 +34,12 @@ class DM_HELPER_DLL_EXPORT SpatialLinking : public Module
 {
     DM_DECLARE_NODE(SpatialLinking)
 private:
-        std::string sInView1;
-        std::string sInView2;
+
+        std::string base;
+        std::string linkto;
         DM::System * city;
-        DM::View inView1;
-        DM::View inView2;
+        DM::View vbase;
+        DM::View vlinkto;
 public:
     SpatialLinking();
     void run();
