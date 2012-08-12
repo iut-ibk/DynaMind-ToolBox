@@ -149,11 +149,12 @@ bool Component::changeAttribute(Attribute newattribute)
         return this->addAttribute(newattribute);
     }
     Attribute * attr = attributesview[newattribute.getName()];
+    Attribute::AttributeType type = attr->getType();
     attr->setDouble(newattribute.getDouble());
     attr->setDoubleVector(newattribute.getDoubleVector());
     attr->setString(newattribute.getString());
     attr->setStringVector(newattribute.getStringVector());
-
+    attr->setType(type);
     return true;
 }
 
