@@ -143,7 +143,7 @@ void AttributeCalculator::run() {
             std::vector<double> * varaible_container = new std::vector<double>();
 
             //Can be later replaced by a function
-            double val;
+            double val = 0;
             getLinkedAttriubte(varaible_container, cmp, it->first);
 
             foreach (double v, *varaible_container) {

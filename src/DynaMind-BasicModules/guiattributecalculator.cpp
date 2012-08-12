@@ -166,19 +166,19 @@ void GUIAttributeCalculator::on_addButton_clicked() {
     if (ui->listAttributes->size().isNull())
         return;
 
-    elementName << ui->comboView->currentText().toStdString();
+    //elementName << ui->comboView->currentText().toStdString();
 
     std::vector<std::string> elements;
     elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
-    QTreeWidgetItem * parent = ui->listAttributes->currentItem()->parent();
+    QTreeWidgetItem * p = ui->listAttributes->currentItem()->parent();
 
     do {
-        elements.push_back(parent->text(0).toStdString());
-        QTreeWidgetItem * parent = parent->parent();
-    } while (!parent);
+        elements.push_back(p->text(0).toStdString());
+        p = p->parent();
+    } while (p);
 
-
-    for (int i = elements.size()-1; i > -1; --i)
+    elementName << elements[elements.size()-1];
+    for (int i = elements.size()-2; i > -1; --i)
         elementName << "." <<elements[i];
 
     ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
