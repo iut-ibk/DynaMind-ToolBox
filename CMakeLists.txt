@@ -1,5 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-basicmodules)
+set(CMAKE_MODULE_PATH 
+  "${dynamind-basicmodules_SOURCE_DIR}/cmake"
+  "${dynamind-basicmodules_SOURCE_DIR}/cmake/Utils" 
+  "${dynamind-basicmodules_SOURCE_DIR}/cmake/Packages"
+)
 
 FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
             PATHS   $ENV{DYNAMIND_DIR}/include
