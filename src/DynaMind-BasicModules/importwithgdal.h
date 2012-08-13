@@ -28,7 +28,7 @@
 #define IMPORTWITHGDAL_H
 #include <dmmodule.h>
 #include <dm.h>
-#include "gdal/ogrsf_frmts.h"
+#include "ogrsf_frmts.h"
 #include <QHash>
 #include <QString>
 
