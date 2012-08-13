@@ -162,11 +162,13 @@ void Attribute::setLink(string viewname, string uuid)
 
 void Attribute::setLinks(std::vector<LinkAttribute> links)
 {
+    this->type = Attribute::LINK;
     this->stringvector.clear();
     foreach (LinkAttribute attr, links) {
         this->stringvector.push_back(attr.viewname);
         this->stringvector.push_back(attr.uuid);
     }
+
 }
 
 LinkAttribute Attribute::getLink()
