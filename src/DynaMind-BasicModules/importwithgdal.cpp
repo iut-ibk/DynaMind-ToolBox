@@ -40,15 +40,14 @@ ImportwithGDAL::ImportwithGDAL()
     this->tol = 0.01;
     this->addParameter("Tolerance", DM::DOUBLE, &this->tol);
     devider = 100;
+    this->append = false;
+    this->addParameter("AppendToExisting", DM::BOOL, &this->append);
 }
 
 DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double z) {
     //CreateKey
     DM::Node n_tmp(x,y,z);
-
-    int ix = (int) x / devider;
-    int iy = (int) y / devider;
-    QString key = QString::number(ix) + "|" +  QString::number(iy);
+    QString key = this->createHash(x,y);
     std::vector<DM::Node* > * nodes = nodeList[key];
     if (!nodes) {
         nodes = new std::vector<DM::Node* >;
@@ -121,14 +120,44 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
         for (int i = 0; i < npoints; i++) {
             ring->getPoint(i, poPoint);
             n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
-            nlist.push_back(n);
+            if (find(nlist.begin(), nlist.end(), n) == nlist.end())
+                nlist.push_back(n);
 
         }
+        if (nlist.size() < 3)
+            return 0;
+        nlist.push_back(nlist[0]);
         delete poPoint;
         return sys->addFace(nlist, this->view);
     }
     return 0;
 
+}
+
+void ImportwithGDAL::initPointList(System *sys)
+{
+    std::map<std::string, Node*> nodes =  sys->getAllNodes();
+    for (std::map<std::string, Node*>::const_iterator it = nodes.begin();
+         it != nodes.end();
+         ++it) {
+        DM::Node * n = it->second;
+        QString key = this->createHash(n->getX(), n->getY());
+        std::vector<DM::Node* > * nodes = nodeList[key];
+        if (!nodes) {
+            nodes = new std::vector<DM::Node* >;
+            nodeList[key] = nodes;
+        }
+        nodes->push_back(n);
+    }
+}
+
+QString ImportwithGDAL::createHash(double x, double y)
+{
+    int ix = (int) x / devider;
+    int iy = (int) y / devider;
+    QString key = QString::number(ix) + "|" +  QString::number(iy);
+
+    return key;
 }
 
 void ImportwithGDAL::init() {
@@ -191,6 +220,9 @@ void ImportwithGDAL::init() {
         break;
     }
     std::vector<DM::View> data;
+    if (append) {
+        data.push_back( DM::View("dummy", SUBSYSTEM, READ));
+    }
     data.push_back(view);
 
     this->addData("Data", data);
@@ -203,6 +235,7 @@ void ImportwithGDAL::init() {
 void ImportwithGDAL::run() {
 
     DM::System * sys = this->getData("Data");
+    this->initPointList(sys);
     OGRRegisterAll();
 
     OGRDataSource       *poDS;
@@ -218,7 +251,6 @@ void ImportwithGDAL::run() {
 
     int layerCount = poDS->GetLayerCount();
     poLayer = poDS->GetLayer(0);
-    //poLayer = poDS->GetLayerByName( "point" );
 
     OGRFeature *poFeature;
 
@@ -233,7 +265,7 @@ void ImportwithGDAL::run() {
         if (view.getType() == DM::FACE)
             cmp = this->loadFace(sys, poFeature);
         if (cmp)
-        this->appendAttributes(cmp, poFDefn, poFeature);
+            this->appendAttributes(cmp, poFDefn, poFeature);
         OGRFeature::DestroyFeature( poFeature );
     }
 

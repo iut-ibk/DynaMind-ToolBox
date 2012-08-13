@@ -42,12 +42,15 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
         std::string FileName;
     std::string ViewName;
     double tol;
+    bool append;
     DM::View view;
     QHash<QString, std::vector<DM::Node* > *> nodeList;
     DM::Node * addNode(DM::System * sys, double x, double y, double z);
     void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
     DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
     DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
+    void initPointList(DM::System * sys);
+    QString createHash(double x, double y);
     double devider;
 public:
     void run();
