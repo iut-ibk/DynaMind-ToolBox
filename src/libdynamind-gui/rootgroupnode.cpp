@@ -265,9 +265,7 @@ void RootGroupNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 
 void  RootGroupNode::setGroupZValue() {
-    DM::Logger(DM::Debug) << "Set Z Level";
     if (this->parentGroup != 0) {
-        DM::Logger(DM::Debug) << "ParentGroup Z Level" << this->parentGroup->zValue();
         if (this->parentGroup->zValue()+1 != this->zValue())
             this->setZValue(this->parentGroup->zValue()+1);
     }
