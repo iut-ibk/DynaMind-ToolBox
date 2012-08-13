@@ -11,6 +11,7 @@ find_path(QGLVIEWER_INCLUDE_DIR
           NAMES QGLViewer/qglviewer.h
           PATHS /usr/include
                 /usr/local/include
+		C:/winlibs/QGLViewer
                 ENV QGLVIEWERROOT 
          )
 
@@ -18,6 +19,7 @@ find_library(QGLVIEWER_LIBRARY_RELEASE
              NAMES qglviewer-qt4 QGLViewer QGLViewer2
              PATHS /usr/lib
                    /usr/local/lib
+		   C:/winlibs/QGLViewer
                    ENV QGLVIEWERROOT
                    ENV LD_LIBRARY_PATH
                    ENV LIBRARY_PATH
@@ -28,6 +30,7 @@ find_library(QGLVIEWER_LIBRARY_DEBUG
              NAMES dqglviewer-qt4 dQGLViewer dQGLViewer2
              PATHS /usr/lib
                    /usr/local/lib
+		   C:/winlibs/QGLViewer
                    ENV QGLVIEWERROOT
                    ENV LD_LIBRARY_PATH
                    ENV LIBRARY_PATH
