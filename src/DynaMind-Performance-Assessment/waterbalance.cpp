@@ -51,6 +51,39 @@ WaterBalance::WaterBalance()
 {   
     this->cd3logfile = "";
     this->addParameter("CD3 log file", DM::FILENAME, &this->cd3logfile);
+
+    std::vector<DM::View> views;
+
+    //Define Parameter for Sewer network
+    //this->sewernetwork = DM::View("CONDUIT", DM::EDGE, DM::READ);
+    //views.push_back(this->sewernetwork);
+
+    //Define Parameter for potable water network    
+    this->tank = DM::View("TANK", DM::NODE, DM::READ);
+    this->tank.addAttribute("Volume");
+    views.push_back(this->tank);
+    this->tank3rd = DM::View("3RDTANK", DM::NODE, DM::READ);
+    this->tank3rd.addAttribute("Volume");
+    views.push_back(this->tank3rd);
+    views.push_back(DM::View("PIPE",DM::EDGE,DM::READ));
+    views.push_back(DM::View("3RDPIPE",DM::EDGE,DM::READ));
+    views.push_back(DM::View("DEMAND_NODE",DM::NODE,DM::READ));
+
+    //Define Parameter for non potable water network
+    //this->nonpotablenetork = DM::View("3RDPIPE", DM::EDGE, DM::READ);
+    //views.push_back(this->nonpotablenetork);
+
+    //Rater data
+    this->rdata = DM::View("CATCHMENT", DM::FACE, DM::READ);
+    this->rdata.getAttribute("CD3-TYPE");
+    this->rdata.getAttribute("RAINFILE");
+    this->rdata.getAttribute("POPULATION");
+    views.push_back(this->rdata);
+
+
+
+
+    this->addData("City", views);
 }
 
 void WaterBalance::run()

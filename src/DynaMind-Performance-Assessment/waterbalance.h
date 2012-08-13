@@ -37,6 +37,11 @@ class WaterBalance : public DM::Module
 private:
     std::string cd3logfile;
 
+    DM::View tank;
+    DM::View tank3rd;
+
+    DM::View rdata;
+
 public:
     WaterBalance();
     void run();
