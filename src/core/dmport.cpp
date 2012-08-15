@@ -35,7 +35,6 @@ namespace DM {
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
 
-        srand((unsigned)time(0));
         this->uuid = QUuid::createUuid().toString().toStdString();
         this->module = module;
         this->PortType = PortType;
