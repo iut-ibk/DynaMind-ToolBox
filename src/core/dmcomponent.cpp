@@ -81,8 +81,7 @@ Component::Component(const Component& c)
 
     for ( it=ownedchilds.begin() ; it != ownedchilds.end(); it++ )
     {
-        //has to be redone!!!
-        //ownedchilds[(*it).first]=(*it).second->clone();
+
         childsview[(*it).first]=ownedchilds[(*it).first];
     }
     ownedchilds.clear();
@@ -147,6 +146,10 @@ bool Component::changeAttribute(Attribute newattribute)
 
     if(attributesview.find(newattribute.getName())==attributesview.end()) {
         return this->addAttribute(newattribute);
+    }
+    if(ownedattributes.find(newattribute.getName())==ownedattributes.end()) {
+        ownedattributes[newattribute.getName()] = new Attribute(*(attributesview[newattribute.getName()]));
+        attributesview[newattribute.getName()] = ownedattributes[newattribute.getName()];
     }
     Attribute * attr = attributesview[newattribute.getName()];
     Attribute::AttributeType type = attr->getType();
