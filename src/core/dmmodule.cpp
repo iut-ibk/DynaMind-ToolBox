@@ -78,8 +78,7 @@ void Module::resetParameter() {
 
 
 }
-Module::Module() {
-    srand((unsigned)time(0));
+Module::Module() {    
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->group = 0;
     PythonModule = false;

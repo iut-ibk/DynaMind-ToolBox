@@ -181,6 +181,7 @@ bool Simulation::addModulesFromSettings() {
 }
 
 Simulation::Simulation() {
+    srand((unsigned)time(NULL));
     this->setTerminationEnabled(true);
     data = new SimulationPrivate();
     //data->simObserver;
