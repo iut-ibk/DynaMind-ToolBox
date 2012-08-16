@@ -140,6 +140,9 @@ bool Module::checkPreviousModuleUnchanged() {
 
         if (sys == 0)
             return false;
+        if (!sys->getLastModule()) {
+            return false;
+        }
         if (!sys->getLastModule()->isExecuted()) {
             return false;
         }
@@ -239,7 +242,7 @@ void Module::updateParameter() {
         if (DataValidation::isVectorOfViewRead(views)) {
             DM::System * sys_old = this->data_vals[s];
             if (sys_old != 0) {
-                this->data_vals[s] = sys_old->createSuccessor();
+                this->data_vals[s] = sys_old;//sys_old->createSuccessor();
                 foreach (DM::View v, views)
                     this->data_vals[s]->addView(v);
             }
@@ -599,16 +602,22 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     int LinkId = -1;
     int BackId = -1;
     int counter = 0;
+    int CounterBackLink = 0;
 
     //Identify Positions in the Link Vector
     foreach (ModuleLink * l, p->getLinks()) {
         if (!l->isBackLink()) {
             LinkId = counter;
+
         } else {
             BackId = counter;
+            CounterBackLink++;
         }
         counter++;
     }
+
+    int standardLinks = counter-CounterBackLink;
+
     if (LinkId < 0)
         return 0;
     ModuleLink *l = p->getLinks()[LinkId];
@@ -619,9 +628,21 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     }
 
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
-    return m->getSystemState(l->getDataNameFromOutPort());
 
+    DM::System * returnSys =  m->getSystemState(l->getDataNameFromOutPort());
+    if (!returnSys)
+        return 0;
+    if (m->getGroup() != this->getGroup()) {
+         Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
+         return returnSys->createSuccessor();
+    }
 
+    if (standardLinks > 1) {
+         Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
+         return returnSys->createSuccessor();
+    }
+
+    return returnSys;
 }
 
 
@@ -693,7 +714,6 @@ void Module::copyParameterFromOtherModule(Module * m) {
                 this->setParameterValue(it->first, m->getParameterAsString(it->first));
             }
         }
-
         //Set Group
         this->setGroup(m->getGroup());
         this->name = m->getName();
