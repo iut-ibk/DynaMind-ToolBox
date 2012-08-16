@@ -1,0 +1,557 @@
+<DynaMind>
+	<Info Version="0.3/">
+<DynaMindCore>
+	<Nodes>
+		<RootNode>
+			<UUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+		</RootNode>
+		<Node>
+			<ClassName value="AttributeCalculator"/>
+			<UUID value="{044abf8f-95e2-4e97-bc49-30af6cd8e90c}"/>
+			<Name value="Year"/>
+			<GroupUUID value="{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+			<parameter name="NameOfBaseView">
+				<![CDATA[SUPERBLOCK]]>
+			</parameter>
+			<parameter name="equation">
+				<![CDATA[y+1]]>
+			</parameter>
+			<parameter name="nameOfNewAttribute">
+				<![CDATA[Year]]>
+			</parameter>
+			<parameter name="variablesMap">
+				<![CDATA[SUPERBLOCK.Year*|*y*||*]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="AttributeCalculator"/>
+			<UUID value="{1d563163-f298-49b4-8f44-da8f48a22327}"/>
+			<Name value="Renew"/>
+			<GroupUUID value="{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+			<parameter name="NameOfBaseView">
+				<![CDATA[PARCEL]]>
+			</parameter>
+			<parameter name="equation">
+				<![CDATA[if(r_rexisting<1981, if(rand(100) < (rate+1), y,r_rexisting),r_rexisting)]]>
+			</parameter>
+			<parameter name="nameOfNewAttribute">
+				<![CDATA[Renew]]>
+			</parameter>
+			<parameter name="variablesMap">
+				<![CDATA[PARCEL.CITYBLOCK.SUPERBLOCK.RenewRate*|*rate*||*PARCEL.CITYBLOCK.SUPERBLOCK.Year*|*y*||*PARCEL.Renew*|*r_rexisting*||*]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="AttributeCalculator"/>
+			<UUID value="{2f57bc08-225d-4d57-9fcb-860b73db846d}"/>
+			<Name value="RenewRate"/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="NameOfBaseView">
+				<![CDATA[SUPERBLOCK]]>
+			</parameter>
+			<parameter name="equation">
+				<![CDATA[10]]>
+			</parameter>
+			<parameter name="nameOfNewAttribute">
+				<![CDATA[RenewRate]]>
+			</parameter>
+			<parameter name="variablesMap">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="SpatialLinking"/>
+			<UUID value="{3025c576-14b5-4a6c-a711-339e40542ac6}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="Base">
+				<![CDATA[CITYBLOCK]]>
+			</parameter>
+			<parameter name="Link">
+				<![CDATA[SUPERBLOCK]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ExportToShapeFile"/>
+			<UUID value="{42834d9b-7088-4c2a-948a-9629d43717a3}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="CoordinateSystem">
+				<![CDATA[+proj=utm +zone=55 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0]]>
+			</parameter>
+			<parameter name="Faces">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="FileName">
+				<![CDATA[/tmp/block]]>
+			</parameter>
+			<parameter name="Lines">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="Name">
+				<![CDATA[SUPERBLOCK]]>
+			</parameter>
+			<parameter name="Points">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="offsetX">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="offsetY">
+				<![CDATA[4.320189848244228e-316]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ExportToShapeFile"/>
+			<UUID value="{5de21943-e17f-4f00-9269-02d5f13a4146}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="CoordinateSystem">
+				<![CDATA[+proj=utm +zone=55 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0]]>
+			</parameter>
+			<parameter name="Faces">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="FileName">
+				<![CDATA[/tmp/parcel]]>
+			</parameter>
+			<parameter name="Lines">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="Name">
+				<![CDATA[PARCEL]]>
+			</parameter>
+			<parameter name="Points">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="offsetX">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="offsetY">
+				<![CDATA[5.246305229555694e-317]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="AttributeCalculator"/>
+			<UUID value="{700bcd3a-5a25-4d55-9773-c3bac079818d}"/>
+			<Name value="Year"/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="NameOfBaseView">
+				<![CDATA[SUPERBLOCK]]>
+			</parameter>
+			<parameter name="equation">
+				<![CDATA[1980]]>
+			</parameter>
+			<parameter name="nameOfNewAttribute">
+				<![CDATA[Year]]>
+			</parameter>
+			<parameter name="variablesMap">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="CalculateCentroid"/>
+			<UUID value="{9cddbd44-4aa1-4f70-9cbc-fc70963c468d}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="NameOfExistingView">
+				<![CDATA[PARCEL]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="CityBlock"/>
+			<UUID value="{a37ee0ce-6d5c-4a50-b48c-60e66aec6e0f}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="Height">
+				<![CDATA[100]]>
+			</parameter>
+			<parameter name="Width">
+				<![CDATA[100]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="CalculateCentroid"/>
+			<UUID value="{aed39d47-1425-4899-a07f-5b734d1f7ca0}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="NameOfExistingView">
+				<![CDATA[CITYBLOCK]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="SpatialLinking"/>
+			<UUID value="{b6eadc7b-9136-4583-bcb3-9c78b7280c41}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="Base">
+				<![CDATA[PARCEL]]>
+			</parameter>
+			<parameter name="Link">
+				<![CDATA[CITYBLOCK]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="Parcels"/>
+			<UUID value="{bb953a02-1edc-4f01-8fc2-e94938e88a44}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+		</Node>
+		<Node>
+			<ClassName value="AttributeCalculator"/>
+			<UUID value="{bcdaa321-e89e-4424-bd6e-fc7f75f3b4a7}"/>
+			<Name value="Renew"/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="NameOfBaseView">
+				<![CDATA[PARCEL]]>
+			</parameter>
+			<parameter name="equation">
+				<![CDATA[1980]]>
+			</parameter>
+			<parameter name="nameOfNewAttribute">
+				<![CDATA[Renew]]>
+			</parameter>
+			<parameter name="variablesMap">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="GroupTest"/>
+			<UUID value="{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="Runs">
+				<![CDATA[10]]>
+			</parameter>
+			<parameter name="nameOfInViews">
+				<![CDATA[1*|*]]>
+			</parameter>
+			<parameter name="nameOfOutViews">
+				<![CDATA[2*|*]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="SuperBlock"/>
+			<UUID value="{ff20db52-b064-46a4-8cfd-f029915f1c20}"/>
+			<Name value=""/>
+			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>
+			<parameter name="Height">
+				<![CDATA[1000]]>
+			</parameter>
+			<parameter name="Width">
+				<![CDATA[1000]]>
+			</parameter>
+			<parameter name="offsetx">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="offsety">
+				<![CDATA[0]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{1d563163-f298-49b4-8f44-da8f48a22327}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{044abf8f-95e2-4e97-bc49-30af6cd8e90c}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+				<PortName value = "2"/>
+				<PortType value = "1"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{1d563163-f298-49b4-8f44-da8f48a22327}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "1"/>
+			<InPort>
+				<UUID value = "{044abf8f-95e2-4e97-bc49-30af6cd8e90c}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{1d563163-f298-49b4-8f44-da8f48a22327}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{bcdaa321-e89e-4424-bd6e-fc7f75f3b4a7}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{2f57bc08-225d-4d57-9fcb-860b73db846d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{b6eadc7b-9136-4583-bcb3-9c78b7280c41}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{3025c576-14b5-4a6c-a711-339e40542ac6}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{2f57bc08-225d-4d57-9fcb-860b73db846d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{700bcd3a-5a25-4d55-9773-c3bac079818d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{3025c576-14b5-4a6c-a711-339e40542ac6}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{9cddbd44-4aa1-4f70-9cbc-fc70963c468d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{bb953a02-1edc-4f01-8fc2-e94938e88a44}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{a37ee0ce-6d5c-4a50-b48c-60e66aec6e0f}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{9cddbd44-4aa1-4f70-9cbc-fc70963c468d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{aed39d47-1425-4899-a07f-5b734d1f7ca0}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{700bcd3a-5a25-4d55-9773-c3bac079818d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{b6eadc7b-9136-4583-bcb3-9c78b7280c41}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{aed39d47-1425-4899-a07f-5b734d1f7ca0}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{bb953a02-1edc-4f01-8fc2-e94938e88a44}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+				<PortName value = "1"/>
+				<PortType value = "1"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{bcdaa321-e89e-4424-bd6e-fc7f75f3b4a7}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{044abf8f-95e2-4e97-bc49-30af6cd8e90c}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+				<PortName value = "1"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{42834d9b-7088-4c2a-948a-9629d43717a3}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+				<PortName value = "2"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{5de21943-e17f-4f00-9269-02d5f13a4146}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+				<PortName value = "2"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{a37ee0ce-6d5c-4a50-b48c-60e66aec6e0f}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{ff20db52-b064-46a4-8cfd-f029915f1c20}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="{3025c576-14b5-4a6c-a711-339e40542ac6}"/>
+			<GUI_PosX value="324.328"/>
+			<GUI_PosY value="477.156"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{bcdaa321-e89e-4424-bd6e-fc7f75f3b4a7}"/>
+			<GUI_PosX value="740.5"/>
+			<GUI_PosY value="275.404"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
+			<GUI_PosX value="932.248"/>
+			<GUI_PosY value="148.812"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{2f57bc08-225d-4d57-9fcb-860b73db846d}"/>
+			<GUI_PosX value="560"/>
+			<GUI_PosY value="595"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{9cddbd44-4aa1-4f70-9cbc-fc70963c468d}"/>
+			<GUI_PosX value="60.2344"/>
+			<GUI_PosY value="529.844"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{aed39d47-1425-4899-a07f-5b734d1f7ca0}"/>
+			<GUI_PosX value="54.6094"/>
+			<GUI_PosY value="493.984"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{42834d9b-7088-4c2a-948a-9629d43717a3}"/>
+			<GUI_PosX value="1246"/>
+			<GUI_PosY value="22"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{5de21943-e17f-4f00-9269-02d5f13a4146}"/>
+			<GUI_PosX value="1145"/>
+			<GUI_PosY value="479"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{a37ee0ce-6d5c-4a50-b48c-60e66aec6e0f}"/>
+			<GUI_PosX value="82"/>
+			<GUI_PosY value="218"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{b6eadc7b-9136-4583-bcb3-9c78b7280c41}"/>
+			<GUI_PosX value="319.625"/>
+			<GUI_PosY value="508.969"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{bb953a02-1edc-4f01-8fc2-e94938e88a44}"/>
+			<GUI_PosX value="61.2188"/>
+			<GUI_PosY value="361.703"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{700bcd3a-5a25-4d55-9773-c3bac079818d}"/>
+			<GUI_PosX value="569.031"/>
+			<GUI_PosY value="480.437"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{ff20db52-b064-46a4-8cfd-f029915f1c20}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{1d563163-f298-49b4-8f44-da8f48a22327}"/>
+			<GUI_PosX value="302"/>
+			<GUI_PosY value="197"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{044abf8f-95e2-4e97-bc49-30af6cd8e90c}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>
