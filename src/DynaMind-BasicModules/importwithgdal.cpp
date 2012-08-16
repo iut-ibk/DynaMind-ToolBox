@@ -26,6 +26,7 @@
 
 #include "importwithgdal.h"
 #include "tbvectordata.h"
+#include <algorithm>
 
 #include <QHash>
 
