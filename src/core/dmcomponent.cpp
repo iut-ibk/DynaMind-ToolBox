@@ -127,7 +127,14 @@ bool Component::addAttribute(std::string name, double val) {
     }
     Attribute  attr = Attribute(name, val);
     return this->addAttribute(attr);
+}
 
+bool Component::addAttribute(std::string name, std::string val) {
+    if(attributesview.find(name)!=attributesview.end()) {
+        return this->changeAttribute(name, val);
+    }
+    Attribute  attr = Attribute(name, val);
+    return this->addAttribute(attr);
 }
 
 bool Component::addAttribute(Attribute newattribute)
@@ -166,6 +173,10 @@ bool Component::changeAttribute(std::string s, double val)
     return this->changeAttribute(Attribute(s, val));
 }
 
+bool Component::changeAttribute(std::string s, std::string val)
+{
+    return this->changeAttribute(Attribute(s, val));
+}
 
 bool Component::removeAttribute(std::string name)
 {

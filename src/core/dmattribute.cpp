@@ -62,6 +62,14 @@ Attribute::Attribute(std::string name, double val)
     this->type = Attribute::DOUBLE;
 
 }
+Attribute::Attribute(std::string name, std::string val)
+{
+    this->stringvalue = val;
+    this->name=name;
+
+    this->type = Attribute::STRING;
+
+}
 
 Attribute::~Attribute()
 {
