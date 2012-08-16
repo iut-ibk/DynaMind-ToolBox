@@ -46,7 +46,6 @@ void RainDance::run() {
     sys_in = this->getData("Data");
 
     QDateTime tstart = QDateTime::currentDateTime();
-    srand ( time(NULL) );
     std::vector<std::string> uuids = sys_in->getUUIDsOfComponentsInView(v_rain);
     foreach (std::string  uuid, uuids) {
         Component * cmp = sys_in->getComponent(uuid);

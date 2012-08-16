@@ -80,7 +80,10 @@ void AttributeCalculator::init() {
         }
 
         DM::View toAppend =  viewsmap[viewname];
-        toAppend.getAttribute(attributename);
+        if (attributename.compare(nameOfNewAttribute) != 0)
+            toAppend.getAttribute(attributename);
+        else
+            toAppend.modifyAttribute(attributename);
         viewsmap[viewname] = toAppend;
 
     }
@@ -91,6 +94,8 @@ void AttributeCalculator::init() {
         data.push_back(it->second);
     }
     this->addData("Data", data);
+    int i = 0;
+    i++;
 }
 
 void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_container, Component *currentcmp,std::string name ) {
@@ -116,6 +121,7 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
 }
 
 void AttributeCalculator::run() {
+    std::cout << "Start "  <<  equation << std::endl;
 
     this->sys_in = this->getData("Data");
     std::map<std::string, double * > doubleVaraibles;
@@ -144,7 +150,8 @@ void AttributeCalculator::run() {
 
             //Can be later replaced by a function
             double val = 0;
-            getLinkedAttriubte(varaible_container, cmp, it->first);
+            std::string varname = it->first;
+            getLinkedAttriubte(varaible_container, cmp, varname);
 
             foreach (double v, *varaible_container) {
                 val+=v;
@@ -153,9 +160,19 @@ void AttributeCalculator::run() {
             double * var = doubleVaraibles[it->second];
             (*var) = val;
 
+            //std::cout << "Var: " << it->second << " " << val << std::endl;
+
             delete varaible_container;
         }
-        cmp->addAttribute(nameOfNewAttribute, p->Eval());
+        try {
+            double d = p->Eval();
+            cmp->addAttribute(nameOfNewAttribute, d);
+            //std::cout << "Ress " << d << std::endl;
+        }
+        catch (mu::Parser::exception_type &e) {
+            Logger(Error) << e.GetMsg();
+        }
+        int i = 0;
     }
 
     foreach (std::string variable, varaibleNames) {
@@ -163,6 +180,9 @@ void AttributeCalculator::run() {
     }
     doubleVaraibles.clear();
     delete p;
+
+
+    std::cout << "Start "  <<  equation << std::endl;
 
 }
 

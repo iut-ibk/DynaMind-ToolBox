@@ -50,14 +50,6 @@ inline void addCorineConstants(mu::Parser * p){
     mu::ForestsSemiNatural= DM::ForestsSemiNatural;
 
 
-
-    /*  p->DefineVar("ContUrbanFabric", new double( vibens::DynaMind::ContUrbanFabric ));
-        p->DefineVar("DisContUrbanFabric", new double(vibens::DynaMind::DisContUrbanFabric ));
-        p->DefineVar("RoadRailNetwork", new double(vibens::DynaMind::RoadRailNetwork ));
-        p->DefineVar("AgriculturalAreas", new double(vibens::DynaMind::AgriculturalAreas ));
-        p->DefineVar("ForestsSemiNatural", new double(vibens::DynaMind::ForestsSemiNatural ));
-        p->DefineVar("WaterBodies",new double( vibens::DynaMind::WaterBodies ));*/
-
     p->DefineVar("ContUrbanFabric", & mu::ContUrbanFabric);
     p->DefineVar("DisContUrbanFabric",& mu::DisContUrbanFabric);
     p->DefineVar("RoadRailNetwork", & mu::RoadRailNetwork);

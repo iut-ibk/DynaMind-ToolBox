@@ -113,7 +113,6 @@ void Marker::initRExpression () {
             std::vector<std::string> tokens;
             while (ss >> buf)
                 tokens.push_back(buf);
-            //RRasterData.push_back(& this->getRasterData(tokens[0]) );
             RRasterVariables.push_back(new double);
             p->DefineVar(*it, RRasterVariables[Rcounter++] );
 
