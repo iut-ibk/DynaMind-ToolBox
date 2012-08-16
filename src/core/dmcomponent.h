@@ -93,11 +93,16 @@ public:
     /** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, double val);
 
+    /** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
+    bool addAttribute(std::string, std::string);
     /** @brief Change existing Attribute. If attribute doesn't exist a new Attribute is added to the Component*/
     bool changeAttribute(Attribute newattribute);
 
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
     bool changeAttribute(std::string, double val);
+
+    /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
+    bool changeAttribute(std::string s, std::string val);
 
     /** @brief Remove Attribute, returns false if no Attribute with this name exists */
     bool removeAttribute(std::string name);

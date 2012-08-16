@@ -85,6 +85,8 @@ public:
     Attribute(std::string name);
     /** @brief creates a new double attribute**/
     Attribute(std::string name, double val);
+    /** @brief creates a new string attribute**/
+    Attribute(std::string name, std::string val);
     /** @brief creates a new attribute**/
     Attribute();
     /** @brief set double value**/
