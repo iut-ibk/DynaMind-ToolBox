@@ -91,7 +91,7 @@ Component * Component::updateChild(Component * c) {
     if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
         return c;
     Component * c_new = c->clone();
-    ownedchilds[c->getUUID()]=c_new;
+    changeChild(c_new);
 
     return c_new;
 }
@@ -133,7 +133,7 @@ bool Component::addAttribute(std::string name, double val) {
 bool Component::addAttribute(Attribute newattribute)
 {
     if(attributesview.find(newattribute.getName())!=attributesview.end())
-        return false;
+        return this->changeAttribute(newattribute);
     Attribute * a = new Attribute(newattribute);
     attributesview[newattribute.getName()] = a;
     ownedattributes[newattribute.getName()] = a;

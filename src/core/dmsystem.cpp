@@ -40,6 +40,7 @@ using namespace DM;
 
 System::System() : Component()
 {
+    this->lastModule = 0;
 
 }
 
@@ -92,6 +93,7 @@ System::System(const System& s) : Component(s)
     viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
     views = s.views;
+    lastModule = s.lastModule;
 }
 
 System::~System()
@@ -291,7 +293,7 @@ Component * System::getComponent(std::string uuid) {
     if(rasterdata.find(uuid)!=rasterdata.end())
         return rasterdata[uuid];
     if(components.find(uuid)!=components.end()) {
-         Component * c = components[uuid];
+        Component * c = components[uuid];
         if (c->getCurrentSystem() != this) {
             c = static_cast<Component*>(updateChild(components[uuid]));
             components[uuid] = c;
@@ -528,8 +530,6 @@ bool System::addView(View view)
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
         if (view.getAttributeType(a) == Attribute::LINK) {
-            //UUID in Dummy Object not defined
-            //TODO maybe we should do it?
             attr.setLink(view.getLinkName(a), "");
         }
         dummy->addAttribute(attr);
