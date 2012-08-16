@@ -118,6 +118,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
         this->views[view.getName()][c->getUUID()] = c;
         c->setView(view.getName());
     }
+    this->updateViews(c);
 
     return c;
 }
@@ -317,6 +318,11 @@ bool System::removeFace(std::string name)
 
     faces.erase(name);
     return true;
+}
+
+std::map<std::string, Component*>  System::getAllComponents()
+{
+    return this->components;
 }
 
 bool System::removeComponent(std::string name)

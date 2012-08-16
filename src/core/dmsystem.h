@@ -131,6 +131,8 @@ public:
     /** @brief Removes a Face. Returns false if the face doesn't exist */
     bool removeFace(std::string uuid);
     /** @brief Returns a map of nodes stored in the system */
+    std::map<std::string, Component*> getAllComponents();
+    /** @brief Returns a map of nodes stored in the system */
     std::map<std::string, Node*> getAllNodes();
     /** @brief Returns a map of edges stored in the system */
     std::map<std::string, Edge*> getAllEdges();
