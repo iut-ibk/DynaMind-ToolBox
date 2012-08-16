@@ -7,7 +7,10 @@
 #include "dmattribute.h"
 #include "dmsystemiterators.h"
 
-#include <GL/gl.h>
+#ifdef _WIN32
+#include <windows.h>
+typedef GLvoid (__stdcall *_GLUfuncptr)(GLvoid);
+#endif
 #include <GL/glu.h>
 
 #include <QImage>
