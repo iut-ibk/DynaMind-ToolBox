@@ -29,26 +29,31 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <vector>
+
 #include "dmsimulation.h"
 #include "dmsimulationreader.h"
 #include "dmmodule.h"
 #include "dmmoduleregistry.h"
 #include "dmmoduleparameterreader.h"
-#include "vector"
 #include "dmmoduleregistry.h"
-#include <QThread>
 #include "dmsimulationobserver.h"
 #include <dmmodule.h>
 #include <dmmodulelink.h>
 #include <dmport.h>
 #include <dmmoduleregistry.h>
-#include <QSettings>
-#include <QDir>
 #include <dmgroup.h>
 #include <dmsimulationwriter.h>
 #include <dmlogger.h>
 #include <dmporttuple.h>
 #include <dmpythonenv.h>
+
+#include <QSettings>
+#include <QDir>
+#include <QThread>
 
 namespace DM {
 struct SimulationPrivate {
