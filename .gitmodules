@@ -25,3 +25,9 @@
 [submodule "DynaMind-Performance-Assessment"]
 	path = DynaMind-Performance-Assessment
 	url = git@github.com:iut-ibk/DynaMind-Performance-Assessment.git
+[submodule "DynaMind-VIBeModules"]
+	path = DynaMind-VIBeModules
+	url = git@github.com:iut-ibk/DynaMind-VIBeModules.git
+[submodule "DynaMind-DAnCE4Water"]
+	path = DynaMind-DAnCE4Water
+	url = git@github.com:christianurich/DynaMind-DAnCE4Water.git
