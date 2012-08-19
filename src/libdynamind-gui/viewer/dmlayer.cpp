@@ -88,7 +88,7 @@ struct TesselatedFaceDrawer {
           vmd(vmd), name_start(name_start), 
           attribute_vector_name(attribute_vector_name) {
         
-        this->height_scale = 1.0/vmd.attr_max*vmd.radius()*height_scale;
+        this->height_scale = height_scale == 0.0 ? 1.0/vmd.attr_max*vmd.radius()*height_scale : 0.0;
         this->attr_span = vmd.attr_max - vmd.attr_min;
     }
     
