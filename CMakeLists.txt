@@ -6,7 +6,7 @@ OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim DynaMind-Performance-Assessment)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim DynaMind-Performance-Assessment DynaMind-VIBeModules DynaMind-DAnCE4Water)
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
@@ -41,7 +41,6 @@ SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
 endforeach(${tool}) 
-
 
 add_subdirectory(DynaMind-ComplexUnitTests)
 add_subdirectory(Data)
