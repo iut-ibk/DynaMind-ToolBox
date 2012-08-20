@@ -38,7 +38,7 @@ struct SimpleDrawer {
 
 void error_callback(GLenum e) {
     const char *error_string = (const char *) gluErrorString(e);
-    int x = 100;
+    std::cout << "error while tesselating: " << error_string << std::endl;
 }
 
 void color_callback(GLdouble *d, void *data) {
@@ -73,23 +73,23 @@ void combine_callback(GLdouble coords[3],
 }
 
 struct TesselatedFaceDrawer {
-    std::string attr;
-    double height_scale, attr_span;
-    GLuint texture, name_start;
-    const ViewMetaData &vmd;
-    int attribute_vector_name;
-    
+    double height_scale;
+    double attr_span;
+    const Layer &l;
     std::vector<GLdouble *> vertices;
+    int name_start;
     
-    TesselatedFaceDrawer(const ViewMetaData &vmd, GLuint name_start, 
-                         std::string attr = "", double height_scale = -1, 
-                         GLuint texture = -1, int attribute_vector_name = 0)
-        : attr(attr), texture(texture), 
-          vmd(vmd), name_start(name_start), 
-          attribute_vector_name(attribute_vector_name) {
+    TesselatedFaceDrawer(const Layer &l)
+        : l(l), height_scale(0.0), name_start(l.getNameStart()) {
+        if (l.getAttribute() == "") {
+            return;
+        }
+        if (l.getHeightInterpretation() > 0.0) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            this->height_scale = 1.0/vmd.attr_max*vmd.radius() * l.getHeightInterpretation();
+            this->attr_span = vmd.attr_max - vmd.attr_min;
+        }
         
-        this->height_scale = height_scale == 0.0 ? 1.0/vmd.attr_max*vmd.radius()*height_scale : 0.0;
-        this->attr_span = vmd.attr_max - vmd.attr_min;
     }
     
     void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Node *n, iterator_pos pos) {
@@ -106,21 +106,22 @@ struct TesselatedFaceDrawer {
         d[1] = n->getY();
         d[2] = 0.0;
         if (height_scale > 0) {
-            Attribute *a = f->getAttribute(attr);
+            Attribute *a = f->getAttribute(l.getAttribute());
             if (a->getType() == Attribute::DOUBLE) {
-                d[2] = f->getAttribute(attr)->getDouble() * height_scale;
+                d[2] = f->getAttribute(l.getAttribute())->getDouble() * height_scale;
             } else {
-                double attr_value = a->getDoubleVector()[attribute_vector_name];
+                double attr_value = a->getDoubleVector()[l.getAttributeVectorName()];
                 d[2] = attr_value * height_scale;
             }
         }
         
-        if (glIsTexture(texture)) {
-            Attribute *a = f->getAttribute(attr);
+        if (glIsTexture(l.getColorInterpretation())) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            Attribute *a = f->getAttribute(l.getAttribute());
             if (a->getType() == Attribute::DOUBLE) {
                 d[3] = (a->getDouble() - vmd.attr_min) / attr_span;
             } else {
-                d[3] = (a->getDoubleVector()[attribute_vector_name] - vmd.attr_min) / attr_span;
+                d[3] = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
             }
             d[4] = 0.5;
         } else {
@@ -130,16 +131,16 @@ struct TesselatedFaceDrawer {
     }
     
     void render() {
-        if (glIsTexture(texture)) {
+        if (glIsTexture(l.getColorInterpretation())) {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, texture);
+            glBindTexture(GL_TEXTURE_2D, l.getColorInterpretation());
         }
         assert(glGetError() == GL_NO_ERROR);
         GLUtesselator *tess = gluNewTess();
         gluTessCallback(tess, GLU_TESS_ERROR, (_GLUfuncptr) error_callback);
         gluTessCallback(tess, GLU_TESS_BEGIN, (_GLUfuncptr) glBegin);
         gluTessCallback(tess, GLU_TESS_COMBINE_DATA, (_GLUfuncptr) combine_callback);
-        if (glIsTexture(texture)) {
+        if (glIsTexture(l.getColorInterpretation())) {
             gluTessCallback(tess, GLU_TESS_VERTEX, (_GLUfuncptr) texture_callback);
         } else {
             gluTessCallback(tess, GLU_TESS_VERTEX, (_GLUfuncptr) color_callback);
@@ -148,7 +149,9 @@ struct TesselatedFaceDrawer {
         
         glPushName(name_start);
         
-        gluTessBeginPolygon(tess, &this->texture);
+        GLuint texture = l.getColorInterpretation();
+        
+        gluTessBeginPolygon(tess, &texture);
         gluTessBeginContour(tess);
         
         foreach(GLdouble *v, vertices) {
@@ -164,7 +167,7 @@ struct TesselatedFaceDrawer {
         assert(glGetError() == GL_NO_ERROR);
         
         foreach (GLdouble *v, vertices) {
-            delete v;
+            delete[] v;
         }
         
         vertices.clear();
@@ -177,15 +180,8 @@ struct TesselatedFaceDrawer {
 Layer::Layer(System *s, View v, const std::string &a) 
     : system(s), view(v), 
       attribute(a), vmd(a),
-      attribute_vector_name(0) {
-}
-
-void Layer::setColorInterpretation(GLuint texture) {
-    this->texture = texture;
-}
-
-void Layer::setHeightInterpretation(float percent) {
-    scale_height = percent;
+      attribute_vector_name(0), texture(-1),
+      scale_height(-1) {
 }
 
 void Layer::draw() {
@@ -197,7 +193,7 @@ void Layer::draw() {
         glNewList(lists[attribute_vector_name], GL_COMPILE);
         
         if (view.getType() == DM::FACE) {
-            TesselatedFaceDrawer drawer(vmd, name_start, attribute, scale_height, texture, attribute_vector_name);
+            TesselatedFaceDrawer drawer(*this);
             iterate_faces(system, view, drawer);
         }
         if (view.getType() == DM::EDGE) {

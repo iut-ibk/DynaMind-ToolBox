@@ -20,11 +20,24 @@ class Node;
 
 class Layer {
 public:
-    Layer(System *system, View v, const std::string &attribute = 0);
+    Layer(System *system, View v, const std::string &attribute = "");
     ~Layer();
     
-    void setColorInterpretation(GLuint texture);
-    void setHeightInterpretation(float percent);
+    void setColorInterpretation(GLuint texture) {
+        this->texture = texture;
+    }
+
+    GLuint getColorInterpretation() const {
+        return texture;
+    }
+    
+    void setHeightInterpretation(float percent) {
+        this->scale_height = percent;
+    }
+    
+    float getHeightInterpretation() const {
+        return scale_height;
+    }
     
     void systemChanged();
     
@@ -60,6 +73,14 @@ public:
     
     void setAttributeVectorName(int name) {
         attribute_vector_name = name;
+    }
+    
+    int getAttributeVectorName() const {
+        return attribute_vector_name;
+    }
+    
+    std::string getAttribute() const {
+        return attribute;
     }
     
 private:
