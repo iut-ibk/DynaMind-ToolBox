@@ -110,8 +110,10 @@ System::~System()
 Component * System::addComponent(Component* c, const DM::View & view)
 {
 
-    if(!addChild(c))
+    if(!addChild(c)) {
+        delete c;
         return 0;
+    }
     components[c->getUUID()]=c;
 
     if (!view.getName().empty()) {
@@ -126,8 +128,10 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
 Node * System::addNode(Node* node)
 {
-    if(!addChild(node))
+    if(!addChild(node)) {
+        delete node;
         return 0;
+    }
 
     nodes[node->getUUID()]=node;
     this->updateViews(node);
@@ -136,8 +140,10 @@ Node * System::addNode(Node* node)
 
 RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
-    if(!addChild(r))
+    if(!addChild(r)) {
+        delete r;
         return 0;
+    }
 
     rasterdata[r->getUUID()] = r;
 
@@ -172,11 +178,15 @@ Node * System::addNode(Node n,  const DM::View & view) {
 
 Edge * System::addEdge(Edge* edge)
 {
-    if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName()))
+    if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
+        delete edge;
         return 0;
+    }
 
-    if(!addChild(edge))
+    if(!addChild(edge)) {
+        delete edge;
         return 0;
+    }
 
     edges[edge->getUUID()]=edge;
     foreach (std::string v, edge->getInViews()) {
@@ -203,8 +213,10 @@ Edge * System::addEdge(Node * start, Node * end, const View &view)
 }
 
 Face * System::addFace(Face *f) {
-    if(!addChild(f))
+    if(!addChild(f)) {
+        delete f;
         return 0;
+    }
 
     faces[f->getUUID()]=f;
     this->updateViews(f);
@@ -404,8 +416,10 @@ bool System::removeComponentFromView(Component *comp, const View &view) {
 System * System::addSubSystem(System *newsystem,  const DM::View & view)
 {
     //TODO add View to subsystem
-    if(!addChild(newsystem))
+    if(!addChild(newsystem)) {
+        delete newsystem;
         return 0;
+    }
 
     subsystems[newsystem->getUUID()]=newsystem;
 
