@@ -35,6 +35,7 @@ DM_DECLARE_NODE_NAME(ImportwithGDAL, Modules)
 ImportwithGDAL::ImportwithGDAL()
 {
     this->FileName = "";
+
     this->addParameter("Filename", DM::FILENAME, &this->FileName);
     this->ViewName = "";
     this->addParameter("ViewName", DM::STRING, &this->ViewName);
@@ -43,6 +44,11 @@ ImportwithGDAL::ImportwithGDAL()
     devider = 100;
     this->append = false;
     this->addParameter("AppendToExisting", DM::BOOL, &this->append);
+    this->attributesToImport = std::map<std::string, std::string>();
+    this->addParameter("AttributesToImport", DM::STRING_MAP, &this->attributesToImport);
+    this->ImportAll = false;
+    this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
+
 }
 
 DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double z) {
@@ -70,10 +76,19 @@ void ImportwithGDAL::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, O
 
     int iField;
 
+
     for( iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
     {
         OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-        Attribute attr(poFieldDefn->GetNameRef());
+        bool exists = this->attributesToImport.find(poFieldDefn->GetNameRef()) != this->attributesToImport.end();
+        if (!ImportAll && !exists)
+            continue;
+        std::string attrName;
+        if (exists)
+            attrName = this->attributesToImport[poFieldDefn->GetNameRef()];
+        else
+            attrName = poFieldDefn->GetNameRef();
+        Attribute attr(attrName);
         if( poFieldDefn->GetType() == OFTInteger )
             attr.setDouble(poFeature->GetFieldAsInteger( iField ));
         else if( poFieldDefn->GetType() == OFTReal )
@@ -194,7 +209,15 @@ void ImportwithGDAL::init() {
         for( iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
         {
             OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-            view.addAttribute(poFieldDefn->GetNameRef());
+            bool exists = this->attributesToImport.find(poFieldDefn->GetNameRef()) != this->attributesToImport.end();
+            if (!ImportAll && !exists)
+                continue;
+            std::string attrName;
+            if (exists)
+                attrName = this->attributesToImport[poFieldDefn->GetNameRef()];
+            else
+                attrName = poFieldDefn->GetNameRef();
+            view.addAttribute(attrName);
         }
 
         OGRGeometry *poGeometry;

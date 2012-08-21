@@ -52,6 +52,9 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     void initPointList(DM::System * sys);
     QString createHash(double x, double y);
     double devider;
+    std::map<std::string, std::string> attributesToImport;
+    bool ImportAll;
+
 public:
     void run();
     void init();
