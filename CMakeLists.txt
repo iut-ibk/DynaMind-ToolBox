@@ -12,25 +12,24 @@ file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
 foreach (tool ${TOOLBOX})
-        if(EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
-	    message(STATUS "${tool} submodule already exists")
-
-	else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
-	    message(STATUS "preparing ${tool} submodule")
-	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
-                            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-	    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
-		            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout viewer-feature
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
+        message(STATUS "${tool} submodule already exists")
+    else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
+        message(STATUS "preparing ${tool} submodule")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+        execute_process(COMMAND ${GIT_EXECUTABLE} checkout viewer-feature
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
     endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
-        if(DYNAMIND_UPDATE)
+    if(DYNAMIND_UPDATE)
             execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-	    execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
+            execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
-	endif()
+    endif(DYNAMIND_UPDATE)
 
 endforeach(tool ${TOOLBOX}) 
 
@@ -40,13 +39,10 @@ SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/sr
 SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 foreach (tool ${TOOLBOX})
-	add_subdirectory(${tool})
+    add_subdirectory(${tool})
 endforeach(${tool}) 
 
-<<<<<<< HEAD
 if (WITH_TESTS)
-=======
->>>>>>> 06dbc1a3a7123e816df181968c6bc590430104b7
 add_subdirectory(DynaMind-ComplexUnitTests)
 endif (WITH_TESTS)
 add_subdirectory(Data)
