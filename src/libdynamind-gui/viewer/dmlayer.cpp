@@ -68,10 +68,11 @@ struct TesselatedFaceDrawer {
             return;
         }
         
+        const ViewMetaData &vmd = l.getViewMetaData();
+        this->attr_span = vmd.attr_max - vmd.attr_min;
+        
         if (l.getHeightInterpretation() > 0.0) {
-            const ViewMetaData &vmd = l.getViewMetaData();
             this->height_scale = 1.0/vmd.attr_max*vmd.radius() * l.getHeightInterpretation();
-            this->attr_span = vmd.attr_max - vmd.attr_min;
         }
     }
     
