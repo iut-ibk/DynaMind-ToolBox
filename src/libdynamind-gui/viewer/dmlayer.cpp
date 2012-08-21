@@ -9,12 +9,17 @@
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/partition_2.h>
+#include <CGAL/Partition_traits_2.h>
+#include <CGAL/Partition_is_valid_traits_2.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Partition_traits_2<K>                         Traits;
+typedef CGAL::Is_convex_2<Traits>                           Is_convex_2;
 typedef Traits::Point_2                                     Point_2;
 typedef Traits::Polygon_2                                   Polygon_2;
 typedef std::vector<Polygon_2>                              Polygon_list;
+typedef CGAL::Partition_is_valid_traits_2<Traits, Is_convex_2>
+                                                            Validity_traits;
 
 #include <QImage>
 #include <QPainter>
@@ -67,6 +72,8 @@ struct TesselatedFaceDrawer {
             render();
             polygon.clear();
             name_start++;
+            current_height = 0.0;
+            current_tex[0] = current_tex[1] = 0.0;
             return;
         }
         if (pos == before) {
@@ -109,9 +116,12 @@ struct TesselatedFaceDrawer {
         if (polygon.is_clockwise_oriented())
             polygon.reverse_orientation();
         Polygon_list tesselated;
-        CGAL::y_monotone_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
-                                     std::back_inserter(tesselated));
+        Validity_traits validity_traits;
+        CGAL::optimal_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
+                                         std::back_inserter(tesselated), validity_traits);
+        
         foreach(Polygon_2 poly, tesselated) {
+#if 1
             glBegin(GL_POLYGON);
             
             foreach(Point_2 p, poly.container()) {
@@ -123,6 +133,15 @@ struct TesselatedFaceDrawer {
                 }
                 glVertex3d(p.x(), p.y(), current_height);
             }
+#else
+            glBegin(GL_LINE_STRIP);
+            glColor3f(.0f, .0f, .0f);
+            foreach(Point_2 p, poly.container()) {
+                glVertex3d(p.x(), p.y(), 0);
+            }
+            Point_2 first = poly.container().front();
+            glVertex3d(first.x(), first.y(), 0);
+#endif
             
             glEnd();
         }
