@@ -3,6 +3,7 @@ project(DynaMind-ToolBox)
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
+OPTION(WITH_TESTS "build unit tests" OFF)
 
 find_package(Git REQUIRED)
 
@@ -42,8 +43,9 @@ foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
 endforeach(${tool}) 
 
-
+if (WITH_TESTS)
 add_subdirectory(DynaMind-ComplexUnitTests)
+endif (WITH_TESTS)
 add_subdirectory(Data)
 if (WITH_PYTHON_PACKAGE)
     INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
