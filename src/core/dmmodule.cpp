@@ -251,6 +251,7 @@ void Module::updateParameter() {
 
     }
     foreach(PortObserver * po, this->portobserver) {
+        if (!po)
         po->changedPorts();
     }
 }
