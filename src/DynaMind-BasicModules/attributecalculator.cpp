@@ -160,19 +160,15 @@ void AttributeCalculator::run() {
             double * var = doubleVaraibles[it->second];
             (*var) = val;
 
-            //std::cout << "Var: " << it->second << " " << val << std::endl;
-
-            delete varaible_container;
+           delete varaible_container;
         }
         try {
             double d = p->Eval();
             cmp->addAttribute(nameOfNewAttribute, d);
-            //std::cout << "Ress " << d << std::endl;
         }
         catch (mu::Parser::exception_type &e) {
             Logger(Error) << e.GetMsg();
         }
-        int i = 0;
     }
 
     foreach (std::string variable, varaibleNames) {
@@ -180,9 +176,6 @@ void AttributeCalculator::run() {
     }
     doubleVaraibles.clear();
     delete p;
-
-
-    std::cout << "Start "  <<  equation << std::endl;
 
 }
 
