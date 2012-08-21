@@ -50,12 +50,16 @@ void Viewer::init() {
     glPointSize(3);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
+#ifndef _WIN32
     glEnable(GL_POLYGON_SMOOTH);
+#endif
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+#ifndef _WIN32
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+#endif 
 }
 
 void Viewer::drawWithNames() {
