@@ -130,8 +130,8 @@ struct TesselatedFaceDrawer {
             polygon.reverse_orientation();
         Polygon_list tesselated;
         Validity_traits validity_traits;
-        CGAL::optimal_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
-                                         std::back_inserter(tesselated), validity_traits);
+        CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
+                                               std::back_inserter(tesselated), validity_traits);
         
         foreach(Polygon_2 poly, tesselated) {
 #if 1
