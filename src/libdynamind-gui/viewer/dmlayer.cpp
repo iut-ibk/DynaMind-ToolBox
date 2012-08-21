@@ -23,6 +23,7 @@ typedef CGAL::Partition_is_valid_traits_2<Traits, Is_convex_2>
 
 #include <QImage>
 #include <QPainter>
+#include <QProgressDialog>
 #include <cassert>
 
 namespace DM {
@@ -44,7 +45,6 @@ struct SimpleDrawer {
     }
 };
 
-
 struct TesselatedFaceDrawer {
     double height_scale;
     double attr_span;
@@ -53,18 +53,30 @@ struct TesselatedFaceDrawer {
     double current_height;
     double current_tex[2];
     int name_start;
+    QProgressDialog *dialog;
     
-    TesselatedFaceDrawer(const Layer &l)
+    TesselatedFaceDrawer(const Layer &l, QWidget *parent)
         : l(l), height_scale(0.0), name_start(l.getNameStart()) {
+        
+        dialog = new QProgressDialog("Tesselating Polygons...", "cancel", 
+                                     0, l.getViewMetaData().number_of_primitives,
+                                     parent);
+        //dialog->setModal(true);
+        dialog->show();
+        
         if (l.getAttribute() == "") {
             return;
         }
+        
         if (l.getHeightInterpretation() > 0.0) {
             const ViewMetaData &vmd = l.getViewMetaData();
             this->height_scale = 1.0/vmd.attr_max*vmd.radius() * l.getHeightInterpretation();
             this->attr_span = vmd.attr_max - vmd.attr_min;
         }
-        
+    }
+    
+    ~TesselatedFaceDrawer() {
+        delete dialog;
     }
     
     void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Node *n, iterator_pos pos) {
@@ -74,6 +86,7 @@ struct TesselatedFaceDrawer {
             name_start++;
             current_height = 0.0;
             current_tex[0] = current_tex[1] = 0.0;
+            dialog->setValue(dialog->value()+1);
             return;
         }
         if (pos == before) {
@@ -157,7 +170,7 @@ Layer::Layer(System *s, View v, const std::string &a)
       scale_height(-1) {
 }
 
-void Layer::draw() {
+void Layer::draw(QWidget *parent) {
     if (lists.size() <= attribute_vector_name) {
         lists.resize(attribute_vector_name+1, -1);
     }
@@ -166,7 +179,7 @@ void Layer::draw() {
         glNewList(lists[attribute_vector_name], GL_COMPILE);
         
         if (view.getType() == DM::FACE) {
-            TesselatedFaceDrawer drawer(*this);
+            TesselatedFaceDrawer drawer(*this, parent);
             iterate_faces(system, view, drawer);
         }
         if (view.getType() == DM::EDGE) {
@@ -188,8 +201,8 @@ void Layer::draw() {
     glPopMatrix();
 }
 
-void Layer::drawWithNames() {
-    draw();
+void Layer::drawWithNames(QWidget *parent) {
+    draw(parent);
 }
 
 void Layer::systemChanged() {

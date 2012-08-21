@@ -35,14 +35,14 @@ void Viewer::init() {
 void Viewer::drawWithNames() {
     CHECK_SYSTEM;
     foreach(Layer *l, layers) {
-        l->drawWithNames();
+        l->drawWithNames(this);
     }
 }
 
 void Viewer::draw() {
     CHECK_SYSTEM;
     foreach(Layer *l, layers) {
-        l->draw();
+        l->draw(this);
     }
 }
 

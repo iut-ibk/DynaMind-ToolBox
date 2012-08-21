@@ -11,6 +11,8 @@
 
 #include "dmviewmetadata.h"
 
+class QWidget;
+
 namespace DM {
 
 class System;
@@ -45,8 +47,8 @@ public:
         return vmd;
     }
     
-    void draw();
-    void drawWithNames();
+    void draw(QWidget *parent);
+    void drawWithNames(QWidget *parent);
     
     void setOffset(double x, double y, double z) {
         x_off = x;
