@@ -133,6 +133,7 @@ struct TesselatedFaceDrawer {
         CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
                                                std::back_inserter(tesselated), validity_traits);
         
+        glPushName(name_start);
         foreach(Polygon_2 poly, tesselated) {
 #if 1
             glBegin(GL_POLYGON);
@@ -158,6 +159,7 @@ struct TesselatedFaceDrawer {
             
             glEnd();
         }
+        glPopName();
         if (glIsTexture(l.getColorInterpretation())) glDisable(GL_TEXTURE_2D);
     }
 };
