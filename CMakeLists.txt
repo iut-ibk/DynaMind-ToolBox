@@ -74,6 +74,5 @@ ADD_SUBDIRECTORY(cd3)
 INCLUDE_DIRECTORIES(cd3/src/cd3core)
 INCLUDE_DIRECTORIES(cd3/src/app)
 
-ADD_SUBDIRECTORY(src/cd3-helper)
 ADD_SUBDIRECTORY(src/cd3-modules)
 ADD_SUBDIRECTORY(src/DynaMind-Performance-Assessment)
