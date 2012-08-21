@@ -30,22 +30,40 @@
 #include <dmmodule.h>
 #include <dm.h>
 
+class MapBasedModel;
+class NodeRegistry;
+class ISimulation;
+class SimulationRegistry;
+class DynaMindStreamLogSink;
+
 class WaterBalance : public DM::Module
 {
      DM_DECLARE_NODE(WaterBalance)
 
 private:
-    std::string cd3logfile;
 
     DM::View tank;
     DM::View tank3rd;
-
+    DM::View storage;
     DM::View rdata;
+    DM::System *city;
+    std::map<std::string,std::string> tankconversion;
+    std::map<std::string,std::string> tank3rdconversion;
+    std::map<std::string,std::string> storageconversion;
+
+    SimulationRegistry *simreg;
+    NodeRegistry *nodereg;
+    ISimulation *s;
+    DynaMindStreamLogSink *sink;
 
 public:
     WaterBalance();
     void run();
-
+    bool createModel(MapBasedModel *m);
+    bool createTanks(MapBasedModel *m, DM::View v, std::map<std::string,std::string> *ids);
+    bool createBlocks(MapBasedModel *m);
+    void clear();
+    void initCD3();
 };
 
 #endif // WaterBalance_H
