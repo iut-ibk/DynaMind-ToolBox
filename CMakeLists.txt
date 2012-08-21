@@ -43,7 +43,10 @@ foreach (tool ${TOOLBOX})
 	add_subdirectory(${tool})
 endforeach(${tool}) 
 
+<<<<<<< HEAD
 if (WITH_TESTS)
+=======
+>>>>>>> 06dbc1a3a7123e816df181968c6bc590430104b7
 add_subdirectory(DynaMind-ComplexUnitTests)
 endif (WITH_TESTS)
 add_subdirectory(Data)
