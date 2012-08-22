@@ -358,6 +358,8 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QAction * a_showHelp = menu.addAction("showHelp");
     QMenu * GroupMenu =     menu.addMenu("Groups");
 
+    a_viewData->setEnabled(this->getDMModel()->getInPorts().size() > 0);
+    
     GroupMenu->setTitle("Group");
     QVector<QAction *> actions;
     std::vector<DM::Group*> gs = this->simulation->getGroups();
