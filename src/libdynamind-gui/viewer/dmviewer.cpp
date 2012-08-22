@@ -60,6 +60,15 @@ void Viewer::init() {
 #ifndef _WIN32
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 #endif 
+#else
+    glEnable(GL_MULTISAMPLE);
+    GLint bufs;
+    GLint samples;
+    glGetIntegerv(GL_SAMPLE_BUFFERS, &bufs);
+    glGetIntegerv(GL_SAMPLES, &samples);
+    qDebug("Have %d buffers and %d samples", bufs, samples);
+#endif
+    
 }
 
 void Viewer::drawWithNames() {
