@@ -117,6 +117,43 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 
 }
 
+Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
+{
+    OGRGeometry *poGeometry;
+    poGeometry = poFeature->GetGeometryRef();
+    DM::Node * n = 0;
+    if( poGeometry != NULL
+            && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+    {
+        OGRLineString *poPolyline = (OGRLineString *) poGeometry;
+        int npoints = poPolyline->getNumPoints();
+        if (npoints == 0)
+            return 0;
+        OGRPoint *poPoint = new OGRPoint();
+        std::vector<Node*> nlist;
+
+        for (int i = 0; i < npoints; i++) {
+            poPolyline->getPoint(i, poPoint);
+            n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
+            if (find(nlist.begin(), nlist.end(), n) == nlist.end())
+                nlist.push_back(n);
+
+        }
+        if (nlist.size() < 2)
+            return 0;
+        nlist.push_back(nlist[0]);
+        delete poPoint;
+        std::vector<DM::Edge *> edges;
+        for (int i = 1; i < nlist.size(); i++) {
+            edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
+        }
+
+        if (edges.size() > 0)
+            return edges[0];
+    }
+    return 0;
+}
+
 Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 {
     OGRGeometry *poGeometry;
@@ -235,6 +272,12 @@ void ImportwithGDAL::init() {
             view.setType(DM::FACE);
             view.setAccessType(DM::WRITE);
         }
+        if( poGeometry != NULL
+                && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+        {
+            view.setType(DM::EDGE);
+            view.setAccessType(DM::WRITE);
+        }
         else
         {
             printf( "no point geometry\n" );
@@ -286,6 +329,8 @@ void ImportwithGDAL::run() {
         DM::Component * cmp;
         if (view.getType() == DM::NODE)
             cmp = this->loadNode(sys, poFeature);
+        if (view.getType() == DM::EDGE)
+            cmp = this->loadEdge(sys, poFeature);
         if (view.getType() == DM::FACE)
             cmp = this->loadFace(sys, poFeature);
         if (cmp)

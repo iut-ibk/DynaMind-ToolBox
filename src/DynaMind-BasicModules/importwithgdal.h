@@ -48,6 +48,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     DM::Node * addNode(DM::System * sys, double x, double y, double z);
     void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
     DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
+    DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
     DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
     void initPointList(DM::System * sys);
     QString createHash(double x, double y);
