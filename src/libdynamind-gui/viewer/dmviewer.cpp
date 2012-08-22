@@ -48,28 +48,7 @@ void Viewer::init() {
     glDisable(GL_CULL_FACE);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glPointSize(3);
-#if 0
-    glEnable(GL_POINT_SMOOTH);
-    glEnable(GL_LINE_SMOOTH);
-#ifndef _WIN32
-    glEnable(GL_POLYGON_SMOOTH);
-#endif
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-#ifndef _WIN32
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-#endif 
-#else
     glEnable(GL_MULTISAMPLE);
-    GLint bufs;
-    GLint samples;
-    glGetIntegerv(GL_SAMPLE_BUFFERS, &bufs);
-    glGetIntegerv(GL_SAMPLES, &samples);
-    qDebug("Have %d buffers and %d samples", bufs, samples);
-#endif
-    
 }
 
 void Viewer::drawWithNames() {
