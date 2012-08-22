@@ -48,6 +48,7 @@ void Viewer::init() {
     glDisable(GL_CULL_FACE);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glPointSize(3);
+#if 0
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
 #ifndef _WIN32
@@ -145,7 +146,7 @@ void Viewer::updateLayerLayout() {
     
     setSceneRadius(max_radius);
     using namespace qglviewer;
-    Vec c(Vec(vmd.min) + Vec(max_radius, max_radius, 0));
+    Vec c(Vec(vmd.min) + Vec((vmd.max[0] - vmd.min[0])/2.0, (vmd.max[1] - vmd.min[1])/2.0, 0.0));
     setSceneCenter(c);
     
     //update camera only the first time
