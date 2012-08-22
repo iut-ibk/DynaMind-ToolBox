@@ -57,13 +57,22 @@ namespace DM {
 template<int SD_GL_PRIMITIVE>
 struct SimpleDrawer {
 
+    GLuint name_start;
+    
+    SimpleDrawer(const Layer &l) : name_start(l.getNameStart()) {
+        
+    }
+    
     void operator()(DM::System *s, DM::View v, void *f_e, DM::Node *n, iterator_pos pos) {
         if (pos == before) {
+            glPushName(name_start);
             glBegin(SD_GL_PRIMITIVE);
             return;
         }
         if (pos == after) {
             glEnd();
+            glPopName();
+            name_start++;
             return;
         }
         glColor3f(0, 0, 0);
@@ -212,11 +221,11 @@ void Layer::draw(QWidget *parent) {
             iterate_faces(system, view, drawer);
         }
         if (view.getType() == DM::EDGE) {
-            SimpleDrawer<GL_LINES> drawer;
+            SimpleDrawer<GL_LINES> drawer(*this);
             iterate_edges(system, view, drawer);
         }
         if (view.getType() == DM::NODE) {
-            SimpleDrawer<GL_POINTS> drawer;
+            SimpleDrawer<GL_POINTS> drawer(*this);
             iterate_nodes(system, view, drawer);
         }
         
