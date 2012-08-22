@@ -33,6 +33,7 @@
 #include "dmcomponenteditor.h"
 
 #include <QGLViewer/vec.h>
+#include <QFontMetrics>
 
 #include <string>
 #include <limits>
@@ -58,11 +59,68 @@ void Viewer::drawWithNames() {
     }
 }
 
+#define CBAR_W 200
+#define CBAR_H 30
+
+void Viewer::drawColorBars() {
+    if (!layers.size())
+        return;
+    startScreenCoordinatesSystem();
+    glDisable(GL_LIGHTING);
+    
+    
+    QFont f;
+    QFontMetrics fm(f);
+    
+    for(int i = 0; i < layers.size(); i++) {
+        Layer *l = layers[i];
+        if (!glIsTexture(l->getColorInterpretation()))
+            continue;
+        
+        int y_off = i*(fm.lineSpacing() + CBAR_H);
+        
+        double lower = l->getViewMetaData().attr_min;
+        double upper = l->getViewMetaData().attr_max;
+        
+        glColor3f(.0, .0, .0);
+        drawText(0, CBAR_H + y_off + fm.lineSpacing() - 1, QString("%1").arg(lower));
+        drawText(CBAR_W, CBAR_H + y_off + fm.lineSpacing() - 1, QString("%1").arg(upper));
+        
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, l->getColorInterpretation());
+        
+        glBegin(GL_QUADS);
+            glColor3f(1.0, 1.0, 1.0);
+            
+            
+            glTexCoord2f(0.0, 0.0);        
+            glVertex2f(0, y_off + CBAR_H);
+            
+            glTexCoord2f(1.0, 0.0);        
+            glVertex2f(CBAR_W, y_off + CBAR_H);
+        
+            glTexCoord2f(1.0, 1.0);        
+            glVertex2f(CBAR_W, y_off);
+            
+            glTexCoord2f(0.0, 1.0);        
+            glVertex2f(0, y_off);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+    }
+    glEnable(GL_LIGHTING);
+    stopScreenCoordinatesSystem();
+}
+
 void Viewer::draw() {
     CHECK_SYSTEM;
     foreach(Layer *l, layers) {
         l->draw(this);
     }
+}
+
+void Viewer::postDraw() {
+    drawColorBars();
 }
 
 void Viewer::postSelection(const QPoint &) {
