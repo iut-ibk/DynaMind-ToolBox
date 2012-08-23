@@ -20,42 +20,42 @@ Tank::~Tank() {
 int Tank::f(ptime time, int dt) {
     (void) time;
 
-    currentvolume.insert(currentvolume.begin(),currentvolume[0]);
-    currentvolume[0] += in[0];
+    currentvolume.push_back(currentvolume[currentvolume.size()-1]);
+    int volumeindex = currentvolume.size()-1;
 
+    currentvolume[volumeindex] += in[0];
 
-    if(currentvolume[0] > maxvolume[0]*0.9)
+    if(currentvolume[volumeindex] > maxvolume[0]*0.9)
     {
-        if((currentvolume[0] - maxoutflow[0] * dt) > 0)
+        if((currentvolume[volumeindex] - maxoutflow[0] * dt) > 0)
         {
-            currentvolume[0] -= maxoutflow[0] * dt;
+            currentvolume[volumeindex] -= maxoutflow[0] * dt;
             out[0] = maxoutflow[0] * dt;
         }
         else
         {
-            out[0] = currentvolume[0];
-            currentvolume[0] = 0;
+            out[0] = currentvolume[volumeindex];
+            currentvolume[volumeindex] = 0;
         }
     }
     else
     {
-        if((currentvolume[0] + maxoutflow[0] * dt) <= maxvolume[0])
+        if((currentvolume[volumeindex] + maxoutflow[0] * dt) <= maxvolume[0])
         {
-            currentvolume[0] += maxoutflow[0] * dt;
+            currentvolume[volumeindex] += maxoutflow[0] * dt;
             out[0] = -maxoutflow[0] * dt;
         }
         else
         {
-            out[0] = -(maxvolume[0] - currentvolume[0]);
-            currentvolume[0] = maxvolume[0];
+            out[0] = -(maxvolume[0] - currentvolume[volumeindex]);
+            currentvolume[volumeindex] = maxvolume[0];
         }
     }
 
-
-    if(currentvolume[0] > maxvolume[0])
+    if(currentvolume[volumeindex] > maxvolume[0])
     {
-        overflow[0] = currentvolume[0] - maxvolume[0];
-        currentvolume[0] = maxvolume[0];
+        overflow[0] = currentvolume[volumeindex] - maxvolume[0];
+        currentvolume[volumeindex] = maxvolume[0];
     }
 
     return dt;

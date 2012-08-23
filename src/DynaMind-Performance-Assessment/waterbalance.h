@@ -35,26 +35,31 @@ class NodeRegistry;
 class ISimulation;
 class SimulationRegistry;
 class DynaMindStreamLogSink;
+class Node;
+class SimulationParameters;
 
 class WaterBalance : public DM::Module
 {
      DM_DECLARE_NODE(WaterBalance)
 
 private:
-
-    DM::View tank;
-    DM::View tank3rd;
-    DM::View storage;
-    DM::View rdata;
     DM::System *city;
-    std::map<std::string,std::string> tankconversion;
-    std::map<std::string,std::string> tank3rdconversion;
-    std::map<std::string,std::string> storageconversion;
+
+    typedef std::map<std::string,DM::View> viewmap;
+    typedef std::map<std::string,std::string> stringmap;
+    typedef std::map<std::string, stringmap * > conversionmap;
+
+    conversionmap conversions;
+    viewmap viewdef;
+
+    std::map<std::string, Node *> mixers;
+    std::map<std::string, int> mixerports;
 
     SimulationRegistry *simreg;
     NodeRegistry *nodereg;
     ISimulation *s;
     DynaMindStreamLogSink *sink;
+    SimulationParameters *p;
 
 public:
     WaterBalance();
@@ -62,8 +67,14 @@ public:
     bool createModel(MapBasedModel *m);
     bool createTanks(MapBasedModel *m, DM::View v, std::map<std::string,std::string> *ids);
     bool createBlocks(MapBasedModel *m);
+    bool connectBlocks(MapBasedModel *m);
+    bool connectBlock(MapBasedModel *m, DM::Face *currentblock, std::string type);
+    bool connectTanks(MapBasedModel *m, std::string type);
+    bool connect(MapBasedModel *m,std::string type,std::string successor, Node *n, std::string outportname);
+    void checkconnection(MapBasedModel *m, std::string name);
+    void extractVolumeResult(MapBasedModel *m,std::string type);
     void clear();
-    void initCD3();
+    void initmodel();
 };
 
 #endif // WaterBalance_H

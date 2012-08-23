@@ -62,56 +62,86 @@ WaterBalance::WaterBalance()
     nodereg=0;
     sink=0;
     s=0;
+    p=0;
 
     std::vector<DM::View> views;
+    DM::View view;
 
     //Define Parameter for potable water network    
-    this->tank = DM::View("TANK", DM::NODE, DM::READ);
-    this->tank.getAttribute("Id");
-    this->tank.getAttribute("InCapacity");
-    this->tank.getAttribute("MaxVolume");
-    this->tank.getAttribute("Successor");
-    this->tank.getAttribute("UDTank");
-    this->tank.addAttribute("Volumecurve");
-    views.push_back(this->tank);
+    view = DM::View("TANK", DM::NODE, DM::READ);
+    view.getAttribute("Id");
+    view.getAttribute("InCapacity");
+    view.getAttribute("MaxVolume");
+    view.getAttribute("Successor");
+    view.getAttribute("UDTank");
+    view.addAttribute("Volumecurve");
+    views.push_back(view);
+    viewdef["Tank"]=view;
+
+    view = DM::View("PIPE", DM::EDGE, DM::READ);
+    view.getAttribute("Id");
+    views.push_back(view);
+    viewdef["Pipe"]=view;
 
     //Define Parameter for nonpotable water network
-    this->tank3rd = DM::View("3RDTANK", DM::NODE, DM::READ);
-    this->tank3rd.getAttribute("Id");
-    this->tank3rd.getAttribute("InCapacity");
-    this->tank3rd.getAttribute("MaxVolume");
-    this->tank3rd.getAttribute("Successor");
-    this->tank3rd.getAttribute("UDTank");
-    this->tank3rd.addAttribute("Volumecurve");
-    views.push_back(this->tank3rd);
+    view = DM::View("3RDTANK", DM::NODE, DM::READ);
+    view.getAttribute("Id");
+    view.getAttribute("InCapacity");
+    view.getAttribute("MaxVolume");
+    view.getAttribute("Successor");
+    view.getAttribute("UDTank");
+    view.addAttribute("Volumecurve");
+    views.push_back(view);
+    viewdef["3rdTank"]=view;
+
+    view = DM::View("3RDPIPE", DM::EDGE, DM::READ);
+    view.getAttribute("Id");
+    views.push_back(view);
+    viewdef["3rdPipe"]=view;
 
     //Catchment
-    this->rdata = DM::View("CATCHMENT", DM::FACE, DM::READ);
-    this->rdata.getAttribute("3rdTank");
-    this->rdata.getAttribute("Blockmodel");
-    this->rdata.getAttribute("Population");
-    this->rdata.getAttribute("Tank");
-    this->rdata.getAttribute("UDTank");
-    views.push_back(this->rdata);
+    view = DM::View("CATCHMENT", DM::FACE, DM::READ);
+    view.getAttribute("3rdTank");
+    view.getAttribute("Blockmodel");
+    view.getAttribute("Population");
+    view.getAttribute("Tank");
+    view.getAttribute("UDTank");
+    views.push_back(view);
+    viewdef["Block"]=view;
 
-    //Define Parameter for potable water network
-    this->storage = DM::View("STORAGE", DM::NODE, DM::READ);
-    this->storage.getAttribute("Id");
-    this->storage.getAttribute("Maxvolume");
-    this->storage.addAttribute("Volumecurve");
-    views.push_back(this->storage);
+    //Define Parameter for ud network
+    view = DM::View("STORAGE", DM::NODE, DM::READ);
+    view.getAttribute("Id");
+    view.getAttribute("InCapacity");
+    view.getAttribute("MaxVolume");
+    view.getAttribute("Successor");
+    view.getAttribute("UDTank");
+    view.addAttribute("Volumecurve");
+    views.push_back(view);
+    viewdef["UDTank"]=view;
+
+    view = DM::View("CONDUIT", DM::EDGE, DM::READ);
+    view.getAttribute("Id");
+    views.push_back(view);
+    viewdef["Conduit"]=view;
 
     this->addData("City", views);
 }
 
 void WaterBalance::run()
 {
-    initCD3();
+    clear();
+    initmodel();
 
     try{
         nodereg->addNativePlugin("Modules/libdance4water-nodes.so");
         nodereg->addNativePlugin("libnodes.so");
         simreg->addNativePlugin("libnodes.so");
+
+        p = new SimulationParameters();
+        p->dt = lexical_cast<int>("300");
+        p->start = time_from_string("2001-Jan-01 00:00:00");
+        p->stop = time_from_string("2001-Feb-20 00:00:00");
 
         MapBasedModel m;
 
@@ -131,18 +161,14 @@ void WaterBalance::run()
         DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
         s->setModel(&m);
 
-        SimulationParameters p;
-
-        p.dt = lexical_cast<int>("300");
-        p.start = time_from_string("2001-Jan-01 00:00:00");
-        p.stop = time_from_string("2001-Jan-03 00:00:00");
-
-        s->setSimulationParameters(p);
+        s->setSimulationParameters(*p);
 
         ptime starttime = s->getSimulationParameters().start;
         m.initNodes(s->getSimulationParameters());
         s->start(starttime);
-
+        extractVolumeResult(&m,"Tank");
+        extractVolumeResult(&m,"3rdTank");
+        extractVolumeResult(&m,"UDTank");
 
     }
     catch(...)
@@ -160,14 +186,39 @@ bool WaterBalance::createModel(MapBasedModel *m)
 {
     this->city = this->getData("City");
 
-    if(!createTanks(m,tank,&tankconversion))
-        return false;
+    std::vector<std::string> names;
+    names.push_back("Tank");
+    names.push_back("3rdTank");
+    names.push_back("UDTank");
 
-    if(!createTanks(m,tank3rd,&tank3rdconversion))
-        return false;
+    for(int index=0; index < names.size(); index++)
+    {
+        conversions[names[index]] = new stringmap();
 
-    if(!createTanks(m,storage,&storageconversion))
+        if(!createTanks(m,viewdef[names[index]], conversions[names[index]]))
+        {
+            DM::Logger(DM::Error) << names[index] << " definition not valid";
+            return false;
+        }
+    }
+
+    if(!createBlocks(m))
+    {
+        DM::Logger(DM::Error) << "Block definition not valid";
         return false;
+    }
+
+    if(!connectBlocks(m))
+    {
+        DM::Logger(DM::Error) << "Block connection definition not valid";
+        return false;
+    }
+
+    for(int index=0; index < names.size(); index++)
+    {
+        if(!connectTanks(m,names[index]))
+            return false;
+    }
 
     return true;
 }
@@ -191,21 +242,8 @@ bool WaterBalance::createTanks(MapBasedModel *m, DM::View v, std::map<std::strin
 
         m->addNode(currenttank->getUUID(),cd3tank);
 
-        (*ids)[currenttank->getAttribute("Id")->getString()]=currenttank->getUUID();
-    }
-
-    //create connections
-    for(int index=0; index<tankids.size(); index++)
-    {
-        DM::Node *currenttank = city->getNode(tankids[index]);
-
-        if(currenttank->getAttribute("Successor")->getString().empty())
-            continue;
-
-        Node *source = m->getNode(tankids[index]);
-        Node *sink = m->getNode(ids->at(currenttank->getAttribute("Successor")->getString()));m->getNode(ids->at(currenttank->getAttribute("Successor")->getString()));
-
-        m->addConnection(new NodeConnection(source,"out",sink,"in"));
+        (*ids)[QString::number(currenttank->getAttribute("Id")->getDouble()).toStdString()]=currenttank->getUUID();
+        checkconnection(m, currenttank->getUUID());
     }
 
     return true;
@@ -213,7 +251,7 @@ bool WaterBalance::createTanks(MapBasedModel *m, DM::View v, std::map<std::strin
 
 bool WaterBalance::createBlocks(MapBasedModel *m)
 {
-    std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(rdata);
+    std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(viewdef["Block"]);
 
     for(int index=0; index<blockids.size(); index++)
     {
@@ -232,7 +270,7 @@ bool WaterBalance::createBlocks(MapBasedModel *m)
 
         //TMP CODE FOR GENERATING SOME OUTPUT IN BLOCKS
         Flow const_flow;
-        const_flow[0] = 0.3;
+        const_flow[0] = 0.0001;
         cd3block->setParameter("const_flow_nonpotable",const_flow);
         cd3block->setParameter("const_flow_potable",const_flow);
         cd3block->setParameter("const_flow_sewer",const_flow);
@@ -240,14 +278,12 @@ bool WaterBalance::createBlocks(MapBasedModel *m)
         m->addNode(currentblock->getUUID(),cd3block);
     }
 
-    std::map<std::string, Node*> tank3rdmix;
-    std::map<std::string, Node*> tankmix;
-    std::map<std::string, Node*> storagemix;
+    return true;
+}
 
-
-    int tankports=0;
-    int tank3rdports=0;
-    int storageports=0;
+bool WaterBalance::connectBlocks(MapBasedModel *m)
+{
+    std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(viewdef["Block"]);
 
     for(int index=0; index<blockids.size(); index++)
     {
@@ -256,68 +292,137 @@ bool WaterBalance::createBlocks(MapBasedModel *m)
         if(currentblock->getAttribute("Blockmodel")->getString().empty())
             continue;
 
-        if(!nodereg->contains(currentblock->getAttribute("Blockmodel")->getString()))
-        {
-            DM::Logger(DM::Error) << "CD3 block named \"" << currentblock->getAttribute("Blockmodel")->getString() << "\n does not exist";
-            return false;
-        }
-
-        std::string tanksucc;
-
-        //tank connections
-        tanksucc = currentblock->getAttribute("Tank")->getString();
-
-        if(tankmix.find(tanksucc)==tankmix.end())
-        {
-            tankmix[tanksucc]=nodereg->createNode("Mixer");
-            m->addNode("tankmix_" + tanksucc, tankmix[tanksucc]);
-            m->addConnection(new NodeConnection(tankmix[tanksucc],"out",m->getNode(tankconversion[tanksucc]),"in"));
-        }
-
-        Node *current = tankmix[tanksucc];
-        current->setParameter("num_inputs",++tankports);
-        m->addConnection(new NodeConnection(m->getNode(currentblock->getUUID()),"outp",tankmix[tanksucc],"in_" + tankports));
-
-        //tank3rd connections
-        tanksucc = currentblock->getAttribute("3rdTank")->getString();
-
-        if(tank3rdmix.find(tanksucc)==tank3rdmix.end())
-        {
-            tank3rdmix[tanksucc]=nodereg->createNode("Mixer");
-            m->addNode("tank3rdmix_" + tanksucc, tank3rdmix[tanksucc]);
-            m->addConnection(new NodeConnection(tank3rdmix[tanksucc],"out",m->getNode(tank3rdconversion[tanksucc]),"in"));
-        }
-
-        current = tank3rdmix[tanksucc];
-        current->setParameter("num_inputs",++tank3rdports);
-        m->addConnection(new NodeConnection(m->getNode(currentblock->getUUID()),"outnp",tank3rdmix[tanksucc],"in_" + tank3rdports));
-
-        //tank connections
-        tanksucc = currentblock->getAttribute("UDTank")->getString();
-
-        if(storagemix.find(tanksucc)==tankmix.end())
-        {
-            storagemix[tanksucc]=nodereg->createNode("Mixer");
-            m->addNode("udmix_" + tanksucc, storagemix[tanksucc]);
-            m->addConnection(new NodeConnection(storagemix[tanksucc],"out",m->getNode(storageconversion[tanksucc]),"in"));
-        }
-
-        current = tankmix[tanksucc];
-        current->setParameter("num_inputs",++tankports);
-        m->addConnection(new NodeConnection(m->getNode(currentblock->getUUID()),"outs",storagemix[tanksucc],"in_" + storageports));
+        connectBlock(m,currentblock,"Tank");
+        connectBlock(m,currentblock,"3rdTank");
+        connectBlock(m,currentblock,"UDTank");
     }
 
     return true;
 }
 
+bool WaterBalance::connectBlock(MapBasedModel *m, DM::Face *currentblock, std::string type)
+{
+    if(conversions[type]->find(currentblock->getAttribute(type)->getString())==conversions[type]->end())
+    {
+        for(stringmap::iterator i(conversions[type]->begin()); i != conversions[type]->end(); i++)
+            DM::Logger(DM::Debug) << "ValidTank: " << (*i).second;
+
+        DM::Logger(DM::Warning) << "Cannot connect to a not existing tank: Type=" << type << " Name=" << currentblock->getAttribute(type)->getString();
+        return false;
+    }
+
+    std::string pname;
+
+    if(type=="Tank")
+        pname="outp";
+
+    if(type=="3rdTank")
+        pname="outnp";
+
+    if(type=="UDTank")
+        pname="outs";
+
+    std::string successor = conversions[type]->at(currentblock->getAttribute(type)->getString());
+    return connect(m,type,successor,m->getNode(currentblock->getUUID()),pname);
+}
+
+bool WaterBalance::connectTanks(MapBasedModel *m, std::string type)
+{
+    std::vector<std::string> tankids = city->getUUIDsOfComponentsInView(viewdef[type]);
+
+    for(int index=0; index<tankids.size(); index++)
+    {
+        DM::Node *tank = city->getNode(tankids[index]);
+
+        if(!tank->getAttribute("Successor")->getString().empty())
+            if(!connect(m,type,conversions[type]->at(tank->getAttribute("Successor")->getString()),m->getNode(tank->getUUID()),"out"))
+                return false;
+
+        if(!tank->getAttribute("UDTank")->getString().empty())
+            if(!connect(m,"UDTank",conversions["UDTank"]->at(tank->getAttribute("UDTank")->getString()),m->getNode(tank->getUUID()),"overflow"))
+                return false;
+    }
+
+    return true;
+}
+
+bool WaterBalance::connect(MapBasedModel *m, string type, std::string successor, Node *n, string outportname)
+{
+    if(successor.empty() || successor=="NULL")
+    {
+        DM::Logger(DM::Warning) << "Connection to " << type << " namend " << successor << " not possible";
+        return false;
+    }
+
+    mixerports[successor]=mixerports[successor]+1;
+    mixers[successor]->setParameter("num_inputs",mixerports[successor]);
+
+    mixers[successor]->init(p->start,p->stop,p->dt);
+
+    if(mixers[successor]!=m->getNode(successor+"_Mixer"))
+        return false;
+
+    m->addConnection(new NodeConnection(n,outportname,mixers[successor],"in_" + QString::number(mixerports[successor]-1).toStdString()));
+    mixers[successor]->deinit();
+    return true;
+}
+
+void WaterBalance::checkconnection(MapBasedModel *m, string name)
+{
+    if(mixers.find(name)==mixers.end())
+    {
+        //create new mixer
+        mixers[name] = nodereg->createNode("Mixer");
+        mixerports[name] = 0;
+        m->addNode(name + "_Mixer" , mixers[name]);
+        mixers[name]->setParameter("num_inputs",0);
+        m->addConnection(new NodeConnection(mixers[name],"out",m->getNode(name),"in"));
+    }
+}
+
+void WaterBalance::extractVolumeResult(MapBasedModel *m, string type)
+{
+    std::vector<std::string> tankids = city->getUUIDsOfComponentsInView(viewdef[type]);
+
+    //write results
+    for(int index=0; index<tankids.size(); index++)
+    {
+        DM::Node *currenttank = city->getNode(tankids[index]);
+        Node *cd3tank = m->getNode(tankids[index]);
+
+        DM::Attribute a("Volumecurve");
+        a.setDoubleVector(*(cd3tank->getState<std::vector<double> >("TankVolume")));
+
+        if(!a.getDoubleVector().size())
+            std::cout << "Scheisse" << std::endl;
+
+        currenttank->addAttribute(a);
+
+        if(!currenttank->getAttribute("Volumecurve")->getDoubleVector().size())
+            std::cout << "Scheisse" << std::endl;
+
+        //for(int index=0; index < a.getDoubleVector().size(); index++)
+        //    std::cout << QString::number(a.getDoubleVector()[index]).toStdString() << std::endl;
+    }
+
+    return;
+}
+
 void WaterBalance::clear()
 {
-    tankconversion.clear();
-    tank3rdconversion.clear();
-    storageconversion.clear();
+    mixers.clear();
+    mixerports.clear();
+
+    for(conversionmap::iterator i(conversions.begin()); i != conversions.end(); i++)
+        delete (*i).second;
+
+    conversions.clear();
 
     if(simreg)
         delete simreg;
+
+    if(p)
+        delete p;
 
     if(nodereg)
         delete nodereg;
@@ -332,9 +437,10 @@ void WaterBalance::clear()
     nodereg=0;
     sink=0;
     s=0;
+    p=0;
 }
 
-void WaterBalance::initCD3()
+void WaterBalance::initmodel()
 {
     sink = new DynaMindStreamLogSink(DM::Logger().sink);
     Log::init(sink, Debug);
