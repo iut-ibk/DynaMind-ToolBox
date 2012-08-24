@@ -14,7 +14,7 @@ Default::Default() {
     addOutPort(ADD_PARAMETERS(outnp));
     addOutPort(ADD_PARAMETERS(outs));
 
-    addState("GeneratedVolume", &generatedvolume);
+    addState("TotalVolume", &totalvolume);
 }
 
 Default::~Default() {
@@ -22,7 +22,7 @@ Default::~Default() {
 
 int Default::f(ptime time, int dt) {
     (void) time;
-    generatedvolume[0] += outp[0] + outnp[0] + outs[0];
+    totalvolume += outp[0] + outnp[0] + outs[0];
     return dt;
 }
 
@@ -37,6 +37,7 @@ bool Default::init(ptime start, ptime end, int dt) {
     outnp[0] = outnp[0] * dt;
     outs[0] = outs[0] * dt;
 
+    totalvolume=0;
     return true;
 }
 

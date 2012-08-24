@@ -12,6 +12,7 @@ Tank::Tank() {
     addParameter(ADD_PARAMETERS(maxvolume)).setUnit("m^3");
 
     addState("TankVolume", &currentvolume);
+    addState("TankVolume", &currentvolume);
 }
 
 Tank::~Tank() {
@@ -24,6 +25,8 @@ int Tank::f(ptime time, int dt) {
     int volumeindex = currentvolume.size()-1;
 
     currentvolume[volumeindex] += in[0];
+    out[0] = 0;
+    overflow[0] = 0;
 
     if(currentvolume[volumeindex] > maxvolume[0]*0.9)
     {
@@ -38,7 +41,8 @@ int Tank::f(ptime time, int dt) {
             currentvolume[volumeindex] = 0;
         }
     }
-    else
+
+    if(currentvolume[volumeindex] < maxvolume[0]*0.5)
     {
         if((currentvolume[volumeindex] + maxoutflow[0] * dt) <= maxvolume[0])
         {

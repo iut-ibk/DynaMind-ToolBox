@@ -53,6 +53,7 @@
 #include <QFile>
 #include <QTime>
 #include <map>
+#include <math.h>
 
 DM_DECLARE_NODE_NAME(WaterBalance,Performance)
 
@@ -139,9 +140,9 @@ void WaterBalance::run()
         simreg->addNativePlugin("libnodes.so");
 
         p = new SimulationParameters();
-        p->dt = lexical_cast<int>("300");
+        p->dt = lexical_cast<int>("60");
         p->start = time_from_string("2001-Jan-01 00:00:00");
-        p->stop = time_from_string("2001-Feb-20 00:00:00");
+        p->stop = time_from_string("2001-Jan-02 00:00:00");
 
         MapBasedModel m;
 
@@ -166,9 +167,17 @@ void WaterBalance::run()
         ptime starttime = s->getSimulationParameters().start;
         m.initNodes(s->getSimulationParameters());
         s->start(starttime);
-        extractVolumeResult(&m,"Tank");
-        extractVolumeResult(&m,"3rdTank");
-        extractVolumeResult(&m,"UDTank");
+
+        //Check result;
+        double balance = 0;
+
+        balance += extractVolumeResult(&m,"Tank");
+        balance += extractVolumeResult(&m,"3rdTank");
+        balance += extractVolumeResult(&m,"UDTank");
+        balance -= extractTotalBlockVolume(&m);
+
+        if(abs(balance) > 0.1)
+            DM::Logger(DM::Warning) << "Water Balance error > 0.1 m^3: " << balance << " m^3. Maybe simulation steps too high ?";
 
     }
     catch(...)
@@ -270,10 +279,15 @@ bool WaterBalance::createBlocks(MapBasedModel *m)
 
         //TMP CODE FOR GENERATING SOME OUTPUT IN BLOCKS
         Flow const_flow;
-        const_flow[0] = 0.0001;
+        const_flow[0] = 0.001;
+        cd3block->setParameter("const_flow_sewer",const_flow);
+
+        if(currentblock->getAttribute("Tank")->getString() == "1")
+            const_flow[0] *= -1;
+
         cd3block->setParameter("const_flow_nonpotable",const_flow);
         cd3block->setParameter("const_flow_potable",const_flow);
-        cd3block->setParameter("const_flow_sewer",const_flow);
+
 
         m->addNode(currentblock->getUUID(),cd3block);
     }
@@ -380,9 +394,10 @@ void WaterBalance::checkconnection(MapBasedModel *m, string name)
     }
 }
 
-void WaterBalance::extractVolumeResult(MapBasedModel *m, string type)
+double WaterBalance::extractVolumeResult(MapBasedModel *m, string type)
 {
     std::vector<std::string> tankids = city->getUUIDsOfComponentsInView(viewdef[type]);
+    double totalvolume = 0;
 
     //write results
     for(int index=0; index<tankids.size(); index++)
@@ -392,20 +407,31 @@ void WaterBalance::extractVolumeResult(MapBasedModel *m, string type)
 
         DM::Attribute a("Volumecurve");
         a.setDoubleVector(*(cd3tank->getState<std::vector<double> >("TankVolume")));
-
-        if(!a.getDoubleVector().size())
-            std::cout << "Scheisse" << std::endl;
-
+        totalvolume += a.getDoubleVector()[a.getDoubleVector().size()-1];
         currenttank->addAttribute(a);
-
-        if(!currenttank->getAttribute("Volumecurve")->getDoubleVector().size())
-            std::cout << "Scheisse" << std::endl;
-
-        //for(int index=0; index < a.getDoubleVector().size(); index++)
-        //    std::cout << QString::number(a.getDoubleVector()[index]).toStdString() << std::endl;
     }
 
-    return;
+    return totalvolume;
+}
+
+double WaterBalance::extractTotalBlockVolume(MapBasedModel *m)
+{
+    double totalvolume;
+
+    std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(viewdef["Block"]);
+
+    for(int index=0; index<blockids.size(); index++)
+    {
+        DM::Face *currentblock = city->getFace(blockids[index]);
+
+        if(currentblock->getAttribute("Blockmodel")->getString().empty())
+            continue;
+
+        Node *cd3block = m->getNode(currentblock->getUUID());
+        totalvolume += (*cd3block->getState<double>("TotalVolume"));
+    }
+
+    return totalvolume;
 }
 
 void WaterBalance::clear()

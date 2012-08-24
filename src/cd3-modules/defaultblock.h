@@ -20,7 +20,7 @@ private:
     Flow outp;
     Flow outnp;
     Flow outs;
-    Flow generatedvolume;
+    double totalvolume;
 };
 
 #endif // DEFAULTBLOCK_H

@@ -72,7 +72,8 @@ public:
     bool connectTanks(MapBasedModel *m, std::string type);
     bool connect(MapBasedModel *m,std::string type,std::string successor, Node *n, std::string outportname);
     void checkconnection(MapBasedModel *m, std::string name);
-    void extractVolumeResult(MapBasedModel *m,std::string type);
+    double extractVolumeResult(MapBasedModel *m,std::string type);
+    double extractTotalBlockVolume(MapBasedModel *m);
     void clear();
     void initmodel();
 };
