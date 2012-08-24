@@ -49,7 +49,7 @@ void Viewer::init() {
     glDisable(GL_CULL_FACE);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glPointSize(3);
-    glEnable(GL_MULTISAMPLE);
+    glDisable(GL_LIGHTING);
 }
 
 void Viewer::drawWithNames() {
@@ -66,8 +66,6 @@ void Viewer::drawColorBars() {
     if (!layers.size())
         return;
     startScreenCoordinatesSystem();
-    glDisable(GL_LIGHTING);
-    
     
     QFont f;
     QFontMetrics fm(f);
@@ -108,15 +106,16 @@ void Viewer::drawColorBars() {
 
         glDisable(GL_TEXTURE_2D);
     }
-    glEnable(GL_LIGHTING);
     stopScreenCoordinatesSystem();
 }
 
 void Viewer::draw() {
     CHECK_SYSTEM;
+    glEnable(GL_MULTISAMPLE);
     foreach(Layer *l, layers) {
         l->draw(this);
     }
+    glDisable(GL_MULTISAMPLE);
 }
 
 void Viewer::postDraw() {
