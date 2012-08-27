@@ -10,8 +10,8 @@ Tank::Tank() {
 
     addParameter(ADD_PARAMETERS(maxoutflow)).setUnit("m^3/s");
     addParameter(ADD_PARAMETERS(maxvolume)).setUnit("m^3");
+    addParameter(ADD_PARAMETERS(initvolume)).setUnit("%");
 
-    addState("TankVolume", &currentvolume);
     addState("TankVolume", &currentvolume);
 }
 
@@ -69,7 +69,7 @@ bool Tank::init(ptime start, ptime end, int dt) {
     (void) start;
     (void) end;
     currentvolume.clear();
-    currentvolume.push_back(0);
+    currentvolume.push_back(maxvolume[0]*initvolume/100);
     out[0] = 0;
     overflow[0] = 0;
     return true;

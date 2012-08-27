@@ -20,6 +20,7 @@ private:
     Flow overflow;
     Flow maxvolume;
     Flow maxoutflow;
+    double initvolume;
     std::vector<double> currentvolume;
 
 };

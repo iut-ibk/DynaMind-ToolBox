@@ -59,6 +59,8 @@ DM_DECLARE_NODE_NAME(WaterBalance,Performance)
 
 WaterBalance::WaterBalance()
 {   
+    initvolume=0;
+
     simreg=0;
     nodereg=0;
     sink=0;
@@ -75,6 +77,7 @@ WaterBalance::WaterBalance()
     view.getAttribute("MaxVolume");
     view.getAttribute("Successor");
     view.getAttribute("UDTank");
+    view.getAttribute("InitVolume");
     view.addAttribute("Volumecurve");
     views.push_back(view);
     viewdef["Tank"]=view;
@@ -91,6 +94,7 @@ WaterBalance::WaterBalance()
     view.getAttribute("MaxVolume");
     view.getAttribute("Successor");
     view.getAttribute("UDTank");
+    view.getAttribute("InitVolume");
     view.addAttribute("Volumecurve");
     views.push_back(view);
     viewdef["3rdTank"]=view;
@@ -117,6 +121,7 @@ WaterBalance::WaterBalance()
     view.getAttribute("MaxVolume");
     view.getAttribute("Successor");
     view.getAttribute("UDTank");
+    view.getAttribute("InitVolume");
     view.addAttribute("Volumecurve");
     views.push_back(view);
     viewdef["UDTank"]=view;
@@ -142,7 +147,7 @@ void WaterBalance::run()
         p = new SimulationParameters();
         p->dt = lexical_cast<int>("60");
         p->start = time_from_string("2001-Jan-01 00:00:00");
-        p->stop = time_from_string("2001-Jan-02 00:00:00");
+        p->stop = time_from_string("2001-Feb-02 00:00:00");
 
         MapBasedModel m;
 
@@ -169,7 +174,7 @@ void WaterBalance::run()
         s->start(starttime);
 
         //Check result;
-        double balance = 0;
+        double balance = -initvolume;
 
         balance += extractVolumeResult(&m,"Tank");
         balance += extractVolumeResult(&m,"3rdTank");
@@ -248,6 +253,8 @@ bool WaterBalance::createTanks(MapBasedModel *m, DM::View v, std::map<std::strin
         maxoutflow[0] = currenttank->getAttribute("InCapacity")->getDouble();
         cd3tank->setParameter("maxvolume",maxvolume);
         cd3tank->setParameter("maxoutflow",maxoutflow);
+        cd3tank->setParameter("initvolume",currenttank->getAttribute("InitVolume")->getDouble());
+        initvolume += maxvolume[0]*currenttank->getAttribute("InitVolume")->getDouble()/100;
 
         m->addNode(currenttank->getUUID(),cd3tank);
 
@@ -436,6 +443,8 @@ double WaterBalance::extractTotalBlockVolume(MapBasedModel *m)
 
 void WaterBalance::clear()
 {
+    initvolume=0;
+
     mixers.clear();
     mixerports.clear();
 

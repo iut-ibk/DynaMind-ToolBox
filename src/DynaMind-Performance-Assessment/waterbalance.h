@@ -54,6 +54,7 @@ private:
 
     std::map<std::string, Node *> mixers;
     std::map<std::string, int> mixerports;
+    double initvolume;
 
     SimulationRegistry *simreg;
     NodeRegistry *nodereg;
