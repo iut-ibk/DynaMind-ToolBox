@@ -31,6 +31,7 @@
 #include "dmnode.h"
 #include "dmlayer.h"
 #include "dmcomponenteditor.h"
+#include "glext.h"
 
 #include <QGLViewer/vec.h>
 #include <QFontMetrics>
@@ -111,11 +112,11 @@ void Viewer::drawColorBars() {
 
 void Viewer::draw() {
     CHECK_SYSTEM;
-    glEnable(GL_MULTISAMPLE_ARB);
+    glEnable(GL_MULTISAMPLE);
     foreach(Layer *l, layers) {
         l->draw(this);
     }
-    glDisable(GL_MULTISAMPLE_ARB);
+    glDisable(GL_MULTISAMPLE);
 }
 
 void Viewer::postDraw() {
