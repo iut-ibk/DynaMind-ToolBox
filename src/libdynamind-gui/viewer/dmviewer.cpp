@@ -111,11 +111,11 @@ void Viewer::drawColorBars() {
 
 void Viewer::draw() {
     CHECK_SYSTEM;
-    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE_ARB);
     foreach(Layer *l, layers) {
         l->draw(this);
     }
-    glDisable(GL_MULTISAMPLE);
+    glDisable(GL_MULTISAMPLE_ARB);
 }
 
 void Viewer::postDraw() {
