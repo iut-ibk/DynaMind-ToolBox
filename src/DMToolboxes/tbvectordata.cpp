@@ -133,8 +133,10 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
     DM::Node * n1 = sys->getNode(e1->getStartpointName());
     DM::Node * n2 = sys->getNode(e1->getEndpointName());
 
-    if (n1->compare2d(n) || n2->compare2d(n))
+    if (n1->compare2d(n) || n2->compare2d(n)) {
+        delete e1;
         return;
+    }
 
     std::set<std::string> views = e1->getInViews();
     e1 = sys->addEdge(e1);

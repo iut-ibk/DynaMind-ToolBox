@@ -135,9 +135,12 @@ bool PythonEnv::addOverWriteStdCout() {
     script << "        self.error=error\n";
     script << "        self.currentstring=\"\"\n";
     script << "\n";
+    script << "    def flush(self):\n";
+    script << "        pass\n";
+    script << "\n";
     script << "    def write(self, text):\n";
-    script << "        self.stdout.write(text)\n";
-    script << "        self.currentstring = self.currentstring + \" \" + text\n";
+    script << "        self.stdout.write(str(text))\n";
+    script << "        self.currentstring = self.currentstring + \" \" + str(text)\n";
     script << "\n";
     script << "        if text.rfind(\"\\n\") == -1:\n";
     script << "                return\n";
