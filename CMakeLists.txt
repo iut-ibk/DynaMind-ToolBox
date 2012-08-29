@@ -18,12 +18,12 @@ foreach (tool ${TOOLBOX})
         message(STATUS "preparing ${tool} submodule for you")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --recursive ${tool}
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
     if(DYNAMIND_UPDATE)
-            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --recursive ${tool}
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     endif(DYNAMIND_UPDATE)
 endforeach(tool ${TOOLBOX}) 
