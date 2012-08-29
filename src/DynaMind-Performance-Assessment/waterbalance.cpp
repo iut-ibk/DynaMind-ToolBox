@@ -343,7 +343,7 @@ bool WaterBalance::connectBlock(MapBasedModel *m, DM::Face *currentblock, std::s
     if(type=="UDTank")
         pname="outs";
 
-    std::string successor = conversions[type]->at(currentblock->getAttribute(type)->getString());
+    std::string successor = (*conversions[type])[currentblock->getAttribute(type)->getString()];
     return connect(m,type,successor,m->getNode(currentblock->getUUID()),pname);
 }
 
@@ -356,11 +356,11 @@ bool WaterBalance::connectTanks(MapBasedModel *m, std::string type)
         DM::Node *tank = city->getNode(tankids[index]);
 
         if(!tank->getAttribute("Successor")->getString().empty())
-            if(!connect(m,type,conversions[type]->at(tank->getAttribute("Successor")->getString()),m->getNode(tank->getUUID()),"out"))
+            if(!connect(m,type,(*conversions[type])[tank->getAttribute("Successor")->getString()],m->getNode(tank->getUUID()),"out"))
                 return false;
 
         if(!tank->getAttribute("UDTank")->getString().empty())
-            if(!connect(m,"UDTank",conversions["UDTank"]->at(tank->getAttribute("UDTank")->getString()),m->getNode(tank->getUUID()),"overflow"))
+            if(!connect(m,"UDTank",(*conversions["UDTank"])[tank->getAttribute("UDTank")->getString()],m->getNode(tank->getUUID()),"overflow"))
                 return false;
     }
 
