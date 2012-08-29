@@ -202,6 +202,12 @@ std::vector<LinkAttribute> Attribute::getLinks()
 
 void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
 {
+    if(timestamp.size()!=value.size())
+    {
+        DM::Logger(DM::Error) << "Length of time and value vector are not equal";
+        return;
+    }
+
     this->type = Attribute::TIMESERIES;
     this->doublevector = value;
     this->stringvector = timestamp;
