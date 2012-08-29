@@ -85,27 +85,27 @@ void Viewer::drawColorBars() {
         drawText(0, CBAR_H + y_off + fm.lineSpacing() - 1, QString("%1").arg(lower));
         drawText(CBAR_W, CBAR_H + y_off + fm.lineSpacing() - 1, QString("%1").arg(upper));
         
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, l->getColorInterpretation());
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, l->getColorInterpretation());
         
         glBegin(GL_QUADS);
             glColor3f(1.0, 1.0, 1.0);
             
             
-            glTexCoord2f(0.0, 0.0);        
+            glTexCoord1f(0.0);
             glVertex2f(0, y_off + CBAR_H);
             
-            glTexCoord2f(1.0, 0.0);        
+            glTexCoord1f(1.0);
             glVertex2f(CBAR_W, y_off + CBAR_H);
         
-            glTexCoord2f(1.0, 1.0);        
+            glTexCoord1f(1.0);
             glVertex2f(CBAR_W, y_off);
             
-            glTexCoord2f(0.0, 1.0);        
+            glTexCoord1f(0.0);
             glVertex2f(0, y_off);
         glEnd();
 
-        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_1D);
     }
     stopScreenCoordinatesSystem();
 }
