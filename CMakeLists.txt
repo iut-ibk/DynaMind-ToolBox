@@ -15,22 +15,17 @@ foreach (tool ${TOOLBOX})
     if(EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
         message(STATUS "${tool} submodule already exists")
     else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
-        message(STATUS "preparing ${tool} submodule")
+        message(STATUS "preparing ${tool} submodule for you")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-        execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
     endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
     if(DYNAMIND_UPDATE)
             execute_process(COMMAND ${GIT_EXECUTABLE} submodule update ${tool}
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-            execute_process(COMMAND ${GIT_EXECUTABLE} checkout master
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${tool}/)
     endif(DYNAMIND_UPDATE)
-
 endforeach(tool ${TOOLBOX}) 
 
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
