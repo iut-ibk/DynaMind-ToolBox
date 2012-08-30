@@ -7,7 +7,7 @@ OPTION(WITH_TESTS "build unit tests" OFF)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim DynaMind-Performance-Assessment DynaMind-VIBeModules DynaMind-DAnCE4Water P8Modules)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim DynaMind-Performance-Assessment DynaMind-VIBeModules DynaMind-DAnCE4Water)
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
