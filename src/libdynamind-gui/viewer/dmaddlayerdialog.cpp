@@ -33,6 +33,7 @@
 
 #include "dmattribute.h"
 #include "dmlayer.h"
+#include "glext.h"
 #include "dmviewer.h"
 #include "dmlogger.h"
 
