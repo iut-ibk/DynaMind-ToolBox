@@ -76,26 +76,34 @@ AddLayerDialog::~AddLayerDialog() {
 GLuint makeColorRampTexture(DM::Viewer *v, QColor start, QColor stop) {
     v->makeCurrent();
     GLuint texture;
-    QImage p(100, 10, QImage::Format_RGB32);
-    QPainter painter;
-    double h_inc = (stop.hueF() - start.hueF()) / 100.0;
-    double s_inc = (stop.saturationF() - start.saturationF()) / 100.0;
-    double v_inc = (stop.valueF() - start.valueF()) / 100.0;
+    glEnable(GL_TEXTURE_1D);
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_1D, texture);
     
-    painter.begin(&p);
-    for (int i = 0; i < 100; i++) {
+    GLubyte data[256][4];
+    
+    double h_inc = (stop.hueF() - start.hueF()) / 256.0;
+    double s_inc = (stop.saturationF() - start.saturationF()) / 256.0;
+    double v_inc = (stop.valueF() - start.valueF()) / 256.0;
+    
+    for (int i = 0; i < 256; i++) {
         double h = start.hueF() + (i*h_inc);
         double s = start.saturationF() + (i*s_inc);
         double v = start.valueF() + (i*v_inc);
                 
         QColor c = QColor::fromHsvF(h, s, v);
-        painter.setPen(c);
-        painter.drawRect(i, 0, 1, 10);
+        data[i][0] = c.red();
+        data[i][1] = c.green();
+        data[i][2] = c.blue();
+        data[i][3] = c.alpha();
     }
-    painter.end();
     
-    glEnable(GL_TEXTURE_2D);
-    texture = v->bindTexture(p, GL_TEXTURE_2D, GL_RGB);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    Q_ASSERT(glGetError() == GL_NO_ERROR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    Q_ASSERT(glIsTexture(texture));
     return texture;
 }
 
