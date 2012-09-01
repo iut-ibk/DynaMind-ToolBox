@@ -375,7 +375,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     DM::Module * group = this->getDMModel()->getGroup();
     if (group != 0 && rgroup != 0) {
         if (this->getDMModel()->getGroup()->getUuid().compare(this->simulation->getRootGroup()->getUuid()) != 0) {
-            QAction *a = GroupMenu->addAction("none");
+            QAction *a = GroupMenu->addAction("RootGroup");
             a->setObjectName(QString::fromStdString(this->simulation->getRootGroup()->getUuid()));
             actions.push_back(a);
         }
@@ -439,6 +439,9 @@ void ModelNode::addGroup() {
     DM::Group * g;
     if (name.compare(QString::fromStdString(this->simulation->getRootGroup()->getUuid())) == 0) {
         this->getDMModel()->setGroup((DM::Group * ) this->simulation->getRootGroup());
+        this->getSimulation()->GUIaddModule(this->getDMModel(), this->pos());
+        this->VIBeModuleUUID = "";
+        delete this;
         return;
     }
 
