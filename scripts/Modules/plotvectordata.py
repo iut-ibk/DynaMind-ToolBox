@@ -73,7 +73,7 @@ class PlotVectorData(Module):
                     
                 #find LayerNames
                 names = []
-                names =  city.getNamesOfComponentsInView(view)
+                names =  city.getUUIDsOfComponentsInView(view)
     
     
                 for n in names:  
