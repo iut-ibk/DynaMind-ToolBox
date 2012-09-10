@@ -38,7 +38,7 @@ IF(WIN32 AND NOT UNIX)
               ${QT_BINARY_DIR}/QtSVG4.dll
               ${QT_BINARY_DIR}/QtSql4.dll
               ${CGAL_DIR}/bin/CGAL-vc90-mt-4.0.2.dll
-              ${QGLVIEWER_DIR}/QGLViewer/release/QGLViewer2.dll
+              ${QGLVIEWER_INCLUDE_DIR}/QGLViewer/release/QGLViewer2.dll
               ${Boost_LIBRARY_DIRS}/boost_python-*-mt-1_*.dll
               ${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
               ${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
