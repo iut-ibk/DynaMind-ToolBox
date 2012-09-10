@@ -208,7 +208,7 @@ namespace DM {
 
         void loadPythonModulesFromDirectory(std::string path);
         /** @brief Add Modules from default location
-          * modules/
+          * Modules/ and PythonModules/scripts
         **/
         void loadModulesFromDefaultLocation();
         /** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
