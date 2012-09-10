@@ -143,25 +143,26 @@ void Simulation::reloadModules() {
 }
 void Simulation::loadModulesFromDefaultLocation()
 {
-    QDir CurrentPath = QDir::currentPath();
-    CurrentPath = CurrentPath.cd("Modules");
+    QDir cp = QDir::currentPath();
+    if (!cp.cd("Modules"))
+        std::cout << "could not change path to Modules";
 
     //Native Modules
-    QStringList modulesToLoad = CurrentPath.entryList();
-    std::cout <<  CurrentPath.absolutePath().toStdString() << std::endl;
+    QStringList modulesToLoad = cp.entryList();
+    std::cout <<  cp.absolutePath().toStdString() << std::endl;
 
     foreach (QString module, modulesToLoad) {
         if (module == ".." || module == ".")
             continue;
         DM::Logger(DM::Debug) << module.toStdString();
         std::cout <<  module.toStdString() << std::endl;
-        QString ml = CurrentPath.absolutePath() +"/" + module;
+        QString ml = cp.absolutePath() +"/" + module;
         this->moduleRegistry->addNativePlugin(ml.toStdString());
     }
-    CurrentPath = QDir::currentPath();
-    CurrentPath.cd("PythonModules");
-    CurrentPath.cd("scripts");
-    this->loadPythonModulesFromDirectory(CurrentPath.absolutePath().toStdString());
+    cp = QDir::currentPath();
+    cp.cd("PythonModules");
+    cp.cd("scripts");
+    this->loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
 
 }
 void Simulation::loadPythonModulesFromDirectory(std::string path) {
