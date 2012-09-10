@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
+ADD_DEFINITIONS(-DDYNAMIND_VERSION="0.2.0")
+
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
