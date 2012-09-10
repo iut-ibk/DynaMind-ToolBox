@@ -45,7 +45,7 @@ class ModuleRegistry;
 class ModuleLink;
 class Group;
 
-static const  string CoreVersion = DYNAMIND_VERSION;
+static const  string CoreVersion = DYNAMIND_VERSION_CORE;
 
 enum SimuatlonsStatuses {
     SIM_OK,
