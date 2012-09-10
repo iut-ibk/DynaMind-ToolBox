@@ -149,7 +149,7 @@ void Simulation::loadModulesFromDefaultLocation()
     //Native Modules
     QStringList modulesToLoad = CurrentPath.entryList();
     std::cout <<  CurrentPath.absolutePath().toStdString() << std::endl;
-    this->moduleRegistry->addNativePlugin(ml.toStdString());
+
     foreach (QString module, modulesToLoad) {
         if (module == ".." || module == ".")
             continue;
