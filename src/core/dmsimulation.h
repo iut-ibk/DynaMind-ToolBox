@@ -35,24 +35,26 @@
 
 
 namespace DM {
-    struct SimulationPrivate;
-    class DataObserver;
-    class SimulationObserver;
-    class Module;
-    class Port;
-    class IDataBase;
-    class ModuleRegistry;
-    class ModuleLink;
-    class Group;
+struct SimulationPrivate;
+class DataObserver;
+class SimulationObserver;
+class Module;
+class Port;
+class IDataBase;
+class ModuleRegistry;
+class ModuleLink;
+class Group;
 
-    enum SimuatlonsStatuses {
-        SIM_OK,
-        SIM_FAILED_LOAD,
-        SIM_ERROR_SYSTEM_NOT_SET
+static const  string CoreVersion = DYNAMIND_VERSION;
 
-    };
+enum SimuatlonsStatuses {
+    SIM_OK,
+    SIM_FAILED_LOAD,
+    SIM_ERROR_SYSTEM_NOT_SET
 
-    /**
+};
+
+/**
     * @class DM::Simulation
     *
     *
@@ -90,105 +92,105 @@ namespace DM {
     * }
     * @endcode
     */
-    class DM_HELPER_DLL_EXPORT Simulation:public QThread {
-    public:
+class DM_HELPER_DLL_EXPORT Simulation:public QThread {
+public:
 
-        /** @brief creates a new simulation
+    /** @brief creates a new simulation
          *
          * Every simulation comes with a root group to start with.
         */
-        Simulation();
-        virtual ~Simulation();
+    Simulation();
+    virtual ~Simulation();
 
-        /** @brief Starts the Simulation. Returns if model run was executed successful
+    /** @brief Starts the Simulation. Returns if model run was executed successful
          *
          * If the paramter virtualRun is true only the init methods of the modules are executed.
          * This is ca be used to update the data model.
          */
-        bool startSimulation(bool virtualRun = false);
+    bool startSimulation(bool virtualRun = false);
 
-         /** @brief Starts the Simulation. Returns if model run was executed successful
+    /** @brief Starts the Simulation. Returns if model run was executed successful
           *
           * calles startSimulation with default parameter
           */
-        virtual void run();
+    virtual void run();
 
-        /** @brief add data observer to the simulation */
-        void addDataObserver(DataObserver*  observer);
+    /** @brief add data observer to the simulation */
+    void addDataObserver(DataObserver*  observer);
 
-        /** @brief add simulation observer to the simulation */
-        void addSimulationObserver(SimulationObserver * simulationObserver);
+    /** @brief add simulation observer to the simulation */
+    void addSimulationObserver(SimulationObserver * simulationObserver);
 
-        /** @brief return root group */
-        Module * getRootGroup(){return rootGroup;}
+    /** @brief return root group */
+    Module * getRootGroup(){return rootGroup;}
 
-        /** @brief adds a new link to the simulation. If it was not possible to create the link a null pointer is returned,
+    /** @brief adds a new link to the simulation. If it was not possible to create the link a null pointer is returned,
          * otherwise the a pointer to the new created link is returned.
          */
-        ModuleLink * addLink(Port * OutPort,Port * InPort);
+    ModuleLink * addLink(Port * OutPort,Port * InPort);
 
-        /** @brief removes a link */
-        void removeLink(ModuleLink * );
+    /** @brief removes a link */
+    void removeLink(ModuleLink * );
 
-        /** @brief adds a new module/group to the system. If it was not possible to create the module a null pointer is returned,
+    /** @brief adds a new module/group to the system. If it was not possible to create the module a null pointer is returned,
          * otherwise a pointer to the new created module or group
          */
-        Module * addModule(std::string ModuleName);
+    Module * addModule(std::string ModuleName);
 
-        /** @brief Removes module.
+    /** @brief Removes module.
          *
          * Delets Module. Since the destructor is called the module is also removed from the Modulelist
          */
-        void removeModule(std::string UUid);
+    void removeModule(std::string UUid);
 
-        /** @brief returns a pointer to the ModuleRegistry */
-        ModuleRegistry * getModuleRegistry();
+    /** @brief returns a pointer to the ModuleRegistry */
+    ModuleRegistry * getModuleRegistry();
 
-        /** @brief returns all groups within the simulation */
-        std::vector<Group*> getGroups();
+    /** @brief returns all groups within the simulation */
+    std::vector<Group*> getGroups();
 
-        /** @brief writes the simulation to a xml file */
-        void writeSimulation(std::string filename);
+    /** @brief writes the simulation to a xml file */
+    void writeSimulation(std::string filename);
 
-        /** @brief returns a vector to all modules */
-        std::vector<Module*> getModules() const;
+    /** @brief returns a vector to all modules */
+    std::vector<Module*> getModules() const;
 
-        /** @brief adds a simulation saved in a file to the current simulation */
-        std::map<std::string, std::string>  loadSimulation(std::string FileName);
+    /** @brief adds a simulation saved in a file to the current simulation */
+    std::map<std::string, std::string>  loadSimulation(std::string FileName);
 
-        /** @brief returns a pointer to a module */
-        Module * getModuleWithUUID(std::string UUID);
+    /** @brief returns a pointer to a module */
+    Module * getModuleWithUUID(std::string UUID);
 
-        /** @brief returns the module according to the module name, if there are several modules with the same name the first one is returend */
-        Module * getModuleByName(std::string name);
+    /** @brief returns the module according to the module name, if there are several modules with the same name the first one is returend */
+    Module * getModuleByName(std::string name);
 
-        /** @brief returns a vector to all links in the simulation */
-        std::vector<ModuleLink*> getLinks();
+    /** @brief returns a vector to all links in the simulation */
+    std::vector<ModuleLink*> getLinks();
 
-        /** @brief Resets the module. Be careful to do so a new module is created which means the
+    /** @brief Resets the module. Be careful to do so a new module is created which means the
          * pointer has changed as well as the uuid
          *
          * The method creates a new module/group, copies the parameters from the old to
          * the new module/group and rewires the module/group
          */
-        Module * resetModule(std::string UUID);
+    Module * resetModule(std::string UUID);
 
-        /** @brief Reset all modules */
-        void resetModules();
+    /** @brief Reset all modules */
+    void resetModules();
 
-        /** @brief Reloads all python modules */
-        void reloadModules();
+    /** @brief Reloads all python modules */
+    void reloadModules();
 
-        /** @brief return all modules of the same type */
-        std::vector<Module*> getModulesFromType(std::string name);
+    /** @brief return all modules of the same type */
+    std::vector<Module*> getModulesFromType(std::string name);
 
-        /** @brief remove module */
-        void deregisterModule(std::string UUID);
+    /** @brief remove module */
+    void deregisterModule(std::string UUID);
 
-        /** @brief register a new native module returns if module has been loaded succcessfully*/
-        bool registerNativeModules(std::string Filename);
+    /** @brief register a new native module returns if module has been loaded succcessfully*/
+    bool registerNativeModules(std::string Filename);
 
-        /** @brief Register pyhton modules.
+    /** @brief Register pyhton modules.
          *
          * The function loads pyhton modules that are saved in a special data structure
          *
@@ -198,41 +200,41 @@ namespace DM {
          *          - __init__.py
          *          - mymodule.py
          */
-        void registerPythonModules(std::string path);
+    void registerPythonModules(std::string path);
 
-        /** @brief Returns true if the simulation run is executed as virtual run */
-        bool isVirtualRun(){return this->virtualRun;}
+    /** @brief Returns true if the simulation run is executed as virtual run */
+    bool isVirtualRun(){return this->virtualRun;}
 
-        /** @brief Add the modules set in the QSetting **/
-        bool addModulesFromSettings();
+    /** @brief Add the modules set in the QSetting **/
+    bool addModulesFromSettings();
 
-        void loadPythonModulesFromDirectory(std::string path);
-        /** @brief Add Modules from default location
+    void loadPythonModulesFromDirectory(std::string path);
+    /** @brief Add Modules from default location
           * Modules/ and PythonModules/scripts
         **/
-        void loadModulesFromDefaultLocation();
-        /** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
-        int getSimulationStatus();
+    void loadModulesFromDefaultLocation();
+    /** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
+    int getSimulationStatus();
 
-        /** @brief set Simulation Status */
-        void setSimulationStatus(int Status);
+    /** @brief set Simulation Status */
+    void setSimulationStatus(int Status);
 
-    private:
-        DMRootGroup * rootGroup;
-        std::map<std::string, Module*> Modules;
-        //std::vector<ModuleLink * > Links;
-        SimulationPrivate *data;
-        IDataBase * database;
-        ModuleRegistry * moduleRegistry;
-        void removeLinksFromModule(Module *);
+    /**@brief returns List of successfully loaded module files*/
+    std::vector<std::string> getLoadModuleFiles();
+
+private:
+    DMRootGroup * rootGroup;
+    std::map<std::string, Module*> Modules;
+    //std::vector<ModuleLink * > Links;
+    SimulationPrivate *data;
+    IDataBase * database;
+    ModuleRegistry * moduleRegistry;
+    void removeLinksFromModule(Module *);
+    std::vector<std::string> loadedModuleFiles;
+    bool virtualRun;
 
 
 
-
-        bool virtualRun;
-
-
-
-    };
+};
 }
 #endif // SIMULATION_H

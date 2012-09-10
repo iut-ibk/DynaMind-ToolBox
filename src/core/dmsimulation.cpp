@@ -143,9 +143,7 @@ void Simulation::reloadModules() {
 }
 void Simulation::loadModulesFromDefaultLocation()
 {
-    QDir cp = QDir::currentPath();
-    if (!cp.cd("Modules"))
-        std::cout << "could not change path to Modules";
+    QDir cp = QDir(QDir::currentPath() + "/Modules");
 
     //Native Modules
     QStringList modulesToLoad = cp.entryList();
@@ -157,12 +155,13 @@ void Simulation::loadModulesFromDefaultLocation()
         DM::Logger(DM::Debug) << module.toStdString();
         std::cout <<  module.toStdString() << std::endl;
         QString ml = cp.absolutePath() +"/" + module;
-        this->moduleRegistry->addNativePlugin(ml.toStdString());
+        if (this->moduleRegistry->addNativePlugin(ml.toStdString())) {
+            loadedModuleFiles.push_back(ml.toStdString());
+        }
     }
-    cp = QDir::currentPath();
-    cp.cd("PythonModules");
-    cp.cd("scripts");
-    this->loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+    cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+
 
 }
 void Simulation::loadPythonModulesFromDirectory(std::string path) {
@@ -173,10 +172,10 @@ void Simulation::loadPythonModulesFromDirectory(std::string path) {
     foreach(QString file, files) {
         try{
             std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-            Logger(Debug) << n;
-
+            loadedModuleFiles.push_back(file.toStdString());
         } catch(...) {
             Logger(Warning)  << "Can't load Module " << file.toStdString();
+
         }
     }
 }
@@ -206,7 +205,9 @@ bool Simulation::addModulesFromSettings() {
         if (s.isEmpty())
             continue;
         Logger(Standard) << "Loading Native Modules " <<s.toStdString();
-        moduleRegistry->addNativePlugin(s.toStdString());
+        if (moduleRegistry->addNativePlugin(s.toStdString())) {
+            loadedModuleFiles.push_back(s.toStdString());
+        }
     }
 
     return true;
@@ -284,7 +285,7 @@ void Simulation::resetModules() {
     std::vector<DM::Module *> mv= this->getModules();
     foreach (Module * m, mv) {
         if (!m->isExecuted())
-        this->resetModule(m->getUuid());
+            this->resetModule(m->getUuid());
     }
 }
 void Simulation::run() {
@@ -597,6 +598,11 @@ int Simulation::getSimulationStatus() {
 
 void Simulation::setSimulationStatus(int Status) {
     this->data->simulationStatus = Status;
+}
+
+std::vector<std::string> Simulation::getLoadModuleFiles()
+{
+    return this->loadedModuleFiles;
 }
 
 std::vector<Module*> Simulation::getModules() const{
