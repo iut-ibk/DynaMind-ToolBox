@@ -61,6 +61,7 @@
 #include "preferences.h"
 #include "projectviewer.h"
 #include "guihelpviewer.h"
+#include "guiaboutdialog.h"
 
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
@@ -557,6 +558,13 @@ void DMMainWindow::on_actionZoomIn_activated(){
     QGraphicsView * view = groupscenes[i]->views()[0];
 
     view->scale(1.2, 1.2);
+
+}
+
+void DMMainWindow::on_actionAbout_activated()
+{
+    GUIAboutDialog * ab= new GUIAboutDialog(this->simulation, this);
+    ab->show();
 
 }
 

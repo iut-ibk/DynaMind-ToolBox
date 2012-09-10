@@ -111,10 +111,12 @@ public slots:
     void showHelp(std::string classname);
 
 
+
 private slots:
     void on_actionZoomReset_activated();
     void on_actionZoomOut_activated();
     void on_actionZoomIn_activated();
+    void on_actionAbout_activated();
 signals:
     void updateSplashMessage(QString);
 
