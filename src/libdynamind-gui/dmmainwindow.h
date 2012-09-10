@@ -91,7 +91,6 @@ private:
     void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 
-
 public slots:
     void runSimulation();
     void sceneChanged();

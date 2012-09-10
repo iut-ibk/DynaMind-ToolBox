@@ -172,6 +172,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
 
     connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     this->simulation->registerRootNode();
+    this->simulation->loadModulesFromDefaultLocation();
     this->simulation->addModulesFromSettings();
     this->helpviewer = new GUIHelpViewer();
 
@@ -189,13 +190,6 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
     connect(actionUpdate, SIGNAL(activated()), this , SLOT(updateSimulation()), Qt::DirectConnection);
     currentDocument = "";
-
-    QSettings settings("IUT", "DYNAMIND");
-    if(settings.value("pythonModules").toString().isEmpty()) {
-        counter++;
-        this->preferences();
-    }
-
     this->simmanagment = new SimulationManagment();
 
     createModuleListView();
@@ -551,6 +545,8 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
     }
 
 }
+
+
 
 DMMainWindow::~DMMainWindow() {
     delete this->simulation;
