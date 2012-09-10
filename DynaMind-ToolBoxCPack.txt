@@ -47,7 +47,9 @@ SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com")
               ${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll)
 
      INSTALL(DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
+     INSTALL (DIRECTORY "C:/winlibs/GDAL/" DESTINATION bin)
      INSTALL(FILES ${DLLS} DESTINATION bin)
+
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
