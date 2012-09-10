@@ -206,6 +206,11 @@ namespace DM {
         /** @brief Add the modules set in the QSetting **/
         bool addModulesFromSettings();
 
+        void loadPythonModulesFromDirectory(std::string path);
+        /** @brief Add Modules from default location
+          * modules/
+        **/
+        void loadModulesFromDefaultLocation();
         /** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
         int getSimulationStatus();
 
@@ -220,6 +225,7 @@ namespace DM {
         IDataBase * database;
         ModuleRegistry * moduleRegistry;
         void removeLinksFromModule(Module *);
+
 
 
 

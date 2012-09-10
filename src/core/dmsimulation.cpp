@@ -141,6 +141,42 @@ void Simulation::reloadModules() {
 
     }
 }
+void Simulation::loadModulesFromDefaultLocation()
+{
+    QDir CurrentPath = QDir::currentPath();
+    CurrentPath.cd("Modules");
+
+    //Native Modules
+    QStringList modulesToLoad = CurrentPath.entryList();
+    foreach (QString module, modulesToLoad) {
+        if (module == ".." || module == ".")
+            continue;
+        DM::Logger(DM::Debug) << module.toStdString();
+        QString ml = CurrentPath.absolutePath() +"/" + module;
+        this->moduleRegistry->addNativePlugin(ml.toStdString());
+    }
+    CurrentPath = QDir::currentPath();
+    CurrentPath.cd("PythonModules");
+    CurrentPath.cd("scripts");
+    this->loadPythonModulesFromDirectory(CurrentPath.absolutePath().toStdString());
+
+}
+void Simulation::loadPythonModulesFromDirectory(std::string path) {
+    QDir pythonDir = QDir(QString::fromStdString(path));
+    QStringList filters;
+    filters << "*.py";
+    QStringList files = pythonDir.entryList(filters);
+    foreach(QString file, files) {
+        try{
+            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+            Logger(Debug) << n;
+
+        } catch(...) {
+            Logger(Warning)  << "Can't load Module " << file.toStdString();
+        }
+    }
+}
+
 bool Simulation::addModulesFromSettings() {
 
 
@@ -156,20 +192,7 @@ bool Simulation::addModulesFromSettings() {
     QStringList list = text.replace("\\","/").split(",");
     foreach (QString s, list){
         DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
-        pythonDir = QDir(s);
-        QStringList filters;
-        filters << "*.py";
-        QStringList files = pythonDir.entryList(filters);
-        foreach(QString file, files) {
-            try{
-                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-                Logger(Debug) << n;
-
-            } catch(...) {
-                Logger(Warning)  << "Can't load Module " << file.toStdString();
-            }
-        }
-
+        loadPythonModulesFromDirectory(s.toStdString());
     }
 
     // Native Modules
