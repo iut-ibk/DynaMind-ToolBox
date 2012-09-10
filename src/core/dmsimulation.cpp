@@ -144,7 +144,7 @@ void Simulation::reloadModules() {
 void Simulation::loadModulesFromDefaultLocation()
 {
     QDir CurrentPath = QDir::currentPath();
-    CurrentPath.cd("Modules");
+    CurrentPath = CurrentPath.cd("Modules");
 
     //Native Modules
     QStringList modulesToLoad = CurrentPath.entryList();
