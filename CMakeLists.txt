@@ -6,10 +6,21 @@ ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.2.0")
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
+OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
+OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim DynaMind-Performance-Assessment DynaMind-VIBeModules DynaMind-DAnCE4Water)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim  DynaMind-VIBeModules DynaMind-DAnCE4Water)
+
+if(WITH_PLUGIN_QGIS)
+    set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
+endif(WITH_PLUGIN_QGIS)
+
+if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
+endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
+
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
