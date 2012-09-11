@@ -26,7 +26,7 @@
 
 #ifndef VIEWERWINDOW_H
 #define VIEWERWINDOW_H
-
+#include <dmcompilersettings.h>
 #include <QWidget>
 #include <QTimer>
 
@@ -37,7 +37,7 @@ namespace DM {
 
 class System;
 
-class ViewerWindow : public QWidget
+class DM_HELPER_DLL_EXPORT ViewerWindow : public QWidget
 {
     Q_OBJECT
     

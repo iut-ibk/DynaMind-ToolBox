@@ -26,7 +26,7 @@
 
 #ifndef ADDLAYERDIALOG_H
 #define ADDLAYERDIALOG_H
-
+#include <dmcompilersettings.h>
 #include <QDialog>
 
 namespace Ui {
@@ -43,7 +43,7 @@ namespace DM {
 
 
 
-class AddLayerDialog : public QDialog {
+class DM_HELPER_DLL_EXPORT AddLayerDialog : public QDialog {
     Q_OBJECT
     
 public:

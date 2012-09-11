@@ -26,7 +26,7 @@
 
 #ifndef DM_DMCOMPONENTEDITOR_H
 #define DM_DMCOMPONENTEDITOR_H
-
+#include <dmcompilersettings.h>
 #include <QDialog>
 
 class QTreeWidgetItem;
@@ -39,7 +39,7 @@ namespace Ui {
 class ComponentEditor;
 }
 
-class ComponentEditor : public QDialog {
+class DM_HELPER_DLL_EXPORT ComponentEditor : public QDialog {
     Q_OBJECT
     
 public:
