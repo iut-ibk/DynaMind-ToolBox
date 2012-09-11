@@ -116,8 +116,6 @@ private slots:
     void on_actionZoomOut_activated();
     void on_actionZoomIn_activated();
     void on_actionAbout_activated();
-signals:
-    void updateSplashMessage(QString);
 
 };
 
