@@ -192,7 +192,6 @@ DM::Module * ModelNode::getDMModel() {
 ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation)
 {
     this->guiPortObserver.setModelNode(this);
-    this->guiResultObserver.setResultWidget(this->ResultWidget);
     this->minimized = false;
     this->visible = true;
     this->setParentItem(0);

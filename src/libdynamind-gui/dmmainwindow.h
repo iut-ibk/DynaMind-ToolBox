@@ -41,7 +41,6 @@
 #include <QMap>
 #include <QVector>
 #include <moduledescription.h>
-#include <guiresultobserver.h>
 #include <ui_dmmainwindow.h>
 #include <simulationio.h>
 class QTreeWidgetItem;

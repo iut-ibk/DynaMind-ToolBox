@@ -43,7 +43,6 @@
 #include <dmport.h>
 #include <dmsimulation.h>
 #include <guiportobserver.h>
-#include <guiresultobserver.h>
 #include <QWidget>
 
 class ModelNodeButton;
@@ -57,7 +56,6 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
     enum { Type = UserType + 1 };
 protected:
     GUIPortObserver guiPortObserver;
-    GUIResultObserver guiResultObserver;
     float x1;
     float y1;
     float x2;
@@ -84,7 +82,6 @@ protected:
     virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     GUISimulation * simulation;
-    DMMainWindow * ResultWidget;
 
 public:
     QStringList ExistingInPorts;
@@ -97,7 +94,6 @@ public:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
-    void setResultWidget(DMMainWindow * widget) {this->ResultWidget = widget; this->guiResultObserver.setResultWidget(widget);}
 
     int getID(){return this->id;}
     QString getName(){return QString::fromStdString(this->getDMModel()->getClassName());}
