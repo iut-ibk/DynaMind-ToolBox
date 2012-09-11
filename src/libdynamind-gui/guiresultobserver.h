@@ -29,11 +29,12 @@
 #include <QWidget>
 #include <QObject>
 #include <dmrasterdata.h>
+#include <dmcompilersettings.h>
 
 #include <QVector>
 
 class DMMainWindow;
-class GUIResultObserver :public QObject, public DM::ResultObserver
+class DM_HELPER_DLL_EXPORT GUIResultObserver :public QObject, public DM::ResultObserver
 {
     Q_OBJECT
 private:

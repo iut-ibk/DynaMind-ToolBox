@@ -31,8 +31,9 @@
 #include <QString>
 #include <QMutex>
 #include <QMutexLocker>
+#include <dmcompilersettings.h>
 
-class GuiLogSink : public QObject, public DM::LogSink {
+class DM_HELPER_DLL_EXPORT GuiLogSink : public QObject, public DM::LogSink {
     Q_OBJECT
 public:
     QMutex *mutex;

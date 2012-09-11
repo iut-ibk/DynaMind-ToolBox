@@ -26,11 +26,11 @@
 
 #ifndef GUISIMULATIONOBSERVER_H
 #define GUISIMULATIONOBSERVER_H
-
+#include <dmcompilersettings.h>
 #include <dmsimulationobserver.h>
 #include <projectviewer.h>
 
-class GUISimulationObserver : public DM::SimulationObserver
+class DM_HELPER_DLL_EXPORT GUISimulationObserver : public DM::SimulationObserver
 {
 private:
     ProjectViewer * pv;

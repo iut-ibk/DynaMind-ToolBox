@@ -31,12 +31,13 @@
 #include <QVector>
 #include <QGraphicsView>
 #include <QContextMenuEvent>
+#include <dmcompilersettings.h>
 namespace Ui {
     class GUIImageResultView;
 }
 class QGraphicsPixmapItem;
 class QGraphicsSvgItem;
-class GUIImageResultView : public QWidget
+class DM_HELPER_DLL_EXPORT GUIImageResultView : public QWidget
 {
     Q_OBJECT
 

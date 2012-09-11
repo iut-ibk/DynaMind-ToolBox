@@ -26,7 +26,7 @@
 
 #ifndef GUISIMULATION_H
 #define GUISIMULATION_H
-
+#include <dmcompilersettings.h>
 #include <dmsimulation.h>
 #include <QVector>
 #include <QString>
@@ -35,7 +35,7 @@
 class ModelNode;
 class GroupNode;
 class GUILink;
-class GUISimulation :  public DM::Simulation
+class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
 {
     Q_OBJECT
 public:

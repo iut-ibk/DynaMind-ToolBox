@@ -29,9 +29,10 @@
 #include <QWidget>
 #include <dmportobserver.h>
 #include <QObject>
+#include <dmcompilersettings.h>
 class ModelNode;
 
-class GUIPortObserver :  public PortObserver
+class DM_HELPER_DLL_EXPORT GUIPortObserver :  public PortObserver
 {
 private:
     ModelNode * mn;
