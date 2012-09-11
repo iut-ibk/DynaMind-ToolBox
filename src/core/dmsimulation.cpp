@@ -173,6 +173,7 @@ void Simulation::loadPythonModulesFromDirectory(std::string path) {
     QStringList filters;
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
+    DM::PythonEnv::getInstance()->addPythonPath((path));
     foreach(QString file, files) {
         try{
             std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
@@ -198,7 +199,6 @@ bool Simulation::addModulesFromSettings() {
     QString text = settings.value("pythonModules").toString();
     QStringList list = text.replace("\\","/").split(",");
     foreach (QString s, list){
-        DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
         loadPythonModulesFromDirectory(s.toStdString());
     }
 
