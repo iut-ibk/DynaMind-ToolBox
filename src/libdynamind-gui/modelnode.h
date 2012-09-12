@@ -87,7 +87,7 @@ public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
     ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
-    ModelNode(DM::Module *VIBeModuleUUID, GUISimulation *simulation);
+    ModelNode(DM::Module *VIBeModuleUUID, GUISimulation *simulation, QObject *parent = 0, QGraphicsItem *parent_item = 0);
 
     int type() const {return Type; }
     virtual ~ModelNode();

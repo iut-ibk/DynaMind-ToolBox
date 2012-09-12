@@ -157,7 +157,7 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
     }
 }
 
-DMMainWindow::DMMainWindow(QWidget * parent)
+DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent) , Ui::DMMainWindow()
 {
 
     setupUi(this);
