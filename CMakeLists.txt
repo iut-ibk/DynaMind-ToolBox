@@ -3,6 +3,16 @@ project(DynaMind-ToolBox)
 
 ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.2.0")
 
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+        message(STATUS "Using Visual C compilers")
+        set(CMAKE_CXX_FLAGS "/EHsc")
+ENDIF()
+
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+        message(STATUS "Using GNU compilers")
+        set(CMAKE_CXX_FLAGS "-g -Wall")
+ENDIF()
+
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
