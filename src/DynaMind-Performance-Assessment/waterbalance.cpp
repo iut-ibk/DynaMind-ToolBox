@@ -145,9 +145,9 @@ void WaterBalance::run()
         simreg->addNativePlugin("libnodes.so");
 
         p = new SimulationParameters();
-        p->dt = lexical_cast<int>("60");
+        p->dt = lexical_cast<int>("120");
         p->start = time_from_string("2001-Jan-01 00:00:00");
-        p->stop = time_from_string("2001-Feb-02 00:00:00");
+        p->stop = time_from_string("2001-Jan-10 00:00:00");
 
         MapBasedModel m;
 
