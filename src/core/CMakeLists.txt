@@ -9,6 +9,14 @@ SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${OUTPUT_DIR}/
 
 ADD_LIBRARY(dynamindcore  SHARED ${DYNAMIND_CPPS})
 
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+        SET_TARGET_PROPERTIES(dynamindcore PROPERTIES COMPILE_FLAGS "/frounding-math")
+ENDIF()
+
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+        SET_TARGET_PROPERTIES(dynamindcore PROPERTIES COMPILE_FLAGS "-frounding-math")
+ENDIF()
+
 TARGET_LINK_LIBRARIES(dynamindcore ${QT_LIBRARIES} ${PYTHON_LIBRARIES} ${QT_QTMAIN_LIBRARY})
 
 add_dependencies(dynamindcore pydynamindgen pydmtoolboxgen)
