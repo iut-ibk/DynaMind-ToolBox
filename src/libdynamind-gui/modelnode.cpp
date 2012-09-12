@@ -189,8 +189,7 @@ DM::Module * ModelNode::getDMModel() {
     return this->simulation->getModuleWithUUID(this->VIBeModuleUUID);
 }
 
-ModelNode::ModelNode( DM::Module *VIBeModule,GUISimulation * simulation, QObject *parent, QGraphicsItem *parent_gi)
-    : QObject(parent), QGraphicsItem(parent_gi)
+ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
 {
     this->guiPortObserver.setModelNode(this);
     this->minimized = false;
