@@ -160,6 +160,7 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent) , Ui::DMMainWindow()
 {
 
+    Q_INIT_RESOURCE(icons);
     setupUi(this);
     log_updater = new GuiLogSink();
     DM::Log::init(log_updater,DM::Debug);
