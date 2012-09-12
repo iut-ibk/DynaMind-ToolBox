@@ -26,7 +26,7 @@
 
 #ifndef DM_DMLAYER_H
 #define DM_DMLAYER_H
-
+#include <dmcompilersettings.h>
 #include "dmview.h"
 
 #include <QMap>
@@ -46,7 +46,7 @@ class Attribute;
 class Face;
 class Node;
 
-class Layer {
+class DM_HELPER_DLL_EXPORT Layer {
 public:
     Layer(System *system, View v, const std::string &attribute = "");
     ~Layer();

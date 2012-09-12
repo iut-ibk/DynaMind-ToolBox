@@ -26,14 +26,14 @@
 
 #ifndef GUIHELPVIEWER_H
 #define GUIHELPVIEWER_H
-
+#include <dmcompilersettings.h>
 #include <QWidget>
 #include <QUrl>
 namespace Ui {
 class GUIHelpViewer;
 }
 
-class GUIHelpViewer : public QWidget
+class DM_HELPER_DLL_EXPORT GUIHelpViewer : public QWidget
 {
     Q_OBJECT
     

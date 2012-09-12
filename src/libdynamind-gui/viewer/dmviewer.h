@@ -26,14 +26,14 @@
 
 #ifndef DM3DVIEWER_H
 #define DM3DVIEWER_H
-
+#include <dmcompilersettings.h>
 #include <QGLViewer/qglviewer.h>
 
 namespace DM {
 class System;
 class Layer;
 
-class Viewer : public QGLViewer {
+class DM_HELPER_DLL_EXPORT Viewer : public QGLViewer {
 public:
     Viewer(QWidget *parent = 0) : QGLViewer(parent), system(0) {
     }

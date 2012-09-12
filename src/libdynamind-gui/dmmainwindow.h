@@ -41,7 +41,6 @@
 #include <QMap>
 #include <QVector>
 #include <moduledescription.h>
-#include <guiresultobserver.h>
 #include <ui_dmmainwindow.h>
 #include <simulationio.h>
 class QTreeWidgetItem;
@@ -91,7 +90,6 @@ private:
     void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 
-
 public slots:
     void runSimulation();
     void sceneChanged();
@@ -112,12 +110,12 @@ public slots:
     void showHelp(std::string classname);
 
 
+
 private slots:
     void on_actionZoomReset_activated();
     void on_actionZoomOut_activated();
     void on_actionZoomIn_activated();
-signals:
-    void updateSplashMessage(QString);
+    void on_actionAbout_activated();
 
 };
 

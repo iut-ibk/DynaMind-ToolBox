@@ -13,7 +13,10 @@ find_path(QGLVIEWER_INCLUDE_DIR
                 /usr/local/include
                 ENV QGLVIEWERROOT 
          )
-
+find_path(QGLVIEWER_DIR
+             NAMES QGLViewer
+                   ENV QGLVIEWERROOT
+         )
 find_library(QGLVIEWER_LIBRARY_RELEASE 
              NAMES qglviewer-qt4 QGLViewer QGLViewer2
              PATHS /usr/lib
@@ -44,6 +47,7 @@ if(QGLVIEWER_LIBRARY_RELEASE)
   set(QGLVIEWER_LIBRARIES ${QGLVIEWER_LIBRARIES_} CACHE FILEPATH "The QGLViewer library")
 
 endif()
+
 
 IF(QGLVIEWER_INCLUDE_DIR AND QGLVIEWER_LIBRARIES)
    SET(QGLVIEWER_FOUND TRUE)

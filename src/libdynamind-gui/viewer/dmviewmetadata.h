@@ -26,7 +26,7 @@
 
 #ifndef DM_VIEWMETADATA_H
 #define DM_VIEWMETADATA_H
-
+#include <dmcompilersettings.h>
 #include "dmsystemiterators.h"
 
 namespace DM {
@@ -35,7 +35,7 @@ class System;
 class View;
 class Component;
 
-struct ViewMetaData {
+struct DM_HELPER_DLL_EXPORT ViewMetaData {
     ViewMetaData(std::string attribute);
     
     void max_vec(const double *other);

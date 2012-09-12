@@ -41,22 +41,22 @@ int main(int argc, char *argv[]) {
     glf.setSamples(4);
     QGLFormat::setDefaultFormat(glf);
     //Q_INIT_RESOURCE(icons);
-    Q_INIT_RESOURCE(splash);
+    //Q_INIT_RESOURCE(splash);
 
-    QPixmap pixmap(":/Splash/ressources/logo.png");
-    QSplashScreen *splash1 = new QSplashScreen(pixmap);
+    //QPixmap pixmap(":/Splash/ressources/logo.png");
+    //QSplashScreen *splash1 = new QSplashScreen(pixmap);
 
-    splash1->show();
+    //splash1->show();
     //splash1->showMessage("Loading Modules");
     app.processEvents();
 
-   QThreadPool::globalInstance()->setMaxThreadCount(0);
+    QThreadPool::globalInstance()->setMaxThreadCount(0);
 
     DMMainWindow * mw = new DMMainWindow();
 
     mw->show();
 
-    splash1->finish(mw);
+    //splash1->finish(mw);
 
 
     return app.exec();
