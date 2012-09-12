@@ -1,0 +1,400 @@
+<DynaMind>
+	<Info Version="0.3/">
+<DynaMindCore>
+	<Nodes>
+		<RootNode>
+			<UUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+		</RootNode>
+		<Node>
+			<ClassName value="WaterBalance"/>
+			<UUID value="{0fa5ef12-3c8d-41d7-b263-3aa8bf05b6b1}"/>
+			<Name value=""/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{2a58f52b-aa52-40a2-b10e-67a3f6162ea7}"/>
+			<Name value="Pipes"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Pipes.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[PIPE]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{4bf95f0c-233c-4c94-acef-abf7a3cf6733}"/>
+			<Name value="3rdTanks"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Tanks.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[3RDTANK]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{5e1385ca-5852-404d-9348-d13bbed126ee}"/>
+			<Name value="Conduits"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Conduits.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[CONDUIT]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{6d141c5b-ff80-4684-acf7-fce64483b0a2}"/>
+			<Name value="UDTanks"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/UDTank.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[STORAGE]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{8d3b9268-6b3d-4308-91f5-678fe1cb35f2}"/>
+			<Name value="Tanks"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Tanks.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[TANK]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{aef00588-e67b-4a5b-beac-16d04822d6c1}"/>
+			<Name value="3rdPipes"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Pipes.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[3RDPIPE]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="AppendViewFromSystem"/>
+			<UUID value="{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+			<Name value=""/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="Inports">
+				<![CDATA[tank*|*3rdtank*|*catchments*|*udtank*|*]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{f5d6f866-892d-42fb-ae4e-99cd2230ff19}"/>
+			<Name value="Conduits"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Conduits.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[CONDUIT]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="ImportwithGDAL"/>
+			<UUID value="{f740bc29-8021-4fef-9eb5-f73f0ad1bc1d}"/>
+			<Name value="Catchments"/>
+			<GroupUUID value="{73085736-da1f-44ff-94e2-43aa202f586d}"/>
+			<parameter name="AppendToExisting">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="AttributesToImport">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Filename">
+				<![CDATA[/home/csae6550/Desktop/Prepared/Input/Blocks.shp]]>
+			</parameter>
+			<parameter name="ImportAll">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Tolerance">
+				<![CDATA[0.01]]>
+			</parameter>
+			<parameter name="ViewName">
+				<![CDATA[CATCHMENT]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{5e1385ca-5852-404d-9348-d13bbed126ee}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{2a58f52b-aa52-40a2-b10e-67a3f6162ea7}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{aef00588-e67b-4a5b-beac-16d04822d6c1}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{4bf95f0c-233c-4c94-acef-abf7a3cf6733}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+				<PortName value = "tank"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{5e1385ca-5852-404d-9348-d13bbed126ee}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+				<PortName value = "udtank"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{6d141c5b-ff80-4684-acf7-fce64483b0a2}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{2a58f52b-aa52-40a2-b10e-67a3f6162ea7}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{8d3b9268-6b3d-4308-91f5-678fe1cb35f2}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{f5d6f866-892d-42fb-ae4e-99cd2230ff19}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{aef00588-e67b-4a5b-beac-16d04822d6c1}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{0fa5ef12-3c8d-41d7-b263-3aa8bf05b6b1}"/>
+				<PortName value = "City"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+				<PortName value = "Combined"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+				<PortName value = "3rdtank"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{f5d6f866-892d-42fb-ae4e-99cd2230ff19}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+				<PortName value = "catchments"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{f740bc29-8021-4fef-9eb5-f73f0ad1bc1d}"/>
+				<PortName value = "Data"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="{8d3b9268-6b3d-4308-91f5-678fe1cb35f2}"/>
+			<GUI_PosX value="2"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{f740bc29-8021-4fef-9eb5-f73f0ad1bc1d}"/>
+			<GUI_PosX value="591"/>
+			<GUI_PosY value="248"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{6d141c5b-ff80-4684-acf7-fce64483b0a2}"/>
+			<GUI_PosX value="591"/>
+			<GUI_PosY value="384"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{aef00588-e67b-4a5b-beac-16d04822d6c1}"/>
+			<GUI_PosX value="303"/>
+			<GUI_PosY value="128"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{0fa5ef12-3c8d-41d7-b263-3aa8bf05b6b1}"/>
+			<GUI_PosX value="1290"/>
+			<GUI_PosY value="18"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{c0712ca3-deb0-4252-82c9-7804641660f0}"/>
+			<GUI_PosX value="906"/>
+			<GUI_PosY value="9"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{2a58f52b-aa52-40a2-b10e-67a3f6162ea7}"/>
+			<GUI_PosX value="305"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{5e1385ca-5852-404d-9348-d13bbed126ee}"/>
+			<GUI_PosX value="584"/>
+			<GUI_PosY value="1"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{4bf95f0c-233c-4c94-acef-abf7a3cf6733}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="126"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{f5d6f866-892d-42fb-ae4e-99cd2230ff19}"/>
+			<GUI_PosX value="588"/>
+			<GUI_PosY value="125"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>
