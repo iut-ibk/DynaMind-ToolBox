@@ -39,7 +39,7 @@
 #include <rootgroupnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
-#include "viewer/dmviewerwindow.h"
+#include <dmviewerwindow.h>
 
 std::string ModelNode::getParameterAsString(std::string name) {
 
