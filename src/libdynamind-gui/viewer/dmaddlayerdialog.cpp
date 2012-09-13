@@ -50,17 +50,17 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
         strings << QString::fromStdString(v.getName());
         
         switch (v.getType()) {
-            case DM::FACE:
-                strings << "Face";
-                break;
-            case DM::EDGE:
-                strings << "Edge";
-                break;
-            case DM::NODE:
-                strings << "Node";
-                break;
-            default:
-                continue;
+        case DM::FACE:
+            strings << "Face";
+            break;
+        case DM::EDGE:
+            strings << "Edge";
+            break;
+        case DM::NODE:
+            strings << "Node";
+            break;
+        default:
+            continue;
         }
         
         QTreeWidgetItem *item = new QTreeWidgetItem(strings);
@@ -91,7 +91,7 @@ GLuint makeColorRampTexture(DM::Viewer *v, QColor start, QColor stop) {
         double h = start.hueF() + (i*h_inc);
         double s = start.saturationF() + (i*s_inc);
         double v = start.valueF() + (i*v_inc);
-                
+
         QColor c = QColor::fromHsvF(h, s, v);
         data[i][0] = c.red();
         data[i][1] = c.green();
@@ -162,17 +162,43 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     ui->attributeList->clear();
     view = system->getViewDefinition(current->text(0).toStdString());
     
-    if (!system->getUUIDsOfComponentsInView(*view).size()) return;
+    //if (!system->getUUIDsOfComponentsInView(*view).size()) return;
     
-    std::string uuid = system->getUUIDsOfComponentsInView(*view)[0];
-    
+
+
+    std::string uuid =  view->getIdOfDummyComponent();
+    std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(*view);
+    QMap<std::string, DM::Attribute::AttributeType> attrTypes;
     QMap<std::string, DM::Attribute*> attributes(system->getComponent(uuid)->getAllAttributes());
+
+    foreach (std::string k, attributes.keys()) {
+        attrTypes[k] = attributes[k]->getType();
+    }
     
+    foreach (std::string uuid,uuids) {
+        QMap<std::string, DM::Attribute*> attrs(system->getComponent(uuid)->getAllAttributes());
+        foreach(std::string k, attrs.keys()) {
+            attrTypes[k] = attrs[k]->getType();
+        }
+        bool exists = true;
+        foreach(std::string k, attrTypes.keys()) {
+            if (attrTypes[k] == DM::Attribute::NOTYPE) {
+                exists = false;
+                continue;
+            }
+        }
+        if (exists)
+            break;
+    }
+    foreach (std::string k, attrTypes.keys()) {
+        attributes[k]->setType(attrTypes[k]);
+    }
+
     foreach(std::string key, attributes.keys()) {
         DM::Attribute *attr = attributes[key];
         if (! (attr->getType() == Attribute::DOUBLE
-            || attr->getType() == Attribute::DOUBLEVECTOR
-            || attr->getType() == Attribute::TIMESERIES)) {
+               || attr->getType() == Attribute::DOUBLEVECTOR
+               || attr->getType() == Attribute::TIMESERIES)) {
             continue;
         }
         
