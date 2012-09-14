@@ -45,6 +45,10 @@ public:
     
     void addLayer(Layer *l);
     
+    Layer *getLayer(int i) {
+        return layers[i];
+    }
+    
 public slots:
     void systemChanged();
     void updateLayerLayout();

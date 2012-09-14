@@ -114,7 +114,8 @@ void Viewer::draw() {
     CHECK_SYSTEM;
     glEnable(GL_MULTISAMPLE);
     foreach(Layer *l, layers) {
-        l->draw(this);
+        if (l->isEnabled())
+            l->draw(this);
     }
     glDisable(GL_MULTISAMPLE);
 }
@@ -128,6 +129,7 @@ void Viewer::postSelection(const QPoint &) {
     int nl = 0;
     int name = selectedName();
     foreach (Layer *l, layers) {
+        if (!l->isEnabled()) continue;
         if (l->isNameFromLayer(selectedName())) {
             View v = l->getView();
             GLuint ns = l->getNameStart();

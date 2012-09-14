@@ -54,6 +54,17 @@ void ViewerWindow::on_actionAdd_Layer_triggered() {
         Layer *l = dialog.getLayer(ui->viewer);
         if (!l) return;
         ui->viewer->addLayer(l);
+        
+        QListWidgetItem *item = new QListWidgetItem(ui->layer_listWidget);
+        item->setFlags(item->flags() | Qt::ItemIsSelectable);
+        item->setCheckState(Qt::Checked);
+        QStringList text;
+        text << QString::fromStdString(l->getView().getName());
+        if (l->getAttribute() != "") {
+            text << QString::fromStdString(l->getAttribute());
+        }
+        item->setText(text.join(":"));
+        
         QStringList attr_names = dialog.getAttributeVectorNames();
         if (attr_names.empty())
             return;
@@ -97,6 +108,12 @@ void ViewerWindow::on_playButton_clicked() {
         timer.start();
         ui->playButton->setIcon(QIcon::fromTheme("player_pause"));
     }
+}
+
+void ViewerWindow::on_layer_listWidget_itemChanged(QListWidgetItem *item) {
+    int i = ui->layer_listWidget->row(item);
+    ui->viewer->getLayer(i)->setEnabled(item->checkState() == Qt::Checked);
+    ui->viewer->updateGL();
 }
 
 void ViewerWindow::timerShot() {

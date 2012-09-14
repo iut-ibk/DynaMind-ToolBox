@@ -111,6 +111,14 @@ public:
         return attribute;
     }
     
+    void setEnabled(bool enabled) {
+        this->enabled = enabled;
+    }
+    
+    bool isEnabled() const {
+        return enabled;
+    }
+    
 private:
     System *system;
     View view;
@@ -126,6 +134,7 @@ private:
     ViewMetaData vmd;
     
     int attribute_vector_name;
+    bool enabled;
 };
 
 } // namespace DM

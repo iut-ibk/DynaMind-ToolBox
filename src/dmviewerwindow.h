@@ -33,6 +33,9 @@
 namespace Ui {
 class ViewerWindow;
 }
+
+class QListWidgetItem;
+
 namespace DM {
 
 class System;
@@ -57,6 +60,8 @@ private slots:
     
     void on_names_currentIndexChanged(int);
     void on_playButton_clicked();
+    
+    void on_layer_listWidget_itemChanged(QListWidgetItem *);
     
     void timerShot();
     
