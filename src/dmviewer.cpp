@@ -71,7 +71,7 @@ void Viewer::drawColorBars() {
     QFont f;
     QFontMetrics fm(f);
     
-    for(int i = 0; i < layers.size(); i++) {
+    for(unsigned int i = 0; i < layers.size(); i++) {
         Layer *l = layers[i];
         if (!glIsTexture(l->getColorInterpretation()))
             continue;

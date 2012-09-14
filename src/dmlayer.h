@@ -92,7 +92,7 @@ public:
     
     bool isNameFromLayer(GLuint name) const {
         name -= name_start;
-        return name >= 0 && name < vmd.number_of_primitives;
+        return name >= 0 && name < (GLuint) vmd.number_of_primitives;
     }
     
     View getView() const {
@@ -126,7 +126,7 @@ private:
     double scale_height;
     
     std::vector<GLuint> lists;
-    int texture;
+    GLuint texture;
     GLuint name_start;
     
     double x_off, y_off, z_off;
