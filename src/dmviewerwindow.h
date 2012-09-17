@@ -30,6 +30,8 @@
 #include <QWidget>
 #include <QTimer>
 
+#include "dmcolorramp.h"
+
 namespace Ui {
 class ViewerWindow;
 }
@@ -38,7 +40,16 @@ class QListWidgetItem;
 
 namespace DM {
 
+
+struct LayerSpec {
+    std::string view;
+    std::string attribute;
+    ColorRamp ramp;
+    double height;
+};
+
 class System;
+class Layer;
 
 class DM_HELPER_DLL_EXPORT ViewerWindow : public QWidget
 {
@@ -48,7 +59,11 @@ public:
     explicit ViewerWindow(System *system, QWidget *parent = 0);
     ~ViewerWindow();
     
+    void addLayers(std::list<LayerSpec> specs);
+    
 private slots:
+    void addLayerFromSpec(LayerSpec spec);
+    void addLayer(Layer *layer);
     void on_actionAdd_Layer_triggered();
     void offsetChanged();
     
