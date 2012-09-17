@@ -60,9 +60,9 @@ private slots:
     void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     
 private:
+    DM::System *system;
     Ui::AddLayerDialog *ui;
     QColor start, stop;
-    DM::System *system;
     
     DM::View *view;
     std::string attribute;
