@@ -175,7 +175,7 @@ struct TesselatedFaceDrawer {
             
             foreach(Point_2 p, poly.container()) {
                 if (glIsTexture(l.getColorInterpretation())) {
-                    glColor3f(1.0, 1.0, 1.0);
+                    glColor4f(1.0, 1.0, 1.0, 0.75);
                     glTexCoord1d(current_tex);
                 } else {
                     glColor3f(0.0, 0.0, 0.0);
