@@ -54,8 +54,6 @@ public:
     QStringList getAttributeVectorNames() const;
     
 private slots:
-    void on_color_start_button_clicked();
-    void on_color_stop_button_clicked();
     void on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     

@@ -36,6 +36,7 @@
 #include "glext.h"
 #include "dmviewer.h"
 #include "dmlogger.h"
+#include "dmcolorramp.h"
 
 namespace DM {
 
@@ -66,8 +67,6 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
         QTreeWidgetItem *item = new QTreeWidgetItem(strings);
         ui->viewList->addTopLevelItem(item);
     }
-    
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }
 
 AddLayerDialog::~AddLayerDialog() {
@@ -113,7 +112,8 @@ DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
         return 0;
     DM::Layer *l = new DM::Layer(system, *view, attribute);
     if (ui->colorCheckBox->isChecked()) {
-        l->setColorInterpretation(makeColorRampTexture(v, start.toHsv(), stop.toHsv()));
+        v->makeCurrent();
+        l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex()));
     }
     if (ui->heightCheckBox->isChecked()) {
         l->setHeightInterpretation(ui->heightSpinBox->value());
@@ -147,18 +147,7 @@ QStringList AddLayerDialog::getAttributeVectorNames() const {
     return QStringList();
 }
 
-void AddLayerDialog::on_color_start_button_clicked() {
-    start = QColorDialog::getColor(start, this);
-    ui->color_start_label->setStyleSheet("background-color: " + start.name());
-}
-
-void AddLayerDialog::on_color_stop_button_clicked() {
-    stop = QColorDialog::getColor(stop, this);
-    ui->color_stop_label->setStyleSheet("background-color: " + stop.name());
-}
-
 void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *) {
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(current);
     ui->attributeList->clear();
     view = system->getViewDefinition(current->text(0).toStdString());
     
