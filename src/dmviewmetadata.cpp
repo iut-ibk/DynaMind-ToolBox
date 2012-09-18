@@ -49,7 +49,7 @@ ViewMetaData::ViewMetaData(std::string attribute)
     : attr(attribute), number_of_primitives(0)  {
     min[0] = std::numeric_limits<double>::max();
     min[2] = min[1] = attr_min = min[0];
-    max[0] = std::numeric_limits<double>::min();
+    max[0] = -std::numeric_limits<double>::max();
     max[2] = max[1] = attr_max = max[0];
 }
 
@@ -64,8 +64,10 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Nod
             a->getType() == Attribute::TIMESERIES) {
             
             std::vector<double> dv = a->getDoubleVector();
-            attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
-            attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
+            if (dv.size()) {
+                attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
+                attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
+            }
         }
         number_of_primitives++;
     }
