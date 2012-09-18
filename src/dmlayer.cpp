@@ -81,9 +81,9 @@ struct SimpleDrawer {
 };
 
 struct TesselatedFaceDrawer {
-    double height_scale;
     double attr_span;
     const Layer &l;
+    double height_scale;
     Polygon_2 polygon;
     double current_height;
     double current_tex;
@@ -175,7 +175,7 @@ struct TesselatedFaceDrawer {
             
             foreach(Point_2 p, poly.container()) {
                 if (glIsTexture(l.getColorInterpretation())) {
-                    glColor3f(1.0, 1.0, 1.0);
+                    glColor4f(1.0, 1.0, 1.0, 0.75);
                     glTexCoord1d(current_tex);
                 } else {
                     glColor3f(0.0, 0.0, 0.0);
@@ -203,7 +203,8 @@ struct TesselatedFaceDrawer {
 Layer::Layer(System *s, View v, const std::string &a) 
     : system(s), view(v), 
       attribute(a), vmd(a),
-      attribute_vector_name(0), texture(-1),
+      texture(-1),
+      attribute_vector_name(0),
       scale_height(-1) {
 }
 

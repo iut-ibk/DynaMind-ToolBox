@@ -48,23 +48,28 @@ ViewerWindow::~ViewerWindow() {
     delete ui;
 }
 
+void ViewerWindow::addLayer(Layer *l) {
+    if (!l) return;
+    ui->viewer->addLayer(l);
+    
+    QListWidgetItem *item = new QListWidgetItem(ui->layer_listWidget);
+    item->setFlags(item->flags() | Qt::ItemIsSelectable);
+    item->setCheckState(Qt::Checked);
+    QStringList text;
+    text << QString::fromStdString(l->getView().getName());
+    if (l->getAttribute() != "") {
+        text << QString::fromStdString(l->getAttribute());
+    }
+    item->setText(text.join(":"));
+    
+}
+
 void ViewerWindow::on_actionAdd_Layer_triggered() {
     AddLayerDialog dialog(system, this);
     if (dialog.exec()) {
         Layer *l = dialog.getLayer(ui->viewer);
         if (!l) return;
-        ui->viewer->addLayer(l);
-        
-        QListWidgetItem *item = new QListWidgetItem(ui->layer_listWidget);
-        item->setFlags(item->flags() | Qt::ItemIsSelectable);
-        item->setCheckState(Qt::Checked);
-        QStringList text;
-        text << QString::fromStdString(l->getView().getName());
-        if (l->getAttribute() != "") {
-            text << QString::fromStdString(l->getAttribute());
-        }
-        item->setText(text.join(":"));
-        
+        addLayer(l);
         QStringList attr_names = dialog.getAttributeVectorNames();
         if (attr_names.empty())
             return;
@@ -73,6 +78,7 @@ void ViewerWindow::on_actionAdd_Layer_triggered() {
         ui->names->addItems(attr_names);
     }
 }
+
 
 void ViewerWindow::offsetChanged() {
     ui->viewer->setLayerOffset(ui->x_layerOffset->value(),
@@ -118,6 +124,29 @@ void ViewerWindow::on_layer_listWidget_itemChanged(QListWidgetItem *item) {
 
 void ViewerWindow::timerShot() {
     ui->names->setCurrentIndex((ui->names->currentIndex()+1) % ui->names->count());
+}
+
+void ViewerWindow::addLayers(std::list<LayerSpec> specs) {
+    foreach(LayerSpec spec, specs) {
+        addLayerFromSpec(spec);
+    }
+}
+
+void ViewerWindow::addLayerFromSpec(LayerSpec spec) {
+    DM::View v;
+    bool found = false;
+    foreach (v, system->getViews()) {
+        if (v.getName() == spec.view) {
+            found = true;
+            break;
+        }
+    }
+    Q_ASSERT(found);
+    ui->viewer->makeCurrent();
+    Layer *l = new Layer(system, v, spec.attribute);
+    l->setHeightInterpretation(spec.height);
+    l->setColorInterpretation(get_color_ramp(spec.ramp));
+    addLayer(l);
 }
 
 }

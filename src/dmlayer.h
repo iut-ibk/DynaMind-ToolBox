@@ -122,6 +122,8 @@ public:
 private:
     System *system;
     View view;
+    ViewMetaData vmd;
+    
     std::string attribute;
     double scale_height;
     
@@ -131,7 +133,6 @@ private:
     
     double x_off, y_off, z_off;
     
-    ViewMetaData vmd;
     
     int attribute_vector_name;
     bool enabled;
