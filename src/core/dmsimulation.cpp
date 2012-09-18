@@ -109,7 +109,7 @@ Simulation::~Simulation() {
 
 void Simulation::reloadModules() {
     //Init Python
-    QSettings settings("IUT", "DYNAMIND");
+    QSettings settings;
     Logger(Standard) << "Reload Modules";
 
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
@@ -188,7 +188,7 @@ void Simulation::loadPythonModulesFromDirectory(std::string path) {
 bool Simulation::addModulesFromSettings() {
 
 
-    QSettings settings("IUT", "DYNAMIND");
+    QSettings settings;
 
     //Init Python
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
