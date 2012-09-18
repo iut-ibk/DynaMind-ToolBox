@@ -36,6 +36,10 @@
 int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
+    
+    QCoreApplication::setOrganizationName("IUT");
+    QCoreApplication::setApplicationName("DYNAMIND");
+    
     QGLFormat glf = QGLFormat::defaultFormat();
     glf.setSampleBuffers(true);
     glf.setSamples(4);

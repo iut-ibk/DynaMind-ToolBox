@@ -52,7 +52,7 @@ Preferences::Preferences(QWidget *parent)
 
 
     this->setParent(parent, Qt::Dialog);
-    QSettings settings("IUT", "DYNAMIND");
+    QSettings settings;
     QString text = settings.value("pythonModules").toString();
     QStringList list = text.replace("\\","/").split(",");
     foreach(QString s, list)
@@ -82,7 +82,7 @@ Preferences::Preferences(QWidget *parent)
 
 void Preferences::writePreference() {
 
-    QSettings settings("IUT", "DYNAMIND");
+    QSettings settings;
     //settings.beginGroup("Preferences");
     QStringList pythonModules;
     for (int i = 0; i < this->listWidget->count(); i++)
