@@ -1,6 +1,11 @@
 #include "dmcolorramp.h"
 #include <QColor>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <GL/gl.h>
+
 namespace DM {
 
 GLuint hue(QColor start, QColor stop) {

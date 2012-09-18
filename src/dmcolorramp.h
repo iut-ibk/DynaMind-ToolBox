@@ -1,8 +1,6 @@
 #ifndef DM_DMCOLORRAMP_H
 #define DM_DMCOLORRAMP_H
 
-#include <GL/gl.h>
-
 namespace DM {
 
 enum ColorRamp {
@@ -25,7 +23,7 @@ enum ColorRamp {
     RAINBOW
 };
 
-GLuint get_color_ramp(ColorRamp ramp);
+unsigned int get_color_ramp(ColorRamp ramp);
 
 } // namespace DM
 
