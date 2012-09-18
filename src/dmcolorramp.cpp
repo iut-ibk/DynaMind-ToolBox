@@ -5,6 +5,7 @@
 #include <windows.h>
 #endif
 #include <GL/gl.h>
+#include <glext.h>
 
 namespace DM {
 
