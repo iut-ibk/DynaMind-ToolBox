@@ -53,7 +53,7 @@ void Viewer::init() {
     glDisable(GL_LIGHTING);
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+    setShortcut(EXIT_VIEWER, 0);
 }
 
 void Viewer::drawWithNames() {
