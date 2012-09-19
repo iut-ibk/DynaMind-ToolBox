@@ -43,7 +43,7 @@ public:
         systemChanged();
     }
     
-    void addLayer(Layer *l);
+    void addLayer(Layer *l, bool overdraw = false);
     
     Layer *getLayer(int i) {
         return layers[i];
@@ -76,7 +76,7 @@ private:
     
     System *system;
     int list;
-    std::vector<Layer*> layers;
+    std::vector<Layer*> layers, overdraw_layers;
     double x_off, y_off, z_off;
     double max_radius;
     int max_layer_index;

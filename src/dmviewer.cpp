@@ -59,6 +59,7 @@ void Viewer::init() {
 void Viewer::drawWithNames() {
     CHECK_SYSTEM;
     foreach(Layer *l, layers) {
+        if (!l->isEnabled()) continue;
         l->drawWithNames(this);
     }
 }
@@ -117,8 +118,13 @@ void Viewer::draw() {
     CHECK_SYSTEM;
     glEnable(GL_MULTISAMPLE);
     foreach(Layer *l, layers) {
-        if (l->isEnabled())
-            l->draw(this);
+        if (!l->isEnabled()) continue;
+        l->draw(this);
+        
+        foreach(Layer *od, overdraw_layers) {
+            od->setOffset(l->getXOff(), l->getYOff(), l->getZOff());
+            od->draw(this);
+        }
     }
     glDisable(GL_MULTISAMPLE);
 }
@@ -144,9 +150,16 @@ void Viewer::postSelection(const QPoint &) {
     }
 }
 
-void Viewer::addLayer(Layer *l) {
-    layers.push_back(l);
+void Viewer::addLayer(Layer *l, bool overdraw) {
     l->systemChanged();
+    
+    if (overdraw) {
+        overdraw_layers.push_back(l);
+        return;
+    } else {
+        layers.push_back(l);
+    }
+    
     if (layers.size() == 1) {
         max_layer_index = 0;
         max_radius = l->getViewMetaData().radius();
@@ -169,6 +182,10 @@ void Viewer::systemChanged() {
     foreach(Layer *l, layers) {
         l->systemChanged();
     }
+    foreach(Layer *l, overdraw_layers) {
+        l->systemChanged();
+    }
+
     updateLayerLayout();
 }
 

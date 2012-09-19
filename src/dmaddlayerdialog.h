@@ -52,6 +52,7 @@ public:
     DM::Layer *getLayer(DM::Viewer *v);
     
     QStringList getAttributeVectorNames() const;
+    bool isOverdrawLayer() const;
     
 private slots:
     void on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

@@ -63,7 +63,7 @@ public:
     
 private slots:
     void addLayerFromSpec(LayerSpec spec);
-    void addLayer(Layer *layer);
+    void addLayer(Layer *layer, bool overdraw = false);
     void on_actionAdd_Layer_triggered();
     void offsetChanged();
     

@@ -112,8 +112,13 @@ QStringList AddLayerDialog::getAttributeVectorNames() const {
     return QStringList();
 }
 
+bool AddLayerDialog::isOverdrawLayer() const {
+    return ui->overdraw->isChecked();
+}
+
 void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *) {
     ui->attributeList->clear();
+    ui->overdraw->setEnabled(current);
     view = system->getViewDefinition(current->text(0).toStdString());
     
     //if (!system->getUUIDsOfComponentsInView(*view).size()) return;
@@ -166,7 +171,6 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
 
 void AddLayerDialog::on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
     attribute = current ? current->text(0).toStdString() : "";
-    
     ui->interpreteGroup->setEnabled(current);
 }
 

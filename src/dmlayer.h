@@ -82,6 +82,18 @@ public:
         z_off = z;
     }
     
+    double getXOff() const {
+        return x_off;
+    }
+    
+    double getYOff() const {
+        return y_off;
+    }
+    
+    double getZOff() const {
+        return z_off;
+    }
+    
     void setNameStart(GLuint start) {
         name_start = start;
     }

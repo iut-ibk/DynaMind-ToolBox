@@ -48,9 +48,11 @@ ViewerWindow::~ViewerWindow() {
     delete ui;
 }
 
-void ViewerWindow::addLayer(Layer *l) {
+void ViewerWindow::addLayer(Layer *l, bool overdraw) {
     if (!l) return;
-    ui->viewer->addLayer(l);
+    ui->viewer->addLayer(l, overdraw);
+    
+    if (overdraw) return;
     
     QListWidgetItem *item = new QListWidgetItem(ui->layer_listWidget);
     item->setFlags(item->flags() | Qt::ItemIsSelectable);
@@ -69,7 +71,7 @@ void ViewerWindow::on_actionAdd_Layer_triggered() {
     if (dialog.exec()) {
         Layer *l = dialog.getLayer(ui->viewer);
         if (!l) return;
-        addLayer(l);
+        addLayer(l, dialog.isOverdrawLayer());
         QStringList attr_names = dialog.getAttributeVectorNames();
         if (attr_names.empty())
             return;
