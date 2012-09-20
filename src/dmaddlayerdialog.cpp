@@ -120,16 +120,17 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     ui->attributeList->clear();
     ui->overdraw->setEnabled(current);
     view = system->getViewDefinition(current->text(0).toStdString());
-    
-    //if (!system->getUUIDsOfComponentsInView(*view).size()) return;
-    
-
 
     std::string uuid =  view->getIdOfDummyComponent();
     std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(*view);
     QMap<std::string, DM::Attribute::AttributeType> attrTypes;
-    QMap<std::string, DM::Attribute*> attributes(system->getComponent(uuid)->getAllAttributes());
-
+    QMap<std::string, DM::Attribute*> attributes_tmp(system->getComponent(uuid)->getAllAttributes());
+    QMap<std::string, DM::Attribute*> attributes;
+    foreach (std::string k, attributes_tmp.keys()) {
+        if (attributes_tmp[k]) {
+            attributes[k] = attributes_tmp[k];
+        }
+    }
     foreach (std::string k, attributes.keys()) {
         attrTypes[k] = attributes[k]->getType();
     }
@@ -150,6 +151,8 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
             break;
     }
     foreach (std::string k, attrTypes.keys()) {
+        if (attributes.find(k) == attributes.end())
+            continue;
         attributes[k]->setType(attrTypes[k]);
     }
 
