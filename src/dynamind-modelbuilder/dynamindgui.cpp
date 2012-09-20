@@ -34,24 +34,24 @@
 #include <dynamindmainwindow.h>
 #include <QGLFormat>
 int main(int argc, char *argv[]) {
-
     QApplication app(argc, argv);
+    Q_INIT_RESOURCE(icons);
+    Q_INIT_RESOURCE(splash);
+    QApplication::setWindowIcon(QIcon(":/ressources/dynamind-icon.png"));
     
     QCoreApplication::setOrganizationName("IUT");
     QCoreApplication::setApplicationName("DYNAMIND");
-    
+
     QGLFormat glf = QGLFormat::defaultFormat();
     glf.setSampleBuffers(true);
     glf.setSamples(4);
     QGLFormat::setDefaultFormat(glf);
-    //Q_INIT_RESOURCE(icons);
-    //Q_INIT_RESOURCE(splash);
 
-    //QPixmap pixmap(":/Splash/ressources/logo.png");
-    //QSplashScreen *splash1 = new QSplashScreen(pixmap);
 
-    //splash1->show();
-    //splash1->showMessage("Loading Modules");
+    QPixmap pixmap(":/Splash/ressources/logo.png");
+    QSplashScreen *splash1 = new QSplashScreen(pixmap);
+
+    splash1->show();
     app.processEvents();
 
     QThreadPool::globalInstance()->setMaxThreadCount(0);
@@ -60,10 +60,7 @@ int main(int argc, char *argv[]) {
 
     mw->show();
 
-    //splash1->finish(mw);
-
-
+    splash1->finish(mw);
     return app.exec();
-
 
 }
