@@ -131,13 +131,26 @@ void AttributeCalculator::run() {
         *d = 0;
         doubleVaraibles[variable] = d;
         p->DefineVar(variable, d);
+
+        std::stringstream nov_stream;
+        nov_stream << "nov_" << variable;
+
+        d = new double;
+        *d = 0;
+        doubleVaraibles[nov_stream.str()] = d;
+        p->DefineVar(nov_stream.str(), d);
     }
     p->DefineFun("rand", mu::random , false);
+
+    double counter = 0;
+
+    p->DefineVar("counter", &counter);
     p->SetExpr(equation);
 
     std::vector<std::string> uuids =   this->sys_in->getUUIDsOfComponentsInView(viewsmap[nameOfBaseView]);
 
     foreach (std::string uuid, uuids) {
+        counter++;
         //UpdateParameters
         //House.Unit.Area
         DM::Component * cmp = this->sys_in->getComponent(uuid); //House
@@ -153,14 +166,20 @@ void AttributeCalculator::run() {
             std::string varname = it->first;
             getLinkedAttriubte(varaible_container, cmp, varname);
 
+            std::stringstream nov_stream;
+            nov_stream << "nov_" << it->second;
+
+            double nov = 0;
             foreach (double v, *varaible_container) {
                 val+=v;
+                nov+=1;
             }
 
             double * var = doubleVaraibles[it->second];
             (*var) = val;
-
-           delete varaible_container;
+            double * nov_var = doubleVaraibles[nov_stream.str()];
+            (*nov_var) =  nov;
+            delete varaible_container;
         }
         try {
             double d = p->Eval();
