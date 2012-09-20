@@ -128,20 +128,20 @@ struct TesselatedFaceDrawer {
         if (pos == before) {
             if (height_scale > 0) {
                 Attribute *a = f->getAttribute(l.getAttribute());
-                if (a->getType() == Attribute::DOUBLE) {
-                    current_height = f->getAttribute(l.getAttribute())->getDouble() * height_scale;
-                } else {
+                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
                     double attr_value = a->getDoubleVector()[l.getAttributeVectorName()];
                     current_height = attr_value * height_scale;
+                } else {
+                    current_height = f->getAttribute(l.getAttribute())->getDouble() * height_scale;
                 }
             }
             if (glIsTexture(l.getColorInterpretation())) {
                 const ViewMetaData &vmd = l.getViewMetaData();
                 Attribute *a = f->getAttribute(l.getAttribute());
-                if (a->getType() == Attribute::DOUBLE) {
-                    current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
-                } else {
+                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
                     current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
+                } else {
+                    current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
                 }
             } else {
                 current_tex = 0.0;
