@@ -77,7 +77,7 @@ struct SimulationPrivate {
 
 
 
-Module * Simulation::addModule(std::string ModuleName) {
+Module * Simulation::addModule(std::string ModuleName, bool callInit) {
 
     Module *module = this->moduleRegistry->createModule(ModuleName);
 
@@ -93,7 +93,8 @@ Module * Simulation::addModule(std::string ModuleName) {
         module->setGroup(this->rootGroup);
     this->Modules[module->getUuid()] = module;
     module->setSimulation(this);
-    module->init();
+    if (callInit)
+        module->init();
     return module;
 
 
@@ -145,7 +146,7 @@ void Simulation::loadModulesFromDefaultLocation()
 {
     QVector<QDir> cpv;
     cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
-     cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
+    cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
 
     foreach (QDir cp, cpv)  {
         QStringList modulesToLoad = cp.entryList();
@@ -388,7 +389,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
 
     SimulationReader simreader(QString::fromStdString(filename));
     foreach (ModuleEntry me, simreader.getModules()) {
-        Module * m = this->addModule(me.ClassName.toStdString());
+        Module * m = this->addModule(me.ClassName.toStdString(), false);
         if (!m) {
             this->setSimulationStatus(SIM_FAILED_LOAD);
             return std::map<std::string, std::string>();

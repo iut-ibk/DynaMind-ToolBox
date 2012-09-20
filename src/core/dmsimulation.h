@@ -135,7 +135,7 @@ public:
     /** @brief adds a new module/group to the system. If it was not possible to create the module a null pointer is returned,
          * otherwise a pointer to the new created module or group
          */
-    Module * addModule(std::string ModuleName);
+    Module * addModule(std::string ModuleName, bool callInit = true);
 
     /** @brief Removes module.
          *
