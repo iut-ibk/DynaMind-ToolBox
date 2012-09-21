@@ -402,7 +402,7 @@ public:
     bool checkPreviousModuleUnchanged();
 
     void setInternalCounter(int counter);
-
+    virtual std::string getHelpUrl();
 private:
     bool PythonModule;
     long id;
@@ -443,6 +443,7 @@ protected:
 
     /** @brief Add a new Port to the Module */
     virtual void addPort(std::string LinkedDataName, int PortType);
+
 };
 }
 

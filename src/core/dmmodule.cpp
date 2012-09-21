@@ -742,5 +742,7 @@ void Module::setExecuted(bool ex){
     }
 }
 
-
+std::string Module::getHelpUrl() {
+    return "";
+}
 }
