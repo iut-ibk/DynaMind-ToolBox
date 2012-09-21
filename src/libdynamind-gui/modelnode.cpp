@@ -486,7 +486,7 @@ void ModelNode::viewData() {
 
 void ModelNode::showHelp() {
 
-    this->simulation->showHelp(this->getDMModel()->getClassName());
+    this->simulation->showHelp(this->getDMModel()->getClassName(), this->getDMModel()->getUuid());
 
 
 }

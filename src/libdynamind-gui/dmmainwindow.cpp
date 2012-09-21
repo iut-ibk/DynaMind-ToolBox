@@ -130,7 +130,7 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     connect(simulation, SIGNAL(GroupNameChanged(GroupNode*)), this, SLOT(renameGroupWindow(GroupNode*)));
     connect(simulation, SIGNAL(addedModule(ModelNode*)), newgroup, SLOT(addModule(ModelNode*)));
     connect(newgroup, SIGNAL(NewModule(QString,QPointF, DM::Module *)), simulation, SLOT(GUIaddModule(QString,QPointF, DM::Module  *)));
-    connect(simulation, SIGNAL(showHelpForModule(std::string)), this, SLOT(showHelp(std::string)));
+    connect(simulation, SIGNAL(showHelpForModule(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
     newgroup->setResultViewer(this);
 
 
@@ -176,7 +176,7 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     this->simulation->registerRootNode();
     this->simulation->loadModulesFromDefaultLocation();
     this->simulation->addModulesFromSettings();
-    this->helpviewer = new GUIHelpViewer();
+    this->helpviewer = new GUIHelpViewer(this->simulation);
 
 
 
@@ -586,7 +586,8 @@ void DMMainWindow::on_actionZoomReset_activated()
 
 }
 
-void DMMainWindow::showHelp(string classname) {
+void DMMainWindow::showHelp(std::string classname, std::string uuid) {
+
     this->helpviewer->show();
-    this->helpviewer->showHelpForModule(classname);
+    this->helpviewer->showHelpForModule(classname, uuid);
 }

@@ -111,6 +111,6 @@ void GUISimulation::clearSimulation() {
 
 }
 
-void GUISimulation::showHelp(string classname) {
-    emit showHelpForModule(classname);
+void GUISimulation::showHelp(string classname, string uuid) {
+    emit showHelpForModule(classname, uuid);
 }
