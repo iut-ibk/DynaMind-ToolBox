@@ -52,6 +52,7 @@ public:
     void init();
     bool createInputDialog();
     DM::System * getSystemIn() {return this->sys_in;}
+    std::string getHelpUrl();
 
 };
 

@@ -58,6 +58,7 @@ public:
     void init();
     bool createInputDialog();
     DM::System * getSystemIn(){return this->sys_in;}
+    virtual std::string getHelpUrl();
 };
 
 #endif // APPENDATTRIBUTES_H
