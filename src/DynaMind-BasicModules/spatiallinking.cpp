@@ -70,6 +70,11 @@ void SpatialLinking::init() {
     this->addData("Data", data);
 }
 
+string SpatialLinking::getHelpUrl()
+{
+    return "https://docs.google.com/document/pub?id=1Vxx4vlj5lokvCAHEATsTIm0Q4n8kG92Krp8e2bLf9Zw";
+}
+
 void SpatialLinking::run() {
     city = this->getData("Data");
     std::vector<std::string> baseUUIDs = city->getUUIDsOfComponentsInView(vbase);
@@ -82,10 +87,15 @@ void SpatialLinking::run() {
     int counterID = -1;
     foreach (std::string baseUUID, baseUUIDs) {
         counterID++;
-        Face * f = city->getFace(baseUUID);
-        Node c = TBVectorData::caclulateCentroid(city, f);
+        Node c;
+        if (vbase.getType() == DM::FACE) {
+            Face * f = city->getFace(baseUUID);
+            c = TBVectorData::caclulateCentroid(city, f);
+        }
+        if (vbase.getType() == DM::NODE) {
+            c = Node(*(city->getNode(baseUUID)));
+        }
         centerPoints.push_back(QPointF(c.getX(), c.getY()));
-
         //CreateKey
         int x = c.getX() / 100;
         int y = c.getY() / 100;
