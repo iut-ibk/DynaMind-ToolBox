@@ -55,6 +55,7 @@ public:
     void addView();
     void addAttribute(std::string s);
     std::vector<std::string> getAttriutes(){return this->newAttributes;}
+    std::string getHelpUrl();
 };
 
 #endif // ADDDATATONEWVIEW_H

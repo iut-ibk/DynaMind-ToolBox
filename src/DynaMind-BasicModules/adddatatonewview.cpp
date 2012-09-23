@@ -159,3 +159,8 @@ void AddDataToNewView::addView()
 void AddDataToNewView::addAttribute(string s) {
     this->newAttributes.push_back(s);
 }
+
+string AddDataToNewView::getHelpUrl()
+{
+    return "https://docs.google.com/document/pub?id=1C-RjuFEmOO1LEAH8XuEURp7udwVTpXMYqqbB3hDZKSg";
+}
