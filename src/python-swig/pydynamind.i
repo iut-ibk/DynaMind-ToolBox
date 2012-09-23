@@ -121,6 +121,7 @@ public:
     virtual bool createInputDialog();
     virtual void run() = 0;
     virtual void init();
+    virtual std::string getHelpUrl();
 
     void addData(std::string name, std::vector<DM::View> view);
     std::map<std::string, std::vector<DM::View> >  getViews();
