@@ -32,6 +32,7 @@
 #include "dmedge.h"
 #include "dmattribute.h"
 #include "dmsystemiterators.h"
+#include "dmlogger.h"
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/partition_2.h>
@@ -45,7 +46,7 @@ typedef Traits::Point_2                                     Point_2;
 typedef Traits::Polygon_2                                   Polygon_2;
 typedef std::vector<Polygon_2>                              Polygon_list;
 typedef CGAL::Partition_is_valid_traits_2<Traits, Is_convex_2>
-                                                            Validity_traits;
+Validity_traits;
 
 #include <QImage>
 #include <QPainter>
@@ -93,7 +94,7 @@ struct TesselatedFaceDrawer {
     TesselatedFaceDrawer(const Layer &l, QWidget *parent)
         : l(l), height_scale(0.0), name_start(l.getNameStart()) {
         
-        dialog = new QProgressDialog("Tesselating Polygons...", "cancel", 
+        dialog = new QProgressDialog("Tesselating Polygons...", "cancel",
                                      0, l.getViewMetaData().number_of_primitives,
                                      parent);
         //dialog->setModal(true);
@@ -161,10 +162,15 @@ struct TesselatedFaceDrawer {
             glBindTexture(GL_TEXTURE_1D, l.getColorInterpretation());
         }
         assert(glGetError() == GL_NO_ERROR);
+        if(!polygon.is_simple()) {
+            DM::Logger(DM::Error) << "Polygon is not simple can't perform tessilation";
+            return;
+        }
         if (polygon.is_clockwise_oriented())
             polygon.reverse_orientation();
         Polygon_list tesselated;
         Validity_traits validity_traits;
+
         CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
                                                std::back_inserter(tesselated), validity_traits);
         
@@ -201,7 +207,7 @@ struct TesselatedFaceDrawer {
 
 
 Layer::Layer(System *s, View v, const std::string &a) 
-    : system(s), view(v), 
+    : system(s), view(v),
       attribute(a), vmd(a),
       texture(-1),
       attribute_vector_name(0),
