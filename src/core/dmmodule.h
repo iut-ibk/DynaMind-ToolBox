@@ -402,6 +402,8 @@ public:
     bool checkPreviousModuleUnchanged();
 
     void setInternalCounter(int counter);
+
+    /** @brief Returns URL to the help of the module */
     virtual std::string getHelpUrl();
 private:
     bool PythonModule;
