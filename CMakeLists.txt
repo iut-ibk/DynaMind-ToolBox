@@ -18,6 +18,7 @@ OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
 OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
+OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
 
 find_package(Git REQUIRED)
 
@@ -30,6 +31,10 @@ endif(WITH_PLUGIN_QGIS)
 if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
     set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
 endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
+
+if(WITH_PLUGIN_DYNAVIBE)
+    set(TOOLBOX ${TOOLBOX} DynaVIBe)
+endif(WITH_PLUGIN_DYNAVIBE)
 
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
@@ -44,7 +49,7 @@ foreach (tool ${TOOLBOX})
     endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 
     if(DYNAMIND_UPDATE)
-            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive ${tool}
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --recursive ${tool}
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     endif(DYNAMIND_UPDATE)
 endforeach(tool ${TOOLBOX}) 
