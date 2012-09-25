@@ -55,12 +55,14 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
         ModelNode * node = new ModelNode(m, this);
         this->modelNodes.append(node);
         node->setPos(pos);
+        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
         emit addedModule(node);
     }
     if (m->isGroup()) {
         GroupNode * node = new GroupNode(m, this);
         this->groupNodes.append(node);
         node->setPos(pos);
+        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
         emit addedGroup(node);
     }
 
