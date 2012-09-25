@@ -27,6 +27,7 @@
 #include "guisimulation.h"
 #include <modelnode.h>
 #include <groupnode.h>
+#include <rootgroupnode.h>
 
 GUISimulation::GUISimulation() : Simulation()
 {
@@ -54,12 +55,14 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
         ModelNode * node = new ModelNode(m, this);
         this->modelNodes.append(node);
         node->setPos(pos);
+        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
         emit addedModule(node);
     }
     if (m->isGroup()) {
         GroupNode * node = new GroupNode(m, this);
         this->groupNodes.append(node);
         node->setPos(pos);
+        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
         emit addedGroup(node);
     }
 
@@ -94,23 +97,17 @@ void GUISimulation::updateSimulation()
 
 void GUISimulation::clearSimulation() {
 
-    GroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup());
-    foreach (GroupNode * g, this->groupNodes) {
-        if (g != rg)
-        delete g;
-    }
-    this->groupNodes.clear();
-    this->groupNodes.push_back(rg);
+    RootGroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup())->getRootGroupNode();
 
-    foreach (ModelNode * m, this->modelNodes) {
-        delete m;
+    foreach (ModelNode * m, rg->getChildNodes()) {
+        rg->removeModelNode(m);
+        m->deleteModelNode();
     }
-    this->modelNodes.clear();
 
     this->setSimulationStatus(DM::SIM_OK);
 
 }
 
-void GUISimulation::showHelp(string classname) {
-    emit showHelpForModule(classname);
+void GUISimulation::showHelp(string classname, string uuid) {
+    emit showHelpForModule(classname, uuid);
 }

@@ -233,7 +233,7 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 }
 QRectF RootGroupNode::boundingRect() const {
-    return QRect(-100, -100, l+200, h+200);
+    return QRect(-100, -100, l+500, h+500);
 
 }
 void RootGroupNode::addModelNode(ModelNode *m) {

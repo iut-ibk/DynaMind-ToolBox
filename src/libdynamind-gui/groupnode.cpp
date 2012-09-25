@@ -37,7 +37,7 @@
 #include <dmporttuple.h>
 #include <dmgroup.h>
 #include <iostream>
-
+#include <rootgroupnode.h>
 
 GroupNode::GroupNode()
 {
@@ -184,6 +184,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     this->x2 = 0;
     this->y2 = 0;
     this->UUID = module->getUuid();
+    this->rg = 0;
 
 
     this->outputCounter = 1;

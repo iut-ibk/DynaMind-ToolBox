@@ -29,6 +29,7 @@
 #include <modelnode.h>
 #include <moduledescription.h>
 #include "dmcompilersettings.h"
+#include <rootgroupnode.h>
 namespace DM {
     class Module;
     class PortTuple;
@@ -36,6 +37,8 @@ namespace DM {
 
 class LinkNode;
 struct LinkNodeTuple;
+
+
 struct GUIPortTuple {
     GUIPort * inPort;
     GUIPort * outPort;
@@ -54,6 +57,7 @@ private:
     std::string name;
     QVector<ModelNode * > childnodes;
     std::string UUID;
+    RootGroupNode * rg;
 
 
 
@@ -76,8 +80,10 @@ public:
     void changeGroupID(QString Name);
 
     void removeModelNode(ModelNode *m);
-
+    QVector<ModelNode * > getChildNodes() {return this->childnodes;}
     virtual void updatePorts();
+    void setRootGroupNode(RootGroupNode * rg) {this->rg = rg;}
+    RootGroupNode * getRootGroupNode() {return this->rg;}
 
 public slots:
     void minimize();

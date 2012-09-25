@@ -78,7 +78,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
         if (ID == DM::DOUBLE || ID == DM::LONG || ID == DM::INT) {
             QLabel * l = new QLabel;
             QLineEdit * le = new QLineEdit;
-            QCheckBox * cb = new QCheckBox("from Outside");
+            //QCheckBox * cb = new QCheckBox("from Outside");
             double val = -1;
             QString s  = QString().fromStdString(name);
             std::string s_tmp = name;
@@ -96,10 +96,10 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
             elements.insert(s, le);
             QString s1;
             s1= "InputDouble|DoubleIn_"+ s;
-            cb->setObjectName(s1);
+            //cb->setObjectName(s1);
             layout1->addWidget(l, layout1->rowCount(),0);
             layout1->addWidget(le,layout1->rowCount()-1,1);
-            layout1->addWidget(cb,layout1->rowCount()-1,2);
+            //layout1->addWidget(cb,layout1->rowCount()-1,2);
 
 
         }

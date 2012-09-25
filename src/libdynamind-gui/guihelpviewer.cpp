@@ -28,19 +28,31 @@
 #include "ui_guihelpviewer.h"
 #include <QDir>
 #include <QFile>
+
 #include <sstream>
 #include <dmlogger.h>
-GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
+GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GUIHelpViewer)
 {
     ui->setupUi(this);
+    this->sim = sim;
     stringstream filename;
     filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
     this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
 }
-void GUIHelpViewer::showHelpForModule(std::string classname) {
+void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
     this->currentUrl = this->url_view_not_avaiable;
+    DM::Module * m = this->sim->getModuleWithUUID(uuid);
+    if (!m)
+        return;
+    if (!m->getHelpUrl().empty()) {
+        this->currentUrl = QUrl(QString::fromStdString(m->getHelpUrl()));
+        ui->webView->load(this->currentUrl);
+        return;
+    }
+
+
     stringstream filename;
     filename << QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << classname << ".html";
     DM::Logger(DM::Debug) << "Helpfile at " << filename.str();
@@ -50,12 +62,12 @@ void GUIHelpViewer::showHelpForModule(std::string classname) {
     qFilename.replace(" ", "%20");
 
     QFile f(qFilename);
-    //if (f.exists()) {
-        stringstream url;
-        url << "file:///" << qFilename.toStdString();
-        DM::Logger(DM::Debug) << qFilename.toStdString();
-        this->currentUrl = QUrl(QString::fromStdString(url.str()));
-    //}
+    stringstream url;
+    url << "file:///" << qFilename.toStdString();
+    DM::Logger(DM::Debug) << qFilename.toStdString();
+    this->currentUrl = QUrl(QString::fromStdString(url.str()));
+
+
     ui->webView->load(this->currentUrl);
 }
 

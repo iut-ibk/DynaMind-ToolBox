@@ -53,14 +53,14 @@ signals:
     void addedModule(ModelNode*);
     void addedGroup(GroupNode*);
     void GroupNameChanged(GroupNode*);
-    void showHelpForModule(std::string);
+    void showHelpForModule(std::string classname, std::string uuid);
 
 
 public slots:
     void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
     void GUIaddModule(DM::Module *, QPointF pos);
     void updateSimulation();
-    void showHelp(std::string classname);
+    void showHelp(std::string classname, std::string uuid);
 
 
 
