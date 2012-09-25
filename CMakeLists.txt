@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.2.0")
+ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.2.1")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         message(STATUS "Using Visual C compilers")
@@ -18,6 +18,7 @@ OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
 OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
+OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
 
 find_package(Git REQUIRED)
 
@@ -31,6 +32,10 @@ if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
     set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
 endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
 
+if(WITH_PLUGIN_DYNAVIBE)
+    set(TOOLBOX ${TOOLBOX} DynaVIBe)
+endif(WITH_PLUGIN_DYNAVIBE)
+
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
@@ -39,9 +44,7 @@ foreach (tool ${TOOLBOX})
         message(STATUS "${tool} submodule already exists")
     else (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
         message(STATUS "preparing ${tool} submodule for you")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule init ${tool}
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --recursive ${tool}
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive ${tool}
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     endif (EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
 

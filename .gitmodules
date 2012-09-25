@@ -31,3 +31,6 @@
 [submodule "DynaMind-DAnCE4Water"]
 	path = DynaMind-DAnCE4Water
 	url = git@github.com:christianurich/DynaMind-DAnCE4Water.git
+[submodule "DynaVIBe"]
+	path = DynaVIBe
+	url = git@github.com:iut-ibk/DynaVIBe.git
