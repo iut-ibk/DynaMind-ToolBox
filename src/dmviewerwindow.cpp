@@ -35,6 +35,20 @@ ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ViewerWindow), system(system) {
     ui->setupUi(this);
+    
+    delete ui->color_bar_widget;
+    ui->color_bar_widget = new ColorBarWidget(this, ui->viewer);
+    
+    ui->color_bar_widget->setObjectName(QString::fromUtf8("color_bar_widget"));
+    QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    sizePolicy.setHorizontalStretch(0);
+    sizePolicy.setVerticalStretch(0);
+    sizePolicy.setHeightForWidth(ui->color_bar_widget->sizePolicy().hasHeightForWidth());
+    ui->color_bar_widget->setSizePolicy(sizePolicy);
+    ui->color_bar_widget->setMinimumSize(QSize(0, 30));
+
+    ui->verticalLayout->insertWidget(ui->verticalLayout->count()-2, ui->color_bar_widget);
+    
     ui->viewer->setSystem(system);
     this->addAction(ui->actionAdd_Layer);
     this->addAction(ui->actionReset_View);
@@ -122,6 +136,14 @@ void ViewerWindow::on_layer_listWidget_itemChanged(QListWidgetItem *item) {
     int i = ui->layer_listWidget->row(item);
     ui->viewer->getLayer(i)->setEnabled(item->checkState() == Qt::Checked);
     ui->viewer->updateGL();
+}
+
+void ViewerWindow::on_layer_listWidget_currentRowChanged(int row) {
+    if (row < 0) return;
+    Layer *layer = ui->viewer->getLayer(row);
+    ui->color_bar_widget->setTexture(layer->getColorInterpretation());
+    ui->min->setText(QString("%1").arg(layer->getViewMetaData().attr_min));
+    ui->max->setText(QString("%1").arg(layer->getViewMetaData().attr_max));
 }
 
 void ViewerWindow::timerShot() {

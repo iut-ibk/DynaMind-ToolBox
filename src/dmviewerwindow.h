@@ -77,6 +77,7 @@ private slots:
     void on_playButton_clicked();
     
     void on_layer_listWidget_itemChanged(QListWidgetItem *);
+    void on_layer_listWidget_currentRowChanged(int row);
     
     void timerShot();
     

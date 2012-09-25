@@ -68,12 +68,9 @@ protected:
     virtual void init();
     virtual void drawWithNames();
     virtual void draw();
-    virtual void postDraw();
     virtual void postSelection(const QPoint &point);
     
 private:
-    void drawColorBars();
-    
     System *system;
     int list;
     std::vector<Layer*> layers, overdraw_layers;
