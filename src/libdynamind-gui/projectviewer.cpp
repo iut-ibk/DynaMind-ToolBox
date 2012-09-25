@@ -45,6 +45,7 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
 
     //Cretae New Visual Representation
     RootGroupNode * rg = new RootGroupNode(g->getDMModel(),g->getSimulation());
+    g->setRootGroupNode(rg);
     this->UUID = QString::fromStdString(g->getDMModel()->getUuid());
     rg->setPos(0,0);
     this->rootGroup = rg;

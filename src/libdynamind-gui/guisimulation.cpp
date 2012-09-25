@@ -27,6 +27,7 @@
 #include "guisimulation.h"
 #include <modelnode.h>
 #include <groupnode.h>
+#include <rootgroupnode.h>
 
 GUISimulation::GUISimulation() : Simulation()
 {
@@ -94,18 +95,12 @@ void GUISimulation::updateSimulation()
 
 void GUISimulation::clearSimulation() {
 
-    GroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup());
-    foreach (GroupNode * g, this->groupNodes) {
-        if (g != rg)
-        delete g;
-    }
-    this->groupNodes.clear();
-    this->groupNodes.push_back(rg);
+    RootGroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup())->getRootGroupNode();
 
-    foreach (ModelNode * m, this->modelNodes) {
-        delete m;
+    foreach (ModelNode * m, rg->getChildNodes()) {
+        rg->removeModelNode(m);
+        m->deleteModelNode();
     }
-    this->modelNodes.clear();
 
     this->setSimulationStatus(DM::SIM_OK);
 
