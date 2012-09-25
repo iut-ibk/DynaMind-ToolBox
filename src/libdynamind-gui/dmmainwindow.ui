@@ -20,7 +20,7 @@
    <string>DynaMind</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset resource="../dynamind-modelbuilder/icons.qrc">
     <normaloff>:/Icons/ressources/dynamind-icon.png</normaloff>:/Icons/ressources/dynamind-icon.png</iconset>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
@@ -751,6 +751,10 @@
    </property>
   </action>
   <action name="actionUpdate">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/Icons/ressources/reload.png</normaloff>:/Icons/ressources/reload.png</iconset>
+   </property>
    <property name="text">
     <string>Update</string>
    </property>
