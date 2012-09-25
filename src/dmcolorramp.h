@@ -20,7 +20,11 @@ enum ColorRamp {
     WHITE_TO_ORANGE,
     
     WHITE_TO_BLACK,
-    RAINBOW
+    RAINBOW,
+    
+    LIGHT_GREENT_TO_DARK_GREEN,
+    LIGHT_BLUE_TO_DARK_BLUE,
+    YELLOW_TO_BROWN
 };
 
 unsigned int get_color_ramp(ColorRamp ramp);

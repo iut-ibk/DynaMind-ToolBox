@@ -242,6 +242,21 @@
               <string>Rainbow</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Light Green to Dark Green</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Light Blue to Dark Blue</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Yellow to Brown</string>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
