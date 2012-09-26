@@ -25,17 +25,8 @@
  */
 #include "dmnodefactory.h"
 #include "dmmoduleregistry.h"
-#include "testmodule.h"
-#include "inoutmodule.h"
-#include "inout2.h"
-#include "userdefineddata.h"
-#include "checkshape.h"
-#include "comparenetworks.h"
-#include "dynamicinout.h"
-#include "dostuffwithrasterdata.h"
 #include "cellularautomata.h"
-#include "grouptest.h"
-#include "memorytest.h"
+#include "loopgroup.h"
 #include "adddatatonewview.h"
 #include "appendattributes.h"
 #include "exportrasterdata.h"
@@ -46,7 +37,6 @@
 #include "importrasterdata.h"
 #include "calculatecentroid.h"
 #include "attributecalculator.h"
-#include "raindance.h"
 #include "spatiallinking.h"
 #include "importwithgdal.h"
 
@@ -55,16 +45,7 @@ using namespace std;
 
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
-    registry->addNodeFactory(new NodeFactory<TestModule>());
-    registry->addNodeFactory(new NodeFactory<InOut>());
-    registry->addNodeFactory(new NodeFactory<InOut2>());
-    registry->addNodeFactory(new NodeFactory<UserdefinedData>());
-    registry->addNodeFactory(new NodeFactory<CheckShape>());
-    registry->addNodeFactory(new NodeFactory<CompareNetworks>());
-    registry->addNodeFactory(new NodeFactory<DynamicInOut>());
-    registry->addNodeFactory(new NodeFactory<DoStuffWithRasterData>());
-    registry->addNodeFactory(new NodeFactory<GroupTest>());
-    registry->addNodeFactory(new NodeFactory<MemoryTest>());
+    registry->addNodeFactory(new NodeFactory<LoopGroup>());
     registry->addNodeFactory(new NodeFactory<CellularAutomata>());
     registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
     registry->addNodeFactory(new NodeFactory<ExportRasterData>());
@@ -76,7 +57,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<ImportRasterData>());
     registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
     registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
-    registry->addNodeFactory(new NodeFactory<RainDance>());
     registry->addNodeFactory(new NodeFactory<SpatialLinking>());
     registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
 }

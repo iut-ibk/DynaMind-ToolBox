@@ -24,15 +24,15 @@
  *
  */
 
-#include "grouptest.h"
-#include <guigrouptest.h>
+#include "loopgroup.h"
+#include <guiloopgroup.h>
 #include <algorithm>
 #include <dmporttuple.h>
 
 
 
-DM_DECLARE_GROUP_NAME(GroupTest, Loops)
-GroupTest::GroupTest() {
+DM_DECLARE_GROUP_NAME(LoopGroup, Loops)
+LoopGroup::LoopGroup() {
     i = 0;
     Runs = 1;
 
@@ -41,12 +41,12 @@ GroupTest::GroupTest() {
     this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutViews);
 }
 
-void GroupTest::run() {
+void LoopGroup::run() {
     this->Steps = Runs;
     Group::run();
 }
 
-void GroupTest::init() {
+void LoopGroup::init() {
     foreach (std::string s, nameOfInViews) {
         this->addTuplePort(s, DM::INTUPLESYSTEM);
     }
@@ -82,7 +82,7 @@ void GroupTest::init() {
 
 }
 
-void GroupTest::addInPort(std::string n) {
+void LoopGroup::addInPort(std::string n) {
 
     if (n.empty())
         return;
@@ -93,7 +93,7 @@ void GroupTest::addInPort(std::string n) {
     this->init();
 }
 
-void GroupTest::addOutPort(std::string n) {
+void LoopGroup::addOutPort(std::string n) {
 
     if (n.empty())
         return;
@@ -104,23 +104,23 @@ void GroupTest::addOutPort(std::string n) {
     this->init();
 }
 
-void GroupTest::removeInPort(string port) {
+void LoopGroup::removeInPort(string port) {
     if (std::find(nameOfInViews.begin(), nameOfInViews.end(), port) == nameOfInViews.end())
         return;
     nameOfInViews.erase(std::find(nameOfInViews.begin(), nameOfInViews.end(), port) );
     this->init();
 }
 
-void GroupTest::removeOutPort(string port) {
+void LoopGroup::removeOutPort(string port) {
     if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), port) == nameOfOutViews.end())
         return;
     nameOfOutViews.erase(std::find(nameOfOutViews.begin(), nameOfOutViews.end(), port) );
     this->init();
 }
 
-bool GroupTest::createInputDialog() {
+bool LoopGroup::createInputDialog() {
 
-    QWidget * w = new GUIGroupTest(this);
+    QWidget * w = new GUILoopGroup(this);
     w->show();
     return true;
 }

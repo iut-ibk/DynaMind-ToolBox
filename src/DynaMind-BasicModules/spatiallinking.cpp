@@ -36,6 +36,7 @@ SpatialLinking::SpatialLinking()
     this->city = 0;
     this->base = "";
     this->linkto = "";
+    spatialL = 100;
 
     this->addParameter("Base", DM::STRING, & this->base);
     this->addParameter("Link", DM::STRING, & this->linkto);
@@ -97,8 +98,8 @@ void SpatialLinking::run() {
         }
         centerPoints.push_back(QPointF(c.getX(), c.getY()));
         //CreateKey
-        int x = c.getX() / 100;
-        int y = c.getY() / 100;
+        int x = c.getX() / spatialL;
+        int y = c.getY() / spatialL;
 
         QString key = QString::number(x) + "|" +  QString::number(y);
         std::vector<int> * vn = nodesMap[key];
@@ -112,24 +113,29 @@ void SpatialLinking::run() {
 
     std::vector<std::string> linkUUIDs = city->getUUIDsOfComponentsInView(vlinkto);
 
+    int CounterElementLinked = 0;
     foreach (std::string linkUUID, linkUUIDs) {
         QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
 
         //Search Space
-        int xmin = (int) qf.boundingRect().x() / 100.;
-        int ymin = (int) (qf.boundingRect().y() )/100.;
-        int xmax = (int) (qf.boundingRect().x() + qf.boundingRect().width())/100.;
-        int ymax = (int) (qf.boundingRect().y() + qf.boundingRect().height()) / 100;
+        int xmin = (int) qf.boundingRect().x() / spatialL;
+        int ymin = (int) (qf.boundingRect().y() )/spatialL ;
+        int xmax = (int) (qf.boundingRect().x() + qf.boundingRect().width())/spatialL;
+        int ymax = (int) (qf.boundingRect().y() + qf.boundingRect().height())/spatialL;
         std::vector<LinkAttribute> links;
+        int elementInSearchSpace = 0;
         for (int x = xmin; x <= xmax; x++) {
             for (int y = ymin; y <= ymax; y++) {
                  QString key = QString::number(x) + "|" +  QString::number(y);
                  //Test Each Key
                  std::vector<int> * centers = nodesMap[key];
-                 if (!centers)
+                 if (!centers) {
+
                      continue;
+                 }
+                 elementInSearchSpace=elementInSearchSpace+centers->size();
                  foreach (int id, (*centers)) {
-                     if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
+                     if (qf.containsPoint(centerPoints[id], Qt::OddEvenFill)) {
                          LinkAttribute lto;
                          lto.viewname = linkto;
                          lto.uuid = linkUUID;
@@ -144,17 +150,18 @@ void SpatialLinking::run() {
                          lbase.uuid = cmp->getUUID();
 
                          links.push_back(lbase);
+                         CounterElementLinked++;
                      }
 
                  }
 
             }
         }
+        Logger(Debug) << "Element in search space " << elementInSearchSpace;
+        Logger(Debug) << "Linked to " << links.size();
         Component * cmp = city->getComponent(linkUUID);
         Attribute * attr = cmp->getAttribute(base);
         attr->setLinks(links);
-
-
     }
 
 
@@ -162,6 +169,8 @@ void SpatialLinking::run() {
         delete nodesMap[key];
     }
     nodesMap.clear();
+
+    Logger(DM::Debug) << "Elements Linked " << CounterElementLinked;
 
 
 

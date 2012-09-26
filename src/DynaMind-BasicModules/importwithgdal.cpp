@@ -111,7 +111,7 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
     {
         OGRPoint *poPoint = (OGRPoint *) poGeometry;
         n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
-        n->setView(this->view);
+        sys->addComponentToView(n, this->view);
     }
     return n;
 

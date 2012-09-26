@@ -24,38 +24,40 @@
  *
  */
 
-namespace DM {
-class Module;
-}
-#ifndef GUIDYNAMICINOUT_H
-#define GUIDYNAMICINOUT_H
+#ifndef GUIGROUPTEST_H
+#define GUIGROUPTEST_H
 
 #include <QDialog>
 #include <dmcompilersettings.h>
 
-class DynamicInOut;
-
-namespace Ui {
-class GUIDynamicInOut;
+namespace DM {
+class Module;
 }
 
-class DM_HELPER_DLL_EXPORT GUIDynamicInOut : public QDialog
+class LoopGroup;
+namespace Ui {
+class GUILoopGroup;
+}
+
+class DM_HELPER_DLL_EXPORT GUILoopGroup: public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit GUIDynamicInOut(DM::Module * m, QWidget *parent = 0);
-    ~GUIDynamicInOut();
-
+    explicit GUILoopGroup(DM::Module * m, QWidget *parent = 0);
+    ~GUILoopGroup();
     
 private:
-    Ui::GUIDynamicInOut *ui;
-    DynamicInOut * module;
+    Ui::GUILoopGroup *ui;
+    LoopGroup * m;
+
 
 protected slots:
-    void addAttribute();
-    void getAttribute();
-
+    void on_addInPort_clicked();
+    void on_addOutPort_clicked();
+    void on_rmInport_clicked();
+    void on_rmOutport_clicked();
+    void accept();
 };
 
-#endif // GUIDYNAMICINOUT_H
+#endif // GUIGROUPTEST_H

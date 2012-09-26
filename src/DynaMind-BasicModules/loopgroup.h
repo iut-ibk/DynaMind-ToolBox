@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2012  Christian Urich
+ * Copyright (C) 2011  Christian Urich
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,19 +24,36 @@
  *
  */
 
-#ifndef MEMORYTEST_H
-#define MEMORYTEST_H
+#ifndef GROUPTEST_H
+#define GROUPTEST_H
 
-#include <dmmodule.h>
+#include "dmcompilersettings.h"
+#include "dmgroup.h"
+#include "dm.h"
+#include "dmview.h"
+#include <iostream>
+#include <vector>
+using namespace DM;
+class DM_HELPER_DLL_EXPORT LoopGroup : public  Group {
+DM_DECLARE_GROUP(LoopGroup)
 
-
-class  MemoryTest : public DM::Module
-{
-    DM_DECLARE_NODE(MemoryTest)
-public:
-    MemoryTest();
-    void run();
-
+    public:
+        LoopGroup();
+        virtual ~LoopGroup(){}
+        void run();
+        void init();
+        bool createInputDialog();
+        std::vector<DM::View> InViews;
+        std::vector<DM::View> OutViews;
+        int Runs;
+        int i;
+        std::vector<std::string> nameOfInViews;
+        std::vector<std::string> nameOfOutViews;
+        void addInPort (std::string in);
+        void addOutPort (std::string in);
+        void removeInPort(std::string port);
+        void removeOutPort(std::string port);
 };
 
-#endif // MEMORYTEST_H
+
+#endif // GROUPTEST_H

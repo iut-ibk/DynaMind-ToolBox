@@ -40,6 +40,7 @@ private:
         DM::System * city;
         DM::View vbase;
         DM::View vlinkto;
+        double spatialL;
 public:
     SpatialLinking();
     void run();

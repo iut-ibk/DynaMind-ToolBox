@@ -24,18 +24,18 @@
  *
  */
 
-#include "guigrouptest.h"
-#include "ui_guigrouptest.h"
-#include <grouptest.h>
+#include "guiloopgroup.h"
+#include "ui_guiloopgroup.h"
+#include <loopgroup.h>
 #include <QInputDialog>
 
-GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
+GUILoopGroup::GUILoopGroup(DM::Module * m, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::GUIGroupTest)
+    ui(new Ui::GUILoopGroup)
 {
     ui->setupUi(this);
 
-    this->m = (GroupTest *) m;
+    this->m = (LoopGroup *) m;
 
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("Runs")));
 
@@ -50,12 +50,12 @@ GUIGroupTest::GUIGroupTest(DM::Module * m, QWidget *parent) :
 
 }
 
-GUIGroupTest::~GUIGroupTest()
+GUILoopGroup::~GUILoopGroup()
 {
     delete ui;
 }
 
-void GUIGroupTest::on_addInPort_clicked() {
+void GUILoopGroup::on_addInPort_clicked() {
     bool ok;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
@@ -67,7 +67,7 @@ void GUIGroupTest::on_addInPort_clicked() {
 
 }
 
-void GUIGroupTest::on_addOutPort_clicked() {
+void GUILoopGroup::on_addOutPort_clicked() {
     bool ok;
     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                          tr("Name"), QLineEdit::Normal,
@@ -78,7 +78,7 @@ void GUIGroupTest::on_addOutPort_clicked() {
     }
 
 }
-void GUIGroupTest::on_rmInport_clicked() {
+void GUILoopGroup::on_rmInport_clicked() {
     if (!ui->listWidget_in->currentItem())
         return;
     std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
@@ -87,7 +87,7 @@ void GUIGroupTest::on_rmInport_clicked() {
 
 }
 
-void GUIGroupTest::on_rmOutport_clicked()
+void GUILoopGroup::on_rmOutport_clicked()
 {
     if (!ui->listWidget_out->currentItem())
         return;
@@ -96,7 +96,7 @@ void GUIGroupTest::on_rmOutport_clicked()
     delete this->ui->listWidget_out->currentItem();
 }
 
-void GUIGroupTest::accept() {
+void GUILoopGroup::accept() {
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
 }
