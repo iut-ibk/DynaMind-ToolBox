@@ -617,19 +617,20 @@ DM::System*   Module::getSystemData(const std::string &name)  {
         counter++;
     }
 
-    int standardLinks = counter-CounterBackLink;
+
 
     if (LinkId < 0)
         return 0;
-    ModuleLink *l = p->getLinks()[LinkId];
+    ModuleLink * l = p->getLinks()[LinkId];
     if (this->internalCounter > 0 && BackId != -1){
         l = p->getLinks()[BackId];
         Logger(Debug) << "BackLink for " << name;
         Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
     }
-
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
-
+    //Counter Number of Links at Outport
+    DM::Port * out_p = m->getOutPort(l->getDataNameFromOutPort());
+    int standardLinks = out_p->getLinks().size() - CounterBackLink;
     DM::System * returnSys =  m->getSystemState(l->getDataNameFromOutPort());
     if (!returnSys)
         return 0;
