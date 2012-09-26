@@ -216,7 +216,7 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="GroupTest"/>
+			<ClassName value="LoopGroup"/>
 			<UUID value="{e2f7833f-e860-4381-851a-f6ef6345162e}"/>
 			<Name value=""/>
 			<GroupUUID value="{8acb0912-2dca-4635-830e-ceef31be6a01}"/>

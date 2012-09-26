@@ -126,7 +126,7 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="GroupTest"/>
+			<ClassName value="LoopGroup"/>
 			<UUID value="{3047ce65-8fd6-42a9-91e6-e85bbea2c586}"/>
 			<Name value="Catchment"/>
 			<GroupUUID value="{47c141fd-adb7-43af-96e8-b602febb4a49}"/>
@@ -201,7 +201,7 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="GroupTest"/>
+			<ClassName value="LoopGroup"/>
 			<UUID value="{47c141fd-adb7-43af-96e8-b602febb4a49}"/>
 			<Name value="Generierung"/>
 			<GroupUUID value="{7f5e1335-a905-4a42-a953-ea8012225741}"/>
@@ -408,7 +408,7 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="GroupTest"/>
+			<ClassName value="LoopGroup"/>
 			<UUID value="{9037d5c2-1fe7-4a4f-8319-fe8ba4eaf079}"/>
 			<Name value="Generation"/>
 			<GroupUUID value="{47c141fd-adb7-43af-96e8-b602febb4a49}"/>
@@ -423,7 +423,7 @@
 			</parameter>
 		</Node>
 		<Node>
-			<ClassName value="GroupTest"/>
+			<ClassName value="LoopGroup"/>
 			<UUID value="{9ca0100d-81c2-4382-a38c-880c2684315d}"/>
 			<Name value="Export"/>
 			<GroupUUID value="{47c141fd-adb7-43af-96e8-b602febb4a49}"/>
