@@ -19,6 +19,7 @@ OPTION(WITH_TESTS "build unit tests" OFF)
 OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
+OPTION(WITH_PLUGIN_POSTGIS "if with POSTGIS plugin" OFF)
 
 find_package(Git REQUIRED)
 
@@ -35,6 +36,10 @@ endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
 if(WITH_PLUGIN_DYNAVIBE)
     set(TOOLBOX ${TOOLBOX} DynaVIBe)
 endif(WITH_PLUGIN_DYNAVIBE)
+
+if(WITH_PLUGIN_POSTGIS)
+    set(TOOLBOX ${TOOLBOX} DynaMind-PostGIS)
+endif(WITH_PLUGIN_POSTGIS)
 
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
