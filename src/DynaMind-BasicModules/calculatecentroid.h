@@ -57,6 +57,7 @@ public:
     bool createInputDialog();
     void setNameOfView(std::string name);
     DM::System * getSystemIn();
+    std::string getHelpUrl();
 };
 
 #endif // CALCULATECENTROID_H

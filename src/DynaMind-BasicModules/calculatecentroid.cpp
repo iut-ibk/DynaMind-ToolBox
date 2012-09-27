@@ -122,3 +122,8 @@ DM::System * CalculateCentroid::getSystemIn() {
     return this->city;
 }
 
+string CalculateCentroid::getHelpUrl()
+{
+    return "https://docs.google.com/document/pub?id=1owj87rP1Kdr_n8dvrWCU-VaKGwU-rLlvkCRXgZgXhoo";
+}
+
