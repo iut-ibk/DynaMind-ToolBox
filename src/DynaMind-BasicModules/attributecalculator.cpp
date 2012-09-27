@@ -76,6 +76,8 @@ void AttributeCalculator::init() {
 
         if (viewsmap.find(viewname) == viewsmap.end()) {
             baseView = this->sys_in->getViewDefinition(viewname);
+            if (!baseView)
+                return;
             viewsmap[viewname] = DM::View(baseView->getName(), baseView->getType(), DM::READ);
         }
 
