@@ -37,3 +37,6 @@
 [submodule "DynaMind-PostGIS"]
 	path = DynaMind-PostGIS
 	url = git@github.com:iut-ibk/DynaMind-PostGIS.git
+[submodule "PowerVIBe"]
+	path = PowerVIBe
+	url = git@github.com:christianurich/PowerVIBe.git

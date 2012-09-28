@@ -20,10 +20,16 @@ OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
 OPTION(WITH_PLUGIN_POSTGIS "if with POSTGIS plugin" OFF)
+OPTION(WITH_PLUGIN_POWERVIBE "if with PowerVIBe plugin" OFF)
+OPTION(WITH_PLUGIN_URBANSIM "if with UrbanSim plugin" OFF)
+OPTION(WITH_PLUGIN_SEWER "if with Sewer plugin" OFF)
+OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
+OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
+OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" OFF)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules DynaMind-Sewer DynaMind-CityBlocks DynaMind-UrbanSim  DynaMind-VIBeModules DynaMind-DAnCE4Water)
+set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules)
 
 if(WITH_PLUGIN_QGIS)
     set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
@@ -40,6 +46,30 @@ endif(WITH_PLUGIN_DYNAVIBE)
 if(WITH_PLUGIN_POSTGIS)
     set(TOOLBOX ${TOOLBOX} DynaMind-PostGIS)
 endif(WITH_PLUGIN_POSTGIS)
+
+if(WITH_PLUGIN_POWERVIBE)
+    set(TOOLBOX ${TOOLBOX} PowerVIBe)
+endif(WITH_PLUGIN_POWERVIBE)
+
+if(WITH_PLUGIN_URBANSIM)
+    set(TOOLBOX ${TOOLBOX} DynaMind-UrbanSim)
+endif(WITH_PLUGIN_URBANSIM)
+
+if(WITH_PLUGIN_SEWER)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Sewer)
+endif(WITH_PLUGIN_SEWER)
+
+if(WITH_PLUGIN_DANCE4WATER)
+    set(TOOLBOX ${TOOLBOX} DynaMind-DAnCE4Water)
+endif(WITH_PLUGIN_DANCE4WATER)
+
+if(WITH_PLUGIN_VIBE)
+    set(TOOLBOX ${TOOLBOX} DynaMind-VIBeModules)
+endif(WITH_PLUGIN_VIBE)
+
+if(WITH_PLUGIN_CITYBLOCKS)
+    set(TOOLBOX ${TOOLBOX} DynaMind-CityBlocks)
+endif(WITH_PLUGIN_CITYBLOCKS)
 
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
