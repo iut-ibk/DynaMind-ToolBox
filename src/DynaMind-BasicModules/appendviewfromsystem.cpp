@@ -112,3 +112,8 @@ void AppendViewFromSystem::addSystem(std::string sys) {
     this->init();
 
 }
+
+string AppendViewFromSystem::getHelpUrl(){
+    return "https://docs.google.com/document/pub?id=1mWbm8OVjYzblWIa45cvIvJLzmYR9ZaW-vogsX7zZVtg";
+}
+
