@@ -62,7 +62,7 @@ enum {
   * -   FACE
   * -   SUBSYSTEM
   * -   RASTERDATA
- *
+  *
   * @section AccessType
   * The AccessType defines the assecctype geometric component.
   * Following AccessTypes are supported:
@@ -79,7 +79,7 @@ enum {
   * - modifyAttribute(std::string name)
   *
   * @section Dummy Component
-  * To every View a Dummy Component is created. The dummy component is used to track the changes made by the modules.
+  * To every View a dummy component is created. The dummy component is used to track the changes made by the modules.
   * @author Christian Urich
   * @date 11.03.2012
   */
@@ -97,6 +97,7 @@ private:
     std::map<std::string, std::string> attributeLinks;
 
 public:
+    /** @brief Default constructor to create a new view */
     View(std::string name, int type, int accesstypeGeometry = READ);
     View();
 
@@ -138,7 +139,10 @@ public:
     bool writes();
 
     void setIdOfDummyComponent(std::string UUID);
+
+    /** @brief returns uuid of the dummy object */
     std::string getIdOfDummyComponent();
+
     bool operator<(const View & other) const;
 
     /** @brief Returns Attribute Type */
@@ -147,7 +151,9 @@ public:
     /** @brief Sets Attribute Type */
     void setAttributeType(std::string name, Attribute::AttributeType type);
 
+    /** @brief Adds link attribute */
     void addLinks(std::string name, View linkto);
+
 
     std::string getLinkName(std::string name);
 

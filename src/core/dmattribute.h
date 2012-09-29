@@ -35,11 +35,6 @@
 
 using namespace std;
 
-/** @ingroup DynaMind-Core
-  * An Attribute is used to add informations to an object.
-  *
-  * As attributes Double, Striunb DoubleVector and StringVectors can be used.
-  */
 namespace DM {
 
 struct LinkAttribute {
@@ -47,6 +42,11 @@ struct LinkAttribute {
     std::string uuid;
 };
 
+/** @ingroup DynaMind-Core
+  * An Attribute is used to add informations to an object.
+  *
+  * As attributes Double, Striunb DoubleVector and StringVectors can be used.
+  */
 class DM_HELPER_DLL_EXPORT Attribute
 {
 public:
