@@ -23,27 +23,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
-#include "testmodule.h"
-#include "inoutmodule.h"
-#include "inout2.h"
-#include "dynamicinout.h"
-#include "grouptest.h"
+
 #include "createnodes.h"
 
-/**
-  * @addtogroup TestModules
-  */
-
-using namespace std;
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
-    registry->addNodeFactory(new NodeFactory<TestModule>());
-    registry->addNodeFactory(new NodeFactory<InOut>());
-    registry->addNodeFactory(new NodeFactory<InOut2>());
-    registry->addNodeFactory(new NodeFactory<DynamicInOut>());
-    registry->addNodeFactory(new NodeFactory<GroupTest>());
-    registry->addNodeFactory(new NodeFactory<CreateNodes>());
-
+DM_DECLARE_NODE_NAME(CreateNodes, Modules)
+CreateNodes::CreateNodes()
+{
+    std::vector<DM::View> data;
+    data.push_back( DM::View("Nodes", DM::NODE, DM::WRITE));
+    this->addData("sys",data);
 }
 
+void CreateNodes::run() {
+    DM::System * sys = this->getData("sys");
+    DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
+    for (int i = 0; i < 100000; i++) {
+        DM::Node  n =  DM::Node(0,0,0);
+        sys->addNode(n, v);
+    }
+}

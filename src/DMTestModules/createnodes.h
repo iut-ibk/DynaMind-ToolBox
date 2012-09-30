@@ -23,27 +23,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
-#include "testmodule.h"
-#include "inoutmodule.h"
-#include "inout2.h"
-#include "dynamicinout.h"
-#include "grouptest.h"
-#include "createnodes.h"
 
-/**
-  * @addtogroup TestModules
-  */
+#ifndef CREATENODES_H
+#define CREATENODES_H
 
-using namespace std;
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
-    registry->addNodeFactory(new NodeFactory<TestModule>());
-    registry->addNodeFactory(new NodeFactory<InOut>());
-    registry->addNodeFactory(new NodeFactory<InOut2>());
-    registry->addNodeFactory(new NodeFactory<DynamicInOut>());
-    registry->addNodeFactory(new NodeFactory<GroupTest>());
-    registry->addNodeFactory(new NodeFactory<CreateNodes>());
+#include <dmmodule.h>
+#include <dm.h>
 
-}
+/** @ingroup TestModules
+ * @brief Creates 1000 nodes for memory testing
 
+ */
+
+class DM_HELPER_DLL_EXPORT CreateNodes : public DM::Module
+{
+    DM_DECLARE_NODE(CreateNodes)
+public:
+    CreateNodes();
+    void run();
+};
+
+#endif // CREATENODES_H
