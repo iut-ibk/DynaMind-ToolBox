@@ -59,6 +59,15 @@ void SpatialLinking::init() {
     DM::View * v1 = this->city->getViewDefinition(base);
     DM::View * v2 = this->city->getViewDefinition(linkto);
 
+    if (!v1) {
+        Logger(Error) << "View " << base << "doesn't exist";
+        return;
+    }
+
+    if (!v2) {
+        Logger(Error) << "View " << linkto << "doesn't exist";
+        return;
+    }
     this->vbase = DM::View(v1->getName(), v1->getType(), READ);
     this->vlinkto = DM::View(v2->getName(), v2->getType(), READ);
 
@@ -126,34 +135,34 @@ void SpatialLinking::run() {
         int elementInSearchSpace = 0;
         for (int x = xmin; x <= xmax; x++) {
             for (int y = ymin; y <= ymax; y++) {
-                 QString key = QString::number(x) + "|" +  QString::number(y);
-                 //Test Each Key
-                 std::vector<int> * centers = nodesMap[key];
-                 if (!centers) {
+                QString key = QString::number(x) + "|" +  QString::number(y);
+                //Test Each Key
+                std::vector<int> * centers = nodesMap[key];
+                if (!centers) {
 
-                     continue;
-                 }
-                 elementInSearchSpace=elementInSearchSpace+centers->size();
-                 foreach (int id, (*centers)) {
-                     if (qf.containsPoint(centerPoints[id], Qt::OddEvenFill)) {
-                         LinkAttribute lto;
-                         lto.viewname = linkto;
-                         lto.uuid = linkUUID;
-                         Component * cmp = city->getComponent(baseUUIDs[id]);
-                         Attribute * attr = cmp->getAttribute(linkto);
-                         std::vector<LinkAttribute>  ls = attr->getLinks();
-                         ls.push_back(lto);
-                         attr->setLinks(ls);
+                    continue;
+                }
+                elementInSearchSpace=elementInSearchSpace+centers->size();
+                foreach (int id, (*centers)) {
+                    if (qf.containsPoint(centerPoints[id], Qt::OddEvenFill)) {
+                        LinkAttribute lto;
+                        lto.viewname = linkto;
+                        lto.uuid = linkUUID;
+                        Component * cmp = city->getComponent(baseUUIDs[id]);
+                        Attribute * attr = cmp->getAttribute(linkto);
+                        std::vector<LinkAttribute>  ls = attr->getLinks();
+                        ls.push_back(lto);
+                        attr->setLinks(ls);
 
-                         LinkAttribute lbase;
-                         lbase.viewname = base;
-                         lbase.uuid = cmp->getUUID();
+                        LinkAttribute lbase;
+                        lbase.viewname = base;
+                        lbase.uuid = cmp->getUUID();
 
-                         links.push_back(lbase);
-                         CounterElementLinked++;
-                     }
+                        links.push_back(lbase);
+                        CounterElementLinked++;
+                    }
 
-                 }
+                }
 
             }
         }
