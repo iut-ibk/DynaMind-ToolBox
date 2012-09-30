@@ -33,6 +33,7 @@ namespace mu {
 double numberOfValues(const double* values, int index);
 double random(double value);
 double printValue(double value);
+double round(double vaule);
 static double ContUrbanFabric;
 static double DisContUrbanFabric;
 static double RoadRailNetwork;

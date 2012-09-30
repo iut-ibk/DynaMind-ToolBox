@@ -47,6 +47,9 @@ double mu::numberOfValues(const double* values, int index)
     }
     return counter;
 }
+double mu::round(double value) {
+     return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
+}
 
 double mu::random(double value)
 {

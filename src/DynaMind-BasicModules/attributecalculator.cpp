@@ -149,6 +149,7 @@ void AttributeCalculator::run() {
         p->DefineVar(nov_stream.str(), d);
     }
     p->DefineFun("rand", mu::random , false);
+    p->DefineFun("round", mu::round);
 
     double counter = 0;
 
