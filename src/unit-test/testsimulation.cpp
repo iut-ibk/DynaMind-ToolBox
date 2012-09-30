@@ -34,6 +34,24 @@
 #include <dmporttuple.h>
 
 namespace {
+
+TEST_F(TestSimulation,testMemory){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Add Module";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * m = sim.addModule("CreateNodes");
+    ASSERT_TRUE(m != 0);
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+    for (int i = 0; i < 30; i++) {
+        sim.removeModule(m->getUuid());
+        m = sim.addModule("CreateNodes");
+        sim.run();
+    }
+}
+
 TEST_F(TestSimulation,addModuleToSimulationTest){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -160,7 +178,7 @@ TEST_F(TestSimulation,loadPythonModule) {
 
 TEST_F(TestSimulation,runSinglePythonModule) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Add Module";
     DM::Simulation sim;
     sim.registerPythonModules("PythonModules/scripts/");
