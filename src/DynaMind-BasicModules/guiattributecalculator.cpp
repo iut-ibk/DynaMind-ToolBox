@@ -36,8 +36,10 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     ui->setupUi(this);
     this->attrcalc = (AttributeCalculator*) m;
 
-    if (!this->attrcalc->getSystemIn())
-        return;
+    bool asVector = this->attrcalc->getParameter<bool>("asVector");
+    this->ui->asVector->setChecked(asVector);
+
+
 
     QStringList headers;
     headers << "Name" << "Landscape";
@@ -50,6 +52,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
     ui->lineEditAttribute->setText(QString::fromStdString( this->attrcalc->getParameterAsString("nameOfNewAttribute")));
 
+    if (!this->attrcalc->getSystemIn())
+        return;
     std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
     foreach (DM::View v, views) {
         ui->comboView->addItem(QString::fromStdString(v.getName()));
@@ -79,6 +83,9 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
         item = new QTableWidgetItem(QString::fromStdString(it->second));
         ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
     }
+
+
+
 
 }
 
@@ -209,5 +216,6 @@ void GUIAttributeCalculator::accept() {
 
     }
     this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
+    this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
     QDialog::accept();
 }
