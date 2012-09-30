@@ -40,6 +40,8 @@ AttributeCalculator::AttributeCalculator()
     this->nameOfNewAttribute = "";
     this->addParameter("nameOfNewAttribute", DM::STRING, & this->nameOfNewAttribute);
     this->addParameter("equation", DM::STRING, & this->equation);
+    this->asVector = false;
+    this->addParameter("asVector", DM::BOOL, & this->asVector);
 
     sys_in = 0;
     std::vector<DM::View> data;
@@ -113,6 +115,10 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
         std::string newSearchName = viewNameList.join(".").toStdString();
         foreach (LinkAttribute l, attr->getLinks()) {
             Component * nextcmp = this->sys_in->getComponent(l.uuid);
+            if(!nextcmp)  {
+                Logger(Error) << "Linked Element does not exist in DB";
+                return;
+            }
             this->getLinkedAttriubte(varaible_container, nextcmp, newSearchName);
         }
     }
@@ -185,7 +191,15 @@ void AttributeCalculator::run() {
         }
         try {
             double d = p->Eval();
-            cmp->addAttribute(nameOfNewAttribute, d);
+            if (!this->asVector) {
+                cmp->addAttribute(nameOfNewAttribute, d);
+            } else {
+                DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
+                std::vector<double> vD = attri->getDoubleVector();
+                vD.push_back(d);
+                attri->setDoubleVector(vD);
+            }
+
         }
         catch (mu::Parser::exception_type &e) {
             Logger(Error) << e.GetMsg();
