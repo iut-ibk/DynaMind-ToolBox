@@ -338,7 +338,7 @@ public:
     Group * getGroup();
 
     /** @brief Returns uuid */
-    std::string getUuid() const {return this->uuid;}
+    const std::string & getUuid() const {return this->uuid;}
 
     /** @brief Set pointer to simulation */
     void setSimulation(Simulation * simulation);
