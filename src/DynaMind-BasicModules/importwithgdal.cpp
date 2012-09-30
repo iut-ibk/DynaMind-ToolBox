@@ -189,6 +189,7 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 
 void ImportwithGDAL::initPointList(System *sys)
 {
+    nodeList.clear();
     std::map<std::string, Node*> nodes =  sys->getAllNodes();
     for (std::map<std::string, Node*>::const_iterator it = nodes.begin();
          it != nodes.end();
