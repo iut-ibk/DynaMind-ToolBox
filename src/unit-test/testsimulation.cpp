@@ -42,12 +42,13 @@ TEST_F(TestSimulation,testMemory){
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * m = sim.addModule("CreateNodes");
+    std::string m_uuid = m->getUuid();
     ASSERT_TRUE(m != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
     for (int i = 0; i < 30; i++) {
-        sim.removeModule(m->getUuid());
-        m = sim.addModule("CreateNodes");
+        sim.removeModule(m_uuid);
+        m_uuid = sim.addModule("CreateNodes")->getUuid();
         sim.run();
     }
 }
