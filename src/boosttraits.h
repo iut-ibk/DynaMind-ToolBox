@@ -43,7 +43,7 @@ namespace boost {
     template <>
     struct graph_traits< DM::System * >
     {
-        struct system_graph_traversal_category : public virtual edge_list_graph_tag, public virtual vertex_list_graph_tag
+        struct system_graph_traversal_category : public virtual edge_list_graph_tag, public virtual vertex_list_graph_tag, public incidence_graph_tag
         {
         };
 
@@ -54,10 +54,25 @@ namespace boost {
         typedef system_graph_traversal_category traversal_category;
         typedef int vertices_size_type;
         typedef int edges_size_type;
+        typedef int degree_size_type;
+
 
         typedef map<std::string,DM::Edge*>::iterator edge_iterator;
         typedef map<std::string,DM::Node*>::iterator vertex_iterator;
+        typedef map<std::string,DM::Edge*>::iterator out_edge_iterator;
     };
+
+    inline std::pair<typename graph_traits< DM::System *>::out_edge_iterator,typename graph_traits< DM::System* >::out_edge_iterator > out_edges(typename graph_traits< DM::System * >::vertex_descriptor, DM::System* g)
+    {
+        //TODO implement
+        return std::make_pair( g->getAllEdges().begin(),g->getAllEdges().end() );
+    }
+
+    inline typename graph_traits< DM::System* >::degree_size_type out_degree(typename graph_traits< DM::System * >::vertex_descriptor, DM::System* g)
+    {
+        //TODO implement
+        return 2;
+    }
 
     inline std::pair<typename graph_traits< DM::System *>::edge_iterator,typename graph_traits< DM::System* >::edge_iterator > edges(DM::System* g)
     {
@@ -93,85 +108,210 @@ namespace boost {
         return g->getAllNodes().size();
     }
 
-
-    //PROPERTY TRAITS
-    struct dmproperty_category : public virtual readable_property_map_tag, public virtual read_write_property_map_tag
+    //NEW PROPERTY TRAITS
+    class SystemPropertyMap
     {
+    private:
+        DM::System *instance;
+    public:
+
+        SystemPropertyMap()
+        {
+        }
+
+        SystemPropertyMap(DM::System* sys)
+        {
+            this->instance=sys;
+        }
+    };
+
+    class SystemPropertyMapInt
+    {
+    private:
+        DM::System *instance;
+    public:
+
+        SystemPropertyMapInt()
+        {
+        }
+
+        SystemPropertyMapInt(DM::System* sys)
+        {
+            this->instance=sys;
+        }
+
+        int& operator[](std::pair<std::string,DM::Node*> x)
+        {
+            int i=1;
+            return i;
+        }
+
+        /*
+        double& operator[](int x)
+        {
+            double i=1;
+            return i;
+        }
+        */
     };
 
     template<>
-    struct property_traits< DM::Edge >
+    struct property_traits< SystemPropertyMap* >
     {
         typedef double value_type;
         typedef double& reference;
-        typedef graph_traits< DM::System * >::edge_descriptor key_type;
-        typedef dmproperty_category category;
+        typedef typename graph_traits< DM::System * >::edge_descriptor key_type;
+        typedef readable_property_map_tag category;
     };
 
     template<>
-    struct property_traits< DM::Node >
+    struct property_traits< SystemPropertyMapInt* >
     {
-        typedef double value_type;
-        typedef double& reference;
-        typedef graph_traits< DM::System * >::vertex_descriptor key_type;
-        typedef dmproperty_category category;
+        typedef int value_type;
+        typedef int& reference;
+        typedef typename graph_traits< DM::System * >::vertex_descriptor key_type;
+        typedef read_write_property_map_tag category;
     };
 
-/*
-    void put( DM::System*  pmap, std::pair<std::string,DM::Edge*> k, const  double& val)
+    template<>
+    struct property_map<DM::System*, vertex_index_t>
     {
-        //TODO implement
-        return;
-    }
-
-    void put( DM::System*  pmap, std::pair<std::string,DM::Node*> k, const  double& val)
-    {
-        //TODO implement
-        return;
-    }
-*/
+        typedef SystemPropertyMapInt* type;
+        typedef const SystemPropertyMapInt* const_type;
+    };
 
     /*
-    typename property_traits< DM::Edge >::reference get(const  DM::System*& pmap, std::pair<std::string,DM::Edge*>& k)
+    template<>
+    struct property_map<SystemPropertyMap*, edge_weight_t>
+    {
+        typedef SystemPropertyMap* type;
+        typedef const SystemPropertyMap* const_type;
+        typedef value_type
+    };*/
+
+    SystemPropertyMap* get(edge_weight_t, DM::System* sys)
+    {
+        return new SystemPropertyMap();
+    }
+
+    typename property_traits< SystemPropertyMap* >::value_type get(property_traits< SystemPropertyMap* > pmap, typename property_traits< SystemPropertyMap* >::key_type k)
     {
         //TODO implement
         double i = 0;
         return i;
     }
 
-    typename property_traits< DM::Node >::reference get(const  DM::System*& pmap, std::pair<std::string,DM::Node*>& k)
+    SystemPropertyMapInt* get(vertex_index_t, DM::System* sys)
+    {
+        return new SystemPropertyMapInt();
+    }
+
+    typename property_traits< SystemPropertyMapInt* >::value_type get(property_traits< SystemPropertyMapInt* > pmap, typename property_traits< SystemPropertyMapInt* >::key_type k)
     {
         //TODO implement
         double i = 0;
         return i;
+    }
+
+    void put(property_traits< SystemPropertyMapInt* >& pmap, typename property_traits< SystemPropertyMapInt* >::key_type& k, typename property_traits< SystemPropertyMapInt* >::value_type& v)
+    {
+        //TODO implement
+        return;
+    }
+
+
+    //PROPERTY TRAITS
+    /*
+    class SystemPropertyMap
+    {
+    private:
+        DM::System *instance;
+    public:
+
+        SystemPropertyMap()
+        {
+        }
+
+        SystemPropertyMap(DM::System* sys)
+        {
+            this->instance=sys;
+        }
+
+        double& operator[](std::pair<std::string,DM::Component*> x)
+        {
+            double i=1;
+            return i;
+        }
+
+        double& operator[](int x)
+        {
+            double i=1;
+            return i;
+        }
+    };
+
+    template<>
+    struct property_traits< SystemPropertyMap* >
+    {
+        typedef double value_type;
+        typedef double& reference;
+        typedef std::pair<std::string,DM::Component*> key_type;
+        typedef read_write_property_map_tag category;
+    };
+
+    template<>
+    struct property_map<SystemPropertyMap*, vertex_index_t>
+    {
+        typedef SystemPropertyMap* type;
+        typedef const SystemPropertyMap* const_type;
+    };
+
+    template<>
+    struct property_map<SystemPropertyMap*, vertex_distance_t>
+    {
+        typedef SystemPropertyMap* type;
+        typedef SystemPropertyMap* const_type;
+    };
+
+    template<>
+    struct property_map<SystemPropertyMap*, edge_weight_t>
+    {
+        typedef DM::System* type;
+        typedef DM::System* const_type;
+    };
+
+    void put( SystemPropertyMap*  pmap, typename property_traits< SystemPropertyMap* >::key_type k, const  double& val)
+    {
+        //TODO implement
+        return;
+    }
+
+    typename property_traits< SystemPropertyMap* >::reference get(SystemPropertyMap*& pmap, typename property_traits< SystemPropertyMap* >::key_type& k)
+    {
+        //TODO implement
+        double i = 0;
+        return i;
+    }
+
+
+    void put(std::pair<std::string,DM::Node*> k,std::pair<std::string,DM::Node*> k1,std::pair<std::string,DM::Node*> k2)
+    {
+    }
+
+    property_map<SystemPropertyMap*, edge_weight_t> get(edge_weight_t a, DM::System*& sys)
+    {
+        return 0;
+    }
+
+    SystemPropertyMap* get(vertex_index_t i, DM::System*& sys)
+    {
+        return new SystemPropertyMap();
+    }
+
+    SystemPropertyMap* get(vertex_distance_t i, DM::System*& sys)
+    {
+        return new SystemPropertyMap();
     }
 */
-    template<>
-    struct property_map< DM::System*, edge_weight_t>
-    {
-        typedef DM::System* type;
-        typedef DM::System* const_type;
-    };
-
-    template<>
-    struct property_map< DM::System*, vertex_index_t>
-    {
-        typedef DM::System* type;
-        typedef DM::System* const_type;
-    };
-
-
-    template <>
-    inline const double& get(const DM::Edge* pa, std::ptrdiff_t k) { return 0; }
-
-    DM::System* get(edge_weight_t a, DM::System *sys)
-    {
-        return sys;
-    }
-
-    DM::System* get(vertex_index_t i, DM::System* sys)
-    {
-        return sys;
-    }
 } // namespace boost
 #endif // boosttraits_H

@@ -41,6 +41,7 @@
 #include <boosttraits.h>
 #include <boost/graph/prim_minimum_spanning_tree.hpp>
 #include <boost/graph/graph_concepts.hpp>
+#include <boost/iterator/iterator_concepts.hpp>
 
 using namespace boost;
 
@@ -51,6 +52,7 @@ StreetToNetwork::StreetToNetwork()
     std::vector<DM::View> views;
     DM::View view;
 
+    /*
     //Define Parameter street network
     view = DM::View("STREET", DM::EDGE, DM::READ);
     views.push_back(view);
@@ -60,8 +62,8 @@ StreetToNetwork::StreetToNetwork()
     view = DM::View("EDGES", DM::NODE, DM::READ);
     views.push_back(view);
     viewdef["EDGES"]=view;
-
-    //this->addData("Layout", views);
+    */
+    this->addData("Layout", views);
 }
 
 void StreetToNetwork::run()
@@ -71,15 +73,44 @@ void StreetToNetwork::run()
     //TESTS
 
     typedef DM::System* Graph;
+    //typedef SystemPropertyMap* Map;
     BOOST_CONCEPT_ASSERT(( EdgeListGraphConcept<Graph> ));
     BOOST_CONCEPT_ASSERT(( VertexListGraphConcept<Graph> ));
-    BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<Graph, property_traits< DM::Edge >::key_type >));
-    //BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<Graph> ));
+    BOOST_CONCEPT_ASSERT(( IncidenceGraphConcept<Graph> ));
+    BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMap* >, property_traits< SystemPropertyMap* >::key_type >));
+    BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
+    BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( MultiPassInputIteratorConcept ));
 
-    //std::vector < graph_traits < DM::System* >::vertex_descriptor >p(num_vertices(this->sys));
-    //property_map<Graph, edge_weight_t>::type weightmap = get(edge_weight, g);
+    //BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<Map, property_traits< Map >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<Map, property_traits< Map >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<Graph, property_traits< Map >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( IndexMapConcept<Map, property_traits< Map >::key_type >));
 
+    /*
+    property_map<Map, edge_weight_t>::type testweightmap = get(edge_weight, this->sys);
+
+    graph_traits<Graph>::edge_iterator itedges = edges(this->sys).first;
+
+    for (int j = 0; j < num_edges(this->sys); j++)
+    {
+        testweightmap[1];
+        //itedges++;
+    }
+
+
+    property_map<Map, vertex_index_t>::type indexmap = get(vertex_index, this->sys);
+    property_map<Map, vertex_distance_t>::type distance = get(vertex_distance, this->sys);
+    */
+    std::vector < graph_traits < DM::System* >::vertex_descriptor > p(num_vertices(this->sys));
+
+    //prim_minimum_spanning_tree(this->sys, *vertices(this->sys).first, &p[0], distance, testweightmap, indexmap, default_dijkstra_visitor());
+
+    //std::vector < graph_traits < DM::System* >::vertex_descriptor > p(num_vertices(this->sys));
     //prim_minimum_spanning_tree(this->sys, &p[0]);
+
+
+    //TEST
 }
 
 void StreetToNetwork::initmodel()
