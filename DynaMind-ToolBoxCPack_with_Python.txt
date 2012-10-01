@@ -52,6 +52,7 @@ IF(WIN32 AND NOT UNIX)
      INSTALL(FILES ${DLLS} DESTINATION bin)
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\lib\\\\DynaMind\\\\3dparty\\\\Editra\\\\\\\"
         DeleteRegValue \\\${env_hklm} DYNAMIND_DIR
         SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
         DeleteRegValue \\\${env_hklm} DYNAMIND_PYTHON
