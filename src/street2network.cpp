@@ -72,14 +72,14 @@ void StreetToNetwork::run()
 
     //TESTS
 
-    typedef DM::System* Graph;
+    typedef SystemGraph* Graph;
     //typedef SystemPropertyMap* Map;
     BOOST_CONCEPT_ASSERT(( EdgeListGraphConcept<Graph> ));
     BOOST_CONCEPT_ASSERT(( VertexListGraphConcept<Graph> ));
     BOOST_CONCEPT_ASSERT(( IncidenceGraphConcept<Graph> ));
-    BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMap* >, property_traits< SystemPropertyMap* >::key_type >));
-    BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
-    BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMap* >, property_traits< SystemPropertyMap* >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( ReadablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
+    //BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<property_traits< SystemPropertyMapInt* >, property_traits< SystemPropertyMapInt* >::key_type >));
     //BOOST_CONCEPT_ASSERT(( MultiPassInputIteratorConcept ));
 
     //BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept<Map, property_traits< Map >::key_type >));
@@ -102,12 +102,23 @@ void StreetToNetwork::run()
     property_map<Map, vertex_index_t>::type indexmap = get(vertex_index, this->sys);
     property_map<Map, vertex_distance_t>::type distance = get(vertex_distance, this->sys);
     */
-    std::vector < graph_traits < DM::System* >::vertex_descriptor > p(num_vertices(this->sys));
+
+    std::vector<std::string> en;
+    boost::SystemGraph g(this->sys,&en,&en);
+    std::vector < graph_traits < SystemGraph* >::vertex_descriptor > p(num_vertices(&g));
 
     //prim_minimum_spanning_tree(this->sys, *vertices(this->sys).first, &p[0], distance, testweightmap, indexmap, default_dijkstra_visitor());
-
+    //choose_const_pmap(get_param(params, edge_weight), g, edge_weight);
     //std::vector < graph_traits < DM::System* >::vertex_descriptor > p(num_vertices(this->sys));
-    //prim_minimum_spanning_tree(this->sys, &p[0]);
+    prim_minimum_spanning_tree(&g, &p[0]);
+
+    /*
+    dijkstra_shortest_paths(&g, src,
+        distance_map(get(vertex_distance, &g)).
+        weight_map(get(edge_weight, &g)).
+        color_map(get(vertex_color, &g)).
+        vertex_index_map(get(vertex_index, &g)));
+        */
 
 
     //TEST
