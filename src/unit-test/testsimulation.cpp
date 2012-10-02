@@ -167,39 +167,41 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
-TEST_F(TestSimulation,loadPythonModule) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Add Module";
-    DM::Simulation sim;
-    sim.registerPythonModules("PythonModules/scripts/");
-    DM::Module * m = sim.addModule("PythonTestModule");
-    ASSERT_TRUE(m != 0);
-}
+#ifndef PYTHON_EMBEDDING_DISABLED
+    TEST_F(TestSimulation,loadPythonModule) {
+        ostream *out = &cout;
+        DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+        DM::Logger(DM::Standard) << "Add Module";
+        DM::Simulation sim;
+        sim.registerPythonModules("PythonModules/scripts/");
+        DM::Module * m = sim.addModule("PythonTestModule");
+        ASSERT_TRUE(m != 0);
+    }
 
-TEST_F(TestSimulation,runSinglePythonModule) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Add Module";
-    DM::Simulation sim;
-    sim.registerPythonModules("PythonModules/scripts/");
-    DM::Module * m = sim.addModule("PythonTestModule");
-    ASSERT_TRUE(m != 0);
-    sim.run();
-    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-
-}
-TEST_F(TestSimulation,runRepeatedSinglePythonModule) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Add Module";
-    DM::Simulation sim;
-    sim.registerPythonModules("PythonModules/scripts/");
-    DM::Module * m = sim.addModule("PythonTestModule");
-    ASSERT_TRUE(m != 0);
-    for (int i = 0; i < 100; i++)
+    TEST_F(TestSimulation,runSinglePythonModule) {
+        ostream *out = &cout;
+        DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+        DM::Logger(DM::Standard) << "Add Module";
+        DM::Simulation sim;
+        sim.registerPythonModules("PythonModules/scripts/");
+        DM::Module * m = sim.addModule("PythonTestModule");
+        ASSERT_TRUE(m != 0);
         sim.run();
-    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+        ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+    }
 
-}
+    TEST_F(TestSimulation,runRepeatedSinglePythonModule) {
+            ostream *out = &cout;
+            DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+            DM::Logger(DM::Standard) << "Add Module";
+            DM::Simulation sim;
+            sim.registerPythonModules("PythonModules/scripts/");
+            DM::Module * m = sim.addModule("PythonTestModule");
+            ASSERT_TRUE(m != 0);
+            for (int i = 0; i < 100; i++)
+                sim.run();
+            ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+
+        }
+#endif
 }

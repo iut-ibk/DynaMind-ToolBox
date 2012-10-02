@@ -35,7 +35,10 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include <sstream>
-#include <dmpythonenv.h>
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+    #include <dmpythonenv.h>
+#endif
 
 
 using namespace std;

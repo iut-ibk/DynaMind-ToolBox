@@ -24,27 +24,28 @@
  *
  */
 
-#include <ostream>
-#include <testpython.h>
-#include <dmlog.h>
-#include <dmlogger.h>
+#ifndef PYTHON_EMBEDDING_DISABLED
+    #include <ostream>
+    #include <testpython.h>
+    #include <dmlog.h>
+    #include <dmlogger.h>
 
-void TestPython::SetUp()
-{
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Load Python engine";
-    pyenv = DM::PythonEnv::getInstance();
-}
+    void TestPython::SetUp()
+    {
+        ostream *out = &cout;
+        DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+        DM::Logger(DM::Standard) << "Load Python engine";
+        pyenv = DM::PythonEnv::getInstance();
+    }
 
-void TestPython::TearDown()
-{
-}
+    void TestPython::TearDown()
+    {
+    }
 
-TEST_F(TestPython,redirectPythonOutput)
-{
-    bool ret = pyenv->addOverWriteStdCout();
-    EXPECT_TRUE(ret);
-}
-
+    TEST_F(TestPython,redirectPythonOutput)
+    {
+        bool ret = pyenv->addOverWriteStdCout();
+        EXPECT_TRUE(ret);
+    }
+#endif
 

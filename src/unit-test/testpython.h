@@ -24,31 +24,33 @@
  *
  */
 
-#ifndef TESTPYTHON_H
-#define TESTPYTHON_H
+#ifndef PYTHON_EMBEDDING_DISABLED
+    #ifndef TESTPYTHON_H
+    #define TESTPYTHON_H
 
-#include <gtest/gtest.h>
-#include <dmsimulation.h>
-#include <dmpythonenv.h>
-#include <dmmodule.h>
+    #include <gtest/gtest.h>
+    #include <dmsimulation.h>
+    #include <dmpythonenv.h>
+    #include <dmmodule.h>
 
-namespace {
-    class TestPython : public ::testing::Test
-    {
-    public:
-        DM::Simulation *sim;
-        DM::PythonEnv *pyenv;
+    namespace {
+        class TestPython : public ::testing::Test
+        {
+        public:
+            DM::Simulation *sim;
+            DM::PythonEnv *pyenv;
 
-    protected:
-            TestPython()
-            {
-                sim = 0;
-                pyenv = 0;
-            }
+        protected:
+                TestPython()
+                {
+                    sim = 0;
+                    pyenv = 0;
+                }
 
-            virtual ~TestPython(){}
-            virtual void SetUp();
-            virtual void TearDown();
-    };
-}
-#endif // TESTPYTHON_H
+                virtual ~TestPython(){}
+                virtual void SetUp();
+                virtual void TearDown();
+        };
+    }
+    #endif // TESTPYTHON_H
+#endif

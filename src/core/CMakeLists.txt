@@ -4,8 +4,10 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
 
-set_source_files_properties(${OUTPUT_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
-SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${OUTPUT_DIR}/pydynamindWRAP.cpp)
+IF(PYTHON_EMBEDDING)
+    set_source_files_properties(${OUTPUT_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
+    SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${OUTPUT_DIR}/pydynamindWRAP.cpp)
+ENDIF()
 
 ADD_LIBRARY(dynamindcore  SHARED ${DYNAMIND_CPPS})
 
@@ -17,9 +19,12 @@ IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
         SET_TARGET_PROPERTIES(dynamindcore PROPERTIES COMPILE_FLAGS "-frounding-math")
 ENDIF()
 
-TARGET_LINK_LIBRARIES(dynamindcore ${QT_LIBRARIES} ${PYTHON_LIBRARIES} ${QT_QTMAIN_LIBRARY})
+TARGET_LINK_LIBRARIES(dynamindcore ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY})
 
-add_dependencies(dynamindcore pydynamindgen pydmtoolboxgen)
+IF(PYTHON_EMBEDDING)
+    TARGET_LINK_LIBRARIES(dynamindcore ${PYTHON_LIBRARIES})
+    ADD_DEPENDENCIES(dynamindcore pydynamindgen pydmtoolboxgen)
+ENDIF()
 
 INSTALL(TARGETS dynamindcore
         RUNTIME DESTINATION bin
