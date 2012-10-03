@@ -40,6 +40,8 @@ public:
 
     RasterData(const RasterData &other);
     RasterData();
+	Components getType();
+	void getRawData(QBuffer* buf);
     virtual ~RasterData();
     void clear();
     double getValue(long x, long y) const;

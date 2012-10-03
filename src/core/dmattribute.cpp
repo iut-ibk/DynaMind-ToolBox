@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -211,6 +211,68 @@ void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<do
     this->type = Attribute::TIMESERIES;
     this->doublevector = value;
     this->stringvector = timestamp;
+}
+
+void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value)
+{
+	if(!timestamp || !value)
+	{
+        DM::Logger(DM::Error) << "timestamp or value are equal null";
+        return;
+	}
+
+	*value = doublevector;
+	*timestamp = stringvector;
+}
+
+void DM::GetRawVectorData(std::vector<double> v, QBuffer *buf)
+{
+	// write size
+	int size = v.size();
+	buf->write((char*)&size, sizeof(size));
+	// write data
+	foreach(double d, v)
+	{
+		buf->write((char*)&d, sizeof(d)*size);
+	}
+}
+void DM::GetRawVectorData(std::vector<std::string> v, QBuffer *buf)
+{
+	foreach(std::string str, v)
+	{	
+		// write size
+		int size = str.size();
+		buf->write((char*)&size, sizeof(size));
+		// write data
+		buf->write((char*)str.data(), size);
+	}
+}
+
+void Attribute::getRawData(QBuffer *buf)
+{
+	switch(type)
+	{
+	case Attribute::AttributeType::DOUBLE:
+		buf->write((char*)&doublevalue, sizeof(doublevalue));
+		break;
+	case Attribute::AttributeType::DOUBLEVECTOR:
+		GetRawVectorData(doublevector, buf);
+		break;
+	case Attribute::AttributeType::STRING:
+		buf->write(stringvalue.data(), stringvalue.size());
+		break;
+	case Attribute::AttributeType::STRINGVECTOR:
+		GetRawVectorData(stringvector, buf);
+		break;
+	case Attribute::AttributeType::TIMESERIES:
+		GetRawVectorData(doublevector, buf);
+		GetRawVectorData(stringvector, buf);
+		break;
+	//case Attribute::AttributeType::LINK:
+	//	break;
+	//case Attribute::AttributeType::NOTYPE:
+	//	break;
+	}
 }
 
 void Attribute::setType(AttributeType type)

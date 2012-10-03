@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,11 @@
 #include <dmlogger.h>
 #include <dmmodule.h>
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <qvariant>
+#include <QtCore>
 
 using namespace DM;
 
@@ -98,7 +103,7 @@ System::System(const System& s) : Component(s)
 
 System::~System()
 {
-    foreach (DM::System * sys, sucessor)
+    foreach (DM::System * sys, sucessors)
         if (sys)
             delete sys;
     foreach (DM::View * v, ownedView) {
@@ -107,9 +112,13 @@ System::~System()
     ownedView.clear();
 }
 
+Components System::getType()
+{
+	return DM::SUBSYSTEM;
+}
+
 Component * System::addComponent(Component* c, const DM::View & view)
 {
-
     if(!addChild(c)) {
         delete c;
         return 0;
@@ -124,7 +133,6 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
     return c;
 }
-
 
 Node * System::addNode(Node* node)
 {
@@ -482,7 +490,7 @@ System* System::createSuccessor()
 
     Logger(Debug) << "Create Sucessor " << this->getUUID();
     System* result = new System(*this);
-    this->sucessor.push_back(result);
+    this->sucessors.push_back(result);
     result->addPredecessors(this);
     return result;
 }
@@ -558,7 +566,12 @@ bool System::addView(View view)
     return true;
 }
 
-std::vector<System*> System::getPredecessorStates()
+std::vector<System*> System::getSucessors()
+{
+    return sucessors;
+}
+
+std::vector<System*> System::getPredecessors()
 {
     return predecessors;
 }
@@ -592,6 +605,127 @@ const std::vector<DM::View> System::getViews()  {
     }
 
     return viewlist;
-
 }
 
+
+DBConnector* DBConnector::instance = 0;
+
+DBConnector::DBConnector()
+{
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName(":memory:");
+
+	if(!db.open())
+		Logger(Error) << "Failed to open db connection";
+	else
+		Logger(Debug) << "Db connection opened";
+
+	// init table structure
+	QSqlQuery query;
+    if(!query.exec(
+		"create table system(uuid varchar(100), predecessors text, sucessors text, components text, PRIMARY KEY (uuid))"
+		"create table components(uuid varchar(100), name text, type tinyint, ownedchilds text, attributes text, PRIMARY KEY (uuid))"
+		"create table attributes(owner varchar(100), name text, type tinyint, value text,PRIMARY KEY (uuid))"
+		))
+         Logger(Debug) << "Cannot initialize db tables";
+}
+DM::DBConnector* DBConnector::getInstance()
+{
+	if(!DBConnector::instance)
+		DBConnector::instance = new DBConnector();
+	return DBConnector::instance;
+}
+
+void DBConnector::beginTransaction()
+{
+    QSqlQuery query;
+    if(!query.exec("BEGIN TRANSACTION"))
+         Logger(Error) << "DB error in \"BEGIN TRANSACTION\" statement";
+}
+
+void DBConnector::endTransaction()
+{
+    QSqlQuery query;
+    if(!query.exec("END TRANSACTION"))
+         Logger(Error) << "DB error in \"END TRANSACTION\" statement";
+}
+
+typedef std::pair<std::string, Component*> ComponentPair;
+typedef std::pair<std::string, Attribute*> AttributePair;
+//uuidSeperator = ";";
+
+void DBConnector::saveSystem(DM::System *sys)
+{
+	QSqlQuery query;
+    query.prepare("INSERT INTO systems (uuid, predecessors, sucessors, components) VALUES (?, ?, ?, ?)");
+
+	query.addBindValue(QString::fromStdString(sys->getUUID()));
+
+	std::string sucessors;
+	foreach(System* sys, sys->getSucessors())		sucessors += sys->getUUID() + uuidSeperator;
+	query.addBindValue(QString::fromStdString(sucessors));
+
+	std::string predecessors;
+	foreach(System* sys, sys->getPredecessors())	predecessors += sys->getUUID() + uuidSeperator;
+	query.addBindValue(QString::fromStdString(predecessors));
+
+	std::string components;
+	foreach(ComponentPair comp, sys->getAllComponents())	components += comp.first + uuidSeperator;
+	foreach(ComponentPair comp, sys->getAllNodes())			components += comp.first + uuidSeperator;
+	foreach(ComponentPair comp, sys->getAllEdges())			components += comp.first + uuidSeperator;
+	foreach(ComponentPair comp, sys->getAllFaces())			components += comp.first + uuidSeperator;
+	foreach(ComponentPair comp, sys->getAllRasterData())	components += comp.first + uuidSeperator;
+	foreach(ComponentPair comp, sys->getAllSubSystems())	components += comp.first + uuidSeperator;
+	query.addBindValue(QString::fromStdString(components));
+
+	if(!query.exec())
+        Logger(Error) << "Cannot insert component in DB";
+
+	saveComponent(sys);
+	foreach(ComponentPair comp, sys->getAllComponents())
+		saveComponent(comp.second);
+}
+
+void DBConnector::saveComponent(DM::Component *comp)
+{
+	QSqlQuery query;
+    query.prepare("INSERT INTO components (uuid, name, type, ownedchilds, attributes) VALUES (?, ?, ?, ?)");
+
+	query.addBindValue(QString::fromStdString(comp->getUUID()));
+	query.addBindValue(QString::fromStdString(comp->getName()));
+	query.addBindValue((int)comp->getType());
+
+	std::string childs;
+	std::string attributes;
+
+	foreach(ComponentPair child, comp->getAllChilds())		childs += child.first + uuidSeperator;
+	query.addBindValue(QString::fromStdString(childs));
+	
+	foreach(AttributePair attr, comp->getAllAttributes())	attributes += attr.first + uuidSeperator;
+	query.addBindValue(QString::fromStdString(attributes));
+
+    if(!query.exec())
+        Logger(Error) << "Cannot insert component in DB";
+
+	foreach(AttributePair attr, comp->getAllAttributes())
+		saveAttribute(attr.second, comp->getUUID());
+}
+
+
+void DBConnector::saveAttribute(DM::Attribute *att, std::string ownerUuid)
+{
+	QSqlQuery query;
+    query.prepare("INSERT INTO attributes (owner, name, type, value) VALUES (?, ?, ?, ?)");
+
+	query.addBindValue(QString::fromStdString(ownerUuid));
+	query.addBindValue(QString::fromStdString(att->getName()));
+	query.addBindValue((int)att->getType());
+
+	QByteArray qba;
+    QBuffer buffer(&qba);
+	att->getRawData(&buffer);
+	query.addBindValue(qba);
+
+    if(!query.exec())
+        Logger(Error) << "Cannot insert attribute in DB";
+}

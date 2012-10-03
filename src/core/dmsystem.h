@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,15 +38,6 @@
 
 namespace DM {
 
-enum Components {
-    COMPONENT,
-    NODE,
-    EDGE,
-    FACE,
-    SUBSYSTEM,
-    RASTERDATA
-};
-
 class Node;
 class Edge;
 class Face;
@@ -54,7 +45,7 @@ class RasterData;
 class Module;
 
 /** @ingroup DynaMind-Core
-      * @brief The system class provides a description for comlpex objects.
+      * @brief The system class provides a description for complex objects.
       *
       * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
       * Systems are used to describe urban environment - water infrastructure, streets, houses ...
@@ -67,7 +58,6 @@ class Module;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
-    std::vector<System*> predecessors;
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;
     std::map<std::string, Face* > faces;
@@ -75,8 +65,9 @@ private:
     std::map<std::string, System*> subsystems;
     std::map<std::string, Component* > components;
     std::map<std::string, View*> viewdefinitions;
-    std::map<std::string, std::map<std::string, Component*> > views;    
-    std::vector<DM::System *> sucessor;
+    std::map<std::string, std::map<std::string, Component*> > views;   
+    std::vector<DM::System*> predecessors;
+    std::vector<DM::System*> sucessors;
     std::vector<DM::View *> ownedView;
 
 
@@ -96,6 +87,8 @@ public:
      *
      * The destructor also deletes all successor states */
     ~System();
+	/** @brief return Type */
+	Components getType();
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system*/
@@ -143,7 +136,9 @@ public:
     /** @brief Returns a map of rasterdata stored in the system */
     std::map<std::string, RasterData*> getAllRasterData();
     /** @brief Returns the predecessor of the system */
-    std::vector<System*> getPredecessorStates();
+    std::vector<System*> getPredecessors();
+    /** @brief Returns the sucessor of the system */
+    std::vector<System*> getSucessors();
     /** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
     System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
     /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
@@ -183,5 +178,24 @@ public:
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
+
+class DBConnector
+{
+private:
+	static DBConnector* instance;
+	DBConnector();
+
+	void beginTransaction();
+	void endTransaction();
+
+	void saveSystem(DM::System *sys);
+	void saveComponent(DM::Component *comp);
+	void saveAttribute(DM::Attribute *att, std::string uuid);
+	//DM::Component* loadComponent();
+public:
+	static DBConnector* getInstance();
+};
 }
+
+
 #endif // SYSTEM_H

@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,9 +66,9 @@ void Component::setName(std::string name) {
     this->name = name;
 }
 
-//std::string Component::getName() const {
-//return name;
-//}
+std::string Component::getName() const {
+return name;
+}
 
 Component::Component(const Component& c)
 {
@@ -119,6 +119,16 @@ void Component::setUUID(std::string uuid)
 std::string Component::getUUID()
 {
     return uuid;
+}
+
+DM::Components Component::getType()
+{
+    return DM::COMPONENT;
+}
+
+void Component::getRawData(QBuffer* buf)
+{
+	return;
 }
 
 bool Component::addAttribute(std::string name, double val) {
@@ -218,7 +228,6 @@ bool Component::addChild(Component *newcomponent)
 
     childsview[newcomponent->getUUID()] = newcomponent;
     ownedchilds[newcomponent->getUUID()] = newcomponent;
-
 
     return true;
 }

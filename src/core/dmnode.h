@@ -62,6 +62,10 @@ public:
     Node();
     /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
     Node(const Node& n);
+	/** @brief return Type */
+	Components getType();
+	/** @brief return Type */
+	void getRawData(QBuffer* buf);
     /** @brief return x */
     double getX() const;
     /** @brief return y*/

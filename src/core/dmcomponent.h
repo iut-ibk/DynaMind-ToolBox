@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,17 @@
 #endif
 
 namespace DM {
+	
+static std::string uuidSeperator = ";";
+
+enum Components {
+    COMPONENT,
+    NODE,
+    EDGE,
+    FACE,
+    SUBSYSTEM,
+    RASTERDATA
+};
 
 class Attribute;
 class System;
@@ -65,8 +76,6 @@ protected:
     System * currentSys;
 
     void removeView(const DM::View & view);
-
-
 public:
     /** @brief create a new component
       *
@@ -79,10 +88,12 @@ public:
     virtual ~Component();
     /** @brief setUUID */
     void setUUID(std::string uuid);
-
+    /** @brief return Type */
+	virtual Components getType();
+    /** @brief return Type */
+	virtual void getRawData(QBuffer *buf);
     /** @brief return UUID */
     std::string getUUID();
-
     /** @brief adds a new Attribute to the Component.
       *
       * Returns true if the attribute has been added to the Component.
@@ -140,7 +151,7 @@ public:
     /** @brief Sets name */
     void setName(std::string name);
     /** @brief Returns name */
-    //std::string getName() const;
+    std::string getName() const;
     //TODO No idea waht this is
     bool addChild(Component *newcomponent);
     bool changeChild(Component *newcomponent);

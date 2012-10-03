@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich, Markus Sengthaler
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,4 +46,13 @@ std::vector<std::string> Face::getNodes() {
 Component* Face::clone()
 {
     return new Face(*this);
+}
+DM::Components Face::getType()
+{
+	return DM::FACE;
+}
+
+void Face::getRawData(QBuffer* buf)
+{
+	DM::GetRawVectorData(nodes, buf);
 }

@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,10 +46,17 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
     for (long i = 0; i < width; i++) {
         data[i] = new double[height];
     }
-
-
-
 }
+Components RasterData::getType()
+{
+	return DM::RASTERDATA;
+}
+
+void RasterData::getRawData(QBuffer *buf)
+{
+	// TODO
+}
+
 double RasterData::getSum() const {
     double sum = 0;
     for ( long i = 0; i < width; i++ ) {

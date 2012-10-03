@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich, Michael Mair
+ * Copyright (C) 2011-2012  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 #include <set>
 #include <map>
 #include <dmcompilersettings.h>
+#include <QtCore>
 
 using namespace std;
 
@@ -122,9 +123,13 @@ public:
     std::vector<LinkAttribute> getLinks();
     /** @brief add TimeSeries **/
     void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
-    /** @brief Sets attribute tyoe */
+    /** @brief add TimeSeries **/
+    void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
+    /** @brief Sets attribute type */
     void setType(AttributeType type);
-    
+	/** @brief Gets value */
+	void Attribute::getRawData(QBuffer *buf);
+
     /**
      * @brief get a printable name of the type, e.g. for gui displaying
      * @return the name of the type as string
@@ -139,5 +144,10 @@ public:
     static const char*getTypeName(AttributeType type);
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
+
+
+void GetRawVectorData(std::vector<double> v, QBuffer *buf);
+void GetRawVectorData(std::vector<std::string> v, QBuffer *buf);
+
 }
 #endif // ATTRIBUTE_H

@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +39,16 @@ Edge::Edge(const Edge& e) : Component(e)
 {
     start=e.start;
     end=e.end;
+}
+DM::Components Edge::getType()
+{
+	return DM::EDGE;
+}
+
+void Edge::getRawData(QBuffer* buf)
+{
+	std::string str = start + uuidSeperator + end + uuidSeperator;
+	buf->write(str.data(), str.length());
 }
 
 std::string Edge::getStartpointName()

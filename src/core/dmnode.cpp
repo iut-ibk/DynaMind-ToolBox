@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,12 +45,21 @@ Node::Node() : Component()
     this->z = 0;
 }
 
-
 Node::Node(const Node& n) : Component(n)
 {
     x=n.x;
     y=n.y;
     z=n.z;
+}
+
+DM::Components Node::getType()
+{
+	return DM::NODE;
+}
+
+void Node::getRawData(QBuffer *buf)
+{
+	buf->write((char*)&v_, sizeof(v_)*3);
 }
 
 double Node::getX() const
