@@ -603,7 +603,6 @@ const std::vector<DM::View> System::getViews()  {
     for (std::map<std::string, View*>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
         viewlist.push_back(View(*it->second));
     }
-
     return viewlist;
 }
 
