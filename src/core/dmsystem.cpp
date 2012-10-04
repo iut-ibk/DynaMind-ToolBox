@@ -34,11 +34,9 @@
 #include <dmlogger.h>
 #include <dmmodule.h>
 
-#include <QSqlDatabase>
+#include <dmdbconnector.h>
+
 #include <QSqlQuery>
-#include <QSqlRecord>
-#include <qvariant>
-#include <QtCore>
 
 using namespace DM;
 
@@ -339,9 +337,58 @@ bool System::removeFace(std::string name)
     faces.erase(name);
     return true;
 }
+// uuid varchar(100), predecessors text, sucessors text, components text
+
+std::list<std::string> System::GetAllComponentsOfType(Components type)
+{
+	DBConnector* db = DBConnector::getInstance();
+	db->beginTransaction();
+
+	QSqlQuery q("SELECT components FROM system WHERE uuid like ?");
+	q.addBindValue(QString::fromStdString(getUUID()));
+	
+	std::list<std::string> list;
+	if(q.next())
+	{
+		Converter::ConvertStringVector(q.value(0).toStringList());
+		list = q.value(0).toStringList().toStdList();
+	}
+
+
+
+	while(q.next())
+	{
+		list.push_back(q.value(0));
+	}
+
+	db->endTransaction();
+}
+
 
 std::map<std::string, Component*>  System::getAllComponents()
 {
+	DBConnector* db = DBConnector::getInstance();
+	db->beginTransaction();
+
+	QSqlQuery q("SELECT components FROM system WHERE uuid like ?");
+	q.addBindValue(QString::fromStdString(getUUID()));
+	while(q.next())
+	{
+
+	}
+
+
+	{	// uuid varchar(100), name text, type tinyint, ownedchilds text, attributes text
+		std::string uuid = q.value(0).toString().toStdString();
+		std::string name = q.value(1).toString().toStdString();
+		//int type = q.value(2).toInt();
+		std::string childs = q.value(3).toString().toStdString();
+		std::string attributes = q.value(4).toString().toStdString();
+		// now build something nice
+
+	}
+	db->endTransaction();
+
     return this->components;
 }
 
@@ -604,127 +651,4 @@ const std::vector<DM::View> System::getViews()  {
         viewlist.push_back(View(*it->second));
     }
     return viewlist;
-}
-
-
-DBConnector* DBConnector::instance = 0;
-
-DBConnector::DBConnector()
-{
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-	db.setDatabaseName(":memory:");
-
-	if(!db.open())
-		Logger(Error) << "Failed to open db connection";
-	else
-		Logger(Debug) << "Db connection opened";
-
-	// init table structure
-	QSqlQuery query;
-    if(!query.exec(
-		"create table system(uuid varchar(100), predecessors text, sucessors text, components text, PRIMARY KEY (uuid))"
-		"create table components(uuid varchar(100), name text, type tinyint, ownedchilds text, attributes text, PRIMARY KEY (uuid))"
-		"create table attributes(owner varchar(100), name text, type tinyint, value text,PRIMARY KEY (uuid))"
-		))
-         Logger(Debug) << "Cannot initialize db tables";
-}
-DM::DBConnector* DBConnector::getInstance()
-{
-	if(!DBConnector::instance)
-		DBConnector::instance = new DBConnector();
-	return DBConnector::instance;
-}
-
-void DBConnector::beginTransaction()
-{
-    QSqlQuery query;
-    if(!query.exec("BEGIN TRANSACTION"))
-         Logger(Error) << "DB error in \"BEGIN TRANSACTION\" statement";
-}
-
-void DBConnector::endTransaction()
-{
-    QSqlQuery query;
-    if(!query.exec("END TRANSACTION"))
-         Logger(Error) << "DB error in \"END TRANSACTION\" statement";
-}
-
-typedef std::pair<std::string, Component*> ComponentPair;
-typedef std::pair<std::string, Attribute*> AttributePair;
-//uuidSeperator = ";";
-
-void DBConnector::saveSystem(DM::System *sys)
-{
-	QSqlQuery query;
-    query.prepare("INSERT INTO systems (uuid, predecessors, sucessors, components) VALUES (?, ?, ?, ?)");
-
-	query.addBindValue(QString::fromStdString(sys->getUUID()));
-
-	std::string sucessors;
-	foreach(System* sys, sys->getSucessors())		sucessors += sys->getUUID() + uuidSeperator;
-	query.addBindValue(QString::fromStdString(sucessors));
-
-	std::string predecessors;
-	foreach(System* sys, sys->getPredecessors())	predecessors += sys->getUUID() + uuidSeperator;
-	query.addBindValue(QString::fromStdString(predecessors));
-
-	std::string components;
-	foreach(ComponentPair comp, sys->getAllComponents())	components += comp.first + uuidSeperator;
-	foreach(ComponentPair comp, sys->getAllNodes())			components += comp.first + uuidSeperator;
-	foreach(ComponentPair comp, sys->getAllEdges())			components += comp.first + uuidSeperator;
-	foreach(ComponentPair comp, sys->getAllFaces())			components += comp.first + uuidSeperator;
-	foreach(ComponentPair comp, sys->getAllRasterData())	components += comp.first + uuidSeperator;
-	foreach(ComponentPair comp, sys->getAllSubSystems())	components += comp.first + uuidSeperator;
-	query.addBindValue(QString::fromStdString(components));
-
-	if(!query.exec())
-        Logger(Error) << "Cannot insert component in DB";
-
-	saveComponent(sys);
-	foreach(ComponentPair comp, sys->getAllComponents())
-		saveComponent(comp.second);
-}
-
-void DBConnector::saveComponent(DM::Component *comp)
-{
-	QSqlQuery query;
-    query.prepare("INSERT INTO components (uuid, name, type, ownedchilds, attributes) VALUES (?, ?, ?, ?)");
-
-	query.addBindValue(QString::fromStdString(comp->getUUID()));
-	query.addBindValue(QString::fromStdString(comp->getName()));
-	query.addBindValue((int)comp->getType());
-
-	std::string childs;
-	std::string attributes;
-
-	foreach(ComponentPair child, comp->getAllChilds())		childs += child.first + uuidSeperator;
-	query.addBindValue(QString::fromStdString(childs));
-	
-	foreach(AttributePair attr, comp->getAllAttributes())	attributes += attr.first + uuidSeperator;
-	query.addBindValue(QString::fromStdString(attributes));
-
-    if(!query.exec())
-        Logger(Error) << "Cannot insert component in DB";
-
-	foreach(AttributePair attr, comp->getAllAttributes())
-		saveAttribute(attr.second, comp->getUUID());
-}
-
-
-void DBConnector::saveAttribute(DM::Attribute *att, std::string ownerUuid)
-{
-	QSqlQuery query;
-    query.prepare("INSERT INTO attributes (owner, name, type, value) VALUES (?, ?, ?, ?)");
-
-	query.addBindValue(QString::fromStdString(ownerUuid));
-	query.addBindValue(QString::fromStdString(att->getName()));
-	query.addBindValue((int)att->getType());
-
-	QByteArray qba;
-    QBuffer buffer(&qba);
-	att->getRawData(&buffer);
-	query.addBindValue(qba);
-
-    if(!query.exec())
-        Logger(Error) << "Cannot insert attribute in DB";
 }

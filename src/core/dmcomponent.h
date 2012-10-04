@@ -91,7 +91,7 @@ public:
     /** @brief return Type */
 	virtual Components getType();
     /** @brief return Type */
-	virtual void getRawData(QBuffer *buf);
+	//virtual void getRawData(QBuffer *buf);
     /** @brief return UUID */
     std::string getUUID();
     /** @brief adds a new Attribute to the Component.

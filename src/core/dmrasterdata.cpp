@@ -330,9 +330,6 @@ void RasterData::setSize(long width, long height, double cellsize) {
         for (long i = 0; i < width; i++) {
             data[i] = new double[height];
         }
-
-
-
     }
 }
 

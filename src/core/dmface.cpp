@@ -51,8 +51,9 @@ DM::Components Face::getType()
 {
 	return DM::FACE;
 }
-
+/*
 void Face::getRawData(QBuffer* buf)
 {
 	DM::GetRawVectorData(nodes, buf);
 }
+*/

@@ -89,6 +89,8 @@ public:
     /** @brief creates a new string attribute**/
     Attribute(std::string name, std::string val);
     /** @brief creates a new attribute**/
+    Attribute(std::string name, int type, QDataStream &stream);
+    /** @brief creates a new attribute**/
     Attribute();
     /** @brief set double value**/
     void setDouble(double v);
@@ -128,8 +130,7 @@ public:
     /** @brief Sets attribute type */
     void setType(AttributeType type);
 	/** @brief Gets value */
-	void Attribute::getRawData(QBuffer *buf);
-
+	void Attribute::getRawData(QDataStream &stream);
     /**
      * @brief get a printable name of the type, e.g. for gui displaying
      * @return the name of the type as string
@@ -146,8 +147,8 @@ public:
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 
 
-void GetRawVectorData(std::vector<double> v, QBuffer *buf);
-void GetRawVectorData(std::vector<std::string> v, QBuffer *buf);
+//void GetRawVectorData(std::vector<double> v, QBuffer *buf);
+//void GetRawVectorData(std::vector<std::string> v, QBuffer *buf);
 
 }
 #endif // ATTRIBUTE_H

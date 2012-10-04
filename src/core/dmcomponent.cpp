@@ -125,11 +125,11 @@ DM::Components Component::getType()
 {
     return DM::COMPONENT;
 }
-
+/*
 void Component::getRawData(QBuffer* buf)
 {
 	return;
-}
+}*/
 
 bool Component::addAttribute(std::string name, double val) {
     if(attributesview.find(name)!=attributesview.end()) {

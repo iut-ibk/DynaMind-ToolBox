@@ -58,18 +58,20 @@ class Module;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
+	/*
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;
     std::map<std::string, Face* > faces;
     std::map<std::string, RasterData *> rasterdata;
     std::map<std::string, System*> subsystems;
-    std::map<std::string, Component* > components;
+    std::map<std::string, Component* > components;*/
+
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;   
+
     std::vector<DM::System*> predecessors;
     std::vector<DM::System*> sucessors;
     std::vector<DM::View *> ownedView;
-
 
     //Get Edge Based on otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
@@ -77,6 +79,9 @@ private:
     void updateViews (Component * c);
     DM::Module * lastModule;
 
+	
+    /** @brief Returns a map of nodes stored in the system */
+    std::list<std::string> GetAllComponentsOfType(Components type);
 public:
 
     /** @brief creates a new System */
@@ -178,23 +183,6 @@ public:
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
-
-class DBConnector
-{
-private:
-	static DBConnector* instance;
-	DBConnector();
-
-	void beginTransaction();
-	void endTransaction();
-
-	void saveSystem(DM::System *sys);
-	void saveComponent(DM::Component *comp);
-	void saveAttribute(DM::Attribute *att, std::string uuid);
-	//DM::Component* loadComponent();
-public:
-	static DBConnector* getInstance();
-};
 }
 
 
