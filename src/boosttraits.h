@@ -214,6 +214,7 @@ namespace boost {
     };
     */
 
+
     /*
     template<>
     struct property_traits< double >
@@ -230,7 +231,12 @@ namespace boost {
         typedef int key_type;
         typedef readable_property_map_tag category;
     };
-    */
+*/
+
+    typedef boost::property_map<Graph, boost::id_tag>::type EdgeID_PMap;
+
+
+    iterator_property_map<int*, EdgeID_PMap, int, int&>
 
     template<>
     struct property_map<SystemGraph*, vertex_index_t>
