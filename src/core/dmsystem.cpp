@@ -454,6 +454,11 @@ std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
     }
     return names;
 }
+
+std::vector<std::string>  System::getUUIDs(View view)
+{
+    return this->getUUIDsOfComponentsInView(view);
+}
 System* System::getSubSystem(std::string uuid)
 {
     if(subsystems.find(uuid)==subsystems.end())

@@ -173,6 +173,8 @@ public:
     std::map<std::string, Component*> getAllComponentsInView(const View &view);
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
+    /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
+    std::vector<std::string> getUUIDs(DM::View  view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
     /** @brief add Predecessor **/
