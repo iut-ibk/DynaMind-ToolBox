@@ -43,9 +43,9 @@ void ExportRasterData::run () {
 
 
     if (flip_h) {
-        for (int j=0; j<rData->getHeight() ; j++)
+        for (unsigned int j=0; j<rData->getHeight() ; j++)
         {
-            for (int i=0; i<rData->getWidth(); i++)
+            for (unsigned int i=0; i<rData->getWidth(); i++)
             {
                 txtout<<rData->getValue(i,j)<< " ";
             }
@@ -56,7 +56,7 @@ void ExportRasterData::run () {
     if (!flip_h) {
         for (int j=rData->getHeight() -1 ; j > -1 ; j--)
         {
-            for (int i=0; i<rData->getWidth(); i++)
+            for (unsigned int i=0; i<rData->getWidth(); i++)
             {
                 txtout<<rData->getValue(i,j)<< " ";
             }

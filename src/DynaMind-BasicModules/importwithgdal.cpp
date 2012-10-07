@@ -144,7 +144,7 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
         nlist.push_back(nlist[0]);
         delete poPoint;
         std::vector<DM::Edge *> edges;
-        for (int i = 1; i < nlist.size(); i++) {
+        for (unsigned int i = 1; i < nlist.size(); i++) {
             edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
         }
 
@@ -260,7 +260,9 @@ void ImportwithGDAL::init() {
 
         OGRGeometry *poGeometry;
 
+
         poGeometry = poFeature->GetGeometryRef();
+        int type = wkbFlatten(poGeometry->getGeometryType());
         if( poGeometry != NULL
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
         {
@@ -282,6 +284,7 @@ void ImportwithGDAL::init() {
         else
         {
             printf( "no point geometry\n" );
+            return;
         }
         OGRFeature::DestroyFeature( poFeature );
 

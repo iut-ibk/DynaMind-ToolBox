@@ -147,6 +147,15 @@ void AttributeCalculator::run() {
         *d = 0;
         doubleVaraibles[nov_stream.str()] = d;
         p->DefineVar(nov_stream.str(), d);
+
+        std::stringstream first_stream;
+        first_stream << "first_" << variable;
+        d = new double;
+        *d = 0;
+        doubleVaraibles[first_stream.str()] = d;
+        p->DefineVar(first_stream.str(), d);
+
+
     }
     p->DefineFun("rand", mu::random , false);
     p->DefineFun("round", mu::round);
@@ -156,7 +165,7 @@ void AttributeCalculator::run() {
     p->DefineVar("counter", &counter);
     p->SetExpr(equation);
 
-    std::vector<std::string> uuids =   this->sys_in->getUUIDsOfComponentsInView(viewsmap[nameOfBaseView]);
+    std::vector<std::string> uuids = this->sys_in->getUUIDsOfComponentsInView(viewsmap[nameOfBaseView]);
 
     foreach (std::string uuid, uuids) {
         counter++;
@@ -178,16 +187,26 @@ void AttributeCalculator::run() {
             std::stringstream nov_stream;
             nov_stream << "nov_" << it->second;
 
+            std::stringstream first_stream;
+            first_stream << "first_" << it->second;
+
             double nov = 0;
             foreach (double v, *varaible_container) {
                 val+=v;
                 nov+=1;
             }
 
+
+
             double * var = doubleVaraibles[it->second];
             (*var) = val;
             double * nov_var = doubleVaraibles[nov_stream.str()];
             (*nov_var) =  nov;
+            double * first_nov = doubleVaraibles[first_stream.str()];
+            if (varaible_container->size() > 0)
+                (*first_nov) = (*varaible_container)[0];
+            else
+                (*first_nov) = 0;
             delete varaible_container;
         }
         try {

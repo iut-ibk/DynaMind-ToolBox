@@ -20,7 +20,7 @@ class DM_HELPER_DLL_EXPORT AppendViewFromSystem : public DM::Module
     std::vector<std::string> existingViews;
     std::vector<DM::View> views;
     std::string mainView;
-    int sizeold;
+    unsigned int sizeold;
 
 
 
