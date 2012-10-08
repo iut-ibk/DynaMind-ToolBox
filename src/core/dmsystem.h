@@ -98,7 +98,9 @@ public:
     ~System();
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
-    /** @brief Adds an existing node to the system. The ownership of the node goes to the system*/
+    /** @brief Adds an existing node to the system. The ownership of the node goes to the system.
+     *  If the node already exists 0 it returns 0, if not the pointer to the node (same as the input)
+     */
     Node * addNode(Node* node);
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
@@ -174,7 +176,7 @@ public:
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
     /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
-    std::vector<std::string> getUUIDs(DM::View  view);
+    std::vector<std::string> getUUIDs(const DM::View &view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
     /** @brief add Predecessor **/
