@@ -141,7 +141,6 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
         }
         if (nlist.size() < 2)
             return 0;
-        nlist.push_back(nlist[0]);
         delete poPoint;
         std::vector<DM::Edge *> edges;
         for (unsigned int i = 1; i < nlist.size(); i++) {
