@@ -391,7 +391,7 @@ bool System::removeNode(std::string name)
             connectededges.push_back(tmpedge->getUUID());
     }
 
-    for(int index=0; index<connectededges.size(); index++)
+    for(unsigned int index=0; index<connectededges.size(); index++)
     {
         if(!removeEdge(connectededges[index]))
             return false;
@@ -455,7 +455,7 @@ std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
     return names;
 }
 
-std::vector<std::string>  System::getUUIDs(View view)
+std::vector<std::string> System::getUUIDs(const DM::View  & view)
 {
     return this->getUUIDsOfComponentsInView(view);
 }
