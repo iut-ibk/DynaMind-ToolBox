@@ -24,7 +24,7 @@
  *
  */
 
-#include <street2network.h>
+#include <extractmaxgraphofforest.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -39,38 +39,32 @@
 
 //BOOST GRAPH includes
 //#include <boosttraits.h>
-#include <boost/graph/prim_minimum_spanning_tree.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 
 using namespace boost;
 
-DM_DECLARE_NODE_NAME(StreetToNetwork,DynaVIBe)
+DM_DECLARE_NODE_NAME(ExtractMaxGraph,DynaVIBe)
 
-StreetToNetwork::StreetToNetwork()
+ExtractMaxGraph::ExtractMaxGraph()
 {   
     std::vector<DM::View> views;
     DM::View view;
 
     //Define Parameter street network
-    view = DM::View("EDGES", DM::EDGE, DM::READ);
+    view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
     views.push_back(view);
     viewdef["EDGES"]=view;
 
     //Define Parameter street network
-    view = DM::View("NODES", DM::NODE, DM::READ);
+    view = DM::View("NODES", DM::NODE, DM::MODIFY);
     views.push_back(view);
     viewdef["NODES"]=view;
-
-    view = DM::View("SPANNINGTREE", DM::EDGE, DM::WRITE);
-    views.push_back(view);
-    viewdef["SPANNINGTREE"]=view;
-
 
     this->addData("Layout", views);
 }
 
-void StreetToNetwork::run()
+void ExtractMaxGraph::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
@@ -110,6 +104,8 @@ void StreetToNetwork::run()
     std::vector<int> component(num_vertices(g));
     int num = connected_components(g, &component[0]);
 
+    DM::Logger(DM::Standard) << "Number of graphs found: " << num;
+
     std::map<int,int> componentsizes;
 
     for (int i = 0; i != component.size(); ++i)
@@ -125,45 +121,23 @@ void StreetToNetwork::run()
         DM::Logger(DM::Standard) << "Tree " << index+1 << " has " << componentsizes[index] << " elements";
     }
 
-    if(num!=1)
+    DM::Logger(DM::Standard) << "Tree " << maxgraphindex+1 << " is extracted";
+
+    //extract graph
+    for(int index=0; index < edges.size(); index++)
     {
-        DM::Logger(DM::Warning) << "Graph is not connected -> Forest of size: " << num;
-        DM::Logger(DM::Warning) << "Tree " << maxgraphindex+1 << " is used for building a minimum spanning tree";
-    }
+        E current = edgeindex[index];
 
-
-    //calculate min spanning tree or forest of minimum spanning trees
-    std::vector < graph_traits < Graph >::vertex_descriptor >p(num_vertices(g));
-    DM::Logger(DM::Standard) << "Start prim algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
-
-    prim_minimum_spanning_tree(g, &p[0]);
-
-    for (std::size_t i = 0; i != p.size(); ++i)
-    {
-        if(i != p[i])
+        if(component[current.first]!=maxgraphindex)
         {
-            if(component[i]!=maxgraphindex)
-                continue;
-
-            if(nodes2edge.find(E(p[i],i))!=nodes2edge.end())
-            {
-                this->sys->addComponentToView(nodes2edge[E(p[i],i)],viewdef["SPANNINGTREE"]);
-                continue;
-            }
-
-            if(nodes2edge.find(E(i,p[i]))!=nodes2edge.end())
-            {
-                this->sys->addComponentToView(nodes2edge[E(i,p[i])],viewdef["SPANNINGTREE"]);
-                continue;
-            }
-
+            DM::Edge *realedge = nodes2edge[current];
+            this->sys->removeComponentFromView(realedge,viewdef["EDGES"]);
+            this->sys->removeComponentFromView(sys->getNode(realedge->getStartpointName()),viewdef["NODES"]);
+            this->sys->removeComponentFromView(sys->getNode(realedge->getEndpointName()),viewdef["NODES"]);
         }
     }
-
-    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getUUIDsOfComponentsInView(viewdef["SPANNINGTREE"]).size();
-    DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 
-void StreetToNetwork::initmodel()
+void ExtractMaxGraph::initmodel()
 {
 }

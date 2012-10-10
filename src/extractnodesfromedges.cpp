@@ -55,7 +55,6 @@ void ExtractNodesFromEdges::run()
     this->sys = this->getData("Layout");
     std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
     std::map<std::string,bool> nodesadded;
-    //std::vector<std::string> nodesadded;
 
     DM::Logger(DM::Standard) << "Number of Edges found:" << edges.size();
 
@@ -72,15 +71,13 @@ void ExtractNodesFromEdges::run()
             nodesadded[sname]=true;
         }
 
-
         //TARGET
         if(nodesadded.find(tname)==nodesadded.end())
         {
             this->sys->addComponentToView(this->sys->getNode(tname),viewdef["NODES"]);
             nodesadded[tname]=true;
-        }
-
-        //if((index%200)==0)
-        //    DM::Logger(DM::Standard) << index << " of " << edges.size();
+        }   
     }
+
+    DM::Logger(DM::Standard) << "Number of extracted nodes: " << nodesadded.size();
 }
