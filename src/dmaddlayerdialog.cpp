@@ -66,6 +66,11 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
         QTreeWidgetItem *item = new QTreeWidgetItem(strings);
         ui->viewList->addTopLevelItem(item);
     }
+    QStringList color_ramp_names;
+    for (int i = 0; i < LAST_COLOR; i++) {
+        color_ramp_names << ColorRampNames[i];
+    }
+    ui->colorRamp->addItems(color_ramp_names);
 }
 
 AddLayerDialog::~AddLayerDialog() {

@@ -4,27 +4,15 @@
 namespace DM {
 
 enum ColorRamp {
-    BLACK_TO_RED,
-    WHITE_TO_RED,
-    
-    BLACK_TO_GREEN,
-    WHITE_TO_GREEN,
-    
-    BLACK_TO_BLUE,
-    WHITE_TO_BLUE,
-    
-    BLACK_TO_YELLOW,
-    WHITE_TO_YELLOW,
-    
-    BLACK_TO_ORANGE,
-    WHITE_TO_ORANGE,
-    
-    WHITE_TO_BLACK,
-    RAINBOW,
-    
-    LIGHT_GREENT_TO_DARK_GREEN,
-    LIGHT_BLUE_TO_DARK_BLUE,
-    YELLOW_TO_BROWN
+#define X(a,b) a,
+#include "colorramps.def"
+#undef X
+};
+
+const char* const ColorRampNames[] = {
+#define X(a,b) b,
+#include "colorramps.def"
+#undef X
 };
 
 unsigned int get_color_ramp(ColorRamp ramp);
