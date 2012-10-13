@@ -1,10 +1,14 @@
 #include "dmcolorramp.h"
 #include <QColor>
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
 #ifdef _WIN32
-#include <windows.h>
+  #include <windows.h>
 #endif
 #include <GL/gl.h>
+#endif
 #include <glext.h>
 
 namespace DM {
