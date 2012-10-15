@@ -152,7 +152,8 @@ void Simulation::loadModulesFromDefaultLocation()
     QVector<QDir> cpv;
     cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
     cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
-
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
+    
     foreach (QDir cp, cpv)  {
         QStringList modulesToLoad = cp.entryList();
         std::cout <<  cp.absolutePath().toStdString() << std::endl;
