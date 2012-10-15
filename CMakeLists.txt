@@ -16,7 +16,7 @@ ENDIF()
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
 OPTION(WITH_TESTS "build unit tests" OFF)
-OPTION(WITH_PLUGIN_QGIS "if with qgis plugin" OFF)
+OPTION(WITH_PLUGIN_DYNAMIND "if with DYNAMIND plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
 OPTION(WITH_PLUGIN_POSTGIS "if with POSTGIS plugin" OFF)
@@ -31,9 +31,9 @@ find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules)
 
-if(WITH_PLUGIN_QGIS)
-    set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
-endif(WITH_PLUGIN_QGIS)
+if(WITH_PLUGIN_DYNAMIND)
+    set(TOOLBOX ${TOOLBOX} DynaMind-DYNAMIND)
+endif(WITH_PLUGIN_DYNAMIND)
 
 if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
     set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
@@ -89,10 +89,18 @@ foreach (tool ${TOOLBOX})
     endif(DYNAMIND_UPDATE)
 endforeach(tool ${TOOLBOX}) 
 
+
+
+
+
+
+
+
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
 SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
+
 
 foreach (tool ${TOOLBOX})
     add_subdirectory(${tool})

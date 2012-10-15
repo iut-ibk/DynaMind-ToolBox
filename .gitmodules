@@ -10,9 +10,6 @@
 [submodule "DynaMind-Sewer"]
 	path = DynaMind-Sewer
 	url = git@github.com:iut-ibk/DynaMind-Sewer.git
-[submodule "DynaMind-CityBlocks"]
-	path = DynaMind-CityBlocks
-	url = git@github.com:christianurich/DynaMind-CityBlocks.git
 [submodule "DynaMind-QGIS"]
 	path = DynaMind-QGIS
 	url = git@github.com:christianurich/DynaMind-QGIS.git
@@ -39,4 +36,7 @@
 	url = git@github.com:iut-ibk/DynaMind-PostGIS.git
 [submodule "PowerVIBe"]
 	path = PowerVIBe
-	url = git@github.com:christianurich/PowerVIBe.git
+	url = git@github.com:iut-ibk/PowerVIBe.git
+[submodule "DynaMind-CityBlocks"]
+	path = DynaMind-CityBlocks
+	url = git@github.com:iut-ibk/DynaMind-CityBlocks.git
