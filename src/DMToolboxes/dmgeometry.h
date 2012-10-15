@@ -73,7 +73,7 @@ public:
      * Returns either the pointer to the new node or to an existing one.
      *
      */
-    DM::Node * addNode(double x, double y, double z, double tol, DM::View v);
+    DM::Node * addNode(double x, double y, double z, double tol, DM::View v = DM::View());
 };
 }
 
