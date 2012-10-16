@@ -293,7 +293,6 @@ QVector<QRunnable *>  Group::getNextJobs() {
 
     }
     //Run Parallelisation TODO
-    int NumberOfRunnables = RunnedModulesInStep.size();
     if(!this->notUsedModules.size()) {
         if (this->group != 0) {
             this->run();
