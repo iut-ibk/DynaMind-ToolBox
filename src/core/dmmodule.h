@@ -160,6 +160,7 @@ class DM_HELPER_DLL_EXPORT  Module {
 
 
 public:
+    /** @brief Default Constructor */
     Module();
     /**
      * @brief Destructor.
@@ -403,6 +404,12 @@ public:
 
     void setInternalCounter(int counter);
 
+    /** @brief Sets debug mode of the module. If true it always creates a new system state. Default the debug mode is set to false */
+    void setDebugMode(bool debug);
+    
+    /** @brief Returns debug mode of the system */
+    bool isDebugMode();
+    
     /** @brief Returns URL to the help of the module */
     virtual std::string getHelpUrl();
 private:
@@ -419,6 +426,7 @@ private:
     std::map<std::string, DM::System *> ownedSystems;
     std::map<std::string, DM::System *> ownedSystems_prev;
     bool hasBeenExecuted;
+    bool debugMode;
 
 
 

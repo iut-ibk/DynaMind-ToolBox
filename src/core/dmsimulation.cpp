@@ -411,6 +411,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
         }
 
         m->setName(me.Name.toStdString());
+        m->setDebugMode(me.DebugMode);
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
         foreach(QString s, me.ParemterList.keys()) {
             m->setParameterValue(s.toStdString(), me.ParemterList[s].toStdString());

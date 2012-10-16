@@ -37,6 +37,7 @@ SimulationReader::SimulationReader(const QString &fileName) {
     r.setContentHandler(this);
     r.setErrorHandler(this);
     r.parse(QXmlInputSource(&file));
+    tmpNode.DebugMode = false;
 }
 
 bool SimulationReader::fatalError(const QXmlParseException & exception) {
@@ -103,6 +104,11 @@ bool SimulationReader::startElement(const QString & namespaceURI,
             tmpLink.OutPort.UUID = atts.value("value");
         if (ParentName == "RootNode")
             RootUUID = atts.value("value");
+        return true;
+    }
+    if (qName == "DebugMode") {
+        if (ParentName == "Node")
+            tmpNode.DebugMode = (bool) atts.value("value").toInt();
         return true;
     }
     if (qName == "PortName") {

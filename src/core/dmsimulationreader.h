@@ -36,6 +36,7 @@ struct DM_HELPER_DLL_EXPORT ModuleEntry {
     QString UUID;
     QString Name;
     QString GroupUUID;
+    bool DebugMode;
     QMap<QString, QString> ParemterList;
 };
 

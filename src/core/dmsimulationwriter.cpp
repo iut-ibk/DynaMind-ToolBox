@@ -104,8 +104,9 @@ namespace DM {
                     << QString::fromStdString(m->getName()) << "\"/>" << "\n";
             out << "\t" << "\t"<< "\t" << "<GroupUUID value=\""
                     << QString::fromStdString(m->getGroup()->getUuid()) << "\"/>" << "\n";
-
-
+            out << "\t" << "\t"<< "\t" << "<DebugMode value=\""
+            << QString::number(m->isDebugMode()) << "\"/>" << "\n";
+            
 
            std::map<std::string, int> parameterList = m->getParameterList();
             for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
