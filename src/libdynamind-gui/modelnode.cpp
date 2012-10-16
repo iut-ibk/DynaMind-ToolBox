@@ -54,6 +54,8 @@ std::string ModelNode::getParameterAsString(std::string name) {
             val << this->getDMModel()->getParameter<std::string>(name);
         return val.str();
     }
+    DM::Logger(DM::Warning) << "Parameter " << name << "not found";
+    return "";
 }
 
 std::string ModelNode::getGroupUUID() {
