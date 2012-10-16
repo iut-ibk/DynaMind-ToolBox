@@ -141,6 +141,8 @@ public slots:
     void printData();
     void viewData();
     void showHelp();
+    void setDebug();
+    void setRelease();
    signals:
     void showHelp(std::string, std::string);
 

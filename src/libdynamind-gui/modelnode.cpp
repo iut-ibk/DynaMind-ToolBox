@@ -237,6 +237,9 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     else if (this->getDMModel()->isExecuted()) {
         Color = COLOR_EXECUTED;
     }
+    else if (this->getDMModel()->isDebugMode()){
+        Color = COLOR_DEBUG;
+    }
     else {
         Color = COLOR_MODULE;
     }
@@ -263,8 +266,6 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
 
         painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(this->getDMModel()->getClassName()));
-        /*if (this->parentGroup)
-            painter->drawText(QPoint(22,55), "Group: "+ QString::fromStdString(this->parentGroup->getVIBeModel()->getName()));*/
 
 
     }
@@ -357,6 +358,13 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QAction * a_showData = menu.addAction("showData");
     QAction * a_viewData = menu.addAction("viewData");
     QAction * a_showHelp = menu.addAction("showHelp");
+    QAction * a_module_debug = 0;
+    QAction * a_module_release = 0;
+    
+    if (this->getDMModel()->isDebugMode())
+        a_module_release = menu.addAction("ReleaseMode");
+    else
+        a_module_debug = menu.addAction("DebugMode");    
     QMenu * GroupMenu =     menu.addMenu("Groups");
 
     a_viewData->setEnabled(this->getDMModel()->getOutPorts().size() > 0);
@@ -390,7 +398,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_edit, SIGNAL( activated() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_rename, SIGNAL(activated() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(activated() ), this, SLOT( printData() ), Qt::DirectConnection);
-    connect( a_viewData, SIGNAL(activated() ), this, SLOT( viewData() ), Qt::DirectConnection);
+    connect( a_viewData, SIGNAL(activated() ), this, SLOT( viewData() ), Qt::DirectConnection);    
+    connect( a_module_debug, SIGNAL(activated() ), this, SLOT( setDebug() ), Qt::DirectConnection);
+    connect( a_module_release, SIGNAL(activated() ), this, SLOT( setRelease() ), Qt::DirectConnection);
     connect( a_showHelp, SIGNAL(activated() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
 
@@ -489,4 +499,12 @@ void ModelNode::viewData() {
 void ModelNode::showHelp() {
     emit showHelp(this->getDMModel()->getClassName(), this->getDMModel()->getUuid());
     //this->simulation->showHelp();
+}
+
+void ModelNode::setDebug() {
+    this->getDMModel()->setDebugMode(true);
+}
+
+void ModelNode::setRelease() {
+    this->getDMModel()->setDebugMode(false);
 }
