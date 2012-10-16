@@ -180,7 +180,7 @@ DM::Node TBVectorData::caclulateCentroid(DM::System * sys, DM::Face * f) {
     double A6 = TBVectorData::calculateArea(sys, f)*6.;
     double x = 0;
     double y = 0;
-    for (int i = 0; i< nodes.size()-1;i++) {
+    for (unsigned int i = 0; i< nodes.size()-1;i++) {
         DM::Node * p_i = nodes[i];
         DM::Node * p_i1 = nodes[i+1];
 
@@ -213,7 +213,7 @@ double TBVectorData::calculateArea(DM::System * sys, DM::Face * f) {
     if (pend != pstart)
             startISEnd = false;
     double A = 0;
-    for (int i = 0; i< nodes.size()-1;i++) {
+    for (unsigned int i = 0; i< nodes.size()-1;i++) {
         DM::Node * p_i = nodes[i];
         DM::Node * p_i1 = nodes[i+1];
 

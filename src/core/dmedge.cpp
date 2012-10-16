@@ -29,6 +29,25 @@
 
 using namespace DM;
 
+Edge::Edge(QByteArray qba) : Component()
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	QString qstart;
+	QString qend;
+	stream>>qstart;
+	stream>>qend;
+	start = qstart.toStdString();
+	end = qend.toStdString();
+}
+
+QByteArray Edge::GetValue()
+{
+	QByteArray bytes;
+	bytes.append(QString::fromStdString(start));
+	bytes.append(QString::fromStdString(end));
+	return bytes;
+}
+
 Edge::Edge(std::string startpoint, std::string endpoint) : Component()
 {
     start=startpoint;
@@ -43,12 +62,6 @@ Edge::Edge(const Edge& e) : Component(e)
 DM::Components Edge::getType()
 {
 	return DM::EDGE;
-}
-
-void Edge::getRawData(QBuffer* buf)
-{
-	std::string str = start + uuidSeperator + end + uuidSeperator;
-	buf->write(str.data(), str.length());
 }
 
 std::string Edge::getStartpointName()

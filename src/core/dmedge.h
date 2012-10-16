@@ -44,16 +44,17 @@ namespace DM {
     private:
         std::string start;
         std::string end;
-
+		
+		virtual QByteArray GetValue();
     public:
+		/** @brief creates a node based on sql data */
+		Edge(QByteArray qba);
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         Edge(std::string startpoint, std::string endpoint);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
         Edge(const Edge& e);
 		/** @brief return Type */
 		Components getType();
-		/** @brief return Type */
-		void getRawData(QBuffer* buf);
         /** @brief return uuid to the startpoint */
         std::string getStartpointName();
         /** @brief return uuid to the endpoint */

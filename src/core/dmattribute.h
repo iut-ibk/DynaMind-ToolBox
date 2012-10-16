@@ -89,9 +89,14 @@ public:
     /** @brief creates a new string attribute**/
     Attribute(std::string name, std::string val);
     /** @brief creates a new attribute**/
-    Attribute(std::string name, int type, QDataStream &stream);
+    Attribute(std::string name, int type, QByteArray bytes);
     /** @brief creates a new attribute**/
     Attribute();
+    /** @brief set double value**/
+    void setValue(QByteArray bytes);
+    /** @brief get double value**/
+    QByteArray getValue();
+    /** @brief set string value**/
     /** @brief set double value**/
     void setDouble(double v);
     /** @brief get double value**/
@@ -129,8 +134,6 @@ public:
     void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
     /** @brief Sets attribute type */
     void setType(AttributeType type);
-	/** @brief Gets value */
-	void Attribute::getRawData(QDataStream &stream);
     /**
      * @brief get a printable name of the type, e.g. for gui displaying
      * @return the name of the type as string
@@ -145,10 +148,5 @@ public:
     static const char*getTypeName(AttributeType type);
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
-
-
-//void GetRawVectorData(std::vector<double> v, QBuffer *buf);
-//void GetRawVectorData(std::vector<std::string> v, QBuffer *buf);
-
 }
 #endif // ATTRIBUTE_H

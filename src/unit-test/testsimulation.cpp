@@ -46,7 +46,7 @@ TEST_F(TestSimulation,testMemory){
     ASSERT_TRUE(m != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 5; i++) {
         sim.removeModule(m_uuid);
         m_uuid = sim.addModule("CreateNodes")->getUuid();
         sim.run();
@@ -134,7 +134,7 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Test Linked Modules";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");

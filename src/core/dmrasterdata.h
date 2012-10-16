@@ -36,12 +36,14 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
+	/** @brief creates a rasterdata based on sql data */
+    RasterData(QByteArray qba);
+
     RasterData(long  width, long  height, double  cellSize);
 
     RasterData(const RasterData &other);
     RasterData();
 	Components getType();
-	void getRawData(QBuffer* buf);
     virtual ~RasterData();
     void clear();
     double getValue(long x, long y) const;
@@ -64,7 +66,8 @@ public:
 
     Component * clone();
 private:
-
+	
+	virtual QByteArray GetValue();
 
     long width;
     long height;

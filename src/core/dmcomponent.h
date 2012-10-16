@@ -44,12 +44,12 @@ namespace DM {
 static std::string uuidSeperator = ";";
 
 enum Components {
-    COMPONENT,
-    NODE,
-    EDGE,
-    FACE,
-    SUBSYSTEM,
-    RASTERDATA
+    COMPONENT =0,
+    NODE=1,
+    EDGE=2,
+    FACE=3,
+    SUBSYSTEM=4,
+    RASTERDATA=5
 };
 
 class Attribute;
@@ -65,6 +65,25 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
+private:
+	std::string stateUuid;
+
+	bool bChilds;
+	bool bAttributes;
+
+	void SQLLoadChilds();
+	void SQLFreeChilds();
+	void SQLInsertChild(Component* c);
+	void SQLDeleteChild(Component* c);
+
+	void SQLInsertAttribute(Attribute *newAttribute);
+	void SQLUpdateAttribute(std::string name, Attribute *newAttribute);
+	void SQLDeleteAttribute(std::string name);
+	void SQLLoadAttributes();
+	void SQLFreeAttributes();
+	
+	void SQLInsertDeepCopy();
+	virtual QByteArray GetValue(){return QByteArray();};
 protected:
     std::string uuid;
     std::string name;
@@ -82,6 +101,8 @@ public:
       * The default constructor creates a UUID for the component.
      */
     Component();
+    /** @brief creates a component based on sql data */
+    //Component(std::string uuid);
     /** @brief Copies a component, also the UUID is copied! */
     Component(const Component& s);
     /** @brief Destructor */
@@ -90,10 +111,10 @@ public:
     void setUUID(std::string uuid);
     /** @brief return Type */
 	virtual Components getType();
-    /** @brief return Type */
-	//virtual void getRawData(QBuffer *buf);
     /** @brief return UUID */
     std::string getUUID();
+    /** @brief return UUID */
+    std::string getStateUUID();
     /** @brief adds a new Attribute to the Component.
       *
       * Returns true if the attribute has been added to the Component.

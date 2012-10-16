@@ -32,6 +32,58 @@
 
 using namespace DM;
 
+RasterData::RasterData(QByteArray qba):Component()
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	qint64 l;
+	stream >> l;	
+	width = l;
+
+	stream >> l;	
+	height = l;
+
+	stream >> cellSize;
+	stream >> NoValue;
+	stream >> minValue;
+	stream >> maxValue;
+
+	stream >> debugValue;
+	stream >> isClone;
+
+    data = new double*[width];
+    for (long i = 0; i < width; i++) 
+	{
+        data[i] = new double[height];
+		for(long j=0;j<width;j++)
+		{
+			stream >> data[i][j];
+		}
+    }
+}
+
+QByteArray RasterData::GetValue()
+{
+	QByteArray bytes;
+	QDataStream stream(&bytes, QIODevice::WriteOnly);
+	stream << width;
+	stream << height;
+	stream << cellSize;
+	stream << NoValue;
+	stream << minValue;
+	stream << maxValue;
+	stream << debugValue;
+	stream << isClone;
+
+    for (long i = 0; i < width; i++) 
+	{
+		for(long j=0;j<width;j++)
+		{
+			stream << data[i][j];
+		}
+    }
+
+	return bytes;
+}
 
 RasterData::RasterData(long  width, long  height, double  cellSize) : Component()
 {
@@ -50,11 +102,6 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
 Components RasterData::getType()
 {
 	return DM::RASTERDATA;
-}
-
-void RasterData::getRawData(QBuffer *buf)
-{
-	// TODO
 }
 
 double RasterData::getSum() const {
@@ -88,8 +135,8 @@ void RasterData::createNewDataSet() {
         data[i] = new double[height];
     }
 
-    for (int i = 0; i < getWidth(); i++) {
-        for (int j = 0; j < getHeight();j++) {
+    for (unsigned int i = 0; i < getWidth(); i++) {
+        for (unsigned int j = 0; j < getHeight();j++) {
             data[i][j] =  data_old[i][j];
         }
     }

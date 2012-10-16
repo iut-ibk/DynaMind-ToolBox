@@ -28,8 +28,31 @@
 #include <dmnode.h>
 #include <cstdlib>
 #include <math.h>
+
+#include <dmdbconnector.h>
+#include <QSqlQuery>
+
+//#include <QVariant>
+
 using namespace DM;
 
+Node::Node(QByteArray qba) : Component()
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	stream>>z;
+	stream>>y;
+	stream>>x;
+}
+
+QByteArray Node::GetValue()
+{
+	QByteArray bytes;
+	QDataStream stream(&bytes, QIODevice::WriteOnly);
+	stream<<x;
+	stream<<y;
+	stream<<z;
+	return bytes;
+}
 
 Node::Node( double x, double y, double z) : Component()
 {
@@ -55,11 +78,6 @@ Node::Node(const Node& n) : Component(n)
 DM::Components Node::getType()
 {
 	return DM::NODE;
-}
-
-void Node::getRawData(QBuffer *buf)
-{
-	buf->write((char*)&v_, sizeof(v_)*3);
 }
 
 double Node::getX() const

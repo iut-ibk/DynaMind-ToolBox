@@ -28,9 +28,22 @@
 #include "dmface.h"
 #include "dmedge.h"
 
+#include "dmdbconnector.h"
 
 using namespace DM;
 
+Face::Face(QByteArray qba) : Component()
+{
+	nodes = DBConnector::GetStringVector(qba);
+}
+QByteArray Face::GetValue()
+{
+	QStringList qsl(QList<QString>::fromVector(QVector<QString>::fromStdVector(DBConnector::ToStdString(nodes))));
+	QByteArray bytes;
+	QDataStream stream(&bytes, QIODevice::WriteOnly);
+	stream << qsl;
+	return bytes;
+}
 Face::Face(std::vector<std::string> nodes) : Component()
 {
     this->nodes = nodes;
@@ -51,9 +64,3 @@ DM::Components Face::getType()
 {
 	return DM::FACE;
 }
-/*
-void Face::getRawData(QBuffer* buf)
-{
-	DM::GetRawVectorData(nodes, buf);
-}
-*/

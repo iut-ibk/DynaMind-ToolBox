@@ -49,18 +49,17 @@ class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
     std::vector<std::string> nodes;
-
+	
+	virtual QByteArray GetValue();
 public:
+    /** @brief creates a face based on sql data */
+    Face(QByteArray qba);
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
     Face(std::vector<std::string> nodes);
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
 	/** @brief return Type */
 	Components getType();
-	/** @brief return Type */
-	void getRawData(QBuffer* buf);
-	/** @brief return Type */
-	Components getRawData();
     /** @brief return vector of nodes defining the face */
     std::vector<std::string> getNodes();
     /** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/

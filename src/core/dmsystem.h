@@ -44,6 +44,14 @@ class Face;
 class RasterData;
 class Module;
 
+
+typedef std::pair<std::string, Component*> ComponentPair;
+typedef std::pair<std::string, Attribute*> AttributePair;
+typedef std::pair<std::string, RasterData*> RasterDataPair;
+typedef std::pair<std::string, Edge*> EdgePair;
+typedef std::pair<std::string, Node*> NodePair;
+typedef std::pair<std::string, Face*> FacePair;
+
 /** @ingroup DynaMind-Core
       * @brief The system class provides a description for complex objects.
       *
@@ -58,13 +66,15 @@ class Module;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
-	/*
+	//std::vector<unsigned int> statepath;
+	//bool bSystems;
+
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;
     std::map<std::string, Face* > faces;
     std::map<std::string, RasterData *> rasterdata;
     std::map<std::string, System*> subsystems;
-    std::map<std::string, Component* > components;*/
+    std::map<std::string, Component* > components;
 
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;   
@@ -77,17 +87,31 @@ private:
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);
-    DM::Module * lastModule;
-
 	
-    /** @brief Returns a map of nodes stored in the system */
-    std::list<std::string> GetAllComponentsOfType(Components type);
-public:
-
-    /** @brief creates a new System */
-    System();    
     /** @brief Copies a System  */
     System(const System& s);
+
+    DM::Module * lastModule;
+
+	void SQLInsertThisSystem();
+	void SQLDeleteThisSystem();
+	void SQLUpdateStates();
+
+	void SQLInsertDeepCopy();
+
+	void SQLLoadComponents();
+	void SQLFreeComponents();
+
+	//void SQLLoadSystems();
+	//void SQLFreeSystems();
+protected:
+	std::string getStateUuid();
+public:
+	
+	/** @brief creates a system based on sql data */
+	//System(std::string uuid);
+    /** @brief creates a new System */
+    System();      
     /** @brief Destructor
      *
      * The destructor also deletes all successor states */

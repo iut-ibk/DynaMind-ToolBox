@@ -54,8 +54,11 @@ private:
         struct { double x, y, z; };
         double v_[3];
     };
-
+	
+	virtual QByteArray GetValue();
 public:
+    /** @brief creates a node based on sql data */
+    Node(QByteArray qba);
     /** @brief create new Node object defined by x, y and z */
     Node( double x, double y, double z );
     /** @brief create empty Node object. x, y and z are 0 */
@@ -64,8 +67,6 @@ public:
     Node(const Node& n);
 	/** @brief return Type */
 	Components getType();
-	/** @brief return Type */
-	void getRawData(QBuffer* buf);
     /** @brief return x */
     double getX() const;
     /** @brief return y*/

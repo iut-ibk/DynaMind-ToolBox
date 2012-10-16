@@ -28,6 +28,7 @@
 #include <dmcomponent.h>
 #include <dmattribute.h>
 #include <QVariant>
+#include "dmdbconnector.h"
 
 using namespace DM;
 
@@ -224,139 +225,6 @@ void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<d
 	*value = doublevector;
 	*timestamp = stringvector;
 }
-/*
-void DM::GetRawVectorData(std::vector<double> v, QBuffer *buf)
-{
-	// write size
-	int size = v.size();
-	buf->write((char*)&size, sizeof(size));
-	// write data
-	foreach(double d, v)
-	{
-		buf->write((char*)&d, sizeof(d)*size);
-	}
-}
-void DM::GetRawVectorData(std::vector<std::string> v, QBuffer *buf)
-{
-	foreach(std::string str, v)
-	{	
-		// write size
-		int size = str.size();
-		buf->write((char*)&size, sizeof(size));
-		// write data
-		buf->write((char*)str.data(), size);
-	}
-}
-*/
-/*
-QVector<QString> ConvertStringVector(std::vector<std::string> v)
-{
-	std::vector<QString> v2(v.size());
-	for(unsigned int i=0;i<v.size();i++)
-		v2[i] = QString::fromStdString(v[i]);
-
-	return QVector<QString>::fromStdVector(v2);
-}
-std::vector<std::string> ConvertStringVector(QVector<QString> v)
-{
-	QVector<std::string> v2(v.size());
-	for(unsigned int i=0;i<v.size();i++)
-		v2[i] = v[i].toStdString();
-
-	return v2.toStdVector();
-}
-
-void Attribute::getRawData(QDataStream &stream)
-{
-	switch(type)
-	{
-	case DOUBLE:
-		stream << doublevalue;
-		break;
-	case DOUBLEVECTOR:
-		stream << QVector<double>::fromStdVector(doublevector);
-		break;
-	case STRING:
-		stream << QString::fromStdString(stringvalue);
-		break;
-	case STRINGVECTOR:
-		stream << ConvertStringVector(stringvector);
-		break;
-	case TIMESERIES:
-		stream << QVector<double>::fromStdVector(doublevector);
-		stream << ConvertStringVector(stringvector);
-		break;
-	//case Attribute::AttributeType::LINK:
-	//	break;
-	//case Attribute::AttributeType::NOTYPE:
-	//	break;
-	}
-}*/
-/*
-Attribute::Attribute(std::string name, int _type, QDataStream &stream)
-{
-	//this->type = type;
-	QVector<double> qdoublevector;
-	QString qstringvalue;
-	QVector<QString> qstringvector;
-
-	switch(_type)
-	{
-	case DOUBLE:	type = DOUBLE;
-		stream >> doublevalue;
-		break;
-	case DOUBLEVECTOR:	type = DOUBLEVECTOR;
-		stream >> qdoublevector;
-		doublevector = qdoublevector.toStdVector();
-		break;
-	case STRING:	type = STRING;
-		stream >> qstringvalue;
-		stringvalue = qstringvalue.toStdString();
-		break;
-	case STRINGVECTOR:	type = STRINGVECTOR;
-		stream >> qstringvector;
-		stringvector = ConvertStringVector(qstringvector);
-		break;
-	case TIMESERIES:	type = TIMESERIES;
-		stream >> qdoublevector;
-		doublevector = qdoublevector.toStdVector();
-		stream >> qstringvector;
-		stringvector = ConvertStringVector(qstringvector);
-		break;
-	//case Attribute::AttributeType::LINK:
-	//	break;
-	//case Attribute::AttributeType::NOTYPE:
-	//	break;
-	}
-}
-*/
-/*
-void Attribute::getRawData(QBuffer *buf)
-{
-	switch(type)
-	{
-	case DOUBLE:
-		buf->write((char*)&doublevalue, sizeof(doublevalue));
-		break;
-	case DOUBLEVECTOR:
-		GetRawVectorData(doublevector, buf);
-		break;
-	case STRING:
-		buf->write(stringvalue.data(), stringvalue.size());
-		break;
-	case STRINGVECTOR:
-		GetRawVectorData(stringvector, buf);
-		break;
-	case TIMESERIES:
-		GetRawVectorData(doublevector, buf);
-		GetRawVectorData(stringvector, buf);
-		break;
-	//case Attribute::AttributeType::LINK:
-	//	break;
-	//case Attribute::AttributeType::NOTYPE:
-	//	break;
-	}
-}*/
 
 void Attribute::setType(AttributeType type)
 {
@@ -380,4 +248,91 @@ const char *Attribute::getTypeName(Attribute::AttributeType type)
         "STRINGVECTOR"
     };
     return arr[type];
+}
+
+Attribute::Attribute(std::string name, int type, QByteArray bytes)
+{
+	this->name = name;
+	this->type = (AttributeType)type;
+	switch(type)
+	{
+	case NOTYPE:
+		break;
+	case DOUBLE:
+		doublevalue = bytes.toDouble();
+		break;
+	case STRING:
+		stringvalue = QString(bytes).toStdString();
+		break;
+	case DOUBLEVECTOR:
+		doublevector = DBConnector::GetDoubleVector(bytes);
+		break;
+	case STRINGVECTOR:
+		stringvector = DBConnector::GetStringVector(bytes);
+	case TIMESERIES:
+		doublevector = DBConnector::GetDoubleVector(bytes);
+		stringvector = DBConnector::GetStringVector(bytes);
+		break;
+	case LINK:	// TODO
+		break;
+	}
+}
+
+QByteArray Attribute::getValue()
+{
+	QByteArray bytes;
+
+	QDataStream s(&bytes, QIODevice::WriteOnly);
+
+	switch(type)
+	{
+	case NOTYPE:
+		break;
+	case DOUBLE:
+		s << doublevalue;
+		break;
+	case STRING:
+		s << QString::fromStdString(stringvalue);
+		break;
+	case DOUBLEVECTOR:
+		s << QVector<double>::fromStdVector(doublevector);
+		break;
+	case STRINGVECTOR:
+		s << QVector<QString>::fromStdVector(DBConnector::ToStdString(stringvector));
+		break;
+	case TIMESERIES:
+		// TODO order?
+		s << QVector<double>::fromStdVector(doublevector);
+		s << QVector<QString>::fromStdVector(DBConnector::ToStdString(stringvector));
+		break;
+	case LINK:	// TODO
+		break;
+	}
+	return bytes;
+}
+void Attribute::setValue(QByteArray bytes)
+{
+	switch(type)
+	{
+	case NOTYPE:
+		break;
+	case DOUBLE:
+		doublevalue = bytes.toDouble();
+		break;
+	case STRING:
+		stringvalue = QString(bytes).toStdString();
+		break;
+	case DOUBLEVECTOR:
+		doublevector = DBConnector::GetDoubleVector(bytes);
+		break;
+	case STRINGVECTOR:
+		stringvector = DBConnector::GetStringVector(bytes);
+		break;
+	case TIMESERIES:
+		doublevector = DBConnector::GetDoubleVector(bytes);
+		stringvector = DBConnector::GetStringVector(bytes);
+		break;
+	case LINK:	// TODO
+		break;
+	}
 }
