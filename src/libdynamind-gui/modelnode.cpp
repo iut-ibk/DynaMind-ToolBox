@@ -42,7 +42,6 @@
 #include <dmviewerwindow.h>
 
 std::string ModelNode::getParameterAsString(std::string name) {
-
     std::ostringstream val;
     int id = this->getDMModel()->getParameterList()[name];
     if (id == DM::DOUBLE || id == DM::LONG || id == DM::STRING) {
@@ -54,6 +53,7 @@ std::string ModelNode::getParameterAsString(std::string name) {
             val << this->getDMModel()->getParameter<std::string>(name);
         return val.str();
     }
+    return val.str();
 }
 
 std::string ModelNode::getGroupUUID() {
@@ -163,11 +163,11 @@ void ModelNode::addPort(DM::Port * p) {
     GUIPort * gui_p = new  GUIPort(this, p);
     ports.append(gui_p);
     if  (p->getPortType() < DM::OUTPORTS) {
-        gui_p->setPos(this->boundingRect().width(),70+gui_p->boundingRect().height()*this->outputCounter++);
+        gui_p->setPos(this->boundingRect().width(),30+gui_p->boundingRect().height()*this->outputCounter++);
         if (outputCounter > inputCounter)
             this->h = h+20;
     }else {
-        gui_p->setPos(0,70+gui_p->boundingRect().height()*this->inputCounter++);
+        gui_p->setPos(0,30+gui_p->boundingRect().height()*this->inputCounter++);
         if (outputCounter < inputCounter)
             this->h = h+20;
 
@@ -216,7 +216,7 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
 
     w = w < 140 ? 140 : w;
     l = w+4;
-    h =  80;
+    h =  35;
     VIBeModule->addPortObserver( & this->guiPortObserver);
     this->updatePorts();
 
