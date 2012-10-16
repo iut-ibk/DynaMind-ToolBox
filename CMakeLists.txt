@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.2.1")
+ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.3.0")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         message(STATUS "Using Visual C compilers")
@@ -26,10 +26,15 @@ OPTION(WITH_PLUGIN_SEWER "if with Sewer plugin" OFF)
 OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
 OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
 OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" OFF)
+OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules)
+
+if(WITH_EXTENSIONS)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Extensions)
+endif(WITH_EXTENSIONS)
 
 if(WITH_PLUGIN_DYNAMIND)
     set(TOOLBOX ${TOOLBOX} DynaMind-DYNAMIND)
@@ -99,6 +104,7 @@ endforeach(tool ${TOOLBOX})
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
+SET(DYNAMIND_EXTENSIONS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind-Extensions/src) 
 SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 
 
