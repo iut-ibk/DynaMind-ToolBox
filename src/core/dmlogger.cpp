@@ -30,7 +30,7 @@
 
 namespace DM {
     Logger::Logger(LogLevel level)
-        : sink(*Log::getInstance()->sink), level(level) {
+        : level(level), sink(*Log::getInstance()->sink) {
         dirty = false;
         this->max = Log::getInstance()->max;
         logstring="";
