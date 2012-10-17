@@ -80,10 +80,10 @@ void ExtractMaxGraph::run()
     for(int index=0; index<nodes.size(); index++)
         nodesindex[nodes[index]]=index;
 
-    E edgeindex[edges.size()];
-    int weights[edges.size()];
+    std::vector<E> edgeindex(edges.size());
 
     const int num_nodes = nodes.size();
+    Graph g(num_nodes);
 
     for(int counter=0; counter<edges.size(); counter++)
     {
@@ -94,11 +94,9 @@ void ExtractMaxGraph::run()
         targetindex=nodesindex[edge->getEndpointName()];
 
         edgeindex[counter]=E(sourceindex,targetindex);
-        nodes2edge[edgeindex[counter]]=edge;
-        weights[counter] = counter;
+        nodes2edge[E(sourceindex,targetindex)]=edge;
+        add_edge(sourceindex, targetindex, 1, g);
     }
-
-    Graph g(edgeindex, edgeindex + sizeof(edgeindex) / sizeof(E), weights, num_nodes);
 
     //check if graph is conntected
     std::vector<int> component(num_vertices(g));
