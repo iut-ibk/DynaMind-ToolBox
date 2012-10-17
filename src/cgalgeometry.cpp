@@ -28,7 +28,6 @@
 #include <ostream>
 #include <QString>
 #include <boost/foreach.hpp>
-#include <CGAL/Triangulation_2.h>
 #include <iostream>
 
 namespace DM {
@@ -148,27 +147,27 @@ namespace DM {
     }
     
     DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding,  float Tolerance, bool RemoveLines)  {
-        typedef Kernel::FT                                         Number_type;
+        //typedef Kernel::FT                                         Number_type;
         
-        typedef CGAL::Partition_traits_2<Kernel>                         Traits;
-        typedef Traits_2::Point_2                                  Point_2;
-        typedef Traits::Point_2                                     Point_2_poly;
-        typedef Traits::Polygon_2                                  Polygon_2   ;
-        typedef std::list<Polygon_2>                                Polygon_list;
-        typedef Traits_2::X_monotone_curve_2                       Segment_2;
+        //typedef CGAL::Partition_traits_2<Kernel>                         Traits;
+        //typedef Traits_2::Point_2                                  Point_2;
+        //typedef Traits::Point_2                                     Point_2_poly;
+        //typedef Traits::Polygon_2                                  Polygon_2   ;
+        //typedef std::list<Polygon_2>                                     Polygon_list;
+        //typedef Traits_2::X_monotone_curve_2                             Segment_2;
         
-        typedef Polygon_2::Vertex_iterator                          Vertex_iterator;
-        typedef CGAL::Triangulation_2<Kernel>         Triangulation;
-        typedef CGAL::Triangulation_vertex_base_2<Kernel>                     Vb;
-        typedef CGAL::Constrained_triangulation_face_base_2<Kernel>           Fb;
-        typedef CGAL::Triangulation_data_structure_2<Vb,Fb>              TDS;
-        typedef CGAL::Exact_predicates_tag                               Itag;
-        typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS, Itag> CDT;
-        typedef CDT::Point                                                      Point2D;
+        //typedef Polygon_2::Vertex_iterator                              Vertex_iterator;
+        //typedef CGAL::Triangulation_2<Kernel>                           Triangulation;
+        //typedef CGAL::Triangulation_vertex_base_2<Kernel>                     Vb;
+        //typedef CGAL::Constrained_triangulation_face_base_2<Kernel>           Fb;
+        //typedef CGAL::Triangulation_data_structure_2<Vb,Fb>              TDS;
+        //typedef CGAL::Exact_predicates_tag                               Itag;
+        //typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS, Itag> CDT;
+        //typedef CDT::Point                                                      Point2D;
         
         // Print the outer CCBs of the unbounded faces.
         Arrangement_2::Edge_iterator					eit;
-        Arrangement_2::Vertex_const_iterator            vit;
+        //Arrangement_2::Vertex_const_iterator            vit;
         Arrangement_2::Face_const_iterator              fit;
         Arrangement_2::Ccb_halfedge_const_circulator    curr;
         Segment_list_2 segments;

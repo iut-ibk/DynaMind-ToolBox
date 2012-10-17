@@ -46,8 +46,8 @@
 #include <CGAL/Arr_Bezier_curve_traits_2.h>
 #include <CGAL/Arrangement_2.h>
 #include <CGAL/IO/Arr_iostream.h>
-#include <CGAL/CORE_algebraic_number_traits.h>
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+//#include <CGAL/CORE_algebraic_number_traits.h>
+//#include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/partition_2.h>
 #include <CGAL/Partition_traits_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -64,6 +64,7 @@
 using namespace boost;
 
 typedef CGAL::Quotient<double>                          Number_type;
+//typedef double                                          Number_type;
 typedef CGAL::Cartesian<Number_type>                    Kernel;
 typedef CGAL::Snap_rounding_traits_2<Kernel>            Traits;
 typedef Kernel::Segment_2                               Segment_2;
