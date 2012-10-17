@@ -182,6 +182,11 @@ void Attribute::setLinks(std::vector<LinkAttribute> links)
 LinkAttribute Attribute::getLink()
 {
     LinkAttribute attr;
+    if (this->stringvector.size() < 2) {
+        Logger(Warning) << "Couldn't find link " << this->getName();
+        return LinkAttribute();
+        
+    }
     attr.viewname = this->stringvector[0];
     attr.uuid = this->stringvector[1];
     return attr;

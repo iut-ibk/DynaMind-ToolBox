@@ -116,7 +116,7 @@ public:
     void setLink(std::string viewname, std::string uuid);
     /** @brief Sets attribute links the existing vector is cleared! **/
     void setLinks(std::vector<LinkAttribute> links);
-    /** @brief Returns the first element in the link attribute vector*/
+    /** @brief Returns the first element in the link attribute vector. If no link exists it retruns an empty LinkAttribute */
     LinkAttribute getLink();
     /** @brief Returns Vector of Links */
     std::vector<LinkAttribute> getLinks();
