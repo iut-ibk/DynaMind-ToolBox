@@ -81,7 +81,7 @@ typedef CGAL::Arrangement_2<Traits_2>                   Arrangement_2;
 namespace DM {
 
 
-    class  DM_HELPER_DLL_EXPORT CGALGeometry
+    class DM_HELPER_DLL_EXPORT CGALGeometry
     {
     public:
 
