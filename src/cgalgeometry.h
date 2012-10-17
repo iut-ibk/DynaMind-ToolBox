@@ -71,9 +71,9 @@ typedef Kernel::Point_2                                 Point_2;
 typedef std::list<Segment_2>                            Segment_list_2;
 typedef std::list<Point_2>                              Polyline_2;
 typedef std::list<Polyline_2>                           Polyline_list_2;
-typedef CGAL::CORE_algebraic_number_traits              Nt_traits;
-typedef Nt_traits::Rational                             Rational;
-typedef Nt_traits::Algebraic                            Algebraic;
+//typedef CGAL::CORE_algebraic_number_traits              Nt_traits;
+//typedef Nt_traits::Rational                             Rational;
+//typedef Nt_traits::Algebraic                            Algebraic;
 typedef CGAL::Arr_segment_traits_2<Kernel>              Traits_2;
 typedef CGAL::Arrangement_2<Traits_2>                   Arrangement_2;
 

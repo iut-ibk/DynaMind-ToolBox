@@ -277,7 +277,7 @@ namespace DM {
         typedef CGAL::Cartesian<FT>             K;
         typedef K::Point_2                      Point_2;
         typedef CGAL::Aff_transformation_2<K>   Transformation;
-        double pi =  3.14159265;
+        const double pi =  3.14159265;
         double area = -1;
         double angel = 0;
         for (double i = 0; i < 180; i++) {
