@@ -34,7 +34,7 @@
 #include <dmporttuple.h>
 
 namespace {
-
+	/*
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -162,6 +162,28 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     DM::Module * inout2  = sim.addModule("InOut2");
     ASSERT_TRUE(inout2 != 0);
     DM::ModuleLink * l2 = sim.addLink(g->getOutPortTuple("Out")->getOutPort(), inout2->getInPort("Inport"));
+    ASSERT_TRUE(l2 != 0);
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}
+*/
+TEST_F(TestSimulation,sqltest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Logger(DM::Standard) << "Test Reallocation (SQL)";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * mcreator = sim.addModule("CreateAllComponenets");
+    ASSERT_TRUE(mcreator != 0);
+    DM::Module * mallocator  = sim.addModule("Reallocator");
+    ASSERT_TRUE(mallocator != 0);
+    DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
+    ASSERT_TRUE(mcheck != 0);
+    //DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mcheck->getInPort("sys"));
+    //ASSERT_TRUE(l1 != 0);
+    DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mallocator->getInPort("sys"));
+    ASSERT_TRUE(l1 != 0);
+    DM::ModuleLink * l2 = sim.addLink(mallocator->getOutPort("sys"), mcheck->getInPort("sys"));
     ASSERT_TRUE(l2 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
