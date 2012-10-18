@@ -120,7 +120,9 @@ System::~System()
     }
     ownedView.clear();
 
-	SQLDeleteThisSystem();
+	// if this system is a root system, destroy whole dataset
+	if(currentSys==this)
+		SQLDeleteThisSystem();
 }
 
 Components System::getType()
@@ -545,11 +547,14 @@ bool System::addView(View view)
         }
         if (  DM::EDGE == view.getType()) {
             DM::Node * n1 =this->addNode(0,0,0);
+			n1->setName("dummy");
             DM::Node * n2 =this->addNode(0,0,0);
+			n2->setName("dummy");
             dummy = this->addEdge(n1,n2);
         }
         if (  DM::FACE == view.getType()) {
             DM::Node * n1 =this->addNode(0,0,0);
+			n1->setName("dummy");
             std::vector<Node*> ve;
             ve.push_back(n1);
             dummy = this->addFace(ve);
@@ -562,6 +567,7 @@ bool System::addView(View view)
             dummy = new DM::RasterData();
             this->addRasterData((DM::RasterData*) dummy);
         }
+		dummy->setName("dummy");
     }
     existingView->setIdOfDummyComponent(dummy->getUUID());
 
@@ -752,7 +758,7 @@ void System::SQLLoadComponents()
 }
 void System::SQLFreeComponents()
 {
-	SQLFreeChilds();
+	SQLUnloadChilds();
 }
 
 /*
@@ -801,3 +807,27 @@ System::System(std::string uuid):Component(uuid)
 	q.addBindValue(QString::fromStdString(uuid));
 }
 */
+
+void System::ForceAllocation()
+{
+	SQLLoadComponents();
+	//SQLLoadChilds();
+	SQLLoadAttributes();
+
+	foreach(ComponentPair p, this->ownedchilds)
+	{
+		p.second->ForceAllocation();
+	}
+}
+void System::ForceDeallocation()
+{
+	SQLUnloadChilds();
+	SQLUnloadAttributes();
+
+	components.clear();
+	edges.clear();
+	nodes.clear();
+	faces.clear();
+	rasterdata.clear();
+	subsystems.clear();
+}

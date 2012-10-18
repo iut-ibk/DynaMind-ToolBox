@@ -85,13 +85,13 @@ DBConnector::DBConnector()
 											owner varchar(128), \
 											name text, \
 											type tinyint, \
-											value text, \
+											value blob, \
 											PRIMARY KEY (uuid,stateuuid))")
 	|| !query.exec("CREATE TABLE attributes(owner varchar(128), \
 											stateuuid varchar(128), \
 											name varchar(128), \
 											type tinyint, \
-											value text, \
+											value blob, \
 											PRIMARY KEY (owner,stateuuid,name))")
 		)
 	{

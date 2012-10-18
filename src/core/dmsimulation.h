@@ -50,7 +50,8 @@ static const  string CoreVersion = DYNAMIND_VERSION_CORE;
 enum SimuatlonsStatuses {
     SIM_OK,
     SIM_FAILED_LOAD,
-    SIM_ERROR_SYSTEM_NOT_SET
+    SIM_ERROR_SYSTEM_NOT_SET,
+	SIM_FAILED,
 
 };
 

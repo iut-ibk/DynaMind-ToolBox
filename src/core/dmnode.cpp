@@ -48,9 +48,9 @@ QByteArray Node::GetValue()
 {
 	QByteArray bytes;
 	QDataStream stream(&bytes, QIODevice::WriteOnly);
-	stream<<x;
-	stream<<y;
 	stream<<z;
+	stream<<y;
+	stream<<x;
 	return bytes;
 }
 

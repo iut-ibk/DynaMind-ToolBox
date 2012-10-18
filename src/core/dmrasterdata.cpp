@@ -54,7 +54,7 @@ RasterData::RasterData(QByteArray qba):Component()
     for (long i = 0; i < width; i++) 
 	{
         data[i] = new double[height];
-		for(long j=0;j<width;j++)
+		for(long j=0;j<height;j++)
 		{
 			stream >> data[i][j];
 		}
@@ -76,7 +76,7 @@ QByteArray RasterData::GetValue()
 
     for (long i = 0; i < width; i++) 
 	{
-		for(long j=0;j<width;j++)
+		for(long j=0;j<height;j++)
 		{
 			stream << data[i][j];
 		}

@@ -199,7 +199,8 @@ void Module::updateParameter() {
                     sys = 0;
                     break;
                 }
-
+				// TODOOOOOOOO
+				/*
                 //Get DummyComponent
                 DM::Component * c = sys->getComponent(checkView->getIdOfDummyComponent());
                 //Check if attributes are avalible
@@ -208,7 +209,7 @@ void Module::updateParameter() {
                     DM::Logger(DM::Warning) << "Something weired happend checkview does not exist " << this->getName();
                     break;
                 }
-
+				
                 //Check if attributes to read are avalible in component
                 foreach (std::string a, view.getReadAttributes()) {
                     std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
@@ -220,6 +221,7 @@ void Module::updateParameter() {
                 }
                 if (sys == 0)
                     break;
+					*/
             }
             if (sys == 0)
                 continue;
@@ -665,6 +667,7 @@ DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> vi
 
     if (ownedSystems.find(name) == ownedSystems.end()) {
         this->ownedSystems[name] = new DM::System();
+		//this->ownedSystems[name]->setName("dummy");
     }
 
     DM::System * sys = this->ownedSystems[name];

@@ -31,21 +31,38 @@ using namespace DM;
 
 Edge::Edge(QByteArray qba) : Component()
 {
+	QStringList qsl;
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	stream >> qsl;
+	start = qsl[0].toStdString();
+	end = qsl[1].toStdString();
+
+	/*
+
 	QDataStream stream(&qba, QIODevice::ReadOnly);
 	QString qstart;
 	QString qend;
 	stream>>qstart;
 	stream>>qend;
 	start = qstart.toStdString();
-	end = qend.toStdString();
+	end = qend.toStdString();*/
 }
 
 QByteArray Edge::GetValue()
 {
+	QStringList qsl;
+	qsl.append(QString::fromStdString(start));
+	qsl.append(QString::fromStdString(end));
+	
 	QByteArray bytes;
-	bytes.append(QString::fromStdString(start));
-	bytes.append(QString::fromStdString(end));
+	QDataStream stream(&bytes, QIODevice::WriteOnly);
+	stream << qsl;
 	return bytes;
+	/*
+	QByteArray bytes;
+	bytes.append(QString::fromStdString(end));
+	bytes.append(QString::fromStdString(start));
+	return bytes;*/
 }
 
 Edge::Edge(std::string startpoint, std::string endpoint) : Component()

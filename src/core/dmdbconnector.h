@@ -84,6 +84,7 @@ template <typename M> void FreeMap( M & amap )
     for( typename M::iterator it = amap.begin(); it != amap.end(); ++it ) 
 	{
         delete it->second;
+		it->second = NULL;
     }
     amap.clear();
 }
@@ -92,7 +93,9 @@ template <typename M> void FreeVector( M &amap )
 	for(int i=0;i<amap.size();i++)
 	{
 		delete amap[i];
+		amap[i] = NULL;
 	}
+	amap.Clear();
 }
 
 	

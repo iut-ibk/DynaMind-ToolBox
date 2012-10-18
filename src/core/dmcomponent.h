@@ -68,19 +68,22 @@ class DM_HELPER_DLL_EXPORT Component
 private:
 	std::string stateUuid;
 
-	bool bChilds;
-	bool bAttributes;
+	bool bLoadedChilds;
+	bool bLoadedAttributes;
 
 	void SQLLoadChilds();
-	void SQLFreeChilds();
+	void SQLUnloadChilds();
 	void SQLInsertChild(Component* c);
 	void SQLDeleteChild(Component* c);
+
+	void SQLSetOwner(Component *owner);
+	void SQLSetName(std::string name);
 
 	void SQLInsertAttribute(Attribute *newAttribute);
 	void SQLUpdateAttribute(std::string name, Attribute *newAttribute);
 	void SQLDeleteAttribute(std::string name);
 	void SQLLoadAttributes();
-	void SQLFreeAttributes();
+	void SQLUnloadAttributes();
 	
 	void SQLInsertDeepCopy();
 	virtual QByteArray GetValue(){return QByteArray();};
@@ -180,11 +183,16 @@ public:
     Component* getChild(std::string name);
     std::map<std::string, Component*> getAllChilds();
 
+    std::map<std::string, Component*> getAllOwnedChilds();
+
     Component * updateChild(Component * c);
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);
 
+	/** @brief user friendly versions of (de)allocation */
+	void virtual ForceAllocation();
+	void virtual ForceDeallocation();
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }

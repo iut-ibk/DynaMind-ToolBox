@@ -204,6 +204,9 @@ public:
 
     void setAccessedByModule(Module * m);
     Module * getLastModule();
+
+	void virtual ForceAllocation();
+	void virtual ForceDeallocation();
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
