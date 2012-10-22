@@ -27,140 +27,109 @@
 #include "cgalgeometry_p.h"
 
 namespace DM {
-    
-    
-    Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & view, float tol)  {
-        
-        Logger(Debug) << "Snap Rounding 2D";
-        
-        Segment_list_2 seg_list;
-        Polyline_list_2 output_list;
-        
-        seg_list = CGALGeometry_P::VecToSegment2D(sys, view);
-        
-        // Generate an iterated snap-rounding
-        CGAL::snap_rounding_2<Traits,Segment_list_2::const_iterator,Polyline_list_2>
-        (seg_list.begin(), seg_list.end(), output_list, tol, false, false, 1);
-        
-        Segment_list_2 ret_list;
-        ret_list = CGALGeometry_P::PolyLineToSegments(output_list);
-        
-        Logger(Debug) << "End Snap Rounding 2D";
-        
-        return ret_list;
+
+
+Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & view, float tol)  {
+
+    Logger(Debug) << "Snap Rounding 2D";
+
+    Segment_list_2 seg_list;
+    Polyline_list_2 output_list;
+
+    seg_list = CGALGeometry_P::VecToSegment2D(sys, view);
+
+    // Generate an iterated snap-rounding
+    CGAL::snap_rounding_2<Traits,Segment_list_2::const_iterator,Polyline_list_2>
+            (seg_list.begin(), seg_list.end(), output_list, tol, false, false, 1);
+
+    Segment_list_2 ret_list;
+    ret_list = CGALGeometry_P::PolyLineToSegments(output_list);
+
+    Logger(Debug) << "End Snap Rounding 2D";
+
+    return ret_list;
+}
+
+Segment_list_2 CGALGeometry_P::VecToSegment2D(DM::System * sys,  DM::View & view) {
+    Segment_list_2 seg_list;
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+
+    foreach (std::string id, uuids) {
+        DM::Edge * edge = sys->getEdge(id);
+        DM::Node * n1 = sys->getNode(edge->getStartpointName());
+        DM::Node * n2 = sys->getNode(edge->getEndpointName());
+        Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+        if (!seg.is_degenerate () ) {
+            seg_list.push_back(seg);
+        }
     }
-    
-    
-    
-    Segment_list_2 CGALGeometry_P::VecToSegment2D(DM::System * sys,  DM::View & view) {
-        Segment_list_2 seg_list;
-        std::vector<std::string> uuids = sys->getUUIDs(view);
-        
-        foreach (std::string id, uuids) {
-            DM::Edge * edge = sys->getEdge(id);
-            DM::Node * n1 = sys->getNode(edge->getStartpointName());
-            DM::Node * n2 = sys->getNode(edge->getEndpointName());
-            Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
-            if (!seg.is_degenerate () ) {
+    return seg_list;
+}
+
+Segment_list_2 CGALGeometry_P::PolyLineToSegments(const Polyline_list_2 & poly_list) {
+    Segment_list_2 seg_list;
+    for (Polyline_list_2::const_iterator poly = poly_list.begin(); poly != poly_list.end(); ++poly) {
+        Polyline_2::const_iterator point,  prevPoint;
+
+        for (point = poly->begin(); point != poly->end(); ++point) {
+            if (point != poly->begin()) {
+                Segment_2 seg(Point_2(prevPoint->x(), prevPoint->y()), Point_2(point->x(), point->y()));
                 seg_list.push_back(seg);
             }
+            prevPoint = point;
         }
-        return seg_list;
     }
-    
-    Segment_list_2 CGALGeometry_P::PolyLineToSegments(const Polyline_list_2 & poly_list) {
-        Segment_list_2 seg_list;
-        for (Polyline_list_2::const_iterator poly = poly_list.begin(); poly != poly_list.end(); ++poly) {
-            Polyline_2::const_iterator point,  prevPoint;
-            
-            for (point = poly->begin(); point != poly->end(); ++point) {
-                if (point != poly->begin()) {
-                    Segment_2 seg(Point_2(prevPoint->x(), prevPoint->y()), Point_2(point->x(), point->y()));
-                    seg_list.push_back(seg);
-                }
-                prevPoint = point;
-            }
-        }
-        return seg_list;
-    }
-    
-    DM::System CGALGeometry_P::Segment2DToVec(Segment_list_2 seg_list, DM::View & view) {
-        DM::System  sys;
-        for ( Segment_list_2::const_iterator seg = seg_list.begin(); seg != seg_list.end(); ++seg) {
-            float x1 = CGAL::to_double(seg->source().x());
-            float y1 = CGAL::to_double(seg->source().y());
-            float x2 = CGAL::to_double(seg->target().x());
-            float y2 = CGAL::to_double(seg->target().y());
-            DM::Node * n1 = sys.addNode(x1, y1, 0);
-            DM::Node * n2 = sys.addNode(x2, y2, 0);
-            sys.addEdge(n1, n2, view);
-        }
-        return sys;
-    }
-    float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
-        std::stringstream num;
-        std::stringstream den;
-        num << n.numerator();
-        den << n.denominator();
-        float numf =  QString::fromStdString(num.str()).toFloat();
-        float denf =  QString::fromStdString(den.str()).toFloat();
-        
-        return numf/denf;
-        
-    }
-    
-    bool  CGALGeometry_P::checkPoints(const Point_2 & p1, const Point_2 & p2) {
-        return p1==p2;
-    }
-    int CGALGeometry_P::count_neighboring_vertices (Arrangement_2::Vertex_const_handle v)
-    {
-        int counter = 0;
-        if (v->is_isolated()) {
-            return counter;
-        }
-        
-        Arrangement_2::Halfedge_around_vertex_const_circulator first, curr;
-        first = curr = v->incident_halfedges();
+    return seg_list;
+}
 
-        do {
-            // Note that the current halfedge is directed from u to v:
-            Arrangement_2::Vertex_const_handle u = curr->source();
-            counter++;
-        } while (++curr != first);
+DM::System CGALGeometry_P::Segment2DToVec(Segment_list_2 seg_list, DM::View & view) {
+    DM::System  sys;
+    for ( Segment_list_2::const_iterator seg = seg_list.begin(); seg != seg_list.end(); ++seg) {
+        float x1 = CGAL::to_double(seg->source().x());
+        float y1 = CGAL::to_double(seg->source().y());
+        float x2 = CGAL::to_double(seg->target().x());
+        float y2 = CGAL::to_double(seg->target().y());
+        DM::Node * n1 = sys.addNode(x1, y1, 0);
+        DM::Node * n2 = sys.addNode(x2, y2, 0);
+        sys.addEdge(n1, n2, view);
+    }
+    return sys;
+}
+float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
+    std::stringstream num;
+    std::stringstream den;
+    num << n.numerator();
+    den << n.denominator();
+    float numf =  QString::fromStdString(num.str()).toFloat();
+    float denf =  QString::fromStdString(den.str()).toFloat();
+
+    return numf/denf;
+
+}
+
+bool  CGALGeometry_P::CheckPoints(const Point_2 & p1, const Point_2 & p2) {
+    return p1==p2;
+}
+int CGALGeometry_P::CountNeighboringVertices (Arrangement_2::Vertex_const_handle v)
+{
+    int counter = 0;
+    if (v->is_isolated()) {
         return counter;
     }
-      
-    /*void Geometry::extrudeFace(std::vector<Point> &vp, std::vector<Face> & vf, float height) {
-     //Create Upper Points
-     std::vector<long> opposite_ids;
-     Face refF = vf[0];
-     BOOST_FOREACH(long id, refF.ids) {
-     vp.push_back(Point(vp[id].x, vp[id].y, vp[id].z+ height));
-     opposite_ids.push_back(vp.size()-1);
-     }
-     
-     //Create Top Face
-     
-     vf.push_back(Face(opposite_ids));
-     
-     //Create Sides
-     
-     for (int i = 0; i < refF.ids.size(); i++) {
-     if (i != 0) {
-     std::vector<long> f_side;
-     f_side.push_back(refF.ids[i-1]);
-     f_side.push_back(opposite_ids[i-1]);
-     f_side.push_back(opposite_ids[i]);
-     f_side.push_back(refF.ids[i]);
-     f_side.push_back(refF.ids[i-1]);
-     vf.push_back(Face(f_side));
-     }
-     
-     }
-     
-     
-     }
-     
+
+    Arrangement_2::Halfedge_around_vertex_const_circulator first, curr;
+    first = curr = v->incident_halfedges();
+
+    do {
+        // Note that the current halfedge is directed from u to v:
+        Arrangement_2::Vertex_const_handle u = curr->source();
+        counter++;
+    } while (++curr != first);
+    return counter;
+}
+
+
+/*
      VectorData Geometry::DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T) {
      
      if (l1 < 1 || l2 < 1 || b < 1 ) {
@@ -353,8 +322,8 @@ namespace DM {
      
      
      */
-    
-    /*VectorData Geometry::createRaster(std::vector<Point> & points, double width, double height) {
+
+/*VectorData Geometry::createRaster(std::vector<Point> & points, double width, double height) {
      //typedef CGAL::Quotient<CGAL::Gmpq>           FT;
      //typedef long double                           FT;
      typedef CGAL::Cartesian<CGAL::Gmpq>                   K;
