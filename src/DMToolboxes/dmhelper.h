@@ -30,6 +30,7 @@
 #include <dmcompilersettings.h>
 #include <map>
 #include <string>
+#include <dm.h>
 
 
 /**
@@ -49,6 +50,8 @@ public:
     static std::map<std::string, std::string> convertIntMapToStringMap(std::map<int, int> map);
     /** @brief converts a string map to a int map */
     static std::string convertIntMapToDMMapString(std::map<int,int>);
+     /** @brief Easier way to link components together */
+    static void LinkComponents(const DM::View &v1, DM::Component * c1, const DM::View &v2, DM::Component *c2);
 };
 
 #endif // DMHELPER_H

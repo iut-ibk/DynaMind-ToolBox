@@ -59,3 +59,10 @@ std::string DMHelper::convertIntMapToDMMapString(std::map<int, int>  intmap) {
     std::string s = ss.str();
     return ss.str();
 }
+
+void DMHelper::LinkComponents(const DM::View &v1, DM::Component *c1, const DM::View &v2, DM::Component *c2)
+{
+    c1->getAttribute(v2.getName())->setLink(v2.getName(), c2->getUUID());
+    c2->getAttribute(v1.getName())->setLink(v1.getName(), c1->getUUID());
+
+}

@@ -162,7 +162,7 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
 
 }
 
-DM::Node TBVectorData::caclulateCentroid(DM::System * sys, DM::Face * f) {
+DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     //Check if first is last
     if (f->getNodes().size() < 3)
         return DM::Node(0,0,0);
