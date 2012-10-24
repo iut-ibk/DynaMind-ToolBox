@@ -64,7 +64,7 @@ public:
 	static std::vector<double> GetDoubleVector(QByteArray qba);
 
 	static QStringList GetStringList(std::vector<DM::Component*> v);
-	static QStringList GetStringList(std::vector<DM::System*> v);
+	//static QStringList GetStringList(std::vector<DM::System*> v);
 };
 
 		/*

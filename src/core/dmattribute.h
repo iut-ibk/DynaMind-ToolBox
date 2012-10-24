@@ -43,6 +43,8 @@ struct LinkAttribute {
     std::string uuid;
 };
 
+class Component;
+
 /** @ingroup DynaMind-Core
   * An Attribute is used to add informations to an object.
   *
@@ -62,6 +64,7 @@ public:
     };
     
 private:
+	std::string _uuid;	// this one is really unique
     std::string name;
     double doublevalue;
     std::string stringvalue;
@@ -71,7 +74,19 @@ private:
 
     AttributeType type;
 
+
+	void SQLInsertThis();
+	void SQLDeleteThis();
+	void SQLUpdateValue();
+	void SQLSetOwner(Component* owner);
+	void SQLSetName(std::string newname);
+	void SQLSetType(AttributeType newtype);
+
+    void setValue(QByteArray bytes);
+    QByteArray getValue();
 public:
+    /** @brief changes the owner **/
+	void SetOwner(Component* owner);
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/
@@ -89,13 +104,9 @@ public:
     /** @brief creates a new string attribute**/
     Attribute(std::string name, std::string val);
     /** @brief creates a new attribute**/
-    Attribute(std::string name, int type, QByteArray bytes);
+    //Attribute(std::string name, int type, QByteArray bytes);
     /** @brief creates a new attribute**/
     Attribute();
-    /** @brief set double value**/
-    void setValue(QByteArray bytes);
-    /** @brief get double value**/
-    QByteArray getValue();
     /** @brief set string value**/
     /** @brief set double value**/
     void setDouble(double v);

@@ -49,6 +49,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<CreateAllComponenets>());
     registry->addNodeFactory(new NodeFactory<Reallocator>());
     registry->addNodeFactory(new NodeFactory<CheckAllComponenets>());
+    registry->addNodeFactory(new NodeFactory<SuccessorCheck>());
 
 }
 

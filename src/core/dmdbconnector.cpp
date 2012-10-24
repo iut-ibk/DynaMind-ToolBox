@@ -87,12 +87,13 @@ DBConnector::DBConnector()
 											type tinyint, \
 											value blob, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE attributes(owner varchar(128), \
+	|| !query.exec("CREATE TABLE attributes(uuid varchar(128), \
+											owner varchar(128), \
 											stateuuid varchar(128), \
 											name varchar(128), \
 											type tinyint, \
 											value blob, \
-											PRIMARY KEY (owner,stateuuid,name))")
+											PRIMARY KEY (uuid))")
 		)
 	{
         Logger(Error) << "Cannot initialize db tables";
@@ -183,13 +184,15 @@ QStringList DBConnector::GetStringList(std::vector<DM::Component*> v)
 	}
 	return list;
 }
+/*
 QStringList DBConnector::GetStringList(std::vector<DM::System*> v)
 {
 	QStringList list;
 	foreach(System* item, v)
 	{
-		list.append(QString::fromStdString(item->getUUID()));
+		list.append(QString::fromStdString(item->getStateUUID()));
 	}
 	return list;
 }
 
+*/

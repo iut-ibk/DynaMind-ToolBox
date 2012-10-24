@@ -199,8 +199,6 @@ void Module::updateParameter() {
                     sys = 0;
                     break;
                 }
-				// TODOOOOOOOO
-				/*
                 //Get DummyComponent
                 DM::Component * c = sys->getComponent(checkView->getIdOfDummyComponent());
                 //Check if attributes are avalible
@@ -221,7 +219,6 @@ void Module::updateParameter() {
                 }
                 if (sys == 0)
                     break;
-					*/
             }
             if (sys == 0)
                 continue;
@@ -667,7 +664,7 @@ DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> vi
 
     if (ownedSystems.find(name) == ownedSystems.end()) {
         this->ownedSystems[name] = new DM::System();
-		//this->ownedSystems[name]->setName("dummy");
+		this->ownedSystems[name]->setName("getSystem_Write");
     }
 
     DM::System * sys = this->ownedSystems[name];

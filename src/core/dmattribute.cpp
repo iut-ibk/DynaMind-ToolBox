@@ -34,25 +34,26 @@ using namespace DM;
 
 Attribute::Attribute(const Attribute &newattribute)
 {
-
     this->name=newattribute.name;
     this->doublevalue=newattribute.doublevalue;
     this->stringvalue=newattribute.stringvalue;
     this->doublevector=newattribute.doublevector;
     this->stringvector=newattribute.stringvector;
     this->type = newattribute.type;
+	SQLInsertThis();
 }
 
 Attribute::Attribute(std::string name)
 {
     this->name=name;
     this->type = Attribute::NOTYPE;
+	SQLInsertThis();
 }
 Attribute::Attribute()
 {
     this->name="";
     this->type = Attribute::NOTYPE;
-
+	SQLInsertThis();
 }
 
 Attribute::Attribute(std::string name, double val)
@@ -61,7 +62,7 @@ Attribute::Attribute(std::string name, double val)
     this->name=name;
 
     this->type = Attribute::DOUBLE;
-
+	SQLInsertThis();
 }
 Attribute::Attribute(std::string name, std::string val)
 {
@@ -69,11 +70,12 @@ Attribute::Attribute(std::string name, std::string val)
     this->name=name;
 
     this->type = Attribute::STRING;
-
+	SQLInsertThis();
 }
 
 Attribute::~Attribute()
 {
+	SQLDeleteThis();
 }
 
 Attribute::AttributeType Attribute::getType()
@@ -83,6 +85,7 @@ Attribute::AttributeType Attribute::getType()
 
 void Attribute::setName(std::string name)
 {
+	SQLSetName(name);
     this->name=name;
 }
 
@@ -108,6 +111,7 @@ void Attribute::setString(std::string s)
 {
     stringvalue=s;
     this->type = Attribute::STRING;
+	SQLUpdateValue();
 }
 
 std::string Attribute::getString()
@@ -119,6 +123,7 @@ void Attribute::setDoubleVector(std::vector<double> v)
 {
     doublevector=v;
     this->type = Attribute::DOUBLEVECTOR;
+	SQLUpdateValue();
 }
 
 std::vector<double> Attribute::getDoubleVector()
@@ -130,6 +135,7 @@ void Attribute::setStringVector(std::vector<std::string> s)
 {
     stringvector=s;
     this->type = Attribute::STRINGVECTOR;
+	SQLUpdateValue();
 }
 
 std::vector<std::string> Attribute::getStringVector()
@@ -167,6 +173,7 @@ void Attribute::setLink(string viewname, string uuid)
     this->type = Attribute::LINK;
     this->stringvector.push_back(viewname);
     this->stringvector.push_back(uuid);
+	SQLUpdateValue();
 }
 
 void Attribute::setLinks(std::vector<LinkAttribute> links)
@@ -177,7 +184,8 @@ void Attribute::setLinks(std::vector<LinkAttribute> links)
         this->stringvector.push_back(attr.viewname);
         this->stringvector.push_back(attr.uuid);
     }
-
+	
+	SQLUpdateValue();
 }
 
 LinkAttribute Attribute::getLink()
@@ -212,6 +220,7 @@ void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<do
     this->type = Attribute::TIMESERIES;
     this->doublevector = value;
     this->stringvector = timestamp;
+	SQLUpdateValue();
 }
 
 void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value)
@@ -228,6 +237,7 @@ void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<d
 
 void Attribute::setType(AttributeType type)
 {
+	SQLSetType(type);
     this->type = type;
 }
 
@@ -249,7 +259,7 @@ const char *Attribute::getTypeName(Attribute::AttributeType type)
     };
     return arr[type];
 }
-
+/*
 Attribute::Attribute(std::string name, int type, QByteArray bytes)
 {
 	this->name = name;
@@ -276,7 +286,7 @@ Attribute::Attribute(std::string name, int type, QByteArray bytes)
 	case LINK:	// TODO
 		break;
 	}
-}
+}*/
 
 QByteArray Attribute::getValue()
 {
@@ -335,4 +345,62 @@ void Attribute::setValue(QByteArray bytes)
 	case LINK:	// TODO
 		break;
 	}
+}
+
+
+void Attribute::SQLInsertThis()
+{
+	_uuid = QUuid::createUuid().toString().toStdString();
+	QSqlQuery q;
+	q.prepare("INSERT INTO attributes (uuid,name,type,value) VALUES (?,?,?,?)");
+	q.addBindValue(QString::fromStdString(_uuid));
+	q.addBindValue(QString::fromStdString(name));
+	q.addBindValue((int)type);
+	q.addBindValue(getValue());
+	if(!q.exec())	PrintSqlError(&q);
+}
+void Attribute::SQLDeleteThis()
+{	
+	QSqlQuery q;
+	q.prepare("DELETE FROM attributes WHERE uuid=?");
+	q.addBindValue(QString::fromStdString(_uuid));
+	if(!q.exec())	PrintSqlError(&q);
+}
+void Attribute::SQLUpdateValue()
+{	
+	QSqlQuery q;
+	q.prepare("UPDATE attributes SET value=? WHERE uuid=?");
+	q.addBindValue(getValue());
+	q.addBindValue(QString::fromStdString(_uuid));
+	if(!q.exec())	PrintSqlError(&q);
+}
+void Attribute::SetOwner(Component* owner)
+{
+	// TODO: make shure its not bound to another component
+	SQLSetOwner(owner);
+}
+void Attribute::SQLSetOwner(Component* owner)
+{
+	QSqlQuery q;
+	q.prepare("UPDATE attributes SET owner=?,stateuuid=? WHERE uuid=?");
+	q.addBindValue(QString::fromStdString(owner->getUUID()));
+	q.addBindValue(QString::fromStdString(owner->getStateUUID()));
+	q.addBindValue(QString::fromStdString(_uuid));
+	if(!q.exec())	PrintSqlError(&q);
+}
+void Attribute::SQLSetName(std::string newname)
+{	
+	QSqlQuery q;
+	q.prepare("UPDATE attributes SET name=? WHERE uuid=?");
+	q.addBindValue(QString::fromStdString(name));
+	q.addBindValue(QString::fromStdString(_uuid));
+	if(!q.exec())	PrintSqlError(&q);
+}
+void Attribute::SQLSetType(AttributeType newtype)
+{
+	QSqlQuery q;
+	q.prepare("UPDATE attributes SET type=? WHERE uuid=?");
+	q.addBindValue(newtype);
+	q.addBindValue(QString::fromStdString(_uuid));
+	if(!q.exec())	PrintSqlError(&q);
 }

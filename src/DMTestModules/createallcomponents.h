@@ -51,4 +51,11 @@ public:
     void run();
 };
 
+class DM_HELPER_DLL_EXPORT SuccessorCheck: public DM::Module
+{
+    DM_DECLARE_NODE(SuccessorCheck)
+public:
+    SuccessorCheck();
+    void run();
+};
 #endif // CREATEALLCOMPONENTS_H

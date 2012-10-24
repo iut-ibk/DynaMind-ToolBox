@@ -45,13 +45,16 @@ using namespace DM;
 Component::Component()
 {
     this->uuid = QUuid::createUuid().toString().toStdString();
+    this->stateUuid = QUuid::createUuid().toString().toStdString();
     name = "";
-    childsview = std::map<std::string,Component*>();
-    attributesview = std::map<std::string,Attribute*>();
-    ownedchilds = std::map<std::string,Component*>();
+    //childsview = std::map<std::string,Component*>();
+    //attributesview = std::map<std::string,Attribute*>();
     ownedattributes =  std::map<std::string,Attribute*>();
     inViews = std::set<std::string>();
     currentSys = NULL;
+	
+	DBConnector::getInstance();
+	SQLInsertThisComponent();
 }
 
 void Component::createNewUUID() {
@@ -78,27 +81,20 @@ return name;
 
 Component::Component(const Component& c)
 {
-    this->uuid=c.uuid;
-    attributesview=c.attributesview;
-    ownedchilds=c.ownedchilds;
+    uuid=c.uuid;
+    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    //attributesview=c.attributesview;
+    //ownedchilds=c.ownedchilds;
     inViews = c.inViews;
-	currentSys = NULL;
-
-    std::map<std::string,Component*>::iterator it;
-
-    for ( it=ownedchilds.begin() ; it != ownedchilds.end(); it++ )
+	name = c.name;
+	
+	std::map<std::string,Attribute*> attrmap = c.ownedattributes;
+	for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
     {
-        childsview[(*it).first]=ownedchilds[(*it).first];
+		this->addAttribute(*it->second);
     }
-    ownedchilds.clear();
-}
-Component * Component::updateChild(Component * c) {
-    if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
-        return c;
-    Component * c_new = c->clone();
-    changeChild(c_new);
 
-    return c_new;
+	SQLInsertThisComponent();
 }
 
 Component::~Component()
@@ -106,19 +102,15 @@ Component::~Component()
 	//SQLUnloadAttributes();
 	//SQLUnloadChilds();
 
-    while(ownedchilds.size())
-    {
-		//SQLDeleteChild((*ownedchilds.begin()).second);
-        delete (*ownedchilds.begin()).second;
-        ownedchilds.erase(ownedchilds.begin());
-    }
-
-    while(ownedattributes.size())
+	while(ownedattributes.size())// && bLoadedAttributes)
     {
 		//SQLDeleteAttribute((*ownedattributes.begin()).second);
         delete (*ownedattributes.begin()).second;
         ownedattributes.erase(ownedattributes.begin());
     }
+
+	
+	SQLDeleteThisComponent();
 }
 
 void Component::setUUID(std::string uuid)
@@ -154,48 +146,68 @@ void Component::getRawData(QBuffer* buf)
 
 bool Component::addAttribute(std::string name, double val) 
 {
-	SQLLoadAttributes();
-    if(attributesview.find(name)!=attributesview.end()) {
+	//SQLLoadAttributes();
+    /*if(attributesview.find(name)!=attributesview.end()) {
+        return this->changeAttribute(name, val);
+    }*/
+    if(ownedattributes.find(name)!=ownedattributes.end()) {
         return this->changeAttribute(name, val);
     }
-    Attribute  attr = Attribute(name, val);
+
+    Attribute  attr(name, val);
     return this->addAttribute(attr);
+	/*
+    const Attribute* attr = new Attribute(name, val);
+    bool b = this->addAttribute(*attr);
+	delete attr;
+	return b;*/
 }
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
-	SQLLoadAttributes();
-    if(attributesview.find(name)!=attributesview.end()) {
+	//SQLLoadAttributes();
+    /*if(attributesview.find(name)!=attributesview.end()) {
+        return this->changeAttribute(name, val);
+    }*/
+	if(ownedattributes.find(name)!=ownedattributes.end()) {
         return this->changeAttribute(name, val);
     }
-    Attribute  attr = Attribute(name, val);
-    return this->addAttribute(attr);
+    //Attribute  attr = Attribute(name, val);
+    //return this->addAttribute(attr);
+
+	Attribute* attr = new Attribute(name, val);
+    bool b = this->addAttribute(*attr);
+	delete attr;
+	return b;
 }
 
-bool Component::addAttribute(Attribute newattribute)
+bool Component::addAttribute(Attribute &newattribute)
 {
-	SQLLoadAttributes();
-    if(attributesview.find(newattribute.getName())!=attributesview.end())
+	//SQLLoadAttributes();
+    //if(attributesview.find(newattribute.getName())!=attributesview.end())
+	if(ownedattributes.find(newattribute.getName())!=ownedattributes.end())
         return this->changeAttribute(newattribute);
+
     Attribute * a = new Attribute(newattribute);
-    attributesview[newattribute.getName()] = a;
+    //attributesview[newattribute.getName()] = a;
     ownedattributes[newattribute.getName()] = a;
 
-	SQLInsertAttribute(a);
+	a->SetOwner(this);
     return true;
 }
 
 bool Component::changeAttribute(Attribute newattribute)
 {
-	SQLLoadAttributes();
-    if(attributesview.find(newattribute.getName())==attributesview.end()) {
-        return this->addAttribute(newattribute);
-    }
+	//SQLLoadAttributes();
+    //if(attributesview.find(newattribute.getName())==attributesview.end()) {
+    //    return this->addAttribute(newattribute);
+    //}
     if(ownedattributes.find(newattribute.getName())==ownedattributes.end()) {
-        ownedattributes[newattribute.getName()] = new Attribute(*(attributesview[newattribute.getName()]));
-        attributesview[newattribute.getName()] = ownedattributes[newattribute.getName()];
+        ownedattributes[newattribute.getName()] = new Attribute(*(ownedattributes[newattribute.getName()]));
+        //attributesview[newattribute.getName()] = ownedattributes[newattribute.getName()];
     }
-    Attribute * attr = attributesview[newattribute.getName()];
+    //Attribute * attr = attributesview[newattribute.getName()];
+    Attribute * attr = ownedattributes[newattribute.getName()];
     Attribute::AttributeType type = attr->getType();
     attr->setDouble(newattribute.getDouble());
     attr->setDoubleVector(newattribute.getDoubleVector());
@@ -203,7 +215,7 @@ bool Component::changeAttribute(Attribute newattribute)
     attr->setStringVector(newattribute.getStringVector());
     attr->setType(type);
 
-	SQLUpdateAttribute(newattribute.getName(), attr);
+	//SQLUpdateAttribute(newattribute.getName(), attr);
 
     return true;
 }
@@ -220,113 +232,42 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	SQLLoadAttributes();
-    if(attributesview.find(name)!=attributesview.end())
-    {
+	//SQLLoadAttributes();
+    //if(attributesview.find(name)!=attributesview.end())
+    //{
         if(ownedattributes.find(name)!=ownedattributes.end())
         {
             delete ownedattributes[name];
             ownedattributes.erase(name);
-			SQLDeleteAttribute(name);
+			//SQLDeleteAttribute(name);
         }
 
-        attributesview.erase(name);
-        return true;
-    }
+       // attributesview.erase(name);
+      //  return true;
+   // }
 
     return false;
 }
 
 Attribute* Component::getAttribute(std::string name)
 {
-	SQLLoadAttributes();
-    if(attributesview.find(name)==attributesview.end()) {
+	//SQLLoadAttributes();
+    //if(attributesview.find(name)==attributesview.end())
+	if(ownedattributes.find(name)!=ownedattributes.end())
         this->addAttribute(Attribute(name));
-    }
-    return attributesview[name];
+
+    //return attributesview[name];
+    return ownedattributes[name];
 }
 
 const std::map<std::string, Attribute*> & Component::getAllAttributes() const
 {
-    return attributesview;
-}
-
-bool Component::addChild(Component *newcomponent)
-{
-	SQLLoadChilds();
-    if(!newcomponent)
-        return false;
-
-    if(childsview.find(newcomponent->getUUID())!=childsview.end())
-        return false;
-
-    childsview[newcomponent->getUUID()] = newcomponent;
-    ownedchilds[newcomponent->getUUID()] = newcomponent;
-	newcomponent->setCurrentSystem(this->getCurrentSystem());
-
-	if(newcomponent->getType() != SUBSYSTEM)
-	{
-		newcomponent->stateUuid = this->getStateUUID();
-		SQLInsertChild(newcomponent);
-	}
-	else
-	{
-		newcomponent->SQLSetOwner(this);
-	}
-    return true;
+    return ownedattributes;
+    //return attributesview;
 }
 
 Component* Component::clone() {
     return new Component(*this);
-}
-
-bool Component::changeChild(Component *newcomponent)
-{
-	SQLLoadChilds();
-    if(!newcomponent)
-        return false;
-
-    if(ownedchilds.find(newcomponent->getUUID())!=ownedchilds.end())
-	{
-		SQLDeleteChild(newcomponent);
-        delete ownedchilds[newcomponent->getUUID()];
-	}
-	
-    ownedchilds[newcomponent->getUUID()] = newcomponent;
-    childsview[newcomponent->getUUID()] = newcomponent;
-
-	// currentSystem and statuuid are not set - if the change results from 
-	// allocating a new successor state component;
-	newcomponent->stateUuid = this->getStateUUID();
-	SQLInsertChild(newcomponent);
-
-    return true;
-}
-
-bool Component::removeChild(std::string name)
-{
-	SQLLoadChilds();
-    if(childsview.find(name)!=childsview.end())
-    {
-        if(ownedchilds.find(name)!=ownedchilds.end())
-        {
-			SQLDeleteChild(ownedchilds[name]);
-            delete ownedchilds[name];
-            ownedchilds.erase(name);
-        }
-
-        childsview.erase(name);
-        return true;
-    }
-    return false;
-}
-
-Component* Component::getChild(std::string name)
-{
-	SQLLoadChilds();
-    if(childsview.find(name)==childsview.end())
-        return 0;
-    return childsview[name];
 }
 
 void Component::setView(std::string view)
@@ -348,14 +289,7 @@ const set<std::string> &Component::getInViews() const {
     return this->inViews;
 
 }
-std::map<std::string, Component*> Component::getAllChilds()
-{
-    return childsview;
-}
-std::map<std::string, Component*> Component::getAllOwnedChilds()
-{
-	return this->ownedchilds;
-}
+
 
 System * Component::getCurrentSystem() {
     return this->currentSys;
@@ -365,13 +299,16 @@ void Component::setCurrentSystem(System *sys) {
     this->currentSys = sys;
 }
 
+
+
+/*
 void Component::SQLLoadChilds()
 {
 	if(bLoadedChilds) return;
 		bLoadedChilds= true;
 
 	QSqlQuery q;
-	q.prepare("SELECT uuid,name,type,value FROM components WHERE owner LIKE ? AND stateuuid LIKE ?");
+	q.prepare("SELECT uuid,name,type,value FROM components WHERE owner LIKE ? AND stateuuid LIKE ? AND uuid NOT LIKE owner");
 	q.addBindValue(QString::fromStdString(getUUID()));
 	q.addBindValue(QString::fromStdString(getStateUUID()));
 	if(!q.exec())	PrintSqlError(&q);
@@ -393,11 +330,12 @@ void Component::SQLLoadChilds()
 			break;
 		case RASTERDATA: ownedchilds[newuuid] = new RasterData(value);
 			break;
-		case SUBSYSTEM: ownedchilds[newuuid] = new System();
-			ownedchilds[newuuid]->SQLSetOwner(this);
+		case SUBSYSTEM: ownedchilds[newuuid] = new System(this);
+			//ownedchilds[newuuid]->SQLSetOwner(this);
 			break;
 		}
 		ownedchilds[newuuid]->setUUID(newuuid);
+		ownedchilds[newuuid]->stateUuid = this->stateUuid;
 		ownedchilds[newuuid]->setName(q.value(1).toString().toStdString());
 	}
 }
@@ -502,11 +440,16 @@ void Component::SQLInsertDeepCopy()
 	// thus we dont have to create it here again, just go on to the components itself
 	foreach(ComponentPair p, this->ownedchilds)
 	{
-		Component *copy = new Component(*p.second);
+		//Component *copy = new Component(*p.second);
+		Component *copy = p.second->clone();
 		copy->stateUuid = this->getStateUUID();
+
+		this->SQLInsertChild(copy);
+
 		copy->SQLInsertDeepCopy();
 		delete copy;
 	}
+	bLoadedChilds = false;
 
 	foreach(AttributePair p, this->ownedattributes)
 	{
@@ -517,10 +460,12 @@ void Component::SQLInsertDeepCopy()
 		q.addBindValue(QString::fromStdString(p.second->getName()));
 		q.addBindValue(p.second->getType());
 		q.addBindValue(p.second->getValue());
-	if(!q.exec())	PrintSqlError(&q);
+		if(!q.exec())	PrintSqlError(&q);
 	}
+	
+	bLoadedAttributes = false;
 }
-
+*/
 void Component::SQLSetName(std::string name)
 {
 	QSqlQuery q;
@@ -530,17 +475,42 @@ void Component::SQLSetName(std::string name)
 	q.addBindValue(QString::fromStdString(this->getStateUUID()));
 	if(!q.exec())	PrintSqlError(&q);
 }
+
+void Component::SetOwner(Component *owner)
+{
+	SQLSetOwner(owner);
+	currentSys = owner->getCurrentSystem();
+	stateUuid = owner->getStateUUID();
+
+	for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); it++ )
+    {
+		it->second->SetOwner(this);
+    }
+}
 void Component::SQLSetOwner(Component * owner)
 {
-	QSqlQuery q;
-	q.prepare("UPDATE components SET owner=?,stateuuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(owner->getUUID()));
-	q.addBindValue(QString::fromStdString(owner->getStateUUID()));
-	q.addBindValue(QString::fromStdString(this->getUUID()));
-	q.addBindValue(QString::fromStdString(this->getStateUUID()));
-	if(!q.exec())	PrintSqlError(&q);
-}
+	{
+		QSqlQuery q;
+		q.prepare("UPDATE components SET owner=?,stateuuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+		q.addBindValue(QString::fromStdString(owner->getUUID()));
+		q.addBindValue(QString::fromStdString(owner->getStateUUID()));
+		q.addBindValue(QString::fromStdString(this->getUUID()));
+		q.addBindValue(QString::fromStdString(this->getStateUUID()));
+		if(!q.exec())	PrintSqlError(&q);
+	}
 
+	if(owner->getType() == SUBSYSTEM)
+	{
+		QSqlQuery q;
+		q.prepare("UPDATE systems SET stateuuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+		q.addBindValue(QString::fromStdString(owner->getStateUUID()));
+		q.addBindValue(QString::fromStdString(this->getUUID()));
+		q.addBindValue(QString::fromStdString(this->getStateUUID()));
+		if(!q.exec())	PrintSqlError(&q);
+	}
+
+}
+/*
 void Component::ForceAllocation()
 {
 	SQLLoadChilds();
@@ -555,4 +525,29 @@ void Component::ForceDeallocation()
 {
 	SQLUnloadChilds();
 	SQLUnloadAttributes();
+}
+
+*/
+
+void Component::SQLInsertThisComponent()
+{
+	QSqlQuery q;
+	q.prepare("INSERT INTO components (uuid,stateuuid,type,name,value) VALUES (?,?,?,?,?)");
+	q.addBindValue(QString::fromStdString(this->uuid));
+	q.addBindValue(QString::fromStdString(this->stateUuid));
+	q.addBindValue(this->getType());
+	q.addBindValue(QString::fromStdString(this->name));
+	q.addBindValue(this->GetValue());
+
+	if(!q.exec())	PrintSqlError(&q);
+}
+
+void Component::SQLDeleteThisComponent()
+{
+	QSqlQuery q;
+	q.prepare("DELETE FROM components WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(this->uuid));
+	q.addBindValue(QString::fromStdString(this->stateUuid));
+
+	if(!q.exec())	PrintSqlError(&q);
 }

@@ -56,10 +56,11 @@ void Reallocator::run()
     DM::System * sys = this->getData("sys");
 	
     DM::Logger(DM::Debug) << "unload system entries";
-	sys->ForceDeallocation();
+	//sys->ForceDeallocation();
     DM::Logger(DM::Debug) << "load system entries";
-	sys->ForceAllocation();
+	//sys->ForceAllocation();
 	
     DM::Logger(DM::Debug) << "finished reallocation module run";
 }
+
 

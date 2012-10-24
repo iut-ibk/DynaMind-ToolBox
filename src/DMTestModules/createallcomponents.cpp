@@ -37,7 +37,8 @@ CreateAllComponenets::CreateAllComponenets()
 	DM::View faces("Faces", DM::FACE, DM::WRITE);
 	DM::View edges("Edges", DM::EDGE, DM::WRITE);
 	DM::View rasterdata("Rasterdata", DM::RASTERDATA, DM::WRITE);
-	//TODO nodes.addAttribute("nodeattribute");
+
+	//comps.addAttribute("yeahttribute");
 
 	data.push_back(comps);
 	data.push_back(nodes);
@@ -48,20 +49,64 @@ CreateAllComponenets::CreateAllComponenets()
     this->addData("sys",data);
 }
 
-// ugly globals
-typedef std::pair<std::string, int> uuidCompPair;
-std::map<std::string, int> itemMap;
-std::map<std::string, std::vector<std::string>> strValueMap;
-std::map<std::string, std::vector<double>> dblValueMap;
+class ComponentID: public std::pair<std::string,std::pair<std::string,std::string>>
+{
+public:
+	ComponentID(std::string _uuid, std::string _stateUuid, std::string _owner)
+	{
+		first = _uuid;
+		second.first = _stateUuid;
+		second.second = _owner;
+	}
+	ComponentID(DM::Component *c, DM::Component *_owner)
+	{
+		first = c->getUUID();
+		second.first = c->getStateUUID();
+		second.second = _owner->getUUID();
+	}
+	std::string toString()
+	{
+		std::stringstream stream;
+		stream << first;
+		stream << "|";
+		stream << second.first;
+		return stream.str();
+	}
+	std::string getOwner()
+	{
+		return second.second;
+	}
+	std::string getStateUuid()
+	{
+		return second.first;
+	}
+	std::string getUuid()
+	{
+		return first;
+	}
+};
 
-void AddValidation(DM::Component* c)
+class ComponentContent
+{
+public:
+	DM::Components	type;
+	std::vector<std::string> strvalues;
+	std::vector<double> dblValues;
+};
+
+typedef std::pair<ComponentID, ComponentContent> idCompPair;
+std::map<ComponentID, ComponentContent> mapValidation;
+
+void AddValidation(DM::Component* c, DM::Component* owner)
 {
 	if(c==NULL)
 		DM::Logger(DM::Error) << "Add Validation: NULL pointer parameter";
 
 	DM::Logger(DM::Debug) << "Adding to validation list: " << c->getUUID();
 
-	itemMap[c->getUUID()] = (int)c->getType();
+	ComponentID cid(c, owner);
+
+	mapValidation[cid].type = c->getType();
 	
 	std::vector<std::string> sv;
 	std::vector<double> dv;
@@ -73,16 +118,16 @@ void AddValidation(DM::Component* c)
 	case DM::Components::EDGE:
 		sv.push_back(((DM::Edge*)c)->getStartpointName());
 		sv.push_back(((DM::Edge*)c)->getEndpointName());
-		strValueMap[c->getUUID()] = sv;
+		mapValidation[ComponentID(c, owner)].strvalues = sv;
 		break;
 	case DM::Components::FACE:
-		strValueMap[c->getUUID()] = ((DM::Face*)c)->getNodes();
+		mapValidation[ComponentID(c, owner)].strvalues = ((DM::Face*)c)->getNodes();
 		break;
 	case DM::Components::NODE:
 		dv.push_back(((DM::Node*)c)->get()[0]);
 		dv.push_back(((DM::Node*)c)->get()[1]);
 		dv.push_back(((DM::Node*)c)->get()[2]);
-		dblValueMap[c->getUUID()] = dv;
+		mapValidation[ComponentID(c, owner)].dblValues = dv;
 		break;
 	case DM::Components::RASTERDATA:
 		break;
@@ -90,55 +135,55 @@ void AddValidation(DM::Component* c)
 		break;
 	}
 }
-
-
-bool ValidateValues(DM::Component* foundItem, std::string itemUuid, DM::Components itemType, std::string strItem)
+bool ValidateValues(DM::Component* foundItem, idCompPair item)
 {
+	ComponentID itemId = item.first;
+
 	bool success = true;
-	switch(itemType)
+	switch(item.second.type)
 	{
 	case DM::Components::COMPONENT:
 		break;
 	case DM::Components::EDGE:
-		if(strValueMap[itemUuid][0] != ((DM::Edge*)foundItem)->getStartpointName())
+		if(mapValidation[itemId].strvalues[0] != ((DM::Edge*)foundItem)->getStartpointName())
 		{
-			DM::Logger(DM::Error) << "wrong edge start point " << strItem 
+			DM::Logger(DM::Error) << "wrong edge start point " << itemId.toString() 
 				<< " is " << ((DM::Edge*)foundItem)->getStartpointName()
-				<< " expected " << strValueMap[itemUuid][0];
+				<< " expected " << mapValidation[itemId].strvalues[0];
 			success = false;
 		}
-		if(strValueMap[itemUuid][1] != ((DM::Edge*)foundItem)->getEndpointName())
+		if(mapValidation[itemId].strvalues[1] != ((DM::Edge*)foundItem)->getEndpointName())
 		{
-			DM::Logger(DM::Error) << "wrong edge end point " << strItem 
+			DM::Logger(DM::Error) << "wrong edge end point " << itemId.toString()  
 				<< " is " << ((DM::Edge*)foundItem)->getEndpointName()
-				<< " expected " << strValueMap[itemUuid][1];
+				<< " expected " << mapValidation[itemId].strvalues[1];
 			success = false;
 		}
 		break;
 	case DM::Components::FACE:
-		for(unsigned int i=0;i<strValueMap[itemUuid].size();i++)
+		for(unsigned int i=0;i<mapValidation[itemId].strvalues.size();i++)
 		{
 			if(i>((DM::Face*)foundItem)->getNodes().size())
 			{
-				DM::Logger(DM::Error) << "missing face point ["<<i<<"] " << strValueMap[itemUuid][i];
+				DM::Logger(DM::Error) << "missing face point ["<<i<<"] " << mapValidation[itemId].strvalues[i];
 				success = false;
 			}
-			else if(strValueMap[itemUuid][i] != ((DM::Face*)foundItem)->getNodes()[i])
+			else if(mapValidation[itemId].strvalues[i] != ((DM::Face*)foundItem)->getNodes()[i])
 			{
-				DM::Logger(DM::Error) << "wrong face point ["<<i<<"] " << strItem 
+				DM::Logger(DM::Error) << "wrong face point ["<<i<<"] " << itemId.toString()  
 					<< " is " << ((DM::Edge*)foundItem)->getStartpointName()
-					<< " expected " << strValueMap[itemUuid][i];
+					<< " expected " << mapValidation[itemId].strvalues[i];
 				success = false;
 			}
 		}
 		break;
 	case DM::Components::NODE:
-		for(int i=0;i<dblValueMap[itemUuid].size();i++)
+		for(unsigned int i=0;i<mapValidation[itemId].dblValues.size();i++)
 		{
-			if(((DM::Node*)foundItem)->get()[i] != dblValueMap[itemUuid][i])
+			if(((DM::Node*)foundItem)->get()[i] != mapValidation[itemId].dblValues[i])
 			{
 				DM::Logger(DM::Error) << "wrong coordinate value ["<<i<<"]: is "
-					<< ((DM::Node*)foundItem)->get()[i] << " should be " << dblValueMap[itemUuid][i];
+					<< ((DM::Node*)foundItem)->get()[i] << " should be " << mapValidation[itemId].dblValues[i];
 				success = false;
 			}
 		}
@@ -150,52 +195,52 @@ bool ValidateValues(DM::Component* foundItem, std::string itemUuid, DM::Componen
 	}
 	return success;
 }
-
-bool Validate(std::map<std::string,DM::Component*> map)
+bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner)
 {
 	bool success = true;
-
-	foreach(uuidCompPair item, itemMap)
+	
+	foreach(idCompPair item, mapValidation)
 	{
-		std::string itemUuid = item.first;
-		DM::Components itemType = (DM::Components)item.second;
+		ComponentID itemId = item.first;
+		if(itemId.getOwner() == owner->getUUID() && itemId.getStateUuid() == owner->getStateUUID())
+		{
+
+			std::string strItem = itemId.toString();
 		
-		DM::Logger(DM::Debug) << "Checking: " << itemUuid;
+			DM::Logger(DM::Debug) << "Checking: " << strItem;
 
-		std::stringstream strstrItem;
-		strstrItem << "{ uuid="<<itemUuid<< "\ttype="<<(int)itemType<<" }";
-		std::string strItem = strstrItem.str();
+			DM::Component* foundItem = map[itemId.getUuid()];
 
-		DM::Component* foundItem = map[itemUuid];
-
-		if(foundItem==NULL)
-		{
-			DM::Logger(DM::Error) << "missing " << strItem;
-			success = false;
-		}
-		else
-		{
-			DM::Logger(DM::Debug) << "successfully found " << strItem;
-			if(item.second != foundItem->getType())
+			if(foundItem==NULL)
 			{
-				DM::Logger(DM::Error) << "wrong type " << strItem << " is of type " << foundItem->getType();
+				DM::Logger(DM::Error) << "missing " << strItem;
 				success = false;
 			}
 			else
 			{
-				DM::Logger(DM::Debug) << "type is correct " << strItem;
-				if(!ValidateValues(foundItem, itemUuid, itemType, strItem))
+				DM::Logger(DM::Debug) << "successfully found " << strItem;
+				if(item.second.type != foundItem->getType())
+				{
+					DM::Logger(DM::Error) << "wrong type " << strItem << " is of type " << foundItem->getType()
+						<< "should be " << item.second.type;
 					success = false;
+				}
 				else
-					DM::Logger(DM::Debug) << "value is correct " << itemUuid;
+				{
+					DM::Logger(DM::Debug) << "type is correct " << strItem;
+					if(!ValidateValues(foundItem, item))
+						success = false;
+					else
+						DM::Logger(DM::Debug) << "value is correct " << strItem;
+				}
 			}
 		}
 	}
 	return success;
 }
 
-void CreateAllComponenets::run() {
-
+void CreateAllComponenets::run() 
+{	
     DM::Logger(DM::Debug) << "creating components";
 
     DM::System * sys = this->getData("sys");
@@ -210,27 +255,29 @@ void CreateAllComponenets::run() {
 	DM::Node *y = new DM::Node(4,5,6);
 	DM::Node *z = new DM::Node(7,8,9);
 	
-	AddValidation(sys->addComponent(new DM::Component()));
-	AddValidation(sys->addNode(x));
-	AddValidation(sys->addNode(y));
-	AddValidation(sys->addNode(z));
-	AddValidation(sys->addEdge(new DM::Edge(x->getUUID(),y->getUUID())));
+	DM::Component* c = new DM::Component();
+	//c->addAttribute("yeahttribute", 3.141592);
+	AddValidation(sys->addComponent(new DM::Component()), sys);
+	AddValidation(sys->addNode(x), sys);
+	AddValidation(sys->addNode(y), sys);
+	AddValidation(sys->addNode(z), sys);
+	AddValidation(sys->addEdge(new DM::Edge(x->getUUID(),y->getUUID())), sys);
 
 	std::vector<std::string> nodeVector;
 	nodeVector.push_back(x->getUUID());
 	nodeVector.push_back(y->getUUID());
 	nodeVector.push_back(z->getUUID());
-	AddValidation(sys->addFace(new DM::Face(nodeVector)));
+	AddValidation(sys->addFace(new DM::Face(nodeVector)), sys);
 
 	DM::RasterData *raster = new DM::RasterData();
 	raster->setNoValue(1.0);
 	raster->setSize(2.,3.,4.);
 	raster->setValue(0,0,5.);
 	raster->setValue(1,1,6.);
-	AddValidation(sys->addRasterData(raster));
+	AddValidation(sys->addRasterData(raster), sys);
 
-	DM::System *sub = new DM::System();
-	AddValidation(sys->addSubSystem(sub));
+	//DM::System *sub = new DM::System();
+	//AddValidation(sys->addSubSystem(sub), sys);
 
     DM::Logger(DM::Debug) << "creating components ... done";
 }
@@ -253,20 +300,7 @@ CheckAllComponenets::CheckAllComponenets()
 	data.push_back(rasterdata);
 
     this->addData("sys",data);
-
-	//nodes.getAttribute("nodeattribute");
-	//data
-	//	this.addData();
 }
-
-/*
-void CheckCount(int expected, int measured, std::string component)
-{
-	if(expected==measured)	
-		DM::Logger(DM::Debug) << "successfully found all " << component << " (" << QString(measured) << ")";
-	else DM::Logger(DM::Error) << "missing " << component << " (" << QString(measured) << " of " << QString(expected) << ")";
-}
-*/
 
 void CheckAllComponenets::run() {
 
@@ -274,13 +308,57 @@ void CheckAllComponenets::run() {
 
     DM::System * sys = this->getData("sys");
 
-	/*
-	CheckCount(1, sys->getAllComponents().size(), "components");
-	CheckCount(3, sys->getAllNodes().size(), "nodes");
-	CheckCount(1, sys->getAllEdges().size(), "edges");
-	CheckCount(1, sys->getAllFaces().size(), "faces");
-	// TODO check rasterdata 
-	*/
-	if(!Validate(sys->getAllOwnedChilds()))
+	if(!Validate(sys->getAllChilds(), sys))
 		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+}
+
+
+DM_DECLARE_NODE_NAME(SuccessorCheck, Modules)
+SuccessorCheck::SuccessorCheck()
+{
+	std::vector<DM::View> data;
+	DM::View comps("Components", DM::COMPONENT, DM::MODIFY);
+	DM::View nodes("Nodes", DM::NODE, DM::MODIFY);
+	DM::View faces("Faces", DM::FACE, DM::MODIFY);
+	DM::View edges("Edges", DM::EDGE, DM::MODIFY);
+	DM::View rasterdata("Rasterdata", DM::RASTERDATA, DM::MODIFY);
+	//nodes.addAttribute("nodeattribute");
+
+	data.push_back(comps);
+	data.push_back(nodes);
+	data.push_back(faces);
+	data.push_back(edges);
+	data.push_back(rasterdata);
+
+    this->addData("sys",data);
+}
+
+typedef std::pair<std::string, DM::Node*> uuidNodePair;
+typedef std::pair<std::string, DM::Component*> uuidCompPair;
+
+void SuccessorCheck::run() 
+{
+    DM::System * sys = this->getData("sys");
+	
+	DM::Logger(DM::Debug) << "generating successor state";
+	DM::System * sys2 = sys->createSuccessor();
+	foreach(uuidCompPair p,sys2->getAllChilds())
+	{
+		AddValidation(p.second, sys2);
+	}
+
+	// VALIDATE
+	DM::Logger(DM::Debug) << "starting system validation";
+	if(!Validate(sys->getAllChilds(), sys))
+	{
+		DM::Logger(DM::Error) << "system validation failed";
+		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+	}
+	
+	DM::Logger(DM::Debug) << "starting successor validation";
+	if(!Validate(sys2->getAllChilds(), sys2))
+	{
+		DM::Logger(DM::Error) << "successor validation failed";
+		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+	}
 }

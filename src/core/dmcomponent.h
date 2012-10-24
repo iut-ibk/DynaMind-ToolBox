@@ -68,36 +68,44 @@ class DM_HELPER_DLL_EXPORT Component
 private:
 	std::string stateUuid;
 
-	bool bLoadedChilds;
-	bool bLoadedAttributes;
-
+	//bool bLoadedChilds;
+	//bool bLoadedAttributes;
+	/*
 	void SQLLoadChilds();
 	void SQLUnloadChilds();
 	void SQLInsertChild(Component* c);
 	void SQLDeleteChild(Component* c);
-
+	*/
+	void SetOwner(Component *owner);
 	void SQLSetOwner(Component *owner);
 	void SQLSetName(std::string name);
-
+	/*
 	void SQLInsertAttribute(Attribute *newAttribute);
 	void SQLUpdateAttribute(std::string name, Attribute *newAttribute);
 	void SQLDeleteAttribute(std::string name);
 	void SQLLoadAttributes();
 	void SQLUnloadAttributes();
-	
 	void SQLInsertDeepCopy();
+	*/
+
+	void SQLInsertThisComponent();
+	void SQLDeleteThisComponent();
+
+
 	virtual QByteArray GetValue(){return QByteArray();};
 protected:
     std::string uuid;
     std::string name;
-    std::map<std::string,Component*> childsview;
-    std::map<std::string,Attribute*> attributesview;
-    std::map<std::string,Component*> ownedchilds;
+    //std::map<std::string,Component*> childsview;
+    //std::map<std::string,Attribute*> attributesview;
     std::map<std::string,Attribute*> ownedattributes;
     std::set<std::string> inViews;
     System * currentSys;
 
     void removeView(const DM::View & view);
+
+    /** @brief Copies a component, also the UUID is copied! */
+    Component(const Component& s, System* sys);
 public:
     /** @brief create a new component
       *
@@ -108,22 +116,25 @@ public:
     //Component(std::string uuid);
     /** @brief Copies a component, also the UUID is copied! */
     Component(const Component& s);
+
     /** @brief Destructor */
     virtual ~Component();
     /** @brief setUUID */
-    void setUUID(std::string uuid);
+    virtual void setUUID(std::string uuid);
     /** @brief return Type */
 	virtual Components getType();
     /** @brief return UUID */
     std::string getUUID();
     /** @brief return UUID */
     std::string getStateUUID();
+    /** @brief return UUID */
+    //virtual std::string setStateUUID();
     /** @brief adds a new Attribute to the Component.
       *
       * Returns true if the attribute has been added to the Component.
       * Returns false if the attribute with the same name already exists.
       */
-    bool addAttribute(Attribute newattribute);
+    bool addAttribute(Attribute &newattribute);
 
     /** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, double val);
@@ -176,23 +187,14 @@ public:
     void setName(std::string name);
     /** @brief Returns name */
     std::string getName() const;
-    //TODO No idea waht this is
-    bool addChild(Component *newcomponent);
-    bool changeChild(Component *newcomponent);
-    bool removeChild(std::string name);
-    Component* getChild(std::string name);
-    std::map<std::string, Component*> getAllChilds();
-
-    std::map<std::string, Component*> getAllOwnedChilds();
-
-    Component * updateChild(Component * c);
+    
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);
 
 	/** @brief user friendly versions of (de)allocation */
-	void virtual ForceAllocation();
-	void virtual ForceDeallocation();
+	//void virtual ForceAllocation();
+	//void virtual ForceDeallocation();
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }

@@ -34,7 +34,7 @@
 #include <dmporttuple.h>
 
 namespace {
-	/*
+	
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -134,7 +134,7 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Linked Modules";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -166,10 +166,29 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-*/
-TEST_F(TestSimulation,sqltest) {
+
+
+
+TEST_F(TestSimulation,validationtool) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test validation tool";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * mcreator = sim.addModule("CreateAllComponenets");
+    ASSERT_TRUE(mcreator != 0);
+    DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
+    ASSERT_TRUE(mcheck != 0);
+    DM::ModuleLink * l2 = sim.addLink(mcreator->getOutPort("sys"), mcheck->getInPort("sys"));
+    ASSERT_TRUE(l2 != 0);
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}
+
+/*
+TEST_F(TestSimulation,simplesqltest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Reallocation (SQL)";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -179,8 +198,6 @@ TEST_F(TestSimulation,sqltest) {
     ASSERT_TRUE(mallocator != 0);
     DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
     ASSERT_TRUE(mcheck != 0);
-    //DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mcheck->getInPort("sys"));
-    //ASSERT_TRUE(l1 != 0);
     DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mallocator->getInPort("sys"));
     ASSERT_TRUE(l1 != 0);
     DM::ModuleLink * l2 = sim.addLink(mallocator->getOutPort("sys"), mcheck->getInPort("sys"));
@@ -188,6 +205,21 @@ TEST_F(TestSimulation,sqltest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+TEST_F(TestSimulation,sqlsuccessortest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test Successor states (SQL)";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+    DM::Module * mcreator = sim.addModule("CreateAllComponenets");
+    ASSERT_TRUE(mcreator != 0);
+    DM::Module * msucc  = sim.addModule("SuccessorCheck");
+    ASSERT_TRUE(msucc != 0);
+    DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), msucc->getInPort("sys"));
+    ASSERT_TRUE(l1 != 0);
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}*/
 
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {

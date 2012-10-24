@@ -44,10 +44,31 @@ using namespace DM;
 System::System() : Component()
 {
     this->lastModule = 0;
-	stateUuid = QUuid::createUuid().toString().toStdString();
-
+	//stateUuid = QUuid::createUuid().toString().toStdString();
+	currentSys = this;
+	
+    ownedchilds = std::map<std::string,Component*>();
 	DBConnector::getInstance();
 	SQLInsertThisSystem();
+}
+/*
+System::System(Component *owner) : Component()
+{
+    this->lastModule = 0;
+	stateUuid = owner->getStateUUID();
+	SQLInsertThisSystem();
+}*/
+
+void System::setUUID(std::string uuid)
+{
+	QSqlQuery q;
+	q.prepare("UPDATE systems SET uuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(this->uuid));
+	q.addBindValue(QString::fromStdString(this->getStateUUID()));
+	if(!q.exec())	PrintSqlError(&q);
+	
+	Component::setUUID(uuid);
 }
 
 std::string System::getStateUuid()
@@ -93,21 +114,33 @@ DM::View * System::getViewDefinition(string name) {
 
 System::System(const System& s) : Component(s)
 {
+	/*
     subsystems=s.subsystems;
     components = s.components;
     nodes=s.nodes;
     edges=s.edges;
     faces = s.faces;
     rasterdata = s.rasterdata;
-    EdgeNodeMap = s.EdgeNodeMap;
+    EdgeNodeMap = s.EdgeNodeMap;*/
+
+	// rebuild pointers
+	
     viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
     views = s.views;
     lastModule = s.lastModule;
-
-	stateUuid = QUuid::createUuid().toString().toStdString();
-
 	SQLInsertThisSystem();
+	
+	currentSys = this;
+	std::map<std::string,Component*>::iterator it;
+	std::map<std::string,Component*> childmap = s.ownedchilds;
+	
+    for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); it++ )
+    {
+        //childsview[(*it).first]=ownedchilds[(*it).first];
+		this->addChild(it->second->clone());
+    }
+    //ownedchilds.clear();
 }
 
 System::~System()
@@ -120,9 +153,14 @@ System::~System()
     }
     ownedView.clear();
 
-	// if this system is a root system, destroy whole dataset
-	if(currentSys==this)
-		SQLDeleteThisSystem();
+	while(ownedchilds.size())// && bLoadedChilds)
+    {
+		//SQLDeleteChild((*ownedchilds.begin()).second);
+        delete (*ownedchilds.begin()).second;
+        ownedchilds.erase(ownedchilds.begin());
+    }
+
+	SQLDeleteThisSystem();
 }
 
 Components System::getType()
@@ -309,7 +347,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 
 Component * System::getComponent(std::string uuid)
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     if(nodes.find(uuid)!=nodes.end())
         return this->getNode(uuid);
     if(edges.find(uuid)!=edges.end())
@@ -320,18 +358,12 @@ Component * System::getComponent(std::string uuid)
         return this->getSubSystem(uuid);
     if(rasterdata.find(uuid)!=rasterdata.end())
         return rasterdata[uuid];
-    if(components.find(uuid)!=components.end()) {
-        Component * c = components[uuid];
-        if (c->getCurrentSystem() != this) {
-            c = static_cast<Component*>(updateChild(components[uuid]));
-            components[uuid] = c;
-            this->updateViews(c);
-            c->setCurrentSystem(this);
-        }
-        return c;
-    }
-    return 0;
+    if(components.find(uuid)!=components.end())
+        return components[uuid];
+	if(ownedchilds.find(uuid)!=ownedchilds.end())
+		return ownedchilds[uuid];
 
+    return 0;
 }
 
 bool System::removeFace(std::string name)
@@ -349,7 +381,7 @@ bool System::removeFace(std::string name)
 
 std::map<std::string, Component*>  System::getAllComponents()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return this->components;
 }
 
@@ -485,13 +517,13 @@ System* System::getSubSystem(std::string uuid)
 
 std::map<std::string, System*> System::getAllSubSystems()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return subsystems;
 }
 
 std::map<std::string, RasterData*> System::getAllRasterData()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return rasterdata;
 }
 
@@ -505,7 +537,7 @@ System* System::createSuccessor()
 	
     result->addPredecessors(this);
 	result->SQLUpdateStates();
-	result->SQLInsertDeepCopy();
+	//result->SQLInsertDeepCopy();
 
     return result;
 }
@@ -598,30 +630,24 @@ std::vector<System*> System::getPredecessors()
 void System::addPredecessors(System *s)
 {
     this->predecessors.push_back(s);
-	
-	QSqlQuery q;
-	q.prepare("UPDATE systems SET predecessors=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(DBConnector::GetStringList(predecessors));
-	q.addBindValue(QString::fromStdString(getUUID()));
-	q.addBindValue(QString::fromStdString(getStateUUID()));
-	if(!q.exec())	PrintSqlError(&q);
+	this->SQLUpdateStates();
 }
 
 std::map<std::string, Node*> System::getAllNodes()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return nodes;
 }
 
 std::map<std::string, Edge*> System::getAllEdges()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return edges;
 }
 
 std::map<std::string, Face*> System::getAllFaces()
 {
-	SQLLoadComponents();
+	//SQLLoadComponents();
     return faces;
 }
 
@@ -634,7 +660,99 @@ const std::vector<DM::View> System::getViews()  {
     }
     return viewlist;
 }
+bool System::addChild(Component *newcomponent)
+{
+	//SQLLoadChilds();
+    if(!newcomponent)
+        return false;
 
+    //if(childsview.find(newcomponent->getUUID())!=childsview.end())
+    //    return false;
+
+    //childsview[newcomponent->getUUID()] = newcomponent;
+    ownedchilds[newcomponent->getUUID()] = newcomponent;
+
+	newcomponent->SetOwner(this);
+
+	/*
+	if(newcomponent->getType() != SUBSYSTEM)
+	{
+		newcomponent->stateUuid = this->getStateUUID();
+		//SQLInsertChild(newcomponent);
+	}
+	else
+	{
+		// need to set owner first, otherwhise we wont find the former newcomponent
+		newcomponent->SQLSetOwner(this);
+		newcomponent->stateUuid = this->getStateUUID();
+	}*/
+    return true;
+}
+
+bool System::changeChild(Component *newcomponent)
+{
+	//SQLLoadChilds();
+    if(!newcomponent)
+        return false;
+
+    if(ownedchilds.find(newcomponent->getUUID())!=ownedchilds.end())
+	{
+		//SQLDeleteChild(newcomponent);
+        delete ownedchilds[newcomponent->getUUID()];
+	}
+	
+    ownedchilds[newcomponent->getUUID()] = newcomponent;
+    //childsview[newcomponent->getUUID()] = newcomponent;
+
+	// currentSystem and statuuid are not set - if the change results from 
+	// allocating a new successor state component;
+	newcomponent->stateUuid = this->getStateUUID();
+	//SQLInsertChild(newcomponent);
+
+    return true;
+}
+Component * System::updateChild(Component * c) {
+    if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
+        return c;
+    Component * c_new = c->clone();
+    changeChild(c_new);
+
+    return c_new;
+}
+
+bool System::removeChild(std::string name)
+{
+	//SQLLoadChilds();
+    //if(childsview.find(name)!=childsview.end())
+    //{
+        if(ownedchilds.find(name)!=ownedchilds.end())
+        {
+			//SQLDeleteChild(ownedchilds[name]);
+            delete ownedchilds[name];
+            ownedchilds.erase(name);
+			return true;
+        }
+
+        //childsview.erase(name);
+        //return true;
+    //}
+    return false;
+}
+
+Component* System::getChild(std::string name)
+{
+	//SQLLoadChilds();
+    //if(childsview.find(name)==childsview.end())
+    //    return 0;
+   // return childsview[name];
+
+	return ownedchilds[name];
+}
+std::map<std::string, Component*> System::getAllChilds()
+{
+    //return childsview;
+	return ownedchilds;
+}
 /*
 void System::LoadComponents()
 {
@@ -682,24 +800,11 @@ void System::SQLInsertThisSystem()
 {
 	// prepare is mandatory, otherwise exec() will return an error
 	QSqlQuery q;
-	q.prepare("INSERT INTO systems (uuid,stateuuid,predecessors) VALUES (?,?,?)");
+	q.prepare("INSERT INTO systems (uuid,stateuuid) VALUES (?,?)");
 	q.addBindValue(QString::fromStdString(this->getUUID()));
 	q.addBindValue(QString::fromStdString(this->getStateUuid()));
-	q.addBindValue(DBConnector::GetStringList(predecessors));
 	
 	if(!q.exec())	PrintSqlError(&q);
-
-	QSqlQuery q2;
-	q2.prepare("INSERT INTO components (uuid,stateuuid,owner,type,name) VALUES (?,?,?,?,?)");
-	q2.addBindValue(QString::fromStdString(this->getUUID()));
-	q2.addBindValue(QString::fromStdString(this->getStateUuid()));
-	q2.addBindValue(QString::fromStdString(this->getUUID()));
-	q2.addBindValue(SUBSYSTEM);
-	q2.addBindValue(QString::fromStdString(this->getName()));
-
-	if(!q2.exec())	PrintSqlError(&q2);
-
-	//DBConnector::getInstance()->endTransaction();
 }
 void System::SQLDeleteThisSystem()
 {
@@ -708,16 +813,34 @@ void System::SQLDeleteThisSystem()
 	q.addBindValue(QString::fromStdString(this->getUUID()));
 	q.addBindValue(QString::fromStdString(this->getStateUuid()));
 	if(!q.exec())	PrintSqlError(&q);
-
-	QSqlQuery q2;
-	q2.prepare("DELETE FROM components WHERE uuid LIKE ? AND owner like ? AND stateuuid like ?");
-	q2.addBindValue(QString::fromStdString(this->getUUID()));
-	q2.addBindValue(QString::fromStdString(this->getUUID()));
-	q2.addBindValue(QString::fromStdString(this->getStateUuid()));
-	if(!q2.exec())	PrintSqlError(&q2);
 }
+
 void System::SQLUpdateStates()
 {
+	QStringList sucList;
+	foreach(System* sys, sucessors)
+	{
+		sucList.push_back(QString::fromStdString(sys->getStateUUID()));
+	}
+	QStringList preList;
+	foreach(System* sys, predecessors)
+	{
+		preList.push_back(QString::fromStdString(sys->getStateUUID()));
+	}
+
+	QSqlQuery q;
+	q.prepare("UPDATE systems SET sucessors=?,predecessors=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(sucList);
+	q.addBindValue(preList);
+	q.addBindValue(QString::fromStdString(getUUID()));
+	q.addBindValue(QString::fromStdString(getStateUuid()));
+	if(!q.exec())	PrintSqlError(&q);
+}
+
+/*
+void System::SQLSetStateUUID(std::string newstduuid)
+{
+	
 	QSqlQuery q;
 	q.prepare("UPDATE systems SET sucessors=?,predecessors=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(DBConnector::GetStringList(sucessors));
@@ -726,7 +849,9 @@ void System::SQLUpdateStates()
 	q.addBindValue(QString::fromStdString(this->getStateUuid()));
 	if(!q.exec())	PrintSqlError(&q);
 }
+*/
 
+/*
 void System::SQLInsertDeepCopy()
 {
 	Component::SQLInsertDeepCopy();
@@ -741,17 +866,17 @@ void System::SQLLoadComponents()
 		Component *c = item.second;
 		switch(c->getType())
 		{
-		case COMPONENT: components[uuid]  = c;
+		case COMPONENT: components[item.first]  = c;
 			break;
-		case NODE:  nodes[uuid] = (Node*)c;
+		case NODE:  nodes[item.first] = (Node*)c;
 			break;
-		case EDGE: edges[uuid] = (Edge*)c;
+		case EDGE: edges[item.first] = (Edge*)c;
 			break;
-		case FACE: faces[uuid]  = (Face*)c;
+		case FACE: faces[item.first]  = (Face*)c;
 			break;
-		case RASTERDATA: rasterdata[uuid] = (RasterData*)c;
+		case RASTERDATA: rasterdata[item.first] = (RasterData*)c;
 			break;
-		case SUBSYSTEM: subsystems[uuid] = (System*)c;
+		case SUBSYSTEM: subsystems[item.first] = (System*)c;
 			break;
 		}
 	}
@@ -760,53 +885,6 @@ void System::SQLFreeComponents()
 {
 	SQLUnloadChilds();
 }
-
-/*
-void System::SQLLoadSystems()
-{
-	if(bSystems==true)	return;
-		bSystems = true;
-
-	QSqlQuery q1("SELECT sucessors FROM systems WHERE uuid LIKE ?");
-	q1.addBindValue(QString::fromStdString(getUUID()));
-
-	if(q1.next())
-	{
-		QStringList list = q1.value(0).toStringList();
-		foreach(QString item, list)
-		{
-			sucessors.push_back(new System(item.toStdString()));
-		}
-	}
-	QSqlQuery q2("SELECT predecessors FROM systems WHERE uuid LIKE ?");
-	q2.addBindValue(QString::fromStdString(getUUID()));
-
-	if(q2.next())
-	{
-		QStringList list = q2.value(0).toStringList();
-		foreach(QString item, list)
-		{
-			predecessors.push_back(new System(item.toStdString()));
-		}
-	}
-}
-void System::SQLFreeSystems()
-{
-	FreeVector(sucessors);
-	FreeVector(predecessors);
-	bSystems = true;
-}
-*/
-/*
-System::System(std::string uuid):Component(uuid)
-{
-	this->bComponents = false;
-	this->bSystems = false;
-	System();
-	QSqlQuery q("SELECT uuid FROM systems WHERE uuid LIKE ?");
-	q.addBindValue(QString::fromStdString(uuid));
-}
-*/
 
 void System::ForceAllocation()
 {
@@ -831,3 +909,4 @@ void System::ForceDeallocation()
 	rasterdata.clear();
 	subsystems.clear();
 }
+*/

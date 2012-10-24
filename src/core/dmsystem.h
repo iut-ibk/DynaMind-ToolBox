@@ -76,6 +76,8 @@ private:
     std::map<std::string, System*> subsystems;
     std::map<std::string, Component* > components;
 
+    std::map<std::string,Component*> ownedchilds;
+
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;   
 
@@ -96,28 +98,38 @@ private:
 	void SQLInsertThisSystem();
 	void SQLDeleteThisSystem();
 	void SQLUpdateStates();
-
+	//void SQLSetStateUUID(std::string newstduuid);
+	/*
 	void SQLInsertDeepCopy();
 
 	void SQLLoadComponents();
-	void SQLFreeComponents();
+	void SQLFreeComponents();*/
 
-	//void SQLLoadSystems();
-	//void SQLFreeSystems();
+	//TODO No idea waht this is
+    bool addChild(Component *newcomponent);
+    bool changeChild(Component *newcomponent);
+    bool removeChild(std::string name);
+    Component* getChild(std::string name);
+
+    Component * updateChild(Component * c);
 protected:
 	std::string getStateUuid();
 public:
-	
+	std::map<std::string, Component*> getAllChilds();
+
+
 	/** @brief creates a system based on sql data */
-	//System(std::string uuid);
+	//System(Component *owner);
     /** @brief creates a new System */
-    System();      
+    System();
     /** @brief Destructor
      *
      * The destructor also deletes all successor states */
     ~System();
+    /** @brief setUUID */
+    virtual void setUUID(std::string uuid);
 	/** @brief return Type */
-	Components getType();
+	virtual Components getType();
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system*/
@@ -204,9 +216,9 @@ public:
 
     void setAccessedByModule(Module * m);
     Module * getLastModule();
-
+	/*
 	void virtual ForceAllocation();
-	void virtual ForceDeallocation();
+	void virtual ForceDeallocation();*/
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
