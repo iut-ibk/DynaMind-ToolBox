@@ -177,7 +177,7 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     bool startISEnd = true;
     if (pend != pstart)
             startISEnd = false;
-    double A6 = TBVectorData::calculateArea(sys, f)*6.;
+    double A6 = TBVectorData::CalculateArea(sys, f)*6.;
     double x = 0;
     double y = 0;
     for (int i = 0; i< nodes.size()-1;i++) {
@@ -197,7 +197,7 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     return DM::Node(x/A6,y/A6,0);
 }
 
-double TBVectorData::calculateArea(DM::System * sys, DM::Face * f) {
+double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f) {
     //Check if first is last
     if (f->getNodes().size() < 3)
         return 0;

@@ -71,7 +71,7 @@ public:
     /** @brief calculate centroid of a face */
     static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
     /** @brief calculate area of a face */
-    static double calculateArea(DM::System * sys, DM::Face * f);
+    static double CalculateArea(DM::System * sys, DM::Face * f);
 
     static QPolygonF FaceAsQPolgonF(DM::System * sys, DM::Face * f);
 
