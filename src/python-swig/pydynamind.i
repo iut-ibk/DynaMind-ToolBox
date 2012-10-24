@@ -131,17 +131,19 @@ public:
 
 
 
-    std::vector<std::string> getParameterListAsVector();
+    std::vector<std::string> getParameterListAsVector();    
     virtual std::string getParameterAsString(std::string Name);
-
     virtual void updateParameter();
 
 
     void addParameter(std::string name, int type, void * ref, std::string description);
-
     virtual void setParameterValue(std::string name, std::string value);
 
+    virtual std::string getHelpUrl();
+
+
     virtual const char *getClassName();
+
     virtual const char *getFileName();
 };
 

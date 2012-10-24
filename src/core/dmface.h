@@ -49,6 +49,7 @@ class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
     std::vector<std::string> nodes;
+    std::vector<std::vector<std::string> > holes;
 
 public:
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
@@ -59,6 +60,11 @@ public:
     std::vector<std::string> getNodes();
     /** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/
     Component * clone();
+    /** @brief Returns a vector of holes */
+    const std::vector<std::vector<std::string> > & getHoles() const;
+    /** @brief Add hole */
+    void addHole(std::vector<std::string> hole);
+
 
 };
 typedef std::map<std::string, DM::Face*> FaceMap;

@@ -38,6 +38,7 @@ Face::Face(std::vector<std::string> nodes) : Component()
 Face::Face(const Face& e) : Component(e)
 {
     this->nodes=e.nodes;
+    this->holes=e.holes;
 }
 std::vector<std::string> Face::getNodes() {
     return this->nodes;
@@ -46,4 +47,14 @@ std::vector<std::string> Face::getNodes() {
 Component* Face::clone()
 {
     return new Face(*this);
+}
+
+const std::vector<std::vector<std::string> > & Face::getHoles() const
+{
+    return holes;
+}
+
+void Face::addHole(std::vector<std::string> hole)
+{
+    this->holes.push_back(hole);
 }
