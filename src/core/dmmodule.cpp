@@ -72,11 +72,6 @@ void Module::resetParameter() {
         ownedSystems.erase(ownedSystems.begin());
     }
     ownedSystems.clear();
-
-
-
-
-
 }
 Module::Module() {    
     this->uuid = QUuid::createUuid().toString().toStdString();
@@ -90,6 +85,7 @@ Module::Module() {
     resultobserver = std::vector<ResultObserver * >();
     simulation = 0;
     hasBeenExecuted = false;
+    debugMode = false;
 }
 
 Module::~Module() {
@@ -188,13 +184,13 @@ void Module::updateParameter() {
                 //Get View saved in System
                 DM::View * checkView = sys->getViewDefinition(view.getName());
                 if (!checkView) {
-                    DM::Logger(DM::Warning) << "Something weired happend checkview does not exist " << this->getName();
+                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName();
                     sys = 0;
                     break;
                 }
 
-                //Check Type
-                if (checkView->getType() != view.getType()) {
+                //Check Type. Since all components can be used as component it can be used "downwards"
+                if (checkView->getType() != view.getType() && view.getType() != DM::COMPONENT) {
                     DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << " type difference";
                     sys = 0;
                     break;
@@ -204,7 +200,7 @@ void Module::updateParameter() {
                 //Check if attributes are avalible
                 if (c == 0) {
                     sys = 0;
-                    DM::Logger(DM::Warning) << "Something weired happend checkview does not exist " << this->getName();
+                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName();
                     break;
                 }
 				
@@ -642,6 +638,9 @@ DM::System*   Module::getSystemData(const std::string &name)  {
          Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
          return returnSys->createSuccessor();
     }
+    if (isDebugMode()) {
+        Logger(Debug) << "Debug Split " << l->getInPort()->getLinkedDataName();
+        return returnSys->createSuccessor();    }
 
     return returnSys;
 }
@@ -709,6 +708,7 @@ void Module::copyParameterFromOtherModule(Module * m) {
     std::string name_origin = m->getClassName();
     std::string name_this = this->getClassName();
     this->uuid = m->getUuid();
+    this->debugMode = m->isDebugMode();
     if (name_origin.compare(name_this) == 0) {
         std::map<std::string, int> parameterList = m->getParameterList();
         for ( std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
@@ -743,7 +743,16 @@ void Module::setExecuted(bool ex){
     }
 }
 
+    
 std::string Module::getHelpUrl() {
     return "";
 }
+    
+    void Module::setDebugMode(bool mode) {
+        this->debugMode = mode;
+    }
+    
+    bool Module::isDebugMode() {
+        return debugMode;
+    }
 }

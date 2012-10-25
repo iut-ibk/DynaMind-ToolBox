@@ -49,6 +49,7 @@ namespace std {
     %template(nodevector) vector<DM::Node* >;
     %template(facevector) vector<DM::Face* >;
     %template(viewvector) vector<DM::View >;
+    %template(linkvector) vector<DM::LinkAttribute >;
     %template(viewmap) map<string, vector<DM::View* > >;
     %template(componentvector) vector<DM::Component* >;
     %template(attributevector) vector<DM::Attribute* >;
@@ -130,17 +131,19 @@ public:
 
 
 
-    std::vector<std::string> getParameterListAsVector();
+    std::vector<std::string> getParameterListAsVector();    
     virtual std::string getParameterAsString(std::string Name);
-
     virtual void updateParameter();
 
 
     void addParameter(std::string name, int type, void * ref, std::string description);
-
     virtual void setParameterValue(std::string name, std::string value);
 
+    virtual std::string getHelpUrl();
+
+
     virtual const char *getClassName();
+
     virtual const char *getFileName();
 };
 

@@ -152,7 +152,8 @@ void Simulation::loadModulesFromDefaultLocation()
     QVector<QDir> cpv;
     cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
     cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
-
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
+    
     foreach (QDir cp, cpv)  {
         QStringList modulesToLoad = cp.entryList();
         std::cout <<  cp.absolutePath().toStdString() << std::endl;
@@ -410,6 +411,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
         }
 
         m->setName(me.Name.toStdString());
+        m->setDebugMode(me.DebugMode);
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
         foreach(QString s, me.ParemterList.keys()) {
             m->setParameterValue(s.toStdString(), me.ParemterList[s].toStdString());

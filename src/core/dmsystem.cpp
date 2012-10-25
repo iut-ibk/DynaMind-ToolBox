@@ -381,7 +381,16 @@ bool System::removeFace(std::string name)
 
 std::map<std::string, Component*>  System::getAllComponents()
 {
-	//SQLLoadComponents();
+    for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Component * c = it->second;
+        if (c->getCurrentSystem() != this) {
+            c = static_cast<Component*>(updateChild(components[uuid]));
+            components[uuid] = c;
+            this->updateViews(c);
+            c->setCurrentSystem(this);
+        }
+    }
     return this->components;
 }
 
@@ -501,6 +510,11 @@ std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
         names.push_back(it->first);
     }
     return names;
+}
+
+std::vector<std::string> System::getUUIDs(const DM::View  & view)
+{
+    return this->getUUIDsOfComponentsInView(view);
 }
 System* System::getSubSystem(std::string uuid)
 {
@@ -635,19 +649,50 @@ void System::addPredecessors(System *s)
 
 std::map<std::string, Node*> System::getAllNodes()
 {
-	//SQLLoadComponents();
+    //Update All Nodes
+    for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Node * n = it->second;
+        if (n->getCurrentSystem() != this) {
+            n = static_cast<Node*>(updateChild(nodes[uuid]));
+            nodes[uuid] = n;
+            this->updateViews(n);
+            n->setCurrentSystem(this);
+        }
+    }
     return nodes;
 }
 
 std::map<std::string, Edge*> System::getAllEdges()
 {
-	//SQLLoadComponents();
+
+    //Update all Edges
+    for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Edge * e = it->second;
+        if (e->getCurrentSystem() != this) {
+            e = static_cast<Edge*>(updateChild(edges[uuid]));
+            edges[uuid] = e;
+            this->updateViews(e);
+            e->setCurrentSystem(this);
+        }
+    }
     return edges;
 }
 
 std::map<std::string, Face*> System::getAllFaces()
 {
-	//SQLLoadComponents();
+
+    for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Face * f = it->second;
+        if (f->getCurrentSystem() != this) {
+            f = static_cast<Face*>(updateChild(faces[uuid]));
+            faces[uuid] = f;
+            this->updateViews(f);
+            f->setCurrentSystem(this);
+        }
+    }
     return faces;
 }
 

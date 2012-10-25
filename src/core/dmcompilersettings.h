@@ -45,7 +45,7 @@
 #        define DM_HELPER_DLL_LOCAL
 #    endif
 #    define BOOST_ALL_NO_LIB  //disable the msvc automatic boost-lib selection in order to link against the static libs!
-#elif defined(__linux__) || defined(linux) || defined(__linux)
+#else //defined(__linux__) || defined(linux) || defined(__linux)
 #    if __GNUC__ >= 4    // TODO Makefile: add -fvisibility=hidden to compiler parameter in Linux version
 #        define DM_HELPER_DLL_IMPORT __attribute__ ((visibility("default")))
 #        define DM_HELPER_DLL_EXPORT __attribute__ ((visibility("default")))
