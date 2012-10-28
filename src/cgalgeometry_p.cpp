@@ -25,7 +25,10 @@
  */
 
 #include "cgalgeometry_p.h"
-
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_face_base_with_info_2.h>
+#include <CGAL/Polygon_2.h>
 namespace DM {
 
 
@@ -106,6 +109,16 @@ float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
     return numf/denf;
 
 }
+struct FaceInfo2
+{
+  FaceInfo2(){}
+  int nesting_level;
+
+  bool in_domain(){
+    return nesting_level%2 == 1;
+  }
+};
+
 
 bool  CGALGeometry_P::CheckPoints(const Point_2 & p1, const Point_2 & p2) {
     return p1==p2;

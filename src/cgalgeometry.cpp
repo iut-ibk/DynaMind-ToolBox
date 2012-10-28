@@ -26,10 +26,15 @@
 #include "cgalgeometry.h"
 #include <sstream>
 #include <ostream>
+#include <math.h>
+
 #include <QString>
 #include <boost/foreach.hpp>
 #include <iostream>
 #include "cgalgeometry_p.h"
+#include "tbvectordata.h"
+#include "cgaltriangulation.h"
+
 
 namespace DM {
 
@@ -214,37 +219,15 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
     return ret_points;
 }
 
-
-std::vector<Face*> CGALGeometry::ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid){
-    //Create Upper Points
-    std::vector<DM::Node*> opposite_ids;
-    //Face refF = vf[0];
-    foreach(DM::Node * n, vp) {
-        DM::Node * n_new = sys->addNode(n->getX(), n->getY(), n->getZ() + height);
-        opposite_ids.push_back(n_new);
-    }
-
-    //Create Sides
-    std::vector<DM::Face*> newFaces;
-    for (int i = 0; i < vp.size(); i++) {
-        if (i != 0) {
-            std::vector<Node *> f_side;
-            f_side.push_back(vp[i]);
-            f_side.push_back(opposite_ids[i]);
-            f_side.push_back(opposite_ids[i-1]);
-            f_side.push_back(vp[i-1]);
-            f_side.push_back(vp[i]);
-            newFaces.push_back(sys->addFace(f_side, view));
-        }
-
-    }
-
-    //Create Lid
-    if (withLid)
-        newFaces.push_back(sys->addFace(opposite_ids, view));
-
-    return newFaces;
-
-
+std::vector<DM::Node> CGALGeometry::FaceTriangulation(System *sys, Face *f)
+{
+    std::vector<DM::Node> triangles;
+    CGALTriangulation::Triangulation(sys, f, triangles);
+    return triangles;
 }
+
+
+
+
+
 }

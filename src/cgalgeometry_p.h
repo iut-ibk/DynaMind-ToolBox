@@ -63,7 +63,6 @@
 using namespace boost;
 
 typedef CGAL::Quotient<double>                          Number_type;
-//typedef double                                          Number_type;
 typedef CGAL::Cartesian<Number_type>                    Kernel;
 typedef CGAL::Snap_rounding_traits_2<Kernel>            Traits;
 typedef Kernel::Segment_2                               Segment_2;
@@ -71,9 +70,6 @@ typedef Kernel::Point_2                                 Point_2;
 typedef std::list<Segment_2>                            Segment_list_2;
 typedef std::list<Point_2>                              Polyline_2;
 typedef std::list<Polyline_2>                           Polyline_list_2;
-//typedef CGAL::CORE_algebraic_number_traits              Nt_traits;
-//typedef Nt_traits::Rational                             Rational;
-//typedef Nt_traits::Algebraic                            Algebraic;
 typedef CGAL::Arr_segment_traits_2<Kernel>              Traits_2;
 typedef CGAL::Arrangement_2<Traits_2>                   Arrangement_2;
 
@@ -95,6 +91,8 @@ public:
     static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
 
     static float NumberTypetoFloat(Number_type n);
+
+
 
     
     /*static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);

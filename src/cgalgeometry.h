@@ -38,14 +38,12 @@ namespace DM {
 
         static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
 
-        static double CalculateMinBoundingBox(std::vector<Node*> nodes, std::vector<Node> &boundingBox);
+        static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox);
         
-        static std::vector<Node> OffsetPolygon(std::vector<Node*> points, double offset);
+        static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
 
-        /** @brief Extrudes a ploygon. The new faces are added to the system and a vector with pointer to created faces is returned.
-         *  If the option with lid is true the last entry in the return vector points to the lid
-         */
-        static std::vector<Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
+        static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
+
 
     };
 }
