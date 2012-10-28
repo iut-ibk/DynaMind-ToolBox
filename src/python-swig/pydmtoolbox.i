@@ -19,7 +19,6 @@
 %include std_string.i
 %include std_map.i
 
-
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
 %include "../core/dmattribute.h"

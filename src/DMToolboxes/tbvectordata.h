@@ -53,28 +53,77 @@ class View;
 class DM_HELPER_DLL_EXPORT TBVectorData
 {
 public:
+    /** @brief Returns edge identified by n1 and n2*/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters = true);
-    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
-    /**
-      Checks if an edged already exists. Per default the Orintation is matters.
-      If an edge exists the pointer s returned. If not a  null is returned.
+
+    /** @brief Checks if an edged already exists. Per default the Orintation is matters.
+      * If an edge exists the pointer is returned. If not a  null is returned.
       **/
+    static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
+
+     /** @brief Returns pointer to existing not at n or 0 if point doesn't exist */
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
     /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
     static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
-    /** @brief returns pointers of the face */
+
+    /** @brief Returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
 
+    /** @todo Check if works */
     static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
 
-    /** @brief calculate centroid of a face */
+    /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
     static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
+
     /** @brief calculate area of a face */
     static double CalculateArea(DM::System * sys, DM::Face * f);
 
+    /** @brief Creates QPolygonF */
     static QPolygonF FaceAsQPolgonF(DM::System * sys, DM::Face * f);
 
+    /** @brief Extrudes a ploygon. The new faces are added to the system and a vector with pointer to created faces is returned.
+     *  If the option with lid is true the last entry in the return vector points to the lid
+     */
+    static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
+
+    /** @brief Calculates centroid of a 3D plane.
+     *
+     * Therefore the plane is rotated so that z = const. Next the method uses CalculateCentroid to calulcate the centroid of the plane.
+     * After rotating the centroid back it is returned.
+     */
+    static DM::Node CentroidPlane3D(DM::System * sys, DM::Face * f);
+
+    /** @brief Calulates v' = alphas v and returns  v' as new node */
+    static DM::Node RotateVector(double (&R)[3][3], const DM::Node & n1);
+
+    /** @brief Caluates the normal vector */
+    static DM::Node NormalVector(const DM::Node & n1, const DM::Node & n2);
+
+    /** @brief Creates a the normal vectors to given nodes. The created coordinate system is
+     * right handed and orthogonal. First the normal vector e3 = n1 x n2 is calulated. To create a orthogonal system
+     * it just n1 to caluclate e2 and e3 (e2 = n1 x n3; e3 = e2 x e3)
+     * E = e1;e2;e3
+     */
+    static void CorrdinateSystem(const DM::Node & n0, const DM::Node & n1,  const DM::Node & n2, double (&E)[3][3]);
+
+    /** @brief Returns the cirection cosine between two vector */
+    static double DirectionCosine(const DM::Node & n1, const DM::Node & n2);
+
+    /** @brief Returns angle between two vectors */
+    static double AngelBetweenVectors(const DM::Node & n1, const DM::Node & n2);
+
+    /** @brief Creates rotation matrix based on direction cosines, where E_from (e1_from; e2_from; e3_from)
+     * and E_to (e1_to; e2_to; e3_tp)  contain their normal vectors to describe the cooridnate system.
+     * Direction cosines are written in alphas.
+     *
+     * The rotaiton matrix enables the transformation of a vector in to a new coordinate system.
+     * v' = alphas v
+     *
+     * To transform the vector back in it's original system the transposed alpahs matrix can be used. (alphas_inverse = alphas_transpose)
+     * v = alphas_t v'
+     */
+    static void RotationMatrix(const double (&E_from)[3][3], const double (&E_to)[3][3], double (&alphas)[3][3]);
 
 };
 
