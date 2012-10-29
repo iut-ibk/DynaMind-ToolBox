@@ -47,6 +47,8 @@ Component::Component()
     ownedattributes =  std::map<std::string,Attribute*>();
     inViews = std::set<std::string>();
     currentSys = 0;
+    mMutex = new QMutex(QMutex::Recursive);
+
 }
 
 void Component::createNewUUID() {
@@ -72,11 +74,12 @@ void Component::setName(std::string name) {
 
 Component::Component(const Component& c)
 {
+
     this->uuid=c.uuid;
     attributesview=c.attributesview;
     ownedchilds=c.ownedchilds;
     inViews = c.inViews;
-
+    mMutex = new QMutex(QMutex::Recursive);
     std::map<std::string,Component*>::iterator it;
 
     for ( it=ownedchilds.begin() ; it != ownedchilds.end(); it++ )
@@ -109,6 +112,8 @@ Component::~Component()
         delete (*ownedattributes.begin()).second;
         ownedattributes.erase(ownedattributes.begin());
     }
+
+    delete mMutex;
 }
 
 void Component::setUUID(std::string uuid)
@@ -130,6 +135,7 @@ bool Component::addAttribute(std::string name, double val) {
 }
 
 bool Component::addAttribute(std::string name, std::string val) {
+    QMutexLocker locker(mMutex);
     if(attributesview.find(name)!=attributesview.end()) {
         return this->changeAttribute(name, val);
     }
@@ -139,6 +145,8 @@ bool Component::addAttribute(std::string name, std::string val) {
 
 bool Component::addAttribute(Attribute newattribute)
 {
+    QMutexLocker locker(mMutex);
+
     if(attributesview.find(newattribute.getName())!=attributesview.end())
         return this->changeAttribute(newattribute);
     Attribute * a = new Attribute(newattribute);
