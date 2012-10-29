@@ -37,14 +37,16 @@ CreateAllComponenets::CreateAllComponenets()
 	DM::View faces("Faces", DM::FACE, DM::WRITE);
 	DM::View edges("Edges", DM::EDGE, DM::WRITE);
 	DM::View rasterdata("Rasterdata", DM::RASTERDATA, DM::WRITE);
+	DM::View systems("System", DM::SUBSYSTEM, DM::WRITE);
 
-	//comps.addAttribute("yeahttribute");
+	comps.addAttribute("yeahttribute");
 
 	data.push_back(comps);
 	data.push_back(nodes);
 	data.push_back(faces);
 	data.push_back(edges);
 	data.push_back(rasterdata);
+	data.push_back(systems);
 
     this->addData("sys",data);
 }
@@ -250,14 +252,15 @@ void CreateAllComponenets::run()
 	DM::View faces = DM::View("Faces", DM::FACE, DM::WRITE);
 	DM::View edges = DM::View("Edges", DM::EDGE, DM::WRITE);
 	DM::View rasterdata = DM::View("Rasterdata", DM::RASTERDATA, DM::WRITE);
+	DM::View systems = DM::View("System", DM::SUBSYSTEM, DM::WRITE);
 
 	DM::Node *x = new DM::Node(1,2,3);
 	DM::Node *y = new DM::Node(4,5,6);
 	DM::Node *z = new DM::Node(7,8,9);
 	
 	DM::Component* c = new DM::Component();
-	//c->addAttribute("yeahttribute", 3.141592);
-	AddValidation(sys->addComponent(new DM::Component()), sys);
+	c->addAttribute("yeahttribute", 3.141592);
+	AddValidation(sys->addComponent(c), sys);
 	AddValidation(sys->addNode(x), sys);
 	AddValidation(sys->addNode(y), sys);
 	AddValidation(sys->addNode(z), sys);
@@ -268,16 +271,16 @@ void CreateAllComponenets::run()
 	nodeVector.push_back(y->getUUID());
 	nodeVector.push_back(z->getUUID());
 	AddValidation(sys->addFace(new DM::Face(nodeVector)), sys);
-
+	
 	DM::RasterData *raster = new DM::RasterData();
 	raster->setNoValue(1.0);
 	raster->setSize(2.,3.,4.);
 	raster->setValue(0,0,5.);
 	raster->setValue(1,1,6.);
 	AddValidation(sys->addRasterData(raster), sys);
-
-	//DM::System *sub = new DM::System();
-	//AddValidation(sys->addSubSystem(sub), sys);
+	
+	DM::System *sub = new DM::System();
+	AddValidation(sys->addSubSystem(sub), sys);
 
     DM::Logger(DM::Debug) << "creating components ... done";
 }
@@ -291,13 +294,15 @@ CheckAllComponenets::CheckAllComponenets()
 	DM::View faces("Faces", DM::FACE, DM::READ);
 	DM::View edges("Edges", DM::EDGE, DM::READ);
 	DM::View rasterdata("Rasterdata", DM::RASTERDATA, DM::READ);
-	//nodes.addAttribute("nodeattribute");
+	DM::View systems = DM::View("System", DM::SUBSYSTEM, DM::WRITE);
+	comps.addAttribute("yeahttribute");
 
 	data.push_back(comps);
 	data.push_back(nodes);
 	data.push_back(faces);
 	data.push_back(edges);
 	data.push_back(rasterdata);
+	data.push_back(systems);
 
     this->addData("sys",data);
 }
@@ -322,13 +327,15 @@ SuccessorCheck::SuccessorCheck()
 	DM::View faces("Faces", DM::FACE, DM::MODIFY);
 	DM::View edges("Edges", DM::EDGE, DM::MODIFY);
 	DM::View rasterdata("Rasterdata", DM::RASTERDATA, DM::MODIFY);
-	//nodes.addAttribute("nodeattribute");
+	DM::View systems("System", DM::SUBSYSTEM, DM::WRITE);
+	comps.addAttribute("yeahttribute");
 
 	data.push_back(comps);
 	data.push_back(nodes);
 	data.push_back(faces);
 	data.push_back(edges);
 	data.push_back(rasterdata);
+	data.push_back(systems);
 
     this->addData("sys",data);
 }
