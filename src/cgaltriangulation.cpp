@@ -126,6 +126,4 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
         }
     }
 
-    std::cout << "There are " << count << " facets in the domain." << std::endl;
-
 }
