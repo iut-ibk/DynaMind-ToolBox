@@ -390,7 +390,7 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
 
     //Create Sides
     std::vector<DM::Face*> newFaces;
-    for (int i = 0; i < vp.size(); i++) {
+    for (unsigned int i = 0; i < vp.size(); i++) {
         if (i != 0) {
             std::vector<DM::Node *> f_side;
             f_side.push_back(vp[i]);
@@ -404,8 +404,10 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     }
 
     //Create Lid
-    if (withLid)
-        newFaces.push_back(sys->addFace(opposite_ids, view));
+    if (!withLid)
+            return newFaces;
+    reverse(opposite_ids.begin(),opposite_ids.end());
+    newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
 

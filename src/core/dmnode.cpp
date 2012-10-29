@@ -106,6 +106,16 @@ Node Node::operator +(const Node & other) const {
     return(Node(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ()));
 }
 
+Node Node::operator *(const double &val) const
+{
+    return(Node(this->x * val, this->y  * val, this->z * val));
+}
+
+Node Node::operator /(const double &val) const
+{
+    return(Node(this->x / val, this->y  / val, this->z / val));
+}
+
 
 bool Node::compare2d(const Node &other, double round ) const {
 

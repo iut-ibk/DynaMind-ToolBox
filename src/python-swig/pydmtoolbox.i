@@ -12,7 +12,6 @@
     #include <rasterdatahelper.h>
     using namespace std;
     using namespace DM;
-
 %}
 
 %include std_vector.i
