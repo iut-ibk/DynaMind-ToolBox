@@ -95,8 +95,8 @@ private:
 
     DM::Module * lastModule;
 
-	void SQLInsertThisSystem();
-	void SQLDeleteThisSystem();
+	void SQLInsert();
+	void SQLDelete();
 	void SQLUpdateStates();
 	//void SQLSetStateUUID(std::string newstduuid);
 	/*
@@ -117,9 +117,6 @@ protected:
 public:
 	std::map<std::string, Component*> getAllChilds();
 
-
-	/** @brief creates a system based on sql data */
-	//System(Component *owner);
     /** @brief creates a new System */
     System();
     /** @brief Destructor
@@ -220,9 +217,6 @@ public:
 
     void setAccessedByModule(Module * m);
     Module * getLastModule();
-	/*
-	void virtual ForceAllocation();
-	void virtual ForceDeallocation();*/
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

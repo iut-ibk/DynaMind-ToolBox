@@ -79,11 +79,13 @@ private:
     double ** data;
 
     int debugValue;
-    bool isClone;
+    //bool isClone;
 
-    void createNewDataSet();
+    //void createNewDataSet();
 
-
+	void SQLInsert();
+	void SQLDelete();
+	void SQLSetValues();
 };
 typedef std::map<std::string, DM::RasterData*> RasterDataMap;
 }

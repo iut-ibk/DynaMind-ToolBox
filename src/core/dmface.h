@@ -51,9 +51,15 @@ private:
     std::vector<std::string> nodes;
 	virtual QByteArray GetValue();
     std::vector<std::vector<std::string> > holes;
+
+	void SQLInsert();
+	void SQLDelete();
+	void SQLSetValues();
 public:
     /** @brief creates a face based on sql data */
     Face(QByteArray qba);
+    /** @brief destructor */
+    ~Face();
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
     Face(std::vector<std::string> nodes);
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/

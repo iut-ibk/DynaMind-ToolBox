@@ -74,21 +74,45 @@ DBConnector::DBConnector()
 
 	// init table structure
 	QSqlQuery query;
-	if(!query.exec("DROP TABLE IF EXISTS systems, components, attributes")
+	if(!query.exec("DROP TABLE IF EXISTS systems, components, nodes, edges, faces, rasterdatas, attributes")
 	||	!query.exec("CREATE TABLE systems(	uuid varchar(128) NOT NULL, \
 											stateuuid varchar(128) NOT NULL, \
+											owner varchar(128), \
+											name text, \
 											predecessors text, \
 											sucessors text, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE components(uuid varchar(128), \
-											stateuuid varchar(128), \
+	|| !query.exec("CREATE TABLE components(uuid varchar(128) NOT NULL, \
+											stateuuid varchar(128) NOT NULL, \
 											owner varchar(128), \
 											name text, \
-											type tinyint, \
+											PRIMARY KEY (uuid,stateuuid))")
+	|| !query.exec("CREATE TABLE nodes(uuid varchar(128) NOT NULL, \
+											stateuuid varchar(128) NOT NULL, \
+											owner varchar(128), \
+											name text, \
+											x double, y double, z double, \
+											PRIMARY KEY (uuid,stateuuid))")
+	|| !query.exec("CREATE TABLE edges(uuid varchar(128) NOT NULL, \
+											stateuuid varchar(128) NOT NULL, \
+											owner varchar(128), \
+											name text, \
+											start varchar(128), end varchar(128), \
+											PRIMARY KEY (uuid,stateuuid))")
+	|| !query.exec("CREATE TABLE faces(uuid varchar(128) NOT NULL, \
+											stateuuid varchar(128) NOT NULL, \
+											owner varchar(128), \
+											name text, \
+											nodes text, \
+											PRIMARY KEY (uuid,stateuuid))")
+	|| !query.exec("CREATE TABLE rasterdatas(uuid varchar(128) NOT NULL, \
+											stateuuid varchar(128) NOT NULL, \
+											owner varchar(128), \
+											name text, \
 											value blob, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE attributes(uuid varchar(128), \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE attributes(uuid varchar(128) NOT NULL, \
+											owner varchar(128) NOT NULL, \
 											stateuuid varchar(128), \
 											name varchar(128), \
 											type tinyint, \

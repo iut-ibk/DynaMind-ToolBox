@@ -56,6 +56,9 @@ private:
     };
 	
 	virtual QByteArray GetValue();
+	void SQLInsert();
+	void SQLDelete();
+	void SQLSetValues();
 public:
     /** @brief creates a node based on sql data */
     Node(QByteArray qba);
@@ -63,6 +66,8 @@ public:
     Node( double x, double y, double z );
     /** @brief create empty Node object. x, y and z are 0 */
     Node();
+    /** @brief destructor*/
+    ~Node();
     /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
     Node(const Node& n);
 	/** @brief return Type */

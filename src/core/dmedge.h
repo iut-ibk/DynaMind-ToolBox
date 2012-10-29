@@ -46,6 +46,9 @@ namespace DM {
         std::string end;
 		
 		virtual QByteArray GetValue();
+		void SQLInsert();
+		void SQLDelete();
+		void SQLSetValues();
     public:
 		/** @brief creates a node based on sql data */
 		Edge(QByteArray qba);
@@ -53,6 +56,8 @@ namespace DM {
         Edge(std::string startpoint, std::string endpoint);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
         Edge(const Edge& e);
+        /** @brief destructor */
+        ~Edge();
 		/** @brief return Type */
 		Components getType();
         /** @brief return uuid to the startpoint */

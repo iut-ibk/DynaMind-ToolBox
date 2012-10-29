@@ -59,6 +59,7 @@ Node::Node( double x, double y, double z) : Component()
     this->x=x;
     this->y=y;
     this->z=z;
+	SQLInsert();
 }
 
 Node::Node() : Component()
@@ -66,6 +67,7 @@ Node::Node() : Component()
     this->x = 0;
     this->y = 0;
     this->z = 0;
+	SQLInsert();
 }
 
 Node::Node(const Node& n) : Component(n)
@@ -73,8 +75,12 @@ Node::Node(const Node& n) : Component(n)
     x=n.x;
     y=n.y;
     z=n.z;
+	SQLInsert();
 }
-
+Node::~Node()
+{
+	SQLDelete();
+}
 DM::Components Node::getType()
 {
 	return DM::NODE;
@@ -103,16 +109,19 @@ Node::get() const {
 void Node::setX(double x)
 {
     this->x=x;
+	SQLSetValues();
 }
 
 void Node::setY(double y)
 {
     this->y=y;
+	SQLSetValues();
 }
 
 void Node::setZ(double z)
 {
     this->z=z;
+	SQLSetValues();
 }
 
 Component* Node::clone()
@@ -142,4 +151,26 @@ bool Node::compare2d(const Node &other, double round ) const {
 bool Node::compare2d(const Node * other , double round ) const {
 
     return fabs( this->x - other->getX() ) <= round   &&  fabs( this->y - other->getY() ) <= round;
+}
+
+void Node::SQLInsert()
+{
+	SQLInsertAs("node");
+	SQLSetValues();
+}
+void Node::SQLDelete()
+{
+	SQLDeleteAs("node");
+}
+
+void Node::SQLSetValues()
+{
+	QSqlQuery q;
+	q.prepare("UPDATE nodes SET x=?,y=?,z=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(x);
+	q.addBindValue(y);
+	q.addBindValue(z);
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
 }

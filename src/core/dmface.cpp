@@ -47,11 +47,19 @@ QByteArray Face::GetValue()
 Face::Face(std::vector<std::string> nodes) : Component()
 {
     this->nodes = nodes;
+	SQLInsert();
+	SQLSetValues();
 }
 Face::Face(const Face& e) : Component(e)
 {
     this->nodes=e.nodes;
     this->holes=e.holes;
+	SQLInsert();
+	SQLSetValues();
+}
+Face::~Face()
+{
+	SQLDelete();
 }
 std::vector<std::string> Face::getNodes() {
     return this->nodes;
@@ -75,4 +83,30 @@ const std::vector<std::vector<std::string> > & Face::getHoles() const
 void Face::addHole(std::vector<std::string> hole)
 {
     this->holes.push_back(hole);
+}
+
+void Face::SQLInsert()
+{
+	SQLInsertAs("face");
+	SQLSetValues();
+}
+void Face::SQLDelete()
+{
+	SQLDeleteAs("face");
+}
+
+void Face::SQLSetValues()
+{
+	QStringList qnodes;
+	foreach(std::string s, nodes)
+	{
+		qnodes.push_back(QString::fromStdString(s));
+	}
+
+	QSqlQuery q;
+	q.prepare("UPDATE faces SET nodes=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(qnodes);
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
 }

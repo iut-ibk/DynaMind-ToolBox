@@ -29,6 +29,7 @@
 #include <time.h>
 #include <QMutex>
 #include <dmlogger.h>
+#include "dmdbconnector.h"
 
 using namespace DM;
 
@@ -48,7 +49,7 @@ RasterData::RasterData(QByteArray qba):Component()
 	stream >> maxValue;
 
 	stream >> debugValue;
-	stream >> isClone;
+	//stream >> isClone;
 
     data = new double*[width];
     for (long i = 0; i < width; i++) 
@@ -72,7 +73,7 @@ QByteArray RasterData::GetValue()
 	stream << minValue;
 	stream << maxValue;
 	stream << debugValue;
-	stream << isClone;
+	//stream << isClone;
 
     for (long i = 0; i < width; i++) 
 	{
@@ -98,6 +99,8 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
     for (long i = 0; i < width; i++) {
         data[i] = new double[height];
     }
+	SQLInsert();
+	SQLSetValues();
 }
 Components RasterData::getType()
 {
@@ -123,8 +126,8 @@ double RasterData::getValue(long x, long y) const {
 
         return  this->NoValue;
     }
-
 }
+/*
 void RasterData::createNewDataSet() {
     double **data_old = this->data;
     this->minValue = 0;
@@ -142,12 +145,12 @@ void RasterData::createNewDataSet() {
     }
 
     this->isClone = false;
-
-}
+	SQLSetValues();
+}*/
 
 bool RasterData::setValue(long x, long y, double value) {
-    if (this->isClone == true)
-        this->createNewDataSet();
+    //if (this->isClone == true)
+    //    this->createNewDataSet();
 
     if (  x >-1 && y >-1 && x < this->width && y < this->height) {
         data[x][y] = value;
@@ -159,20 +162,17 @@ bool RasterData::setValue(long x, long y, double value) {
         if (maxValue == this->NoValue || maxValue < value) {
             maxValue = value;
         }
-
-
-
+		
+		SQLSetValues();
         return true;
-    } else {
-        return false;
-    }
+    } 
     return false;
 }
 
 RasterData::~RasterData() {
 
-    if (isClone)
-        return;
+//    if (isClone)
+//        return;
     for (long i = 0; i < width; i++) {
         delete[] this->data[i];
     }
@@ -180,7 +180,7 @@ RasterData::~RasterData() {
         delete[] data;
     data = 0;
 
-
+	SQLDelete();
 }
 
 void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
@@ -348,7 +348,10 @@ RasterData::RasterData() : Component() {
     this->width = 0;
     this->height = 0;
     this->data = 0;
-    this->isClone = false;
+    //this->isClone = false;
+
+	SQLInsert();
+	SQLSetValues();
 }
 RasterData::RasterData(const RasterData &other) : Component(other) {
 
@@ -359,8 +362,18 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
     this->minValue = other.minValue;
     this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
-    this->data = other.data;
-    this->isClone = true;
+		
+    data = new double*[width];
+    for (long i = 0; i < width; i++)
+	{
+        data[i] = new double[height];
+		memcpy(data[i],other.data[i],sizeof(double)*height);
+	}
+
+    //this->isClone = true;
+
+	SQLInsert();
+	SQLSetValues();
 
 }
 
@@ -374,20 +387,40 @@ void RasterData::setSize(long width, long height, double cellsize) {
         this->maxValue = -9999;
 
         data = new double*[width];
-        for (long i = 0; i < width; i++) {
+        for (long i = 0; i < width; i++)
             data[i] = new double[height];
-        }
     }
+	SQLSetValues();
 }
 
 void RasterData::clear() {
-    for (int y = 0; y < this->height; y++) {
-        for (int x = 0; x < this->width; x++) {
+    for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
             this->data[x][y] = 0;
-        }
-    }
+
+	SQLSetValues();
 }
 
 Component * RasterData::clone() {
     return new RasterData(*this);
+}
+
+void RasterData::SQLInsert()
+{
+	SQLInsertAs("rasterdata");
+	SQLSetValues();
+}
+void RasterData::SQLDelete()
+{
+	SQLDeleteAs("rasterdata");
+}
+
+void RasterData::SQLSetValues()
+{
+	QSqlQuery q;
+	q.prepare("UPDATE rasterdatas SET value=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(GetValue());
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
 }

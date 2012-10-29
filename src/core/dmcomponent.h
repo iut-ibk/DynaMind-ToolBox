@@ -66,7 +66,6 @@ class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 private:
-	std::string stateUuid;
 
 	//bool bLoadedChilds;
 	//bool bLoadedAttributes;
@@ -88,12 +87,15 @@ private:
 	void SQLInsertDeepCopy();
 	*/
 
-	void SQLInsertThisComponent();
-	void SQLDeleteThisComponent();
-
+	void SQLInsertComponent();
+	void SQLDeleteComponentOnly();
 
 	virtual QByteArray GetValue(){return QByteArray();};
 protected:
+	std::string stateUuid;
+	void SQLInsertAs(std::string type);
+	void SQLDeleteAs(std::string type);
+
     std::string uuid;
     std::string name;
     //std::map<std::string,Component*> childsview;
