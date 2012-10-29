@@ -34,7 +34,7 @@
 #include <dmporttuple.h>
 
 namespace {
-	
+	/*
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -165,7 +165,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ASSERT_TRUE(l2 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-}
+}*/
 
 
 
@@ -185,7 +185,7 @@ TEST_F(TestSimulation,validationtool) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
-/*
+
 TEST_F(TestSimulation,simplesqltest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -207,7 +207,7 @@ TEST_F(TestSimulation,simplesqltest) {
 }
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Test Successor states (SQL)";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -219,7 +219,7 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     ASSERT_TRUE(l1 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-}*/
+}
 
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
