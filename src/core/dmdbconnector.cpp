@@ -49,6 +49,7 @@ void DM::PrintSqlError(QSqlQuery *q)
 
 
 DBConnector* DBConnector::instance = 0;
+int DBConnector::_linkID = 1;
 
 DBConnector::DBConnector()
 {
@@ -74,7 +75,7 @@ DBConnector::DBConnector()
 
 	// init table structure
 	QSqlQuery query;
-	if(!query.exec("DROP TABLE IF EXISTS systems, components, nodes, edges, faces, rasterdatas, attributes")
+	if(!query.exec("DROP TABLE IF EXISTS systems, components, nodes, edges, faces, rasterdatas, rasterfields, attributes")
 	||	!query.exec("CREATE TABLE systems(	uuid varchar(128) NOT NULL, \
 											stateuuid varchar(128) NOT NULL, \
 											owner varchar(128), \
@@ -104,13 +105,17 @@ DBConnector::DBConnector()
 											owner varchar(128), \
 											name text, \
 											nodes text, \
+											holes text, \
 											PRIMARY KEY (uuid,stateuuid))")
 	|| !query.exec("CREATE TABLE rasterdatas(uuid varchar(128) NOT NULL, \
 											stateuuid varchar(128) NOT NULL, \
 											owner varchar(128), \
 											name text, \
 											value blob, \
+											datalink int,\
 											PRIMARY KEY (uuid,stateuuid))")
+	|| !query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
+											x bigint, y bigint, value double)")
 	|| !query.exec("CREATE TABLE attributes(uuid varchar(128) NOT NULL, \
 											owner varchar(128) NOT NULL, \
 											stateuuid varchar(128), \
@@ -132,6 +137,7 @@ DBConnector::DBConnector()
 		db.close();
 		return;
 	}
+
 	Logger(Debug) << "DB created";
 }
 DM::DBConnector* DBConnector::getInstance()
@@ -140,7 +146,10 @@ DM::DBConnector* DBConnector::getInstance()
 		DBConnector::instance = new DBConnector();
 	return DBConnector::instance;
 }
-
+int DBConnector::GetNewLinkID()
+{
+	return DBConnector::_linkID++;
+}
 void DBConnector::beginTransaction()
 {
     QSqlQuery query;

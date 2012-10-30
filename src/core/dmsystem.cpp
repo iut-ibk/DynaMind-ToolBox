@@ -197,8 +197,6 @@ Node* System::addNode(double x, double y, double z,  const DM::View & view) {
         this->views[view.getName()][n->getUUID()] = n;
         n->setView(view.getName());
     }
-
-
     return n;
 }
 Node* System::addNode(Node n,  const DM::View & view) {

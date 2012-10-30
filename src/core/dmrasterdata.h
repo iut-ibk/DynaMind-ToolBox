@@ -37,7 +37,7 @@ class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
 	/** @brief creates a rasterdata based on sql data */
-    RasterData(QByteArray qba);
+    //RasterData(QByteArray qba);
 
     RasterData(long  width, long  height, double  cellSize);
 
@@ -67,7 +67,9 @@ public:
     Component * clone();
 private:
 	
-	virtual QByteArray GetValue();
+	//QByteArray GetValue();
+
+	int linkID;
 
     long width;
     long height;
@@ -76,7 +78,7 @@ private:
 
     double minValue;
     double maxValue;
-    double ** data;
+    //double ** data;
 
     int debugValue;
     //bool isClone;
@@ -85,7 +87,12 @@ private:
 
 	void SQLInsert();
 	void SQLDelete();
-	void SQLSetValues();
+	void SQLDeleteField();
+	void SQLInsertField(long width, long height, double value);
+	double SQLGetValue(long x, long y) const;
+	void SQLSetValue(long x, long y, double value);
+	void SQLUpdateLink(int id);
+	//void SQLSetValues();
 };
 typedef std::map<std::string, DM::RasterData*> RasterDataMap;
 }
