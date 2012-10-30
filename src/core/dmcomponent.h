@@ -66,31 +66,17 @@ class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 private:
-
-	//bool bLoadedChilds;
-	//bool bLoadedAttributes;
-	/*
-	void SQLLoadChilds();
-	void SQLUnloadChilds();
-	void SQLInsertChild(Component* c);
-	void SQLDeleteChild(Component* c);
-	*/
 	void SetOwner(Component *owner);
 	void SQLSetOwner(Component *owner);
-	void SQLSetName(std::string name);
-	/*
-	void SQLInsertAttribute(Attribute *newAttribute);
-	void SQLUpdateAttribute(std::string name, Attribute *newAttribute);
-	void SQLDeleteAttribute(std::string name);
-	void SQLLoadAttributes();
-	void SQLUnloadAttributes();
-	void SQLInsertDeepCopy();
-	*/
+
 
 	void SQLInsertComponent();
 	void SQLDeleteComponentOnly();
 
-	virtual QByteArray GetValue(){return QByteArray();};
+	//virtual QByteArray GetValue(){return QByteArray();};
+	
+	bool HasAttribute(std::string name);
+	void LoadAttribute(std::string name);
 protected:
 	std::string stateUuid;
 	void SQLInsertAs(std::string type);
@@ -98,10 +84,11 @@ protected:
 
     std::string uuid;
     std::string name;
-    //std::map<std::string,Component*> childsview;
-    //std::map<std::string,Attribute*> attributesview;
+
     std::map<std::string,Attribute*> ownedattributes;
+
     std::set<std::string> inViews;
+
     System * currentSys;
 
     void removeView(const DM::View & view);
@@ -114,8 +101,6 @@ public:
       * The default constructor creates a UUID for the component.
      */
     Component();
-    /** @brief creates a component based on sql data */
-    //Component(std::string uuid);
     /** @brief Copies a component, also the UUID is copied! */
     Component(const Component& s);
 
@@ -193,10 +178,6 @@ public:
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);
-
-	/** @brief user friendly versions of (de)allocation */
-	//void virtual ForceAllocation();
-	//void virtual ForceDeallocation();
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }
