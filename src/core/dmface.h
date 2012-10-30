@@ -48,16 +48,19 @@ class Node;
 class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
-    std::vector<std::string> nodes;
-	virtual QByteArray GetValue();
-    std::vector<std::vector<std::string> > holes;
+    //std::vector<std::string> nodes;
+	//virtual QByteArray GetValue();
+    //std::vector<std::vector<std::string> > holes;
 
-	void SQLInsert();
+	void SQLInsert(std::vector<std::string> nodes);
+	void SQLInsert(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
 	void SQLDelete();
-	void SQLSetValues();
+	void SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
+	void SQLSetNodes(std::vector<std::string> nodes);
+	void SQLSetHoles(std::vector<std::vector<std::string>> holes);
 public:
     /** @brief creates a face based on sql data */
-    Face(QByteArray qba);
+    //Face(QByteArray qba);
     /** @brief destructor */
     ~Face();
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
@@ -67,11 +70,11 @@ public:
 	/** @brief return Type */
 	Components getType();
     /** @brief return vector of nodes defining the face */
-    std::vector<std::string> getNodes();
+    std::vector<std::string> getNodes() const;
     /** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/
     Component * clone();
     /** @brief Returns a vector of holes */
-    const std::vector<std::vector<std::string> > & getHoles() const;
+    const std::vector<std::vector<std::string> > getHoles() const;
     /** @brief Add hole */
     void addHole(std::vector<std::string> hole);
 

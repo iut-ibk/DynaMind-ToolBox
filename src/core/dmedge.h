@@ -42,16 +42,16 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
-        std::string start;
-        std::string end;
+        //std::string start;
+        //std::string end;
 		
-		virtual QByteArray GetValue();
-		void SQLInsert();
+		//virtual QByteArray GetValue();
+		void SQLInsert(std::string start, std::string end);
 		void SQLDelete();
-		void SQLSetValues();
+		void SQLSetValues(std::string start, std::string end);
     public:
 		/** @brief creates a node based on sql data */
-		Edge(QByteArray qba);
+		//Edge(QByteArray qba);
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         Edge(std::string startpoint, std::string endpoint);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
@@ -61,13 +61,13 @@ namespace DM {
 		/** @brief return Type */
 		Components getType();
         /** @brief return uuid to the startpoint */
-        std::string getStartpointName();
+        const std::string getStartpointName() const;
         /** @brief return uuid to the endpoint */
-        std::string getEndpointName();
+        const std::string getEndpointName() const;
         /** @brief set uuid to that points to the start node */
-        void setStartpointName(std::string name);
+        void setStartpointName(std::string start);
         /** @brief set uuid that points to the end node */
-        void setEndpointName(std::string name);        
+        void setEndpointName(std::string end);        
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
     };

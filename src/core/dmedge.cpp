@@ -31,7 +31,7 @@
 #include <dmdbconnector.h>
 
 using namespace DM;
-
+/*
 Edge::Edge(QByteArray qba) : Component()
 {
 	QStringList qsl;
@@ -39,16 +39,6 @@ Edge::Edge(QByteArray qba) : Component()
 	stream >> qsl;
 	start = qsl[0].toStdString();
 	end = qsl[1].toStdString();
-
-	/*
-
-	QDataStream stream(&qba, QIODevice::ReadOnly);
-	QString qstart;
-	QString qend;
-	stream>>qstart;
-	stream>>qend;
-	start = qstart.toStdString();
-	end = qend.toStdString();*/
 }
 
 QByteArray Edge::GetValue()
@@ -61,27 +51,20 @@ QByteArray Edge::GetValue()
 	QDataStream stream(&bytes, QIODevice::WriteOnly);
 	stream << qsl;
 	return bytes;
-	/*
-	QByteArray bytes;
-	bytes.append(QString::fromStdString(end));
-	bytes.append(QString::fromStdString(start));
-	return bytes;*/
 }
-
+*/
 Edge::Edge(std::string startpoint, std::string endpoint) : Component()
 {
-    start=startpoint;
-    end=endpoint;
-	SQLInsert();
-	SQLSetValues();
+    //start=startpoint;
+    //end=endpoint;
+	SQLInsert(startpoint,endpoint);
 }
 
 Edge::Edge(const Edge& e) : Component(e)
 {
-    start=e.start;
-    end=e.end;
-	SQLInsert();
-	SQLSetValues();
+    //start=e.start;
+    //end=e.end;
+	SQLInsert(e.getStartpointName(), e.getEndpointName());
 }
 
 Edge::~Edge()
@@ -93,24 +76,54 @@ DM::Components Edge::getType()
 	return DM::EDGE;
 }
 
-std::string Edge::getStartpointName()
+const std::string Edge::getStartpointName() const
 {
-    return start;
+    //return start;
+	QSqlQuery q;
+	q.prepare("SELECT start FROM edges WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
+
+	if(q.next())	
+		return q.value(0).toString().toStdString();
+	return "";
 }
 
-std::string Edge::getEndpointName()
+const std::string Edge::getEndpointName() const
 {
-    return end;
+    //return end;
+	QSqlQuery q;
+	q.prepare("SELECT end FROM edges WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
+
+	if(q.next())	return q.value(0).toString().toStdString();
+	return "";
 }
 
-void Edge::setStartpointName(std::string name) {
-    this->start = name;
-	SQLSetValues();
+void Edge::setStartpointName(std::string start) 
+{
+    //this->start = name;
+	//SQLSetValues();
+	QSqlQuery q;
+	q.prepare("UPDATE edges SET start=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(start));
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
 }
 
-void Edge::setEndpointName(std::string name) {
-    this->end = name;
-	SQLSetValues();
+void Edge::setEndpointName(std::string end) {
+    //this->end = name;
+	//SQLSetValues();
+	QSqlQuery q;
+	q.prepare("UPDATE edges SET end=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(end));
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
 }
 
 Component* Edge::clone()
@@ -118,17 +131,17 @@ Component* Edge::clone()
     return new Edge(*this);
 }
 
-void Edge::SQLInsert()
+void Edge::SQLInsert(const std::string start, const std::string end)
 {
 	SQLInsertAs("edge");
-	SQLSetValues();
+	SQLSetValues(start,end);
 }
 void Edge::SQLDelete()
 {
 	SQLDeleteAs("edge");
 }
 
-void Edge::SQLSetValues()
+void Edge::SQLSetValues(std::string start, std::string end)
 {
 	QSqlQuery q;
 	q.prepare("UPDATE edges SET start=?,end=? WHERE uuid LIKE ? AND stateuuid LIKE ?");

@@ -50,18 +50,19 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
+	/*
     union {
         struct { double x, y, z; };
         double v_[3];
-    };
+    };*/
 	
-	virtual QByteArray GetValue();
-	void SQLInsert();
+	//virtual QByteArray GetValue();
+	void SQLInsert(double x,double y,double z);
 	void SQLDelete();
-	void SQLSetValues();
+	void SQLSetValues(double x,double y,double z);
 public:
     /** @brief creates a node based on sql data */
-    Node(QByteArray qba);
+    //Node(QByteArray qba);
     /** @brief create new Node object defined by x, y and z */
     Node( double x, double y, double z );
     /** @brief create empty Node object. x, y and z are 0 */
@@ -78,8 +79,11 @@ public:
     double getY() const;
     /** @brief return z*/
     double getZ() const;
-    /** @brief return array*/
-    const double * const get() const;
+    /** @brief return array*/	// WARNING: as of sql access, this isnt possible anymore, use get(unsigned int i) instead
+    //const double * const get() const;
+    /** @brief return coordinates*/
+    const double get(unsigned int i) const;
+
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/
