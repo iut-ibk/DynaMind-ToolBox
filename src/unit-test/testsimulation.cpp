@@ -167,7 +167,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }*/
 
-
+/*
 
 TEST_F(TestSimulation,validationtool) {
     ostream *out = &cout;
@@ -207,7 +207,7 @@ TEST_F(TestSimulation,simplesqltest) {
 }
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Successor states (SQL)";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -220,7 +220,86 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+*/
+TEST_F(TestSimulation, SqlFaceOrder)
+{ 
+	ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test face nodes order (SQL)";
 
+	std::vector<std::string> nodesin;
+	nodesin.push_back("one");
+	nodesin.push_back("two");
+	nodesin.push_back("three");	
+	
+	std::vector<std::string> hole0in;
+	hole0in.push_back("0one");
+	hole0in.push_back("0two");
+	hole0in.push_back("0three");
+	std::vector<std::string> hole1in;
+	hole1in.push_back("1one");
+	hole1in.push_back("1two");
+	hole1in.push_back("1three");
+
+	DM::Face* face = new DM::Face(nodesin);
+	face->addHole(hole0in);
+	face->addHole(hole1in);
+
+	std::vector<std::string> nodesout = face->getNodes();
+	std::vector<std::vector<std::string>> holesout =  face->getHoles();
+	    
+	ASSERT_TRUE(nodesin.size() == nodesout.size());
+	for(unsigned int i=0;i<nodesin.size();i++)
+		ASSERT_TRUE(nodesin[i] == nodesout[i]);
+
+	ASSERT_TRUE(holesout.size() == 2);
+
+	for(unsigned int i=0;i<holesout[0].size();i++)
+		ASSERT_TRUE(holesout[0][i] == hole0in[i]);
+	
+	for(unsigned int i=0;i<holesout[1].size();i++)
+		ASSERT_TRUE(holesout[1][i] == hole1in[i]);
+
+	delete face;
+}
+TEST_F(TestSimulation, SQLRasterdata)
+{ 
+	ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test raster data (SQL)";
+
+	DM::RasterData* raster = new DM::RasterData(3,3,10);
+	// check no value
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
+	// insert
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			raster->setValue(x,y,x*1000+y);
+	// check values
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
+	delete raster;
+
+	raster = new DM::RasterData();
+	raster->setSize(3,3,10);
+	// check no value
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
+	// insert
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			raster->setValue(x,y,x*1000+y);
+	// check values
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
+
+	delete raster;
+}
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;
