@@ -31,20 +31,6 @@
 #include "dmdbconnector.h"
 
 using namespace DM;
-/*
-Face::Face(QByteArray qba) : Component()
-{
-	nodes = DBConnector::GetStringVector(qba);
-}
-QByteArray Face::GetValue()
-{
-	QStringList qsl(QList<QString>::fromVector(QVector<QString>::fromStdVector(DBConnector::ToStdString(nodes))));
-	QByteArray bytes;
-	QDataStream stream(&bytes, QIODevice::WriteOnly);
-	stream << qsl;
-	return bytes;
-}
-*/
 
 Face::Face(std::vector<std::string> nodes) : Component()
 {
@@ -61,10 +47,26 @@ Face::~Face()
 {
 	SQLDelete();
 }
+
+std::vector<std::string> GetVector(QByteArray &qba)
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	QString str;
+	std::vector<std::string> result;
+
+	unsigned int len=0;
+	stream >> len;
+	for(unsigned int i=0;i<len;i++)
+	{
+		stream>>str;
+		result.push_back(str.toStdString());
+	}
+	return result;
+}	
+
 std::vector<std::string> Face::getNodes() const
 {
     //return this->nodes;
-
 	std::vector<std::string> nodes;
 	QByteArray list;
 	QSqlQuery q;
@@ -75,7 +77,7 @@ std::vector<std::string> Face::getNodes() const
 	if(q.next())
 	{
 		list = q.value(0).toByteArray();
-		nodes = Converter::GetVector(list);
+		nodes = GetVector(list);
 	}
 	return nodes;
 }
@@ -90,6 +92,30 @@ DM::Components Face::getType()
 	return DM::FACE;
 }
 
+std::vector<std::vector<std::string>> GetVectorVector(QByteArray &qba)
+{
+	QDataStream stream(&qba, QIODevice::ReadWrite);
+	QString str;
+	std::vector<std::vector<std::string>> result;
+
+	unsigned int len=0;
+	stream >> len;
+	for(unsigned int i=0;i<len;i++)
+	{
+		std::vector<std::string> v;
+		unsigned int ilen = 0;
+		stream >> ilen;
+		for(unsigned int i=0;i<ilen;i++)
+		{
+			QString qstr;
+			stream >> qstr;
+			v.push_back(qstr.toStdString());
+		}
+		result.push_back(v);
+	}
+	return result;
+}
+
 const std::vector<std::vector<std::string> > Face::getHoles() const
 {
     //return holes;
@@ -102,7 +128,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())
 	{
-		holes = Converter::GetVectorVector(q.value(0).toByteArray());
+		holes = GetVectorVector(q.value(0).toByteArray());
 	}
 	return holes;
 }
@@ -135,36 +161,52 @@ void Face::SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<
 	SQLSetNodes(nodes);
 	SQLSetHoles(holes);
 }
+
+QByteArray GetBytes(std::vector<std::string> stringvector)
+{
+	QByteArray qba;
+	QDataStream stream(&qba, QIODevice::WriteOnly);
+	
+	stream << stringvector.size();
+	for(unsigned int i=0;i<stringvector.size();i++)
+		stream << QString::fromStdString(stringvector[i]);
+		
+	return qba;
+}
+
 void Face::SQLSetNodes(std::vector<std::string> nodes)
 {
 	QSqlQuery q;
 	q.prepare("UPDATE faces SET nodes=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	//q.addBindValue(qnodes);
-	q.addBindValue(Converter::GetBytes(nodes));
+	q.addBindValue(GetBytes(nodes));
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
 	if(!q.exec())	PrintSqlError(&q);
 }
-void Face::SQLSetHoles(std::vector<std::vector<std::string>> holes)
-{/*
-	QByteArray qdata;
-	QDataStream stream(&qdata, QIODevice::WriteOnly);
 
-	foreach(std::vector<std::string> hole, holes)
+QByteArray GetBytes(std::vector<std::vector<std::string>> stringvectorvector)
+{
+	QByteArray qba;
+	QDataStream stream(&qba, QIODevice::WriteOnly);
+	
+	stream << stringvectorvector.size();
+	for(unsigned int i=0;i<stringvectorvector.size();i++)
 	{
-		QStringList qhole;
-		foreach(std::string holenode, hole)
-			qhole.push_back(QString::fromStdString(holenode));
-		stream << qhole;
+		stream << stringvectorvector[i].size();
+		for(unsigned int j=0;j<stringvectorvector[i].size();j++)
+				stream << QString::fromStdString(stringvectorvector[i][j]);
 	}
-	stream << (int)holes.size();*/
+	return qba;
+}
 
-	
-	
+void Face::SQLSetHoles(std::vector<std::vector<std::string>> holes)
+{
 	QSqlQuery q;
 	q.prepare("UPDATE faces SET holes=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(Converter::GetBytes(holes));
+	q.addBindValue(GetBytes(holes));
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
 	if(!q.exec())	PrintSqlError(&q);
 }
+
+	

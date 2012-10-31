@@ -42,11 +42,19 @@ QByteArray GetBinaryValue(std::vector<double> v)
 
 QByteArray GetBinaryValue(std::vector<std::string> v)
 {
+	std::vector<QString> qv;
+	foreach(std::string item, v)
+		qv.push_back(QString::fromStdString(item));
+
 	QByteArray bytes;
 	QDataStream s(&bytes, QIODevice::WriteOnly);
-	s << QVector<QString>::fromStdVector(DBConnector::ToStdString(v));
+	s << QVector<QString>::fromStdVector(qv);
 	return bytes;
 }
+
+
+
+
 QByteArray GetBinaryValue(std::vector<LinkAttribute> v)
 {
 	QByteArray bytes;
