@@ -53,15 +53,23 @@ int DBConnector::_linkID = 1;
 
 DBConnector::DBConnector()
 {
-	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-	//db.setDatabaseName(":memory:");
-
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName(":memory:");
+	//db.setDatabaseName("testdb");
+	/*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
     db.setDatabaseName(connectionString);
     db.setUserName("root");
     db.setPassword("");
-
+	*/
+	/*
+	QString connectionString = "DRIVER={PostgreSQL Unicode};SERVER=localhost;DATABASE=dynamind;";
+	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+    db.setDatabaseName(connectionString);
+    db.setUserName("postgres");
+    db.setPassword("this00");
+	*/
 	if(!db.open())
 	{
 		Logger(Error) << "Failed to open db connection";
@@ -75,51 +83,58 @@ DBConnector::DBConnector()
 
 	// init table structure
 	QSqlQuery query;
-	if(!query.exec("DROP TABLE IF EXISTS systems, components, nodes, edges, faces, rasterdatas, rasterfields, attributes")
-	||	!query.exec("CREATE TABLE systems(	uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	if(	!query.exec("DROP TABLE IF EXISTS systems")
+	||	!query.exec("DROP TABLE IF EXISTS components")
+	||	!query.exec("DROP TABLE IF EXISTS nodes")
+	||	!query.exec("DROP TABLE IF EXISTS edges")
+	||	!query.exec("DROP TABLE IF EXISTS faces")
+	||	!query.exec("DROP TABLE IF EXISTS rasterdatas")
+	||	!query.exec("DROP TABLE IF EXISTS rasterfields")
+	||	!query.exec("DROP TABLE IF EXISTS attributes")
+	||	!query.exec("CREATE TABLE systems(	uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
 											predecessors text, \
 											sucessors text, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE components(uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE components(uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE nodes(uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE nodes(uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
-											x double, y double, z double, \
+											x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE edges(uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE edges(uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
-											start varchar(128), end varchar(128), \
+											start VARCHAR(128,128), end VARCHAR(128,128), \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE faces(uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE faces(uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
 											nodes text, \
 											holes text, \
 											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE rasterdatas(uuid varchar(128) NOT NULL, \
-											stateuuid varchar(128) NOT NULL, \
-											owner varchar(128), \
+	|| !query.exec("CREATE TABLE rasterdatas(uuid VARCHAR(128,128) NOT NULL, \
+											stateuuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
 											name text, \
-											value blob, \
 											datalink int,\
 											PRIMARY KEY (uuid,stateuuid))")
 	|| !query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
-											x bigint, y bigint, value double)")
-	|| !query.exec("CREATE TABLE attributes(uuid varchar(128) NOT NULL, \
-											owner varchar(128) NOT NULL, \
-											stateuuid varchar(128), \
-											name varchar(128), \
+											x bigint, y bigint, value DOUBLE PRECISION, \
+											PRIMARY KEY (datalink,x,y))")
+	|| !query.exec("CREATE TABLE attributes(uuid VARCHAR(128,128) NOT NULL, \
+											owner VARCHAR(128,128), \
+											stateuuid VARCHAR(128,128), \
+											name VARCHAR(128,128), \
 											type tinyint, \
 											value blob, \
 											PRIMARY KEY (uuid))")
@@ -164,6 +179,8 @@ void DBConnector::endTransaction()
     //if(!query.exec("END TRANSACTION"))
     if(!query.exec("COMMIT"))
          PrintSqlError(&query);
+
+	query.finish();
 }
 
 std::vector<std::string> DBConnector::GetStringVector(QByteArray qba)
