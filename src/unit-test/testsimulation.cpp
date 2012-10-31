@@ -34,7 +34,7 @@
 #include <dmporttuple.h>
 
 namespace {
-	/*
+	
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -48,6 +48,7 @@ TEST_F(TestSimulation,testMemory){
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
     for (int i = 0; i < 5; i++) {
         sim.removeModule(m_uuid);
+		DM::Logger(DM::Standard) << "#" << i;
         m_uuid = sim.addModule("CreateNodes")->getUuid();
         sim.run();
     }
@@ -165,9 +166,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ASSERT_TRUE(l2 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-}*/
-
-/*
+}
 
 TEST_F(TestSimulation,validationtool) {
     ostream *out = &cout;
@@ -220,7 +219,7 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-*/
+
 TEST_F(TestSimulation, SqlFaceOrder)
 { 
 	ostream *out = &cout;
@@ -268,38 +267,130 @@ TEST_F(TestSimulation, SQLRasterdata)
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test raster data (SQL)";
 
-	DM::RasterData* raster = new DM::RasterData(3,3,10);
+	int size = 4;
+	DM::RasterData* raster = new DM::RasterData(size,size,10);
 	// check no value
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "checking default values";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
 			ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
 	// insert
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "inserting values";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
 			raster->setValue(x,y,x*1000+y);
 	// check values
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "checking values";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
+		{
+			DM::Logger(DM::Debug) << "checking " << x << "/" << y;
 			ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
+		}
 	delete raster;
 
 	raster = new DM::RasterData();
-	raster->setSize(3,3,10);
+	raster->setSize(size,size,10);
 	// check no value
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "checking default values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
 			ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
 	// insert
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "inserting values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
 			raster->setValue(x,y,x*1000+y);
 	// check values
-	for(long x=0;x<3;x++)
-		for(long y=0;y<3;y++)
+    DM::Logger(DM::Debug) << "checking values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
 			ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
 
 	delete raster;
 }
+
+TEST_F(TestSimulation, SQLattributes)
+{ 
+	ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test attributes (SQL)";
+
+	double dbl = 13.0;
+	std::vector<double> vecDbl;
+	vecDbl.push_back(dbl);
+	vecDbl.push_back(dbl*2);
+	vecDbl.push_back(dbl*3);
+
+	std::string str = "peter thermometer";
+	std::vector<std::string> vecStr;
+	vecStr.push_back(str);
+	vecStr.push_back(str+str);
+	vecStr.push_back(str+str+str);
+	
+    DM::Logger(DM::Debug) << "checking doubles";
+	// DOUBLE	
+	DM::Attribute* a = new DM::Attribute("fuzzi");
+	a->setDouble(dbl);
+	ASSERT_TRUE(a->getDouble() == dbl);
+	delete a;
+	
+    DM::Logger(DM::Debug) << "checking double vectors";
+	// DOUBLE VECTOR
+	a = new DM::Attribute("fuzzi");
+	a->setDoubleVector(vecDbl);
+	ASSERT_TRUE(a->getDoubleVector() == vecDbl);
+	delete a;
+	
+    DM::Logger(DM::Debug) << "checking strings";
+	// STRING
+	a = new DM::Attribute("fuzzi");
+	a->setString(str);
+	ASSERT_TRUE(a->getString() == str);
+	delete a;
+	
+    DM::Logger(DM::Debug) << "checking string vectors";
+	// STRING VECTOR
+	a = new DM::Attribute("fuzzi");
+	a->setStringVector(vecStr);
+	ASSERT_TRUE(a->getStringVector() == vecStr);
+	delete a;
+	
+    DM::Logger(DM::Debug) << "checking time series";
+	// TIME SERIES
+	a = new DM::Attribute("fuzzi");
+	a->addTimeSeries(vecStr, vecDbl);
+	std::vector<double> vecDblOut;
+	std::vector<std::string> vecStrOut;
+	a->getTimeSeries(&vecStrOut, &vecDblOut);
+	ASSERT_TRUE(vecDblOut == vecDbl);
+	ASSERT_TRUE(vecStrOut == vecStr);
+	delete a;
+	
+    DM::Logger(DM::Debug) << "checking links";
+	// LINKS
+	a = new DM::Attribute("fuzzi");
+
+	std::vector<DM::LinkAttribute> links;
+	DM::LinkAttribute link0 = {"0","a"};
+	DM::LinkAttribute link1 = {"1","b"};
+	DM::LinkAttribute link2 = {"2","c"};
+
+	links.push_back(link0);
+	links.push_back(link1);
+	a->setLinks(links);
+	links.push_back(link2);
+	a->setLink(link2.viewname, link2.uuid);
+	std::vector<DM::LinkAttribute> linksOut = a->getLinks();
+
+	for(unsigned int i=0;i<links.size();i++)
+	{
+		ASSERT_TRUE(linksOut[i].uuid == links[i].uuid);
+		ASSERT_TRUE(linksOut[i].viewname == links[i].viewname);
+	}
+	delete a;
+}
+
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;
