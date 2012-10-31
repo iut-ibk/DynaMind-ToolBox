@@ -66,24 +66,28 @@ public:
 private:
 	std::string _uuid;	// this one is really unique
     std::string name;
+	/*
     double doublevalue;
     std::string stringvalue;
     std::vector<double> doublevector;
-    std::vector<std::string> stringvector;
+    std::vector<std::string> stringvector;*/
     std::set<std::string> inViews;
 
-    AttributeType type;
+    //AttributeType type;
 
 
-	void SQLInsertThis();
+	void SQLInsertThis(AttributeType type);
 	void SQLDeleteThis();
-	void SQLUpdateValue();
+	void SQLUpdateValue(QByteArray qba);
 	void SQLSetOwner(Component* owner);
 	void SQLSetName(std::string newname);
 	void SQLSetType(AttributeType newtype);
+	bool SQLGetValue(QVariant &value);
+	void SQLSetValue(AttributeType type, QVariant value);
+
 
     void setValue(QByteArray bytes);
-    QByteArray getValue();
+    QByteArray getValue(AttributeType type);
 public:
     /** @brief changes the owner **/
 	void SetOwner(Component* owner);
@@ -104,10 +108,7 @@ public:
     /** @brief creates a new string attribute**/
     Attribute(std::string name, std::string val);
     /** @brief creates a new attribute**/
-    //Attribute(std::string name, int type, QByteArray bytes);
-    /** @brief creates a new attribute**/
     Attribute();
-    /** @brief set string value**/
     /** @brief set double value**/
     void setDouble(double v);
     /** @brief get double value**/
@@ -130,7 +131,7 @@ public:
     std::string getName();
     ~Attribute();
     /** @brief return datatype*/
-    AttributeType getType();
+    AttributeType getType() const;
     /** @brief add link object **/
     void setLink(std::string viewname, std::string uuid);
     /** @brief Sets attribute links the existing vector is cleared! **/

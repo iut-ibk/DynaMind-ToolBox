@@ -77,7 +77,6 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
     this->minValue = -9999;
     this->maxValue = -9999;
     this->debugValue = 0;
-	linkID = 0;
 	/*
     data = new double*[width];
     for (long i = 0; i < width; i++) {
@@ -90,7 +89,6 @@ RasterData::RasterData() : Component() {
     this->cellSize = 0;
     this->width = 0;
     this->height = 0;
-	linkID = 0;
     //this->data = 0;
     //this->isClone = false;
 
@@ -106,7 +104,6 @@ RasterData::RasterData(const RasterData &other) : Component(other)
     this->minValue = other.minValue;
     this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
-	linkID = 0;
 	/*
     data = new double*[width];
     for (long i = 0; i < width; i++)
@@ -120,7 +117,10 @@ RasterData::RasterData(const RasterData &other) : Component(other)
 	SQLInsert();
 	SQLInsertField(width, height, NoValue);
 
-	// TODO copy values!!
+	for(long x=0;x<3;x++)
+		for(long y=0;y<3;y++)
+			this->setValue(x,y,other.getValue(x,y));
+
 
 	//SQLSetValues();
 }
@@ -382,6 +382,7 @@ void RasterData::setSize(long width, long height, double cellsize)
         data = new double*[width];
         for (long i = 0; i < width; i++)
             data[i] = new double[height];*/
+
 		SQLInsertField(width, height, NoValue);
     }
 	//SQLSetValues();
@@ -405,18 +406,50 @@ void RasterData::SQLInsert()
 }
 void RasterData::SQLDelete()
 {
-	SQLDeleteAs("rasterdata");
 	SQLDeleteField();
+	SQLDeleteAs("rasterdata");
 }
 void RasterData::SQLInsertField(long width, long height, double value)
 {
-	if(linkID!=0)
+	if(width == 0 || height == 0)
+		return;
+	if(GetLinkID()!=0)
 		return;
 
-	linkID = DBConnector::GetNewLinkID();
+	int linkID = DBConnector::GetNewLinkID();
 	SQLUpdateLink(linkID);
-	QString strQuery = "INSERT INTO rasterfields(datalink,x,y,value) VALUES ";
+	
+	for(long x = 0; x < width; x++)
+	{
+		for(long y = 0; y < height; y++)
+		{
+			QSqlQuery q;
+			q.prepare("INSERT INTO rasterfields(datalink,x,y,value) VALUES (?,?,?,?)");
+			q.addBindValue(linkID);
+			q.addBindValue(x);
+			q.addBindValue(y);
+			q.addBindValue(NoValue);
+			if(!q.exec())	PrintSqlError(&q);
+		}
+	}
 
+	/* SQL variant
+	QString sLinkID = QString::number(linkID);
+	QString sNoValue = QString::number(NoValue);
+
+	QString strQuery = "INSERT INTO rasterfields\n\
+		SELECT "+sLinkID+" AS datalink, 0 AS x, 0 AS y, "+sNoValue+" AS value\n";
+
+	for(long x = 0; x < width; x++)
+	{
+		for(long y = 1; y < height; y++)
+		{
+			strQuery += "UNION SELECT "+sLinkID+","+QString::number(x)+","+QString::number(y)+","+sNoValue+"\n";
+		}
+	}*/
+
+	/* not possible in sql light
+	QString strQuery = "INSERT INTO rasterfields(datalink,x,y,value) VALUES ";
 	for(long x = 0; x < width; x++)
 	{
 		for(long y = 0; y < height; y++)
@@ -434,34 +467,33 @@ void RasterData::SQLInsertField(long width, long height, double value)
 	}
 	// eliminate the last ,
 	strQuery.chop(1);
-
+	*/
+	/*
 	QSqlQuery q;
 	q.prepare(strQuery);
-	if(!q.exec())	PrintSqlError(&q);
+	if(!q.exec())	PrintSqlError(&q);*/
 }
 void RasterData::SQLDeleteField()
 {
-	if(linkID==0)
+	if(GetLinkID()==0)
 		return;
 
 	QSqlQuery q;
 	q.prepare("DELETE FROM rasterfields WHERE datalink=?");
-	q.addBindValue(linkID);
-	linkID = 0;
+	q.addBindValue(GetLinkID());
 	if(!q.exec())	PrintSqlError(&q);
 }
 double RasterData::SQLGetValue(long x, long y) const
 {
 	QSqlQuery q;
 	q.prepare("SELECT value FROM rasterfields WHERE datalink=? AND x=? AND y=?");
-	q.addBindValue(linkID);
+	q.addBindValue(GetLinkID());
 	q.addBindValue(x);
 	q.addBindValue(y);
 	if(!q.exec())	PrintSqlError(&q);
-	if(q.next())
-	{
+	if(q.next())	
 		return q.value(0).toDouble();
-	}
+	
 	return NoValue;
 }
 void RasterData::SQLSetValue(long x, long y, double value)
@@ -469,7 +501,7 @@ void RasterData::SQLSetValue(long x, long y, double value)
 	QSqlQuery q;
 	q.prepare("UPDATE rasterfields SET value = ? WHERE datalink=? AND x=? AND y=?");
 	q.addBindValue(value);
-	q.addBindValue(linkID);
+	q.addBindValue(GetLinkID());
 	q.addBindValue(x);
 	q.addBindValue(y);
 	if(!q.exec())	PrintSqlError(&q);
@@ -484,4 +516,13 @@ void RasterData::SQLUpdateLink(int id)
 	if(!q.exec())	PrintSqlError(&q);
 }
 
-
+int RasterData::GetLinkID() const
+{
+	QSqlQuery q;
+	q.prepare("SELECT datalink FROM rasterdatas WHERE uuid LIKE ? AND stateuuid LIKE ?");
+	q.addBindValue(QString::fromStdString(uuid));
+	q.addBindValue(QString::fromStdString(stateUuid));
+	if(!q.exec())	PrintSqlError(&q);
+	if(q.next())	return q.value(0).toInt();
+	return 0;
+}

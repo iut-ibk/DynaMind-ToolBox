@@ -161,7 +161,7 @@ bool Component::addAttribute(std::string name, std::string val)
 bool Component::addAttribute(Attribute &newattribute)
 {
     //if(ownedattributes.find(name)!=ownedattributes.end())
-	if(HasAttribute(name))
+	if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
 
     Attribute * a = new Attribute(newattribute);
@@ -179,14 +179,34 @@ bool Component::changeAttribute(Attribute newattribute)
 		return this->addAttribute(newattribute);
 
 	Attribute * attr = ownedattributes[newattribute.getName()];
-	// get type before setX, otherwhise setX will overwrite type
 	Attribute::AttributeType type = attr->getType();
-	attr->setDouble(newattribute.getDouble());
-	attr->setDoubleVector(newattribute.getDoubleVector());
-	attr->setString(newattribute.getString());
-	attr->setStringVector(newattribute.getStringVector());
-	attr->setType(type);
-	
+	std::vector<std::string> vecStr;
+	std::vector<double> vecDbl;
+	switch(type)
+	{
+	case Attribute::DOUBLE:
+		attr->setDouble(newattribute.getDouble());
+		break;
+	case Attribute::STRING:
+		attr->setString(newattribute.getString());
+		break;
+	case Attribute::DOUBLEVECTOR:
+		attr->setDoubleVector(newattribute.getDoubleVector());
+		break;
+	case Attribute::STRINGVECTOR:
+		attr->setStringVector(newattribute.getStringVector());
+		break;
+	case Attribute::TIMESERIES:
+		newattribute.getTimeSeries(&vecStr, &vecDbl);
+		attr->addTimeSeries(vecStr,vecDbl);
+		break;
+	case Attribute::LINK:
+		attr->setLinks(newattribute.getLinks());
+		break;
+	default:	
+		attr->setType(type);
+		break;
+	}
     return true;
 }
 
@@ -278,7 +298,7 @@ void Component::SQLSetOwner(Component * owner)
 		case EDGE:		strType = "edges";	break;
 		case FACE:		strType = "faces";	break;
 		case SUBSYSTEM:	strType = "systems";	break;
-		case RASTERDATA:strType = "rasters";	break;
+		case RASTERDATA:strType = "rasterdatas";	break;
 	}
 	{
 		QSqlQuery q;

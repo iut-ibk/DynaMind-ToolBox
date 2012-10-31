@@ -69,7 +69,7 @@ private:
 	
 	//QByteArray GetValue();
 
-	int linkID;
+	//int linkID;
 
     long width;
     long height;
@@ -92,6 +92,8 @@ private:
 	double SQLGetValue(long x, long y) const;
 	void SQLSetValue(long x, long y, double value);
 	void SQLUpdateLink(int id);
+
+	int GetLinkID() const;
 	//void SQLSetValues();
 };
 typedef std::map<std::string, DM::RasterData*> RasterDataMap;
