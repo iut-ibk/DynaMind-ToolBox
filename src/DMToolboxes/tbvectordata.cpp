@@ -24,6 +24,8 @@
  *
  */
 #include <math.h>
+#include <algorithm>
+
 
 #include "tbvectordata.h"
 #include "dm.h"
