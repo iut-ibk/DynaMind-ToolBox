@@ -176,7 +176,6 @@ Component * System::addComponent(Component* c, const DM::View & view)
 }
 Component * System::getComponent(std::string uuid)
 {
-	//SQLLoadComponents();
     if(nodes.find(uuid)!=nodes.end())
         return this->getNode(uuid);
     if(edges.find(uuid)!=edges.end())
@@ -239,14 +238,13 @@ Node* System::getNode(std::string uuid)
 {
     if(nodes.find(uuid)==nodes.end())
         return 0;
-    Node * n = nodes[uuid];
+    /*Node * n = nodes[uuid];
     if (n->getCurrentSystem() != this) {
         n = static_cast<Node*>(updateChild(nodes[uuid]));
         nodes[uuid] = n;
         this->updateViews(n);
         n->setCurrentSystem(this);
-    }
-
+    }*/
     return nodes[uuid];
 }
 bool System::removeNode(std::string name)
@@ -323,14 +321,14 @@ Edge* System::getEdge(std::string uuid)
 {
     if(edges.find(uuid)==edges.end())
         return 0;
-    Edge * e = edges[uuid];
+    /*Edge * e = edges[uuid];
     if (e->getCurrentSystem() != this) {
         e = static_cast<Edge*>(updateChild(edges[uuid]));
         edges[uuid] = e;
         this->updateViews(e);
         e->setCurrentSystem(this);
     }
-
+	*/
     return edges[uuid];
 }
 Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
@@ -384,13 +382,13 @@ Face* System::getFace(std::string uuid)
 {
     if(faces.find(uuid)==faces.end())
         return 0;
-    Face * f = faces[uuid];
+    /*Face * f = faces[uuid];
     if (f->getCurrentSystem() != this) {
         f = static_cast<Face*>(updateChild(faces[uuid]));
         faces[uuid] = f;
         this->updateViews(f);
         f->setCurrentSystem(this);
-    }
+    }*/
     return faces[uuid];
 
 }
@@ -426,7 +424,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 
 std::map<std::string, Component*>  System::getAllComponents()
 {
-    for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
+    /*for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
         std::string uuid = it->first;
         DM::Component * c = it->second;
         if (c->getCurrentSystem() != this) {
@@ -435,13 +433,13 @@ std::map<std::string, Component*>  System::getAllComponents()
             this->updateViews(c);
             c->setCurrentSystem(this);
         }
-    }
+    }*/
     return this->components;
 }
 std::map<std::string, Node*> System::getAllNodes()
 {
     //Update All Nodes
-    for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    /*for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
         std::string uuid = it->first;
         DM::Node * n = it->second;
         if (n->getCurrentSystem() != this) {
@@ -450,14 +448,13 @@ std::map<std::string, Node*> System::getAllNodes()
             this->updateViews(n);
             n->setCurrentSystem(this);
         }
-    }
+    }*/
     return nodes;
 }
 std::map<std::string, Edge*> System::getAllEdges()
 {
-
     //Update all Edges
-    for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
+    /*for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
         std::string uuid = it->first;
         DM::Edge * e = it->second;
         if (e->getCurrentSystem() != this) {
@@ -466,13 +463,12 @@ std::map<std::string, Edge*> System::getAllEdges()
             this->updateViews(e);
             e->setCurrentSystem(this);
         }
-    }
+    }*/
     return edges;
 }
 std::map<std::string, Face*> System::getAllFaces()
 {
-
-    for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
+    /*for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
         std::string uuid = it->first;
         DM::Face * f = it->second;
         if (f->getCurrentSystem() != this) {
@@ -481,7 +477,7 @@ std::map<std::string, Face*> System::getAllFaces()
             this->updateViews(f);
             f->setCurrentSystem(this);
         }
-    }
+    }*/
     return faces;
 }
 
@@ -508,8 +504,6 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
     }
 
     subsystems[newsystem->getUUID()]=newsystem;
-
-
 
     if (!view.getName().empty()) {
         this->views[view.getName()][newsystem->getUUID()] = newsystem;
@@ -686,7 +680,6 @@ void System::addPredecessors(System *s)
 
 bool System::addChild(Component *newcomponent)
 {
-	//SQLLoadChilds();
     if(!newcomponent)
         return false;
 
