@@ -92,11 +92,11 @@ DM::Components Face::getType()
 	return DM::FACE;
 }
 
-std::vector<std::vector<std::string>> GetVectorVector(QByteArray &qba)
+std::vector<std::vector<std::string> > GetVectorVector(QByteArray &qba)
 {
 	QDataStream stream(&qba, QIODevice::ReadWrite);
 	QString str;
-	std::vector<std::vector<std::string>> result;
+	std::vector<std::vector<std::string> > result;
 
 	unsigned int len=0;
 	stream >> len;
@@ -120,7 +120,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 {
     //return holes;
 
-	std::vector<std::vector<std::string>> holes;
+	std::vector<std::vector<std::string> > holes;
 	QSqlQuery q;
 	q.prepare("SELECT holes FROM faces WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(uuid));
@@ -135,7 +135,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 
 void Face::addHole(std::vector<std::string> hole)
 {
-	std::vector<std::vector<std::string>> holes = getHoles();
+	std::vector<std::vector<std::string> > holes = getHoles();
 	holes.push_back(hole);
 	SQLSetHoles(holes);
     //this->holes.push_back(hole);
@@ -146,7 +146,7 @@ void Face::SQLInsert(std::vector<std::string> nodes)
 	SQLInsertAs("face");
 	SQLSetNodes(nodes);
 }
-void Face::SQLInsert(std::vector<std::string> nodes, std::vector<std::vector<std::string>> holes)
+void Face::SQLInsert(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes)
 {
 	SQLInsertAs("face");
 	SQLSetValues(nodes, holes);
@@ -156,7 +156,7 @@ void Face::SQLDelete()
 	SQLDeleteAs("face");
 }
 
-void Face::SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string>> holes)
+void Face::SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes)
 {
 	SQLSetNodes(nodes);
 	SQLSetHoles(holes);
@@ -184,7 +184,7 @@ void Face::SQLSetNodes(std::vector<std::string> nodes)
 	if(!q.exec())	PrintSqlError(&q);
 }
 
-QByteArray GetBytes(std::vector<std::vector<std::string>> stringvectorvector)
+QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
 {
 	QByteArray qba;
 	QDataStream stream(&qba, QIODevice::WriteOnly);
@@ -199,7 +199,7 @@ QByteArray GetBytes(std::vector<std::vector<std::string>> stringvectorvector)
 	return qba;
 }
 
-void Face::SQLSetHoles(std::vector<std::vector<std::string>> holes)
+void Face::SQLSetHoles(std::vector<std::vector<std::string> > holes)
 {
 	QSqlQuery q;
 	q.prepare("UPDATE faces SET holes=? WHERE uuid LIKE ? AND stateuuid LIKE ?");

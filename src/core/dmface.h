@@ -57,7 +57,7 @@ private:
 	void SQLDelete();
 	void SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
 	void SQLSetNodes(std::vector<std::string> nodes);
-	void SQLSetHoles(std::vector<std::vector<std::string>> holes);
+	void SQLSetHoles(std::vector<std::vector<std::string> > holes);
 public:
     /** @brief creates a face based on sql data */
     //Face(QByteArray qba);

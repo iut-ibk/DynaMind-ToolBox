@@ -245,7 +245,7 @@ TEST_F(TestSimulation, SqlFaceOrder)
 	face->addHole(hole1in);
 
 	std::vector<std::string> nodesout = face->getNodes();
-	std::vector<std::vector<std::string>> holesout =  face->getHoles();
+	std::vector<std::vector<std::string> > holesout =  face->getHoles();
 	    
 	ASSERT_TRUE(nodesin.size() == nodesout.size());
 	for(unsigned int i=0;i<nodesin.size();i++)
