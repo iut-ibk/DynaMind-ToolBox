@@ -50,6 +50,54 @@ System::System() : Component()
 	DBConnector::getInstance();
 	SQLInsert();
 }
+System::System(const System& s) : Component(s)
+{
+	/*
+    subsystems=s.subsystems;
+    components = s.components;
+    nodes=s.nodes;
+    edges=s.edges;
+    faces = s.faces;
+    rasterdata = s.rasterdata;
+    EdgeNodeMap = s.EdgeNodeMap;*/
+
+	// rebuild pointers
+	
+    viewdefinitions = s.viewdefinitions;
+    predecessors = s.predecessors;
+    views = s.views;
+    lastModule = s.lastModule;
+	SQLInsert();
+	
+	currentSys = this;
+	std::map<std::string,Component*>::iterator it;
+	std::map<std::string,Component*> childmap = s.ownedchilds;
+	
+    for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); it++ )
+    {
+        //childsview[(*it).first]=ownedchilds[(*it).first];
+		this->addChild(it->second->clone());
+    }
+    //ownedchilds.clear();
+}
+System::~System()
+{
+	while(ownedchilds.size())// && bLoadedChilds)
+    {
+		//SQLDeleteChild((*ownedchilds.begin()).second);
+        delete (*ownedchilds.begin()).second;
+        ownedchilds.erase(ownedchilds.begin());
+    }
+
+	foreach (DM::System * sys, sucessors)
+        if (sys)	delete sys;
+    foreach (DM::View * v, ownedView)
+        delete v;
+
+    ownedView.clear();
+
+	SQLDelete();
+}
 
 void System::setUUID(std::string uuid)
 {
@@ -104,55 +152,6 @@ DM::View * System::getViewDefinition(string name) {
     return viewdefinitions[name];
 }
 
-System::System(const System& s) : Component(s)
-{
-	/*
-    subsystems=s.subsystems;
-    components = s.components;
-    nodes=s.nodes;
-    edges=s.edges;
-    faces = s.faces;
-    rasterdata = s.rasterdata;
-    EdgeNodeMap = s.EdgeNodeMap;*/
-
-	// rebuild pointers
-	
-    viewdefinitions = s.viewdefinitions;
-    predecessors = s.predecessors;
-    views = s.views;
-    lastModule = s.lastModule;
-	SQLInsert();
-	
-	currentSys = this;
-	std::map<std::string,Component*>::iterator it;
-	std::map<std::string,Component*> childmap = s.ownedchilds;
-	
-    for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); it++ )
-    {
-        //childsview[(*it).first]=ownedchilds[(*it).first];
-		this->addChild(it->second->clone());
-    }
-    //ownedchilds.clear();
-}
-
-System::~System()
-{
-	while(ownedchilds.size())// && bLoadedChilds)
-    {
-		//SQLDeleteChild((*ownedchilds.begin()).second);
-        delete (*ownedchilds.begin()).second;
-        ownedchilds.erase(ownedchilds.begin());
-    }
-
-	foreach (DM::System * sys, sucessors)
-        if (sys)	delete sys;
-    foreach (DM::View * v, ownedView)
-        delete v;
-
-    ownedView.clear();
-
-	SQLDelete();
-}
 
 Components System::getType()
 {
@@ -174,6 +173,38 @@ Component * System::addComponent(Component* c, const DM::View & view)
     this->updateViews(c);
 
     return c;
+}
+Component * System::getComponent(std::string uuid)
+{
+	//SQLLoadComponents();
+    if(nodes.find(uuid)!=nodes.end())
+        return this->getNode(uuid);
+    if(edges.find(uuid)!=edges.end())
+        return this->getEdge(uuid);
+    if(faces.find(uuid)!=faces.end())
+        return this->getFace(uuid);
+    if(subsystems.find(uuid)!=subsystems.end())
+        return this->getSubSystem(uuid);
+    if(rasterdata.find(uuid)!=rasterdata.end())
+        return rasterdata[uuid];
+    if(components.find(uuid)!=components.end())
+        return components[uuid];
+	if(ownedchilds.find(uuid)!=ownedchilds.end())
+		return ownedchilds[uuid];
+
+    return 0;
+}
+bool System::removeComponent(std::string name)
+{
+    //check if name is a edge instance
+    if(components.find(name)==components.end())
+        return false;
+
+    if(!removeChild(name))
+        return false;
+
+    components.erase(name);
+    return true;
 }
 
 Node* System::addNode(Node* node)
@@ -217,6 +248,40 @@ Node* System::getNode(std::string uuid)
     }
 
     return nodes[uuid];
+}
+bool System::removeNode(std::string name)
+{
+    //check if name is a node instance
+    if(nodes.find(name)==nodes.end())
+        return false;
+
+    //remove node
+    if(!removeChild(name))
+        return false;
+
+    nodes.erase(name);
+
+    //find all connected edges and remove them
+    std::vector<std::string> connectededges;
+
+    std::map<std::string,Edge*>::iterator ite;
+
+
+    for ( ite=edges.begin() ; ite != edges.end(); ite++ )
+    {
+        Edge* tmpedge = edges[(*ite).first];
+
+        if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
+            connectededges.push_back(tmpedge->getUUID());
+    }
+
+    for(unsigned int index=0; index<connectededges.size(); index++)
+    {
+        if(!removeEdge(connectededges[index]))
+            return false;
+    }
+
+    return true;
 }
 
 Edge* System::addEdge(Edge* edge)
@@ -275,6 +340,19 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
         return 0;
     return EdgeNodeMap[key];
 }
+bool System::removeEdge(std::string name)
+{
+    //check if name is a edge instance
+    if(edges.find(name)==edges.end())
+        return false;
+
+    if(!removeChild(name))
+        return false;
+    DM::Edge * e  = this->getEdge(name);
+    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
+    edges.erase(name);
+    return true;
+}
 
 Face* System::addFace(Face *f) {
     if(!addChild(f)) {
@@ -316,6 +394,18 @@ Face* System::getFace(std::string uuid)
     return faces[uuid];
 
 }
+bool System::removeFace(std::string name)
+{
+    //check if name is a edge instance
+    if(faces.find(name)==faces.end())
+        return false;
+
+    if(!removeChild(name))
+        return false;
+
+    faces.erase(name);
+    return true;
+}
 
 RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
@@ -334,40 +424,6 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     return r;
 }
 
-Component * System::getComponent(std::string uuid)
-{
-	//SQLLoadComponents();
-    if(nodes.find(uuid)!=nodes.end())
-        return this->getNode(uuid);
-    if(edges.find(uuid)!=edges.end())
-        return this->getEdge(uuid);
-    if(faces.find(uuid)!=faces.end())
-        return this->getFace(uuid);
-    if(subsystems.find(uuid)!=subsystems.end())
-        return this->getSubSystem(uuid);
-    if(rasterdata.find(uuid)!=rasterdata.end())
-        return rasterdata[uuid];
-    if(components.find(uuid)!=components.end())
-        return components[uuid];
-	if(ownedchilds.find(uuid)!=ownedchilds.end())
-		return ownedchilds[uuid];
-
-    return 0;
-}
-
-bool System::removeFace(std::string name)
-{
-    //check if name is a edge instance
-    if(faces.find(name)==faces.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-
-    faces.erase(name);
-    return true;
-}
-
 std::map<std::string, Component*>  System::getAllComponents()
 {
     for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
@@ -382,69 +438,53 @@ std::map<std::string, Component*>  System::getAllComponents()
     }
     return this->components;
 }
-
-bool System::removeComponent(std::string name)
+std::map<std::string, Node*> System::getAllNodes()
 {
-    //check if name is a edge instance
-    if(components.find(name)==components.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-
-    components.erase(name);
-    return true;
-}
-
-
-bool System::removeEdge(std::string name)
-{
-    //check if name is a edge instance
-    if(edges.find(name)==edges.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-    DM::Edge * e  = this->getEdge(name);
-    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
-    edges.erase(name);
-    return true;
-}
-
-bool System::removeNode(std::string name)
-{
-    //check if name is a node instance
-    if(nodes.find(name)==nodes.end())
-        return false;
-
-    //remove node
-    if(!removeChild(name))
-        return false;
-
-    nodes.erase(name);
-
-    //find all connected edges and remove them
-    std::vector<std::string> connectededges;
-
-    std::map<std::string,Edge*>::iterator ite;
-
-
-    for ( ite=edges.begin() ; ite != edges.end(); ite++ )
-    {
-        Edge* tmpedge = edges[(*ite).first];
-
-        if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
-            connectededges.push_back(tmpedge->getUUID());
+    //Update All Nodes
+    for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Node * n = it->second;
+        if (n->getCurrentSystem() != this) {
+            n = static_cast<Node*>(updateChild(nodes[uuid]));
+            nodes[uuid] = n;
+            this->updateViews(n);
+            n->setCurrentSystem(this);
+        }
     }
-
-    for(unsigned int index=0; index<connectededges.size(); index++)
-    {
-        if(!removeEdge(connectededges[index]))
-            return false;
-    }
-
-    return true;
+    return nodes;
 }
+std::map<std::string, Edge*> System::getAllEdges()
+{
+
+    //Update all Edges
+    for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Edge * e = it->second;
+        if (e->getCurrentSystem() != this) {
+            e = static_cast<Edge*>(updateChild(edges[uuid]));
+            edges[uuid] = e;
+            this->updateViews(e);
+            e->setCurrentSystem(this);
+        }
+    }
+    return edges;
+}
+std::map<std::string, Face*> System::getAllFaces()
+{
+
+    for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
+        std::string uuid = it->first;
+        DM::Face * f = it->second;
+        if (f->getCurrentSystem() != this) {
+            f = static_cast<Face*>(updateChild(faces[uuid]));
+            faces[uuid] = f;
+            this->updateViews(f);
+            f->setCurrentSystem(this);
+        }
+    }
+    return faces;
+}
+
 bool System::addComponentToView(Component *comp, const View &view) {
     this->views[view.getName()][comp->getUUID()] = comp;
     comp->setView(view.getName());
@@ -478,7 +518,18 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
     return newsystem;
 }
+System* System::getSubSystem(std::string uuid)
+{
+    if(subsystems.find(uuid)==subsystems.end())
+        return 0;
 
+    System * s= static_cast<System*>(updateChild(subsystems[uuid]));
+    subsystems[uuid] = s;
+    this->updateViews(s);
+    return subsystems[uuid];
+
+
+}
 bool System::removeSubSystem(std::string name)
 {
     if(!removeChild(name))
@@ -488,6 +539,7 @@ bool System::removeSubSystem(std::string name)
 
     return true;
 }
+
 std::map<std::string, Component*> System::getAllComponentsInView(const DM::View & view) {
 
     return views[view.getName()];
@@ -505,18 +557,6 @@ std::vector<std::string> System::getUUIDs(const DM::View  & view)
 {
     return this->getUUIDsOfComponentsInView(view);
 }
-System* System::getSubSystem(std::string uuid)
-{
-    if(subsystems.find(uuid)==subsystems.end())
-        return 0;
-
-    System * s= static_cast<System*>(updateChild(subsystems[uuid]));
-    subsystems[uuid] = s;
-    this->updateViews(s);
-    return subsystems[uuid];
-
-
-}
 
 std::map<std::string, System*> System::getAllSubSystems()
 {
@@ -530,20 +570,6 @@ std::map<std::string, RasterData*> System::getAllRasterData()
     return rasterdata;
 }
 
-System* System::createSuccessor()
-{
-    Logger(Debug) << "Create Sucessor " << this->getUUID();
-    System* result = new System(*this);
-	//result->statepath.push_back(this->numCopies++);
-    this->sucessors.push_back(result);
-	this->SQLUpdateStates();
-	
-    result->addPredecessors(this);
-	result->SQLUpdateStates();
-	//result->SQLInsertDeepCopy();
-
-    return result;
-}
 
 Component* System::clone()
 {
@@ -619,72 +645,6 @@ bool System::addView(View view)
 
     return true;
 }
-
-std::vector<System*> System::getSucessors()
-{
-    return sucessors;
-}
-
-std::vector<System*> System::getPredecessors()
-{
-    return predecessors;
-}
-
-void System::addPredecessors(System *s)
-{
-    this->predecessors.push_back(s);
-	this->SQLUpdateStates();
-}
-
-std::map<std::string, Node*> System::getAllNodes()
-{
-    //Update All Nodes
-    for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Node * n = it->second;
-        if (n->getCurrentSystem() != this) {
-            n = static_cast<Node*>(updateChild(nodes[uuid]));
-            nodes[uuid] = n;
-            this->updateViews(n);
-            n->setCurrentSystem(this);
-        }
-    }
-    return nodes;
-}
-
-std::map<std::string, Edge*> System::getAllEdges()
-{
-
-    //Update all Edges
-    for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Edge * e = it->second;
-        if (e->getCurrentSystem() != this) {
-            e = static_cast<Edge*>(updateChild(edges[uuid]));
-            edges[uuid] = e;
-            this->updateViews(e);
-            e->setCurrentSystem(this);
-        }
-    }
-    return edges;
-}
-
-std::map<std::string, Face*> System::getAllFaces()
-{
-
-    for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Face * f = it->second;
-        if (f->getCurrentSystem() != this) {
-            f = static_cast<Face*>(updateChild(faces[uuid]));
-            faces[uuid] = f;
-            this->updateViews(f);
-            f->setCurrentSystem(this);
-        }
-    }
-    return faces;
-}
-
 const std::vector<DM::View> System::getViews()  {
 
     std::vector<DM::View> viewlist;
@@ -694,6 +654,36 @@ const std::vector<DM::View> System::getViews()  {
     }
     return viewlist;
 }
+
+System* System::createSuccessor()
+{
+    Logger(Debug) << "Create Sucessor " << this->getUUID();
+    System* result = new System(*this);
+	//result->statepath.push_back(this->numCopies++);
+    this->sucessors.push_back(result);
+	this->SQLUpdateStates();
+	
+    result->addPredecessors(this);
+	result->SQLUpdateStates();
+	//result->SQLInsertDeepCopy();
+
+    return result;
+}
+std::vector<System*> System::getSucessors()
+{
+    return sucessors;
+}
+std::vector<System*> System::getPredecessors()
+{
+    return predecessors;
+}
+void System::addPredecessors(System *s)
+{
+    this->predecessors.push_back(s);
+	this->SQLUpdateStates();
+}
+
+
 bool System::addChild(Component *newcomponent)
 {
 	//SQLLoadChilds();
@@ -710,7 +700,6 @@ bool System::addChild(Component *newcomponent)
 
     return true;
 }
-
 bool System::changeChild(Component *newcomponent)
 {
 	//SQLLoadChilds();
@@ -741,7 +730,6 @@ Component * System::updateChild(Component * c) {
 
     return c_new;
 }
-
 bool System::removeChild(std::string name)
 {
 	//SQLLoadChilds();
@@ -760,7 +748,6 @@ bool System::removeChild(std::string name)
     //}
     return false;
 }
-
 Component* System::getChild(std::string name)
 {
 	//SQLLoadChilds();
@@ -770,11 +757,13 @@ Component* System::getChild(std::string name)
 
 	return ownedchilds[name];
 }
+
 std::map<std::string, Component*> System::getAllChilds()
 {
     //return childsview;
 	return ownedchilds;
 }
+
 void System::SQLInsert()
 {
 	SQLInsertAs("system");
@@ -783,7 +772,6 @@ void System::SQLDelete()
 {
 	SQLDeleteAs("system");
 }
-
 void System::SQLUpdateStates()
 {
 	QStringList sucList;
