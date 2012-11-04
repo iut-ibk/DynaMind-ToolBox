@@ -52,6 +52,9 @@ private:
 
 public slots:
     void showHelpForModule(std::string className, std::string uuid);
+    
+    void on_commandBackToOvwerView_clicked();
+
 };
 
 #endif // GUIHELPVIEWER_H

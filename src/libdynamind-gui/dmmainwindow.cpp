@@ -264,6 +264,8 @@ void DMMainWindow::runSimulation() {
 
 }
 void DMMainWindow::updateSimulation() {
+    this->simulation->reloadModules();
+    createModuleListView();
     this->simulation->updateSimulation();
 }
 
@@ -589,4 +591,8 @@ void DMMainWindow::showHelp(std::string classname, std::string uuid) {
 
     this->helpviewer->show();
     this->helpviewer->showHelpForModule(classname, uuid);
+}
+
+void DMMainWindow::on_actionShow_Help_activated() {
+    this->helpviewer->show();
 }

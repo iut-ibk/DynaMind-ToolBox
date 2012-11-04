@@ -116,6 +116,7 @@ private slots:
     void on_actionZoomOut_activated();
     void on_actionZoomIn_activated();
     void on_actionAbout_activated();
+    void on_actionShow_Help_activated();
 
 };
 

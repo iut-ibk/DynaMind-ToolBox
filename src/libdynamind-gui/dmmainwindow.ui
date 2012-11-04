@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>932</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSimulation">
@@ -135,6 +135,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionShow_Help"/>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuSimulation"/>
@@ -752,7 +753,7 @@
   </action>
   <action name="actionUpdate">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../dynamind-modelbuilder/icons.qrc">
      <normaloff>:/Icons/ressources/reload.png</normaloff>:/Icons/ressources/reload.png</iconset>
    </property>
    <property name="text">
@@ -767,6 +768,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionShow_Help">
+   <property name="text">
+    <string>Show Help</string>
    </property>
   </action>
  </widget>

@@ -35,6 +35,8 @@ GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GUIHelpViewer)
 {
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
+   true);
     ui->setupUi(this);
     this->sim = sim;
     stringstream filename;
@@ -44,29 +46,17 @@ GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
 void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
     this->currentUrl = this->url_view_not_avaiable;
     DM::Module * m = this->sim->getModuleWithUUID(uuid);
-    if (!m)
+    this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
+    
+    if (!m){
+        ui->webView->load(this->currentUrl);
         return;
+    }
     if (!m->getHelpUrl().empty()) {
         this->currentUrl = QUrl(QString::fromStdString(m->getHelpUrl()));
         ui->webView->load(this->currentUrl);
         return;
     }
-
-
-    stringstream filename;
-    filename << QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << classname << ".html";
-    DM::Logger(DM::Debug) << "Helpfile at " << filename.str();
-
-    QString qFilename = QString::fromStdString(filename.str());
-    qFilename.replace("\\", "/");
-    qFilename.replace(" ", "%20");
-
-    QFile f(qFilename);
-    stringstream url;
-    url << "file:///" << qFilename.toStdString();
-    DM::Logger(DM::Debug) << qFilename.toStdString();
-    this->currentUrl = QUrl(QString::fromStdString(url.str()));
-
 
     ui->webView->load(this->currentUrl);
 }
@@ -74,4 +64,10 @@ void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
 GUIHelpViewer::~GUIHelpViewer()
 {
     delete ui;
+}
+
+void GUIHelpViewer::on_commandBackToOvwerView_clicked()
+{
+    this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
+    ui->webView->load(this->currentUrl);
 }
