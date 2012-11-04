@@ -112,6 +112,25 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 
     insert_polygon(cdt,polygon1);
 
+    //Add Holes: Holes use the same transormation matrix
+    std::vector<std::vector<std::string> > holes = f->getHoles();
+    foreach (std::vector<std::string> hole, holes) {
+        std::vector<DM::Node* > nodes_h;
+        foreach (std::string nuuid, hole) {
+            DM::Node * n = sys->getNode(nuuid);
+            DM::Node n_t = TBVectorData::RotateVector(alphas, *n);
+            nodes_h.push_back(transformedSys.addNode(n_t));
+        }
+        DM::Face * f_h = transformedSys.addFace(nodes_h);
+
+        Polygon_2 hole_p;
+        for (int  i = 0; i <nodes_h.size()-1; i++ ) {
+            DM::Node * n = nodes_h[i];
+            hole_p.push_back(Point(n->getX(),n->getY()));
+        }
+        insert_polygon(cdt,hole_p);
+    }
+
     //Mark facets that are inside the domain bounded by the polygon
     mark_domains(cdt);
 

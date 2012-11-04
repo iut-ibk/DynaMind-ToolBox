@@ -42,6 +42,9 @@ namespace DM {
         
         static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
 
+        /** @brief Returns node list that contains the triangulation of the face f.
+         * Every trinagle is defined by 3 nodes.
+         */
         static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
 
 
