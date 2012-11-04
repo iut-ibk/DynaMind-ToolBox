@@ -100,7 +100,7 @@ void SpatialLinking::run() {
         Node c;
         if (vbase.getType() == DM::FACE) {
             Face * f = city->getFace(baseUUID);
-            c = TBVectorData::caclulateCentroid(city, f);
+            c = TBVectorData::CaclulateCentroid(city, f);
         }
         if (vbase.getType() == DM::NODE) {
             c = Node(*(city->getNode(baseUUID)));

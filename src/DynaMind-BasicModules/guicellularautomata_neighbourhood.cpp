@@ -53,7 +53,7 @@ GUICellularAutomata_Neighbourhood::~GUICellularAutomata_Neighbourhood()
 
 void GUICellularAutomata_Neighbourhood::accept() {
 
-    std::cout << "huh" << std::endl;
+
     std::map<std::string, std::string> neighs = m->getParameter< std::map<std::string, std::string> >("Neighs");
     std::string name = ui->lineEdit_name->text().toStdString();
     std::stringstream ss;

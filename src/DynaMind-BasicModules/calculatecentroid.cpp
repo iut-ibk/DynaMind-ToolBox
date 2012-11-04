@@ -94,8 +94,8 @@ void CalculateCentroid::run() {
     for (int i = 0; i < elements; i++){
         Face * f = city->getFace(names[i]);
 
-        Node p = TBVectorData::caclulateCentroid(this->city, f);
-        double area = fabs(TBVectorData::calculateArea(this->city, f));
+        Node p = TBVectorData::CaclulateCentroid(this->city, f);
+        double area = fabs(TBVectorData::CalculateArea(this->city, f));
 
         f->addAttribute("centroid_x", p.getX());
         f->addAttribute("centroid_y", p.getY());

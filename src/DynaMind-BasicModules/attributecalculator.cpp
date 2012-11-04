@@ -129,7 +129,6 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
 }
 
 void AttributeCalculator::run() {
-    std::cout << "Start "  <<  equation << std::endl;
 
     this->sys_in = this->getData("Data");
     std::map<std::string, double * > doubleVaraibles;
