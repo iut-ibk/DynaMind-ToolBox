@@ -26,7 +26,7 @@
 
 #include <dmcomponent.h>
 #include "dmface.h"
-#include "dmedge.h"
+#include "dmnode.h"
 
 
 using namespace DM;
@@ -57,4 +57,15 @@ const std::vector<std::vector<std::string> > & Face::getHoles() const
 void Face::addHole(std::vector<std::string> hole)
 {
     this->holes.push_back(hole);
+}
+
+void Face::addHole(std::vector<DM::Node*> hole)
+{
+    std::vector<std::string> shole;
+    for (std::vector<DM::Node *>::const_iterator it = hole.begin(); it != hole.end(); ++it)
+    {
+        DM::Node * n = *it;
+        shole.push_back(n->getUUID());
+    }
+    this->addHole(shole);
 }
