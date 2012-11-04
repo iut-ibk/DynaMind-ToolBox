@@ -40,7 +40,7 @@ namespace {
 void TestSimulation::SetUp()
 {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Debug) << "Load Native Module";
     DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
     sim = new DM::Simulation();
