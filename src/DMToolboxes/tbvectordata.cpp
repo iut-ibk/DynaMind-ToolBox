@@ -197,8 +197,59 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     }
     return DM::Node(x/A6,y/A6,nodes[0]->getZ());
 }
+double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
+{
 
-double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f) {
+    double E[3][3];
+    TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
+
+    double E_to[3][3];
+
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+
+    double alphas[3][3];
+    RotationMatrix(E, E_to, alphas);
+
+    double alphas_t[3][3];
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            alphas_t[j][i] =  alphas[i][j];
+        }
+    }
+
+    DM::System transformedSys;
+
+    std::vector<DM::Node*> ns_t;
+
+    for (int i = 0; i < nodes.size(); i++) {
+        DM::Node n = *(nodes[i]);
+        DM::Node n_t = RotateVector(alphas, n);
+        ns_t.push_back(transformedSys.addNode(n_t));
+    }
+
+
+
+    DM::Node * pend = ns_t[nodes.size()-1];
+    DM::Node * pstart = ns_t[0];
+    bool startISEnd = true;
+    if (pend != pstart)
+        startISEnd = false;
+    double A = 0;
+    for (int i = 0; i< ns_t.size()-1;i++) {
+        DM::Node * p_i = ns_t[i];
+        DM::Node * p_i1 = ns_t[i+1];
+
+        A+=p_i->getX()*p_i1->getY() - p_i1->getX()*p_i->getY();
+
+    }
+    if (!startISEnd)
+        A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
+
+    return A/2.;
+}
+
+double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
+{
     //Check if first is last
     if (f->getNodes().size() < 3)
         return 0;
@@ -208,23 +259,21 @@ double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f) {
         nodes.push_back(sys->getNode(uuid));
     }
 
-    DM::Node * pend = nodes[nodes.size()-1];
-    DM::Node * pstart = nodes[0];
-    bool startISEnd = true;
-    if (pend != pstart)
-        startISEnd = false;
-    double A = 0;
-    for (int i = 0; i< nodes.size()-1;i++) {
-        DM::Node * p_i = nodes[i];
-        DM::Node * p_i1 = nodes[i+1];
 
-        A+=p_i->getX()*p_i1->getY() - p_i1->getX()*p_i->getY();
+    //Caclulate Area Total
+    double A = CalculateArea(nodes);
 
+    std::vector<std::vector<std::string > > holes = f->getHoles();
+
+    foreach (std::vector<std::string> hole, holes) {
+        std::vector<DM::Node *> nodes_H;
+        foreach (std::string uuid, hole) {
+            nodes_H.push_back(sys->getNode(uuid));
+        }
+        //Remove Holes
+         A -= CalculateArea(nodes_H);
     }
-    if (!startISEnd)
-        A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
-
-    return A/2.;
+    return A;
 }
 
 QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)

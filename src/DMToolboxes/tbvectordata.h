@@ -76,7 +76,7 @@ public:
     /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
     static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
 
-    /** @brief calculate area of a face */
+    /** @brief calculate area of a planar face */
     static double CalculateArea(DM::System * sys, DM::Face * f);
 
     /** @brief Creates QPolygonF */
@@ -124,6 +124,8 @@ public:
      * v = alphas_t v'
      */
     static void RotationMatrix(const double (&E_from)[3][3], const double (&E_to)[3][3], double (&alphas)[3][3]);
+
+    static double CalculateArea(std::vector<DM::Node *> const & nodes);
 
 };
 
