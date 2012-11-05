@@ -5,8 +5,7 @@ FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
 
 IF(PYTHON_EMBEDDING)
-    set_source_files_properties(${OUTPUT_DIR}/pydynamindWRAP.cpp PROPERTIES GENERATED 1)
-    SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp ${OUTPUT_DIR}/pydynamindWRAP.cpp)
+    SET(DYNAMIND_CPPS ${DYNAMIND_CPPS} ../python-swig/dmpythonenv.cpp)
 ENDIF()
 
 ADD_LIBRARY(dynamindcore SHARED ${DYNAMIND_CPPS} ${DYNAMIND_HEADER})
