@@ -1,7 +1,6 @@
 #include "cgaltriangulation.h"
 #include <tbvectordata.h>
 
-
 void CGALTriangulation::mark_domains(CDT& ct,  CDT::Face_handle start, int index, std::list<CDT::Edge>& border)
 {
     if(start->info().nesting_level != -1){
@@ -53,7 +52,7 @@ void CGALTriangulation::mark_domains(CDT& cdt)
 
 void insert_polygon(CDT& cdt,const Polygon_2& polygon){
     if ( polygon.is_empty() ) return;
-    CDT::Vertex_handle v_prev=cdt.insert(*CGAL::cpp0x::prev(polygon.vertices_end()));
+    CDT::Vertex_handle v_prev=cdt.insert(*boost::prior(polygon.vertices_end()));
     for (Polygon_2::Vertex_iterator vit=polygon.vertices_begin();
          vit!=polygon.vertices_end();++vit)
     {
