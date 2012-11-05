@@ -1,5 +1,8 @@
 %module(directors="1", allprotected="1") pydmtoolbox
 %feature("director");
+
+%feature("autodoc", "1");
+
 %{
     #include <dmcomponent.h>
 
