@@ -15,7 +15,7 @@ ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_PYTHON_PACKAGE "build python package" ON)
-OPTION(WITH_TESTS "build unit tests" OFF)
+OPTION(WITH_UNIT_TESTS "build unit tests" OFF)
 OPTION(WITH_PLUGIN_DYNAMIND "if with DYNAMIND plugin" OFF)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
@@ -31,6 +31,11 @@ OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules)
+
+if(WITH_UNIT_TESTS)
+    set(WITH_PLUGIN_CITYBLOCKS ON CACHE BOOL "" FORCE)
+    set(WITH_PLUGIN_SEWER ON CACHE BOOL "" FORCE)
+endif(WITH_UNIT_TESTS)
 
 if(WITH_EXTENSIONS)
     set(TOOLBOX ${TOOLBOX} DynaMind-Extensions)
@@ -78,7 +83,6 @@ endif(WITH_PLUGIN_CITYBLOCKS)
 
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
-
 foreach (tool ${TOOLBOX})
     if(EXISTS ${CMAKE_SOURCE_DIR}/${tool}/src)
         message(STATUS "${tool} submodule already exists")
@@ -94,13 +98,6 @@ foreach (tool ${TOOLBOX})
     endif(DYNAMIND_UPDATE)
 endforeach(tool ${TOOLBOX}) 
 
-
-
-
-
-
-
-
 SET(DYNAMIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DynaMind/src/core) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/DMToolboxes) 
 SET(DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DynaMind/src/python-swig) 
@@ -112,11 +109,13 @@ foreach (tool ${TOOLBOX})
     add_subdirectory(${tool})
 endforeach(${tool}) 
 
-if (WITH_UNIT_TESTS)
+if(WITH_UNIT_TESTS)
     add_subdirectory(DynaMind-ComplexUnitTests)
-endif (WITH_UNIT_TESTS)
+endif(WITH_UNIT_TESTS)
+
 add_subdirectory(Data)
-if (WITH_PYTHON_PACKAGE)
+
+if(WITH_PYTHON_PACKAGE)
     INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
 else()
     INCLUDE(DynaMind-ToolBoxCPack.txt)
