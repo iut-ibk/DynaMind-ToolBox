@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012   Christian Urich
+ * Copyright (C) 2012   Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,31 +24,16 @@
  *
  */
 
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
 
-#include "dmcompilersettings.h"
-#include "dm.h"
+#ifndef CUTELITTLEGEOMETRYHELPERS_H
+#define CUTELITTLEGEOMETRYHELPERS_H
 
-namespace DM {
+#include <dm.h>
 
+class DM_HELPER_DLL_EXPORT CuteLittleGeometryHelpers
+{
+public:
+    static std::vector<DM::Face*>  CreateHolesInAWall(DM::System * sys, DM::Face * f, double distance, double width, double height);
+};
 
-    class DM_HELPER_DLL_EXPORT CGALGeometry
-    {
-    public:
-
-        static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
-
-        static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox);
-        
-        static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
-
-        /** @brief Returns node list that contains the triangulation of the face f.
-         * Every trinagle is defined by 3 nodes.
-         */
-        static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
-
-
-    };
-}
-#endif // GEOMETRY_H
+#endif // CUTELITTLEGEOMETRYHELPERS_H
