@@ -94,7 +94,7 @@ protected:
     void removeView(const DM::View & view);
 
     /** @brief Copies a component, also the UUID is copied! */
-    Component(const Component& s, System* sys);
+    //Component(const Component& s, System* sys);
 public:
     /** @brief create a new component
       *
