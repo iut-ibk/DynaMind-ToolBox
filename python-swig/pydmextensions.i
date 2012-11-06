@@ -19,7 +19,6 @@
 %include std_string.i
 %include std_map.i
 
-
 %include "../../DynaMind/src/core/dmcomponent.h"
 %include "../../DynaMind/src/core/dmsystem.h"
 %include "../../DynaMind/src/core/dmattribute.h"

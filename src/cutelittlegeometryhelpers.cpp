@@ -26,8 +26,8 @@
 
 #include "cutelittlegeometryhelpers.h"
 #include "tbvectordata.h"
-
-
+#include <algorithm>
+#include <math.h>
 
 std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height)
 {
@@ -39,6 +39,12 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
     double E_to[3][3];
 
     TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+
+
+    DM::Node dN1 = *(nodes[1]) - *(nodes[0]);
+    DM::Node dN2 = *(nodes[2]) - *(nodes[0]);
+    DM::Node orientationOriginal = TBVectorData::NormalVector(dN1, dN2);
+
 
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
@@ -95,10 +101,10 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
         DM::Node n3(xmin + 1.2 + height,  delta_y + width/2, z_const);
         DM::Node n4(xmin + 1.2,  delta_y + width/2, z_const);
 
-        window_nodes.push_back(n1);
-        window_nodes.push_back(n2);
-        window_nodes.push_back(n3);
         window_nodes.push_back(n4);
+        window_nodes.push_back(n3);
+        window_nodes.push_back(n2);
+        window_nodes.push_back(n1);
 
     }
     //Transform Coordinates back
@@ -119,6 +125,18 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
             window_nodes_t.push_back(sys->addNode(n));
         }
         window_nodes_t.push_back(window_nodes_t[0]);
+
+
+        dN1 = *(window_nodes_t[1]) - *(window_nodes_t[0]);
+        dN2 = *(window_nodes_t[2]) - *(window_nodes_t[0]);
+        DM::Node orientationOriginal_window = TBVectorData::NormalVector(dN1, dN2);
+
+        DM::Node checkDir = orientationOriginal - orientationOriginal_window;
+        if (fabs(checkDir.getX()) > 0.0001 ||
+            fabs(checkDir.getY()) > 0.0001 ||
+            fabs(checkDir.getZ()) > 0.0001) {
+            std::reverse(window_nodes_t.begin(),window_nodes_t.end());
+        }
 
         windows.push_back(sys->addFace(window_nodes_t));
 
