@@ -77,7 +77,9 @@ struct SimpleDrawer {
             return;
         }
         glColor3f(0, 0, 0);
-        glVertex3dv(n->get());
+        QVector<double> vertex = n->get();
+        const double tmp[3] = { vertex[0],vertex[1],vertex[2] };
+        glVertex3dv(tmp);
     }
 };
 
