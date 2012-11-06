@@ -26,7 +26,7 @@
 
 #include <dmcomponent.h>
 #include "dmface.h"
-#include "dmedge.h"
+#include "dmnode.h"
 
 #include "dmdbconnector.h"
 
@@ -140,6 +140,16 @@ void Face::addHole(std::vector<std::string> hole)
 	SQLSetHoles(holes);
     //this->holes.push_back(hole);
 }
+void Face::addHole(std::vector<DM::Node*> hole)
+{
+    std::vector<std::string> shole;
+    for (std::vector<DM::Node *>::const_iterator it = hole.begin(); it != hole.end(); ++it)
+    {
+        DM::Node * n = *it;
+        shole.push_back(n->getUUID());
+    }
+    this->addHole(shole);
+}
 
 void Face::SQLInsert(std::vector<std::string> nodes)
 {
@@ -209,4 +219,3 @@ void Face::SQLSetHoles(std::vector<std::vector<std::string> > holes)
 	if(!q.exec())	PrintSqlError(&q);
 }
 
-	

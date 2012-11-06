@@ -1,5 +1,8 @@
 %module(directors="1", allprotected="1") pydynamind
 %ignore "DM_HELPER_DLL_EXPORT";
+
+%feature("autodoc", "1");
+
 %feature("director");
 %{
     #include <dmsimulation.h>
@@ -110,7 +113,6 @@ namespace std {
         ForestsSemiNatural = 6,
         WaterBodies = 7
     };
-
 
 
 

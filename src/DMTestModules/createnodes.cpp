@@ -37,7 +37,9 @@ CreateNodes::CreateNodes()
 void CreateNodes::run() {
     DM::System * sys = this->getData("sys");
     DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
-    for (int i = 0; i < 100; i++) {
+
+    for (int i = 0; i < 10; i++) {
+
         DM::Node  n =  DM::Node(0,0,0);
         sys->addNode(n, v);
     }

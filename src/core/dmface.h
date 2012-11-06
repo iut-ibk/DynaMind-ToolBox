@@ -77,7 +77,8 @@ public:
     const std::vector<std::vector<std::string> > getHoles() const;
     /** @brief Add hole */
     void addHole(std::vector<std::string> hole);
-
+    /** @brief Add hole */
+    void addHole(std::vector<DM::Node *> hole);
 
 };
 typedef std::map<std::string, DM::Face*> FaceMap;

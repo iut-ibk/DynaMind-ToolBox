@@ -193,6 +193,16 @@ Node Node::operator +(const Node & other) const
     return(Node(this->getX() + other.getX(), this->getY() + other.getY(), this->getZ() + other.getZ()));
 }
 
+Node Node::operator *(const double &val) const
+{
+    return(Node(this->getX() * val, this->getY()  * val, this->getZ() * val));
+}
+
+Node Node::operator /(const double &val) const
+{
+    return(Node(this->getX() / val, this->getY()  / val, this->getZ() / val));
+}
+
 bool Node::compare2d(const Node &other, double round ) const 
 {
     //return fabs( this->x - other.getX() ) <= round   &&  fabs( this->y - other.getY() ) <= round;

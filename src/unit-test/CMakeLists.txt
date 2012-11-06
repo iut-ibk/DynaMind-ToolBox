@@ -4,8 +4,9 @@ MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
                     ${gtest_SOURCE_DIR}/include
-                    ${dynamind_SOURCE_DIR}/src/DMTestModules)
+                    ${dynamind_SOURCE_DIR}/src/DMTestModules
+                    ${dynamind_SOURCE_DIR}/src/DMToolboxes)
 
 FILE(GLOB UNIT_CPP *.cpp)
 ADD_EXECUTABLE(unit-test ${UNIT_CPP})
-TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamind-testmodules)
+TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamindtoolbox dynamind-testmodules)

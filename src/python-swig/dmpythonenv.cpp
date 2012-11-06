@@ -40,9 +40,11 @@
 #include <swigruntime.h>
 #include <sstream>
 
+/*
 extern "C" {
 void init_pydynamind(void);
 }
+*/
 
 void init() {
     DM::OStreamLogSink *sink = new DM::OStreamLogSink(cout);
@@ -73,7 +75,7 @@ PythonEnv::PythonEnv() {
         Py_Initialize();
     }
     SWIG_PYTHON_INITIALIZE_THREADS;
-    init_pydynamind();
+    //init_pydynamind();
     PyThreadState *pts = PyGILState_GetThisThreadState();
     PyEval_ReleaseThread(pts);
 

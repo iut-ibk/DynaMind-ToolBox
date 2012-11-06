@@ -97,6 +97,10 @@ public:
     Node operator-(const Node & other) const;
     /** @brief x1+x2, y1+y2, z1+z2*/
     Node operator+(const Node & other) const;
+    /** @brief x1*val, y1*val, z1*val*/
+    Node operator*(const double & val) const;
+    /** @brief x1/val, y1/val, z1/val*/
+    Node operator/(const double & val) const;
     /** @brief return if x and y are +- round the same*/
     bool compare2d(const Node &other, double round = 0) const;
     /** @brief return if x and y are +- round the same*/
