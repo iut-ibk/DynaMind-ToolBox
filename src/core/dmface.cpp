@@ -150,7 +150,6 @@ void Face::addHole(std::vector<DM::Node*> hole)
     }
     this->addHole(shole);
 }
-
 void Face::SQLInsert(std::vector<std::string> nodes)
 {
 	SQLInsertAs("face");
@@ -218,4 +217,3 @@ void Face::SQLSetHoles(std::vector<std::vector<std::string> > holes)
 	q.addBindValue(QString::fromStdString(stateUuid));
 	if(!q.exec())	PrintSqlError(&q);
 }
-

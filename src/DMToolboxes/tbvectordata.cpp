@@ -234,7 +234,7 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
         startISEnd = false;
     double A = 0;
 
-    for (unsigned int i = 0; i< ns_t.size()-1;i++) {
+	for (unsigned int i = 0; i< ns_t.size()-1;i++) {
         DM::Node * p_i = ns_t[i];
         DM::Node * p_i1 = ns_t[i+1];
 
@@ -463,5 +463,3 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
 
 
 }
-
-
