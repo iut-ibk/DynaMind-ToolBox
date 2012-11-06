@@ -32,7 +32,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <qvariant>
+#include <QVariant>
 #include <QtCore>
 #include <QSqlError>
 
