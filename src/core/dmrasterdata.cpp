@@ -30,6 +30,7 @@
 #include <QMutex>
 #include <dmlogger.h>
 #include "dmdbconnector.h"
+#include <QVariant>
 
 using namespace DM;
 /*
@@ -426,8 +427,8 @@ void RasterData::SQLInsertField(long width, long height, double value)
 			QSqlQuery q;
 			q.prepare("INSERT INTO rasterfields(datalink,x,y,value) VALUES (?,?,?,?)");
 			q.addBindValue(linkID);
-			q.addBindValue(x);
-			q.addBindValue(y);
+            q.addBindValue(QVariant::fromValue(x));
+            q.addBindValue(QVariant::fromValue(y));
 			q.addBindValue(NoValue);
 			if(!q.exec())	PrintSqlError(&q);
 		}
@@ -488,8 +489,8 @@ double RasterData::SQLGetValue(long x, long y) const
 	QSqlQuery q;
 	q.prepare("SELECT value FROM rasterfields WHERE datalink=? AND x=? AND y=?");
 	q.addBindValue(GetLinkID());
-	q.addBindValue(x);
-	q.addBindValue(y);
+    q.addBindValue(QVariant::fromValue(x));
+    q.addBindValue(QVariant::fromValue(y));
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())	
 		return q.value(0).toDouble();
@@ -502,8 +503,8 @@ void RasterData::SQLSetValue(long x, long y, double value)
 	q.prepare("UPDATE rasterfields SET value = ? WHERE datalink=? AND x=? AND y=?");
 	q.addBindValue(value);
 	q.addBindValue(GetLinkID());
-	q.addBindValue(x);
-	q.addBindValue(y);
+    q.addBindValue(QVariant::fromValue(x));
+    q.addBindValue(QVariant::fromValue(y));
 	if(!q.exec())	PrintSqlError(&q);
 }
 void RasterData::SQLUpdateLink(int id)

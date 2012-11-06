@@ -29,6 +29,7 @@
 #include "dmnode.h"
 
 #include "dmdbconnector.h"
+#include <QByteArray>
 
 using namespace DM;
 
@@ -128,7 +129,8 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())
 	{
-		holes = GetVectorVector(q.value(0).toByteArray());
+        QByteArray tmp = q.value(0).toByteArray();
+        holes = GetVectorVector(tmp);
 	}
 	return holes;
 }
@@ -176,7 +178,7 @@ QByteArray GetBytes(std::vector<std::string> stringvector)
 	QByteArray qba;
 	QDataStream stream(&qba, QIODevice::WriteOnly);
 	
-	stream << stringvector.size();
+    stream << (int)stringvector.size();
 	for(unsigned int i=0;i<stringvector.size();i++)
 		stream << QString::fromStdString(stringvector[i]);
 		
@@ -198,10 +200,10 @@ QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
 	QByteArray qba;
 	QDataStream stream(&qba, QIODevice::WriteOnly);
 	
-	stream << stringvectorvector.size();
+    stream << (int)stringvectorvector.size();
 	for(unsigned int i=0;i<stringvectorvector.size();i++)
 	{
-		stream << stringvectorvector[i].size();
+        stream << (int)stringvectorvector[i].size();
 		for(unsigned int j=0;j<stringvectorvector[i].size();j++)
 				stream << QString::fromStdString(stringvectorvector[i][j]);
 	}

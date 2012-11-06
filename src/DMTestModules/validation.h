@@ -9,7 +9,7 @@
 void AddValidation(DM::Component* c, DM::Component* owner);
 bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner);
 
-class ComponentID: public std::pair<std::string,std::pair<std::string,std::string>>
+class ComponentID: public std::pair<std::string,std::pair<std::string,std::string> >
 {
 public:
 	ComponentID(std::string _uuid, std::string _stateUuid, std::string _owner);

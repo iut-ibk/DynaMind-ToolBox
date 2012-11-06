@@ -89,9 +89,6 @@ private:
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);
-	
-    /** @brief Copies a System  */
-    System(const System& s);
 
     DM::Module * lastModule;
 
@@ -116,6 +113,9 @@ protected:
 	std::string getStateUuid();
 public:
 	std::map<std::string, Component*> getAllChilds();
+
+    /** @brief Copies a System  */
+    System(const System& s);
 
     /** @brief creates a new System */
     System();

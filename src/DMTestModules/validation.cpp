@@ -113,12 +113,12 @@ bool ValidateValues(DM::Component* foundItem, idCompPair item)
 		{
 			if(i>((DM::Face*)foundItem)->getNodes().size())
 			{
-				DM::Logger(DM::Error) << "missing face point ["<<i<<"] " << mapValidation[itemId].strvalues[i];
+                DM::Logger(DM::Error) << "missing face point [" << (int)i <<"] " << mapValidation[itemId].strvalues[i];
 				success = false;
 			}
 			else if(mapValidation[itemId].strvalues[i] != ((DM::Face*)foundItem)->getNodes()[i])
 			{
-				DM::Logger(DM::Error) << "wrong face point ["<<i<<"] " << itemId.toString()  
+                DM::Logger(DM::Error) << "wrong face point [" << (int)i <<"] " << itemId.toString()
 					<< " is " << ((DM::Edge*)foundItem)->getStartpointName()
 					<< " expected " << mapValidation[itemId].strvalues[i];
 				success = false;
@@ -130,7 +130,7 @@ bool ValidateValues(DM::Component* foundItem, idCompPair item)
 		{
 			if(((DM::Node*)foundItem)->get(i) != mapValidation[itemId].dblValues[i])
 			{
-				DM::Logger(DM::Error) << "wrong coordinate value ["<<i<<"]: is "
+                DM::Logger(DM::Error) << "wrong coordinate value [" << (int)i <<"]: is "
 					<< ((DM::Node*)foundItem)->get(i) << " should be " << mapValidation[itemId].dblValues[i];
 				success = false;
 			}

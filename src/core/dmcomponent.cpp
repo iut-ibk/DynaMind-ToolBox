@@ -146,7 +146,8 @@ bool Component::addAttribute(std::string name, double val)
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
-    return this->addAttribute(Attribute(name, val));
+    Attribute tmp(name, val);
+    return this->addAttribute(tmp);
 }
 
 bool Component::addAttribute(std::string name, std::string val) 
@@ -155,7 +156,8 @@ bool Component::addAttribute(std::string name, std::string val)
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
-    return this->addAttribute(Attribute(name, val));
+    Attribute tmp(name, val);
+    return this->addAttribute(tmp);
 }
 
 bool Component::addAttribute(Attribute &newattribute)
@@ -235,8 +237,11 @@ bool Component::removeAttribute(std::string name)
 Attribute* Component::getAttribute(std::string name)
 {
 	//if(ownedattributes.find(name)==ownedattributes.end())
-	if(!HasAttribute(name))
-        this->addAttribute(Attribute(name));
+    if(!HasAttribute(name))
+    {
+        Attribute tmp(name);
+        this->addAttribute(tmp);
+    }
 
     return ownedattributes[name];
 }
