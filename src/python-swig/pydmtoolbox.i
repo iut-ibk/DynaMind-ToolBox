@@ -1,5 +1,8 @@
 %module(directors="1", allprotected="1") pydmtoolbox
 %feature("director");
+
+%feature("autodoc", "1");
+
 %{
     #include <dmcomponent.h>
 
@@ -12,13 +15,11 @@
     #include <rasterdatahelper.h>
     using namespace std;
     using namespace DM;
-
 %}
 
 %include std_vector.i
 %include std_string.i
 %include std_map.i
-
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
