@@ -73,8 +73,7 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Nod
     }
     if (pos != in_between) return;
 
-    QVector<double> vertex = n->get();
-    const double tmp[3] = { vertex[0],vertex[1],vertex[2] };
+    const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
     min_vec(tmp);
     max_vec(tmp);
 }
