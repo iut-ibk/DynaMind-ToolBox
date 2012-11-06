@@ -68,9 +68,13 @@ double Node::getZ() const
     return z;
 }
 
-const double * const
-Node::get() const {
-    return v_;
+const QVector<double> Node::get() const
+{
+    QVector<double> v;
+    v.push_back(v_[0]);
+    v.push_back(v_[1]);
+    v.push_back(v_[2]);
+    return v;
 }
 
 void Node::setX(double x)

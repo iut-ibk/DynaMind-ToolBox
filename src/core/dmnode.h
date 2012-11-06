@@ -34,6 +34,7 @@
 #endif
 
 #include <string>
+#include <QVector>
 
 namespace DM {
 class  Component;
@@ -68,8 +69,8 @@ public:
     double getY() const;
     /** @brief return z*/
     double getZ() const;
-    /** @brief return array*/
-    const double * const get() const;
+    /** @brief return QVector*/
+    const QVector<double> get() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/
