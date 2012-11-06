@@ -38,25 +38,22 @@
 #include <math.h>
 
 //BOOST GRAPH includes
-//#include <boosttraits.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 
 using namespace boost;
 
-DM_DECLARE_NODE_NAME(ExtractMaxGraph,DynaVIBe)
+DM_DECLARE_NODE_NAME(ExtractMaxGraph,Graph)
 
 ExtractMaxGraph::ExtractMaxGraph()
 {   
     std::vector<DM::View> views;
     DM::View view;
 
-    //Define Parameter street network
     view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
     views.push_back(view);
     viewdef["EDGES"]=view;
 
-    //Define Parameter street network
     view = DM::View("NODES", DM::NODE, DM::MODIFY);
     views.push_back(view);
     viewdef["NODES"]=view;
@@ -116,10 +113,10 @@ void ExtractMaxGraph::run()
         if(componentsizes[maxgraphindex] < componentsizes[index])
             maxgraphindex = index;
 
-        DM::Logger(DM::Standard) << "Tree " << index+1 << " has " << componentsizes[index] << " elements";
+        DM::Logger(DM::Standard) << "Graph " << index+1 << " has " << componentsizes[index] << " elements";
     }
 
-    DM::Logger(DM::Standard) << "Tree " << maxgraphindex+1 << " is extracted";
+    DM::Logger(DM::Standard) << "Graph " << maxgraphindex+1 << " is extracted";
 
     //extract graph
     for(int index=0; index < edges.size(); index++)

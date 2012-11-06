@@ -25,18 +25,15 @@
  */
 #include "dmnodefactory.h"
 #include "dmmoduleregistry.h"
-#include <street2network.h>
+#include <minimumspanningtree.h>
 #include <extractnodesfromedges.h>
 #include <connectnodes2graph.h>
 #include <extractmaxgraphofforest.h>
 
-
 using namespace std;
 
-
-
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<StreetToNetwork>());
+    registry->addNodeFactory(new DM::NodeFactory<MinimumSpanningTree>());
     registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
     registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
     registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());

@@ -30,7 +30,7 @@
 #include <dmsystem.h>
 #include <dmlogsink.h>
 
-DM_DECLARE_NODE_NAME(ExtractNodesFromEdges,DynaVIBe)
+DM_DECLARE_NODE_NAME(ExtractNodesFromEdges,Graph)
 
 ExtractNodesFromEdges::ExtractNodesFromEdges()
 {   

@@ -24,15 +24,15 @@
  *
  */
 
-#ifndef StreetToNetwork_H
-#define StreetToNetwork_H
+#ifndef MinimumSpanningTree_H
+#define MinimumSpanningTree_H
 
 #include <dmmodule.h>
 #include <dm.h>
 
-class StreetToNetwork : public DM::Module
+class MinimumSpanningTree : public DM::Module
 {
-    DM_DECLARE_NODE(StreetToNetwork)
+    DM_DECLARE_NODE(MinimumSpanningTree)
 
 private:
     typedef std::map<std::string,DM::View> viewmap;
@@ -41,7 +41,7 @@ private:
     viewmap viewdef;
 
 public:
-    StreetToNetwork();
+    MinimumSpanningTree();
     typedef std::map<std::string,std::string> stringmap;
     typedef std::map<std::string, stringmap * > conversionmap;
 
@@ -49,4 +49,4 @@ public:
     void initmodel();
 };
 
-#endif // StreetToNetwork_H
+#endif // MinimumSpanningTree_H

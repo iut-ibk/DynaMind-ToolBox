@@ -24,7 +24,7 @@
  *
  */
 
-#include <street2network.h>
+#include <minimumspanningtree.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -45,9 +45,9 @@
 
 using namespace boost;
 
-DM_DECLARE_NODE_NAME(StreetToNetwork,DynaVIBe)
+DM_DECLARE_NODE_NAME(MinimumSpanningTree,Graph)
 
-StreetToNetwork::StreetToNetwork()
+MinimumSpanningTree::MinimumSpanningTree()
 {   
     std::vector<DM::View> views;
     DM::View view;
@@ -66,11 +66,10 @@ StreetToNetwork::StreetToNetwork()
     views.push_back(view);
     viewdef["SPANNINGTREE"]=view;
 
-
     this->addData("Layout", views);
 }
 
-void StreetToNetwork::run()
+void MinimumSpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
@@ -101,8 +100,6 @@ void StreetToNetwork::run()
         add_edge(sourceindex, targetindex, 1, g);
     }
 
-
-
     //check if graph is conntected
     std::vector<int> component(num_vertices(g));
     int num = connected_components(g, &component[0]);
@@ -125,9 +122,8 @@ void StreetToNetwork::run()
     if(num!=1)
     {
         DM::Logger(DM::Warning) << "Graph is not connected -> Forest of size: " << num;
-        DM::Logger(DM::Warning) << "Tree " << maxgraphindex+1 << " is used for building a minimum spanning tree";
+        DM::Logger(DM::Warning) << "Graph " << maxgraphindex+1 << " is used for building a minimum spanning tree";
     }
-
 
     //calculate min spanning tree or forest of minimum spanning trees
     std::vector < graph_traits < Graph >::vertex_descriptor >p(num_vertices(g));
@@ -153,7 +149,6 @@ void StreetToNetwork::run()
                 this->sys->addComponentToView(nodes2edge[E(i,p[i])],viewdef["SPANNINGTREE"]);
                 continue;
             }
-
         }
     }
 
@@ -161,6 +156,6 @@ void StreetToNetwork::run()
     DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 
-void StreetToNetwork::initmodel()
+void MinimumSpanningTree::initmodel()
 {
 }

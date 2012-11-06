@@ -31,7 +31,7 @@
 #include <dmlogsink.h>
 #include <math.h>
 
-DM_DECLARE_NODE_NAME(ConnectNodes2Graph,DynaVIBe)
+DM_DECLARE_NODE_NAME(ConnectNodes2Graph,Graph)
 
 ConnectNodes2Graph::ConnectNodes2Graph()
 {   
