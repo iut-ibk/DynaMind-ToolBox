@@ -133,6 +133,15 @@ Node::get() const {
     return v_;
 }*/
 
+const QVector<double> Node::get() const
+{
+    QVector<double> v;
+    v.push_back(getX());
+    v.push_back(getY());
+    v.push_back(getZ());
+    return v;
+}
+
 const double Node::get(unsigned int i) const {
 	if(i==0)		return getX();
 	else if(i==1)	return getY();

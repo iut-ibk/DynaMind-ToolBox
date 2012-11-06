@@ -81,6 +81,7 @@ public:
     double getZ() const;
     /** @brief return array*/	// WARNING: as of sql access, this isnt possible anymore, use get(unsigned int i) instead
     //const double * const get() const;
+    const QVector<double> get() const;
     /** @brief return coordinates*/
     const double get(unsigned int i) const;
 

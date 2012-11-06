@@ -317,7 +317,7 @@ DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 
     std::vector<DM::Node*> ns_t;
 
-    for (int i = 0; i < nodeList.size(); i++) {
+    for (unsigned int i = 0; i < nodeList.size(); i++) {
         DM::Node n = *(nodeList[i]);
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
