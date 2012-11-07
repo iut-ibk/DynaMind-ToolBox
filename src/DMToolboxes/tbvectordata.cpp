@@ -457,7 +457,7 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     //Create Lid
     if (!withLid)
             return newFaces;
-    reverse(opposite_ids.begin(),opposite_ids.end());
+    //reverse(opposite_ids.begin(),opposite_ids.end());
     newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
