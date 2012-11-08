@@ -80,7 +80,7 @@ Face::~Face()
     Component::SQLDelete("faces");
 }
 
-std::vector<std::string> GetVector(QByteArray &qba)
+std::vector<std::string> GetVector(QByteArray qba)
 {
 	QDataStream stream(&qba, QIODevice::ReadOnly);
 	QString str;
@@ -131,10 +131,9 @@ QString Face::getTableName()
 {
     return "faces";
 }
-std::vector<std::vector<std::string> > GetVectorVector(QByteArray &qba)
+std::vector<std::vector<std::string> > GetVectorVector(QByteArray qba)
 {
-	QDataStream stream(&qba, QIODevice::ReadWrite);
-	QString str;
+    QDataStream stream(&qba, QIODevice::ReadWrite);
 	std::vector<std::vector<std::string> > result;
 
 	unsigned int len=0;
