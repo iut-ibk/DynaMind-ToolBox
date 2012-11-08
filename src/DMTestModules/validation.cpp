@@ -83,12 +83,12 @@ void AddValidation(DM::Component* c, DM::Component* owner)
 		break;
 	}
 }
-bool ValidateValues(DM::Component* foundItem, idCompPair item)
+bool ValidateValues(DM::Component* foundItem, std::map<ComponentID, ComponentContent>::const_iterator item)
 {
-	ComponentID itemId = item.first;
+    ComponentID itemId = item->first;
 
 	bool success = true;
-	switch(item.second.type)
+    switch(item->second.type)
 	{
 	case DM::COMPONENT:
 		break;
@@ -147,9 +147,10 @@ bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner)
 {
 	bool success = true;
 	
-	foreach(idCompPair item, mapValidation)
-	{
-		ComponentID itemId = item.first;
+    //foreach(idCompPair item, mapValidation)
+    for(std::map<ComponentID, ComponentContent>::const_iterator it = mapValidation.begin(); it != mapValidation.end();++it)
+    {
+        ComponentID itemId = it->first;
 		if(itemId.getOwner() == owner->getUUID() && itemId.getStateUuid() == owner->getStateUUID())
 		{
 
@@ -167,16 +168,16 @@ bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner)
 			else
 			{
 				DM::Logger(DM::Debug) << "successfully found " << strItem;
-				if(item.second.type != foundItem->getType())
+                if(it->second.type != foundItem->getType())
 				{
 					DM::Logger(DM::Error) << "wrong type " << strItem << " is of type " << foundItem->getType()
-						<< "should be " << item.second.type;
+                        << "should be " << it->second.type;
 					success = false;
 				}
 				else
 				{
 					DM::Logger(DM::Debug) << "type is correct " << strItem;
-					if(!ValidateValues(foundItem, item))
+                    if(!ValidateValues(foundItem, it))
 						success = false;
 					else
 						DM::Logger(DM::Debug) << "value is correct " << strItem;
