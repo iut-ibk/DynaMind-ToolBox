@@ -34,7 +34,6 @@
 #include <dmporttuple.h>
 
 namespace {
-	
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -175,12 +174,19 @@ TEST_F(TestSimulation,validationtool) {
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
+    std::string uuid = mcreator->getUuid();
     ASSERT_TRUE(mcreator != 0);
     DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
     ASSERT_TRUE(mcheck != 0);
     DM::ModuleLink * l2 = sim.addLink(mcreator->getOutPort("sys"), mcheck->getInPort("sys"));
     ASSERT_TRUE(l2 != 0);
     sim.run();
+    //for(int i=0;i<500;i++)
+    //{
+    //    DM::Logger(DM::Standard) << "run #" << i;
+    //    sim.run();
+    //    sim.getModuleWithUUID(uuid)->setExecuted(false);
+    //}
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
@@ -204,6 +210,23 @@ TEST_F(TestSimulation,simplesqltest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+
+
+
+TEST_F(TestSimulation,sqlprofiling) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Test Profiling (SQL)";
+
+    for(int i=0;i<10000;i++)
+    {
+        //DM::Logger(DM::Standard) << "iteration "<<i;
+        DM::Node* n = new DM::Node(0,0,0);
+        n->setX(1.0);
+        delete n;
+    }
+}
+
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -390,7 +413,7 @@ TEST_F(TestSimulation, SQLattributes)
 	}
 	delete a;
 }
-
+/**/
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;
