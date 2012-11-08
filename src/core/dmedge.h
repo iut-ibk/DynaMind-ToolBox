@@ -45,7 +45,8 @@ namespace DM {
         //void SQLInsert(std::string start, std::string end);
         //void SQLDelete();
 		void SQLSetValues(std::string start, std::string end);
-        const std::vector<std::string> getPoints() const;
+        //const std::vector<std::string> getPoints() const;
+        const void getPoints(std::string *points) const;
         /** @brief return table name */
         QString getTableName();
     public:

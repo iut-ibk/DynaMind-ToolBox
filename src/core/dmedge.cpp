@@ -43,7 +43,9 @@ Edge::Edge(std::string startpoint, std::string endpoint) : Component(true)
 
 Edge::Edge(const Edge& e) : Component(e, true)
 {
-    std::vector<std::string> points = e.getPoints();
+    //std::vector<std::string> points = e.getPoints();
+    std::string points[2];
+    getPoints(points);
     DBConnector::getInstance()->Insert("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
                                        "start",QString::fromStdString(points[0]),
@@ -64,29 +66,18 @@ QString Edge::getTableName()
     return "edges";
 }
 
-const std::vector<std::string> Edge::getPoints() const
+const void Edge::getPoints(std::string *points) const
 {
-    std::vector<std::string> points;
+    //std::vector<std::string> points;
     QVariant v1,v2;
     if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
                                        , "start", &v1, "end", &v2))
     {
-        points.push_back( v1.toString().toStdString());
-        points.push_back( v2.toString().toStdString());
+        //points.push_back( v1.toString().toStdString());
+        //points.push_back( v2.toString().toStdString());
+        points[0] = v1.toString().toStdString();
+        points[1] = v2.toString().toStdString();
     }
-/*
-    QSqlQuery q;
-    q.prepare("SELECT start,end FROM edges WHERE uuid LIKE ? AND stateuuid LIKE ?");
-    q.addBindValue(QString::fromStdString(uuid));
-    q.addBindValue(QString::fromStdString(stateUuid));
-    if(!q.exec())	PrintSqlError(&q);
-
-    if(q.next())
-    {
-        points.push_back( q.value(0).toString().toStdString());
-        points.push_back( q.value(1).toString().toStdString());
-    }*/
-    return points;
 }
 
 const std::string Edge::getStartpointName() const

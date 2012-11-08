@@ -77,14 +77,13 @@ public:
     /** @brief writes a xyz-double[3] into the given vector */
     const void get(double *vector) const;
     /** @brief returns all edges connecting this node */
-    //std::vector<std::string> getEdges() const;
+    std::vector<std::string> getEdges() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/
     void setY(double y);
     /** @brief set z*/
     void setZ(double z);
-
     /** @brief return true if x, y and z are the same*/
     bool operator==(const Node & other) const;
     /** @brief x1-x2, y1-y2, z1-z2*/
