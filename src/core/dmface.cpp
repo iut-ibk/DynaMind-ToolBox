@@ -77,7 +77,7 @@ Face::Face(const Face& e) : Component(e, true)
 }
 Face::~Face()
 {
-    Component::SQLDelete("faces");
+    Component::SQLDelete();
 }
 
 std::vector<std::string> GetVector(QByteArray qba)

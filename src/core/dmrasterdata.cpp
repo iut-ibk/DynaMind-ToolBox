@@ -142,7 +142,7 @@ bool RasterData::setValue(long x, long y, double value)
 RasterData::~RasterData()
 {
     SQLDeleteField();
-    Component::SQLDelete("rasterdatas");
+    Component::SQLDelete();
 }
 
 void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {

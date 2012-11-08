@@ -42,10 +42,7 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
-        //void SQLInsert(std::string start, std::string end);
-        //void SQLDelete();
-		void SQLSetValues(std::string start, std::string end);
-        //const std::vector<std::string> getPoints() const;
+        void SQLSetValues(std::string start, std::string end);
         const void getPoints(std::string *points) const;
         /** @brief return table name */
         QString getTableName();

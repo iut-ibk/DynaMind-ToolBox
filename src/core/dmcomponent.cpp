@@ -125,13 +125,6 @@ void Component::setName(std::string name)
                                        QString::fromStdString(uuid),
                                        QString::fromStdString(stateUuid),
                                        "name", QString::fromStdString(name));
-    /*
-    QSqlQuery q;
-	q.prepare("UPDATE components SET name=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(name));
-	q.addBindValue(QString::fromStdString(uuid));
-	q.addBindValue(QString::fromStdString(stateUuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 std::string Component::getName() const 
@@ -145,14 +138,6 @@ void Component::setUUID(std::string uuid)
                                        QString::fromStdString(uuid),
                                        QString::fromStdString(stateUuid),
                                        "uuid", QString::fromStdString(uuid));
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE components SET uuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(uuid));
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->getStateUUID()));
-    if(!q.exec())	PrintSqlError(&q);*/
-
     this->uuid=uuid;
 }
 
@@ -169,19 +154,6 @@ DM::Components Component::getType()
 {
     return DM::COMPONENT;
 }
-/*std::string Component::getTableName()
-{
-    switch(getType())
-    {
-        case COMPONENT:	return "components";
-        case NODE:		return "nodes";
-        case EDGE:		return "edges";
-        case FACE:		return "faces";
-        case SUBSYSTEM:	return "systems";
-        case RASTERDATA:return "rasterdatas";
-    }
-    return "";
-}*/
 QString Component::getTableName()
 {
     return "components";
@@ -335,26 +307,6 @@ void Component::SetOwner(Component *owner)
 }
 void Component::SQLSetOwner(Component * owner)
 {
-    /*
-	QString strType;
-	switch(getType())
-	{
-		case COMPONENT:	strType = "components";	break;
-		case NODE:		strType = "nodes";	break;
-		case EDGE:		strType = "edges";	break;
-		case FACE:		strType = "faces";	break;
-		case SUBSYSTEM:	strType = "systems";	break;
-		case RASTERDATA:strType = "rasterdatas";	break;
-	}
-	{
-		QSqlQuery q;
-		q.prepare("UPDATE "+strType+" SET owner=?,stateuuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-		q.addBindValue(QString::fromStdString(owner->getUUID()));
-		q.addBindValue(QString::fromStdString(owner->getStateUUID()));
-		q.addBindValue(QString::fromStdString(this->getUUID()));
-		q.addBindValue(QString::fromStdString(this->getStateUUID()));
-		if(!q.exec())	PrintSqlError(&q);
-    }*/
     DBConnector::getInstance()->Update(getTableName(),
                                        QString::fromStdString(uuid),
                                        QString::fromStdString(stateUuid),
@@ -368,13 +320,6 @@ void Component::SQLInsertComponent()
                                        QString::fromStdString(uuid),
                                        QString::fromStdString(stateUuid),
                                        "name", QString::fromStdString(name));
-    /*
-	QSqlQuery q;
-	q.prepare("INSERT INTO components (uuid,stateuuid,name) VALUES (?,?,?)");
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->stateUuid));
-	q.addBindValue(QString::fromStdString(this->name));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 void Component::SQLDeleteComponent()
@@ -383,29 +328,10 @@ void Component::SQLDeleteComponent()
     DBConnector::getInstance()->Delete("components",
                                        QString::fromStdString(uuid),
                                        QString::fromStdString(stateUuid));
-    /*
-	QSqlQuery q;
-	q.prepare("DELETE FROM components WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->stateUuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
-/*
-void Component::SQLInsertAs(std::string type)
+void Component::SQLDelete()
 {
-	QSqlQuery q;
-	q.prepare("INSERT INTO "+QString::fromStdString(type)+"s (uuid,stateuuid,name) VALUES (?,?,?)");
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->stateUuid));
-	q.addBindValue(QString::fromStdString(this->name));
-	if(!q.exec())	PrintSqlError(&q);
-	// important: delete component entry in sql
-    // SQLDeleteComponentOnly();
-}*/
-
-void Component::SQLDelete(QString type)
-{
-    DBConnector::getInstance()->Delete(type, QString::fromStdString(uuid),
+    DBConnector::getInstance()->Delete(getTableName(), QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid));
 }
 

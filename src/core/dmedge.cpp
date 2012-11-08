@@ -55,7 +55,7 @@ Edge::Edge(const Edge& e) : Component(e, true)
 
 Edge::~Edge()
 {
-    Component::SQLDelete("edges");
+    Component::SQLDelete();
 }
 DM::Components Edge::getType()
 {

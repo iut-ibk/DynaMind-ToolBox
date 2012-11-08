@@ -66,9 +66,6 @@ typedef std::pair<std::string, Face*> FacePair;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
-	//std::vector<unsigned int> statepath;
-	//bool bSystems;
-
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;
     std::map<std::string, Face* > faces;
@@ -92,33 +89,20 @@ private:
 
     DM::Module * lastModule;
 
-	void SQLInsert();
-    //void SQLDelete();
-	void SQLUpdateStates();
-	//void SQLSetStateUUID(std::string newstduuid);
-	/*
-	void SQLInsertDeepCopy();
-
-	void SQLLoadComponents();
-	void SQLFreeComponents();*/
-
+    void SQLInsert();
+    void SQLUpdateStates();
 	//TODO No idea waht this is
     bool addChild(Component *newcomponent);
-    //bool changeChild(Component *newcomponent);
     bool removeChild(std::string name);
     Component* getChild(std::string name);
-
-    //Component * updateChild(Component * c);
     /** @brief return table name */
     QString getTableName();
 protected:
 	std::string getStateUuid();
 public:
 	std::map<std::string, Component*> getAllChilds();
-
     /** @brief Copies a System  */
     System(const System& s);
-
     /** @brief creates a new System */
     System();
     /** @brief Destructor

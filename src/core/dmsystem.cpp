@@ -58,8 +58,7 @@ System::System(const System& s) : Component(s, true)
     lastModule = s.lastModule;
 	SQLInsert();
 	
-	currentSys = this;
-    //std::map<std::string,Component*>::iterator it;
+    currentSys = this;
     std::map<std::string,Component*> childmap = s.ownedchilds;
 	
     for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
@@ -82,23 +81,14 @@ System::~System()
 
     ownedView.clear();
 
-    Component::SQLDelete("systems");
+    Component::SQLDelete();
 }
 
 void System::setUUID(std::string uuid)
 {
-
     DBConnector::getInstance()->Update("systems", QString::fromStdString(this->uuid),
                                                 QString::fromStdString(stateUuid),
                                        "uuid", QString::fromStdString(uuid));
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE systems SET uuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(uuid));
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->getStateUUID()));
-    if(!q.exec())	PrintSqlError(&q);*/
-	
     this->uuid = uuid;
 }
 
@@ -449,9 +439,6 @@ System* System::getSubSystem(std::string uuid)
     if(subsystems.find(uuid)==subsystems.end())
         return 0;
 
-    /*System * s= static_cast<System*>(updateChild(subsystems[uuid]));
-    subsystems[uuid] = s;
-    this->updateViews(s);*/
     return subsystems[uuid];
 }
 bool System::removeSubSystem(std::string name)
@@ -613,31 +600,6 @@ bool System::addChild(Component *newcomponent)
 
     return true;
 }
-/*
-bool System::changeChild(Component *newcomponent)
-{
-    if(!newcomponent)
-        return false;
-
-    if(ownedchilds.find(newcomponent->getUUID())!=ownedchilds.end())
-        delete ownedchilds[newcomponent->getUUID()];
-
-    ownedchilds[newcomponent->getUUID()] = newcomponent;
-
-	// currentSystem and statuuid are not set - if the change results from 
-	// allocating a new successor state component;
-    //newcomponent->stateUuid = this->getStateUUID();
-
-    return true;
-}*/
-/*Component * System::updateChild(Component * c) {
-    if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
-        return c;
-    Component * c_new = c->clone();
-    changeChild(c_new);
-
-    return c_new;
-}*/
 bool System::removeChild(std::string name)
 {
     if(ownedchilds.find(name)!=ownedchilds.end())
@@ -662,13 +624,7 @@ void System::SQLInsert()
 {
     DBConnector::getInstance()->Insert("systems", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid));
-    //SQLInsertAs("system");
 }
-/*
-void System::SQLDelete()
-{
-	SQLDeleteAs("system");
-}*/
 void System::SQLUpdateStates()
 {
 	QStringList sucList;
@@ -685,12 +641,4 @@ void System::SQLUpdateStates()
                                                         QString::fromStdString(stateUuid),
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
-/*
-	QSqlQuery q;
-	q.prepare("UPDATE systems SET sucessors=?,predecessors=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(sucList);
-	q.addBindValue(preList);
-	q.addBindValue(QString::fromStdString(getUUID()));
-	q.addBindValue(QString::fromStdString(getStateUuid()));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
