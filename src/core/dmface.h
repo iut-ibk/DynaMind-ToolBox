@@ -48,19 +48,15 @@ class Node;
 class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
-    //std::vector<std::string> nodes;
-	//virtual QByteArray GetValue();
-    //std::vector<std::vector<std::string> > holes;
-
-	void SQLInsert(std::vector<std::string> nodes);
-	void SQLInsert(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
-	void SQLDelete();
+    //void SQLInsert(std::vector<std::string> nodes);
+    //void SQLInsert(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
+    //void SQLDelete();
 	void SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
 	void SQLSetNodes(std::vector<std::string> nodes);
 	void SQLSetHoles(std::vector<std::vector<std::string> > holes);
+    /** @brief return table name */
+    QString getTableName();
 public:
-    /** @brief creates a face based on sql data */
-    //Face(QByteArray qba);
     /** @brief destructor */
     ~Face();
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */

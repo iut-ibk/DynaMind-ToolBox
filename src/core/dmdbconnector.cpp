@@ -165,6 +165,315 @@ int DBConnector::GetNewLinkID()
 {
 	return DBConnector::_linkID++;
 }
+/*
+ *  INSERT with uuid
+ */
+void DBConnector::Insert(QString table, QString uuid)
+{
+    QSqlQuery q;
+    q.prepare("INSERT INTO "+table+" (uuid) VALUES (?)");
+    q.addBindValue(uuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Insert(QString table,  QString uuid,
+                         QString parName0, QVariant parValue0)
+{
+    QSqlQuery q;
+    q.prepare("INSERT INTO "+table+" (uuid,"+
+              parName0+") VALUES (?,?)");
+    q.addBindValue(uuid);
+    q.addBindValue(parValue0);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Insert(QString table,  QString uuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1)
+ {
+     QSqlQuery q;
+     q.prepare("INSERT INTO "+table+" (uuid,"+
+               parName0+","+
+               parName1+") VALUES (?,?,?)");
+     q.addBindValue(uuid);
+     q.addBindValue(parValue0);
+     q.addBindValue(parValue1);
+     if(!q.exec())	PrintSqlError(&q);
+ }
+/*
+ *  INSERT with uuid and stateuuid
+ */
+void DBConnector::Insert(QString table, QString uuid, QString stateUuid)
+{
+    QSqlQuery q;
+    q.prepare("INSERT INTO "+table+" (uuid,stateuuid) VALUES (?,?)");
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0)
+{
+    QSqlQuery q;
+    q.prepare("INSERT INTO "+table+" (uuid,stateuuid,"+
+              parName0+") VALUES (?,?,?)");
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    q.addBindValue(parValue0);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1)
+ {
+     QSqlQuery q;
+     q.prepare("INSERT INTO "+table+" (uuid,stateuuid,"+
+               parName0+","+
+               parName1+") VALUES (?,?,?,?)");
+     q.addBindValue(uuid);
+     q.addBindValue(stateUuid);
+     q.addBindValue(parValue0);
+     q.addBindValue(parValue1);
+     if(!q.exec())	PrintSqlError(&q);
+ }
+void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1,
+                         QString parName2, QVariant parValue2)
+ {
+     QSqlQuery q;
+     q.prepare("INSERT INTO "+table+" (uuid,stateuuid,"+
+               parName0+","+
+               parName1+","+
+               parName2+") VALUES (?,?,?,?,?)");
+     q.addBindValue(uuid);
+     q.addBindValue(stateUuid);
+     q.addBindValue(parValue0);
+     q.addBindValue(parValue1);
+     q.addBindValue(parValue2);
+     if(!q.exec())	PrintSqlError(&q);
+ }
+/*
+ *  DELETE with uuid
+ */
+void DBConnector::Delete(QString table,  QString uuid)
+{
+    QSqlQuery q;
+    q.prepare("DELETE FROM "+table+" WHERE uuid LIKE ?");
+    q.addBindValue(uuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+/*
+ *  DELETE with uuid and stateuuid
+ */
+void DBConnector::Delete(QString table,  QString uuid, QString stateUuid)
+{
+    QSqlQuery q;
+    q.prepare("DELETE FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+/*
+ *  UPDATE with uuid
+ */
+void DBConnector::Update(QString table,  QString uuid,
+                         QString parName0, QVariant parValue0)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(uuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+
+void DBConnector::Update(QString table,  QString uuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "
+              +parName0+"=?,"
+              +parName1+"=? WHERE uuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(parValue1);
+    q.addBindValue(uuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Update(QString table,  QString uuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1,
+                         QString parName2, QVariant parValue2)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "
+              +parName0+"=?,"
+              +parName1+"=?,"
+              +parName2+"=? WHERE uuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(parValue1);
+    q.addBindValue(parValue2);
+    q.addBindValue(uuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+/*
+ *  UPDATE with uuid and stateuuid
+ */
+void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+
+void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "
+              +parName0+"=?,"
+              +parName1+"=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(parValue1);
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+                         QString parName0, QVariant parValue0,
+                         QString parName1, QVariant parValue1,
+                         QString parName2, QVariant parValue2)
+{
+    QSqlQuery q;
+    q.prepare("UPDATE "+table+" SET "
+              +parName0+"=?,"
+              +parName1+"=?,"
+              +parName2+"=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q.addBindValue(parValue0);
+    q.addBindValue(parValue1);
+    q.addBindValue(parValue2);
+    q.addBindValue(uuid);
+    q.addBindValue(stateUuid);
+    if(!q.exec())	PrintSqlError(&q);
+}
+/*
+ *  SELECT single entry with uuid
+ */
+bool DBConnector::Select(QString table, QString uuid,
+                         QString valName, QVariant *value)
+{
+    QSqlQuery q;
+    q.prepare("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
+    q.addBindValue(uuid);
+    if(!q.exec() || !q.next())
+    {
+        PrintSqlError(&q);
+        return false;
+    }
+    *value = q.value(0);
+    return true;
+}
+bool DBConnector::Select(QString table, QString uuid,
+                         QString valName0, QVariant *value0,
+                         QString valName1, QVariant *value1)
+ {
+     QSqlQuery q;
+     q.prepare("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
+     q.addBindValue(uuid);
+     if(!q.exec() || !q.next())
+     {
+         PrintSqlError(&q);
+         return false;
+     }
+     *value0 = q.value(0);
+     *value1 = q.value(1);
+     return true;
+ }
+/*
+ *  SELECT single entry with uuid and stateuuid
+ */
+bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+                         QString valName, QVariant *value)
+{
+    QSqlQuery q;
+    q.prepare("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q.addBindValue(uuid);
+    q.addBindValue(stateuuid);
+    if(!q.exec() || !q.next())
+    {
+        PrintSqlError(&q);
+        return false;
+    }
+    *value = q.value(0);
+    return true;
+}
+bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+                         QString valName0, QVariant *value0,
+                         QString valName1, QVariant *value1)
+ {
+     QSqlQuery q;
+     q.prepare("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
+     q.addBindValue(uuid);
+     q.addBindValue(stateuuid);
+     if(!q.exec() || !q.next())
+     {
+         PrintSqlError(&q);
+         return false;
+     }
+     *value0 = q.value(0);
+     *value1 = q.value(1);
+     return true;
+ }
+
+/*
+void DBConnector::InsertX(std::string table, ...)
+{
+    QString strParams;
+    QString strValues;
+    QVariant qValue;
+    QSqlQuery q;
+
+    va_list params;
+    va_start( params, table );
+
+    QVariant name = va_arg(params, QVariant);
+    QVariant value = va_arg(params, QVariant);
+
+
+
+    while(name != NULL && value != NULL)
+    {
+        strParams += name.toString() + ",";
+        strValues += "?,";
+
+        name = va_arg(params, QVariant);
+        value = va_arg(params, QVariant);
+    }
+
+    va_end( params );
+
+    strParams.chop(1);
+    strValues.chop(1);
+
+    q.prepare("INSERT INTO "+QString::fromStdString(table)+
+              " ("+strParams+") VALUES ("+strValues+")");
+
+    p = par;
+    while(p != NULL)
+    {
+        q.addBindValue(p->value);
+        p = va_arg(params, DMSqlParameter*);
+    }
+    va_end( params );
+
+    if(!q.exec())	PrintSqlError(&q);
+}*/
+
+
+
 void DBConnector::beginTransaction()
 {
     QSqlQuery query;

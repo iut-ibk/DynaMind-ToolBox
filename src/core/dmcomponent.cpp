@@ -44,7 +44,7 @@ using namespace DM;
 
 Component::Component()
 {
-	DBConnector::getInstance();
+    DBConnector::getInstance();
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     name = "";
@@ -52,9 +52,20 @@ Component::Component()
 
     inViews = std::set<std::string>();
     currentSys = NULL;
-	
-	DBConnector::getInstance();
-	SQLInsertComponent();
+
+    DBConnector::getInstance();
+    SQLInsertComponent();
+}
+Component::Component(bool b)
+{
+    DBConnector::getInstance();
+    this->uuid = QUuid::createUuid().toString().toStdString();
+    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    name = "";
+    ownedattributes = std::map<std::string,Attribute*>();
+
+    inViews = std::set<std::string>();
+    currentSys = NULL;
 }
 
 Component::Component(const Component& c)
@@ -62,13 +73,24 @@ Component::Component(const Component& c)
     uuid=c.uuid;
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
-	name = c.name;
+    name = c.name;
 
-	std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-	for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
-		this->addAttribute(*it->second);
-    
-	SQLInsertComponent();
+    std::map<std::string,Attribute*> attrmap = c.ownedattributes;
+    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
+        this->addAttribute(*it->second);
+
+    SQLInsertComponent();
+}
+Component::Component(const Component& c, bool b)
+{
+    uuid=c.uuid;
+    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    inViews = c.inViews;
+    name = c.name;
+
+    std::map<std::string,Attribute*> attrmap = c.ownedattributes;
+    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
+        this->addAttribute(*it->second);
 }
 
 Component::~Component()
@@ -79,7 +101,7 @@ Component::~Component()
         ownedattributes.erase(ownedattributes.begin());
     }
 	// if this class is not of type component, nothing will happen
-	SQLDeleteComponentOnly();
+    SQLDeleteComponent();
 }
 
 void Component::createNewUUID() 
@@ -99,12 +121,17 @@ bool Component::isInView(View view) const
 
 void Component::setName(std::string name) 
 {
+    DBConnector::getInstance()->Update(getTableName(),
+                                       QString::fromStdString(uuid),
+                                       QString::fromStdString(stateUuid),
+                                       "name", QString::fromStdString(name));
+    /*
     QSqlQuery q;
 	q.prepare("UPDATE components SET name=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(name));
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 std::string Component::getName() const 
@@ -112,16 +139,19 @@ std::string Component::getName() const
 	return name;
 }
 
-
-
 void Component::setUUID(std::string uuid)
 {
+    DBConnector::getInstance()->Update(getTableName(),
+                                       QString::fromStdString(uuid),
+                                       QString::fromStdString(stateUuid),
+                                       "uuid", QString::fromStdString(uuid));
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE components SET uuid=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(this->uuid));
 	q.addBindValue(QString::fromStdString(this->getStateUUID()));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 
     this->uuid=uuid;
 }
@@ -139,10 +169,26 @@ DM::Components Component::getType()
 {
     return DM::COMPONENT;
 }
+/*std::string Component::getTableName()
+{
+    switch(getType())
+    {
+        case COMPONENT:	return "components";
+        case NODE:		return "nodes";
+        case EDGE:		return "edges";
+        case FACE:		return "faces";
+        case SUBSYSTEM:	return "systems";
+        case RASTERDATA:return "rasterdatas";
+    }
+    return "";
+}*/
+QString Component::getTableName()
+{
+    return "components";
+}
 
 bool Component::addAttribute(std::string name, double val) 
 {
-    //if(ownedattributes.find(name)!=ownedattributes.end())
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
@@ -152,7 +198,6 @@ bool Component::addAttribute(std::string name, double val)
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
-    //if(ownedattributes.find(name)!=ownedattributes.end())
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
@@ -162,7 +207,6 @@ bool Component::addAttribute(std::string name, std::string val)
 
 bool Component::addAttribute(Attribute &newattribute)
 {
-    //if(ownedattributes.find(name)!=ownedattributes.end())
 	if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
 
@@ -175,8 +219,6 @@ bool Component::addAttribute(Attribute &newattribute)
 
 bool Component::changeAttribute(Attribute newattribute)
 {
-    //if(ownedattributes.find(newattribute.getName())==ownedattributes.end())
-    //	ownedattributes[newattribute.getName()] = new Attribute(*(ownedattributes[newattribute.getName()]));
 	if(!HasAttribute(newattribute.getName()))
 		return this->addAttribute(newattribute);
 
@@ -224,7 +266,6 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	//if(ownedattributes.find(name)!=ownedattributes.end())
 	if(HasAttribute(name))
 	{
 		delete ownedattributes[name];
@@ -236,7 +277,6 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
-	//if(ownedattributes.find(name)==ownedattributes.end())
     if(!HasAttribute(name))
     {
         Attribute tmp(name);
@@ -295,6 +335,7 @@ void Component::SetOwner(Component *owner)
 }
 void Component::SQLSetOwner(Component * owner)
 {
+    /*
 	QString strType;
 	switch(getType())
 	{
@@ -313,29 +354,43 @@ void Component::SQLSetOwner(Component * owner)
 		q.addBindValue(QString::fromStdString(this->getUUID()));
 		q.addBindValue(QString::fromStdString(this->getStateUUID()));
 		if(!q.exec())	PrintSqlError(&q);
-	}
+    }*/
+    DBConnector::getInstance()->Update(getTableName(),
+                                       QString::fromStdString(uuid),
+                                       QString::fromStdString(stateUuid),
+                                       "owner", QString::fromStdString(owner->uuid),
+                                       "stateuuid", QString::fromStdString(owner->stateUuid));
 }
 
 void Component::SQLInsertComponent()
 {
+    DBConnector::getInstance()->Insert("components",
+                                       QString::fromStdString(uuid),
+                                       QString::fromStdString(stateUuid),
+                                       "name", QString::fromStdString(name));
+    /*
 	QSqlQuery q;
 	q.prepare("INSERT INTO components (uuid,stateuuid,name) VALUES (?,?,?)");
 	q.addBindValue(QString::fromStdString(this->uuid));
 	q.addBindValue(QString::fromStdString(this->stateUuid));
 	q.addBindValue(QString::fromStdString(this->name));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 
-void Component::SQLDeleteComponentOnly()
+void Component::SQLDeleteComponent()
 {
-	// note: if its not a component, it will just do nothing
+    // note: if its not a component, it will just do nothing
+    DBConnector::getInstance()->Delete("components",
+                                       QString::fromStdString(uuid),
+                                       QString::fromStdString(stateUuid));
+    /*
 	QSqlQuery q;
 	q.prepare("DELETE FROM components WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(this->uuid));
 	q.addBindValue(QString::fromStdString(this->stateUuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
-
+/*
 void Component::SQLInsertAs(std::string type)
 {
 	QSqlQuery q;
@@ -345,16 +400,13 @@ void Component::SQLInsertAs(std::string type)
 	q.addBindValue(QString::fromStdString(this->name));
 	if(!q.exec())	PrintSqlError(&q);
 	// important: delete component entry in sql
-	SQLDeleteComponentOnly();
-}
+    // SQLDeleteComponentOnly();
+}*/
 
-void Component::SQLDeleteAs(std::string type)
+void Component::SQLDelete(QString type)
 {
-	QSqlQuery q;
-	q.prepare("DELETE FROM "+QString::fromStdString(type)+"s WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(this->uuid));
-	q.addBindValue(QString::fromStdString(this->stateUuid));
-	if(!q.exec())	PrintSqlError(&q);
+    DBConnector::getInstance()->Delete(type, QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid));
 }
 
 bool Component::HasAttribute(std::string name)

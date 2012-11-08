@@ -36,9 +36,6 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
-	/** @brief creates a rasterdata based on sql data */
-    //RasterData(QByteArray qba);
-
     RasterData(long  width, long  height, double  cellSize);
 
     RasterData(const RasterData &other);
@@ -66,9 +63,6 @@ public:
 
     Component * clone();
 private:
-	
-	//QByteArray GetValue();
-
 	//int linkID;
 
     long width;
@@ -86,7 +80,7 @@ private:
     //void createNewDataSet();
 
 	void SQLInsert();
-	void SQLDelete();
+    //void SQLDelete();
 	void SQLDeleteField();
 	void SQLInsertField(long width, long height, double value);
 	double SQLGetValue(long x, long y) const;
@@ -95,6 +89,8 @@ private:
 
 	int GetLinkID() const;
 	//void SQLSetValues();
+    /** @brief return table name */
+    QString getTableName();
 };
 typedef std::map<std::string, DM::RasterData*> RasterDataMap;
 }

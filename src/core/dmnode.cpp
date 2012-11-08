@@ -35,60 +35,54 @@
 //#include <QVariant>
 
 using namespace DM;
-/*
-Node::Node(QByteArray qba) : Component()
+
+Node::Node( double x, double y, double z) : Component(true)
 {
-	QDataStream stream(&qba, QIODevice::ReadOnly);
-	stream>>z;
-	stream>>y;
-	stream>>x;
+    //DBConnector::getInstance()->InsertX("nodes", "uuid", QString::fromStdString(uuid),
+    //                                    "value", QVariant::fromValue(438));
+
+    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",x,"y",y,"z",z);
+    //SQLInsert(x,y,z);
 }
 
-QByteArray Node::GetValue()
+Node::Node() : Component(true)
 {
-	QByteArray bytes;
-	QDataStream stream(&bytes, QIODevice::WriteOnly);
-	stream<<z;
-	stream<<y;
-	stream<<x;
-	return bytes;
-}*/
-
-Node::Node( double x, double y, double z) : Component()
-{
-	/*this->x=x;
-    this->y=y;
-    this->z=z;*/
-	SQLInsert(x,y,z);
+    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",0,"y",0,"z",0);
+    //SQLInsert(0,0,0);
 }
 
-Node::Node() : Component()
+Node::Node(const Node& n) : Component(n, true)
 {
-    /*this->x = 0;
-    this->y = 0;
-    this->z = 0;*/
-	SQLInsert(0,0,0);
-}
-
-Node::Node(const Node& n) : Component(n)
-{
-	/*this->x=x;
-    this->y=y;
-    this->z=z;*/
-	SQLInsert(n.getX(),n.getY(),n.getZ());
+    std::vector<double> v = n.get();
+    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",v[0],"y",v[1],"z",v[2]);
+    //SQLInsert(n.getX(),n.getY(),n.getZ());
 }
 Node::~Node()
 {
-	SQLDelete();
+    Component::SQLDelete("nodes");
 }
 DM::Components Node::getType()
 {
 	return DM::NODE;
 }
-
+QString Node::getTableName()
+{
+    return "nodes";
+}
 double Node::getX() const
 {
-    //return x;
+    QVariant value;
+    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+                                                    QString::fromStdString(stateUuid),
+                                          "x",      &value))
+        return value.toDouble();
+    /*
 	QSqlQuery q;
 	q.prepare("SELECT x FROM nodes WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(uuid));
@@ -96,46 +90,49 @@ double Node::getX() const
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())
 		return q.value(0).toDouble();
-
+*/
 	return 0;
 }
 
 double Node::getY() const
 {
-    //return y;
+    QVariant value;
+    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+                                                    QString::fromStdString(stateUuid),
+                                          "y",      &value))
+        return value.toDouble();
+    /*
 	QSqlQuery q;
 	q.prepare("SELECT y FROM nodes WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())
-		return q.value(0).toDouble();
-
+        return q.value(0).toDouble();*/
 	return 0;
 }
 
 double Node::getZ() const
 {
-    //return z;
+    QVariant value;
+    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+                                                    QString::fromStdString(stateUuid),
+                                          "z",      &value))
+        return value.toDouble();
+    /*
 	QSqlQuery q;
 	q.prepare("SELECT z FROM nodes WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())
-		return q.value(0).toDouble();
-
+        return q.value(0).toDouble();*/
 	return 0;
 }
-/*
-const double * const
-Node::get() const {
-    return v_;
-}*/
 
-const QVector<double> Node::get() const
+const std::vector<double> Node::get() const
 {
-    QVector<double> v;
+    std::vector<double> v;
     v.push_back(getX());
     v.push_back(getY());
     v.push_back(getZ());
@@ -151,91 +148,132 @@ const double Node::get(unsigned int i) const {
 
 void Node::setX(double x)
 {
-    //this->x=x;
+    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",     QVariant::fromValue(x));
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE nodes SET x=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(x);
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);}
+    if(!q.exec())	PrintSqlError(&q);*/
+}
 
 void Node::setY(double y)
 {
-    //this->y=y;
-	QSqlQuery q;
+    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "y",     QVariant::fromValue(y));
+    /*QSqlQuery q;
 	q.prepare("UPDATE nodes SET y=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(y);
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);}
+    if(!q.exec())	PrintSqlError(&q);*/
+}
 
 void Node::setZ(double z)
 {
-    //this->z=z;
-	QSqlQuery q;
+    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "z",     QVariant::fromValue(z));
+    /*QSqlQuery q;
 	q.prepare("UPDATE nodes SET z=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(z);
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);}
+    if(!q.exec())	PrintSqlError(&q);*/
+}
 
 Component* Node::clone()
 {
     return new Node(*this);
 }
 
-
 bool Node::operator ==(const Node & other) const 
 {
-    //return this->x == other.getX() && this->y == other.getY() && this->z == other.getZ();
-	return this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() == other.getZ();
+    std::vector<double> vOther = other.get();
+    std::vector<double> vThis = this->get();
+    return vOther == vThis;
+    //return  this->getX() == other.getX() &&
+    //        this->getY() == other.getY() &&
+    //        this->getZ() == other.getZ();
 }
 Node Node::operator -(const Node & other) const 
 {
-    //return(Node(this->x - other.getX(), this->y - other.getY(), this->z - other.getZ()));
-    return(Node(this->getX() - other.getX(), this->getY() - other.getY(), this->getZ() - other.getZ()));
+    std::vector<double> vOther = other.get();
+    std::vector<double> vThis = this->get();
+    return Node(vThis[0]-vOther[0],
+                vThis[1]-vOther[1],
+                vThis[2]-vOther[2]);
+    //return(Node(this->getX() - other.getX(),
+    //            this->getY() - other.getY(),
+    //            this->getZ() - other.getZ()));
 }
 
 Node Node::operator +(const Node & other) const 
 {
-    //return(Node(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ()));
-    return(Node(this->getX() + other.getX(), this->getY() + other.getY(), this->getZ() + other.getZ()));
+    std::vector<double> vOther = other.get();
+    std::vector<double> vThis = this->get();
+    return Node(vThis[0]+vOther[0],
+                vThis[1]+vOther[1],
+                vThis[2]+vOther[2]);
+    //return(Node(this->getX() + other.getX(), this->getY() + other.getY(), this->getZ() + other.getZ()));
 }
 
 Node Node::operator *(const double &val) const
 {
-    return(Node(this->getX() * val, this->getY()  * val, this->getZ() * val));
+    std::vector<double> vThis = this->get();
+    return Node(vThis[0]*val,
+                vThis[1]*val,
+                vThis[2]*val);
+    //return(Node(this->getX() * val, this->getY()  * val, this->getZ() * val));
 }
 
 Node Node::operator /(const double &val) const
 {
-    return(Node(this->getX() / val, this->getY()  / val, this->getZ() / val));
+    std::vector<double> vThis = this->get();
+    return Node(vThis[0]/val,
+                vThis[1]/val,
+                vThis[2]/val);
+    //return(Node(this->getX() / val, this->getY()  / val, this->getZ() / val));
 }
 
 bool Node::compare2d(const Node &other, double round ) const 
 {
-    //return fabs( this->x - other.getX() ) <= round   &&  fabs( this->y - other.getY() ) <= round;
-    return fabs( this->getX() - other.getX() ) <= round   &&  fabs( this->getY() - other.getY() ) <= round;
+    std::vector<double> vOther = other.get();
+    std::vector<double> vThis = this->get();
+    return fabs(vThis[0]-vOther[0]) <= round &&
+           fabs(vThis[1]-vOther[1]) <= round;
+    //return fabs( this->getX() - other.getX() ) <= round   &&  fabs( this->getY() - other.getY() ) <= round;
 }
 
 bool Node::compare2d(const Node * other , double round ) const 
 {
-    //return fabs( this->x - other->getX() ) <= round   &&  fabs( this->y - other->getY() ) <= round;
-    return fabs( this->getX() - other->getX() ) <= round   &&  fabs( this->getY() - other->getY() ) <= round;
+    return compare2d(*other, round);
+    //return fabs( this->getX() - other->getX() ) <= round   &&  fabs( this->getY() - other->getY() ) <= round;
 }
-
+/*
 void Node::SQLInsert(double x,double y,double z)
 {
 	SQLInsertAs("node");
 	SQLSetValues(x,y,z);
-}
+}*/
+/*
 void Node::SQLDelete()
 {
 	SQLDeleteAs("node");
-}
+}*/
 
 void Node::SQLSetValues(double x,double y,double z)
 {
+    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",     QVariant::fromValue(x),
+                                       "y",     QVariant::fromValue(y),
+                                       "z",     QVariant::fromValue(z));
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE nodes SET x=?,y=?,z=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
 	q.addBindValue(x);
@@ -243,5 +281,5 @@ void Node::SQLSetValues(double x,double y,double z)
 	q.addBindValue(z);
 	q.addBindValue(QString::fromStdString(uuid));
 	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }

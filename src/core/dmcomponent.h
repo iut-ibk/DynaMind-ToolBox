@@ -71,16 +71,14 @@ private:
 
 
 	void SQLInsertComponent();
-	void SQLDeleteComponentOnly();
+    void SQLDeleteComponent();
 
-	//virtual QByteArray GetValue(){return QByteArray();};
-	
 	bool HasAttribute(std::string name);
 	void LoadAttribute(std::string name);
 protected:
 	std::string stateUuid;
-	void SQLInsertAs(std::string type);
-	void SQLDeleteAs(std::string type);
+    //void SQLInsertAs(std::string type);
+    void SQLDelete(QString type);
 
     std::string uuid;
     std::string name;
@@ -95,6 +93,13 @@ protected:
 
     /** @brief Copies a component, also the UUID is copied! */
     //Component(const Component& s, System* sys);
+
+    /** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
+    Component(bool b);
+    /** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
+    Component(const Component& s, bool b);
+    /** @brief return table name */
+    virtual QString getTableName();
 public:
     /** @brief create a new component
       *
@@ -109,7 +114,7 @@ public:
     /** @brief setUUID */
     virtual void setUUID(std::string uuid);
     /** @brief return Type */
-	virtual Components getType();
+    virtual Components getType();
     /** @brief return UUID */
     std::string getUUID();
     /** @brief return UUID */

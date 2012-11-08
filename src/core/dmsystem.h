@@ -93,7 +93,7 @@ private:
     DM::Module * lastModule;
 
 	void SQLInsert();
-	void SQLDelete();
+    //void SQLDelete();
 	void SQLUpdateStates();
 	//void SQLSetStateUUID(std::string newstduuid);
 	/*
@@ -109,6 +109,8 @@ private:
     Component* getChild(std::string name);
 
     Component * updateChild(Component * c);
+    /** @brief return table name */
+    QString getTableName();
 protected:
 	std::string getStateUuid();
 public:

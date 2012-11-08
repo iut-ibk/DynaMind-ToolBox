@@ -66,20 +66,12 @@ public:
 private:
 	std::string _uuid;	// this one is really unique
     std::string name;
-	/*
-    double doublevalue;
-    std::string stringvalue;
-    std::vector<double> doublevector;
-    std::vector<std::string> stringvector;*/
     std::set<std::string> inViews;
-
-    //AttributeType type;
-
 
 	void SQLInsertThis(AttributeType type);
 	void SQLDeleteThis();
 	void SQLUpdateValue(QByteArray qba);
-	void SQLSetOwner(Component* owner);
+    //void SQLSetOwner(Component* owner);
 	void SQLSetName(std::string newname);
 	void SQLSetType(AttributeType newtype);
 	bool SQLGetValue(QVariant &value);
@@ -129,6 +121,7 @@ public:
     void setName(std::string name);
     /** @brief get name */
     std::string getName();
+    /** @brief destructor */
     ~Attribute();
     /** @brief return datatype*/
     AttributeType getType() const;

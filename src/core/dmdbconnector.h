@@ -32,6 +32,18 @@
 
 namespace DM {
 
+class DMSqlParameter
+{
+public:
+    QString name;
+    QVariant value;
+    DMSqlParameter(QString name, QVariant value)
+    {
+        this->name = name;
+        this->value = value;
+    }
+};
+
 class DBConnector
 {
 private:
@@ -43,9 +55,65 @@ private:
 public:
 	static DBConnector* getInstance();
 	void beginTransaction();
-	void endTransaction();
+    void endTransaction();
+    // inserts with uuid
+    void Insert(QString table,  QString uuid);
+    void Insert(QString table,  QString uuid,
+                                QString parName0, QVariant parValue0);
+    void Insert(QString table,  QString uuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1);
+    // inserts with uuid and stateuuid
+    void Insert(QString table,  QString uuid, QString stateUuid);
+    void Insert(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0);
+    void Insert(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1);
+    void Insert(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1,
+                                QString parName2, QVariant parValue2);
+    // updates with uuid
+    void Update(QString table,  QString uuid,
+                                QString parName0, QVariant parValue0);
+    void Update(QString table,  QString uuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1);
+    void Update(QString table,  QString uuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1,
+                                QString parName2, QVariant parValue2);
+    // updates with uuid and stateuuid
+    void Update(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0);
+    void Update(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1);
+    void Update(QString table,  QString uuid, QString stateUuid,
+                                QString parName0, QVariant parValue0,
+                                QString parName1, QVariant parValue1,
+                                QString parName2, QVariant parValue2);
+    // delete with uuid
+    void Delete(QString table,  QString uuid);
+    // delete with uuid and stateuuid
+    void Delete(QString table,  QString uuid, QString stateUuid);
+    // select single entry with uuid
+    bool Select(QString table, QString uuid,
+                QString valName, QVariant *value);
+    bool Select(QString table, QString uuid,
+                QString valName0, QVariant *value0,
+                QString valName1, QVariant *value1);
+    // select single entry with uuid and stateuuid
+    bool Select(QString table, QString uuid, QString stateuuid,
+                QString valName, QVariant *value);
+    bool Select(QString table, QString uuid, QString stateuuid,
+                QString valName0, QVariant *value0,
+                QString valName1, QVariant *value1);
 
-	static int GetNewLinkID();
+    //void InsertX(std::string table, ...);
+
+    static int GetNewLinkID();
 };
 
 void PrintSqlError(QSqlQuery *q);

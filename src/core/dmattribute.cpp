@@ -52,9 +52,6 @@ QByteArray GetBinaryValue(std::vector<std::string> v)
 	return bytes;
 }
 
-
-
-
 QByteArray GetBinaryValue(std::vector<LinkAttribute> v)
 {
 	QByteArray bytes;
@@ -114,7 +111,6 @@ std::vector<std::string> ToStringVector(QVariant q)
 Attribute::Attribute()
 {
     this->name="";
-    //this->type = Attribute::NOTYPE;
 
 	DBConnector::getInstance();
 	SQLInsertThis(NOTYPE);
@@ -122,37 +118,27 @@ Attribute::Attribute()
 Attribute::Attribute(const Attribute &newattribute)
 {
     this->name=newattribute.name;
-    //this->doublevalue=newattribute.doublevalue;
-    //this->stringvalue=newattribute.stringvalue;
-    //this->doublevector=newattribute.doublevector;
-    //this->stringvector=newattribute.stringvector;
-    //this->type = newattribute.type;
 	SQLInsertThis(newattribute.getType());
 }
 
 Attribute::Attribute(std::string name)
 {
     this->name=name;
-    //this->type = Attribute::NOTYPE;
 	SQLInsertThis(NOTYPE);
 }
 
 
 Attribute::Attribute(std::string name, double val)
 {
-    //this->doublevalue = val;
     this->name=name;
 
-    //this->type = Attribute::DOUBLE;
 	SQLInsertThis(DOUBLE);
 	this->setDouble(val);
 }
 Attribute::Attribute(std::string name, std::string val)
 {
-    //this->stringvalue = val;
     this->name=name;
 
-    //this->type = Attribute::STRING;
 	SQLInsertThis(STRING);
 	setString(val);
 }
@@ -164,12 +150,17 @@ Attribute::~Attribute()
 
 Attribute::AttributeType Attribute::getType() const
 {
+    QVariant value;
+    if(DBConnector::getInstance()->Select("attributes", QString::fromStdString(_uuid), "type", &value))
+        return (AttributeType)value.toInt();
+    return NOTYPE;
+/*
 	QSqlQuery q;
 	q.prepare("SELECT type FROM attributes WHERE uuid=?");
 	q.addBindValue(QString::fromStdString(_uuid));
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())	return (AttributeType)q.value(0).toInt();
-    return NOTYPE;
+    return NOTYPE;*/
 }
 
 void Attribute::setName(std::string name)
@@ -185,14 +176,11 @@ std::string Attribute::getName()
 
 void Attribute::setDouble(double v)
 {
-    //doublevalue=v;
-    //this->type = Attribute::DOUBLE;
 	SQLSetValue(DOUBLE, v);
 }
 
 double Attribute::getDouble()
 {
-    //return doublevalue;
 	QVariant value;
 	if(SQLGetValue(value))	return value.toDouble();
 	return 0;
@@ -200,14 +188,11 @@ double Attribute::getDouble()
 
 void Attribute::setString(std::string s)
 {
-    //stringvalue=s;
-    //this->type = Attribute::STRING;
 	SQLSetValue(STRING, QString::fromStdString(s));
 }
 
 std::string Attribute::getString()
 {
-    //return stringvalue;
 	QVariant value;
 	if(SQLGetValue(value))	return value.toString().toStdString();
 	return "";
@@ -215,14 +200,11 @@ std::string Attribute::getString()
 
 void Attribute::setDoubleVector(std::vector<double> v)
 {
-    //doublevector=v;
-    //this->type = Attribute::DOUBLEVECTOR;
 	SQLSetValue(DOUBLEVECTOR, GetBinaryValue(v));
 }
 
 std::vector<double> Attribute::getDoubleVector()
 {
-    //return doublevector;
 	QVariant value;
 	if(SQLGetValue(value))	return ToDoubleVector(value);
 	return std::vector<double>();
@@ -230,14 +212,11 @@ std::vector<double> Attribute::getDoubleVector()
 
 void Attribute::setStringVector(std::vector<std::string> s)
 {
-    //stringvector=s;
-    //this->type = Attribute::STRINGVECTOR;
 	SQLSetValue(STRINGVECTOR, GetBinaryValue(s));
 }
 
 std::vector<std::string> Attribute::getStringVector()
 {
-    //return stringvector;
 	QVariant value;
 	if(SQLGetValue(value))	return ToStringVector(value);
 	return std::vector<string>();
@@ -270,10 +249,6 @@ bool Attribute::hasStringVector()
 
 void Attribute::setLink(string viewname, string uuid)
 {
-	/*
-    this->type = Attribute::LINK;
-    this->stringvector.push_back(viewname);
-    this->stringvector.push_back(uuid);*/
 	std::vector<LinkAttribute> links = getLinks();
 	LinkAttribute att;
 	att.uuid = uuid;
@@ -284,12 +259,6 @@ void Attribute::setLink(string viewname, string uuid)
 
 void Attribute::setLinks(std::vector<LinkAttribute> links)
 {
-    //this->type = Attribute::LINK;
-    /*this->stringvector.clear();
-    foreach (LinkAttribute attr, links) {
-        this->stringvector.push_back(attr.viewname);
-        this->stringvector.push_back(attr.uuid);
-    }*/
 	SQLSetValue(LINK, GetBinaryValue(links));
 }
 
@@ -300,18 +269,7 @@ LinkAttribute Attribute::getLink()
 	{
 		std::vector<LinkAttribute> linkvector = ToLinkVector(value);
 		if(linkvector.size())
-			return linkvector[0];
-		/*
-		LinkAttribute attr;
-		if (stringvector.size() < 2) 
-		{
-			Logger(Warning) << "Couldn't find link " << this->getName();
-			return LinkAttribute();
-		}
-		attr.viewname = stringvector[0];
-		attr.uuid = stringvector[1];
-		return attr;
-		*/
+            return linkvector[0];
 	}
 	return LinkAttribute();
 }
@@ -322,16 +280,8 @@ std::vector<LinkAttribute> Attribute::getLinks()
 
 	QVariant value;
 	if(SQLGetValue(value))
-	{
-		linkvector = ToLinkVector(value);
-		/*
-		for (unsigned int i = 0; i < stringvector.size(); i+=2) {
-			LinkAttribute attr;
-			attr.viewname = stringvector[i];
-			attr.uuid = stringvector[i+1];
-			links.push_back(attr);
-		}*/
-	}
+        linkvector = ToLinkVector(value);
+
     return linkvector;
 }
 
@@ -342,11 +292,6 @@ void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<do
         DM::Logger(DM::Error) << "Length of time and value vector are not equal";
         return;
     }
-	/*
-    this->type = Attribute::TIMESERIES;
-    this->doublevector = value;
-    this->stringvector = timestamp;
-	SQLUpdateValue();*/
 	QByteArray qba;
 	QDataStream s(&qba, QIODevice::WriteOnly);
 	s << (int)value.size();
@@ -371,10 +316,7 @@ void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<d
 	{
         DM::Logger(DM::Error) << "timestamp or value are equal null";
         return;
-	}
-	
-	QVector<double> qdoublevector;
-	QVector<QString> qstringvector;
+    }
 	
 	double dbl;
 	QString str;
@@ -384,21 +326,12 @@ void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<d
 		s >> str;
 		value->push_back(dbl);
 		timestamp->push_back(str.toStdString());
-	}
-	/*
-	if(!timestamp || !value)
-	{
-        DM::Logger(DM::Error) << "timestamp or value are equal null";
-        return;
-	}*/
-	//value = doublevector;
-	//*timestamp = stringvector;
+    }
 }
 
 void Attribute::setType(AttributeType type)
 {
-	SQLSetType(type);
-    //this->type = type;
+    SQLSetType(type);
 }
 
 const char *Attribute::getTypeName() const
@@ -419,96 +352,51 @@ const char *Attribute::getTypeName(Attribute::AttributeType type)
     };
     return arr[type];
 }
-
-/*
-QByteArray Attribute::getValue(AttributeType type)
-{
-	QByteArray bytes;
-
-	QDataStream s(&bytes, QIODevice::WriteOnly);
-	switch(type)
-	{
-	case NOTYPE:
-		break;
-	case DOUBLE:
-		s << doublevalue;
-		break;
-	case STRING:
-		s << QString::fromStdString(stringvalue);
-		break;
-	case DOUBLEVECTOR:
-		s << QVector<double>::fromStdVector(doublevector);
-		break;
-	case STRINGVECTOR:
-		s << QVector<QString>::fromStdVector(DBConnector::ToStdString(stringvector));
-		break;
-	case TIMESERIES:
-		// TODO order?
-		s << QVector<double>::fromStdVector(doublevector);
-		s << QVector<QString>::fromStdVector(DBConnector::ToStdString(stringvector));
-		break;
-	case LINK:	// TODO
-		break;
-	}
-	return bytes;
-}
-void Attribute::setValue(QByteArray bytes)
-{
-	switch(getType())
-	{
-	case NOTYPE:
-		break;
-	case DOUBLE:
-		doublevalue = bytes.toDouble();
-		break;
-	case STRING:
-		stringvalue = QString(bytes).toStdString();
-		break;
-	case DOUBLEVECTOR:
-		doublevector = DBConnector::GetDoubleVector(bytes);
-		break;
-	case STRINGVECTOR:
-		stringvector = DBConnector::GetStringVector(bytes);
-		break;
-	case TIMESERIES:
-		doublevector = DBConnector::GetDoubleVector(bytes);
-		stringvector = DBConnector::GetStringVector(bytes);
-		break;
-	case LINK:	// TODO
-		break;
-	}
-}*/
 void Attribute::SQLInsertThis(AttributeType type)
 {
 	_uuid = QUuid::createUuid().toString().toStdString();
+
+
+    DBConnector::getInstance()->Insert("attributes", QString::fromStdString(_uuid),
+                                       "name", QString::fromStdString(name),
+                                       "type", QVariant::fromValue((int)type));
+/*
 	QSqlQuery q;
 	q.prepare("INSERT INTO attributes (uuid,name,type) VALUES (?,?,?)");
 	q.addBindValue(QString::fromStdString(_uuid));
 	q.addBindValue(QString::fromStdString(name));
 	q.addBindValue((int)type);
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 void Attribute::SQLDeleteThis()
-{	
-	QSqlQuery q;
+{
+    DBConnector::getInstance()->Delete("attributes", QString::fromStdString(_uuid));
+    /*QSqlQuery q;
 	q.prepare("DELETE FROM attributes WHERE uuid=?");
 	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 void Attribute::SQLUpdateValue(QByteArray qba)
 {	
+    DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
+                                       "value",qba);
+/*
 	QSqlQuery q;
 	q.prepare("UPDATE attributes SET value=? WHERE uuid=?");
 	q.addBindValue(qba);
 	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 void Attribute::SetOwner(Component* owner)
 {
 	// TODO: make shure its not bound to another component
-	SQLSetOwner(owner);
+    DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
+                                       "owner",     QString::fromStdString(owner->getUUID()),
+                                       "stateuuid", QString::fromStdString(owner->getStateUUID()));
+    //SQLSetOwner(owner);
 }
+/*
 void Attribute::SQLSetOwner(Component* owner)
 {
 	QSqlQuery q;
@@ -517,27 +405,36 @@ void Attribute::SQLSetOwner(Component* owner)
 	q.addBindValue(QString::fromStdString(owner->getStateUUID()));
 	q.addBindValue(QString::fromStdString(_uuid));
 	if(!q.exec())	PrintSqlError(&q);
-}
+}*/
 void Attribute::SQLSetName(std::string newname)
 {	
+    DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
+                                       "name",      QString::fromStdString(newname));
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE attributes SET name=? WHERE uuid=?");
 	q.addBindValue(QString::fromStdString(newname));
 	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 void Attribute::SQLSetType(AttributeType newtype)
 {
+    DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
+                                       "type",      QVariant::fromValue((int)newtype),
+                                       "value",     QVariant::fromValue(0));
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE attributes SET type=?,value=NULL WHERE uuid=?");
 	q.addBindValue(newtype);
 	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 bool Attribute::SQLGetValue(QVariant &value)
 {
-	QSqlQuery q;
+    return DBConnector::getInstance()->Select("attributes",
+                                              QString::fromStdString(_uuid), "value", &value);
+    /*QSqlQuery q;
 	q.prepare("SELECT value FROM attributes WHERE uuid=?");
 	q.addBindValue(QString::fromStdString(_uuid));
 	if(q.exec())	
@@ -550,14 +447,18 @@ bool Attribute::SQLGetValue(QVariant &value)
 	}
 	else
 		PrintSqlError(&q);
-	return false;
+    return false;*/
 }
 void Attribute::SQLSetValue(AttributeType type, QVariant value)
 {
+    DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
+                                        "type",      QVariant::fromValue((int)type),
+                                        "value",     value);
+    /*
 	QSqlQuery q;
 	q.prepare("UPDATE attributes SET type=?,value=? WHERE uuid=?");
 	q.addBindValue((int)type);
 	q.addBindValue(value);
 	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
+    if(!q.exec())	PrintSqlError(&q);*/
 }

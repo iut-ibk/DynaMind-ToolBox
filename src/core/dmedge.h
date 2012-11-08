@@ -42,16 +42,13 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
-        //std::string start;
-        //std::string end;
-		
-		//virtual QByteArray GetValue();
-		void SQLInsert(std::string start, std::string end);
-		void SQLDelete();
+        //void SQLInsert(std::string start, std::string end);
+        //void SQLDelete();
 		void SQLSetValues(std::string start, std::string end);
+        const std::vector<std::string> getPoints() const;
+        /** @brief return table name */
+        QString getTableName();
     public:
-		/** @brief creates a node based on sql data */
-		//Edge(QByteArray qba);
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         Edge(std::string startpoint, std::string endpoint);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
