@@ -112,7 +112,6 @@ Component::~Component()
         delete (*ownedattributes.begin()).second;
         ownedattributes.erase(ownedattributes.begin());
     }
-
     delete mMutex;
 }
 
@@ -127,6 +126,7 @@ std::string Component::getUUID()
 }
 
 bool Component::addAttribute(std::string name, double val) {
+    QMutexLocker locker(mMutex);
     if(attributesview.find(name)!=attributesview.end()) {
         return this->changeAttribute(name, val);
     }
