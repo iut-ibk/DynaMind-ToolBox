@@ -34,6 +34,7 @@
 #include <dmporttuple.h>
 
 namespace {
+/*
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -211,22 +212,42 @@ TEST_F(TestSimulation,simplesqltest) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
-
+*/
 
 TEST_F(TestSimulation,sqlprofiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Test Profiling (SQL)";
 
-    for(int i=0;i<10000;i++)
+
+    QElapsedTimer timer;
+    timer.start();
+
+    for(int i=0;i<1000;i++)
     {
         //DM::Logger(DM::Standard) << "iteration "<<i;
         DM::Node* n = new DM::Node(0,0,0);
         n->setX(1.0);
         delete n;
     }
-}
 
+    DM::Logger(DM::Standard) << "time for single nodes: " << (long)timer.elapsed();
+
+    timer.restart();
+    DM::Node* baseNode = new DM::Node(0,0,0);
+    DM::System* sys = new System();
+    for(int i=0;i<1000;i++)
+    {
+        //DM::Logger(DM::Standard) << "iteration "<<i;
+        DM::Node n(*baseNode);
+        sys->addNode(n);
+    }
+    delete baseNode;
+    delete sys;
+
+    DM::Logger(DM::Standard) << "time for attached and copied nodes: " << (long)timer.elapsed();
+}
+/*
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
