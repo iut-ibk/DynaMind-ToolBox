@@ -54,7 +54,7 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
 
     std::vector<DM::Node*> ns_t;
     double z_const = 0;
-    for (int i = 0; i < nodes.size(); i++) {
+    for (unsigned int i = 0; i < nodes.size(); i++) {
         DM::Node n = *(nodes[i]);
         DM::Node n_t = TBVectorData::RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -87,12 +87,10 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
 
     int numberOfSegments = l / distance;
 
-    double true_distance = l / numberOfSegments;
-
     std::vector<DM::Node> window_nodes;
 
     //We will distribute the windows equally as parapet height we asume 0.80 m
-    for (int i = 0; i < numberOfSegments; i++) {
+    for (unsigned int i = 0; i < numberOfSegments; i++) {
         //Center of the new window
         double delta_y = l / (numberOfSegments+1) * (i+1) + ymin;
 
@@ -127,9 +125,9 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
         window_nodes_t.push_back(window_nodes_t[0]);
 
 
-        dN1 = *(window_nodes_t[1]) - *(window_nodes_t[0]);
-        dN2 = *(window_nodes_t[2]) - *(window_nodes_t[0]);
-        DM::Node orientationOriginal_window = TBVectorData::NormalVector(dN1, dN2);
+        DM::Node dN1_1 = *(window_nodes_t[1]) - *(window_nodes_t[0]);
+        DM::Node dN2_1  = *(window_nodes_t[2]) - *(window_nodes_t[0]);
+        DM::Node orientationOriginal_window = TBVectorData::NormalVector(dN1_1, dN2_1);
 
         DM::Node checkDir = orientationOriginal - orientationOriginal_window;
         if (fabs(checkDir.getX()) > 0.0001 ||
@@ -145,4 +143,66 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
         DM::Logger(DM::Debug) << "Add Window";
     }
     return windows;
+}
+
+void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View & buildingView, DM::View & geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  & footprint, int stories)
+{
+    std::vector<double> roofColor;
+    roofColor.push_back(0.66);
+    roofColor.push_back(0.66);
+    roofColor.push_back(0.66);
+    std::vector<double> wallColor;
+    wallColor.push_back(0.96);
+    wallColor.push_back(0.96);
+    wallColor.push_back(0.86);
+    std::vector<double> windowColor;
+    windowColor.push_back(0.5019608);
+    windowColor.push_back(1.0);
+    windowColor.push_back(0.5019608);
+
+    //Set footprint as floor
+    DM::Face * base_plate = city->addFace(footprint, geometryView);
+    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", base_plate->getUUID());
+    base_plate->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+    base_plate->addAttribute("type", "ceiling_cellar");
+
+    //The Building is extruded stepwise. Housenodes is used as a starting point for the extusion
+    std::vector<DM::Node*> houseNodes = footprint;
+    //Create Walls
+    for (int story = 0; story < stories; story++) {
+        std::vector<DM::Face*> extruded_faces = TBVectorData::ExtrudeFace(city, geometryView, houseNodes, 3);
+        int lastID = extruded_faces.size();
+        for (int i = 0; i < lastID; i++) {
+            DM::Face * f = extruded_faces[i];
+            if (i != lastID-1) {
+                f->addAttribute("type", "wall_outside");
+                f->getAttribute("color")->setDoubleVector(wallColor);
+                std::vector<DM::Face* > windows = CuteLittleGeometryHelpers::CreateHolesInAWall(city, f, 5, 1.5, 1);
+                foreach (DM::Face * w, windows) {
+                    w->addAttribute("type", "window");
+                    w->getAttribute("color")->setDoubleVector(windowColor);
+                    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", w->getUUID());
+                    f->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+                    city->addComponentToView(w,geometryView);
+                }
+            }
+            else if (story != stories -1){
+                f->addAttribute("type", "ceiling");
+                f->getAttribute("color")->setDoubleVector(wallColor);
+                houseNodes = TBVectorData::getNodeListFromFace(city, f);
+                //Reverse otherwise extruded walls have the wrong orientation
+                //std::reverse(houseNodes.begin(), houseNodes.end());
+            } else {
+                f->addAttribute("type", "ceiling_roof");
+                //std::reverse(houseNodes.begin(), houseNodes.end());
+                f->getAttribute("color")->setDoubleVector(roofColor);
+            }
+            BuildingInterface->getAttribute("Geometry")->setLink("Geometry", f->getUUID());
+            f->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+
+        }
+    }
+
+
+
 }
