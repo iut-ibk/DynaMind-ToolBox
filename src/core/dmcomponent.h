@@ -66,7 +66,6 @@ class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 private:
-	void SetOwner(Component *owner);
 	void SQLSetOwner(Component *owner);
 
 
@@ -76,6 +75,8 @@ private:
 	bool HasAttribute(std::string name);
 	void LoadAttribute(std::string name);
 protected:
+    /* @brief Sets stateUuid and ownership in sql db*/
+    void SetOwner(Component *owner);
 	std::string stateUuid;
     //void SQLInsertAs(std::string type);
     void SQLDelete(QString type);

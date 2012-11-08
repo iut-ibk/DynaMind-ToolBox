@@ -72,12 +72,12 @@ public:
     double getY() const;
     /** @brief return z*/
     double getZ() const;
-    /** @brief return array*/	// WARNING: as of sql access, this isnt possible anymore, use get(unsigned int i) instead
-    //const double * const get() const;
-    const std::vector<double> get() const;
-    /** @brief return coordinates*/
+    /** @brief return coordinates */
     const double get(unsigned int i) const;
-
+    /** @brief writes a xyz-double[3] into the given vector */
+    const void get(double *vector) const;
+    /** @brief returns all edges connecting this node */
+    //std::vector<std::string> getEdges() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/

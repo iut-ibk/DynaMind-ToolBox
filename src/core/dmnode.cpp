@@ -57,7 +57,8 @@ Node::Node() : Component(true)
 
 Node::Node(const Node& n) : Component(n, true)
 {
-    std::vector<double> v = n.get();
+    double v[3];
+    n.get(v);
     DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
                                        "x",v[0],"y",v[1],"z",v[2]);
@@ -130,13 +131,22 @@ double Node::getZ() const
 	return 0;
 }
 
-const std::vector<double> Node::get() const
+const void Node::get(double *vector) const
 {
-    std::vector<double> v;
+    QVariant v[3];
+    DBConnector::getInstance()->Select("nodes", QString::fromStdString(uuid),
+                                                QString::fromStdString(stateUuid),
+                                       "x",     &v[0],
+                                       "y",     &v[1],
+                                       "z",     &v[2]);
+    vector[0] = v[0].toDouble();
+    vector[1] = v[1].toDouble();
+    vector[2] = v[2].toDouble();
+    /*std::vector<double> v;
     v.push_back(getX());
     v.push_back(getY());
     v.push_back(getZ());
-    return v;
+    return v;*/
 }
 
 const double Node::get(unsigned int i) const {
@@ -193,59 +203,61 @@ Component* Node::clone()
 
 bool Node::operator ==(const Node & other) const 
 {
-    std::vector<double> vOther = other.get();
-    std::vector<double> vThis = this->get();
-    return vOther == vThis;
-    //return  this->getX() == other.getX() &&
-    //        this->getY() == other.getY() &&
-    //        this->getZ() == other.getZ();
+    double v0[3];
+    double v1[3];
+    this->get(v0);
+    other.get(v1);
+    return v0[0] == v1[0] &&
+           v0[1] == v1[1] &&
+           v0[2] == v1[2];
 }
 Node Node::operator -(const Node & other) const 
 {
-    std::vector<double> vOther = other.get();
-    std::vector<double> vThis = this->get();
-    return Node(vThis[0]-vOther[0],
-                vThis[1]-vOther[1],
-                vThis[2]-vOther[2]);
-    //return(Node(this->getX() - other.getX(),
-    //            this->getY() - other.getY(),
-    //            this->getZ() - other.getZ()));
+    double v0[3];
+    double v1[3];
+    this->get(v0);
+    other.get(v1);
+    return Node(v0[0]-v1[0],
+                v0[1]-v1[1],
+                v0[2]-v1[2]);
 }
 
 Node Node::operator +(const Node & other) const 
 {
-    std::vector<double> vOther = other.get();
-    std::vector<double> vThis = this->get();
-    return Node(vThis[0]+vOther[0],
-                vThis[1]+vOther[1],
-                vThis[2]+vOther[2]);
-    //return(Node(this->getX() + other.getX(), this->getY() + other.getY(), this->getZ() + other.getZ()));
+    double v0[3];
+    double v1[3];
+    other.get(v0);
+    this->get(v1);
+    return Node(v0[0]+v1[0],
+                v0[1]+v1[1],
+                v0[2]+v1[2]);
 }
-
 Node Node::operator *(const double &val) const
 {
-    std::vector<double> vThis = this->get();
-    return Node(vThis[0]*val,
-                vThis[1]*val,
-                vThis[2]*val);
-    //return(Node(this->getX() * val, this->getY()  * val, this->getZ() * val));
+    double v0[3];
+    this->get(v0);
+    return Node(v0[0]*val,
+                v0[1]*val,
+                v0[2]*val);
 }
 
 Node Node::operator /(const double &val) const
 {
-    std::vector<double> vThis = this->get();
-    return Node(vThis[0]/val,
-                vThis[1]/val,
-                vThis[2]/val);
-    //return(Node(this->getX() / val, this->getY()  / val, this->getZ() / val));
+    double v0[3];
+    this->get(v0);
+    return Node(v0[0]/val,
+                v0[1]/val,
+                v0[2]/val);
 }
 
 bool Node::compare2d(const Node &other, double round ) const 
 {
-    std::vector<double> vOther = other.get();
-    std::vector<double> vThis = this->get();
-    return fabs(vThis[0]-vOther[0]) <= round &&
-           fabs(vThis[1]-vOther[1]) <= round;
+    double v0[3];
+    double v1[3];
+    other.get(v0);
+    this->get(v1);
+    return fabs(v0[0]-v1[0]) <= round &&
+           fabs(v0[1]-v1[1]) <= round;
     //return fabs( this->getX() - other.getX() ) <= round   &&  fabs( this->getY() - other.getY() ) <= round;
 }
 

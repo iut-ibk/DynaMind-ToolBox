@@ -62,7 +62,7 @@ System::System(const System& s) : Component(s, true)
     //std::map<std::string,Component*>::iterator it;
     std::map<std::string,Component*> childmap = s.ownedchilds;
 	
-    for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); it++ )
+    for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
     {
 		this->addChild(it->second->clone());
     }
@@ -211,23 +211,25 @@ Node* System::addNode(Node* node)
     this->updateViews(node);
     return node;
 }
+Node* System::addNode(const Node &n,  const DM::View & view)
+{
+    double v[3];
+    n.get(v);
+    return this->addNode(v[0],v[1],v[2], view);
+}
 Node* System::addNode(double x, double y, double z,  const DM::View & view) {
 
     Node * n = this->addNode(new Node(x, y, z));
 
-    if (n == 0)
-        return 0;
+    if (n == NULL)
+        return NULL;
     if (!view.getName().empty()) {
         this->views[view.getName()][n->getUUID()] = n;
         n->setView(view.getName());
     }
     return n;
 }
-Node* System::addNode(Node n,  const DM::View & view) {
 
-    return this->addNode(n.getX(), n.getY(), n.getZ(), view);
-
-}
 Node* System::getNode(std::string uuid)
 {
     if(nodes.find(uuid)==nodes.end())
@@ -447,12 +449,10 @@ System* System::getSubSystem(std::string uuid)
     if(subsystems.find(uuid)==subsystems.end())
         return 0;
 
-    System * s= static_cast<System*>(updateChild(subsystems[uuid]));
+    /*System * s= static_cast<System*>(updateChild(subsystems[uuid]));
     subsystems[uuid] = s;
-    this->updateViews(s);
+    this->updateViews(s);*/
     return subsystems[uuid];
-
-
 }
 bool System::removeSubSystem(std::string name)
 {
@@ -613,6 +613,7 @@ bool System::addChild(Component *newcomponent)
 
     return true;
 }
+/*
 bool System::changeChild(Component *newcomponent)
 {
     if(!newcomponent)
@@ -625,18 +626,18 @@ bool System::changeChild(Component *newcomponent)
 
 	// currentSystem and statuuid are not set - if the change results from 
 	// allocating a new successor state component;
-    newcomponent->stateUuid = this->getStateUUID();
+    //newcomponent->stateUuid = this->getStateUUID();
 
     return true;
-}
-Component * System::updateChild(Component * c) {
+}*/
+/*Component * System::updateChild(Component * c) {
     if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
         return c;
     Component * c_new = c->clone();
     changeChild(c_new);
 
     return c_new;
-}
+}*/
 bool System::removeChild(std::string name)
 {
     if(ownedchilds.find(name)!=ownedchilds.end())

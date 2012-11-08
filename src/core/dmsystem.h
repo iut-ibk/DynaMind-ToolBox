@@ -104,11 +104,11 @@ private:
 
 	//TODO No idea waht this is
     bool addChild(Component *newcomponent);
-    bool changeChild(Component *newcomponent);
+    //bool changeChild(Component *newcomponent);
     bool removeChild(std::string name);
     Component* getChild(std::string name);
 
-    Component * updateChild(Component * c);
+    //Component * updateChild(Component * c);
     /** @brief return table name */
     QString getTableName();
 protected:
@@ -137,8 +137,8 @@ public:
     Node * addNode(Node* node);
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
-    /** @brief Adds a new node to the system and returns a pointer to the node. */
-    Node * addNode(Node node,  const DM::View & view = DM::View());
+    /** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
+    Node * addNode(const Node &n,  const DM::View & view = DM::View());
     /** @brief Adds a new Edge to the system, the system class takes ownership of the edge */
     Edge* addEdge(Edge* edge);
     /** @brief Creates a new Edge, based on the UUID of the start and end node */

@@ -110,6 +110,10 @@ public:
     bool Select(QString table, QString uuid, QString stateuuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1);
+    bool Select(QString table, QString uuid, QString stateuuid,
+                QString valName0, QVariant *value0,
+                QString valName1, QVariant *value1,
+                QString valName2, QVariant *value2);
 
     //void InsertX(std::string table, ...);
 

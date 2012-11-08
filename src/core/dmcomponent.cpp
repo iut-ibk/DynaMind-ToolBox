@@ -76,7 +76,7 @@ Component::Component(const Component& c)
     name = c.name;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
+    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
         this->addAttribute(*it->second);
 
     SQLInsertComponent();
@@ -89,7 +89,7 @@ Component::Component(const Component& c, bool b)
     name = c.name;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); it++ )
+    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
         this->addAttribute(*it->second);
 }
 
@@ -328,7 +328,7 @@ void Component::SetOwner(Component *owner)
 	currentSys = owner->getCurrentSystem();
 	stateUuid = owner->getStateUUID();
 
-	for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); it++ )
+    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
     {
 		it->second->SetOwner(this);
     }

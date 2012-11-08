@@ -427,6 +427,25 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
      *value1 = q.value(1);
      return true;
  }
+bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+                         QString valName0, QVariant *value0,
+                         QString valName1, QVariant *value1,
+                         QString valName2, QVariant *value2)
+   {
+       QSqlQuery q;
+       q.prepare("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
+       q.addBindValue(uuid);
+       q.addBindValue(stateuuid);
+       if(!q.exec() || !q.next())
+       {
+           PrintSqlError(&q);
+           return false;
+       }
+       *value0 = q.value(0);
+       *value1 = q.value(1);
+       *value2 = q.value(2);
+       return true;
+   }
 
 /*
 void DBConnector::InsertX(std::string table, ...)
