@@ -84,6 +84,7 @@ public:
     static QPolygonF FaceAsQPolgonF(DM::System * sys, DM::Face * f);
 
     /** @brief Extrudes a ploygon. The new faces are added to the system and a vector with pointer to created faces is returned.
+     *  Z coorindates of the extruded walls are (z + height)
      *  If the option with lid is true the last entry in the return vector points to the lid
      */
     static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
