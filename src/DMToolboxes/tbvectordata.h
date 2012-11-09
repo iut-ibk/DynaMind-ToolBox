@@ -29,6 +29,7 @@
 #include <dmcompilersettings.h>
 #include <vector>
 #include <QPolygonF>
+#include <math.h>
 
 namespace DM {
 class System;
@@ -61,10 +62,10 @@ public:
       **/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
 
-     /** @brief Returns pointer to existing not at n or 0 if point doesn't exist */
+     /** @brief Returns pointer to existing node at n or 0 if point doesn't exist */
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
-    /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
+    /** @brief Checks if a node already exists in the system. If not a new node is created.*/
     static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
 
     /** @brief Returns pointers of the face */
@@ -127,6 +128,8 @@ public:
 
     static double CalculateArea(std::vector<DM::Node *> const & nodes);
 
+    /** @brief Calculate distance of two nodes A and B */
+    static double calculateDistance(DM::Node *a, DM::Node *b);
 };
 
 #endif // TBVECTORDATA_H

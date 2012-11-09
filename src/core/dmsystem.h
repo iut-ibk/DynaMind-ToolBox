@@ -80,7 +80,7 @@ private:
     std::vector<DM::View *> ownedView;
 
 
-    //Get Edge Based on otherwise takes ages
+    //Get Edge Based on map otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);
