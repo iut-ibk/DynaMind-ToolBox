@@ -6,37 +6,48 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Michael Mair
-
+ * Copyright (C) 2012  Michael Mair
+ 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
-#include <minimumspanningtree.h>
-#include <extractnodesfromedges.h>
-#include <connectnodes2graph.h>
-#include <extractmaxgraphofforest.h>
-#include <reducetree.h>
 
-using namespace std;
+#ifndef ReduceTree_H
+#define ReduceTree_H
 
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<MinimumSpanningTree>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
-    registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
-    registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
-}
+#include <dmmodule.h>
+#include <dm.h>
+
+class ReduceTree : public DM::Module
+{
+    DM_DECLARE_NODE(ReduceTree)
+
+private:
+    typedef std::map<std::string,DM::View> viewmap;
+
+    DM::System *sys;
+    viewmap viewdef;
+
+
+public:
+    ReduceTree();
+
+    void run();
+    bool deleteflagrecursive(std::vector<std::string> &edges, std::vector<std::string> &forcednodes, std::string currentnode, std::vector<std::string> &visitednodes, std::map<std::string, bool> &deletenodes);
+    void deleteflagiterative(std::vector<std::string> &edges, std::vector<std::string> &forcednodes, std::vector<std::string> &deleteedges);
+    void initmodel(){}
+};
+
+#endif // ReduceTree_H

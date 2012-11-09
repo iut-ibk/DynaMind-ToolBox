@@ -49,7 +49,6 @@ public:
     void run();
     void initmodel(){}
     std::string findNearestNode(std::vector<std::string>& nodes, DM::Node *connectingNode);
-    double calcDistance(DM::Node *a, DM::Node *b);
 };
 
 #endif // ConnectNodes2Graph_H

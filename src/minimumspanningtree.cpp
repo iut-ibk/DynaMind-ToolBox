@@ -29,6 +29,7 @@
 //DynaMind includes
 #include <dmsystem.h>
 #include <dmlogsink.h>
+#include <tbvectordata.h>
 
 #include <iostream>
 #include <fstream>
@@ -92,12 +93,15 @@ void MinimumSpanningTree::run()
     {
         int sourceindex, targetindex;
         DM::Edge *edge=this->sys->getEdge(edges[counter]);
+        DM::Node *start = this->sys->getNode(edge->getStartpointName());
+        DM::Node *end = this->sys->getNode(edge->getEndpointName());
+        double distance = TBVectorData::calculateDistance(start,end);
 
         sourceindex=nodesindex[edge->getStartpointName()];
         targetindex=nodesindex[edge->getEndpointName()];
 
         nodes2edge[E(sourceindex,targetindex)]=edge;
-        add_edge(sourceindex, targetindex, 1, g);
+        add_edge(sourceindex, targetindex, distance, g);
     }
 
     //check if graph is conntected

@@ -30,6 +30,15 @@
 #include <dmsystem.h>
 #include <dmlogsink.h>
 #include <math.h>
+#include <tbvectordata.h>
+
+//CGAL
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <CGAL/Search_traits_2.h>
+#include <list>
+#include <cmath>
 
 DM_DECLARE_NODE_NAME(ConnectNodes2Graph,Graph)
 
@@ -58,9 +67,17 @@ ConnectNodes2Graph::ConnectNodes2Graph()
 
 void ConnectNodes2Graph::run()
 {
+    typedef CGAL::Simple_cartesian<double> K;
+    typedef K::Point_2  Point_2;
+    typedef CGAL::Search_traits_2<K> TreeTraits;
+    typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+    typedef Neighbor_search::Tree Tree;
+
     this->sys = this->getData("Layout");
     std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
     std::vector<std::string> connectingnodes(sys->getUUIDsOfComponentsInView(viewdef["CONNECTINGNODES"]));
+    std::map<std::pair<int,int>,std::string> nodemap;
+    int notconnectedcounter=0;
 
     if(!nodes.size())
     {
@@ -74,25 +91,53 @@ void ConnectNodes2Graph::run()
         return;
     }
 
-    //connectnodes
-    //TODO slow version
+    std::list<Point_2> Lr;
+
+    for(int index=0; index<nodes.size(); index++)
+    {
+        DM::Node *currentnode = this->sys->getNode(nodes[index]);
+        int x = currentnode->getX();
+        int y = currentnode->getY();
+
+        nodemap[std::pair<int,int>(x,y)]=currentnode->getUUID();
+        Lr.push_back(Point_2(x,y));
+    }
+
+    Tree tree(Lr.begin(),Lr.end());
+
     for(int index=0; index < connectingnodes.size(); index++)
     {
         DM::Node *connectingnode = sys->getNode(connectingnodes[index]);
-        std::string nearest = findNearestNode(nodes,connectingnode);
+        int x = connectingnode->getX();
+        int y = connectingnode->getY();
+
+        Neighbor_search search(tree, Point_2(x,y), 1);
+
+        Neighbor_search::iterator it = search.begin();
+
+        Point_2 fn = it->first;
+
+        std::string nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
+
+
+
+        //std::string nearest = findNearestNode(nodes,connectingnode);
         sys->addEdge(connectingnode,sys->getNode(nearest),viewdef["EDGES"]);
         sys->addComponentToView(connectingnode,viewdef["NODES"]);
     }
+
+    DM::Logger(DM::Standard) << "Not connected nodes: " << notconnectedcounter;
+
 }
 
 std::string ConnectNodes2Graph::findNearestNode(std::vector<std::string>& nodes, DM::Node *connectingNode)
 {
-    double currentdistance=calcDistance(sys->getNode(nodes[0]),connectingNode);
+    double currentdistance=TBVectorData::calculateDistance(sys->getNode(nodes[0]),connectingNode);
     DM::Node *node = sys->getNode(nodes[0]);
 
     for(int index=1; index<nodes.size(); index++)
     {
-        double distance = calcDistance(sys->getNode(nodes[index]),connectingNode);
+        double distance = TBVectorData::calculateDistance(sys->getNode(nodes[index]),connectingNode);
 
         if(currentdistance > distance)
         {
@@ -102,9 +147,4 @@ std::string ConnectNodes2Graph::findNearestNode(std::vector<std::string>& nodes,
     }
 
     return node->getUUID();
-}
-
-double ConnectNodes2Graph::calcDistance(DM::Node *a, DM::Node *b)
-{
-    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2));
 }
