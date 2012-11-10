@@ -66,9 +66,6 @@ public:
       */
     DM::Node * findNode(const double & x, const double & y, const double & tol);
 
-    /** @brief inits spatial node hash map.
-      */
-    void initSpatialNodeHashMap( DM::System * sys);
     /** @brief Adds a node to the system. Before a new node is created it checks if already a node exists.
      * Returns either the pointer to the new node or to an existing one.
      *

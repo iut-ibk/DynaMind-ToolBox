@@ -26,9 +26,9 @@
 #include "dmmodulerunnable.h"
 
 #include <QThreadPool>
+#include <QElapsedTimer>
 #include <dmmodule.h>
 #include <dmgroup.h>
-#include <time.h>
 #include <dmlogger.h>
 #include <dmsimulation.h>
 
@@ -41,7 +41,9 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 }
 
 void DM::ModuleRunnable::run() {
-    clock_t start, finish;
+
+
+
 
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
@@ -58,13 +60,13 @@ void DM::ModuleRunnable::run() {
         if (!m->getSimulation()->isVirtualRun() || m->isGroup()) {
             if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
                 DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
-
-                start = clock();
-                DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  << m->isExecuted();
+                QElapsedTimer timer;
+                timer.start();
+                DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
                 m->run();
                 m->setExecuted(true);
-                finish = clock();
-                DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  ( double (finish - start)/CLOCKS_PER_SEC );
+
+                DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  (double) timer.elapsed()/1000;
             }
         }
         m->postRun();
