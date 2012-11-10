@@ -353,10 +353,12 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu menu;
     QAction  * a_edit = menu.addAction("edit");
     QAction * a_rename = menu.addAction("rename");
+    QAction * a_reset = menu.addAction("reset module");
     QAction * a_delete = menu.addAction("delete");
-    QAction * a_showData = menu.addAction("showData");
-    QAction * a_viewData = menu.addAction("viewData");
-    QAction * a_showHelp = menu.addAction("showHelp");
+    QAction * a_showData = menu.addAction("show data stream");
+    QAction * a_viewData = menu.addAction("show viewer");
+
+    QAction * a_showHelp = menu.addAction("Help");
     QAction * a_module_debug = 0;
     QAction * a_module_release = 0;
     
@@ -401,6 +403,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_module_debug, SIGNAL(activated() ), this, SLOT( setDebug() ), Qt::DirectConnection);
     connect( a_module_release, SIGNAL(activated() ), this, SLOT( setRelease() ), Qt::DirectConnection);
     connect( a_showHelp, SIGNAL(activated() ), this, SLOT( showHelp() ), Qt::DirectConnection);
+    connect( a_reset, SIGNAL(activated() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
 
 }
@@ -506,4 +509,9 @@ void ModelNode::setDebug() {
 
 void ModelNode::setRelease() {
     this->getDMModel()->setDebugMode(false);
+}
+
+void ModelNode::setResetModule()
+{
+    this->getDMModel()->setExecuted(false);
 }

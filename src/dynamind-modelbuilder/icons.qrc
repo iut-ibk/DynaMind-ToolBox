@@ -12,5 +12,6 @@
         <file>ressources/player_play.png</file>
         <file>ressources/dynamind-icon.png</file>
         <file>ressources/reload.png</file>
+        <file>ressources/edit-clear.png</file>
     </qresource>
 </RCC>

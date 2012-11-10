@@ -95,6 +95,13 @@ void GUISimulation::updateSimulation()
     this->startSimulation(true);
 }
 
+void GUISimulation::reset()
+{
+    this->resetSimulation();
+    this->reloadModules();
+    this->updateSimulation();
+}
+
 void GUISimulation::clearSimulation() {
 
     RootGroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup())->getRootGroupNode();

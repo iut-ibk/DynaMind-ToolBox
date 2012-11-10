@@ -143,6 +143,7 @@ public slots:
     void showHelp();
     void setDebug();
     void setRelease();
+    void setResetModule();
    signals:
     void showHelp(std::string, std::string);
 

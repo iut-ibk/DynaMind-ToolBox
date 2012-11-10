@@ -60,6 +60,7 @@ public slots:
     void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
     void GUIaddModule(DM::Module *, QPointF pos);
     void updateSimulation();
+    void reset();
     void showHelp(std::string classname, std::string uuid);
 
 

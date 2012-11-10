@@ -638,6 +638,7 @@
    </attribute>
    <addaction name="actionRun"/>
    <addaction name="actionUpdate"/>
+   <addaction name="actionReset"/>
   </widget>
   <action name="actionRun">
    <property name="icon">
@@ -752,6 +753,9 @@
    </property>
   </action>
   <action name="actionUpdate">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../dynamind-modelbuilder/icons.qrc">
      <normaloff>:/Icons/ressources/reload.png</normaloff>:/Icons/ressources/reload.png</iconset>
@@ -773,6 +777,15 @@
   <action name="actionShow_Help">
    <property name="text">
     <string>Show Help</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/Icons/ressources/edit-clear.png</normaloff>:/Icons/ressources/edit-clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reset</string>
    </property>
   </action>
  </widget>

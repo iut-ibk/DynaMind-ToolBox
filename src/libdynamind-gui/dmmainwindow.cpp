@@ -191,7 +191,9 @@ DMMainWindow::DMMainWindow(QWidget * parent)
     connect(actionEditor, SIGNAL(activated()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
     connect(actionUpdate, SIGNAL(activated()), this , SLOT(updateSimulation()), Qt::DirectConnection);
+    connect(actionReset, SIGNAL(activated()), this->simulation , SLOT(reset()), Qt::DirectConnection);
     currentDocument = "";
+
     this->simmanagment = new SimulationManagment();
 
     createModuleListView();
