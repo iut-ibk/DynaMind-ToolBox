@@ -29,7 +29,8 @@
 
 #include "dmcomponent.h"
 #include "dmattribute.h"
-
+#include "dmlogger.h"
+#include <QDateTime>
 #include <QTreeWidgetItem>
 #include <QVector>
 #include "qcustomplot.h"
@@ -68,7 +69,7 @@ ComponentEditor::ComponentEditor(Component *c, QWidget *parent) :
         }
         
         if (attr->getType() == Attribute::TIMESERIES ||
-            attr->getType() == Attribute::DOUBLEVECTOR) {
+                attr->getType() == Attribute::DOUBLEVECTOR) {
             strings << "...";
         }
         
@@ -106,12 +107,50 @@ void ComponentEditor::on_attributeList_currentItemChanged(QTreeWidgetItem *curre
         return;
     }
     
-    ui->plot->addGraph();
+
     QVector<double> y = QVector<double>::fromStdVector(attr->getDoubleVector());
     QVector<double> x(y.size());
-    std::generate_n(x.begin(), y.size(), inc());
+
+    double timedelta = 0;
+
+    if (attr->getType() == Attribute::TIMESERIES) {
+        std::vector<std::string> dates = attr->getStringVector();
+        //Convert String To dates
+        QDateTime startDate = QDateTime::fromString( QString::fromStdString(dates[0]), Qt::ISODate);
+        QDateTime endDate = QDateTime::fromString( QString::fromStdString(dates[y.size()-1]), Qt::ISODate);
+        timedelta = startDate.secsTo(endDate);
+        for (int i = 0; i < y.size(); i++) {
+            QDateTime date(QDateTime::fromString(QString::fromStdString(dates[i]), Qt::ISODate) );
+            if (!date.isValid()) {
+                DM::Logger(DM::Debug) << "Can't show data use correct time format yyyy-mm-ddThh:mm:ss";
+                return;
+            }
+            QDateTime datetime(date);
+            double val =  datetime.toMSecsSinceEpoch()/1000;
+            x[i] =val;
+        }
+    } else {
+        std::generate_n(x.begin(), y.size(), inc());
+    }
+
+    ui->plot->addGraph();
     ui->plot->graph(0)->setData(x, y);
     ui->plot->graph(0)->rescaleAxes();
+    if (attr->getType() == Attribute::TIMESERIES) {
+        if (timedelta > 24 * 60 * 60) {
+            ui->plot->graph(0)->keyAxis()->setTickLabelType(QCPAxis::ltDateTime);
+            ui->plot->graph(0)->keyAxis()->setDateTimeFormat("yyyy-MM-dd");
+        }
+        if (timedelta > 250 * 24 * 60 * 60) {
+            ui->plot->graph(0)->keyAxis()->setTickLabelType(QCPAxis::ltDateTime);
+            ui->plot->graph(0)->keyAxis()->setDateTimeFormat("yyyy-MM");
+        }
+        if (timedelta > 3 * 365 * 24 * 60 * 60) {
+            ui->plot->graph(0)->keyAxis()->setTickLabelType(QCPAxis::ltDateTime);
+            ui->plot->graph(0)->keyAxis()->setDateTimeFormat("yyyy");
+        }
+
+    }
     ui->plot->replot();
 }
 
