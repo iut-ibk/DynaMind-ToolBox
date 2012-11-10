@@ -182,19 +182,20 @@ void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::Vi
                     w->addAttribute("type", "window");
                     w->getAttribute("color")->setDoubleVector(windowColor);
                     BuildingInterface->getAttribute("Geometry")->setLink("Geometry", w->getUUID());
-                    f->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+                    w->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
                     city->addComponentToView(w,geometryView);
                 }
+
+                double a = TBVectorData::CalculateArea(city, f);
+                DM::Logger(DM::Debug) << "Wall:" << a;
+
             }
             else if (story != stories -1){
                 f->addAttribute("type", "ceiling");
                 f->getAttribute("color")->setDoubleVector(wallColor);
                 houseNodes = TBVectorData::getNodeListFromFace(city, f);
-                //Reverse otherwise extruded walls have the wrong orientation
-                //std::reverse(houseNodes.begin(), houseNodes.end());
             } else {
                 f->addAttribute("type", "ceiling_roof");
-                //std::reverse(houseNodes.begin(), houseNodes.end());
                 f->getAttribute("color")->setDoubleVector(roofColor);
             }
             BuildingInterface->getAttribute("Geometry")->setLink("Geometry", f->getUUID());
