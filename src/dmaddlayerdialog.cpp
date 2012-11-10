@@ -50,6 +50,9 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
         strings << QString::fromStdString(v.getName());
         
         switch (v.getType()) {
+        case DM::COMPONENT:
+            strings << "Component";
+            break;
         case DM::FACE:
             strings << "Face";
             break;

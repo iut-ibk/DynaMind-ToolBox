@@ -33,6 +33,7 @@
 #include "dmattribute.h"
 #include "dmsystemiterators.h"
 #include "dmlogger.h"
+#include "tbvectordata.h"
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/partition_2.h>
@@ -216,6 +217,33 @@ Layer::Layer(System *s, View v, const std::string &a)
       scale_height(-1) {
 }
 
+struct GeomtryDrawer {
+
+    GLuint name_start;
+
+    GeomtryDrawer(const Layer &l) : name_start(l.getNameStart()) {
+
+    }
+
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+        if (pos == before) {
+            glPushName(name_start);
+            glBegin(GL_TRIANGLES);
+            return;
+        }
+        if (pos == after) {
+            glEnd();
+            glPopName();
+            name_start++;
+            return;
+        }
+        DM::Node * n = (DM::Node*) node;
+        glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
+        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+        glVertex3dv(tmp);
+    }
+};
+
 void Layer::draw(QWidget *parent) {
     if (lists.size() <= attribute_vector_name) {
         lists.resize(attribute_vector_name+1, -1);
@@ -223,7 +251,10 @@ void Layer::draw(QWidget *parent) {
     if (!glIsList(lists[attribute_vector_name])) {
         lists[attribute_vector_name] = glGenLists(1);
         glNewList(lists[attribute_vector_name], GL_COMPILE);
-        
+        if (view.getType() == DM::COMPONENT) {
+            GeomtryDrawer drawer(*this);
+            iterate_components(system, view, drawer);
+        }
         if (view.getType() == DM::FACE) {
             TesselatedFaceDrawer drawer(*this, parent);
             iterate_faces(system, view, drawer);
@@ -254,6 +285,9 @@ void Layer::drawWithNames(QWidget *parent) {
 void Layer::systemChanged() {
     vmd = ViewMetaData(attribute);
 
+    if (view.getType() == DM::COMPONENT) {
+        iterate_components(system, view, vmd);
+    }
     if (view.getType() == DM::FACE) {
         iterate_faces(system, view, vmd);
     }
@@ -270,5 +304,6 @@ void Layer::systemChanged() {
         }
     }
 }
+
 
 } // namespace DM

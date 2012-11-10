@@ -32,6 +32,11 @@
 #include "dmnode.h"
 #include "dmedge.h"
 #include "dmface.h"
+#include "dmcomponent.h"
+#include "dmattribute.h"
+#include "tbvectordata.h"
+#include "cgalgeometry.h"
+
 #include <QtGlobal>
 
 enum iterator_pos {
@@ -39,6 +44,36 @@ enum iterator_pos {
     after,
     in_between
 };
+
+template<typename CB>
+void iterate_components(DM::System *system, DM::View v, CB &callback = CB()) {
+    foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) {
+        DM::Component *cmp = system->getComponent(cmp_uuid);
+
+        std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
+
+        callback(system, v, cmp,0, before);
+        foreach (DM::LinkAttribute link, links) {
+            DM::Face * f = system->getFace(link.uuid);
+            std::vector<double> c = f->getAttribute("color")->getDoubleVector();
+            int size_c = c.size();
+            DM::Node color;
+            if (c.size() > 2) {
+                color.setX(c[0]);
+                color.setY(c[1]);
+                color.setZ(c[2]);
+            }
+            std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
+            foreach (DM::Node n, nodes) {
+                n.addAttribute("r", color.getX());
+                n.addAttribute("g", color.getY());
+                n.addAttribute("b", color.getZ());
+                callback(system, v, cmp, &n, in_between);
+            }
+        }
+        callback(system, v, cmp, 0, after);
+    }
+}
 
 template<typename CB> 
 void iterate_nodes(DM::System *system, DM::View v, CB &callback = CB()) {
@@ -73,6 +108,7 @@ template<typename CB>
 void iterate_faces(DM::System *system, DM::View v, CB &callback = CB()) {
     foreach(std::string face_uuid, system->getUUIDsOfComponentsInView(v)) {
         DM::Face *f = system->getFace(face_uuid);
+
         std::vector<std::string> nodes = f->getNodes();
         nodes.pop_back();
         
