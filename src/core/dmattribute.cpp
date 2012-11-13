@@ -176,26 +176,30 @@ std::string Attribute::getName()
 
 void Attribute::setDouble(double v)
 {
-	SQLSetValue(DOUBLE, v);
+    //SQLSetValue(DOUBLE, v);
+    SQLSetValue(DOUBLE, QByteArray::fromRawData((char*)&v, sizeof(double)));
 }
 
 double Attribute::getDouble()
 {
 	QVariant value;
-	if(SQLGetValue(value))	return value.toDouble();
-	return 0;
+    //if(SQLGetValue(value))	return value.toDouble();
+    if(SQLGetValue(value))	return value.toByteArray().toDouble();
+    return 0;
 }
 
 void Attribute::setString(std::string s)
 {
-	SQLSetValue(STRING, QString::fromStdString(s));
+    //SQLSetValue(STRING, QString::fromStdString(s));
+    SQLSetValue(STRING, QString::fromStdString(s).toAscii());
 }
 
 std::string Attribute::getString()
 {
 	QVariant value;
-	if(SQLGetValue(value))	return value.toString().toStdString();
-	return "";
+    //if(SQLGetValue(value))	return value.toString().toStdString();
+    if(SQLGetValue(value))	return QString(value.toByteArray()).toStdString();
+    return "";
 }
 
 void Attribute::setDoubleVector(std::vector<double> v)
