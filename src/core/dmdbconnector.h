@@ -27,7 +27,7 @@
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
 
-#include <dmsystem.h>
+//#include <dmsystem.h>
 #include <QSqlQuery>
 
 namespace DM {
@@ -53,12 +53,17 @@ private:
 	
     static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
+    static bool _bTransaction;
+
+    QSqlDatabase *_db;
 
     QSqlQuery *getQuery(QString cmd);
+    void ExecuteQuery(QSqlQuery *q);
+    bool ExecuteSelectQuery(QSqlQuery *q);
 public:
-	static DBConnector* getInstance();
-	void beginTransaction();
-    void endTransaction();
+    static DBConnector* getInstance();
+    void BeginTransaction();
+    void CommitTransaction();
     // inserts with uuid
     void Insert(QString table,  QString uuid);
     void Insert(QString table,  QString uuid,
