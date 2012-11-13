@@ -176,15 +176,14 @@ std::string Attribute::getName()
 
 void Attribute::setDouble(double v)
 {
-    //SQLSetValue(DOUBLE, v);
-    SQLSetValue(DOUBLE, QByteArray::fromRawData((char*)&v, sizeof(double)));
+    SQLSetValue(DOUBLE, v);
 }
 
 double Attribute::getDouble()
 {
 	QVariant value;
-    //if(SQLGetValue(value))	return value.toDouble();
-    if(SQLGetValue(value))	return value.toByteArray().toDouble();
+    if(SQLGetValue(value))	return value.toDouble();
+	
     return 0;
 }
 
