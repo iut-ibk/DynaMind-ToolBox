@@ -49,9 +49,12 @@ class DBConnector
 private:
 	static DBConnector* instance;
 	DBConnector();
+    ~DBConnector();
 	
-	static int _linkID;
+    static int _linkID;
+    static QMap<QString,QSqlQuery*> mapQuery;
 
+    QSqlQuery *getQuery(QString cmd);
 public:
 	static DBConnector* getInstance();
 	void beginTransaction();
