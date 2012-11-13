@@ -36,8 +36,8 @@ Edge::Edge(std::string startpoint, std::string endpoint) : Component(true)
 {
     DBConnector::getInstance()->Insert("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
-                                      "start",QString::fromStdString(startpoint),
-                                      "end",QString::fromStdString(endpoint));
+                                      "startnode",QString::fromStdString(startpoint),
+                                      "endnode",QString::fromStdString(endpoint));
     //SQLInsert(startpoint,endpoint);
 }
 
@@ -48,8 +48,8 @@ Edge::Edge(const Edge& e) : Component(e, true)
     getPoints(points);
     DBConnector::getInstance()->Insert("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "start",QString::fromStdString(points[0]),
-                                       "end",QString::fromStdString(points[1]));
+                                       "startnode",QString::fromStdString(points[0]),
+                                       "endnode",QString::fromStdString(points[1]));
     //SQLInsert(e.getStartpointName(), e.getEndpointName());
 }
 
@@ -71,7 +71,7 @@ const void Edge::getPoints(std::string *points) const
     //std::vector<std::string> points;
     QVariant v1,v2;
     if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
-                                       , "start", &v1, "end", &v2))
+                                       , "startnode", &v1, "endnode", &v2))
     {
         //points.push_back( v1.toString().toStdString());
         //points.push_back( v2.toString().toStdString());
@@ -84,7 +84,7 @@ const std::string Edge::getStartpointName() const
 {
     QVariant value;
     if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
-                                       , "start", &value))
+                                       , "startnode", &value))
         return value.toString().toStdString();
     /*
     QSqlQuery q;
@@ -102,7 +102,7 @@ const std::string Edge::getEndpointName() const
 {
     QVariant value;
     if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
-                                       , "end", &value))
+                                       , "endnode", &value))
         return value.toString().toStdString();
     /*
 	QSqlQuery q;
@@ -119,7 +119,7 @@ void Edge::setStartpointName(std::string start)
 {
     DBConnector::getInstance()->Update("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "start", QString::fromStdString(start));
+                                       "startnode", QString::fromStdString(start));
     /*
 	QSqlQuery q;
 	q.prepare("UPDATE edges SET start=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
@@ -133,7 +133,7 @@ void Edge::setEndpointName(std::string end)
 {
     DBConnector::getInstance()->Update("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "end",   QString::fromStdString(end));
+                                       "endnode",   QString::fromStdString(end));
     /*
 	QSqlQuery q;
 	q.prepare("UPDATE edges SET end=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
@@ -150,7 +150,7 @@ Component* Edge::clone()
 /*
 void Edge::SQLInsert(const std::string start, const std::string end)
 {
-    DBConnector.getInstance()->Insert(this,"start",start,"end",end);
+    DBConnector.getInstance()->Insert(this,"startnode",start,"endnode",end);
     //SQLInsertAs("edge");
     //SQLSetValues(start,end);
 }*/
@@ -164,8 +164,8 @@ void Edge::SQLSetValues(std::string start, std::string end)
 {
     DBConnector::getInstance()->Update("edges", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "start", QString::fromStdString(start),
-                                       "end",   QString::fromStdString(end));
+                                       "startnode", QString::fromStdString(start),
+                                       "endnode",   QString::fromStdString(end));
     /*
 	QSqlQuery q;
 	q.prepare("UPDATE edges SET start=?,end=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
