@@ -80,7 +80,7 @@ protected:
     void SQLDelete();
 
     std::string uuid;
-    std::string name;
+    //std::string name;
 
     std::map<std::string,Attribute*> ownedattributes;
 
@@ -154,10 +154,6 @@ public:
       * To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
       * The method returns a pointer to a new data object (including attributes and uuid) */
     virtual Component* clone();
-    /** @brief Sets name */
-    void setName(std::string name);
-    /** @brief Returns name */
-    std::string getName() const;
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);

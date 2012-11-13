@@ -47,7 +47,6 @@ Component::Component()
     DBConnector::getInstance();
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->stateUuid = QUuid::createUuid().toString().toStdString();
-    name = "";
     ownedattributes = std::map<std::string,Attribute*>();
 
     inViews = std::set<std::string>();
@@ -61,7 +60,6 @@ Component::Component(bool b)
     DBConnector::getInstance();
     this->uuid = QUuid::createUuid().toString().toStdString();
     this->stateUuid = QUuid::createUuid().toString().toStdString();
-    name = "";
     ownedattributes = std::map<std::string,Attribute*>();
 
     inViews = std::set<std::string>();
@@ -73,7 +71,6 @@ Component::Component(const Component& c)
     uuid=c.uuid;
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
-    name = c.name;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
     for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
@@ -86,7 +83,6 @@ Component::Component(const Component& c, bool b)
     uuid=c.uuid;
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
-    name = c.name;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
     for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
@@ -117,19 +113,6 @@ bool Component::isInView(View view) const
     }
 
     return false;
-}
-
-void Component::setName(std::string name) 
-{
-    DBConnector::getInstance()->Update(getTableName(),
-                                       QString::fromStdString(uuid),
-                                       QString::fromStdString(stateUuid),
-                                       "name", QString::fromStdString(name));
-}
-
-std::string Component::getName() const 
-{
-	return name;
 }
 
 void Component::setUUID(std::string uuid)
@@ -318,8 +301,7 @@ void Component::SQLInsertComponent()
 {
     DBConnector::getInstance()->Insert("components",
                                        QString::fromStdString(uuid),
-                                       QString::fromStdString(stateUuid),
-                                       "name", QString::fromStdString(name));
+                                       QString::fromStdString(stateUuid));
 }
 
 void Component::SQLDeleteComponent()
