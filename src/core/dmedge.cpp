@@ -83,8 +83,9 @@ const void Edge::getPoints(std::string *points) const
 const std::string Edge::getStartpointName() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
-                                       , "startnode", &value))
+    if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid),
+												QString::fromStdString(stateUuid),
+											"startnode", &value))
         return value.toString().toStdString();
     /*
     QSqlQuery q;
@@ -101,8 +102,9 @@ const std::string Edge::getStartpointName() const
 const std::string Edge::getEndpointName() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid)
-                                       , "endnode", &value))
+    if(DBConnector::getInstance()->Select("edges", QString::fromStdString(uuid),
+												QString::fromStdString(stateUuid),
+										"endnode", &value))
         return value.toString().toStdString();
     /*
 	QSqlQuery q;
