@@ -508,35 +508,36 @@ bool System::addView(View view)
     if (!existingView->getIdOfDummyComponent().empty()) {
         dummy = this->getComponent(existingView->getIdOfDummyComponent());
     } else {
-        if ( DM::COMPONENT == view.getType()) {
+        switch(view.getType())
+        {
+        case DM::COMPONENT:
             dummy = this->addComponent(new Component());
-        }
-        if ( DM::NODE == view.getType()) {
+            break;
+        case DM::NODE:
             dummy = this->addNode(0,0,0);
-        }
-        if (  DM::EDGE == view.getType()) {
+            break;
+        case DM::EDGE:{
+            DM::Node * n1 = this->addNode(0,0,0);
+            DM::Node * n2 = this->addNode(0,0,0);
+            dummy = this->addEdge(n1,n2);}
+            break;
+        case DM::FACE:{
             DM::Node * n1 =this->addNode(0,0,0);
-			n1->setName("dummy");
-            DM::Node * n2 =this->addNode(0,0,0);
-			n2->setName("dummy");
-            dummy = this->addEdge(n1,n2);
-        }
-        if (  DM::FACE == view.getType()) {
-            DM::Node * n1 =this->addNode(0,0,0);
-			n1->setName("dummy");
             std::vector<Node*> ve;
             ve.push_back(n1);
-            dummy = this->addFace(ve);
-        }
-        if (  DM::SUBSYSTEM == view.getType()) {
+            dummy = this->addFace(ve);}
+            break;
+        case DM::SUBSYSTEM:
             dummy = new DM::System();
             this->addSubSystem((DM::System*) dummy);
-        }
-        if (  DM::RASTERDATA == view.getType()) {
+            break;
+        case DM::RASTERDATA:
             dummy = new DM::RasterData();
             this->addRasterData((DM::RasterData*) dummy);
+            break;
+        default:
+            break;
         }
-		dummy->setName("dummy");
     }
     existingView->setIdOfDummyComponent(dummy->getUUID());
 
