@@ -29,27 +29,30 @@
 #include <time.h>
 #include <QMutex>
 #include <dmlogger.h>
+#include <math.h>
 
 using namespace DM;
 
 
-RasterData::RasterData(long  width, long  height, double  cellSize) : Component()
+RasterData::RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) : Component()
 {
+    DM::Logger(DM::Warning) << "New implemented RasterData --- please check existing code";
     this->width = width;
     this->height = height;
-    this->cellSize = cellSize;
+    this->cellSizeX = cellSizeX;
+    this->cellSizeY = cellSizeY;
+    this->xoffset = xoffset;
+    this->yoffset = yoffset;
     this->NoValue = -9999;
     this->minValue = -9999;
     this->maxValue = -9999;
     this->debugValue = 0;
-    data = new double*[width];
+    data = new float*[width];
     for (long i = 0; i < width; i++) {
-        data[i] = new double[height];
+        data[i] = new float[height];
     }
-
-
-
 }
+
 double RasterData::getSum() const {
     double sum = 0;
     for ( long i = 0; i < width; i++ ) {
@@ -62,23 +65,23 @@ double RasterData::getSum() const {
 
     return sum;
 }
-double RasterData::getValue(long x, long y) const {
+
+double RasterData::getCell(long x, long y) const {
     if (  x >-1 && y >-1 && x < this->width && y < this->height) {
         return  data[x][y];
     } else {
-
         return  this->NoValue;
     }
 
 }
 void RasterData::createNewDataSet() {
-    double **data_old = this->data;
+    float **data_old = this->data;
     this->minValue = 0;
     this->maxValue = 0;
 
-    data = new double*[width];
+    data = new float*[width];
     for (long i = 0; i < width; i++) {
-        data[i] = new double[height];
+        data[i] = new float[height];
     }
 
     for (int i = 0; i < getWidth(); i++) {
@@ -91,7 +94,7 @@ void RasterData::createNewDataSet() {
 
 }
 
-bool RasterData::setValue(long x, long y, double value) {
+bool RasterData::setCell(long x, long y, double value) {
     if (this->isClone == true)
         this->createNewDataSet();
 
@@ -105,8 +108,6 @@ bool RasterData::setValue(long x, long y, double value) {
         if (maxValue == this->NoValue || maxValue < value) {
             maxValue = value;
         }
-
-
 
         return true;
     } else {
@@ -122,14 +123,14 @@ RasterData::~RasterData() {
     for (long i = 0; i < width; i++) {
         delete[] this->data[i];
     }
+
     if (height != 0)
         delete[] data;
+
     data = 0;
-
-
 }
 
-void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
+void RasterData::getNeighboorhood(float** d, int width, int height, int x, int y) {
     int dx = (int) (width -1)/2;
     int dy = (int) (height -1)/2;
     int x_cell;
@@ -153,10 +154,7 @@ void RasterData::getNeighboorhood(double** d, int width, int height, int x, int 
             if ( j >= this->height) {
                 y_cell = j - this->height;
             }
-            d[k][l] = this->getValue(x_cell,y_cell);
-       /*     if (d[k][l] < 0 ) {
-                vibens::Logger( vibens::Debug) << "Error";
-            }*/
+            d[k][l] = this->getCell(x_cell,y_cell);
 
             l++;
         }
@@ -168,7 +166,7 @@ void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
 
-            neigh[counter] = this->getValue(i,j);
+            neigh[counter] = this->getCell(i,j);
             counter++;
         }
     }
@@ -230,7 +228,7 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
 
-            neigh[counter] = this->getValue(i,j);
+            neigh[counter] = this->getCell(i,j);
             counter++;
         }
     }
@@ -290,7 +288,8 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 
 
 RasterData::RasterData() : Component() {
-    this->cellSize = 0;
+    this->cellSizeX = 0;
+    this->cellSizeY = 0;
     this->width = 0;
     this->height = 0;
     this->data = 0;
@@ -298,7 +297,10 @@ RasterData::RasterData() : Component() {
 }
 RasterData::RasterData(const RasterData &other) : Component(other) {
 
-    this->cellSize = other.cellSize;
+    this->cellSizeX = other.cellSizeX;
+    this->cellSizeY = other.cellSizeY;
+    this->xoffset = other.xoffset;
+    this->yoffset = other.yoffset;
     this->width = other.width;
     this->height = other.height;
     this->NoValue = other.NoValue;
@@ -310,23 +312,44 @@ RasterData::RasterData(const RasterData &other) : Component(other) {
 
 }
 
-void RasterData::setSize(long width, long height, double cellsize) {
-    if (width != this->width || height != this->height || this->cellSize != cellsize) {
+void RasterData::setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) {
+    if (width != this->width || height != this->height || this->cellSizeX != cellsizeX || this->cellSizeY != cellsizeY)
+    {
+        for (long i = 0; i < this->width; i++)
+        {
+            delete[] this->data[i];
+        }
+
+        if (this->height != 0)
+            delete[] data;
+
         this->width = width;
         this->height = height;
-        this->cellSize = cellsize;
+        this->cellSizeX = cellsizeX;
+        this->cellSizeY = cellsizeY;
+        this->xoffset = xoffset;
+        this->yoffset = yoffset;
         this->NoValue = -9999;
         this->minValue = -9999;
         this->maxValue = -9999;
 
-        data = new double*[width];
-        for (long i = 0; i < width; i++) {
-            data[i] = new double[height];
+        data = new float*[width];
+
+        for (long i = 0; i < width; i++)
+        {
+            data[i] = new float[height];
         }
-
-
-
     }
+}
+
+bool RasterData::setValue(long x, long y, double value)
+{
+    return setCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY),value);
+}
+
+double RasterData::getValue(long x, long y) const
+{
+    return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
 
 void RasterData::clear() {

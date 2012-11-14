@@ -31,7 +31,8 @@
 double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::vector<DM::Node*>   & points, DM::RasterData * blocker, DM::Node * offset) {
     double sum = 0;
     long counter = 0;
-    double cellSize = rdata->getCellSize();
+    double cellSizeX = rdata->getCellSizeX();
+    double cellSizeY = rdata->getCellSizeY();
 
     QPolygonF area;
     foreach(DM::Node * p , points ) {
@@ -63,20 +64,20 @@ double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::v
             }
         }
 
-        for ( double x = minx; x < maxx; x = x+cellSize ) {
-            for ( double y = miny; y < maxy; y = y+cellSize ) {
+        for ( double x = minx; x < maxx; x = x+cellSizeX ) {
+            for ( double y = miny; y < maxy; y = y+cellSizeY ) {
                 if ( area.containsPoint(QPointF(x,y), Qt::WindingFill) == true ) {
                     if ( blocker != 0 ) {
-                        if ( blocker->getValue((int) x/cellSize , (int)  y/cellSize) <  1 ) {
-                            sum = sum + rdata->getValue((int) x/cellSize, (int)  y/cellSize);
-                            blocker->setValue((int) x/cellSize, (int) y/cellSize, 2);
+                        if ( blocker->getCell((int) x/cellSizeX , (int)  y/cellSizeY) <  1 ) {
+                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                            blocker->setCell((int) x/cellSizeX, (int) y/cellSizeY, 2);
                             counter++;
 
                         }
                     } else {
 
-                        if ( rdata->getNoValue() != rdata->getValue((int) x/cellSize, (int)  y/cellSize)) {
-                            sum = sum + rdata->getValue((int) x/cellSize, (int)  y/cellSize);
+                        if ( rdata->getNoValue() != rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY)) {
+                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
                             counter++;
                         }
                     }
@@ -101,7 +102,8 @@ double RasterDataHelper::meanOverArea (DM::RasterData * rdata, std::vector<DM::N
 
 double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::Node*> &points,DM::RasterData * blocker, DM::Node * offset) {
     double sum = 0;
-    double cellSize = rdata->getCellSize();
+    double cellSizeX = rdata->getCellSizeX();
+    double cellSizeY = rdata->getCellSizeY();
 
     QPolygonF area;
 
@@ -134,25 +136,21 @@ double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::No
             }
         }
 
-        for ( double x = minx; x < maxx; x = x+cellSize ) {
-            for ( double y = miny; y < maxy; y = y+cellSize ) {
+        for ( double x = minx; x < maxx; x = x+cellSizeX ) {
+            for ( double y = miny; y < maxy; y = y+cellSizeY ) {
                 if ( area.containsPoint(QPointF(x,y), Qt::WindingFill) == true ) {
                     if ( blocker != 0 ) {
-                        if ( blocker->getValue((int) x/cellSize , (int)  y/cellSize) <  1 ) {
-                            sum = sum + rdata->getValue((int) x/cellSize, (int)  y/cellSize);
-                            blocker->setValue((int) x/cellSize, (int) y/cellSize, 2);
+                        if ( blocker->getCell((int) x/cellSizeX , (int)  y/cellSizeY) <  1 ) {
+                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                            blocker->setCell((int) x/cellSizeX, (int) y/cellSizeY, 2);
 
                         }
                     } else {
-                        sum = sum + rdata->getValue((int) x/cellSize, (int)  y/cellSize);
+                        sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
                     }
-
                 }
-
             }
-
         }
-
     }
 
     return sum;
