@@ -48,17 +48,22 @@ enum iterator_pos {
 template<typename CB>
 void iterate_components(DM::System *system, DM::View v, CB &callback = CB()) {
     foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) {
+
         DM::Component *cmp = system->getComponent(cmp_uuid);
-
-        std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
-
         callback(system, v, cmp,0, before);
+        std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
+        std::vector<std::string> uuids;
         foreach (DM::LinkAttribute link, links) {
-            DM::Face * f = system->getFace(link.uuid);
+            uuids.push_back(link.uuid);
+        }
+        if (v.getType() == DM::FACE)
+            uuids.push_back(cmp_uuid);
+        foreach (std::string uuid, uuids) {
+            DM::Face * f = system->getFace(uuid);
             std::vector<double> c = f->getAttribute("color")->getDoubleVector();
             int size_c = c.size();
             DM::Node color;
-            if (c.size() > 2) {
+            if (size_c > 2) {
                 color.setX(c[0]);
                 color.setY(c[1]);
                 color.setZ(c[2]);

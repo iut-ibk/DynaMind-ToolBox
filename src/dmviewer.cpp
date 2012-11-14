@@ -89,8 +89,8 @@ void Viewer::postSelection(const QPoint &) {
             View v = l->getView();
             GLuint ns = l->getNameStart();
             std::string uuid = system->getUUIDsOfComponentsInView(v)[name - ns];
-            ComponentEditor ce(system->getComponent(uuid));
-            ce.exec();
+            ComponentEditor * ce = new ComponentEditor(system->getComponent(uuid));
+            ce->show();
         }
         nl++;
     }

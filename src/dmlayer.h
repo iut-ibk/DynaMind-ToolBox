@@ -53,7 +53,7 @@ class Node;
 
 class DM_HELPER_DLL_EXPORT Layer {
 public:
-    Layer(System *system, View v, const std::string &attribute = "");
+    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false);
     ~Layer();
     
     void setColorInterpretation(GLuint texture) {
@@ -153,6 +153,7 @@ private:
     
     int attribute_vector_name;
     bool enabled;
+    bool as3DObject;
 };
 
 } // namespace DM

@@ -79,7 +79,7 @@ struct SimpleDrawer {
         }
         glColor3f(0, 0, 0);
         //QVector<double> vertex = n->get();
-        const double tmp[3] = {n->getX(), n->getY(), 0};
+        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
         glVertex3dv(tmp);
     }
 };
@@ -209,12 +209,13 @@ struct TesselatedFaceDrawer {
 };
 
 
-Layer::Layer(System *s, View v, const std::string &a) 
+Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect)
     : system(s), view(v),
       attribute(a), vmd(a),
       texture(-1),
       attribute_vector_name(0),
-      scale_height(-1) {
+      scale_height(-1),
+      as3DObject(D3Ojbect){
 }
 
 struct GeomtryDrawer {
@@ -228,6 +229,7 @@ struct GeomtryDrawer {
     void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
+            //glBegin(GL_LINE_STRIP);
             glBegin(GL_TRIANGLES);
             return;
         }
@@ -251,11 +253,11 @@ void Layer::draw(QWidget *parent) {
     if (!glIsList(lists[attribute_vector_name])) {
         lists[attribute_vector_name] = glGenLists(1);
         glNewList(lists[attribute_vector_name], GL_COMPILE);
-        if (view.getType() == DM::COMPONENT) {
+        if (view.getType() == DM::COMPONENT || this->as3DObject == true) {
             GeomtryDrawer drawer(*this);
             iterate_components(system, view, drawer);
         }
-        if (view.getType() == DM::FACE) {
+        if (view.getType() == DM::FACE && !this->as3DObject) {
             TesselatedFaceDrawer drawer(*this, parent);
             iterate_faces(system, view, drawer);
         }

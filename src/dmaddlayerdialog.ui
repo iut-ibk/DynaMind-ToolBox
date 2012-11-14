@@ -25,14 +25,21 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
-     <item row="3" column="2">
-      <widget class="QFrame" name="frame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
+     <item row="1" column="0">
+      <widget class="QTreeWidget" name="viewList">
+       <attribute name="headerDefaultSectionSize">
+        <number>120</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Type</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item row="0" column="2">
@@ -59,6 +66,16 @@
        </column>
       </widget>
      </item>
+     <item row="4" column="2">
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -71,23 +88,6 @@
        <property name="text">
         <string>Choose Attribute:</string>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QTreeWidget" name="viewList">
-       <attribute name="headerDefaultSectionSize">
-        <number>120</number>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Type</string>
-        </property>
-       </column>
       </widget>
      </item>
      <item row="1" column="2">
@@ -127,6 +127,20 @@
           <property name="spacing">
            <number>0</number>
           </property>
+          <item row="2" column="0">
+           <widget class="QComboBox" name="colorRamp">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="heightCheckBox">
+            <property name="text">
+             <string>Height</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="colorCheckBox">
             <property name="text">
@@ -170,20 +184,6 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="heightCheckBox">
-            <property name="text">
-             <string>Height</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QComboBox" name="colorRamp">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -202,13 +202,23 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QCheckBox" name="overdraw">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="text">
         <string>Is overdraw Layer</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="checkBox3DObject">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>as 3D Object</string>
        </property>
       </widget>
      </item>

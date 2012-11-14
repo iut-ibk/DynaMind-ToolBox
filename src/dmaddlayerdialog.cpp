@@ -83,7 +83,7 @@ AddLayerDialog::~AddLayerDialog() {
 DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
     if (!view)
         return 0;
-    DM::Layer *l = new DM::Layer(system, *view, attribute);
+    DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked());
     if (ui->colorCheckBox->isChecked()) {
         v->makeCurrent();
         l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex()));
