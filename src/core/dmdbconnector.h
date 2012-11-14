@@ -70,6 +70,8 @@ private:
     static QSqlDatabase _db;
 
     static SingletonDestroyer _destroyer;
+    bool CreateTables();
+    bool DropTables();
 
 protected:
     virtual ~DBConnector();

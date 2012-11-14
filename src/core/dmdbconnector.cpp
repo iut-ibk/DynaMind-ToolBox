@@ -36,8 +36,6 @@
 #include <QtCore>
 #include <QSqlError>
 
-	 //#include "qtdir/src/sql/drivers/psql/qsql_psql.cpp"
-
 using namespace DM;
 
 void DM::PrintSqlError(QSqlQuery *q)
@@ -69,22 +67,116 @@ bool DBConnector::_bTransaction = false;
 QSqlDatabase DBConnector::_db;
 
 
+bool DBConnector::CreateTables()
+{
+    QSqlQuery query;
+    if( query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            predecessors text, \
+                                            sucessors text, \
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE components(uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE nodes(uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE edges(uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            startnode VARCHAR(128), \
+                                            endnode VARCHAR(128), \
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE faces(uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            nodes text, \
+                                            holes text, \
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE rasterdatas(uuid VARCHAR(128) NOT NULL, \
+                                            stateuuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            datalink int,\
+                                            PRIMARY KEY (uuid,stateuuid))")
+    && query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
+                                            x bigint, y bigint, value DOUBLE PRECISION, \
+                                            PRIMARY KEY (datalink,x,y))")
+    && query.exec("CREATE TABLE attributes(uuid VARCHAR(128) NOT NULL, \
+                                            owner VARCHAR(128), \
+                                            stateuuid VARCHAR(128), \
+                                            name VARCHAR(128), \
+                                            type smallint, \
+                                            value bytea, \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE UNIQUE INDEX idx_systems ON systems(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_components ON components(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_nodes ON nodes(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_edges ON edges(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_faces ON faces(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_rasterdatas ON rasterdatas(uuid, stateuuid)")
+    && query.exec("CREATE UNIQUE INDEX idx_rasterfields ON rasterfields(datalink, x, y)")
+    && query.exec("CREATE UNIQUE INDEX idx_attributes ON attributes(uuid)")
+    && query.exec("PRAGMA synchronous=OFF")
+    )
+        return true;
+
+    PrintSqlError(&query);
+    return false;
+}
+
+bool DBConnector::DropTables()
+{
+    QSqlQuery query;
+    if(	query.exec("DROP TABLE IF EXISTS systems")
+    &&	query.exec("DROP TABLE IF EXISTS components")
+    &&	query.exec("DROP TABLE IF EXISTS nodes")
+    &&	query.exec("DROP TABLE IF EXISTS edges")
+    &&	query.exec("DROP TABLE IF EXISTS faces")
+    &&	query.exec("DROP TABLE IF EXISTS rasterdatas")
+    &&	query.exec("DROP TABLE IF EXISTS rasterfields")
+    &&	query.exec("DROP TABLE IF EXISTS attributes")
+    &&	query.exec("DROP INDEX IF EXISTS idx_systems")
+    &&	query.exec("DROP INDEX IF EXISTS idx_components")
+    &&	query.exec("DROP INDEX IF EXISTS idx_nodes")
+    &&	query.exec("DROP INDEX IF EXISTS idx_edges")
+    &&	query.exec("DROP INDEX IF EXISTS idx_faces")
+    &&	query.exec("DROP INDEX IF EXISTS idx_rasterdatas")
+    &&	query.exec("DROP INDEX IF EXISTS idx_rasterfields")
+    &&	query.exec("DROP INDEX IF EXISTS idx_attributes")
+            )
+        return true;
+
+    PrintSqlError(&query);
+    return false;
+}
+
 DBConnector::DBConnector()
 {
     _db = QSqlDatabase::addDatabase("QSQLITE");
     _db.setDatabaseName(":memory:");
     //_db.setDatabaseName("testdb");
-	/*
+/*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
     db.setDatabaseName(connectionString);
     db.setUserName("root");
     db.setPassword("");
-	*/
+*/
 /*
-    QString connectionString = "DRIVER={PostgreSQL Unicode};SERVER=localhost;DATABASE=dynamind;";
-	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+    QString connectionString = "DRIVER={PostgreSQL Unicode(x64)};SERVER=localhost;DATABASE=dynamind;";
+    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
     db.setDatabaseName(connectionString);
+    db.setUserName("postgres");
+    db.setPassword("this00");
+*/
+    /*
+    //QString connectionString = "SERVER=localhost;DATABASE=dynamind;";
+    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+    db.setDatabaseName("dynamind");
     db.setUserName("postgres");
     db.setPassword("this00");
 */
@@ -95,71 +187,16 @@ DBConnector::DBConnector()
         QSqlError e = _db.lastError();
 		Logger(Error) << "driver error: " << e.driverText();
 		Logger(Error) << "database error: " << e.databaseText();
+        return;
 	}
 	else
 		Logger(Debug) << "Db connection opened";
 
-	// init table structure
-	QSqlQuery query;
-	if(	!query.exec("DROP TABLE IF EXISTS systems")
-	||	!query.exec("DROP TABLE IF EXISTS components")
-	||	!query.exec("DROP TABLE IF EXISTS nodes")
-	||	!query.exec("DROP TABLE IF EXISTS edges")
-	||	!query.exec("DROP TABLE IF EXISTS faces")
-	||	!query.exec("DROP TABLE IF EXISTS rasterdatas")
-	||	!query.exec("DROP TABLE IF EXISTS rasterfields")
-	||	!query.exec("DROP TABLE IF EXISTS attributes")
-    ||	!query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-											predecessors text, \
-											sucessors text, \
-											PRIMARY KEY (uuid,stateuuid))")
-    || !query.exec("CREATE TABLE components(uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-											PRIMARY KEY (uuid,stateuuid))")
-    || !query.exec("CREATE TABLE nodes(uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-											x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
-											PRIMARY KEY (uuid,stateuuid))")
-    || !query.exec("CREATE TABLE edges(uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-                                            startnode VARCHAR(128), \
-                                            endnode VARCHAR(128), \
-											PRIMARY KEY (uuid,stateuuid))")
-    || !query.exec("CREATE TABLE faces(uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-											nodes text, \
-											holes text, \
-											PRIMARY KEY (uuid,stateuuid))")
-    || !query.exec("CREATE TABLE rasterdatas(uuid VARCHAR(128) NOT NULL, \
-                                            stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-											datalink int,\
-											PRIMARY KEY (uuid,stateuuid))")
-	|| !query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
-											x bigint, y bigint, value DOUBLE PRECISION, \
-											PRIMARY KEY (datalink,x,y))")
-    || !query.exec("CREATE TABLE attributes(uuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-                                            stateuuid VARCHAR(128), \
-                                            name VARCHAR(128), \
-                                            type smallint, \
-                                            value bytea, \
-                                            PRIMARY KEY (uuid))")
-		)
+    // init table structure
+    if(!DropTables() || !CreateTables())
 	{
         Logger(Error) << "Cannot initialize db tables";
-		PrintSqlError(&query);
-
-		QSqlQuery q;
-		q.prepare("DROP TABLE IF EXISTS systems, components, attributes");
-		if(!q.exec())	PrintSqlError(&q);
-
+        DropTables();
         //db.removeDatabase("QODBC");
         _db.removeDatabase("QSQLITE");
         _db.close();
@@ -203,24 +240,20 @@ QSqlQuery* DBConnector::getQuery(QString cmd)
         return q;
     }
 }
-//int counter = 0;
-
 void DBConnector::ExecuteQuery(QSqlQuery *q)
-{
+{   
     if(!_bTransaction)
         this->BeginTransaction();
 
-    //counter++;
     if(!q->exec())	PrintSqlError(q);
 }
 
 bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 {
+
     if(_bTransaction)
-    {
         this->CommitTransaction();
-        //counter = 0;
-    }
+
     if(!q->exec() || !q->next())
     {
         PrintSqlError(q);
@@ -237,8 +270,6 @@ void DBConnector::BeginTransaction()
 
 void DBConnector::CommitTransaction()
 {
-    //Logger(Error) << "committing " << counter;
-
     _bTransaction = false;
     if(!_db.commit())
     {
@@ -472,7 +503,7 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
 bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1)
- {
+{
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
      q->addBindValue(uuid);
      q->addBindValue(stateuuid);
@@ -487,59 +518,17 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1,
                          QString valName2, QVariant *value2)
-   {
-       QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
-       q->addBindValue(uuid);
-       q->addBindValue(stateuuid);
-       if(!ExecuteSelectQuery(q))
-           return false;
-
-       *value0 = q->value(0);
-       *value1 = q->value(1);
-       *value2 = q->value(2);
-       return true;
-   }
-
-/*
-void DBConnector::InsertX(std::string table, ...)
 {
-    QString strParams;
-    QString strValues;
-    QVariant qValue;
-    QSqlQuery q;
+    QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
+    q->addBindValue(uuid);
+    q->addBindValue(stateuuid);
+    if(!ExecuteSelectQuery(q))
+        return false;
 
-    va_list params;
-    va_start( params, table );
+    *value0 = q->value(0);
+    *value1 = q->value(1);
+    *value2 = q->value(2);
+    return true;
+}
 
-    QVariant name = va_arg(params, QVariant);
-    QVariant value = va_arg(params, QVariant);
 
-
-
-    while(name != NULL && value != NULL)
-    {
-        strParams += name.toString() + ",";
-        strValues += "?,";
-
-        name = va_arg(params, QVariant);
-        value = va_arg(params, QVariant);
-    }
-
-    va_end( params );
-
-    strParams.chop(1);
-    strValues.chop(1);
-
-    q.prepare("INSERT INTO "+QString::fromStdString(table)+
-              " ("+strParams+") VALUES ("+strValues+")");
-
-    p = par;
-    while(p != NULL)
-    {
-        q.addBindValue(p->value);
-        p = va_arg(params, DMSqlParameter*);
-    }
-    va_end( params );
-
-    if(!q.exec())	PrintSqlError(&q);
-}*/
