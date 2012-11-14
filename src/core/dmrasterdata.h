@@ -70,7 +70,7 @@ public:
 
     Component * clone();
 private:
-	//int linkID;
+    int _linkID;
 
     long width;
     long height;
@@ -96,7 +96,7 @@ private:
 	void SQLSetValue(long x, long y, double value);
 	void SQLUpdateLink(int id);
 
-	int GetLinkID() const;
+    //int GetLinkID() const;
 	//void SQLSetValues();
     /** @brief return table name */
     QString getTableName();
