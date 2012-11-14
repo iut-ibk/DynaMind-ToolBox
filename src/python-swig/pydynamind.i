@@ -232,6 +232,10 @@ def my_del(self):
     self.__disown__()
 
 Component.__del__ = my_del
+Node.__del__ = my_del
+Edge.__del__ = my_del
+Face.__del__ = my_del
+
 
 class NodeFactory(INodeFactory):
     def __init__(self, klass):

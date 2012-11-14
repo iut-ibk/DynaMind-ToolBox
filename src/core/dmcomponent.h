@@ -56,7 +56,7 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
-    QMutex * mMutex;
+    //QMutex * mMutex;
 protected:
 
     std::string uuid;

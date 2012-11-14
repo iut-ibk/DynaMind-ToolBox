@@ -87,7 +87,7 @@ public:
      *  Z coorindates of the extruded walls are (z + height)
      *  If the option with lid is true the last entry in the return vector points to the lid
      */
-    static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
+    static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp,  double height, double offset = 0, bool withLid = true);
 
     /** @brief Calculates centroid of a 3D plane.
      *
@@ -95,6 +95,9 @@ public:
      * After rotating the centroid back it is returned.
      */
     static DM::Node CentroidPlane3D(DM::System * sys, DM::Face * f);
+
+    /** @brief Calculates cnetroid of a plane, see CentroidPlane3D */
+    static DM::Node CentroidPlane(const std::vector<DM::Node*> & nodes);
 
     /** @brief Calulates v' = alphas v and returns  v' as new node */
     static DM::Node RotateVector(double (&R)[3][3], const DM::Node & n1);
@@ -131,6 +134,9 @@ public:
 
     /** @brief Calculate distance of two nodes A and B */
     static double calculateDistance(DM::Node *a, DM::Node *b);
+
+    /** @brief Creates a circle */
+    static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);
 };
 
 #endif // TBVECTORDATA_H

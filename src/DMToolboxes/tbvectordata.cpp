@@ -181,7 +181,7 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     double A6 = TBVectorData::CalculateArea(sys, f)*6.;
     double x = 0;
     double y = 0;
-    for (int i = 0; i< nodes.size()-1;i++) {
+    for (unsigned int i = 0; i< nodes.size()-1;i++) {
         DM::Node * p_i = nodes[i];
         DM::Node * p_i1 = nodes[i+1];
 
@@ -221,7 +221,7 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     std::vector<DM::Node*> ns_t;
 
-    for (int i = 0; i < nodes.size(); i++) {
+    for (unsigned int i = 0; i < nodes.size(); i++) {
         DM::Node n = *(nodes[i]);
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -235,7 +235,7 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (pend != pstart)
         startISEnd = false;
     double A = 0;
-    for (int i = 0; i< ns_t.size()-1;i++) {
+    for (unsigned int i = 0; i< ns_t.size()-1;i++) {
         DM::Node * p_i = ns_t[i];
         DM::Node * p_i1 = ns_t[i+1];
 
@@ -291,18 +291,13 @@ QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
 }
 
 
-DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
-{
-
-    //Make Place Plane
-    std::vector<DM::Node*> nodeList = TBVectorData::getNodeListFromFace(sys, f);
-
+DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
     double E[3][3];
     TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
 
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
@@ -318,8 +313,8 @@ DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 
     std::vector<DM::Node*> ns_t;
 
-    for (int i = 0; i < nodeList.size(); i++) {
-        DM::Node n = *(nodeList[i]);
+    for (unsigned int i = 0; i < nodes.size(); i++) {
+        DM::Node n = *(nodes[i]);
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
     }
@@ -329,6 +324,15 @@ DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 
     DM::Node centroid = RotateVector(alphas_t, centroid_t);
     return centroid;
+
+}
+
+DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
+{
+
+    //Make Place Plane
+    std::vector<DM::Node*> nodeList = TBVectorData::getNodeListFromFace(sys, f);
+    return TBVectorData::CentroidPlane(nodeList);
 
 }
 
@@ -430,25 +434,35 @@ void TBVectorData::RotationMatrix(const double (&E_from)[3][3], const double (&E
 
 }
 
-std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid){
+std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp,  double height,  double offset, bool withLid){
+
+    std::vector<DM::Node * > basePoints;
+    //Create new base points if offset != 0
+    if (offset != 0) {
+        foreach (DM::Node * n, vp)
+            basePoints.push_back(sys->addNode(n->getX(), n->getY(), n->getZ() + offset));
+    } else {
+        basePoints = vp;
+    }
     //Create Upper Points
+
     std::vector<DM::Node*> opposite_ids;
     //Face refF = vf[0];
-    foreach(DM::Node * n, vp) {
+    foreach(DM::Node * n, basePoints) {
         DM::Node * n_new = sys->addNode(n->getX(), n->getY(), n->getZ() + height);
         opposite_ids.push_back(n_new);
     }
 
     //Create Sides
     std::vector<DM::Face*> newFaces;
-    for (unsigned int i = 0; i < vp.size(); i++) {
+    for (unsigned int i = 0; i < basePoints.size(); i++) {
         if (i != 0) {
             std::vector<DM::Node *> f_side;
-            f_side.push_back(vp[i]);
+            f_side.push_back(basePoints[i]);
             f_side.push_back(opposite_ids[i]);
             f_side.push_back(opposite_ids[i-1]);
-            f_side.push_back(vp[i-1]);
-            f_side.push_back(vp[i]);
+            f_side.push_back(basePoints[i-1]);
+            f_side.push_back(basePoints[i]);
             newFaces.push_back(sys->addFace(f_side, view));
         }
 
@@ -457,7 +471,6 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     //Create Lid
     if (!withLid)
             return newFaces;
-    //reverse(opposite_ids.begin(),opposite_ids.end());
     newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
@@ -468,4 +481,19 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
     return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2));
+}
+
+vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segments)
+{
+    const double pi =  3.14159265;
+    std::vector<DM::Node> ressNodes;
+    double delta_phi = pi*2/segments;
+
+    for (double phi = 0; phi < 2*pi; phi+=delta_phi) {
+        double x = radius * cos(phi) + c->getX();
+        double y = radius * sin(phi) + c->getY();
+        DM::Node n(x,y,0);
+        ressNodes.push_back(n);
+    }
+    return ressNodes;
 }
