@@ -531,4 +531,10 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
     return true;
 }
 
+/*
+void DBConnector::Duplicate(QString table, QString uuid, QString stateuuid,
+                                           QString newuuid, QString newStateUuid)
+{
 
+
+}*/

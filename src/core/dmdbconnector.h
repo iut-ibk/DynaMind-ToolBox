@@ -142,9 +142,9 @@ public:
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
-
-    //void InsertX(std::string table, ...);
-
+/*
+    void Duplicate(QString table, QString uuid, QString stateuuid,
+                                               QString newuuid, QString newStateUuid);*/
     static int GetNewLinkID();
 };
 
