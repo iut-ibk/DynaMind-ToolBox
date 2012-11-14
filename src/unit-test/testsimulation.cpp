@@ -178,44 +178,44 @@ TEST_F(TestSimulation, SQLRasterdata)
     DM::Logger(DM::Standard) << "Test raster data (SQL)";
 
     int size = 4;
-    DM::RasterData* raster = new DM::RasterData(size,size,10);
+    DM::RasterData* raster = new DM::RasterData(size,size,1,1,0,0);
     // check no value
     DM::Logger(DM::Debug) << "checking default values";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
-            ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
+            ASSERT_TRUE(raster->getCell(x,y) == raster->getNoValue());
     // insert
     DM::Logger(DM::Debug) << "inserting values";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
-            raster->setValue(x,y,x*1000+y);
+            raster->setCell(x,y,x*1000+y);
     // check values
     DM::Logger(DM::Debug) << "checking values";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
         {
             DM::Logger(DM::Debug) << "checking " << x << "/" << y;
-            ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
+            ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
         }
     delete raster;
 
     raster = new DM::RasterData();
-    raster->setSize(size,size,10);
+    raster->setSize(size,size,1,1,0,0);
     // check no value
     DM::Logger(DM::Debug) << "checking default values with seperatly initialized grid";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
-            ASSERT_TRUE(raster->getValue(x,y) == raster->getNoValue());
+            ASSERT_TRUE(raster->getCell(x,y) == raster->getNoValue());
     // insert
     DM::Logger(DM::Debug) << "inserting values with seperatly initialized grid";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
-            raster->setValue(x,y,x*1000+y);
+            raster->setCell(x,y,x*1000+y);
     // check values
     DM::Logger(DM::Debug) << "checking values with seperatly initialized grid";
     for(long x=0;x<size;x++)
         for(long y=0;y<size;y++)
-            ASSERT_TRUE(raster->getValue(x,y) == x*1000+y);
+            ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
 
     delete raster;
 }

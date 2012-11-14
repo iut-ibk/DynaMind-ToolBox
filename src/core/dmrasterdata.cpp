@@ -29,17 +29,23 @@
 #include <time.h>
 #include <QMutex>
 #include <dmlogger.h>
+#include <math.h>
 #include "dmdbconnector.h"
 #include <QVariant>
 
 using namespace DM;
 
-RasterData::RasterData(long  width, long  height, double  cellSize) : Component(true)
+RasterData::RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) : Component(true)
 {
+    DM::Logger(DM::Warning) << "New implemented RasterData --- please check existing code";
+
     this->width = width;
     this->height = height;
-    this->cellSize = cellSize;
-    this->NoValue = -9999;
+    this->cellSizeX = cellSizeX;
+    this->cellSizeY = cellSizeY;
+    this->xoffset = xoffset;
+    this->yoffset = yoffset;
+
     this->minValue = -9999;
     this->maxValue = -9999;
     this->debugValue = 0;
@@ -47,8 +53,12 @@ RasterData::RasterData(long  width, long  height, double  cellSize) : Component(
 	SQLInsert();
 	SQLInsertField(width, height, NoValue);
 }
-RasterData::RasterData() : Component(true) {
-    this->cellSize = 0;
+RasterData::RasterData() : Component(true)
+{
+    this->cellSizeX = 0;
+    this->cellSizeY = 0;
+    this->xoffset = 0;
+    this->yoffset = 0;
     this->width = 0;
     this->height = 0;
 
@@ -56,13 +66,17 @@ RasterData::RasterData() : Component(true) {
 }
 RasterData::RasterData(const RasterData &other) : Component(other, true)
 {
-    this->cellSize = other.cellSize;
     this->width = other.width;
     this->height = other.height;
     this->NoValue = other.NoValue;
     this->minValue = other.minValue;
     this->maxValue = other.maxValue;
     this->debugValue = other.debugValue;
+
+    this->cellSizeX = other.cellSizeX;
+    this->cellSizeY = other.cellSizeY;
+    this->xoffset = other.xoffset;
+    this->yoffset = other.yoffset;
 
 	SQLInsert();
 	SQLInsertField(width, height, NoValue);
@@ -94,7 +108,9 @@ double RasterData::getSum() const
     }
     return sum;
 }
-double RasterData::getValue(long x, long y) const {
+
+double RasterData::getCell(long x, long y) const
+{
     if (  x >-1 && y >-1 && x < this->width && y < this->height) 
         return  SQLGetValue(x,y);
     else
@@ -102,13 +118,13 @@ double RasterData::getValue(long x, long y) const {
 }
 /*
 void RasterData::createNewDataSet() {
-    double **data_old = this->data;
+    float **data_old = this->data;
     this->minValue = 0;
     this->maxValue = 0;
 
-    data = new double*[width];
+    data = new float*[width];
     for (long i = 0; i < width; i++) {
-        data[i] = new double[height];
+        data[i] = new float[height];
     }
 
     for (unsigned int i = 0; i < getWidth(); i++) {
@@ -121,19 +137,18 @@ void RasterData::createNewDataSet() {
 	SQLSetValues();
 }*/
 
-bool RasterData::setValue(long x, long y, double value) 
+bool RasterData::setCell(long x, long y, double value)
 {
     if (  x >-1 && y >-1 && x < this->width && y < this->height) 
 	{
 		SQLSetValue(x,y,value);
-        //data[x][y] = value;
 
         if (minValue == this->NoValue || minValue > value)
             minValue = value;
 
         if (maxValue == this->NoValue || maxValue < value)
             maxValue = value;
-		
+
         return true;
     } 
     return false;
@@ -145,7 +160,7 @@ RasterData::~RasterData()
     Component::SQLDelete();
 }
 
-void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
+void RasterData::getNeighboorhood(float** d, int width, int height, int x, int y) {
     int dx = (int) (width -1)/2;
     int dy = (int) (height -1)/2;
     int x_cell;
@@ -169,10 +184,7 @@ void RasterData::getNeighboorhood(double** d, int width, int height, int x, int 
             if ( j >= this->height) {
                 y_cell = j - this->height;
             }
-            d[k][l] = this->getValue(x_cell,y_cell);
-       /*     if (d[k][l] < 0 ) {
-                vibens::Logger( vibens::Debug) << "Error";
-            }*/
+            d[k][l] = this->getCell(x_cell,y_cell);
 
             l++;
         }
@@ -184,7 +196,7 @@ void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
 
-            neigh[counter] = this->getValue(i,j);
+            neigh[counter] = this->getCell(i,j);
             counter++;
         }
     }
@@ -246,7 +258,7 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
 
-            neigh[counter] = this->getValue(i,j);
+            neigh[counter] = this->getCell(i,j);
             counter++;
         }
     }
@@ -304,14 +316,15 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 
 }
 
-
-void RasterData::setSize(long width, long height, double cellsize) 
-{
-    if (width != this->width || height != this->height || this->cellSize != cellsize) 
-	{
+void RasterData::setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) {
+    if (width != this->width || height != this->height || this->cellSizeX != cellsizeX || this->cellSizeY != cellsizeY)
+    {
         this->width = width;
         this->height = height;
-        this->cellSize = cellsize;
+        this->cellSizeX = cellsizeX;
+        this->cellSizeY = cellsizeY;
+        this->xoffset = xoffset;
+        this->yoffset = yoffset;
         this->NoValue = -9999;
         this->minValue = -9999;
         this->maxValue = -9999;
@@ -334,7 +347,17 @@ void RasterData::SQLInsert()
 {
     DBConnector::getInstance()->Insert("rasterdatas", QString::fromStdString(uuid),
                                                 QString::fromStdString(stateUuid));
-    //SQLInsertAs("rasterdata");
+}
+
+
+bool RasterData::setValue(long x, long y, double value)
+{
+    return setCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY),value);
+}
+
+double RasterData::getValue(long x, long y) const
+{
+    return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
 /*
 void RasterData::SQLDelete()
@@ -444,13 +467,6 @@ void RasterData::SQLUpdateLink(int id)
     DBConnector::getInstance()->Update("rasterdatas", QString::fromStdString(uuid),
                                                       QString::fromStdString(stateUuid),
                                        "datalink",    QVariant::fromValue(id));
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE rasterdatas SET datalink = ? WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(id);
-	q.addBindValue(QString::fromStdString(uuid));
-	q.addBindValue(QString::fromStdString(stateUuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 int RasterData::GetLinkID() const
@@ -460,12 +476,5 @@ int RasterData::GetLinkID() const
                                                          QString::fromStdString(stateUuid),
                                           "datalink",    &value))
         return value.toInt();
-/*
-	QSqlQuery q;
-	q.prepare("SELECT datalink FROM rasterdatas WHERE uuid LIKE ? AND stateuuid LIKE ?");
-	q.addBindValue(QString::fromStdString(uuid));
-	q.addBindValue(QString::fromStdString(stateUuid));
-	if(!q.exec())	PrintSqlError(&q);
-    if(q.next())	return q.value(0).toInt();*/
 	return 0;
 }

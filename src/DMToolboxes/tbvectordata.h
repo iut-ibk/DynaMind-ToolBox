@@ -1,12 +1,12 @@
 /**
  * @file
- * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Chrisitan Urich <christian.urich@gmail.com>, Michael Mair <michael.mair@uibk.ac.at>
  * @version 1.0
  * @section LICENSE
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich and Michael Mair
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@
 #include <dmcompilersettings.h>
 #include <vector>
 #include <QPolygonF>
+#include <math.h>
 
 namespace DM {
 class System;
@@ -47,7 +48,7 @@ class View;
 *
 * @ingroup ToolBoxes
 * @brief Lots of useful functions that make live easier
-* @author Christian Urich
+* @author Christian Urich, Michael Mair
 *
 */
 class DM_HELPER_DLL_EXPORT TBVectorData
@@ -61,10 +62,10 @@ public:
       **/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
 
-     /** @brief Returns pointer to existing not at n or 0 if point doesn't exist */
+     /** @brief Returns pointer to existing node at n or 0 if point doesn't exist */
     static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
 
-    /** @brief Checks if the a node already exists in the system. If not a new node is created, otherwise a new node is created.*/
+    /** @brief Checks if a node already exists in the system. If not a new node is created.*/
     static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
 
     /** @brief Returns pointers of the face */
@@ -83,6 +84,10 @@ public:
     static QPolygonF FaceAsQPolgonF(DM::System * sys, DM::Face * f);
 
     /** @brief Extrudes a ploygon. The new faces are added to the system and a vector with pointer to created faces is returned.
+<<<<<<< HEAD
+=======
+     *  Z coorindates of the extruded walls are (z + height)
+>>>>>>> master
      *  If the option with lid is true the last entry in the return vector points to the lid
      */
     static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
@@ -127,6 +132,8 @@ public:
 
     static double CalculateArea(std::vector<DM::Node *> const & nodes);
 
+    /** @brief Calculate distance of two nodes A and B */
+    static double calculateDistance(DM::Node *a, DM::Node *b);
 };
 
 #endif // TBVECTORDATA_H

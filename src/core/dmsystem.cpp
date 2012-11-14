@@ -44,6 +44,8 @@ using namespace DM;
 System::System() : Component(true)
 {
     this->lastModule = 0;
+    //this->mutex = new QMutex(QMutex::Recursive);
+
 	currentSys = this;
 	
     ownedchilds = std::map<std::string,Component*>();
@@ -56,6 +58,7 @@ System::System(const System& s) : Component(s, true)
     predecessors = s.predecessors;
     views = s.views;
     lastModule = s.lastModule;
+    //mutex = new QMutex(QMutex::Recursive);
 	SQLInsert();
 	
     currentSys = this;
@@ -74,12 +77,14 @@ System::~System()
         ownedchilds.erase(ownedchilds.begin());
     }
 
-	foreach (DM::System * sys, sucessors)
-        if (sys)	delete sys;
+    foreach (DM::System * sys, this->sucessors)
+        if (sys)
+            delete sys;
     foreach (DM::View * v, ownedView)
         delete v;
 
     ownedView.clear();
+    //delete mutex;
 
     Component::SQLDelete();
 }
@@ -140,10 +145,13 @@ Components System::getType()
 }
 QString System::getTableName()
 {
+
     return "systems";
 }
 Component * System::addComponent(Component* c, const DM::View & view)
 {
+    //QMutexLocker locker(mutex);
+
     if(!addChild(c)) {
         delete c;
         return 0;
@@ -192,6 +200,7 @@ bool System::removeComponent(std::string name)
 
 Node* System::addNode(Node* node)
 {
+    //QMutexLocker locker(mutex);
     if(!addChild(node)) {
         delete node;
         return 0;
@@ -207,8 +216,10 @@ Node* System::addNode(const Node &n,  const DM::View & view)
     n.get(v);
     return this->addNode(v[0],v[1],v[2], view);
 }
-Node* System::addNode(double x, double y, double z,  const DM::View & view) {
 
+Node * System::addNode(double x, double y, double z,  const DM::View & view)
+{
+    //QMutexLocker locker(mutex);
     Node * n = this->addNode(new Node(x, y, z));
 
     if (n == NULL)
@@ -243,7 +254,6 @@ bool System::removeNode(std::string name)
 
     std::map<std::string,Edge*>::iterator ite;
 
-
     for ( ite=edges.begin() ; ite != edges.end(); ite++ )
     {
         Edge* tmpedge = edges[(*ite).first];
@@ -263,6 +273,7 @@ bool System::removeNode(std::string name)
 
 Edge* System::addEdge(Edge* edge)
 {
+    //QMutexLocker locker(mutex);
     if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
         delete edge;
         return 0;
@@ -283,6 +294,7 @@ Edge* System::addEdge(Edge* edge)
 }
 Edge* System::addEdge(Node * start, Node * end, const View &view)
 {
+    //QMutexLocker locker(mutex);
     Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
 
     if (e == 0)

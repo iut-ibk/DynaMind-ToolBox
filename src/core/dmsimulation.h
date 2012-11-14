@@ -176,8 +176,11 @@ public:
          */
     Module * resetModule(std::string UUID);
 
-    /** @brief Reset all modules */
+    /** @brief Reset all unexecuted modules */
     void resetModules();
+
+    /** @brief Resets the whole simulation */
+    void resetSimulation();
 
     /** @brief Reloads all python modules */
     void reloadModules();

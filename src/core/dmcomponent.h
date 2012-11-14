@@ -34,6 +34,8 @@
 #include <set>
 #include <dmview.h>
 #include <dmcompilersettings.h>
+#include <QMutex>
+#include <QMutexLocker>
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -63,10 +65,9 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
+
 private:
 	void SQLSetOwner(Component *owner);
-
-
 	void SQLInsertComponent();
     void SQLDeleteComponent();
 
@@ -78,6 +79,9 @@ protected:
     std::string stateUuid;
 
     void SQLDelete();
+
+    //QMutex * mMutex;
+
 
     std::string uuid;
     //std::string name;
@@ -96,6 +100,7 @@ protected:
     /** @brief return table name */
     virtual QString getTableName();
 public:
+
     /** @brief create a new component
       *
       * The default constructor creates a UUID for the component.

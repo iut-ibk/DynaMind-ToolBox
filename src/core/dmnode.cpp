@@ -197,18 +197,14 @@ Node Node::operator *(const double &val) const
 {
     double v0[3];
     this->get(v0);
-    return Node(v0[0]*val,
-                v0[1]*val,
-                v0[2]*val);
+    return Node(v0[0]*val,  v0[1]*val,  v0[2]*val);
 }
 
 Node Node::operator /(const double &val) const
 {
     double v0[3];
     this->get(v0);
-    return Node(v0[0]/val,
-                v0[1]/val,
-                v0[2]/val);
+    return Node(v0[0]/val,  v0[1]/val,  v0[2]/val);
 }
 
 bool Node::compare2d(const Node &other, double round ) const 
@@ -217,8 +213,7 @@ bool Node::compare2d(const Node &other, double round ) const
     double v1[3];
     other.get(v0);
     this->get(v1);
-    return fabs(v0[0]-v1[0]) <= round &&
-           fabs(v0[1]-v1[1]) <= round;
+    return fabs(v0[0]-v1[0]) <= round && fabs(v0[1]-v1[1]) <= round;
 }
 bool Node::compare2d(const Node * other , double round ) const 
 {

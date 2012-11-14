@@ -66,6 +66,7 @@ typedef std::pair<std::string, Face*> FacePair;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
+    //QMutex * mutex;
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;
     std::map<std::string, Face* > faces;
@@ -82,7 +83,7 @@ private:
     std::vector<DM::System*> sucessors;
     std::vector<DM::View *> ownedView;
 
-    //Get Edge Based on otherwise takes ages
+    //Get Edge Based on map otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);

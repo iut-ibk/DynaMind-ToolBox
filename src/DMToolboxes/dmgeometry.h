@@ -57,18 +57,15 @@ public:
     /** @brief Creates a spatial hash from a node
      *
      * the key is concatenated out of the int value x/devider '|' and y/devider
-     * e.g. x=240.00; y=200.00; devider=10,00 -> 12|10
+     * e.g. x=240.00; y=200.00; devider=20,00 -> 12|10
      */
     QString spatialHashNode(const double &x, const double &y);
 
-    /** @brief Returns the pointer to the node located at x,y (inlcudung a tolerance) or 0 if it couldn't find a node.
+    /** @brief Returns the pointer to the node located at x,y (including a tolerance) or 0 if it couldn't find a node.
       * It requires a NodeHasMap that can be created with the initNodeHasMap method
       */
     DM::Node * findNode(const double & x, const double & y, const double & tol);
 
-    /** @brief inits spatial node hash map.
-      */
-    void initSpatialNodeHashMap( DM::System * sys);
     /** @brief Adds a node to the system. Before a new node is created it checks if already a node exists.
      * Returns either the pointer to the new node or to an existing one.
      *

@@ -221,7 +221,8 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     std::vector<DM::Node*> ns_t;
 
-    for (unsigned int i = 0; i < nodes.size(); i++) {
+    for (unsigned int i = 0; i < nodes.size(); i++)
+    {
         DM::Node n = *(nodes[i]);
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -234,7 +235,8 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
         startISEnd = false;
     double A = 0;
 
-	for (unsigned int i = 0; i< ns_t.size()-1;i++) {
+    for (unsigned int i = 0; i< ns_t.size()-1;i++)
+    {
         DM::Node * p_i = ns_t[i];
         DM::Node * p_i1 = ns_t[i+1];
 
@@ -317,7 +319,8 @@ DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 
     std::vector<DM::Node*> ns_t;
 
-    for (unsigned int i = 0; i < nodeList.size(); i++) {
+    for (unsigned int i = 0; i < nodeList.size(); i++)
+    {
         DM::Node n = *(nodeList[i]);
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -331,10 +334,9 @@ DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 
 }
 
-DM::Node  TBVectorData::RotateVector(double (&R)[3][3], const DM::Node & node) {
-
+DM::Node  TBVectorData::RotateVector(double (&R)[3][3], const DM::Node & node)
+{
     double n[3];
-
 
     n[0] = node.getX();
     n[1] = node.getY();
@@ -456,10 +458,17 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     //Create Lid
     if (!withLid)
             return newFaces;
-    reverse(opposite_ids.begin(),opposite_ids.end());
+
+    //reverse(opposite_ids.begin(),opposite_ids.end());
+
     newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
 
 
+}
+
+double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
+{
+    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
 }

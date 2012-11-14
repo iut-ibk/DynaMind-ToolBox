@@ -49,11 +49,18 @@ Component::Component()
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     ownedattributes = std::map<std::string,Attribute*>();
 
+    //mMutex = new QMutex(QMutex::Recursive);
+
     inViews = std::set<std::string>();
     currentSys = NULL;
 
     DBConnector::getInstance();
     SQLInsertComponent();
+}
+
+
+void Component::createNewUUID() {
+    this->uuid = QUuid::createUuid().toString().toStdString();
 }
 Component::Component(bool b)
 {
@@ -71,6 +78,8 @@ Component::Component(const Component& c)
     uuid=c.uuid;
     this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
+
+    //mMutex = new QMutex(QMutex::Recursive);
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
     for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
@@ -98,12 +107,9 @@ Component::~Component()
     }
 	// if this class is not of type component, nothing will happen
     SQLDeleteComponent();
+    //delete ;
 }
 
-void Component::createNewUUID() 
-{
-	this->setUUID(QUuid::createUuid().toString().toStdString());
-}
 
 bool Component::isInView(View view) const 
 {
@@ -111,7 +117,6 @@ bool Component::isInView(View view) const
         if (view.getName().compare(s) == 0)
             return true;
     }
-
     return false;
 }
 
@@ -144,6 +149,8 @@ QString Component::getTableName()
 
 bool Component::addAttribute(std::string name, double val) 
 {
+    //QMutexLocker locker(mMutex);
+
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
@@ -153,6 +160,8 @@ bool Component::addAttribute(std::string name, double val)
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
+    //QMutexLocker locker(mMutex);
+
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
@@ -162,6 +171,8 @@ bool Component::addAttribute(std::string name, std::string val)
 
 bool Component::addAttribute(Attribute &newattribute)
 {
+    //QMutexLocker locker(mMutex);
+
 	if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
 

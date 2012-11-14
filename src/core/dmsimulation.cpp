@@ -51,7 +51,7 @@
 #include <dmporttuple.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
-    #include <dmpythonenv.h>
+#include <dmpythonenv.h>
 #endif
 
 #include <QSettings>
@@ -112,40 +112,40 @@ Simulation::~Simulation() {
 }
 
 void Simulation::reloadModules() {
-    #ifndef PYTHON_EMBEDDING_DISABLED
-        //Init Python
-        QSettings settings;
-        Logger(Standard) << "Reload Modules";
+#ifndef PYTHON_EMBEDDING_DISABLED
+    //Init Python
+    QSettings settings;
+    Logger(Standard) << "Reload Modules";
 
-        QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-        for (int index = 0; index < pythonhome.size(); index++)
-            DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+    QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
+    for (int index = 0; index < pythonhome.size(); index++)
+        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
 
 
-        QDir pythonDir;
-        QString text = settings.value("pythonModules").toString();
-        QStringList list = text.replace("\\","/").split(",");
+    QDir pythonDir;
+    QString text = settings.value("pythonModules").toString();
+    QStringList list = text.replace("\\","/").split(",");
 
-        foreach (QString s, list){
-            DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
-            pythonDir = QDir(s);
-            QStringList filters;
-            filters << "*.py";
-            QStringList files = pythonDir.entryList(filters);
-            foreach(QString file, files) {
-                try{
-                    std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-                    Logger(Debug) << n;
+    foreach (QString s, list){
+        DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
+        pythonDir = QDir(s);
+        QStringList filters;
+        filters << "*.py";
+        QStringList files = pythonDir.entryList(filters);
+        foreach(QString file, files) {
+            try{
+                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+                Logger(Debug) << n;
 
-                } catch(...) {
-                    Logger(Warning)  << "Can't load Module " << file.toStdString();
-                    std::cout << file.toStdString() << std::endl;
-                }
+            } catch(...) {
+                Logger(Warning)  << "Can't load Module " << file.toStdString();
+                std::cout << file.toStdString() << std::endl;
             }
-
         }
-    #endif
+
+    }
+#endif
 }
 void Simulation::loadModulesFromDefaultLocation()
 {
@@ -169,32 +169,32 @@ void Simulation::loadModulesFromDefaultLocation()
         }
     }
 
-    #ifndef PYTHON_EMBEDDING_DISABLED
-        QDir cp;
-        cp = QDir(QDir::currentPath() + "/bin/PythonModules/scripts");
-        loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+#ifndef PYTHON_EMBEDDING_DISABLED
+    QDir cp;
+    cp = QDir(QDir::currentPath() + "/bin/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
 
-        cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
-        loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
-    #endif
+    cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+#endif
 }
 void Simulation::loadPythonModulesFromDirectory(std::string path) {
-    #ifndef PYTHON_EMBEDDING_DISABLED
-        QDir pythonDir = QDir(QString::fromStdString(path));
-        QStringList filters;
-        filters << "*.py";
-        QStringList files = pythonDir.entryList(filters);
-        DM::PythonEnv::getInstance()->addPythonPath((path));
-        foreach(QString file, files) {
-            try{
-                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-                loadedModuleFiles.push_back(file.toStdString());
-            } catch(...) {
-                Logger(Warning)  << "Can't load Module " << file.toStdString();
+#ifndef PYTHON_EMBEDDING_DISABLED
+    QDir pythonDir = QDir(QString::fromStdString(path));
+    QStringList filters;
+    filters << "*.py";
+    QStringList files = pythonDir.entryList(filters);
+    DM::PythonEnv::getInstance()->addPythonPath((path));
+    foreach(QString file, files) {
+        try{
+            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+            loadedModuleFiles.push_back(file.toStdString());
+        } catch(...) {
+            Logger(Warning)  << "Can't load Module " << file.toStdString();
 
-            }
         }
-    #endif
+    }
+#endif
 }
 
 bool Simulation::addModulesFromSettings() {
@@ -202,21 +202,21 @@ bool Simulation::addModulesFromSettings() {
     QString text;
     QStringList list;
 
-    #ifndef PYTHON_EMBEDDING_DISABLED
-        //Init Python
-        QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-        for (int index = 0; index < pythonhome.size(); index++)
-            DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+#ifndef PYTHON_EMBEDDING_DISABLED
+    //Init Python
+    QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
+    for (int index = 0; index < pythonhome.size(); index++)
+        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
 
-        QDir pythonDir;
-        text = settings.value("pythonModules").toString();
-        list = text.replace("\\","/").split(",");
-        foreach (QString s, list){
-            loadPythonModulesFromDirectory(s.toStdString());
-        }
-    #endif
+    QDir pythonDir;
+    text = settings.value("pythonModules").toString();
+    list = text.replace("\\","/").split(",");
+    foreach (QString s, list){
+        loadPythonModulesFromDirectory(s.toStdString());
+    }
+#endif
 
-        // Native Modules
+    // Native Modules
     text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
     foreach (QString s, list) {
@@ -251,18 +251,18 @@ bool Simulation::registerNativeModules(string Filename) {
 }
 
 void Simulation::registerPythonModules(std::string path) {
-    #ifndef PYTHON_EMBEDDING_DISABLED
-        DM::PythonEnv::getInstance()->addPythonPath(path);
-        QDir pythonDir = QDir(QString::fromStdString(path));
-        QStringList filters;
-        filters << "*.py";
-        QStringList files = pythonDir.entryList(filters);
-        foreach(QString file, files) {
-            Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
-            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+#ifndef PYTHON_EMBEDDING_DISABLED
+    DM::PythonEnv::getInstance()->addPythonPath(path);
+    QDir pythonDir = QDir(QString::fromStdString(path));
+    QStringList filters;
+    filters << "*.py";
+    QStringList files = pythonDir.entryList(filters);
+    foreach(QString file, files) {
+        Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
+        std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
 
-        }
-    #endif
+    }
+#endif
 }
 
 ModuleRegistry * Simulation::getModuleRegistry() {
@@ -304,8 +304,20 @@ std::vector<Group*> Simulation::getGroups() {
 void Simulation::resetModules() {
     std::vector<DM::Module *> mv= this->getModules();
     foreach (Module * m, mv) {
-        if (!m->isExecuted())
+        if (!m->isExecuted()) {
+            //Make sure all data are deleted
+            m->resetParameter();
             this->resetModule(m->getUuid());
+        }
+    }
+}
+
+void Simulation::resetSimulation()
+{
+    std::vector<DM::Module *> mv= this->getModules();
+    foreach (Module * m, mv) {
+        m->resetParameter();
+        this->resetModule(m->getUuid());
     }
 }
 void Simulation::run() {

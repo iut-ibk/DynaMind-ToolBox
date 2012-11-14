@@ -85,7 +85,7 @@ void CreateAllComponenets::run()
 	
 	DM::RasterData *raster = new DM::RasterData();
 	raster->setNoValue(1.0);
-	raster->setSize(2.,3.,4.);
+    raster->setSize(2.,3.,1.,1.,0.,0.);
 	raster->setValue(0,0,5.);
 	raster->setValue(1,1,6.);
 	AddValidation(sys->addRasterData(raster), sys);
