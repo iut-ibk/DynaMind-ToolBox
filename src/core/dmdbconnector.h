@@ -44,23 +44,41 @@ public:
     }
 };
 
+class DBConnector;
+
+class SingletonDestroyer
+{
+    public:
+        SingletonDestroyer(DBConnector* = NULL);
+        ~SingletonDestroyer();
+
+        void SetSingleton(DBConnector* s);
+    private:
+        DBConnector* _singleton;
+};
+
 class DBConnector
 {
+    friend class SingletonDestroyer;
 private:
 	static DBConnector* instance;
-	DBConnector();
-    ~DBConnector();
+    DBConnector();
 	
     static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
+    static QSqlDatabase _db;
 
-    QSqlDatabase *_db;
+    static SingletonDestroyer _destroyer;
+
+protected:
+    virtual ~DBConnector();
+public:
 
     QSqlQuery *getQuery(QString cmd);
     void ExecuteQuery(QSqlQuery *q);
     bool ExecuteSelectQuery(QSqlQuery *q);
-public:
+
     static DBConnector* getInstance();
     void BeginTransaction();
     void CommitTransaction();

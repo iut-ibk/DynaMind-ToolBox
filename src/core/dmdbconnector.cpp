@@ -47,18 +47,33 @@ void DM::PrintSqlError(QSqlQuery *q)
 	Logger(Error) << "sql error: " << e.text();
 }
 
+SingletonDestroyer::SingletonDestroyer (DBConnector *s) {
+    _singleton = s;
+}
+
+SingletonDestroyer::~SingletonDestroyer () {
+    delete _singleton;
+}
+
+void SingletonDestroyer::SetSingleton (DBConnector* s) {
+    _singleton = s;
+}
+
+
+SingletonDestroyer DBConnector::_destroyer;
 
 DBConnector* DBConnector::instance = 0;
 int DBConnector::_linkID = 1;
 QMap<QString,QSqlQuery*> DBConnector::mapQuery;
 bool DBConnector::_bTransaction = false;
+QSqlDatabase DBConnector::_db;
 
 
 DBConnector::DBConnector()
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    //db.setDatabaseName(":memory:");
-    db.setDatabaseName("testdb");
+    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db.setDatabaseName(":memory:");
+    //_db.setDatabaseName("testdb");
 	/*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -73,11 +88,11 @@ DBConnector::DBConnector()
     db.setUserName("postgres");
     db.setPassword("this00");
 */
-	if(!db.open())
+    if(!_db.open())
 	{
 		Logger(Error) << "Failed to open db connection";
 		
-		QSqlError e = db.lastError();
+        QSqlError e = _db.lastError();
 		Logger(Error) << "driver error: " << e.driverText();
 		Logger(Error) << "database error: " << e.databaseText();
 	}
@@ -146,8 +161,8 @@ DBConnector::DBConnector()
 		if(!q.exec())	PrintSqlError(&q);
 
         //db.removeDatabase("QODBC");
-        db.removeDatabase("QSQLITE");
-		db.close();
+        _db.removeDatabase("QSQLITE");
+        _db.close();
 		return;
 	}
 
@@ -155,17 +170,20 @@ DBConnector::DBConnector()
 }
 DM::DBConnector::~DBConnector()
 {
-    // commit (destructor called deletes!)
+    // commit (destructor called sql deletes may exist!)
     CommitTransaction();
 
-    for(QMap<QString,QSqlQuery*>::const_iterator it = mapQuery.begin(); it != mapQuery.end(); ++it)
-        delete it;
+    //for(QMap<QString,QSqlQuery*>::const_iterator it = mapQuery.begin(); it != mapQuery.end(); ++it)
+    //    delete it;
 }
 
 DM::DBConnector* DBConnector::getInstance()
 {
 	if(!DBConnector::instance)
+    {
 		DBConnector::instance = new DBConnector();
+        _destroyer.SetSingleton(DBConnector::instance);
+    }
 	return DBConnector::instance;
 }
 int DBConnector::GetNewLinkID()
@@ -185,25 +203,23 @@ QSqlQuery* DBConnector::getQuery(QString cmd)
         return q;
     }
 }
-int counter = 0;
+//int counter = 0;
 
 void DBConnector::ExecuteQuery(QSqlQuery *q)
 {
     if(!_bTransaction)
-    {
         this->BeginTransaction();
-    }
-    counter++;
-    Logger(Error) << counter;
+
+    //counter++;
     if(!q->exec())	PrintSqlError(q);
 }
 
 bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 {
-    if(!_bTransaction)
+    if(_bTransaction)
     {
-        counter = 0;
         this->CommitTransaction();
+        //counter = 0;
     }
     if(!q->exec() || !q->next())
     {
@@ -216,16 +232,18 @@ bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 void DBConnector::BeginTransaction()
 {
     _bTransaction = true;
-    _db->transaction();
+    _db.transaction();
 }
 
 void DBConnector::CommitTransaction()
 {
+    //Logger(Error) << "committing " << counter;
+
     _bTransaction = false;
-    if(!_db->commit())
+    if(!_db.commit())
     {
         Logger(Error) << "rolling back commit";
-        if(_db->rollback())
+        if(_db.rollback())
             Logger(Error) << "rollback failed";
     }
 }
@@ -237,8 +255,7 @@ void DBConnector::Insert(QString table, QString uuid)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
     q->addBindValue(uuid);
-    if(!q->exec())	PrintSqlError(q);
-    //this->ExecuteQuery(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QString uuid,
                          QString parName0, QVariant parValue0)
@@ -247,7 +264,7 @@ void DBConnector::Insert(QString table,  QString uuid,
                             parName0+") VALUES (?,?)");
     q->addBindValue(uuid);
     q->addBindValue(parValue0);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QString uuid,
                          QString parName0, QVariant parValue0,
@@ -259,7 +276,7 @@ void DBConnector::Insert(QString table,  QString uuid,
      q->addBindValue(uuid);
      q->addBindValue(parValue0);
      q->addBindValue(parValue1);
-     if(!q->exec())	PrintSqlError(q);
+     this->ExecuteQuery(q);
  }
 /*
  *  INSERT with uuid and stateuuid
@@ -269,7 +286,7 @@ void DBConnector::Insert(QString table, QString uuid, QString stateUuid)
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,stateuuid) VALUES (?,?)");
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
                          QString parName0, QVariant parValue0)
@@ -279,7 +296,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
     q->addBindValue(parValue0);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
@@ -292,7 +309,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
      q->addBindValue(stateUuid);
      q->addBindValue(parValue0);
      q->addBindValue(parValue1);
-     if(!q->exec())	PrintSqlError(q);
+     this->ExecuteQuery(q);
  }
 void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
@@ -308,7 +325,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
      q->addBindValue(parValue0);
      q->addBindValue(parValue1);
      q->addBindValue(parValue2);
-     if(!q->exec())	PrintSqlError(q);
+     this->ExecuteQuery(q);
  }
 /*
  *  DELETE with uuid
@@ -317,7 +334,7 @@ void DBConnector::Delete(QString table,  QString uuid)
 {
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
     q->addBindValue(uuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 /*
  *  DELETE with uuid and stateuuid
@@ -327,7 +344,7 @@ void DBConnector::Delete(QString table,  QString uuid, QString stateUuid)
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 /*
  *  UPDATE with uuid
@@ -338,7 +355,7 @@ void DBConnector::Update(QString table,  QString uuid,
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
     q->addBindValue(parValue0);
     q->addBindValue(uuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 
 void DBConnector::Update(QString table,  QString uuid,
@@ -351,7 +368,7 @@ void DBConnector::Update(QString table,  QString uuid,
     q->addBindValue(parValue0);
     q->addBindValue(parValue1);
     q->addBindValue(uuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Update(QString table,  QString uuid,
                          QString parName0, QVariant parValue0,
@@ -366,7 +383,7 @@ void DBConnector::Update(QString table,  QString uuid,
     q->addBindValue(parValue1);
     q->addBindValue(parValue2);
     q->addBindValue(uuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 /*
  *  UPDATE with uuid and stateuuid
@@ -378,7 +395,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(parValue0);
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 
 void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
@@ -392,7 +409,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(parValue1);
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
@@ -408,7 +425,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(parValue2);
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
-    if(!q->exec())	PrintSqlError(q);
+    this->ExecuteQuery(q);
 }
 /*
  *  SELECT single entry with uuid
@@ -418,11 +435,9 @@ bool DBConnector::Select(QString table, QString uuid,
 {
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
     q->addBindValue(uuid);
-    if(!q->exec() || !q->next())
-    {
-        PrintSqlError(q);
+
+    if(!ExecuteSelectQuery(q))
         return false;
-    }
     *value = q->value(0);
     return true;
 }
@@ -432,11 +447,9 @@ bool DBConnector::Select(QString table, QString uuid,
  {
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
      q->addBindValue(uuid);
-     if(!q->exec() || !q->next())
-     {
-         PrintSqlError(q);
+     if(!ExecuteSelectQuery(q))
          return false;
-     }
+
      *value0 = q->value(0);
      *value1 = q->value(1);
      return true;
@@ -450,11 +463,9 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
     q->addBindValue(uuid);
     q->addBindValue(stateuuid);
-    if(!q->exec() || !q->next())
-    {
-        PrintSqlError(q);
+    if(!ExecuteSelectQuery(q))
         return false;
-    }
+
     *value = q->value(0);
     return true;
 }
@@ -465,11 +476,9 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
      q->addBindValue(uuid);
      q->addBindValue(stateuuid);
-     if(!q->exec() || !q->next())
-     {
-         PrintSqlError(q);
+     if(!ExecuteSelectQuery(q))
          return false;
-     }
+
      *value0 = q->value(0);
      *value1 = q->value(1);
      return true;
@@ -482,11 +491,9 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
        QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
        q->addBindValue(uuid);
        q->addBindValue(stateuuid);
-       if(!q->exec() || !q->next())
-       {
-           PrintSqlError(q);
+       if(!ExecuteSelectQuery(q))
            return false;
-       }
+
        *value0 = q->value(0);
        *value1 = q->value(1);
        *value2 = q->value(2);
