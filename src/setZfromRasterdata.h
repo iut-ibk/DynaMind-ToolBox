@@ -6,39 +6,47 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Michael Mair
-
+ * Copyright (C) 2012  Michael Mair
+ 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
-#include <minimumspanningtree.h>
-#include <extractnodesfromedges.h>
-#include <connectnodes2graph.h>
-#include <extractmaxgraphofforest.h>
-#include <reducetree.h>
-#include <setZfromRasterdata.h>
 
-using namespace std;
+#ifndef SetZfromRasterdata_H
+#define SetZfromRasterdata_H
 
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<MinimumSpanningTree>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
-    registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
-    registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
-    registry->addNodeFactory(new DM::NodeFactory<SetZfromRasterdata>());
-}
+#include <dmmodule.h>
+#include <dm.h>
+
+class SetZfromRasterdata : public DM::Module
+{
+    DM_DECLARE_NODE(SetZfromRasterdata)
+
+private:
+    typedef std::map<std::string,DM::View> viewmap;
+
+    DM::System *sys;
+    DM::RasterData * r;
+    viewmap viewdef;
+
+
+public:
+    SetZfromRasterdata();
+
+    void run();
+    void initmodel(){}
+};
+
+#endif // SetZfromRasterdata_H

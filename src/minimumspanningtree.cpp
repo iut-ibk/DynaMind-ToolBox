@@ -74,7 +74,7 @@ void MinimumSpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
-    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, int > > Graph;
+    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, double > > Graph;
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
