@@ -504,7 +504,7 @@ bool System::addView(View view)
     if (!view.writes()) {
         return true;
     }
-    DM::Component * dummy  = 0;
+    DM::Component * dummy  = NULL;
     if (!existingView->getIdOfDummyComponent().empty()) {
         dummy = this->getComponent(existingView->getIdOfDummyComponent());
     } else {
@@ -539,6 +539,9 @@ bool System::addView(View view)
             break;
         }
     }
+    if(dummy==NULL)
+        Logger(Error) << "Error: dummy object could not be initialized";
+
     existingView->setIdOfDummyComponent(dummy->getUUID());
 
 
