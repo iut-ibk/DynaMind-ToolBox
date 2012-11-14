@@ -480,7 +480,7 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
 
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
-    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2));
+    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
 }
 
 vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segments)

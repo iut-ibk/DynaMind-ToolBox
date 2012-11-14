@@ -36,25 +36,32 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
-    RasterData(long  width, long  height, double  cellSize);
+    RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
 
     RasterData(const RasterData &other);
     RasterData();
     virtual ~RasterData();
     void clear();
     double getValue(long x, long y) const;
+    double getCell(long x, long y) const;
     bool setValue(long x, long y, double value);
+    bool setCell(long x, long y, double value);
     unsigned long getWidth()const {return width;}
     unsigned long getHeight() const {return height;}
-    double getCellSize() const {return cellSize;}
+    double getCellSizeX() const {return cellSizeX;}
+    double getCellSizeY() const {return cellSizeY;}
     double getNoValue() const {return NoValue;}
     void setNoValue(double NoValue)  {this->NoValue = NoValue;}
     double getMinValue() const {return minValue;}
     double getMaxValue() const {return maxValue;}
     double getSum() const;
+    double getXOffset(){return xoffset;}
+    double getYOffset(){return yoffset;}
+    void setXOffset(double value){this->xoffset=value;}
+    void setYOffset(double value){this->yoffset=value;}
     std::vector<double> getMoorNeighbourhood(long x, long y) const;
-    void setSize(long width, long height, double cellsize);
-    void getNeighboorhood(double** d, int width, int height, int x, int y);
+    void setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
+    void getNeighboorhood(float** d, int width, int height, int x, int y);
 
     void getMoorNeighbourhood(std::vector<double> & neigh, long x, long y);
     void setDebugValue(int val){debugValue = val;}
@@ -66,12 +73,15 @@ private:
 
     long width;
     long height;
-    double cellSize;
+    double cellSizeX;
+    double cellSizeY;
     double NoValue;
+    double xoffset;
+    double yoffset;
 
     double minValue;
     double maxValue;
-    double ** data;
+    float ** data;
 
     int debugValue;
     bool isClone;
