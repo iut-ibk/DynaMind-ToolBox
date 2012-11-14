@@ -70,17 +70,19 @@ private:
 
 	void SQLInsertThis(AttributeType type);
 	void SQLDeleteThis();
-	void SQLUpdateValue(QByteArray qba);
+    void SQLUpdateValue(AttributeType type, QVariant value);
     //void SQLSetOwner(Component* owner);
 	void SQLSetName(std::string newname);
 	void SQLSetType(AttributeType newtype);
     bool SQLGetValue(QVariant &value) const;
 	void SQLSetValue(AttributeType type, QVariant value);
 
-
     void setValue(QByteArray bytes);
     //QByteArray getValue(AttributeType type) const;
+protected:
 public:
+    /** @brief copies type and value to this attribute**/
+    void Change(Attribute &attribute);
     /** @brief changes the owner **/
 	void SetOwner(Component* owner);
     /** @brief Returns true if a double value is set **/

@@ -340,6 +340,12 @@ void Attribute::setType(AttributeType type)
 {
     SQLSetType(type);
 }
+void Attribute::Change(Attribute &attribute)
+{
+    QVariant value;
+    attribute.SQLGetValue(value);
+    this->SQLUpdateValue(attribute.getType(), value);
+}
 
 const char *Attribute::getTypeName() const
 {
@@ -363,37 +369,20 @@ void Attribute::SQLInsertThis(AttributeType type)
 {
 	_uuid = QUuid::createUuid().toString().toStdString();
 
-
     DBConnector::getInstance()->Insert("attributes", QString::fromStdString(_uuid),
                                        "name", QString::fromStdString(name),
                                        "type", QVariant::fromValue((int)type));
-/*
-	QSqlQuery q;
-	q.prepare("INSERT INTO attributes (uuid,name,type) VALUES (?,?,?)");
-	q.addBindValue(QString::fromStdString(_uuid));
-	q.addBindValue(QString::fromStdString(name));
-	q.addBindValue((int)type);
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 void Attribute::SQLDeleteThis()
 {
     DBConnector::getInstance()->Delete("attributes", QString::fromStdString(_uuid));
-    /*QSqlQuery q;
-	q.prepare("DELETE FROM attributes WHERE uuid=?");
-	q.addBindValue(QString::fromStdString(_uuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 
-void Attribute::SQLUpdateValue(QByteArray qba)
+void Attribute::SQLUpdateValue(AttributeType type, QVariant value)
 {	
     DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
-                                       "value",qba);
-/*
-	QSqlQuery q;
-	q.prepare("UPDATE attributes SET value=? WHERE uuid=?");
-	q.addBindValue(qba);
-	q.addBindValue(QString::fromStdString(_uuid));
-    if(!q.exec())	PrintSqlError(&q);*/
+                                       "type",(int)type,
+                                       "value",value);
 }
 void Attribute::SetOwner(Component* owner)
 {
@@ -401,71 +390,28 @@ void Attribute::SetOwner(Component* owner)
     DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
                                        "owner",     QString::fromStdString(owner->getUUID()),
                                        "stateuuid", QString::fromStdString(owner->getStateUUID()));
-    //SQLSetOwner(owner);
 }
-/*
-void Attribute::SQLSetOwner(Component* owner)
-{
-	QSqlQuery q;
-	q.prepare("UPDATE attributes SET owner=?,stateuuid=? WHERE uuid=?");
-	q.addBindValue(QString::fromStdString(owner->getUUID()));
-	q.addBindValue(QString::fromStdString(owner->getStateUUID()));
-	q.addBindValue(QString::fromStdString(_uuid));
-	if(!q.exec())	PrintSqlError(&q);
-}*/
+
 void Attribute::SQLSetName(std::string newname)
 {	
     DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
                                        "name",      QString::fromStdString(newname));
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE attributes SET name=? WHERE uuid=?");
-	q.addBindValue(QString::fromStdString(newname));
-	q.addBindValue(QString::fromStdString(_uuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 void Attribute::SQLSetType(AttributeType newtype)
 {
     DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
                                        "type",      QVariant::fromValue((int)newtype),
                                        "value",     QVariant::fromValue(0));
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE attributes SET type=?,value=NULL WHERE uuid=?");
-	q.addBindValue(newtype);
-	q.addBindValue(QString::fromStdString(_uuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 
 bool Attribute::SQLGetValue(QVariant &value) const
 {
     return DBConnector::getInstance()->Select("attributes",
                                               QString::fromStdString(_uuid), "value", &value);
-    /*QSqlQuery q;
-	q.prepare("SELECT value FROM attributes WHERE uuid=?");
-	q.addBindValue(QString::fromStdString(_uuid));
-	if(q.exec())	
-	{
-		if(q.next())	
-		{
-			value = q.value(0);
-			return true;
-		}
-	}
-	else
-		PrintSqlError(&q);
-    return false;*/
 }
 void Attribute::SQLSetValue(AttributeType type, QVariant value)
 {
     DBConnector::getInstance()->Update("attributes", QString::fromStdString(_uuid),
                                         "type",      QVariant::fromValue((int)type),
                                         "value",     value);
-    /*
-	QSqlQuery q;
-	q.prepare("UPDATE attributes SET type=?,value=? WHERE uuid=?");
-	q.addBindValue((int)type);
-	q.addBindValue(value);
-	q.addBindValue(QString::fromStdString(_uuid));
-    if(!q.exec())	PrintSqlError(&q);*/
 }
