@@ -285,16 +285,29 @@ TEST_F(TestSimulation,sqlprofiling) {
 
     QElapsedTimer timer;
     timer.start();
+    // attribute profiling
+    timer.restart();
+    DM::Attribute* abuffer = new DM::Attribute[n];
+    DM::Logger(DM::Standard) << "create " << n << " attributes " << (long)timer.elapsed();
+
+    timer.restart();
+    delete[] abuffer;
+    DM::Logger(DM::Standard) << "delete " << n << " attributes " << (long)timer.elapsed();
+
+    timer.restart();
+    DM::Attribute * a0 = new DM::Attribute("name", 10.0);
+    DM::Attribute *aptBuffer[n];
+    for(int i=0;i<n;i++)
+        aptBuffer[i] = new DM::Attribute(*a0);
+
+    delete a0;
+    DM::Logger(DM::Standard) << "copy " << n << " attributes " << (long)timer.elapsed();
+    for(int i=0;i<n;i++)
+        delete aptBuffer[i];
+
     // component stuff
     DM::Component* buffer = new DM::Component[n];
     DM::Logger(DM::Standard) << "create " << n << " components " << (long)timer.elapsed();
-
-    /*timer.restart();
-    DM::Attribute* abuffer = new DM::Attribute[n];
-    DM::Logger(DM::Standard) << "create " << n << " attributes " << (long)timer.elapsed();
-*/
-
-
 
     timer.restart();
     for(int i=0;i<n;i++)
@@ -307,12 +320,13 @@ TEST_F(TestSimulation,sqlprofiling) {
     DM::Logger(DM::Standard) << "change " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
-    delete[] buffer;
-    DM::Logger(DM::Standard) << "delete " << n << " components " << (long)timer.elapsed();
+    for(int i=0;i<n;i++)
+        buffer[i].addAttribute(DM::Attribute("thestring", "blubberdiblub"));
+    DM::Logger(DM::Standard) << "copyadd " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
-
-
+    delete[] buffer;
+    DM::Logger(DM::Standard) << "delete " << n << " components " << (long)timer.elapsed();
 
     // nodes
     timer.restart();
@@ -322,11 +336,9 @@ TEST_F(TestSimulation,sqlprofiling) {
         node->setX(1.0);
         delete node;
     }
-    DM::Logger(DM::Standard) << "time for " << n << " single nodes: " << (long)timer.elapsed();
+    DM::Logger(DM::Standard) << "create and change " << n << " single nodes " << (long)timer.elapsed();
+
     timer.restart();
-
-
-
     DM::Node* baseNode = new DM::Node(0,0,0);
     DM::System* sys = new System();
     for(int i=0;i<n;i++)
@@ -337,7 +349,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     delete baseNode;
     delete sys;
 
-    DM::Logger(DM::Standard) << "time for " << n << " attached and copied nodes: " << (long)timer.elapsed();
+    DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
 }
 
 TEST_F(TestSimulation,testMemory){
