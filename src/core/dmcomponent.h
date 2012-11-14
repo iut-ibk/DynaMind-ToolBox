@@ -73,6 +73,7 @@ private:
 
 	bool HasAttribute(std::string name);
 	void LoadAttribute(std::string name);
+    bool addAttribute(Attribute *pAttribute);
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     void SetOwner(Component *owner);
@@ -130,7 +131,7 @@ public:
     /** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, std::string);
     /** @brief Change existing Attribute. If attribute doesn't exist a new Attribute is added to the Component*/
-    bool changeAttribute(Attribute newattribute);
+    bool changeAttribute(Attribute &newattribute);
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
     bool changeAttribute(std::string, double val);
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/

@@ -150,41 +150,49 @@ QString Component::getTableName()
 bool Component::addAttribute(std::string name, double val) 
 {
     //QMutexLocker locker(mMutex);
-
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
-    Attribute tmp(name, val);
-    return this->addAttribute(tmp);
+    return this->addAttribute(new Attribute(name, val));
 }
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
     //QMutexLocker locker(mMutex);
-
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
 
-    Attribute tmp(name, val);
-    return this->addAttribute(tmp);
+    return this->addAttribute(new Attribute(name, val));
 }
 
 bool Component::addAttribute(Attribute &newattribute)
 {
     //QMutexLocker locker(mMutex);
-
-	if(HasAttribute(newattribute.getName()))
+    if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
 
     Attribute * a = new Attribute(newattribute);
     ownedattributes[newattribute.getName()] = a;
 
-	a->SetOwner(this);
+    a->SetOwner(this);
     return true;
 }
 
-bool Component::changeAttribute(Attribute newattribute)
+bool Component::addAttribute(Attribute *pAttribute)
 {
+    //QMutexLocker locker(mMutex);
+    if(HasAttribute(pAttribute->getName()))
+        delete ownedattributes[pAttribute->getName()];
+
+    pAttribute->SetOwner(this);
+    return true;
+}
+
+bool Component::changeAttribute(Attribute &newattribute)
+{
+    getAttribute(newattribute.getName())->Change(newattribute);
+    return true;
+    /*
 	if(!HasAttribute(newattribute.getName()))
 		return this->addAttribute(newattribute);
 
@@ -217,17 +225,21 @@ bool Component::changeAttribute(Attribute newattribute)
 		attr->setType(type);
 		break;
 	}
-    return true;
+    return true;*/
 }
 
 bool Component::changeAttribute(std::string s, double val)
 {
-    return this->changeAttribute(Attribute(s, val));
+    getAttribute(s)->setDouble(val);
+    return true;
+    //return this->changeAttribute(Attribute(s, val));
 }
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
-    return this->changeAttribute(Attribute(s, val));
+    getAttribute(s)->setString(val);
+    return true;
+    //return this->changeAttribute(Attribute(s, val));
 }
 
 bool Component::removeAttribute(std::string name)
