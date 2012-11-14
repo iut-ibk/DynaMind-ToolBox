@@ -34,6 +34,8 @@
 #include <set>
 #include <dmview.h>
 #include <dmcompilersettings.h>
+#include <QMutex>
+#include <QMutexLocker>
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -54,7 +56,9 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
+    QMutex * mMutex;
 protected:
+
     std::string uuid;
     std::string name;
     std::map<std::string,Component*> childsview;
@@ -68,6 +72,7 @@ protected:
 
 
 public:
+
     /** @brief create a new component
       *
       * The default constructor creates a UUID for the component.
