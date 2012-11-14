@@ -84,11 +84,12 @@ TEST_F(TestSimulation,sqlprofiling) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Test Profiling (SQL)";
 
+    const int n = 1000;
 
     QElapsedTimer timer;
     timer.start();
 
-    for(int i=0;i<100;i++)
+    for(int i=0;i<n;i++)
     {
         //DM::Logger(DM::Standard) << "iteration "<<i;
         DM::Node* n = new DM::Node(0,0,0);
@@ -96,12 +97,12 @@ TEST_F(TestSimulation,sqlprofiling) {
         delete n;
     }
 
-    DM::Logger(DM::Standard) << "time for single nodes: " << (long)timer.elapsed();
+    DM::Logger(DM::Standard) << "time for " << n << " single nodes: " << (long)timer.elapsed();
 
     timer.restart();
     DM::Node* baseNode = new DM::Node(0,0,0);
     DM::System* sys = new System();
-    for(int i=0;i<100;i++)
+    for(int i=0;i<n;i++)
     {
         //DM::Logger(DM::Standard) << "iteration "<<i;
         DM::Node n(*baseNode);
@@ -110,7 +111,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     delete baseNode;
     delete sys;
 
-    DM::Logger(DM::Standard) << "time for attached and copied nodes: " << (long)timer.elapsed();
+    DM::Logger(DM::Standard) << "time for " << n << " attached and copied nodes: " << (long)timer.elapsed();
 }
 
 TEST_F(TestSimulation,sqlsuccessortest) {
@@ -397,7 +398,7 @@ TEST_F(TestSimulation,linkedDynamicModules) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-/* MEMORY LEAK
+
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -431,7 +432,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ASSERT_TRUE(l2 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
-}*/
+}
 
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
