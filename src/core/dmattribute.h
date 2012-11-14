@@ -74,12 +74,12 @@ private:
     //void SQLSetOwner(Component* owner);
 	void SQLSetName(std::string newname);
 	void SQLSetType(AttributeType newtype);
-	bool SQLGetValue(QVariant &value);
+    bool SQLGetValue(QVariant &value) const;
 	void SQLSetValue(AttributeType type, QVariant value);
 
 
     void setValue(QByteArray bytes);
-    QByteArray getValue(AttributeType type);
+    //QByteArray getValue(AttributeType type) const;
 public:
     /** @brief changes the owner **/
 	void SetOwner(Component* owner);

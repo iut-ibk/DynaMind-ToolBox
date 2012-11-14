@@ -118,7 +118,11 @@ Attribute::Attribute()
 Attribute::Attribute(const Attribute &newattribute)
 {
     this->name=newattribute.name;
-	SQLInsertThis(newattribute.getType());
+    AttributeType type = newattribute.getType();
+    QVariant value;
+    newattribute.SQLGetValue(value);
+    SQLInsertThis(type);
+    SQLSetValue(type, value);
 }
 
 Attribute::Attribute(std::string name)
@@ -433,7 +437,7 @@ void Attribute::SQLSetType(AttributeType newtype)
     if(!q.exec())	PrintSqlError(&q);*/
 }
 
-bool Attribute::SQLGetValue(QVariant &value)
+bool Attribute::SQLGetValue(QVariant &value) const
 {
     return DBConnector::getInstance()->Select("attributes",
                                               QString::fromStdString(_uuid), "value", &value);
