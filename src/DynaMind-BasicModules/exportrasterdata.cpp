@@ -38,7 +38,7 @@ void ExportRasterData::run () {
     txtout<<"nrows "<< rData->getHeight() <<"\n";
     txtout<<"xllcorner 0"<<"\n";
     txtout<<"yllcorner 0"<<"\n";
-    txtout<<"cellsize "<<rData->getCellSize()<<"\n";
+    txtout<<"cellsize "<<rData->getCellSizeX()<<"\n";
     txtout<<"nodata_value "<< rData->getNoValue()<<"\n";
 
 

@@ -27,6 +27,9 @@ GUIAppendAttributes::GUIAppendAttributes(DM::Module *m, QWidget *parent) :
     foreach (std::string s, sys_in) {
         if (sys->getViewDefinition(s)->getType() == DM::FACE)
             ui->comboBox_faces->addItem(QString::fromStdString(s));
+
+        if (sys->getViewDefinition(s)->getType() == DM::NODE)
+            ui->comboBox_faces->addItem(QString::fromStdString(s));
     }
 
     std::string NameOfExistingView = this->m->getParameterAsString("NameOfExistingView");

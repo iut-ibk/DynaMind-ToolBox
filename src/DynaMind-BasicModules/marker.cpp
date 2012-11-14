@@ -142,7 +142,7 @@ double Marker::evaluateExpresion_R(int index, Node &p) {
             *RVariables.at(i) = RDoubleAttributes.at(i)->at(index);
         }
         for ( unsigned int i = 0; i < RRasterData.size(); i++ ) {
-            *RRasterVariables.at(i) = RRasterData.at(i)->getValue(p.getX(), p.getY());
+            *RRasterVariables.at(i) = RRasterData.at(i)->getCell(p.getX(), p.getY());
         }
 
         *R = RExpression->Eval();
@@ -237,7 +237,7 @@ double Marker::evaluateExpresion_r(int index, Node &p ) {
             *rVariables.at(i) = rDoubleAttributes.at(i)->at(index);
         }
         for (unsigned int i = 0; i < rRasterData.size(); i++ ) {
-            *rRasterVariables.at(i) = rRasterData.at(i)->getValue(p.getX(), p.getY());
+            *rRasterVariables.at(i) = rRasterData.at(i)->getCell(p.getX(), p.getY());
         }
         //Calculate
         return rExpression->Eval();
@@ -256,7 +256,7 @@ void Marker::run() {
         vIdentifier = DM::View(param.Identifier, DM::EDGE, DM::READ);
     sys_in = this->getData("Data");
     this->OutputMap = this->getRasterData("Result", DM::View("result", DM::RASTERDATA, DM::WRITE));
-    this->OutputMap->setSize(param.Width, param.Height, param.CellSize);
+    this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,0,0);
     this->OutputMap->clear();
 
     //Init MuParser
@@ -332,7 +332,7 @@ void Marker::run() {
         *(V) = p.getZ();
         foreach(std::string s, VariableNames) {
             double * d = VariableMap[s];
-            *(d) = inputRasterData[s]->getValue(p.getX(), p.getY());
+            *(d) = inputRasterData[s]->getCell(p.getX(), p.getY());
         }
         //Evaluate R
         try {
@@ -370,20 +370,20 @@ void Marker::run() {
                         Logger(Error) << e.GetMsg();
                     }
                     if (param.PlacementOption.compare("KeepHigherValue") == 0) {
-                        if (  this->OutputMap->getValue(i,j) > value ) {
-                            value = this->OutputMap->getValue(i,j);
+                        if (  this->OutputMap->getCell(i,j) > value ) {
+                            value = this->OutputMap->getCell(i,j);
                         }
                     } else if ( param.PlacementOption.compare("KeepLowerValue") == 0 ) {
-                        if ( this->OutputMap->getValue(i,j) < value && this->OutputMap->getValue(i,j) != 0 ) {
-                            value = this->OutputMap->getValue(i,j);
+                        if ( this->OutputMap->getCell(i,j) < value && this->OutputMap->getCell(i,j) != 0 ) {
+                            value = this->OutputMap->getCell(i,j);
                         }
                     } else if ( param.PlacementOption.compare("KeepValue") == 0 ) {
-                        if ( this->OutputMap->getValue(i,j) != 0) {
-                            value = this->OutputMap->getValue(i,j);
+                        if ( this->OutputMap->getCell(i,j) != 0) {
+                            value = this->OutputMap->getCell(i,j);
 
                         }
                     } else if ( param.PlacementOption.compare("Add") == 0 ) {
-                        double val =  this->OutputMap->getValue(i,j);
+                        double val =  this->OutputMap->getCell(i,j);
 
                         value = value + val;
                     }
@@ -396,7 +396,7 @@ void Marker::run() {
                         Logger(Debug) << value;
                     }
 
-                    this->OutputMap->setValue(i,j,value);
+                    this->OutputMap->setCell(i,j,value);
                 }
             }
         }

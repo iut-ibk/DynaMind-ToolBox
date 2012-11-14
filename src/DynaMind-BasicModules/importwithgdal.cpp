@@ -35,8 +35,9 @@ DM_DECLARE_NODE_NAME(ImportwithGDAL, Modules)
 ImportwithGDAL::ImportwithGDAL()
 {
     this->FileName = "";
-
     this->addParameter("Filename", DM::FILENAME, &this->FileName);
+    this->epsgcode=31254;
+    this->addParameter("Transform to EPSG:", DM::INT, &this->epsgcode);
     this->ViewName = "";
     this->addParameter("ViewName", DM::STRING, &this->ViewName);
     this->tol = 0.01;
@@ -48,7 +49,12 @@ ImportwithGDAL::ImportwithGDAL()
     this->addParameter("AttributesToImport", DM::STRING_MAP, &this->attributesToImport);
     this->ImportAll = false;
     this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
-
+    poCT=NULL;
+}
+ImportwithGDAL::~ImportwithGDAL()
+{
+    if(poCT)
+        delete poCT;
 }
 
 DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double z) {
@@ -110,7 +116,10 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
             && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
     {
         OGRPoint *poPoint = (OGRPoint *) poGeometry;
-        n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
+        double x = poPoint->getX();
+        double y = poPoint->getY();
+        transform(&x,&y);
+        n = this->addNode(sys, x, y, 0);
         sys->addComponentToView(n, this->view);
     }
     return n;
@@ -134,7 +143,10 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 
         for (int i = 0; i < npoints; i++) {
             poPolyline->getPoint(i, poPoint);
-            n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
+            double x = poPoint->getX();
+            double y = poPoint->getY();
+            transform(&x,&y);
+            n = this->addNode(sys, x, y, 0);
             if (find(nlist.begin(), nlist.end(), n) == nlist.end())
                 nlist.push_back(n);
 
@@ -171,7 +183,10 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 
         for (int i = 0; i < npoints; i++) {
             ring->getPoint(i, poPoint);
-            n = this->addNode(sys, poPoint->getX(), poPoint->getY(), 0);
+            double x = poPoint->getX();
+            double y = poPoint->getY();
+            transform(&x,&y);
+            n = this->addNode(sys, x, y, 0);
             if (find(nlist.begin(), nlist.end(), n) == nlist.end())
                 nlist.push_back(n);
 
@@ -214,10 +229,19 @@ QString ImportwithGDAL::createHash(double x, double y)
 }
 
 void ImportwithGDAL::init() {
-    if (FileName.empty())
+    fileok=true;
+
+    if(FileName.empty())
+    {
+        DM::Logger(DM::Error) << "No file specified " << FileName;
         return;
-    if (ViewName.empty())
+    }
+
+    if(ViewName.empty())
+    {
+        DM::Logger(DM::Error) << "No view specified";
         return;
+    }
 
     view = DM::View();
     view.setName(ViewName);
@@ -225,14 +249,36 @@ void ImportwithGDAL::init() {
     OGRRegisterAll();
 
     OGRDataSource       *poDS;
-    int driverCount = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
     poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+
     if( poDS == NULL )
     {
-        printf( "Open failed.\n" );
-        return;
+        GDALDataset  *poDataset;
+
+        poDataset = (GDALDataset *) GDALOpen( FileName.c_str(), GA_ReadOnly );
+        if( poDataset == NULL )
+        {
+             DM::Logger(DM::Error) << "Open failed.";
+             fileok=false;
+             return;
+        }
+        else
+        {
+            rasterDataInit(poDataset);
+        }
+    }
+    else
+    {
+        vectorDataInit(poDS);
     }
 
+    return;
+}
+
+void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
+{
+    isvectordata = true;
     OGRLayer  *poLayer;
     poLayer = poDS->GetLayer(0);
     OGRFeature *poFeature;
@@ -267,6 +313,7 @@ void ImportwithGDAL::init() {
         {
             view.setType(DM::NODE);
             view.setAccessType(DM::WRITE);
+            DM::Logger(DM::Debug) << "Found: Geometry type wkbPoint";
         }
 
         if( poGeometry != NULL
@@ -274,6 +321,7 @@ void ImportwithGDAL::init() {
         {
             view.setType(DM::FACE);
             view.setAccessType(DM::WRITE);
+            DM::Logger(DM::Debug) << "Found: Geometry type wkbPolygon";
         }
 
         if( poGeometry != NULL
@@ -281,12 +329,14 @@ void ImportwithGDAL::init() {
         {
             view.setType(DM::EDGE);
             view.setAccessType(DM::WRITE);
+            DM::Logger(DM::Debug) << "Found: Geometry type wkbLineString";
         }
 
         if( poGeometry != NULL
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint";
+            fileok=false;
             return;
         }
 
@@ -294,6 +344,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiLineString";
+            fileok=false;
             return;
         }
 
@@ -301,6 +352,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint";
+            fileok=false;
             return;
         }
 
@@ -308,6 +360,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbGeometryCollection )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbGeometryCollection";
+            fileok=false;
             return;
         }
 
@@ -315,6 +368,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbNone )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbNone";
+            fileok=false;
             return;
         }
 
@@ -322,6 +376,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbLinearRing )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbLinearRing";
+            fileok=false;
             return;
         }
 
@@ -329,6 +384,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint25D )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbPoint25D";
+            fileok=false;
             return;
         }
 
@@ -336,6 +392,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString25D )
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbLineString25D";
+            fileok=false;
             return;
         }
 
@@ -343,6 +400,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon25D)
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbPolygon25D";
+            fileok=false;
             return;
         }
 
@@ -350,6 +408,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint25D)
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint25D";
+            fileok=false;
             return;
         }
 
@@ -357,6 +416,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString25D)
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiLineString25D";
+            fileok=false;
             return;
         }
 
@@ -364,6 +424,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon25D)
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPolygon25D";
+            fileok=false;
             return;
         }
 
@@ -371,6 +432,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbGeometryCollection25D)
         {
             DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbGeometryCollection25D";
+            fileok=false;
             return;
         }
 
@@ -378,6 +440,7 @@ void ImportwithGDAL::init() {
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbUnknown )
         {
             DM::Logger(DM::Error) << "Geometry type unknown";
+            fileok=false;
             return;
         }
 
@@ -385,6 +448,7 @@ void ImportwithGDAL::init() {
 
         break;
     }
+
     std::vector<DM::View> data;
     if (append) {
         data.push_back( DM::View("dummy", SUBSYSTEM, READ));
@@ -393,21 +457,109 @@ void ImportwithGDAL::init() {
 
     this->addData("Data", data);
     OGRDataSource::DestroyDataSource( poDS );
+
+    return;
 }
 
-void ImportwithGDAL::run() {
+void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
+{
+    isvectordata=false;
+    append=false;
 
+    double        adfGeoTransform[6];
+    int           nBlockXSize, nBlockYSize;
+    int           bGotMin, bGotMax;
+    double        adfMinMax[2];
+    GDALRasterBand  *poBand;
+
+    DM::Logger(DM::Debug) << "Driver: " << poDataset->GetDriver()->GetDescription() << "/" << poDataset->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME );
+    DM::Logger(DM::Debug) << "Size is " << poDataset->GetRasterXSize() << " " << poDataset->GetRasterYSize() << " " << poDataset->GetRasterCount();
+
+    if( !std::string(poDataset->GetProjectionRef()).empty() )
+    {
+        DM::Logger(DM::Debug) << "Projection is " << " " << poDataset->GetProjectionRef();
+    }
+    else
+    {
+        DM::Logger(DM::Error) << "No projection found";
+        GDALClose(poDataset);
+        fileok=false;
+        return;
+    }
+
+    if( poDataset->GetGeoTransform( adfGeoTransform ) == CE_None )
+    {
+        DM::Logger(DM::Debug) << "Origin = " << adfGeoTransform[0] << "," << adfGeoTransform[3];
+        DM::Logger(DM::Debug) << "Pixel Size = " << adfGeoTransform[1] << "," << adfGeoTransform[5];
+    }
+
+    poBand = poDataset->GetRasterBand( 1 );
+    poBand->GetBlockSize( &nBlockXSize, &nBlockYSize );
+    DM::Logger(DM::Debug) << "Block=" << nBlockXSize << "x" << nBlockYSize <<
+                             "Type=" << GDALGetDataTypeName(poBand->GetRasterDataType()) <<
+                             ", ColorInterp=" << GDALGetColorInterpretationName(poBand->GetColorInterpretation());
+
+    adfMinMax[0] = poBand->GetMinimum( &bGotMin );
+    adfMinMax[1] = poBand->GetMaximum( &bGotMax );
+    if( ! (bGotMin && bGotMax) )
+        GDALComputeRasterMinMax((GDALRasterBandH)poBand, TRUE, adfMinMax);
+
+    DM::Logger(DM::Debug) << "Min=" << adfMinMax[0] << ", Max=" << adfMinMax[1];
+
+    if( poBand->GetOverviewCount() > 0 )
+        DM::Logger(DM::Debug) << "Band has" << poBand->GetOverviewCount() << " overviews";
+
+    if( poBand->GetColorTable() != NULL )
+        DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
+
+
+    view.setType(DM::RASTERDATA);
+    view.setAccessType(DM::WRITE);
+
+    std::vector<DM::View> data;
+    data.push_back(view);
+
+    this->addData("Data", data);
+
+    GDALClose(poDataset);
+    return;
+}
+
+void ImportwithGDAL::run()
+{
+    if(!fileok)
+    {
+        DM::Logger(DM::Error) << "Cannot read file";
+        return;
+    }
+
+    if(isvectordata)
+        importVectorData();
+    else
+        importRasterData();
+
+    return;
+}
+
+bool ImportwithGDAL::importVectorData()
+{
     DM::System * sys = this->getData("Data");
     this->initPointList(sys);
+
+    if(poCT!=NULL)
+        delete poCT;
+
+    OGRSpatialReference *oSourceSRS, *oTargetSRS;
+
     OGRRegisterAll();
 
     OGRDataSource       *poDS;
-    int driverCount = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
     poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
     if( poDS == NULL )
     {
-        printf( "Open failed.\n" );
-        return;
+        DM::Logger(DM::Error) << "Open failed.";
+        return false;
     }
 
     OGRLayer  *poLayer;
@@ -418,6 +570,22 @@ void ImportwithGDAL::run() {
     OGRFeature *poFeature;
 
     poLayer->ResetReading();
+
+    oSourceSRS = poLayer->GetSpatialRef();
+    oTargetSRS = new OGRSpatialReference();
+    oTargetSRS->importFromEPSG(this->epsgcode);
+    poCT = OGRCreateCoordinateTransformation( oSourceSRS, oTargetSRS );
+
+    if(poCT == NULL)
+    {
+        transformok=false;
+        DM::Logger(DM::Error) << "Unknown transformation to EPSG:" << this->epsgcode;
+    }
+    else
+    {
+        transformok=true;
+    }
+
     while( (poFeature = poLayer->GetNextFeature()) != NULL )
     {
 
@@ -435,6 +603,69 @@ void ImportwithGDAL::run() {
     }
 
     OGRDataSource::DestroyDataSource( poDS );
+    return true;
 }
 
+bool ImportwithGDAL::importRasterData()
+{
+    GDALDataset  *poDataset;
+    GDALRasterBand  *poBand;
+    double adfGeoTransform[6];
+    DM::RasterData * r = this->getRasterData("Data", view);
 
+    poDataset = (GDALDataset *) GDALOpen( FileName.c_str(), GA_ReadOnly );
+    poBand = poDataset->GetRasterBand( 1 );
+
+    float *pafScanline;
+    int nXSize = poBand->GetXSize();
+    int nYSize = poBand->GetYSize();
+    double xoff=0;
+    double yoff=0;
+    double xsize=0;
+    double ysize=0;
+
+    r->setNoValue(-9999999999);
+
+    if( poDataset->GetGeoTransform( adfGeoTransform ) == CE_None )
+    {
+        xsize = fabs(adfGeoTransform[1]);
+        ysize = fabs(adfGeoTransform[5]);
+        xoff = adfGeoTransform[0];
+        yoff = adfGeoTransform[3] - ysize * nYSize;
+    }
+
+    r->setSize(nXSize, nYSize, xsize,ysize,xoff,yoff);
+
+    pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
+
+    for(int index=0; index < nYSize; index++)
+    {
+        poBand->RasterIO( GF_Read, 0, nYSize-index-1, nXSize, 1, pafScanline, nXSize, 1, GDT_Float32, 0, 0 );
+
+        for(int x=0; x < nXSize; x++)
+        {
+            r->setCell(x,index,pafScanline[x]);
+        }
+    }
+
+    CPLFree(pafScanline);
+    GDALClose(poDataset);
+    return true;
+}
+
+bool ImportwithGDAL::transform(double *x, double *y)
+{
+    if(!transformok)
+        return false;
+
+    if( poCT == NULL || !poCT->Transform( 1, x, y ) )
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
+    return false;
+}

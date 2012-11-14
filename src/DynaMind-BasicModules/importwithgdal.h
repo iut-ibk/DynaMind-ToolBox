@@ -29,6 +29,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include "ogrsf_frmts.h"
+#include "gdal_priv.h"
 #include <QHash>
 #include <QString>
 
@@ -38,28 +39,41 @@ using namespace DM;
 class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
 {
     DM_DECLARE_NODE(ImportwithGDAL)
-    private:
-        std::string FileName;
-    std::string ViewName;
-    double tol;
-    bool append;
-    DM::View view;
-    QHash<QString, std::vector<DM::Node* > *> nodeList;
-    DM::Node * addNode(DM::System * sys, double x, double y, double z);
-    void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
-    DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
-    DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
-    DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
-    void initPointList(DM::System * sys);
-    QString createHash(double x, double y);
-    double devider;
-    std::map<std::string, std::string> attributesToImport;
-    bool ImportAll;
 
-public:
-    void run();
-    void init();
-    ImportwithGDAL();
+    private:
+        bool fileok;
+        std::string FileName;
+        std::string ViewName;
+        bool isvectordata;
+        int epsgcode;
+        bool transformok;
+        double tol;
+        bool append;
+        DM::View view;
+        double devider;
+        std::map<std::string, std::string> attributesToImport;
+        bool ImportAll;
+        OGRCoordinateTransformation *poCT;
+
+        QHash<QString, std::vector<DM::Node* > *> nodeList;
+        DM::Node * addNode(DM::System * sys, double x, double y, double z);
+        void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
+        DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
+        DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
+        DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
+        void initPointList(DM::System * sys);
+        QString createHash(double x, double y);
+        void vectorDataInit(OGRDataSource       *poDS);
+        void rasterDataInit(GDALDataset  *poDataset);
+        bool importVectorData();
+        bool importRasterData();
+        bool transform(double *x, double *y);
+
+    public:
+        void run();
+        void init();
+        ImportwithGDAL();
+        ~ImportwithGDAL();
 };
 
 #endif // IMPORTWITHGDAL_H

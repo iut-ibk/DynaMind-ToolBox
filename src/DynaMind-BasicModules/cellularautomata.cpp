@@ -107,7 +107,7 @@ void CellularAutomata::init() {
 
 void CellularAutomata::run()  {
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
-    this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize);
+    this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,0,0);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
 
     foreach (std::string s, param.ListOfLandscapes) {
@@ -143,7 +143,7 @@ void CellularAutomata::run()  {
                     Logger(Error) << e.GetMsg()  ;
                 }
             }
-            this->param.OutputMap->setValue(x,y,this->Desicion->Eval());
+            this->param.OutputMap->setCell(x,y,this->Desicion->Eval());
         }
     }
 
@@ -160,7 +160,7 @@ void CellularAutomata::deinit() {
 
         std::string name= it->first;
         int **Neighbourhood_Stamp = NeighboorhoodStamps[name];
-        double **Neighbourhood = NeighboorhoodMaps[name];
+        float **Neighbourhood = NeighboorhoodMaps[name];
         Dimension dim = this->NeighboohoodDimensions[name];
         int width = dim.widht;
         for (int i = 0; i < width; i++) {
@@ -206,17 +206,17 @@ void CellularAutomata::initRuntime() {
         //Find Matrix Dimension;
         list[2]  = list[2].remove("|");
         QStringList rows = list[2].split(";");
-        double **Neighbourhood;
+        float **Neighbourhood;
         int **Neighbourhood_Stamp;
         int width = rows.size();
-        Neighbourhood = new double*[width];
+        Neighbourhood = new float*[width];
         Neighbourhood_Stamp = new int*[width];
         int height;
         int i = 0;
         foreach(QString s, rows) {
             //Logger(Debug) << s.toStdString()  ;
             height = s.split(",").size();
-            Neighbourhood[i] = new double[height];
+            Neighbourhood[i] = new float[height];
             Neighbourhood_Stamp[i] = new int[height];
             int j = 0;
             foreach(QString v, s.split(",")) {
@@ -241,7 +241,7 @@ void CellularAutomata::initRuntime() {
             }
         }
         //Logger(Debug) << sum  ;
-        double **d = new double*[sum];
+        float **d = new float*[sum];
         i = 0;
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
@@ -278,8 +278,8 @@ void CellularAutomata::initRuntime() {
 
                 std::stringstream varname;
                 varname << neigh << i;
-                double ** d =  NeighboorhoodPointerMap[neigh];
-                p->DefineVar(varname.str(), d[i]);
+                float ** d =  NeighboorhoodPointerMap[neigh];
+                p->DefineVar(varname.str(), (double*)d[i]);
             }
             rule.replace(QString::fromStdString(neigh),QString::fromStdString(ss.str()));
         }

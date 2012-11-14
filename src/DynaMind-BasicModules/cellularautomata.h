@@ -78,9 +78,9 @@ private:
     std::map<std::string, RasterData * > landscapes;
 
 
-    std::map<std::string, double**> NeighboorhoodMaps;
+    std::map<std::string, float**> NeighboorhoodMaps;
     std::map<std::string, int**> NeighboorhoodStamps;
-    std::map<std::string, double** > NeighboorhoodPointerMap;
+    std::map<std::string, float** > NeighboorhoodPointerMap;
     std::map<std::string, Dimension> NeighboohoodDimensions;
     std::map<std::string, std::string> NeighboorhoodMapName;
 

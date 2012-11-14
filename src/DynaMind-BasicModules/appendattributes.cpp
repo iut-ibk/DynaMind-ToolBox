@@ -52,10 +52,6 @@ AppendAttributes::AppendAttributes() {
 
 
     this->addData("Data", data);
-
-
-
-
 }
 
 void AppendAttributes::run() {
@@ -63,16 +59,30 @@ void AppendAttributes::run() {
     DM::System * sys = this->getData("Data");
     DM::View * v_existing= sys->getViewDefinition(NameOfExistingView);
     DM::RasterData * r = this->getRasterData("Data", DM::View(NameOfRasterData, DM::READ, DM::RASTERDATA));
-    foreach (std::string s, sys->getUUIDsOfComponentsInView(*v_existing)) {
-        DM::Face * f = sys->getFace(s);
-        std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
-        double dattr = 0;
-        if (median) {
-            dattr = RasterDataHelper::meanOverArea(r,nl) * multiplier;
-        } else {
-            dattr = RasterDataHelper::sumOverArea(r,nl,0) * multiplier;
+
+    DM::Logger(DM::Debug) << "VIEWNAME: " << NameOfExistingView;
+
+    foreach (std::string s, sys->getUUIDsOfComponentsInView(*v_existing))
+    {
+        if(v_existing->getType()==DM::FACE)
+        {
+            DM::Face * f = sys->getFace(s);
+            std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
+            double dattr = 0;
+            if (median) {
+                dattr = RasterDataHelper::meanOverArea(r,nl) * multiplier;
+            } else {
+                dattr = RasterDataHelper::sumOverArea(r,nl,0) * multiplier;
+            }
+            f->changeAttribute(newAttribute, dattr);
         }
-        f->changeAttribute(newAttribute, dattr);
+
+        if(v_existing->getType()==DM::NODE)
+        {
+            DM::Node * f = sys->getNode(s);
+            double dattr = r->getValue(f->getX(),f->getY());
+            f->changeAttribute(newAttribute, dattr);
+        }
     }
 }
 
@@ -100,6 +110,7 @@ void AppendAttributes::init()
 
     if (this->NameOfExistingView.empty())
         return;
+
     if (this->newAttribute.empty())
         return;
     if (newAttribute_old.compare(newAttribute) == 0)

@@ -114,7 +114,7 @@ void ImportRasterData::run()
     std::cout <<" Rows " << nrows << std::endl;
     std::cout <<" Cellsize " << cellsize << std::endl;
     r->setNoValue(NoDataValue);
-    r->setSize(ncols, nrows, cellsize);
+    r->setSize(ncols, nrows, cellsize,cellsize,0,0);
     while (!line.isNull()) {
         LineCounter++;
         line =stream.readLine();
@@ -124,9 +124,9 @@ void ImportRasterData::run()
                 QString s = QString(list[i]);
                 s.replace(",", ".");
                 if (flip)
-                    r->setValue(i, nrows-rowCounter-1, s.toDouble());
+                    r->setCell(i, nrows-rowCounter-1, s.toDouble());
                 else
-                    r->setValue(i, rowCounter, s.toDouble());
+                    r->setCell(i, rowCounter, s.toDouble());
             }
             rowCounter++;
 
