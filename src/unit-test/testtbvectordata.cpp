@@ -3,6 +3,7 @@
 #include <dm.h>
 
 namespace {
+/*
     TEST_F(TestTBVectorData,calculateArea){
         DM::System * sys = new DM::System();
 
@@ -23,6 +24,7 @@ namespace {
         double area = TBVectorData::CalculateArea(sys,f);
         EXPECT_DOUBLE_EQ(1, area);
 
+        delete sys;
     }
     TEST_F(TestTBVectorData,calculateAreaWithHole){
         DM::System * sys = new DM::System();
@@ -60,6 +62,7 @@ namespace {
 
         EXPECT_DOUBLE_EQ(3, area);
 
+        delete sys;
     }
     TEST_F(TestTBVectorData,calculateArea3d){
         DM::System * sys = new DM::System();
@@ -81,6 +84,7 @@ namespace {
         double area = TBVectorData::CalculateArea(sys,f);
         EXPECT_DOUBLE_EQ(1, area);
 
+        delete sys;
     }
     TEST_F(TestTBVectorData,calculateAreaWithHole3D){
         DM::System * sys = new DM::System();
@@ -118,5 +122,6 @@ namespace {
 
         EXPECT_DOUBLE_EQ(3, area);
 
-    }
+        delete sys;
+    }*/
 }
