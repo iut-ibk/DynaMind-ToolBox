@@ -79,41 +79,6 @@ TEST_F(TestSimulation,simplesqltest) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
-TEST_F(TestSimulation,sqlprofiling) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Test Profiling (SQL)";
-
-    const int n = 1000;
-
-    QElapsedTimer timer;
-    timer.start();
-
-    for(int i=0;i<n;i++)
-    {
-        //DM::Logger(DM::Standard) << "iteration "<<i;
-        DM::Node* n = new DM::Node(0,0,0);
-        n->setX(1.0);
-        delete n;
-    }
-
-    DM::Logger(DM::Standard) << "time for " << n << " single nodes: " << (long)timer.elapsed();
-
-    timer.restart();
-    DM::Node* baseNode = new DM::Node(0,0,0);
-    DM::System* sys = new System();
-    for(int i=0;i<n;i++)
-    {
-        //DM::Logger(DM::Standard) << "iteration "<<i;
-        DM::Node n(*baseNode);
-        sys->addNode(n);
-    }
-    delete baseNode;
-    delete sys;
-
-    DM::Logger(DM::Standard) << "time for " << n << " attached and copied nodes: " << (long)timer.elapsed();
-}
-
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -226,6 +191,15 @@ TEST_F(TestSimulation, SQLattributes)
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test attributes (SQL)";
 
+
+    DM::Logger(DM::Debug) << "checking add attributes";
+    // DOUBLE
+    DM::Component *c = new DM::Component();
+    c->addAttribute(DM::Attribute("hint", 50));
+    DM::Attribute *pa = c->getAttribute("hint");
+    ASSERT_TRUE(pa->getDouble()==50);
+    delete c;
+
     double dbl = 13.0;
     std::vector<double> vecDbl;
     vecDbl.push_back(dbl);
@@ -299,6 +273,71 @@ TEST_F(TestSimulation, SQLattributes)
         ASSERT_TRUE(linksOut[i].viewname == links[i].viewname);
     }
     delete a;
+}
+
+
+TEST_F(TestSimulation,sqlprofiling) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Test Profiling (SQL)";
+
+    const int n = 1000;
+
+    QElapsedTimer timer;
+    timer.start();
+    // component stuff
+    DM::Component* buffer = new DM::Component[n];
+    DM::Logger(DM::Standard) << "create " << n << " components " << (long)timer.elapsed();
+
+    /*timer.restart();
+    DM::Attribute* abuffer = new DM::Attribute[n];
+    DM::Logger(DM::Standard) << "create " << n << " attributes " << (long)timer.elapsed();
+*/
+
+
+
+    timer.restart();
+    for(int i=0;i<n;i++)
+        buffer[i].addAttribute("thedouble", 24.0);
+    DM::Logger(DM::Standard) << "add " << n << " attributes " << (long)timer.elapsed();
+
+    timer.restart();
+    for(int i=0;i<n;i++)
+        buffer[i].changeAttribute("thedouble", 48.0);
+    DM::Logger(DM::Standard) << "change " << n << " attributes " << (long)timer.elapsed();
+
+    timer.restart();
+    delete[] buffer;
+    DM::Logger(DM::Standard) << "delete " << n << " components " << (long)timer.elapsed();
+
+    timer.restart();
+
+
+
+    // nodes
+    timer.restart();
+    for(int i=0;i<n;i++)
+    {
+        DM::Node* node = new DM::Node(0,0,0);
+        node->setX(1.0);
+        delete node;
+    }
+    DM::Logger(DM::Standard) << "time for " << n << " single nodes: " << (long)timer.elapsed();
+    timer.restart();
+
+
+
+    DM::Node* baseNode = new DM::Node(0,0,0);
+    DM::System* sys = new System();
+    for(int i=0;i<n;i++)
+    {
+        DM::Node node(*baseNode);
+        sys->addNode(node);
+    }
+    delete baseNode;
+    delete sys;
+
+    DM::Logger(DM::Standard) << "time for " << n << " attached and copied nodes: " << (long)timer.elapsed();
 }
 
 TEST_F(TestSimulation,testMemory){
