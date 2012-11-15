@@ -7,17 +7,17 @@
  * This file is part of DynaMind
  *
  * Copyright (C) 2011-2012  Christian Urich
- 
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- 
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -34,6 +34,7 @@
 #include "cgalgeometry_p.h"
 #include "tbvectordata.h"
 #include "cgaltriangulation.h"
+#include "cgalregulartriangulation.h"
 
 
 namespace DM {
@@ -140,7 +141,7 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
     return return_vec;
 }
 
-double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vector<DM::Node> & boundingBox) {
+double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vector<DM::Node> & boundingBox, std::vector<double> & size) {
     typedef double                          FT;
     typedef CGAL::Cartesian<FT>             K;
     typedef K::Point_2                      Point_2;
@@ -148,7 +149,10 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
     const double pi =  3.14159265;
     double area = -1;
     double angel = 0;
-    for (double i = 0; i < 180; i++) {
+    double l  = 0;
+    double w = 0;
+    //Test all from rotations from 0-90 degrees
+    for (double i = 0; i < 90; i++) {
         Transformation rotate(CGAL::ROTATION, sin(i/180.*pi), cos(i/180.*pi));
         std::list<Point_2> points_2;
 
@@ -161,9 +165,25 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
         if (area < 0 || a < area ) {
             area = a;
             angel = i;
+            double dx_l = c2.vertex(0).x() - c2.vertex(1).x();
+            double dy_l = c2.vertex(0).y() - c2.vertex(1).y();
+
+            double dx_w = c2.vertex(0).x() - c2.vertex(3).x();
+            double dy_w = c2.vertex(0).y() - c2.vertex(3).y();
+            l  = sqrt(dx_l*dx_l+ dy_l*dy_l);
+            w  = sqrt(dx_w*dx_w + dy_w*dy_w);
+
         }
 
     }
+    if (l < w) {
+        angel += 90;
+        double tmp_l = l;
+        l = w;
+        w = tmp_l;
+
+    }
+
 
     //caluclate final bounding box
     Transformation rotate(CGAL::ROTATION, sin(angel/180.*pi), cos(angel/180.*pi));
@@ -173,10 +193,11 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
     }
     K::Iso_rectangle_2 c2 = CGAL::bounding_box(points_2.begin(), points_2.end());
     for (int i = 0; i < 4; i++) {
-        Point_2 p = c2.vertex(0);
+        Point_2 p = c2.vertex(i);
         boundingBox.push_back(DM::Node(CGAL::to_double(p.x()),CGAL::to_double(p.y()), 0));
     }
-
+    size.push_back(l);
+    size.push_back(w);
     return angel;
 }
 
@@ -195,7 +216,11 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 
     Polygon_2 poly_s;
     std::vector<Node> ret_points;
-    foreach(Node * p, points) {
+    int vector_size = points.size();
+    if (points[0] == points[vector_size-1] )
+        vector_size--;
+    for (int i = 0; i <  vector_size; i++) {
+        Node * p = points[i];
         poly_s.push_back(Point_2(p->getX(), p->getY()));
     }
     if(!poly_s.is_simple()) {
@@ -212,7 +237,7 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 
     foreach(PolygonPtr poly, offset_polygons) {
         Polygon_2 p = *(poly);
-        for (int i = 0; i < p.size(); i++ ) {
+        for (unsigned int i = 0; i < p.size(); i++ ) {
             ret_points.push_back(Node(p[i].x(), p[i].y(), 0));
         }
     }
@@ -226,8 +251,11 @@ std::vector<DM::Node> CGALGeometry::FaceTriangulation(System *sys, Face *f)
     return triangles;
 }
 
-
-
-
+std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *f, double meshsize)
+{
+    std::vector<DM::Node> triangles;
+    CGALRegularTriangulation::Triangulation(sys, f, triangles,  meshsize);
+    return triangles;
+}
 
 }

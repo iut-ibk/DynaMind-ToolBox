@@ -24,12 +24,16 @@
  *
  */
 
-#include "cutelittlegeometryhelpers.h"
+#include "littlegeometryhelpers.h"
+#include "cgalgeometry.h"
 #include "tbvectordata.h"
 #include <algorithm>
 #include <math.h>
+#include <QPointF>
+#include <QPolygonF>
+#include <QTransform>
 
-std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height)
+std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height, double parapet)
 {
     std::vector<DM::Node*> nodes = TBVectorData::getNodeListFromFace(sys, f);
     //And again we rotate or wall again into x,y assuming. we assume that z is becoming our new x
@@ -69,10 +73,6 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
     double ymax = ns_t[0]->getY();
 
     foreach (DM::Node * n, ns_t) {
-        DM::Logger(DM::Debug) << n->getX() << "\t" <<  n->getY() << "\t" << n->getZ();
-    }
-
-    foreach (DM::Node * n, ns_t) {
         if (xmin > n->getX())
             xmin = n->getX();
         if (xmax < n->getX())
@@ -90,14 +90,14 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
     std::vector<DM::Node> window_nodes;
 
     //We will distribute the windows equally as parapet height we asume 0.80 m
-    for (unsigned int i = 0; i < numberOfSegments; i++) {
+    for (int i = 0; i < numberOfSegments; i++) {
         //Center of the new window
         double delta_y = l / (numberOfSegments+1) * (i+1) + ymin;
 
-        DM::Node n1(xmin + 1.2, delta_y - width/2, z_const);
-        DM::Node n2(xmin + 1.2 + height,  delta_y - width/2, z_const);
-        DM::Node n3(xmin + 1.2 + height,  delta_y + width/2, z_const);
-        DM::Node n4(xmin + 1.2,  delta_y + width/2, z_const);
+        DM::Node n1(xmin + parapet, delta_y - width/2, z_const);
+        DM::Node n2(xmin + parapet + height,  delta_y - width/2, z_const);
+        DM::Node n3(xmin + parapet + height,  delta_y + width/2, z_const);
+        DM::Node n4(xmin + parapet,  delta_y + width/2, z_const);
 
         window_nodes.push_back(n4);
         window_nodes.push_back(n3);
@@ -116,7 +116,7 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
 
     std::vector<DM::Face * > windows;
 
-    for (int i = 0; i < window_nodes.size()/4; i++){
+    for ( unsigned int i = 0; i < window_nodes.size()/4; i++){
         std::vector<DM::Node*> window_nodes_t;
         for (int j = 0; j < 4; j++) {
             DM::Node n = TBVectorData::RotateVector(alphas_t, window_nodes[j+i*4]);
@@ -131,8 +131,8 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
 
         DM::Node checkDir = orientationOriginal - orientationOriginal_window;
         if (fabs(checkDir.getX()) > 0.0001 ||
-            fabs(checkDir.getY()) > 0.0001 ||
-            fabs(checkDir.getZ()) > 0.0001) {
+                fabs(checkDir.getY()) > 0.0001 ||
+                fabs(checkDir.getZ()) > 0.0001) {
             std::reverse(window_nodes_t.begin(),window_nodes_t.end());
         }
 
@@ -140,25 +140,25 @@ std::vector<DM::Face*> CuteLittleGeometryHelpers::CreateHolesInAWall(DM::System 
 
         f->addHole(window_nodes_t);
 
-        DM::Logger(DM::Debug) << "Add Window";
+        //DM::Logger(DM::Debug) << "Add Window";
     }
     return windows;
 }
 
-void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View & buildingView, DM::View & geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  & footprint, int stories)
+void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View & buildingView, DM::View & geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  & footprint, int stories)
 {
     std::vector<double> roofColor;
     roofColor.push_back(0.66);
     roofColor.push_back(0.66);
     roofColor.push_back(0.66);
     std::vector<double> wallColor;
-    wallColor.push_back(0.96);
-    wallColor.push_back(0.96);
-    wallColor.push_back(0.86);
+    wallColor.push_back(196./255.);
+    wallColor.push_back(196./255.);
+    wallColor.push_back(196./255.);
     std::vector<double> windowColor;
-    windowColor.push_back(0.5019608);
-    windowColor.push_back(1.0);
-    windowColor.push_back(0.5019608);
+    windowColor.push_back(0.53);
+    windowColor.push_back(0.81);
+    windowColor.push_back(1);
 
     //Set footprint as floor
     DM::Face * base_plate = city->addFace(footprint, geometryView);
@@ -177,7 +177,7 @@ void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::Vi
             if (i != lastID-1) {
                 f->addAttribute("type", "wall_outside");
                 f->getAttribute("color")->setDoubleVector(wallColor);
-                std::vector<DM::Face* > windows = CuteLittleGeometryHelpers::CreateHolesInAWall(city, f, 5, 1.5, 1);
+                std::vector<DM::Face* > windows = LittleGeometryHelpers::CreateHolesInAWall(city, f, 5, 1.5, 1);
                 foreach (DM::Face * w, windows) {
                     w->addAttribute("type", "window");
                     w->getAttribute("color")->setDoubleVector(windowColor);
@@ -187,7 +187,7 @@ void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::Vi
                 }
 
                 double a = TBVectorData::CalculateArea(city, f);
-                DM::Logger(DM::Debug) << "Wall:" << a;
+                //DM::Logger(DM::Debug) << "Wall:" << a;
 
             }
             else if (story != stories -1){
@@ -206,4 +206,108 @@ void CuteLittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::Vi
 
 
 
+}
+
+void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & buildingView, DM::View &geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  &footprint, double height, double alpha)
+{
+    std::vector<double> roofColor;
+    roofColor.push_back(178./255.);
+    roofColor.push_back(34./255.);
+    roofColor.push_back(34./255.);
+
+    std::vector<double> wallColor;
+    wallColor.push_back(0.96);
+    wallColor.push_back(0.96);
+    wallColor.push_back(0.86);
+
+    const double pi =  3.14159265;
+    //Create roof for minimal bounding box
+    std::vector<DM::Node> b_box;
+    std::vector<double> dimension;
+
+    double angle = DM::CGALGeometry::CalculateMinBoundingBox(footprint, b_box, dimension);
+    DM::Node center = TBVectorData::CentroidPlane(footprint);
+
+    QTransform t;
+    t.rotate(angle);
+
+    double l = dimension[0];
+    double b = dimension[1];
+
+
+    double h = cos (alpha / 180. * pi) * b / 2.;
+    QPointF qcenter(center.getX(), center.getY());
+    QPointF q_top_1 = t.map(QPointF (  -l/2., 0)) + qcenter;
+    QPointF q_top_2 =  t.map(QPointF (l/2.,  0)) + qcenter;
+    /**
+      * 4--------3
+      * |        |
+      * t1-------t2
+      * |        |
+      * 1--------2
+      */
+
+    QPointF q_n1 =  t.map(QPointF (  -l/2.,  b/2.)) + qcenter;
+    QPointF q_n2 =  t.map(QPointF (  l/2., b/2.)) + qcenter;
+    QPointF q_n3 =  t.map(QPointF (  l/2.,  -b/2.)) + qcenter;
+    QPointF q_n4 =  t.map(QPointF (  -l/2.,  -b/2.)) + qcenter;
+
+    DM::Node * n4 = city->addNode(q_n1.x(), q_n1.y(), height);
+    DM::Node * n3 = city->addNode(q_n2.x(), q_n2.y(), height);
+    DM::Node * n2 = city->addNode(q_n3.x(), q_n3.y(), height);
+    DM::Node * n1 = city->addNode(q_n4.x(), q_n4.y(), height);
+
+    DM::Node * t1 = city->addNode(q_top_1.x(), q_top_1.y(), height + h/2.);
+    DM::Node * t2 = city->addNode(q_top_2.x(), q_top_2.y(), height + h/2.);
+
+    std::vector<DM::Node* > vF1;
+    vF1.push_back(n1);
+    vF1.push_back(n2);
+    vF1.push_back(t2);
+    vF1.push_back(t1);
+    vF1.push_back(n1);
+
+    DM::Face * F1 =  city->addFace(vF1, geometryView);
+    F1->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+    F1->addAttribute("type", "roof");
+    F1->getAttribute("color")->setDoubleVector(roofColor);
+    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F1->getUUID());
+
+
+    std::vector<DM::Node* > vF2;
+    vF2.push_back(t1);
+    vF2.push_back(t2);
+    vF2.push_back(n3);
+    vF2.push_back(n4);
+    vF2.push_back(t1);
+
+    DM::Face * F2 =  city->addFace(vF2, geometryView);
+    F2->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+    F2->addAttribute("type", "roof");
+    F2->getAttribute("color")->setDoubleVector(roofColor);
+    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F2->getUUID());
+
+    std::vector<DM::Node* > vF3;
+    vF3.push_back(n1);
+    vF3.push_back(t1);
+    vF3.push_back(n4);
+    vF3.push_back(n1);
+
+    DM::Face * F3 =  city->addFace(vF3, geometryView);
+    F3->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+    F3->addAttribute("type", "roof_wall");
+    F3->getAttribute("color")->setDoubleVector(wallColor);
+    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F3->getUUID());
+
+    std::vector<DM::Node* > vF4;
+    vF4.push_back(n2);
+    vF4.push_back(n3);
+    vF4.push_back(t2);
+    vF4.push_back(n2);
+
+    DM::Face * F4 =  city->addFace(vF4, geometryView);
+    F4->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+    F4->addAttribute("type", "roof_wall");
+    F4->getAttribute("color")->setDoubleVector(wallColor);
+    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F4->getUUID());
 }
