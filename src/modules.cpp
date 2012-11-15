@@ -31,6 +31,7 @@
 #include <extractmaxgraphofforest.h>
 #include <reducetree.h>
 #include <setZfromRasterdata.h>
+#include <calculatelength.h>
 
 using namespace std;
 
@@ -41,4 +42,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
     registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
     registry->addNodeFactory(new DM::NodeFactory<SetZfromRasterdata>());
+    registry->addNodeFactory(new DM::NodeFactory<CalculateEdgeLength>());
 }
