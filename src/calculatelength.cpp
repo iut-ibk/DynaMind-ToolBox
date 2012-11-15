@@ -1,0 +1,78 @@
+/**
+ * @file
+ * @author  Michael Mair <michael.mair@uibk.ac.at>
+ * @version 1.0
+ * @section LICENSE
+ *
+ * This file is part of DynaMind
+ *
+ * Copyright (C) 2012  Michael Mair
+ 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
+#include <calculatelength.h>
+
+//DynaMind includes
+#include <dmsystem.h>
+#include <dmlogsink.h>
+#include <math.h>
+#include <tbvectordata.h>
+
+//CGAL
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <CGAL/Search_traits_2.h>
+#include <list>
+#include <cmath>
+
+DM_DECLARE_NODE_NAME(CalculateEdgeLength,Graph)
+
+CalculateEdgeLength::CalculateEdgeLength()
+{   
+    std::vector<DM::View> views;
+    DM::View view;
+
+    view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
+    view.addAttribute("length");
+    views.push_back(view);
+    viewdef["EDGES"]=view;
+
+    this->addData("Layout", views);
+}
+
+void CalculateEdgeLength::run()
+{
+    sys = this->getData("Layout");
+    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
+
+    if(!edges.size())
+    {
+        DM::Logger(DM::Error) << "Could not find any edges";
+        return;
+    }
+
+    for(int index=0; index < edges.size(); index++)
+    {
+        DM::Edge *currentedge = sys->getEdge(edges[index]);
+        DM::Node *start = sys->getNode(currentedge->getStartpointName());
+        DM::Node *end = sys->getNode(currentedge->getEndpointName());
+        double length = TBVectorData::calculateDistance(start,end);
+        currentedge->addAttribute("length",length);
+    }
+    return;
+}
