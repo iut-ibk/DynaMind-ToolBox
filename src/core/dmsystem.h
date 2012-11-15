@@ -67,7 +67,6 @@ class Module;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
-    QMutex * mutex;
     std::vector<System*> predecessors;
     std::map<std::string, Node* > nodes;
     std::map<std::string, Edge* > edges;

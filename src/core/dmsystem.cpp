@@ -41,7 +41,6 @@ using namespace DM;
 System::System() : Component()
 {
     this->lastModule = 0;
-    this->mutex = new QMutex(QMutex::Recursive);
 
 }
 
@@ -95,7 +94,6 @@ System::System(const System& s) : Component(s)
     predecessors = s.predecessors;
     views = s.views;
     lastModule = s.lastModule;
-    mutex = new QMutex(QMutex::Recursive);
 }
 
 System::~System()
@@ -108,13 +106,11 @@ System::~System()
     }
     ownedView.clear();
 
-    delete mutex;
+
 }
 
 Component * System::addComponent(Component* c, const DM::View & view)
 {
-    QMutexLocker locker(mutex);
-
     if(!addChild(c)) {
         delete c;
         return 0;
@@ -133,7 +129,6 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
 Node * System::addNode(Node* node)
 {
-    QMutexLocker locker(mutex);
     if(!addChild(node)) {
         delete node;
         return 0;
@@ -146,7 +141,6 @@ Node * System::addNode(Node* node)
 
 RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
-    QMutexLocker locker(mutex);
     if(!addChild(r)) {
         delete r;
         return 0;
@@ -163,7 +157,6 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 }
 
 Node * System::addNode(double x, double y, double z,  const DM::View & view) {
-    QMutexLocker locker(mutex);
     Node * n = this->addNode(new Node(x, y, z));
 
     if (n == 0)
@@ -178,14 +171,12 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view) {
 }
 
 Node * System::addNode(Node n,  const DM::View & view) {
-    QMutexLocker locker(mutex);
     return this->addNode(n.getX(), n.getY(), n.getZ(), view);
 
 }
 
 Edge * System::addEdge(Edge* edge)
 {
-    QMutexLocker locker(mutex);
     if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
         delete edge;
         return 0;
@@ -206,7 +197,6 @@ Edge * System::addEdge(Edge* edge)
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
 {
-    QMutexLocker locker(mutex);
     Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
 
     if (e == 0)
