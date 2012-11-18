@@ -129,6 +129,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
 Node * System::addNode(Node* node)
 {
+    QMutexLocker(this->mutex);
     if(!addChild(node)) {
         delete node;
         return 0;
@@ -157,6 +158,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 }
 
 Node * System::addNode(double x, double y, double z,  const DM::View & view) {
+    QMutexLocker(this->mutex);
     Node * n = this->addNode(new Node(x, y, z));
 
     if (n == 0)
@@ -177,6 +179,7 @@ Node * System::addNode(Node n,  const DM::View & view) {
 
 Edge * System::addEdge(Edge* edge)
 {
+    QMutexLocker(this->mutex);
     if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
         delete edge;
         return 0;
@@ -197,6 +200,7 @@ Edge * System::addEdge(Edge* edge)
 }
 Edge * System::addEdge(Node * start, Node * end, const View &view)
 {
+    QMutexLocker(this->mutex);
     Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
 
     if (e == 0)
@@ -212,6 +216,7 @@ Edge * System::addEdge(Node * start, Node * end, const View &view)
 }
 
 Face * System::addFace(Face *f) {
+    QMutexLocker(this->mutex);
     if(!addChild(f)) {
         delete f;
         return 0;
@@ -224,6 +229,7 @@ Face * System::addFace(Face *f) {
 
 Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
 {
+    QMutexLocker(this->mutex);
     std::vector<std::string> stringNodes;
 
     foreach (Node* n, nodes)
@@ -241,6 +247,7 @@ Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
 
 Node* System::getNode(std::string uuid)
 {
+    QMutexLocker(this->mutex);
     if(nodes.find(uuid)==nodes.end())
         return 0;
     Node * n = nodes[uuid];
@@ -256,6 +263,7 @@ Node* System::getNode(std::string uuid)
 
 Edge* System::getEdge(std::string uuid)
 {
+    QMutexLocker(this->mutex);
     if(edges.find(uuid)==edges.end())
         return 0;
     Edge * e = edges[uuid];
@@ -279,6 +287,7 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
 
 Face* System::getFace(std::string uuid)
 {
+    QMutexLocker(this->mutex);
     if(faces.find(uuid)==faces.end())
         return 0;
     Face * f = faces[uuid];
@@ -294,6 +303,7 @@ Face* System::getFace(std::string uuid)
 
 
 Component * System::getComponent(std::string uuid) {
+    QMutexLocker(this->mutex);
     if(nodes.find(uuid)!=nodes.end())
         return this->getNode(uuid);
     if(edges.find(uuid)!=edges.end())
@@ -333,6 +343,7 @@ bool System::removeFace(std::string name)
 
 std::map<std::string, Component*>  System::getAllComponents()
 {
+    QMutexLocker(this->mutex);
     for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
         std::string uuid = it->first;
         DM::Component * c = it->second;
@@ -348,6 +359,7 @@ std::map<std::string, Component*>  System::getAllComponents()
 
 bool System::removeComponent(std::string name)
 {
+    QMutexLocker(this->mutex);
     //check if name is a edge instance
     if(components.find(name)==components.end())
         return false;
@@ -362,6 +374,7 @@ bool System::removeComponent(std::string name)
 
 bool System::removeEdge(std::string name)
 {
+    QMutexLocker(this->mutex);
     //check if name is a edge instance
     if(edges.find(name)==edges.end())
         return false;
@@ -376,6 +389,7 @@ bool System::removeEdge(std::string name)
 
 bool System::removeNode(std::string name)
 {
+    QMutexLocker(this->mutex);
     //check if name is a node instance
     if(nodes.find(name)==nodes.end())
         return false;
@@ -409,12 +423,14 @@ bool System::removeNode(std::string name)
     return true;
 }
 bool System::addComponentToView(Component *comp, const View &view) {
+    QMutexLocker(this->mutex);
     this->views[view.getName()][comp->getUUID()] = comp;
     comp->setView(view.getName());
     return true;
 }
 
 bool System::removeComponentFromView(Component *comp, const View &view) {
+    QMutexLocker(this->mutex);
     std::map<std::string, Component*> entries = this->views[view.getName()];
     entries.erase(comp->getUUID());
     comp->removeView(view);
@@ -424,6 +440,7 @@ bool System::removeComponentFromView(Component *comp, const View &view) {
 
 System * System::addSubSystem(System *newsystem,  const DM::View & view)
 {
+    QMutexLocker(this->mutex);
     //TODO add View to subsystem
     if(!addChild(newsystem)) {
         delete newsystem;
@@ -444,6 +461,7 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
 bool System::removeSubSystem(std::string name)
 {
+    QMutexLocker(this->mutex);
     if(!removeChild(name))
         return false;
 
@@ -470,6 +488,7 @@ std::vector<std::string> System::getUUIDs(const DM::View  & view)
 }
 System* System::getSubSystem(std::string uuid)
 {
+    QMutexLocker(this->mutex);
     if(subsystems.find(uuid)==subsystems.end())
         return 0;
 
@@ -493,7 +512,7 @@ std::map<std::string, RasterData*> System::getAllRasterData()
 
 System* System::createSuccessor()
 {
-
+    QMutexLocker(this->mutex);
     Logger(Debug) << "Create Sucessor " << this->getUUID();
     System* result = new System(*this);
     this->sucessor.push_back(result);
@@ -508,6 +527,7 @@ Component* System::clone()
 
 bool System::addView(View view)
 {
+    QMutexLocker(this->mutex);
 
     //For each view one dummy element will be created
     //Check for existing View
@@ -564,7 +584,7 @@ bool System::addView(View view)
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
         if (view.getAttributeType(a) == Attribute::LINK) {
-            attr.setLink(view.getLinkName(a), "");
+            attr.setLink(view.getNameOfLinkedView(a), "");
         }
         dummy->addAttribute(attr);
     }
@@ -584,6 +604,7 @@ void System::addPredecessors(System *s)
 
 std::map<std::string, Node*> System::getAllNodes()
 {
+    QMutexLocker(this->mutex);
     //Update All Nodes
     for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
         std::string uuid = it->first;
@@ -600,6 +621,7 @@ std::map<std::string, Node*> System::getAllNodes()
 
 std::map<std::string, Edge*> System::getAllEdges()
 {
+    QMutexLocker(this->mutex);
     //Update all Edges
     for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
         std::string uuid = it->first;
@@ -616,6 +638,7 @@ std::map<std::string, Edge*> System::getAllEdges()
 
 std::map<std::string, Face*> System::getAllFaces()
 {
+    QMutexLocker(this->mutex);
     for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
         std::string uuid = it->first;
         DM::Face * f = it->second;

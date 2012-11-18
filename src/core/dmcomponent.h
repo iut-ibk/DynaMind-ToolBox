@@ -66,6 +66,7 @@ protected:
     std::map<std::string,Attribute*> ownedattributes;
     std::set<std::string> inViews;
     System * currentSys;
+    QMutex * mutex;
 
     void removeView(const DM::View & view);
 

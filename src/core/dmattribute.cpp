@@ -163,6 +163,7 @@ bool Attribute::hasStringVector()
 
 void Attribute::setLink(string viewname, string uuid)
 {
+
     this->type = Attribute::LINK;
     this->stringvector.push_back(viewname);
     this->stringvector.push_back(uuid);
