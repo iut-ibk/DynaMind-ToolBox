@@ -51,10 +51,11 @@ ViewMetaData::ViewMetaData(std::string attribute)
     min[2] = min[1] = attr_min = min[0];
     max[0] = -std::numeric_limits<double>::max();
     max[2] = max[1] = attr_max = max[0];
+    fromNode = true;
 }
 
 void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Node *n, iterator_pos pos) {
-    if (pos == before) {
+    if (pos == before && !fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
         if (a->getType() == Attribute::DOUBLE) {
             attr_max = std::max(attr_max, a->getDouble());
@@ -63,6 +64,23 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Nod
         if (a->getType() == Attribute::DOUBLEVECTOR ||
             a->getType() == Attribute::TIMESERIES) {
             
+            std::vector<double> dv = a->getDoubleVector();
+            if (dv.size()) {
+                attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
+                attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
+            }
+        }
+        number_of_primitives++;
+    }
+    if (pos == in_between && fromNode) {
+        DM::Attribute *a = c->getAttribute(attr);
+        if (a->getType() == Attribute::DOUBLE) {
+            attr_max = std::max(attr_max, a->getDouble());
+            attr_min = std::min(attr_min, a->getDouble());
+        }
+        if (a->getType() == Attribute::DOUBLEVECTOR ||
+            a->getType() == Attribute::TIMESERIES) {
+
             std::vector<double> dv = a->getDoubleVector();
             if (dv.size()) {
                 attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));

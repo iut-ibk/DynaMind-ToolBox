@@ -169,7 +169,7 @@ void ViewerWindow::addLayerFromSpec(LayerSpec spec) {
     ui->viewer->makeCurrent();
     Layer *l = new Layer(system, v, spec.attribute);
     l->setHeightInterpretation(spec.height);
-    l->setColorInterpretation(get_color_ramp(spec.ramp));
+    l->setColorInterpretation(get_color_ramp(spec.ramp, l->LayerColor) );
     addLayer(l);
 }
 

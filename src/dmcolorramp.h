@@ -15,7 +15,7 @@ const char* const ColorRampNames[] = {
 #undef X
 };
 
-unsigned int get_color_ramp(ColorRamp ramp);
+unsigned int get_color_ramp(ColorRamp ramp, int rgbadata[256][4]);
 
 } // namespace DM
 

@@ -66,7 +66,7 @@
        </column>
       </widget>
      </item>
-     <item row="4" column="2">
+     <item row="5" column="2">
       <widget class="QFrame" name="frame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -202,7 +202,7 @@
        </layout>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QCheckBox" name="overdraw">
        <property name="enabled">
         <bool>false</bool>
@@ -219,6 +219,13 @@
        </property>
        <property name="text">
         <string>as 3D Object</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="checkBoxAsMesh">
+       <property name="text">
+        <string>as Mesh</string>
        </property>
       </widget>
      </item>

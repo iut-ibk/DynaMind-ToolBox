@@ -37,6 +37,7 @@ class Component;
 
 struct DM_HELPER_DLL_EXPORT ViewMetaData {
     ViewMetaData(std::string attribute);
+    bool fromNode;
     
     void max_vec(const double *other);
     void min_vec(const double *other);

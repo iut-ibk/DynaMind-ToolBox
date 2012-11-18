@@ -25,15 +25,17 @@
  */
 
 #include "dmlayer.h"
-
+#include "dmlogger.h"
 #include "dmcomponent.h"
 #include "dmnode.h"
 #include "dmface.h"
 #include "dmedge.h"
 #include "dmattribute.h"
 #include "dmsystemiterators.h"
-#include "dmlogger.h"
 #include "tbvectordata.h"
+
+#include <QString>
+#include <QStringList>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/partition_2.h>
@@ -78,7 +80,6 @@ struct SimpleDrawer {
             return;
         }
         glColor3f(0, 0, 0);
-        //QVector<double> vertex = n->get();
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
         glVertex3dv(tmp);
     }
@@ -100,7 +101,6 @@ struct TesselatedFaceDrawer {
         dialog = new QProgressDialog("Tesselating Polygons...", "cancel",
                                      0, l.getViewMetaData().number_of_primitives,
                                      parent);
-        //dialog->setModal(true);
         dialog->show();
         
         if (l.getAttribute() == "") {
@@ -209,13 +209,28 @@ struct TesselatedFaceDrawer {
 };
 
 
-Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect)
+Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMesh)
     : system(s), view(v),
       attribute(a), vmd(a),
       texture(-1),
       attribute_vector_name(0),
       scale_height(-1),
-      as3DObject(D3Ojbect){
+      as3DObject(D3Ojbect),
+      asMesh(asMesh){
+
+    QString attr = QString::fromStdString(a);
+    QStringList view_attr = attr.split(":");
+
+    if (view_attr.size() != 2)
+        return;
+    this->attributeView = *(system->getViewDefinition(view_attr[0].toStdString()));
+    this->attribute = view_attr[1].toStdString();
+
+    vmd = ViewMetaData(this->attribute);
+
+
+
+
 }
 
 struct GeomtryDrawer {
@@ -246,6 +261,79 @@ struct GeomtryDrawer {
     }
 };
 
+struct MeshDrawer {
+
+    GLuint name_start;
+    double current_tex;
+    const Layer &l;
+    double attr_span;
+
+    MeshDrawer(const Layer &l)
+        : l(l), name_start(l.getNameStart()) {
+
+
+        if (l.getAttribute() == "") {
+            return;
+        }
+
+        const ViewMetaData &vmd = l.getViewMetaData();
+        this->attr_span = vmd.attr_max - vmd.attr_min;
+
+    }
+
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+
+        if (pos == before) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            this->attr_span = vmd.attr_max - vmd.attr_min;
+            glPushName(name_start);
+            glBegin(GL_TRIANGLES);
+            return;
+        }
+        if (pos == after) {
+            glEnd();
+            glPopName();
+            name_start++;
+            return;
+        }
+
+        if (glIsTexture(l.getColorInterpretation())) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            Attribute *a = cmp->getAttribute(l.getAttribute());
+
+            if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
+                current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span *255;
+            } else {
+                current_tex = (a->getDouble() - vmd.attr_min) / attr_span * 255;
+            }
+        } else {
+            current_tex = 0.0;
+        }
+
+        DM::Node * n = (DM::Node*) node;
+
+
+        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+
+
+
+        if (current_tex < 0) {
+            glColor3f(0.0, 0.0, 0.0);
+            glVertex3dv(tmp);
+            return;
+        }
+
+        float r = l.LayerColor[(int)current_tex][0]/255.;
+        float g = l.LayerColor[(int)current_tex][1]/255.;
+        float b = l.LayerColor[(int)current_tex][2]/255.;
+        float a = l.LayerColor[(int)current_tex][3]/255.;
+
+        glColor3f(r, g, b);
+        glVertex3dv(tmp);
+    }
+};
+
+
 void Layer::draw(QWidget *parent) {
     if (lists.size() <= attribute_vector_name) {
         lists.resize(attribute_vector_name+1, -1);
@@ -257,7 +345,11 @@ void Layer::draw(QWidget *parent) {
             GeomtryDrawer drawer(*this);
             iterate_components(system, view, drawer);
         }
-        if (view.getType() == DM::FACE && !this->as3DObject) {
+        if (view.getType() == DM::FACE && this->asMesh) {
+            MeshDrawer drawer(*this);
+            iterate_mesh(system, view, drawer);
+        }
+        if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
             TesselatedFaceDrawer drawer(*this, parent);
             iterate_faces(system, view, drawer);
         }
@@ -269,10 +361,10 @@ void Layer::draw(QWidget *parent) {
             SimpleDrawer<GL_POINTS> drawer(*this);
             iterate_nodes(system, view, drawer);
         }
-        
+
         glEndList();
     }
-    
+
     glPushMatrix();
     glTranslated(x_off, y_off, z_off);
     assert(glIsList(lists[attribute_vector_name]));
@@ -287,11 +379,14 @@ void Layer::drawWithNames(QWidget *parent) {
 void Layer::systemChanged() {
     vmd = ViewMetaData(attribute);
 
-    if (view.getType() == DM::COMPONENT) {
+    if (view.getType() == DM::COMPONENT || this->as3DObject) {
         iterate_components(system, view, vmd);
     }
-    if (view.getType() == DM::FACE) {
+    if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
         iterate_faces(system, view, vmd);
+    }
+    if (view.getType() == DM::FACE || this->asMesh) {
+        iterate_mesh(system, view, vmd);
     }
     if (view.getType() == DM::EDGE) {
         iterate_edges(system, view, vmd);
@@ -299,7 +394,7 @@ void Layer::systemChanged() {
     if (view.getType() == DM::NODE) {
         iterate_nodes(system, view, vmd);
     }
-    
+
     foreach (GLuint list, lists) {
         if (glIsList(list)) {
             glDeleteLists(list, 1);

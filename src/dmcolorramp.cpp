@@ -13,7 +13,7 @@
 
 namespace DM {
 
-GLuint hue(QColor start, QColor stop) {
+GLuint hue(QColor start, QColor stop, int rgbadata[256][4]) {
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_1D, texture);
@@ -33,6 +33,11 @@ GLuint hue(QColor start, QColor stop) {
         data[i][1] = c.green();
         data[i][2] = c.blue();
         data[i][3] = c.alpha();
+
+        rgbadata[i][0] = c.red();
+        rgbadata[i][1] = c.green();
+        rgbadata[i][2] = c.blue();
+        rgbadata[i][3] = c.alpha();
     }
     
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -44,7 +49,7 @@ GLuint hue(QColor start, QColor stop) {
     return texture;
 }
 
-GLuint val(QColor start, QColor stop) {
+GLuint val(QColor start, QColor stop, int rgbadata[256][4]) {
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_1D, texture);
@@ -63,6 +68,15 @@ GLuint val(QColor start, QColor stop) {
         data[i][1] = c.green();
         data[i][2] = c.blue();
         data[i][3] = c.alpha();
+float g = c.green();
+        rgbadata[i][0] = c.red();
+        rgbadata[i][1] = g;
+        rgbadata[i][2] = c.blue();
+        rgbadata[i][3] = c.alpha();
+
+
+
+
     }
     
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -74,7 +88,7 @@ GLuint val(QColor start, QColor stop) {
     return texture;
 }
 
-GLuint sat(QColor start, QColor stop) {
+GLuint sat(QColor start, QColor stop, int rgbadata[256][4]) {
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_1D, texture);
@@ -93,6 +107,14 @@ GLuint sat(QColor start, QColor stop) {
         data[i][1] = c.green();
         data[i][2] = c.blue();
         data[i][3] = c.alpha();
+
+        rgbadata[i][0] = c.red();
+        rgbadata[i][1] = c.green();
+        rgbadata[i][2] = c.blue();
+        rgbadata[i][3] = c.alpha();
+
+
+
     }
     
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -104,7 +126,7 @@ GLuint sat(QColor start, QColor stop) {
     return texture;
 }
 
-GLuint hsv(QColor start, QColor stop) {
+GLuint hsv(QColor start, QColor stop, int rgbadata[256][4]) {
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_1D, texture);
@@ -125,6 +147,12 @@ GLuint hsv(QColor start, QColor stop) {
         data[i][1] = c.green();
         data[i][2] = c.blue();
         data[i][3] = c.alpha();
+
+        rgbadata[i][0] = c.red();
+        rgbadata[i][1] = c.green();
+        rgbadata[i][2] = c.blue();
+        rgbadata[i][3] = c.alpha();
+
     }
     
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -136,81 +164,82 @@ GLuint hsv(QColor start, QColor stop) {
     return texture;
 }
 
-GLuint black_to_red() {
-    return val(Qt::black, Qt::red);
+GLuint black_to_red(int rgbadata[256][4]) {
+    return val(Qt::black, Qt::red,rgbadata);
 }
 
-GLuint black_to_blue() {
-    return val(Qt::black, Qt::blue);
+GLuint black_to_blue(int rgbadata[256][4]) {
+    return val(Qt::black, Qt::blue,rgbadata);
 }
 
-GLuint black_to_green() {
-    return val(Qt::black, Qt::green);
+GLuint black_to_green(int rgbadata[256][4]) {
+    return val(Qt::black, Qt::green,rgbadata);
 }
 
-GLuint black_to_yellow() {
-    return val(Qt::black, Qt::yellow);
+GLuint black_to_yellow(int rgbadata[256][4]) {
+    return val(Qt::black, Qt::yellow,rgbadata);
 }
 
-GLuint black_to_orange() {
-    return val(Qt::black, QColor(255, 165, 0));
+GLuint black_to_orange(int rgbadata[256][4]) {
+    return val(Qt::black, QColor(255, 165, 0),rgbadata);
 }
 
-GLuint white_to_red() {
-    return sat(Qt::white, Qt::red);
+GLuint white_to_red(int rgbadata[256][4]) {
+    return sat(Qt::white, Qt::red,rgbadata);
 }
 
-GLuint white_to_blue() {
-    return sat(Qt::white, Qt::blue);
+GLuint white_to_blue(int rgbadata[256][4]) {
+    return sat(Qt::white, Qt::blue,rgbadata);
 }
 
-GLuint white_to_green() {
-    return sat(Qt::white, Qt::green);
+GLuint white_to_green(int rgbadata[256][4]) {
+    return sat(Qt::white, Qt::green,rgbadata);
 }
 
-GLuint white_to_yellow() {
-    return sat(Qt::white, Qt::yellow);
+GLuint white_to_yellow(int rgbadata[256][4]) {
+    return sat(Qt::white, Qt::yellow, rgbadata);
 }
 
-GLuint white_to_orange() {
-    return sat(Qt::white, QColor(255, 165, 0));
+GLuint white_to_orange(int rgbadata[256][4]) {
+    return sat(Qt::white, QColor(255, 165, 0),rgbadata);
 }
 
-GLuint white_to_black() {
-    return val(Qt::white, Qt::black);
+GLuint white_to_black(int rgbadata[256][4]) {
+    return val(Qt::white, Qt::black,rgbadata);
 }
 
-GLuint rainbow() {
+GLuint rainbow(int rgbadata[256][4]) {
     QColor start, stop;
     start.setHsv(359, 255, 255);
     stop.setHsv(58, 255, 255);
-    return hue(start, stop);
+    return hue(start, stop,rgbadata);
 }
 
-GLuint light_green_to_dark_green() {
+GLuint light_green_to_dark_green(int rgbadata[256][4]) {
     QColor start, stop;
     start.setHsv(149, 128, 255);
     stop.setHsv(149, 128, 70);
-    return val(start, stop);
+    return val(start, stop,rgbadata);
 }
 
-GLuint light_blue_to_dark_blue() {
+GLuint light_blue_to_dark_blue(int rgbadata[256][4]) {
     QColor start, stop;
     start.setHsv(240, 70, 255);
     stop.setHsv(240, 255, 255);
-    return sat(start, stop);
+    return sat(start, stop, rgbadata);
 }
 
-GLuint yellow_to_brown() {
+GLuint yellow_to_brown(int rgbadata[256][4]) {
+
     QColor start, stop;
     start.setHsv(29, 177, 127);
     stop.setHsv(60, 255, 255);
-    return hsv(start, stop);
+    return hsv(start, stop, rgbadata);
 }
 
-typedef GLuint (*color_ramp_func)(void);
+typedef GLuint (*color_ramp_func)(int rgbadata[256][4]);
 
-GLuint get_color_ramp(ColorRamp ramp) {
+GLuint get_color_ramp(ColorRamp ramp, int rgbadata[256][4]) {
     color_ramp_func funcs[] = {
         black_to_red,
         white_to_red,
@@ -230,7 +259,7 @@ GLuint get_color_ramp(ColorRamp ramp) {
         light_blue_to_dark_blue,
         yellow_to_brown
     };
-    return funcs[ramp]();
+    return funcs[ramp](rgbadata);
 }
 
 } // namespace DM

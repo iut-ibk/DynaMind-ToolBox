@@ -31,6 +31,7 @@
 #include <QTreeWidgetItem>
 #include <QGroupBox>
 
+#include <sstream>
 #include "dmattribute.h"
 #include "dmlayer.h"
 #include "dmviewer.h"
@@ -83,14 +84,19 @@ AddLayerDialog::~AddLayerDialog() {
 DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
     if (!view)
         return 0;
-    DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked());
+    //Change
+    //DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked());
+    DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked(), ui->checkBoxAsMesh->isChecked());
     if (ui->colorCheckBox->isChecked()) {
         v->makeCurrent();
-        l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex()));
+        l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex(),  l->LayerColor));
     }
     if (ui->heightCheckBox->isChecked()) {
         l->setHeightInterpretation(ui->heightSpinBox->value());
     }
+    //CHANGE
+    //l->setColorInterpretation(get_color_ramp((ColorRamp)(1), l->LayerColor));
+
     return l;
 }
 
@@ -129,40 +135,9 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     ui->overdraw->setEnabled(current);
     view = system->getViewDefinition(current->text(0).toStdString());
 
-    std::string uuid =  view->getIdOfDummyComponent();
-    std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(*view);
-    QMap<std::string, DM::Attribute::AttributeType> attrTypes;
-    QMap<std::string, DM::Attribute*> attributes_tmp(system->getComponent(uuid)->getAllAttributes());
-    QMap<std::string, DM::Attribute*> attributes;
-    foreach (std::string k, attributes_tmp.keys()) {
-        if (attributes_tmp[k]) {
-            attributes[k] = attributes_tmp[k];
-        }
-    }
-    foreach (std::string k, attributes.keys()) {
-        attrTypes[k] = attributes[k]->getType();
-    }
-    
-    foreach (std::string uuid,uuids) {
-        QMap<std::string, DM::Attribute*> attrs(system->getComponent(uuid)->getAllAttributes());
-        foreach(std::string k, attrs.keys()) {
-            attrTypes[k] = attrs[k]->getType();
-        }
-        bool exists = true;
-        foreach(std::string k, attrTypes.keys()) {
-            if (attrTypes[k] == DM::Attribute::NOTYPE) {
-                exists = false;
-                continue;
-            }
-        }
-        if (exists)
-            break;
-    }
-    foreach (std::string k, attrTypes.keys()) {
-        if (attributes.find(k) == attributes.end())
-            continue;
-        attributes[k]->setType(attrTypes[k]);
-    }
+
+    QMap<string, DM::Attribute *> attributes;
+    getAttributesFromComponent(*view, attributes);
 
     foreach(std::string key, attributes.keys()) {
         DM::Attribute *attr = attributes[key];
@@ -183,6 +158,68 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
 void AddLayerDialog::on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
     attribute = current ? current->text(0).toStdString() : "";
     ui->interpreteGroup->setEnabled(current);
+}
+
+void AddLayerDialog::getAttributesFromComponent(DM::View & view, QMap<string, DM::Attribute *> & attributes, std::string leadingName)
+{
+    QMap<std::string, DM::Attribute::AttributeType> attrTypes;
+    std::string uuid =  view.getIdOfDummyComponent();
+
+    //check fo links
+    std::vector<std::string> links = view.getNamesOfLinks();
+
+    foreach (std::string link, links) {
+        DM::View * v= system->getViewDefinition(view.getNameOfLinkedView(link));
+        getAttributesFromComponent(*v, attributes, link);
+    }
+
+    std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(view);
+    QMap<std::string, DM::Attribute*> attributes_tmp(system->getComponent(uuid)->getAllAttributes());
+
+
+    foreach (std::string k, attributes_tmp.keys()) {
+        if (attributes_tmp[k]) {
+            attributes[newAttributeName(leadingName, k)] = attributes_tmp[k];
+        }
+    }
+    foreach (std::string k, attributes.keys()) {
+        attrTypes[k] = attributes[k]->getType();
+    }
+
+    foreach (std::string uuid,uuids) {
+        QMap<std::string, DM::Attribute*> attrs(system->getComponent(uuid)->getAllAttributes());
+        foreach(std::string k, attrs.keys()) {
+            attrTypes[newAttributeName(leadingName, k)] = attrs[k]->getType();
+        }
+        bool exists = true;
+        foreach(std::string k, attrTypes.keys()) {
+            if (attrTypes[k] == DM::Attribute::NOTYPE) {
+                exists = false;
+                continue;
+            }
+        }
+        if (exists)
+            break;
+    }
+
+
+    foreach (std::string k, attrTypes.keys()) {
+        if (attributes.find(k) == attributes.end())
+            continue;
+        attributes[k]->setType(attrTypes[k]);
+    }
+
+    return;
+
+}
+
+string AddLayerDialog::newAttributeName(string viewName, string name)
+{
+    if (viewName.empty())
+        return name;
+    std::stringstream ss;
+    ss << viewName << ":" <<name;
+    return ss.str();
 }
 
 }

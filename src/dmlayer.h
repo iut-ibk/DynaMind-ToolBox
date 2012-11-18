@@ -53,7 +53,7 @@ class Node;
 
 class DM_HELPER_DLL_EXPORT Layer {
 public:
-    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false);
+    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false);
     ~Layer();
     
     void setColorInterpretation(GLuint texture) {
@@ -135,11 +135,14 @@ public:
     bool isEnabled() const {
         return enabled;
     }
+
+    int LayerColor[256][4];
     
 private:
     System *system;
     View view;
     ViewMetaData vmd;
+    View attributeView; //use of maped attributes
     
     std::string attribute;
     double scale_height;
@@ -154,6 +157,7 @@ private:
     int attribute_vector_name;
     bool enabled;
     bool as3DObject;
+    bool asMesh;
 };
 
 } // namespace DM
