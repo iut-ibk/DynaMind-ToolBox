@@ -119,4 +119,35 @@ namespace {
         EXPECT_DOUBLE_EQ(3, area);
 
     }
+    TEST_F(TestTBVectorData,calculateCentroid){
+        DM::System * sys = new DM::System();
+
+        DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
+        DM::Node * n2 = sys->addNode(DM::Node(3,1,0));
+        DM::Node * n3 = sys->addNode(DM::Node(3,3,0));
+        DM::Node * n4 = sys->addNode(DM::Node(1,3,0));
+
+        std::vector<DM::Node * > nodes;
+        nodes.push_back(n1);
+        nodes.push_back(n2);
+        nodes.push_back(n3);
+        nodes.push_back(n4);
+        nodes.push_back(n1);
+
+        DM::Face * f = sys->addFace(nodes);
+
+
+        DM::Node c = TBVectorData::CaclulateCentroid(sys, f);
+
+        EXPECT_DOUBLE_EQ(2.0, c.getX());
+        EXPECT_DOUBLE_EQ(2.0, c.getY());
+
+        std::reverse(nodes.begin(), nodes.end());
+        DM::Face * f1 = sys->addFace(nodes);
+        c = TBVectorData::CaclulateCentroid(sys, f1);
+       EXPECT_DOUBLE_EQ(2.0, c.getX());
+        EXPECT_DOUBLE_EQ(2.0, c.getY());
+
+
+    }
 }
