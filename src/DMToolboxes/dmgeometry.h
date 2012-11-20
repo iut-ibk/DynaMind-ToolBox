@@ -48,7 +48,7 @@ private:
     double devider;
     DM::System * sys;
 public:
-    SpatialNodeHashMap(DM::System * sys, double devider);
+    SpatialNodeHashMap(DM::System * sys, double devider, bool init = true);
     const double & getDevider() const;
     DM::System * getSystem();
     ~SpatialNodeHashMap();

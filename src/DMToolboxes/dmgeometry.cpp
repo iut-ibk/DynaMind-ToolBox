@@ -74,8 +74,10 @@ Node * SpatialNodeHashMap::addNode(double x, double y, double z, double tol, Vie
     return n;
 }
 
-SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider) :  devider(devider), sys(sys)
+SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool init) :  devider(devider), sys(sys)
 {
+    if (!init)
+        return;
     NodeMap nodeMap = sys->getAllNodes();
     for (NodeMap::const_iterator it = nodeMap.begin(); it != nodeMap.end(); ++it) {
         DM::Node * n = it->second;
