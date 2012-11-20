@@ -164,7 +164,52 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
 }
 
 DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
-    return  TBVectorData::CentroidPlane3D(sys, f);
+    //Check if first is last
+    if (f->getNodes().size() < 3)
+        return DM::Node(0,0,0);
+    std::vector<std::string> NodeUUIDs = f->getNodes();
+    std::vector<DM::Node *> nodes;
+    foreach (std::string uuid, NodeUUIDs) {
+        nodes.push_back(sys->getNode(uuid));
+    }
+
+    DM::Node * pend = nodes[nodes.size()-1];
+    DM::Node * pstart = nodes[0];
+    bool startISEnd = true;
+    if (pend != pstart)
+        startISEnd = false;
+    double A6 = TBVectorData::CalculateArea(sys, f)*6.;
+    double x = 0;
+    double y = 0;
+    for (unsigned int i = 0; i< nodes.size()-1;i++) {
+        DM::Node * p_i = nodes[i];
+        DM::Node * p_i1 = nodes[i+1];
+
+        x+= (p_i->getX() + p_i1->getX())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
+        y+= (p_i->getY() + p_i1->getY())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
+
+
+    }
+    if (!startISEnd) {
+        x+= (pend->getX() + pstart->getX())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
+        y+= (pend->getY() + pstart->getY())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
+
+    }
+
+
+
+    DM::Node n1 = *(nodes[0]) - *(nodes[1]);
+    DM::Node n2 = *(nodes[1]) -  *(nodes[2]);
+
+
+
+    DM::Node n = NormalVector(n1, n2);
+    if (n.getZ() < 0) {
+        x = x*-1;
+        y = y*-1;
+    }
+
+    return DM::Node(x/A6,y/A6,nodes[0]->getZ());
 }
 double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 {

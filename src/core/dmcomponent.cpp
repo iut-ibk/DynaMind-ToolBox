@@ -311,3 +311,12 @@ void Component::setCurrentSystem(System *sys) {
     this->currentSys = sys;
 }
 
+void Component::operator =(const Component &c)
+{
+    this->uuid=c.uuid;
+    attributesview=c.attributesview;
+    ownedchilds=c.ownedchilds;
+    inViews = c.inViews;
+    this->mutex = new QMutex();
+}
+

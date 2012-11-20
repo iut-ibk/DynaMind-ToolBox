@@ -157,6 +157,8 @@ public:
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);
+    void operator =(const Component& s);
+
 
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;

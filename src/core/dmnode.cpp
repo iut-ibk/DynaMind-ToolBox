@@ -53,6 +53,18 @@ Node::Node(const Node& n) : Component(n)
     z=n.z;
 }
 
+void Node::operator =(const Node &n)
+{
+
+    x=n.x;
+    y=n.y;
+    z=n.z;
+
+    this->mutex = new QMutex(QMutex::Recursive);
+}
+
+
+
 double Node::getX() const
 {
     return x;

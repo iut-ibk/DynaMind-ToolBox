@@ -94,6 +94,9 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
+
+    void operator =(const Node &n);
+
 };
 
 typedef std::map<std::string, DM::Node*> NodeMap;
