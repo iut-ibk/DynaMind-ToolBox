@@ -1,6 +1,6 @@
 #include "cgalregulartriangulation.h"
 #include <tbvectordata.h>
-
+#include <dmgeometry.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
@@ -22,6 +22,7 @@ typedef CDT::Vertex_handle Vertex_handle;
 typedef CDT::Point Point;
 typedef CGAL::Polygon_2<K> Polygon_2;
 
+
 void insert_polygon(CDT& cdt,const Polygon_2& polygon){
     if ( polygon.is_empty() ) return;
     CDT::Vertex_handle v_prev=cdt.insert(*boost::prior(polygon.vertices_end()));
@@ -34,7 +35,7 @@ void insert_polygon(CDT& cdt,const Polygon_2& polygon){
     }
 }
 
-void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std::vector<DM::Node> & triangels, double meshsize)
+void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std::vector<DM::Node> & triangels, double meshsize, std::vector<int> & ids)
 {
 
     //Make Place Plane
@@ -104,10 +105,6 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
     }
 
 
-
-
-
-
     std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
 
     std::cout << "Meshing the domain..." << std::endl;
@@ -116,7 +113,7 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
 
     std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
     std::cout << "Number of finite faces: " << cdt.number_of_faces() << std::endl;
-    int mesh_faces_counter = 0;
+    /*int mesh_faces_counter = 0;
     for(CDT::Finite_faces_iterator fit = cdt.finite_faces_begin();
         fit != cdt.finite_faces_end(); ++fit)
     {
@@ -129,7 +126,39 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
         }
 
     }
+    std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;*/
+
+    int mesh_faces_counter = 0;
+    int count=0;
+    DM::System nodesearch;
+    DM::SpatialNodeHashMap spnh(&nodesearch, 0.1);
+    std::map<DM::Node * , int> nodeids;
+    std::map<int, DM::Node * > idsnode;
+    int id = 0;
+    for (CDT::Finite_faces_iterator fit=cdt.finite_faces_begin();
+         fit!=cdt.finite_faces_end();++fit){
+        if (fit->is_in_domain() ) {
+            for (int i = 0; i < 3; i++){
+                bool newlyAdded = false;
+                if (!spnh.findNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), 0.001)) {
+                    newlyAdded = true;
+                }
+                DM::Node * n = spnh.addNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), const_height, 0.001);
+                if (newlyAdded)  {
+                    idsnode[count] = n;
+                    nodeids[n] = count++;
+
+                }
+                ids.push_back(nodeids[n]);
+            }
+        }
+    }
+    for (int i = 0; i < count; i++) {
+        DM::Node * n = idsnode[i];
+        triangels.push_back(TBVectorData::RotateVector(alphas_t, DM::Node(n->getX(), n->getY(), n->getZ())));
+    }
     std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;
+
 }
 
 

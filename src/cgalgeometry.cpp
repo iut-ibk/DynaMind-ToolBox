@@ -35,6 +35,7 @@
 #include "tbvectordata.h"
 #include "cgaltriangulation.h"
 #include "cgalregulartriangulation.h"
+#include <CGAL/min_quadrilateral_2.h>
 
 
 namespace DM {
@@ -142,40 +143,43 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 }
 
 double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vector<DM::Node> & boundingBox, std::vector<double> & size) {
-    typedef double                          FT;
-    typedef CGAL::Cartesian<FT>             K;
-    typedef K::Point_2                      Point_2;
-    typedef CGAL::Aff_transformation_2<K>   Transformation;
+
+
+
+    typedef double                              FT;
+    typedef CGAL::Cartesian<FT>                 K;
+    typedef CGAL::Point_2<K>                    Point_2;
+    typedef CGAL::Polygon_2<K>                  Polygon_2;
+
     const double pi =  3.14159265;
-    double area = -1;
     double angel = 0;
     double l  = 0;
     double w = 0;
-    //Test all from rotations from 0-90 degrees
-    for (double i = 0; i < 90; i++) {
-        Transformation rotate(CGAL::ROTATION, sin(i/180.*pi), cos(i/180.*pi));
-        std::list<Point_2> points_2;
 
-        foreach(Node * n, nodes) {
-            points_2.push_back(rotate(Point_2(n->getX(), n->getY())));
-        }
+    Polygon_2 pls;
+    std::vector<Point_2> lpoints;
+    for (int i = 0; i < nodes.size(); i++) {
+        DM::Node * n = nodes[i];
+        lpoints.push_back(Point_2(n->getX(), n->getY()));
 
-        K::Iso_rectangle_2 c2 = CGAL::bounding_box(points_2.begin(), points_2.end());
-        double a = c2.area();
-        if (area < 0 || a < area ) {
-            area = a;
-            angel = i;
-            double dx_l = c2.vertex(0).x() - c2.vertex(1).x();
-            double dy_l = c2.vertex(0).y() - c2.vertex(1).y();
-
-            double dx_w = c2.vertex(0).x() - c2.vertex(3).x();
-            double dy_w = c2.vertex(0).y() - c2.vertex(3).y();
-            l  = sqrt(dx_l*dx_l+ dy_l*dy_l);
-            w  = sqrt(dx_w*dx_w + dy_w*dy_w);
-
-        }
 
     }
+
+    CGAL::convex_hull_2( lpoints.begin(), lpoints.end(), std::back_inserter(pls) );
+    Polygon_2 p_m;
+    CGAL::min_rectangle_2(
+                pls.vertices_begin(), pls.vertices_end(), std::back_inserter(p_m));
+    for (Polygon_2::Vertex_const_iterator vit = p_m.vertices_begin(); vit!= p_m.vertices_end(); vit++) {
+        boundingBox.push_back(DM::Node(vit->x(), vit->y(), 0));
+    }
+
+    l = TBVectorData::calculateDistance(&boundingBox[0], &boundingBox[1]);
+    w = TBVectorData::calculateDistance(&boundingBox[0], &boundingBox[3]);
+
+
+    angel = TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), boundingBox[1]-boundingBox[0])*180./pi;
+
+    DM::Logger(DM::Debug) << l << " " << w << " " << angel;
     if (l < w) {
         angel += 90;
         double tmp_l = l;
@@ -184,18 +188,6 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
     }
 
-
-    //caluclate final bounding box
-    Transformation rotate(CGAL::ROTATION, sin(angel/180.*pi), cos(angel/180.*pi));
-    std::list<Point_2> points_2;
-    foreach(Node * n, nodes) {
-        points_2.push_back(rotate(Point_2(n->getX(), n->getY())));
-    }
-    K::Iso_rectangle_2 c2 = CGAL::bounding_box(points_2.begin(), points_2.end());
-    for (int i = 0; i < 4; i++) {
-        Point_2 p = c2.vertex(i);
-        boundingBox.push_back(DM::Node(CGAL::to_double(p.x()),CGAL::to_double(p.y()), 0));
-    }
     size.push_back(l);
     size.push_back(w);
     return angel;
@@ -247,14 +239,16 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 std::vector<DM::Node> CGALGeometry::FaceTriangulation(System *sys, Face *f)
 {
     std::vector<DM::Node> triangles;
+
     CGALTriangulation::Triangulation(sys, f, triangles);
     return triangles;
 }
 
-std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *f, double meshsize)
+std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *f, std::vector<int> & ids, double meshsize)
 {
     std::vector<DM::Node> triangles;
-    CGALRegularTriangulation::Triangulation(sys, f, triangles,  meshsize);
+
+    CGALRegularTriangulation::Triangulation(sys, f, triangles,  meshsize, ids);
     return triangles;
 }
 

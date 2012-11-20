@@ -51,7 +51,7 @@ namespace DM {
 
         /** @brief Regular Triangulation
          */
-        static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, double meshsize);
+        static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, std::vector<int> & ids, double meshsize);
 
     };
 }

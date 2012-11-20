@@ -62,8 +62,13 @@
 
 using namespace boost;
 
-typedef CGAL::Quotient<double>                          Number_type;
-typedef CGAL::Cartesian<Number_type>                    Kernel;
+//typedef CGAL::Quotient<double>                          Number_type;
+//typedef CGAL::Exact_predicates_exact_constructions_kernel<Number_type> k
+//Cartesian<Number_type>                    Kernel;
+
+typedef CGAL::Quotient<CGAL::MP_Float>           Number_type;
+typedef CGAL::Cartesian<Number_type>             Kernel;
+
 typedef CGAL::Snap_rounding_traits_2<Kernel>            Traits;
 typedef Kernel::Segment_2                               Segment_2;
 typedef Kernel::Point_2                                 Point_2;
