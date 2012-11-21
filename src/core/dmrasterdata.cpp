@@ -48,6 +48,7 @@ RasterData::RasterData(long width, long height, double cellsizeX, double cellsiz
 
     this->minValue = -9999;
     this->maxValue = -9999;
+    this->NoValue = -9999;
     this->debugValue = 0;
     this->_linkID = 0;
 
@@ -119,26 +120,6 @@ double RasterData::getCell(long x, long y) const
     else
         return  this->NoValue;
 }
-/*
-void RasterData::createNewDataSet() {
-    float **data_old = this->data;
-    this->minValue = 0;
-    this->maxValue = 0;
-
-    data = new float*[width];
-    for (long i = 0; i < width; i++) {
-        data[i] = new float[height];
-    }
-
-    for (unsigned int i = 0; i < getWidth(); i++) {
-        for (unsigned int j = 0; j < getHeight();j++) {
-            data[i][j] =  data_old[i][j];
-        }
-    }
-
-    this->isClone = false;
-	SQLSetValues();
-}*/
 
 bool RasterData::setCell(long x, long y, double value)
 {
@@ -362,12 +343,7 @@ double RasterData::getValue(long x, long y) const
 {
     return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
-/*
-void RasterData::SQLDelete()
-{
-	SQLDeleteField();
-    Component::SQLDelete("rasterdatas");
-}*/
+
 void RasterData::SQLInsertField(long width, long height, double value)
 {
 	if(width == 0 || height == 0)
@@ -379,7 +355,51 @@ void RasterData::SQLInsertField(long width, long height, double value)
 	int linkID = DBConnector::GetNewLinkID();
     this->_linkID = linkID;
 	SQLUpdateLink(linkID);
-	
+
+    QString strQuery;
+    QSqlQuery q;
+    DBConnector *db = DBConnector::getInstance();
+
+    long maxUnions = 500;
+    long counter = maxUnions;
+    for(long x = 0; x < width; x++)
+    {
+        for(long y = 0; y < height; y++)
+        {
+            counter++;
+            if(counter>=maxUnions)
+            {
+                if(x!=0 && y!=0)
+                {
+                    QSqlQuery *q = db->getQuery(strQuery);
+                    db->ExecuteQuery(q);
+                }
+
+                strQuery = "INSERT INTO rasterfields \n SELECT "
+                        +QString::number(linkID)+" AS datalink, "
+                        +QString::number(x)+" AS x, "
+                        +QString::number(y)+" AS y, "
+                        +QString::number(NoValue)+" AS value\n";
+                counter = 0;
+            }
+            else
+            {
+                strQuery += "UNION SELECT "
+                        +QString::number(linkID)+","
+                        +QString::number(x)+","
+                        +QString::number(y)+","
+                        +QString::number(NoValue)+"\n";
+            }
+        }
+    }
+
+    if(counter!=0)
+    {
+        QSqlQuery *q = db->getQuery(strQuery);
+        db->ExecuteQuery(q);
+        db->CommitTransaction();
+    }
+    /*
 	for(long x = 0; x < width; x++)
 	{
 		for(long y = 0; y < height; y++)
@@ -390,49 +410,8 @@ void RasterData::SQLInsertField(long width, long height, double value)
             q->addBindValue(QVariant::fromValue(y));
             q->addBindValue(NoValue);
             DBConnector::getInstance()->ExecuteQuery(q);
-            //if(!q.exec())	PrintSqlError(&q);
 		}
-    }
-
-    /* SQL variant
-    QString sLinkID = QString::number(linkID);
-    QString sNoValue = QString::number(NoValue);
-
-    QString strQuery = "INSERT INTO rasterfields\n\
-        SELECT "+sLinkID+" AS datalink, 0 AS x, 0 AS y, "+sNoValue+" AS value\n";
-
-    for(long x = 0; x < width; x++)
-    {
-        for(long y = 1; y < height; y++)
-        {
-            strQuery += "UNION SELECT "+sLinkID+","+QString::number(x)+","+QString::number(y)+","+sNoValue+"\n";
-        }
     }*/
-
-    /* not possible in sql light
-    QString strQuery = "INSERT INTO rasterfields(datalink,x,y,value) VALUES ";
-    for(long x = 0; x < width; x++)
-    {
-        for(long y = 0; y < height; y++)
-        {
-            strQuery += "(";
-            strQuery += QString::number(linkID);
-            strQuery += ",";
-            strQuery += QString::number(x);
-            strQuery += ",";
-            strQuery += QString::number(y);
-            strQuery += ",";
-            strQuery += QString::number(NoValue);
-            strQuery += "),";
-        }
-    }
-    // eliminate the last ,
-    strQuery.chop(1);
-    */
-    /*
-    QSqlQuery q;
-    q.prepare(strQuery);
-    if(!q.exec())	PrintSqlError(&q);*/
 }
 void RasterData::SQLDeleteField()
 {
@@ -444,7 +423,6 @@ void RasterData::SQLDeleteField()
     //q->addBindValue(GetLinkID());
     q->addBindValue(_linkID);
     DBConnector::getInstance()->ExecuteQuery(q);
-    //if(!q.exec())	PrintSqlError(&q);
 }
 double RasterData::SQLGetValue(long x, long y) const
 {
