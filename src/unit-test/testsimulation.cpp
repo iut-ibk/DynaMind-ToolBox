@@ -359,6 +359,49 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
+TEST_F(TestSimulation, SqlNodeTest)
+{
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test face nodes order (SQL)";
+
+    DM::Node *node = new DM::Node(1,2,3);
+    ASSERT_TRUE(node->getX()==1);
+    ASSERT_TRUE(node->getY()==2);
+    ASSERT_TRUE(node->getZ()==3);
+    delete node;
+}
+
+TEST_F(TestSimulation, SqlEdgeTest)
+{
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test face nodes order (SQL)";
+
+    DM::Node *n0 = new DM::Node(1,2,3);
+    DM::Node *n1 = new DM::Node(1,2,3);
+
+    DM::Edge *edge = new DM::Edge(n0->getUUID(), n1->getUUID());
+
+    ASSERT_TRUE(edge->getStartpointName()==n0->getUUID());
+    ASSERT_TRUE(edge->getEndpointName()==n1->getUUID());
+
+    /*std::string points[2];
+    edge->getPoints(points);
+    ASSERT_TRUE(points[0]==n0->getUUID());
+    ASSERT_TRUE(points[1]==n1->getUUID());*/
+
+    std::vector<std::string> list = n0->getEdges();
+    ASSERT_TRUE(list[0] == edge->getUUID());
+
+    list = n1->getEdges();
+    ASSERT_TRUE(list[0] == edge->getUUID());
+
+    delete n0;
+    delete n1;
+    delete edge;
+}
+
 TEST_F(TestSimulation, SqlFaceOrder)
 {
     ostream *out = &cout;
