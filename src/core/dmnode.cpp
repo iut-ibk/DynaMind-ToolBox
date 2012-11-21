@@ -121,8 +121,21 @@ const double Node::get(unsigned int i) const {
 
 std::vector<std::string> Node::getEdges() const
 {
+    // TODO
+
     std::vector<std::string> edges;
-    QSqlQuery q;
+
+    QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT uuid FROM edges WHERE startnode LIKE ? OR endnode LIKE ?");
+    q->addBindValue(QString::fromStdString(uuid));
+    q->addBindValue(QString::fromStdString(uuid));
+    if(DBConnector::getInstance()->ExecuteSelectQuery(q))
+    {
+        do
+            edges.push_back(q->value(0).toString().toStdString());
+        while(q->next());
+    }
+
+    /*QSqlQuery q;
     q.prepare("SELECT uuid FROM edges WHERE start LIKE ? OR end LIKE ?");
     q.addBindValue(QString::fromStdString(uuid));
     q.addBindValue(QString::fromStdString(uuid));
@@ -132,7 +145,7 @@ std::vector<std::string> Node::getEdges() const
             edges.push_back(q.value(0).toString().toStdString());
     }
     else
-        PrintSqlError(&q);
+        PrintSqlError(&q);*/
     return edges;
 }
 
