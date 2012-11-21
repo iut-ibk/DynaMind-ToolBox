@@ -25,6 +25,7 @@
  */
 
 #include <dmlogger.h>
+
 #include <dmsystem.h>
 #include <dmcomponent.h>
 #include <dmdbconnector.h>
@@ -57,7 +58,6 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
     _singleton = s;
 }
 
-
 SingletonDestroyer DBConnector::_destroyer;
 
 DBConnector* DBConnector::instance = 0;
@@ -70,7 +70,14 @@ QSqlDatabase DBConnector::_db;
 bool DBConnector::CreateTables()
 {
     QSqlQuery query;
-    if( query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
+
+    if(        query.exec("PRAGMA synchronous=OFF")
+               && query.exec("PRAGMA count_changes=OFF")
+              // && query.exec("PRAGMA page_size=5120")
+            && query.exec("PRAGMA journal_mode=OFF")
+            && query.exec("PRAGMA temp_store=OFF")
+           // && query.exec("PRAGMA cache_size=50000")
+    && query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
                                             owner VARCHAR(128), \
                                             predecessors text, \
@@ -112,15 +119,14 @@ bool DBConnector::CreateTables()
                                             type smallint, \
                                             value bytea, \
                                             PRIMARY KEY (uuid))")
-    && query.exec("CREATE UNIQUE INDEX idx_systems ON systems(uuid, stateuuid)")
+    /*&& query.exec("CREATE UNIQUE INDEX idx_systems ON systems(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_components ON components(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_nodes ON nodes(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_edges ON edges(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_faces ON faces(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_rasterdatas ON rasterdatas(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_rasterfields ON rasterfields(datalink, x, y)")
-    && query.exec("CREATE UNIQUE INDEX idx_attributes ON attributes(uuid)")
-    && query.exec("PRAGMA synchronous=OFF")
+    && query.exec("CREATE UNIQUE INDEX idx_attributes ON attributes(uuid)")*/
     )
         return true;
 
@@ -139,14 +145,14 @@ bool DBConnector::DropTables()
     &&	query.exec("DROP TABLE IF EXISTS rasterdatas")
     &&	query.exec("DROP TABLE IF EXISTS rasterfields")
     &&	query.exec("DROP TABLE IF EXISTS attributes")
-    &&	query.exec("DROP INDEX IF EXISTS idx_systems")
+    /*&&	query.exec("DROP INDEX IF EXISTS idx_systems")
     &&	query.exec("DROP INDEX IF EXISTS idx_components")
     &&	query.exec("DROP INDEX IF EXISTS idx_nodes")
     &&	query.exec("DROP INDEX IF EXISTS idx_edges")
     &&	query.exec("DROP INDEX IF EXISTS idx_faces")
     &&	query.exec("DROP INDEX IF EXISTS idx_rasterdatas")
     &&	query.exec("DROP INDEX IF EXISTS idx_rasterfields")
-    &&	query.exec("DROP INDEX IF EXISTS idx_attributes")
+    &&	query.exec("DROP INDEX IF EXISTS idx_attributes")*/
             )
         return true;
 
@@ -157,8 +163,8 @@ bool DBConnector::DropTables()
 DBConnector::DBConnector()
 {
     _db = QSqlDatabase::addDatabase("QSQLITE");
-    _db.setDatabaseName(":memory:");
-    //_db.setDatabaseName("testdb");
+    //_db.setDatabaseName(":memory:");
+    _db.setDatabaseName("testdb");
 /*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -205,16 +211,15 @@ DBConnector::DBConnector()
 
 	Logger(Debug) << "DB created";
 }
-DM::DBConnector::~DBConnector()
+DBConnector::~DBConnector()
 {
     // commit (destructor called sql deletes may exist!)
     CommitTransaction();
-
     //for(QMap<QString,QSqlQuery*>::const_iterator it = mapQuery.begin(); it != mapQuery.end(); ++it)
     //    delete it;
 }
 
-DM::DBConnector* DBConnector::getInstance()
+DBConnector* DBConnector::getInstance()
 {
 	if(!DBConnector::instance)
     {
@@ -266,12 +271,17 @@ void DBConnector::BeginTransaction()
 {
     _bTransaction = true;
     _db.transaction();
+    //QSqlQuery q;
+    //if(!q.exec("BEGIN TRANSACTION"))
+    //    PrintSqlError(&q);
 }
 
 void DBConnector::CommitTransaction()
 {
     _bTransaction = false;
     if(!_db.commit())
+    //QSqlQuery q;
+    //if(!q.exec("END TRANSACTION"))
     {
         Logger(Error) << "rolling back commit";
         if(_db.rollback())
@@ -538,3 +548,8 @@ void DBConnector::Duplicate(QString table, QString uuid, QString stateuuid,
 
 
 }*/
+
+
+
+
+

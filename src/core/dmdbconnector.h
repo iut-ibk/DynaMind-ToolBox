@@ -26,11 +26,13 @@
 
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
+#include <dmcompilersettings.h>
 
-//#include <dmsystem.h>
 #include <QSqlQuery>
 
 namespace DM {
+
+void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
 
 class DMSqlParameter
 {
@@ -44,20 +46,9 @@ public:
     }
 };
 
-class DBConnector;
+class SingletonDestroyer;
 
-class SingletonDestroyer
-{
-    public:
-        SingletonDestroyer(DBConnector* = NULL);
-        ~SingletonDestroyer();
-
-        void SetSingleton(DBConnector* s);
-    private:
-        DBConnector* _singleton;
-};
-
-class DBConnector
+class DM_HELPER_DLL_EXPORT DBConnector
 {
     friend class SingletonDestroyer;
 private:
@@ -148,7 +139,16 @@ public:
     static int GetNewLinkID();
 };
 
-void PrintSqlError(QSqlQuery *q);
+class SingletonDestroyer
+{
+    public:
+        SingletonDestroyer(DBConnector* = NULL);
+        ~SingletonDestroyer();
+
+        void SetSingleton(DBConnector* s);
+    private:
+        DBConnector* _singleton;
+};
 
 }
 
