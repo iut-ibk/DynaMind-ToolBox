@@ -33,12 +33,284 @@
 #include <grouptest.h>
 #include <dmporttuple.h>
 
+#include <dmdbconnector.h>
+
 namespace {
 
-TEST_F(TestSimulation,validationtool) {
+void SeperateInsert(long nx, long ny)
+{
+    QSqlQuery q;
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            if(!q.exec("INSERT INTO rasterfields VALUES (0,"
+                        +QString::number(x)+","
+                        +QString::number(y)+",0)"))
+                    DM::PrintSqlError(&q);
+        }
+    }
+}
+
+void SeperateInsertWrapper(long nx, long ny)
+{
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            QSqlQuery *q = DM::DBConnector::getInstance()->getQuery(
+                        "INSERT INTO rasterfields VALUES (0,"
+                        +QString::number(x)+","
+                        +QString::number(y)+",0)");
+            DM::DBConnector::getInstance()->ExecuteQuery(q);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+
+void SeperateInsertParamWrapper(long nx, long ny)
+{
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            QSqlQuery *q = DM::DBConnector::getInstance()->getQuery("INSERT INTO rasterfields VALUES (0,?,?,0)");
+            q->addBindValue(QVariant::fromValue(x));
+            q->addBindValue(QVariant::fromValue(y));
+            DM::DBConnector::getInstance()->ExecuteQuery(q);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+
+void TransactionInsert(long nx, long ny)
+{
+    QSqlQuery q;
+    if(!q.exec("BEGIN TRANSACTION")) DM::PrintSqlError(&q);
+
+    for(long x = 0; x < nx; x++)
+        for(long y = 0; y < ny; y++)
+            if(!q.exec("INSERT INTO rasterfields VALUES (0,"+QString::number(x)+","+QString::number(y)+",0)"))
+                DM::PrintSqlError(&q);
+    if(!q.exec("END TRANSACTION")) DM::PrintSqlError(&q);
+}
+/*
+void TransactionInsert2(long nx, long ny)
+{
+    DM::DBConnector::getInstance()->BeginTransaction();
+    QSqlQuery *q;
+
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            q = DM::DBConnector::getInstance()->getQuery("INSERT INTO rasterfields VALUES (0,"+QString::number(x)+","+QString::number(y)+",0)");
+            if(!q->exec())
+                DM::PrintSqlError(q);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+void TransactionInsert3(long nx, long ny)
+{
+    DM::DBConnector::getInstance()->BeginTransaction();
+    QSqlQuery *q;
+
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            q = DM::DBConnector::getInstance()->getQuery("INSERT INTO rasterfields VALUES (0,?,?,0)");
+            q->addBindValue(QVariant::fromValue(x));
+            q->addBindValue(QVariant::fromValue(y));
+            if(!q->exec())
+                DM::PrintSqlError(q);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+
+void TransactionInsert4(long nx, long ny)
+{
+    //DM::DBConnector::getInstance()->BeginTransaction();
+    QSqlQuery *q;
+
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            q = DM::DBConnector::getInstance()->getQuery("INSERT INTO rasterfields VALUES (0,?,?,0)");
+            q->addBindValue(QVariant::fromValue(x));
+            q->addBindValue(QVariant::fromValue(y));
+            DM::DBConnector::getInstance()->ExecuteQuery(q);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+*/
+QString CreateQuery(long firstx, long firsty)
+{
+    return "INSERT INTO rasterfields \n SELECT 0 AS datalink, "
+            +QString::number(firstx)+" AS x, "
+            +QString::number(firsty)+" AS y, 0 AS value\n";
+}
+
+void UnionInsert(long nx, long ny, long maxUnions)
+{
+    QString strQuery;
+    QSqlQuery q;
+
+    long counter = maxUnions;
+    for(long x = 0; x < nx; x++)
+    {
+        for(long y = 0; y < ny; y++)
+        {
+            counter++;
+            if(counter>=maxUnions)
+            {
+                if(x!=0 && y!=0)
+                    if(!q.exec(strQuery)) DM::PrintSqlError(&q);
+
+                strQuery = CreateQuery(x,y);
+                counter = 0;
+            }
+            else
+            {
+                strQuery += "UNION SELECT 0,"+QString::number(x)+
+                        ","+QString::number(y)+",0\n";
+            }
+        }
+    }
+    if(!q.exec(strQuery)) DM::PrintSqlError(&q);
+}
+
+double GetElapsedTime(QElapsedTimer *timer)
+{
+    return (double) timer->nsecsElapsed()*1e-6;
+}
+/*
+TEST_F(TestSimulation,BulkInsert)
+{
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Test validation tool";
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Write Test";
+
+    long nx = 1;
+    long ny = 1;
+    int size = sizeof(int)+2*sizeof(long)+sizeof(double);
+
+    QElapsedTimer timer;
+    timer.start();
+    //long t =0;
+
+    DM::DBConnector::getInstance();
+    QSqlQuery q;
+
+    for(int k=0;k<18;k++)
+    {
+        //qint64 absSize = (nx*ny)*size;
+        double absSize = nx*ny*size;
+        qint64 rate[10];
+        int p=0;
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        SeperateInsert(nx,ny);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        SeperateInsertWrapper(nx,ny);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        SeperateInsertParamWrapper(nx,ny);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        TransactionInsert(nx,ny);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        UnionInsert(nx,ny,127);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+        timer.restart();
+        if(!q.exec("BEGIN TRANSACTION")) DM::PrintSqlError(&q);
+        UnionInsert(nx,ny,127);
+        if(!q.exec("END TRANSACTION")) DM::PrintSqlError(&q);
+        rate[p++] = absSize/GetElapsedTime(&timer);
+
+
+        DM::Logger(DM::Standard) << "\t" << (nx*ny) << "\t" << (long)rate[0] << "\t" << (long)rate[1] << "\t" << (long)rate[2] << "\t" << (long)rate[3] << "\t" << (long)rate[4] << "\t" << (long)rate[5];
+
+        //DM::Logger(DM::Standard) << "\t" << (nx*ny) << "\t" << (long)rate0;
+        ny *= 2;
+    }
+
+    if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+}
+
+TEST_F(TestSimulation,UnionInsert)
+{
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Write Test";
+
+    long nx = 1;
+    long ny = 1;
+    int size = sizeof(int)+2*sizeof(long)+sizeof(double);
+
+    QElapsedTimer timer;
+    timer.start();
+
+    DM::DBConnector::getInstance();
+    QSqlQuery q;
+
+    int iterations = 10;
+
+    for(int k=0;k<17;k++)
+    {
+        double absSize = (nx*ny)*size;
+        long blockSize = 1;
+        QString str = "";
+        for(int j=0;j<6;j++)
+        {
+
+            double t = 0;
+
+            for(int i=0;i<iterations;i++)
+            {
+                if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+                timer.restart();
+                UnionInsert(nx,ny,blockSize);
+
+                t += GetElapsedTime(&timer);
+            }
+            long rate = absSize / t * iterations;
+
+            str += "\t" + QString::number(rate);
+            blockSize *= 4;
+            if(blockSize>500)
+                blockSize = 500;
+        }
+
+        DM::Logger(DM::Standard) << "\t" << (nx*ny) << str;
+        ny *= 2;
+    }
+
+    if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+}
+/**/
+
+TEST_F(TestSimulation,validationtool) {
+        ostream *out = &cout;
+        DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+        DM::Logger(DM::Standard) << "Test validation tool";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
@@ -49,16 +321,8 @@ TEST_F(TestSimulation,validationtool) {
     DM::ModuleLink * l2 = sim.addLink(mcreator->getOutPort("sys"), mcheck->getInPort("sys"));
     ASSERT_TRUE(l2 != 0);
     sim.run();
-    //for(int i=0;i<500;i++)
-    //{
-    //    DM::Logger(DM::Standard) << "run #" << i;
-    //    sim.run();
-    //    sim.getModuleWithUUID(uuid)->setExecuted(false);
-    //}
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
-
 TEST_F(TestSimulation,simplesqltest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -275,7 +539,6 @@ TEST_F(TestSimulation, SQLattributes)
     delete a;
 }
 
-
 TEST_F(TestSimulation,sqlprofiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -484,7 +747,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+/**/
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;
