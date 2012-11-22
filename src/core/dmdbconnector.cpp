@@ -80,8 +80,8 @@ bool DBConnector::CreateTables()
     && query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
                                             owner VARCHAR(128), \
-                                            predecessors text, \
-                                            sucessors text, \
+                                            predecessors TEXT, \
+                                            sucessors TEXT, \
                                             PRIMARY KEY (uuid,stateuuid))")
     && query.exec("CREATE TABLE components(uuid VARCHAR(128) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
@@ -101,23 +101,23 @@ bool DBConnector::CreateTables()
     && query.exec("CREATE TABLE faces(uuid VARCHAR(128) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
                                             owner VARCHAR(128), \
-                                            nodes text, \
-                                            holes text, \
+                                            nodes TEXT, \
+                                            holes TEXT, \
                                             PRIMARY KEY (uuid,stateuuid))")
     && query.exec("CREATE TABLE rasterdatas(uuid VARCHAR(128) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
                                             owner VARCHAR(128), \
-                                            datalink int,\
+                                            datalink INT,\
                                             PRIMARY KEY (uuid,stateuuid))")
     && query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
-                                            x bigint, y bigint, value DOUBLE PRECISION, \
-                                            PRIMARY KEY (datalink,x,y))")
+                                            x BIGINT, data BYTEA, \
+                                            PRIMARY KEY (datalink,x))")
     && query.exec("CREATE TABLE attributes(uuid VARCHAR(128) NOT NULL, \
                                             owner VARCHAR(128), \
                                             stateuuid VARCHAR(128), \
                                             name VARCHAR(128), \
-                                            type smallint, \
-                                            value bytea, \
+                                            type SMALLINT, \
+                                            value BYTEA, \
                                             PRIMARY KEY (uuid))")
     /*&& query.exec("CREATE UNIQUE INDEX idx_systems ON systems(uuid, stateuuid)")
     && query.exec("CREATE UNIQUE INDEX idx_components ON components(uuid, stateuuid)")
@@ -545,11 +545,11 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
 void DBConnector::Duplicate(QString table, QString uuid, QString stateuuid,
                                            QString newuuid, QString newStateUuid)
 {
+    QSqlQuery *q = getQuery("INSERT INTO "+table+" SELECT * FROM "+table+" WHERE")
 
+}
 
-}*/
-
-
+*/
 
 
 

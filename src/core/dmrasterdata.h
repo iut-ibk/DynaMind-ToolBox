@@ -91,9 +91,11 @@ private:
 	void SQLInsert();
     //void SQLDelete();
 	void SQLDeleteField();
-	void SQLInsertField(long width, long height, double value);
-	double SQLGetValue(long x, long y) const;
-	void SQLSetValue(long x, long y, double value);
+    void SQLInsertField(long width, long height);
+    double SQLGetValue(long x, long y) const;
+    QByteArray SQLGetRow(long x) const;
+    void SQLSetRow(long x, QByteArray data);
+    void SQLSetValue(long x, long y, double value);
 	void SQLUpdateLink(int id);
 
     //int GetLinkID() const;

@@ -53,7 +53,7 @@ RasterData::RasterData(long width, long height, double cellsizeX, double cellsiz
     this->_linkID = 0;
 
 	SQLInsert();
-	SQLInsertField(width, height, NoValue);
+    SQLInsertField(width, height);
 }
 RasterData::RasterData() : Component(true)
 {
@@ -83,11 +83,14 @@ RasterData::RasterData(const RasterData &other) : Component(other, true)
     this->_linkID = 0;
 
 	SQLInsert();
-	SQLInsertField(width, height, NoValue);
+    SQLInsertField(width, height);
 
+    /*
 	for(long x=0;x<3;x++)
 		for(long y=0;y<3;y++)
-            this->setValue(x,y,other.getValue(x,y));
+            this->setValue(x,y,other.getValue(x,y));*/
+    for(long x=0;x<3;x++)
+        this->SQLSetRow(x, other.SQLGetRow(x));
 }
 
 Components RasterData::getType()
@@ -313,7 +316,7 @@ void RasterData::setSize(long width, long height, double cellsizeX, double cells
         this->minValue = -9999;
         this->maxValue = -9999;
 
-		SQLInsertField(width, height, NoValue);
+        SQLInsertField(width, height);
     }
 }
 
@@ -344,7 +347,7 @@ double RasterData::getValue(long x, long y) const
     return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
 
-void RasterData::SQLInsertField(long width, long height, double value)
+void RasterData::SQLInsertField(long width, long height)
 {
 	if(width == 0 || height == 0)
 		return;
@@ -356,6 +359,28 @@ void RasterData::SQLInsertField(long width, long height, double value)
     this->_linkID = linkID;
 	SQLUpdateLink(linkID);
 
+    double* buffer = new double[height];
+    for(long x = 0; x < width; x++)
+    {
+        /*
+        QByteArray qba;
+        QDataStream stream(&qba, QIODevice::WriteOnly);
+
+        for(long y = 0; y < height; y++)
+            stream << NoValue;
+*/
+        for(long y = 0; y < height; y++)
+            buffer[y] = NoValue;
+        QByteArray qba((char*)buffer, sizeof(double)*height);
+
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(datalink,x,data) VALUES (?,?,?)");
+        q->addBindValue(QVariant::fromValue(linkID));
+        q->addBindValue(QVariant::fromValue(x));
+        q->addBindValue(qba.toBase64());
+        DBConnector::getInstance()->ExecuteQuery(q);
+    }
+    delete buffer;
+/*
     QString strQuery;
     QSqlQuery q;
     DBConnector *db = DBConnector::getInstance();
@@ -398,7 +423,7 @@ void RasterData::SQLInsertField(long width, long height, double value)
         QSqlQuery *q = db->getQuery(strQuery);
         db->ExecuteQuery(q);
         db->CommitTransaction();
-    }
+    }*/
     /*
 	for(long x = 0; x < width; x++)
 	{
@@ -415,38 +440,42 @@ void RasterData::SQLInsertField(long width, long height, double value)
 }
 void RasterData::SQLDeleteField()
 {
-    //if(GetLinkID()==0)
     if(_linkID==0)
         return;
 
     QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE datalink=?");
-    //q->addBindValue(GetLinkID());
     q->addBindValue(_linkID);
     DBConnector::getInstance()->ExecuteQuery(q);
 }
-double RasterData::SQLGetValue(long x, long y) const
+QByteArray RasterData::SQLGetRow(long x) const
 {
-    QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT value FROM rasterfields WHERE datalink=? AND x=? AND y=?");
-    //q->addBindValue(GetLinkID());
+    QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT data FROM rasterfields WHERE datalink=? AND x=?");
     q->addBindValue(_linkID);
     q->addBindValue(QVariant::fromValue(x));
-    q->addBindValue(QVariant::fromValue(y));
     if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
-        return NoValue;
-// TODO
+        return QByteArray();
 
-        return q->value(0).toDouble();
-	
-	return NoValue;
+    return QByteArray::fromBase64(q->value(0).toByteArray());
+}
+
+double RasterData::SQLGetValue(long x, long y) const
+{
+    QByteArray qba = SQLGetRow(x);
+    double* darray = (double*)qba.data();
+    return darray[y];
 }
 void RasterData::SQLSetValue(long x, long y, double value)
 {
-    QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET value = ? WHERE datalink=? AND x=? AND y=?");
-    q->addBindValue(value);
-    //q->addBindValue(GetLinkID());
+    QByteArray qba = SQLGetRow(x);
+    ((double*)qba.data())[y] = value;
+    SQLSetRow(x,qba);
+}
+void RasterData::SQLSetRow(long x, QByteArray data)
+{
+    QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data = ? WHERE datalink=? AND x=?");
+    q->addBindValue(data.toBase64());
     q->addBindValue(_linkID);
     q->addBindValue(QVariant::fromValue(x));
-    q->addBindValue(QVariant::fromValue(y));
     DBConnector::getInstance()->ExecuteQuery(q);
 }
 void RasterData::SQLUpdateLink(int id)
