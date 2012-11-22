@@ -94,6 +94,24 @@ void TransactionInsert(long nx, long ny)
                 DM::PrintSqlError(&q);
     if(!q.exec("END TRANSACTION")) DM::PrintSqlError(&q);
 }
+
+void BLOBInsert(long nx, long ny)
+{
+    for(long x = 0; x < nx; x++)
+    {
+        QByteArray qba;
+        QDataStream qds(&qba, QIODevice::WriteOnly);
+        for(long y = 0; y < ny; y++)
+            qds << (double)0.0;
+
+        QSqlQuery *q = DM::DBConnector::getInstance()->getQuery("INSERT INTO rasterfields VALUES (0,?,?)");
+        q->addBindValue(QVariant::fromValue(x));
+        q->addBindValue(qba);
+        DM::DBConnector::getInstance()->ExecuteQuery(q);
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+}
+
 /*
 void TransactionInsert2(long nx, long ny)
 {
@@ -206,55 +224,98 @@ TEST_F(TestSimulation,BulkInsert)
     DM::DBConnector::getInstance();
     QSqlQuery q;
 
+    int iterations = 7;
+
     for(int k=0;k<18;k++)
     {
-        //qint64 absSize = (nx*ny)*size;
-        double absSize = nx*ny*size;
-        qint64 rate[10];
+        qint64 rate[20];
+        memset(rate,0,sizeof(qint64)*20);
         int p=0;
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+        for(int i=0;i<iterations;i++)
+        {
+            p=0;
+            double absSize = nx*ny*size;
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        SeperateInsert(nx,ny);
-        rate[p++] = absSize/GetElapsedTime(&timer);
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+            timer.restart();
+            SeperateInsert(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        SeperateInsertWrapper(nx,ny);
-        rate[p++] = absSize/GetElapsedTime(&timer);
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+            timer.restart();
+            SeperateInsertWrapper(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        SeperateInsertParamWrapper(nx,ny);
-        rate[p++] = absSize/GetElapsedTime(&timer);
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+            timer.restart();
+            SeperateInsertParamWrapper(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        TransactionInsert(nx,ny);
-        rate[p++] = absSize/GetElapsedTime(&timer);
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+            timer.restart();
+            TransactionInsert(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        UnionInsert(nx,ny,127);
-        rate[p++] = absSize/GetElapsedTime(&timer);
-        if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+            timer.restart();
+            UnionInsert(nx,ny,127);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        timer.restart();
-        if(!q.exec("BEGIN TRANSACTION")) DM::PrintSqlError(&q);
-        UnionInsert(nx,ny,127);
-        if(!q.exec("END TRANSACTION")) DM::PrintSqlError(&q);
-        rate[p++] = absSize/GetElapsedTime(&timer);
+            timer.restart();
+            if(!q.exec("BEGIN TRANSACTION")) DM::PrintSqlError(&q);
+            UnionInsert(nx,ny,127);
+            if(!q.exec("END TRANSACTION")) DM::PrintSqlError(&q);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
+            if(!q.exec("DROP TABLE IF EXISTS rasterfields"))
+                DM::PrintSqlError(&q);
+            if(!q.exec("CREATE TABLE rasterfields(datalink int NOT NULL, x bigint, data BLOB, PRIMARY KEY (datalink,x))"))
+                DM::PrintSqlError(&q);
 
-        DM::Logger(DM::Standard) << "\t" << (nx*ny) << "\t" << (long)rate[0] << "\t" << (long)rate[1] << "\t" << (long)rate[2] << "\t" << (long)rate[3] << "\t" << (long)rate[4] << "\t" << (long)rate[5];
+            timer.restart();
+            BLOBInsert(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
-        //DM::Logger(DM::Standard) << "\t" << (nx*ny) << "\t" << (long)rate0;
+            if(!q.exec("DROP TABLE IF EXISTS rasterfields"))
+                DM::PrintSqlError(&q);
+            if(!q.exec("CREATE TABLE rasterfields(datalink int NOT NULL, x bigint, data BLOB)"))
+                DM::PrintSqlError(&q);
+
+            timer.restart();
+            BLOBInsert(nx,ny);
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+            if(!q.exec("DROP TABLE IF EXISTS rasterfields"))
+                DM::PrintSqlError(&q);
+
+            if(!q.exec("CREATE TABLE rasterfields(datalink int NOT NULL, x bigint, y bigint, \
+                        value DOUBLE PRECISION, PRIMARY KEY (datalink,x,y))"))
+                DM::PrintSqlError(&q);
+
+            timer.restart();
+            double *data = new double[nx*ny];
+            for(long x = 0; x < nx; x++)
+                for(long y = 0; y < ny; y++)
+                    data[x+nx*y] = 0.0;
+
+            rate[p++] += absSize/GetElapsedTime(&timer);
+            delete data;
+        }
+
+        QString str = "\t" + QString::number(nx*ny);
+        for(int i=0;i<p;i++)
+            str += "\t" + QString::number((long)(rate[i]/(double)iterations));
+        DM::Logger(DM::Standard) << str;
         ny *= 2;
     }
 
     if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 }
-
+/*
 TEST_F(TestSimulation,UnionInsert)
 {
     ostream *out = &cout;
@@ -280,7 +341,6 @@ TEST_F(TestSimulation,UnionInsert)
         QString str = "";
         for(int j=0;j<6;j++)
         {
-
             double t = 0;
 
             for(int i=0;i<iterations;i++)
@@ -385,11 +445,6 @@ TEST_F(TestSimulation, SqlEdgeTest)
 
     ASSERT_TRUE(edge->getStartpointName()==n0->getUUID());
     ASSERT_TRUE(edge->getEndpointName()==n1->getUUID());
-
-    /*std::string points[2];
-    edge->getPoints(points);
-    ASSERT_TRUE(points[0]==n0->getUUID());
-    ASSERT_TRUE(points[1]==n1->getUUID());*/
 
     std::vector<std::string> list = n0->getEdges();
     ASSERT_TRUE(list[0] == edge->getUUID());
@@ -652,10 +707,20 @@ TEST_F(TestSimulation,sqlprofiling) {
         DM::Node node(*baseNode);
         sys->addNode(node);
     }
+    DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
     delete baseNode;
     delete sys;
+    DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
 
-    DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
+    // rasterdatas
+    timer.restart();
+    DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
+    DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+    timer.restart();
+    delete raster;
+    DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+
 }
 
 TEST_F(TestSimulation,testMemory){
