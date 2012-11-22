@@ -235,7 +235,10 @@ TEST_F(TestSimulation,BulkInsert)
         {
             p=0;
             double absSize = nx*ny*size;
-            if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
+
+            if(!q.exec("CREATE TABLE rasterfields(datalink int NOT NULL, x bigint, y bigint, \
+                        value DOUBLE PRECISION, PRIMARY KEY (datalink,x,y))"))
+                DM::PrintSqlError(&q);
 
             timer.restart();
             SeperateInsert(nx,ny);
@@ -290,10 +293,6 @@ TEST_F(TestSimulation,BulkInsert)
             if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 
             if(!q.exec("DROP TABLE IF EXISTS rasterfields"))
-                DM::PrintSqlError(&q);
-
-            if(!q.exec("CREATE TABLE rasterfields(datalink int NOT NULL, x bigint, y bigint, \
-                        value DOUBLE PRECISION, PRIMARY KEY (datalink,x,y))"))
                 DM::PrintSqlError(&q);
 
             timer.restart();
@@ -649,10 +648,12 @@ TEST_F(TestSimulation,sqlprofiling) {
     // attribute profiling
     timer.restart();
     DM::Attribute* abuffer = new DM::Attribute[n];
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "create " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     delete[] abuffer;
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
@@ -662,31 +663,37 @@ TEST_F(TestSimulation,sqlprofiling) {
         aptBuffer[i] = new DM::Attribute(*a0);
 
     delete a0;
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "copy " << n << " attributes " << (long)timer.elapsed();
     for(int i=0;i<n;i++)
         delete aptBuffer[i];
 
     // component stuff
     DM::Component* buffer = new DM::Component[n];
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "create " << n << " components " << (long)timer.elapsed();
 
     timer.restart();
     for(int i=0;i<n;i++)
         buffer[i].addAttribute("thedouble", 24.0);
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "add " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     for(int i=0;i<n;i++)
         buffer[i].changeAttribute("thedouble", 48.0);
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "change " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     for(int i=0;i<n;i++)
         buffer[i].addAttribute(DM::Attribute("thestring", "blubberdiblub"));
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "copyadd " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     delete[] buffer;
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << " components " << (long)timer.elapsed();
 
     // nodes
@@ -697,6 +704,7 @@ TEST_F(TestSimulation,sqlprofiling) {
         node->setX(1.0);
         delete node;
     }
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "create and change " << n << " single nodes " << (long)timer.elapsed();
 
     timer.restart();
@@ -707,18 +715,22 @@ TEST_F(TestSimulation,sqlprofiling) {
         DM::Node node(*baseNode);
         sys->addNode(node);
     }
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
     delete baseNode;
     delete sys;
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
 
     // rasterdatas
     timer.restart();
     DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
     delete raster;
+    DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
 }
