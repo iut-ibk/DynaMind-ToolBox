@@ -36,6 +36,22 @@
 #include "cgaltriangulation.h"
 #include "cgalregulartriangulation.h"
 #include <CGAL/min_quadrilateral_2.h>
+#include <CGAL/intersections.h>
+#include <CGAL/Polygon_set_2.h>
+#include <print_utils.h>
+
+
+
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Point_2.h>
+#include <CGAL/Aff_transformation_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
+
+
+
+
+
 
 
 namespace DM {
@@ -158,7 +174,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
     Polygon_2 pls;
     std::vector<Point_2> lpoints;
-    for (int i = 0; i < nodes.size(); i++) {
+    for (unsigned int i = 0; i < nodes.size(); i++) {
         DM::Node * n = nodes[i];
         lpoints.push_back(Point_2(n->getX(), n->getY()));
 
@@ -179,7 +195,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
     angel = TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), boundingBox[1]-boundingBox[0])*180./pi;
 
-    DM::Logger(DM::Debug) << l << " " << w << " " << angel;
+    //DM::Logger(DM::Debug) << l << " " << w << " " << angel;
     if (l < w) {
         angel += 90;
         double tmp_l = l;
@@ -250,6 +266,92 @@ std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *
 
     CGALRegularTriangulation::Triangulation(sys, f, triangles,  meshsize, ids);
     return triangles;
+}
+
+std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
+{
+
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    typedef K::Point_2                                          Point;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
+    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
+    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
+    std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
+
+    int size_n1 = nodes1.size();
+
+    Polygon_2 poly1;
+
+    for (int i = 0; i < size_n1-1; i++) {
+        DM::Node * n = nodes1[i];
+        poly1.push_back(Point(n->getX(), n->getY()));
+    }
+
+    std::vector<DM::Node*> nodes2 = TBVectorData::getNodeListFromFace(sys, f2);
+
+    int size_n2 = nodes2.size();
+
+    Polygon_2 poly2;
+
+    for (int i = 0; i < size_n2-1; i++) {
+        DM::Node * n = nodes2[i];
+        poly2.push_back(Point(n->getX(), n->getY()));
+    }
+
+    if ((CGAL::do_intersect (poly1, poly2)))
+        DM::Logger(DM::Debug) << "The two polygons intersect in their interior.";
+    else
+        DM::Logger(DM::Debug) << "The two polygons do not intersect.";
+
+    Pwh_list_2                  intR;
+    Pwh_list_2::const_iterator  it;
+
+    CGAL::intersection (poly1, poly2, std::back_inserter(intR));
+
+    std::vector<DM::Node> resultVector;
+    typename Polygon_2::Vertex_iterator vit;
+    typename Polygon_with_holes_2::Hole_iterator hit;
+    print_polygon(poly1);
+    print_polygon(poly2);
+    for (it = intR.begin(); it != intR.end(); ++it) {
+
+        print_polygon_with_holes (*it);
+        Polygon_with_holes_2 P = (*it);
+
+        Polygon_2 P_out = P.outer_boundary();
+        for (vit = P_out.vertices_begin(); vit !=P_out.vertices_end(); ++vit) {
+            resultVector.push_back(DM::Node(vit->x(), vit->y(), 0));
+        }
+    }
+    return resultVector;
+}
+
+std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, double alpha)
+{
+    std::vector<DM::Node> ressVec;
+    const double pi =  3.14159265;
+    typedef CGAL::Cartesian<double>         K;
+    typedef CGAL::Aff_transformation_2<K>   Transformation;
+    typedef K::Point_2                  Point;
+
+
+    Transformation rotate(CGAL::ROTATION,  sin(alpha/180*pi), cos(alpha/180*pi));
+
+    foreach (DM::Node n, nodes) {
+
+        Point q(n.getX(), n.getY());
+        q = rotate(q);
+
+        ressVec.push_back(DM::Node(q.x(), q.y(), n.getZ()));
+
+
+    }
+    return ressVec;
+
+
+
 }
 
 }

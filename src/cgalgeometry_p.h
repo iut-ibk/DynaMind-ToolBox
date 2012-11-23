@@ -99,6 +99,8 @@ public:
 
 
 
+
+
     
     /*static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);
      static VectorData createRaster(std::vector<Point> & points, double width, double height);*/

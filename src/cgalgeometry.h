@@ -53,6 +53,13 @@ namespace DM {
          */
         static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, std::vector<int> & ids, double meshsize);
 
+        /** @brief Intersect Faces */
+        static std::vector<DM::Node> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
+
+
+        /** @brief Rotate Nodes */
+        static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
+
     };
 }
 #endif // GEOMETRY_H
