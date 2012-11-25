@@ -347,7 +347,7 @@ int CGALGeometry_P::CountNeighboringVertices (Arrangement_2::Vertex_const_handle
      typedef std::list<Polygon_with_holes_2>       Pwh_list_2;
      typedef CGAL::Polygon_set_2<K>                Polygon_set_2;
      
-     double pi =  3.14159265;
+     double pi =  3.14159265358979323846;
      double area = -1;
      double angel = 0;
      double x;

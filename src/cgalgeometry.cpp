@@ -167,7 +167,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
     typedef CGAL::Point_2<K>                    Point_2;
     typedef CGAL::Polygon_2<K>                  Polygon_2;
 
-    const double pi =  3.14159265;
+    const double pi =  3.14159265358979323846;
     double angel = 0;
     double l  = 0;
     double w = 0;
@@ -268,6 +268,39 @@ std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *
     return triangles;
 }
 
+bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM::Node*> nodes2) {
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    typedef K::Point_2                                          Point;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
+    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
+    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
+
+
+    int size_n1 = nodes1.size();
+
+    Polygon_2 poly1;
+
+    for (int i = 0; i < size_n1-1; i++) {
+        DM::Node * n = nodes1[i];
+        poly1.push_back(Point(n->getX(), n->getY()));
+    }
+
+
+
+    int size_n2 = nodes2.size();
+
+    Polygon_2 poly2;
+
+    for (int i = 0; i < size_n2-1; i++) {
+        DM::Node * n = nodes2[i];
+        poly2.push_back(Point(n->getX(), n->getY()));
+    }
+
+    return CGAL::do_intersect (poly1, poly2);
+}
+
 std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
 
@@ -331,7 +364,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, double alpha)
 {
     std::vector<DM::Node> ressVec;
-    const double pi =  3.14159265;
+    const double pi =  3.14159265358979323846;
     typedef CGAL::Cartesian<double>         K;
     typedef CGAL::Aff_transformation_2<K>   Transformation;
     typedef K::Point_2                  Point;

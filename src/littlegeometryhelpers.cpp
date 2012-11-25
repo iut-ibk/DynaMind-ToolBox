@@ -156,8 +156,8 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
     wallColor.push_back(196./255.);
     wallColor.push_back(196./255.);
     std::vector<double> windowColor;
-    windowColor.push_back(0.53);
-    windowColor.push_back(0.81);
+    windowColor.push_back(204./255.);
+    windowColor.push_back(229./255.);
     windowColor.push_back(1);
 
     //Set footprint as floor
@@ -214,13 +214,16 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
     roofColor.push_back(178./255.);
     roofColor.push_back(34./255.);
     roofColor.push_back(34./255.);
-
     std::vector<double> wallColor;
-    wallColor.push_back(0.96);
-    wallColor.push_back(0.96);
-    wallColor.push_back(0.86);
+    wallColor.push_back(196./255.);
+    wallColor.push_back(196./255.);
+    wallColor.push_back(196./255.);
+    std::vector<double> windowColor;
+    windowColor.push_back(204./255.);
+    windowColor.push_back(229./255.);
+    windowColor.push_back(1);
 
-    const double pi =  3.14159265;
+    const double pi =  3.14159265358979323846;
     //Create roof for minimal bounding box
     std::vector<DM::Node> b_box;
     std::vector<double> dimension;
