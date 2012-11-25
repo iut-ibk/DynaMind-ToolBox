@@ -137,6 +137,7 @@ public:
 
     /** @brief Creates a circle */
     static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);
+
 };
 
 #endif // TBVECTORDATA_H

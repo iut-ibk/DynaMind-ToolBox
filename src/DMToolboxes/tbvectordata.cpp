@@ -499,7 +499,7 @@ double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 
 vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segments)
 {
-    const double pi =  3.14159265;
+    const double pi =  3.14159265358979323846;
     std::vector<DM::Node> ressNodes;
     double delta_phi = pi*2/segments;
 
@@ -511,3 +511,4 @@ vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segm
     }
     return ressNodes;
 }
+
