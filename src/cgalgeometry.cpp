@@ -310,6 +310,8 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
     typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
     typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+    typename Polygon_2::Vertex_iterator vit;
+    typename Polygon_with_holes_2::Hole_iterator hit;
 
     std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
 
@@ -344,8 +346,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     CGAL::intersection (poly1, poly2, std::back_inserter(intR));
 
     std::vector<DM::Node> resultVector;
-    typename Polygon_2::Vertex_iterator vit;
-    typename Polygon_with_holes_2::Hole_iterator hit;
+
     print_polygon(poly1);
     print_polygon(poly2);
     for (it = intR.begin(); it != intR.end(); ++it) {
@@ -363,12 +364,13 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
 std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, double alpha)
 {
-    std::vector<DM::Node> ressVec;
-    const double pi =  3.14159265358979323846;
+
     typedef CGAL::Cartesian<double>         K;
     typedef CGAL::Aff_transformation_2<K>   Transformation;
     typedef K::Point_2                  Point;
 
+    std::vector<DM::Node> ressVec;
+    const double pi =  3.14159265358979323846;
 
     Transformation rotate(CGAL::ROTATION,  sin(alpha/180*pi), cos(alpha/180*pi));
 
