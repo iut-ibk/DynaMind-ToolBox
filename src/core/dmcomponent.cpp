@@ -113,6 +113,7 @@ Component::~Component()
         delete (*ownedattributes.begin()).second;
         ownedattributes.erase(ownedattributes.begin());
     }
+
     delete mutex;
 }
 

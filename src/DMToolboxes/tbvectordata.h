@@ -138,6 +138,9 @@ public:
     /** @brief Creates a circle */
     static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);
 
+     /** @brief Creates regular grid of points */
+    static std::vector<DM::Node> CreateRaster(DM::System *sys, DM::Face *f, double gridSize);
+
 };
 
 #endif // TBVECTORDATA_H

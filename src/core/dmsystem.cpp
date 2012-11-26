@@ -173,6 +173,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view) {
 }
 
 Node * System::addNode(Node n,  const DM::View & view) {
+    QMutexLocker(this->mutex);
     return this->addNode(n.getX(), n.getY(), n.getZ(), view);
 
 }

@@ -96,7 +96,6 @@ public:
     Component* clone();
 
     void operator =(const Node &n);
-
 };
 
 typedef std::map<std::string, DM::Node*> NodeMap;

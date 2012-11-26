@@ -30,7 +30,6 @@
 #include <math.h>
 using namespace DM;
 
-
 Node::Node( double x, double y, double z) : Component()
 {
     this->x=x;

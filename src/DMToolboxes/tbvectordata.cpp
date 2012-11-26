@@ -512,3 +512,120 @@ vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segm
     return ressNodes;
 }
 
+std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, double gridSize)
+{
+    //Make Place Plane
+    std::vector<DM::Node*> nodeList = TBVectorData::getNodeListFromFace(sys, f);
+
+    std::vector<DM::Node> returnNodes_t;
+
+    double E[3][3];
+    TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
+
+    double E_to[3][3];
+
+    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
+
+    double alphas[3][3];
+    TBVectorData::RotationMatrix(E, E_to, alphas);
+
+    double alphas_t[3][3];
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            alphas_t[j][i] =  alphas[i][j];
+        }
+    }
+
+    DM::System transformedSys;
+
+    std::vector<DM::Node*> ns_t;
+    double const_height;
+    for (unsigned int i = 0; i < nodeList.size(); i++) {
+        DM::Node n = *(nodeList[i]);
+        DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
+        ns_t.push_back(transformedSys.addNode(n_t));
+        const_height = n_t.getZ();
+    }
+
+    double minX = 0;
+    double maxX = 0;
+    double minY = 0;
+    double maxY = 0;
+    for (unsigned int i = 0; i < ns_t.size(); i++){
+        DM::Node * n1 = ns_t[i];
+        if (i == 0) {
+            minX = n1->getX();
+            maxX = n1->getX();
+            minY = n1->getY();
+            maxY = n1->getY();
+        }
+
+        if(minX > n1->getX())
+            minX = n1->getX();
+        if(maxX < n1->getX())
+            maxX = n1->getX();
+
+        if(minY > n1->getY())
+            minY = n1->getY();
+        if(maxY < n1->getY())
+            maxY = n1->getY();
+    }
+    double blockWidth = maxX - minX;
+    double blockHeight = maxY - minY;
+
+
+    //Create Raster
+
+    unsigned int elements_x = blockWidth/gridSize + 1;
+    unsigned int elements_y = blockHeight/gridSize + 1;
+    double realwidth = blockWidth / elements_x;
+    double realheight = blockHeight / elements_y;
+
+    QPolygonF h1;
+    for (unsigned int i = 0; i < ns_t.size()-1; i++){
+        DM::Node * n1 = ns_t[i];
+        h1.push_back(QPointF(n1->getX(), n1->getY()));
+    }
+
+    std::vector<QPolygonF> holes;
+    foreach (std::vector<std::string> hole, f->getHoles()) {
+        QPolygonF h;
+        for (unsigned int i = 0; i < hole.size(); i++) {
+            DM::Node n = *(sys->getNode(hole[i]));
+            DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
+            h.push_back(QPointF(n_t.getX(), n_t.getY()));
+        }
+        holes.push_back(h);
+    }
+
+    for (unsigned int x = 0; x < elements_x; x++) {
+        for (unsigned int y = 0; y < elements_y; y++) {
+            double x_p = minX + ((double)x+0.5) * realwidth;
+            double y_p = minY + ((double)y+0.5) * realheight;
+            //Cehck if Point is valid
+            QPointF p(x_p, y_p);
+
+            if (!h1.containsPoint(p, Qt::WindingFill))
+                continue;
+            bool isInHole = false;
+            foreach (QPolygonF h1, holes) {
+                if (h1.containsPoint(p, Qt::WindingFill)) {
+                    isInHole = true;
+                    break;
+                }
+            }
+            if (isInHole)
+                continue;
+            returnNodes_t.push_back(DM::Node(x_p,y_p, const_height));
+        }
+    }
+
+    std::vector<DM::Node> returnNodes;
+    for (unsigned int  i = 0; i <returnNodes_t.size(); i++ ) {
+        returnNodes.push_back(TBVectorData::RotateVector(alphas_t,returnNodes_t[i]));
+    }
+
+    return returnNodes;
+
+}
+
