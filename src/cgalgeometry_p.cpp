@@ -109,6 +109,7 @@ float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
     return numf/denf;
 
 }
+
 struct FaceInfo2
 {
   FaceInfo2(){}

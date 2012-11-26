@@ -269,7 +269,7 @@ std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *
 }
 
 bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM::Node*> nodes2) {
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
     typedef K::Point_2                                          Point;
     typedef CGAL::Polygon_2<K>                                  Polygon_2;
     typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
@@ -293,10 +293,22 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
 
     Polygon_2 poly2;
 
+
     for (int i = 0; i < size_n2-1; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
     }
+
+    CGAL::Orientation orient = poly1.orientation();
+    if (orient == CGAL::CLOCKWISE) {
+        poly1.reverse_orientation();
+    }
+
+    orient = poly2.orientation();
+    if (orient == CGAL::CLOCKWISE) {
+        poly2.reverse_orientation();
+    }
+
 
     return CGAL::do_intersect (poly1, poly2);
 }
@@ -310,8 +322,9 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
     typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
     typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
-    typename Polygon_2::Vertex_iterator vit;
-    typename Polygon_with_holes_2::Hole_iterator hit;
+
+    Polygon_2::Vertex_iterator vit;
+    Polygon_with_holes_2::Hole_iterator hit;
 
     std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
 

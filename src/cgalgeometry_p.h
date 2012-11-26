@@ -78,6 +78,7 @@ typedef std::list<Polyline_2>                           Polyline_list_2;
 typedef CGAL::Arr_segment_traits_2<Kernel>              Traits_2;
 typedef CGAL::Arrangement_2<Traits_2>                   Arrangement_2;
 
+
 namespace DM {
 class DM_HELPER_DLL_EXPORT CGALGeometry_P
 {
@@ -96,6 +97,7 @@ public:
     static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
 
     static float NumberTypetoFloat(Number_type n);
+
 
 
 
