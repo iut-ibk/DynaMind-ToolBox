@@ -102,14 +102,13 @@ System::System(const System& s) : Component(s, true)
         childReplaceMap[it->second->getQUUID()] = addEdge(e)->getQUUID();
     }
 
-    // update views
-    //foreach(View* v, viewdefinitions)
-    //views = s.views;
-    viewdefinitions = s.viewdefinitions;
-    for (std::map<std::string,View*>::iterator it=viewdefinitions.begin() ; it != viewdefinitions.end(); ++it )
+    // update view definitions
+    std::map<std::string, View*> viewdefinitionMap = s.viewdefinitions;
+    for (std::map<std::string,View*>::iterator it=viewdefinitionMap.begin() ; it != viewdefinitionMap.end(); ++it )
     {
         View* v = new View(*it->second);
         viewdefinitions[v->getName()] = v;
+        ownedView.push_back(v);
 
         if(v->getDummyComponent()!=NULL)
         {
@@ -117,8 +116,12 @@ System::System(const System& s) : Component(s, true)
             QUuid newDummyId = childReplaceMap[oldDummyId];
             Component* dummy = ownedchilds[newDummyId.toString().toStdString()];
             v->setDummyComponent(dummy);
-
         }
+    }
+    // update views
+    for (std::map<std::string, Component*>::iterator it=ownedchilds.begin() ; it != ownedchilds.end(); ++it )
+    {
+        this->updateViews(it->second);
     }
 }
 System::~System()

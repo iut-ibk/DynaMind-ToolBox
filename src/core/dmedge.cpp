@@ -115,11 +115,25 @@ void Edge::setStartpoint(Node *start)
                                        "startnode", start->getQUUID().toRfc4122());
 }
 
+void Edge::setStartpointName(std::string name)
+{
+    DBConnector::getInstance()->Update("edges", uuid.toRfc4122(),
+                                                QString::fromStdString(stateUuid),
+                                       "startnode", QUuid(QString::fromStdString(name)).toRfc4122());
+}
+
 void Edge::setEndpoint(Node *end)
 {
     DBConnector::getInstance()->Update("edges", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "endnode",  end->getQUUID().toRfc4122());
+}
+
+void Edge::setEndpointName(std::string name)
+{
+    DBConnector::getInstance()->Update("edges", uuid.toRfc4122(),
+                                                QString::fromStdString(stateUuid),
+                                       "endnode", QUuid(QString::fromStdString(name)).toRfc4122());
 }
 
 Component* Edge::clone()

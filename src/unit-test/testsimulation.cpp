@@ -838,7 +838,7 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Linked Modules";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");

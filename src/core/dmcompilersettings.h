@@ -81,11 +81,19 @@
 
 // disable some nasty MSVC Warnings
 #ifdef _MSC_VER   // Windows && MS Visual C
-#        pragma warning( disable : 4996 )     // disable deprecation warnings
+//#        pragma warning( disable : 4996 )     // disable deprecation warnings
 //#        pragma warning( disable : 4091 )    // disable typedef warning without variable declaration
 #        pragma warning( disable : 4275 )    // non &#8211; DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier'
 #        pragma warning( disable : 4251 )    // like warning above but for templates (like std::string)
 #endif
 
+#ifdef __GNUC__
+#define DEPRECATED(func) func __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED(func) __declspec(deprecated) func
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED(func) func
+#endif
 
 #endif //COMPILERSETTINGS_H
