@@ -45,8 +45,9 @@ using namespace DM;
 Component::Component()
 {
     DBConnector::getInstance();
-    this->uuid = QUuid::createUuid().toString().toStdString();
-    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    uuid = QUuid::createUuid();
+    //this->uuid = QUuid::createUuid().toString().toStdString();
+    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     ownedattributes = std::map<std::string,Attribute*>();
 
     //mMutex = new QMutex(QMutex::Recursive);
@@ -58,15 +59,16 @@ Component::Component()
     SQLInsertComponent();
 }
 
-
+/*
 void Component::createNewUUID() {
     this->uuid = QUuid::createUuid().toString().toStdString();
-}
+}*/
 Component::Component(bool b)
 {
     DBConnector::getInstance();
-    this->uuid = QUuid::createUuid().toString().toStdString();
-    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    uuid = QUuid::createUuid();
+    //this->uuid = QUuid::createUuid().toString().toStdString();
+    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     ownedattributes = std::map<std::string,Attribute*>();
 
     inViews = std::set<std::string>();
@@ -75,8 +77,10 @@ Component::Component(bool b)
 
 Component::Component(const Component& c)
 {
-    uuid=c.uuid;
-    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    uuid = QUuid::createUuid();
+    //uuid=c.uuid;
+    //uuid = QUuid::createUuid().toString().toStdString();
+    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
 
     //mMutex = new QMutex(QMutex::Recursive);
@@ -89,8 +93,10 @@ Component::Component(const Component& c)
 }
 Component::Component(const Component& c, bool b)
 {
-    uuid=c.uuid;
-    this->stateUuid = QUuid::createUuid().toString().toStdString();
+    uuid = QUuid::createUuid();
+    //uuid=c.uuid;
+    //uuid = QUuid::createUuid().toString().toStdString();
+    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
@@ -119,17 +125,21 @@ bool Component::isInView(View view) const
     }
     return false;
 }
-
+/*
 void Component::setUUID(std::string uuid)
 {
     DBConnector::getInstance()->Update(getTableName(),
-                                       QString::fromStdString(uuid),
+                                       uuid.toRfc4122(),
                                        QString::fromStdString(stateUuid),
-                                       "uuid", QString::fromStdString(uuid));
+                                       "uuid", uuid.toRfc4122());
     this->uuid=uuid;
-}
+}*/
 
 std::string Component::getUUID()
+{
+    return uuid.toString().toStdString();
+}
+QUuid Component::getQUUID()
 {
     return uuid;
 }
@@ -304,7 +314,7 @@ void Component::SetOwner(Component *owner)
 {
 	SQLSetOwner(owner);
 	currentSys = owner->getCurrentSystem();
-	stateUuid = owner->getStateUUID();
+    //stateUuid = owner->getStateUUID();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
     {
@@ -314,16 +324,16 @@ void Component::SetOwner(Component *owner)
 void Component::SQLSetOwner(Component * owner)
 {
     DBConnector::getInstance()->Update(getTableName(),
-                                       QString::fromStdString(uuid),
+                                       uuid.toRfc4122(),
                                        QString::fromStdString(stateUuid),
-                                       "owner", QString::fromStdString(owner->uuid),
+                                       "owner", owner->uuid.toRfc4122(),
                                        "stateuuid", QString::fromStdString(owner->stateUuid));
 }
 
 void Component::SQLInsertComponent()
 {
     DBConnector::getInstance()->Insert("components",
-                                       QString::fromStdString(uuid),
+                                       uuid.toRfc4122(),
                                        QString::fromStdString(stateUuid));
 }
 
@@ -331,12 +341,12 @@ void Component::SQLDeleteComponent()
 {
     // note: if its not a component, it will just do nothing
     DBConnector::getInstance()->Delete("components",
-                                       QString::fromStdString(uuid),
+                                       uuid.toRfc4122(),
                                        QString::fromStdString(stateUuid));
 }
 void Component::SQLDelete()
 {
-    DBConnector::getInstance()->Delete(getTableName(), QString::fromStdString(uuid),
+    DBConnector::getInstance()->Delete(getTableName(), uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid));
 }
 

@@ -78,7 +78,7 @@ public:
     /** @brief writes a xyz-double[3] into the given vector */
     const void get(double *vector) const;
     /** @brief returns all edges connecting this node */
-    std::vector<std::string> getEdges() const;
+    std::vector<QUuid> getEdges() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/

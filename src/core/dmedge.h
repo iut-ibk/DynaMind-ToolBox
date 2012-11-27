@@ -32,6 +32,7 @@
 namespace DM {
 
     class Component;
+    class Node;
     /** @ingroup DynaMind-Core
       * @brief Provides an Edge object. An Edge just contains references to a start and end node.
       *
@@ -42,13 +43,13 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
-        void SQLSetValues(std::string start, std::string end);
-        const void getPoints(std::string *points) const;
+        void SQLSetValues(QUuid start, QUuid end);
         /** @brief return table name */
         QString getTableName();
     public:
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
-        Edge(std::string startpoint, std::string endpoint);
+        //Edge(QUuid startpoint, QUuid endpoint);
+        Edge(Node* start, Node* end);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
         Edge(const Edge& e);
         /** @brief destructor */
@@ -56,15 +57,21 @@ namespace DM {
 		/** @brief return Type */
 		Components getType();
         /** @brief return uuid to the startpoint */
+        const QUuid getStartpoint() const;
+        /** @brief return uuid to the endpoint */
+        const QUuid getEndpoint() const;
+        /** @brief return uuid to the startpoint */
         const std::string getStartpointName() const;
         /** @brief return uuid to the endpoint */
         const std::string getEndpointName() const;
         /** @brief set uuid to that points to the start node */
-        void setStartpointName(std::string start);
+        void setStartpoint(Node* start);
         /** @brief set uuid that points to the end node */
-        void setEndpointName(std::string end);        
+        void setEndpoint(Node* end);
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
+        /** @brief returns both points*/
+        const void getPoints(QUuid *points) const;
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;
 }

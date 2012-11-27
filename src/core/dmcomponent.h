@@ -62,6 +62,7 @@ class System;
   * Ever component can be identified by a unique ID created by the QT framework.
   * Components also manages the attributes. Components can be part of none or more views.
   */
+
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
@@ -77,14 +78,14 @@ private:
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     void SetOwner(Component *owner);
-    std::string stateUuid;
+    const std::string stateUuid;
 
     void SQLDelete();
 
     //QMutex * mMutex;
 
-
-    std::string uuid;
+    QUuid uuid;
+    //std::string uuid;
     //std::string name;
 
     std::map<std::string,Attribute*> ownedattributes;
@@ -113,11 +114,13 @@ public:
     /** @brief Destructor */
     virtual ~Component();
     /** @brief setUUID */
-    virtual void setUUID(std::string uuid);
+    //virtual void setUUID(std::string uuid);
     /** @brief return Type */
     virtual Components getType();
     /** @brief return UUID */
     std::string getUUID();
+    /** @brief return UUID */
+    QUuid getQUUID();
     /** @brief return UUID */
     std::string getStateUUID();
     /** @brief adds a new Attribute to the Component.
@@ -150,7 +153,7 @@ public:
       */
     void setView(const DM::View & view);
     /** @brief Create new UUID */
-    void createNewUUID();
+    //void createNewUUID();
     /** @brief Retruns a set of Views in which the Compont is used */
     std::set<std::string> const &  getInViews() const;
     /** @brief Returns true if Component is in the View */

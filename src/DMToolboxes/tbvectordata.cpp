@@ -129,7 +129,7 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
 
 void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
     DM::Edge * e1 = new DM::Edge(*e);
-    e1->createNewUUID();
+    //e1->createNewUUID();
 
     DM::Node * n1 = sys->getNode(e1->getStartpointName());
     DM::Node * n2 = sys->getNode(e1->getEndpointName());
@@ -145,17 +145,17 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
         sys->removeComponentFromView(e1, *sys->getViewDefinition(v));
 
     }
-    e1->setEndpointName(n->getUUID());
+    e1->setEndpoint(n);
     sys->addComponentToView(e1, view);
 
     DM::Edge * e2 = new DM::Edge(*e);
-    e2->createNewUUID();
+    //e2->createNewUUID();
     e2 = sys->addEdge(e2);
     views = e2->getInViews();
     foreach (std::string v, views) {
         sys->removeComponentFromView(e2, *sys->getViewDefinition(v));
     }
-    e2->setStartpointName(n->getUUID());
+    e2->setStartpoint(n);
     sys->addComponentToView(e2, view);
 
 

@@ -184,7 +184,7 @@ void Module::updateParameter() {
                 //Get View saved in System
                 DM::View * checkView = sys->getViewDefinition(view.getName());
                 if (!checkView) {
-                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName();
+                    DM::Logger(DM::Warning) << "View Definition not found: " << this->getName();
                     sys = 0;
                     break;
                 }
@@ -200,7 +200,7 @@ void Module::updateParameter() {
                 //Check if attributes are avalible
                 if (c == 0) {
                     sys = 0;
-                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName();
+                    DM::Logger(DM::Warning) << "Dummy component not found: " << checkView->getIdOfDummyComponent();
                     break;
                 }
 				

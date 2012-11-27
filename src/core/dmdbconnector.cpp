@@ -61,7 +61,7 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
 SingletonDestroyer DBConnector::_destroyer;
 
 DBConnector* DBConnector::instance = 0;
-int DBConnector::_linkID = 1;
+//int DBConnector::_linkID = 1;
 QMap<QString,QSqlQuery*> DBConnector::mapQuery;
 bool DBConnector::_bTransaction = false;
 QSqlDatabase DBConnector::_db;
@@ -77,43 +77,43 @@ bool DBConnector::CreateTables()
             && query.exec("PRAGMA journal_mode=OFF")
             && query.exec("PRAGMA temp_store=OFF")
            // && query.exec("PRAGMA cache_size=50000")
-    && query.exec("CREATE TABLE systems(	uuid VARCHAR(128) NOT NULL, \
+    && query.exec("CREATE TABLE systems(	uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
+                                            owner BINARY16, \
                                             predecessors TEXT, \
                                             sucessors TEXT, \
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE components(uuid VARCHAR(128) NOT NULL, \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE TABLE components(uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE nodes(uuid VARCHAR(128) NOT NULL, \
+                                            owner BINARY(16), \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE TABLE nodes(uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
+                                            owner BINARY(16), \
                                             x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE edges(uuid VARCHAR(128) NOT NULL, \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE TABLE edges(uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
-                                            startnode VARCHAR(128), \
-                                            endnode VARCHAR(128), \
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE faces(uuid VARCHAR(128) NOT NULL, \
+                                            owner BINARY(16), \
+                                            startnode BINARY(16), \
+                                            endnode BINARY(16), \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE TABLE faces(uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
+                                            owner BINARY(16), \
                                             nodes TEXT, \
                                             holes TEXT, \
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE rasterdatas(uuid VARCHAR(128) NOT NULL, \
+                                            PRIMARY KEY (uuid))")
+    && query.exec("CREATE TABLE rasterdatas(uuid BINARY(16) NOT NULL, \
                                             stateuuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
+                                            owner BINARY(16), \
                                             datalink INT,\
-                                            PRIMARY KEY (uuid,stateuuid))")
-    && query.exec("CREATE TABLE rasterfields(datalink int NOT NULL, \
+                                            PRIMARY KEY (uuid))")
+               && query.exec("CREATE TABLE rasterfields(owner BINARY(16) NOT NULL, \
                                             x BIGINT, data BYTEA, \
-                                            PRIMARY KEY (datalink,x))")
-    && query.exec("CREATE TABLE attributes(uuid VARCHAR(128) NOT NULL, \
-                                            owner VARCHAR(128), \
+                                            PRIMARY KEY (owner,x))")
+    && query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
+                                            owner BINARY(16), \
                                             stateuuid VARCHAR(128), \
                                             name VARCHAR(128), \
                                             type SMALLINT, \
@@ -228,10 +228,10 @@ DBConnector* DBConnector::getInstance()
     }
 	return DBConnector::instance;
 }
-int DBConnector::GetNewLinkID()
+/*int DBConnector::GetNewLinkID()
 {
     return DBConnector::_linkID++;
-}
+}*/
 
 QSqlQuery* DBConnector::getQuery(QString cmd)
 {
@@ -292,13 +292,13 @@ void DBConnector::CommitTransaction()
 /*
  *  INSERT with uuid
  */
-void DBConnector::Insert(QString table, QString uuid)
+void DBConnector::Insert(QString table, QByteArray uuid)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
     q->addBindValue(uuid);
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QString uuid,
+void DBConnector::Insert(QString table,  QByteArray uuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
@@ -307,7 +307,7 @@ void DBConnector::Insert(QString table,  QString uuid,
     q->addBindValue(parValue0);
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QString uuid,
+void DBConnector::Insert(QString table,  QByteArray uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
  {
@@ -322,14 +322,14 @@ void DBConnector::Insert(QString table,  QString uuid,
 /*
  *  INSERT with uuid and stateuuid
  */
-void DBConnector::Insert(QString table, QString uuid, QString stateUuid)
+void DBConnector::Insert(QString table, QByteArray uuid, QString stateUuid)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,stateuuid) VALUES (?,?)");
     q->addBindValue(uuid);
     q->addBindValue(stateUuid);
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Insert(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,stateuuid,"+
@@ -339,7 +339,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(parValue0);
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Insert(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
  {
@@ -352,7 +352,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
      q->addBindValue(parValue1);
      this->ExecuteQuery(q);
  }
-void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Insert(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
@@ -371,7 +371,7 @@ void DBConnector::Insert(QString table,  QString uuid, QString stateUuid,
 /*
  *  DELETE with uuid
  */
-void DBConnector::Delete(QString table,  QString uuid)
+void DBConnector::Delete(QString table,  QByteArray uuid)
 {
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
     q->addBindValue(uuid);
@@ -380,7 +380,7 @@ void DBConnector::Delete(QString table,  QString uuid)
 /*
  *  DELETE with uuid and stateuuid
  */
-void DBConnector::Delete(QString table,  QString uuid, QString stateUuid)
+void DBConnector::Delete(QString table,  QByteArray uuid, QString stateUuid)
 {
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
     q->addBindValue(uuid);
@@ -390,7 +390,7 @@ void DBConnector::Delete(QString table,  QString uuid, QString stateUuid)
 /*
  *  UPDATE with uuid
  */
-void DBConnector::Update(QString table,  QString uuid,
+void DBConnector::Update(QString table,  QByteArray uuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
@@ -399,7 +399,7 @@ void DBConnector::Update(QString table,  QString uuid,
     this->ExecuteQuery(q);
 }
 
-void DBConnector::Update(QString table,  QString uuid,
+void DBConnector::Update(QString table,  QByteArray uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
 {
@@ -411,7 +411,7 @@ void DBConnector::Update(QString table,  QString uuid,
     q->addBindValue(uuid);
     this->ExecuteQuery(q);
 }
-void DBConnector::Update(QString table,  QString uuid,
+void DBConnector::Update(QString table,  QByteArray uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
@@ -429,7 +429,7 @@ void DBConnector::Update(QString table,  QString uuid,
 /*
  *  UPDATE with uuid and stateuuid
  */
-void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Update(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ? AND stateuuid LIKE ?");
@@ -439,7 +439,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
     this->ExecuteQuery(q);
 }
 
-void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Update(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
 {
@@ -452,7 +452,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
     q->addBindValue(stateUuid);
     this->ExecuteQuery(q);
 }
-void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
+void DBConnector::Update(QString table,  QByteArray uuid, QString stateUuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
@@ -471,7 +471,7 @@ void DBConnector::Update(QString table,  QString uuid, QString stateUuid,
 /*
  *  SELECT single entry with uuid
  */
-bool DBConnector::Select(QString table, QString uuid,
+bool DBConnector::Select(QString table, QByteArray uuid,
                          QString valName, QVariant *value)
 {
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
@@ -482,7 +482,7 @@ bool DBConnector::Select(QString table, QString uuid,
     *value = q->value(0);
     return true;
 }
-bool DBConnector::Select(QString table, QString uuid,
+bool DBConnector::Select(QString table, QByteArray uuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1)
  {
@@ -498,7 +498,7 @@ bool DBConnector::Select(QString table, QString uuid,
 /*
  *  SELECT single entry with uuid and stateuuid
  */
-bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+bool DBConnector::Select(QString table, QByteArray uuid, QString stateuuid,
                          QString valName, QVariant *value)
 {
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
@@ -510,7 +510,7 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
     *value = q->value(0);
     return true;
 }
-bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+bool DBConnector::Select(QString table, QByteArray uuid, QString stateuuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1)
 {
@@ -524,7 +524,7 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
      *value1 = q->value(1);
      return true;
  }
-bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
+bool DBConnector::Select(QString table, QByteArray uuid, QString stateuuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1,
                          QString valName2, QVariant *value2)
@@ -542,7 +542,7 @@ bool DBConnector::Select(QString table, QString uuid, QString stateuuid,
 }
 
 /*
-void DBConnector::Duplicate(QString table, QString uuid, QString stateuuid,
+void DBConnector::Duplicate(QString table, QByteArray uuid, QString stateuuid,
                                            QString newuuid, QString newStateUuid)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" SELECT * FROM "+table+" WHERE")

@@ -63,10 +63,44 @@ System::System(const System& s) : Component(s, true)
 	
     currentSys = this;
     std::map<std::string,Component*> childmap = s.ownedchilds;
+
+    std::map<QUuid,QUuid> nodeReplaceMap;
 	
     for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
     {
-		this->addChild(it->second->clone());
+        Component *c = it->second->clone();
+
+        switch(it->second->getType())
+        {
+        case DM::COMPONENT: this->addComponent(c); break;
+        case DM::NODE:
+            this->addNode((Node*)c);
+            nodeReplaceMap[it->second->getQUUID()] = c->getQUUID();
+            break;
+        //case DM::EDGE:      this->addEdge((Edge*)c); break;
+        case DM::FACE:      this->addFace((Face*)c); break;
+        case DM::SUBSYSTEM: this->addSubSystem((System*)c); break;
+        case DM::RASTERDATA: this->addRasterData((RasterData*)c); break;
+        default:    break;
+        }
+    }
+    std::map<std::string,Edge*> edgemap = s.edges;
+    for (std::map<std::string,Edge*>::iterator it=edgemap.begin() ; it != edgemap.end(); ++it )
+    {
+        Edge *e = (Edge*)it->second->clone();
+
+        QUuid points[2];
+        e->getPoints(points);
+        e->setStartpoint(getNode(nodeReplaceMap[points[0]].toString().toStdString()));
+        e->setEndpoint(getNode(nodeReplaceMap[points[1]].toString().toStdString()));
+
+        this->addEdge(e);
+    }
+
+    // update views
+    foreach(View* v, views)
+    {
+        //v->getIdOfDummyComponent()
     }
 }
 System::~System()
@@ -89,13 +123,14 @@ System::~System()
     Component::SQLDelete();
 }
 
+/*
 void System::setUUID(std::string uuid)
 {
     DBConnector::getInstance()->Update("systems", QString::fromStdString(this->uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "uuid", QString::fromStdString(uuid));
+                                       "uuid", uuid.toRfc4122());
     this->uuid = uuid;
-}
+}*/
 
 std::string System::getStateUuid()
 {
@@ -138,14 +173,12 @@ DM::View * System::getViewDefinition(string name) {
     return viewdefinitions[name];
 }
 
-
 Components System::getType()
 {
 	return DM::SUBSYSTEM;
 }
 QString System::getTableName()
 {
-
     return "systems";
 }
 Component * System::addComponent(Component* c, const DM::View & view)
@@ -247,20 +280,21 @@ bool System::removeNode(std::string name)
     if(!removeChild(name))
         return false;
 
-    nodes.erase(name);
 
     //find all connected edges and remove them
     std::vector<std::string> connectededges;
 
     std::map<std::string,Edge*>::iterator ite;
 
+    Node* n = nodes[name];
+
     for ( ite=edges.begin() ; ite != edges.end(); ite++ )
     {
         Edge* tmpedge = edges[(*ite).first];
-
         if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
             connectededges.push_back(tmpedge->getUUID());
     }
+    nodes.erase(name);
 
     for(unsigned int index=0; index<connectededges.size(); index++)
     {
@@ -274,7 +308,7 @@ bool System::removeNode(std::string name)
 Edge* System::addEdge(Edge* edge)
 {
     //QMutexLocker locker(mutex);
-    if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
+    if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())){
         delete edge;
         return 0;
     }
@@ -295,7 +329,7 @@ Edge* System::addEdge(Edge* edge)
 Edge* System::addEdge(Node * start, Node * end, const View &view)
 {
     //QMutexLocker locker(mutex);
-    Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
+    Edge * e = this->addEdge(new Edge(start, end));
 
     if (e == 0)
         return 0;
@@ -585,7 +619,6 @@ System* System::createSuccessor()
     System* result = new System(*this);
     this->sucessors.push_back(result);
 	this->SQLUpdateStates();
-	
     result->addPredecessors(this);
     result->SQLUpdateStates();
 
@@ -638,7 +671,7 @@ std::map<std::string, Component*> System::getAllChilds()
 
 void System::SQLInsert()
 {
-    DBConnector::getInstance()->Insert("systems", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("systems", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid));
 }
 void System::SQLUpdateStates()
@@ -653,7 +686,7 @@ void System::SQLUpdateStates()
 	{
 		preList.push_back(QString::fromStdString(sys->getStateUUID()));
 	}
-    DBConnector::getInstance()->Update("systems",       QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("systems",       uuid.toRfc4122(),
                                                         QString::fromStdString(stateUuid),
                                        "sucessors",     sucList,
                                        "predecessors",  preList);

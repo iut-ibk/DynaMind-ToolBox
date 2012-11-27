@@ -74,7 +74,7 @@ private:
     std::map<std::string, System*> subsystems;
     std::map<std::string, Component* > components;
 
-    std::map<std::string,Component*> ownedchilds;
+    std::map<std::string, Component*> ownedchilds;
 
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;   
@@ -111,7 +111,7 @@ public:
      * The destructor also deletes all successor states */
     ~System();
     /** @brief setUUID */
-    virtual void setUUID(std::string uuid);
+    //virtual void setUUID(std::string uuid);
 	/** @brief return Type */
 	virtual Components getType();
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/

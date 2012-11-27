@@ -365,11 +365,12 @@ TEST_F(TestSimulation,UnionInsert)
     if(!q.exec("DELETE FROM rasterfields WHERE datalink=0")) DM::PrintSqlError(&q);
 }
 /**/
-
+/*
 TEST_F(TestSimulation,validationtool) {
-        ostream *out = &cout;
-        DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-        DM::Logger(DM::Standard) << "Test validation tool";
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test validation tool";
+
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
@@ -386,6 +387,7 @@ TEST_F(TestSimulation,simplesqltest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Reallocation (SQL)";
+
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
@@ -401,7 +403,7 @@ TEST_F(TestSimulation,simplesqltest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+*/
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -417,7 +419,7 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+/*
 TEST_F(TestSimulation, SqlNodeTest)
 {
     ostream *out = &cout;
@@ -440,16 +442,16 @@ TEST_F(TestSimulation, SqlEdgeTest)
     DM::Node *n0 = new DM::Node(1,2,3);
     DM::Node *n1 = new DM::Node(1,2,3);
 
-    DM::Edge *edge = new DM::Edge(n0->getUUID(), n1->getUUID());
+    DM::Edge *edge = new DM::Edge(n0, n1);
 
     ASSERT_TRUE(edge->getStartpointName()==n0->getUUID());
     ASSERT_TRUE(edge->getEndpointName()==n1->getUUID());
 
-    std::vector<std::string> list = n0->getEdges();
-    ASSERT_TRUE(list[0] == edge->getUUID());
+    std::vector<QUuid> list = n0->getEdges();
+    ASSERT_TRUE(list[0] == edge->getQUUID());
 
     list = n1->getEdges();
-    ASSERT_TRUE(list[0] == edge->getUUID());
+    ASSERT_TRUE(list[0] == edge->getQUUID());
 
     delete n0;
     delete n1;
@@ -832,10 +834,10 @@ TEST_F(TestSimulation,linkedDynamicModules) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+*/
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Test Linked Modules";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");

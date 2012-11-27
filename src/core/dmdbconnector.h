@@ -55,7 +55,7 @@ private:
 	static DBConnector* instance;
     DBConnector();
 	
-    static int _linkID;
+    //static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
     static QSqlDatabase _db;
@@ -76,67 +76,67 @@ public:
     void BeginTransaction();
     void CommitTransaction();
     // inserts with uuid
-    void Insert(QString table,  QString uuid);
-    void Insert(QString table,  QString uuid,
+    void Insert(QString table,  QByteArray uuid);
+    void Insert(QString table,  QByteArray uuid,
                                 QString parName0, QVariant parValue0);
-    void Insert(QString table,  QString uuid,
+    void Insert(QString table,  QByteArray uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
     // inserts with uuid and stateuuid
-    void Insert(QString table,  QString uuid, QString stateUuid);
-    void Insert(QString table,  QString uuid, QString stateUuid,
+    void Insert(QString table,  QByteArray uuid, QString stateUuid);
+    void Insert(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0);
-    void Insert(QString table,  QString uuid, QString stateUuid,
+    void Insert(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
-    void Insert(QString table,  QString uuid, QString stateUuid,
+    void Insert(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     // updates with uuid
-    void Update(QString table,  QString uuid,
+    void Update(QString table,  QByteArray uuid,
                                 QString parName0, QVariant parValue0);
-    void Update(QString table,  QString uuid,
+    void Update(QString table,  QByteArray uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
-    void Update(QString table,  QString uuid,
+    void Update(QString table,  QByteArray uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     // updates with uuid and stateuuid
-    void Update(QString table,  QString uuid, QString stateUuid,
+    void Update(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0);
-    void Update(QString table,  QString uuid, QString stateUuid,
+    void Update(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
-    void Update(QString table,  QString uuid, QString stateUuid,
+    void Update(QString table,  QByteArray uuid, QString stateUuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     // delete with uuid
-    void Delete(QString table,  QString uuid);
+    void Delete(QString table,  QByteArray uuid);
     // delete with uuid and stateuuid
-    void Delete(QString table,  QString uuid, QString stateUuid);
+    void Delete(QString table,  QByteArray uuid, QString stateUuid);
     // select single entry with uuid
-    bool Select(QString table, QString uuid,
+    bool Select(QString table, QByteArray uuid,
                 QString valName, QVariant *value);
-    bool Select(QString table, QString uuid,
+    bool Select(QString table, QByteArray uuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1);
     // select single entry with uuid and stateuuid
-    bool Select(QString table, QString uuid, QString stateuuid,
+    bool Select(QString table, QByteArray uuid, QString stateuuid,
                 QString valName, QVariant *value);
-    bool Select(QString table, QString uuid, QString stateuuid,
+    bool Select(QString table, QByteArray uuid, QString stateuuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1);
-    bool Select(QString table, QString uuid, QString stateuuid,
+    bool Select(QString table, QByteArray uuid, QString stateuuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
 /*
-    void Duplicate(QString table, QString uuid, QString stateuuid,
+    void Duplicate(QString table, QByteArray uuid, QString stateuuid,
                                                QString newuuid, QString newStateUuid);*/
-    static int GetNewLinkID();
+    //static int GetNewLinkID();
 };
 
 class SingletonDestroyer

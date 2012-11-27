@@ -36,14 +36,14 @@ using namespace DM;
 
 Node::Node( double x, double y, double z) : Component(true)
 {
-    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",x,"y",y,"z",z);
 }
 
 Node::Node() : Component(true)
 {
-    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",0,"y",0,"z",0);
 }
@@ -52,7 +52,7 @@ Node::Node(const Node& n) : Component(n, true)
 {
     double v[3];
     n.get(v);
-    DBConnector::getInstance()->Insert("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",v[0],"y",v[1],"z",v[2]);
 }
@@ -71,7 +71,7 @@ QString Node::getTableName()
 double Node::getX() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
                                                     QString::fromStdString(stateUuid),
                                           "x",      &value))
         return value.toDouble();
@@ -81,7 +81,7 @@ double Node::getX() const
 double Node::getY() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
                                                     QString::fromStdString(stateUuid),
                                           "y",      &value))
         return value.toDouble();
@@ -91,7 +91,7 @@ double Node::getY() const
 double Node::getZ() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  QString::fromStdString(uuid),
+    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
                                                     QString::fromStdString(stateUuid),
                                           "z",      &value))
         return value.toDouble();
@@ -101,7 +101,7 @@ double Node::getZ() const
 const void Node::get(double *vector) const
 {
     QVariant v[3];
-    DBConnector::getInstance()->Select("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Select("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",     &v[0],
                                        "y",     &v[1],
@@ -119,26 +119,26 @@ const double Node::get(unsigned int i) const {
 }
 
 
-std::vector<std::string> Node::getEdges() const
+std::vector<QUuid> Node::getEdges() const
 {
     // TODO
 
-    std::vector<std::string> edges;
+    std::vector<QUuid> edges;
 
     QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT uuid FROM edges WHERE startnode LIKE ? OR endnode LIKE ?");
-    q->addBindValue(QString::fromStdString(uuid));
-    q->addBindValue(QString::fromStdString(uuid));
+    q->addBindValue(uuid.toRfc4122());
+    q->addBindValue(uuid.toRfc4122());
     if(DBConnector::getInstance()->ExecuteSelectQuery(q))
     {
         do
-            edges.push_back(q->value(0).toString().toStdString());
+            edges.push_back(QUuid::fromRfc4122(q->value(0).toByteArray()));
         while(q->next());
     }
 
     /*QSqlQuery q;
     q.prepare("SELECT uuid FROM edges WHERE start LIKE ? OR end LIKE ?");
-    q.addBindValue(QString::fromStdString(uuid));
-    q.addBindValue(QString::fromStdString(uuid));
+    q.addBindValue(uuid.toRfc4122());
+    q.addBindValue(uuid.toRfc4122());
     if(q.exec())
     {
         while(q.next())
@@ -151,21 +151,21 @@ std::vector<std::string> Node::getEdges() const
 
 void Node::setX(double x)
 {
-    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",     QVariant::fromValue(x));
 }
 
 void Node::setY(double y)
 {
-    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "y",     QVariant::fromValue(y));
 }
 
 void Node::setZ(double z)
 {
-    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "z",     QVariant::fromValue(z));
 }
@@ -234,7 +234,7 @@ bool Node::compare2d(const Node * other , double round ) const
 }
 void Node::SQLSetValues(double x,double y,double z)
 {
-    DBConnector::getInstance()->Update("nodes", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "x",     QVariant::fromValue(x),
                                        "y",     QVariant::fromValue(y),

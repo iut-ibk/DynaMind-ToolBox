@@ -64,7 +64,8 @@ public:
     };
     
 private:
-	std::string _uuid;	// this one is really unique
+    QUuid _uuid;
+    //std::string _uuid;	// this one is really unique
     std::string name;
     std::set<std::string> inViews;
 

@@ -75,7 +75,7 @@ void CreateAllComponenets::run()
 	AddValidation(sys->addNode(x), sys);
 	AddValidation(sys->addNode(y), sys);
 	AddValidation(sys->addNode(z), sys);
-	AddValidation(sys->addEdge(new DM::Edge(x->getUUID(),y->getUUID())), sys);
+    AddValidation(sys->addEdge(new DM::Edge(x,y)), sys);
 
 	std::vector<std::string> nodeVector;
 	nodeVector.push_back(x->getUUID());

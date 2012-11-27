@@ -70,7 +70,7 @@ public:
 
     Component * clone();
 private:
-    int _linkID;
+    //int _linkID;
 
     long width;
     long height;
@@ -96,7 +96,7 @@ private:
     QByteArray SQLGetRow(long x) const;
     void SQLSetRow(long x, QByteArray data);
     void SQLSetValue(long x, long y, double value);
-	void SQLUpdateLink(int id);
+    //void SQLUpdateLink(int id);
 
     //int GetLinkID() const;
 	//void SQLSetValues();

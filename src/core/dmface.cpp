@@ -62,13 +62,13 @@ QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
 
 Face::Face(std::vector<std::string> nodes) : Component(true)
 {
-    DBConnector::getInstance()->Insert("faces", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "nodes", GetBytes(nodes));
 }
 Face::Face(const Face& e) : Component(e, true)
 {
-    DBConnector::getInstance()->Insert("faces", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "nodes", GetBytes(e.getNodes()),
                                        "holes", GetBytes(e.getHoles()));
@@ -98,7 +98,7 @@ std::vector<std::string> Face::getNodes() const
 {
     std::vector<std::string> nodes;
     QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  QString::fromStdString(uuid),
+    if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
                                                     QString::fromStdString(stateUuid),
                                           "nodes", &value))
         nodes = GetVector(value.toByteArray());
@@ -145,7 +145,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 {
 	std::vector<std::vector<std::string> > holes;
     QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  QString::fromStdString(uuid),
+    if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
                                                     QString::fromStdString(stateUuid),
                                           "holes", &value))
         holes = GetVectorVector(value.toByteArray());
@@ -177,14 +177,14 @@ void Face::SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<
 
 void Face::SQLSetNodes(std::vector<std::string> nodes)
 {
-    DBConnector::getInstance()->Update("faces", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("faces", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "nodes", GetBytes(nodes));
 }
 
 void Face::SQLSetHoles(std::vector<std::vector<std::string> > holes)
 {
-    DBConnector::getInstance()->Update("faces", QString::fromStdString(uuid),
+    DBConnector::getInstance()->Update("faces", uuid.toRfc4122(),
                                                 QString::fromStdString(stateUuid),
                                        "holes", GetBytes(holes));
 }
