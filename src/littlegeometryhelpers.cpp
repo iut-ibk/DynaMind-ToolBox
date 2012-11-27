@@ -229,7 +229,8 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
     std::vector<double> dimension;
 
     double angle = DM::CGALGeometry::CalculateMinBoundingBox(footprint, b_box, dimension);
-    DM::Node center = TBVectorData::CentroidPlane(footprint);
+    DM::Face * foot = city->addFace(footprint);
+    DM::Node center = TBVectorData::CaclulateCentroid(city, foot);
 
     QTransform t;
     t.rotate(angle);

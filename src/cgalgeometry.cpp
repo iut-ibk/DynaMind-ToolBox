@@ -162,10 +162,9 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
 
 
-    typedef double                              FT;
-    typedef CGAL::Cartesian<FT>                 K;
-    typedef CGAL::Point_2<K>                    Point_2;
-    typedef CGAL::Polygon_2<K>                  Polygon_2;
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
+    typedef K::Point_2                                          Point_2;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
 
     const double pi =  3.14159265358979323846;
     double angel = 0;
@@ -186,7 +185,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
     CGAL::min_rectangle_2(
                 pls.vertices_begin(), pls.vertices_end(), std::back_inserter(p_m));
     for (Polygon_2::Vertex_const_iterator vit = p_m.vertices_begin(); vit!= p_m.vertices_end(); vit++) {
-        boundingBox.push_back(DM::Node(vit->x(), vit->y(), 0));
+        boundingBox.push_back(DM::Node(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
     }
 
     l = TBVectorData::calculateDistance(&boundingBox[0], &boundingBox[1]);
@@ -316,7 +315,8 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
 std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
 
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    std::cout << "start intersection" << std::endl;
+    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
     typedef K::Point_2                                          Point;
     typedef CGAL::Polygon_2<K>                                  Polygon_2;
     typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
@@ -348,6 +348,18 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
         poly2.push_back(Point(n->getX(), n->getY()));
     }
 
+    CGAL::Orientation orient = poly1.orientation();
+    if (orient == CGAL::CLOCKWISE) {
+        poly1.reverse_orientation();
+    }
+
+    orient = poly2.orientation();
+    if (orient == CGAL::CLOCKWISE) {
+        poly2.reverse_orientation();
+    }
+
+
+
     if ((CGAL::do_intersect (poly1, poly2)))
         DM::Logger(DM::Debug) << "The two polygons intersect in their interior.";
     else
@@ -356,12 +368,18 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     Pwh_list_2                  intR;
     Pwh_list_2::const_iterator  it;
 
+    print_polygon(poly1);
+    print_polygon(poly2);
+
+    std::cout << "Start intersection" << std::endl;
+
     CGAL::intersection (poly1, poly2, std::back_inserter(intR));
 
     std::vector<DM::Node> resultVector;
 
-    print_polygon(poly1);
-    print_polygon(poly2);
+
+
+
     for (it = intR.begin(); it != intR.end(); ++it) {
 
         print_polygon_with_holes (*it);
@@ -369,9 +387,19 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
         Polygon_2 P_out = P.outer_boundary();
         for (vit = P_out.vertices_begin(); vit !=P_out.vertices_end(); ++vit) {
-            resultVector.push_back(DM::Node(vit->x(), vit->y(), 0));
+            DM::Node tmp(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0);
+            bool exists = false;
+            foreach (DM::Node n, resultVector) {
+                if (n.compare2d(tmp,0.00001))
+                    exists = true;
+
+            }
+            if (!exists)
+                resultVector.push_back(DM::Node(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
         }
     }
+    if (resultVector.size() < 3)
+        DM::Logger(DM::Error) << "Something went wrong";
     return resultVector;
 }
 
