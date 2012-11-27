@@ -54,33 +54,38 @@ System::System() : Component(true)
 }
 System::System(const System& s) : Component(s, true)
 {
-    viewdefinitions = s.viewdefinitions;
     predecessors = s.predecessors;
-    views = s.views;
     lastModule = s.lastModule;
     //mutex = new QMutex(QMutex::Recursive);
 	SQLInsert();
 	
     currentSys = this;
-    std::map<std::string,Component*> childmap = s.ownedchilds;
 
-    std::map<QUuid,QUuid> nodeReplaceMap;
-	
+    std::map<QUuid,QUuid> childReplaceMap;
+
+    std::map<std::string,Component*> childmap = s.ownedchilds;
     for (std::map<std::string,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
     {
-        Component *c = it->second->clone();
+        Component *oldComp = it->second;
 
         switch(it->second->getType())
         {
-        case DM::COMPONENT: this->addComponent(c); break;
+        case DM::COMPONENT:
+            childReplaceMap[oldComp->getQUUID()] = addComponent(oldComp->clone())->getQUUID();
+            break;
         case DM::NODE:
-            this->addNode((Node*)c);
-            nodeReplaceMap[it->second->getQUUID()] = c->getQUUID();
+            childReplaceMap[oldComp->getQUUID()] = addNode((Node*)oldComp->clone())->getQUUID();
             break;
         //case DM::EDGE:      this->addEdge((Edge*)c); break;
-        case DM::FACE:      this->addFace((Face*)c); break;
-        case DM::SUBSYSTEM: this->addSubSystem((System*)c); break;
-        case DM::RASTERDATA: this->addRasterData((RasterData*)c); break;
+        case DM::FACE:
+            childReplaceMap[oldComp->getQUUID()] = addFace((Face*)oldComp->clone())->getQUUID();
+            break;
+        case DM::SUBSYSTEM:
+            childReplaceMap[oldComp->getQUUID()] = addSubSystem((System*)oldComp->clone())->getQUUID();
+            break;
+        case DM::RASTERDATA:
+            childReplaceMap[oldComp->getQUUID()] = addRasterData((RasterData*)oldComp->clone())->getQUUID();
+            break;
         default:    break;
         }
     }
@@ -91,16 +96,29 @@ System::System(const System& s) : Component(s, true)
 
         QUuid points[2];
         e->getPoints(points);
-        e->setStartpoint(getNode(nodeReplaceMap[points[0]].toString().toStdString()));
-        e->setEndpoint(getNode(nodeReplaceMap[points[1]].toString().toStdString()));
+        e->setStartpoint(getNode(childReplaceMap[points[0]].toString().toStdString()));
+        e->setEndpoint(getNode(childReplaceMap[points[1]].toString().toStdString()));
 
-        this->addEdge(e);
+        childReplaceMap[it->second->getQUUID()] = addEdge(e)->getQUUID();
     }
 
     // update views
-    foreach(View* v, views)
+    //foreach(View* v, viewdefinitions)
+    //views = s.views;
+    viewdefinitions = s.viewdefinitions;
+    for (std::map<std::string,View*>::iterator it=viewdefinitions.begin() ; it != viewdefinitions.end(); ++it )
     {
-        //v->getIdOfDummyComponent()
+        View* v = new View(*it->second);
+        viewdefinitions[v->getName()] = v;
+
+        if(v->getDummyComponent()!=NULL)
+        {
+            QUuid oldDummyId = v->getDummyComponent()->getQUUID();
+            QUuid newDummyId = childReplaceMap[oldDummyId];
+            Component* dummy = ownedchilds[newDummyId.toString().toStdString()];
+            v->setDummyComponent(dummy);
+
+        }
     }
 }
 System::~System()
@@ -550,10 +568,9 @@ bool System::addView(View view)
     if (!view.writes()) {
         return true;
     }
-    DM::Component * dummy  = NULL;
-    if (!existingView->getIdOfDummyComponent().empty()) {
-        dummy = this->getComponent(existingView->getIdOfDummyComponent());
-    } else {
+    DM::Component * dummy  = existingView->getDummyComponent();
+    if (existingView->getDummyComponent() == NULL)
+    {
         switch(view.getType())
         {
         case DM::COMPONENT:
@@ -588,7 +605,7 @@ bool System::addView(View view)
     if(dummy==NULL)
         Logger(Error) << "Error: dummy object could not be initialized";
 
-    existingView->setIdOfDummyComponent(dummy->getUUID());
+    existingView->setDummyComponent(dummy);
 
 
     //extend Dummy Attribute

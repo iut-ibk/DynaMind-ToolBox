@@ -34,19 +34,28 @@ View::View(std::string name, int type, int accesstypeGeometry)
     this->name = name;
     this->type = type;
     this->accesstypeGeometry = accesstypeGeometry;
+    this->dummy = NULL;
 
 }
 View::View() {
     this->name = "";
     this->type = -1;
+    this->dummy = NULL;
 }
-
+/*
 void View::setIdOfDummyComponent(std::string UUID) {
     this->IdofDummyComponent = UUID;
 }
 
 std::string View::getIdOfDummyComponent() {
     return this->IdofDummyComponent;
+}*/
+void View::setDummyComponent(Component* c) {
+    dummy = c;
+}
+
+Component* View::getDummyComponent() {
+    return this->dummy;
 }
 
 void View::addAttribute(std::string name) {
