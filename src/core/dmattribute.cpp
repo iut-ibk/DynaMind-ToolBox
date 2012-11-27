@@ -388,8 +388,7 @@ void Attribute::SetOwner(Component* owner)
 {
 	// TODO: make shure its not bound to another component
     DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
-                                       "owner",     QString::fromStdString(owner->getUUID()),
-                                       "stateuuid", QString::fromStdString(owner->getStateUUID()));
+                                       "owner",     QString::fromStdString(owner->getUUID()));
 }
 
 void Attribute::SQLSetName(std::string newname)

@@ -143,10 +143,6 @@ QUuid Component::getQUUID()
 {
     return uuid;
 }
-std::string Component::getStateUUID()
-{
-	return stateUuid;
-}
 
 DM::Components Component::getType()
 {
@@ -325,29 +321,24 @@ void Component::SQLSetOwner(Component * owner)
 {
     DBConnector::getInstance()->Update(getTableName(),
                                        uuid.toRfc4122(),
-                                       QString::fromStdString(stateUuid),
-                                       "owner", owner->uuid.toRfc4122(),
-                                       "stateuuid", QString::fromStdString(owner->stateUuid));
+                                       "owner", owner->uuid.toRfc4122());
 }
 
 void Component::SQLInsertComponent()
 {
     DBConnector::getInstance()->Insert("components",
-                                       uuid.toRfc4122(),
-                                       QString::fromStdString(stateUuid));
+                                       uuid.toRfc4122());
 }
 
 void Component::SQLDeleteComponent()
 {
     // note: if its not a component, it will just do nothing
     DBConnector::getInstance()->Delete("components",
-                                       uuid.toRfc4122(),
-                                       QString::fromStdString(stateUuid));
+                                       uuid.toRfc4122());
 }
 void Component::SQLDelete()
 {
-    DBConnector::getInstance()->Delete(getTableName(), uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid));
+    DBConnector::getInstance()->Delete(getTableName(), uuid.toRfc4122());
 }
 
 bool Component::HasAttribute(std::string name)

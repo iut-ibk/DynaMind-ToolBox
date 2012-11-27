@@ -77,11 +77,15 @@ void CreateAllComponenets::run()
 	AddValidation(sys->addNode(z), sys);
     AddValidation(sys->addEdge(new DM::Edge(x,y)), sys);
 
-	std::vector<std::string> nodeVector;
+    /*std::vector<std::string> nodeVector;
 	nodeVector.push_back(x->getUUID());
 	nodeVector.push_back(y->getUUID());
-	nodeVector.push_back(z->getUUID());
-	AddValidation(sys->addFace(new DM::Face(nodeVector)), sys);
+    nodeVector.push_back(z->getUUID());*/
+    std::vector<DM::Node*> nodeVector;
+    nodeVector.push_back(x);
+    nodeVector.push_back(y);
+    nodeVector.push_back(z);
+    AddValidation(sys->addFace(new DM::Face(nodeVector)), sys);
 	
 	DM::RasterData *raster = new DM::RasterData();
 	raster->setNoValue(1.0);

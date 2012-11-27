@@ -48,9 +48,10 @@ class Node;
 class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 private:
-	void SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes);
-	void SQLSetNodes(std::vector<std::string> nodes);
-	void SQLSetHoles(std::vector<std::vector<std::string> > holes);
+    std::vector<Node*> _nodes;
+    std::vector<Face*> _holes;
+
+    void SQLUpdateValues();
     /** @brief return table name */
     QString getTableName();
 public:
@@ -58,21 +59,22 @@ public:
     ~Face();
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
     DEPRECATED(Face(std::vector<std::string> nodes));
-    //Face(std::vector<Nodes*> nodes);
+    Face(std::vector<Node*> nodes);
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
 	/** @brief return Type */
 	Components getType();
     /** @brief return vector of nodes defining the face */
     DEPRECATED(std::vector<std::string> getNodes() const);
+    std::vector<Node*> getNodePointers() const;
     /** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/
     Component * clone();
     /** @brief Returns a vector of holes */
     DEPRECATED(const std::vector<std::vector<std::string> > getHoles() const);
+    const std::vector<Face*> getHolePointers() const;
     /** @brief Add hole */
     DEPRECATED(void addHole(std::vector<std::string> hole));
-    /** @brief Add hole */
-    DEPRECATED(void addHole(std::vector<DM::Node *> hole));
+    void addHole(Face* hole);
 
 };
 typedef std::map<std::string, DM::Face*> FaceMap;

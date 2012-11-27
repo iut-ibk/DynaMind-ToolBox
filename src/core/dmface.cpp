@@ -27,13 +27,15 @@
 #include <dmcomponent.h>
 #include "dmface.h"
 #include "dmnode.h"
+#include "dmsystem.h"
+#include "dmlogger.h"
 
 #include "dmdbconnector.h"
 #include <QByteArray>
 
 using namespace DM;
 
-
+/*
 QByteArray GetBytes(std::vector<std::string> stringvector)
 {
     QByteArray qba;
@@ -41,10 +43,23 @@ QByteArray GetBytes(std::vector<std::string> stringvector)
 
     stream << (int)stringvector.size();
     for(unsigned int i=0;i<stringvector.size();i++)
-        stream << QString::fromStdString(stringvector[i]);
+        stream << QUuid(QString::fromStdString(stringvector[i]));
+
+    return qba;
+}*/
+
+QByteArray GetBytes(std::vector<Node*> nodevector)
+{
+    QByteArray qba;
+    QDataStream stream(&qba, QIODevice::WriteOnly);
+
+    stream << (int)nodevector.size();
+    for(unsigned int i=0;i<nodevector.size();i++)
+        stream << nodevector[i]->getQUUID();
 
     return qba;
 }
+/*
 QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
 {
     QByteArray qba;
@@ -55,24 +70,52 @@ QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
     {
         stream << (int)stringvectorvector[i].size();
         for(unsigned int j=0;j<stringvectorvector[i].size();j++)
-                stream << QString::fromStdString(stringvectorvector[i][j]);
+                stream << QUuid(QString::fromStdString(stringvectorvector[i][j]));
+    }
+    return qba;
+}*/
+
+QByteArray GetBytes(std::vector<Face*> facevector)
+{
+    QByteArray qba;
+    QDataStream stream(&qba, QIODevice::WriteOnly);
+
+    stream << (int)facevector.size();
+    for(unsigned int i=0;i<facevector.size();i++)
+    {
+        stream << GetBytes(facevector[i]->getNodePointers());
     }
     return qba;
 }
 
 Face::Face(std::vector<std::string> nodes) : Component(true)
 {
+    Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
+                         doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
+    /*
+    foreach(std::string nodeUuid, nodes)
+    {
+        _nodes.push_back(this->getCurrentSystem()->getNode(nodeUuid));
+    }
+
     DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid),
-                                       "nodes", GetBytes(nodes));
+                                       "nodes", GetBytes(_nodes));*/
+}
+
+Face::Face(std::vector<Node*> nodes) : Component(true)
+{
+    this->_nodes = nodes;
+    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
+                                       "nodes", GetBytes(_nodes));
 }
 
 Face::Face(const Face& e) : Component(e, true)
 {
+    this->_nodes = e._nodes;
+    this->_holes = e._holes;
     DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid),
-                                       "nodes", GetBytes(e.getNodes()),
-                                       "holes", GetBytes(e.getHoles()));
+                                       "nodes", GetBytes(e._nodes),
+                                       "holes", GetBytes(e._holes));
 }
 Face::~Face()
 {
@@ -98,12 +141,19 @@ std::vector<std::string> GetVector(QByteArray qba)
 std::vector<std::string> Face::getNodes() const
 {
     std::vector<std::string> nodes;
-    QVariant value;
+    foreach(Node* n, _nodes)
+    {
+        nodes.push_back(n->getUUID());
+    }
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
-                                                    QString::fromStdString(stateUuid),
                                           "nodes", &value))
-        nodes = GetVector(value.toByteArray());
-	return nodes;
+        nodes = GetVector(value.toByteArray());*/
+    return nodes;
+}
+std::vector<Node*> Face::getNodePointers() const
+{
+    return _nodes;
 }
 
 Component* Face::clone()
@@ -119,7 +169,7 @@ QString Face::getTableName()
 {
     return "faces";
 }
-std::vector<std::vector<std::string> > GetVectorVector(QByteArray qba)
+/*std::vector<std::vector<std::string> > GetVectorVector(QByteArray qba)
 {
     QDataStream stream(&qba, QIODevice::ReadWrite);
 	std::vector<std::vector<std::string> > result;
@@ -140,53 +190,62 @@ std::vector<std::vector<std::string> > GetVectorVector(QByteArray qba)
 		result.push_back(v);
 	}
 	return result;
-}
+}*/
 
 const std::vector<std::vector<std::string> > Face::getHoles() const
 {
-	std::vector<std::vector<std::string> > holes;
-    QVariant value;
+    std::vector<std::vector<std::string> > holes;
+    foreach(Face* f, _holes)
+    {
+        std::vector<std::string> hole;
+        foreach(Node* n, f->getNodePointers())
+        {
+            hole.push_back(n->getUUID());
+        }
+        holes.push_back(hole);
+    }
+
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
-                                                    QString::fromStdString(stateUuid),
                                           "holes", &value))
-        holes = GetVectorVector(value.toByteArray());
-	return holes;
+        holes = GetVectorVector(value.toByteArray());*/
+    return holes;
+}
+
+const std::vector<Face*> Face::getHolePointers() const
+{
+    return _holes;
 }
 
 void Face::addHole(std::vector<std::string> hole)
 {
-	std::vector<std::vector<std::string> > holes = getHoles();
-	holes.push_back(hole);
-    SQLSetHoles(holes);
-}
-void Face::addHole(std::vector<DM::Node*> hole)
-{
-    std::vector<std::string> shole;
-    for (std::vector<DM::Node *>::const_iterator it = hole.begin(); it != hole.end(); ++it)
+    System *curSys = this->getCurrentSystem();
+    std::vector<Node*> holeNodes;
+    foreach(std::string uuidNodes, hole)
     {
-        DM::Node * n = *it;
-        shole.push_back(n->getUUID());
+        holeNodes.push_back(curSys->getNode(uuidNodes));
     }
-    this->addHole(shole);
+    _holes.push_back(curSys->addFace(holeNodes));
+
+    /*std::vector<std::vector<std::string> > holes = getHoles();
+    holes.push_back(hole);
+    SQLSetHoles(holes);*/
 }
 
-void Face::SQLSetValues(std::vector<std::string> nodes, std::vector<std::vector<std::string> > holes)
+void Face::addHole(Face* hole)
 {
-	SQLSetNodes(nodes);
-	SQLSetHoles(holes);
+    if(hole==this)
+    {
+        Logger(Error) << "addHole: self reference not possible";
+        return;
+    }
+    _holes.push_back(hole);
+    SQLUpdateValues();
 }
 
-void Face::SQLSetNodes(std::vector<std::string> nodes)
+void Face::SQLUpdateValues()
 {
     DBConnector::getInstance()->Update("faces", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid),
-                                       "nodes", GetBytes(nodes));
+                                       "nodes", GetBytes(_nodes),
+                                       "holes", GetBytes(_holes));
 }
-
-void Face::SQLSetHoles(std::vector<std::vector<std::string> > holes)
-{
-    DBConnector::getInstance()->Update("faces", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid),
-                                       "holes", GetBytes(holes));
-}
-

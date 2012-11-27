@@ -153,11 +153,6 @@ void System::setUUID(std::string uuid)
     this->uuid = uuid;
 }*/
 
-std::string System::getStateUuid()
-{
-	return stateUuid;
-}
-
 void System::setAccessedByModule(Module * m) {
     this->lastModule = m;
 }
@@ -400,13 +395,13 @@ Face* System::addFace(Face *f) {
     this->updateViews(f);
     return f;
 }
-Face* System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
+Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 {
-    std::vector<std::string> stringNodes;
-
+    /*std::vector<std::string> stringNodes;
     foreach (Node* n, nodes)
         stringNodes.push_back(n->getUUID());
-    Face * f = this->addFace(new Face(stringNodes));
+    Face * f = this->addFace(new Face(stringNodes));*/
+    Face *f = this->addFace(new Face(nodes));
 
     if (f == 0)
         return 0;
@@ -691,23 +686,21 @@ std::map<std::string, Component*> System::getAllChilds()
 
 void System::SQLInsert()
 {
-    DBConnector::getInstance()->Insert("systems", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid));
+    DBConnector::getInstance()->Insert("systems", uuid.toRfc4122());
 }
 void System::SQLUpdateStates()
 {
 	QStringList sucList;
 	foreach(System* sys, sucessors)
 	{
-		sucList.push_back(QString::fromStdString(sys->getStateUUID()));
+        sucList.push_back(sys->getQUUID().toString());
 	}
 	QStringList preList;
 	foreach(System* sys, predecessors)
 	{
-		preList.push_back(QString::fromStdString(sys->getStateUUID()));
+        preList.push_back(sys->getQUUID().toString());
 	}
     DBConnector::getInstance()->Update("systems",       uuid.toRfc4122(),
-                                                        QString::fromStdString(stateUuid),
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
 }

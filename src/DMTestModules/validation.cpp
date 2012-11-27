@@ -16,8 +16,7 @@ ComponentID::ComponentID(std::string _uuid, std::string _stateUuid, std::string 
 }
 ComponentID::ComponentID(DM::Component *c, DM::Component *_owner)
 {
-	first = c->getUUID();
-	second.first = c->getStateUUID();
+    first = c->getUUID();
 	second.second = _owner->getUUID();
 }
 std::string ComponentID::toString()
@@ -151,7 +150,7 @@ bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner)
     for(std::map<ComponentID, ComponentContent>::const_iterator it = mapValidation.begin(); it != mapValidation.end();++it)
     {
         ComponentID itemId = it->first;
-		if(itemId.getOwner() == owner->getUUID() && itemId.getStateUuid() == owner->getStateUUID())
+        if(itemId.getOwner() == owner->getUUID())
 		{
 
 			std::string strItem = itemId.toString();

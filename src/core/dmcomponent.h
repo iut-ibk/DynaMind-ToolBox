@@ -78,7 +78,7 @@ private:
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     void SetOwner(Component *owner);
-    const std::string stateUuid;
+    //const std::string stateUuid;
 
     void SQLDelete();
 
@@ -121,8 +121,6 @@ public:
     std::string getUUID();
     /** @brief return UUID */
     QUuid getQUUID();
-    /** @brief return UUID */
-    std::string getStateUUID();
     /** @brief adds a new Attribute to the Component.
       *
       * Returns true if the attribute has been added to the Component.

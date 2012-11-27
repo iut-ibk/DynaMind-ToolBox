@@ -465,6 +465,33 @@ TEST_F(TestSimulation, SqlFaceOrder)
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test face nodes order (SQL)";
 
+    DM::Node n0(0,1,2);
+    DM::Node n1(3,4,5);
+    DM::Node n2(6,7,8);
+    std::vector<DM::Node*> nodes;
+    nodes.push_back(&n0);
+    nodes.push_back(&n1);
+    nodes.push_back(&n2);
+
+    DM::Face f(nodes);
+    DM::Face h(f);
+    f.addHole(&h);
+
+    ASSERT_TRUE(f.getNodePointers().size()==3);
+    ASSERT_TRUE(f.getHolePointers().size()==1);
+    ASSERT_TRUE(f.getHolePointers()[0]->getNodePointers().size()==3);
+
+    ASSERT_TRUE(*f.getNodePointers()[0]==n0);
+    ASSERT_TRUE(*f.getNodePointers()[1]==n1);
+    ASSERT_TRUE(*f.getNodePointers()[2]==n2);
+
+    ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[0]==n0);
+    ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[1]==n1);
+    ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
+
+
+
+/*
     std::vector<std::string> nodesin;
     nodesin.push_back("one");
     nodesin.push_back("two");
@@ -498,7 +525,7 @@ TEST_F(TestSimulation, SqlFaceOrder)
     for(unsigned int i=0;i<holesout[1].size();i++)
         ASSERT_TRUE(holesout[1][i] == hole1in[i]);
 
-    delete face;
+    delete face;*/
 }
 TEST_F(TestSimulation, SQLRasterdata)
 {
@@ -638,10 +665,10 @@ TEST_F(TestSimulation, SQLattributes)
     }
     delete a;
 }
-
+/*
 TEST_F(TestSimulation,sqlprofiling) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Test Profiling (SQL)";
 
     const int n = 1000;
@@ -736,7 +763,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
-}
+}*/
 
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;

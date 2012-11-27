@@ -332,8 +332,7 @@ Component * RasterData::clone() {
 
 void RasterData::SQLInsert()
 {
-    DBConnector::getInstance()->Insert("rasterdatas", uuid.toRfc4122(),
-                                                QString::fromStdString(stateUuid));
+    DBConnector::getInstance()->Insert("rasterdatas", uuid.toRfc4122());
 }
 
 
