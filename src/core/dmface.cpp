@@ -66,6 +66,7 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
                                                 QString::fromStdString(stateUuid),
                                        "nodes", GetBytes(nodes));
 }
+
 Face::Face(const Face& e) : Component(e, true)
 {
     DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
