@@ -353,12 +353,12 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu menu;
     QAction  * a_edit = menu.addAction("edit");
     QAction * a_rename = menu.addAction("rename");
-    QAction * a_reset = menu.addAction("reset module");
+    QAction * a_reset = menu.addAction("reset");
     QAction * a_delete = menu.addAction("delete");
-    QAction * a_showData = menu.addAction("show data stream");
-    QAction * a_viewData = menu.addAction("show viewer");
+    QAction * a_showData = menu.addAction("stream");
+    QAction * a_viewData = menu.addAction("viewer");
 
-    QAction * a_showHelp = menu.addAction("Help");
+    QAction * a_showHelp = menu.addAction("help");
     QAction * a_module_debug = 0;
     QAction * a_module_release = 0;
     
@@ -514,4 +514,6 @@ void ModelNode::setRelease() {
 void ModelNode::setResetModule()
 {
     this->getDMModel()->setExecuted(false);
+    this->simulation->reloadModules();
+    this->simulation->updateSimulation();
 }
