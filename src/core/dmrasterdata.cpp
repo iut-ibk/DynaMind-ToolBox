@@ -37,12 +37,12 @@ using namespace DM;
 
 RasterData::RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) : Component(true)
 {
-    DM::Logger(DM::Warning) << "New implemented RasterData --- please check existing code";
+    //DM::Logger(DM::Warning) << "New implemented RasterData --- please check existing code";
 
     this->width = width;
     this->height = height;
-    this->cellSizeX = cellSizeX;
-    this->cellSizeY = cellSizeY;
+    this->cellSizeX = cellsizeX;
+    this->cellSizeY = cellsizeY;
     this->xoffset = xoffset;
     this->yoffset = yoffset;
 

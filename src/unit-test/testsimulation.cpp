@@ -665,7 +665,7 @@ TEST_F(TestSimulation, SQLattributes)
     }
     delete a;
 }
-/*
+
 TEST_F(TestSimulation,sqlprofiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -751,7 +751,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     delete sys;
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
-
+/*
     // rasterdatas
     timer.restart();
     DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
@@ -761,9 +761,37 @@ TEST_F(TestSimulation,sqlprofiling) {
     timer.restart();
     delete raster;
     DM::DBConnector::getInstance()->CommitTransaction();
-    DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+    DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();*/
+}
 
-}*/
+TEST_F(TestSimulation,sqlRasterDataProfiling) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Test raster data profiling";
+
+    const int n = 200;
+    QElapsedTimer timer;
+    timer.restart();
+    DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
+    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+    timer.restart();
+    for(int x=0;x<n;x++)
+    {
+        for(int y=0;y<n;y++)
+        {
+            raster->setValue(x,y,x*1000+y);
+        }
+    }
+    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+    timer.restart();
+    delete raster;
+    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+}
 
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
