@@ -141,6 +141,9 @@ public:
      /** @brief Creates regular grid of points */
     static std::vector<DM::Node> CreateRaster(DM::System *sys, DM::Face *f, double gridSize);
 
+    /** @brief Add nodes and create Face */
+    static DM::Face * AddFaceToSystem(DM::System * sys, std::vector<DM::Node> nodes);
+
 };
 
 #endif // TBVECTORDATA_H

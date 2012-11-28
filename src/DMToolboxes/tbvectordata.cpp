@@ -629,3 +629,19 @@ std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, d
 
 }
 
+DM::Face * TBVectorData::AddFaceToSystem(DM::System *sys, std::vector<DM::Node> nodes)
+{
+    if (nodes.size() == 0)
+        return 0;
+
+    std::vector<DM::Node*> nodes_p;
+    foreach (DM::Node n, nodes) {
+        nodes_p.push_back(sys->addNode(n));
+    }
+    nodes_p.push_back(nodes_p[0]);
+
+    return sys->addFace(nodes_p);
+
+
+}
+
