@@ -50,10 +50,19 @@ class System;
 class Attribute;
 class Face;
 class Node;
+enum  RENDERTYPE {
+    GEOMETRYDRAWER,
+    MESHDRAWER,
+    TESSELATEDFACEDRAWER,
+    FACELINEDRAWER,
+    SIMPLEDRAWERNODES,
+    SIMPLEDRAWEREDGES
+
+};
 
 class DM_HELPER_DLL_EXPORT Layer {
 public:
-    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false);
+    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false, bool AsLine = false);
     ~Layer();
     
     void setColorInterpretation(GLuint texture) {
@@ -143,6 +152,7 @@ private:
     View view;
     ViewMetaData vmd;
     View attributeView; //use of maped attributes
+    RENDERTYPE rtype;
     
     std::string attribute;
     double scale_height;

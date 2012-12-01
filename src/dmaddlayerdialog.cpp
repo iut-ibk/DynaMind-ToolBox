@@ -86,7 +86,7 @@ DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
         return 0;
     //Change
     //DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked());
-    DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked(), ui->checkBoxAsMesh->isChecked());
+    DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked(), ui->checkBoxAsMesh->isChecked(), ui->checkBoxAsLine->isChecked());
     if (ui->colorCheckBox->isChecked()) {
         v->makeCurrent();
         l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex(),  l->LayerColor));

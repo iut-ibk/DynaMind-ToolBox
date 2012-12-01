@@ -62,11 +62,11 @@ template<int SD_GL_PRIMITIVE>
 struct SimpleDrawer {
 
     GLuint name_start;
-    
+
     SimpleDrawer(const Layer &l) : name_start(l.getNameStart()) {
-        
+
     }
-    
+
     void operator()(DM::System *s, DM::View v, void *f_e, DM::Node *n, iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
@@ -94,31 +94,31 @@ struct TesselatedFaceDrawer {
     double current_tex;
     int name_start;
     QProgressDialog *dialog;
-    
+
     TesselatedFaceDrawer(const Layer &l, QWidget *parent)
         : l(l), height_scale(0.0), name_start(l.getNameStart()) {
-        
+
         dialog = new QProgressDialog("Tesselating Polygons...", "cancel",
                                      0, l.getViewMetaData().number_of_primitives,
                                      parent);
         dialog->show();
-        
+
         if (l.getAttribute() == "") {
             return;
         }
-        
+
         const ViewMetaData &vmd = l.getViewMetaData();
         this->attr_span = vmd.attr_max - vmd.attr_min;
-        
+
         if (l.getHeightInterpretation() > 0.0 && this->attr_span != 0.0) {
             this->height_scale = 1.0/this->attr_span*vmd.radius() * l.getHeightInterpretation();
         }
     }
-    
+
     ~TesselatedFaceDrawer() {
         delete dialog;
     }
-    
+
     void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Node *n, iterator_pos pos) {
         if (pos == after) {
             render();
@@ -152,13 +152,13 @@ struct TesselatedFaceDrawer {
             }
             return;
         }
-        
+
         if (pos != in_between) return;
-        
+
         Point_2 p(n->getX(), n->getY());
         polygon.push_back(p);
     }
-    
+
     void render() {
         if (glIsTexture(l.getColorInterpretation())) {
             glEnable(GL_TEXTURE_1D);
@@ -169,6 +169,10 @@ struct TesselatedFaceDrawer {
             DM::Logger(DM::Error) << "Polygon is not simple can't perform tessilation";
             return;
         }
+        if(polygon.size() < 3) {
+            DM::Logger(DM::Error) << "Not a polygon";
+            return;
+        }
         if (polygon.is_clockwise_oriented())
             polygon.reverse_orientation();
         Polygon_list tesselated;
@@ -176,12 +180,12 @@ struct TesselatedFaceDrawer {
 
         CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
                                                std::back_inserter(tesselated), validity_traits);
-        
+
         glPushName(name_start);
         foreach(Polygon_2 poly, tesselated) {
 #if 1
             glBegin(GL_POLYGON);
-            
+
             foreach(Point_2 p, poly.container()) {
                 if (glIsTexture(l.getColorInterpretation())) {
                     glColor4f(1.0, 1.0, 1.0, 0.75);
@@ -200,7 +204,7 @@ struct TesselatedFaceDrawer {
             Point_2 first = poly.container().front();
             glVertex3d(first.x(), first.y(), 0);
 #endif
-            
+
             glEnd();
         }
         glPopName();
@@ -209,7 +213,7 @@ struct TesselatedFaceDrawer {
 };
 
 
-Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMesh)
+Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMesh, bool asLine)
     : system(s), view(v),
       attribute(a), vmd(a),
       texture(-1),
@@ -220,6 +224,29 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
 
     QString attr = QString::fromStdString(a);
     QStringList view_attr = attr.split(":");
+
+
+    if (view.getType() == DM::COMPONENT || this->as3DObject == true) {
+        this->rtype = GEOMETRYDRAWER;
+    }
+    if (view.getType() == DM::FACE && this->asMesh) {
+        this->rtype = MESHDRAWER;
+    }
+    if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
+        if (!asLine)
+            this->rtype = DM::TESSELATEDFACEDRAWER;
+        else
+            this->rtype = DM::FACELINEDRAWER;
+
+    }
+    if (view.getType() == DM::EDGE) {
+        this->rtype = SIMPLEDRAWEREDGES;
+    }
+    if (view.getType() == DM::NODE) {
+        this->rtype = SIMPLEDRAWERNODES;
+    }
+
+
 
     if (view_attr.size() != 2)
         return;
@@ -232,6 +259,45 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
 
 
 }
+
+struct FaceLineDrawer {
+
+    GLuint name_start;
+    DM::Node * first;
+    DM::Node * last;
+    FaceLineDrawer(const Layer &l) : name_start(l.getNameStart()) {
+
+    }
+
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+        if (pos == before) {
+            glPushName(name_start);
+            glBegin(GL_LINE_STRIP);
+            first = 0;
+            return;
+        }
+        if (pos == after) {
+            if (first) {
+                const double tmp[3] = {first->getX(), first->getY(), first->getZ()};
+                glVertex3dv(tmp);
+            }
+            glEnd();
+            glPopName();
+            name_start++;
+            return;
+        }
+
+        DM::Node * n = (DM::Node*) node;
+        if (!first)
+            first = n;
+        glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
+        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+        glVertex3dv(tmp);
+
+
+
+    }
+};
 
 struct GeomtryDrawer {
 
@@ -297,7 +363,7 @@ struct MeshDrawer {
             return;
         }
 
-        if (glIsTexture(l.getColorInterpretation())) {
+        if (attr_span != 0) {
             const ViewMetaData &vmd = l.getViewMetaData();
             Attribute *a = cmp->getAttribute(l.getAttribute());
 
@@ -341,25 +407,30 @@ void Layer::draw(QWidget *parent) {
     if (!glIsList(lists[attribute_vector_name])) {
         lists[attribute_vector_name] = glGenLists(1);
         glNewList(lists[attribute_vector_name], GL_COMPILE);
-        if (view.getType() == DM::COMPONENT || this->as3DObject == true) {
+        if (rtype == GEOMETRYDRAWER) {
             GeomtryDrawer drawer(*this);
             iterate_components(system, view, drawer);
         }
-        if (view.getType() == DM::FACE && this->asMesh) {
+        if (rtype == MESHDRAWER) {
             MeshDrawer drawer(*this);
             iterate_mesh(system, view, drawer);
         }
-        if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
+        if (rtype ==  FACELINEDRAWER) {
+            FaceLineDrawer drawer(*this);
+            iterate_faces(system, view, drawer);
+        }
+        if (rtype == TESSELATEDFACEDRAWER) {
             TesselatedFaceDrawer drawer(*this, parent);
             iterate_faces(system, view, drawer);
         }
-        if (view.getType() == DM::EDGE) {
-            SimpleDrawer<GL_LINES> drawer(*this);
-            iterate_edges(system, view, drawer);
-        }
-        if (view.getType() == DM::NODE) {
+        if (rtype == SIMPLEDRAWERNODES) {
             SimpleDrawer<GL_POINTS> drawer(*this);
             iterate_nodes(system, view, drawer);
+        }
+        if (rtype == SIMPLEDRAWEREDGES) {
+            SimpleDrawer<GL_LINES> drawer(*this);
+            iterate_edges(system, view, drawer);
+
         }
 
         glEndList();
@@ -378,21 +449,23 @@ void Layer::drawWithNames(QWidget *parent) {
 
 void Layer::systemChanged() {
     vmd = ViewMetaData(attribute);
-
-    if (view.getType() == DM::COMPONENT || this->as3DObject) {
+    if (rtype ==  GEOMETRYDRAWER) {
         iterate_components(system, view, vmd);
     }
-    if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
-        iterate_faces(system, view, vmd);
-    }
-    if (view.getType() == DM::FACE || this->asMesh) {
+    if (rtype ==  MESHDRAWER) {
         iterate_mesh(system, view, vmd);
     }
-    if (view.getType() == DM::EDGE) {
-        iterate_edges(system, view, vmd);
+    if (rtype ==  TESSELATEDFACEDRAWER) {
+        iterate_faces(system, view, vmd);
     }
-    if (view.getType() == DM::NODE) {
+    if (rtype ==  FACELINEDRAWER) {
+        iterate_faces(system, view, vmd);
+    }
+    if (rtype ==  SIMPLEDRAWERNODES) {
         iterate_nodes(system, view, vmd);
+    }
+    if (rtype ==  SIMPLEDRAWEREDGES) {
+        iterate_edges(system, view, vmd);
     }
 
     foreach (GLuint list, lists) {
