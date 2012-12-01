@@ -3,7 +3,7 @@
 
 #include <dm.h>
 #include <vector>
-class CGALSearchOperations
+class DM_HELPER_DLL_EXPORT CGALSearchOperations
 {
 public:
    /** @brief sorts a number of Points by its distance */
