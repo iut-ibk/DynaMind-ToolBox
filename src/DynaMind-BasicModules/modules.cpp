@@ -40,6 +40,7 @@
 #include "spatiallinking.h"
 #include "importwithgdal.h"
 #include "calculateboundingbox.h"
+#include "singlepoint.h"
 
 using namespace std;
 
@@ -61,5 +62,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<SpatialLinking>());
     registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
     registry->addNodeFactory(new NodeFactory<CalculateBoundingBox>());
+    registry->addNodeFactory(new NodeFactory<SinglePoint>());
 }
 

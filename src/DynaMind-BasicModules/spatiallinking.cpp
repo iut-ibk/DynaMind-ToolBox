@@ -97,13 +97,17 @@ void SpatialLinking::run() {
     int counterID = -1;
     foreach (std::string baseUUID, baseUUIDs) {
         counterID++;
-        Node c;
+        Node c(0,0,0);
         if (vbase.getType() == DM::FACE) {
             Face * f = city->getFace(baseUUID);
-            c = TBVectorData::CaclulateCentroid(city, f);
+            DM::Node d (TBVectorData::CaclulateCentroid(city, f));
+            c.setX(d.getX());
+            c.setY(d.getY());
+            c.setZ(d.getZ());
         }
         if (vbase.getType() == DM::NODE) {
-            c = Node(*(city->getNode(baseUUID)));
+            DM::Node * n1 = city->getNode(baseUUID);
+            c = DM::Node(n1->getX(), n1->getY(), n1->getZ());
         }
         centerPoints.push_back(QPointF(c.getX(), c.getY()));
         //CreateKey
