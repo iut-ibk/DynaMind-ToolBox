@@ -160,8 +160,6 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 
 double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vector<DM::Node> & boundingBox, std::vector<double> & size) {
 
-
-
     typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
     typedef K::Point_2                                          Point_2;
     typedef CGAL::Polygon_2<K>                                  Polygon_2;
@@ -173,14 +171,20 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
     Polygon_2 pls;
     std::vector<Point_2> lpoints;
-    for (unsigned int i = 0; i < nodes.size(); i++) {
+    int s_nodes = nodes.size();
+    if (nodes[0] == nodes[s_nodes-1])
+        s_nodes--;
+    for (unsigned int i = 0; i < s_nodes; i++) {
         DM::Node * n = nodes[i];
         lpoints.push_back(Point_2(n->getX(), n->getY()));
-
-
     }
 
+
+
     CGAL::convex_hull_2( lpoints.begin(), lpoints.end(), std::back_inserter(pls) );
+    if (!pls.is_simple()) {
+        return -1;
+    }
     Polygon_2 p_m;
     CGAL::min_rectangle_2(
                 pls.vertices_begin(), pls.vertices_end(), std::back_inserter(p_m));
@@ -315,6 +319,8 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
 std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
 
+    std::vector<DM::Node> resultVector;
+
     std::cout << "start intersection" << std::endl;
     typedef CGAL::Exact_predicates_exact_constructions_kernel K;
     typedef K::Point_2                                          Point;
@@ -343,9 +349,24 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
     Polygon_2 poly2;
 
+
+
     for (int i = 0; i < size_n2-1; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
+    }
+
+    print_polygon(poly1);
+    print_polygon(poly2);
+
+    if (!poly1.is_simple()) {
+        Logger(Debug) << "Polygon1 is not simple cant perform intersection";
+        return resultVector;
+    }
+    if (!poly2.is_simple()) {
+        Logger(Debug) << "Polygon2 is not simple cant perform intersection";
+
+        return resultVector;
     }
 
     CGAL::Orientation orient = poly1.orientation();
@@ -359,26 +380,15 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     }
 
 
-
-    if ((CGAL::do_intersect (poly1, poly2)))
+    /*if ((CGAL::do_intersect (poly1, poly2)))
         DM::Logger(DM::Debug) << "The two polygons intersect in their interior.";
     else
-        DM::Logger(DM::Debug) << "The two polygons do not intersect.";
+        DM::Logger(DM::Debug) << "The two polygons do not intersect.";*/
 
     Pwh_list_2                  intR;
     Pwh_list_2::const_iterator  it;
 
-    print_polygon(poly1);
-    print_polygon(poly2);
-
-    std::cout << "Start intersection" << std::endl;
-
     CGAL::intersection (poly1, poly2, std::back_inserter(intR));
-
-    std::vector<DM::Node> resultVector;
-
-
-
 
     for (it = intR.begin(); it != intR.end(); ++it) {
 
@@ -398,6 +408,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
                 resultVector.push_back(DM::Node(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
         }
     }
+    std::cout << "end intersection" << std::endl;
     if (resultVector.size() < 3)
         DM::Logger(DM::Error) << "Something went wrong";
     return resultVector;
