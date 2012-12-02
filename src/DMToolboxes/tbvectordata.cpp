@@ -167,11 +167,16 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     //Check if first is last
     if (f->getNodes().size() < 3)
         return DM::Node(0,0,0);
+
+
     std::vector<std::string> NodeUUIDs = f->getNodes();
     std::vector<DM::Node *> nodes;
     foreach (std::string uuid, NodeUUIDs) {
         nodes.push_back(sys->getNode(uuid));
     }
+
+    //Offset Points to fix problem with big number
+    DM::Node offsetN = MinCoordinates(nodes);
 
     DM::Node * pend = nodes[nodes.size()-1];
     DM::Node * pstart = nodes[0];
@@ -182,24 +187,24 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
     double x = 0;
     double y = 0;
     for (unsigned int i = 0; i< nodes.size()-1;i++) {
-        DM::Node * p_i = nodes[i];
-        DM::Node * p_i1 = nodes[i+1];
+        DM::Node p_i = *nodes[i] - offsetN;
+        DM::Node p_i1 = *nodes[i+1] - offsetN;
 
-        x+= (p_i->getX() + p_i1->getX())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
-        y+= (p_i->getY() + p_i1->getY())*(p_i->getX() * p_i1->getY() - p_i1->getX() * p_i->getY());
+        x+= (p_i.getX() + p_i1.getX())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
+        y+= (p_i.getY() + p_i1.getY())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
 
 
     }
     if (!startISEnd) {
-        x+= (pend->getX() + pstart->getX())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
-        y+= (pend->getY() + pstart->getY())*(pend->getX() * pstart->getY() - pstart->getX() * pend->getY());
+        x+= (pend->getX() - offsetN.getX() + pstart->getX() - offsetN.getX())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
+        y+= (pend->getY()-  offsetN.getY() + pstart->getY()-  offsetN.getY())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
 
     }
 
 
 
     DM::Node n1 = *(nodes[0]) - *(nodes[1]);
-    DM::Node n2 = *(nodes[1]) -  *(nodes[2]);
+    DM::Node n2 = *(nodes[1]) - *(nodes[2]);
 
 
 
@@ -209,7 +214,7 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
         y = y*-1;
     }
 
-    return DM::Node(x/A6,y/A6,nodes[0]->getZ());
+    return DM::Node(x/A6 + offsetN.getX(),y/A6 + offsetN.getY(),nodes[0]->getZ());
 }
 double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 {
@@ -642,6 +647,32 @@ DM::Face * TBVectorData::AddFaceToSystem(DM::System *sys, std::vector<DM::Node> 
 
     return sys->addFace(nodes_p);
 
+
+}
+
+DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
+{
+    double minx, miny, minz;
+
+    if (nodes.size() < 1) {
+        DM::Logger(DM::Warning) << "no nodes";
+        return DM::Node();
+    }
+
+    minx = nodes[0]->getX();
+    miny = nodes[1]->getY();
+    minz = nodes[2]->getZ();
+
+    foreach (DM::Node * n, nodes) {
+        if (minx > n->getX())
+            minx = n->getX();
+        if (miny > n->getY())
+            miny = n->getY();
+        if (minz > n->getZ())
+            minz = n->getZ();
+    }
+
+    return DM::Node(minx, miny, minz);
 
 }
 
