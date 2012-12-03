@@ -1,0 +1,33 @@
+INCLUDE(CheckTypeSize)
+CHECK_TYPE_SIZE (long LONG_SIZE)
+
+IF(${LONG_SIZE} EQUAL 4)
+    MESSAGE(STATUS 32bit-System)
+ENDIF()
+
+IF(${LONG_SIZE} EQUAL 8)
+    MESSAGE(STATUS 64bit-System)
+ENDIF()
+
+OPTION(CLE "Compile as a command line executable" "OFF")
+
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    MESSAGE(STATUS "Using GNU compilers")
+    ADD_DEFINITIONS(-Wno-format-security -Wno-format)
+ELSE()
+    ADD_DEFINITIONS(/D _CRT_SECURE_NO_WARNINGS)
+    ADD_DEFINITIONS(-DDLL)
+ENDIF()
+
+FILE(GLOB_RECURSE EPANET_CPP_FILES ./ *.c)
+
+ADD_LIBRARY(epanet2 SHARED ${EPANET_CPP_FILES})
+
+IF(${CLE})
+    ADD_DEFINITIONS(-DCLE)
+    ADD_EXECUTABLE(Ep2 ${EPANET_CPP_FILES})
+    INSTALL(TARGETS Ep2 DESTINATION bin)
+    MESSAGE(STATUS "Building executable")
+ELSE()
+    MESSAGE(STATUS "Type \"cmake -DCLE=ON [path]\" to build an Epanet executable")
+ENDIF()
