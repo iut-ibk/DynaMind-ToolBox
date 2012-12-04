@@ -747,6 +747,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     }
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
+
     delete baseNode;
     delete sys;
     DM::DBConnector::getInstance()->CommitTransaction();

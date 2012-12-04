@@ -67,14 +67,14 @@ class  DM_HELPER_DLL_EXPORT System : public Component
 {
 private:
     //QMutex * mutex;
-    std::map<std::string, Node* > nodes;
-    std::map<std::string, Edge* > edges;
-    std::map<std::string, Face* > faces;
-    std::map<std::string, RasterData *> rasterdata;
-    std::map<std::string, System*> subsystems;
-    std::map<std::string, Component* > components;
+    std::map<QUuid, Node* > nodes;
+    std::map<QUuid, Edge* > edges;
+    std::map<QUuid, Face* > faces;
+    std::map<QUuid, RasterData *> rasterdata;
+    std::map<QUuid, System*> subsystems;
+    std::map<QUuid, Component* > components;
 
-    std::map<std::string, Component*> ownedchilds;
+    std::map<QUuid, Component*> ownedchilds;
 
     std::map<std::string, View*> viewdefinitions;
     std::map<std::string, std::map<std::string, Component*> > views;   
@@ -92,16 +92,25 @@ private:
 
     void SQLInsert();
     void SQLUpdateStates();
-	//TODO No idea waht this is
+
     bool addChild(Component *newcomponent);
-    bool removeChild(std::string name);
-    Component* getChild(std::string name);
+    DEPRECATED(bool removeChild(std::string name));
+    bool removeChild(QUuid uuid);
+    bool removeChild(Component* c);
+    DEPRECATED(Component* getChild(std::string name));
+    Component* getChild(QUuid uuid);
+    Component* findChild(QUuid uuid) const;
     /** @brief return table name */
     QString getTableName();
+    Component* getComponent(QUuid uuid);
+    Node* getNode(QUuid uuid);
+    Edge* getEdge(QUuid uuid);
+    System* getSubSystem(QUuid uuid);
 protected:
 	std::string getStateUuid();
 public:
-	std::map<std::string, Component*> getAllChilds();
+    std::map<std::string, Component*> DEPRECATED(getAllChilds());
+    std::vector<Component*> getChilds();
     /** @brief Copies a System  */
     System(const System& s);
     /** @brief creates a new System */
@@ -133,11 +142,11 @@ public:
     /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
     /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist*/
-    Component* getComponent(std::string uuid);
+    DEPRECATED(Component* getComponent(std::string uuid));
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exist*/
-    Node* getNode(std::string uuid);
+    DEPRECATED(Node* getNode(std::string uuid));
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
-    Edge* getEdge(std::string uuid);
+    DEPRECATED(Edge* getEdge(std::string uuid));
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
     Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
     /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist*/
@@ -145,23 +154,23 @@ public:
     /** @brief Removes an Edge. Returns false if the edge doesn't exist */
     bool removeEdge(std::string uuid);
     /** @brief Removes a Node. Returns false if the node doesn't exist */
-    bool removeNode(std::string uuid);
+    DEPRECATED(bool removeNode(std::string uuid));
     /** @brief Removes a Component. Returns false if the component doesn't exist */
-    bool removeComponent(std::string uuid);
+    DEPRECATED(bool removeComponent(std::string uuid));
     /** @brief Removes a Face. Returns false if the face doesn't exist */
     bool removeFace(std::string uuid);
     /** @brief Returns a map of nodes stored in the system */
-    std::map<std::string, Component*> getAllComponents();
+    std::map<std::string, Component*> DEPRECATED(getAllComponents());
     /** @brief Returns a map of nodes stored in the system */
-    std::map<std::string, Node*> getAllNodes();
+    std::map<std::string, Node*> DEPRECATED(getAllNodes());
     /** @brief Returns a map of edges stored in the system */
-    std::map<std::string, Edge*> getAllEdges();
+    std::map<std::string, Edge*> DEPRECATED(getAllEdges());
     /** @brief Returns a map of faces stored in the system */
-    std::map<std::string, Face*> getAllFaces();
+    std::map<std::string, Face*> DEPRECATED(getAllFaces());
     /** @brief Returns a map of subsystems stored in the system */
-    std::map<std::string, System*> getAllSubSystems();
+    std::map<std::string, System*> DEPRECATED(getAllSubSystems());
     /** @brief Returns a map of rasterdata stored in the system */
-    std::map<std::string, RasterData*> getAllRasterData();
+    std::map<std::string, RasterData*> DEPRECATED(getAllRasterData());
     /** @brief Returns the predecessor of the system */
     std::vector<System*> getPredecessors();
     /** @brief Returns the sucessor of the system */
@@ -171,7 +180,7 @@ public:
     /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
     bool removeSubSystem(std::string uuid);
     /** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist */
-    System* getSubSystem(std::string uuid);
+    DEPRECATED(System* getSubSystem(std::string uuid));
     /** @brief Creates a new Successor state
        *
        * @todo add a more detailed description here
@@ -208,6 +217,68 @@ public:
 
 typedef std::map<std::string, DM::System*> SystemMap;
 }
+
+
+// mforeach
+
+struct ForeachBaseBase {};
+
+template <typename T1, typename T2>
+class ForeachBase: public ForeachBaseBase
+{
+public:
+    inline ForeachBase(const std::map<T1,T2>& t): c(t), brk(0), i(c.begin()), e(c.end()){};
+    const std::map<T1,T2> c;
+    mutable int brk;
+    mutable typename std::map<T1,T2>::const_iterator i, e;
+    inline bool condition() const { return (!brk++ && i != e);}
+};
+
+template <typename T1, typename T2> inline std::map<T1,T2> *pMForeachPointer(const std::map<T1,T2> &) { return 0; }
+
+template <typename T1, typename T2> inline ForeachBase<T1,T2> pMForeachBaseNew(const std::map<T1,T2>& t)
+{ return ForeachBase<T1,T2>(t); }
+
+template <typename T1, typename T2>
+inline const ForeachBase<T1,T2> *pMForeachBase(const ForeachBaseBase *base, const std::map<T1,T2> *)
+{ return static_cast<const ForeachBase<T1,T2> *>(base); }
+
+
+#if defined(Q_CC_MIPS)
+/*
+   Proper for-scoping in MIPSpro CC
+*/
+#  define MAP_FOREACH(variable,container)                                                             \
+    if(0){}else                                                                                     \
+    for (const ForeachBaseBase &_container_ = pMForeachBaseNew(container);                \
+         pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->condition();       \
+         ++pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->i)               \
+        for (variable = pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->i->second; \
+             pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->brk;           \
+             --pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->brk)
+
+#elif defined(Q_CC_DIAB)
+// VxWorks DIAB generates unresolvable symbols, if container is a function call
+#  define MAP_FOREACH(variable,container)                                                             \
+    if(0){}else                                                                                     \
+    for (const ForeachBaseBase &_container_ = pMForeachBaseNew(container);                \
+         pMForeachBase(&_container_, (__typeof__(container) *) 0)->condition();       \
+         ++pMForeachBase(&_container_, (__typeof__(container) *) 0)->i)               \
+        for (variable = pMForeachBase(&_container_, (__typeof__(container) *) 0)->i->second; \
+             pMForeachBase(&_container_, (__typeof__(container) *) 0)->brk;           \
+             --pMForeachBase(&_container_, (__typeof__(container) *) 0)->brk)
+
+#else
+#  define MAP_FOREACH(variable, container) \
+    for (const ForeachBaseBase &_container_ = pMForeachBaseNew(container); \
+         pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->condition();       \
+         ++pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->i)               \
+        for (variable = pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->i->second; \
+             pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->brk;           \
+             --pMForeachBase(&_container_, true ? 0 : pMForeachPointer(container))->brk)
+#endif // MSVC6 || MIPSpro
+
+#define mforeach MAP_FOREACH
 
 
 #endif // SYSTEM_H
