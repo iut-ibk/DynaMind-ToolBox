@@ -18,17 +18,9 @@ AUTHOR:     L. Rossman
 // --- Define DLLEXPORT
 
 #ifdef DLL
-  #ifdef __cplusplus
   #define DLLEXPORT extern "C" __declspec(dllexport) __stdcall
-  #else
-  #define DLLEXPORT __declspec(dllexport) __stdcall
-  #endif
 #else
-  #ifdef __cplusplus
   #define DLLEXPORT __attribute__ ((visibility("default")))
-  #else
-  #define DLLEXPORT
-  #endif
 #endif
 
 // --- Define the EPANET toolkit constants
