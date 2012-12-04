@@ -37,7 +37,7 @@
 namespace DM {
 
 
-enum {
+enum ACCESS{
     READ,
     MODIFY,
     WRITE
