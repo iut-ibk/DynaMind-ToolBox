@@ -18,7 +18,7 @@ AUTHOR:     L. Rossman
 // --- Define DLLEXPORT
 
 #ifdef DLL
-  #define DLLEXPORT extern "C" __declspec(dllexport) __stdcall
+  #define DLLEXPORT __declspec(dllexport)
 #else
   #define DLLEXPORT __attribute__ ((visibility("default")))
 #endif
