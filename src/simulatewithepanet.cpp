@@ -40,22 +40,37 @@
 #include <list>
 #include <cmath>
 
+//Watersupply
+#include <watersupplyviewdef.h>
+
 //EPANET
 extern "C"
 {
     #include <toolkit.h>
 }
 
+using namespace DM;
+
 DM_DECLARE_NODE_NAME(SimulateWithEPANET,Watersupply)
 
 SimulateWithEPANET::SimulateWithEPANET()
 {   
-
+    WS::ViewDefinitionHelper wsd;
+    this->addData("Layout", wsd.getAll(DM::MODIFY));
 }
 
 void SimulateWithEPANET::run()
 {
+    //write EPANET input file
+    std::string inputfile = "";
+
+    //write Junctions
+    //Logger(Debug) << WSSTRING[JUNCTION];
+
     int ret = ENopen("/home/csae6550/Desktop/EN_goefis.inp","/home/csae6550/Desktop/EN_goefis.rpt","");
+
+
+
     ENopenH();
     ENinitH(1);
     ENsolveH();
