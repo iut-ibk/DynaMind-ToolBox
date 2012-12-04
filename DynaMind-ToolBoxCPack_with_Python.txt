@@ -52,7 +52,13 @@ IF(WIN32 AND NOT UNIX)
      INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
      INSTALL (DIRECTORY "C:/winlibs/Python27/" DESTINATION bin)
      INSTALL (DIRECTORY "C:/winlibs/GDAL/" DESTINATION bin)
+
      INSTALL(FILES ${DLLS} DESTINATION bin)
+
+     INSTALL(FILE "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" bin)
+     INSTALL(FILE ${QT_BINARY_DIR}/../plugins/sqldrivers/qsqlite4.dll bin/plugins/sqldrivers)
+     INSTALL( ${QT_PLUINGS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin)
+
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
         WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\lib\\\\DynaMind\\\\3dparty\\\\Editra\\\\\\\"

@@ -53,6 +53,10 @@ SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com")
      INSTALL (DIRECTORY "C:/winlibs/GDAL/" DESTINATION bin)
      INSTALL(FILES ${DLLS} DESTINATION bin)
 
+     INSTALL(FILE "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" bin)
+     INSTALL(FILE ${QT_BINARY_DIR}/../plugins/sqldrivers/qsqlite4.dll bin/plugins/sqldrivers)
+     INSTALL( ${QT_PLUINGS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin)
+
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
