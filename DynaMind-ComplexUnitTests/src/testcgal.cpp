@@ -3,6 +3,7 @@
 #include <dm.h>
 #include <tbvectordata.h>
 #include <cgalgeometry.h>
+#include <cgalsearchoperations.h>
 #include <dmlog.h>
 namespace {
 TEST_F(TestCGAL, triangulation){
@@ -221,7 +222,7 @@ TEST_F(TestCGAL, intersectionTest){
     if (interested.size() < 3)
         return;
     foreach (DM::Node n, interested) {
-            nodes_i.push_back(sys->addNode(n.getX(), n.getY(), n.getZ()));
+        nodes_i.push_back(sys->addNode(n.getX(), n.getY(), n.getZ()));
     }
 
     nodes_i.push_back(nodes_i[0]);
@@ -281,6 +282,30 @@ TEST_F(TestCGAL, dointersectionTest){
     ASSERT_TRUE(DM::CGALGeometry::DoFacesInterect(nodes, nodes1));
     ASSERT_FALSE(DM::CGALGeometry::DoFacesInterect(nodes, nodes2));
 
+}
+
+TEST_F(TestCGAL, simpleNodeSearch){
+    DM::System * sys = new DM::System();
+
+    DM::Node * n1_1 = sys->addNode(DM::Node(1,1,0));
+    DM::Node * n2_1 = sys->addNode(DM::Node(1,2,0));
+    DM::Node * n3_1 = sys->addNode(DM::Node(2,3,0));
+    DM::Node * n4_1 = sys->addNode(DM::Node(0,4,0));
+
+    std::vector<DM::Node * > nodes1;
+    nodes1.push_back(n4_1);
+    nodes1.push_back(n1_1);
+    nodes1.push_back(n2_1);
+    nodes1.push_back(n3_1);
+
+
+    DM::Node searchNode(1,6,0);
+
+    std::vector<DM::Node> rn = CGALSearchOperations::NearestPoints(nodes1, &searchNode);
+    EXPECT_GT(rn.size(), 0);
+    DM::Node n1 = rn[0];
+    EXPECT_DOUBLE_EQ(n1.getX(), 0);
+    EXPECT_DOUBLE_EQ(n1.getY(), 4);
 }
 
 }
