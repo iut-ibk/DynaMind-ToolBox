@@ -55,6 +55,8 @@ IF(WIN32 AND NOT UNIX)
 
      INSTALL(FILES ${DLLS} DESTINATION bin)
 
+     FIND_PACKAGE(Qt4 REQUIRED)
+     SET(QT_USE_QTSQL true)
      INSTALL(FILE "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" bin)
      INSTALL(FILE ${QT_BINARY_DIR}/../plugins/sqldrivers/qsqlite4.dll bin/plugins/sqldrivers)
      INSTALL( ${QT_PLUINGS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin)
