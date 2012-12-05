@@ -28,6 +28,8 @@
 #include "dmview.h"
 #include <dmmodule.h>
 #include <dmattribute.h>
+#include <dmcomponent.h>
+
 namespace DM {
 View::View(std::string name, int type, int accesstypeGeometry)
 {
@@ -45,11 +47,13 @@ View::View() {
 /*
 void View::setIdOfDummyComponent(std::string UUID) {
     this->IdofDummyComponent = UUID;
-}
-
-std::string View::getIdOfDummyComponent() {
-    return this->IdofDummyComponent;
 }*/
+
+std::string View::getIdOfDummyComponent()
+{
+    return dummy->getUUID();
+    //return this->IdofDummyComponent;
+}
 void View::setDummyComponent(Component* c) {
     dummy = c;
 }

@@ -143,8 +143,9 @@ public:
     void setDummyComponent(Component *c);
     Component* getDummyComponent();
 
-    /** @brief returns uuid of the dummy object */
-    //std::string getIdOfDummyComponent();
+    /** @brief returns uuid of the dummy object
+        @deprecated*/
+    std::string getIdOfDummyComponent();
 
     bool operator<(const View & other) const;
 
