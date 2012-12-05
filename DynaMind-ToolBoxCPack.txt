@@ -40,6 +40,9 @@ SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com")
               ${CGAL_DIR}/bin/CGAL-vc90-mt-4.0.2.dll
               ${QGLVIEWER_INCLUDE_DIR}/QGLViewer/release/QGLViewer2.dll
               ${Boost_LIBRARY_DIRS}/boost_python-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIRS}/boost_thread-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIRS}/boost_chrono-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIRS}/boost_graph-*-mt-1_*.dll
               ${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
               ${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
               ${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
@@ -49,6 +52,12 @@ SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com")
      INSTALL(DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
      INSTALL (DIRECTORY "C:/winlibs/GDAL/" DESTINATION bin)
      INSTALL(FILES ${DLLS} DESTINATION bin)
+
+     FIND_PACKAGE(Qt4 REQUIRED QtSql)
+     MESSAGE(STATUS "QT PLUGINS DIR: " ${QT_PLUGINS_DIR})
+     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
+     INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin/plugins/sqldrivers)
+     INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlmysql4.dll DESTINATION bin/plugins/sqldrivers)
 
 
      set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
