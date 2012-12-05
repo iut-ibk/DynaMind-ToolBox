@@ -80,6 +80,7 @@ public:
     /** @brief Add hole
            @deprecated*/
     void addHole(std::vector<std::string> hole);
+    void addHole(std::vector<Node*> hole);
     void addHole(Face* hole);
 
 };

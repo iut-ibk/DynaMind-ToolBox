@@ -222,14 +222,14 @@ void Face::addHole(std::vector<std::string> hole)
     System *curSys = this->getCurrentSystem();
     std::vector<Node*> holeNodes;
     foreach(std::string uuidNodes, hole)
-    {
         holeNodes.push_back(curSys->getNode(uuidNodes));
-    }
-    _holes.push_back(curSys->addFace(holeNodes));
 
-    /*std::vector<std::vector<std::string> > holes = getHoles();
-    holes.push_back(hole);
-    SQLSetHoles(holes);*/
+    addHole(holeNodes);
+}
+
+void Face::addHole(std::vector<Node*> hole)
+{
+    _holes.push_back(getCurrentSystem()->addFace(hole));
 }
 
 void Face::addHole(Face* hole)
