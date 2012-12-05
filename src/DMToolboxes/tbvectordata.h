@@ -7,17 +7,17 @@
  * This file is part of DynaMind
  *
  * Copyright (C) 2011-2012  Christian Urich and Michael Mair
- 
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- 
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -87,7 +87,7 @@ public:
      *  Z coorindates of the extruded walls are (z + height)
      *  If the option with lid is true the last entry in the return vector points to the lid
      */
-    static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp, const float & height, bool withLid = true);
+    static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp,  double height, double offset = 0, bool withLid = true);
 
     /** @brief Calculates centroid of a 3D plane.
      *
@@ -97,7 +97,7 @@ public:
     static DM::Node CentroidPlane3D(DM::System * sys, DM::Face * f);
 
     /** @brief Calculates cnetroid of a plane, see CentroidPlane3D */
-    //static DM::Node CentroidPlane(const std::vector<DM::Node*> & nodes);
+    static DM::Node CentroidPlane(const std::vector<DM::Node*> & nodes);
 
     /** @brief Calulates v' = alphas v and returns  v' as new node */
     static DM::Node RotateVector(double (&R)[3][3], const DM::Node & n1);
@@ -134,6 +134,19 @@ public:
 
     /** @brief Calculate distance of two nodes A and B */
     static double calculateDistance(DM::Node *a, DM::Node *b);
+
+    /** @brief Creates a circle */
+    static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);
+
+     /** @brief Creates regular grid of points */
+    static std::vector<DM::Node> CreateRaster(DM::System *sys, DM::Face *f, double gridSize);
+
+    /** @brief Add nodes and create Face */
+    static DM::Face * AddFaceToSystem(DM::System * sys, std::vector<DM::Node> nodes);
+
+    /** @brief Return node with min x, min y and min z */
+    static DM::Node MinCoordinates(std::vector<DM::Node*> & nodes);
+
 };
 
 #endif // TBVECTORDATA_H
