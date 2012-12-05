@@ -86,7 +86,7 @@
 #        pragma warning( disable : 4275 )    // non &#8211; DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier'
 #        pragma warning( disable : 4251 )    // like warning above but for templates (like std::string)
 #endif
-
+/*
 #ifdef __GNUC__
 #define DEPRECATED(func) func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
@@ -95,5 +95,5 @@
 #pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #define DEPRECATED(func) func
 #endif
-
+*/
 #endif //COMPILERSETTINGS_H

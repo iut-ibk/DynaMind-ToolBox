@@ -67,10 +67,14 @@ namespace DM {
         const std::string getEndpointName() const;
         /** @brief set uuid to that points to the start node */
         void setStartpoint(Node* start);
-        DEPRECATED(void setStartpointName(std::string name));
+        /** @brief set uuid to that points to the start node
+            @deprecated*/
+        void setStartpointName(std::string name);
         /** @brief set uuid that points to the end node */
         void setEndpoint(Node* end);
-        DEPRECATED(void setEndpointName(std::string name));
+        /** @brief set uuid that points to the end node
+            @deprecated*/
+        void setEndpointName(std::string name);
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
         /** @brief returns both points*/

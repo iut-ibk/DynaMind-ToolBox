@@ -28,6 +28,7 @@
 
 #include "dmcompilersettings.h"
 #include <dmcomponent.h>
+#include "dmdbconnector.h"
 
 
 
@@ -41,7 +42,7 @@ public:
     RasterData(const RasterData &other);
     RasterData();
 	Components getType();
-    virtual ~RasterData();
+    ~RasterData();
     void clear();
     double getValue(long x, long y) const;
     double getCell(long x, long y) const;
@@ -79,17 +80,12 @@ private:
     double NoValue;
     double xoffset;
     double yoffset;
-
     double minValue;
     double maxValue;
-
     int debugValue;
-    //bool isClone;
+    Cache<long,QByteArray> *rowCache;
 
-    //void createNewDataSet();
-
-	void SQLInsert();
-    //void SQLDelete();
+    void SQLInsert();
 	void SQLDeleteField();
     void SQLInsertField(long width, long height);
     double SQLGetValue(long x, long y) const;
@@ -99,7 +95,6 @@ private:
     //void SQLUpdateLink(int id);
 
     //int GetLinkID() const;
-	//void SQLSetValues();
     /** @brief return table name */
     QString getTableName();
 };

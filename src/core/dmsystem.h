@@ -94,10 +94,12 @@ private:
     void SQLUpdateStates();
 
     bool addChild(Component *newcomponent);
-    DEPRECATED(bool removeChild(std::string name));
+    /*@deprecated*/
+    bool removeChild(std::string name);
     bool removeChild(QUuid uuid);
     bool removeChild(Component* c);
-    DEPRECATED(Component* getChild(std::string name));
+    /*@deprecated*/
+    Component* getChild(std::string name);
     Component* getChild(QUuid uuid);
     Component* findChild(QUuid uuid) const;
     /** @brief return table name */
@@ -107,9 +109,10 @@ private:
     Edge* getEdge(QUuid uuid);
     System* getSubSystem(QUuid uuid);
 protected:
-	std::string getStateUuid();
+    //std::string getStateUuid();
 public:
-    std::map<std::string, Component*> DEPRECATED(getAllChilds());
+    /*@deprecated*/
+    std::map<std::string, Component*> getAllChilds();
     std::vector<Component*> getChilds();
     /** @brief Copies a System  */
     System(const System& s);
@@ -141,36 +144,49 @@ public:
     Face * addFace(Face * f);
     /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
-    /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist*/
-    DEPRECATED(Component* getComponent(std::string uuid));
-    /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exist*/
-    DEPRECATED(Node* getNode(std::string uuid));
-    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
-    DEPRECATED(Edge* getEdge(std::string uuid));
-    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist*/
+    /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
+        @deprecated*/
+    Component* getComponent(std::string uuid);
+    /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
+        @deprecatedt*/
+    Node* getNode(std::string uuid);
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exis
+        @deprecatedt*/
+    Edge* getEdge(std::string uuid);
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
+        @deprecated*/
     Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
-    /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist*/
+    /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist
+        @deprecated*/
     Face * getFace(std::string uuid);
     /** @brief Removes an Edge. Returns false if the edge doesn't exist */
     bool removeEdge(std::string uuid);
-    /** @brief Removes a Node. Returns false if the node doesn't exist */
-    DEPRECATED(bool removeNode(std::string uuid));
-    /** @brief Removes a Component. Returns false if the component doesn't exist */
-    DEPRECATED(bool removeComponent(std::string uuid));
+    /** @brief Removes a Node. Returns false if the node doesn't exist
+        @deprecated*/
+    bool removeNode(std::string uuid);
+    /** @brief Removes a Component. Returns false if the component doesn't exist
+        @deprecated*/
+    bool removeComponent(std::string uuid);
     /** @brief Removes a Face. Returns false if the face doesn't exist */
     bool removeFace(std::string uuid);
-    /** @brief Returns a map of nodes stored in the system */
-    std::map<std::string, Component*> DEPRECATED(getAllComponents());
-    /** @brief Returns a map of nodes stored in the system */
-    std::map<std::string, Node*> DEPRECATED(getAllNodes());
-    /** @brief Returns a map of edges stored in the system */
-    std::map<std::string, Edge*> DEPRECATED(getAllEdges());
-    /** @brief Returns a map of faces stored in the system */
-    std::map<std::string, Face*> DEPRECATED(getAllFaces());
-    /** @brief Returns a map of subsystems stored in the system */
-    std::map<std::string, System*> DEPRECATED(getAllSubSystems());
-    /** @brief Returns a map of rasterdata stored in the system */
-    std::map<std::string, RasterData*> DEPRECATED(getAllRasterData());
+    /** @brief Returns a map of nodes stored in the system
+        @deprecated*/
+    std::map<std::string, Component*> getAllComponents();
+    /** @brief Returns a map of nodes stored in the system
+        @deprecated*/
+    std::map<std::string, Node*> getAllNodes();
+    /** @brief Returns a map of edges stored in the system
+        @deprecated*/
+    std::map<std::string, Edge*> getAllEdges();
+    /** @brief Returns a map of faces stored in the system
+        @deprecated*/
+    std::map<std::string, Face*> getAllFaces();
+    /** @brief Returns a map of subsystems stored in the system
+        @deprecated*/
+    std::map<std::string, System*> getAllSubSystems();
+    /** @brief Returns a map of rasterdata stored in the system
+        @deprecated*/
+    std::map<std::string, RasterData*> getAllRasterData();
     /** @brief Returns the predecessor of the system */
     std::vector<System*> getPredecessors();
     /** @brief Returns the sucessor of the system */
@@ -179,8 +195,9 @@ public:
     System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
     /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
     bool removeSubSystem(std::string uuid);
-    /** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist */
-    DEPRECATED(System* getSubSystem(std::string uuid));
+    /** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist
+        @deprecated*/
+    System* getSubSystem(std::string uuid);
     /** @brief Creates a new Successor state
        *
        * @todo add a more detailed description here
@@ -227,7 +244,7 @@ template <typename T1, typename T2>
 class ForeachBase: public ForeachBaseBase
 {
 public:
-    inline ForeachBase(const std::map<T1,T2>& t): c(t), brk(0), i(c.begin()), e(c.end()){};
+    inline ForeachBase(const std::map<T1,T2>& t): c(t), brk(0), i(c.begin()), e(c.end()){}
     const std::map<T1,T2> c;
     mutable int brk;
     mutable typename std::map<T1,T2>::const_iterator i, e;
