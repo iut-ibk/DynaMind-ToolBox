@@ -160,6 +160,9 @@ bool DBConnector::DropTables()
 
 DBConnector::DBConnector()
 {
+    if(QFile::exists("testdb"))
+        QFile::remove("testdb");
+
     _db = QSqlDatabase::addDatabase("QSQLITE");
     //_db.setDatabaseName(":memory:");
     _db.setDatabaseName("testdb");
