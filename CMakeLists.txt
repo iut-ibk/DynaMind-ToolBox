@@ -10,7 +10,7 @@ ENDIF()
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
         message(STATUS "Using GNU compilers")
-        set(CMAKE_CXX_FLAGS "-g -Wall")
+        set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
@@ -27,16 +27,26 @@ OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
 OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
 OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" OFF)
 OPTION(WITH_PLUGIN_QGIS "if with QGIS plugin" OFF)
+OPTION(WITH_PLUGIN_BASICMODULES "if with BASICMODULES plugin" ON)
+OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 
 find_package(Git REQUIRED)
 
-set(TOOLBOX DynaMind DynaMind-Gui DynaMind-BasicModules)
+set(TOOLBOX DynaMind)
 
 if(WITH_UNIT_TESTS)
     set(WITH_PLUGIN_CITYBLOCKS ON CACHE BOOL "" FORCE)
     set(WITH_PLUGIN_SEWER ON CACHE BOOL "" FORCE)
 endif(WITH_UNIT_TESTS)
+
+if(WITH_PLUGIN_BASICMODULES)
+    set(TOOLBOX ${TOOLBOX} DynaMind-BasicModules)
+endif(WITH_PLUGIN_BASICMODULES)
+
+if(WITH_GUI)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Gui)
+endif(WITH_GUI)
 
 if(WITH_EXTENSIONS)
     set(TOOLBOX ${TOOLBOX} DynaMind-Extensions)
