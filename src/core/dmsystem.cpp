@@ -668,7 +668,7 @@ bool System::addView(View view)
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
         if (view.getAttributeType(a) == Attribute::LINK) {
-            attr.setLink(view.getLinkName(a), "");
+            attr.setLink(view.getNameOfLinkedView(a), "");
         }
         dummy->addAttribute(attr);
     }

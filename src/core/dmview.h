@@ -158,8 +158,11 @@ public:
     /** @brief Adds link attribute */
     void addLinks(std::string name, View linkto);
 
+    /** @brief Returns names of object that link to other views */
+    std::vector<std::string> getNamesOfLinks();
 
-    std::string getLinkName(std::string name);
+    /** @brief Returns names of object the linked view */
+    std::string getNameOfLinkedView(std::string name);
 
 };
 }
