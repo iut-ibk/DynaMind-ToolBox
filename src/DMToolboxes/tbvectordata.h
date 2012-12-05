@@ -96,6 +96,9 @@ public:
      */
     static DM::Node CentroidPlane3D(DM::System * sys, DM::Face * f);
 
+    /** @brief Calculates cnetroid of a plane, see CentroidPlane3D */
+    //static DM::Node CentroidPlane(const std::vector<DM::Node*> & nodes);
+
     /** @brief Calulates v' = alphas v and returns  v' as new node */
     static DM::Node RotateVector(double (&R)[3][3], const DM::Node & n1);
 

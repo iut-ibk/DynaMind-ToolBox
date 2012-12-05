@@ -290,8 +290,43 @@ QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
 
     return poly;
 }
+/*
+DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
+    double E[3][3];
+    TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
 
+    double E_to[3][3];
 
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+
+    double alphas[3][3];
+    RotationMatrix(E, E_to, alphas);
+
+    double alphas_t[3][3];
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            alphas_t[j][i] =  alphas[i][j];
+        }
+    }
+
+    DM::System transformedSys;
+
+    std::vector<DM::Node*> ns_t;
+
+    for (unsigned int i = 0; i < nodes.size(); i++) {
+        DM::Node n = *(nodes[i]);
+        DM::Node n_t = RotateVector(alphas, n);
+        ns_t.push_back(transformedSys.addNode(n_t));
+    }
+
+    DM::Face * f_t = transformedSys.addFace(ns_t);
+    DM::Node centroid_t = TBVectorData::CaclulateCentroid(&transformedSys, f_t);
+
+    DM::Node centroid = RotateVector(alphas_t, centroid_t);
+    return centroid;
+
+}
+*/
 DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
 {
 
