@@ -34,6 +34,7 @@
 #include <dmporttuple.h>
 
 #include <dmdbconnector.h>
+#include <QSqlQuery>
 
 namespace {
 
@@ -383,6 +384,26 @@ TEST_F(TestSimulation,validationtool) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }*/
+
+TEST_F(TestSimulation,cachetest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test cache";
+
+    Cache<int,float> c(3);
+    c.add(1,1.0f);
+    c.add(2,2.0f);
+    float f = c.get(1);
+    c.add(3,3.0f);
+    c.add(4,4.0f);
+    f = c.get(10);
+
+    ASSERT_TRUE(c.get(1)!=NULL);
+    ASSERT_TRUE(c.get(2)==NULL);
+    ASSERT_TRUE(c.get(3)!=NULL);
+    ASSERT_TRUE(c.get(4)!=NULL);
+}
+
 TEST_F(TestSimulation,simplesqltest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -488,44 +509,6 @@ TEST_F(TestSimulation, SqlFaceOrder)
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[0]==n0);
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[1]==n1);
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
-
-
-
-/*
-    std::vector<std::string> nodesin;
-    nodesin.push_back("one");
-    nodesin.push_back("two");
-    nodesin.push_back("three");
-
-    std::vector<std::string> hole0in;
-    hole0in.push_back("0one");
-    hole0in.push_back("0two");
-    hole0in.push_back("0three");
-    std::vector<std::string> hole1in;
-    hole1in.push_back("1one");
-    hole1in.push_back("1two");
-    hole1in.push_back("1three");
-
-    DM::Face* face = new DM::Face(nodesin);
-    face->addHole(hole0in);
-    face->addHole(hole1in);
-
-    std::vector<std::string> nodesout = face->getNodes();
-    std::vector<std::vector<std::string> > holesout =  face->getHoles();
-
-    ASSERT_TRUE(nodesin.size() == nodesout.size());
-    for(unsigned int i=0;i<nodesin.size();i++)
-        ASSERT_TRUE(nodesin[i] == nodesout[i]);
-
-    ASSERT_TRUE(holesout.size() == 2);
-
-    for(unsigned int i=0;i<holesout[0].size();i++)
-        ASSERT_TRUE(holesout[0][i] == hole0in[i]);
-
-    for(unsigned int i=0;i<holesout[1].size();i++)
-        ASSERT_TRUE(holesout[1][i] == hole1in[i]);
-
-    delete face;*/
 }
 TEST_F(TestSimulation, SQLRasterdata)
 {
@@ -752,19 +735,8 @@ TEST_F(TestSimulation,sqlprofiling) {
     delete sys;
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
-/*
-    // rasterdatas
-    timer.restart();
-    DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
-    DM::DBConnector::getInstance()->CommitTransaction();
-    DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
-
-    timer.restart();
-    delete raster;
-    DM::DBConnector::getInstance()->CommitTransaction();
-    DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();*/
 }
-
+/**/
 TEST_F(TestSimulation,sqlRasterDataProfiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -779,12 +751,17 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
 
     timer.restart();
     for(int x=0;x<n;x++)
-    {
         for(int y=0;y<n;y++)
-        {
+            raster->getValue(x,y);
+
+    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::Logger(DM::Standard) << "get each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+    timer.restart();
+    for(int x=0;x<n;x++)
+        for(int y=0;y<n;y++)
             raster->setValue(x,y,x*1000+y);
-        }
-    }
+
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
