@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef ReduceTree_H
-#define ReduceTree_H
+#ifndef Watersupplydef_H
+#define Watersupplydef_H
 
 #include <dm.h>
 #include <string.h>
@@ -34,6 +34,11 @@ namespace DM
 {
     namespace WS
     {
+        #define EPANETMODEL_ATTR\
+        A(Inpfilepath)
+
+        #define EPANETMODEL_LINK
+
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR\
@@ -47,7 +52,8 @@ namespace DM
 
         #define TABLE \
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \
-        X(PIPE,DM::EDGE,PIPE_ATTR, PIPE_LINK)
+        X(PIPE,DM::EDGE,PIPE_ATTR, PIPE_LINK) \
+        X(EPANETMODEL,DM::COMPONENT,EPANETMODEL_ATTR, EPANETMODEL_LINK)
 
         //THIS CODE SHOULD BE IN AN OWN HEADER BUT QTCREATER CANNOT RESOLVE THESE MACROS
         #define A(a) a,
@@ -140,4 +146,4 @@ namespace DM
     }
 }
 
-#endif // ReduceTree_H
+#endif // Watersupplydef_H

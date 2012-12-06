@@ -24,7 +24,7 @@
  *
  */
 
-#include <simulatewithepanet.h>
+#include <createepanetmodel.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -33,10 +33,10 @@
 #include <tbvectordata.h>
 
 //CGAL
-//#include <CGAL/Simple_cartesian.h>
-//#include <CGAL/point_generators_2.h>
-//#include <CGAL/Orthogonal_k_neighbor_search.h>
-//#include <CGAL/Search_traits_2.h>
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <CGAL/Search_traits_2.h>
 #include <list>
 #include <cmath>
 
@@ -46,35 +46,16 @@
 
 using namespace DM;
 
-DM_DECLARE_NODE_NAME(SimulateWithEPANET,Watersupply)
+DM_DECLARE_NODE_NAME(CreateEPANETModel,Watersupply)
 
-SimulateWithEPANET::SimulateWithEPANET()
+CreateEPANETModel::CreateEPANETModel()
 {   
-    //WS::ViewDefinitionHelper wsd;
-    //this->addData("Watersupply", wsd.getAll(DM::MODIFY));
-    //wsd.getCompleteView(WS::JUNCTION,DM::READ);
+    WS::ViewDefinitionHelper wsd;
+    std::vector<DM::View> views;
+    views.push_back(wsd.getCompleteView(WS::EPANETMODEL,DM::WRITE));
+    this->addData("Watersupply", views);
 }
 
-void SimulateWithEPANET::run()
+void CreateEPANETModel::run()
 {
-    std::stringstream buffer;
-    EPANET::Redirect re(&buffer);
-    //write EPANET input file
-    //std::string inputfile = "";
-
-    //write Junctions
-    //Logger(Debug) << WSSTRING[JUNCTION];
-
-    int ret = EPANET::ENopen("/home/csae6550/Desktop/EN_goefis.inp","/home/csae6550/Desktop/EN_goefis.rpt","");
-    ret+=EPANET::ENopenH();
-    ret+=EPANET::ENinitH(1);
-    ret+=EPANET::ENsolveH();
-    //ret+=ENinitQ(1);
-    //ret+=ENsolveQ();
-    //ret+=ENcloseH();
-    //ret+=ENcloseQ();
-    ret+=EPANET::ENclose();
-    Logger(Debug) << buffer.str();
-
-    DM::Logger(DM::Debug) << "EPANET result: " << ret;
 }
