@@ -29,13 +29,14 @@
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <graphviewdef.h>
 
 class ExtractMaxGraph : public DM::Module
 {
     DM_DECLARE_NODE(ExtractMaxGraph)
 
 private:
-    typedef std::map<std::string,DM::View> viewmap;
+    typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
 
     DM::System *sys;
     viewmap viewdef;

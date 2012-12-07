@@ -29,16 +29,18 @@
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <graphviewdef.h>
 
 class MinimumSpanningTree : public DM::Module
 {
     DM_DECLARE_NODE(MinimumSpanningTree)
 
 private:
-    typedef std::map<std::string,DM::View> viewmap;
+    typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
 
     DM::System *sys;
     viewmap viewdef;
+    DM::GRAPH::ViewDefinitionHelper defhelper;
 
 public:
     MinimumSpanningTree();

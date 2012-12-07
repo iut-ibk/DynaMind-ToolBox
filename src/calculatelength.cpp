@@ -47,10 +47,10 @@ CalculateEdgeLength::CalculateEdgeLength()
     std::vector<DM::View> views;
     DM::View view;
 
-    view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
-    view.addAttribute("length");
+    view = defhelper.getView(DM::GRAPH::EDGES,DM::READ);
+    defhelper.setAttribute(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight,view,DM::WRITE);
     views.push_back(view);
-    viewdef["EDGES"]=view;
+    viewdef[DM::GRAPH::EDGES]=view;
 
     this->addData("Layout", views);
 }
@@ -58,7 +58,7 @@ CalculateEdgeLength::CalculateEdgeLength()
 void CalculateEdgeLength::run()
 {
     sys = this->getData("Layout");
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
+    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
 
     if(!edges.size())
     {
@@ -66,13 +66,13 @@ void CalculateEdgeLength::run()
         return;
     }
 
-    for(int index=0; index < edges.size(); index++)
+    for(uint index=0; index < edges.size(); index++)
     {
         DM::Edge *currentedge = sys->getEdge(edges[index]);
         DM::Node *start = sys->getNode(currentedge->getStartpointName());
         DM::Node *end = sys->getNode(currentedge->getEndpointName());
         double length = TBVectorData::calculateDistance(start,end);
-        currentedge->addAttribute("length",length);
+        currentedge->addAttribute(defhelper.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight),length);
     }
     return;
 }

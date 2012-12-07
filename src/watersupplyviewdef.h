@@ -34,18 +34,23 @@ namespace DM
 {
     namespace WS
     {
-        #define EPANETMODEL_ATTR\
+        #define EPANETMODEL_ATTR \
         A(Inpfilepath)
 
         #define EPANETMODEL_LINK
 
         #define JUNCTION_LINK
 
-        #define JUNCTION_ATTR\
-        A(Demand) \
+        #define JUNCTION_ATTR \
         A(Elevation)
 
+        #define DEMAND_ATTR \
+        A(Demand)
+
+        #define DEMAND_LINK
+
         #define PIPE_LINK
+
         #define PIPE_ATTR\
         A(Diameter) \
         A(Length)
@@ -53,96 +58,10 @@ namespace DM
         #define TABLE \
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \
         X(PIPE,DM::EDGE,PIPE_ATTR, PIPE_LINK) \
-        X(EPANETMODEL,DM::COMPONENT,EPANETMODEL_ATTR, EPANETMODEL_LINK)
+        X(EPANETMODEL,DM::COMPONENT,EPANETMODEL_ATTR, EPANETMODEL_LINK) \
+        X(DEMAND,DM::NODE,DEMAND_ATTR,DEMAND_LINK)
 
-        //THIS CODE SHOULD BE IN AN OWN HEADER BUT QTCREATER CANNOT RESOLVE THESE MACROS
-        #define A(a) a,
-        #define X(b,c,d,e) namespace b##_ATTR_DEF{ enum {d};};
-        TABLE
-        #undef X
-        #undef A
-
-        #define A(a) a,
-        #define X(b,c,d,e) namespace b##_LINK_DEF{ enum {e};};
-        TABLE
-        #undef X
-        #undef A
-
-        #define NAMECOMP COMP
-        #define NAMETYPE TYPE
-        #define NAMECOMPONENTSTRING COMPONENTSTRING
-
-        #define X(a,b,c,d) a,
-            enum NAMECOMP{TABLE};
-        #undef X
-
-        #define NAME COMP
-        #define X(a,b,c,d) #a,
-            string NAMECOMPONENTSTRING[] = {TABLE};
-        #undef X
-
-        #define X(a,b,c,d) b,
-            DM::Components NAMETYPE[] = {TABLE};
-        #undef X
-
-        class DM_HELPER_DLL_EXPORT ViewDefinitionHelper
-        {
-        private:
-            std::map<NAMECOMP,std::vector<std::string> > ATTRIBUTESTRING;
-
-        public:
-            ViewDefinitionHelper()
-            {
-                #define A(a) #a,
-                #define X(b,c,d,e) std::string tmp_##b##_ATTR[] = {b##_ATTR}; ATTRIBUTESTRING[b]=std::vector<std::string>(tmp_##b##_ATTR, tmp_##b##_ATTR + sizeof(tmp_##b##_ATTR)/sizeof(tmp_##b##_ATTR[0]));
-                TABLE
-                #undef X
-                #undef A
-            }
-
-            DM::View getView(NAMECOMP c, DM::ACCESS a)
-            {
-                return DM::View(NAMECOMPONENTSTRING[c], NAMETYPE[c], a);
-            }
-
-            DM::View getCompleteView(NAMECOMP c, DM::ACCESS a)
-            {
-                DM::View result(NAMECOMPONENTSTRING[c], NAMETYPE[c], a);
-
-                for(uint index=0; index<ATTRIBUTESTRING[c].size(); index++)
-                {
-                    if(a==DM::WRITE)
-                        result.addAttribute(ATTRIBUTESTRING[c][index]);
-
-                    if(a==DM::READ)
-                        result.getAttribute(ATTRIBUTESTRING[c][index]);
-
-                    if(a==DM::MODIFY)
-                        result.modifyAttribute(ATTRIBUTESTRING[c][index]);
-                }
-
-                return result;
-            }
-
-            std::vector<DM::View> getAll(DM::ACCESS a)
-            {
-                std::vector<DM::View> result;
-
-                for(uint index = 0; index < sizeof(NAMECOMPONENTSTRING)/sizeof(NAMECOMPONENTSTRING[0]); index++)
-                    result.push_back(getCompleteView(static_cast<NAMECOMP>(index),a));
-
-                return result;
-            }
-        };
-
-        #undef NAMECOMP
-        #undef NAMETYPE
-        #undef NAMECOMPONENTSTRING
-        #undef TABLE
-        #undef JUNCTION_LINK
-        #undef JUNCTION_ATTR
-        #undef PIPE_LINK
-        #undef PIPE_ATTR
+        #include<viewdefhelper.h> //This would be the header if code completion would work correctly in qtcreator
     }
 }
 

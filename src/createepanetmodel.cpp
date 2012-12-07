@@ -41,6 +41,7 @@
 #include <cmath>
 
 //Watersupply
+#include <graphviewdef.h>
 #include <watersupplyviewdef.h>
 #include <dmepanet.h>
 
@@ -53,6 +54,9 @@ CreateEPANETModel::CreateEPANETModel()
     WS::ViewDefinitionHelper wsd;
     std::vector<DM::View> views;
     views.push_back(wsd.getCompleteView(WS::EPANETMODEL,DM::WRITE));
+    //views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::READ));
+    views.push_back(wsd.getCompleteView(WS::PIPE,DM::WRITE));
+    //views.push_back(wsd.getCompleteView(WS::DEMAND,DM::READ));
     this->addData("Watersupply", views);
 }
 

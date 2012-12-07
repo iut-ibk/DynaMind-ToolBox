@@ -29,17 +29,18 @@
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <graphviewdef.h>
 
 class CalculateEdgeLength : public DM::Module
 {
     DM_DECLARE_NODE(CalculateEdgeLength)
 
 private:
-    typedef std::map<std::string,DM::View> viewmap;
+    typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
 
     DM::System *sys;
     viewmap viewdef;
-
+    DM::GRAPH::ViewDefinitionHelper defhelper;
 
 public:
     CalculateEdgeLength();

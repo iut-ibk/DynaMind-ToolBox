@@ -36,16 +36,17 @@ ExtractNodesFromEdges::ExtractNodesFromEdges()
 {   
     std::vector<DM::View> views;
     DM::View view;
+    DM::GRAPH::ViewDefinitionHelper defhelper;
 
     //Define Parameter street network
-    view = DM::View("EDGES", DM::EDGE, DM::READ);
+    view = defhelper.getView(DM::GRAPH::EDGES,DM::READ);
     views.push_back(view);
-    viewdef["EDGES"]=view;
+    viewdef[DM::GRAPH::EDGES]=view;
 
     //Define Parameter street network
-    view = DM::View("NODES", DM::NODE, DM::WRITE);
+    view = defhelper.getView(DM::GRAPH::NODES,DM::WRITE);
     views.push_back(view);
-    viewdef["NODES"]=view;
+    viewdef[DM::GRAPH::NODES]=view;
 
     this->addData("Layout", views);
 }
@@ -53,12 +54,13 @@ ExtractNodesFromEdges::ExtractNodesFromEdges()
 void ExtractNodesFromEdges::run()
 {
     this->sys = this->getData("Layout");
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
+
+    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
     std::map<std::string,bool> nodesadded;
 
     DM::Logger(DM::Standard) << "Number of Edges found:" << edges.size();
 
-    for(int index=0; index<edges.size(); index++)
+    for(uint index=0; index<edges.size(); index++)
     {
         DM::Edge *edge = this->sys->getEdge(edges.at(index));
         string sname = edge->getStartpointName();
@@ -67,14 +69,14 @@ void ExtractNodesFromEdges::run()
         //SOURCE
         if(nodesadded.find(sname)==nodesadded.end())
         {
-            this->sys->addComponentToView(this->sys->getNode(sname),viewdef["NODES"]);
+            this->sys->addComponentToView(this->sys->getNode(sname),viewdef[DM::GRAPH::NODES]);
             nodesadded[sname]=true;
         }
 
         //TARGET
         if(nodesadded.find(tname)==nodesadded.end())
         {
-            this->sys->addComponentToView(this->sys->getNode(tname),viewdef["NODES"]);
+            this->sys->addComponentToView(this->sys->getNode(tname),viewdef[DM::GRAPH::NODES]);
             nodesadded[tname]=true;
         }   
     }

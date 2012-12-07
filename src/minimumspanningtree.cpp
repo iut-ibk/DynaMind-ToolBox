@@ -53,19 +53,17 @@ MinimumSpanningTree::MinimumSpanningTree()
     std::vector<DM::View> views;
     DM::View view;
 
-    //Define Parameter street network
-    view = DM::View("EDGES", DM::EDGE, DM::READ);
+    view = defhelper.getCompleteView(DM::GRAPH::EDGES,DM::READ);
     views.push_back(view);
-    viewdef["EDGES"]=view;
+    viewdef[DM::GRAPH::EDGES]=view;
 
-    //Define Parameter street network
-    view = DM::View("NODES", DM::NODE, DM::READ);
+    view = defhelper.getView(DM::GRAPH::NODES,DM::READ);
     views.push_back(view);
-    viewdef["NODES"]=view;
+    viewdef[DM::GRAPH::NODES]=view;
 
-    view = DM::View("SPANNINGTREE", DM::EDGE, DM::WRITE);
+    view = defhelper.getView(DM::GRAPH::SPANNINGTREE,DM::WRITE);
     views.push_back(view);
-    viewdef["SPANNINGTREE"]=view;
+    viewdef[DM::GRAPH::SPANNINGTREE]=view;
 
     this->addData("Layout", views);
 }
@@ -78,24 +76,23 @@ void MinimumSpanningTree::run()
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
+    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::NODES]));
+    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
     std::map<std::string,int> nodesindex;
     std::map<E,DM::Edge*> nodes2edge;
 
-    for(int index=0; index<nodes.size(); index++)
+    for(uint index=0; index<nodes.size(); index++)
         nodesindex[nodes[index]]=index;
 
     const int num_nodes = nodes.size();
     Graph g(num_nodes);
 
-    for(int counter=0; counter<edges.size(); counter++)
+    for(uint counter=0; counter<edges.size(); counter++)
     {
         int sourceindex, targetindex;
         DM::Edge *edge=this->sys->getEdge(edges[counter]);
-        DM::Node *start = this->sys->getNode(edge->getStartpointName());
-        DM::Node *end = this->sys->getNode(edge->getEndpointName());
-        double distance = TBVectorData::calculateDistance(start,end);
+
+        double distance = edge->getAttribute(defhelper.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
 
         sourceindex=nodesindex[edge->getStartpointName()];
         targetindex=nodesindex[edge->getEndpointName()];
@@ -110,17 +107,17 @@ void MinimumSpanningTree::run()
 
     std::map<int,int> componentsizes;
 
-    for (int i = 0; i != component.size(); ++i)
+    for (uint i = 0; i != component.size(); ++i)
         componentsizes[component[i]]=++componentsizes[component[i]];
 
     int maxgraphindex=0;
 
-    for(int index=0; index < componentsizes.size(); index++)
+    for(uint index=0; index < componentsizes.size(); index++)
     {
         if(componentsizes[maxgraphindex] < componentsizes[index])
             maxgraphindex = index;
 
-        DM::Logger(DM::Standard) << "Tree " << index+1 << " has " << componentsizes[index] << " elements";
+        DM::Logger(DM::Standard) << "Tree " << (int)index+1 << " has " << componentsizes[index] << " elements";
     }
 
     if(num!=1)
@@ -144,19 +141,19 @@ void MinimumSpanningTree::run()
 
             if(nodes2edge.find(E(p[i],i))!=nodes2edge.end())
             {
-                this->sys->addComponentToView(nodes2edge[E(p[i],i)],viewdef["SPANNINGTREE"]);
+                this->sys->addComponentToView(nodes2edge[E(p[i],i)],viewdef[DM::GRAPH::SPANNINGTREE]);
                 continue;
             }
 
             if(nodes2edge.find(E(i,p[i]))!=nodes2edge.end())
             {
-                this->sys->addComponentToView(nodes2edge[E(i,p[i])],viewdef["SPANNINGTREE"]);
+                this->sys->addComponentToView(nodes2edge[E(i,p[i])],viewdef[DM::GRAPH::SPANNINGTREE]);
                 continue;
             }
         }
     }
 
-    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getUUIDsOfComponentsInView(viewdef["SPANNINGTREE"]).size();
+    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::SPANNINGTREE]).size();
     DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 

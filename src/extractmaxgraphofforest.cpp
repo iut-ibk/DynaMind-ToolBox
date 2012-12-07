@@ -49,14 +49,15 @@ ExtractMaxGraph::ExtractMaxGraph()
 {   
     std::vector<DM::View> views;
     DM::View view;
+    DM::GRAPH::ViewDefinitionHelper defhelper;
 
-    view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
+    view = defhelper.getView(DM::GRAPH::EDGES,DM::MODIFY);
     views.push_back(view);
-    viewdef["EDGES"]=view;
+    viewdef[DM::GRAPH::EDGES]=view;
 
-    view = DM::View("NODES", DM::NODE, DM::MODIFY);
+    view = defhelper.getView(DM::GRAPH::NODES,DM::MODIFY);
     views.push_back(view);
-    viewdef["NODES"]=view;
+    viewdef[DM::GRAPH::NODES]=view;
 
     this->addData("Layout", views);
 }
@@ -69,12 +70,12 @@ void ExtractMaxGraph::run()
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef["EDGES"]));
+    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::NODES]));
+    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
     std::map<std::string,int> nodesindex;
     std::map<E,DM::Edge*> nodes2edge;
 
-    for(int index=0; index<nodes.size(); index++)
+    for(uint index=0; index<nodes.size(); index++)
         nodesindex[nodes[index]]=index;
 
     std::vector<E> edgeindex(edges.size());
@@ -82,7 +83,7 @@ void ExtractMaxGraph::run()
     const int num_nodes = nodes.size();
     Graph g(num_nodes);
 
-    for(int counter=0; counter<edges.size(); counter++)
+    for(uint counter=0; counter<edges.size(); counter++)
     {
         int sourceindex, targetindex;
         DM::Edge *edge=this->sys->getEdge(edges[counter]);
@@ -103,32 +104,32 @@ void ExtractMaxGraph::run()
 
     std::map<int,int> componentsizes;
 
-    for (int i = 0; i != component.size(); ++i)
+    for (uint i = 0; i != component.size(); ++i)
         componentsizes[component[i]]=++componentsizes[component[i]];
 
     int maxgraphindex=0;
 
-    for(int index=0; index < componentsizes.size(); index++)
+    for(uint index=0; index < componentsizes.size(); index++)
     {
         if(componentsizes[maxgraphindex] < componentsizes[index])
             maxgraphindex = index;
 
-        DM::Logger(DM::Standard) << "Graph " << index+1 << " has " << componentsizes[index] << " elements";
+        DM::Logger(DM::Standard) << "Graph " << (int)index+1 << " has " << componentsizes[index] << " elements";
     }
 
     DM::Logger(DM::Standard) << "Graph " << maxgraphindex+1 << " is extracted";
 
     //extract graph
-    for(int index=0; index < edges.size(); index++)
+    for(uint index=0; index < edges.size(); index++)
     {
         E current = edgeindex[index];
 
         if(component[current.first]!=maxgraphindex)
         {
             DM::Edge *realedge = nodes2edge[current];
-            this->sys->removeComponentFromView(realedge,viewdef["EDGES"]);
-            this->sys->removeComponentFromView(sys->getNode(realedge->getStartpointName()),viewdef["NODES"]);
-            this->sys->removeComponentFromView(sys->getNode(realedge->getEndpointName()),viewdef["NODES"]);
+            this->sys->removeComponentFromView(realedge,viewdef[DM::GRAPH::EDGES]);
+            this->sys->removeComponentFromView(sys->getNode(realedge->getStartpointName()),viewdef[DM::GRAPH::NODES]);
+            this->sys->removeComponentFromView(sys->getNode(realedge->getEndpointName()),viewdef[DM::GRAPH::NODES]);
         }
     }
 }
