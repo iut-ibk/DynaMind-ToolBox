@@ -35,25 +35,30 @@ public:
     ViewDefinitionHelper()
     {
         #define NAME COMP
-        #define X(a,b,c,d) #a,
-            std::string tmp_names[] = {TABLE};
-            NAMECOMPONENTSTRING = std::vector<std::string>(tmp_names,tmp_names + sizeof(tmp_names)/sizeof(tmp_names[0]));
+
+        NAMECOMPONENTSTRING = std::vector<std::string>();
+
+        #define X(a,b,c,d) NAMECOMPONENTSTRING.push_back(#a);
+        TABLE
         #undef X
 
-        #define X(a,b,c,d) b,
-            DM::Components tmp_types[] = {TABLE};
-            NAMETYPE = std::vector<DM::Components>(tmp_types,tmp_types + sizeof(tmp_types)/sizeof(tmp_types[0]));
+        NAMETYPE = std::vector<DM::Components>();
+
+        #define X(a,b,c,d) NAMETYPE.push_back(b);
+        TABLE
         #undef X
 
-        #define A(a) #a,
-        #define X(b,c,d,e) std::string tmp_##b##_ATTR[] = {d}; ATTRIBUTESTRING[b]=std::vector<std::string>(tmp_##b##_ATTR, tmp_##b##_ATTR + sizeof(tmp_##b##_ATTR)/sizeof(tmp_##b##_ATTR[0]));
+        std::vector<std::string> tmpattrvec;
+
+        #define A(a) tmpattrvec.push_back(#a);
+        #define X(b,c,d,e) d ATTRIBUTESTRING[b]=std::vector<std::string>(tmpattrvec); tmpattrvec.clear();
         TABLE
         #undef X
         #undef A
         #undef NAME
 
-        #define B(a,b,c,d) #d,
-        #define X(d,e,f,g) std::string tmp_##d##_LINK[] = {g}; LINKSTRING[d]=std::vector<std::string>(tmp_##d##_LINK, tmp_##d##_LINK + sizeof(tmp_##d##_LINK)/sizeof(tmp_##d##_LINK[0]));
+        #define B(a,b,c,d) tmpattrvec.push_back(#d);
+        #define X(d,e,f,g) g LINKSTRING[d]=std::vector<std::string>(tmpattrvec); tmpattrvec.clear();
         TABLE
         #undef X
         #undef B
