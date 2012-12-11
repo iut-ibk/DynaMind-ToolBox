@@ -390,18 +390,23 @@ TEST_F(TestSimulation,cachetest) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test cache";
 
-    Cache<int,float> c(3);
-    c.add(1,1.0f);
-    c.add(2,2.0f);
-    float f = c.get(1);
-    c.add(3,3.0f);
-    c.add(4,4.0f);
-    f = c.get(10);
+    float* one = new float(1.0f);
+    float* two = new float(2.0f);
+    float* three = new float(3.0f);
+    float* four = new float(4.0f);
 
-    ASSERT_TRUE(c.get(1)!=NULL);
+    Cache<int,float> c(3);
+    c.add(1,one);
+    c.add(2,two);
+    float f = *c.get(1);
+    c.add(3,three);
+    c.add(4,four);
+    f = *c.get(10);
+
+    ASSERT_TRUE(c.get(1)==one);
     ASSERT_TRUE(c.get(2)==NULL);
-    ASSERT_TRUE(c.get(3)!=NULL);
-    ASSERT_TRUE(c.get(4)!=NULL);
+    ASSERT_TRUE(c.get(3)==three);
+    ASSERT_TRUE(c.get(4)==four);
 }
 
 TEST_F(TestSimulation,simplesqltest) {
@@ -441,7 +446,7 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }*/
-
+/*
 TEST_F(TestSimulation, SqlNodeTest)
 {
     ostream *out = &cout;
@@ -742,7 +747,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Test raster data profiling";
 
-    const int n = 200;
+    const int n = 1000;
     QElapsedTimer timer;
     timer.restart();
     DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
@@ -750,18 +755,19 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
-    for(int x=0;x<n;x++)
-        for(int y=0;y<n;y++)
+    for(int y=0;y<n;y++)
+        for(int x=0;x<n;x++)
             raster->getValue(x,y);
 
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "get each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
-    for(int x=0;x<n;x++)
-        for(int y=0;y<n;y++)
+    for(int y=0;y<n;y++)
+        for(int x=0;x<n;x++)
             raster->setValue(x,y,x*1000+y);
 
+    raster->ForceUpdate();
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
@@ -770,7 +776,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 }
-
+/*
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -903,7 +909,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-/**/
+
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;
@@ -941,4 +947,5 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 
         }
 #endif
+/**/
 }
