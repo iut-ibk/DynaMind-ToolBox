@@ -69,7 +69,8 @@ private:
     std::string name;
     std::set<std::string> inViews;
 
-	void SQLInsertThis(AttributeType type);
+    void SQLInsert(AttributeType type);
+    void SQLInsert(AttributeType type, QVariant value);
     void SQLDeleteThis();
     //void SQLSetOwner(Component* owner);
     void SQLSetName(std::string newname);

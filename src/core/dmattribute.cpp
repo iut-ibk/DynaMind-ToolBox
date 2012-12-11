@@ -130,7 +130,7 @@ Attribute::Attribute()
     this->name="";
 
 	DBConnector::getInstance();
-	SQLInsertThis(NOTYPE);
+    SQLInsert(NOTYPE);
 }
 Attribute::Attribute(const Attribute &newattribute)
 {
@@ -138,14 +138,15 @@ Attribute::Attribute(const Attribute &newattribute)
     AttributeType type = newattribute.getType();
     QVariant value;
     newattribute.SQLGetValue(value);
-    SQLInsertThis(type);
-    SQLSetValue(type, value);
+    SQLInsert(type, value);
+    //SQLInsertThis(type);
+    //SQLSetValue(type, value);
 }
 
 Attribute::Attribute(std::string name)
 {
     this->name=name;
-	SQLInsertThis(NOTYPE);
+    SQLInsert(NOTYPE);
 }
 
 
@@ -153,14 +154,14 @@ Attribute::Attribute(std::string name, double val)
 {
     this->name=name;
 
-	SQLInsertThis(DOUBLE);
+    SQLInsert(DOUBLE);
 	this->setDouble(val);
 }
 Attribute::Attribute(std::string name, std::string val)
 {
     this->name=name;
 
-	SQLInsertThis(STRING);
+    SQLInsert(STRING);
 	setString(val);
 }
 
@@ -370,7 +371,7 @@ const char *Attribute::getTypeName(Attribute::AttributeType type)
     };
     return arr[type];
 }
-void Attribute::SQLInsertThis(AttributeType type)
+void Attribute::SQLInsert(AttributeType type)
 {
     _uuid = QUuid::createUuid();
 
@@ -378,6 +379,17 @@ void Attribute::SQLInsertThis(AttributeType type)
                                        "name", QString::fromStdString(name),
                                        "type", QVariant::fromValue((int)type));
     attributeCache.add(_uuid, new RawAttribute(name,type,0));
+}
+
+void Attribute::SQLInsert(AttributeType type, QVariant value)
+{
+    _uuid = QUuid::createUuid();
+
+    DBConnector::getInstance()->Insert("attributes", _uuid,
+                                       "name", QString::fromStdString(name),
+                                       "type", QVariant::fromValue((int)type),
+                                       "value", value);
+    attributeCache.add(_uuid, new RawAttribute(name,type,value));
 }
 void Attribute::SQLDeleteThis()
 {

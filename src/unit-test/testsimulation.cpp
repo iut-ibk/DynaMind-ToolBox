@@ -652,6 +652,13 @@ TEST_F(TestSimulation, SQLattributes)
         ASSERT_TRUE(linksOut[i].viewname == links[i].viewname);
     }
     delete a;
+    DM::Logger(DM::Debug) << "checking copy constructor";
+    a = new DM::Attribute("fuzzi", 5.0);
+    DM::Attribute *b = new Attribute(*a);
+    ASSERT_TRUE(a->getDouble() == 5.0);
+    ASSERT_TRUE(b->getDouble() == 5.0);
+    delete a;
+    delete b;
 }
 
 TEST_F(TestSimulation,sqlprofiling) {
