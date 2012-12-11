@@ -281,7 +281,7 @@ void DBConnector::BeginTransaction()
 
 void DBConnector::CommitTransaction()
 {
-    if(_db.isOpen() && _bTransaction)
+    if(_bTransaction)
     {
         _bTransaction = false;
         if(!_db.commit())
