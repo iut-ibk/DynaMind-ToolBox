@@ -60,9 +60,9 @@ private:
     //static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
-    static QSqlDatabase _db;
 
     static SingletonDestroyer _destroyer;
+    static QSqlDatabase* _db;
     bool CreateTables();
     bool DropTables();
 

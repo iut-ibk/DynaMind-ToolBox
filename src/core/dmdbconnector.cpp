@@ -63,14 +63,13 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
     _singleton = s;
 }
 
-SingletonDestroyer DBConnector::_destroyer;
 
 DBConnector* DBConnector::instance = 0;
 //int DBConnector::_linkID = 1;
 QMap<QString,QSqlQuery*> DBConnector::mapQuery;
 bool DBConnector::_bTransaction = false;
-QSqlDatabase DBConnector::_db;
-
+QSqlDatabase* DBConnector::_db = new QSqlDatabase();
+SingletonDestroyer DBConnector::_destroyer;
 
 bool DBConnector::CreateTables()
 {
@@ -163,9 +162,9 @@ DBConnector::DBConnector()
     if(QFile::exists("testdb"))
         QFile::remove("testdb");
 
-    _db = QSqlDatabase::addDatabase("QSQLITE");
+    *_db = QSqlDatabase::addDatabase("QSQLITE");
     //_db.setDatabaseName(":memory:");
-    _db.setDatabaseName("testdb");
+    _db->setDatabaseName("testdb");
 /*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -187,11 +186,11 @@ DBConnector::DBConnector()
     db.setUserName("postgres");
     db.setPassword("this00");
 */
-    if(!_db.open())
+    if(!_db->open())
 	{
 		Logger(Error) << "Failed to open db connection";
 		
-        QSqlError e = _db.lastError();
+        QSqlError e = _db->lastError();
 		Logger(Error) << "driver error: " << e.driverText();
 		Logger(Error) << "database error: " << e.databaseText();
         return;
@@ -205,8 +204,8 @@ DBConnector::DBConnector()
         Logger(Error) << "Cannot initialize db tables";
         DropTables();
         //db.removeDatabase("QODBC");
-        _db.removeDatabase("QSQLITE");
-        _db.close();
+        _db->removeDatabase("QSQLITE");
+        _db->close();
 		return;
 	}
 
@@ -218,6 +217,7 @@ DBConnector::~DBConnector()
     CommitTransaction();
     //for(QMap<QString,QSqlQuery*>::const_iterator it = mapQuery.begin(); it != mapQuery.end(); ++it)
     //    delete it;
+    delete _db;
 }
 
 DBConnector* DBConnector::getInstance()
@@ -272,7 +272,7 @@ void DBConnector::BeginTransaction()
     if(!_bTransaction)
     {
         _bTransaction = true;
-        _db.transaction();
+        _db->transaction();
     }
     //QSqlQuery q;
     //if(!q.exec("BEGIN TRANSACTION"))
@@ -284,13 +284,13 @@ void DBConnector::CommitTransaction()
     if(_bTransaction)
     {
         _bTransaction = false;
-        if(!_db.commit())
+        if(!_db->commit())
         //QSqlQuery q;
         //if(!q.exec("END TRANSACTION"))
         {
             Logger(Error) << "rolling back commit";
-            PrintSqlErrorE(_db.lastError());
-            if(_db.rollback())
+            PrintSqlErrorE(_db->lastError());
+            if(_db->rollback())
                 Logger(Error) << "rollback failed";
         }
     }
