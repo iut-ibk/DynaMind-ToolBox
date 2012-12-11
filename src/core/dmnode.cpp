@@ -173,7 +173,7 @@ void Node::setX(double x)
     if(Vector3 *v = nodeCache.get(getQUUID()))
     {
         v->x = x;
-        nodeCache.change(this->getQUUID(), v);
+        nodeCache.get(getQUUID());  // push to front
     }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x));
@@ -184,7 +184,7 @@ void Node::setY(double y)
     if(Vector3 *v = nodeCache.get(getQUUID()))
     {
         v->y = y;
-        nodeCache.change(this->getQUUID(), v);
+        nodeCache.get(getQUUID());  // push to front
     }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "y",     QVariant::fromValue(y));
@@ -195,7 +195,7 @@ void Node::setZ(double z)
     if(Vector3 *v = nodeCache.get(getQUUID()))
     {
         v->z = z;
-        nodeCache.change(this->getQUUID(), v);
+        nodeCache.get(getQUUID());  // push to front
     }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "z",     QVariant::fromValue(z));
@@ -265,7 +265,16 @@ bool Node::compare2d(const Node * other , double round ) const
 }
 void Node::SQLSetValues(double x,double y,double z)
 {
-    nodeCache.change(this->getQUUID(), new Vector3(x,y,z));
+    if(Vector3 *v = nodeCache.get(getQUUID()))
+    {
+        v->x = x;
+        v->y = y;
+        v->z = z;
+        nodeCache.get(getQUUID());  // push to front
+    }
+    else
+        nodeCache.add(getQUUID(), new Vector3(x,y,z));
+
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x),
                                        "y",     QVariant::fromValue(y),
