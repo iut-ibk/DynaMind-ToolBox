@@ -374,6 +374,12 @@ void RasterData::SQLDeleteField()
     if(width==0 || height==0)
         return;
 
+    for(int y=0;y<height;y++)
+    {
+         rowCache.remove(std::pair<QUuid,long>(uuid,y));
+         rowUpdateCache.erase(std::pair<QUuid,long>(uuid,y));
+    }
+
     QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
     q->addBindValue(uuid.toByteArray());
     DBConnector::getInstance()->ExecuteQuery(q);
