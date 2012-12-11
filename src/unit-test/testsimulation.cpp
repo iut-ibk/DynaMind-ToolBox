@@ -573,17 +573,9 @@ TEST_F(TestSimulation, SQLattributes)
 
     DM::Logger(DM::Debug) << "checking add attributes";
     // DOUBLE
-    // via copy constr
     DM::Component *c = new DM::Component();
     c->addAttribute(DM::Attribute("hint", 50));
     DM::Attribute *pa = c->getAttribute("hint");
-    ASSERT_TRUE(pa->getDouble()==50);
-    delete c;
-    // via binding
-    c = new DM::Component();
-    a = new DM::Attribute("hint", 50);
-    c->addAttribute(a);
-    pa = c->getAttribute("hint");
     ASSERT_TRUE(pa->getDouble()==50);
     delete c;
 
