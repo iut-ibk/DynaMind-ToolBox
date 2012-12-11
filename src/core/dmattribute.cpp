@@ -32,6 +32,23 @@
 
 using namespace DM;
 
+class RawAttribute
+{
+public:
+    std::string name;
+    Attribute::AttributeType type;
+    QVariant value;
+
+    RawAttribute(std::string name, Attribute::AttributeType type, QVariant value)
+    {
+        this->name = name;
+        this->type = type;
+        this->value = value;
+    }
+};
+
+static Cache<QUuid,RawAttribute> attributeCache(2048);
+
 QByteArray GetBinaryValue(std::vector<double> v)
 {
 	QByteArray bytes;
@@ -154,17 +171,7 @@ Attribute::~Attribute()
 
 Attribute::AttributeType Attribute::getType() const
 {
-    QVariant value;
-    if(DBConnector::getInstance()->Select("attributes", _uuid, "type", &value))
-        return (AttributeType)value.toInt();
-    return NOTYPE;
-/*
-	QSqlQuery q;
-	q.prepare("SELECT type FROM attributes WHERE uuid=?");
-    q.addBindValue(_uuid);
-	if(!q.exec())	PrintSqlError(&q);
-	if(q.next())	return (AttributeType)q.value(0).toInt();
-    return NOTYPE;*/
+    return SQLGetType();
 }
 
 void Attribute::setName(std::string name)
@@ -193,14 +200,12 @@ double Attribute::getDouble()
 
 void Attribute::setString(std::string s)
 {
-    //SQLSetValue(STRING, QString::fromStdString(s));
     SQLSetValue(STRING, QString::fromStdString(s).toAscii());
 }
 
 std::string Attribute::getString()
 {
-	QVariant value;
-    //if(SQLGetValue(value))	return value.toString().toStdString();
+    QVariant value;
     if(SQLGetValue(value))	return QString(value.toByteArray()).toStdString();
     return "";
 }
@@ -344,7 +349,7 @@ void Attribute::Change(Attribute &attribute)
 {
     QVariant value;
     attribute.SQLGetValue(value);
-    this->SQLUpdateValue(attribute.getType(), value);
+    this->SQLSetValue(attribute.getType(), value);
 }
 
 const char *Attribute::getTypeName() const
@@ -372,18 +377,14 @@ void Attribute::SQLInsertThis(AttributeType type)
     DBConnector::getInstance()->Insert("attributes", _uuid,
                                        "name", QString::fromStdString(name),
                                        "type", QVariant::fromValue((int)type));
+    attributeCache.add(_uuid, new RawAttribute(name,type,0));
 }
 void Attribute::SQLDeleteThis()
 {
     DBConnector::getInstance()->Delete("attributes", _uuid);
+    attributeCache.remove(_uuid);
 }
 
-void Attribute::SQLUpdateValue(AttributeType type, QVariant value)
-{	
-    DBConnector::getInstance()->Update("attributes", _uuid,
-                                       "type",(int)type,
-                                       "value",value);
-}
 void Attribute::SetOwner(Component* owner)
 {
 	// TODO: make shure its not bound to another component
@@ -393,23 +394,50 @@ void Attribute::SetOwner(Component* owner)
 
 void Attribute::SQLSetName(std::string newname)
 {	
+    if(RawAttribute *att = attributeCache.get(_uuid))
+    {
+        att->name = name;
+        attributeCache.get(_uuid);  // push to top
+    }
+
     DBConnector::getInstance()->Update("attributes", _uuid,
                                        "name",      QString::fromStdString(newname));
 }
 void Attribute::SQLSetType(AttributeType newtype)
 {
-    DBConnector::getInstance()->Update("attributes", _uuid,
-                                       "type",      QVariant::fromValue((int)newtype),
-                                       "value",     QVariant::fromValue(0));
+    SQLSetValue(newtype,0);
+}
+
+Attribute::AttributeType Attribute::SQLGetType() const
+{
+    if(RawAttribute *att = attributeCache.get(_uuid))
+        return att->type;
+
+    QVariant value;
+    if(DBConnector::getInstance()->Select("attributes", _uuid, "type", &value))
+        return (AttributeType)value.toInt();
+    return NOTYPE;
 }
 
 bool Attribute::SQLGetValue(QVariant &value) const
 {
+    if(RawAttribute *att = attributeCache.get(_uuid))
+    {
+        value = att->value;
+        return true;
+    }
     return DBConnector::getInstance()->Select("attributes",
                                               _uuid, "value", &value);
 }
 void Attribute::SQLSetValue(AttributeType type, QVariant value)
 {
+    if(RawAttribute *att = attributeCache.get(_uuid))
+    {
+        att->type = type;
+        att->value = value;
+        attributeCache.get(_uuid);  // push to top
+    }
+
     DBConnector::getInstance()->Update("attributes", _uuid,
                                         "type",      QVariant::fromValue((int)type),
                                         "value",     value);
