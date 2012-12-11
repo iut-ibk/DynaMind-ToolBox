@@ -119,12 +119,12 @@ std::vector<QUuid> Node::getEdges() const
     std::vector<QUuid> edges;
 
     QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT uuid FROM edges WHERE startnode LIKE ? OR endnode LIKE ?");
-    q->addBindValue(uuid);
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
+    q->addBindValue(uuid.toByteArray());
     if(DBConnector::getInstance()->ExecuteSelectQuery(q))
     {
         do
-            edges.push_back(QUuid::fromRfc4122(q->value(0).toByteArray()));
+            edges.push_back(QUuid(q->value(0).toByteArray()));
         while(q->next());
     }
 

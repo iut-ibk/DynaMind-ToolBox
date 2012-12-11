@@ -68,19 +68,15 @@ void CreateAllComponenets::run()
 	DM::Node *x = new DM::Node(1,2,3);
 	DM::Node *y = new DM::Node(4,5,6);
 	DM::Node *z = new DM::Node(7,8,9);
-	
+
 	DM::Component* c = new DM::Component();
 	c->addAttribute("yeahttribute", 3.141592);
-	AddValidation(sys->addComponent(c), sys);
+    AddValidation(sys->addComponent(c), sys);
 	AddValidation(sys->addNode(x), sys);
 	AddValidation(sys->addNode(y), sys);
 	AddValidation(sys->addNode(z), sys);
     AddValidation(sys->addEdge(new DM::Edge(x,y)), sys);
 
-    /*std::vector<std::string> nodeVector;
-	nodeVector.push_back(x->getUUID());
-	nodeVector.push_back(y->getUUID());
-    nodeVector.push_back(z->getUUID());*/
     std::vector<DM::Node*> nodeVector;
     nodeVector.push_back(x);
     nodeVector.push_back(y);

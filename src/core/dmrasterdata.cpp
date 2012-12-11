@@ -362,7 +362,7 @@ void RasterData::SQLInsertField(long width, long height)
         QByteArray qba((char*)buffer, sizeof(double)*width);
 
         QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
-        q->addBindValue(uuid);
+        q->addBindValue(uuid.toByteArray());
         q->addBindValue(QVariant::fromValue(y));
         q->addBindValue(qba.toBase64());
         DBConnector::getInstance()->ExecuteQuery(q);
@@ -375,7 +375,7 @@ void RasterData::SQLDeleteField()
         return;
 
     QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     DBConnector::getInstance()->ExecuteQuery(q);
 }
 
@@ -403,7 +403,7 @@ QByteArray* RasterData::SQLGetRow(long y) const
 QByteArray* RasterData::SQLForceGetRow(long y) const
 {
     QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT data FROM rasterfields WHERE owner LIKE ? AND y=?");
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     q->addBindValue(QVariant::fromValue(y));
     if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
         return NULL;
@@ -436,7 +436,7 @@ void ApplyRowUpdates()
     {
         QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data = ? WHERE owner LIKE ? AND y=?");
         q->addBindValue(it->second->toBase64());
-        q->addBindValue(it->first.first);
+        q->addBindValue(it->first.first.toByteArray());
         q->addBindValue(QVariant::fromValue(it->first.second));
         DBConnector::getInstance()->ExecuteQuery(q);
     }

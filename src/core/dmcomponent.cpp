@@ -321,7 +321,7 @@ void Component::SQLSetOwner(Component * owner)
 {
     DBConnector::getInstance()->Update(getTableName(),
                                        uuid,
-                                       "owner", owner->uuid);
+                                       "owner", owner->uuid.toByteArray());
 }
 
 void Component::SQLInsertComponent()

@@ -401,12 +401,12 @@ TEST_F(TestSimulation,cachetest) {
     float f = *c.get(1);
     c.add(3,three);
     c.add(4,four);
-    f = *c.get(10);
 
     ASSERT_TRUE(c.get(1)==one);
     ASSERT_TRUE(c.get(2)==NULL);
     ASSERT_TRUE(c.get(3)==three);
     ASSERT_TRUE(c.get(4)==four);
+    ASSERT_TRUE(c.get(10)==NULL);
 }
 
 TEST_F(TestSimulation,simplesqltest) {

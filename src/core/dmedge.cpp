@@ -36,8 +36,8 @@ using namespace DM;
 Edge::Edge(Node *start, Node *end) : Component(true)
 {
     DBConnector::getInstance()->Insert("edges", uuid,
-                                      "startnode",  start->getQUUID(),
-                                      "endnode",    end->getQUUID());
+                                       "startnode",  start->getQUUID().toByteArray(),
+                                      "endnode",    end->getQUUID().toByteArray());
 }
 
 Edge::Edge(const Edge& e) : Component(e, true)
@@ -46,8 +46,8 @@ Edge::Edge(const Edge& e) : Component(e, true)
     QUuid points[2];
     e.getPoints(points);
     DBConnector::getInstance()->Insert("edges", uuid,
-                                       "startnode",points[0],
-                                       "endnode",points[1]);
+                                       "startnode",points[0].toByteArray(),
+                                       "endnode",points[1].toByteArray());
 }
 
 Edge::~Edge()
@@ -69,8 +69,8 @@ const void Edge::getPoints(QUuid *points) const
     if(DBConnector::getInstance()->Select("edges", uuid,
                                        "startnode", &v1, "endnode", &v2))
     {
-        points[0] = QUuid::fromRfc4122(v1.toByteArray());
-        points[1] = QUuid::fromRfc4122(v2.toByteArray());
+        points[0] = QUuid(v1.toByteArray());
+        points[1] = QUuid(v2.toByteArray());
     }
 }
 
@@ -79,7 +79,7 @@ const QUuid Edge::getStartpoint() const
     QVariant value;
     if(DBConnector::getInstance()->Select("edges", uuid,
 											"startnode", &value))
-        return QUuid::fromRfc4122(value.toByteArray());
+        return QUuid(value.toByteArray());
 
     return "";
 }
@@ -94,7 +94,7 @@ const QUuid Edge::getEndpoint() const
     QVariant value;
     if(DBConnector::getInstance()->Select("edges", uuid,
                                         "endnode", &value))
-        return QUuid::fromRfc4122(value.toByteArray());
+        return QUuid(value.toByteArray());
 
     return "";
 }
@@ -107,25 +107,25 @@ const std::string Edge::getEndpointName() const
 void Edge::setStartpoint(Node *start)
 {
     DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode", start->getQUUID());
+                                       "startnode", start->getQUUID().toByteArray());
 }
 
 void Edge::setStartpointName(std::string name)
 {
     DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode", QUuid(QString::fromStdString(name)));
+                                       "startnode", QUuid(QString::fromStdString(name)).toByteArray());
 }
 
 void Edge::setEndpoint(Node *end)
 {
     DBConnector::getInstance()->Update("edges", uuid,
-                                       "endnode",  end->getQUUID());
+                                       "endnode",  end->getQUUID().toByteArray());
 }
 
 void Edge::setEndpointName(std::string name)
 {
     DBConnector::getInstance()->Update("edges", uuid,
-                                       "endnode", QUuid(QString::fromStdString(name)));
+                                       "endnode", QUuid(QString::fromStdString(name)).toByteArray());
 }
 
 Component* Edge::clone()
@@ -136,6 +136,6 @@ Component* Edge::clone()
 void Edge::SQLSetValues(QUuid start, QUuid end)
 {
     DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode", start,
-                                       "endnode",   end);
+                                       "startnode", start.toByteArray(),
+                                       "endnode",   end.toByteArray());
 }
