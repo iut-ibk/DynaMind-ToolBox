@@ -359,12 +359,13 @@ void RasterData::SQLInsertField(long width, long height)
     {
         for(long x = 0; x < width; x++)
             buffer[x] = NoValue;
-        QByteArray qba((char*)buffer, sizeof(double)*width);
+        QByteArray *qba = new QByteArray((char*)buffer, sizeof(double)*width);
+		rowCache.add(std::pair<QUuid,long>(getQUUID(),y), qba);
 
         QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
         q->addBindValue(uuid.toByteArray());
         q->addBindValue(QVariant::fromValue(y));
-        q->addBindValue(qba.toBase64());
+        q->addBindValue(qba->toBase64());
         DBConnector::getInstance()->ExecuteQuery(q);
     }
     delete buffer;
@@ -388,7 +389,7 @@ void RasterData::SQLDeleteField()
 double RasterData::SQLGetValue(long x, long y) const
 {
     QByteArray *qba = SQLGetRow(y);
-    return ((double*)qba->data_ptr())[x];
+	return ((double*)qba->data())[x];
 }
 QByteArray* RasterData::SQLGetRow(long y) const
 {
@@ -429,8 +430,6 @@ void RasterData::SQLSetValue(long x, long y, double value)
 }
 void RasterData::SQLSetRow(long y, QByteArray *data)
 {
-    // TODO if data is not in cache
-    rowCache.change(std::pair<QUuid,long>(uuid,y), data);
     rowUpdateCache[std::pair<QUuid,long>(uuid,y)] = data;
 }
 
