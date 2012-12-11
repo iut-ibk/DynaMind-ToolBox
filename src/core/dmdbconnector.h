@@ -78,37 +78,35 @@ public:
     void BeginTransaction();
     void CommitTransaction();
     // inserts with uuid
-    void Insert(QString table,  QByteArray uuid);
-    void Insert(QString table,  QByteArray uuid,
+    void Insert(QString table,  QUuid uuid);
+    void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
-    void Insert(QString table,  QByteArray uuid,
+    void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
-    void Insert(QString table,  QByteArray uuid,
+    void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     // updates with uuid
-    void Update(QString table,  QByteArray uuid,
+    void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
-    void Update(QString table,  QByteArray uuid,
+    void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1);
-    void Update(QString table,  QByteArray uuid,
+    void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     // delete with uuid
-    void Delete(QString table,  QByteArray uuid);
-    // delete with uuid and stateuuid
-    void Delete(QString table,  QByteArray uuid, QString stateUuid);
+    void Delete(QString table,  QUuid uuid);
     // select single entry with uuid
-    bool Select(QString table, QByteArray uuid,
+    bool Select(QString table, QUuid uuid,
                 QString valName, QVariant *value);
-    bool Select(QString table, QByteArray uuid,
+    bool Select(QString table, QUuid uuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1);
-    bool Select(QString table, QByteArray uuid,
+    bool Select(QString table, QUuid uuid,
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);

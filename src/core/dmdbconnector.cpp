@@ -281,7 +281,7 @@ void DBConnector::BeginTransaction()
 
 void DBConnector::CommitTransaction()
 {
-    if(_bTransaction)
+    if(_db.isOpen() && _bTransaction)
     {
         _bTransaction = false;
         if(!_db.commit())
@@ -299,34 +299,34 @@ void DBConnector::CommitTransaction()
 /*
  *  INSERT with uuid
  */
-void DBConnector::Insert(QString table, QByteArray uuid)
+void DBConnector::Insert(QString table, QUuid uuid)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QByteArray uuid,
+void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
                             parName0+") VALUES (?,?)");
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     q->addBindValue(parValue0);
     this->ExecuteQuery(q);
 }
-void DBConnector::Insert(QString table,  QByteArray uuid,
+void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
  {
      QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
                              parName0+","+
                              parName1+") VALUES (?,?,?)");
-     q->addBindValue(uuid);
+     q->addBindValue(uuid.toByteArray());
      q->addBindValue(parValue0);
      q->addBindValue(parValue1);
      this->ExecuteQuery(q);
  }
-void DBConnector::Insert(QString table,  QByteArray uuid,
+void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
@@ -335,7 +335,7 @@ void DBConnector::Insert(QString table,  QByteArray uuid,
                              parName0+","+
                              parName1+","+
                              parName2+") VALUES (?,?,?,?)");
-     q->addBindValue(uuid);
+     q->addBindValue(uuid.toByteArray());
      q->addBindValue(parValue0);
      q->addBindValue(parValue1);
      q->addBindValue(parValue2);
@@ -344,35 +344,25 @@ void DBConnector::Insert(QString table,  QByteArray uuid,
 /*
  *  DELETE with uuid
  */
-void DBConnector::Delete(QString table,  QByteArray uuid)
+void DBConnector::Delete(QString table,  QUuid uuid)
 {
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
-    q->addBindValue(uuid);
-    this->ExecuteQuery(q);
-}
-/*
- *  DELETE with uuid and stateuuid
- */
-void DBConnector::Delete(QString table,  QByteArray uuid, QString stateUuid)
-{
-    QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ? AND stateuuid LIKE ?");
-    q->addBindValue(uuid);
-    q->addBindValue(stateUuid);
+    q->addBindValue(uuid.toByteArray());
     this->ExecuteQuery(q);
 }
 /*
  *  UPDATE with uuid
  */
-void DBConnector::Update(QString table,  QByteArray uuid,
+void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0)
 {
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
     q->addBindValue(parValue0);
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     this->ExecuteQuery(q);
 }
 
-void DBConnector::Update(QString table,  QByteArray uuid,
+void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
 {
@@ -381,10 +371,10 @@ void DBConnector::Update(QString table,  QByteArray uuid,
                             +parName1+"=? WHERE uuid LIKE ?");
     q->addBindValue(parValue0);
     q->addBindValue(parValue1);
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     this->ExecuteQuery(q);
 }
-void DBConnector::Update(QString table,  QByteArray uuid,
+void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
@@ -396,29 +386,29 @@ void DBConnector::Update(QString table,  QByteArray uuid,
     q->addBindValue(parValue0);
     q->addBindValue(parValue1);
     q->addBindValue(parValue2);
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
     this->ExecuteQuery(q);
 }
 /*
  *  SELECT single entry with uuid
  */
-bool DBConnector::Select(QString table, QByteArray uuid,
+bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName, QVariant *value)
 {
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
-    q->addBindValue(uuid);
+    q->addBindValue(uuid.toByteArray());
 
     if(!ExecuteSelectQuery(q))
         return false;
     *value = q->value(0);
     return true;
 }
-bool DBConnector::Select(QString table, QByteArray uuid,
+bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1)
  {
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
-     q->addBindValue(uuid);
+     q->addBindValue(uuid.toByteArray());
      if(!ExecuteSelectQuery(q))
          return false;
 
@@ -426,13 +416,13 @@ bool DBConnector::Select(QString table, QByteArray uuid,
      *value1 = q->value(1);
      return true;
  }
-bool DBConnector::Select(QString table, QByteArray uuid,
+bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1,
                          QString valName2, QVariant *value2)
  {
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
-     q->addBindValue(uuid);
+     q->addBindValue(uuid.toByteArray());
      if(!ExecuteSelectQuery(q))
          return false;
 
