@@ -256,6 +256,12 @@ public:
         n->value = value;
         return true;
     }
+    void remove(Tkey key)
+    {
+        Node *n = search(key);
+        if(n)
+            delete pop(n);
+    }
 };
 
 }   // namespace DM
