@@ -34,7 +34,7 @@
 #endif
 
 #include <string>
-#include <QVector>
+//#include <QVector>
 
 namespace DM {
 class  Component;

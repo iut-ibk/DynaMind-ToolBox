@@ -34,16 +34,29 @@
 
 using namespace DM;
 
+class Vector3
+{
+public:
+    double x,y,z;
+
+    Vector3(){}
+    Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
+};
+
+static Cache<QUuid,Vector3> nodeCache(512);
+
 Node::Node( double x, double y, double z) : Component(true)
 {
     DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",x,"y",y,"z",z);
+    nodeCache.add(getQUUID(), new Vector3(x,y,z));
 }
 
 Node::Node() : Component(true)
 {
     DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",0,"y",0,"z",0);
+    nodeCache.add(getQUUID(), new Vector3(0,0,0));
 }
 
 Node::Node(const Node& n) : Component(n, true)
@@ -52,9 +65,11 @@ Node::Node(const Node& n) : Component(n, true)
     n.get(v);
     DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",v[0],"y",v[1],"z",v[2]);
+    nodeCache.add(getQUUID(), new Vector3(v[0],v[1],v[2]));
 }
 Node::~Node()
 {
+    nodeCache.remove(getQUUID());
     Component::SQLDelete();
 }
 DM::Components Node::getType()
@@ -67,33 +82,55 @@ QString Node::getTableName()
 }
 double Node::getX() const
 {
-    QVariant value;
+    if(Vector3* v = nodeCache.get(getQUUID()))   return v->x;
+    Vector3 v;
+    get(&v.x);
+    return v.x;
+
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "x",      &value))
         return value.toDouble();
-	return 0;
+    return 0;*/
 }
 
 double Node::getY() const
 {
-    QVariant value;
+    if(Vector3* v = nodeCache.get(getQUUID()))   return v->y;
+    Vector3 v;
+    get(&v.x);
+    return v.y;
+
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "y",      &value))
         return value.toDouble();
-	return 0;
+    return 0;*/
 }
 
 double Node::getZ() const
 {
-    QVariant value;
+    if(Vector3* v = nodeCache.get(getQUUID()))   return v->z;
+    Vector3 v;
+    get(&v.x);
+    return v.z;
+
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "z",      &value))
         return value.toDouble();
-	return 0;
+    return 0;*/
 }
 
 const void Node::get(double *vector) const
 {
+    if(Vector3 *v = nodeCache.get(getQUUID()))
+    {
+        vector[0] = v->x;
+        vector[1] = v->y;
+        vector[2] = v->z;
+        return;
+    }
     QVariant v[3];
     DBConnector::getInstance()->Select("nodes", uuid,
                                        "x",     &v[0],
@@ -102,6 +139,7 @@ const void Node::get(double *vector) const
     vector[0] = v[0].toDouble();
     vector[1] = v[1].toDouble();
     vector[2] = v[2].toDouble();
+    nodeCache.add(getQUUID(), new Vector3(vector[0],vector[1],vector[2]));
 }
 
 const double Node::get(unsigned int i) const {
@@ -127,35 +165,38 @@ std::vector<QUuid> Node::getEdges() const
             edges.push_back(QUuid(q->value(0).toByteArray()));
         while(q->next());
     }
-
-    /*QSqlQuery q;
-    q.prepare("SELECT uuid FROM edges WHERE start LIKE ? OR end LIKE ?");
-    q.addBindValue(uuid);
-    q.addBindValue(uuid);
-    if(q.exec())
-    {
-        while(q.next())
-            edges.push_back(q.value(0).toString().toStdString());
-    }
-    else
-        PrintSqlError(&q);*/
     return edges;
 }
 
 void Node::setX(double x)
 {
+    if(Vector3 *v = nodeCache.get(getQUUID()))
+    {
+        v->x = x;
+        nodeCache.change(this->getQUUID(), v);
+    }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x));
 }
 
 void Node::setY(double y)
 {
+    if(Vector3 *v = nodeCache.get(getQUUID()))
+    {
+        v->y = y;
+        nodeCache.change(this->getQUUID(), v);
+    }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "y",     QVariant::fromValue(y));
 }
 
 void Node::setZ(double z)
 {
+    if(Vector3 *v = nodeCache.get(getQUUID()))
+    {
+        v->z = z;
+        nodeCache.change(this->getQUUID(), v);
+    }
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "z",     QVariant::fromValue(z));
 }
@@ -224,6 +265,7 @@ bool Node::compare2d(const Node * other , double round ) const
 }
 void Node::SQLSetValues(double x,double y,double z)
 {
+    nodeCache.change(this->getQUUID(), new Vector3(x,y,z));
     DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x),
                                        "y",     QVariant::fromValue(y),
