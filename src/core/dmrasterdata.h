@@ -70,9 +70,8 @@ public:
     int getDebugValue() {return debugValue;}
 
     Component * clone();
+    void ForceUpdate() const;
 private:
-    //int _linkID;
-
     long width;
     long height;
     double cellSizeX;
@@ -83,18 +82,16 @@ private:
     double minValue;
     double maxValue;
     int debugValue;
-    Cache<long,QByteArray> *rowCache;
 
     void SQLInsert();
 	void SQLDeleteField();
     void SQLInsertField(long width, long height);
     double SQLGetValue(long x, long y) const;
-    QByteArray SQLGetRow(long x) const;
-    void SQLSetRow(long x, QByteArray data);
+    QByteArray* SQLGetRow(long y) const;
+    QByteArray* SQLForceGetRow(long y) const;
+    void SQLSetRow(long y, QByteArray *data);
     void SQLSetValue(long x, long y, double value);
-    //void SQLUpdateLink(int id);
 
-    //int GetLinkID() const;
     /** @brief return table name */
     QString getTableName();
 };
