@@ -190,6 +190,7 @@ bool Component::addAttribute(Attribute *pAttribute)
     if(HasAttribute(pAttribute->getName()))
         delete ownedattributes[pAttribute->getName()];
 
+	ownedattributes[pAttribute->getName()] = pAttribute;
     pAttribute->SetOwner(this);
     return true;
 }
