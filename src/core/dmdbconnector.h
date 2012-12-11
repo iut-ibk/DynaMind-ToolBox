@@ -129,6 +129,13 @@ class SingletonDestroyer
         DBConnector* _singleton;
 };
 
+
+template<typename T>
+struct is_pointer { static const bool value = false; };
+
+template<typename T>
+struct is_pointer<T*> { static const bool value = true; };
+
 template<class Tkey,class Tvalue>
 class Cache
 {
@@ -137,15 +144,19 @@ private:
     {
     public:
         Tkey key;
-        Tvalue value;
+        Tvalue* value;
         Node* next;
         Node* last;
-        Node(Tkey k, Tvalue v)
+        Node(const Tkey k, Tvalue* v)
         {
             key=k;
             value=v;
             next = NULL;
             last = NULL;
+        }
+        ~Node()
+        {
+            delete value;
         }
     };
 
@@ -184,9 +195,14 @@ private:
     Node* search(Tkey key)
     {
         Node *n = _root;
-        while(n!=NULL && n->key != key)
-            n = n->next;
-        return n;
+        while(n!=NULL)
+        {
+            if(n->key == key)
+                return n;
+            else
+                n = n->next;
+        }
+        return NULL;
     }
 
 public:
@@ -210,7 +226,7 @@ public:
         }
     }
 
-    Tvalue get(Tkey key)
+    Tvalue* get(Tkey key)
     {
         Node *n = search(key);
         // push front
@@ -218,24 +234,29 @@ public:
         {
             pop(n);
             push_front(n);
+            return n->value;
         }
-        else
-            return Tvalue();
-        return n->value;
+        return NULL;
     }
-    void add(Tkey key,Tvalue value)
+    void add(Tkey key,Tvalue* value)
     {
+        if(search(key)!=NULL)
+            return;
+
         Node *n = new Node(key,value);
         push_front(n);
 
         if(_cnt>_size)
             delete pop(_last);
     }
-    void change(Tkey key,Tvalue value)
+    bool change(Tkey key,Tvalue* value)
     {
         Node *n = search(key);
-        if(n!=NULL)
-            n->value = value;
+        if(n==NULL)
+            return false;
+
+        n->value = value;
+        return true;
     }
 };
 

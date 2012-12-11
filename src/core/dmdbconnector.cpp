@@ -109,8 +109,8 @@ bool DBConnector::CreateTables()
                                             datalink INT,\
                                             PRIMARY KEY (uuid))")
                && query.exec("CREATE TABLE rasterfields(owner BINARY(16) NOT NULL, \
-                                            x BIGINT, data BYTEA, \
-                                            PRIMARY KEY (owner,x))")
+                                            y BIGINT, data BYTEA, \
+                                            PRIMARY KEY (owner,y))")
     && query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
                                             owner BINARY(16), \
                                             name VARCHAR(128), \
@@ -248,8 +248,7 @@ QSqlQuery* DBConnector::getQuery(QString cmd)
 }
 void DBConnector::ExecuteQuery(QSqlQuery *q)
 {   
-    if(!_bTransaction)
-        this->BeginTransaction();
+    this->BeginTransaction();
 
     if(!q->exec())	PrintSqlError(q);
 }
@@ -270,8 +269,11 @@ bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 
 void DBConnector::BeginTransaction()
 {
-    _bTransaction = true;
-    _db.transaction();
+    if(!_bTransaction)
+    {
+        _bTransaction = true;
+        _db.transaction();
+    }
     //QSqlQuery q;
     //if(!q.exec("BEGIN TRANSACTION"))
     //    PrintSqlError(&q);
@@ -281,7 +283,7 @@ void DBConnector::CommitTransaction()
 {
     if(_bTransaction)
     {
-    _bTransaction = false;
+        _bTransaction = false;
         if(!_db.commit())
         //QSqlQuery q;
         //if(!q.exec("END TRANSACTION"))
