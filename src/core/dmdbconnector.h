@@ -247,13 +247,14 @@ public:
         if(_cnt>_size)
             delete pop(_last);
     }
-    bool change(Tkey key,Tvalue* value)
+    bool replace(Tkey key,Tvalue* value)
     {
         Node *n = search(key);
         if(n==NULL)
             return false;
 
-        n->value = value;
+        delete pop(n);
+        add(key, value);
         return true;
     }
     void remove(Tkey key)
