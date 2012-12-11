@@ -155,13 +155,13 @@ Attribute::~Attribute()
 Attribute::AttributeType Attribute::getType() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("attributes", _uuid.toRfc4122(), "type", &value))
+    if(DBConnector::getInstance()->Select("attributes", _uuid, "type", &value))
         return (AttributeType)value.toInt();
     return NOTYPE;
 /*
 	QSqlQuery q;
 	q.prepare("SELECT type FROM attributes WHERE uuid=?");
-    q.addBindValue(_uuid.toRfc4122());
+    q.addBindValue(_uuid);
 	if(!q.exec())	PrintSqlError(&q);
 	if(q.next())	return (AttributeType)q.value(0).toInt();
     return NOTYPE;*/
@@ -369,36 +369,36 @@ void Attribute::SQLInsertThis(AttributeType type)
 {
     _uuid = QUuid::createUuid();
 
-    DBConnector::getInstance()->Insert("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("attributes", _uuid,
                                        "name", QString::fromStdString(name),
                                        "type", QVariant::fromValue((int)type));
 }
 void Attribute::SQLDeleteThis()
 {
-    DBConnector::getInstance()->Delete("attributes", _uuid.toRfc4122());
+    DBConnector::getInstance()->Delete("attributes", _uuid);
 }
 
 void Attribute::SQLUpdateValue(AttributeType type, QVariant value)
 {	
-    DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("attributes", _uuid,
                                        "type",(int)type,
                                        "value",value);
 }
 void Attribute::SetOwner(Component* owner)
 {
 	// TODO: make shure its not bound to another component
-    DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("attributes", _uuid,
                                        "owner",     QString::fromStdString(owner->getUUID()));
 }
 
 void Attribute::SQLSetName(std::string newname)
 {	
-    DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("attributes", _uuid,
                                        "name",      QString::fromStdString(newname));
 }
 void Attribute::SQLSetType(AttributeType newtype)
 {
-    DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("attributes", _uuid,
                                        "type",      QVariant::fromValue((int)newtype),
                                        "value",     QVariant::fromValue(0));
 }
@@ -406,11 +406,11 @@ void Attribute::SQLSetType(AttributeType newtype)
 bool Attribute::SQLGetValue(QVariant &value) const
 {
     return DBConnector::getInstance()->Select("attributes",
-                                              _uuid.toRfc4122(), "value", &value);
+                                              _uuid, "value", &value);
 }
 void Attribute::SQLSetValue(AttributeType type, QVariant value)
 {
-    DBConnector::getInstance()->Update("attributes", _uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("attributes", _uuid,
                                         "type",      QVariant::fromValue((int)type),
                                         "value",     value);
 }

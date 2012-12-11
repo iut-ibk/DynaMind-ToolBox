@@ -98,14 +98,14 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
         _nodes.push_back(this->getCurrentSystem()->getNode(nodeUuid));
     }
 
-    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("faces", uuid,
                                        "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(std::vector<Node*> nodes) : Component(true)
 {
     this->_nodes = nodes;
-    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("faces", uuid,
                                        "nodes", GetBytes(_nodes));
 }
 
@@ -113,7 +113,7 @@ Face::Face(const Face& e) : Component(e, true)
 {
     this->_nodes = e._nodes;
     this->_holes = e._holes;
-    DBConnector::getInstance()->Insert("faces", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("faces", uuid,
                                        "nodes", GetBytes(e._nodes),
                                        "holes", GetBytes(e._holes));
 }
@@ -146,7 +146,7 @@ std::vector<std::string> Face::getNodes() const
         nodes.push_back(n->getUUID());
     }
     /*QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
+    if(DBConnector::getInstance()->Select("faces",  uuid,
                                           "nodes", &value))
         nodes = GetVector(value.toByteArray());*/
     return nodes;
@@ -206,7 +206,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
     }
 
     /*QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  uuid.toRfc4122(),
+    if(DBConnector::getInstance()->Select("faces",  uuid,
                                           "holes", &value))
         holes = GetVectorVector(value.toByteArray());*/
     return holes;
@@ -245,7 +245,7 @@ void Face::addHole(Face* hole)
 
 void Face::SQLUpdateValues()
 {
-    DBConnector::getInstance()->Update("faces", uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("faces", uuid,
                                        "nodes", GetBytes(_nodes),
                                        "holes", GetBytes(_holes));
 }

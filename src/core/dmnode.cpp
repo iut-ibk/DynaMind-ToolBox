@@ -36,13 +36,13 @@ using namespace DM;
 
 Node::Node( double x, double y, double z) : Component(true)
 {
-    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",x,"y",y,"z",z);
 }
 
 Node::Node() : Component(true)
 {
-    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",0,"y",0,"z",0);
 }
 
@@ -50,7 +50,7 @@ Node::Node(const Node& n) : Component(n, true)
 {
     double v[3];
     n.get(v);
-    DBConnector::getInstance()->Insert("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Insert("nodes", uuid,
                                        "x",v[0],"y",v[1],"z",v[2]);
 }
 Node::~Node()
@@ -68,7 +68,7 @@ QString Node::getTableName()
 double Node::getX() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
+    if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "x",      &value))
         return value.toDouble();
 	return 0;
@@ -77,7 +77,7 @@ double Node::getX() const
 double Node::getY() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
+    if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "y",      &value))
         return value.toDouble();
 	return 0;
@@ -86,7 +86,7 @@ double Node::getY() const
 double Node::getZ() const
 {
     QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid.toRfc4122(),
+    if(DBConnector::getInstance()->Select("nodes",  uuid,
                                           "z",      &value))
         return value.toDouble();
 	return 0;
@@ -95,7 +95,7 @@ double Node::getZ() const
 const void Node::get(double *vector) const
 {
     QVariant v[3];
-    DBConnector::getInstance()->Select("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Select("nodes", uuid,
                                        "x",     &v[0],
                                        "y",     &v[1],
                                        "z",     &v[2]);
@@ -119,8 +119,8 @@ std::vector<QUuid> Node::getEdges() const
     std::vector<QUuid> edges;
 
     QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT uuid FROM edges WHERE startnode LIKE ? OR endnode LIKE ?");
-    q->addBindValue(uuid.toRfc4122());
-    q->addBindValue(uuid.toRfc4122());
+    q->addBindValue(uuid);
+    q->addBindValue(uuid);
     if(DBConnector::getInstance()->ExecuteSelectQuery(q))
     {
         do
@@ -130,8 +130,8 @@ std::vector<QUuid> Node::getEdges() const
 
     /*QSqlQuery q;
     q.prepare("SELECT uuid FROM edges WHERE start LIKE ? OR end LIKE ?");
-    q.addBindValue(uuid.toRfc4122());
-    q.addBindValue(uuid.toRfc4122());
+    q.addBindValue(uuid);
+    q.addBindValue(uuid);
     if(q.exec())
     {
         while(q.next())
@@ -144,19 +144,19 @@ std::vector<QUuid> Node::getEdges() const
 
 void Node::setX(double x)
 {
-    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x));
 }
 
 void Node::setY(double y)
 {
-    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("nodes", uuid,
                                        "y",     QVariant::fromValue(y));
 }
 
 void Node::setZ(double z)
 {
-    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("nodes", uuid,
                                        "z",     QVariant::fromValue(z));
 }
 
@@ -224,7 +224,7 @@ bool Node::compare2d(const Node * other , double round ) const
 }
 void Node::SQLSetValues(double x,double y,double z)
 {
-    DBConnector::getInstance()->Update("nodes", uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("nodes", uuid,
                                        "x",     QVariant::fromValue(x),
                                        "y",     QVariant::fromValue(y),
                                        "z",     QVariant::fromValue(z));

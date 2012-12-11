@@ -129,9 +129,9 @@ bool Component::isInView(View view) const
 void Component::setUUID(std::string uuid)
 {
     DBConnector::getInstance()->Update(getTableName(),
-                                       uuid.toRfc4122(),
+                                       uuid,
                                        QString::fromStdString(stateUuid),
-                                       "uuid", uuid.toRfc4122());
+                                       "uuid", uuid);
     this->uuid=uuid;
 }*/
 
@@ -320,25 +320,25 @@ void Component::SetOwner(Component *owner)
 void Component::SQLSetOwner(Component * owner)
 {
     DBConnector::getInstance()->Update(getTableName(),
-                                       uuid.toRfc4122(),
-                                       "owner", owner->uuid.toRfc4122());
+                                       uuid,
+                                       "owner", owner->uuid);
 }
 
 void Component::SQLInsertComponent()
 {
     DBConnector::getInstance()->Insert("components",
-                                       uuid.toRfc4122());
+                                       uuid);
 }
 
 void Component::SQLDeleteComponent()
 {
     // note: if its not a component, it will just do nothing
     DBConnector::getInstance()->Delete("components",
-                                       uuid.toRfc4122());
+                                       uuid);
 }
 void Component::SQLDelete()
 {
-    DBConnector::getInstance()->Delete(getTableName(), uuid.toRfc4122());
+    DBConnector::getInstance()->Delete(getTableName(), uuid);
 }
 
 bool Component::HasAttribute(std::string name)

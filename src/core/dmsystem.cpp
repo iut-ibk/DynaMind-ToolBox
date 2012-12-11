@@ -156,7 +156,7 @@ void System::setUUID(std::string uuid)
 {
     DBConnector::getInstance()->Update("systems", QString::fromStdString(this->uuid),
                                                 QString::fromStdString(stateUuid),
-                                       "uuid", uuid.toRfc4122());
+                                       "uuid", uuid);
     this->uuid = uuid;
 }*/
 
@@ -789,7 +789,7 @@ std::vector<Component*> System::getChilds()
 
 void System::SQLInsert()
 {
-    DBConnector::getInstance()->Insert("systems", uuid.toRfc4122());
+    DBConnector::getInstance()->Insert("systems", uuid);
 }
 void System::SQLUpdateStates()
 {
@@ -803,7 +803,7 @@ void System::SQLUpdateStates()
 	{
         preList.push_back(sys->getQUUID().toString());
 	}
-    DBConnector::getInstance()->Update("systems",       uuid.toRfc4122(),
+    DBConnector::getInstance()->Update("systems",       uuid,
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
 }
