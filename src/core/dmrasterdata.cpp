@@ -68,6 +68,7 @@ double RasterData::getSum() const {
 
 double RasterData::getCell(long x, long y) const {
     if (  x >-1 && y >-1 && x < this->width && y < this->height) {
+        //std::cout << data[x][y] << std::endl;
         return  data[x][y];
     } else {
         return  this->NoValue;
@@ -84,8 +85,8 @@ void RasterData::createNewDataSet() {
         data[i] = new float[height];
     }
 
-    for (int i = 0; i < getWidth(); i++) {
-        for (int j = 0; j < getHeight();j++) {
+    for (unsigned int i = 0; i < getWidth(); i++) {
+        for (unsigned int j = 0; j < getHeight();j++) {
             data[i][j] =  data_old[i][j];
         }
     }
@@ -130,7 +131,7 @@ RasterData::~RasterData() {
     data = 0;
 }
 
-void RasterData::getNeighboorhood(float** d, int width, int height, int x, int y) {
+void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
     int dx = (int) (width -1)/2;
     int dy = (int) (height -1)/2;
     int x_cell;
@@ -154,7 +155,8 @@ void RasterData::getNeighboorhood(float** d, int width, int height, int x, int y
             if ( j >= this->height) {
                 y_cell = j - this->height;
             }
-            d[k][l] = this->getCell(x_cell,y_cell);
+            float val = this->getCell(x_cell,y_cell);
+            d[k][l] = val;
 
             l++;
         }
