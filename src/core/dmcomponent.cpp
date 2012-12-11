@@ -139,7 +139,7 @@ std::string Component::getUUID()
 {
     return uuid.toString().toStdString();
 }
-QUuid Component::getQUUID()
+QUuid Component::getQUUID() const
 {
     return uuid;
 }

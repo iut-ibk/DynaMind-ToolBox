@@ -120,7 +120,7 @@ public:
     /** @brief return UUID */
     std::string getUUID();
     /** @brief return UUID */
-    QUuid getQUUID();
+    QUuid getQUUID() const;
     /** @brief adds a new Attribute to the Component.
       *
       * Returns true if the attribute has been added to the Component.
