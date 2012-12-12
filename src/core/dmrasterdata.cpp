@@ -147,7 +147,7 @@ RasterData::~RasterData()
     Component::SQLDelete();
 }
 
-void RasterData::getNeighboorhood(float** d, int width, int height, int x, int y) {
+void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
     int dx = (int) (width -1)/2;
     int dy = (int) (height -1)/2;
     int x_cell;

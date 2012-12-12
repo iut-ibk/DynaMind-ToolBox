@@ -86,9 +86,10 @@ public:
     /** @brief Returns the current Instance */
     static Log *getInstance();
     friend class Logger;
+    virtual ~Log();
 private:
     Log();
-    virtual ~Log();
+
 
     static Log *instance;
 

@@ -63,7 +63,7 @@ public:
     void setYOffset(double value){this->yoffset=value;}
     std::vector<double> getMoorNeighbourhood(long x, long y) const;
     void setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
-    void getNeighboorhood(float** d, int width, int height, int x, int y);
+    void getNeighboorhood(double** d, int width, int height, int x, int y);
 
     void getMoorNeighbourhood(std::vector<double> & neigh, long x, long y);
     void setDebugValue(int val){debugValue = val;}

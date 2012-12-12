@@ -574,7 +574,8 @@ TEST_F(TestSimulation, SQLattributes)
     DM::Logger(DM::Debug) << "checking add attributes";
     // DOUBLE
     DM::Component *c = new DM::Component();
-    c->addAttribute(DM::Attribute("hint", 50));
+    DM::Attribute attr("hint", 50);
+    c->addAttribute(attr);
     DM::Attribute *pa = c->getAttribute("hint");
     ASSERT_TRUE(pa->getDouble()==50);
     delete c;
@@ -712,7 +713,10 @@ TEST_F(TestSimulation,sqlprofiling) {
 
     timer.restart();
     for(int i=0;i<n;i++)
-        buffer[i].addAttribute(DM::Attribute("thestring", "blubberdiblub"));
+    {
+        DM::Attribute attr("thestring", "blubberdiblub");
+        buffer[i].addAttribute(attr);
+    }
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "copyadd " << n << " attributes " << (long)timer.elapsed();
 
