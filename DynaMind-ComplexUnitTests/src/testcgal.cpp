@@ -274,10 +274,6 @@ TEST_F(TestCGAL, dointersectionTest){
     nodes2.push_back(n4_2);
     nodes2.push_back(n1_2);
 
-    DM::Face * f1 = sys->addFace(nodes);
-    DM::Face * f2 = sys->addFace(nodes1);
-    DM::Face * f3 = sys->addFace(nodes2);
-
 
     ASSERT_TRUE(DM::CGALGeometry::DoFacesInterect(nodes, nodes1));
     ASSERT_FALSE(DM::CGALGeometry::DoFacesInterect(nodes, nodes2));
