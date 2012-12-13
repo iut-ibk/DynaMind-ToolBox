@@ -229,13 +229,6 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
 
-    double alphas_t[3][3];
-    for (int i = 0; i < 3; i++){
-        for (int j = 0; j < 3; j++){
-            alphas_t[j][i] =  alphas[i][j];
-        }
-    }
-
     DM::System transformedSys;
 
     std::vector<DM::Node*> ns_t;

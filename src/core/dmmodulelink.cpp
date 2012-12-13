@@ -152,13 +152,10 @@ bool ModuleLink::isBackLinkInChain() {
             counter++;
 
         }
-        ModuleLink *l = p->getLinks()[LinkId];
         if (g->getInternalCounter() > 1 && BackId != -1 && counter > 1){
-            l = p->getLinks()[BackId];
             return true;
         }
         else if (BackId != -1 && counter == 1){
-            l = p->getLinks()[BackId];
             return true;
 
         }

@@ -46,11 +46,19 @@ Attribute::Attribute(std::string name)
 {
     this->name=name;
     this->type = Attribute::NOTYPE;
+
+    doublevalue = 0;
+    stringvalue = "";
+
+
+
 }
 Attribute::Attribute()
 {
     this->name="";
     this->type = Attribute::NOTYPE;
+    doublevalue = 0;
+    stringvalue = "";
 
 }
 
