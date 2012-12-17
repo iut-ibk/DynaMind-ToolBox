@@ -52,9 +52,12 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-	void SQLSetValues(double x,double y,double z);
+    double x,y,z;
+    //void SQLSetValues(double x,double y,double z);
     /** @brief return table name */
     QString getTableName();
+protected:
+    virtual void SetOwner(Component *owner);
 public:
     /** @brief create new Node object defined by x, y and z */
     Node( double x, double y, double z );
@@ -100,10 +103,10 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
-
+/*
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
-#endif
+#endif*/
 };
 
 typedef std::map<std::string, DM::Node*> NodeMap;

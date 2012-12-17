@@ -77,7 +77,7 @@ private:
     bool addAttribute(Attribute *pAttribute);
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
-    void SetOwner(Component *owner);
+    virtual void SetOwner(Component *owner);
     //const std::string stateUuid;
 
     void SQLDelete();
