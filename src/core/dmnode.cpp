@@ -97,12 +97,6 @@ double Node::getX() const
     Vector3 v;
     get(&v.x);
     return v.x;
-
-    /*QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid,
-                                          "x",      &value))
-        return value.toDouble();
-    return 0;*/
 }
 
 double Node::getY() const
@@ -111,12 +105,6 @@ double Node::getY() const
     Vector3 v;
     get(&v.x);
     return v.y;
-
-    /*QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid,
-                                          "y",      &value))
-        return value.toDouble();
-    return 0;*/
 }
 
 double Node::getZ() const
@@ -125,12 +113,6 @@ double Node::getZ() const
     Vector3 v;
     get(&v.x);
     return v.z;
-
-    /*QVariant value;
-    if(DBConnector::getInstance()->Select("nodes",  uuid,
-                                          "z",      &value))
-        return value.toDouble();
-    return 0;*/
 }
 
 const void Node::get(double *vector) const

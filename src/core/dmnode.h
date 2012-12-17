@@ -52,8 +52,6 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-    //void SQLInsert(double x,double y,double z);
-    //void SQLDelete();
 	void SQLSetValues(double x,double y,double z);
     /** @brief return table name */
     QString getTableName();
