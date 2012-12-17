@@ -33,6 +33,7 @@
 #include <map>
 #include <dmcompilersettings.h>
 #include <QtCore>
+#include "dmdbconnector.h"
 
 using namespace std;
 
@@ -155,6 +156,9 @@ public:
      * @return the name of the @arg type
      */
     static const char*getTypeName(AttributeType type);
+#ifdef CACHE_PROFILING
+    static void PrintStatistics();
+#endif
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

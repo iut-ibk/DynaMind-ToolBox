@@ -40,6 +40,16 @@ const unsigned int rowOverlapp = 3;
 static Cache<std::pair<QUuid,long>,QByteArray> rowCache(512);
 static std::map<std::pair<QUuid,long>,QByteArray*> rowUpdateCache;
 
+#ifdef CACHE_PROFILING
+void RasterData::PrintStatistics()
+{
+    Logger(Standard) << "Rasterdata row cache statistics:\t"
+                     << "misses: " << (long)rowCache.misses
+                     << "\thits: " << (long)rowCache.hits;
+    rowCache.ResetProfilingCounters();
+}
+#endif
+
 
 RasterData::RasterData(long width, long height,
                        double cellsizeX, double cellsizeY,

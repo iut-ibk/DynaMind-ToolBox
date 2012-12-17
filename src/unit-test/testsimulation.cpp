@@ -428,7 +428,32 @@ TEST_F(TestSimulation,simplesqltest) {
     ASSERT_TRUE(l2 != 0);
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
+
+/*
+TEST_F(TestSimulation,simplesimulationtest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test SuperBlock-CityBlock";
+
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-cityblocks");
+    DM::Module * msuperblock = sim.addModule("SuperBlock");
+    ASSERT_TRUE(msuperblock != 0);
+    DM::Module * mcityblock  = sim.addModule("CityBlock");
+    ASSERT_TRUE(mcityblock != 0);
+    DM::ModuleLink * l1 = sim.addLink(msuperblock->getOutPort("sys"), mcityblock->getInPort("sys"));
+    ASSERT_TRUE(l1 != 0);
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}*/
+
+
 
 /* DOES NOT WORK ANYMORE (VALIDATION TOOL ON SUCCESSORSTATE)
 TEST_F(TestSimulation,sqlsuccessortest) {
@@ -458,6 +483,11 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(node->getY()==2);
     ASSERT_TRUE(node->getZ()==3);
     delete node;
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SqlEdgeTest)
@@ -483,6 +513,11 @@ TEST_F(TestSimulation, SqlEdgeTest)
     delete n0;
     delete n1;
     delete edge;
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SqlFaceOrder)
@@ -514,6 +549,11 @@ TEST_F(TestSimulation, SqlFaceOrder)
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[0]==n0);
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[1]==n1);
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 TEST_F(TestSimulation, SQLRasterdata)
 {
@@ -562,6 +602,11 @@ TEST_F(TestSimulation, SQLRasterdata)
             ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
 
     delete raster;
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SQLattributes)
@@ -660,6 +705,11 @@ TEST_F(TestSimulation, SQLattributes)
     ASSERT_TRUE(b->getDouble() == 5.0);
     delete a;
     delete b;
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation,sqlprofiling) {
@@ -751,8 +801,14 @@ TEST_F(TestSimulation,sqlprofiling) {
     delete sys;
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
 /**/
+
 TEST_F(TestSimulation,sqlRasterDataProfiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -786,8 +842,13 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     delete raster;
     DM::DBConnector::getInstance()->CommitTransaction();
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+    // print cache statistics
+    DM::Node::PrintStatistics();
+    DM::Attribute::PrintStatistics();
+    DM::RasterData::PrintStatistics();
 }
-/*
+
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -920,7 +981,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+/*
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
         ostream *out = &cout;

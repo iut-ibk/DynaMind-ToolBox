@@ -127,6 +127,7 @@ class SingletonDestroyer
         DBConnector* _singleton;
 };
 
+#define CACHE_PROFILING
 
 template<typename T>
 struct is_pointer { static const bool value = false; };
@@ -204,12 +205,28 @@ private:
     }
 
 public:
+#ifdef CACHE_PROFILING
+    unsigned long hits;
+    unsigned long misses;
+
+    void ResetProfilingCounters()
+    {
+        misses = 0;
+        hits = 0;
+    }
+
+#endif
+
     Cache(unsigned int size)
     {
         _size=size;
         _cnt=0;
         _root = NULL;
         _last = NULL;
+#ifdef CACHE_PROFILING
+            hits = 0;
+            misses = 0;
+#endif
     }
     ~Cache()
     {
@@ -232,8 +249,14 @@ public:
         {
             pop(n);
             push_front(n);
+#ifdef CACHE_PROFILING
+            hits++;
+#endif
             return n->value;
         }
+#ifdef CACHE_PROFILING
+        misses++;
+#endif
         return NULL;
     }
     void add(Tkey key,Tvalue* value)

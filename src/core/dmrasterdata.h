@@ -71,6 +71,10 @@ public:
 
     Component * clone();
     void ForceUpdate() const;
+
+#ifdef CACHE_PROFILING
+    static void PrintStatistics();
+#endif
 private:
     long width;
     long height;

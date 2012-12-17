@@ -31,6 +31,7 @@
 
 #include <dmdbconnector.h>
 #include <QSqlQuery>
+#include "dmlogger.h"
 
 using namespace DM;
 
@@ -44,6 +45,16 @@ public:
 };
 
 static Cache<QUuid,Vector3> nodeCache(512);
+
+#ifdef CACHE_PROFILING
+void Node::PrintStatistics()
+{
+    Logger(Standard) << "Node cache statistics:\t"
+                     << "misses: " << (long)nodeCache.misses
+                     << "\thits: " << (long)nodeCache.hits;
+    nodeCache.ResetProfilingCounters();
+}
+#endif
 
 Node::Node( double x, double y, double z) : Component(true)
 {

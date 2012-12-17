@@ -49,6 +49,16 @@ public:
 
 static Cache<QUuid,RawAttribute> attributeCache(2048);
 
+#ifdef CACHE_PROFILING
+void Attribute::PrintStatistics()
+{
+    Logger(Standard) << "Attribute cache statistics:\t"
+                     << "misses: " << (long)attributeCache.misses
+                     << "\thits: " << (long)attributeCache.hits;
+    attributeCache.ResetProfilingCounters();
+}
+#endif
+
 QByteArray GetBinaryValue(std::vector<double> v)
 {
 	QByteArray bytes;

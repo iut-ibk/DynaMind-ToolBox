@@ -28,6 +28,7 @@
 #define DMNODE_H
 
 #include <dmcompilersettings.h>
+#include "dmdbconnector.h"
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -101,6 +102,10 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
+
+#ifdef CACHE_PROFILING
+    static void PrintStatistics();
+#endif
 };
 
 typedef std::map<std::string, DM::Node*> NodeMap;
