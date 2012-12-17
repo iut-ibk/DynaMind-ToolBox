@@ -430,7 +430,7 @@ TEST_F(TestSimulation,simplesqltest) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -485,7 +485,7 @@ TEST_F(TestSimulation, SqlNodeTest)
     delete node;
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -515,7 +515,7 @@ TEST_F(TestSimulation, SqlEdgeTest)
     delete edge;
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -551,7 +551,7 @@ TEST_F(TestSimulation, SqlFaceOrder)
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -604,7 +604,7 @@ TEST_F(TestSimulation, SQLRasterdata)
     delete raster;
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -707,7 +707,7 @@ TEST_F(TestSimulation, SQLattributes)
     delete b;
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -803,7 +803,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -844,7 +844,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     // print cache statistics
-    DM::Node::PrintStatistics();
+    //DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
