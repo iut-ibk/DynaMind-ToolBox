@@ -46,8 +46,6 @@ Component::Component()
 {
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
-    //this->uuid = QUuid::createUuid().toString().toStdString();
-    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     ownedattributes = std::map<std::string,Attribute*>();
 
     //mMutex = new QMutex(QMutex::Recursive);
@@ -59,16 +57,10 @@ Component::Component()
     SQLInsertComponent();
 }
 
-/*
-void Component::createNewUUID() {
-    this->uuid = QUuid::createUuid().toString().toStdString();
-}*/
 Component::Component(bool b)
 {
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
-    //this->uuid = QUuid::createUuid().toString().toStdString();
-    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     ownedattributes = std::map<std::string,Attribute*>();
 
     inViews = std::set<std::string>();
@@ -78,9 +70,6 @@ Component::Component(bool b)
 Component::Component(const Component& c)
 {
     uuid = QUuid::createUuid();
-    //uuid=c.uuid;
-    //uuid = QUuid::createUuid().toString().toStdString();
-    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
 
     //mMutex = new QMutex(QMutex::Recursive);
@@ -94,9 +83,6 @@ Component::Component(const Component& c)
 Component::Component(const Component& c, bool b)
 {
     uuid = QUuid::createUuid();
-    //uuid=c.uuid;
-    //uuid = QUuid::createUuid().toString().toStdString();
-    //this->stateUuid = QUuid::createUuid().toString().toStdString();
     inViews = c.inViews;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
@@ -125,16 +111,6 @@ bool Component::isInView(View view) const
     }
     return false;
 }
-/*
-void Component::setUUID(std::string uuid)
-{
-    DBConnector::getInstance()->Update(getTableName(),
-                                       uuid,
-                                       QString::fromStdString(stateUuid),
-                                       "uuid", uuid);
-    this->uuid=uuid;
-}*/
-
 std::string Component::getUUID()
 {
     return uuid.toString().toStdString();
@@ -199,54 +175,18 @@ bool Component::changeAttribute(Attribute &newattribute)
 {
     getAttribute(newattribute.getName())->Change(newattribute);
     return true;
-    /*
-	if(!HasAttribute(newattribute.getName()))
-		return this->addAttribute(newattribute);
-
-	Attribute * attr = ownedattributes[newattribute.getName()];
-	Attribute::AttributeType type = attr->getType();
-	std::vector<std::string> vecStr;
-	std::vector<double> vecDbl;
-	switch(type)
-	{
-	case Attribute::DOUBLE:
-		attr->setDouble(newattribute.getDouble());
-		break;
-	case Attribute::STRING:
-		attr->setString(newattribute.getString());
-		break;
-	case Attribute::DOUBLEVECTOR:
-		attr->setDoubleVector(newattribute.getDoubleVector());
-		break;
-	case Attribute::STRINGVECTOR:
-		attr->setStringVector(newattribute.getStringVector());
-		break;
-	case Attribute::TIMESERIES:
-		newattribute.getTimeSeries(&vecStr, &vecDbl);
-		attr->addTimeSeries(vecStr,vecDbl);
-		break;
-	case Attribute::LINK:
-		attr->setLinks(newattribute.getLinks());
-		break;
-	default:	
-		attr->setType(type);
-		break;
-	}
-    return true;*/
 }
 
 bool Component::changeAttribute(std::string s, double val)
 {
     getAttribute(s)->setDouble(val);
     return true;
-    //return this->changeAttribute(Attribute(s, val));
 }
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
     getAttribute(s)->setString(val);
     return true;
-    //return this->changeAttribute(Attribute(s, val));
 }
 
 bool Component::removeAttribute(std::string name)
@@ -310,13 +250,10 @@ void Component::setCurrentSystem(System *sys) {
 void Component::SetOwner(Component *owner)
 {
 	SQLSetOwner(owner);
-	currentSys = owner->getCurrentSystem();
-    //stateUuid = owner->getStateUUID();
+    currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-    {
 		it->second->SetOwner(this);
-    }
 }
 void Component::SQLSetOwner(Component * owner)
 {
