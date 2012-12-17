@@ -40,20 +40,6 @@
 
 using namespace DM;
 
-/*template <class T>
-void DeleteFromVector(std::vector<T*> vector, T* item)
-{
-    for(unsigned int i=0;i<vector.size();i++)
-    {
-        if(vector[i]==item)
-        {
-            vector.erase(vector.begin()+i);
-            return true;
-        }
-    }
-    return false;
-}*/
-
 System::System() : Component(true)
 {
     this->lastModule = 0;
@@ -151,15 +137,6 @@ System::~System()
     Component::SQLDelete();
 }
 
-/*
-void System::setUUID(std::string uuid)
-{
-    DBConnector::getInstance()->Update("systems", QString::fromStdString(this->uuid),
-                                                QString::fromStdString(stateUuid),
-                                       "uuid", uuid);
-    this->uuid = uuid;
-}*/
-
 void System::setAccessedByModule(Module * m) {
     this->lastModule = m;
 }
@@ -224,36 +201,15 @@ Component * System::addComponent(Component* c, const DM::View & view)
 }
 Component * System::getComponent(std::string uuid)
 {
-    /*
-    if(nodes.find(uuid)!=nodes.end())
-        return this->getNode(uuid);
-    if(edges.find(uuid)!=edges.end())
-        return this->getEdge(uuid);
-    if(faces.find(uuid)!=faces.end())
-        return this->getFace(uuid);
-    if(subsystems.find(uuid)!=subsystems.end())
-        return this->getSubSystem(uuid);
-    if(rasterdata.find(uuid)!=rasterdata.end())
-        return rasterdata[uuid];
-    if(components.find(uuid)!=components.end())
-        return components[uuid];
-    if(ownedchilds.find(QUuid(QString::fromStdString(uuid)))!=ownedchilds.end())
-        return ownedchilds[QUuid(QString::fromStdString(uuid))];
-*/
     return this->getChild(uuid);
 }
 bool System::removeComponent(std::string name)
 {
-    //check if name is a edge instance
-    /*
-    if(components.find(name)==components.end())
+    QUuid quuid(QString::fromStdString(name));
+    if(nodes.find(quuid)==nodes.end())
         return false;
 
-    if(!removeChild(name))
-        return false;
-
-    components.erase(name);
-    return true;*/
+    nodes.erase(quuid);
 
     return removeChild(name);
 }
@@ -292,9 +248,6 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 
 Node* System::getNode(std::string uuid)
 {
-    /*if(nodes.find(uuid)==nodes.end())
-        return 0;
-    return nodes[uuid];*/
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
         return (Node*)c;
@@ -304,9 +257,6 @@ Node* System::getNode(std::string uuid)
 
 Node* System::getNode(QUuid uuid)
 {
-    /*if(nodes.find(uuid)==nodes.end())
-        return 0;
-    return nodes[uuid];*/
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
         return (Node*)c;
@@ -428,10 +378,6 @@ Face* System::addFace(Face *f) {
 }
 Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 {
-    /*std::vector<std::string> stringNodes;
-    foreach (Node* n, nodes)
-        stringNodes.push_back(n->getUUID());
-    Face * f = this->addFace(new Face(stringNodes));*/
     Face *f = this->addFace(new Face(nodes));
 
     if (f == 0)
@@ -728,15 +674,21 @@ bool System::removeChild(std::string name)
 
 bool System::removeChild(Component* c)
 {
-    if(ownedchilds.find(c->getQUUID())==ownedchilds.end())
+    QUuid id = c->getQUUID();
+    if(ownedchilds.find(id)==ownedchilds.end())
         return false;
 
-    ownedchilds.erase(c->getQUUID());
-    /*switch(c->getType())
-    {
-    case COMPONENT:
+    ownedchilds.erase(id);
 
-    }*/
+    switch (c->getType())
+    {
+    case COMPONENT: components.erase(id);   break;
+    case NODE:      nodes.erase(id);   break;
+    case FACE:      faces.erase(id);   break;
+    case EDGE:      edges.erase(id);   break;
+    case RASTERDATA: rasterdata.erase(id);   break;
+    case SYSTEM:    subsystems.erase(id);   break;
+    }
 
     delete c;
     return true;

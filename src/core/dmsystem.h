@@ -98,7 +98,6 @@ private:
     /*@deprecated*/
     bool removeChild(std::string name);
     bool removeChild(QUuid uuid);
-    bool removeChild(Component* c);
     /*@deprecated*/
     Component* getChild(std::string name);
     Component* getChild(QUuid uuid);
@@ -112,6 +111,7 @@ private:
 protected:
     //std::string getStateUuid();
 public:
+    bool removeChild(Component* c);
     /*@deprecated*/
     std::map<std::string, Component*> getAllChilds();
     std::vector<Component*> getChilds();
@@ -149,10 +149,10 @@ public:
         @deprecated*/
     Component* getComponent(std::string uuid);
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
-        @deprecatedt*/
+        @deprecated*/
     Node* getNode(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exis
-        @deprecatedt*/
+        @deprecated*/
     Edge* getEdge(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
