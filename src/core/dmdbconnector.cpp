@@ -63,6 +63,11 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
     _singleton = s;
 }
 
+std::list<Asynchron*> syncList;
+Asynchron::Asynchron()
+{
+    syncList.push_back(this);
+}
 
 DBConnector* DBConnector::instance = 0;
 //int DBConnector::_linkID = 1;
@@ -294,6 +299,13 @@ void DBConnector::CommitTransaction()
                 Logger(Error) << "rollback failed";
         }
     }
+}
+
+void DBConnector::Synchronize()
+{
+    CommitTransaction();
+    foreach(Asynchron *a, syncList)
+        a->Synchronize();
 }
 
 /*

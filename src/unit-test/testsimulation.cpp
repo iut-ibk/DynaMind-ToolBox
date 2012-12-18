@@ -66,7 +66,7 @@ void SeperateInsertWrapper(long nx, long ny)
             DM::DBConnector::getInstance()->ExecuteQuery(q);
         }
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
 }
 
 void SeperateInsertParamWrapper(long nx, long ny)
@@ -81,7 +81,7 @@ void SeperateInsertParamWrapper(long nx, long ny)
             DM::DBConnector::getInstance()->ExecuteQuery(q);
         }
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
 }
 
 void TransactionInsert(long nx, long ny)
@@ -110,7 +110,7 @@ void BLOBInsert(long nx, long ny)
         q->addBindValue(qba);
         DM::DBConnector::getInstance()->ExecuteQuery(q);
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
 }
 
 /*
@@ -429,8 +429,9 @@ TEST_F(TestSimulation,simplesqltest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -484,8 +485,9 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(node->getZ()==3);
     delete node;
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -514,8 +516,9 @@ TEST_F(TestSimulation, SqlEdgeTest)
     delete n1;
     delete edge;
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -550,8 +553,9 @@ TEST_F(TestSimulation, SqlFaceOrder)
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[1]==n1);
     ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -603,8 +607,9 @@ TEST_F(TestSimulation, SQLRasterdata)
 
     delete raster;
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -706,8 +711,9 @@ TEST_F(TestSimulation, SQLattributes)
     delete a;
     delete b;
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -724,12 +730,12 @@ TEST_F(TestSimulation,sqlprofiling) {
     // attribute profiling
     timer.restart();
     DM::Attribute* abuffer = new DM::Attribute[n];
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "create " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     delete[] abuffer;
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "delete " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
@@ -739,26 +745,26 @@ TEST_F(TestSimulation,sqlprofiling) {
         aptBuffer[i] = new DM::Attribute(*a0);
 
     delete a0;
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "copy " << n << " attributes " << (long)timer.elapsed();
     for(int i=0;i<n;i++)
         delete aptBuffer[i];
 
     // component stuff
     DM::Component* buffer = new DM::Component[n];
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "create " << n << " components " << (long)timer.elapsed();
 
     timer.restart();
     for(int i=0;i<n;i++)
         buffer[i].addAttribute("thedouble", 24.0);
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "add " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     for(int i=0;i<n;i++)
         buffer[i].changeAttribute("thedouble", 48.0);
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "change " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
@@ -767,12 +773,12 @@ TEST_F(TestSimulation,sqlprofiling) {
         DM::Attribute attr("thestring", "blubberdiblub");
         buffer[i].addAttribute(attr);
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "copyadd " << n << " attributes " << (long)timer.elapsed();
 
     timer.restart();
     delete[] buffer;
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "delete " << n << " components " << (long)timer.elapsed();
 
     // nodes
@@ -783,7 +789,7 @@ TEST_F(TestSimulation,sqlprofiling) {
         node->setX(1.0);
         delete node;
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "create and change " << n << " single nodes " << (long)timer.elapsed();
 
     timer.restart();
@@ -794,16 +800,16 @@ TEST_F(TestSimulation,sqlprofiling) {
         DM::Node node(*baseNode);
         sys->addNode(node);
     }
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
 
     delete baseNode;
     delete sys;
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
 
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }
@@ -818,7 +824,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     QElapsedTimer timer;
     timer.restart();
     DM::RasterData* raster = new DM::RasterData(n,n,1.0,1.0,0.0,0.0);
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "create rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
@@ -826,7 +832,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
         for(int x=0;x<n;x++)
             raster->getValue(x,y);
 
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "get each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
@@ -835,16 +841,17 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
             raster->setValue(x,y,x*1000+y);
 
     raster->ForceUpdate();
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
     timer.restart();
     delete raster;
-    DM::DBConnector::getInstance()->CommitTransaction();
+    DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "delete rasterdata(" << n << "x" << n << ") " << (long)timer.elapsed();
 
+    DBConnector::getInstance()->Synchronize();
     // print cache statistics
-    //DM::Node::PrintStatistics();
+    DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     DM::RasterData::PrintStatistics();
 }

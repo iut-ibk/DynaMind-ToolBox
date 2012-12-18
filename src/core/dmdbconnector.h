@@ -36,6 +36,13 @@ namespace DM {
 
 void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
 
+class Asynchron
+{
+public:
+    Asynchron();
+    virtual void Synchronize() = NULL;
+};
+
 class DMSqlParameter
 {
 public:
@@ -66,17 +73,19 @@ private:
     bool CreateTables();
     bool DropTables();
 
+    void CommitTransaction();
+
 protected:
     virtual ~DBConnector();
 public:
-
     QSqlQuery *getQuery(QString cmd);
     void ExecuteQuery(QSqlQuery *q);
     bool ExecuteSelectQuery(QSqlQuery *q);
 
     static DBConnector* getInstance();
     void BeginTransaction();
-    void CommitTransaction();
+
+    void Synchronize();
     // inserts with uuid
     void Insert(QString table,  QUuid uuid);
     void Insert(QString table,  QUuid uuid,
@@ -128,17 +137,17 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
-
+/*
 template<typename T>
 struct is_pointer { static const bool value = false; };
 
 template<typename T>
 struct is_pointer<T*> { static const bool value = true; };
-
+*/
 template<class Tkey,class Tvalue>
 class Cache
 {
-private:
+protected:
     class Node
     {
     public:
@@ -155,7 +164,8 @@ private:
         }
         ~Node()
         {
-            delete value;
+            if(value)
+                delete value;
         }
     };
 
@@ -241,7 +251,7 @@ public:
         }
     }
 
-    Tvalue* get(Tkey key)
+    virtual Tvalue* get(const Tkey key)
     {
         Node *n = search(key);
         // push front
@@ -259,7 +269,7 @@ public:
 #endif
         return NULL;
     }
-    void add(Tkey key,Tvalue* value)
+    virtual void add(Tkey key,Tvalue* value)
     {
         if(search(key)!=NULL)
             return;
@@ -280,13 +290,55 @@ public:
         add(key, value);
         return true;
     }
-    void remove(Tkey key)
+    virtual void remove(Tkey key)
     {
         Node *n = search(key);
         if(n)
             delete pop(n);
     }
 };
+/*
+template<class T>
+class PointerContainer
+{
+public:
+    T* ptr;
+    PointerContainer()
+    {
+        ptr = NULL;
+    }
+    ~PointerContainer()
+    {
+        if(ptr)
+            delete ptr;
+    }
+};
+
+template<class Tkey,class Tvalue>
+class ContaineredCache: Cache<Tkey,PointerContainer<Tvalue> >
+{
+public:
+    ContaineredCache(unsigned int size):Cache(size){}
+    void add(Tkey key,Tvalue* value)
+    {
+        if(search(key)!=NULL)
+            return;
+
+        Node *n = new Node(key,value);
+        push_front(n);
+
+        if(_cnt>_size)
+        {
+            if(_last->value)
+            {
+                _last->value->ptr = NULL;
+                _last->value = NULL;
+            }
+            delete pop(_last);
+        }
+    }
+};
+*/
 
 }   // namespace DM
 
