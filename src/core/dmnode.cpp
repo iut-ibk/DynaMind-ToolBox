@@ -34,17 +34,53 @@
 #include "dmlogger.h"
 
 using namespace DM;
-/*
-class Vector3
+
+// like cache, but with db-functions
+template<class Tkey,class Tvalue>
+class NodeCache: public Cache<Tkey,Tvalue>, Asynchron
 {
 public:
-    double x,y,z;
+    NodeCache(unsigned int size): Cache(size){}
+    // add, save to db if something is dropped
+    void add(Tkey key,Tvalue* value)
+    {
+        if(search(key)!=NULL)
+            return;
 
-    Vector3(){}
-    Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
+        Node *n = new Node(key,value);
+        push_front(n);
+
+        if(_cnt>_size)
+        {
+            _last->key->SaveToDb(_last->value);
+            delete pop(_last);
+        }
+    }
+    // get node, if not found, we may find it in the db
+    Tvalue* get(const Tkey key)
+    {
+        Tvalue* v = Cache::get(key);
+        if(!v)
+        {
+            v = key->LoadFromDb();
+            if(v)   add(key,v);
+        }
+        return v;
+    }
+    // save everything to db
+    void Synchronize()
+    {
+        Node* n=_root;
+        while(n)
+        {
+            _last->key->SaveToDb(_last->value);
+            n = n->next;
+        }
+    }
 };
 
-static Cache<QUuid,Vector3> nodeCache(512);
+
+static NodeCache<Node*,Vector3> nodeCache(2);
 
 #ifdef CACHE_PROFILING
 void Node::PrintStatistics()
@@ -55,12 +91,15 @@ void Node::PrintStatistics()
     nodeCache.ResetProfilingCounters();
 }
 #endif
-*/
+
+
 Node::Node( double x, double y, double z) : Component(true)
 {
-    this->x = x;
-    this->y = y;
-    this->z = z;
+    vector = new Vector3();
+    vector->x = x;
+    vector->y = y;
+    vector->z = z;
+    isInserted = false;
     //DBConnector::getInstance()->Insert("nodes", uuid,
     //                                   "x",x,"y",y,"z",z);
     //nodeCache.add(getQUUID(), new Vector3(x,y,z));
@@ -68,9 +107,11 @@ Node::Node( double x, double y, double z) : Component(true)
 
 Node::Node() : Component(true)
 {
-    this->x = 0;
-    this->y = 0;
-    this->z = 0;
+    vector = new Vector3();
+    vector->x = 0;
+    vector->y = 0;
+    vector->z = 0;
+    isInserted = false;
     //DBConnector::getInstance()->Insert("nodes", uuid,
     //                                   "x",0,"y",0,"z",0);
     //nodeCache.add(getQUUID(), new Vector3(0,0,0));
@@ -78,9 +119,13 @@ Node::Node() : Component(true)
 
 Node::Node(const Node& n) : Component(n, true)
 {
-    this->x = n.x;
-    this->y = n.y;
-    this->z = n.z;
+    vector = new Vector3();
+    Vector3 refv;
+    n.get(&refv.x);
+    vector->x = refv.x;
+    vector->y = refv.y;
+    vector->z = refv.z;
+    isInserted = false;
     //double v[3];
     //n.get(v);
     //DBConnector::getInstance()->Insert("nodes", uuid,
@@ -89,8 +134,10 @@ Node::Node(const Node& n) : Component(n, true)
 }
 Node::~Node()
 {
-    //nodeCache.remove(getQUUID());
-    if(currentSys)
+    nodeCache.remove(this);
+    if(vector)
+        delete vector;
+    if(isInserted)
         Component::SQLDelete();
 }
 void Node::SetOwner(Component *owner)
@@ -98,8 +145,11 @@ void Node::SetOwner(Component *owner)
     currentSys = owner->getCurrentSystem();
     if(currentSys)
     {
-        DBConnector::getInstance()->Insert("nodes", uuid,
-                                           "x",x,"y",y,"z",z);
+        nodeCache.add(this,new Vector3(*vector));
+        delete vector;
+        vector = NULL;
+        //DBConnector::getInstance()->Insert("nodes", uuid,
+        //                                   "x",x,"y",y,"z",z);
     }
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
         it->second->SetOwner(this);
@@ -118,7 +168,8 @@ double Node::getX() const
     Vector3 v;
     get(&v.x);
     return v.x;*/
-    return x;
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    return v->x;
 }
 
 double Node::getY() const
@@ -127,7 +178,8 @@ double Node::getY() const
     Vector3 v;
     get(&v.x);
     return v.y;*/
-    return y;
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    return v->y;
 }
 
 double Node::getZ() const
@@ -136,7 +188,8 @@ double Node::getZ() const
     Vector3 v;
     get(&v.x);
     return v.z;*/
-    return z;
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    return v->z;
 }
 
 const void Node::get(double *vector) const
@@ -157,9 +210,10 @@ const void Node::get(double *vector) const
     vector[1] = v[1].toDouble();
     vector[2] = v[2].toDouble();
     nodeCache.add(getQUUID(), new Vector3(vector[0],vector[1],vector[2]));*/
-    vector[0] = x;
-    vector[1] = y;
-    vector[2] = z;
+    Vector3* v = this->vector ? this->vector:nodeCache.get((Node*)this);
+    vector[0] = v->x;
+    vector[1] = v->y;
+    vector[2] = v->z;
 }
 
 const double Node::get(unsigned int i) const {
@@ -195,10 +249,13 @@ void Node::setX(double x)
         v->x = x;
         nodeCache.get(getQUUID());  // push to front
     }*/
-    this->x = x;
+    /*this->x = x;
     if(currentSys)
         DBConnector::getInstance()->Update("nodes", uuid,
-                                           "x",     QVariant::fromValue(x));
+                                           "x",     QVariant::fromValue(x));*/
+
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    v->x = x;
 }
 
 void Node::setY(double y)
@@ -208,10 +265,13 @@ void Node::setY(double y)
         v->y = y;
         nodeCache.get(getQUUID());  // push to front
     }*/
-    this->x = x;
+    /*this->x = x;
     if(currentSys)
         DBConnector::getInstance()->Update("nodes", uuid,
-                                           "y",     QVariant::fromValue(y));
+                                           "y",     QVariant::fromValue(y));*/
+
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    v->y = y;
 }
 
 void Node::setZ(double z)
@@ -221,10 +281,13 @@ void Node::setZ(double z)
         v->z = z;
         nodeCache.get(getQUUID());  // push to front
     }*/
-    this->x = x;
+    /*this->x = x;
     if(currentSys)
         DBConnector::getInstance()->Update("nodes", uuid,
-                                           "z",     QVariant::fromValue(z));
+                                           "z",     QVariant::fromValue(z));*/
+
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+    v->z = z;
 }
 
 Component* Node::clone()
@@ -289,6 +352,33 @@ bool Node::compare2d(const Node * other , double round ) const
 {
     return compare2d(*other, round);
 }
+
+Vector3* Node::LoadFromDb()
+{
+    QVariant v[3];
+    DBConnector::getInstance()->Select(getTableName(), uuid,
+                                       "x",     &v[0],
+                                       "y",     &v[1],
+                                       "z",     &v[2]);
+    return new Vector3(v[0].toDouble(),v[1].toDouble(),v[2].toDouble());
+}
+void Node::SaveToDb(Vector3 *v)
+{
+    if(isInserted)
+    {
+        DBConnector::getInstance()->Update("nodes", uuid,
+                                           "x",     QVariant::fromValue(v->x),
+                                           "y",     QVariant::fromValue(v->y),
+                                           "z",     QVariant::fromValue(v->z));
+    }
+    else
+    {
+        DBConnector::getInstance()->Insert("nodes", uuid,
+                                           "x",v->x,"y",v->y,"z",v->z);
+        isInserted = true;
+    }
+}
+
 /*void Node::SQLSetValues(double x,double y,double z)
 {
     if(Vector3 *v = nodeCache.get(getQUUID()))

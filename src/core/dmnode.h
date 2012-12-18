@@ -38,8 +38,8 @@
 //#include <QVector>
 
 namespace DM {
-class  Component;
-
+class Component;
+class Vector3;
 /**
      * @ingroup DynaMind-Core
      * @brief Provides a 3D node object
@@ -52,7 +52,9 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-    double x,y,z;
+    //double x,y,z;
+    Vector3* vector;
+    bool    isInserted;
     //void SQLSetValues(double x,double y,double z);
     /** @brief return table name */
     QString getTableName();
@@ -103,12 +105,41 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
-/*
+
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
-#endif*/
+#endif
+
+    //static Node* SqlImport(QUuid);
+    Vector3* LoadFromDb();
+    void SaveToDb(Vector3* v);
 };
 
+class Vector3
+{
+public:
+    double x,y,z;
+
+    Vector3(){}
+    Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
+    Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
+};
+/*
+class SqlVector3: public Vector3
+{
+public:
+    Node* n;
+    SqlVector3(Node* n): Vector3()
+    {
+        this->n = n;
+    }
+
+    ~SqlVector3()
+    {
+        n->SqlExport();
+    }
+};
+*/
 typedef std::map<std::string, DM::Node*> NodeMap;
 }
 #endif // NODE_H
