@@ -80,7 +80,7 @@ public:
 };
 
 
-static NodeCache<Node*,Vector3> nodeCache(2);
+static NodeCache<Node*,Vector3> nodeCache(512);
 
 #ifdef CACHE_PROFILING
 void Node::PrintStatistics()
