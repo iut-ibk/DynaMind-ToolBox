@@ -44,9 +44,11 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT Edge : public Component
     {
     private:
-        void SQLSetValues(QUuid start, QUuid end);
+        //void SQLSetValues(QUuid start, QUuid end);
         /** @brief return table name */
         QString getTableName();
+		Node* start;
+		Node* end;
     public:
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         //Edge(QUuid startpoint, QUuid endpoint);
@@ -57,10 +59,14 @@ namespace DM {
         ~Edge();
 		/** @brief return Type */
 		Components getType();
-        /** @brief return uuid to the startpoint */
+        /** @brief return uuid to the startpoint 
+			@deprecated*/
         const QUuid getStartpoint() const;
-        /** @brief return uuid to the endpoint */
+		Node*	getStart() const;
+        /** @brief return uuid to the endpoint 
+			@deprecated*/
         const QUuid getEndpoint() const;
+		Node*	getEnd() const;
         /** @brief return uuid to the startpoint */
         const std::string getStartpointName() const;
         /** @brief return uuid to the endpoint */
@@ -78,7 +84,7 @@ namespace DM {
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
         /** @brief returns both points*/
-        const void getPoints(QUuid *points) const;
+        //const void getPoints(Node *points) const;
 
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;

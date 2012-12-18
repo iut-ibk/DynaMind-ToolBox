@@ -27,6 +27,7 @@
 #include <dmcomponent.h>
 #include <dmedge.h>
 #include <dmnode.h>
+#include <dmsystem.h>
 
 #include <QSqlQuery>
 #include <dmdbconnector.h>
@@ -35,6 +36,8 @@ using namespace DM;
 
 Edge::Edge(Node *start, Node *end) : Component(true)
 {
+	this->start = start;
+	this->end = end;
     DBConnector::getInstance()->Insert("edges", uuid,
                                        "startnode",  start->getQUUID().toByteArray(),
                                       "endnode",    end->getQUUID().toByteArray());
@@ -42,12 +45,16 @@ Edge::Edge(Node *start, Node *end) : Component(true)
 
 Edge::Edge(const Edge& e) : Component(e, true)
 {
-    //std::vector<std::string> points = e.getPoints();
-    QUuid points[2];
+	start = e.getStart();
+	end = e.getEnd();
+	DBConnector::getInstance()->Insert("edges", uuid,
+                                       "startnode",  start->getQUUID().toByteArray(),
+                                      "endnode",    end->getQUUID().toByteArray());
+    /*QUuid points[2];
     e.getPoints(points);
     DBConnector::getInstance()->Insert("edges", uuid,
                                        "startnode",points[0].toByteArray(),
-                                       "endnode",points[1].toByteArray());
+                                       "endnode",points[1].toByteArray());*/
 }
 
 Edge::~Edge()
@@ -63,7 +70,7 @@ QString Edge::getTableName()
     return "edges";
 }
 
-const void Edge::getPoints(QUuid *points) const
+/*const void Edge::getPoints(QUuid *points) const
 {
     QVariant v1,v2;
     if(DBConnector::getInstance()->Select("edges", uuid,
@@ -72,31 +79,40 @@ const void Edge::getPoints(QUuid *points) const
         points[0] = QUuid(v1.toByteArray());
         points[1] = QUuid(v2.toByteArray());
     }
+}*/
+Node* Edge::getStart() const
+{
+	return start;
 }
-
 const QUuid Edge::getStartpoint() const
 {
-    QVariant value;
+	return start->getQUUID();
+    /*QVariant value;
     if(DBConnector::getInstance()->Select("edges", uuid,
 											"startnode", &value))
         return QUuid(value.toByteArray());
 
-    return "";
+    return "";*/
 }
 
 const std::string Edge::getStartpointName() const
 {
     return getStartpoint().toString().toStdString();
 }
-
+Node* Edge::getEnd() const
+{
+	return end;
+}
 const QUuid Edge::getEndpoint() const
 {
+	return end->getQUUID();
+	/*
     QVariant value;
     if(DBConnector::getInstance()->Select("edges", uuid,
                                         "endnode", &value))
         return QUuid(value.toByteArray());
 
-    return "";
+    return "";*/
 }
 
 const std::string Edge::getEndpointName() const
@@ -106,26 +122,30 @@ const std::string Edge::getEndpointName() const
 
 void Edge::setStartpoint(Node *start)
 {
+	this->start = start;
     DBConnector::getInstance()->Update("edges", uuid,
                                        "startnode", start->getQUUID().toByteArray());
 }
 
 void Edge::setStartpointName(std::string name)
 {
-    DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode", QUuid(QString::fromStdString(name)).toByteArray());
+	start = currentSys->getNode(name);
+    //DBConnector::getInstance()->Update("edges", uuid,
+    //                                   "startnode", QUuid(QString::fromStdString(name)).toByteArray());
 }
 
 void Edge::setEndpoint(Node *end)
 {
+	this->end = end;
     DBConnector::getInstance()->Update("edges", uuid,
                                        "endnode",  end->getQUUID().toByteArray());
 }
 
 void Edge::setEndpointName(std::string name)
 {
-    DBConnector::getInstance()->Update("edges", uuid,
-                                       "endnode", QUuid(QString::fromStdString(name)).toByteArray());
+	end = currentSys->getNode(name);
+    //DBConnector::getInstance()->Update("edges", uuid,
+    //                                   "endnode", QUuid(QString::fromStdString(name)).toByteArray());
 }
 
 Component* Edge::clone()
@@ -133,9 +153,9 @@ Component* Edge::clone()
     return new Edge(*this);
 }
 
-void Edge::SQLSetValues(QUuid start, QUuid end)
+/*void Edge::SQLSetValues(QUuid start, QUuid end)
 {
     DBConnector::getInstance()->Update("edges", uuid,
                                        "startnode", start.toByteArray(),
                                        "endnode",   end.toByteArray());
-}
+}*/

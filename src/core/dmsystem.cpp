@@ -95,10 +95,10 @@ System::System(const System& s) : Component(s, true)
         Edge *oldEdge = it->second;
         Edge *e = (Edge*)oldEdge->clone();
         QUuid points[2];
-        e->getPoints(points);
+        //e->getPoints(points);
 
-        e->setStartpoint((Node*)childReplaceMap[s.findChild(points[0])]);
-        e->setEndpoint((Node*)childReplaceMap[s.findChild(points[1])]);
+		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStart()->getQUUID())]);
+        e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEnd()->getQUUID())]);
 
         childReplaceMap[oldEdge] = addEdge(e);
     }
