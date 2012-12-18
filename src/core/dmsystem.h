@@ -44,8 +44,6 @@ class Face;
 class RasterData;
 class Module;
 
-
-
 typedef std::pair<std::string, Component*> ComponentPair;
 typedef std::pair<std::string, Attribute*> AttributePair;
 typedef std::pair<std::string, RasterData*> RasterDataPair;

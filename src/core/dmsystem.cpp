@@ -40,6 +40,8 @@
 
 using namespace DM;
 
+
+
 System::System() : Component(true)
 {
     this->lastModule = 0;
@@ -205,12 +207,6 @@ Component * System::getComponent(std::string uuid)
 }
 bool System::removeComponent(std::string name)
 {
-    QUuid quuid(QString::fromStdString(name));
-    if(nodes.find(quuid)==nodes.end())
-        return false;
-
-    nodes.erase(quuid);
-
     return removeChild(name);
 }
 
@@ -222,6 +218,7 @@ Node* System::addNode(Node* node)
         return 0;
     }
     nodes[node->getQUUID()] = node;
+
     this->updateViews(node);
     return node;
 }
@@ -265,10 +262,11 @@ Node* System::getNode(QUuid uuid)
 }
 bool System::removeNode(std::string name)
 {
+
     QUuid quuid(QString::fromStdString(name));
     //check if name is a node instance
     if(nodes.find(quuid)==nodes.end())
-        return false;
+       return false;
 
     //remove node
     if(!removeChild(quuid))
@@ -440,6 +438,7 @@ std::map<std::string, Node*> System::getAllNodes()
     std::map<std::string, Node*> n;
     for (std::map<QUuid,Node*>::iterator it=nodes.begin() ; it != nodes.end(); ++it )
         n[it->second->getUUID()] = it->second;
+
     return n;
 }
 std::map<std::string, Edge*> System::getAllEdges()
