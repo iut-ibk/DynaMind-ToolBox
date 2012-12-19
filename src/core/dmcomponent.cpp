@@ -71,7 +71,7 @@ Component::Component(const Component& c)
 {
     uuid = QUuid::createUuid();
     inViews = c.inViews;
-
+	currentSys = NULL;
     //mMutex = new QMutex(QMutex::Recursive);
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
@@ -84,10 +84,13 @@ Component::Component(const Component& c, bool b)
 {
     uuid = QUuid::createUuid();
     inViews = c.inViews;
+	currentSys = NULL;
 
     std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
-        this->addAttribute(*it->second);
+	mforeach(Attribute* a, attrmap)
+		this->addAttribute(*a);
+    //for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
+    //    this->addAttribute(*it->second);
 }
 
 Component::~Component()
