@@ -63,10 +63,12 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
     _singleton = s;
 }
 
-std::list<Asynchron*> syncList;
+static std::list<Asynchron*>* syncList = NULL;
 Asynchron::Asynchron()
 {
-    syncList.push_back(this);
+	if(!syncList)	syncList = new std::list<Asynchron*>();
+
+    syncList->push_back(this);
 }
 
 DBConnector* DBConnector::instance = 0;
@@ -304,7 +306,7 @@ void DBConnector::CommitTransaction()
 void DBConnector::Synchronize()
 {
     CommitTransaction();
-    foreach(Asynchron *a, syncList)
+    foreach(Asynchron *a, *syncList)
         a->Synchronize();
 }
 

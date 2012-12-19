@@ -35,52 +35,7 @@
 
 using namespace DM;
 
-// like cache, but with db-functions
-template<class Tkey,class Tvalue>
-class NodeCache: public Cache<Tkey,Tvalue>, Asynchron
-{
-public:
-    NodeCache(unsigned int size): Cache(size){}
-    // add, save to db if something is dropped
-    void add(Tkey key,Tvalue* value)
-    {
-        if(search(key)!=NULL)
-            return;
-
-        Node *n = new Node(key,value);
-        push_front(n);
-
-        if(_cnt>_size)
-        {
-            _last->key->SaveToDb(_last->value);
-            delete pop(_last);
-        }
-    }
-    // get node, if not found, we may find it in the db
-    Tvalue* get(const Tkey key)
-    {
-        Tvalue* v = Cache::get(key);
-        if(!v)
-        {
-            v = key->LoadFromDb();
-            if(v)   add(key,v);
-        }
-        return v;
-    }
-    // save everything to db
-    void Synchronize()
-    {
-        Node* n=_root;
-        while(n)
-        {
-            _last->key->SaveToDb(_last->value);
-            n = n->next;
-        }
-    }
-};
-
-
-static NodeCache<Node*,Vector3> nodeCache(50000);
+static DbCache<Node*,Vector3> nodeCache(50000);
 
 #ifdef CACHE_PROFILING
 void Node::PrintStatistics()
