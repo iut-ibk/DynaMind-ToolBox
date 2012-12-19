@@ -155,7 +155,7 @@ protected:
         Tvalue* value;
         Node* next;
         Node* last;
-        Node(const Tkey k, Tvalue* v)
+        Node(const Tkey &k, Tvalue* v)
         {
             key=k;
             value=v;
@@ -168,13 +168,27 @@ protected:
                 delete value;
         }
     };
-
+private:
+	std::map<Tkey,Node*> map;
+protected:
     Node*   _root;
     Node*   _last;
     unsigned int    _size;
     unsigned int    _cnt;
-
-    void push_front(Node *n)
+	// internal
+	inline Node* newNode(const Tkey &k, Tvalue* v)
+	{
+		Node* n = new Node(k,v);
+		map[k] = n;
+		return n;
+	}
+	inline void removeNode(Node* n)
+	{
+		map.erase(n->key);
+		delete pop(n);
+	}
+	//
+    void push_front(Node* n)
     {
         if(_last==NULL)
             _last = n;
@@ -201,8 +215,13 @@ protected:
         _cnt--;
         return n;
     }
-    Node* search(Tkey key)
+    Node* search(const Tkey &key)
     {
+		std::map<Tkey,Node*>::iterator it = map.find(key);
+		if(it==map.end())
+			return NULL;
+		return it->second;
+		/*
         Node *n = _root;
         while(n!=NULL)
         {
@@ -210,7 +229,7 @@ protected:
                 return n;
             else
                 n = n->next;
-        }
+        }*/
         return NULL;
     }
 
@@ -251,7 +270,7 @@ public:
         }
     }
 
-    virtual Tvalue* get(const Tkey key)
+    virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
         // push front
@@ -269,76 +288,80 @@ public:
 #endif
         return NULL;
     }
-    virtual void add(Tkey key,Tvalue* value)
+    virtual void add(const Tkey& key,Tvalue* value)
     {
         if(search(key)!=NULL)
             return;
 
-        Node *n = new Node(key,value);
+        Node *n = newNode(key,value);
         push_front(n);
 
         if(_cnt>_size)
-            delete pop(_last);
+			removeNode(_last);
+            //delete pop(_last);
     }
-    bool replace(Tkey key,Tvalue* value)
+    bool replace(const Tkey& key,Tvalue* value)
     {
         Node *n = search(key);
         if(n==NULL)
             return false;
 
-        delete pop(n);
+		removeNode(n);
+        //delete pop(n);
         add(key, value);
         return true;
     }
-    virtual void remove(Tkey key)
+    void remove(const Tkey& key)
     {
         Node *n = search(key);
-        if(n)
-            delete pop(n);
-    }
-};
-/*
-template<class T>
-class PointerContainer
-{
-public:
-    T* ptr;
-    PointerContainer()
-    {
-        ptr = NULL;
-    }
-    ~PointerContainer()
-    {
-        if(ptr)
-            delete ptr;
+        if(n)	removeNode(n);
+            //delete pop(n);
     }
 };
 
+// like cache, but with db-functions
 template<class Tkey,class Tvalue>
-class ContaineredCache: Cache<Tkey,PointerContainer<Tvalue> >
+class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 {
 public:
-    ContaineredCache(unsigned int size):Cache(size){}
+    DbCache(unsigned int size): Cache(size){}
+    // add, save to db if something is dropped
     void add(Tkey key,Tvalue* value)
     {
         if(search(key)!=NULL)
             return;
 
-        Node *n = new Node(key,value);
+        Node *n = newNode(key,value);
         push_front(n);
 
         if(_cnt>_size)
         {
-            if(_last->value)
-            {
-                _last->value->ptr = NULL;
-                _last->value = NULL;
-            }
-            delete pop(_last);
+            _last->key->SaveToDb(_last->value);
+            removeNode(_last);
+        }
+    }
+    // get node, if not found, we may find it in the db
+    Tvalue* get(const Tkey& key)
+    {
+        Tvalue* v = Cache::get(key);
+        if(!v)
+        {
+            v = key->LoadFromDb();
+            if(v)   add(key,v);
+        }
+        return v;
+    }
+    // save everything to db
+    void Synchronize()
+    {
+        Node* n=_root;
+        while(n)
+        {
+            _last->key->SaveToDb(_last->value);
+            n = n->next;
         }
     }
 };
-*/
 
 }   // namespace DM
 

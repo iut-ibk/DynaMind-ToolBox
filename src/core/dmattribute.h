@@ -43,6 +43,18 @@ struct LinkAttribute {
     std::string viewname;
     std::string uuid;
 };
+class TimeSeriesAttribute
+{
+public:
+	TimeSeriesAttribute(std::vector<std::string>* timestamp, std::vector<double>* value)
+	{
+		this->timestamp = *timestamp;
+		this->value = *value;
+	}
+	TimeSeriesAttribute(){};
+	std::vector<std::string> timestamp;
+	std::vector<double> value;
+};
 
 class Component;
 
@@ -63,13 +75,42 @@ public:
         DOUBLEVECTOR,
         STRINGVECTOR
     };
-    
+    class AttributeValue
+	{
+	public:
+		Attribute::AttributeType type;
+		void*	ptr;
+
+		AttributeValue()
+		{
+			ptr = NULL;
+			type = NOTYPE;
+		}
+		AttributeValue(const AttributeValue& ref);
+		AttributeValue(double d);
+		AttributeValue(std::string string);
+		~AttributeValue()
+		{
+			Free();
+		}
+		void Free()
+		{
+			if(ptr)	delete ptr;
+			ptr = NULL;
+			type = NOTYPE;
+		}
+		AttributeValue(QVariant var, AttributeType type);
+		QVariant toQVariant();
+	};
 private:
     QUuid _uuid;
-    //std::string _uuid;	// this one is really unique
     std::string name;
     std::set<std::string> inViews;
-
+	Component* owner;
+	AttributeValue	*value;
+	bool	isInserted;
+	
+	/*
     void SQLInsert(AttributeType type);
     void SQLInsert(AttributeType type, QVariant value);
     void SQLDeleteThis();
@@ -79,9 +120,12 @@ private:
     AttributeType SQLGetType() const;
     bool SQLGetValue(QVariant &value) const;
 	void SQLSetValue(AttributeType type, QVariant value);
-
-    void setValue(QByteArray bytes);
+	*/
+    //void setValue(QByteArray bytes);
     //QByteArray getValue(AttributeType type) const;
+
+	AttributeValue*	getValue() const;
+	//void setValue(void* pData, size_t size);
 protected:
 public:
     /** @brief copies type and value to this attribute**/
@@ -156,6 +200,9 @@ public:
      * @return the name of the @arg type
      */
     static const char*getTypeName(AttributeType type);
+
+	AttributeValue* LoadFromDb();
+	void SaveToDb(AttributeValue *val);
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif
