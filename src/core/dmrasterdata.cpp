@@ -37,7 +37,7 @@
 using namespace DM;
 
 const unsigned int rowOverlapp = 3;
-static Cache<std::pair<QUuid,long>,QByteArray> rowCache(512);
+static Cache<std::pair<QUuid,long>,QByteArray> rowCache(4096);
 static std::map<std::pair<QUuid,long>,QByteArray*> rowUpdateCache;
 
 #ifdef CACHE_PROFILING
