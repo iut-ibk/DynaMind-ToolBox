@@ -40,13 +40,9 @@ Edge::Edge(Node *start, Node *end) : Component(true)
 {
 	this->start = start;
 	this->end = end;
-	
 	start->addEdge(this);
 	end->addEdge(this);
 
-    /*DBConnector::getInstance()->Insert("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                      "endnode",    end->getQUUID().toByteArray());*/
 	isCached = false;
 	isInserted = false;
 }
@@ -57,9 +53,7 @@ Edge::Edge(const Edge& e) : Component(e, true)
 	end = e.getEnd();
 	start->addEdge(this);
 	end->addEdge(this);
-	/*DBConnector::getInstance()->Insert("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                      "endnode",    end->getQUUID().toByteArray());*/
+
 	isCached = false;
 	isInserted = false;
 }
@@ -68,7 +62,8 @@ Edge::~Edge()
 {
 	if(isCached)
 		edgeCache.remove(this);
-    //Component::SQLDelete();
+    if(isInserted)
+        Component::SQLDelete();
 }
 DM::Components Edge::getType()
 {
