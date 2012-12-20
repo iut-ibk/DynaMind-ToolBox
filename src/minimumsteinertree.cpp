@@ -147,7 +147,7 @@ void MinimumSteinerTree::run()
 
     //create complete graph between forced nodes
     #pragma omp parallel for
-    for(uint vai = 0; vai<num_vertices(g); vai++)
+    for(int vai = 0; vai<num_vertices(g); vai++)
     {
         if(std::find(forcednodeslist.begin(),forcednodeslist.end(),vai) == forcednodeslist.end())
             continue;
