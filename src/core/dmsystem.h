@@ -103,7 +103,6 @@ private:
     /** @brief return table name */
     QString getTableName();
     Component* getComponent(QUuid uuid);
-    Node* getNode(QUuid uuid);
     Edge* getEdge(QUuid uuid);
     System* getSubSystem(QUuid uuid);
 protected:
@@ -131,6 +130,8 @@ public:
      *  If the node already exists 0 it returns 0, if not the pointer to the node (same as the input)
      */
     Node * addNode(Node* node);
+	/** @brief for Edge::LoadDb() */
+    Node* getNode(QUuid uuid);	// protected for DM::Edge
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
     /** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/

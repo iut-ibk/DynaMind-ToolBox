@@ -40,6 +40,7 @@
 namespace DM {
 class Component;
 class Vector3;
+class Edge;
 /**
      * @ingroup DynaMind-Core
      * @brief Provides a 3D node object
@@ -58,6 +59,14 @@ private:
     //void SQLSetValues(double x,double y,double z);
     /** @brief return table name */
     QString getTableName();
+	
+	std::vector<Edge*> connectedEdges;	// not cached, for now
+	void addEdge(Edge* e)
+	{
+		connectedEdges.push_back(e);
+	}
+	//public:
+	friend class Edge;
 protected:
     virtual void SetOwner(Component *owner);
 public:

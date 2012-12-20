@@ -26,6 +26,7 @@
 
 #include <dmcomponent.h>
 #include <dmnode.h>
+#include <dmedge.h>
 #include <cstdlib>
 #include <math.h>
 
@@ -109,6 +110,7 @@ void Node::SetOwner(Component *owner)
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
         it->second->SetOwner(this);
 }
+
 DM::Components Node::getType()
 {
 	return DM::NODE;
@@ -181,10 +183,8 @@ const double Node::get(unsigned int i) const {
 
 std::vector<QUuid> Node::getEdges() const
 {
-    // TODO
-
     std::vector<QUuid> edges;
-
+	/*
     QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT uuid FROM edges WHERE startnode LIKE ? OR endnode LIKE ?");
     q->addBindValue(uuid.toByteArray());
     q->addBindValue(uuid.toByteArray());
@@ -193,7 +193,11 @@ std::vector<QUuid> Node::getEdges() const
         do
             edges.push_back(QUuid(q->value(0).toByteArray()));
         while(q->next());
-    }
+    }*/
+
+	foreach(Edge* e, connectedEdges)
+		edges.push_back(e->getQUUID());
+
     return edges;
 }
 

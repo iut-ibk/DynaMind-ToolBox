@@ -28,12 +28,13 @@
 #ifndef DMEDGE_H
 #define DMEDGE_H
 #include <dmcompilersettings.h>
+#include <dmnode.h>
 
 
 namespace DM {
 
     class Component;
-    class Node;
+    //class Node;
     /** @ingroup DynaMind-Core
       * @brief Provides an Edge object. An Edge just contains references to a start and end node.
       *
@@ -49,6 +50,11 @@ namespace DM {
         QString getTableName();
 		Node* start;
 		Node* end;
+
+		bool	isCached;
+		bool	isInserted;
+
+		//friend std::vector<Edge*> Node::connectedEdges;
     public:
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         //Edge(QUuid startpoint, QUuid endpoint);
@@ -85,7 +91,8 @@ namespace DM {
         Component* clone();
         /** @brief returns both points*/
         //const void getPoints(Node *points) const;
-
+		bool* LoadFromDb();
+		void SaveToDb(bool* b);
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;
 }
