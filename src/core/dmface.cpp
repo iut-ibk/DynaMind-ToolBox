@@ -35,19 +35,6 @@
 
 using namespace DM;
 
-/*
-QByteArray GetBytes(std::vector<std::string> stringvector)
-{
-    QByteArray qba;
-    QDataStream stream(&qba, QIODevice::WriteOnly);
-
-    stream << (int)stringvector.size();
-    for(unsigned int i=0;i<stringvector.size();i++)
-        stream << QUuid(QString::fromStdString(stringvector[i]));
-
-    return qba;
-}*/
-
 QByteArray GetBytes(std::vector<Node*> nodevector)
 {
     QByteArray qba;
@@ -59,21 +46,6 @@ QByteArray GetBytes(std::vector<Node*> nodevector)
 
     return qba;
 }
-/*
-QByteArray GetBytes(std::vector<std::vector<std::string> > stringvectorvector)
-{
-    QByteArray qba;
-    QDataStream stream(&qba, QIODevice::WriteOnly);
-
-    stream << (int)stringvectorvector.size();
-    for(unsigned int i=0;i<stringvectorvector.size();i++)
-    {
-        stream << (int)stringvectorvector[i].size();
-        for(unsigned int j=0;j<stringvectorvector[i].size();j++)
-                stream << QUuid(QString::fromStdString(stringvectorvector[i][j]));
-    }
-    return qba;
-}*/
 
 QByteArray GetBytes(std::vector<Face*> facevector)
 {
@@ -145,10 +117,6 @@ std::vector<std::string> Face::getNodes() const
     {
         nodes.push_back(n->getUUID());
     }
-    /*QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  uuid,
-                                          "nodes", &value))
-        nodes = GetVector(value.toByteArray());*/
     return nodes;
 }
 std::vector<Node*> Face::getNodePointers() const
@@ -169,28 +137,6 @@ QString Face::getTableName()
 {
     return "faces";
 }
-/*std::vector<std::vector<std::string> > GetVectorVector(QByteArray qba)
-{
-    QDataStream stream(&qba, QIODevice::ReadWrite);
-	std::vector<std::vector<std::string> > result;
-
-	unsigned int len=0;
-	stream >> len;
-	for(unsigned int i=0;i<len;i++)
-	{
-		std::vector<std::string> v;
-		unsigned int ilen = 0;
-		stream >> ilen;
-		for(unsigned int i=0;i<ilen;i++)
-		{
-			QString qstr;
-			stream >> qstr;
-			v.push_back(qstr.toStdString());
-		}
-		result.push_back(v);
-	}
-	return result;
-}*/
 
 const std::vector<std::vector<std::string> > Face::getHoles() const
 {
@@ -204,11 +150,6 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
         }
         holes.push_back(hole);
     }
-
-    /*QVariant value;
-    if(DBConnector::getInstance()->Select("faces",  uuid,
-                                          "holes", &value))
-        holes = GetVectorVector(value.toByteArray());*/
     return holes;
 }
 
