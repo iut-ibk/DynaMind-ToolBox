@@ -147,6 +147,7 @@ public:
     /** @brief Return node with min x, min y and min z */
     static DM::Node MinCoordinates(std::vector<DM::Node*> & nodes);
 
+
 };
 
 #endif // TBVECTORDATA_H

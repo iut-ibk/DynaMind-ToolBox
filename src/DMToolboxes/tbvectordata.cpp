@@ -224,7 +224,8 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
 
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
@@ -309,7 +310,7 @@ DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
 
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
@@ -484,7 +485,6 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     if (!withLid)
             return newFaces;
     newFaces.push_back(sys->addFace(opposite_ids, view));
-
     return newFaces;
 
 
@@ -522,7 +522,7 @@ std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, d
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
+    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[ nodeList.size()-2]), E_to);
 
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
