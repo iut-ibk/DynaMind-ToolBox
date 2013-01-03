@@ -93,20 +93,10 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     ui->lineEdit_RExpression->setText( QString::fromStdString(m->getParameterAsString("RExpression")) );
     ui->lineEdit_rExpression->setText( QString::fromStdString(m->getParameterAsString("rExpression")) );
     ui->lineEdit_maxExpression->setText( QString::fromStdString(m->getParameterAsString("maxExpression")) );
+    ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("resultName")) );
     ui->checkBox_Points->setChecked(QString::fromStdString(m->getParameterAsString("Points")).toInt());
     ui->checkBox_Edges->setChecked(QString::fromStdString(m->getParameterAsString("Edges")).toInt());
     //ui->lineEdit_Idnetifier->setText( QString::fromStdString(m->getParameterAsString("Identifier")) );
-    //Check for Parameters from Outside
-    if (checkIfFromOutSide("Height")) {
-        ui->checkBox_Height->setChecked(true);
-    }
-    if (checkIfFromOutSide("Width")) {
-        ui->checkBox_Width->setChecked(true);
-    }
-    if (checkIfFromOutSide("CellSize")) {
-        ui->checkBox_CellSize->setChecked(true);
-    }
-
 
     QStringList optionList;
     optionList << "Replace" << "KeepValue" << "KeepLowerValue" << "KeepHigherValue" << "Add";
@@ -123,11 +113,6 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     QObject::connect(ui->pushButton_RExpression, SIGNAL(clicked()), this, SLOT(addR()));
     QObject::connect(ui->pushButton_rExpression, SIGNAL(clicked()), this, SLOT(addr()));
     QObject::connect(ui->pushButton_maxExpression, SIGNAL(clicked()), this, SLOT(addMax()));
-
-    QObject::connect(ui->checkBox_Height, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-    QObject::connect(ui->checkBox_Width, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-    QObject::connect(ui->checkBox_CellSize, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-
 
 }
 void GUIMarker::addR() {
@@ -178,6 +163,7 @@ void GUIMarker::accept() {
     this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
     this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
     this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
+    this->m->setParameterValue("resultName", ui->lineEdit_resultName->text().toStdString());
     this->m->setParameterValue("Identifier", ui->comboBox->currentText().toStdString());
     this->m->setParameterValue("rExpression", ui->lineEdit_rExpression->text().toStdString());
     this->m->setParameterValue("RExpression", ui->lineEdit_RExpression->text().toStdString());
