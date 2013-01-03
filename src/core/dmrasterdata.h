@@ -42,20 +42,35 @@ public:
     RasterData();
     virtual ~RasterData();
     void clear();
+    /** @brief Retruns value from cell at real x and real y */
     double getValue(long x, long y) const;
+    /** @brief Retruns value from cell at  x and  y */
     double getCell(long x, long y) const;
+    /** @brief Sets value from cell at real x and real y */
     bool setValue(long x, long y, double value);
+    /** @brief Sets value from cell at x and y */
     bool setCell(long x, long y, double value);
+    /** @brief Retruns  Returns elements in X */
     unsigned long getWidth()const {return width;}
+    /** @brief Retruns  Returns elements in Y */
     unsigned long getHeight() const {return height;}
+    /** @brief Retruns  cell size  in x */
     double getCellSizeX() const {return cellSizeX;}
+    /** @brief Retruns  cell size  in y */
     double getCellSizeY() const {return cellSizeY;}
+    /** @brief Returns no data value */
     double getNoValue() const {return NoValue;}
+    /** @brief Sets no data value */
     void setNoValue(double NoValue)  {this->NoValue = NoValue;}
+    /** @brief Returns min value */
     double getMinValue() const {return minValue;}
+    /** @brief Returns max value */
     double getMaxValue() const {return maxValue;}
+    /** @brief Returns sum */
     double getSum() const;
+    /** @brief Returns offset x */
     double getXOffset(){return xoffset;}
+    /** @brief Returns offset y */
     double getYOffset(){return yoffset;}
     void setXOffset(double value){this->xoffset=value;}
     void setYOffset(double value){this->yoffset=value;}
