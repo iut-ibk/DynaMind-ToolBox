@@ -73,7 +73,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
+    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[nodeList.size()-2]), E_to);
 
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
@@ -89,7 +89,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 
     std::vector<DM::Node*> ns_t;
     double const_height;
-    for (int i = 0; i < nodeList.size(); i++) {
+    for (unsigned int i = 0; i < nodeList.size(); i++) {
         DM::Node n = *(nodeList[i]);
         DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -103,7 +103,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
     Polygon_2 polygon1;
     std::vector<std::string> nodes;
     nodes = f_t->getNodes();
-    for (int  i = 0; i <nodes.size()-1; i++ ) {
+    for (unsigned int  i = 0; i <nodes.size()-1; i++ ) {
         DM::Node * n = transformedSys.getNode(nodes[i]);
         polygon1.push_back(Point(n->getX(),n->getY()));
     }
@@ -123,7 +123,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
         DM::Face * f_h = transformedSys.addFace(nodes_h);
 
         Polygon_2 hole_p;
-        for (int  i = 0; i <nodes_h.size()-1; i++ ) {
+        for (unsigned int  i = 0; i <nodes_h.size()-1; i++ ) {
             DM::Node * n = nodes_h[i];
             hole_p.push_back(Point(n->getX(),n->getY()));
         }

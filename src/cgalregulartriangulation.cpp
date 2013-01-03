@@ -8,10 +8,12 @@
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
 #include <CGAL/Polygon_2.h>
-
+#include <CGAL/Cartesian.h>
 #include <iostream>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+//typedef CGAL::Quotient<CGAL::MP_Float>           Number_type;
+//typedef CGAL::Cartesian<Number_type>             K;
 typedef CGAL::Triangulation_vertex_base_2<K> Vb;
 typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
 typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
@@ -46,7 +48,7 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
+    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[nodeList.size()-2]), E_to);
 
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
@@ -105,14 +107,14 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
     }
 
 
-    std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
+    //std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
 
-    std::cout << "Meshing the domain..." << std::endl;
+    //std::cout << "Meshing the domain..." << std::endl;
     CGAL::refine_Delaunay_mesh_2(cdt, list_of_seeds.begin(), list_of_seeds.end(),
                                  Criteria(0.125, meshsize));
 
-    std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
-    std::cout << "Number of finite faces: " << cdt.number_of_faces() << std::endl;
+    //std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
+    //std::cout << "Number of finite faces: " << cdt.number_of_faces() << std::endl;
     /*int mesh_faces_counter = 0;
     for(CDT::Finite_faces_iterator fit = cdt.finite_faces_begin();
         fit != cdt.finite_faces_end(); ++fit)
@@ -140,10 +142,10 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
         if (fit->is_in_domain() ) {
             for (int i = 0; i < 3; i++){
                 bool newlyAdded = false;
-                if (!spnh.findNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), 0.001)) {
+                if (!spnh.findNode(CGAL::to_double(fit->vertex(i)->point().x()),  CGAL::to_double(fit->vertex(i)->point().y()), 0.001)) {
                     newlyAdded = true;
                 }
-                DM::Node * n = spnh.addNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), const_height, 0.001);
+                DM::Node * n = spnh.addNode(CGAL::to_double(fit->vertex(i)->point().x()),  CGAL::to_double(fit->vertex(i)->point().y()), const_height, 0.001);
                 if (newlyAdded)  {
                     idsnode[count] = n;
                     nodeids[n] = count++;
@@ -157,7 +159,7 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
         DM::Node * n = idsnode[i];
         triangels.push_back(TBVectorData::RotateVector(alphas_t, DM::Node(n->getX(), n->getY(), n->getZ())));
     }
-    std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;
+    //std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;
 
 }
 

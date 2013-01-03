@@ -61,6 +61,9 @@ namespace DM {
         /** @brief Rotate Nodes */
         static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
 
+        /** @brief Check Orientation if CLOKCWISE return true */
+        static bool CheckOrientation(std::vector<DM::Node*> nodes);
+
     };
 }
 #endif // GEOMETRY_H

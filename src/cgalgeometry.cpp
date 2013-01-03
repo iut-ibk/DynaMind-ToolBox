@@ -171,7 +171,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 
     Polygon_2 pls;
     std::vector<Point_2> lpoints;
-    int s_nodes = nodes.size();
+    unsigned int s_nodes = nodes.size();
     if (nodes[0] == nodes[s_nodes-1])
         s_nodes--;
     for (unsigned int i = 0; i < s_nodes; i++) {
@@ -292,6 +292,7 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
 
 
 
+
     int size_n2 = nodes2.size();
 
     Polygon_2 poly2;
@@ -300,6 +301,17 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
     for (int i = 0; i < size_n2-1; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
+    }
+
+    if (!poly1.is_simple()) {
+        Logger(Debug) << "Polygon1 is not simple cant perform intersection";
+        return true;
+    }
+
+    if (!poly2.is_simple()) {
+        Logger(Debug) << "Polygon2 is not simple cant perform intersection";
+
+        return true;
     }
 
     CGAL::Orientation orient = poly1.orientation();
@@ -311,6 +323,8 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
     if (orient == CGAL::CLOCKWISE) {
         poly2.reverse_orientation();
     }
+
+
 
 
     return CGAL::do_intersect (poly1, poly2);
@@ -441,4 +455,32 @@ std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, do
 
 }
 
+bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
+{
+    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+    typedef K::Point_2                                          Point;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
+    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
+    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
+
+    int size_n1 = nodes.size();
+
+    Polygon_2 poly1;
+
+    for (int i = 0; i < size_n1-1; i++) {
+        DM::Node * n = nodes[i];
+        poly1.push_back(Point(n->getX(), n->getY()));
+    }
+
+
+    CGAL::Orientation orient = poly1.orientation();
+    if (orient == CGAL::CLOCKWISE) {
+        return false;
+    }
+
+    return true;
+
+}
 }

@@ -145,7 +145,7 @@ std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys
     return windows;
 }
 
-void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View & buildingView, DM::View & geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  & footprint, int stories)
+void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View & buildingView, DM::View & geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  & footprint, int stories, bool createWindows)
 {
     std::vector<double> roofColor;
     roofColor.push_back(0.66);
@@ -177,17 +177,16 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
             if (i != lastID-1) {
                 f->addAttribute("type", "wall_outside");
                 f->getAttribute("color")->setDoubleVector(wallColor);
-                std::vector<DM::Face* > windows = LittleGeometryHelpers::CreateHolesInAWall(city, f, 5, 1.5, 1);
-                foreach (DM::Face * w, windows) {
-                    w->addAttribute("type", "window");
-                    w->getAttribute("color")->setDoubleVector(windowColor);
-                    BuildingInterface->getAttribute("Geometry")->setLink("Geometry", w->getUUID());
-                    w->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
-                    city->addComponentToView(w,geometryView);
+                if (createWindows){
+                    std::vector<DM::Face* > windows = LittleGeometryHelpers::CreateHolesInAWall(city, f, 5, 1.5, 1);
+                    foreach (DM::Face * w, windows) {
+                        w->addAttribute("type", "window");
+                        w->getAttribute("color")->setDoubleVector(windowColor);
+                        BuildingInterface->getAttribute("Geometry")->setLink("Geometry", w->getUUID());
+                        w->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+                        city->addComponentToView(w,geometryView);
+                    }
                 }
-
-                double a = TBVectorData::CalculateArea(city, f);
-                //DM::Logger(DM::Debug) << "Wall:" << a;
 
             }
             else if (story != stories -1){
@@ -195,7 +194,12 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
                 f->getAttribute("color")->setDoubleVector(wallColor);
                 houseNodes = TBVectorData::getNodeListFromFace(city, f);
             } else {
+                /*std::vector<DM::Node*> roof = TBVectorData::getNodeListFromFace(city, f);
+                std::reverse(roof.begin(), roof.end());
+                f = city->addFace(roof, geometryView);*/
+
                 f->addAttribute("type", "ceiling_roof");
+
                 f->getAttribute("color")->setDoubleVector(roofColor);
             }
             BuildingInterface->getAttribute("Geometry")->setLink("Geometry", f->getUUID());

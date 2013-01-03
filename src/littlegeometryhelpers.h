@@ -37,7 +37,7 @@ public:
     static std::vector<DM::Face*>  CreateHolesInAWall(DM::System * sys, DM::Face * f, double distance, double width, double height, double parapet = 1.2);
 
     /** @brief create standard house */
-    static void CreateStandardBuilding(DM::System * city, DM::View & buildingView,  DM::View & geometryView,  DM::Component * BuildingInterface, std::vector<DM::Node * >  & footprint, int stories);
+    static void CreateStandardBuilding(DM::System * city, DM::View & buildingView,  DM::View & geometryView,  DM::Component * BuildingInterface, std::vector<DM::Node * >  & footprint, int stories, bool createWindows = true);
 
     static void CreateRoofRectangle(DM::System * city, DM::View & buildingView,  DM::View & geometryView,  DM::Component * BuildingInterface, std::vector<DM::Node * >  & footprint, double heigh, double alpha);
 
