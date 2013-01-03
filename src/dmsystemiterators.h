@@ -36,6 +36,8 @@
 #include "dmattribute.h"
 #include "tbvectordata.h"
 #include "cgalgeometry.h"
+#include "triangulaterasterdata.h"
+
 #include <dmlogger.h>
 
 #include <QtGlobal>
@@ -111,6 +113,28 @@ void iterate_nodes(DM::System *system, DM::View v, CB &callback = CB()) {
         callback(system, v, n, 0, after);
     }
 
+}
+
+template<typename CB>
+void iterate_rasterdata(DM::System *system, DM::View v, CB &callback = CB()) {
+    DM::ComponentMap cmp = system->getAllComponentsInView(v);
+    DM::RasterData * r = 0;
+    for (DM::ComponentMap::const_iterator it = cmp.begin();
+         it != cmp.end();
+         ++it) {
+        r = (DM::RasterData *) it->second;
+    }
+
+    callback(system, v, r, 0, before);
+
+    std::vector<DM::Node> nodes;
+    TriangulateRasterData::Triangulation(nodes, r);
+
+    for (unsigned int i = 0; i < nodes.size(); i++) {
+        callback(system, v, r, &nodes[i], in_between);
+    }
+
+    callback(system, v, r, 0, after);
 }
 
 template<typename CB>

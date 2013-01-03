@@ -54,7 +54,7 @@ ViewMetaData::ViewMetaData(std::string attribute)
     fromNode = true;
 }
 
-void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Node *n, iterator_pos pos) {
+void ViewMetaData::operator()(DM::System *sys, DM::View v, DM::Component *c, DM::Node *n, iterator_pos pos) {
     if (pos == before && !fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
         if (a->getType() == Attribute::DOUBLE) {
@@ -70,7 +70,20 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Nod
                 attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
             }
         }
+
         number_of_primitives++;
+    }
+    //If Rasterdata use z as Attribute
+    if (v.getType() == DM::RASTERDATA) {
+        DM::ComponentMap cmp = sys->getAllComponentsInView(v);
+        DM::RasterData * r = 0;
+        for (DM::ComponentMap::const_iterator it = cmp.begin();
+             it != cmp.end();
+             ++it) {
+            r = (DM::RasterData *) it->second;
+        }
+        attr_max = r->getMaxValue();
+        attr_min = r->getMinValue();
     }
     if (pos == in_between && fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
@@ -94,6 +107,7 @@ void ViewMetaData::operator()(DM::System *, DM::View , DM::Component *c, DM::Nod
     const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
     min_vec(tmp);
     max_vec(tmp);
+
 }
 
 double ViewMetaData::radius() const {

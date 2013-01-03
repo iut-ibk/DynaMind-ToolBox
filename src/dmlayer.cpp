@@ -245,6 +245,10 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
     if (view.getType() == DM::NODE) {
         this->rtype = SIMPLEDRAWERNODES;
     }
+    if (view.getType() == DM::RASTERDATA) {
+        this->rtype = RASTERDRAWER;
+        vmd = ViewMetaData("");
+    }
 
 
 
@@ -323,6 +327,61 @@ struct GeomtryDrawer {
         DM::Node * n = (DM::Node*) node;
         glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+        glVertex3dv(tmp);
+    }
+};
+
+struct RasterDrawer {
+
+    GLuint name_start;
+    double current_tex;
+    const Layer &l;
+    double attr_span;
+    RasterDrawer(const Layer &l) : l(l), name_start(l.getNameStart()) {
+
+        const ViewMetaData &vmd = l.getViewMetaData();
+        this->attr_span = vmd.attr_max - vmd.attr_min;
+
+    }
+
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+        if (pos == before) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            this->attr_span = vmd.attr_max - vmd.attr_min;
+            glPushName(name_start);
+            glBegin(GL_TRIANGLES);
+            return;
+        }
+        if (pos == after) {
+            glEnd();
+            glPopName();
+            name_start++;
+            return;
+        }
+
+        DM::Node * n = (DM::Node*) node;
+        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+        if (attr_span != 0) {
+            const ViewMetaData &vmd = l.getViewMetaData();
+            current_tex = (n->getZ()- vmd.attr_min) / attr_span * 255;
+        } else {
+            current_tex = 0.0;
+        }
+
+
+
+        if (current_tex < 0) {
+            glColor3f(0.0, 0.0, 0.0);
+            glVertex3dv(tmp);
+            return;
+        }
+
+        float r = l.LayerColor[(int)current_tex][0]/255.;
+        float g = l.LayerColor[(int)current_tex][1]/255.;
+        float b = l.LayerColor[(int)current_tex][2]/255.;
+        float a = l.LayerColor[(int)current_tex][3]/255.;
+
+        glColor3f(r, g, b);
         glVertex3dv(tmp);
     }
 };
@@ -430,7 +489,14 @@ void Layer::draw(QWidget *parent) {
         if (rtype == SIMPLEDRAWEREDGES) {
             SimpleDrawer<GL_LINES> drawer(*this);
             iterate_edges(system, view, drawer);
-
+        }
+        if (rtype == SIMPLEDRAWEREDGES) {
+            SimpleDrawer<GL_LINES> drawer(*this);
+            iterate_edges(system, view, drawer);
+        }
+        if (rtype == RASTERDRAWER) {
+            RasterDrawer drawer(*this);
+            iterate_rasterdata(system, view, drawer);
         }
 
         glEndList();
@@ -468,6 +534,9 @@ void Layer::systemChanged() {
         iterate_edges(system, view, vmd);
     }
 
+    if (rtype ==  RASTERDRAWER) {
+        iterate_rasterdata(system, view, vmd);
+    }
     foreach (GLuint list, lists) {
         if (glIsList(list)) {
             glDeleteLists(list, 1);

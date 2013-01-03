@@ -63,6 +63,9 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
         case DM::NODE:
             strings << "Node";
             break;
+        case DM::RASTERDATA:
+            strings << "RasterData";
+            break;
         default:
             continue;
         }
@@ -135,6 +138,10 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     ui->overdraw->setEnabled(current);
     view = system->getViewDefinition(current->text(0).toStdString());
 
+    if (view->getType() == DM::RASTERDATA)
+        ui->interpreteGroup->setEnabled(current);
+    else
+        ui->interpreteGroup->setDisabled(current);
 
     QMap<string, DM::Attribute *> attributes;
     getAttributesFromComponent(*view, attributes);
