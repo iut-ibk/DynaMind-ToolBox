@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.3.0")
+ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.4.0")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         message(STATUS "Using Visual C compilers")
