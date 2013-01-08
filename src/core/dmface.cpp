@@ -181,12 +181,30 @@ void Face::addHole(Face* hole)
         return;
     }
     _holes.push_back(hole);
-    SQLUpdateValues();
+    //SQLUpdateValues();
 }
-
+/*
 void Face::SQLUpdateValues()
 {
     DBConnector::getInstance()->Update("faces", uuid,
                                        "nodes", GetBytes(_nodes),
                                        "holes", GetBytes(_holes));
+}
+*/
+void Face::Synchronize()
+{
+	if(getCurrentSystem())
+		DBConnector::getInstance()->Update("faces", uuid,
+										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
+		                                  "nodes", GetBytes(_nodes),
+		                                  "holes", GetBytes(_holes));
+}
+
+void Face::SetOwner(Component *owner)
+{
+	//SQLSetOwner(owner);
+    currentSys = owner->getCurrentSystem();
+
+    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+		it->second->SetOwner(this);
 }

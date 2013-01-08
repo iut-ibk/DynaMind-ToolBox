@@ -70,6 +70,11 @@ Asynchron::Asynchron()
 
     syncList->push_back(this);
 }
+Asynchron::~Asynchron()
+{
+	if(syncList)
+		syncList->remove(this);
+}
 
 DBConnector* DBConnector::instance = 0;
 //int DBConnector::_linkID = 1;

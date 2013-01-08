@@ -45,16 +45,18 @@ class Node;
   * @TODO if endnod == startnode or if this doesn't matter
   * @TODO orientation
   */
-class DM_HELPER_DLL_EXPORT Face :  public Component
+class DM_HELPER_DLL_EXPORT Face :  public Component, Asynchron
 {
 private:
     std::vector<Node*> _nodes;
     std::vector<Face*> _holes;
 
-    void SQLUpdateValues();
+    //void SQLUpdateValues();
     /** @brief return table name */
     QString getTableName();
+	void SetOwner(Component *owner);
 public:
+	void Synchronize();
     /** @brief destructor */
     ~Face();
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes

@@ -40,6 +40,7 @@ class Asynchron
 {
 public:
     Asynchron();
+	~Asynchron();
     virtual void Synchronize() = NULL;
 };
 
