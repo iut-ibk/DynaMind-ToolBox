@@ -106,6 +106,11 @@ void CellularAutomata::init() {
 }
 
 void CellularAutomata::run()  {
+    if (param.Desicion.empty()) {
+        Logger(Error) << "No decision set";
+        return;
+    }
+
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
     this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,0,0);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
@@ -129,13 +134,13 @@ void CellularAutomata::run()  {
                 RasterData * r = landscapes[this->NeighboorhoodMapName[s]];
                 r->getNeighboorhood(this->NeighboorhoodMaps[s], this->NeighboohoodDimensions[s].widht,this->NeighboohoodDimensions[s].height, x, y );
             }
-            for (int counter = 0; counter < this->Rules.size(); counter++) {
+            for (unsigned int counter = 0; counter < this->Rules.size(); counter++) {
 
                 Parser * p=this->Rules.at(counter);
                 try
                 {
                     double val =  p->Eval();
-
+                    //Logger(Debug) << val;
                     *(this->RulesResults.at(counter)) = val;
                 } catch (Parser::exception_type &e)
                 {
@@ -143,7 +148,8 @@ void CellularAutomata::run()  {
                     Logger(Error) << e.GetMsg()  ;
                 }
             }
-            this->param.OutputMap->setCell(x,y,this->Desicion->Eval());
+            double ressult = this->Desicion->Eval();
+            this->param.OutputMap->setCell(x,y,ressult);
         }
     }
 
@@ -160,7 +166,7 @@ void CellularAutomata::deinit() {
 
         std::string name= it->first;
         int **Neighbourhood_Stamp = NeighboorhoodStamps[name];
-        float **Neighbourhood = NeighboorhoodMaps[name];
+        double **Neighbourhood = NeighboorhoodMaps[name];
         Dimension dim = this->NeighboohoodDimensions[name];
         int width = dim.widht;
         for (int i = 0; i < width; i++) {
@@ -206,17 +212,17 @@ void CellularAutomata::initRuntime() {
         //Find Matrix Dimension;
         list[2]  = list[2].remove("|");
         QStringList rows = list[2].split(";");
-        float **Neighbourhood;
+        double **Neighbourhood;
         int **Neighbourhood_Stamp;
         int width = rows.size();
-        Neighbourhood = new float*[width];
+        Neighbourhood = new double*[width];
         Neighbourhood_Stamp = new int*[width];
         int height;
         int i = 0;
         foreach(QString s, rows) {
             //Logger(Debug) << s.toStdString()  ;
             height = s.split(",").size();
-            Neighbourhood[i] = new float[height];
+            Neighbourhood[i] = new double[height];
             Neighbourhood_Stamp[i] = new int[height];
             int j = 0;
             foreach(QString v, s.split(",")) {
@@ -241,7 +247,7 @@ void CellularAutomata::initRuntime() {
             }
         }
         //Logger(Debug) << sum  ;
-        float **d = new float*[sum];
+        double **d = new double*[sum];
         i = 0;
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
@@ -278,7 +284,7 @@ void CellularAutomata::initRuntime() {
 
                 std::stringstream varname;
                 varname << neigh << i;
-                float ** d =  NeighboorhoodPointerMap[neigh];
+                double ** d =  NeighboorhoodPointerMap[neigh];
                 p->DefineVar(varname.str(), (double*)d[i]);
             }
             rule.replace(QString::fromStdString(neigh),QString::fromStdString(ss.str()));

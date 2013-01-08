@@ -80,7 +80,7 @@ void AppendAttributes::run() {
         if(v_existing->getType()==DM::NODE)
         {
             DM::Node * f = sys->getNode(s);
-            double dattr = r->getValue(f->getX(),f->getY());
+            double dattr = r->getCell(f->getX(),f->getY());
             f->changeAttribute(newAttribute, dattr);
         }
     }

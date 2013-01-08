@@ -40,8 +40,10 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
         double CellSize;
         std::string MarkerMap;
 
+        std::string resultName;
+
         std::string VectorData;
-        //std::string RasterData;
+
 
         int Points;
         int Edges;

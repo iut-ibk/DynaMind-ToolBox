@@ -47,7 +47,7 @@ void ExportRasterData::run () {
         {
             for (unsigned int i=0; i<rData->getWidth(); i++)
             {
-                txtout<<rData->getValue(i,j)<< " ";
+                txtout<<rData->getCell(i,j)<< " ";
             }
             txtout<<"\n";
 
@@ -58,7 +58,7 @@ void ExportRasterData::run () {
         {
             for (unsigned int i=0; i<rData->getWidth(); i++)
             {
-                txtout<<rData->getValue(i,j)<< " ";
+                txtout<<rData->getCell(i,j)<< " ";
             }
             txtout<<"\n";
 

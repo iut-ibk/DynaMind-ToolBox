@@ -98,10 +98,6 @@ void CalculateCentroid::run() {
 
         Node p = TBVectorData::CaclulateCentroid(this->city, f);
         double area = fabs(TBVectorData::CalculateArea(this->city, f));
-
-        if (p.getX() < 0 ) {
-            Logger(Error) << "Srewed";
-        }
         f->addAttribute("centroid_x", p.getX());
         f->addAttribute("centroid_y", p.getY());
         f->addAttribute("area", area);

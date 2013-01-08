@@ -45,6 +45,7 @@ Marker::Marker()
     param.Identifier = "";
     param.Points = true;
     param.Edges = false;
+    param.resultName = "Result";
 
     this->addParameter("Width", DM::LONG, & param.Width);
     this->addParameter("Height", DM::LONG, & param.Height);
@@ -57,13 +58,9 @@ Marker::Marker()
     this->addParameter("Points", DM::INT, &param.Points);
     this->addParameter("Edges", DM::INT, &param.Edges);
     this->addParameter("Identifier", DM::STRING, &param.Identifier);
+    this->addParameter("resultName", DM::STRING, &param.resultName);
 
-
-    //this->addParameter("InputRasterData", VIBe2::USER_DEFINED_RASTERDATA_IN, &inputRasterData);
-    //this->addParameter("VectorData", VIBe2::VECTORDATA_IN, & vectorData);
-    //this->addParameter("OutPutMap", VIBe2::RASTERDATA_OUT, &OutputMap);
-
-    DM::View outputview("result", DM::RASTERDATA, DM::WRITE);
+    DM::View outputview(param.resultName, DM::RASTERDATA, DM::WRITE);
 
 
     std::vector<DM::View> data;
@@ -80,6 +77,11 @@ Marker::Marker()
 
 void Marker::init() {
         sys_in = this->getData("Data");
+        DM::View outputview = DM::View (param.resultName, DM::RASTERDATA, DM::WRITE);
+        std::vector<DM::View> rData;
+        rData.push_back(outputview);
+
+        this->addData("Result", rData);
 }
 
 double Marker::calculater(const Node &sp, const Node &cp) {
@@ -255,7 +257,7 @@ void Marker::run() {
     if (param.Edges == true )
         vIdentifier = DM::View(param.Identifier, DM::EDGE, DM::READ);
     sys_in = this->getData("Data");
-    this->OutputMap = this->getRasterData("Result", DM::View("result", DM::RASTERDATA, DM::WRITE));
+    this->OutputMap = this->getRasterData("Result", DM::View (param.resultName, DM::RASTERDATA, DM::WRITE));
     this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,0,0);
     this->OutputMap->clear();
 
