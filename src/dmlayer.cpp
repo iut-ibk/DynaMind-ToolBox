@@ -164,7 +164,7 @@ struct TesselatedFaceDrawer {
             glEnable(GL_TEXTURE_1D);
             glBindTexture(GL_TEXTURE_1D, l.getColorInterpretation());
         }
-        assert(glGetError() == GL_NO_ERROR);
+        //assert(glGetError() == GL_NO_ERROR);
         if(!polygon.is_simple()) {
             DM::Logger(DM::Error) << "Polygon is not simple can't perform tessilation";
             return;
