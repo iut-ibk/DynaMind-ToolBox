@@ -95,7 +95,7 @@ void DMMainWindow::removeGroupWindows(QString uuid) {
 
             if ((pv->getUUID()).compare(uuid) == 0) {
 
-                this->tabWidget_4->removeTab(this->tabWidget_4->indexOf(tabmap[pv]));
+                ui->tabWidget_4->removeTab(ui->tabWidget_4->indexOf(tabmap[pv]));
 
                 delete pv;
 
@@ -143,7 +143,7 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     if (name.isEmpty()) {
         name = g->getName();
     }
-    this->groupscenes[this->tabWidget_4->addTab(gv,name)] = newgroup;
+    this->groupscenes[ui->tabWidget_4->addTab(gv,name)] = newgroup;
     tabmap[newgroup] = gv;
 
 }
@@ -152,16 +152,15 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
         if ((pv->getRootNode()->getDMModel()->getUuid()).compare(g->getDMModel()->getUuid()) == 0) {
-            this->tabWidget_4->setTabText(i, QString::fromStdString(g->getDMModel()->getName()));
+            ui->tabWidget_4->setTabText(i, QString::fromStdString(g->getDMModel()->getName()));
         }
     }
 }
 
-DMMainWindow::DMMainWindow(QWidget * parent)
+DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
-
     Q_INIT_RESOURCE(icons);
-    setupUi(this);
+    ui->setupUi(this);
     log_updater = new GuiLogSink();
     DM::Log::init(log_updater,DM::Debug);
     running =  false;
@@ -180,18 +179,18 @@ DMMainWindow::DMMainWindow(QWidget * parent)
 
 
 
-    log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
-    connect( actionRun, SIGNAL( activated() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
-    connect( actionPreferences, SIGNAL ( activated() ), this, SLOT(preferences() ), Qt::DirectConnection );
-    connect(actionSave, SIGNAL(activated()), this , SLOT(saveSimulation()), Qt::DirectConnection);
-    connect(actionSaveAs, SIGNAL(activated()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
-    connect(actionOpen, SIGNAL(activated()), this , SLOT(loadSimulation()), Qt::DirectConnection);
-    connect(actionNew, SIGNAL(activated()), this , SLOT(clearSimulation()), Qt::DirectConnection);
-    connect(actionImport, SIGNAL(activated()), this , SLOT(importSimulation()), Qt::DirectConnection);
-    connect(actionEditor, SIGNAL(activated()), this , SLOT(startEditor()), Qt::DirectConnection);
-    connect(actionReload_Modules, SIGNAL(activated()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
-    connect(actionUpdate, SIGNAL(activated()), this , SLOT(updateSimulation()), Qt::DirectConnection);
-    connect(actionReset, SIGNAL(activated()), this->simulation , SLOT(reset()), Qt::DirectConnection);
+    ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
+    connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
+    connect( ui->actionPreferences, SIGNAL ( triggered() ), this, SLOT(preferences() ), Qt::DirectConnection );
+    connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
+    connect(ui->actionSaveAs, SIGNAL(triggered()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
+    connect(ui->actionOpen, SIGNAL(triggered()), this , SLOT(loadSimulation()), Qt::DirectConnection);
+    connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(clearSimulation()), Qt::DirectConnection);
+    connect(ui->actionImport, SIGNAL(triggered()), this , SLOT(importSimulation()), Qt::DirectConnection);
+    connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
+    connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
+    connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
+    connect(ui->actionReset, SIGNAL(triggered()), this->simulation , SLOT(reset()), Qt::DirectConnection);
     currentDocument = "";
 
     this->simmanagment = new SimulationManagment();
@@ -206,12 +205,12 @@ DMMainWindow::DMMainWindow(QWidget * parent)
 }
 
 void DMMainWindow::createModuleListView() {
-    this->treeWidget->clear();
+    ui->treeWidget->clear();
     std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
     std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
-    this->treeWidget->setColumnCount(1);
+    ui->treeWidget->setColumnCount(1);
     for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) {
-        QTreeWidgetItem * items = new QTreeWidgetItem(this->treeWidget);
+        QTreeWidgetItem * items = new QTreeWidgetItem(ui->treeWidget);
         std::string name = it->first;
         items->setText(0, QString::fromStdString(name));
         std::vector<std::string> names = it->second;
@@ -241,7 +240,7 @@ void DMMainWindow::createModuleListView() {
         }
 
         for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) {
-            QTreeWidgetItem * items = new QTreeWidgetItem(this->treeWidget);
+            QTreeWidgetItem * items = new QTreeWidgetItem(ui->treeWidget);
             std::string name = it->first;
             items->setText(0, QString::fromStdString(name));
             std::vector<std::string> names = it->second;
@@ -557,31 +556,31 @@ DMMainWindow::~DMMainWindow() {
     delete this->simulation;
 }
 
-void DMMainWindow::on_actionZoomIn_activated(){
-    int i= this->tabWidget_4->currentIndex();
+void DMMainWindow::on_actionZoomIn_triggered(){
+    int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
 
     view->scale(1.2, 1.2);
 
 }
 
-void DMMainWindow::on_actionAbout_activated()
+void DMMainWindow::on_actionAbout_triggered()
 {
     GUIAboutDialog * ab= new GUIAboutDialog(this->simulation, this);
     ab->show();
 
 }
 
-void DMMainWindow::on_actionZoomOut_activated()
+void DMMainWindow::on_actionZoomOut_triggered()
 {
-    int i= this->tabWidget_4->currentIndex();
+    int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->scale(0.8, 0.8);
 }
 
-void DMMainWindow::on_actionZoomReset_activated()
+void DMMainWindow::on_actionZoomReset_triggered()
 {
-    int i= this->tabWidget_4->currentIndex();
+    int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
 
@@ -595,6 +594,6 @@ void DMMainWindow::showHelp(std::string classname, std::string uuid) {
     this->helpviewer->showHelpForModule(classname, uuid);
 }
 
-void DMMainWindow::on_actionShow_Help_activated() {
+void DMMainWindow::on_actionShow_Help_triggered() {
     this->helpviewer->show();
 }

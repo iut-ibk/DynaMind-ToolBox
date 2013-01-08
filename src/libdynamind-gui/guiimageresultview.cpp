@@ -101,7 +101,7 @@ void GUIImageResultView::saveFigure() {
 void GUIImageResultView::contextMenuEvent(QContextMenuEvent *event) {
     QMenu menu;
     QAction  * a_save = menu.addAction("save");
-    connect( a_save, SIGNAL(activated() ), this, SLOT( saveFigure() ), Qt::DirectConnection);
+    connect( a_save, SIGNAL(triggered() ), this, SLOT( saveFigure() ), Qt::DirectConnection);
     menu.exec(event->globalPos());
 
 }

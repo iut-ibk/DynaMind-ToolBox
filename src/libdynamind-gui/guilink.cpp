@@ -140,8 +140,8 @@ void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QAction  * a_delete = menu.addAction("delete");
 
 
-    connect( a_delete, SIGNAL( activated() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
-    connect( a_back, SIGNAL( activated() ), this, SLOT( backLink() ), Qt::DirectConnection );
+    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
+    connect( a_back, SIGNAL( triggered() ), this, SLOT( backLink() ), Qt::DirectConnection );
     menu.exec(event->screenPos());
 
 }

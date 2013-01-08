@@ -63,7 +63,7 @@ namespace DM {
 
 
 
-class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow, public Ui::DMMainWindow
+class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -73,6 +73,7 @@ public:
     GuiLogSink *log_updater;
     GUISimulation * getSimulation() {return this->simulation;}
 private:
+    Ui::DMMainWindow *ui;
     GUISimulation * simulation;
     SimulationManagment * simmanagment;
     GUISimulationObserver * simobserver;
@@ -112,11 +113,11 @@ public slots:
 
 
 private slots:
-    void on_actionZoomReset_activated();
-    void on_actionZoomOut_activated();
-    void on_actionZoomIn_activated();
-    void on_actionAbout_activated();
-    void on_actionShow_Help_activated();
+    void on_actionZoomReset_triggered();
+    void on_actionZoomOut_triggered();
+    void on_actionZoomIn_triggered();
+    void on_actionAbout_triggered();
+    void on_actionShow_Help_triggered();
 
 };
 

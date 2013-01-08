@@ -392,18 +392,18 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     }
 
     foreach (QAction *a,  actions) {
-        connect( a, SIGNAL( activated() ), this, SLOT( addGroup() ), Qt::DirectConnection );
+        connect( a, SIGNAL( triggered() ), this, SLOT( addGroup() ), Qt::DirectConnection );
     }
 
-    connect( a_delete, SIGNAL( activated() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
-    connect( a_edit, SIGNAL( activated() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
-    connect( a_rename, SIGNAL(activated() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
-    connect( a_showData, SIGNAL(activated() ), this, SLOT( printData() ), Qt::DirectConnection);
-    connect( a_viewData, SIGNAL(activated() ), this, SLOT( viewData() ), Qt::DirectConnection);    
-    connect( a_module_debug, SIGNAL(activated() ), this, SLOT( setDebug() ), Qt::DirectConnection);
-    connect( a_module_release, SIGNAL(activated() ), this, SLOT( setRelease() ), Qt::DirectConnection);
-    connect( a_showHelp, SIGNAL(activated() ), this, SLOT( showHelp() ), Qt::DirectConnection);
-    connect( a_reset, SIGNAL(activated() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
+    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
+    connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
+    connect( a_rename, SIGNAL(triggered() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
+    connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
+    connect( a_viewData, SIGNAL(triggered() ), this, SLOT( viewData() ), Qt::DirectConnection);
+    connect( a_module_debug, SIGNAL(triggered() ), this, SLOT( setDebug() ), Qt::DirectConnection);
+    connect( a_module_release, SIGNAL(triggered() ), this, SLOT( setRelease() ), Qt::DirectConnection);
+    connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
+    connect( a_reset, SIGNAL(triggered() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
 
 }
