@@ -181,7 +181,7 @@ void MinimumSteinerTree::run()
 
             #pragma omp critical
             {
-                edgetopath[std::make_pair<int,int>(*vi,vai)]=currentpath;
+                edgetopath[std::make_pair(*vi,vai)]=currentpath;
                 add_edge(*vi,vai,d[*vi],completegraph);
             }
         }
@@ -220,11 +220,11 @@ void MinimumSteinerTree::run()
         int s = source(*ei,completegraph);
         int t = target(*ei,completegraph);
 
-        if(nodes2edge.find(std::make_pair<int,int>(s,t))!=nodes2edge.end())
-            sys->addComponentToView(nodes2edge[std::make_pair<int,int>(s,t)],viewdef[DM::GRAPH::SPANNINGTREE]);
+        if(nodes2edge.find(std::make_pair(s,t))!=nodes2edge.end())
+            sys->addComponentToView(nodes2edge[std::make_pair(s,t)],viewdef[DM::GRAPH::SPANNINGTREE]);
 
-        if(nodes2edge.find(std::make_pair<int,int>(t,s))!=nodes2edge.end())
-            sys->addComponentToView(nodes2edge[std::make_pair<int,int>(t,s)],viewdef[DM::GRAPH::SPANNINGTREE]);
+        if(nodes2edge.find(std::make_pair(t,s))!=nodes2edge.end())
+            sys->addComponentToView(nodes2edge[std::make_pair(t,s)],viewdef[DM::GRAPH::SPANNINGTREE]);
     }
 }
 
