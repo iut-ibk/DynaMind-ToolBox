@@ -40,6 +40,8 @@ void TriangulateRasterData::Triangulation(std::vector<DM::Node> & nodes, DM::Ras
     for (unsigned long  y = 0; y < Y; y++) {
         for (unsigned long  x = 0; x < X; x++) {
             double val = rData->getCell(x,y);
+            if (val == noData)
+                continue;
             nodes.push_back( DM::Node( (x-0.5) * lX ,  (y-0.5) * lY, val) );
             nodes.push_back( DM::Node( (x+0.5) * lX,   (y-0.5) * lY, val) );
             nodes.push_back( DM::Node( (x-0.5) * lX,   (y+0.5) * lY, val) );
