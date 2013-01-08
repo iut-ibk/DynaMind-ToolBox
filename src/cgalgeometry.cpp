@@ -335,7 +335,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
     std::vector<DM::Node> resultVector;
 
-    std::cout << "start intersection" << std::endl;
+    //std::cout << "start intersection" << std::endl;
     typedef CGAL::Exact_predicates_exact_constructions_kernel K;
     typedef K::Point_2                                          Point;
     typedef CGAL::Polygon_2<K>                                  Polygon_2;
@@ -370,8 +370,8 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
         poly2.push_back(Point(n->getX(), n->getY()));
     }
 
-    print_polygon(poly1);
-    print_polygon(poly2);
+    //print_polygon(poly1);
+    //print_polygon(poly2);
 
     if (!poly1.is_simple()) {
         Logger(Debug) << "Polygon1 is not simple cant perform intersection";
@@ -406,7 +406,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
     for (it = intR.begin(); it != intR.end(); ++it) {
 
-        print_polygon_with_holes (*it);
+        //print_polygon_with_holes (*it);
         Polygon_with_holes_2 P = (*it);
 
         Polygon_2 P_out = P.outer_boundary();
@@ -422,7 +422,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
                 resultVector.push_back(DM::Node(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
         }
     }
-    std::cout << "end intersection" << std::endl;
+    //std::cout << "end intersection" << std::endl;
     if (resultVector.size() < 3)
         DM::Logger(DM::Error) << "Something went wrong";
     return resultVector;
