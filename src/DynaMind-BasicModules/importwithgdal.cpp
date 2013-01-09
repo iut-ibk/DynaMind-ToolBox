@@ -247,6 +247,7 @@ void ImportwithGDAL::init() {
     view.setName(ViewName);
 
     OGRRegisterAll();
+    GDALAllRegister();	// neccessary for windows!
 
     OGRDataSource       *poDS;
     OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
