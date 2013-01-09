@@ -53,7 +53,6 @@ void AppendViewFromSystem::run() {
 //TODO: Works finw until someone is changing something upstream -> no update downstream!
 void AppendViewFromSystem::init()
 {
-    std::cout << "Run init" << std::endl;
     //Define New System
     if (Inports.size() > 0 ) {
         bool changed = false;
