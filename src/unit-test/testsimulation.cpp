@@ -36,9 +36,9 @@
 #include <dmdbconnector.h>
 #include <QSqlQuery>
 
-//#define SQLUNITTESTS
+#define SQLUNITTESTS
 #define SQLPROFILING
-//#define STDUNITTESTS
+#define STDUNITTESTS
 
 
 namespace {
@@ -414,6 +414,33 @@ TEST_F(TestSimulation,cachetest) {
     ASSERT_TRUE(c.get(3)==three);
     ASSERT_TRUE(c.get(4)==four);
     ASSERT_TRUE(c.get(10)==NULL);
+	/*
+	int size = 20000;
+	//for(int i=0;i<size;i++)
+	//	buf[i] = (double)rand();
+
+	QElapsedTimer time;
+	time.start();
+
+	for(int i=0;i<10;i++)
+	{
+		double *buf = new double[size];
+		QByteArray qba((char*)buf, size*sizeof(double));
+	}
+
+	DM::Logger(Error) << "elapsed time for 10x1 buffers: " << GetElapsedTime(&time);
+	time.restart();
+	
+	double *buf = new double[size*10];
+	double* p = buf;
+	for(int i=0;i<10;i++)
+	{
+		QByteArray::fromRawData((char*)p,size*sizeof(double));
+		p += size;
+	}
+	
+	DM::Logger(Error) << "elapsed time for 1x10 buffers: " << GetElapsedTime(&time);
+	delete buf;*/
 }
 
 TEST_F(TestSimulation,simplesqltest) {
