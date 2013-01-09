@@ -364,21 +364,48 @@ void RasterData::SQLInsertField(long width, long height)
 	if(width == 0 || height == 0)
         return;
 
+	//Logger(Debug) << "inserting field into sql: "<<width<<"x"<<height;
+	
     double* buffer = new double[width];
+    for(long x = 0; x < width; x++)
+        buffer[x] = NoValue;
+
+	char* pBuffer = (char*) buffer;
+	int rowsize = sizeof(double)*width;
+
     for(long y = 0; y < height; y++)
     {
-        for(long x = 0; x < width; x++)
-            buffer[x] = NoValue;
-        QByteArray *qba = new QByteArray((char*)buffer, sizeof(double)*width);
+        QByteArray *qba = new QByteArray(pBuffer, rowsize);
 		rowCache.add(std::pair<QUuid,long>(getQUUID(),y), qba);
 
         QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
         q->addBindValue(uuid.toByteArray());
         q->addBindValue(QVariant::fromValue(y));
-        q->addBindValue(qba->toBase64());
+        q->addBindValue(*qba);
         DBConnector::getInstance()->ExecuteQuery(q);
     }
     delete buffer;
+	/*
+	double *buffer = new double[width*height];
+    for(long x = 0; x < width*height; x++)
+        buffer[x] = NoValue;
+
+	for(long y = 0; y < height; y++)
+    {
+		QByteArray *qba = new QByteArray;
+		qba->setRawData((char*)buffer, sizeof(double)*width);
+		buffer += width;
+
+		rowCache.add(std::pair<QUuid,long>(getQUUID(),y), qba);
+
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
+        q->addBindValue(uuid.toByteArray());
+        q->addBindValue(QVariant::fromValue(y));
+        q->addBindValue(*qba);
+        DBConnector::getInstance()->ExecuteQuery(q);
+    }
+
+	Logger(Debug) << "finished field insert";*/
 }
 void RasterData::SQLDeleteField()
 {
@@ -425,7 +452,7 @@ QByteArray* RasterData::SQLForceGetRow(long y) const
     if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
         return NULL;
 
-    QByteArray* qba = new QByteArray(QByteArray::fromBase64(q->value(0).toByteArray()));
+	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
     rowCache.add(std::pair<QUuid,long>(uuid,y),qba);
     return qba;
 }
@@ -450,7 +477,7 @@ void ApplyRowUpdates()
         ++it)
     {
         QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data = ? WHERE owner LIKE ? AND y=?");
-        q->addBindValue(it->second->toBase64());
+        q->addBindValue(*(it->second));
         q->addBindValue(it->first.first.toByteArray());
         q->addBindValue(QVariant::fromValue(it->first.second));
         DBConnector::getInstance()->ExecuteQuery(q);
