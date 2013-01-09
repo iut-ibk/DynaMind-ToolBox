@@ -36,6 +36,11 @@
 #include <dmdbconnector.h>
 #include <QSqlQuery>
 
+//#define SQLUNITTESTS
+#define SQLPROFILING
+//#define STDUNITTESTS
+
+
 namespace {
 
 void SeperateInsert(long nx, long ny)
@@ -385,6 +390,8 @@ TEST_F(TestSimulation,validationtool) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }*/
 
+#ifdef SQLUNITTESTS
+
 TEST_F(TestSimulation,cachetest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -698,6 +705,9 @@ TEST_F(TestSimulation, SQLattributes)
     DM::RasterData::PrintStatistics();
 }
 
+#endif
+#ifdef SQLPROFILING
+
 TEST_F(TestSimulation,sqlprofiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -836,6 +846,9 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     DM::RasterData::PrintStatistics();
 }
 
+#endif
+#ifdef STDUNITTESTS
+
 TEST_F(TestSimulation,testMemory){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -968,6 +981,8 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+
+#endif
 /*
 #ifndef PYTHON_EMBEDDING_DISABLED
     TEST_F(TestSimulation,loadPythonModule) {
