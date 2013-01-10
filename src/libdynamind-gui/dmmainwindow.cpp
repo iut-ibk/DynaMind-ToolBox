@@ -162,7 +162,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
-    DM::Log::init(log_updater,DM::Debug);
+
+    DM::Log::init(log_updater,DM::Standard);
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
