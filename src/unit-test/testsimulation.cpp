@@ -415,6 +415,24 @@ TEST_F(TestSimulation,cachetest) {
     ASSERT_TRUE(c.get(4)==four);
     ASSERT_TRUE(c.get(10)==NULL);
 	/*
+	int size = 4000;
+	Cache<int,double> cache(size);
+	for(int i=0;i<size;i++)
+	{
+		double* d = new double;
+		*d = (double)i;
+		cache.add(i,d);
+	}
+	
+	QElapsedTimer time;
+	time.start();
+	for(int j=0;j<10;j++)
+		for(int i=0;i<size;i++)
+			cache.get(i);
+	
+	DM::Logger(Error) << "elapsed time for searching " << GetElapsedTime(&time);
+	*/
+	/*
 	int size = 20000;
 	//for(int i=0;i<size;i++)
 	//	buf[i] = (double)rand();
