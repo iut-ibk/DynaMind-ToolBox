@@ -74,8 +74,21 @@ Node * SpatialNodeHashMap::addNode(double x, double y, double z, double tol, Vie
     return n;
 }
 
-SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider) :  devider(devider), sys(sys)
+void SpatialNodeHashMap::addNodesFromView(const DM::View &view)
 {
+    std::vector<std::string> uuid_nodes = sys->getUUIDs(view);
+    foreach (std::string uuid, uuid_nodes)
+        this->addNodeToSpatialNodeHashMap(sys->getNode(uuid));
+}
+
+SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool init, const DM::View & nodeView) :  devider(devider), sys(sys)
+{
+    if (!init)
+        return;
+    if (nodeView.getName().empty()) {
+        this->addNodesFromView(nodeView);
+        return;
+    }
     NodeMap nodeMap = sys->getAllNodes();
     for (NodeMap::const_iterator it = nodeMap.begin(); it != nodeMap.end(); ++it) {
         DM::Node * n = it->second;

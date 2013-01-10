@@ -173,7 +173,8 @@ Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 		ptr = new TimeSeriesAttribute(*((TimeSeriesAttribute*)ref.ptr));
 		break;
 	case LINK:
-		ptr = new LinkAttribute(*((LinkAttribute*)ref.ptr));
+		//ptr = new LinkAttribute(*((LinkAttribute*)ref.ptr));
+		ptr = new std::vector<LinkAttribute>(*((std::vector<LinkAttribute>*)ref.ptr));
 		break;
 	case DOUBLEVECTOR:
 		ptr = new std::vector<double>(*((std::vector<double>*)ref.ptr));
@@ -468,7 +469,7 @@ void Attribute::setType(AttributeType type)
 		a->ptr = new TimeSeriesAttribute();
 		break;
 	case LINK:
-		a->ptr = new LinkAttribute();
+		a->ptr = new std::vector<LinkAttribute>();
 		break;
 	case DOUBLEVECTOR:
 		a->ptr = new std::vector<double>();

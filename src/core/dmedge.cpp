@@ -34,7 +34,7 @@
 
 using namespace DM;
 
-DbCache<Edge*,bool> edgeCache(1024);
+DbCache<Edge*,bool> edgeCache(1e6);
 
 Edge::Edge(Node *start, Node *end) : Component(true)
 {

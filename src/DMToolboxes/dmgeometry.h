@@ -48,10 +48,11 @@ private:
     double devider;
     DM::System * sys;
 public:
-    SpatialNodeHashMap(DM::System * sys, double devider);
+    SpatialNodeHashMap(DM::System * sys, double devider, bool init = true, const DM::View & nodeView = DM::View());
     const double & getDevider() const;
     DM::System * getSystem();
     ~SpatialNodeHashMap();
+
 
 public:
     /** @brief Creates a spatial hash from a node
@@ -71,6 +72,11 @@ public:
      *
      */
     DM::Node * addNode(double x, double y, double z, double tol, DM::View v = DM::View());
+
+    /** @brief Adds nodes from view to the search field
+     *
+     */
+    void addNodesFromView(const DM::View & view);
 };
 }
 
