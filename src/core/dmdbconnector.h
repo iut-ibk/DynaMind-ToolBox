@@ -230,8 +230,8 @@ protected:
                 return n;
             else
                 n = n->next;
-        }*/
-        return NULL;
+        }
+        return NULL;*/
     }
 
 public:
