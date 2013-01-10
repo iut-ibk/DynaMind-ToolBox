@@ -112,7 +112,9 @@ void SpatialLinking::run() {
         }
         if (vbase.getType() == DM::NODE) {
             DM::Node * n1 = city->getNode(baseUUID);
-            c = DM::Node(n1->getX(), n1->getY(), n1->getZ());
+            c.setX(n1->getX());
+            c.setY(n1->getY());
+            c.setZ(n1->getZ());
         }
         centerPoints.push_back(QPointF(c.getX(), c.getY()));
         //CreateKey
@@ -120,9 +122,9 @@ void SpatialLinking::run() {
         int y = c.getY() / spatialL;
 
         QString key = QString::number(x) + "|" +  QString::number(y);
-        std::vector<int> * vn = nodesMap[key];
-        if (!vn) {
-            vn = new  std::vector<int>();
+        std::vector<int> * vn;
+        if (!nodesMap.contains(key)) {
+            vn = new std::vector<int>();
             nodesMap[key] = vn;
         }
         vn->push_back(counterID);
