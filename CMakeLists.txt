@@ -36,6 +36,15 @@ FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 FIND_PACKAGE(GDAL)
 INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR})
 
+find_package(OpenMP)
+if(OPENMP_FOUND)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        message(STATUS "OpenMP is enabled")
+else()
+        add_definitions(-DOPENMP_DISABLED)
+        message(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
+endif()
+
 INCLUDE(${QT_USE_FILE})
 INCLUDE_DIRECTORIES( ${DYNAMIND_INCLUDE_DIR})
 

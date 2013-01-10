@@ -29,6 +29,11 @@
 #include <QHash>
 #include <QPolygonF>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+
 DM_DECLARE_NODE_NAME(SpatialLinking, Modules)
 
 SpatialLinking::SpatialLinking()
@@ -127,7 +132,11 @@ void SpatialLinking::run() {
     std::vector<std::string> linkUUIDs = city->getUUIDsOfComponentsInView(vlinkto);
 
     int CounterElementLinked = 0;
-    foreach (std::string linkUUID, linkUUIDs) {
+    int NumberOfLinks = linkUUIDs.size();
+#pragma omp parallel for
+    for (int i = 0; i < NumberOfLinks; i++) {
+    //foreach (std::string linkUUID, linkUUIDs) {
+        std::string linkUUID = linkUUIDs[i];
         QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
 
         //Search Space
@@ -170,8 +179,8 @@ void SpatialLinking::run() {
 
             }
         }
-        Logger(Debug) << "Element in search space " << elementInSearchSpace;
-        Logger(Debug) << "Linked to " << links.size();
+        //Logger(Debug) << "Element in search space " << elementInSearchSpace;
+        //Logger(Debug) << "Linked to " << links.size();
         Component * cmp = city->getComponent(linkUUID);
         Attribute * attr = cmp->getAttribute(base);
         attr->setLinks(links);
