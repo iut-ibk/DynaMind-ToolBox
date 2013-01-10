@@ -41,7 +41,7 @@ class Asynchron
 public:
     Asynchron();
 	~Asynchron();
-    virtual void Synchronize() = NULL;
+    virtual void Synchronize() = 0;
 };
 
 class DMSqlParameter
@@ -218,7 +218,7 @@ protected:
     }
     Node* search(const Tkey &key)
     {
-		std::map<Tkey,Node*>::iterator it = map.find(key);
+        typename std::map<Tkey,Node*>::iterator it = map.find(key);
 		if(it==map.end())
 			return NULL;
 		return it->second;
@@ -325,26 +325,28 @@ template<class Tkey,class Tvalue>
 class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 {
 public:
-    DbCache(unsigned int size): Cache(size){}
+    typedef typename Cache<Tkey,Tvalue>::Node Node;
+
+    DbCache(unsigned int size): Cache<Tkey,Tvalue>(size){}
     // add, save to db if something is dropped
     void add(Tkey key,Tvalue* value)
     {
-        if(search(key)!=NULL)
+        if(Cache<Tkey,Tvalue>::search(key)!=NULL)
             return;
 
-        Node *n = newNode(key,value);
-        push_front(n);
+        Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
+        Cache<Tkey,Tvalue>::push_front(n);
 
-        if(_cnt>_size)
+        if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
         {
-            _last->key->SaveToDb(_last->value);
-            removeNode(_last);
+            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
         }
     }
     // get node, if not found, we may find it in the db
     Tvalue* get(const Tkey& key)
     {
-        Tvalue* v = Cache::get(key);
+        Tvalue* v = Cache<Tkey,Tvalue>::get(key);
         if(!v)
         {
             v = key->LoadFromDb();
@@ -355,10 +357,10 @@ public:
     // save everything to db
     void Synchronize()
     {
-        Node* n=_root;
+        Node* n=Cache<Tkey,Tvalue>::_root;
         while(n)
         {
-            _last->key->SaveToDb(_last->value);
+            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
             n = n->next;
         }
     }
