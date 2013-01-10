@@ -157,6 +157,8 @@ void Simulation::loadModulesFromDefaultLocation()
 #else
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Release"));
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/RelWithDebInfo"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo"));
 #endif
     
     foreach (QDir cp, cpv)  {
