@@ -20,8 +20,6 @@ void ClearView::run() {
     for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
         data->removeComponentFromView(it->second, v);
     }
-    int i = 0;
-
 
 }
 
