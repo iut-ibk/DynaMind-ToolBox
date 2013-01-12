@@ -41,8 +41,13 @@
 #include <CGAL/partition_2.h>
 #include <CGAL/Partition_traits_2.h>
 #include <CGAL/Partition_is_valid_traits_2.h>
+#include <CGAL/Cartesian.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+//typedef CGAL::Quotient<CGAL::MP_Float>           Number_type;
+//typedef CGAL::Lazy_exact_nt<CGAL::Quotient<CGAL::MP_Float> > NT;
+//typedef CGAL::Cartesian<NT>             K;
+
 typedef CGAL::Partition_traits_2<K>                         Traits;
 typedef CGAL::Is_convex_2<Traits>                           Is_convex_2;
 typedef Traits::Point_2                                     Point_2;
@@ -173,13 +178,17 @@ struct TesselatedFaceDrawer {
             DM::Logger(DM::Error) << "Not a polygon";
             return;
         }
+
         if (polygon.is_clockwise_oriented())
             polygon.reverse_orientation();
         Polygon_list tesselated;
         Validity_traits validity_traits;
 
-        CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
-                                               std::back_inserter(tesselated), validity_traits);
+       // CGAL::greene_approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
+                                               //std::back_inserter(tesselated), validity_traits);
+
+        CGAL::approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
+                                                std::back_inserter(tesselated), validity_traits);
 
         glPushName(name_start);
         foreach(Polygon_2 poly, tesselated) {
@@ -193,7 +202,7 @@ struct TesselatedFaceDrawer {
                 } else {
                     glColor3f(0.0, 0.0, 0.0);
                 }
-                glVertex3d(p.x(), p.y(), current_height);
+                glVertex3d(CGAL::to_double(p.x()), CGAL::to_double(p.y()), current_height);
             }
 #else
             glBegin(GL_LINE_STRIP);
