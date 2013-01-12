@@ -27,6 +27,7 @@
 #include "calculateboundingbox.h"
 #include "sstream"
 #include "tbvectordata.h"
+#include <cgalgeometry.h>
 
 DM_DECLARE_NODE_NAME(CalculateBoundingBox, Geometry)
 
@@ -40,8 +41,12 @@ CalculateBoundingBox::CalculateBoundingBox()
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addParameter("NameOfExistingView", DM::STRING, & this->NameOfExistingView);
+    this->addParameter("MinBounding", DM::BOOL, & this->MinBounding);
+
     this->addData("Data", data);
     changed = true;
+    MinBounding = false;
+
 
 }
 
@@ -61,6 +66,8 @@ void CalculateBoundingBox::init() {
     ss << NameOfExistingView << "_BOUNDING_BOX";
 
     newFaces = DM::View(ss.str(), DM::FACE, DM::WRITE);
+    newFaces.addAttribute("l");
+    newFaces.addAttribute("b");
 
     DM::View * v = city->getViewDefinition(NameOfExistingView);
     DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
@@ -78,10 +85,8 @@ void CalculateBoundingBox::init() {
     this->updateParameter();
 }
 
-void CalculateBoundingBox::run() {
-
-    city = this->getData("Data");
-
+void CalculateBoundingBox::caculateBoundingBox()
+{
     std::vector<std::string> uuids = this->city->getUUIDs(vData);
 
     foreach (std::string uuid, uuids) {
@@ -98,6 +103,7 @@ void CalculateBoundingBox::run() {
         DM::Node * n3 = this->city->addNode(*x2, *y2, 0);
         DM::Node * n4 = this->city->addNode(*x2, *y1, 0);
 
+
         std::vector<DM::Node *> vF;
         vF.push_back(n1);
         vF.push_back(n2);
@@ -107,10 +113,56 @@ void CalculateBoundingBox::run() {
 
         DM::Face * bF = city->addFace(vF, newFaces);
 
+        bF->addAttribute("l", x2-x1);
+        bF->addAttribute("b", y2-y1);
+
         bF->getAttribute(vData.getName())->setLink(vData.getName(), f->getUUID());
         f->getAttribute(newFaces.getName())->setLink(newFaces.getName(), bF->getUUID());
 
     }
+}
+
+void CalculateBoundingBox::caculateMinBoundingBox()
+{
+    std::vector<std::string> uuids = this->city->getUUIDs(vData);
+
+    foreach (std::string uuid, uuids) {
+        DM::Face * f = city->getFace(uuid);
+        std::vector<double> size;
+        std::vector<DM::Node> ress_nodes;
+        CGALGeometry::CalculateMinBoundingBox( TBVectorData::getNodeListFromFace(city, f), ress_nodes, size );
+        std::vector<DM::Node*> vF;
+        foreach (DM::Node  n, ress_nodes) {
+            vF.push_back(city->addNode(n));
+        }
+        vF.push_back(vF[0]);
+
+
+        DM::Face * bF = city->addFace(vF, newFaces);
+
+        bF->addAttribute("l",size[0]);
+        bF->addAttribute("b",size[1]);
+
+        bF->getAttribute(vData.getName())->setLink(vData.getName(), f->getUUID());
+        f->getAttribute(newFaces.getName())->setLink(newFaces.getName(), bF->getUUID());
+
+    }
+}
+
+void CalculateBoundingBox::run() {
+
+    city = this->getData("Data");
+
+    if (this->MinBounding) {
+        caculateMinBoundingBox();
+        return;
+    }
+    caculateBoundingBox();
+
+
+
+
+
 
 
 }

@@ -39,6 +39,11 @@ class DM_HELPER_DLL_EXPORT CalculateBoundingBox : public Module
         bool changed;
         DM::View vData;
         DM::View newFaces;
+        bool MinBounding;
+
+private:
+        void caculateBoundingBox();
+        void caculateMinBoundingBox();
 public:
         void run();
     void init();
