@@ -43,8 +43,7 @@ namespace DM {
  */
 class DM_HELPER_DLL_EXPORT SpatialNodeHashMap : public NodeHashMap{
 private:
-    /** @brief addNode to spatial node has map. */
-    void addNodeToSpatialNodeHashMap(DM::Node * n);
+
     double devider;
     DM::System * sys;
 public:
@@ -55,6 +54,8 @@ public:
 
 
 public:
+    /** @brief addNode to spatial node has map. */
+    void addNodeToSpatialNodeHashMap(DM::Node * n);
     /** @brief Creates a spatial hash from a node
      *
      * the key is concatenated out of the int value x/devider '|' and y/devider
