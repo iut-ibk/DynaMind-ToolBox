@@ -90,7 +90,7 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
 
     std::vector<DM::Node*> ns_t;
     double const_height;
-    for (int i = 0; i < nodeList.size(); i++) {
+    for (unsigned int i = 0; i < nodeList.size(); i++) {
         DM::Node n = *(nodeList[i]);
         DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
@@ -99,12 +99,11 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
 
     DM::Face * f_t = transformedSys.addFace(ns_t);
 
-
     CDT cdt;
     Polygon_2 polygon1;
     std::vector<std::string> nodes;
     nodes = f_t->getNodes();
-    for (int  i = 0; i <nodes.size()-1; i++ ) {
+    for (unsigned int  i = 0; i <nodes.size()-1; i++ ) {
         DM::Node * n = transformedSys.getNode(nodes[i]);
         polygon1.push_back(Point(n->getX(),n->getY()));
     }
@@ -125,44 +124,22 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
         DM::Node center_h = TBVectorData::CaclulateCentroid(&transformedSys, f_h);
         list_of_seeds.push_back(Point(center_h.getX(), center_h.getY()));
         Polygon_2 hole_p;
-        for (int  i = 0; i <nodes_h.size()-1; i++ ) {
+        for (unsigned int  i = 0; i <nodes_h.size()-1; i++ ) {
             DM::Node * n = nodes_h[i];
             hole_p.push_back(Point(n->getX(),n->getY()));
         }
         insert_polygon(cdt,hole_p);
     }
 
-
-    //std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
-
-    //std::cout << "Meshing the domain..." << std::endl;
     CGAL::refine_Delaunay_mesh_2(cdt, list_of_seeds.begin(), list_of_seeds.end(),
                                  Criteria(0.125, meshsize));
 
-    //std::cout << "Number of vertices: " << cdt.number_of_vertices() << std::endl;
-    //std::cout << "Number of finite faces: " << cdt.number_of_faces() << std::endl;
-    /*int mesh_faces_counter = 0;
-    for(CDT::Finite_faces_iterator fit = cdt.finite_faces_begin();
-        fit != cdt.finite_faces_end(); ++fit)
-    {
-        if(fit->is_in_domain()){
-            ++mesh_faces_counter;
-            for (int i = 0; i < 3; i++) {
-                triangels.push_back( TBVectorData::RotateVector(alphas_t, DM::Node( fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), const_height)));
-            }
-
-        }
-
-    }
-    std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;*/
-
-    int mesh_faces_counter = 0;
     int count=0;
     DM::System nodesearch;
     DM::SpatialNodeHashMap spnh(&nodesearch, 0.1);
     std::map<DM::Node * , int> nodeids;
     std::map<int, DM::Node * > idsnode;
-    int id = 0;
+
     for (CDT::Finite_faces_iterator fit=cdt.finite_faces_begin();
          fit!=cdt.finite_faces_end();++fit){
         if (fit->is_in_domain() ) {
@@ -185,7 +162,6 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
         DM::Node * n = idsnode[i];
         triangels.push_back(TBVectorData::RotateVector(alphas_t, DM::Node(n->getX(), n->getY(), n->getZ())));
     }
-    //std::cout << "Number of faces in the mesh domain: " << mesh_faces_counter << std::endl;
 
 }
 
