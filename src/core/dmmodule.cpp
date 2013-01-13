@@ -184,7 +184,7 @@ void Module::updateParameter() {
                 //Get View saved in System
                 DM::View * checkView = sys->getViewDefinition(view.getName());
                 if (!checkView) {
-                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName();
+                    DM::Logger(DM::Warning) << "Something weird happend checkview does not exist " << this->getName() << " " << " " << view.getName();
                     sys = 0;
                     break;
                 }
