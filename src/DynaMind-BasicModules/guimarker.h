@@ -64,7 +64,7 @@ public slots:
     void addMax();
     void addMaxtoVIBe(QStringList list);
     void accept();
-    void fromOutSide();
+
 };
 
 #endif // GUIMARKER_H

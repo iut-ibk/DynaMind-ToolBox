@@ -44,8 +44,14 @@ CellularAutomata::CellularAutomata()
     param.Steps = 1;
     NameOfOutput = "";
     NameOfOutput_old  = "";
+    param.offsetX = 0;
+    param.offsetY = 0;
+
     this->addParameter("Width", DM::LONG, &this->param.Width);
     this->addParameter("Height", DM::LONG, &this->param.Height);
+    this->addParameter("OffsetX", DM::LONG, &this->param.offsetX);
+    this->addParameter("OffsetY", DM::LONG, &this->param.offsetY);
+
     this->addParameter("CellSize", DM::DOUBLE, &this->param.CellSize);
     this->addParameter("Steps", DM::INT, &this->param.Steps);
     this->addParameter("Neighs", DM::STRING_MAP, &this->param.neighs);
@@ -112,7 +118,7 @@ void CellularAutomata::run()  {
     }
 
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
-    this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,0,0);
+    this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,param.offsetX,param.offsetY);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
 
     foreach (std::string s, param.ListOfLandscapes) {

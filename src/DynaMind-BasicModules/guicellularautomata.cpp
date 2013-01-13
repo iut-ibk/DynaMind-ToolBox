@@ -54,6 +54,8 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
     ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
+    ui->lineEdit_OffsetX->setText( QString::fromStdString(m->getParameterAsString("OffsetX")) );
+    ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("NameOfOutput")) );
     std::map<std::string, std::vector<DM::View> > views =  m->getViews();
 
@@ -71,10 +73,6 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     QObject::connect(ui->pushButton_formula, SIGNAL(clicked()), this, SLOT(addFormula()));
     QObject::connect(ui->pushButton_edit, SIGNAL(clicked()), this, SLOT(editRule()));
     QObject::connect(ui->pushButton_expression, SIGNAL(clicked()), this, SLOT(addExpression()));
-    QObject::connect(ui->checkBox_Height, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-    QObject::connect(ui->checkBox_Width, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-    QObject::connect(ui->checkBox_CellSize, SIGNAL(clicked()), this, SLOT(fromOutSide()));
-
 
     QStringList headers;
     headers << "Name" << "Landscape" << "Type";
@@ -93,18 +91,6 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
 
 
 
-}
-void GUICellularAutomata::fromOutSide() {
-    QCheckBox * b = (QCheckBox *)QObject::sender();
-    QString s =b->objectName();
-    QStringList s1 = s.split("_");
-    QString name;
-    name = "DoubleIn_" + s1[1];
-    if (b->checkState ()) {
-        //this->m->appendToUserDefinedParameter("InputDouble",name.toStdString());
-    } else {
-        //this->m->de("InputDouble","DoubleIn_Width");
-    }
 }
 
 void GUICellularAutomata::updateEntries() {
@@ -218,6 +204,8 @@ void GUICellularAutomata::accept() {
     this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
     this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
     this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
+    this->m->setParameterValue("OffsetX", ui->lineEdit_OffsetX->text().toStdString());
+    this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
     this->m->setParameterValue("NameOfOutput", ui->lineEdit_resultName->text().toStdString());
     QDialog::accept();
 }

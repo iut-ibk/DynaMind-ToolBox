@@ -45,6 +45,8 @@ class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
         long Width;
         long Height;
         double CellSize;
+        long offsetX;
+        long offsetY;
         int Steps;
         RasterData * OutputMap;
         std::string Desicion;

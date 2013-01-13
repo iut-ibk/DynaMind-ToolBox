@@ -68,7 +68,6 @@ public slots:
     void updateEntries();
     void addRule(QStringList list);
     void accept();
-    void fromOutSide();
 
 };
 

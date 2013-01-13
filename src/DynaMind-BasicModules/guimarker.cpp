@@ -32,32 +32,6 @@
 
 using namespace DM;
 
-void GUIMarker::fromOutSide() {
-    QCheckBox * b = (QCheckBox *)QObject::sender();
-    QString s =b->objectName();
-    QStringList s1 = s.split("_");
-    QString name;
-    name = "DoubleIn_" + s1[1];
-    if (b->checkState ()) {
-        //this->m->appendToUserDefinedParameter("InputDouble",name.toStdString());
-    } else {
-        //this->m->de("InputDouble","DoubleIn_Width");
-    }
-}
-
-
-bool GUIMarker::checkIfFromOutSide(QString name) {
-    /*QString s2 = "DoubleIn_" + name;
-    std::map<std::string, double> doublemap = m->getParameter<std::map<std::string, double> >("InputDouble");
-    for (std::map<std::string, double>::iterator it = doublemap.begin(); it != doublemap.end(); ++it) {
-        if (s2.toStdString().compare(it->first) == 0)
-            return true;
-    }*/
-    return false;
-
-}
-
-
 
 GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     QDialog(parent),
@@ -90,13 +64,16 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
     ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
+    ui->lineEdit_OffsetX->setText( QString::fromStdString(m->getParameterAsString("OffsetX")) );
+    ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
+
     ui->lineEdit_RExpression->setText( QString::fromStdString(m->getParameterAsString("RExpression")) );
     ui->lineEdit_rExpression->setText( QString::fromStdString(m->getParameterAsString("rExpression")) );
     ui->lineEdit_maxExpression->setText( QString::fromStdString(m->getParameterAsString("maxExpression")) );
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("resultName")) );
     ui->checkBox_Points->setChecked(QString::fromStdString(m->getParameterAsString("Points")).toInt());
     ui->checkBox_Edges->setChecked(QString::fromStdString(m->getParameterAsString("Edges")).toInt());
-    //ui->lineEdit_Idnetifier->setText( QString::fromStdString(m->getParameterAsString("Identifier")) );
+
 
     QStringList optionList;
     optionList << "Replace" << "KeepValue" << "KeepLowerValue" << "KeepHigherValue" << "Add";
@@ -106,9 +83,7 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
 
     if (!QString::fromStdString(m->getParameterAsString("PlacementOption")).isEmpty())
         ui->comboBox_option->setCurrentIndex(optionList.indexOf(QString::fromStdString(m->getParameterAsString("PlacementOption"))));
-    //std::map<std::string ,RasterData * >  maps = m->getParameter<std::map<std::string, RasterData * > >("InputRasterData");
-    //for (std::map<std::string ,RasterData * >::iterator it = maps.begin(); it != maps.end(); ++it)
-        //ui->listWidget_InputRasterData->addItem(QString::fromStdString(it->first));
+
     QObject::connect(ui->pushButton_addInputRasterData, SIGNAL(clicked()), this, SLOT(addRasterData()));
     QObject::connect(ui->pushButton_RExpression, SIGNAL(clicked()), this, SLOT(addR()));
     QObject::connect(ui->pushButton_rExpression, SIGNAL(clicked()), this, SLOT(addr()));
@@ -163,6 +138,9 @@ void GUIMarker::accept() {
     this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
     this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
     this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
+    this->m->setParameterValue("OffsetX", ui->lineEdit_OffsetX->text().toStdString());
+    this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
+
     this->m->setParameterValue("resultName", ui->lineEdit_resultName->text().toStdString());
     this->m->setParameterValue("Identifier", ui->comboBox->currentText().toStdString());
     this->m->setParameterValue("rExpression", ui->lineEdit_rExpression->text().toStdString());

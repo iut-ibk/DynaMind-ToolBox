@@ -50,6 +50,9 @@ Marker::Marker()
     this->addParameter("Width", DM::LONG, & param.Width);
     this->addParameter("Height", DM::LONG, & param.Height);
     this->addParameter("CellSize", DM::DOUBLE, &param.CellSize);
+    this->addParameter("OffsetX", DM::LONG, &param.OffsetX);
+    this->addParameter("OffsetY", DM::LONG, &param.OffsetY);
+
     this->addParameter("RExpression", DM::STRING, &param.RExpression);
     this->addParameter("rExpression", DM::STRING, &param.rExpression);
     this->addParameter("maxExpression", DM::STRING, &param.maxExpression);
@@ -258,7 +261,7 @@ void Marker::run() {
         vIdentifier = DM::View(param.Identifier, DM::EDGE, DM::READ);
     sys_in = this->getData("Data");
     this->OutputMap = this->getRasterData("Result", DM::View (param.resultName, DM::RASTERDATA, DM::WRITE));
-    this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,0,0);
+    this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,param.OffsetX,param.OffsetY);
     this->OutputMap->clear();
 
     //Init MuParser
@@ -300,7 +303,7 @@ void Marker::run() {
         DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
         for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
             DM::Node * n = sys_in->getNode(it->first);
-            points.push_back(Node((long) n->getX()/param.CellSize,(long) n->getY()/param.CellSize,n->getZ()));
+            points.push_back(Node((long) ( n->getX() - param.OffsetX )/param.CellSize   ,(long) ( n->getY() - param.OffsetY) /param.CellSize   ,n->getZ()));
         }
     }
     //AddLines as Points
@@ -316,8 +319,8 @@ void Marker::run() {
 
             long steps = (long) sqrt(dx*dx+dy*dy);
 
-            long x0 = (long) p1->getX()/param.CellSize;
-            long y0 = (long) p1->getY()/param.CellSize;
+            long x0 = (long) (p1->getX() - param.OffsetX ) /param.CellSize;
+            long y0 = (long) (p1->getY() - param.OffsetY ) /param.CellSize;
             for ( int i = 0; i < steps; i++ ) {
                 Node p;
                 p.setX( x0 + i* (dx /  steps) );

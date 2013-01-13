@@ -37,6 +37,9 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
     struct Parameter {
         unsigned long Width;
         unsigned long Height;
+        unsigned long OffsetX;
+        unsigned long OffsetY;
+
         double CellSize;
         std::string MarkerMap;
 
