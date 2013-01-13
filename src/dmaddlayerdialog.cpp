@@ -177,6 +177,8 @@ void AddLayerDialog::getAttributesFromComponent(DM::View & view, QMap<string, DM
 
     foreach (std::string link, links) {
         DM::View * v= system->getViewDefinition(view.getNameOfLinkedView(link));
+        if (!v)
+            continue;
         getAttributesFromComponent(*v, attributes, link);
     }
 
