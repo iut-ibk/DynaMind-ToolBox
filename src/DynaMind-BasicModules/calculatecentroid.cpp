@@ -26,6 +26,7 @@
 
 
 #include "calculatecentroid.h"
+#include <cgalgeometry.h>
 #include "tbvectordata.h"
 #include "guicalculatecentroid.h"
 #include <sstream>
@@ -96,7 +97,7 @@ void CalculateCentroid::run() {
     for (int i = 0; i < elements; i++){
         Face * f = city->getFace(names[i]);
 
-        Node p = TBVectorData::CaclulateCentroid(this->city, f);
+        Node p = DM::CGALGeometry::CalculateCentroid(this->city, f);
         double area = fabs(TBVectorData::CalculateArea(this->city, f));
         f->addAttribute("centroid_x", p.getX());
         f->addAttribute("centroid_y", p.getY());
