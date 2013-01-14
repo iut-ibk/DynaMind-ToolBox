@@ -61,9 +61,13 @@ void AttributeCalculator::init() {
     if (equation.empty())
         return;
 
+
+    DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
+    if (!baseView)
+        return;
+
     viewsmap.clear();
     varaibleNames.clear();
-    DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
     DM::View writeView = DM::View(baseView->getName(), baseView->getType(), DM::READ);
     writeView.addAttribute(nameOfNewAttribute);
     viewsmap[nameOfBaseView] = writeView;
