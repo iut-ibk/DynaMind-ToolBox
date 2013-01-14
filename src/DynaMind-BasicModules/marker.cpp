@@ -47,6 +47,9 @@ Marker::Marker()
     param.Edges = false;
     param.resultName = "Result";
 
+    param.OffsetX = 0;
+    param.OffsetY = 0;
+
     this->addParameter("Width", DM::LONG, & param.Width);
     this->addParameter("Height", DM::LONG, & param.Height);
     this->addParameter("CellSize", DM::DOUBLE, &param.CellSize);
@@ -79,12 +82,12 @@ Marker::Marker()
 }
 
 void Marker::init() {
-        sys_in = this->getData("Data");
-        DM::View outputview = DM::View (param.resultName, DM::RASTERDATA, DM::WRITE);
-        std::vector<DM::View> rData;
-        rData.push_back(outputview);
+    sys_in = this->getData("Data");
+    DM::View outputview = DM::View (param.resultName, DM::RASTERDATA, DM::WRITE);
+    std::vector<DM::View> rData;
+    rData.push_back(outputview);
 
-        this->addData("Result", rData);
+    this->addData("Result", rData);
 }
 
 double Marker::calculater(const Node &sp, const Node &cp) {
@@ -303,7 +306,15 @@ void Marker::run() {
         DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
         for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
             DM::Node * n = sys_in->getNode(it->first);
-            points.push_back(Node((long) ( n->getX() - param.OffsetX )/param.CellSize   ,(long) ( n->getY() - param.OffsetY) /param.CellSize   ,n->getZ()));
+            long X = (long) ( n->getX() - param.OffsetX +  param.CellSize/2 ) / param.CellSize;
+            long Y = (long) ( n->getY() - param.OffsetY +  param.CellSize/2 ) / param.CellSize;
+
+            if ( X >= param.Width)
+                continue;
+            if ( Y >= param.Height)
+                continue;
+
+            points.push_back(Node(X   ,Y ,n->getZ()));
         }
     }
     //AddLines as Points
@@ -312,6 +323,10 @@ void Marker::run() {
         for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
             DM::Edge * e = sys_in->getEdge(it->first);
 
+            if (!e) {
+                Logger(Warning) << "Not an Edge " << vIdentifier.getName();
+                continue;
+            }
             Node * p1 = sys_in->getNode(e->getStartpointName());
             Node * p2 = sys_in->getNode(e->getEndpointName());
             double dx = p2->getX()/param.CellSize - p1->getX()/param.CellSize;
@@ -319,12 +334,23 @@ void Marker::run() {
 
             long steps = (long) sqrt(dx*dx+dy*dy);
 
-            long x0 = (long) (p1->getX() - param.OffsetX ) /param.CellSize;
-            long y0 = (long) (p1->getY() - param.OffsetY ) /param.CellSize;
+            long x0 = (long) (p1->getX() - param.OffsetX +  param.CellSize/2. ) / param.CellSize;
+            long y0 = (long) (p1->getY() - param.OffsetY +  param.CellSize/2. ) / param.CellSize;
             for ( int i = 0; i < steps; i++ ) {
+                long X = (long) ( x0 + i* (dx /  steps) );
+                long Y = (long) ( y0 + i* (dy /  steps) );
+
+                if ( X >= param.Width)
+                    continue;
+                if ( Y >= param.Height)
+                    continue;
                 Node p;
-                p.setX( x0 + i* (dx /  steps) );
-                p.setY( y0 + i* (dy /  steps) );
+
+                p.setX( X );
+                p.setY( Y );
+
+
+
                 points.push_back(p);
             }
         }
@@ -364,8 +390,8 @@ void Marker::run() {
 
         for ( unsigned long  i = minI; i < maxI; i++ ) {
             for ( unsigned long j =  minJ; j < maxJ; j++ ) {
-                currentPoint.setX( (double) i+0.5 );
-                currentPoint.setY( (double) j+0.5 );
+                currentPoint.setX( (double) i);//+0.5 );
+                currentPoint.setY( (double) j);//+0.5 );
                 *r = calculater(CenterPoint, currentPoint);
                 if (*r <= *R ) {
                     double value;
