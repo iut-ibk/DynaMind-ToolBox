@@ -26,6 +26,8 @@
 
 #include "spatiallinking.h"
 #include <tbvectordata.h>
+#include <cgalgeometry.h>
+
 #include <QHash>
 #include <QPolygonF>
 
@@ -41,7 +43,7 @@ SpatialLinking::SpatialLinking()
     this->city = 0;
     this->base = "";
     this->linkto = "";
-    spatialL = 100;
+    spatialL = 1000;
 
     this->addParameter("Base", DM::STRING, & this->base);
     this->addParameter("Link", DM::STRING, & this->linkto);
@@ -105,7 +107,7 @@ void SpatialLinking::run() {
         Node c(0,0,0);
         if (vbase.getType() == DM::FACE) {
             Face * f = city->getFace(baseUUID);
-            DM::Node d (TBVectorData::CaclulateCentroid(city, f));
+            DM::Node d (DM::CGALGeometry::CalculateCentroid(city, f));
             c.setX(d.getX());
             c.setY(d.getY());
             c.setZ(d.getZ());
@@ -138,7 +140,6 @@ void SpatialLinking::run() {
     int NumberOfLinks = linkUUIDs.size();
 #pragma omp parallel for
     for (int i = 0; i < NumberOfLinks; i++) {
-        //foreach (std::string linkUUID, linkUUIDs) {
         std::string linkUUID = linkUUIDs[i];
         QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
 
@@ -147,8 +148,19 @@ void SpatialLinking::run() {
         int ymin = (int) (qf.boundingRect().bottom()) /spatialL-1;
         int xmax = (int) (qf.boundingRect().right())/spatialL+1;
         int ymax = (int) (qf.boundingRect().top())/spatialL+1;
-        //Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|"<< ymax;
+        Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|"<< ymax;
 
+        if (xmin > xmax) {
+            double tmp_x = xmin;
+            xmin = xmax;
+            xmax = tmp_x;
+        }
+
+        if (ymin > ymax) {
+            double tmp_y = ymin;
+            ymin = ymax;
+            ymax = tmp_y;
+        }
         std::vector<LinkAttribute> links;
         int elementInSearchSpace = 0;
         for (int x = xmin; x <= xmax; x++) {
@@ -157,13 +169,12 @@ void SpatialLinking::run() {
                 //Test Each Key
                 std::vector<int> * centers = nodesMap[key];
                 if (!centers) {
-
                     continue;
                 }
                 elementInSearchSpace=elementInSearchSpace+centers->size();
                 foreach (int id, (*centers)) {
                     //Logger(Debug) << centerPoints[id].x() << "|" << centerPoints[id].y();
-                    if (qf.containsPoint(centerPoints[id], Qt::OddEvenFill)) {
+                    if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
                         LinkAttribute lto;
                         lto.viewname = linkto;
                         lto.uuid = linkUUID;
