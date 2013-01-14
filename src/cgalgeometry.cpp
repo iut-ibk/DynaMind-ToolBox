@@ -47,6 +47,7 @@
 #include <CGAL/Point_2.h>
 #include <CGAL/Aff_transformation_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
+#include <CGAL/centroid.h>
 
 
 
@@ -481,6 +482,31 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
     }
 
     return true;
+
+}
+
+Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
+{
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
+    typedef K::Point_2                                          Point_2;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
+    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
+    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
+    std::vector<DM::Node *> nodes = TBVectorData::getNodeListFromFace(sys, f);
+    int size_n1 = nodes.size();
+
+    std::list<Point_2>  poly1;
+
+    for (int i = 0; i < size_n1-1; i++) {
+        DM::Node * n = nodes[i];
+        poly1.push_back(Point_2(n->getX(), n->getY()));
+    }
+    Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
+    //std::cout << c2 << std::endl;
+    return DM::Node(c2.x(), c2.y(), 0.);
+
 
 }
 }
