@@ -67,6 +67,9 @@ System::System(const System& s) : Component(s, true)
     std::map<QUuid, Component*> childmap = s.ownedchilds;
     for (std::map<QUuid,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
     {
+		// init name generation
+		it->second->getUUID();
+		// copy elements
         Component *oldComp = it->second;
         switch(oldComp->getType())
         {
@@ -274,12 +277,12 @@ Node* System::getNode(QUuid uuid)
 }
 bool System::removeNode(std::string name)
 {
-
-    QUuid quuid(QString::fromStdString(name));
+	QUuid quuid = getChild(name)->getQUUID();
+    //QUuid quuid(QString::fromStdString(name));
     //check if name is a node instance
     if(nodes.find(quuid)==nodes.end())
        return false;
-
+	
     //remove node
     if(!removeChild(quuid))
         return false;
@@ -345,8 +348,9 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 }
 Edge* System::getEdge(std::string uuid)
 {
-    QUuid quuid(QString::fromStdString(uuid));
-    return getEdge(quuid);
+    //QUuid quuid(QString::fromStdString(uuid));
+    //return getEdge(quuid);
+	return (Edge*)getChild(uuid);
 }
 Edge* System::getEdge(QUuid uuid)
 {
@@ -363,7 +367,8 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
 }
 bool System::removeEdge(std::string name)
 {
-    QUuid quuid(QString::fromStdString(name));
+	QUuid quuid = getChild(name)->getQUUID();
+    //QUuid quuid(QString::fromStdString(name));
     //check if name is a edge instance
     if(edges.find(quuid)==edges.end())
         return false;
@@ -400,7 +405,8 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 }
 Face* System::getFace(std::string uuid)
 {
-    QUuid quuid(QString::fromStdString(uuid));
+	QUuid quuid = getChild(uuid)->getQUUID();
+    //QUuid quuid(QString::fromStdString(uuid));
     if(faces.find(quuid)==faces.end())
         return 0;
     return faces[quuid];
@@ -408,7 +414,8 @@ Face* System::getFace(std::string uuid)
 }
 bool System::removeFace(std::string name)
 {
-    QUuid quuid(QString::fromStdString(name));
+	QUuid quuid = getChild(name)->getQUUID();
+    //QUuid quuid(QString::fromStdString(name));
     //check if name is a edge instance
     if(faces.find(quuid)==faces.end())
         return false;
@@ -501,7 +508,8 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 }
 System* System::getSubSystem(std::string uuid)
 {
-    return getSubSystem(QUuid(QString::fromStdString(uuid)));
+    //return getSubSystem(QUuid(QString::fromStdString(uuid)));
+	return (System*)getChild(uuid);
 }
 System* System::getSubSystem(QUuid uuid)
 {
@@ -515,7 +523,7 @@ bool System::removeSubSystem(std::string name)
     if(!removeChild(name))
         return false;
 
-    subsystems.erase(QUuid(QString::fromStdString(name)));
+    //subsystems.erase(QUuid(QString::fromStdString(name)));	is already done in removeChild
 
     return true;
 }
@@ -680,7 +688,8 @@ bool System::addChild(Component *newcomponent)
 }
 bool System::removeChild(std::string name)
 {
-    return removeChild(QUuid(QString::fromStdString(name)));
+    //return removeChild(QUuid(QString::fromStdString(name)));
+	return removeChild(getChild(name));
 }
 
 bool System::removeChild(Component* c)
@@ -716,7 +725,14 @@ bool System::removeChild(QUuid uuid)
 
 Component* System::getChild(std::string name)
 {
-    return getChild(QUuid(QString::fromStdString(name)));
+    //return getChild(QUuid(QString::fromStdString(name)));
+	mforeach(Component* c, ownedchilds)
+	{
+		if(c->HasAttribute("_uuid"))
+			if(c->getAttribute("_uuid")->getString() == name)
+				return c;
+	}
+	return NULL;
 }
 
 Component* System::getChild(QUuid uuid)

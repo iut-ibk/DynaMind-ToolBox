@@ -116,7 +116,10 @@ bool Component::isInView(View view) const
 }
 std::string Component::getUUID()
 {
-    return uuid.toString().toStdString();
+    //return uuid.toString().toStdString();
+	Attribute* a = this->getAttribute("_uuid");
+	if(a->getString() == "")	a->setString(QUuid::createUuid().toString().toStdString());
+	return a->getString();
 }
 QUuid Component::getQUUID() const
 {
@@ -150,7 +153,7 @@ bool Component::addAttribute(std::string name, std::string val)
     return this->addAttribute(new Attribute(name, val));
 }
 
-bool Component::addAttribute(Attribute &newattribute)
+bool Component::addAttribute(const Attribute &newattribute)
 {
     //QMutexLocker locker(mMutex);
     if(HasAttribute(newattribute.getName()))
@@ -174,7 +177,7 @@ bool Component::addAttribute(Attribute *pAttribute)
     return true;
 }
 
-bool Component::changeAttribute(Attribute &newattribute)
+bool Component::changeAttribute(const Attribute &newattribute)
 {
     getAttribute(newattribute.getName())->Change(newattribute);
     return true;

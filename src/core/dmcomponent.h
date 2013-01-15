@@ -126,13 +126,13 @@ public:
       * Returns true if the attribute has been added to the Component.
       * Returns false if the attribute with the same name already exists.
       */
-    bool addAttribute(Attribute &newattribute);
+    bool addAttribute(const Attribute &newattribute);
     /** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, double val);
     /** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
     bool addAttribute(std::string, std::string);
     /** @brief Change existing Attribute. If attribute doesn't exist a new Attribute is added to the Component*/
-    bool changeAttribute(Attribute &newattribute);
+    bool changeAttribute(const Attribute &newattribute);
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
     bool changeAttribute(std::string, double val);
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/

@@ -288,10 +288,9 @@ Attribute::~Attribute()
 {
 	if(value)	delete value;
 	if(isInserted)
-	{
 		DBConnector::getInstance()->Delete("attributes", _uuid);
-		attributeCache.remove(this);
-	}
+
+	attributeCache.remove(this);
 }
 
 Attribute::AttributeType Attribute::getType() const
@@ -304,7 +303,7 @@ void Attribute::setName(std::string name)
     this->name=name;
 }
 
-std::string Attribute::getName()
+std::string Attribute::getName() const
 {
     return name;
 }
@@ -482,7 +481,7 @@ void Attribute::setType(AttributeType type)
 		break;
 	}
 }
-void Attribute::Change(Attribute &attribute)
+void Attribute::Change(const Attribute &attribute)
 {
     name=attribute.name;
 	//owner = attribute.owner;

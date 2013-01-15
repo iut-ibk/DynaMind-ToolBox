@@ -85,7 +85,8 @@ const QUuid Edge::getStartpoint() const
 
 const std::string Edge::getStartpointName() const
 {
-    return getStartpoint().toString().toStdString();
+    //return getStartpoint().toString().toStdString();
+	return start->getUUID();
 }
 Node* Edge::getEnd() const
 {
@@ -98,7 +99,8 @@ const QUuid Edge::getEndpoint() const
 
 const std::string Edge::getEndpointName() const
 {
-    return getEndpoint().toString().toStdString();
+    //return getEndpoint().toString().toStdString();
+	return end->getUUID();
 }
 
 void Edge::setStartpoint(Node *start)

@@ -505,6 +505,49 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }*/
 
+TEST_F(TestSimulation,sqlsuccessortest)
+{
+	ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test Successor states (SQL)";
+
+	// check if uuids are created
+	Component* c = new Component();
+	ASSERT_TRUE(c->getUUID() != "");
+	// check if attribute is added
+	ASSERT_TRUE(c->getAttribute("_uuid")->getString() != "");
+	delete c;
+	
+	// check if no name is created if there is no element
+	System *sys = new System();
+	c = sys->getComponent((std::string)"test");
+	ASSERT_TRUE(c == NULL);
+	delete sys;
+	
+	// check if successor names conserved
+	sys = new System();
+	Node* n = new Node(1,2,3);
+	sys->addNode(n);
+	std::string name = n->getUUID();	// add, then init uuid
+	Node* n2 = new Node(4,5,6);
+	sys->addNode(n2);
+	System *sys2 = sys->createSuccessor();
+	std::string name2 = n2->getUUID();	// add, successor then get name
+	
+	Node* sysn = sys->getNode(name);
+	Node* sysn2 = sys2->getNode(name);
+	Node* sysn22 = sys2->getNode(name2);
+	ASSERT_TRUE(*sysn2 == *n);
+	ASSERT_TRUE(*sysn22 == *n2);
+	ASSERT_TRUE(sysn2->getUUID() == n->getUUID());
+	ASSERT_TRUE(sysn22->getUUID() == n2->getUUID());
+	ASSERT_TRUE(sysn->getQUUID() == n->getQUUID());
+	ASSERT_TRUE(sysn22->getQUUID() != n2->getQUUID());
+	
+	delete sys;
+	//delete sys2;	successor states are deleted by sys
+}
+
 TEST_F(TestSimulation, SqlNodeTest)
 {
     ostream *out = &cout;
@@ -657,7 +700,7 @@ TEST_F(TestSimulation, SQLattributes)
     // DOUBLE
     DM::Component *c = new DM::Component();
     DM::Attribute attr("hint", 50);
-    c->addAttribute(attr);
+    bool isNew = c->addAttribute(attr);
     DM::Attribute *pa = c->getAttribute("hint");
     ASSERT_TRUE(pa->getDouble()==50);
     delete c;

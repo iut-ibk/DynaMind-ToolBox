@@ -129,7 +129,7 @@ private:
 protected:
 public:
     /** @brief copies type and value to this attribute**/
-    void Change(Attribute &attribute);
+    void Change(const Attribute &attribute);
     /** @brief changes the owner **/
 	void SetOwner(Component* owner);
     /** @brief Returns true if a double value is set **/
@@ -169,7 +169,7 @@ public:
     /** @brief set attribute name */
     void setName(std::string name);
     /** @brief get name */
-    std::string getName();
+    std::string getName() const;
     /** @brief destructor */
     ~Attribute();
     /** @brief return datatype*/
