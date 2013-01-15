@@ -77,9 +77,7 @@ System::System(const System& s) : Component(s, true)
             childReplaceMap[oldComp] = addNode((Node*)oldComp->clone());
             break;
         //case DM::EDGE:      this->addEdge((Edge*)c); break;
-        case DM::FACE:
-            childReplaceMap[oldComp] = addFace((Face*)oldComp->clone());
-            break;
+        //case DM::FACE:			childReplaceMap[oldComp] = addFace((Face*)oldComp->clone());break;
         case DM::SUBSYSTEM:
             childReplaceMap[oldComp] = addSubSystem((System*)oldComp->clone());
             break;
@@ -102,6 +100,20 @@ System::System(const System& s) : Component(s, true)
 
         childReplaceMap[oldEdge] = addEdge(e);
     }
+	/*std::map<QUuid,Face*> facemap = s.faces;
+	mforeach(Face* f,facemap)
+	{
+		Face* newf = new Face(*f);
+		foreach
+	}*/
+	mforeach(Face* f, s.faces)
+	{
+		std::vector<Node*> faceNodes = f->getNodePointers();
+		for(int i=0;i<faceNodes.size();i++)
+			faceNodes[i] = (Node*)childReplaceMap[faceNodes[i]];
+
+		this->addFace(faceNodes);
+	}
 
     // update view definitions
     std::map<std::string, View*> viewdefinitionMap = s.viewdefinitions;
