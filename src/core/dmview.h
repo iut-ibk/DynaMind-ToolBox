@@ -89,7 +89,6 @@ private:
 
     int type;
     std::string name;
-    //std::string IdofDummyComponent;
     Component *dummy;
     int accesstypeGeometry;
 

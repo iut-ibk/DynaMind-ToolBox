@@ -47,15 +47,10 @@ View::View() {
     this->type = -1;
     this->dummy = NULL;
 }
-/*
-void View::setIdOfDummyComponent(std::string UUID) {
-    this->IdofDummyComponent = UUID;
-}*/
 
 std::string View::getIdOfDummyComponent()
 {
     return dummy->getUUID();
-    //return this->IdofDummyComponent;
 }
 void View::setDummyComponent(Component* c) {
     dummy = c;
@@ -81,36 +76,29 @@ void View::modifyAttribute(std::string name) {
 
 std::vector<std::string> View::getWriteAttributes() const {
     std::vector<std::string> attrs;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second > READ)
             attrs.push_back(it->first);
-    }
 
     return attrs;
 }
 
 std::vector<std::string> View::getReadAttributes() const {
     std::vector<std::string> attrs;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second < WRITE)
             attrs.push_back(it->first);
-    }
 
     return attrs;
-
-
-
 }
-
 
 bool View::reads() const
 {
     if (this->accesstypeGeometry < WRITE)
         return true;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second < WRITE)
             return true;
-    }
 
     return false;
 }
@@ -120,10 +108,9 @@ bool View::writes() const
 {
     if (this->accesstypeGeometry > READ)
         return true;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second > READ)
             return true;
-    }
 
     return false;
 }
@@ -164,7 +151,6 @@ std::vector<std::string> View::getNamesOfLinks()
 std::string View::getNameOfLinkedView(string name)
 {
     return this->attributeLinks[name];
-
 }
 
 }

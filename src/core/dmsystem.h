@@ -80,7 +80,6 @@ private:
 
     std::vector<DM::System*> predecessors;
     std::vector<DM::System*> sucessors;
-    //std::vector<DM::View *> ownedView;
 
     //Get Edge Based on map otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
