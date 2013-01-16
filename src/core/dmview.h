@@ -134,10 +134,10 @@ public:
     void setAccessType(int Type) {this->accesstypeGeometry = Type;}
 
     /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
-    bool reads();
+    bool reads() const;
 
     /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
-    bool writes();
+    bool writes() const;
 
     //void setIdOfDummyComponent(std::string UUID);
     void setDummyComponent(Component *c);

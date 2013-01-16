@@ -103,7 +103,8 @@ std::vector<std::string> View::getReadAttributes() const {
 }
 
 
-bool View::reads() {
+bool View::reads() const
+{
     if (this->accesstypeGeometry < WRITE)
         return true;
     for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
@@ -115,7 +116,8 @@ bool View::reads() {
 }
 
 
-bool View::writes() {
+bool View::writes() const
+{
     if (this->accesstypeGeometry > READ)
         return true;
     for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
