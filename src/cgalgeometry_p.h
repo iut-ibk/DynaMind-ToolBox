@@ -33,6 +33,7 @@
 #include <list>
 #include <fstream>
 
+#include <CGAL/Lazy_exact_nt.h>
 #include <CGAL/basic.h>
 #include <CGAL/Cartesian.h>
 #include <CGAL/Quotient.h>
@@ -67,7 +68,8 @@ using namespace boost;
 //Cartesian<Number_type>                    Kernel;
 
 typedef CGAL::Quotient<CGAL::MP_Float>           Number_type;
-typedef CGAL::Cartesian<Number_type>             Kernel;
+typedef CGAL::Lazy_exact_nt<CGAL::Quotient<CGAL::MP_Float> > NT;
+typedef CGAL::Cartesian<NT>             Kernel;
 
 typedef CGAL::Snap_rounding_traits_2<Kernel>            Traits;
 typedef Kernel::Segment_2                               Segment_2;

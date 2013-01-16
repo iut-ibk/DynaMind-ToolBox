@@ -31,6 +31,9 @@ void TriangulateRasterData::Triangulation(std::vector<DM::Node> & nodes, DM::Ras
     unsigned long Y = rData->getHeight();
     unsigned long X = rData->getWidth();
 
+    unsigned long OX = rData->getXOffset();
+    unsigned long OY = rData->getYOffset();
+
     double noData = rData->getNoValue();
     double lX = rData->getCellSizeX();
     double lY = rData->getCellSizeY();
@@ -42,13 +45,13 @@ void TriangulateRasterData::Triangulation(std::vector<DM::Node> & nodes, DM::Ras
             double val = rData->getCell(x,y);
             if (val == noData)
                 continue;
-            nodes.push_back( DM::Node( (x-0.5) * lX ,  (y-0.5) * lY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX,   (y-0.5) * lY, val) );
-            nodes.push_back( DM::Node( (x-0.5) * lX,   (y+0.5) * lY, val) );
+            nodes.push_back( DM::Node( (x-0.5) * lX + OX ,  (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Node( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
 
-            nodes.push_back( DM::Node( (x-0.5) * lX,   (y+0.5) * lY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX,   (y-0.5) * lY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX,   (y+0.5) * lY, val) );
+            nodes.push_back( DM::Node( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
+            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
 
         }
     }
