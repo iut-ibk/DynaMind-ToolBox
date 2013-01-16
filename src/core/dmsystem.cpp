@@ -96,24 +96,46 @@ System::System(const System& s) : Component(s, true)
         childReplaceMap[oldEdge] = addEdge(e);
     }
 	// copy faces
-	mforeach(Face* f, s.faces)
+	mforeach(Face* oldFace, s.faces)
 	{
-		std::vector<Node*> faceNodes = f->getNodePointers();
+		std::vector<Node*> faceNodes = oldFace->getNodePointers();
 		for(int i=0;i<faceNodes.size();i++)
 			faceNodes[i] = (Node*)childReplaceMap[faceNodes[i]];
 
-		this->addFace(faceNodes);
+		Face* newFace = this->addFace(faceNodes);
+        childReplaceMap[oldFace] = newFace;
+		mforeach(Attribute* a, oldFace->getAllAttributes())
+			newFace->addAttribute(*a);
 	}
-
+	// after all faces are initialized, we can copy the holes
+	mforeach(Face* oldFace, s.faces)
+	{
+		Face* f = (Face*)childReplaceMap[oldFace];
+		if(!f)
+		{
+			Logger(Error) << "Not found in child replace map: " << oldFace->getUUID();
+			continue;
+		}
+		std::vector<Face*> faceHoles = oldFace->getHolePointers();
+		foreach(Face* h, oldFace->getHolePointers())
+			f->addHole( (Face*)childReplaceMap[h] );
+	}
     // update view definitions
 	mforeach(View* v, s.viewdefinitions)
 	{
-        viewdefinitions[v->getName()] = v;
-        ownedView.push_back(v);
-
-        if(v->getDummyComponent()!=NULL)
-            v->setDummyComponent(childReplaceMap[v->getDummyComponent()]);
+		View *newv = new View(*v);
+        viewdefinitions[v->getName()] = newv;
+		Component* dummy = v->getDummyComponent();
+		if(dummy)	newv->setDummyComponent(childReplaceMap[dummy]);
+	
+        //ownedView.push_back(v);
+        //if(v->getDummyComponent()!=NULL)
+        //    v->setDummyComponent(childReplaceMap[v->getDummyComponent()]);
     }
+	// copy component views
+    for ( std::map<Component*, Component*>::const_iterator it = childReplaceMap.begin(); it != childReplaceMap.end(); ++it  )
+		it->second->inViews = it->first->inViews;
+	
     // update views
     mforeach(Component* c, ownedchilds)
         this->updateViews(c);
@@ -129,10 +151,12 @@ System::~System()
     foreach (DM::System * sys, this->sucessors)
         if (sys)
             delete sys;
-    foreach (DM::View * v, ownedView)
+    //foreach (DM::View * v, ownedView)
+	mforeach(View *v, viewdefinitions)
         delete v;
 
-    ownedView.clear();
+	viewdefinitions.clear();
+    //ownedView.clear();
     //delete mutex;
 
     Component::SQLDelete();
@@ -567,7 +591,7 @@ bool System::addView(View view)
 	{
 		existingView = new View(view);
         this->viewdefinitions[view.getName()] = existingView;
-        ownedView.push_back(existingView);
+        //ownedView.push_back(existingView);
     }
 
     if (!view.writes())
