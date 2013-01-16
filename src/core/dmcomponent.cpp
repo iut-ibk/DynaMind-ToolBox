@@ -123,7 +123,7 @@ std::string Component::getUUID()
 	{
 		name = QUuid::createUuid().toString().toStdString();
 		a->setString(name);
-		if(this->currentSys)
+		if(this->currentSys && currentSys != this)	// avoid self referencing
 			currentSys->componentNameMap[name] = this;
 	}
 	return name;
@@ -215,13 +215,22 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
+	Attribute* a = ownedattributes[name];
+	if(!a)
+	{
+		a = new Attribute(name);
+		ownedattributes[name] = a;
+	}
+	return a;
+
+	/*
     if(!HasAttribute(name))
     {
         Attribute tmp(name);
         this->addAttribute(tmp);
     }
 
-    return ownedattributes[name];
+    return ownedattributes[name];*/
 }
 
 const std::map<std::string, Attribute*> & Component::getAllAttributes() const
