@@ -241,10 +241,10 @@ typedef std::map<std::string, DM::System*> SystemMap;
 
 
 template <typename T1, typename T2>
-bool map_contains(std::map<T1,T2> m, const T1 key, T2 &to)
+inline bool map_contains(std::map<T1,T2> *m, const T1 &key, T2 &to)
 {
-	std::map<T1,T2>::iterator i = m.find(key);
-	if(i==m.end())	return false;
+	std::map<T1,T2>::iterator i = m->find(key);
+	if(i==m->end())	return false;
 
 	to = i->second;
 	return true;

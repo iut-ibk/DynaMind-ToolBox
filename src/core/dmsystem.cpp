@@ -138,7 +138,7 @@ System::System(const System& s) : Component(s, true)
 	mforeach(Component *c, s.componentNameMap)
 	{
 		Component *newc = NULL;
-		if(map_contains(childReplaceMap, c, newc))
+		if(map_contains(&childReplaceMap, c, newc))
 			this->componentNameMap[newc->getUUID()] = newc;
 		else
 			Logger(Error) << "Not found in child replace map: " << c->getUUID();
@@ -729,7 +729,7 @@ bool System::removeChild(QUuid uuid)
 Component* System::getChild(std::string name)
 {
 	Component *c = NULL;
-	map_contains(componentNameMap, name, c);
+	map_contains(&componentNameMap, name, c);
 	return c;
 	/*
 	mforeach(Component* c, ownedchilds)
