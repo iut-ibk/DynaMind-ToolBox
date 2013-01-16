@@ -53,7 +53,7 @@ std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
 
-
+	/*
     DM::System transformedSys;
 
     std::vector<DM::Node*> ns_t;
@@ -81,7 +81,27 @@ std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys
             ymin = n->getY();
         if (ymax < n->getY())
             ymax = n->getY();
-    }
+    }*/
+	
+	DM::Node n = TBVectorData::RotateVector(alphas, *(nodes[0]));
+	double x = n.getX();
+	double y = n.getY();
+	double z_const = n.getZ();
+	double xmin = x;
+    double xmax = x;
+    double ymin = y;
+    double ymax = y;
+
+	for (unsigned int i = 1; i < nodes.size(); i++) 
+	{
+		n = TBVectorData::RotateVector(alphas, *(nodes[i]));
+		x = n.getX();
+		y = n.getY();
+		xmin = min(xmin,x);
+		xmax = max(xmax,x);
+		ymin = min(ymin,y);
+		ymax = max(ymax,y);
+	}
 
     double l = ymax - ymin;
 
