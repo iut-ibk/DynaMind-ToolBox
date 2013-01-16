@@ -84,6 +84,7 @@ private:
     //Get Edge Based on map otherwise takes ages
     std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
+
     void updateViews (Component * c);
 
     DM::Module * lastModule;
@@ -229,6 +230,10 @@ public:
 
     void setAccessedByModule(Module * m);
     Module * getLastModule();
+
+	
+	// for faster searching - maybe find a better solution for access
+	std::map<std::string, Component*>	componentNameMap;
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

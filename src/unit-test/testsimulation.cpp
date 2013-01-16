@@ -515,7 +515,7 @@ TEST_F(TestSimulation,sqlsuccessortest)
 	Component* c = new Component();
 	ASSERT_TRUE(c->getUUID() != "");
 	// check if attribute is added
-	ASSERT_TRUE(c->getAttribute("_uuid")->getString() != "");
+	ASSERT_TRUE(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() != "");
 	delete c;
 	
 	// check if no name is created if there is no element

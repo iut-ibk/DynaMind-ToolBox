@@ -117,9 +117,16 @@ bool Component::isInView(View view) const
 std::string Component::getUUID()
 {
     //return uuid.toString().toStdString();
-	Attribute* a = this->getAttribute("_uuid");
-	if(a->getString() == "")	a->setString(QUuid::createUuid().toString().toStdString());
-	return a->getString();
+	Attribute* a = this->getAttribute(UUID_ATTRIBUTE_NAME);
+	std::string name = a->getString();
+	if(name == "")	
+	{
+		name = QUuid::createUuid().toString().toStdString();
+		a->setString(name);
+		if(this->currentSys)
+			currentSys->componentNameMap[name] = this;
+	}
+	return name;
 }
 QUuid Component::getQUUID() const
 {

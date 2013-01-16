@@ -43,6 +43,8 @@
 
 namespace DM {
 
+#define UUID_ATTRIBUTE_NAME "_uuid"
+
 enum Components {
     COMPONENT =0,
     NODE=1,

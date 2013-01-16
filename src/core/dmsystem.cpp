@@ -133,6 +133,18 @@ System::System(const System& s) : Component(s, true)
     // update views
     mforeach(Component* c, ownedchilds)
         this->updateViews(c);
+
+	// update componentNameMap
+	mforeach(Component *c, s.componentNameMap)
+	{
+		Component *newc = childReplaceMap[c];
+		if(!newc)
+		{
+			Logger(Error) << "Not found in child replace map: " << c->getUUID();
+			continue;
+		}
+		this->componentNameMap[newc->getUUID()] = newc;
+	}
 }
 System::~System()
 {
@@ -671,6 +683,9 @@ bool System::addChild(Component *newcomponent)
     ownedchilds[newcomponent->getQUUID()] = newcomponent;
 
 	newcomponent->SetOwner(this);
+	// set componentNameMap - if the name is already initialized
+	if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
+		this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
 
     return true;
 }
@@ -697,6 +712,9 @@ bool System::removeChild(Component* c)
     case SYSTEM:    subsystems.erase(id);   break;
     }
 
+	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
+		componentNameMap.erase(c->getUUID());
+
     delete c;
     return true;
 }
@@ -712,13 +730,15 @@ bool System::removeChild(QUuid uuid)
 
 Component* System::getChild(std::string name)
 {
+	return componentNameMap[name];
+	/*
 	mforeach(Component* c, ownedchilds)
 	{
-		if(c->HasAttribute("_uuid"))
-			if(c->getAttribute("_uuid")->getString() == name)
+		if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
+			if(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() == name)
 				return c;
 	}
-	return NULL;
+	return NULL;*/
 }
 
 Component* System::getChild(QUuid uuid)
