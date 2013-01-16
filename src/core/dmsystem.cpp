@@ -64,13 +64,11 @@ System::System(const System& s) : Component(s, true)
 
     std::map<Component*,Component*> childReplaceMap;
 
-    std::map<QUuid, Component*> childmap = s.ownedchilds;
-    for (std::map<QUuid,Component*>::iterator it=childmap.begin() ; it != childmap.end(); ++it )
+	mforeach(Component* oldComp, s.ownedchilds)
     {
 		// init name generation
-		it->second->getUUID();
+		oldComp->getUUID();
 		// copy elements
-        Component *oldComp = it->second;
         switch(oldComp->getType())
         {
         case DM::COMPONENT:
@@ -79,8 +77,6 @@ System::System(const System& s) : Component(s, true)
         case DM::NODE:
             childReplaceMap[oldComp] = addNode((Node*)oldComp->clone());
             break;
-        //case DM::EDGE:      this->addEdge((Edge*)c); break;
-        //case DM::FACE:			childReplaceMap[oldComp] = addFace((Face*)oldComp->clone());break;
         case DM::SUBSYSTEM:
             childReplaceMap[oldComp] = addSubSystem((System*)oldComp->clone());
             break;
@@ -90,25 +86,16 @@ System::System(const System& s) : Component(s, true)
         default:    break;
         }
     }
-    std::map<QUuid,Edge*> edgemap = s.edges;
-    for (std::map<QUuid,Edge*>::iterator it=edgemap.begin() ; it != edgemap.end(); ++it )
+	// copy edges
+	mforeach(Edge* oldEdge, s.edges)
     {
-        Edge *oldEdge = it->second;
         Edge *e = (Edge*)oldEdge->clone();
-        QUuid points[2];
-        //e->getPoints(points);
-
 		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStart()->getQUUID())]);
         e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEnd()->getQUUID())]);
 
         childReplaceMap[oldEdge] = addEdge(e);
     }
-	/*std::map<QUuid,Face*> facemap = s.faces;
-	mforeach(Face* f,facemap)
-	{
-		Face* newf = new Face(*f);
-		foreach
-	}*/
+	// copy faces
 	mforeach(Face* f, s.faces)
 	{
 		std::vector<Node*> faceNodes = f->getNodePointers();
@@ -119,10 +106,8 @@ System::System(const System& s) : Component(s, true)
 	}
 
     // update view definitions
-    std::map<std::string, View*> viewdefinitionMap = s.viewdefinitions;
-    for (std::map<std::string,View*>::iterator it=viewdefinitionMap.begin() ; it != viewdefinitionMap.end(); ++it )
-    {
-        View* v = new View(*it->second);
+	mforeach(View* v, s.viewdefinitions)
+	{
         viewdefinitions[v->getName()] = v;
         ownedView.push_back(v);
 
@@ -130,9 +115,8 @@ System::System(const System& s) : Component(s, true)
             v->setDummyComponent(childReplaceMap[v->getDummyComponent()]);
     }
     // update views
-    //foreach(Component* c, ownedchilds)
-    for (std::map<QUuid,Component*>::iterator it=ownedchilds.begin() ; it != ownedchilds.end(); ++it )
-        this->updateViews(it->second);
+    mforeach(Component* c, ownedchilds)
+        this->updateViews(c);
 }
 System::~System()
 {
@@ -163,21 +147,21 @@ Module * System::getLastModule() {
 }
 
 void System::updateViews(Component * c) {
-    if (!c) {
+    if (!c) 
+	{
         DM::Logger(DM::Error)  << "Component 0 in updateView";
         return;
     }
-    foreach (std::string view, c->getInViews()) {
+    foreach (std::string view, c->getInViews())
         this->views[view][c->getUUID()] = c;
-    }
 }
 
-std::vector<std::string> System::getNamesOfViews() {
+std::vector<std::string> System::getNamesOfViews() 
+{
     std::vector<std::string> names;
-
-    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
+    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  )
         names.push_back(it->first);
-    }
+
     return names;
 }
 
@@ -573,21 +557,22 @@ bool System::addView(View view)
 {
     //For each view one dummy element will be created
     //Check for existing View
-    if (this->viewdefinitions.find(view.getName()) == this->viewdefinitions.end()) {
+    /*if (this->viewdefinitions.find(view.getName()) == this->viewdefinitions.end()) {
         this->viewdefinitions[view.getName()] = new View(view);
         ownedView.push_back(this->viewdefinitions[view.getName()]);
     }
-
+	*/
     DM::View  * existingView = this->viewdefinitions[view.getName()];
-    if (!existingView) {
-        this->viewdefinitions[view.getName()] = new View(view);
-        existingView = this->viewdefinitions[view.getName()];
-        ownedView.push_back(this->viewdefinitions[view.getName()]);
+    if (!existingView) 
+	{
+		existingView = new View(view);
+        this->viewdefinitions[view.getName()] = existingView;
+        ownedView.push_back(existingView);
     }
 
-    if (!view.writes()) {
+    if (!view.writes())
         return true;
-    }
+    
     DM::Component * dummy  = existingView->getDummyComponent();
     if (existingView->getDummyComponent() == NULL)
     {
@@ -627,26 +612,26 @@ bool System::addView(View view)
 
     existingView->setDummyComponent(dummy);
 
-
     //extend Dummy Attribute
-    foreach (std::string a , view.getWriteAttributes()) {
+    foreach (std::string a , view.getWriteAttributes()) 
+	{
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
-        if (view.getAttributeType(a) == Attribute::LINK) {
+        if (view.getAttributeType(a) == Attribute::LINK)
             attr.setLink(view.getNameOfLinkedView(a), "");
-        }
+        
         dummy->addAttribute(attr);
     }
 
     return true;
 }
-const std::vector<DM::View> System::getViews()  {
-
+const std::vector<DM::View> System::getViews()  
+{
     std::vector<DM::View> viewlist;
 
-    for (std::map<std::string, View*>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
-        viewlist.push_back(View(*it->second));
-    }
+	mforeach(View* v, viewdefinitions)
+		viewlist.push_back(View(*v));
+
     return viewlist;
 }
 
@@ -774,14 +759,12 @@ void System::SQLUpdateStates()
 {
 	QStringList sucList;
 	foreach(System* sys, sucessors)
-	{
         sucList.push_back(sys->getQUUID().toString());
-	}
+	
 	QStringList preList;
 	foreach(System* sys, predecessors)
-	{
         preList.push_back(sys->getQUUID().toString());
-	}
+	
     DBConnector::getInstance()->Update("systems",       uuid,
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
