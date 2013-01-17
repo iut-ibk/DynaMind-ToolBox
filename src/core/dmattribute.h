@@ -186,8 +186,11 @@ public:
      * @return the name of the @arg type
      */
     static const char*getTypeName(AttributeType type);
-
+	/** @brief loads the sql database 
+		@internal*/
 	AttributeValue* LoadFromDb();
+	/** @brief saves the sql database 
+		@internal*/
 	void SaveToDb(AttributeValue *val);
 #ifdef CACHE_PROFILING
     static void PrintStatistics();

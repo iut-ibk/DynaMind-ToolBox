@@ -494,7 +494,6 @@ void Attribute::setType(AttributeType type)
 void Attribute::Change(const Attribute &attribute)
 {
     name=attribute.name;
-	//owner = attribute.owner;
 	value = new AttributeValue(*attribute.value);
 }
 

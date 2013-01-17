@@ -37,39 +37,72 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
+	/** @brief constructor initializing a new field */
     RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
-
+	/** @brief constructor initializing via a other field */
     RasterData(const RasterData &other);
+	/** @brief constructor, does not initialize a field */
     RasterData();
+	/** @brief overloaded function for returning the internal type DM::RASTERDATA */
 	Components getType();
+	/** @brief destructor deletes the field and its values too */
     ~RasterData();
+	/** @brief sets the field to NoValue */
     void clear();
+	/** @brief get the value at the specific coordinate 
+		offset will be substracted from the position declaration */
     double getValue(long x, long y) const;
+	/** @brief get the value in the specific cell */
     double getCell(long x, long y) const;
+	/** @brief set the value at the specific coordinate 
+		offset will be substracted from the position declaration  */
     bool setValue(long x, long y, double value);
+	/** @brief get the value in the specific cell */
     bool setCell(long x, long y, double value);
+	/** @brief returns the number of cells in horizontal direction */
     unsigned long getWidth()const {return width;}
+	/** @brief returns the number of cells in vertical direction */
     unsigned long getHeight() const {return height;}
+	/** @brief returns the width of the cell */
     double getCellSizeX() const {return cellSizeX;}
+	/** @brief returns the height of the cell */
     double getCellSizeY() const {return cellSizeY;}
+	/** @brief returns the default value of the field */
     double getNoValue() const {return NoValue;}
+	/** @brief sets the default value in the field
+		does NOT update the field values */
     void setNoValue(double NoValue)  {this->NoValue = NoValue;}
+	/** @brief returns the lower limit of field values */
     double getMinValue() const {return minValue;}
+	/** @brief returns the upper limit of field values */
     double getMaxValue() const {return maxValue;}
+	/** @brief returns the sum over all cells */
     double getSum() const;
+	/** @brief returns the offset in horizontal direction */
     double getXOffset(){return xoffset;}
+	/** @brief returns the offset in vertical direction */
     double getYOffset(){return yoffset;}
+	/** @brief sets the offset in horizontal direction */
     void setXOffset(double value){this->xoffset=value;}
+	/** @brief sets the offset in vertical direction */
     void setYOffset(double value){this->yoffset=value;}
-    std::vector<double> getMoorNeighbourhood(long x, long y) const;
+	/** @brief resizes the field */
     void setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
-    void getNeighboorhood(double** d, int width, int height, int x, int y);
 
+    std::vector<double> getMoorNeighbourhood(long x, long y) const;
     void getMoorNeighbourhood(std::vector<double> & neigh, long x, long y);
+    void getNeighboorhood(double** d, int width, int height, int x, int y);
+	
+	/** @brief sets the debug value */
     void setDebugValue(int val){debugValue = val;}
+	/** @brief returns the debug value */
     int getDebugValue() {return debugValue;}
-
+	
+	/** @brief overloaded clone operator
+		@internal */
     Component * clone();
+	/** @brief updates the field values 
+		@internal */
     void ForceUpdate() const;
 
 #ifdef CACHE_PROFILING
