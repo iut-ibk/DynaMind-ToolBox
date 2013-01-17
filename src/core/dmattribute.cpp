@@ -293,6 +293,16 @@ Attribute::~Attribute()
 	attributeCache.remove(this);
 }
 
+Attribute& Attribute::operator=(const Attribute& other)
+{
+	if(this != &other)
+	{
+		name = other.name;
+		*this->getValue() = *other.getValue();
+	}
+	return *this;
+}
+
 Attribute::AttributeType Attribute::getType() const
 {
 	return getValue()->type;

@@ -74,9 +74,8 @@ Component::Component(const Component& c)
 	currentSys = NULL;
     //mMutex = new QMutex(QMutex::Recursive);
 
-    std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-    for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
-        this->addAttribute(*it->second);
+	mforeach(Attribute* a, c.ownedattributes)
+		this->addAttribute(*a);
 
     SQLInsertComponent();
 }
@@ -86,11 +85,8 @@ Component::Component(const Component& c, bool b)
     inViews = c.inViews;
 	currentSys = NULL;
 
-    std::map<std::string,Attribute*> attrmap = c.ownedattributes;
-	mforeach(Attribute* a, attrmap)
+	mforeach(Attribute* a, c.ownedattributes)
 		this->addAttribute(*a);
-    //for (std::map<std::string,Attribute*>::iterator it=attrmap.begin() ; it != attrmap.end(); ++it )
-    //    this->addAttribute(*it->second);
 }
 
 Component::~Component()
@@ -105,6 +101,15 @@ Component::~Component()
     //delete ;
 }
 
+Component& Component::operator=(const Component& other)
+{
+	if(this != &other)
+	{
+		mforeach(Attribute* a, other.ownedattributes)
+			this->addAttribute(*a);
+	}
+	return *this;
+}
 
 bool Component::isInView(View view) const 
 {

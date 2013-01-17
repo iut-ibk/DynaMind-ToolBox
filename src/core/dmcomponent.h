@@ -104,7 +104,8 @@ protected:
     /** @brief return table name */
     virtual QString getTableName();
 public:
-
+	/** @brief =operator */
+	Component& operator=(Component const& other);
     /** @brief create a new component
       *
       * The default constructor creates a UUID for the component.

@@ -128,6 +128,8 @@ private:
 	//void setValue(void* pData, size_t size);
 protected:
 public:
+	/** @brief =operator */
+	Attribute& operator=(Attribute const& other);
     /** @brief copies type and value to this attribute**/
     void Change(const Attribute &attribute);
     /** @brief changes the owner **/

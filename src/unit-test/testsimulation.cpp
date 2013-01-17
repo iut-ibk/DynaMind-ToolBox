@@ -578,6 +578,10 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(copy3->getY()==2);
     ASSERT_TRUE(copy3->getZ()==3);
 
+	delete copy;
+	delete copy2;
+	delete copy3;
+
     DBConnector::getInstance()->Synchronize();
     // print cache statistics
     DM::Node::PrintStatistics();
@@ -722,6 +726,22 @@ TEST_F(TestSimulation, SQLattributes)
     DM::Attribute *pa = c->getAttribute("hint");
     ASSERT_TRUE(pa->getDouble()==50);
     delete c;
+
+	// check getUuid, assignment operators
+	c = new DM::Component();
+	std::string name = c->getUUID();
+	ASSERT_TRUE(c->getUUID() == name);
+	
+	DM::Component* c2 = new DM::Component(*c);
+	DM::Component* c3 = new DM::Component();
+	*c3 = *c;
+	delete c;
+	
+	ASSERT_TRUE(c2->getUUID() == name);
+	ASSERT_TRUE(c3->getUUID() == name);
+	delete c2;
+	delete c3;
+	//
 
     double dbl = 13.0;
     std::vector<double> vecDbl;
