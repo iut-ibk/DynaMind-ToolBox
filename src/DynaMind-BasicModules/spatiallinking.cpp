@@ -138,7 +138,7 @@ void SpatialLinking::run() {
 
     int CounterElementLinked = 0;
     int NumberOfLinks = linkUUIDs.size();
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < NumberOfLinks; i++) {
         std::string linkUUID = linkUUIDs[i];
         QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
