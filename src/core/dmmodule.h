@@ -426,6 +426,7 @@ private:
     std::map<std::string, DM::System *> ownedSystems;
     std::map<std::string, DM::System *> ownedSystems_prev;
     bool hasBeenExecuted;
+    bool isFullyLinked;
     bool debugMode;
 
 

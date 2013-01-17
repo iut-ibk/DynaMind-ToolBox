@@ -41,15 +41,10 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 }
 
 void DM::ModuleRunnable::run() {
-
-
-
-
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
     if (!m->isExecuted() || m->isGroup()) {
-
-
+        m->resetParameter();
         m->updateParameter();
         m->init();
         //Called twice since the user can change data in the init method!
@@ -65,17 +60,11 @@ void DM::ModuleRunnable::run() {
                 DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
                 m->run();
                 m->setExecuted(true);
-
                 DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  (double) timer.elapsed()/1000;
             }
         }
         m->postRun();
-
-
     }
-
-
-
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);

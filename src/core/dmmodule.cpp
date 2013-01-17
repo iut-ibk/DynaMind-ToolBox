@@ -86,6 +86,7 @@ Module::Module() {
     simulation = 0;
     hasBeenExecuted = false;
     debugMode = false;
+    isFullyLinked = false;
 }
 
 Module::~Module() {
@@ -152,7 +153,14 @@ void Module::setInternalCounter(int counter)
 }
 
 void Module::updateParameter() {
+    //TODO: Clenaing this whole section
     Logger(Debug) << this->getUuid() <<" Update Parameter";
+    this->isFullyLinked = false;
+
+    //If module just has an outport it's always fully linked
+    if (this->InPorts.size() == 0) {
+        this->isFullyLinked = true;
+    }
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
         if (it->second != DM::SYSTEM) {
@@ -222,6 +230,7 @@ void Module::updateParameter() {
             //All Checks successful -> update data
             this->data_vals[s] = sys;
             this->getInPort(s)->setFullyLinked(true);
+            this->isFullyLinked = true;
             if (this->getOutPort(s) != 0)
                 this->getOutPort(s)->setFullyLinked(true);
         }
@@ -245,10 +254,11 @@ void Module::updateParameter() {
         }
         this->data_vals[s]->setAccessedByModule(this);
 
+
     }
     foreach(PortObserver * po, this->portobserver) {
         if (!po)
-        po->changedPorts();
+            po->changedPorts();
     }
 }
 
@@ -356,6 +366,9 @@ void Module::setParameterValue(std::string name, std::string v) {
 void Module::postRun() {
     this->internalCounter++;
     //To make sure that a module gets the right data when used in backlinks
+
+    if (!isFullyLinked)
+        data_vals.clear();
     this->data_vals_prev = data_vals;
 
     //delete prev data
@@ -436,6 +449,11 @@ DM::System* Module::getData(std::string dataname)
     sys = this->data_vals[dataname];
     if (sys == 0)
         Logger(Debug) << "No System " << dataname;
+
+    if (!this->isFullyLinked) {
+        Logger(Debug) << "Module not fully linked return sys 0";
+        return 0;
+    }
     return sys;
 }
 
@@ -631,13 +649,13 @@ DM::System*   Module::getSystemData(const std::string &name)  {
     if (!returnSys)
         return 0;
     if (m->getGroup() != this->getGroup()) {
-         Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
-         return returnSys->createSuccessor();
+        Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
+        return returnSys->createSuccessor();
     }
 
     if (standardLinks > 1) {
-         Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
-         return returnSys->createSuccessor();
+        Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
+        return returnSys->createSuccessor();
     }
     if (isDebugMode()) {
         Logger(Debug) << "Debug Split " << l->getInPort()->getLinkedDataName();
@@ -652,6 +670,10 @@ DM::System* Module::getSystemState(const std::string &name)
     DM::System  * sys = this->data_vals_prev[name];
 
     if (sys == 0) {
+        return 0;
+    }
+    if (!isFullyLinked) {
+        Logger(Debug) << "System is not fully linked return sys 0";
         return 0;
     }
     sys->setAccessedByModule(this);
@@ -743,16 +765,16 @@ void Module::setExecuted(bool ex){
     }
 }
 
-    
+
 std::string Module::getHelpUrl() {
     return "";
 }
-    
-    void Module::setDebugMode(bool mode) {
-        this->debugMode = mode;
-    }
-    
-    bool Module::isDebugMode() {
-        return debugMode;
-    }
+
+void Module::setDebugMode(bool mode) {
+    this->debugMode = mode;
+}
+
+bool Module::isDebugMode() {
+    return debugMode;
+}
 }
