@@ -35,7 +35,6 @@
 #endif
 
 #include <string>
-//#include <QVector>
 
 namespace DM {
 class Component;
@@ -53,10 +52,8 @@ class Edge;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-    //double x,y,z;
     Vector3* vector;
     bool    isInserted;
-    //void SQLSetValues(double x,double y,double z);
     /** @brief return table name */
     QString getTableName();
 	
@@ -65,7 +62,6 @@ private:
 	{
 		connectedEdges.push_back(e);
 	}
-	//public:
 	friend class Edge;
 protected:
     virtual void SetOwner(Component *owner);
@@ -122,8 +118,6 @@ public:
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif
-
-    //static Node* SqlImport(QUuid);
     Vector3* LoadFromDb();
     void SaveToDb(Vector3* v);
 };
@@ -137,22 +131,7 @@ public:
     Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
     Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
 };
-/*
-class SqlVector3: public Vector3
-{
-public:
-    Node* n;
-    SqlVector3(Node* n): Vector3()
-    {
-        this->n = n;
-    }
 
-    ~SqlVector3()
-    {
-        n->SqlExport();
-    }
-};
-*/
 typedef std::map<std::string, DM::Node*> NodeMap;
 }
 #endif // NODE_H

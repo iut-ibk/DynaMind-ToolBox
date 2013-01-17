@@ -80,20 +80,13 @@ private:
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
-    //const std::string stateUuid;
-
     void SQLDelete();
 
     //QMutex * mMutex;
 
     QUuid uuid;
-    //std::string uuid;
-    //std::string name;
-
     std::map<std::string,Attribute*> ownedattributes;
-
     std::set<std::string> inViews;
-
     System * currentSys;
 
     void removeView(const DM::View & view);
@@ -116,8 +109,6 @@ public:
 
     /** @brief Destructor */
     virtual ~Component();
-    /** @brief setUUID */
-    //virtual void setUUID(std::string uuid);
     /** @brief return Type */
     virtual Components getType();
     /** @brief return UUID */
@@ -153,8 +144,6 @@ public:
       * Therefore the name of the View is used as identifier.
       */
     void setView(const DM::View & view);
-    /** @brief Create new UUID */
-    //void createNewUUID();
     /** @brief Retruns a set of Views in which the Compont is used */
     std::set<std::string> const &  getInViews() const;
     /** @brief Returns true if Component is in the View */

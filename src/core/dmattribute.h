@@ -109,23 +109,7 @@ private:
 	Component* owner;
 	AttributeValue	*value;
 	bool	isInserted;
-	
-	/*
-    void SQLInsert(AttributeType type);
-    void SQLInsert(AttributeType type, QVariant value);
-    void SQLDeleteThis();
-    //void SQLSetOwner(Component* owner);
-    void SQLSetName(std::string newname);
-    void SQLSetType(AttributeType newtype);
-    AttributeType SQLGetType() const;
-    bool SQLGetValue(QVariant &value) const;
-	void SQLSetValue(AttributeType type, QVariant value);
-	*/
-    //void setValue(QByteArray bytes);
-    //QByteArray getValue(AttributeType type) const;
-
 	AttributeValue*	getValue() const;
-	//void setValue(void* pData, size_t size);
 protected:
 public:
 	/** @brief =operator */
