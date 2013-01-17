@@ -558,7 +558,25 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(node->getX()==1);
     ASSERT_TRUE(node->getY()==2);
     ASSERT_TRUE(node->getZ()==3);
+
+	DM::Node *copy = new DM::Node(*node);
+	*copy = *node;
+	DM::Node* copy2 = new DM::Node(*node);
+	DM::Node *copy3 = new DM::Node();
+	*copy3 = *node;
     delete node;
+
+    ASSERT_TRUE(copy->getX()==1);
+    ASSERT_TRUE(copy->getY()==2);
+    ASSERT_TRUE(copy->getZ()==3);
+	
+    ASSERT_TRUE(copy2->getX()==1);
+    ASSERT_TRUE(copy2->getY()==2);
+    ASSERT_TRUE(copy2->getZ()==3);
+
+    ASSERT_TRUE(copy3->getX()==1);
+    ASSERT_TRUE(copy3->getY()==2);
+    ASSERT_TRUE(copy3->getZ()==3);
 
     DBConnector::getInstance()->Synchronize();
     // print cache statistics

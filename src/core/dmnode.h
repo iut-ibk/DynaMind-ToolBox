@@ -98,6 +98,10 @@ public:
     void setY(double y);
     /** @brief set z*/
     void setZ(double z);
+    /** @brief set xyz*/
+    void set(double x, double y, double z);
+	/** @brief =operator */
+	Node& operator=(Node const& other);
     /** @brief return true if x, y and z are the same*/
     bool operator==(const Node & other) const;
     /** @brief x1-x2, y1-y2, z1-z2*/

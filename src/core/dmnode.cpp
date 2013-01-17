@@ -201,6 +201,14 @@ std::vector<QUuid> Node::getEdges() const
     return edges;
 }
 
+void Node::set(double x, double y, double z)
+{
+    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	v->x = x;
+	v->y = y;
+	v->z = z;
+}
+
 void Node::setX(double x)
 {
     /*if(Vector3 *v = nodeCache.get(getQUUID()))
@@ -252,6 +260,18 @@ void Node::setZ(double z)
 Component* Node::clone()
 {
     return new Node(*this);
+}
+
+Node& Node::operator=(const Node& other)
+{
+	if(this != &other)
+	{
+		this->isInserted = false;
+		double v[3];
+		other.get(v);
+		this->set(v[0],v[1],v[2]);
+	}
+	return *this;
 }
 
 bool Node::operator ==(const Node & other) const 
