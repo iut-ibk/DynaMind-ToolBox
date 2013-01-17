@@ -224,6 +224,7 @@ Attribute* Component::getAttribute(std::string name)
 	if(!a)
 	{
 		a = new Attribute(name);
+		a->SetOwner(this);
 		ownedattributes[name] = a;
 	}
 	return a;
