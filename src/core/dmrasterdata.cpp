@@ -336,7 +336,7 @@ void RasterData::setSize(long width, long height, double cellsizeX, double cells
 void RasterData::clear() {
     for (int y = 0; y < this->height; y++)
         for (int x = 0; x < this->width; x++)
-            SQLSetValue(x,y,0);
+            SQLSetValue(x,y,NoValue);
 }
 
 Component * RasterData::clone() {
@@ -385,27 +385,6 @@ void RasterData::SQLInsertField(long width, long height)
         DBConnector::getInstance()->ExecuteQuery(q);
     }
     delete buffer;
-	/*
-	double *buffer = new double[width*height];
-    for(long x = 0; x < width*height; x++)
-        buffer[x] = NoValue;
-
-	for(long y = 0; y < height; y++)
-    {
-		QByteArray *qba = new QByteArray;
-		qba->setRawData((char*)buffer, sizeof(double)*width);
-		buffer += width;
-
-		rowCache.add(std::pair<QUuid,long>(getQUUID(),y), qba);
-
-        QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
-        q->addBindValue(uuid.toByteArray());
-        q->addBindValue(QVariant::fromValue(y));
-        q->addBindValue(*qba);
-        DBConnector::getInstance()->ExecuteQuery(q);
-    }
-
-	Logger(Debug) << "finished field insert";*/
 }
 void RasterData::SQLDeleteField()
 {
@@ -461,7 +440,6 @@ QByteArray* RasterData::SQLForceGetRow(long y) const
 void RasterData::SQLSetValue(long x, long y, double value)
 {
     QByteArray* qba = SQLGetRow(y);
-    //((double*)qba.data_ptr())[x] = value;
     ((double*)qba->data())[x] = value;
     SQLSetRow(y,qba);
 }
