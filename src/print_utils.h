@@ -50,4 +50,16 @@ void print_polygon_with_holes
   return;
 }
 
+template<class K>
+void print_polygons ( std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > const& polies )
+{
+  typedef std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > PolygonVector ;
+
+  std::cout << "Polygon list with " << polies.size() << " polygons" << std::endl ;
+
+  for( typename PolygonVector::const_iterator pi = polies.begin() ; pi != polies.end() ; ++ pi )
+    print_polygon(**pi);
+}
+
+
 #endif
