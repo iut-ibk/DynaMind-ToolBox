@@ -80,15 +80,21 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
         int removecounter = 0;
         do {
             removecounter = 0;
+			std::list<Arrangement_2::Edge_iterator> removeList;
+
             for (eit = arr.edges_begin(); eit != arr.edges_end(); ++eit) {
                 Arrangement_2::Vertex_handle   v1 = eit->source(), v2 = eit->target();
                 int c1 = CGALGeometry_P::CountNeighboringVertices(v1);
                 int c2 = CGALGeometry_P::CountNeighboringVertices(v2);
                 if (c1 < 2 || c2 < 2) {
-                    arr.remove_edge (eit);
+                    //arr.remove_edge (eit);
+					removeList.push_back(eit);
                     removecounter++;
                 }
             }
+			foreach(Arrangement_2::Edge_iterator it, removeList)
+				arr.remove_edge(it);
+
             DM::Logger(DM::Debug)<< "Removed Edges with lose end " << removecounter;
 
         } while (removecounter > 0);
