@@ -409,6 +409,9 @@ public:
     
     /** @brief Returns debug mode of the system */
     bool isDebugMode();
+
+    /** @brief Retruns if fully linked */
+    bool isFullyLinked();
     
     /** @brief Returns URL to the help of the module */
     virtual std::string getHelpUrl();
@@ -426,7 +429,7 @@ private:
     std::map<std::string, DM::System *> ownedSystems;
     std::map<std::string, DM::System *> ownedSystems_prev;
     bool hasBeenExecuted;
-    bool isFullyLinked;
+    bool _isFullyLinked;
     bool debugMode;
 
 

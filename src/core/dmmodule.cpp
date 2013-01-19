@@ -86,7 +86,7 @@ Module::Module() {
     simulation = 0;
     hasBeenExecuted = false;
     debugMode = false;
-    isFullyLinked = false;
+    _isFullyLinked = false;
 }
 
 Module::~Module() {
@@ -155,11 +155,11 @@ void Module::setInternalCounter(int counter)
 void Module::updateParameter() {
     //TODO: Clenaing this whole section
     Logger(Debug) << this->getUuid() <<" Update Parameter";
-    this->isFullyLinked = false;
+    this->_isFullyLinked = false;
 
     //If module just has an outport it's always fully linked
     if (this->InPorts.size() == 0) {
-        this->isFullyLinked = true;
+        this->_isFullyLinked = true;
     }
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
         std::string s = it->first;
@@ -230,7 +230,7 @@ void Module::updateParameter() {
             //All Checks successful -> update data
             this->data_vals[s] = sys;
             this->getInPort(s)->setFullyLinked(true);
-            this->isFullyLinked = true;
+            this->_isFullyLinked = true;
             if (this->getOutPort(s) != 0)
                 this->getOutPort(s)->setFullyLinked(true);
         }
@@ -367,7 +367,7 @@ void Module::postRun() {
     this->internalCounter++;
     //To make sure that a module gets the right data when used in backlinks
 
-    if (!isFullyLinked)
+    if (!_isFullyLinked)
         data_vals.clear();
     this->data_vals_prev = data_vals;
 
@@ -450,7 +450,7 @@ DM::System* Module::getData(std::string dataname)
     if (sys == 0)
         Logger(Debug) << "No System " << dataname;
 
-    if (!this->isFullyLinked) {
+    if (!this->_isFullyLinked) {
         Logger(Debug) << "Module not fully linked return sys 0";
         return 0;
     }
@@ -672,7 +672,7 @@ DM::System* Module::getSystemState(const std::string &name)
     if (sys == 0) {
         return 0;
     }
-    if (!isFullyLinked) {
+    if (!_isFullyLinked) {
         Logger(Debug) << "System is not fully linked return sys 0";
         return 0;
     }
@@ -776,5 +776,10 @@ void Module::setDebugMode(bool mode) {
 
 bool Module::isDebugMode() {
     return debugMode;
+}
+
+bool Module::isFullyLinked()
+{
+    return this->_isFullyLinked;
 }
 }
