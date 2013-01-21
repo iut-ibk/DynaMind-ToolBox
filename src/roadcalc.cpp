@@ -40,11 +40,6 @@ void RoadCalc::forward()
   float x1 = x_ + config_.segment_length() * cos(angle_ * (M_PI / 180.0f));
   float y1 = y_ + config_.segment_length() * sin(angle_ * (M_PI / 180.0f));
 
-  glBegin(GL_LINES);
-  glVertex2f(x_, y_);
-  glVertex2f(x1, y1);
-  glEnd();
-
   x_ = x1;
   y_ = y1;
 }

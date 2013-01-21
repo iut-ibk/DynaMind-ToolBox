@@ -37,6 +37,7 @@
 #include <cmath>
 //LSystem
 #include <lsystem.h>
+#include <roadgen.h>
 
 DM_DECLARE_NODE_NAME(RoadGen,UrbanDevelopment)
 
