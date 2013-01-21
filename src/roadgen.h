@@ -27,26 +27,28 @@
 #ifndef RoadGen_H
 #define RoadGen_H
 
+#include <stack>
+
 #include <dmmodule.h>
 #include <dm.h>
+#include "lsystem.h"
+#include "roadcalc.h"
 
 class RoadGen : public DM::Module
 {
     DM_DECLARE_NODE(RoadGen)
 
-private:
-    typedef std::map<std::string,DM::View> viewmap;
+    public:
+        RoadGen();
+        void run();
+        void initmodel(){}
 
-    DM::System *sys;
-    DM::RasterData * r;
-    viewmap viewdef;
+    private:
+        typedef std::map<std::string,DM::View> viewmap;
 
-
-public:
-    RoadGen();
-
-    void run();
-    void initmodel(){}
+        DM::System *sys;
+        DM::RasterData * r;
+        viewmap viewdef;
 };
 
 #endif // RoadGen_H

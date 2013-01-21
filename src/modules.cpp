@@ -36,6 +36,7 @@
 #include <createepanetmodel.h>
 #include <minimumsteinertree.h>
 #include <roadgen.h>
+#include <lsystem.h>
 
 using namespace std;
 

@@ -35,11 +35,12 @@
 //CGAL
 #include <list>
 #include <cmath>
+//LSystem
+#include <lsystem.h>
 
 DM_DECLARE_NODE_NAME(RoadGen,UrbanDevelopment)
 
-RoadGen::RoadGen()
-{   
+RoadGen::RoadGen() {
     std::vector<DM::View> views;
     DM::View view;
 
@@ -98,43 +99,4 @@ initialize segment list S to empty
         - [min/max] length to split
         - gradient
         - pop density
-        -
-
-//
-// thoughts
-//
-
-    implement hierarchical generation
-
 */
-
-void RoadGen::run()
-{
-    sys = this->getData("Layout");
-    r = this->getRasterData("Layout", viewdef["ELEVATION"]);
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
-
-    bool changed = true;
-    int step = 0;
-    while (changed) {
-        int numVertices = 5;
-        step++;
-    }
-    return;
-}
-
-void localConstraints() {
-    return;
-}
-
-void addNode() {
-
-}
-
-void addEdge() {
-
-}
-
-void addIntersection() {
-
-}
