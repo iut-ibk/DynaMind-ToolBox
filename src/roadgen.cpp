@@ -46,28 +46,31 @@ RoadGen::RoadGen() {
     DM::View view;
 
     // load road network
-    view = DM::View("STREETS", DM::NODE, DM::READ);
-    views.push_back(view);
-    viewdef["STREETS"]=view;
+    //view = DM::View("STREETS", DM::NODE, DM::READ);
+    //views.push_back(view);
+    //viewdef["STREETS"]=view;
 
     // load shapefile with blocked but bridgable areas, eg. water, railroad, motorway
-    view = DM::View("BRIDGABLE", DM::FACE, DM::READ);
-    views.push_back(view);
-    viewdef["BRIDGEABLE"]=view;
+    //view = DM::View("BRIDGABLE", DM::FACE, DM::READ);
+    //views.push_back(view);
+    //viewdef["BRIDGEABLE"]=view;
 
-    view = DM::View("POPULATION_DENSITY", DM::FACE, DM::READ);
-    views.push_back(view);
-    viewdef["POPULATION_DENSITY"];
+    //view = DM::View("POPULATION_DENSITY", DM::FACE, DM::READ);
+    //views.push_back(view);
+    //viewdef["POPULATION_DENSITY"];
 
     // declare areas where to build roads
-    view = DM::View("POSSIBLE_AREA", DM::FACE, DM::READ);
-    views.push_back(view);
-    viewdef["POSSIBLE_AREA"];
+    //view = DM::View("POSSIBLE_AREA", DM::FACE, DM::READ);
+    //views.push_back(view);
+    //viewdef["POSSIBLE_AREA"];
 
     // height map of the area [raster]
-    view = DM::View("ELEVATION", DM::RASTERDATA, DM::READ);
+    //view = DM::View("ELEVATION", DM::RASTERDATA, DM::READ);
+    //views.push_back(view);
+    //viewdef["ELEVATION"]=view;
+
+    view = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
     views.push_back(view);
-    viewdef["ELEVATION"]=view;
 
     this->addData("Layout", views);
 }
@@ -101,3 +104,25 @@ initialize segment list S to empty
         - gradient
         - pop density
 */
+
+void RoadGen::run()
+{
+
+    sys = this->getData("Layout");
+
+    rule_map treerules = { { 'X', "(F-[[X]+X]+F[+FX]-X)" },
+                     { 'F', "FF" } };
+    LSystem treesystem("X", treerules);
+// segment_length, angle_left, angle_right, angle_initial
+// translation
+// scale
+    RoadCalc_Config rc_config(1, 0.25f, -0.25f, 0.9f);
+// setup lsystem
+    RoadCalc RC(treesystem, rc_config);
+    RC.init();
+
+    for (int i=0; i < 5; i++) {
+        RC.walk();
+    }
+
+}
