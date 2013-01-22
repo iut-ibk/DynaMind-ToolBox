@@ -36,7 +36,7 @@
 #include <list>
 #include <cmath>
 //LSystem
-#include <lsystem.h>
+#include <lsystem/lsystem.h>
 #include <roadgen.h>
 
 DM_DECLARE_NODE_NAME(RoadGen,UrbanDevelopment)
@@ -110,19 +110,13 @@ void RoadGen::run()
 
     sys = this->getData("Layout");
 
-    rule_map treerules = { { 'X', "(F-[[X]+X]+F[+FX]-X)" },
-                     { 'F', "FF" } };
-    LSystem treesystem("X", treerules);
+//    rule_map treerules = { { 'X', "(F-[[X]+X]+F[+FX]-X)" },
+//                     { 'F', "FF" } };
+//    LSystem treesystem("X", treerules);
 // segment_length, angle_left, angle_right, angle_initial
 // translation
 // scale
-    RoadCalc_Config rc_config(1, 0.25f, -0.25f, 0.9f);
+//    RoadCalc_Config rc_config(1, 0.25f, -0.25f, 0.9f);
 // setup lsystem
-    RoadCalc RC(treesystem, rc_config);
-    RC.init();
-
-    for (int i=0; i < 5; i++) {
-        RC.walk();
-    }
 
 }

@@ -31,8 +31,7 @@
 
 #include <dmmodule.h>
 #include <dm.h>
-#include "lsystem.h"
-#include "roadcalc.h"
+#include "lsystem/lsystem.h"
 
 class RoadGen : public DM::Module
 {
