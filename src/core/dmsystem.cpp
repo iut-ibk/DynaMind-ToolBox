@@ -88,8 +88,8 @@ System::System(const System& s) : Component(s, true)
 	mforeach(Edge* oldEdge, s.edges)
     {
         Edge *e = (Edge*)oldEdge->clone();
-		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStart()->getQUUID())]);
-        e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEnd()->getQUUID())]);
+		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStartNode()->getQUUID())]);
+        e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEndNode()->getQUUID())]);
 
         childReplaceMap[oldEdge] = addEdge(e);
     }
@@ -334,7 +334,7 @@ Edge* System::addEdge(Edge* edge)
     foreach (std::string v, edge->getInViews()) {
         views[v][edge->getUUID()]=edge;
     }
-    this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
+    //this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
     this->updateViews(edge);
     return edge;
 }
@@ -345,12 +345,13 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 
     if (e == 0)
         return 0;
-    if (!view.getName().empty()) {
+    if (!view.getName().empty()) 
+	{
         this->views[view.getName()][e->getUUID()] = e;
         e->setView(view.getName());
     }
 
-    this->EdgeNodeMap[std::pair<std::string, std::string>(start->getUUID(), end->getUUID())] = e;
+    //this->EdgeNodeMap[std::pair<std::string, std::string>(start->getUUID(), end->getUUID())] = e;
 
     return e;
 }
@@ -366,11 +367,21 @@ Edge* System::getEdge(QUuid uuid)
 }
 Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
 {
+	return getEdge(getNode(startnode),getNode(endnode));
+	/*
     std::pair<std::string, std::string> key(startnode, endnode);
     if(EdgeNodeMap.find(key)==EdgeNodeMap.end())
         return 0;
-    return EdgeNodeMap[key];
+    return EdgeNodeMap[key];*/
 }
+Edge* System::getEdge(const Node* start, const Node* end)
+{
+	foreach(Edge* e,start->getEdges())
+		if(e->getStartNode()==start || e->getEndNode()==end)
+			return e;
+	return 0;
+}
+
 bool System::removeEdge(std::string name)
 {
 	QUuid quuid = getChild(name)->getQUUID();
@@ -381,7 +392,7 @@ bool System::removeEdge(std::string name)
     if(!removeChild(quuid))
         return false;
     DM::Edge * e  = this->getEdge(quuid);
-    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
+    //this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
     edges.erase(quuid);
     return true;
 }

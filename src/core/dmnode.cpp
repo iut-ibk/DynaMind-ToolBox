@@ -55,6 +55,7 @@ Node::Node( double x, double y, double z) : Component(true)
     vector->y = y;
     vector->z = z;
     isInserted = false;
+	connectedEdges = 0;
 }
 
 Node::Node() : Component(true)
@@ -64,6 +65,7 @@ Node::Node() : Component(true)
     vector->y = 0;
     vector->z = 0;
     isInserted = false;
+	connectedEdges = 0;
 }
 
 Node::Node(const Node& n) : Component(n, true)
@@ -75,14 +77,14 @@ Node::Node(const Node& n) : Component(n, true)
     vector->y = refv.y;
     vector->z = refv.z;
     isInserted = false;
+	connectedEdges = 0;
 }
 Node::~Node()
 {
     nodeCache.remove(this);
-    if(vector)
-        delete vector;
-    if(isInserted)
-        Component::SQLDelete();
+    if(vector)			delete vector;
+    if(isInserted)		Component::SQLDelete();
+	if(connectedEdges)	delete connectedEdges;
 }
 void Node::SetOwner(Component *owner)
 {
@@ -138,14 +140,9 @@ const double Node::get(unsigned int i) const {
 	else			return 0;
 }
 
-
-std::vector<QUuid> Node::getEdges() const
+std::vector<Edge*> Node::getEdges() const
 {
-    std::vector<QUuid> edges;
-	foreach(Edge* e, connectedEdges)
-		edges.push_back(e->getQUUID());
-
-    return edges;
+    return *connectedEdges;
 }
 
 void Node::set(double x, double y, double z)

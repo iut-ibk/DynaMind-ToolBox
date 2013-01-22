@@ -82,8 +82,7 @@ private:
     std::vector<DM::System*> sucessors;
 
     //Get Edge Based on map otherwise takes ages
-    std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
-
+    //std::map<std::pair<std::string ,std::string>,DM::Edge*> EdgeNodeMap;
 
     void updateViews (Component * c);
 
@@ -156,10 +155,14 @@ public:
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
     Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
+        @deprecated*/
+    Edge* getEdge(const Node* start, const Node* end);
     /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist
         @deprecated*/
     Face * getFace(std::string uuid);
-    /** @brief Removes an Edge. Returns false if the edge doesn't exist */
+    /** @brief Removes an Edge. Returns false if the edge doesn't exist
+        @deprecated*/
     bool removeEdge(std::string uuid);
     /** @brief Removes a Node. Returns false if the node doesn't exist
         @deprecated*/

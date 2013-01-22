@@ -57,10 +57,12 @@ private:
     /** @brief return table name */
     QString getTableName();
 	
-	std::vector<Edge*> connectedEdges;	// not cached, for now
+	std::vector<Edge*> *connectedEdges;	// not cached, for now
 	void addEdge(Edge* e)
 	{
-		connectedEdges.push_back(e);
+		if(!connectedEdges)
+			connectedEdges = new std::vector<Edge*>();
+		connectedEdges->push_back(e);
 	}
 	friend class Edge;
 protected:
@@ -87,7 +89,7 @@ public:
     /** @brief writes a xyz-double[3] into the given vector */
     const void get(double *vector) const;
     /** @brief returns all edges connecting this node */
-    std::vector<QUuid> getEdges() const;
+    std::vector<Edge*> getEdges() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/

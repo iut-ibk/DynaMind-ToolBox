@@ -68,11 +68,13 @@ namespace DM {
         /** @brief return uuid to the startpoint 
 			@deprecated*/
         const QUuid getStartpoint() const;
-		Node*	getStart() const;
+        /** @brief return uuid to the startpoint */
+		Node*	getStartNode() const;
         /** @brief return uuid to the endpoint 
 			@deprecated*/
         const QUuid getEndpoint() const;
-		Node*	getEnd() const;
+        /** @brief return uuid to the endpoint */
+		Node*	getEndNode() const;
         /** @brief return uuid to the startpoint */
         const std::string getStartpointName() const;
         /** @brief return uuid to the endpoint */

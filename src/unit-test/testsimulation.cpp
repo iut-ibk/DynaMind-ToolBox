@@ -603,11 +603,11 @@ TEST_F(TestSimulation, SqlEdgeTest)
     ASSERT_TRUE(edge->getStartpointName()==n0->getUUID());
     ASSERT_TRUE(edge->getEndpointName()==n1->getUUID());
 
-    std::vector<QUuid> list = n0->getEdges();
-    ASSERT_TRUE(list[0] == edge->getQUUID());
+    std::vector<Edge*> list = n0->getEdges();
+    ASSERT_TRUE(list[0] == edge);
 
     list = n1->getEdges();
-    ASSERT_TRUE(list[0] == edge->getQUUID());
+    ASSERT_TRUE(list[0] == edge);
 
     delete n0;
     delete n1;
@@ -829,6 +829,19 @@ TEST_F(TestSimulation, SQLattributes)
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     //DM::RasterData::PrintStatistics();
+}
+TEST_F(TestSimulation, System)
+{
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test GetEdges";
+
+
+	System sys;
+	Node* n0 = sys.addNode(1,2,3);
+	Node* n1 = sys.addNode(4,5,6);
+	Edge *e = sys.addEdge(n0,n1);
+	ASSERT_TRUE(e==sys.getEdge(n0->getUUID(), n1->getUUID()));
 }
 
 #endif

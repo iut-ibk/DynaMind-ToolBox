@@ -49,8 +49,8 @@ Edge::Edge(Node *start, Node *end) : Component(true)
 
 Edge::Edge(const Edge& e) : Component(e, true)
 {
-	start = e.getStart();
-	end = e.getEnd();
+	start = e.getStartNode();
+	end = e.getEndNode();
 	start->addEdge(this);
 	end->addEdge(this);
 
@@ -74,7 +74,7 @@ QString Edge::getTableName()
     return "edges";
 }
 
-Node* Edge::getStart() const
+Node* Edge::getStartNode() const
 {
 	return start;
 }
@@ -88,7 +88,7 @@ const std::string Edge::getStartpointName() const
     //return getStartpoint().toString().toStdString();
 	return start->getUUID();
 }
-Node* Edge::getEnd() const
+Node* Edge::getEndNode() const
 {
 	return end;
 }
