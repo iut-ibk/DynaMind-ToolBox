@@ -30,7 +30,8 @@
 #include <dmcomponent.h>
 #include "dmdbconnector.h"
 
-
+#define RASTERBLOCKSIZE 64
+#define RASTERBLOCKCACHESIZE 4096
 
 namespace DM {
 
@@ -103,10 +104,10 @@ public:
     Component * clone();
 	/** @brief updates the field values 
 		@internal */
-    void ForceUpdate() const;
+    //void ForceUpdate() const;
 
 #ifdef CACHE_PROFILING
-    static void PrintStatistics();
+    //static void PrintStatistics();
 #endif
 private:
     long width;
@@ -124,13 +125,38 @@ private:
 	void SQLDeleteField();
     void SQLInsertField(long width, long height);
     double SQLGetValue(long x, long y) const;
-    QByteArray* SQLGetRow(long y) const;
-    QByteArray* SQLForceGetRow(long y) const;
-    void SQLSetRow(long y, QByteArray *data);
+    //QByteArray* SQLGetRow(long y) const;
+    //QByteArray* SQLForceGetRow(long y) const;
+    //void SQLSetRow(long y, QByteArray *data);
     void SQLSetValue(long x, long y, double value);
+	void SQLCopyField(const RasterData *ref);
 
     /** @brief return table name */
     QString getTableName();
+	void Synchronize();
+
+	class RasterBlockLabel
+	{
+	public:
+		long x; 
+		long y;
+		const RasterData *backRef;
+		bool isInserted;
+		/*
+		RasterBlock(const RasterData *parent, const long x, const long y)
+		{
+			backRef = parent;
+			this->x = x;
+			this->y = y;
+		}*/
+		QByteArray* LoadFromDb();
+		void SaveToDb(QByteArray *qba);
+		/*RasterBlock& operator->() {
+			return *this;
+		}*/
+	};
+	RasterBlockLabel *blockLabels;
+	DbCache<RasterBlockLabel*, QByteArray> *cache;
 };
 typedef std::map<std::string, DM::RasterData*> RasterDataMap;
 }

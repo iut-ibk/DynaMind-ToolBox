@@ -35,19 +35,19 @@
 #include <QSqlQuery>
 
 using namespace DM;
-
+/*
 const unsigned int rowOverlapp = 3;
-static Cache<std::pair<QUuid,long>,QByteArray> rowCache(1e5);
+static Cache<std::pair<QUuid,long>,QByteArray> rowCache(4096);
 static std::map<std::pair<QUuid,long>,QByteArray*> rowUpdateCache;
-
+*/
 #ifdef CACHE_PROFILING
-void RasterData::PrintStatistics()
+/*void RasterData::PrintStatistics()
 {
     Logger(Standard) << "Rasterdata row cache statistics:\t"
                      << "misses: " << (long)rowCache.misses
                      << "\thits: " << (long)rowCache.hits;
     rowCache.ResetProfilingCounters();
-}
+}*/
 #endif
 
 
@@ -68,6 +68,8 @@ RasterData::RasterData(long width, long height,
     this->NoValue = -9999;
     this->debugValue = 0;
 
+	cache = NULL;
+
 	SQLInsert();
     SQLInsertField(width, height);
 }
@@ -79,7 +81,8 @@ RasterData::RasterData() : Component(true)
     this->yoffset = 0;
     this->width = 0;
     this->height = 0;
-
+	
+	cache = NULL;
     SQLInsert();
 }
 RasterData::RasterData(const RasterData &other) : Component(other, true)
@@ -95,12 +98,15 @@ RasterData::RasterData(const RasterData &other) : Component(other, true)
     this->cellSizeY = other.cellSizeY;
     this->xoffset = other.xoffset;
     this->yoffset = other.yoffset;
-
+	
+	cache = NULL;
 	SQLInsert();
     SQLInsertField(width, height);
 
-    for(long y=0;y<height;y++)
-        this->SQLSetRow(y, other.SQLGetRow(y));
+    //for(long y=0;y<height;y++)
+    //    this->SQLSetRow(y, other.SQLGetRow(y));
+
+	SQLCopyField(&other);
 }
 
 Components RasterData::getType()
@@ -316,7 +322,7 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 void RasterData::setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) {
     if (width != this->width || height != this->height || this->cellSizeX != cellsizeX || this->cellSizeY != cellsizeY)
     {
-        if(width != 0 || height != 0)
+        if(this->width != 0 || this->height != 0)
             SQLDeleteField();
 
         this->width = width;
@@ -359,6 +365,144 @@ double RasterData::getValue(long x, long y) const
     return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
 
+void RasterData::SQLInsertField(long width, long height)
+{
+	if(width == 0 || height == 0)
+        return;
+	
+	long blWidth = width/RASTERBLOCKSIZE+1;
+	long blHeight = height/RASTERBLOCKSIZE+1;
+
+	if(cache)
+		return;
+
+	cache = new DbCache<RasterBlockLabel*, QByteArray>(RASTERBLOCKCACHESIZE);
+	blockLabels = new RasterBlockLabel[blWidth*blHeight];
+
+	double buffer[RASTERBLOCKSIZE*RASTERBLOCKSIZE];
+	for(int i=0;i<RASTERBLOCKSIZE*RASTERBLOCKSIZE;i++)
+		buffer[i] = NoValue;
+
+	int buffersize = sizeof(buffer);
+	char* pBuffer = (char*)&buffer;
+	for(long x = 0; x<blWidth; x++)
+	{
+		for(long y = 0; y<blHeight; y++)
+		{
+			RasterBlockLabel* pBlock = &blockLabels[x+y*blWidth];
+			pBlock->backRef = this;
+			pBlock->x = x;
+			pBlock->y = y;
+			pBlock->isInserted = false;
+			QByteArray *qba = new QByteArray(pBuffer, buffersize);
+			cache->add(pBlock,qba);
+			/*
+			QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,x,y,data) VALUES (?,?,?,?)");
+			q->addBindValue(uuid.toByteArray());
+			q->addBindValue(QVariant::fromValue(x));
+			q->addBindValue(QVariant::fromValue(y));
+			q->addBindValue(*qba);
+			DBConnector::getInstance()->ExecuteQuery(q);*/
+		}
+	}
+}
+void RasterData::SQLDeleteField()
+{
+    if(width==0 || height==0)
+        return;
+
+	if(!cache)
+		return;
+
+	delete cache;
+	delete blockLabels;
+	cache = NULL;
+
+	QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
+    q->addBindValue(uuid.toByteArray());
+    DBConnector::getInstance()->ExecuteQuery(q);
+}
+
+double RasterData::SQLGetValue(long x, long y) const
+{
+	if(!cache)	return NoValue;
+	
+	long xBl = x/RASTERBLOCKSIZE;
+	long yBl = y/RASTERBLOCKSIZE;
+	long blWidth = width/RASTERBLOCKSIZE;
+	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
+
+	return ((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE];
+}
+
+void RasterData::SQLSetValue(long x, long y, double value)
+{
+	if(!cache) return;
+	
+	long xBl = x/RASTERBLOCKSIZE;
+	long yBl = y/RASTERBLOCKSIZE;
+	long blWidth = width/RASTERBLOCKSIZE;
+	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
+
+	((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE] = value;
+}
+
+void RasterData::SQLCopyField(const RasterData *ref)
+{
+	if(!cache || !ref->cache)	return;
+
+	long blWidth = width/RASTERBLOCKSIZE+1;
+	long blHeight = height/RASTERBLOCKSIZE+1;
+
+	for(long x = 0; x<blWidth; x++)
+	{
+		for(long y = 0; y<blHeight; y++)
+		{
+			cache->add(&blockLabels[x+y*RASTERBLOCKSIZE], ref->cache->get(&ref->blockLabels[x+y*RASTERBLOCKSIZE]));
+		}
+	}
+}
+
+QByteArray* RasterData::RasterBlockLabel::LoadFromDb()
+{
+	QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT data FROM rasterfields WHERE owner LIKE ? AND x=? AND y=?");
+    q->addBindValue(backRef->uuid.toByteArray());
+    q->addBindValue(QVariant::fromValue(x));
+    q->addBindValue(QVariant::fromValue(y));
+    if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
+        return NULL;
+
+	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
+	long blWidth = x/RASTERBLOCKSIZE+1;
+	long blHeight = y/RASTERBLOCKSIZE+1;
+	backRef->cache->add(&backRef->blockLabels[x+y*RASTERBLOCKSIZE], qba);
+    return qba;
+}
+
+void RasterData::RasterBlockLabel::SaveToDb(QByteArray *qba)
+{
+	if(!isInserted)
+	{
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,x,y,data) VALUES (?,?,?,?)");
+		q->addBindValue(backRef->uuid.toByteArray());
+		q->addBindValue(QVariant::fromValue(x));
+		q->addBindValue(QVariant::fromValue(y));
+		q->addBindValue(*qba);
+		DBConnector::getInstance()->ExecuteQuery(q);
+		isInserted = true;
+	}
+	else
+	{
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data=? WHERE owner=? AND x=? AND y=?");
+		q->addBindValue(*qba);
+		q->addBindValue(backRef->uuid.toByteArray());
+		q->addBindValue(QVariant::fromValue(x));
+		q->addBindValue(QVariant::fromValue(y));
+		DBConnector::getInstance()->ExecuteQuery(q);
+	}
+}
+
+/*
 void RasterData::SQLInsertField(long width, long height)
 {
 	if(width == 0 || height == 0)
@@ -468,3 +612,4 @@ void RasterData::ForceUpdate() const
     ApplyRowUpdates();
 }
 
+*/

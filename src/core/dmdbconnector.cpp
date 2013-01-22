@@ -120,8 +120,10 @@ bool DBConnector::CreateTables()
                                             datalink INT,\
                                             PRIMARY KEY (uuid))")
                && query.exec("CREATE TABLE rasterfields(owner BINARY(16) NOT NULL, \
-                                            y BIGINT, data BYTEA, \
-                                            PRIMARY KEY (owner,y))")
+                                            x BIGINT, \
+                                            y BIGINT, \
+											data BYTEA, \
+                                            PRIMARY KEY (owner,x,y))")
     && query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
                                             owner BINARY(16), \
                                             name VARCHAR(128), \

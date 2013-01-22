@@ -485,7 +485,7 @@ TEST_F(TestSimulation,simplesqltest) {
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 /* DOES NOT WORK ANYMORE (VALIDATION TOOL ON SUCCESSORSTATE)
@@ -586,7 +586,7 @@ TEST_F(TestSimulation, SqlNodeTest)
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SqlEdgeTest)
@@ -617,7 +617,7 @@ TEST_F(TestSimulation, SqlEdgeTest)
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SqlFaceOrder)
@@ -654,7 +654,7 @@ TEST_F(TestSimulation, SqlFaceOrder)
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 TEST_F(TestSimulation, SQLRasterdata)
 {
@@ -662,7 +662,7 @@ TEST_F(TestSimulation, SQLRasterdata)
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test raster data (SQL)";
 
-    int size = 4;
+    int size = 128;
     DM::RasterData* raster = new DM::RasterData(size,size,1,1,0,0);
     // check no value
     DM::Logger(DM::Debug) << "checking default values";
@@ -708,7 +708,7 @@ TEST_F(TestSimulation, SQLRasterdata)
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 TEST_F(TestSimulation, SQLattributes)
@@ -828,7 +828,7 @@ TEST_F(TestSimulation, SQLattributes)
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 #endif
@@ -927,7 +927,7 @@ TEST_F(TestSimulation,sqlprofiling) {
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 /**/
 
@@ -956,7 +956,6 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
         for(int x=0;x<n;x++)
             raster->setValue(x,y,x*1000+y);
 
-    raster->ForceUpdate();
     DM::DBConnector::getInstance()->Synchronize();
     DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
@@ -969,7 +968,7 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
-    DM::RasterData::PrintStatistics();
+    //DM::RasterData::PrintStatistics();
 }
 
 #endif
