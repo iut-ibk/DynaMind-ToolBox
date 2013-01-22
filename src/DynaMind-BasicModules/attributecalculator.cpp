@@ -127,7 +127,7 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
         }
     }
 
-    if (attr->getType() == Attribute::DOUBLE) {
+    if (attr->getType() == Attribute::DOUBLE ||attr->getType() == Attribute::NOTYPE  ) {
         varaible_container->push_back(attr->getDouble());
     }
 }
