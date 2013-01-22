@@ -50,7 +50,7 @@ void AppendViewFromSystem::run() {
 
 }
 
-//TODO: Works finw until someone is changing something upstream -> no update downstream!
+//TODO: Works fine until someone is changing something upstream -> no update downstream!
 void AppendViewFromSystem::init()
 {
     //Define New System
@@ -75,7 +75,12 @@ void AppendViewFromSystem::init()
                         for (DM::AttributeMap::const_iterator it = cmp.begin();
                              it != cmp.end();
                              ++it) {
+                            if (sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getType() == DM::Attribute::LINK)  {
+                                DM::LinkAttribute l_attr = sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getLink();
+                                new_v.addLinks(it->first, DM::View(l_attr.viewname, DM::READ, DM::COMPONENT));
+                            } else {
                             new_v.addAttribute(it->first);
+                            }
                         }
                         views.push_back(new_v);
                         existingViews.push_back(v);
