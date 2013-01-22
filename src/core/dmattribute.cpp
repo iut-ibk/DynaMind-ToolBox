@@ -192,7 +192,7 @@ LinkAttribute Attribute::getLink()
 {
     LinkAttribute attr;
     if (this->stringvector.size() < 2) {
-        Logger(Warning) << "Couldn't find link " << this->getName();
+        Logger(Debug) << "Couldn't find link " << this->getName();
         return LinkAttribute();
         
     }
