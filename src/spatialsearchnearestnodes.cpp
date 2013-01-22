@@ -28,7 +28,7 @@ SpatialSearchNearestNodes::~SpatialSearchNearestNodes()
     delete searchTree;
 }
 
-DM::Node *SpatialSearchNearestNodes::findNearestNode(DM::Node *n)
+DM::Node *SpatialSearchNearestNodes::findNearestNode(DM::Node *n, double treshhold)
 {
     const unsigned int N = 1;
 
@@ -37,7 +37,11 @@ DM::Node *SpatialSearchNearestNodes::findNearestNode(DM::Node *n)
     Point_d p;
     for(Neighbor_search::iterator it = search.begin(); it != search.end(); ++it){
         p = it->first;
-        DM::Logger(DM::Debug) << std::sqrt(it->second);
+        double lenght =  std::sqrt(it->second);
+         DM::Logger(DM::Debug) <<lenght;
+        if (treshhold > 0 && treshhold < lenght )
+            return 0;
+
         break;
     }
 

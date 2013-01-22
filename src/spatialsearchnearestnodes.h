@@ -23,7 +23,7 @@ public:
     SpatialSearchNearestNodes(DM::System * sys, std::vector<DM::Node *> nodes);
     ~SpatialSearchNearestNodes();
 
-    DM::Node * findNearestNode(DM::Node * n);
+    DM::Node * findNearestNode(DM::Node * n, double treshhold = -1);
 
 private:
     Tree * searchTree;
