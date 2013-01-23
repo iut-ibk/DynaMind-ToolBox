@@ -42,7 +42,7 @@
 
 using namespace DM;
 
-class ComponentSyncMap: public Asynchron, public std::list<Component*>
+class ComponentSyncMap: public Asynchron, public std::set<Component*>
 {
 public:
 	void Synchronize()
@@ -67,7 +67,9 @@ Component::Component()
 
     DBConnector::getInstance();
     //SQLInsertComponent();
-	componentSyncMap.push_back(this);
+	isCached = true;
+	componentSyncMap.insert(this);
+	//componentSyncMap.push_back(this);
 }
 
 Component::Component(bool b)
@@ -78,6 +80,7 @@ Component::Component(bool b)
 
     inViews = std::set<std::string>();
     currentSys = NULL;
+	isCached = false;
 }
 
 
@@ -100,12 +103,15 @@ Component::Component(const Component& c)
 {
 	CopyFrom(c);
 	//SQLInsertComponent();
-	componentSyncMap.push_back(this);
+	componentSyncMap.insert(this);
+	isCached = true;
+	//componentSyncMap.push_back(this);
 }
 
 Component::Component(const Component& c, bool bInherited)
 {
     CopyFrom(c);
+	isCached = false;
 }
 
 Component::~Component()
@@ -114,8 +120,10 @@ Component::~Component()
 		delete a;
 
 	ownedattributes.clear();
+	//componentSyncMap.remove(this);
+	if(isCached)
+		componentSyncMap.erase(this);
 	// if this class is not of type component, nothing will happen
-	componentSyncMap.remove(this);
     SQLDelete();
 }
 
@@ -294,7 +302,7 @@ void Component::SetOwner(Component *owner)
 
 void Component::SaveToDb()
 {
-	if(!this->getType() == DM::COMPONENT || !currentSys)
+	if(this->getType() != DM::COMPONENT || !currentSys)
 		return;
 
 	if(!isInserted)

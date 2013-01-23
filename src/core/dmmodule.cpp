@@ -123,7 +123,7 @@ bool Module::checkPreviousModuleUnchanged() {
         if (!DataValidation::isVectorOfViewRead(views))
             continue;
 
-        const DM::System * sys = this->getConstSystemData(s);
+		const DM::System * sys = this->getConstSystemData(s);
         if (sys == 0 || !sys->getLastModule() || !sys->getLastModule()->isExecuted())
             return false;
     }

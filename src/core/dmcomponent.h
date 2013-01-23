@@ -79,6 +79,7 @@ private:
     bool addAttribute(Attribute *pAttribute);
 
 	void CopyFrom(const Component &c);
+	bool isCached;
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
