@@ -42,7 +42,7 @@ namespace DM {
       * unlimeted number of Attributes. Edges only contain references to nodes stored in the system. As reference the uuid
       * of the Node is used.
       */
-    class DM_HELPER_DLL_EXPORT Edge : public Component
+    class DM_HELPER_DLL_EXPORT Edge : public Component, Asynchron
     {
     private:
         //void SQLSetValues(QUuid start, QUuid end);
@@ -51,7 +51,7 @@ namespace DM {
 		Node* start;
 		Node* end;
 
-		bool	isCached;
+		//bool	isCached;
 		//bool	isInserted;
 
 		//friend std::vector<Edge*> Node::connectedEdges;
@@ -93,8 +93,9 @@ namespace DM {
         Component* clone();
         /** @brief returns both points*/
         //const void getPoints(Node *points) const;
-		bool* LoadFromDb();
-		void SaveToDb(bool* b);
+		//bool* LoadFromDb();
+		//void SaveToDb(bool* b);
+		void Synchronize();
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;
 }
