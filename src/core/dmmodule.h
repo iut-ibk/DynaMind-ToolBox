@@ -190,7 +190,9 @@ public:
       * I ports have to be linked to a standard link and in additionally to a back link. If the internal counter of a the module is 0 (the module is)
       * called the first time. The method tries to get the data from the standard link. If the counter > 0 the back link is used.
       */
-    virtual  DM::System* getSystemData(const std::string &name) ;
+    virtual  DM::System* getSystemData(const std::string &name);
+
+    const DM::System* getConstSystemData(const std::string &name);
 
     /** @brief Creates a new system and adds the corresponding views */
     virtual  DM::System* getSystem_Write(string name, std::vector<View> view);
@@ -242,10 +244,10 @@ public:
     std::map<std::string, std::vector<DM::View> >  getViews();
 
     /** @brief Returns all inports */
-    std::vector<Port*> getInPorts();
+    std::vector<Port*> getInPorts() const;
 
     /** @brief Returns all outports */
-    std::vector<Port*> getOutPorts();
+    std::vector<Port*> getOutPorts() const;
 
     /** @brief Retruns a list of parameters used in the module*/
     std::vector<std::string> getParameterListAsVector()  {return this->parameterList;}
@@ -336,7 +338,7 @@ public:
     void setGroup(Group * group);
 
     /** @brief Returns pointer to the parent group */
-    Group * getGroup();
+    Group * getGroup() const;
 
     /** @brief Returns uuid */
     const std::string & getUuid() const {return this->uuid;}

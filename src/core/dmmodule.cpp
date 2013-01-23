@@ -123,7 +123,7 @@ bool Module::checkPreviousModuleUnchanged() {
         if (!DataValidation::isVectorOfViewRead(views))
             continue;
 
-        DM::System * sys = this->getSystemData(s);
+        const DM::System * sys = this->getConstSystemData(s);
         if (sys == 0 || !sys->getLastModule() || !sys->getLastModule()->isExecuted())
             return false;
     }
@@ -571,10 +571,10 @@ void Module::addPort(std::string LinkedDataName, int PortType) {
     }
 
 }
-std::vector<Port*> Module::getInPorts() {
+std::vector<Port*> Module::getInPorts() const {
     return this->InPorts;
 }
-std::vector<Port*> Module::getOutPorts() {
+std::vector<Port*> Module::getOutPorts() const {
     return this->OutPorts;
 }
 
@@ -582,7 +582,41 @@ void Module::init() {
 
 }
 
-DM::System*   Module::getSystemData(const std::string &name)  
+const DM::System* Module::getConstSystemData(const std::string &name)
+{
+	Port * p = this->getInPort(name);
+    if (!p || p->getLinks().size() == 0)
+		return 0;
+
+    int LinkId = -1;
+    int BackId = -1;
+    int counter = 0;
+    //Identify Positions in the Link Vector
+    foreach (ModuleLink * l, p->getLinks()) 
+	{
+        if (!l->isBackLink())
+            LinkId = counter++;
+        else 
+            BackId = counter++;
+    }
+    if (LinkId < 0)
+        return 0;
+
+    ModuleLink * l = p->getLinks()[LinkId];
+
+    if (this->internalCounter > 0 && BackId != -1)
+	{
+        l = p->getLinks()[BackId];
+        Logger(Debug) << "BackLink for " << name;
+        Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
+    }
+    Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
+    //Counter Number of Links at Outport
+    return  m->getSystemState(l->getDataNameFromOutPort());
+}
+
+
+DM::System* Module::getSystemData(const std::string &name)  
 {
     Port * p = this->getInPort(name);
     if (!p || p->getLinks().size() == 0)
@@ -642,14 +676,14 @@ DM::System*   Module::getSystemData(const std::string &name)
 
 DM::System* Module::getSystemState(const std::string &name)
 {
+	// may use map_contains
     DM::System  * sys = this->data_vals_prev[name];
 
-    if (sys == 0) {
+    if (sys == 0)
         return 0;
-    }
+  
     sys->setAccessedByModule(this);
     return sys;
-
 }
 
 
@@ -689,7 +723,7 @@ void Module::setGroup(Group *group) {
     }
     this->group->addModule(this);
 }
-Group * Module::getGroup() {
+Group * Module::getGroup() const {
     return this->group;
 }
 void Module::setSimulation(Simulation *simulation) {

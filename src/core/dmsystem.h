@@ -232,7 +232,7 @@ public:
     void addPredecessors(DM::System * s);
 
     void setAccessedByModule(Module * m);
-    Module * getLastModule();
+    Module * getLastModule() const;
 
 	
 	// for faster searching - maybe find a better solution for access

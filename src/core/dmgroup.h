@@ -78,6 +78,8 @@ namespace DM {
 
          QVector<QRunnable *> getNextJobs();
          bool moduleHasChanged;
+
+		 Port* getPort(std::string name) const;
     protected:
          int Steps;
          int step;
@@ -112,11 +114,11 @@ namespace DM {
         /** @brief Returns in port from port tuple,  if outport tuple and inport tuple have the same name, the in port from the outport tuple is returned
          * @TODO remove this method in the next version
          */
-        virtual Port * getInPort(std::string Name);
+        virtual Port * getInPort(std::string Name) const;
         /** @brief Returns out port from port tuple,  if outport tuple and inport tuple have the same name, the in port from the outport tuple is returned
          * @TODO remove this method in the next version
          */
-        virtual Port * getOutPort(std::string Name);
+        virtual Port * getOutPort(std::string Name) const;
         /** @brief Used after a module has been executed
          *
          * After a module the run method of a module is executed it is removed from the notUsedModules

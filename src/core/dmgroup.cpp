@@ -153,9 +153,22 @@ PortTuple * Group::getInPortTuple(std::string name) {
 
     return 0;
 }
-Port * Group::getInPort( std::string name)  {
 
-    for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
+Port* Group::getPort(std::string name) const
+{
+	foreach(PortTuple *pt, outPortTuple)
+		if(pt->getName() == name)
+			return pt->getOutPort();
+
+	foreach(PortTuple *pt, inPortTuple)
+		if(pt->getName() == name)
+			return pt->getOutPort();
+	return 0;
+}
+
+Port * Group::getInPort( std::string name) const
+{
+    /*for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getInPort();
         if (pt->getName().compare(name) == 0) {
@@ -169,12 +182,17 @@ Port * Group::getInPort( std::string name)  {
             return p;
         }
 
-    }
+    }*/
+	Port *p = getPort(name);
+	if(p)	return p;
+
     return Module::getInPort(name);
 
     return 0;
 }
-Port * Group::getOutPort(std::string name) {
+Port * Group::getOutPort(std::string name) const
+{
+	/*
     for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getOutPort();
@@ -189,7 +207,9 @@ Port * Group::getOutPort(std::string name) {
             return p;
         }
 
-    }
+    }*/
+	Port *p = getPort(name);
+	if(p)	return p;
 
     return Module::getOutPort(name);
     return 0;

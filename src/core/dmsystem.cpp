@@ -172,7 +172,7 @@ void System::setAccessedByModule(Module * m) {
     this->lastModule = m;
 }
 
-Module * System::getLastModule() {
+Module * System::getLastModule() const {
     return this->lastModule;
 }
 
