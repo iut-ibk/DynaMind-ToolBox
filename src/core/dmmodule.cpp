@@ -239,9 +239,9 @@ void Module::updateParameter() {
             this->data_vals[s]->setAccessedByModule(this);
             continue;
         }
-
-        //Create new system state for data that get modified
-        if (DataValidation::isVectorOfViewRead(views)) {
+		else	//Create new system state for data that get modified
+		{
+        //if (DataValidation::isVectorOfViewRead(views)) {
             DM::System * sys_old = this->data_vals[s];
             if (sys_old != 0) {
                 this->data_vals[s] = sys_old;//sys_old->createSuccessor();
