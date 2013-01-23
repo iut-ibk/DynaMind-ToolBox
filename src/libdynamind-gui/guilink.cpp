@@ -117,7 +117,8 @@ void GUILink::setInPort(QPointF p) {
 }
 void GUILink::refresh() {
     source = outPort->getConnectionNode();
-    sink = inPort->getConnectionNode();
+	if(inPort)
+		sink = inPort->getConnectionNode();
     updatePaths();
     prepareGeometryChange ();
     this->update(this->boundingRect());
