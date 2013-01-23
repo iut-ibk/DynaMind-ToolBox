@@ -50,11 +50,6 @@ namespace DM {
         QString getTableName();
 		Node* start;
 		Node* end;
-
-		//bool	isCached;
-		//bool	isInserted;
-
-		//friend std::vector<Edge*> Node::connectedEdges;
     public:
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
         //Edge(QUuid startpoint, QUuid endpoint);

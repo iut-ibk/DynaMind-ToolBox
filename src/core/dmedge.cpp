@@ -34,8 +34,6 @@
 
 using namespace DM;
 
-//DbCache<Edge*,bool> edgeCache(1e6);
-
 Edge::Edge(Node *start, Node *end) : Component(true)
 {
 	this->start = start;
@@ -43,7 +41,6 @@ Edge::Edge(Node *start, Node *end) : Component(true)
 	start->addEdge(this);
 	end->addEdge(this);
 
-	//isCached = false;
 	isInserted = false;
 }
 
@@ -54,14 +51,11 @@ Edge::Edge(const Edge& e) : Component(e, true)
 	start->addEdge(this);
 	end->addEdge(this);
 
-	//isCached = false;
 	isInserted = false;
 }
 
 Edge::~Edge()
 {
-	//if(isCached)
-	//	edgeCache.remove(this);
     if(isInserted)
         Component::SQLDelete();
 }
@@ -85,7 +79,6 @@ const QUuid Edge::getStartpoint() const
 
 const std::string Edge::getStartpointName() const
 {
-    //return getStartpoint().toString().toStdString();
 	return start->getUUID();
 }
 Node* Edge::getEndNode() const
@@ -99,18 +92,13 @@ const QUuid Edge::getEndpoint() const
 
 const std::string Edge::getEndpointName() const
 {
-    //return getEndpoint().toString().toStdString();
 	return end->getUUID();
 }
 
 void Edge::setStartpoint(Node *start)
 {
-	//if(isCached)	edgeCache.get(this);
 	this->start = start;
 	start->addEdge(this);
-	/*if(isCached)
-		DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode", start->getQUUID().toByteArray());*/
 }
 
 void Edge::setStartpointName(std::string name)
@@ -120,12 +108,8 @@ void Edge::setStartpointName(std::string name)
 
 void Edge::setEndpoint(Node *end)
 {
-	//if(isCached)	edgeCache.get(this);
 	this->end = end;
 	end->addEdge(this);
-    /*if(isCached)
-		DBConnector::getInstance()->Update("edges", uuid,
-                                       "endnode",  end->getQUUID().toByteArray());*/
 }
 
 void Edge::setEndpointName(std::string name)
@@ -154,30 +138,3 @@ void Edge::Synchronize()
         isInserted = true;
     }
 }
-/*
-bool* Edge::LoadFromDb()
-{
-	QVariant qstart,qend;
-    DBConnector::getInstance()->Select("edges", uuid,
-                                       "startnode",    &qstart,
-                                       "endnode",     &qend);
-	start = getCurrentSystem()->getNode(QUuid(qstart.toByteArray()));
-    end = getCurrentSystem()->getNode(QUuid(qend.toByteArray()));
-    return NULL;
-}
-void Edge::SaveToDb()
-{
-    if(isInserted)
-    {
-        DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                       "endnode",  end->getQUUID().toByteArray());
-    }
-    else
-    {
-        DBConnector::getInstance()->Insert("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                       "endnode",  end->getQUUID().toByteArray());
-        isInserted = true;
-    }
-}*/
