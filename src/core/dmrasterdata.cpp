@@ -351,6 +351,7 @@ Component * RasterData::clone() {
 
 void RasterData::SQLInsert()
 {
+	isInserted = true;
     DBConnector::getInstance()->Insert("rasterdatas", uuid);
 }
 
@@ -458,7 +459,7 @@ void RasterData::SQLCopyField(const RasterData *ref)
 	{
 		for(long y = 0; y<blHeight; y++)
 		{
-			cache->add(&blockLabels[x+y*RASTERBLOCKSIZE], ref->cache->get(&ref->blockLabels[x+y*RASTERBLOCKSIZE]));
+			cache->add(&blockLabels[x+y*blWidth], ref->cache->get(&ref->blockLabels[x+y*blWidth]));
 		}
 	}
 }
@@ -475,7 +476,7 @@ QByteArray* RasterData::RasterBlockLabel::LoadFromDb()
 	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
 	long blWidth = x/RASTERBLOCKSIZE+1;
 	long blHeight = y/RASTERBLOCKSIZE+1;
-	backRef->cache->add(&backRef->blockLabels[x+y*RASTERBLOCKSIZE], qba);
+	backRef->cache->add(&backRef->blockLabels[x+y*blWidth], qba);
     return qba;
 }
 
