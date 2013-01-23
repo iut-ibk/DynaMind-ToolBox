@@ -782,6 +782,7 @@ std::vector<Component*> System::getChilds()
 
 void System::SQLInsert()
 {
+	isInserted = true;
     DBConnector::getInstance()->Insert("systems", uuid);
 }
 void System::SQLUpdateStates()

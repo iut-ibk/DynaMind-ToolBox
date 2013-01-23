@@ -55,6 +55,7 @@ private:
     /** @brief return table name */
     QString getTableName();
 	void SetOwner(Component *owner);
+	//bool isInserted;
 public:
 	void Synchronize();
     /** @brief destructor */

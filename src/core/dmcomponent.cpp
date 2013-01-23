@@ -97,7 +97,7 @@ Component::~Component()
         ownedattributes.erase(ownedattributes.begin());
     }
 	// if this class is not of type component, nothing will happen
-    SQLDeleteComponent();
+    SQLDelete();
     //delete ;
 }
 
@@ -292,19 +292,27 @@ void Component::SQLSetOwner(Component * owner)
 
 void Component::SQLInsertComponent()
 {
+	isInserted = true;
     DBConnector::getInstance()->Insert("components",
                                        uuid);
 }
-
+/*
 void Component::SQLDeleteComponent()
 {
     // note: if its not a component, it will just do nothing
-    DBConnector::getInstance()->Delete("components",
-                                       uuid);
-}
+	if(isInserted)
+	{
+		isInserted = false;
+		DBConnector::getInstance()->Delete("components", uuid);
+	}
+}*/
 void Component::SQLDelete()
 {
-    DBConnector::getInstance()->Delete(getTableName(), uuid);
+	if(isInserted)
+	{
+		isInserted = false;
+		DBConnector::getInstance()->Delete(getTableName(), uuid);
+	}
 }
 
 bool Component::HasAttribute(std::string name)

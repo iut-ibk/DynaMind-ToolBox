@@ -78,12 +78,15 @@ Node::Node(const Node& n) : Component(n, true)
     vector->z = refv.z;
     isInserted = false;
 	connectedEdges = 0;
+	if(n.connectedEdges)
+		foreach(Edge* e, *n.connectedEdges)
+			this->addEdge(e);
 }
 Node::~Node()
 {
     nodeCache.remove(this);
     if(vector)			delete vector;
-    if(isInserted)		Component::SQLDelete();
+    //if(isInserted)		Component::SQLDelete();
 	if(connectedEdges)	delete connectedEdges;
 }
 void Node::SetOwner(Component *owner)
@@ -184,6 +187,10 @@ Node& Node::operator=(const Node& other)
 		double v[3];
 		other.get(v);
 		this->set(v[0],v[1],v[2]);
+		
+		if(!connectedEdges && other.connectedEdges)
+			foreach(Edge* e, *other.connectedEdges)
+				this->addEdge(e);
 	}
 	return *this;
 }

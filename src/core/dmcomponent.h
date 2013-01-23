@@ -72,11 +72,12 @@ class DM_HELPER_DLL_EXPORT Component
 private:
 	void SQLSetOwner(Component *owner);
 	void SQLInsertComponent();
-    void SQLDeleteComponent();
+    //void SQLDeleteComponent();
 
 	bool HasAttribute(std::string name);
 	void LoadAttribute(std::string name);
     bool addAttribute(Attribute *pAttribute);
+
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
@@ -88,6 +89,7 @@ protected:
     std::map<std::string,Attribute*> ownedattributes;
     std::set<std::string> inViews;
     System * currentSys;
+	bool isInserted;
 
     void removeView(const DM::View & view);
     /** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */

@@ -52,7 +52,7 @@ namespace DM {
 		Node* end;
 
 		bool	isCached;
-		bool	isInserted;
+		//bool	isInserted;
 
 		//friend std::vector<Edge*> Node::connectedEdges;
     public:

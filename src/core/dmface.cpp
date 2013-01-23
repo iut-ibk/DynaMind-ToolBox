@@ -77,17 +77,19 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
 Face::Face(std::vector<Node*> nodes) : Component(true)
 {
     this->_nodes = nodes;
-    DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(_nodes));
+	isInserted = false;
+    /*DBConnector::getInstance()->Insert("faces", uuid,
+                                       "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(const Face& e) : Component(e, true)
 {
     this->_nodes = e._nodes;
     this->_holes = e._holes;
-    DBConnector::getInstance()->Insert("faces", uuid,
+	isInserted = false;
+    /*DBConnector::getInstance()->Insert("faces", uuid,
                                        "nodes", GetBytes(e._nodes),
-                                       "holes", GetBytes(e._holes));
+                                       "holes", GetBytes(e._holes));*/
 }
 Face::~Face()
 {
@@ -193,11 +195,23 @@ void Face::SQLUpdateValues()
 */
 void Face::Synchronize()
 {
-	if(getCurrentSystem())
+	if(!getCurrentSystem())
+		return;
+	if(isInserted)
+	{
 		DBConnector::getInstance()->Update("faces", uuid,
 										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
 		                                  "nodes", GetBytes(_nodes),
 		                                  "holes", GetBytes(_holes));
+	}
+	else
+	{
+		isInserted = true;
+		DBConnector::getInstance()->Insert("faces", uuid,
+										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
+		                                  "nodes", GetBytes(_nodes),
+		                                  "holes", GetBytes(_holes));
+	}
 }
 
 void Face::SetOwner(Component *owner)

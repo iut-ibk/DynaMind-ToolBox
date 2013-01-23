@@ -53,7 +53,7 @@ class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
     Vector3* vector;
-    bool    isInserted;
+    //bool    isInserted;
     /** @brief return table name */
     QString getTableName();
 	
