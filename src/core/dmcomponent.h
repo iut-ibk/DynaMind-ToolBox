@@ -36,6 +36,7 @@
 #include <dmcompilersettings.h>
 #include <QMutex>
 #include <QMutexLocker>
+//#include <unordered_map>
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -87,6 +88,7 @@ protected:
 
     QUuid uuid;
     std::map<std::string,Attribute*> ownedattributes;
+	//std::unordered_map<std::string,Attribute*> ownedattributes;
     std::set<std::string> inViews;
     System * currentSys;
 	bool isInserted;

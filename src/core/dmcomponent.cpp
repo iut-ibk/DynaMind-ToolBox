@@ -91,11 +91,17 @@ Component::Component(const Component& c, bool b)
 
 Component::~Component()
 {
+	mforeach(Attribute* a, ownedattributes)
+		delete a;
+
+	ownedattributes.clear();
+	/*
+	std::map<std::string,Attribute*>::iterator it = ownedattributes.begin();
 	while(ownedattributes.size())
     {
-        delete (*ownedattributes.begin()).second;
-        ownedattributes.erase(ownedattributes.begin());
-    }
+        delete it->second;
+        ownedattributes.erase(it);
+    }*/
 	// if this class is not of type component, nothing will happen
     SQLDelete();
     //delete ;

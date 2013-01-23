@@ -146,11 +146,15 @@ System::System(const System& s) : Component(s, true)
 }
 System::~System()
 {
-    while(ownedchilds.size())
+    /*while(ownedchilds.size())
     {
         delete (*ownedchilds.begin()).second;
         ownedchilds.erase(ownedchilds.begin());
-    }
+    }*/
+	mforeach(Component* c, ownedchilds)
+		delete c;
+
+	ownedchilds.clear();
 
     foreach (DM::System * sys, this->sucessors)
         if (sys)	delete sys;

@@ -153,29 +153,34 @@ void Module::setInternalCounter(int counter)
 
 void Module::updateParameter() {
     Logger(Debug) << this->getUuid() <<" Update Parameter";
-    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) 
+	{
         std::string s = it->first;
-        if (it->second != DM::SYSTEM) {
+        if (it->second != DM::SYSTEM)
             continue;
-        }
-        std::vector<DM::View> views= this->views[s];
-
+        
+        std::vector<DM::View> views = this->views[s];
         //Check Reads
-        if (DataValidation::isVectorOfViewRead(views)) {
+        if (DataValidation::isVectorOfViewRead(views)) 
+		{
             //If the internal counter is > 0 data could be need for back link!
             if (this->internalCounter == 0)
                 this->data_vals[s] = 0;
             //Default links are not fulfilled
-            this->getInPort(s)->setFullyLinked(false);
-            if (this->getOutPort(s) != 0)
-                this->getOutPort(s)->setFullyLinked(false);
+			Port* inPort = this->getInPort(s);
+			Port* outPort = this->getOutPort(s);
+			
+            inPort->setFullyLinked(false);
+            if (outPort != 0)
+                outPort->setFullyLinked(false);
 
             DM::System * sys = this->getSystemData(s);
             if (sys == 0)
                 continue;
 
             //check for reads data. For read access only no new system state is created.
-            foreach (DM::View view,  views)  {
+            foreach (DM::View view,  views)  
+			{
                 if ( !view.reads() )
                     continue;
 
@@ -188,33 +193,32 @@ void Module::updateParameter() {
                     sys = 0;
                     break;
                 }
-
                 //Check Type. Since all components can be used as component it can be used "downwards"
                 if (checkView->getType() != view.getType() && view.getType() != DM::COMPONENT) {
-                    DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << " type difference";
+                    DM::Logger(DM::Warning) << "Couldn't validate View " << view.getName() << " type difference";
                     sys = 0;
                     break;
                 }
                 //Get DummyComponent
                 DM::Component *c = checkView->getDummyComponent();
                 //Check if attributes are avalible
-                if (c == 0)
-                {
+                if (c == 0){
                     sys = 0;
                     DM::Logger(DM::Warning) << "Dummy component does not exist in view: " << checkView->getName();
                     break;
                 }
-                if (c->getCurrentSystem() != sys)
-                {
+                if (c->getCurrentSystem() != sys){
                     sys = 0;
                     DM::Logger(DM::Warning) << "Dummy component not found in system: "
                                             << c->getQUUID().toString().toStdString();
                     break;
                 }
                 //Check if attributes to read are avalible in component
-                foreach (std::string a, view.getReadAttributes()) {
+                foreach (std::string a, view.getReadAttributes()) 
+				{
                     std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
-                    if (existing_attributes.find(a) == existing_attributes.end()) {
+					if(!map_contains(&existing_attributes, a))
+					{
                         sys = 0;
                         DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << "Attribute missing" << a;
                         break;
@@ -227,35 +231,35 @@ void Module::updateParameter() {
                 continue;
             //All Checks successful -> update data
             this->data_vals[s] = sys;
-            this->getInPort(s)->setFullyLinked(true);
-            if (this->getOutPort(s) != 0)
-                this->getOutPort(s)->setFullyLinked(true);
+            inPort->setFullyLinked(true);
+            if (outPort)
+                outPort->setFullyLinked(true);
         }
 
         //Creats a new Dataset for a complet new dataset
         if (!DataValidation::isVectorOfViewRead(views)) {
             this->data_vals[s] = this->getSystem_Write(s, views);
             this->getOutPort(s)->setFullyLinked(true);
-            this->data_vals[s]->setAccessedByModule(this);
-            continue;
+            //this->data_vals[s]->setAccessedByModule(this);
+            //continue;
         }
 		else	//Create new system state for data that get modified
 		{
         //if (DataValidation::isVectorOfViewRead(views)) {
             DM::System * sys_old = this->data_vals[s];
             if (sys_old != 0) {
-                this->data_vals[s] = sys_old;//sys_old->createSuccessor();
+                //this->data_vals[s] = sys_old; completly useless //sys_old->createSuccessor();
                 foreach (DM::View v, views)
-                    this->data_vals[s]->addView(v);
+                    sys_old->addView(v);
             }
         }
         this->data_vals[s]->setAccessedByModule(this);
-
     }
-    foreach(PortObserver * po, this->portobserver) {
+    /* doesnt make sense TODO
+	foreach(PortObserver * po, this->portobserver) {
         if (!po)
         po->changedPorts();
-    }
+    }*/
 }
 
 bool Module::checkIfAllSystemsAreSet() {
