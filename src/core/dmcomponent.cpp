@@ -100,16 +100,8 @@ Component::~Component()
 		delete a;
 
 	ownedattributes.clear();
-	/*
-	std::map<std::string,Attribute*>::iterator it = ownedattributes.begin();
-	while(ownedattributes.size())
-    {
-        delete it->second;
-        ownedattributes.erase(it);
-    }*/
 	// if this class is not of type component, nothing will happen
     SQLDelete();
-    //delete ;
 }
 
 Component& Component::operator=(const Component& other)
@@ -132,7 +124,6 @@ bool Component::isInView(View view) const
 }
 std::string Component::getUUID()
 {
-    //return uuid.toString().toStdString();
 	Attribute* a = this->getAttribute(UUID_ATTRIBUTE_NAME);
 	std::string name = a->getString();
 	if(name == "")	
@@ -239,15 +230,6 @@ Attribute* Component::getAttribute(std::string name)
 		ownedattributes[name] = a;
 	}
 	return a;
-
-	/*
-    if(!HasAttribute(name))
-    {
-        Attribute tmp(name);
-        this->addAttribute(tmp);
-    }
-
-    return ownedattributes[name];*/
 }
 
 const std::map<std::string, Attribute*> & Component::getAllAttributes() const
@@ -296,27 +278,15 @@ void Component::SetOwner(Component *owner)
 }
 void Component::SQLSetOwner(Component * owner)
 {
-    DBConnector::getInstance()->Update(getTableName(),
-                                       uuid,
+    DBConnector::getInstance()->Update(getTableName(), uuid,
                                        "owner", owner->uuid.toByteArray());
 }
 
 void Component::SQLInsertComponent()
 {
 	isInserted = true;
-    DBConnector::getInstance()->Insert("components",
-                                       uuid);
+    DBConnector::getInstance()->Insert("components",	uuid);
 }
-/*
-void Component::SQLDeleteComponent()
-{
-    // note: if its not a component, it will just do nothing
-	if(isInserted)
-	{
-		isInserted = false;
-		DBConnector::getInstance()->Delete("components", uuid);
-	}
-}*/
 void Component::SQLDelete()
 {
 	if(isInserted)

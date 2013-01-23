@@ -97,7 +97,7 @@ Module::~Module() {
     this->getSimulation()->deregisterModule(this->getUuid());
     this->Destructor();
 }
-Port * Module::getInPort( std::string name) const 
+Port * Module::getInPort(std::string name) const 
 {
 	foreach(Port* p, InPorts)
 		if(p->getLinkedDataName() == name)
@@ -571,6 +571,7 @@ void Module::addPort(std::string LinkedDataName, int PortType) {
     }
 
 }
+
 std::vector<Port*> Module::getInPorts() const {
     return this->InPorts;
 }
