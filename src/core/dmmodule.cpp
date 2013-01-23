@@ -96,22 +96,12 @@ Module::~Module() {
         return;
     this->getSimulation()->deregisterModule(this->getUuid());
     this->Destructor();
-
-
 }
 Port * Module::getInPort( std::string name) const 
 {
 	foreach(Port* p, InPorts)
 		if(p->getLinkedDataName() == name)
 			return p;
-	/*
-    for (std::vector<Port*>::const_iterator it = this->InPorts.begin(); it != this->InPorts.end(); ++it) {
-        Port * p = *it;
-        if (p->getLinkedDataName().compare(name) == 0) {
-            return p;
-        }
-
-    }*/
     return 0;
 }
 Port * Module::getOutPort(std::string name) const 
@@ -119,38 +109,23 @@ Port * Module::getOutPort(std::string name) const
 	foreach(Port* p, OutPorts)
 		if(p->getLinkedDataName() == name)
 			return p;
-    /*for (std::vector<Port*>::iterator it = this->OutPorts.begin(); it != this->OutPorts.end(); ++it) {
-        Port * p = *it;
-        if (p->getLinkedDataName().compare(name) == 0) {
-            return p;
-        }
-
-    }*/
     return 0;
 }
 bool Module::checkPreviousModuleUnchanged() {
     Logger(Debug) << this->getUuid() <<" Update Parameter";
-    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) 
+	{
         std::string s = it->first;
-        if (it->second != DM::SYSTEM) {
+        if (it->second != DM::SYSTEM)
             continue;
-        }
         std::vector<DM::View> views= this->views[s];
-
         //Check Reads
-        if (!DataValidation::isVectorOfViewRead(views)) {
+        if (!DataValidation::isVectorOfViewRead(views))
             continue;
-        }
-        DM::System * sys = this->getSystemData(s);
 
-        if (sys == 0)
+        DM::System * sys = this->getSystemData(s);
+        if (sys == 0 || !sys->getLastModule() || !sys->getLastModule()->isExecuted())
             return false;
-        if (!sys->getLastModule()) {
-            return false;
-        }
-        if (!sys->getLastModule()->isExecuted()) {
-            return false;
-        }
     }
     return true;
 }
