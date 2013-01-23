@@ -42,6 +42,18 @@
 
 using namespace DM;
 
+class ComponentSyncMap: public Asynchron, public std::list<Component*>
+{
+public:
+	void Synchronize()
+	{
+		foreach(Component* c, *this)
+			c->SaveToDb();
+	}
+};
+
+static ComponentSyncMap componentSyncMap;
+
 Component::Component()
 {
     DBConnector::getInstance();
@@ -54,7 +66,8 @@ Component::Component()
     currentSys = NULL;
 
     DBConnector::getInstance();
-    SQLInsertComponent();
+    //SQLInsertComponent();
+	componentSyncMap.push_back(this);
 }
 
 Component::Component(bool b)
@@ -86,12 +99,13 @@ void Component::CopyFrom(const Component &c)
 Component::Component(const Component& c)
 {
 	CopyFrom(c);
+	//SQLInsertComponent();
+	componentSyncMap.push_back(this);
 }
 
 Component::Component(const Component& c, bool bInherited)
 {
     CopyFrom(c);
-	SQLInsertComponent();
 }
 
 Component::~Component()
@@ -101,6 +115,7 @@ Component::~Component()
 
 	ownedattributes.clear();
 	// if this class is not of type component, nothing will happen
+	componentSyncMap.remove(this);
     SQLDelete();
 }
 
@@ -270,12 +285,30 @@ void Component::setCurrentSystem(System *sys) {
 
 void Component::SetOwner(Component *owner)
 {
-	SQLSetOwner(owner);
+	//SQLSetOwner(owner);
     currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
 		it->second->SetOwner(this);
 }
+
+void Component::SaveToDb()
+{
+	if(!this->getType() == DM::COMPONENT || !currentSys)
+		return;
+
+	if(!isInserted)
+	{
+		isInserted = true;
+		DBConnector::getInstance()->Insert(	"components", uuid, 
+											"owner", currentSys->getQUUID().toByteArray());
+	}
+	else
+		DBConnector::getInstance()->Update(	"components", uuid, 
+											"owner", currentSys->getQUUID().toByteArray());
+}
+
+/*
 void Component::SQLSetOwner(Component * owner)
 {
     DBConnector::getInstance()->Update(getTableName(), uuid,
@@ -286,7 +319,7 @@ void Component::SQLInsertComponent()
 {
 	isInserted = true;
     DBConnector::getInstance()->Insert("components",	uuid);
-}
+}*/
 void Component::SQLDelete()
 {
 	if(isInserted)
@@ -300,4 +333,3 @@ bool Component::HasAttribute(std::string name)
 {
 	return ownedattributes.find(name)!=ownedattributes.end();
 }
-

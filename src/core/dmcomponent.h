@@ -69,10 +69,9 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
-
 private:
-	void SQLSetOwner(Component *owner);
-	void SQLInsertComponent();
+	//void SQLSetOwner(Component *owner);
+	//void SQLInsertComponent();
     //void SQLDeleteComponent();
 
 	bool HasAttribute(std::string name);
@@ -160,6 +159,7 @@ public:
 
     System * getCurrentSystem();
     void setCurrentSystem(System * sys);
+	void SaveToDb();
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }
