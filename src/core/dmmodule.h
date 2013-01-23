@@ -318,10 +318,10 @@ public:
     void addPortObserver(PortObserver * portobserver);
 
     /** @brief return pointer to InPort */
-    virtual Port * getInPort(std::string Name);
+    virtual Port * getInPort(std::string Name) const;
 
     /** @brief return pointer to OutPort */
-    virtual Port * getOutPort(std::string Name);
+    virtual Port * getOutPort(std::string Name) const;
 
     /** @brief return class name */
     virtual  const char * getClassName()  {return "OVERWRITE getClassName";}
@@ -427,9 +427,6 @@ private:
     std::map<std::string, DM::System *> ownedSystems_prev;
     bool hasBeenExecuted;
     bool debugMode;
-
-
-
 protected:
     std::map<std::string, int> int_params;
     std::map<std::string, std::string> paramRaw;
@@ -442,7 +439,6 @@ protected:
     std::map<std::string, double> InputDoubleData;
     std::vector<std::string> parameterList;
 
-
     /** @brief the internalCounter is increased by on everytime the
      * run method is called.
      */
@@ -453,7 +449,6 @@ protected:
 
     /** @brief Add a new Port to the Module */
     virtual void addPort(std::string LinkedDataName, int PortType);
-
 };
 }
 

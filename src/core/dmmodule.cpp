@@ -99,24 +99,33 @@ Module::~Module() {
 
 
 }
-Port * Module::getInPort( std::string name)  {
+Port * Module::getInPort( std::string name) const 
+{
+	foreach(Port* p, InPorts)
+		if(p->getLinkedDataName() == name)
+			return p;
+	/*
     for (std::vector<Port*>::const_iterator it = this->InPorts.begin(); it != this->InPorts.end(); ++it) {
         Port * p = *it;
         if (p->getLinkedDataName().compare(name) == 0) {
             return p;
         }
 
-    }
+    }*/
     return 0;
 }
-Port * Module::getOutPort(std::string name) {
-    for (std::vector<Port*>::iterator it = this->OutPorts.begin(); it != this->OutPorts.end(); ++it) {
+Port * Module::getOutPort(std::string name) const 
+{	
+	foreach(Port* p, OutPorts)
+		if(p->getLinkedDataName() == name)
+			return p;
+    /*for (std::vector<Port*>::iterator it = this->OutPorts.begin(); it != this->OutPorts.end(); ++it) {
         Port * p = *it;
         if (p->getLinkedDataName().compare(name) == 0) {
             return p;
         }
 
-    }
+    }*/
     return 0;
 }
 bool Module::checkPreviousModuleUnchanged() {
@@ -598,61 +607,60 @@ void Module::init() {
 
 }
 
-
-DM::System*   Module::getSystemData(const std::string &name)  {
+DM::System*   Module::getSystemData(const std::string &name)  
+{
     Port * p = this->getInPort(name);
-    if (p == 0)
-        return 0;
-    if (p->getLinks().size() == 0)
-        return 0;
+    if (!p || p->getLinks().size() == 0)
+		return 0;
 
     int LinkId = -1;
     int BackId = -1;
     int counter = 0;
     int CounterBackLink = 0;
-
     //Identify Positions in the Link Vector
-    foreach (ModuleLink * l, p->getLinks()) {
-        if (!l->isBackLink()) {
-            LinkId = counter;
-
-        } else {
-            BackId = counter;
+    foreach (ModuleLink * l, p->getLinks()) 
+	{
+        if (!l->isBackLink())
+            LinkId = counter++;
+        else 
+		{
+            BackId = counter++;
             CounterBackLink++;
         }
-        counter++;
     }
-
-
-
     if (LinkId < 0)
         return 0;
+
     ModuleLink * l = p->getLinks()[LinkId];
-    if (this->internalCounter > 0 && BackId != -1){
+
+    if (this->internalCounter > 0 && BackId != -1)
+	{
         l = p->getLinks()[BackId];
         Logger(Debug) << "BackLink for " << name;
         Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
     }
     Module * m = this->simulation->getModuleWithUUID(l->getUuidFromOutPort());
     //Counter Number of Links at Outport
-    DM::Port * out_p = m->getOutPort(l->getDataNameFromOutPort());
-    int standardLinks = out_p->getLinks().size() - CounterBackLink;
     DM::System * returnSys =  m->getSystemState(l->getDataNameFromOutPort());
     if (!returnSys)
         return 0;
-    if (m->getGroup() != this->getGroup()) {
+    if (m->getGroup() != this->getGroup()) 
+	{
          Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
          return returnSys->createSuccessor();
     }
-
-    if (standardLinks > 1) {
+    DM::Port * out_p = m->getOutPort(l->getDataNameFromOutPort());
+    // more than 1 standard link?
+    if (out_p->getLinks().size() - CounterBackLink > 1) 
+	{
          Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
          return returnSys->createSuccessor();
     }
-    if (isDebugMode()) {
+    if (isDebugMode()) 
+	{
         Logger(Debug) << "Debug Split " << l->getInPort()->getLinkedDataName();
-        return returnSys->createSuccessor();    }
-
+        return returnSys->createSuccessor();    
+	}
     return returnSys;
 }
 

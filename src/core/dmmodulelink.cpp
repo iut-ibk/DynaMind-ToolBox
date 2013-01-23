@@ -36,7 +36,7 @@ ModuleLink::ModuleLink(Port * InPort, Port * OutPort, bool isBackPort)
     this->OutPort = OutPort;
     this->OutPort->addLink(this);
     this->backLink = isBackPort;
-    isBackLinkFromOrigin = false;
+    //isBackLinkFromOrigin = false;
 
 }
 void ModuleLink::setInPort(Port * p) {
@@ -47,10 +47,10 @@ void ModuleLink::setOutPort(Port * p) {
     this->OutPort = p;
     this->OutPort->addLink(this);
 }
-Port * ModuleLink::getInPort() {
+Port * ModuleLink::getInPort() const {
     return this->InPort;
 }
-Port * ModuleLink::getOutPort() {
+Port * ModuleLink::getOutPort() const {
     return this->OutPort;
 }
 std::string ModuleLink::getUuidFromOutPort() {
@@ -61,14 +61,14 @@ std::string ModuleLink::getUuidFromOutPort() {
 
     return this->OutPort->getModule()->getUuid();
 }
-std::string ModuleLink::getDataNameFromOutPort() {
+std::string ModuleLink::getDataNameFromOutPort() const {
     if (this->OutPort->isPortTuple()) {
         if (getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
             return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getLinkedDataName();
     }
     return this->OutPort->getLinkedDataName();
 }
-ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple) {
+ModuleLink *  ModuleLink::getPortFromTuplePort(const ModuleLink * origin, bool fromInportTuple) const {
 
     Group * g = (Group*) this->OutPort->getModule();
     PortTuple * pt = g->getInPortTuple(this->OutPort->getLinkedDataName());
@@ -98,7 +98,7 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInp
         l = p->getLinks()[BackId];
         Logger(Debug)<< "Internal Counter" << g->getInternalCounter();
         Logger(Debug) << "BackLink for TuplePort" << this->OutPort->getLinkedDataName();
-        origin->isBackLinkFromOrigin = true;
+        //origin->isBackLinkFromOrigin = true;
 
         Logger(Debug) << "Set Back link From Origin" << origin->getInPort()->getLinkedDataName();
 
@@ -111,8 +111,8 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInp
     if (l == 0)
         return 0;
 
-    if (origin->isBackLinkFromOrigin)
-        l->isBackLinkFromOrigin = true;
+    //if (origin->isBackLinkFromOrigin)
+    //    l->isBackLinkFromOrigin = true;
     return l;
 }
 ModuleLink::~ModuleLink() {
