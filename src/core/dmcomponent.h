@@ -79,6 +79,7 @@ private:
 	void LoadAttribute(std::string name);
     bool addAttribute(Attribute *pAttribute);
 
+	void CopyFrom(const Component &c);
 protected:
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
@@ -97,7 +98,7 @@ protected:
     /** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
     Component(bool b);
     /** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
-    Component(const Component& s, bool b);
+    Component(const Component& s, bool bInherited);
     /** @brief return table name */
     virtual QString getTableName();
 public:
@@ -110,7 +111,6 @@ public:
     Component();
     /** @brief Copies a component, also the UUID is copied! */
     Component(const Component& s);
-
     /** @brief Destructor */
     virtual ~Component();
     /** @brief return Type */

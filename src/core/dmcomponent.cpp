@@ -67,26 +67,31 @@ Component::Component(bool b)
     currentSys = NULL;
 }
 
+
+void Component::CopyFrom(const Component &c)
+{
+	uuid = QUuid::createUuid();
+    inViews = c.inViews;
+	currentSys = NULL;
+
+	mforeach(Attribute* a, c.ownedattributes)
+	{
+		//this->addAttribute(*a);
+		Attribute* newa = new Attribute(*a);
+		ownedattributes[newa->getName()] = newa;
+		newa->SetOwner(this);
+	}
+}
+
 Component::Component(const Component& c)
 {
-    uuid = QUuid::createUuid();
-    inViews = c.inViews;
-	currentSys = NULL;
-    //mMutex = new QMutex(QMutex::Recursive);
-
-	mforeach(Attribute* a, c.ownedattributes)
-		this->addAttribute(*a);
-
-    SQLInsertComponent();
+	CopyFrom(c);
 }
-Component::Component(const Component& c, bool b)
-{
-    uuid = QUuid::createUuid();
-    inViews = c.inViews;
-	currentSys = NULL;
 
-	mforeach(Attribute* a, c.ownedattributes)
-		this->addAttribute(*a);
+Component::Component(const Component& c, bool bInherited)
+{
+    CopyFrom(c);
+	SQLInsertComponent();
 }
 
 Component::~Component()
