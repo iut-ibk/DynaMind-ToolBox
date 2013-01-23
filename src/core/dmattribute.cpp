@@ -286,11 +286,11 @@ Attribute::Attribute(std::string name, std::string val)
 
 Attribute::~Attribute()
 {
-	if(value)	delete value;
+	//if(value)	delete value;
 	if(isInserted)
 		DBConnector::getInstance()->Delete("attributes", _uuid);
-
-	attributeCache.remove(this);
+	if(value)
+		attributeCache.remove(this);
 }
 
 Attribute& Attribute::operator=(const Attribute& other)
@@ -524,9 +524,15 @@ Attribute::AttributeValue* Attribute::getValue() const
 
 void Attribute::SetOwner(Component* owner)
 {
-	this->owner = owner;
-	attributeCache.add(this, value);
-	value = NULL;
+	if(!this->owner)
+	{
+		this->owner = owner;
+		attributeCache.add(this, value);
+	}
+	else
+		this->owner = owner;
+
+	//value = NULL;
 	// TODO: make shure its not bound to another component
 }
 
