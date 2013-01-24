@@ -542,7 +542,12 @@ Module * Simulation::resetModule(std::string UUID) {
     foreach(Port * p, m->getInPorts()) {
         foreach(ModuleLink * l, p->getLinks()) {
             std::string name = l->getInPort()->getLinkedDataName();
-            l->setInPort(new_m->getInPort(name));
+			Port *pIn = new_m->getInPort(name);
+			if(!pIn){
+				Logger(Error) << "Cant find port " << name << " in module " << new_m->getClassName();
+				continue;
+			}
+            l->setInPort(pIn);
             p->removeLink(l);
         }
 
@@ -550,7 +555,12 @@ Module * Simulation::resetModule(std::string UUID) {
     foreach(Port * p, m->getOutPorts()) {
         foreach(ModuleLink * l, p->getLinks()) {
             std::string name = l->getOutPort()->getLinkedDataName();
-            l->setOutPort(new_m->getOutPort(name));
+			Port* pOut = new_m->getOutPort(name);
+			if(!pOut){
+				Logger(Error) << "Cant find port " << name << " in module " << new_m->getClassName();
+				continue;
+			}
+            l->setOutPort(pOut);
             p->removeLink(l);
         }
     }

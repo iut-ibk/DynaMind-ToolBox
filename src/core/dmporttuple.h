@@ -52,7 +52,7 @@ namespace DM {
         Port * getInPort() const;
         Port * getOutPort() const;
 
-        std::string getLinkedDataName();
+        std::string getLinkedDataName() const;
     };
 }
 #endif // PORTTUPLE_H

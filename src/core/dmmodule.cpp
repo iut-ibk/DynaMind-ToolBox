@@ -122,7 +122,8 @@ bool Module::checkPreviousModuleUnchanged() {
         //Check Reads
         if (!DataValidation::isVectorOfViewRead(views))
             continue;
-
+		
+		//const DM::System * sys = this->getSystemData(s);
 		const DM::System * sys = this->getConstSystemData(s);
         if (sys == 0 || !sys->getLastModule() || !sys->getLastModule()->isExecuted())
             return false;
@@ -248,12 +249,11 @@ void Module::updateParameter() {
 
 bool Module::checkIfAllSystemsAreSet() {
     for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) {
-        if (it->second != DM::SYSTEM) {
+        if (it->second != DM::SYSTEM)
             continue;
-        }
-
         std::string name = it->first;
-        if (this->data_vals[name] == 0) {
+        //if (this->data_vals[name] == 0) {
+		if(!map_contains(&data_vals, name) || this->data_vals[name] == 0) {
             Logger(Error) << name << " " << "Not Set for module " << this->getUuid() << " " << this->getName();
             this->simulation->setSimulationStatus(SIM_ERROR_SYSTEM_NOT_SET);
             return false;

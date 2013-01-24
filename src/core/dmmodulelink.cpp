@@ -39,11 +39,13 @@ ModuleLink::ModuleLink(Port * InPort, Port * OutPort, bool isBackPort)
     //isBackLinkFromOrigin = false;
 
 }
-void ModuleLink::setInPort(Port * p) {
+void ModuleLink::setInPort(Port * p) 
+{
     this->InPort = p;
     this->InPort->addLink(this);
 }
-void ModuleLink::setOutPort(Port * p) {
+void ModuleLink::setOutPort(Port * p) 
+{
     this->OutPort = p;
     this->OutPort->addLink(this);
 }
