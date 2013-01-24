@@ -665,7 +665,7 @@ const std::vector<DM::View> System::getViews()
 
 System* System::createSuccessor()
 {
-    Logger(Debug) << "Create Sucessor " << this->getUUID();
+    Logger(Debug) << "Create Sucessor ";// << this->getUUID();
     System* result = new System(*this);
     this->sucessors.push_back(result);
 	this->SQLUpdateStates();
