@@ -60,14 +60,16 @@ namespace DM {
 
     void Port::removeLink(ModuleLink * l) {
         Logger(Debug) << this->links.size();
-        for (std::vector<ModuleLink* >::iterator it = this->links.begin(); it!=this->links.end();) {
-            if (*it == l) {
-                it = this->links.erase(it);
-            } else {
-                ++it;
-            }
 
+        for (std::vector<ModuleLink* >::iterator it = this->links.begin(); it!=this->links.end();++it) 
+		{
+            if (*it == l) 
+			{
+                it = this->links.erase(it);
+				break;
+            }
         }
+
          Logger(Debug) << "Remove Link" << this->links.size();
     }
 
