@@ -2,6 +2,7 @@
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @author  Michael Mair <abroxos@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  * This file is part of DynaMind
@@ -234,12 +235,6 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	/*if(HasAttribute(name))
-	{
-		delete ownedattributes[name];
-		ownedattributes.erase(name);
-	}
-    return false;*/
 	return delete_element(&ownedattributes, name);
 }
 

@@ -1,12 +1,13 @@
 /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -311,7 +312,8 @@ std::vector<Group*> Simulation::getGroups() {
 void Simulation::resetModules() 
 {
     std::vector<DM::Module *> mv = this->getModules();
-    foreach (Module * m, mv) {
+    foreach (Module * m, mv) 
+	{
         if (!m->isExecuted()) 
 		{
             //Make sure all data are deleted
@@ -354,7 +356,6 @@ bool Simulation::startSimulation(bool virtualRun)
         Logger(Standard) << "End Simulation";
         return true;
     }
-
     //Execute Simulation Observer
     foreach (SimulationObserver * so, data->simObserver)
         so->VirtualRunDone();
@@ -365,30 +366,12 @@ bool Simulation::startSimulation(bool virtualRun)
 void Simulation::removeModule(std::string UUid) 
 {
 	delete_element(&Modules, UUid);
-    /*for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) 
-	{
-        if (!it->first.compare(UUid)) 
-		{
-            delete it->second;
-            return;
-        }
-    }*/
 }
 void Simulation::deregisterModule(std::string UUID) {
 
     //if(!this)
     //    return;
-
 	remove_element(&Modules, UUID);
-
-    /*for(std::map<std::string, Module*>::iterator it = Modules.begin(); it != Modules.end(); ++it) {
-        std::string id = it->first;
-        if (id.compare(UUID) == 0 ) {
-            Modules.erase(it);
-            return;
-        }
-
-    }*/
 }
 
 void Simulation::writeSimulation(std::string filename) {
@@ -424,13 +407,16 @@ std::vector<Module * > Simulation::getModulesFromType(std::string name) {
     return ress;
 }
 
-std::map<std::string, std::string>  Simulation::loadSimulation(std::string filename) {
+std::map<std::string, std::string>  Simulation::loadSimulation(std::string filename) 
+{
     std::map<std::string, std::string> UUIDTranslator;
-
     SimulationReader simreader(QString::fromStdString(filename));
-    foreach (ModuleEntry me, simreader.getModules()) {
+
+    foreach (ModuleEntry me, simreader.getModules()) 
+	{
         Module * m = this->addModule(me.ClassName.toStdString(), false);
-        if (!m) {
+        if (!m) 
+		{
             this->setSimulationStatus(SIM_FAILED_LOAD);
             return std::map<std::string, std::string>();
         }
@@ -438,96 +424,90 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
         m->setName(me.Name.toStdString());
         m->setDebugMode(me.DebugMode);
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
-        foreach(QString s, me.ParemterList.keys()) {
+        foreach(QString s, me.ParemterList.keys())
             m->setParameterValue(s.toStdString(), me.ParemterList[s].toStdString());
-        }
     }
     //Reconstruct Groups;
-    foreach (ModuleEntry me, simreader.getModules()) {
-        if (me.GroupUUID != simreader.getRootGroupUUID()) {
+    foreach (ModuleEntry me, simreader.getModules()) 
+	{
+        if (me.GroupUUID != simreader.getRootGroupUUID()) 
+		{
             Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
             Group * g = (Group *)this->getModuleWithUUID(UUIDTranslator[me.GroupUUID.toStdString()]);
             m->setGroup(g);
         }
     }
-
     //Call init Functions of the modules
-    foreach (ModuleEntry me, simreader.getModules()) {
+	mforeach(Module* m, this->Modules)
+		m->init();
+    /*foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
         m->init();
-    }
+    }*/
 
-    foreach (LinkEntry le, simreader.getLinks()) {
+    foreach (LinkEntry le, simreader.getLinks()) 
+	{
         std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];
         std::string inPortUUID = UUIDTranslator[le.InPort.UUID.toStdString()];
         DM::Port * p_out = 0;
         DM::Port * p_in = 0;
-        if (!inPortUUID.empty() && !outPortUUID.empty() ) {
+		std::string outPortName = le.OutPort.PortName.toStdString();
+		std::string inPortName = le.OutPort.PortName.toStdString();
 
-            if (le.OutPort.isTuplePort == 1) {
+        if (!inPortUUID.empty() && !outPortUUID.empty() ) 
+		{
+            if (le.OutPort.isTuplePort == 1)
+			{
                 Group * g = (Group*) this->getModuleWithUUID(outPortUUID);
-                bool isWithinThisGroup = false;
-                if (g->getUuid().compare(this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid() ) == 0) {
-                    isWithinThisGroup = true;
+				PortTuple *pt = NULL;
+
+                if (g->getUuid() != this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid())
+                    pt = g->getOutPortTuple(outPortName);
+				else 
+                    pt = g->getInPortTuple(outPortName);
+
+				if (pt == 0) 
+				{
+                    Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<" doesn't exist";
+                    continue;
                 }
-                if (!isWithinThisGroup)     {
-                    PortTuple *pt =  g->getOutPortTuple(le.OutPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_out = pt->getOutPort();
-                } else {
-                    PortTuple *pt =  g->getInPortTuple(le.OutPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_out = pt->getOutPort();
-
-                }
-
-            }else {
-
-                p_out = this->getModuleWithUUID(outPortUUID)->getOutPort(le.OutPort.PortName.toStdString());
+                p_out = pt->getOutPort();
             }
-            if (le.InPort.isTuplePort == 1) {
+			else 
+                p_out = this->getModuleWithUUID(outPortUUID)->getOutPort(outPortName);
+            
+            if (le.InPort.isTuplePort == 1)
+			{
                 //Check if Connected Module is within this group
                 Group * g = (Group*) this->getModuleWithUUID(inPortUUID);
-                bool isWithinThisGroup = false;
-                if (g->getUuid().compare(this->getModuleWithUUID(outPortUUID)->getGroup()->getUuid() ) == 0) {
-                    isWithinThisGroup = true;
-                }
-                if (!isWithinThisGroup){
-                    PortTuple *pt =  g->getInPortTuple(le.InPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_in = pt->getInPort();
-                } else {
-                    PortTuple *pt =  g->getOutPortTuple(le.InPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_in = pt->getInPort();
-                }
-            } else {
-                p_in = this->getModuleWithUUID(inPortUUID)->getInPort(le.InPort.PortName.toStdString());
-            }
+                PortTuple *pt = NULL;
+
+                if (g->getUuid() != this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid())
+					pt = g->getInPortTuple(inPortName);
+				else
+					pt = g->getOutPortTuple(inPortName);
+                
+				if (pt == 0) 
+				{
+					Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<" doesn't exist";
+					continue;
+				}
+				p_in = pt->getInPort();
+            } 
+			else
+                p_in = this->getModuleWithUUID(inPortUUID)->getInPort(inPortName);
+
             ModuleLink * l = this->addLink(p_out, p_in);
 
             if (l != 0)
                 l->setBackLink(le.backlink);
         }
     }
-
     return UUIDTranslator;
-
 }
 
-Module * Simulation::resetModule(std::string UUID) {
+Module * Simulation::resetModule(std::string UUID) 
+{
     Logger(Debug) << "Reset Module " << UUID;
     Module * m = this->getModuleWithUUID(UUID);
     if(!m)
@@ -538,12 +518,9 @@ Module * Simulation::resetModule(std::string UUID) {
     if(!new_m)
         return m;
 
-
     new_m->copyParameterFromOtherModule(m);
-
     //Need to call the init function from the module after the parameters are copied to create the ports
     new_m->init();
-
 
     foreach(Port * p, m->getInPorts()) {
         foreach(ModuleLink * l, p->getLinks()) {
@@ -604,47 +581,41 @@ Module * Simulation::resetModule(std::string UUID) {
                 p->removeLink(l);
             }
         }
-        foreach (Module * m, g->getModules()) {
+        foreach (Module * m, g->getModules())
             m->setGroup(new_g);
-        }
+
         g->clearModules();
-
-
     }
-
     delete m;
     Modules[new_m->getUuid()] = new_m;
     return new_m;
-
-
 }
-std::vector<ModuleLink*> Simulation::getLinks() {
+std::vector<ModuleLink*> Simulation::getLinks() 
+{
     std::vector<ModuleLink*> links;
-    foreach (Module * m, this->getModules()) {
-        foreach(Port * p, m->getInPorts()) {
-            foreach(ModuleLink * l, p->getLinks()) {
+    foreach (Module * m, this->getModules()) 
+	{
+        foreach(Port * p, m->getInPorts())
+            foreach(ModuleLink * l, p->getLinks())
                 links.push_back(l);
-            }
-        }
 
-        if (m->isGroup()) {
+        if (m->isGroup()) 
+		{
             Group * g = (Group *) m;
-            foreach (PortTuple *  pt, g->getInPortTuples()) {
+            foreach (PortTuple *  pt, g->getInPortTuples()) 
+			{
                 Port * p = pt->getInPort();
-                foreach(ModuleLink * l, p->getLinks()) {
+                foreach(ModuleLink * l, p->getLinks())
                     links.push_back(l);
-                }
-
             }
-            foreach (PortTuple *  pt, g->getOutPortTuples()) {
+            foreach (PortTuple *  pt, g->getOutPortTuples()) 
+			{
                 Port * p = pt->getInPort();
-                foreach(ModuleLink * l, p->getLinks()) {
+                foreach(ModuleLink * l, p->getLinks())
                     links.push_back(l);
-                }
             }
         }
     }
-
     return links;
 }
 
@@ -664,8 +635,11 @@ std::vector<std::string> Simulation::getLoadModuleFiles()
 std::vector<Module*> Simulation::getModules() const{
     std::vector<Module*> ms;
 
-    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
-        ms.push_back(it->second);
+    /*for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
+        ms.push_back(it->second);*/
+
+	mforeach(Module* m, Modules)
+		ms.push_back(m);
     return ms;
 }
 }
