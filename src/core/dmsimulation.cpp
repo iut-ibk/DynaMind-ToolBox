@@ -106,7 +106,6 @@ Module * Simulation::addModule(std::string ModuleName, bool callInit) {
 Simulation::~Simulation() {
     Logger(Debug)  << "Remove Modules";
     delete this->rootGroup;
-
     delete data;
     delete moduleRegistry;
 }
@@ -120,8 +119,6 @@ void Simulation::reloadModules() {
     QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
     for (int index = 0; index < pythonhome.size(); index++)
         DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
-
-
 
     QDir pythonDir;
     QString text = settings.value("pythonModules").toString();
@@ -161,18 +158,19 @@ void Simulation::loadModulesFromDefaultLocation()
     cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo"));
 #endif
     
-    foreach (QDir cp, cpv)  {
+    foreach (QDir cp, cpv)  
+	{
         QStringList modulesToLoad = cp.entryList();
         std::cout <<  cp.absolutePath().toStdString() << std::endl;
-        foreach (QString module, modulesToLoad) {
+        foreach (QString module, modulesToLoad) 
+		{
             if (module == ".." || module == ".")
                 continue;
             DM::Logger(DM::Debug) << module.toStdString();
             std::cout <<  module.toStdString() << std::endl;
             QString ml = cp.absolutePath() +"/" + module;
-            if (this->moduleRegistry->addNativePlugin(ml.toStdString())) {
+            if (this->moduleRegistry->addNativePlugin(ml.toStdString()))
                 loadedModuleFiles.push_back(ml.toStdString());
-            }
         }
     }
 
@@ -192,7 +190,8 @@ void Simulation::loadPythonModulesFromDirectory(std::string path) {
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
     DM::PythonEnv::getInstance()->addPythonPath((path));
-    foreach(QString file, files) {
+    foreach(QString file, files) 
+	{
         try{
             std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
             loadedModuleFiles.push_back(file.toStdString());
@@ -238,7 +237,8 @@ bool Simulation::addModulesFromSettings() {
     return true;
 }
 
-Simulation::Simulation() {
+Simulation::Simulation() 
+{
     srand((unsigned)time(NULL));
     this->setTerminationEnabled(true);
     data = new SimulationPrivate();
@@ -252,22 +252,24 @@ Simulation::Simulation() {
 
 }
 
-bool Simulation::registerNativeModules(string Filename) {
+bool Simulation::registerNativeModules(string Filename) 
+{
     Logger(Standard) << "Loading Native Modules " << Filename ;
     return moduleRegistry->addNativePlugin(Filename);
 }
 
-void Simulation::registerPythonModules(std::string path) {
+void Simulation::registerPythonModules(std::string path) 
+{
 #ifndef PYTHON_EMBEDDING_DISABLED
     DM::PythonEnv::getInstance()->addPythonPath(path);
     QDir pythonDir = QDir(QString::fromStdString(path));
     QStringList filters;
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
-    foreach(QString file, files) {
+    foreach(QString file, files) 
+	{
         Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
         std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-
     }
 #endif
 }
@@ -289,7 +291,6 @@ ModuleLink * Simulation::addLink( Port *OutPort, Port *InPort) {
     Logger(Debug) << "Add Link" << OutPort->getLinkedDataName() << "-"<< InPort->getLinkedDataName();
     ModuleLink*  ml = new ModuleLink(InPort, OutPort);
     return ml;
-
 }
 void Simulation::removeLink(ModuleLink * l) {
     Logger(Debug) << "Remove Link";
@@ -300,18 +301,19 @@ std::vector<Group*> Simulation::getGroups() {
 
     std::vector<Group*> groups;
 
-    foreach(Module * m, this->getModules()) {
+    foreach(Module * m, this->getModules())
         if (m->isGroup())
-            groups.push_back((Group * ) m);
-    }
+            groups.push_back((Group*)m);
 
     return groups;
 }
 
-void Simulation::resetModules() {
-    std::vector<DM::Module *> mv= this->getModules();
+void Simulation::resetModules() 
+{
+    std::vector<DM::Module *> mv = this->getModules();
     foreach (Module * m, mv) {
-        if (!m->isExecuted()) {
+        if (!m->isExecuted()) 
+		{
             //Make sure all data are deleted
             m->resetParameter();
             this->resetModule(m->getUuid());
@@ -322,19 +324,20 @@ void Simulation::resetModules() {
 void Simulation::resetSimulation()
 {
     std::vector<DM::Module *> mv= this->getModules();
-    foreach (Module * m, mv) {
+    foreach (Module * m, mv) 
+	{
         m->resetParameter();
         this->resetModule(m->getUuid());
     }
 }
-void Simulation::run() {
+void Simulation::run() 
+{
     this->resetModules();
     this->startSimulation(false);
-
 }
 
-bool Simulation::startSimulation(bool virtualRun) {
-
+bool Simulation::startSimulation(bool virtualRun) 
+{
     if (!virtualRun)
         this->startSimulation(true);
     this->data->simulationStatus = SIM_OK;
@@ -343,46 +346,49 @@ bool Simulation::startSimulation(bool virtualRun) {
     Logger(Debug) << "Reset Steps";
     this->rootGroup->resetSteps();
     Logger(Debug) << "Start Simulations";
-    if (this->rootGroup->getModules().size() > 0) {
+    if (this->rootGroup->getModules().size() > 0)
         this->rootGroup->run();
-    }
 
-    if (!virtualRun) {
+    if (!virtualRun) 
+	{
         Logger(Standard) << "End Simulation";
         return true;
     }
 
     //Execute Simulation Observer
-    foreach (SimulationObserver * so, data->simObserver) {
+    foreach (SimulationObserver * so, data->simObserver)
         so->VirtualRunDone();
-    }
-    return true;
 
+    return true;
 }
 
-void Simulation::removeModule(std::string UUid) {
-    for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) {
-        if (!it->first.compare(UUid)) {
+void Simulation::removeModule(std::string UUid) 
+{
+	delete_element(&Modules, UUid);
+    /*for(std::map<std::string, Module*>::const_iterator it = Modules.begin(); it != Modules.end(); ++it) 
+	{
+        if (!it->first.compare(UUid)) 
+		{
             delete it->second;
             return;
         }
-    }
-
+    }*/
 }
 void Simulation::deregisterModule(std::string UUID) {
 
-    if(!this)
-        return;
+    //if(!this)
+    //    return;
 
-    for(std::map<std::string, Module*>::iterator it = Modules.begin(); it != Modules.end(); ++it) {
+	remove_element(&Modules, UUID);
+
+    /*for(std::map<std::string, Module*>::iterator it = Modules.begin(); it != Modules.end(); ++it) {
         std::string id = it->first;
         if (id.compare(UUID) == 0 ) {
             Modules.erase(it);
             return;
         }
 
-    }
-
+    }*/
 }
 
 void Simulation::writeSimulation(std::string filename) {

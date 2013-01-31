@@ -118,6 +118,27 @@ inline bool map_contains(std::map<T1,T2> *m, const T1 &key)
 	return true;
 }
 
+template <typename T1, typename T2>
+inline bool remove_element(std::map<T1,T2> *m, const T1 &key)
+{
+	typename std::map<T1,T2>::iterator i = m->find(key);
+	if(i==m->end())	return false;
+	m->erase(i);
+	return true;
+}
+
+template <typename T1, typename T2>
+inline bool delete_element(std::map<T1,T2*> *m, const T1 &key)
+{
+	typename std::map<T1,T2*>::iterator i = m->find(key);
+	if(i==m->end())	return false;
+	delete i->second;
+	//m->erase(i);
+	return true;
+}
+
+
+
 template <typename T>
 inline bool vector_contains(std::vector<T> *v, const T &key)
 {

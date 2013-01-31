@@ -234,13 +234,13 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	if(HasAttribute(name))
+	/*if(HasAttribute(name))
 	{
 		delete ownedattributes[name];
 		ownedattributes.erase(name);
 	}
-
-    return false;
+    return false;*/
+	return delete_element(&ownedattributes, name);
 }
 
 Attribute* Component::getAttribute(std::string name)
