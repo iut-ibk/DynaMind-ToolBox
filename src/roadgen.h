@@ -48,6 +48,7 @@ class RoadGen : public DM::Module
         DM::System *sys;
         DM::RasterData * r;
         viewmap viewdef;
+        void NaturalPattern();
 };
 
 #endif // RoadGen_H

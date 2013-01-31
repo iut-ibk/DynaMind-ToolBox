@@ -35,9 +35,12 @@
 //CGAL
 #include <list>
 #include <cmath>
+
 //LSystem
-#include <lsystem/lsystem.h>
+
+//#include <lsystem/streetgraph.h>
 #include <roadgen.h>
+//#include <lsystem/roadlsystem.h>
 
 DM_DECLARE_NODE_NAME(RoadGen,UrbanDevelopment)
 
@@ -75,48 +78,39 @@ RoadGen::RoadGen() {
     this->addData("Layout", views);
 }
 
-/* Implement basically following rules:
- *
-initialize priority queue Q with a single entry: r(0, r0, q0)
-initialize segment list S to empty
-
-  until Q is empty
-    pop smallest r(ti, ri, qi) from Q (i.e., smallest ‘t’)
-    accepted = localConstraints(&r) // snaps a road to local segments and evaluates if road should be accepted
-    if (accepted) {
-      add segment(ri) to S
-      foreach r(tj, rj, qj) produced by globalGoals(ri, qi)
-        add r(ti + 1 + tj, rj, qj) to Q
-    }
-//
-// desc
-//
-    i -> index
-    r(ti, ri, qi) ->
-        ti: timestep delay before evaluation (t = t+1)
-        ri: road <vector>
-        qi: global goals
-
-    road constraints:
-        - minimum distance
-        - [min/max] angle
-        - [min/max] length to split
-        - gradient
-        - pop density
-*/
-
 void RoadGen::run()
 {
 
-    sys = this->getData("Layout");
+/*    sys = this->getData("DevelArea");
+    RoadLSystem* rg = new RoadLSystem();
 
-//    rule_map treerules = { { 'X', "(F-[[X]+X]+F[+FX]-X)" },
-//                     { 'F', "FF" } };
-//    LSystem treesystem("X", treerules);
-// segment_length, angle_left, angle_right, angle_initial
-// translation
-// scale
-//    RoadCalc_Config rc_config(1, 0.25f, -0.25f, 0.9f);
-// setup lsystem
+    DM::Node startnode = DM::Node(0,0,0);
+    DM::Node startdirection = DM::Node(0,1,0);
+
+    /*
+     * [ -> push
+     * ] -> pop
+     * - -> left turn
+     * + -> right turn
+     * R -> start character / Road Variable (builder)
+     * A -> could be seen as intersection variable
+     */
+
+
+  /*  rg->addRule = { {'R', "[[[-R]+RA]RA]++RA"},
+                    {'A', "[[-RA]+RA]RA"};
+
+    rg->setTurnAngle(60,90);
+
+    rg->generate();
+*/
+}
+/*
+void RoadGen::NaturalPattern()
+{
+
+
 
 }
+
+*/

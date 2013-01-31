@@ -1,282 +1,85 @@
 #include "lsystem.h"
+#include <algorithm>
 
-LSystem::LSystem()
+/*void LSystem::evolve()
 {
-  initialize();
+    std::for_each(current.begin(), current.end(), [&](char c)) {
+        auto res = rules.find(c);
+        if (res != rules.end()) {
+            out << res->second;
+        }
+        else {
+            out << c;
+        });
+    current = out.str();
+
+    return current;
 }
 
-LSystem::~LSystem()
-{
-
-  freeProducedString();
-}
-
-void LSystem::freeProducedString()
-{
-  while(!producedString->empty())
-  {
-    removeSymbol(--producedString->end());
-  }
-  delete producedString;
-}
-
-void LSystem::removeSymbol(SymbolString::iterator symbolPosition)
-{
-  Symbol *removedSymbol = *symbolPosition;
-  producedString->erase(symbolPosition);
-  delete removedSymbol;
-}
-
-void LSystem::setAlphabet(std::string const& alphabetCharacters)
-{
-  freeProducedString();
-  initialize();
-
-  for (std::string::const_iterator position = alphabetCharacters.begin();
-       position != alphabetCharacters.end();
-       position++)
-  {
-    alphabet.insert(*position);
-  }
-}
-
-void LSystem::addToAlphabet(std::string const& alphabetCharacters)
-{
-  for (std::string::const_iterator position = alphabetCharacters.begin();
-       position != alphabetCharacters.end();
-       position++)
-  {
-    alphabet.insert(*position);
-  }
-}
-
-void LSystem::initialize()
-{
-  alphabet.clear();
-  axiom = "";
-  rules.clear();
-  producedString = new SymbolString;
-}
-
-void LSystem::reset()
-{
-  freeProducedString();
-  producedString = new SymbolString;
-
-  for (std::string::iterator position = axiom.begin();
-       position != axiom.end();
-       position++)
-  {
-    producedString->push_back(new Symbol(*position));
-  }
-}
-
-void LSystem::setAxiom(std::string const& startingSequence)
-{
-  if (startingSequence == "" || !isInAlphabet(startingSequence))
-  {
-    // FIXME throw exception
-  }
-
-  axiom = startingSequence;
-  reset();
-}
-
-bool LSystem::isInAlphabet(char checkedCharacter) const
-{
-  return alphabet.find(checkedCharacter) != alphabet.end();
-}
-
-bool LSystem::isInAlphabet(std::string const& checkedString) const
-{
-  std::string::const_iterator position = checkedString.begin();
-  while (position != checkedString.end())
-  /* Iterate through the whole string and check all the characters */
-  {
-    if (!isInAlphabet(*position))
+/*void LSystem::generate()
     {
-      return false;
-    }
-    position++;
-  }
+      x_ = y_ = 0.0f;
+      angle_ = config_.initial_angle();
 
-  return true;
-}
-
-bool LSystem::isTerminal(char character) const
-{
-  return rules.find(character) == rules.end();
-}
-
-void LSystem::addRule(char predecessor, std::string const& successor)
-{
-  if (!isInAlphabet(predecessor) || !isInAlphabet(successor))
-  {
-    //FIXME throw exception
-  }
-
-  std::map<char, ProductionRule>::iterator existingRule = rules.find(predecessor);
-  if (existingRule != rules.end())
-  /* Rule with the same left side already exists */
-  {
-    existingRule->second.addSuccessor(successor);
-  }
-  else
-  /* Create new rule */
-  {
-    rules[predecessor] = ProductionRule(predecessor, successor);
-  }
-}
-
-int LSystem::doIteration()
-{
-  SymbolString::iterator position = producedString->begin();
-  SymbolString::iterator nextPosition;
-
-  int rewritesMade = 0;
-
-  while (position != producedString->end())
-  {
-    /* Save the iterator for the next character, because
-       the list can change and we don't want to expand
-       the new parts in this iteration */
-    nextPosition = position;
-    nextPosition++;
-
-    if (!isTerminal((*position)->getSymbol()))
-    {
-      rewritesMade++;
-      rewrite(position);
+      auto current = system_.evolve();
+      std::for_each(current.begin(), current.end(),
+                    [&](char c)
+                    {
+                      switch(c)
+                        {
+                        case 'F':
+                          forward();
+                          break;
+                        case '+':
+                          rotate(config_.right_angle());
+                          break;
+                        case '-':
+                          rotate(config_.left_angle());
+                          break;
+                        case '[':
+                          push_state();
+                          break;
+                        case ']':
+                          pop_state();
+                          break;
+                        }
+                    });
     }
 
-    position = nextPosition;
-  }
-
-  return rewritesMade;
-}
-
-int LSystem::doIterations(int howManyIterations)
+void LSystem::forward()
 {
-  int rewritesMade = 0;
-  for (int iteration = 0; iteration < howManyIterations; iteration++)
-  {
-    rewritesMade += doIteration();
-  }
+    float x1 = x_ + config_.segment_length() * cos(angle_ * (M_PI / 180.0f));
+    float y1 = y_ + config_.segment_length() * sin(angle_ * (M_PI / 180.0f));
 
-  return rewritesMade;
+    glBegin(GL_LINES);
+    glVertex2f(x_, y_);
+    glVertex2f(x1, y1);
+    glEnd();
+
+    x_ = x1;
+    y_ = y1;
 }
 
-void LSystem::rewrite(SymbolString::iterator position)
+void LSystem::rotate(float angle)
 {
-  Symbol predecessor = **position;
-  std::string successor;
+    angle_ += angle;
 
-  if (rules.find(predecessor) != rules.end())
-  /* Not a constant symbol */
-  {
-    successor = rules[predecessor].successor();
+    if(angle_ >= 360.0f)
+        angle_ -= 360.0f;
 
-    /* Insert the successor before the character at position */
-    for (std::string::iterator character = successor.begin();
-         character != successor.end();
-         character++)
-    {
-      producedString->insert(position, new Symbol(*character));
-    }
-
-    /* And remove the rewrited character from the string */
-    removeSymbol(position);
-  }
-  else
-  /* Constant symbol, do nothing. */
-  {}
+    if(angle_ < 0.0f)
+        angle_ += 360.0f;
 }
 
-std::string LSystem::getProducedString()
+void LSystem::push_state()
 {
-  std::string outputString;
-  outputString.clear();
-  for (SymbolString::const_iterator position = producedString->begin();
-       position != producedString->end();
-       position++)
-  {
-    outputString.push_back((*position)->getSymbol());
-  }
-  return outputString;
+    auto state = std::make_tuple(x_, y_, angle_);
+    state_.push(state);
 }
 
-void LSystem::debugDumpProducedStringAddresses()
+void LSystem::pop_state()
 {
-  int counter = 0;
-  for (SymbolString::const_iterator position = producedString->begin();
-       position != producedString->end();
-       position++)
-  {
-    counter++;
-  }
+    std::tie(x_, y_, angle_) = state_.top();
+    state_.pop();
 }
-
-
-LSystem::ProductionRule::ProductionRule()
-  : leftSide(0), rightSide()
-{}
-
-LSystem::ProductionRule::ProductionRule(char leftSideSymbol, std::string const& rightSideString)
-{
-  leftSide = leftSideSymbol;
-  rightSide.push_back(rightSideString);
-}
-
-void LSystem::ProductionRule::addSuccessor(std::string const& rightSideString)
-{
-  rightSide.push_back(rightSideString);
-}
-
-char LSystem::ProductionRule::predecessor() const
-{
-  return leftSide;
-}
-
-std::string LSystem::ProductionRule::successor() const
-{
-  srand(time(NULL));
-  return rightSide[rand() % (rightSide.size() - 1)];
-}
-
-LSystem::Symbol::Symbol(char character)
-  : symbol(character), alreadyRead(false)
-{}
-
-LSystem::Symbol::~Symbol()
-{}
-
-bool LSystem::Symbol::isMarkedRead() const
-{
-  return alreadyRead;
-}
-
-LSystem::Symbol::operator char() const
-{
-  return symbol;
-}
-
-bool LSystem::Symbol::operator==(char character) const
-{
-  return symbol == character;
-}
-
-bool LSystem::Symbol::operator==(Symbol const& another) const
-{
-  return (char)another == symbol;
-}
-
-
-void LSystem::Symbol::markAsRead()
-{
-  alreadyRead = true;
-}
-
-char LSystem::Symbol::getSymbol() const
-{
-  return symbol;
-}
+*/
