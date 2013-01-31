@@ -85,7 +85,7 @@ void Group::Destructor()
 void Group::finishedModule(Module *m) {
     //QMutexLocker locker(mutex);
     currentRunning.erase(std::find(currentRunning.begin(), currentRunning.end(), m));
-	if(!m->isGroup() || ((Group*)m)->isRunnable())
+	if(!m->isGroup() || !((Group*)m)->isRunnable())
 	{
 		UsedModules.push_back(m);
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
@@ -124,8 +124,8 @@ void Group::finishedModule(Module *m) {
             }
             g->resetSteps();
         }
-    }
-	*/
+    }*/
+	
     QVector<QRunnable * > modules = this->getNextJobs();
     foreach (QRunnable * r, modules)
         DMRootGroup::getThreadPool()->start(r);
@@ -177,7 +177,7 @@ PortTuple * Group::getInPortTuple(std::string name) const
 }
 PortTuple * Group::getOutPortTuple(std::string name) const
 {
-	foreach(PortTuple* pt, inPortTuple)
+	foreach(PortTuple* pt, outPortTuple)
 		if(pt->getName() == name)
 			return pt;
 	/*for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {

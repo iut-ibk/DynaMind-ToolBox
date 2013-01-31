@@ -37,7 +37,7 @@
 #include <QSqlQuery>
 
 #define SQLUNITTESTS
-#define SQLPROFILING
+//#define SQLPROFILING
 #define STDUNITTESTS
 
 
