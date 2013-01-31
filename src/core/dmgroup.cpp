@@ -221,11 +221,19 @@ Port * Group::getOutPort(std::string name) const
 }
 
 
-PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
-    PortTuple * pt = 0;
+PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) 
+{
     Logger(Debug) << "Add Tuple Port" << LinkedDataName;
 
-    if (PortType < DM::OUTPORTS) {
+	std::vector<PortTuple*> *portTuples = (PortType <= DM::OUTPORTS) ? &outPortTuple : &inPortTuple;
+	foreach(PortTuple* pt, *portTuples)
+		if(pt->getLinkedDataName() == LinkedDataName)
+			return 0;
+	
+	PortTuple* pt = new PortTuple(this, LinkedDataName, PortType, PortType > DM::OUTPORTS);
+	portTuples->push_back(pt);
+
+    /*if (PortType < DM::OUTPORTS) {
         //Check if port with the same name already exists
         pt = new PortTuple(this, LinkedDataName, PortType, false);
         foreach (PortTuple *pt_existing, outPortTuple) {
@@ -240,10 +248,10 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
                 return 0;
         }
         this->inPortTuple.push_back(pt);
-    }
-    foreach(PortObserver * po, this->portobserver) {
+    }*/
+    foreach(PortObserver * po, this->portobserver)
         po->changedPorts();
-    }
+
     return pt;
 }
 
@@ -251,7 +259,16 @@ void Group::removeTuplePort(PortTuple *pt)
 {
     Logger(Debug) << "Remove Tuple Port" << pt->getName();
     int PortType = pt->getPortType();
-    if (PortType < DM::OUTPORTS) {
+	std::vector<PortTuple*> *portTuples = (PortType <= DM::OUTPORTS) ? &outPortTuple : &inPortTuple;
+
+	std::vector<PortTuple*>::iterator pt_it = find(portTuples->begin(), portTuples->end(), pt);
+    if (pt_it != portTuples->end() )
+	{
+        portTuples->erase(pt_it);
+		foreach(PortObserver * po, this->portobserver)
+			po->changedPorts();
+	}
+    /*if (PortType < DM::OUTPORTS) {
         std::vector<PortTuple*>::iterator pt_it = find(outPortTuple.begin(), outPortTuple.end(), pt);
         if (pt_it == outPortTuple.end() )
             return;
@@ -262,69 +279,83 @@ void Group::removeTuplePort(PortTuple *pt)
             return;
         this->inPortTuple.erase(pt_it);
     }
-    foreach(PortObserver * po, this->portobserver) {
-        po->changedPorts();
-    }
+    foreach(PortObserver * po, this->portobserver)
+        po->changedPorts();*/
 }
 
-QVector<QRunnable *>  Group::getNextJobs() {
+QVector<QRunnable *>  Group::getNextJobs() 
+{
     QVector<QRunnable * > RunnedModulesInStep;
-    for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) {
-        Module * m = *it;
+    //for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) 
+	foreach(Module* m, notUsedModules)
+	{
+        /*Module * m = *it;
         if (std::find(currentRunning.begin(), currentRunning.end(), m) !=  currentRunning.end())
-            continue;
+            continue;*/
+		if(vector_contains(&currentRunning, m))
+			continue;
 
         bool runnable = true;
         std::vector<Port*> inPorts = m->getInPorts();
-        if (m->isGroup()) {
-            Group * g = (Group*) m;
-            foreach(PortTuple * pt , g->getInPortTuples()) {
+        if (m->isGroup()) 
+            foreach(PortTuple * pt , ((Group*)m)->getInPortTuples())
                 inPorts.push_back(pt->getInPort());
-            }
-        }
-        foreach(Port * p, inPorts) {
-            foreach( ModuleLink * l, p->getLinks() ) {
-                if (!l->isBackLink()) {
+
+        foreach(Port * p, inPorts) 
+		{
+            foreach( ModuleLink * l, p->getLinks() ) 
+			{
+                if (!l->isBackLink()) 
+				{
                     Module * neededM = l->getOutPort()->getModule();
-                    bool ModuleExists = false;
-                    foreach(Module* usedM, UsedModules) {
-                        if (usedM == neededM) {
+					if(vector_contains(&UsedModules, neededM))
+					{
+						if (!neededM->isExecuted())
+							m->setExecuted(false);
+					}
+					else
+					{
+                        runnable = false;
+                        break;
+					}
+                    /*bool ModuleExists = false;
+					foreach(Module* usedM, UsedModules) 
+					{
+                        if (usedM == neededM) 
+						{
                             if (!neededM->isExecuted())
                                 m->setExecuted(false);
                             ModuleExists = true;
                             break;
                         }
                     }
-                    if (!ModuleExists) {
+                    if (!ModuleExists) 
+					{
                         runnable = false;
                         break;
-                    }
+                    }*/
                 }
             }
         }
-        if (runnable) {
+        if (runnable) 
+		{
             currentRunning.push_back(m);
             RunnedModulesInStep.push_back(new ModuleRunnable(m));
         }
 
     }
     //Run Parallelisation TODO
-    if(!this->notUsedModules.size()) {
-        if (this->group != 0) {
+    if(!this->notUsedModules.size()) 
+        if (this->group)
             this->run();
-        }
 
-    }
     return RunnedModulesInStep;
 }
 void Group::resetSteps()
 {
     this->step = 0;
-    foreach (DM::Module * m, this->modules) {
+    foreach (DM::Module * m, this->modules)
         m->setInternalCounter(0);
-    }
-
-
 }
 
 void Group::run() {

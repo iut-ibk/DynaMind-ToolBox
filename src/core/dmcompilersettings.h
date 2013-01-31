@@ -123,6 +123,16 @@ inline bool vector_contains(std::vector<T> *v, const T &key)
 {
 	return (find(v->begin(), v->end(), key) != v->end());
 }
+template <typename T>
+inline bool vector_contains(std::vector<T> *v, const T &key, T &to)
+{
+    typename std::vector<T>::iterator i = v->find(key);
+	if(i == v->end())
+		return false;
+	
+	to = *i;
+	return true;
+}
 
 template <typename T>
 void deep_delete(std::vector<T*>* v)
