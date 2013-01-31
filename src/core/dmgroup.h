@@ -66,7 +66,7 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT  Group : public Module
     {
     private:
-        ::QMutex * mutex;
+        //::QMutex * mutex;
         std::vector<Module*> modules;
         std::vector<PortTuple * > inPortTuple;
         std::vector<PortTuple * > outPortTuple;
@@ -100,14 +100,14 @@ namespace DM {
         /** @brief Remove tuple port */
         void removeTuplePort(PortTuple * pt);
         /** @brief Returns pointer to in port tuple by name */
-        PortTuple * getInPortTuple(std::string name);
+        PortTuple * getInPortTuple(std::string name) const;
         /** @brief Returns pointer to out port tuple by name */
-        PortTuple * getOutPortTuple(std::string name);
+        PortTuple * getOutPortTuple(std::string name) const;
         /** @brief Returns in port tuples as pointer vector */
         std::vector<PortTuple * >  getInPortTuples(){return this->inPortTuple;}
         /** @brief Returns out port tuples as pointer vector */
         std::vector<PortTuple * >  getOutPortTuples(){return this->outPortTuple;}
-        /** @brief A Destructur :-), I'm sure their was a very good reason to not put this make an extra destructure... just can't rember why */
+        /** @brief A Destructor :-), I'm sure their was a very good reason to not put this make an extra destructure... just can't rember why */
         virtual void Destructor();
         /** @brief Returns true */
         virtual bool isGroup() const{return true;}
