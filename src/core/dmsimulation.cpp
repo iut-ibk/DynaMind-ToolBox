@@ -452,7 +452,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
         DM::Port * p_out = 0;
         DM::Port * p_in = 0;
 		std::string outPortName = le.OutPort.PortName.toStdString();
-		std::string inPortName = le.OutPort.PortName.toStdString();
+		std::string inPortName = le.InPort.PortName.toStdString();
 
         if (!inPortUUID.empty() && !outPortUUID.empty() ) 
 		{
