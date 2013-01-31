@@ -71,16 +71,6 @@ void Group::Destructor()
         delete *(this->modules.begin());
 	deep_delete(&inPortTuple);
 	deep_delete(&outPortTuple);
-/*
-    foreach(PortTuple * p, this->inPortTuple)
-        delete p;
-
-    foreach(PortTuple * p, this->outPortTuple)
-        delete p;
-
-    this->inPortTuple.clear();
-    this->outPortTuple.clear();*/
-
 }
 void Group::finishedModule(Module *m) {
     //QMutexLocker locker(mutex);
@@ -101,31 +91,6 @@ void Group::finishedModule(Module *m) {
             g->resetSteps();
 		}
 	}
-
-	/*
-    bool remove = true;
-    if (m->isGroup()) {
-        Group * g = (Group *) m;
-        if (g->isRunnable()) {
-            remove = false;
-        }
-    }
-
-
-    if (remove) {
-        UsedModules.push_back(m);
-        notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
-        if (m->isGroup()) {
-            Group * g = (Group * )m;
-            //Don't change status if virtualRun
-            if (!g->getSimulation()->isVirtualRun()) {
-                g->setExecuted(true);
-                g->setContentOfModuleHasChanged(false);
-            }
-            g->resetSteps();
-        }
-    }*/
-	
     QVector<QRunnable * > modules = this->getNextJobs();
     foreach (QRunnable * r, modules)
         DMRootGroup::getThreadPool()->start(r);
@@ -168,11 +133,7 @@ PortTuple * Group::getInPortTuple(std::string name) const
 	foreach(PortTuple* pt, inPortTuple)
 		if(pt->getName() == name)
 			return pt;
-    /*for (std::vector<PortTuple*>::iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
-        PortTuple * p = *it;
-        if (p->getName().compare(name) == 0)
-            return p;
-    }*/
+
     return 0;
 }
 PortTuple * Group::getOutPortTuple(std::string name) const
@@ -180,12 +141,7 @@ PortTuple * Group::getOutPortTuple(std::string name) const
 	foreach(PortTuple* pt, outPortTuple)
 		if(pt->getName() == name)
 			return pt;
-	/*for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
-        PortTuple * p = *it;
 
-        if (p->getName().compare(name) == 0)
-            return p;
-    }*/
     return 0;
 }
 Port* Group::getPort(std::string name) const
@@ -195,13 +151,7 @@ Port* Group::getPort(std::string name) const
 		return p->getInPort();	
 	else if(p = getOutPortTuple(name))
 		return p->getOutPort();
-	/*foreach(PortTuple *pt, outPortTuple)
-		if(pt->getName() == name)
-			return pt->getOutPort();
 
-	foreach(PortTuple *pt, inPortTuple)
-		if(pt->getName() == name)
-			return pt->getInPort();*/
 	return 0;
 }
 
@@ -233,22 +183,6 @@ PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType)
 	PortTuple* pt = new PortTuple(this, LinkedDataName, PortType, PortType > DM::OUTPORTS);
 	portTuples->push_back(pt);
 
-    /*if (PortType < DM::OUTPORTS) {
-        //Check if port with the same name already exists
-        pt = new PortTuple(this, LinkedDataName, PortType, false);
-        foreach (PortTuple *pt_existing, outPortTuple) {
-            if (pt_existing->getName().compare(pt->getName()) == 0)
-                return 0;
-        }
-        this->outPortTuple.push_back(pt);
-    } else {
-        pt = new PortTuple(this, LinkedDataName, PortType, true);
-        foreach (PortTuple *pt_existing, inPortTuple) {
-            if (pt_existing->getName().compare(pt->getName()) == 0)
-                return 0;
-        }
-        this->inPortTuple.push_back(pt);
-    }*/
     foreach(PortObserver * po, this->portobserver)
         po->changedPorts();
 
@@ -268,19 +202,6 @@ void Group::removeTuplePort(PortTuple *pt)
 		foreach(PortObserver * po, this->portobserver)
 			po->changedPorts();
 	}
-    /*if (PortType < DM::OUTPORTS) {
-        std::vector<PortTuple*>::iterator pt_it = find(outPortTuple.begin(), outPortTuple.end(), pt);
-        if (pt_it == outPortTuple.end() )
-            return;
-        this->outPortTuple.erase(pt_it);
-    } else {
-        std::vector<PortTuple*>::iterator pt_it = find(inPortTuple.begin(), inPortTuple.end(), pt);
-        if (pt_it == inPortTuple.end() )
-            return;
-        this->inPortTuple.erase(pt_it);
-    }
-    foreach(PortObserver * po, this->portobserver)
-        po->changedPorts();*/
 }
 
 QVector<QRunnable *>  Group::getNextJobs() 
@@ -289,9 +210,6 @@ QVector<QRunnable *>  Group::getNextJobs()
     //for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) 
 	foreach(Module* m, notUsedModules)
 	{
-        /*Module * m = *it;
-        if (std::find(currentRunning.begin(), currentRunning.end(), m) !=  currentRunning.end())
-            continue;*/
 		if(vector_contains(&currentRunning, m))
 			continue;
 
@@ -318,22 +236,6 @@ QVector<QRunnable *>  Group::getNextJobs()
                         runnable = false;
                         break;
 					}
-                    /*bool ModuleExists = false;
-					foreach(Module* usedM, UsedModules) 
-					{
-                        if (usedM == neededM) 
-						{
-                            if (!neededM->isExecuted())
-                                m->setExecuted(false);
-                            ModuleExists = true;
-                            break;
-                        }
-                    }
-                    if (!ModuleExists) 
-					{
-                        runnable = false;
-                        break;
-                    }*/
                 }
             }
         }

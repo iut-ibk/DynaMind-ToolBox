@@ -102,8 +102,6 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(const ModuleLink * origin, bool f
     if (l == 0)
         return 0;
 
-    //if (origin->isBackLinkFromOrigin)
-    //    l->isBackLinkFromOrigin = true;
     return l;
 }
 ModuleLink::~ModuleLink() 
@@ -139,18 +137,6 @@ bool ModuleLink::isBackLinkInChain()
         }
 		if(BackId != -1 && (counter == 1 || (counter > 1 && g->getInternalCounter() > 1)))
 			return true;
-		/*
-        ModuleLink *l = p->getLinks()[LinkId];
-        if (g->getInternalCounter() > 1 && BackId != -1 && counter > 1)
-		{
-            l = p->getLinks()[BackId];
-            return true;
-        }
-        else if (BackId != -1 && counter == 1)
-		{
-            l = p->getLinks()[BackId];
-            return true;
-        }*/
     }
     return this->isBackLink();
 }

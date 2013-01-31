@@ -40,16 +40,12 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 }
 
-void DM::ModuleRunnable::run() {
-
-
-
-
+void DM::ModuleRunnable::run() 
+{
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
-    if (!m->isExecuted() || m->isGroup()) {
-
-
+    if (!m->isExecuted() || m->isGroup()) 
+	{
         m->updateParameter();
         m->init();
         //Called twice since the user can change data in the init method!
@@ -70,11 +66,7 @@ void DM::ModuleRunnable::run() {
             }
         }
         m->postRun();
-
-
     }
-
-
 
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())

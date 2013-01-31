@@ -28,16 +28,14 @@
 #include <algorithm>
 
 DM_DECLARE_GROUP_NAME(GroupTest, Loops)
-GroupTest::GroupTest() {
+GroupTest::GroupTest() 
+{
     i = 0;
     Runs = 1;
 
     this->addParameter("Runs", DM::INT, &Runs);
     this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInViews);
     this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutViews);
-
-
-
 }
 
 
@@ -47,8 +45,8 @@ void GroupTest::run() {
 }
 
 
-void GroupTest::init() {
-
+void GroupTest::init() 
+{
     foreach (std::string s, nameOfInViews)
         this->addTuplePort(s, DM::INTUPLESYSTEM);
 
@@ -63,7 +61,8 @@ void GroupTest::addInPort(std::string n) {
     if (n.empty())
         return;
     //CheckIfPortAlreadyExists
-    if (std::find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
+	if(vector_contains(&nameOfInViews, n))
+    //if (std::find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
         return;
     nameOfInViews.push_back(n);
     this->init();
@@ -75,7 +74,8 @@ void GroupTest::addOutPort(std::string n) {
     if (n.empty())
         return;
     //CheckIfPortAlreadyExists
-    if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
+	if(vector_contains(&nameOfOutViews, n))
+    //if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
         return;
     nameOfOutViews.push_back(n);
     this->init();
