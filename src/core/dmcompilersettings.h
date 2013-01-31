@@ -98,6 +98,7 @@
 */
 
 #include <map>
+#include <vector>
 
 
 template <typename T1, typename T2>
@@ -115,6 +116,37 @@ inline bool map_contains(std::map<T1,T2> *m, const T1 &key)
 {
 	if(m->find(key)==m->end())	return false;
 	return true;
+}
+
+template <typename T>
+inline bool vector_contains(std::vector<T> *v, const T &key)
+{
+	return (find(v->begin(), v->end(), key) != v->end());
+}
+
+template <typename T>
+void deep_delete(std::vector<T*>* v)
+{
+	/*
+	std::vector<T*>::iterator it = v->begin();
+	for(;it != v->end(); ++it)
+		delete *it;*/
+
+	while(v->size())
+	{
+		delete *v->begin();
+		v->erase(v->begin());
+	}
+	v->clear();
+}
+
+template <typename T1, typename T2>
+void deep_delete(std::map<T1,T2*>* m)
+{
+	std::map<T1,T2*>::iterator it = m->begin();
+	for(;it != m->end(); ++it)
+		delete it->second;
+	m->clear();
 }
 
 // mforeach

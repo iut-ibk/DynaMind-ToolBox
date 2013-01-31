@@ -417,7 +417,7 @@ public:
 private:
     bool PythonModule;
     long id;
-    void convertValus( void *value, int Type, QString val);
+    void convertValues( void *out, int Type, QString in);
     std::vector<Port*> InPorts;
     std::vector<Port*> OutPorts;
 
