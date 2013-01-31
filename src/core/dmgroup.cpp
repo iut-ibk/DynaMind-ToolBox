@@ -47,7 +47,7 @@ Group::Group()
 {
     //mutex = new QMutex(QMutex::Recursive );
     moduleHasChanged = true;
-    step = 0;
+    curStep = 0;
     Steps = 0;
 }
 void Group::addModule(Module *module) {
@@ -85,7 +85,7 @@ void Group::Destructor()
 void Group::finishedModule(Module *m) {
     //QMutexLocker locker(mutex);
     currentRunning.erase(std::find(currentRunning.begin(), currentRunning.end(), m));
-	if(!m->isGroup() || !((Group*)m)->isRunnable())
+	if(!m->isGroup() || !((Group*)m)->StepsLeft())
 	{
 		UsedModules.push_back(m);
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
@@ -345,61 +345,59 @@ QVector<QRunnable *>  Group::getNextJobs()
 
     }
     //Run Parallelisation TODO
-    if(!this->notUsedModules.size()) 
-        if (this->group)
-            this->run();
+    if(!this->notUsedModules.size() && this->group) 
+		this->run();
 
     return RunnedModulesInStep;
 }
 void Group::resetSteps()
 {
-    this->step = 0;
+    this->curStep = 0;
     foreach (DM::Module * m, this->modules)
         m->setInternalCounter(0);
 }
 
-void Group::run() {
-    if (this->step ==0) {
-        if (!this->isExecuted())
-            this->resetModules();
-    }
+void Group::run() 
+{
+    if (this->curStep == 0 && !this->isExecuted())
+		this->resetModules();
 
-    notUsedModules  = this->modules;
-    if (notUsedModules.size() == 0) {
-        this->step = Steps;
-    }
+    this->notUsedModules = this->modules;
+    if (notUsedModules.size() == 0)
+        this->curStep = Steps;
+
     UsedModules.clear();
     currentRunning.clear();
     UsedModules.push_back(this);
-    if (this->isRunnable()) {
+	if (this->StepsLeft()) 
+	{
         //QMutexLocker locker(mutex);
-        QVector<QRunnable * > modules = this->getNextJobs();
-        foreach (QRunnable * r, modules) {
-            if (!r) {
-                Logger(Error) << "Null Pointer";
+        QVector<QRunnable * > nextJobs = this->getNextJobs();
+        foreach (QRunnable * r, nextJobs) 
+		{
+            if (!r) 
+			{
+                Logger(Error) << "Null Pointer in getNextJobs";
                 return;
-
             }
             DMRootGroup::getThreadPool()->start(r);
         }
 
-        if (this->getSimulation()->isVirtualRun() || this->moduleHasChanged == false)
-            this->step = Steps;
-
-        this->step++;
-
-        if (this->isRunnable()) {
-            foreach (DM::Module * m, this->modules) {
-                m->setExecuted(false);
-            }
-        }
-    } else {
-        this->group->finishedModule(this);
+        if (this->getSimulation()->isVirtualRun() || !this->moduleHasChanged)
+			this->setStep(Steps);
+		else
+		{
+			this->curStep++;
+			if (this->StepsLeft()) 
+				foreach (DM::Module * m, this->modules)
+					m->setExecuted(false);
+		}
     }
-
-
+	else
+        this->group->finishedModule(this);
 }
-void Group::setExecuted(bool ex) {
+void Group::setExecuted(bool ex) 
+{
     Module::setExecuted(ex);
     if (!ex)
         this->resetSteps();

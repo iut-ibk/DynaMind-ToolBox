@@ -82,7 +82,7 @@ namespace DM {
 		 Port* getPort(std::string name) const;
     protected:
          int Steps;
-         int step;
+         int curStep;
     public:
          /** @brief default constructor for the group
            *
@@ -135,7 +135,8 @@ namespace DM {
          * A group is executed as long as step < Steps. Steps can be set from a derived class. Is used
          * for for loops
          */
-        bool isRunnable(){return step < Steps;}
+        //bool isRunnable(){return step < Steps;}
+		int StepsLeft() {return Steps-curStep;};
         /** @brief Resets all containing modules and step to 0 */
         void resetSteps();
         /** @brief Clears Module list, modules still exist!*/
@@ -146,7 +147,7 @@ namespace DM {
         virtual ~Group();
 
         /** @brief Set Steps */
-        void setStep(int s) {this->step = s;}
+        void setStep(int s) {this->curStep = s;}
 
         /** @brief Return Steps */
         int getSteps() {return this->Steps;}
