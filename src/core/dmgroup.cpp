@@ -67,12 +67,11 @@ void Group::setContentOfModuleHasChanged(bool c)
 }
 void Group::Destructor() 
 {
-	deep_delete(&modules);
+    while(this->modules.size() > 0)
+        delete *(this->modules.begin());
 	deep_delete(&inPortTuple);
 	deep_delete(&outPortTuple);
-    /*while(this->modules.size() > 0)
-        delete *(this->modules.begin());
-
+/*
     foreach(PortTuple * p, this->inPortTuple)
         delete p;
 
