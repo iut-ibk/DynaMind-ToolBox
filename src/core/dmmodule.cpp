@@ -24,7 +24,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "dmmodule.h"
+#include "dmmodule.h"/*
 #include <list>
 #include <map>
 #include <iostream>
@@ -34,23 +34,109 @@
 #include <QString>
 #include <QStringList>
 #include <typeinfo>
-#include <dmport.h>
+#include <dmport.h>*/
 
-#include <QUuid>
-#include <sstream>
-#include <dmgroup.h>
-#include <dmmodulelink.h>
+//#include <QUuid>
+//#include <sstream>
+//#include <dmgroup.h>
+//#include <dmmodulelink.h>
 #include <dmsimulation.h>
-#include <dmportobserver.h>
-#include <sstream>
-#include <dmcomponent.h>
-#include <dmsystem.h>
-#include <dmdatavalidation.h>
-#include <dmrasterdata.h>
-#include <algorithm>
+//#include <dmportobserver.h>
+//#include <sstream>
+//#include <dmcomponent.h>
+//#include <dmsystem.h>
+//#include <dmdatavalidation.h>
+//#include <dmrasterdata.h>
+//#include <algorithm>
 
 using namespace std;
 namespace DM {
+
+Module::Module()
+{
+}
+Module::~Module()
+{
+	foreach(Parameter* p, parameters)
+		delete p;
+
+	parameters.clear();
+}
+void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
+{
+    Parameter *p = new Parameter();
+	p->name = name;
+	p->type = type;
+	p->data = ref;
+	p->description = description;
+	parameters.push_back(p);
+}
+
+void Module::addInPort(const std::string &name)
+{
+	inPorts[name] = new Port(name);
+}
+void Module::addOutPort(const std::string &name)
+{
+	outPorts[name] = new Port(name);
+}
+
+void Module::removeInPort(const std::string &name)
+{
+	delete_element(&inPorts, name);
+}
+void Module::removeOutPort(const std::string &name)
+{
+	delete_element(&outPorts, name);
+}
+
+void Module::setInPortData(const std::string &name, System* data)
+{
+	Module::Port* p = NULL;
+	if(map_contains(&inPorts, name, p) && p)
+		p->data = data;
+}
+
+void Module::setOutPortData(const std::string &name, System* data)
+{
+	Module::Port* p = NULL;
+	if(map_contains(&inPorts, name, p) && p)
+		p->data = data;
+}
+
+bool Module::inPortsSet()
+{
+	mforeach(Port* p, inPorts)
+		if(!p->data)
+			return false;
+	return true;
+}
+bool Module::outPortsSet()
+{
+	mforeach(Port* p, outPorts)
+		if(!p->data)
+			return false;
+	return true;
+}
+
+Module::Port* Module::getOutPort(std::string name)
+{
+	Module::Port* p = NULL;
+	if(map_contains(&inPorts, name, p))
+		return p;
+	return 0;
+}
+Module::Port* Module::getInPort(std::string name)
+{
+	Module::Port* p = NULL;
+	if(map_contains(&inPorts, name, p))
+		return p;
+	return 0;
+}
+
+
+
+#ifdef OLD_WF
 struct ModulePrivate {
 
 };
@@ -670,4 +756,6 @@ void Module::setDebugMode(bool mode) {
 bool Module::isDebugMode() {
     return debugMode;
 }
+#endif
+
 }

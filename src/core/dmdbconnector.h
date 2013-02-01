@@ -23,10 +23,13 @@
  *
  */
 
-
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
+
 #include <dmcompilersettings.h>
+#include <qvariant.h>
+#include <quuid.h>
+
 
 class QSqlQuery;
 class QSqlError;

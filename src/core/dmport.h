@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#define DMPORT_H
 #ifndef DMPORT_H
 #define DMPORT_H
 #include "dmcompilersettings.h"

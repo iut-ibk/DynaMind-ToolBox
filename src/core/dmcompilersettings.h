@@ -139,6 +139,8 @@ inline bool delete_element(std::map<T1,T2*> *m, const T1 &key)
 
 
 
+
+
 template <typename T>
 inline bool vector_contains(std::vector<T> *v, const T &key)
 {

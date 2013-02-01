@@ -27,6 +27,7 @@
 #define DMMODULEREGISTRY_H
 
 #include "dmcompilersettings.h"
+#include "dmmodule.h"
 #include <map>
 #include <string>
 #include <list>

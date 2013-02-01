@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #include "inout2.h"
 #include <dmcomponent.h>
 #include <dmsystem.h>
@@ -100,3 +100,4 @@ void InOut2::run() {
 InOut2::~InOut2() {
     Logger(Debug) << "Destructor InOut";
 }
+*/

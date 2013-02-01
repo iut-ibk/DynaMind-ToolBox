@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "dmgroup.h"
 #include <dmport.h>
 #include <dmmodulelink.h>
@@ -43,6 +44,7 @@
 #include <dmsimulation.h>
 
 namespace DM {
+	
 Group::Group()
 {
     //mutex = new QMutex(QMutex::Recursive );
@@ -306,3 +308,4 @@ void Group::setExecuted(bool ex)
 }
 
 }
+*/

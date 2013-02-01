@@ -52,7 +52,8 @@ enum Components {
     EDGE=2,
     FACE=3,
     SUBSYSTEM=4,
-    RASTERDATA=5
+    RASTERDATA=5,
+	SYSTEM=6,
 };
 
 class Attribute;

@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "dmporttuple.h"
 #include <dmmodule.h>
 #include <dmmodulelink.h>
@@ -30,6 +31,7 @@
 
 
 namespace DM {
+	
 PortTuple::PortTuple(Module * m, std::string Name, int PortType, bool Inport)
 {
     this->name = Name;
@@ -63,4 +65,6 @@ PortTuple::~PortTuple() {
     this->inPort = 0;
     this->outPort = 0;
 }
+
 }
+*/

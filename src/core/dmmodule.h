@@ -35,19 +35,21 @@
 #include <map>
 #include <QString>
 #include <iostream>
-#include <dmresultobserver.h>
+//#include <dmresultobserver.h>
 #include <dmlog.h>
 #include <dmlogger.h>
 #include <dmlogsink.h>
-#include <dmview.h>
+//#include <dmview.h>
 
 class QThreadPool;
 class PortObserver;
 namespace DM {
+	/*
 class System;
 }
 
 namespace DM {
+	
 enum  DATATYPES {    
     INT,
     LONG,
@@ -91,7 +93,7 @@ typedef std::map<std::string, std::string> parameter_type;
 class Port;
 class Group;
 class Simulation;
-class RasterData;
+class RasterData;*/
 
 
 /**
@@ -156,6 +158,98 @@ class RasterData;
 * @author Christian Urich
 *
 */
+
+enum  DataTypes {    
+    INT,
+    LONG,
+    DOUBLE,
+    STRING,
+    FILENAME,
+    STRING_LIST,
+    STRING_MAP,
+	BOOL,
+};
+
+enum PortType
+{
+	IN,
+	OUT,
+};
+
+class System;
+
+class DM_HELPER_DLL_EXPORT Module
+{
+public:
+	Module();
+	virtual ~Module();
+	/** @brief an optional init function for runtime inits*/
+	virtual void init() {};
+	/** @brief executes the modules with the data given via parameters and 
+		inports (those are set by the simulation) */
+	virtual void run() = 0;
+	/** @brief returns the name of the class - for e.g. logging purposes */
+	virtual char* getName() {return "<name not set>";};
+	/** @brief adds a Parameter to the module.
+      * availiable types:
+      * - DM::DOUBLE
+      * - DM::INT
+      * - DM::BOOL
+      * - DM::STRING
+      * - DM::FILENAME
+      * - DM::LONG
+      * - DM::STRING_LIST
+      * - DM::STRING_MAP
+      */
+    void addParameter(const std::string &name, DataTypes type, void * ref, std::string description = "");
+	/** @brief adds a new port, which can be connected to a single other node*/
+	void addInPort(const std::string &name);
+	void addOutPort(const std::string &name);
+	/** @brief removes a port from the module, may corrupt links! */
+	void removeInPort(const std::string &name);
+	void removeOutPort(const std::string &name);
+	/** @brief sets inport data - may only by used by DM::Simulation */
+	void setInPortData(const std::string &name, System* data);
+	/** @brief checks if all inports are set or not existing */
+	bool inPortsSet();
+	/** @brief checks if all outports are set or not existing */
+	bool outPortsSet();
+
+	/** ports offer a named connection point for links */
+	class Port
+	{
+	public:
+		Port(std::string name)	{this->name = name;};
+		System*		data;
+		std::string getName() const	{return name;};
+	private:
+		std::string	name;
+	};
+	std::map<std::string, System*>	inPorts;
+	std::map<std::string, System*>	outPorts;
+	
+	/** @brief returns the outport with the given name. returns 0 if it does not exist */
+	//Port* getOutPort(std::string name);
+	/** @brief returns the inport with the given name. returns 0 if it does not exist */
+	//Port* getInPort(std::string name);
+
+	// deprecated
+	System* getData
+private:
+	/** @brief */
+	void setOutPortData(const std::string &name, System* data);
+	/** @brief parameters are variable values given via gui inputm configuring a module */
+	struct Parameter
+	{
+		std::string		name;
+		DataTypes		type;
+		void*			data;
+		std::string		description;
+	};
+	std::list<Parameter*>	parameters;
+};
+
+#ifdef OLD_WF
 class DM_HELPER_DLL_EXPORT  Module {
 
 
@@ -452,6 +546,7 @@ protected:
     /** @brief Add a new Port to the Module */
     virtual void addPort(std::string LinkedDataName, int PortType);
 };
+#endif
 }
 
 

@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #include "dynamicinout.h"
 #include <dm.h>
 
@@ -76,3 +76,4 @@ void DynamicInOut::addAttribute(std::string n) {
 }
 
 
+*/

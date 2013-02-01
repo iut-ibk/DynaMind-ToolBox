@@ -23,12 +23,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include <dmmodulelink.h>
 #include <dmport.h>
 #include <dmmodule.h>
 #include <dmgroup.h>
 #include <dmporttuple.h>
 namespace DM {
+	
 ModuleLink::ModuleLink(Port * InPort, Port * OutPort, bool isBackPort)
 {
     this->InPort = InPort;
@@ -142,3 +144,4 @@ bool ModuleLink::isBackLinkInChain()
 }
 
 }
+*/

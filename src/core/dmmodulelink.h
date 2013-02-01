@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#define DMLINK_H
 #ifndef DMLINK_H
 #define DMLINK_H
 #include "dmcompilersettings.h"

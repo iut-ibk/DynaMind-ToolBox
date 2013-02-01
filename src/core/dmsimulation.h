@@ -30,8 +30,9 @@
 #include "dmcompilersettings.h"
 #include <string>
 #include <vector>
-#include <QThread>
-#include <dmrootgroup.h>
+//#include <QThread>
+//#include <dmrootgroup.h>
+#include <dmmodule.h>
 
 
 namespace DM {
@@ -45,9 +46,9 @@ class ModuleRegistry;
 class ModuleLink;
 class Group;
 
-static const  string CoreVersion = DYNAMIND_VERSION_CORE;
+static const  std::string CoreVersion = DYNAMIND_VERSION_CORE;
 
-enum SimuatlonsStatuses {
+enum SimulationStatus {
     SIM_OK,
     SIM_FAILED_LOAD,
     SIM_ERROR_SYSTEM_NOT_SET,
@@ -93,6 +94,54 @@ enum SimuatlonsStatuses {
     * }
     * @endcode
     */
+
+class DM_HELPER_DLL_EXPORT Simulation
+{
+public:
+	Simulation();
+	~Simulation();
+	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
+    Module * addModule(const std::string ModuleName, bool callInit = true);
+    /** @brief Removes and deletes a module from the simulation */
+    void removeModule(Module* m);
+	/** @brief register a new native module returns if module has been loaded succcessfully*/
+    bool registerNativeModules(const std::string Filename);
+	/** @brief connects to ports via a link */
+	int addLink(Module::Port * outPort, Module::Port * inPort);
+    /** @brief removes a link */
+    void removeLink(const Module::Port * outPort,const  Module::Port * inPort);
+    /** @brief starts the entire simulation */
+	void run();
+
+	// deprecated functions
+	SimulationStatus getSimulationStatus() {return status;};
+private:
+	/** @brief shifts data from the outgoing port of a module to the inport of the successor module */
+	void shiftModuleOutput(Module* m);
+	/** @brief internal utility function to quickly find a port */
+	Module::Port* findSuccessorPort(Module::Port* ourPort);
+
+	// a link connects an outport to an inport
+	struct Link
+	{
+		Link(Module::Port* outPort, Module::Port* inPort)
+		{
+			this->outPort = outPort;
+			this->inPort = inPort;
+		}
+		Module::Port* outPort;
+		Module::Port* inPort;
+	};
+	ModuleRegistry*		moduleRegistry;
+	std::list<Module*>	modules;
+	std::list<Link*>	links;
+
+	SimulationStatus	status;
+};
+
+
+#ifdef OLD_WF
+
 class DM_HELPER_DLL_EXPORT Simulation:public QThread {
 public:
 
@@ -240,5 +289,6 @@ private:
 
 
 };
+#endif
 }
 #endif // SIMULATION_H

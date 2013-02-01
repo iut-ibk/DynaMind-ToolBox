@@ -32,6 +32,7 @@
 #include <QUuid>
 
 namespace DM {
+	/*
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
         this->uuid = QUuid::createUuid().toString().toStdString();
@@ -71,4 +72,5 @@ namespace DM {
         }
         Logger(Debug) << "Remove Link" << this->links.size();
     }
+	*/
 }

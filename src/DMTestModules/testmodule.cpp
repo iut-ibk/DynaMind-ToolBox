@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "testmodule.h"
 #include "dmrasterdata.h"
 #include <iostream>
@@ -99,3 +100,4 @@ TestModule::~TestModule() {
     Logger(Debug) << "Destructor Testmodule";
 
 }
+*/

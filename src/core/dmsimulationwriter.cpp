@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "dmsimulationwriter.h"
 #include <dmsimulation.h>
 #include <dmmodule.h>
@@ -36,6 +37,7 @@
 #include <sstream>
 
 namespace DM {
+	
     SimulaitonWriter::SimulaitonWriter()
     {
     }
@@ -157,4 +159,6 @@ namespace DM {
 
 
     }
+	
 }
+*/

@@ -29,9 +29,10 @@
 DM_DECLARE_NODE_NAME(CreateNodes, Modules)
 CreateNodes::CreateNodes()
 {
-    std::vector<DM::View> data;
+    /*std::vector<DM::View> data;
     data.push_back( DM::View("Nodes", DM::NODE, DM::WRITE));
-    this->addData("sys",data);
+    this->addData("sys",data);*/
+	this->addOutPort("outport");
 }
 
 void CreateNodes::run() {

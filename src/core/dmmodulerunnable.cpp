@@ -31,7 +31,7 @@
 #include <dmgroup.h>
 #include <dmlogger.h>
 #include <dmsimulation.h>
-
+/*
 DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 {
     this-> m = m;
@@ -71,4 +71,4 @@ void DM::ModuleRunnable::run()
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);
-}
+}*/

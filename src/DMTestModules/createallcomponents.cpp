@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2012  Christian Urich
+ * Copyright (C) 2012  Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #include "createallcomponents.h"
 #include <sstream>
 #include <dmsimulation.h>
@@ -180,3 +180,4 @@ void SuccessorCheck::run()
 		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
 	}
 }
+*/

@@ -26,6 +26,7 @@
 #include "dmrootgroup.h"
 #include <QThreadPool>
 namespace DM {
+	/*
 QThreadPool * DMRootGroup::pool = NULL;
 
 DMRootGroup::DMRootGroup()
@@ -59,5 +60,5 @@ QThreadPool * DMRootGroup::getThreadPool() {
     }
     pool->setMaxThreadCount(1);
     return pool;
-}
+}*/
 }

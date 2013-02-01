@@ -41,15 +41,15 @@
 #include "dmmoduleregistry.h"
 #include "dmmoduleparameterreader.h"
 #include "dmmoduleregistry.h"
-#include "dmsimulationobserver.h"
+//#include "dmsimulationobserver.h"
 #include <dmmodule.h>
-#include <dmmodulelink.h>
-#include <dmport.h>
+//#include <dmmodulelink.h>
+//#include <dmport.h>
 #include <dmmoduleregistry.h>
-#include <dmgroup.h>
-#include <dmsimulationwriter.h>
+//#include <dmgroup.h>
+//#include <dmsimulationwriter.h>
 #include <dmlogger.h>
-#include <dmporttuple.h>
+//#include <dmporttuple.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -60,6 +60,120 @@
 #include <QThread>
 
 namespace DM {
+
+Simulation::Simulation()
+{
+	status = SIM_OK;
+	moduleRegistry = new ModuleRegistry();
+}
+
+Simulation::~Simulation()
+{
+	delete moduleRegistry;
+}
+
+Module* Simulation::addModule(const std::string ModuleName, bool callInit)
+{
+	Module *module = this->moduleRegistry->createModule(ModuleName);
+    if(!module)
+    {
+        Logger(Error) << "Not able to add new module" << ModuleName;
+        return 0;
+    }
+	modules.push_back(module);
+    Logger(Debug) << "Added module" << ModuleName;
+    if (callInit)
+        module->init();
+
+	return module;
+}
+
+void Simulation::removeModule(Module* m)
+{
+	modules.remove(m);
+	delete m;
+	Logger(Debug) << "Removed module" << m->getName();
+}
+
+bool Simulation::registerNativeModules(const std::string Filename) 
+{
+    Logger(Standard) << "Loading native modules from " << Filename ;
+    return moduleRegistry->addNativePlugin(Filename);
+}
+
+int Simulation::addLink(Module::Port * outPort, Module::Port * inPort)
+{
+	if(!outPort || !inPort)
+	{
+		Logger(Standard) << "Error adding link: null pointer";
+		return 0;
+	}
+	links.push_back(new Link(outPort, inPort));
+    Logger(Debug) << "Added link from port " << outPort->getName() << "to" << inPort->getName();
+	return 1;
+}
+
+void Simulation::removeLink(const Module::Port * outPort, const Module::Port * inPort)
+{
+	Link* toDelete = NULL;
+	foreach(Link* l, links)
+		if(l->outPort == outPort && l->inPort == inPort)
+			toDelete = l;
+
+	if(toDelete)
+	{
+		links.remove(toDelete);
+		delete toDelete;
+		Logger(Debug) << "Deleted link from port " 
+			<< outPort->getName() << "to" << inPort->getName();
+	}
+}
+
+void Simulation::run()
+{
+	foreach(Module* m, modules)
+	{
+		if(m->inPortsSet() && !m->outPortsSet())
+		{
+			m->run();
+			if(!m->outPortsSet())
+			{
+				Logger(Debug) << "module " << m->getName() << "failed; simulation canceled";
+				status = SIM_FAILED;
+				return;
+			}
+			// shift data from out port to next inport
+			shiftModuleOutput(m);
+		}
+	}
+}
+
+Module::Port* Simulation::findSuccessorPort(Module::Port* ourPort)
+{
+	foreach(Link* l, links)
+	{
+		if(l->outPort == ourPort)
+			return l->inPort;
+	}
+	return 0;
+}
+
+void Simulation::shiftModuleOutput(Module* m)
+{
+	mforeach(Module::Port *p_out, m->outPorts)
+	{
+		Module::Port* p_in = findSuccessorPort(p_out);
+		if(!p_in)
+		{
+			Logger(Error) << "link corrupt: starting at port " << p_out->getName();
+			return;
+		}
+		p_in->data = p_out->data;
+	}
+}
+
+
+#ifdef OLD_WF
 struct SimulationPrivate {
     ModuleRegistry registry;
 
@@ -642,6 +756,10 @@ std::vector<Module*> Simulation::getModules() const{
 		ms.push_back(m);
     return ms;
 }
+#endif
+
+
+
 }
 
 
