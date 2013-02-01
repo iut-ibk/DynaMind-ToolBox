@@ -289,6 +289,7 @@ std::string Module::getParameterAsString(std::string Name)
 		return ss.str();
 	case DM::STRING:
 	case DM::FILENAME:	ss <<  this->getParameter<std::string>(Name);
+		return ss.str();
 	case DM::STRING_LIST:
 		{
 			std::vector<std::string> vec = this->getParameter<std::vector<std::string> >(Name);
