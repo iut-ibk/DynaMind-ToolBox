@@ -180,6 +180,7 @@ class System;
 
 class DM_HELPER_DLL_EXPORT Module
 {
+	friend Simulation;
 public:
 	Module();
 	virtual ~Module();
@@ -208,36 +209,24 @@ public:
 	/** @brief removes a port from the module, may corrupt links! */
 	void removeInPort(const std::string &name);
 	void removeOutPort(const std::string &name);
-	/** @brief sets inport data - may only by used by DM::Simulation */
-	void setInPortData(const std::string &name, System* data);
+	/** @brief checks if port exists */
+	bool hasInPort(const std::string &name);
+	bool hasOutPort(const std::string &name);
 	/** @brief checks if all inports are set or not existing */
 	bool inPortsSet();
 	/** @brief checks if all outports are set or not existing */
 	bool outPortsSet();
-
-	/** ports offer a named connection point for links */
-	class Port
-	{
-	public:
-		Port(std::string name)	{this->name = name;};
-		System*		data;
-		std::string getName() const	{return name;};
-	private:
-		std::string	name;
-	};
-	std::map<std::string, System*>	inPorts;
-	std::map<std::string, System*>	outPorts;
-	
-	/** @brief returns the outport with the given name. returns 0 if it does not exist */
-	//Port* getOutPort(std::string name);
-	/** @brief returns the inport with the given name. returns 0 if it does not exist */
-	//Port* getInPort(std::string name);
-
-	// deprecated
-	System* getData
-private:
+	/** @brief get data from inport*/
+	System* getInPortData(const std::string &name);
+	/** @brief get data from outport*/
+	System* getOutPortData(const std::string &name);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
+	// deprecated
+	// ...
+private:
+	/** @brief sets inport data - may only by used by DM::Simulation */
+	void setInPortData(const std::string &name, System* data, const Simulation *sim);
 	/** @brief parameters are variable values given via gui inputm configuring a module */
 	struct Parameter
 	{
@@ -247,6 +236,8 @@ private:
 		std::string		description;
 	};
 	std::list<Parameter*>	parameters;
+	std::map<std::string, System*>	inPorts;
+	std::map<std::string, System*>	outPorts;
 };
 
 #ifdef OLD_WF

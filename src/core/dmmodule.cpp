@@ -74,67 +74,64 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 
 void Module::addInPort(const std::string &name)
 {
-	inPorts[name] = new Port(name);
+	inPorts[name] = NULL;
 }
 void Module::addOutPort(const std::string &name)
 {
-	outPorts[name] = new Port(name);
+	outPorts[name] = NULL;
 }
 
 void Module::removeInPort(const std::string &name)
 {
-	delete_element(&inPorts, name);
+	inPorts.erase(name);
 }
 void Module::removeOutPort(const std::string &name)
 {
-	delete_element(&outPorts, name);
+	outPorts.erase(name);
 }
 
-void Module::setInPortData(const std::string &name, System* data)
+bool Module::hasInPort(const std::string &name)
 {
-	Module::Port* p = NULL;
-	if(map_contains(&inPorts, name, p) && p)
-		p->data = data;
+	return map_contains(&inPorts, name);
+}
+bool Module::hasOutPort(const std::string &name)
+{
+	return map_contains(&outPorts, name);
+}
+
+void Module::setInPortData(const std::string &name, System* data, const Simulation *sim)
+{
+	inPorts[name] = data;
 }
 
 void Module::setOutPortData(const std::string &name, System* data)
 {
-	Module::Port* p = NULL;
-	if(map_contains(&inPorts, name, p) && p)
-		p->data = data;
+	outPorts[name] = data;
 }
 
 bool Module::inPortsSet()
 {
-	mforeach(Port* p, inPorts)
-		if(!p->data)
+	mforeach(System* data, inPorts)
+		if(!data)
 			return false;
 	return true;
 }
 bool Module::outPortsSet()
 {
-	mforeach(Port* p, outPorts)
-		if(!p->data)
+	mforeach(System* data, outPorts)
+		if(!data)
 			return false;
 	return true;
 }
 
-Module::Port* Module::getOutPort(std::string name)
+System* Module::getInPortData(const std::string &name)
 {
-	Module::Port* p = NULL;
-	if(map_contains(&inPorts, name, p))
-		return p;
-	return 0;
+	return inPorts[name];
 }
-Module::Port* Module::getInPort(std::string name)
+System* Module::getOutPortData(const std::string &name)
 {
-	Module::Port* p = NULL;
-	if(map_contains(&inPorts, name, p))
-		return p;
-	return 0;
+	return outPorts[name];
 }
-
-
 
 #ifdef OLD_WF
 struct ModulePrivate {

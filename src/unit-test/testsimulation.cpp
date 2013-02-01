@@ -1056,7 +1056,7 @@ TEST_F(TestSimulation,linkedModulesTest) {
 
     ASSERT_TRUE(inout != 0);
 
-    ASSERT_TRUE(sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport")));
+    ASSERT_TRUE(sim.addLink(m,"Sewer", inout,"Inport"));
     for (long i = 0; i < 10; i++){
         sim.run();
         ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);

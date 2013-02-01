@@ -107,9 +107,9 @@ public:
 	/** @brief register a new native module returns if module has been loaded succcessfully*/
     bool registerNativeModules(const std::string Filename);
 	/** @brief connects to ports via a link */
-	int addLink(Module::Port * outPort, Module::Port * inPort);
+	bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief removes a link */
-    void removeLink(const Module::Port * outPort,const  Module::Port * inPort);
+	void removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief starts the entire simulation */
 	void run();
 
@@ -119,9 +119,10 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module */
 	void shiftModuleOutput(Module* m);
 	/** @brief internal utility function to quickly find a port */
-	Module::Port* findSuccessorPort(Module::Port* ourPort);
+	//Module::Port* findSuccessorPort(Module::Port* ourPort);
 
 	// a link connects an outport to an inport
+	/*
 	struct Link
 	{
 		Link(Module::Port* outPort, Module::Port* inPort)
@@ -131,9 +132,29 @@ private:
 		}
 		Module::Port* outPort;
 		Module::Port* inPort;
+	};*/
+
+	struct Link
+	{
+		Module* src;
+		std::string outPort;
+		Module* dest;
+		std::string inPort;
+
+		/** @brief shortcut to data */
+		System* getSrcData()
+		{
+			return this->src->getInPortData(this->outPort);
+		}
+		System* getDestData()
+		{
+			return this->dest->getOutPortData(this->inPort);
+		}
 	};
+
 	ModuleRegistry*		moduleRegistry;
 	std::list<Module*>	modules;
+	//std::list<Module*>	worklist;
 	std::list<Link*>	links;
 
 	SimulationStatus	status;

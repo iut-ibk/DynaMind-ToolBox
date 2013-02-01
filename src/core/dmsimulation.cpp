@@ -69,6 +69,7 @@ Simulation::Simulation()
 
 Simulation::~Simulation()
 {
+	// TODO: cleanup lost systems
 	delete moduleRegistry;
 }
 
@@ -90,6 +91,7 @@ Module* Simulation::addModule(const std::string ModuleName, bool callInit)
 
 void Simulation::removeModule(Module* m)
 {
+	// TODO check if systems are lost
 	modules.remove(m);
 	delete m;
 	Logger(Debug) << "Removed module" << m->getName();
@@ -97,10 +99,47 @@ void Simulation::removeModule(Module* m)
 
 bool Simulation::registerNativeModules(const std::string Filename) 
 {
-    Logger(Standard) << "Loading native modules from " << Filename ;
+    Logger(Standard) << "Loading native modules from " << Filename;
     return moduleRegistry->addNativePlugin(Filename);
 }
 
+bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
+{
+	if(!source || !dest || !source->hasInPort(outPort) || ! dest->hasInPort(inPort))
+		return false;
+
+	Link* l = new Link();
+	l->src = source;
+	l->outPort = outPort;
+	l->dest = dest;
+	l->inPort = inPort;
+	links.push_back(l);
+    Logger(Debug) << "Added link from port " << outPort << "to" << inPort;
+	return true;
+}
+void Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
+{
+	Link* toDelete;
+	foreach(Link* l, links)
+	{
+		if(	l->src == source && 
+			l->outPort == outPort && 
+			l->dest == dest && 
+			l->inPort == inPort)
+		{
+			toDelete = l;
+			break;
+		}
+	}
+	if(toDelete)
+	{
+		links.remove(toDelete);
+		Logger(Debug) << "Deleted link from port " 
+			<< outPort << "to" << inPort;
+	}
+}
+
+/*
 int Simulation::addLink(Module::Port * outPort, Module::Port * inPort)
 {
 	if(!outPort || !inPort)
@@ -127,28 +166,44 @@ void Simulation::removeLink(const Module::Port * outPort, const Module::Port * i
 		Logger(Debug) << "Deleted link from port " 
 			<< outPort->getName() << "to" << inPort->getName();
 	}
-}
+}*/
 
 void Simulation::run()
 {
-	foreach(Module* m, modules)
+	std::list<Module*> worklist = modules;
+	
+	while(worklist.size())
 	{
-		if(m->inPortsSet() && !m->outPortsSet())
+		int n = worklist.size();
+		foreach(Module* m, worklist)
 		{
-			m->run();
-			if(!m->outPortsSet())
+			if(m->inPortsSet())
 			{
-				Logger(Debug) << "module " << m->getName() << "failed; simulation canceled";
-				status = SIM_FAILED;
-				return;
+				m->run();
+				if(!m->outPortsSet())
+				{
+					Logger(Debug) << "module " << m->getName() << "failed; simulation canceled";
+					status = SIM_FAILED;
+					return;
+				}
+				// shift data from out port to next inport
+				shiftModuleOutput(m);
+				// remove module from worklist
+				worklist.pop_front();
+				break;
 			}
-			// shift data from out port to next inport
-			shiftModuleOutput(m);
+		}
+		// check if we done nothing => infinity loop
+		if(n == worklist.size())
+		{
+			Logger(Debug) << "loose modules detected, simulation canceled. left: " << n;
+			status = SIM_FAILED;
+			return;
 		}
 	}
 }
 
-Module::Port* Simulation::findSuccessorPort(Module::Port* ourPort)
+/*Module::Port* Simulation::findSuccessorPort(Module::Port* ourPort)
 {
 	foreach(Link* l, links)
 	{
@@ -156,19 +211,16 @@ Module::Port* Simulation::findSuccessorPort(Module::Port* ourPort)
 			return l->inPort;
 	}
 	return 0;
-}
+}*/
 
 void Simulation::shiftModuleOutput(Module* m)
 {
-	mforeach(Module::Port *p_out, m->outPorts)
+	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
+		it != m->outPorts.end();++it)
 	{
-		Module::Port* p_in = findSuccessorPort(p_out);
-		if(!p_in)
-		{
-			Logger(Error) << "link corrupt: starting at port " << p_out->getName();
-			return;
-		}
-		p_in->data = p_out->data;
+		foreach(Link* l, links)
+			if(l->src == m)
+				l->dest->setInPortData(l->inPort, it->second, this);
 	}
 }
 
