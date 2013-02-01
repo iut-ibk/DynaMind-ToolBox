@@ -174,7 +174,7 @@ void deep_delete(std::vector<T*>* v)
 template <typename T1, typename T2>
 void deep_delete(std::map<T1,T2*>* m)
 {
-	std::map<T1,T2*>::iterator it = m->begin();
+    typename std::map<T1,T2*>::iterator it = m->begin();
 	for(;it != m->end(); ++it)
 		delete it->second;
 	m->clear();
