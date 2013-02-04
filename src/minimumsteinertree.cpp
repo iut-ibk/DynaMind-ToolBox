@@ -231,3 +231,9 @@ void MinimumSteinerTree::run()
 void MinimumSteinerTree::initmodel()
 {
 }
+
+string MinimumSteinerTree::getHelpUrl()
+{
+    return "https://docs.google.com/document/d/1xn4UMr5fniKuzFBkgUHZfSQMfIZY8UW9eVhHWfCoKD0/edit?usp=sharing";
+}
+

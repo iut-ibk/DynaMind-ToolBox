@@ -50,6 +50,7 @@ public:
 
     void run();
     void initmodel();
+    string getHelpUrl();
 };
 
 #endif // MinimumSteinerTree_H
