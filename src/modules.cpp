@@ -35,10 +35,6 @@
 #include <simulatewithepanet.h>
 #include <createepanetmodel.h>
 #include <minimumsteinertree.h>
-#include <roadgen.h>
-#include <lsystem/lsystem.h>
-//#include <lsystem/graphiclsystem.h>
-//#include <lsystem/roadlsystem.h>
 
 using namespace std;
 
@@ -53,5 +49,4 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
     registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
     registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
-    registry->addNodeFactory(new DM::NodeFactory<RoadGen>());
 }
