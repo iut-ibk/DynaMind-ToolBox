@@ -92,9 +92,9 @@ Module* Simulation::addModule(const std::string ModuleName, bool callInit)
 void Simulation::removeModule(Module* m)
 {
 	// TODO check if systems are lost
+	Logger(Debug) << "Removing module" << m->getName();
 	modules.remove(m);
 	delete m;
-	Logger(Debug) << "Removed module" << m->getName();
 }
 
 bool Simulation::registerNativeModules(const std::string Filename) 
