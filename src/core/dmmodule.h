@@ -214,6 +214,12 @@ public:
     void addParameter(const std::string &name, DataTypes type, void * ref, std::string description = "");
 
 	ModuleStatus getStatus(){return status;};
+	
+	//template<typename T>
+	//void setParameter(std::string name, T value);
+	void setParameter(std::string name, int value);
+	void getParameter(std::string name, int &value);
+
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -252,7 +258,7 @@ private:
 		void*			data;
 		std::string		description;
 	};
-	std::list<Parameter*>	parameters;
+	std::map<std::string, Parameter*>	parameters;
 	std::map<std::string, System*>	inPorts;
 	std::map<std::string, System*>	outPorts;
 	ModuleStatus status;

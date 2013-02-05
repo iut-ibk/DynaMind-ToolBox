@@ -58,7 +58,7 @@ Module::Module()
 }
 Module::~Module()
 {
-	foreach(Parameter* p, parameters)
+	mforeach(Parameter* p, parameters)
 		delete p;
 
 	parameters.clear();
@@ -81,7 +81,7 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 	p->type = type;
 	p->data = ref;
 	p->description = description;
-	parameters.push_back(p);
+	parameters[name] = p;
 }
 
 void Module::addInPort(const std::string &name)
@@ -205,6 +205,25 @@ RasterData* Module::getRasterData(std::string name, View view)
 
 	return getData(name)->addRasterData();
 }
+
+/*template<typename T>
+void Module::setParameter(std::string name, T value)
+{
+	if(map_contains(&parameters, name))
+		parameters[name]->data = &value;
+}*/
+
+void Module::setParameter(std::string name, int value)
+{
+	if(map_contains(&parameters, name))
+		*(int*)parameters[name]->data = value;
+}
+void Module::getParameter(std::string name, int &value)
+{
+	if(map_contains(&parameters, name))
+		value = *(int*)parameters[name]->data;
+}
+
 
 #ifdef OLD_WF
 struct ModulePrivate {
