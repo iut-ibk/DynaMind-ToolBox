@@ -67,7 +67,7 @@ Module::~Module()
 	{
 		mforeach(System* outdata, outPorts)
 			if(indata == outdata)
-				indata == NULL;
+				indata = NULL;
 
 		if(indata)
 			delete indata;
