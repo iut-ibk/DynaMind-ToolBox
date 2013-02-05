@@ -24,7 +24,6 @@
  *
  */
 
-#define INOUT2MODULE_H
 #ifndef INOUT2MODULE_H
 #define INOUT2MODULE_H
 

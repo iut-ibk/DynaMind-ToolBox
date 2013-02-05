@@ -29,7 +29,7 @@
 #include <dmmodule.h>
 #include <dmsimulation.h>
 #include <dmlog.h>
-//#include <dynamicinout.h>
+#include <dynamicinout.h>
 //#include <grouptest.h>
 //#include <dmporttuple.h>
 
@@ -1074,9 +1074,9 @@ TEST_F(TestSimulation,linkedDynamicModules) {
     DM::Module * inout  = sim.addModule("InOut");
     ASSERT_TRUE(inout != 0);
     ASSERT_TRUE(sim.addLink(m,"Sewer", inout, "Inport"));
-    DM::Module * dyinout  = sim.addModule("DynamicInOut");
+	DynamicInOut * dyinout  = (DynamicInOut*)sim.addModule("DynamicInOut");
     ASSERT_TRUE(dyinout != 0);
-    //dyinout->addAttribute("D");
+    dyinout->addAttribute("D");
     ASSERT_TRUE(sim.addLink(inout, "Inport", dyinout, "Inport"));
     DM::Module * inout2  = sim.addModule("InOut2");
     ASSERT_TRUE(inout2 != 0);

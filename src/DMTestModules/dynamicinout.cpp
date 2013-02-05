@@ -46,7 +46,7 @@ DynamicInOut::DynamicInOut()
 
 void DynamicInOut::run() {
     Logger(Debug) << "DynInOut";
-
+	this->setOutPortData("Inport", getData("Inport"));
 }
 
 void DynamicInOut::init() {

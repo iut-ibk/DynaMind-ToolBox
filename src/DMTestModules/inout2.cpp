@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include "inout2.h"
 #include <dmcomponent.h>
 #include <dmsystem.h>
@@ -62,7 +62,7 @@ void InOut2::run() {
 
     int test = a;
     Logger(Debug) << "Run InOut";
-    Logger(Debug) << this->getParameterAsString("a");
+    //Logger(Debug) << this->getParameterAsString("a");
     sys_in = this->getData("Inport");
 
     std::map<std::string, DM::Node*> all_nodes = sys_in->getAllNodes();
@@ -100,4 +100,3 @@ void InOut2::run() {
 InOut2::~InOut2() {
     Logger(Debug) << "Destructor InOut";
 }
-*/
