@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include <queue>
 
 #include "dmsimulation.h"
 #include "dmsimulationreader.h"
@@ -170,6 +171,37 @@ void Simulation::removeLink(const Module::Port * outPort, const Module::Port * i
 
 void Simulation::run()
 {
+	// get modules with no imput - beginning modules list
+	std::queue<Module*> worklist;
+
+	foreach(Module* m, modules)
+		if(m->inPortsSet())
+			worklist.push(m);
+	
+	// run modules
+	while(worklist.size())
+	{
+		Module* m = worklist.front();
+		worklist.pop();
+
+		m->run();
+		if(m->outPortsSet())
+		{
+			// shift data from out port to next inport
+			Module* nextModule = shiftModuleOutput(m);
+			if(nextModule)
+				worklist.push(nextModule);
+		}
+		else
+			Logger(Warning) << "module " << m->getName() 
+				<< " did not set the outport! execution of this branch canceled";
+
+	}
+
+
+
+
+	/*
 	std::list<Module*> worklist = modules;
 	
 	while(worklist.size())
@@ -200,10 +232,10 @@ void Simulation::run()
 			status = SIM_FAILED;
 			return;
 		}
-	}
+	}*/
 }
 
-void Simulation::shiftModuleOutput(Module* m)
+Module* Simulation::shiftModuleOutput(Module* m)
 {
 	mforeach(System* sys, m->outPorts)
 	{
@@ -215,9 +247,11 @@ void Simulation::shiftModuleOutput(Module* m)
 				l->dest->setInPortData(l->inPort, sys, this);
 				// reset out port (loop!)
 				l->src->setOutPortData(l->outPort, 0);
+				return l->dest;
 			}
 		}
 	}
+	return 0;
 }
 
 

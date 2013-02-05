@@ -116,8 +116,9 @@ public:
 	// deprecated functions
 	SimulationStatus getSimulationStatus() {return status;};
 private:
-	/** @brief shifts data from the outgoing port of a module to the inport of the successor module */
-	void shiftModuleOutput(Module* m);
+	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
+		returns destination module */
+	Module* shiftModuleOutput(Module* m);
 	/** @brief internal utility function to quickly find a port */
 	//Module::Port* findSuccessorPort(Module::Port* ourPort);
 
