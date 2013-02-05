@@ -462,6 +462,11 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     return r;
 }
 
+RasterData* System::addRasterData()
+{
+	return addRasterData(new RasterData());
+}
+
 std::map<std::string, Component*>  System::getAllComponents()
 {
     std::map<std::string, Component*> comps;

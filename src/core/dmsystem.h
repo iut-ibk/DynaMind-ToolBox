@@ -228,6 +228,8 @@ public:
     std::vector<std::string> getUUIDs(const DM::View &view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
+	/** @brief adds new RasterData to the system */
+	RasterData* addRasterData();
     /** @brief add Predecessor **/
     void addPredecessors(DM::System * s);
 
