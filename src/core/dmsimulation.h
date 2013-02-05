@@ -120,21 +120,6 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
-	/** @brief internal utility function to quickly find a port */
-	//Module::Port* findSuccessorPort(Module::Port* ourPort);
-
-	// a link connects an outport to an inport
-	/*
-	struct Link
-	{
-		Link(Module::Port* outPort, Module::Port* inPort)
-		{
-			this->outPort = outPort;
-			this->inPort = inPort;
-		}
-		Module::Port* outPort;
-		Module::Port* inPort;
-	};*/
 
 	class Link
 	{
@@ -145,19 +130,11 @@ private:
 		Module* dest;
 		std::string inPort;
 
-		/** @brief shortcut to data */
+		/** @brief shortcut to src data */
 		System* getData()
 		{
 			return src->getOutPortData(outPort);
 		}
-		/*System* getSrcData()
-		{
-			return this->src->getInPortData(this->outPort);
-		}
-		System* getDestData()
-		{
-			return this->dest->getOutPortData(this->inPort);
-		}*/
 		/** @brief shifts data from source to destination */
 		void ShiftData(Simulation* sim, bool successor = false)
 		{
@@ -169,16 +146,10 @@ private:
 			// reset outport
 			this->src->setOutPortData(this->outPort, 0);
 		}
-		/** @brief check if condition is fulfilled */
-		virtual bool CheckCondition()
-		{
-			return true;
-		}
 	};
 
 	ModuleRegistry*		moduleRegistry;
 	std::list<Module*>	modules;
-	//std::list<Module*>	worklist;
 	std::list<Link*>	links;
 
 	SimulationStatus	status;

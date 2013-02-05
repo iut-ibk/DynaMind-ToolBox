@@ -180,59 +180,17 @@ void Simulation::run()
 	// run modules
 	while(worklist.size())
 	{
+		// get first element
 		Module* m = worklist.front();
 		worklist.pop();
-
+		// execute module
 		m->run();
-		//if(m->outPortsSet())
-		//{
-			// shift data from out port to next inport
-			std::list<Module*> nextModules = shiftModuleOutput(m);
-			if(nextModules.size()>0)
-				foreach(Module* m, nextModules)
-					worklist.push(m);
-		/*}
-		else
-			Logger(Warning) << "module " << m->getName() 
-				<< " did not set outport execution of this branch canceled";
-		*/
+		// shift data from out port to next inport
+		std::list<Module*> nextModules = shiftModuleOutput(m);
+		if(nextModules.size()>0)
+			foreach(Module* m, nextModules)
+				worklist.push(m);
 	}
-
-
-
-
-	/*
-	std::list<Module*> worklist = modules;
-	
-	while(worklist.size())
-	{
-		int n = worklist.size();
-		foreach(Module* m, worklist)
-		{
-			if(m->inPortsSet())
-			{
-				m->run();
-				if(!m->outPortsSet())
-				{
-					Logger(Debug) << "module " << m->getName() << " did not set the outport, simulation canceled";
-					status = SIM_FAILED;
-					return;
-				}
-				// shift data from out port to next inport
-				shiftModuleOutput(m);
-				// remove module from worklist
-				worklist.pop_front();
-				break;
-			}
-		}
-		// check if we done nothing => infinity loop
-		if(n == worklist.size())
-		{
-			Logger(Debug) << "loose modules detected, simulation canceled. left: " << n;
-			status = SIM_FAILED;
-			return;
-		}
-	}*/
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
