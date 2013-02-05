@@ -105,7 +105,7 @@ bool Simulation::registerNativeModules(const std::string Filename)
 
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
 {
-	if(!source || !dest || !source->hasInPort(outPort) || ! dest->hasInPort(inPort))
+	if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
 		return false;
 
 	Link* l = new Link();

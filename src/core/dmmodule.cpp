@@ -165,7 +165,22 @@ System* Module::getOutPortData(const std::string &name)
 void Module::addData(std::string name, std::vector<View> views)
 {
 	DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
-	this->addOutPort(name);
+	bool inPort = false;
+	bool outPort = false;
+
+	foreach(View v, views)
+	{
+		ACCESS a = (ACCESS)v.getAccessType();
+		if(a == READ || a == MODIFY)
+			inPort = true;
+		if(a == WRITE || a == MODIFY)
+			outPort = true;
+	}
+	
+	if(inPort)
+		this->addInPort(name);
+	if(outPort)
+		this->addOutPort(name);
 }
 
 System* Module::getData(std::string name)
