@@ -1062,7 +1062,7 @@ TEST_F(TestSimulation,linkedModulesTest) {
         ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
     }
 }
-/*
+
 TEST_F(TestSimulation,linkedDynamicModules) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -1073,20 +1073,18 @@ TEST_F(TestSimulation,linkedDynamicModules) {
     ASSERT_TRUE(m != 0);
     DM::Module * inout  = sim.addModule("InOut");
     ASSERT_TRUE(inout != 0);
-    ASSERT_TRUE(sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport")));
+    ASSERT_TRUE(sim.addLink(m,"Sewer", inout, "Inport"));
     DM::Module * dyinout  = sim.addModule("DynamicInOut");
     ASSERT_TRUE(dyinout != 0);
-    dyinout->addAttribute("D");
-    DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
-    ASSERT_TRUE(l1 != 0);
+    //dyinout->addAttribute("D");
+    ASSERT_TRUE(sim.addLink(inout, "Inport", dyinout, "Inport"));
     DM::Module * inout2  = sim.addModule("InOut2");
     ASSERT_TRUE(inout2 != 0);
-    DM::ModuleLink * l2 = sim.addLink(dyinout->getOutPort("Inport"), inout2->getInPort("Inport"));
-    ASSERT_TRUE(l2 != 0);
+    ASSERT_TRUE(sim.addLink(dyinout,"Inport", inout2, "Inport"));
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
-
+/*
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);

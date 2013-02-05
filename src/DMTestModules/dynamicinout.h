@@ -24,7 +24,7 @@
  *
  */
 
-#define DYNAMICINOUT_H
+
 #ifndef DYNAMICINOUT_H
 #define DYNAMICINOUT_H
 
