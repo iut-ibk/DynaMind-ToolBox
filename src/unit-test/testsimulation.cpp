@@ -40,7 +40,7 @@
 #include <dm.h>
 
 #define SQLUNITTESTS
-#define SQLPROFILING
+//#define SQLPROFILING
 #define STDUNITTESTS
 
 
@@ -465,7 +465,7 @@ TEST_F(TestSimulation,cachetest) {
 	DM::Logger(Error) << "elapsed time for 1x10 buffers: " << GetElapsedTime(&time);
 	delete buf;*/
 }
-
+/*
 TEST_F(TestSimulation,simplesqltest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -490,7 +490,7 @@ TEST_F(TestSimulation,simplesqltest) {
     DM::Attribute::PrintStatistics();
     //DM::RasterData::PrintStatistics();
 }
-
+*/
 /* DOES NOT WORK ANYMORE (VALIDATION TOOL ON SUCCESSORSTATE)
 TEST_F(TestSimulation,sqlsuccessortest) {
     ostream *out = &cout;
@@ -1108,7 +1108,7 @@ TEST_F(TestSimulation,branchTest) {
 
 TEST_F(TestSimulation,loopTest) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Standard) << "Test loops";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -1117,10 +1117,13 @@ TEST_F(TestSimulation,loopTest) {
     ASSERT_TRUE(m != 0);
     DM::Module * inout  = sim.addModule("InOut");
     ASSERT_TRUE(inout != 0);
+    DM::Module * loop  = sim.addModule("Loop");
+
 
     ASSERT_TRUE(sim.addLink(m,"Sewer", inout, "Inport"));
-
-	ASSERT_TRUE(sim.addLink(inout,"Inport", inout, "Inport"));
+	
+	ASSERT_TRUE(sim.addLink(inout,"Inport", loop, "in"));
+	ASSERT_TRUE(sim.addLink(loop,"true", inout, "Inport"));
 
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);

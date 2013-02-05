@@ -182,12 +182,12 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 		// first get alle links starting at the given module
 		std::list<Link*> branches;
 		foreach(Link* l, links)
-			if(l->src == m && l->getData())	// check for assigned and existing data
+			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
 				branches.push_back(l);
 
 		if(branches.size() == 0)
 		{
-			Logger(Warning) << "port not connected";
+			//Logger(Warning) << "port not connected";
 			continue;	// dead path
 		}
 		// the first entry gets the original data, all others a copy = successor
