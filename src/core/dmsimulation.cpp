@@ -167,7 +167,9 @@ void Simulation::run()
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 {
 	std::list<Module*> nextModules;
-	mforeach(System* sys, m->outPorts)
+	//mforeach(System* sys, m->outPorts)
+	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
+		it != m->outPorts.end();	++it)
 	{
 		// first get alle links starting at the given module
 		std::list<Link*> branches;
@@ -188,6 +190,8 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			nextModules.push_back(l->dest);
 			first = false;
 		}
+		// reset port
+		it->second = NULL;
 	}
 	return nextModules;
 }

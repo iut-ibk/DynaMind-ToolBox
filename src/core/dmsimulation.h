@@ -143,8 +143,6 @@ private:
 			this->dest->setInPortData(this->inPort, 
 				successor ? data->createSuccessor() : data, 
 				sim);
-			// reset outport
-			this->src->setOutPortData(this->outPort, 0);
 		}
 	};
 
