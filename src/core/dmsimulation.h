@@ -33,6 +33,7 @@
 //#include <QThread>
 //#include <dmrootgroup.h>
 #include <dmmodule.h>
+#include <dmsystem.h>
 
 
 namespace DM {
@@ -113,12 +114,12 @@ public:
     /** @brief starts the entire simulation */
 	void run();
 
-	// deprecated functions
+	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
-	Module* shiftModuleOutput(Module* m);
+	std::list<Module*> shiftModuleOutput(Module* m);
 	/** @brief internal utility function to quickly find a port */
 	//Module::Port* findSuccessorPort(Module::Port* ourPort);
 
@@ -135,21 +136,43 @@ private:
 		Module::Port* inPort;
 	};*/
 
-	struct Link
+	class Link
 	{
+	public:
 		Module* src;
 		std::string outPort;
+
 		Module* dest;
 		std::string inPort;
 
 		/** @brief shortcut to data */
-		System* getSrcData()
+		System* getData()
+		{
+			return src->getOutPortData(outPort);
+		}
+		/*System* getSrcData()
 		{
 			return this->src->getInPortData(this->outPort);
 		}
 		System* getDestData()
 		{
 			return this->dest->getOutPortData(this->inPort);
+		}*/
+		/** @brief shifts data from source to destination */
+		void ShiftData(Simulation* sim, bool successor = false)
+		{
+			System * data = getData();
+			// shift pointer
+			this->dest->setInPortData(this->inPort, 
+				successor ? data->createSuccessor() : data, 
+				sim);
+			// reset outport
+			this->src->setOutPortData(this->outPort, 0);
+		}
+		/** @brief check if condition is fulfilled */
+		virtual bool CheckCondition()
+		{
+			return true;
 		}
 	};
 

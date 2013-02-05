@@ -1084,6 +1084,27 @@ TEST_F(TestSimulation,linkedDynamicModules) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+
+TEST_F(TestSimulation,loopTest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test Linked Modules";
+    DM::Simulation sim;
+    sim.registerNativeModules("dynamind-testmodules");
+
+    DM::Module * m = sim.addModule("TestModule");
+    ASSERT_TRUE(m != 0);
+    DM::Module * inout  = sim.addModule("InOut");
+    ASSERT_TRUE(inout != 0);
+
+    ASSERT_TRUE(sim.addLink(m,"Sewer", inout, "Inport"));
+
+	ASSERT_TRUE(sim.addLink(inout,"Inport", inout, "Inport"));
+
+    sim.run();
+    ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}
+
 /*
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
     ostream *out = &cout;

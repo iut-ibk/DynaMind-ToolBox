@@ -173,7 +173,6 @@ void Simulation::run()
 {
 	// get modules with no imput - beginning modules list
 	std::queue<Module*> worklist;
-
 	foreach(Module* m, modules)
 		if(m->inPortsSet())
 			worklist.push(m);
@@ -185,17 +184,18 @@ void Simulation::run()
 		worklist.pop();
 
 		m->run();
-		if(m->outPortsSet())
-		{
+		//if(m->outPortsSet())
+		//{
 			// shift data from out port to next inport
-			Module* nextModule = shiftModuleOutput(m);
-			if(nextModule)
-				worklist.push(nextModule);
-		}
+			std::list<Module*> nextModules = shiftModuleOutput(m);
+			if(nextModules.size()>0)
+				foreach(Module* m, nextModules)
+					worklist.push(m);
+		/*}
 		else
 			Logger(Warning) << "module " << m->getName() 
-				<< " did not set the outport! execution of this branch canceled";
-
+				<< " did not set outport execution of this branch canceled";
+		*/
 	}
 
 
@@ -235,23 +235,32 @@ void Simulation::run()
 	}*/
 }
 
-Module* Simulation::shiftModuleOutput(Module* m)
+std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 {
+	std::list<Module*> nextModules;
 	mforeach(System* sys, m->outPorts)
 	{
+		// first get alle links starting at the given module
+		std::list<Link*> branches;
 		foreach(Link* l, links)
+			if(l->src == m && l->getData())	// check for assigned and existing data
+				branches.push_back(l);
+
+		if(branches.size() == 0)
 		{
-			if(l->src == m)
-			{
-				// shift pointer
-				l->dest->setInPortData(l->inPort, sys, this);
-				// reset out port (loop!)
-				l->src->setOutPortData(l->outPort, 0);
-				return l->dest;
-			}
+			Logger(Warning) << "port not connected";
+			continue;	// dead path
+		}
+		// the first entry gets the original data, all others a copy = successor
+		bool first = true;
+		foreach(Link* l, branches)
+		{
+			l->ShiftData(this, !first);
+			nextModules.push_back(l->dest);
+			first = false;
 		}
 	}
-	return 0;
+	return nextModules;
 }
 
 
