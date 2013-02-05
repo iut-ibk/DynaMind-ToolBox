@@ -215,12 +215,18 @@ void Simulation::run()
 
 void Simulation::shiftModuleOutput(Module* m)
 {
-	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
-		it != m->outPorts.end();++it)
+	mforeach(System* sys, m->outPorts)
 	{
 		foreach(Link* l, links)
+		{
 			if(l->src == m)
-				l->dest->setInPortData(l->inPort, it->second, this);
+			{
+				// shift pointer
+				l->dest->setInPortData(l->inPort, sys, this);
+				// reset out port (loop!)
+				l->src->setOutPortData(l->outPort, 0);
+			}
+		}
 	}
 }
 
