@@ -203,16 +203,6 @@ void Simulation::run()
 	}
 }
 
-/*Module::Port* Simulation::findSuccessorPort(Module::Port* ourPort)
-{
-	foreach(Link* l, links)
-	{
-		if(l->outPort == ourPort)
-			return l->inPort;
-	}
-	return 0;
-}*/
-
 void Simulation::shiftModuleOutput(Module* m)
 {
 	mforeach(System* sys, m->outPorts)
