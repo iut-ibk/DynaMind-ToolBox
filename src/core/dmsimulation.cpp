@@ -182,7 +182,7 @@ void Simulation::run()
 				m->run();
 				if(!m->outPortsSet())
 				{
-					Logger(Debug) << "module " << m->getName() << "failed; simulation canceled";
+					Logger(Debug) << "module " << m->getName() << " did not set the outport, simulation canceled";
 					status = SIM_FAILED;
 					return;
 				}
