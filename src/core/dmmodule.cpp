@@ -61,6 +61,17 @@ Module::~Module()
 		delete p;
 
 	parameters.clear();
+
+	// delete systems which end in this module
+	mforeach(System* indata, inPorts)
+	{
+		mforeach(System* outdata, outPorts)
+			if(indata == outdata)
+				indata == NULL;
+
+		if(indata)
+			delete indata;
+	}
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {
