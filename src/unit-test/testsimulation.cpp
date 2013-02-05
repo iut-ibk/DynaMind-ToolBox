@@ -37,9 +37,10 @@
 #include <QSqlQuery>
 #include <qelapsedtimer.h>
 #include <dmsystem.h>
+#include <dm.h>
 
-//#define SQLUNITTESTS
-//#define SQLPROFILING
+#define SQLUNITTESTS
+#define SQLPROFILING
 #define STDUNITTESTS
 
 
@@ -478,10 +479,8 @@ TEST_F(TestSimulation,simplesqltest) {
     ASSERT_TRUE(mallocator != 0);
     DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
     ASSERT_TRUE(mcheck != 0);
-    DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mallocator->getInPort("sys"));
-    ASSERT_TRUE(l1 != 0);
-    DM::ModuleLink * l2 = sim.addLink(mallocator->getOutPort("sys"), mcheck->getInPort("sys"));
-    ASSERT_TRUE(l2 != 0);
+    ASSERT_TRUE(sim.addLink(mcreator, "sys", mallocator, "sys"));
+    ASSERT_TRUE(sim.addLink(mallocator, "sys", mcheck, "sys"));
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 

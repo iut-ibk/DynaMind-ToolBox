@@ -181,6 +181,12 @@ class System;
 class View;
 class RasterData;
 
+enum ModuleStatus
+{
+	MOD_OK,
+	MOD_UNKNOWN_ERROR,
+};
+
 class DM_HELPER_DLL_EXPORT Module
 {
 	friend Simulation;
@@ -206,6 +212,8 @@ public:
       * - DM::STRING_MAP
       */
     void addParameter(const std::string &name, DataTypes type, void * ref, std::string description = "");
+
+	ModuleStatus getStatus(){return status;};
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -226,6 +234,8 @@ protected:
 	System* getOutPortData(const std::string &name);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
+	/** @brief */
+	void setStatus(ModuleStatus status) {this->status = status;};
 
 	// deprecated
 	void addData(std::string name, std::vector<View> views);
@@ -245,6 +255,7 @@ private:
 	std::list<Parameter*>	parameters;
 	std::map<std::string, System*>	inPorts;
 	std::map<std::string, System*>	outPorts;
+	ModuleStatus status;
 };
 
 #ifdef OLD_WF

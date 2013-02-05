@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include "createallcomponents.h"
 #include <sstream>
 #include <dmsimulation.h>
@@ -124,8 +124,10 @@ void CheckAllComponenets::run() {
 
     DM::System * sys = this->getData("sys");
 
+
 	if(!Validate(sys->getAllChilds(), sys))
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+		this->setStatus(DM::MOD_UNKNOWN_ERROR);
+	//	this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
 }
 
 
@@ -170,14 +172,15 @@ void SuccessorCheck::run()
 	if(!Validate(sys->getAllChilds(), sys))
 	{
 		DM::Logger(DM::Error) << "system validation failed";
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+		this->setStatus(DM::MOD_UNKNOWN_ERROR);
+		//this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
 	}
 	
 	DM::Logger(DM::Debug) << "starting successor validation";
 	if(!Validate(sys2->getAllChilds(), sys2))
 	{
 		DM::Logger(DM::Error) << "successor validation failed";
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+		this->setStatus(DM::MOD_UNKNOWN_ERROR);
+		//this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
 	}
 }
-*/
