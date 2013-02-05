@@ -145,7 +145,7 @@ System* Module::getInPortData(const std::string &name)
 {
 	if(!map_contains(&inPorts, name))
 	{
-		DM::Logger(Error) << "accessing non existent in port, canceled";
+		DM::Logger(Debug) << "accessing non existent in port, canceled";
 		return NULL;
 	}
 	else
@@ -155,7 +155,7 @@ System* Module::getOutPortData(const std::string &name)
 {
 	if(!map_contains(&outPorts, name))
 	{
-		DM::Logger(Error) << "accessing non existent out port, canceled";
+		DM::Logger(Debug) << "accessing non existent out port, canceled";
 		return NULL;
 	}
 	else
@@ -172,8 +172,13 @@ System* Module::getData(std::string name)
 {
 	DM::Logger(Warning) << "Module::getData deprecated, " << 
 		"create a new system and apply to port via setOutPortData instead";
-	System *sys = new System();
-	this->setOutPortData(name, sys);
+
+	System *sys = getOutPortData(name);
+	if(!sys)
+	{
+		sys = new System();
+		this->setOutPortData(name, sys);
+	}
 	return sys;
 }
 
@@ -182,9 +187,7 @@ RasterData* Module::getRasterData(std::string name, View view)
 	DM::Logger(Warning) << "Module::getData deprecated, " << 
 		"create a new system, add rasterdata and apply system to port via setOutPortData instead";
 
-	System *sys = new System();
-	this->setOutPortData(name, sys);
-	return sys->addRasterData();
+	return getData(name)->addRasterData();
 }
 
 #ifdef OLD_WF
