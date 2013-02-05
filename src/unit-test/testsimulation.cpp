@@ -1108,7 +1108,7 @@ TEST_F(TestSimulation,branchTest) {
 
 TEST_F(TestSimulation,loopTest) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test loops";
     DM::Simulation sim;
     sim.registerNativeModules("dynamind-testmodules");
@@ -1118,15 +1118,19 @@ TEST_F(TestSimulation,loopTest) {
     DM::Module * inout  = sim.addModule("InOut");
     ASSERT_TRUE(inout != 0);
     DM::Module * loop  = sim.addModule("Loop");
-
+	int numberSteps = 5;
+	loop->setParameter("steps", numberSteps);
 
     ASSERT_TRUE(sim.addLink(m,"Sewer", inout, "Inport"));
-	
 	ASSERT_TRUE(sim.addLink(inout,"Inport", loop, "in"));
 	ASSERT_TRUE(sim.addLink(loop,"true", inout, "Inport"));
 
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+
+	int loopCounter = 0;
+	loop->getParameter("counter", loopCounter);
+	ASSERT_TRUE(loopCounter == numberSteps);
 }
 
 /*
