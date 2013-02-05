@@ -140,35 +140,6 @@ void Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	}
 }
 
-/*
-int Simulation::addLink(Module::Port * outPort, Module::Port * inPort)
-{
-	if(!outPort || !inPort)
-	{
-		Logger(Standard) << "Error adding link: null pointer";
-		return 0;
-	}
-	links.push_back(new Link(outPort, inPort));
-    Logger(Debug) << "Added link from port " << outPort->getName() << "to" << inPort->getName();
-	return 1;
-}
-
-void Simulation::removeLink(const Module::Port * outPort, const Module::Port * inPort)
-{
-	Link* toDelete = NULL;
-	foreach(Link* l, links)
-		if(l->outPort == outPort && l->inPort == inPort)
-			toDelete = l;
-
-	if(toDelete)
-	{
-		links.remove(toDelete);
-		delete toDelete;
-		Logger(Debug) << "Deleted link from port " 
-			<< outPort->getName() << "to" << inPort->getName();
-	}
-}*/
-
 void Simulation::run()
 {
 	// get modules with no imput - beginning modules list
