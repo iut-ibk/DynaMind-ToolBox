@@ -38,20 +38,22 @@ Loop::Loop()
 	this->addOutPort("true");
 	this->addOutPort("false");
 	this->addParameter("steps", DM::INT, &steps);
+	this->addParameter("counter", DM::INT, &counter);
 }
 
 void Loop::run() 
 {	
     DM::Logger(DM::Debug) << "checking condition";
 
-    if(counter++ < steps)
+    if(counter < steps)
 	{
-		DM::Logger(DM::Debug) << "condition true ( " << counter-1 << " < " << steps << " )";
+		counter++;
+		DM::Logger(DM::Debug) << "condition true ( " << counter << " < " << steps << " )";
 		this->setOutPortData("true", this->getInPortData("in"));
 	}
 	else
 	{
-		DM::Logger(DM::Debug) << "condition false ( " << counter-1 << " < " << steps << " )";
+		DM::Logger(DM::Debug) << "condition false ( " << counter << " < " << steps << " )";
 		this->setOutPortData("false", this->getInPortData("in"));
 	}
 
