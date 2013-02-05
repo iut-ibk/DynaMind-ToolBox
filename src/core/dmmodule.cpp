@@ -44,7 +44,7 @@
 //#include <dmportobserver.h>
 //#include <sstream>
 //#include <dmcomponent.h>
-//#include <dmsystem.h>
+#include <dmsystem.h>
 //#include <dmdatavalidation.h>
 //#include <dmrasterdata.h>
 //#include <algorithm>
@@ -101,12 +101,18 @@ bool Module::hasOutPort(const std::string &name)
 
 void Module::setInPortData(const std::string &name, System* data, const Simulation *sim)
 {
-	inPorts[name] = data;
+	if(!map_contains(&inPorts, name))
+		DM::Logger(Error) << "accessing non existent in port, canceled";
+	else
+		inPorts[name] = data;
 }
 
 void Module::setOutPortData(const std::string &name, System* data)
 {
-	outPorts[name] = data;
+	if(!map_contains(&outPorts, name))
+		DM::Logger(Error) << "accessing non existent out port, canceled";
+	else
+		outPorts[name] = data;
 }
 
 bool Module::inPortsSet()
@@ -126,11 +132,48 @@ bool Module::outPortsSet()
 
 System* Module::getInPortData(const std::string &name)
 {
-	return inPorts[name];
+	if(!map_contains(&inPorts, name))
+	{
+		DM::Logger(Error) << "accessing non existent in port, canceled";
+		return NULL;
+	}
+	else
+		return inPorts[name];
 }
 System* Module::getOutPortData(const std::string &name)
 {
-	return outPorts[name];
+	if(!map_contains(&outPorts, name))
+	{
+		DM::Logger(Error) << "accessing non existent out port, canceled";
+		return NULL;
+	}
+	else
+		return outPorts[name];
+}
+
+void Module::addData(std::string name, std::vector<View> views)
+{
+	DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
+	this->addOutPort(name);
+}
+
+System* Module::getData(std::string name)
+{
+	DM::Logger(Warning) << "Module::getData deprecated, " << 
+		"create a new system and apply to port via setOutPortData instead";
+	System *sys = new System();
+	this->setOutPortData(name, sys);
+	return sys;
+}
+
+RasterData* Module::getRasterData(std::string name, View view)
+{
+	DM::Logger(Warning) << "Module::getData deprecated, " << 
+		"create a new system, add rasterdata and apply system to port via setOutPortData instead";
+
+	System *sys = new System();
+	this->setOutPortData(name, sys);
+	return sys->addRasterData();
 }
 
 #ifdef OLD_WF

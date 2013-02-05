@@ -40,6 +40,7 @@
 #include <dmlogger.h>
 #include <dmlogsink.h>
 //#include <dmview.h>
+//#include <dmrasterdata.h>
 
 class QThreadPool;
 class PortObserver;
@@ -177,6 +178,8 @@ enum PortType
 };
 
 class System;
+class View;
+class RasterData;
 
 class DM_HELPER_DLL_EXPORT Module
 {
@@ -203,6 +206,7 @@ public:
       * - DM::STRING_MAP
       */
     void addParameter(const std::string &name, DataTypes type, void * ref, std::string description = "");
+protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
 	void addOutPort(const std::string &name);
@@ -222,8 +226,11 @@ public:
 	System* getOutPortData(const std::string &name);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
+
 	// deprecated
-	// ...
+	void addData(std::string name, std::vector<View> views);
+	System* getData(std::string name);
+	RasterData* getRasterData(std::string name, View view);
 private:
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
