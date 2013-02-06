@@ -271,6 +271,8 @@ void  RootGroupNode::setGroupZValue() {
     }
     foreach (ModelNode * m, this->childnodes ){
         DM::Module * m1 = m->getDMModel();
+        if (m1 == 0)
+            continue;
         if(m->getDMModel()->isGroup()) {
             GroupNode * g = (GroupNode * ) m;
             //g->setGroupZValue();
