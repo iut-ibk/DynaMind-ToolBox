@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "projectviewer.h"
 #include <QDropEvent>
 #include <iostream>
@@ -39,7 +40,7 @@
 ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(parent)
 
 {
-
+	
     this->setItemIndexMethod(QGraphicsScene::NoIndex);
     this->id = 0;
 
@@ -50,7 +51,7 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
     rg->setPos(0,0);
     this->rootGroup = rg;
     this->addItem(rg);
-
+	
 
 }
 ProjectViewer::~ProjectViewer() {
@@ -100,5 +101,5 @@ void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
         this->ResultViewer->importSimulation( lw->currentItem()->text(2), event->scenePos());
     }
 
-}
+}*/
 

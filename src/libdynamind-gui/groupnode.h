@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#define GROUPNODE_H
 #ifndef GROUPNODE_H
 #define GROUPNODE_H
 

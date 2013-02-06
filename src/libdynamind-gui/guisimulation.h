@@ -33,26 +33,26 @@
 #include <QPointF>
 
 class ModelNode;
-class GroupNode;
+//class GroupNode;
 class GUILink;
-class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
+class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation, QObject
 {
-    Q_OBJECT
+    //Q_OBJECT
 public:
     GUISimulation();
     void registerRootNode();
-    GroupNode * getGroupNode(DM::Group * g);
-    void changeGroupName(GroupNode*);
+    //GroupNode * getGroupNode(DM::Group * g);
+    //void changeGroupName(GroupNode*);
     void clearSimulation();
 
 private:
     QVector<ModelNode*> modelNodes;
-    QVector<GroupNode*> groupNodes;
+    //QVector<GroupNode*> groupNodes;
 
 signals:
     void addedModule(ModelNode*);
-    void addedGroup(GroupNode*);
-    void GroupNameChanged(GroupNode*);
+    //void addedGroup(GroupNode*);
+    //void GroupNameChanged(GroupNode*);
     void showHelpForModule(std::string classname, std::string uuid);
 
 

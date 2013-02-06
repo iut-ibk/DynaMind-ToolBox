@@ -44,7 +44,8 @@ GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
     this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
 }
 void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
-    this->currentUrl = this->url_view_not_avaiable;
+    /*
+	this->currentUrl = this->url_view_not_avaiable;
     DM::Module * m = this->sim->getModuleWithUUID(uuid);
     this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
     
@@ -58,7 +59,7 @@ void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
         return;
     }
 
-    ui->webView->load(this->currentUrl);
+    ui->webView->load(this->currentUrl);*/
 }
 
 GUIHelpViewer::~GUIHelpViewer()

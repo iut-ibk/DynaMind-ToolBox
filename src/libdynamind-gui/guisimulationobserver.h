@@ -24,6 +24,7 @@
  *
  */
 
+#define GUISIMULATIONOBSERVER_H
 #ifndef GUISIMULATIONOBSERVER_H
 #define GUISIMULATIONOBSERVER_H
 #include <dmcompilersettings.h>

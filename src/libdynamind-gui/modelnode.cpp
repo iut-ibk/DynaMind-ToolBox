@@ -42,6 +42,7 @@
 #include <dmviewerwindow.h>
 
 std::string ModelNode::getParameterAsString(std::string name) {
+	/*
     std::ostringstream val;
     int id = this->getDMModel()->getParameterList()[name];
     if (id == DM::DOUBLE || id == DM::LONG || id == DM::STRING) {
@@ -54,15 +55,16 @@ std::string ModelNode::getParameterAsString(std::string name) {
         return val.str();
     }
     DM::Logger(DM::Warning) << "Parameter " << name << "not found";
+	*/
     return "";
 }
-
+/*
 std::string ModelNode::getGroupUUID() {
     return this->getDMModel()->getGroup()->getUuid();
-}
+}*/
 
 void ModelNode::updatePorts () {
-
+	/*
     //Add Ports
     //If Port exists is checked by addPort
     foreach (DM::Port * p, this->getDMModel()->getInPorts()){
@@ -122,8 +124,10 @@ void ModelNode::updatePorts () {
 
     }
     this->update();
+	*/
 }
 void ModelNode::resetModel() {
+	/*
     DM::Module *oldmodule = this->getDMModel();
     this->VIBeModuleUUID = this->simulation->resetModule(this->getDMModel()->getUuid())->getUuid();
 
@@ -141,9 +145,9 @@ void ModelNode::resetModel() {
         }
         p->updatePort( po );
     }
-
+	*/
 }
-
+/*
 void ModelNode::addPort(DM::Port * p) {
     if (p->getPortType() < DM::OUTPORTS ) {
         foreach (QString pname, ExistingInPorts) {
@@ -173,7 +177,7 @@ void ModelNode::addPort(DM::Port * p) {
             this->h = h+20;
 
     }
-}
+}*/
 
 
 /*void ModelNode::removePort(int Type, QString s) {
@@ -187,7 +191,8 @@ void ModelNode::addPort(DM::Port * p) {
 //ModelNode
 
 DM::Module * ModelNode::getDMModel() {
-    return this->simulation->getModuleWithUUID(this->VIBeModuleUUID);
+    //return this->simulation->getModuleWithUUID(this->VIBeModuleUUID);
+	return 0;
 }
 
 ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
@@ -199,8 +204,8 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     this->outputCounter = 0;
     this->inputCounter = 0;
     this->parentGroup = 0;
-    this->VIBeModuleUUID = VIBeModule->getUuid();
-    this->id = VIBeModule->getID();
+    //this->VIBeModuleUUID = VIBeModule->getUuid();
+    //this->id = VIBeModule->getID();
     this->simulation = simulation;
     this->nodes = 0;
 
@@ -208,7 +213,7 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-    this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(VIBeModule->getClassName()));
+    //this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(VIBeModule->getClassName()));
     double w = this->simpleTextItem->boundingRect().width()+40;
 
     QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(VIBeModule->getName()));
@@ -218,7 +223,7 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     w = w < 140 ? 140 : w;
     l = w+4;
     h =  35;
-    VIBeModule->addPortObserver( & this->guiPortObserver);
+    //VIBeModule->addPortObserver( & this->guiPortObserver);
     this->updatePorts();
 
     Color = COLOR_MODULE;
@@ -230,7 +235,7 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    if(this->isSelected() == true) {
+    /*if(this->isSelected() == true) {
         Color = COLOR_MODULESELECTED;
     }
     else if (this->getDMModel()->isExecuted()) {
@@ -241,7 +246,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
     else {
         Color = COLOR_MODULE;
-    }
+    }*/
 
     if(this->visible){
         QPen pen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -260,12 +265,12 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         path.addRect(0, 0,l,h);
         painter->fillPath(path, brush);
         painter->strokePath(path, pen);
-
+		/*
         if (!this->getDMModel()->getName().empty())
             painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
 
         painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(this->getDMModel()->getClassName()));
-
+		*/
 
     }
 }
@@ -293,12 +298,12 @@ ModelNode::~ModelNode() {
             p = 0;
         }
     }
-    if (this->getDMModel()!= 0)
+    /*if (this->getDMModel()!= 0)
         this->simulation->removeModule(this->VIBeModuleUUID);
 
     if (this->parentGroup != 0) {
         this->parentGroup->removeModelNode(this);
-    }
+    }*/
 
 
     ports.clear();
@@ -309,12 +314,12 @@ ModelNode::~ModelNode() {
 
 
 void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
-
+	/*
     if (this->parentGroup != 0) {
         this->parentGroup->recalculateLandH();
         this->parentGroup->update();
     }
-
+	*/
     QGraphicsItem::mouseMoveEvent(event);
 
 
@@ -322,7 +327,7 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 }
 
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
-
+	/*
     if(this->visible){
         this->simulation->updateSimulation();
         if (this->getDMModel()->createInputDialog() == false )
@@ -331,13 +336,13 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
             QWidget * gui  = new GUIModelNode(this->getDMModel(), this);
             gui->show();
         }
-    }
+    }*/
 }
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
     QGraphicsItem::mousePressEvent(event );
 }
 
-
+/*
 GUIPort * ModelNode::getGUIPort(DM::Port * p) {
 
     foreach (GUIPort * gui_p, this->ports){
@@ -347,9 +352,10 @@ GUIPort * ModelNode::getGUIPort(DM::Port * p) {
 
 
     return 0;
-}
+}*/
 
 void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
+	/*
     QMenu menu;
     QAction  * a_edit = menu.addAction("edit");
     QAction * a_rename = menu.addAction("rename");
@@ -405,7 +411,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_reset, SIGNAL(triggered() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
-
+	*/
 }
 void ModelNode::editModelNode() {
     GUIModelNode * gui  = new GUIModelNode(this->getDMModel() ,this);
@@ -414,23 +420,24 @@ void ModelNode::editModelNode() {
 
 void ModelNode::renameModelNode() {
     QString text =QInputDialog::getText(0, "Name", tr("Input:"), QLineEdit::Normal);
-    if (!text.isEmpty())
+    /*if (!text.isEmpty())
         this->getDMModel()->setName(text.toStdString());
-
+	
     if (this->isGroup())
     {
         this->simulation->changeGroupName((GroupNode*) this);
-    }
+    }*/
 }
 
 void ModelNode::deleteModelNode() {
 
     delete this;
 }
+/*
 void ModelNode::removeGroup() {
     QString name = QObject::sender()->objectName();
     this->update(this->boundingRect());
-}
+}*/
 
 void ModelNode::setMinimized(bool b) {
     if (!this->isGroup() ){
@@ -445,7 +452,7 @@ void ModelNode::setMinimized(bool b) {
     }
 }
 
-
+/*
 void ModelNode::addGroup() {
     //Find GroupNode
     QString name = QObject::sender()->objectName();
@@ -480,7 +487,7 @@ void ModelNode::addGroup() {
 
 
 }
-
+*/
 void ModelNode::printData() {
 
     GUIViewDataForModules * gv = new GUIViewDataForModules(this->getDMModel());
@@ -488,7 +495,7 @@ void ModelNode::printData() {
 
     
 }
-
+/*
 void ModelNode::viewData() {
     //TODO hook(er) me up
     DM::Port *p = this->getDMModel()->getOutPorts()[0];
@@ -517,3 +524,4 @@ void ModelNode::setResetModule()
     this->simulation->reloadModules();
     this->simulation->updateSimulation();
 }
+*/

@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#define ROOTGROUPNODE_H
 #ifndef ROOTGROUPNODE_H
 #define ROOTGROUPNODE_H
 

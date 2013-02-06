@@ -71,8 +71,9 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
     layout1 = new QGridLayout;
     QGroupBox *gbox = new QGroupBox;
     gbox->setTitle("Parameter");
-    std::map<std::string, int> parameter = m->getParameterList();
-    std::vector<std::string> NameList = m->getParameterListAsVector();
+	// TODO parameter read out
+    std::map<std::string, int> parameter;// = m->getParameterList();
+    std::vector<std::string> NameList;// = m->getParameterListAsVector();
     foreach(std::string name, NameList){
         int ID = parameter[name];//it->second;
         if (ID == DM::DOUBLE || ID == DM::LONG || ID == DM::INT) {
@@ -236,7 +237,8 @@ GUIModelNode::~GUIModelNode() {
 }
 
 void GUIModelNode::addTuplePort() {
-    QString text = QInputDialog::getText(this, "Input", "");
+    /*
+	QString text = QInputDialog::getText(this, "Input", "");
     QStringList ls;
     if (!text.isEmpty()){
         QString s = QObject::sender()->objectName();
@@ -260,7 +262,7 @@ void GUIModelNode::addTuplePort() {
 
             gn->addTuplePort(pt);
         }
-    }
+    }*/
 }
 void GUIModelNode::addUserDefinedItem() {
     QString text = QInputDialog::getText(this, "Input", "");
@@ -427,7 +429,7 @@ void GUIModelNode::addUserDefinedTuple() {
 
 void GUIModelNode::accept() {
 
-    map<std::string, int> parameter = this->module->getParameterList();
+    map<std::string, int> parameter;// = this->module->getParameterList();
 
 
     foreach(QString s,  this->elements.keys()) {

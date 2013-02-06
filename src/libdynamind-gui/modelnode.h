@@ -96,12 +96,12 @@ public:
     void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
 
     int getID(){return this->id;}
-    QString getName(){return QString::fromStdString(this->getDMModel()->getClassName());}
-    void setID(int id){this->getDMModel()->setID(id); this->id = id;}
+    QString getName(){return QString::fromStdString(this->getDMModel()->getName());}
+    //void setID(int id){this->getDMModel()->setID(id); this->id = id;}
 
-    void addPort(DM::Port * p);
-    virtual GUIPort * getGUIPort(DM::Port * p);
-    std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
+    //void addPort(DM::Port * p);
+    //virtual GUIPort * getGUIPort(DM::Port * p);
+    //std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
 
     std::string getParameterAsString(std::string name);
 
@@ -130,20 +130,20 @@ public:
 
     virtual void resetModel();
 
-    std::string getGroupUUID();
+    //std::string getGroupUUID();
 
 public slots:
-    void addGroup();
-    void removeGroup();
+    //void addGroup();
+    //void removeGroup();
     void deleteModelNode();
     void editModelNode();
     void renameModelNode();
     void printData();
-    void viewData();
-    void showHelp();
-    void setDebug();
-    void setRelease();
-    void setResetModule();
+    //void viewData();
+    //void showHelp();
+    //void setDebug();
+    //void setRelease();
+    //void setResetModule();
    signals:
     void showHelp(std::string, std::string);
 

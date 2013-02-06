@@ -35,9 +35,10 @@
 #include <QColor>
 #include <QObject>
 #include "dmcompilersettings.h"
+/*
 namespace DM {
 class Port;
-}
+}*/
 
 class ModelNode;
 class GUILink;
@@ -64,7 +65,7 @@ private:
      GUISimulation * simulation;
 
 public:
-    GUIPort(ModelNode * modelNode, DM::Port * p);
+    GUIPort(ModelNode * modelNode/*, DM::Port * p*/);
     ~GUIPort();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
@@ -81,9 +82,9 @@ public:
     bool isLinked();
     void setHover(bool b){this->isHover=b;}
     void refreshLinks();
-    DM::Port * getVIBePort();
+    //DM::Port * getVIBePort();
     void removeLink(GUILink * l);
-    void updatePort(DM::Port * p);
+    //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 

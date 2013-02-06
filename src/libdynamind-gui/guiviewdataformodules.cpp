@@ -9,6 +9,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIViewDataForModules)
 {
+	/*
     ui->setupUi(this);
     this->m = m;
 
@@ -132,7 +133,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
     }
 
 
-
+	*/
 
 
 }

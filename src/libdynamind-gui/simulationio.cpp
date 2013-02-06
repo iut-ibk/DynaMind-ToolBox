@@ -91,7 +91,7 @@ bool SimulationIO::startElement(const QString & namespaceURI,
 bool SimulationIO::endElement(const QString & namespaceURI,
                               const QString & localName,
                               const QString & qName) {
-    Q_UNUSED(namespaceURI)
+    /*Q_UNUSED(namespaceURI)
     Q_UNUSED(localName)
     if (qName == "GUI_Node") {
         DM::Module * DynaMindm;
@@ -107,7 +107,7 @@ bool SimulationIO::endElement(const QString & namespaceURI,
         }
 
         return true;
-    }
+    }*/
     return true;
 
 }

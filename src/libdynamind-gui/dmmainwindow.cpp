@@ -76,15 +76,17 @@ void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 }
 
 void DMMainWindow::ReloadSimulation() {
+	/*
     this->simulation->reloadModules();
     createModuleListView();
+	*/
 }
 
 void DMMainWindow::startEditor() {
-    DM::PythonEnv::getInstance()->startEditra();
+    //DM::PythonEnv::getInstance()->startEditra();
 }
 void DMMainWindow::removeGroupWindows(QString uuid) {
-
+	/*
     DM::Logger(DM::Debug) << "Remove ProjectWindow " << uuid.toStdString();
     //Check if already exists
     QMap<int, ProjectViewer * > groupscenes_tmp;
@@ -105,10 +107,10 @@ void DMMainWindow::removeGroupWindows(QString uuid) {
         }
 
     }
-    this->groupscenes = groupscenes_tmp;
+    this->groupscenes = groupscenes_tmp;*/
 }
 void DMMainWindow::addNewGroupWindows(GroupNode * g) {
-
+	/*
     //Check if already exists
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
@@ -145,20 +147,23 @@ void DMMainWindow::addNewGroupWindows(GroupNode * g) {
     }
     this->groupscenes[ui->tabWidget_4->addTab(gv,name)] = newgroup;
     tabmap[newgroup] = gv;
-
+	*/
 }
 
 void DMMainWindow::renameGroupWindow(GroupNode * g) {
+	/*
     foreach(int i, groupscenes.keys()) {
         ProjectViewer * pv = groupscenes[i];
         if ((pv->getRootNode()->getDMModel()->getUuid()).compare(g->getDMModel()->getUuid()) == 0) {
             ui->tabWidget_4->setTabText(i, QString::fromStdString(g->getDMModel()->getName()));
         }
     }
+	*/
 }
 
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
+	/*
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
@@ -204,11 +209,12 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
     this->rootItemModelTree->setExpanded(true);
-
+	*/
 
 }
 
 void DMMainWindow::createModuleListView() {
+	/*
     ui->treeWidget->clear();
     std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
     std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
@@ -261,17 +267,18 @@ void DMMainWindow::createModuleListView() {
             }
         }
     }
+	*/
 }
 
 void DMMainWindow::runSimulation() {
-    simulation->start();
-    return;
-
+    //simulation->start();
 }
 void DMMainWindow::updateSimulation() {
+	/*
     this->simulation->reloadModules();
     createModuleListView();
     this->simulation->updateSimulation();
+	*/
 }
 
 void DMMainWindow::SimulationFinished() {
@@ -279,12 +286,13 @@ void DMMainWindow::SimulationFinished() {
 }
 
 void DMMainWindow::preferences() {
+	/*
     Preferences *p =  new Preferences(this);
-    p->exec();
+    p->exec();*/
 }
 
 void DMMainWindow::setRunning() {
-    this->running = false;
+    //this->running = false;
 }
 
 void DMMainWindow::sceneChanged() {
@@ -292,6 +300,7 @@ void DMMainWindow::sceneChanged() {
 
 }
 void DMMainWindow::saveAsSimulation() {
+	/*
    QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save DynaMind File"));
     if (!fileName.isEmpty()) {
@@ -301,18 +310,20 @@ void DMMainWindow::saveAsSimulation() {
         this->writeGUIInformation(fileName);
         this->currentDocument = fileName;
     }
+	*/
 }
 void DMMainWindow::saveSimulation() {
+	/*
     if (!this->currentDocument.isEmpty()) {
         this->simulation->writeSimulation(this->currentDocument.toStdString());
         this->writeGUIInformation(currentDocument);
     } else {
         this->saveAsSimulation();
     }
-
+	*/
 }
 void DMMainWindow::writeGUIInformation(QString FileName) {
-
+	/*
     //Find upper left corner;
     float minx;
     float miny;
@@ -372,15 +383,18 @@ void DMMainWindow::writeGUIInformation(QString FileName) {
     out << "</DynaMind>"<< "\n";
 
     file.close();
-
+	*/
 }
 
 void DMMainWindow::clearSimulation() {
+	/*
     this->simulation->clearSimulation();
     this->currentDocument = "";
+	*/
 }
 
 void DMMainWindow::importSimulation(QString fileName, QPointF offset) {
+	/*
     if (fileName.compare("") == 0)
         fileName = QFileDialog::getOpenFileName(this,
                                                 tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
@@ -395,12 +409,12 @@ void DMMainWindow::importSimulation(QString fileName, QPointF offset) {
     this->loadGUIModules((DM::Group *)this->simulation->getRootGroup(), UUID_Translation, simio.getPositionOfLoadedModules());
 
     this->loadGUILinks(UUID_Translation);
-
+	*/
 
 }
 
 void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation, QVector<LoadModule> posmodules) {
-
+	/*
     std::map<std::string, std::string> reveredUUID_Translation;
     for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
          it != UUID_Translation.end();
@@ -439,11 +453,11 @@ void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::stri
             this->loadGUIModules((DM::Group * )m,  UUID_Translation,posmodules);
 
     }
-
+	*/
 }
 
 void DMMainWindow::loadSimulation(int id) {
-
+	/*
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
 
@@ -461,9 +475,10 @@ void DMMainWindow::loadSimulation(int id) {
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
         this->loadGUILinks(UUID_Translation);
     }
+	*/
 }
 void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translation) {
-
+	/*
     std::map<std::string, std::string> reveredUUID_Translation;
     for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
          it != UUID_Translation.end();
@@ -551,21 +566,20 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
         currentView->update();
 
     }
-
+	*/
 }
 
 
 
 DMMainWindow::~DMMainWindow() {
-    delete this->simulation;
+    //delete this->simulation;
 }
 
 void DMMainWindow::on_actionZoomIn_triggered(){
     int i= ui->tabWidget_4->currentIndex();
-    QGraphicsView * view = groupscenes[i]->views()[0];
+    /*QGraphicsView * view = groupscenes[i]->views()[0];
 
-    view->scale(1.2, 1.2);
-
+    view->scale(1.2, 1.2);*/
 }
 
 void DMMainWindow::on_actionAbout_triggered()
@@ -577,17 +591,17 @@ void DMMainWindow::on_actionAbout_triggered()
 
 void DMMainWindow::on_actionZoomOut_triggered()
 {
-    int i= ui->tabWidget_4->currentIndex();
+    /*int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
-    view->scale(0.8, 0.8);
+    view->scale(0.8, 0.8);*/
 }
 
 void DMMainWindow::on_actionZoomReset_triggered()
 {
-    int i= ui->tabWidget_4->currentIndex();
+    /*int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
-
+	*/
 
 
 }

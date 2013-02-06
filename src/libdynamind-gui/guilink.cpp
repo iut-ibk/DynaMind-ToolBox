@@ -51,10 +51,11 @@ void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     QBrush brush(c);
 
     QPen pen(Qt::black);
-    if (this->inPort != 0) {
+    /*
+	if (this->inPort != 0) {
         if (this->isBack())
             pen = QPen(Qt::red);
-    }
+    }*/
     painter->strokePath(connection_path, pen);
     painter->fillPath(handle_path, brush);
     painter->strokePath(handle_path, pen);
@@ -72,11 +73,12 @@ GUILink::~GUILink() {
         this->inPort->removeLink(this);
     if (this->VIBelink != 0){
         //Check if Links exists
+		/*
         std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
         if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
             this->VIBelink = 0;
         if (VIBelink != 0)
-            delete this->VIBelink;
+            delete this->VIBelink;*/
     }
 
     this->VIBelink = 0;
@@ -131,7 +133,7 @@ void GUILink::deleteLink() {
 
 }
 void GUILink::backLink() {
-    this->VIBelink->setBackLink(true);
+    //this->VIBelink->setBackLink(true);
 }
 
 void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {

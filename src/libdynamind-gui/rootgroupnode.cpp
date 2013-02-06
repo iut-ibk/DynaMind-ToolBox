@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "rootgroupnode.h"
 #include <linknode.h>
 #include <moduledescription.h>
@@ -187,7 +188,7 @@ void RootGroupNode::RePosTuplePorts() {
 }
 
 void RootGroupNode::setSelected(bool selected ) {
-    /*foreach(ModelNode * m, this->childnodes) {
+    foreach(ModelNode * m, this->childnodes) {
         m->setSelected(true);
         if (m->isGroup()) {
             GroupNode * g = (GroupNode *) m;
@@ -195,7 +196,7 @@ void RootGroupNode::setSelected(bool selected ) {
         }
     }
 
-    QGraphicsItem::setSelected ( selected );*/
+    QGraphicsItem::setSelected ( selected );
 
 
 }
@@ -246,14 +247,14 @@ void RootGroupNode::addModelNode(ModelNode *m) {
 
 }
 void RootGroupNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
-    /*this->setSelected(true);
+    this->setSelected(true);
 
     if (this->parentGroup != 0) {
         this->parentGroup->recalculateLandH();
         this->parentGroup->update();
     }
 
-    ModelNode::QGraphicsItem::mouseMoveEvent(event);*/
+    ModelNode::QGraphicsItem::mouseMoveEvent(event);
 }
 
 void RootGroupNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -325,3 +326,4 @@ void RootGroupNode::recalculateLandH() {
     }
 
 }
+*/

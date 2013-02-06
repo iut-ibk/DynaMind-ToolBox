@@ -70,8 +70,8 @@ public:
     void refresh();
     GUIPort * getOutPort(){return outPort;}
     GUIPort * getInPort(){return inPort;}
-    bool isBack(){return this->VIBelink->isBackLink();}
-    void setBack(bool b){this->VIBelink->setBackLink(b);}
+    //bool isBack(){return this->VIBelink->isBackLink();}
+    //void setBack(bool b){this->VIBelink->setBackLink(b);}
     void setSimulation(GUISimulation * sim) {this->sim = sim;}
     void setVIBeLink(DM::ModuleLink * link){this->VIBelink = link;}
     ~GUILink();
