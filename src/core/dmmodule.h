@@ -175,12 +175,12 @@ enum  DataTypes {
     STRING_MAP,
 	BOOL,
 };
-
+/*
 enum PortType
 {
-	IN,
-	OUT,
-};
+	PORT_IN,
+	PORT_OUT,
+};*/
 
 class System;
 class View;
