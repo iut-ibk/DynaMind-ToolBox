@@ -160,6 +160,11 @@ class RasterData;*/
 *
 */
 
+// deprecated parameter type
+typedef std::map<std::string, std::string> parameter_type;
+
+
+
 enum  DataTypes {    
     INT,
     LONG,
@@ -215,12 +220,47 @@ public:
 
 	ModuleStatus getStatus(){return status;};
 	
-	//template<typename T>
-	//void setParameter(std::string name, T value);
-	void setParameter(std::string name, int value);
-	void getParameter(std::string name, int &value);
+	template<typename T>
+	void setParameter(std::string name, T value)
+	{
+		if(map_contains(&parameters, name))
+			*(T*)parameters[name]->data = value;
+	}
+	//void setParameter(std::string name, int value);
 
+	/*template<typename T>
+	void getParameter(std::string name, T &value)
+	{
+		if(map_contains(&parameters, name))
+			value = *(T*)parameters[name]->data;
+	}*/
+	template<typename T>
+	T getParameter(std::string name)
+	{
+		T v;
+		if(map_contains(&parameters, name))
+			v = *(T*)parameters[name]->data;
+		return v;
+	}
+	
+
+
+	//void getParameter(std::string name, int &value);
+	
+	// deprecated
+	std::string getParameterAsString(std::string name);
+	void setParameterValue(std::string name, std::string value)
+	{
+		setParameter(name, value);
+	}
+	template<typename T>
+	void setParameterNative(std::string name, T value)
+	{
+		setParameter<T>(name, value);
+	}
 protected:
+
+
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
 	void addOutPort(const std::string &name);

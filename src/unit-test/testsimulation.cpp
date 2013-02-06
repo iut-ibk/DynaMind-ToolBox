@@ -1128,9 +1128,7 @@ TEST_F(TestSimulation,loopTest) {
     sim.run();
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
-	int loopCounter = 0;
-	loop->getParameter("counter", loopCounter);
-	ASSERT_TRUE(loopCounter == numberSteps);
+	ASSERT_TRUE(loop->getParameter<int>("counter") == numberSteps);
 }
 
 /*

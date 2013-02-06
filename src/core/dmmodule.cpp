@@ -37,7 +37,7 @@
 #include <dmport.h>*/
 
 //#include <QUuid>
-//#include <sstream>
+#include <sstream>
 //#include <dmgroup.h>
 //#include <dmmodulelink.h>
 #include <dmsimulation.h>
@@ -213,17 +213,50 @@ void Module::setParameter(std::string name, T value)
 		parameters[name]->data = &value;
 }*/
 
-void Module::setParameter(std::string name, int value)
+/*void Module::setParameter(std::string name, int value)
 {
 	if(map_contains(&parameters, name))
 		*(int*)parameters[name]->data = value;
-}
-void Module::getParameter(std::string name, int &value)
+}*/
+
+
+/*void Module::getParameter(std::string name, int &value)
 {
 	if(map_contains(&parameters, name))
 		value = *(int*)parameters[name]->data;
-}
+}*/
 
+
+std::string Module::getParameterAsString(std::string name)
+{   
+	std::stringstream strValue;
+    strValue.precision(16);
+	if(map_contains(&parameters, name))
+	{
+		Parameter* p = parameters[name];
+		switch(p->type)
+		{
+		case DOUBLE:	strValue << *(double*)p->data;	break;
+		case INT:		strValue << *(int*)p->data;	break;
+		case LONG:		strValue << *(long*)p->data;	break;
+		case BOOL:		strValue << *(bool*)p->data;	break;
+		case FILENAME:
+		case STRING:	strValue << *(std::string*)p->data;	break;
+		case STRING_LIST:
+			foreach(std::string s, *(std::vector<std::string>*)p->data)
+				strValue << s << "*|*" ;
+			break;
+		case STRING_MAP:
+			{
+				std::map<std::string, std::string> map = *(std::map<std::string,std::string>*)p->data;
+				for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); ++it)
+					strValue << it->first << "*|*" << it->second << "*||*" ;
+				break;
+			}
+		}
+	}
+	return strValue.str();
+}
 
 #ifdef OLD_WF
 struct ModulePrivate {
