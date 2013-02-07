@@ -163,7 +163,7 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
 
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
-	/*
+	
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
@@ -179,13 +179,13 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     env->addOverWriteStdCout();
 
     this->simulation = new GUISimulation();
-
+	/*
     connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     this->simulation->registerRootNode();
     this->simulation->loadModulesFromDefaultLocation();
     this->simulation->addModulesFromSettings();
     this->helpviewer = new GUIHelpViewer(this->simulation);
-
+	*/
 
 
     ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
@@ -199,7 +199,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
     connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
-    connect(ui->actionReset, SIGNAL(triggered()), this->simulation , SLOT(reset()), Qt::DirectConnection);
+    //connect(ui->actionReset, SIGNAL(triggered()), this->simulation , SLOT(reset()), Qt::DirectConnection);
     currentDocument = "";
 
     this->simmanagment = new SimulationManagment();
@@ -209,7 +209,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
     this->rootItemModelTree->setExpanded(true);
-	*/
+	
 
 }
 

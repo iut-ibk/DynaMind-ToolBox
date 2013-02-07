@@ -119,5 +119,5 @@ void GUISimulation::clearSimulation() {
 }
 
 void GUISimulation::showHelp(string classname, string uuid) {
-    emit showHelpForModule(classname, uuid);
+    //emit showHelpForModule(classname, uuid);
 }

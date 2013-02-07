@@ -53,7 +53,7 @@ signals:
     void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);
     //void GroupNameChanged(GroupNode*);
-    void showHelpForModule(std::string classname, std::string uuid);
+    //void showHelpForModule(std::string classname, std::string uuid);
 
 
 public slots:
