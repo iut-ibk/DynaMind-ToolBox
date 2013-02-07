@@ -297,10 +297,10 @@ void DMMainWindow::SimulationFinished() {
 
 }
 
-void DMMainWindow::preferences() {
-	/*
+void DMMainWindow::preferences() 
+{	
     Preferences *p =  new Preferences(this);
-    p->exec();*/
+    p->exec();
 }
 
 void DMMainWindow::setRunning() {
