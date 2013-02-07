@@ -213,10 +213,10 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-    //this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(VIBeModule->getClassName()));
+    this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " /*+ QString::fromStdString(VIBeModule->getClassName())*/);
     double w = this->simpleTextItem->boundingRect().width()+40;
 
-    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(VIBeModule->getName()));
+    QGraphicsSimpleTextItem tn ("Name: " /*+ QString::fromStdString(VIBeModule->getName())*/);
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 

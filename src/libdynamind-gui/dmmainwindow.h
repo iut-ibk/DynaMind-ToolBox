@@ -62,6 +62,8 @@ namespace DM {
 }
 
 
+class SimulationTab;
+
 
 class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
@@ -91,6 +93,7 @@ private:
     void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 
+	QList<SimulationTab*> tabs;
 public slots:
     void runSimulation();
     void sceneChanged();

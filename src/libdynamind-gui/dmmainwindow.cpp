@@ -65,6 +65,7 @@
 #include "guiaboutdialog.h"
 
 #include <dmmoduleregistry.h>
+#include <qgraphicsview.h>
 
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
@@ -188,9 +189,11 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     this->simulation->loadModulesFromSettings();
     this->helpviewer = new GUIHelpViewer(this->simulation);
 
-	//ui->tabWidget_4->addTab(gv,name)
+	// init root tab
+	SimulationTab* tab = new SimulationTab(parent, this->simulation);
+	tabs.append(tab);
+	ui->tabWidget_4->addTab(tab->getQGViewer(),"Root Tab");
 	
-
 
     ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
     connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
@@ -589,6 +592,8 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
 
 DMMainWindow::~DMMainWindow() {
     //delete this->simulation;
+	foreach(SimulationTab *w, tabs)
+		delete w;
 }
 
 void DMMainWindow::on_actionZoomIn_triggered(){

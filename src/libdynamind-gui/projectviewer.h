@@ -49,38 +49,30 @@ class  DM_HELPER_DLL_EXPORT ProjectViewer :public QGraphicsScene
 public:
     int id;
     QString UUID;
-    ProjectViewer(  GroupNode * g, QWidget * parent = 0);
+    ProjectViewer( /* GroupNode * g,*/ QWidget * parent = 0);
     void setResultViewer(DMMainWindow * w){this->ResultViewer = w;}
-    RootGroupNode * getRootNode(){return this->rootGroup;}
+    //RootGroupNode * getRootNode(){return this->rootGroup;}
     QString getUUID() {return this->UUID;}
 
     ~ProjectViewer();
-
-
 protected:
     void dropEvent(QGraphicsSceneDragDropEvent *event);
     void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
-
-
 
 private:
     DM::ModuleRegistry * moduleregistry;
     //GUISimulation * simulation;
     DMMainWindow * ResultViewer;
 
-    RootGroupNode * rootGroup;
-
+    //RootGroupNode * rootGroup;
 
 signals:
-    void NewGroupAdded(GroupNode  *);
-    void NewModule(QString name, QPointF pos, DM::Module* group);
+    //void NewGroupAdded(GroupNode  *);
+    //void NewModule(QString name, QPointF pos, DM::Module* group);
 
 public slots:
     void addModule(ModelNode *m);
-    void addGroup(GroupNode* m);
-
-
-
+    //void addGroup(GroupNode* m);
 };
 
 #endif // PROJECTVIEWER_H

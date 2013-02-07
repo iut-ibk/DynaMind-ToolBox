@@ -23,7 +23,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
+#define PROJECTVIEWER_H
+#ifndef PROJECTVIEWER_H
+#define PROJECTVIEWER_H
 #include "projectviewer.h"
 #include <QDropEvent>
 #include <iostream>
@@ -37,13 +40,14 @@
 #include <sstream>
 #include <guisimulation.h>
 
-ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(parent)
-
+ProjectViewer::ProjectViewer( /*GroupNode *g, */ QWidget *parent) : QGraphicsScene(parent)
 {
-	
     this->setItemIndexMethod(QGraphicsScene::NoIndex);
     this->id = 0;
 
+	RootGroupNode *rgn = new RootGroupNode(0);
+	this->addItem(rgn);
+	/*
     //Cretae New Visual Representation
     RootGroupNode * rg = new RootGroupNode(g->getDMModel(),g->getSimulation());
     g->setRootGroupNode(rg);
@@ -51,25 +55,28 @@ ProjectViewer::ProjectViewer( GroupNode *g,  QWidget *parent) : QGraphicsScene(p
     rg->setPos(0,0);
     this->rootGroup = rg;
     this->addItem(rg);
-	
+	*/
 
 }
-ProjectViewer::~ProjectViewer() {
-    delete rootGroup;
+ProjectViewer::~ProjectViewer() 
+{
+    //delete rootGroup;
 }
 
 void ProjectViewer::addModule(ModelNode *m)
 {
-
+	/*
     //Only add if root group is the same
     if (m->getDMModel()->getGroup() != this->rootGroup->getDMModel()) {
         return;
     }
     this->rootGroup->addModelNode(m);
-    this->addItem(m);
+    this->addItem(m);*/
 }
-
-void ProjectViewer::addGroup(GroupNode *g) {
+/*
+void ProjectViewer::addGroup(GroupNode *g) 
+{
+	
     //Only add if root group is the same
     if (g->getDMModel()->getGroup() != this->rootGroup->getDMModel()) {
         return;
@@ -78,20 +85,19 @@ void ProjectViewer::addGroup(GroupNode *g) {
 
     this->addItem(g);
     connect(g, SIGNAL(removeGroupNode(QString)), ResultViewer, SLOT(removeGroupWindows(QString)));
-
+	
 }
-
+*/
 
 void ProjectViewer::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
     event->accept();
-
 }
 
 void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     event->accept();
-    std::stringstream ss;
+    /*std::stringstream ss;
     QTreeWidget * lw = (QTreeWidget*) event->source();
     QString classname =  lw->currentItem()->text(0);
     std::string type = lw->currentItem()->text(1).toStdString();
@@ -99,7 +105,7 @@ void ProjectViewer::dropEvent(QGraphicsSceneDragDropEvent *event)
         emit NewModule(classname, event->scenePos(), this->rootGroup->getDMModel());
     } else {
         this->ResultViewer->importSimulation( lw->currentItem()->text(2), event->scenePos());
-    }
+    }*/
 
-}*/
-
+}
+#endif

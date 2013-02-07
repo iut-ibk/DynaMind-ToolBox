@@ -23,7 +23,85 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
+#include <rootgroupnode.h>
+#include <QGraphicsDropShadowEffect>
+#include <qgraphicsview.h>
+#include <modelnode.h>
+//#include <QDropEvent>
+#include <QGraphicsSceneDragDropEvent>
+#include <qtreewidget.h>
+#include <guisimulation.h>
+
+SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim): QGraphicsScene(parent)
+{
+	//scene = new QGraphicsScene(parent);
+	
+	viewer = new QGraphicsView(this, parent);
+    viewer->setRenderHints(QPainter::Antialiasing);
+    viewer->setAcceptDrops(true);
+
+	this->sim = sim;
+	
+	//ModelNode* node = new ModelNode(0, sim);
+	//scene->addItem(node);
+
+	/*
+	this->setGraphicsEffect(new  QGraphicsDropShadowEffect(this));
+    this->setVisible(true);
+
+    this->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    this->setFlag(QGraphicsItem::ItemIsMovable, false);
+    this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);*/
+}
+
+SimulationTab::~SimulationTab()
+{
+
+}
+
+void SimulationTab::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    event->accept();
+}
+
+void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    event->accept();
+
+	QTreeWidget *moduleTree = dynamic_cast<QTreeWidget*>(event->source());
+
+	if(!moduleTree || !moduleTree->currentItem())
+		return;
+
+	QTreeWidgetItem* item = moduleTree->currentItem();
+	
+	QString type = item->text(1);
+	QString moduleName = item->text(0);
+	if(type == "Module")
+	{
+		DM::Module* m = sim->addModule(moduleName.toStdString());
+		ModelNode* node = new ModelNode(m, sim);
+		node->setPos(event->scenePos());
+		addItem(node);
+	}
+
+    /*std::stringstream ss;
+    QTreeWidget * lw = (QTreeWidget*) event->source();
+    QString classname =  lw->currentItem()->text(0);
+    std::string type = lw->currentItem()->text(1).toStdString();
+    if (type.compare("Module") == 0) {
+        emit NewModule(classname, event->scenePos(), this->rootGroup->getDMModel());
+    } else {
+        this->ResultViewer->importSimulation( lw->currentItem()->text(2), event->scenePos());
+    }*/
+
+}
+
+#define GROUPNODE_H
+#ifndef GROUPNODE_H
+#define GROUPNODE_H
+
 #include "rootgroupnode.h"
 #include <linknode.h>
 #include <moduledescription.h>
@@ -54,8 +132,8 @@ RootGroupNode::~RootGroupNode() {
     while (this->childnodes.size() > 0)
         delete this->childnodes[0];
 
-    this->OutputTuplePorts.clear();
-    this->InPortTuplePorts.clear();
+    //this->OutputTuplePorts.clear();
+    //this->InPortTuplePorts.clear();
 
 
 
@@ -74,7 +152,7 @@ void RootGroupNode::changeGroupID(QString Name) {
 }
 
 
-
+/*
 void RootGroupNode::updatePorts () {
     DM::Group * g = (DM::Group*)this->getDMModel();
 
@@ -87,8 +165,8 @@ void RootGroupNode::updatePorts () {
 
     }
     ModelNode::updatePorts();
-}
-
+}*/
+/*
 void RootGroupNode::addTuplePort(DM::PortTuple * p) {
 
     //Inport
@@ -118,7 +196,8 @@ void RootGroupNode::addTuplePort(DM::PortTuple * p) {
     }
 
 
-}
+}*/
+/*
 GUIPort *  RootGroupNode::getGUIPort(DM::Port * p) {
     foreach(GUIPortTuple * gui_pt,this->OutputTuplePorts) {
         if (gui_pt->inPort->getVIBePort() == p)
@@ -138,13 +217,13 @@ GUIPort *  RootGroupNode::getGUIPort(DM::Port * p) {
     return ModelNode::getGUIPort( p);
 
     return 0;
-}
+}*/
 
-void RootGroupNode::removeTuplePort(int Type, QString s) {
+/*void RootGroupNode::removeTuplePort(int Type, QString s) {
 
-}
+}*/
 
-RootGroupNode::RootGroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module, s)
+RootGroupNode::RootGroupNode(  /*DM::Module *module,*/ GUISimulation * s): ModelNode( 0, s)
 {
 
     this->childnodes = QVector<ModelNode*>();
@@ -178,23 +257,23 @@ RootGroupNode::RootGroupNode(  DM::Module *module, GUISimulation * s): ModelNode
     Color = COLOR_MODULE;
     updatePorts();
 }
-
+/*
 void RootGroupNode::RePosTuplePorts() {
     foreach(GUIPort * p, this->ports) {
         if (p->getPortType() > DM::OUTPORTS) {
             p->setPos(l, p->pos().y());
         }
     }
-}
+}*/
 
 void RootGroupNode::setSelected(bool selected ) {
-    foreach(ModelNode * m, this->childnodes) {
+    /*foreach(ModelNode * m, this->childnodes) {
         m->setSelected(true);
         if (m->isGroup()) {
             GroupNode * g = (GroupNode *) m;
             g->setSelected(selected);
         }
-    }
+    }*/
 
     QGraphicsItem::setSelected ( selected );
 
@@ -225,10 +304,10 @@ void RootGroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getDMModel()->getName()));
 
 
-    if((RePosFlag) != 0) {
+    /*if((RePosFlag) != 0) {
         RePosTuplePorts();
         RePosFlag = false;
-    }
+    }*/
 
 
 
@@ -240,7 +319,7 @@ QRectF RootGroupNode::boundingRect() const {
 void RootGroupNode::addModelNode(ModelNode *m) {
     this->childnodes.push_back(m);
     DM::Module * m1 = m->getDMModel();
-    m->getDMModel()->setGroup((DM::Group *)this->getDMModel());
+    //m->getDMModel()->setGroup((DM::Group *)this->getDMModel());
     m->setParentGroup(this);
     this->recalculateLandH();
     this->update();
@@ -274,13 +353,13 @@ void  RootGroupNode::setGroupZValue() {
         DM::Module * m1 = m->getDMModel();
         if (m1 == 0)
             continue;
-        if(m->getDMModel()->isGroup()) {
-            GroupNode * g = (GroupNode * ) m;
+        //if(m->getDMModel()->isGroup()) {
+        //    GroupNode * g = (GroupNode * ) m;
             //g->setGroupZValue();
-        } else {
+        //} else {
             if (m->zValue() != this->zValue()+1)
                 m->setZValue(this->zValue()+1);
-        }
+        //}
     }
 }
 
@@ -326,4 +405,6 @@ void RootGroupNode::recalculateLandH() {
     }
 
 }
-*/
+
+
+#endif
