@@ -153,7 +153,7 @@ void GUISimulation::loadModulesFromDefaultLocation()
             //DM::Logger(DM::Debug) << module.toStdString();
             //std::cout <<  module.toStdString() << std::endl;
             QString ml = cp.absolutePath() +"/" + module;
-            if (moduleRegistry->addNativePlugin(ml.toStdString()))
+			if (this->getModuleRegistry()->addNativePlugin(ml.toStdString()))
                 ;//loadedModuleFiles.push_back(ml.toStdString());
         }
     }
@@ -177,10 +177,13 @@ void GUISimulation::loadPythonModulesFromDirectory(std::string path) {
     DM::PythonEnv::getInstance()->addPythonPath((path));
     foreach(QString file, files) 
 	{
-        try{
-            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+        try
+		{
+			std::string n = DM::PythonEnv::getInstance()->registerNodes(this->getModuleRegistry(), file.remove(".py").toStdString());
             //loadedModuleFiles.push_back(file.toStdString());
-        } catch(...) {
+        } 
+		catch(...) 
+		{
             DM::Logger(DM::Warning)  << "Can't load Module " << file.toStdString();
 
         }

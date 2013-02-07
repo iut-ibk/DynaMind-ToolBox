@@ -63,6 +63,8 @@
 #include "guihelpviewer.h"
 #include "guiaboutdialog.h"
 
+#include <dmmoduleregistry.h>
+
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
     (void) count;
@@ -212,26 +214,33 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 
 }
 
-void DMMainWindow::createModuleListView() {
-	/*
+void DMMainWindow::createModuleListView() 
+{
     ui->treeWidget->clear();
-    std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
+    //std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
+	// load the module tree: first map element represents the group name as string
+	// second the names of the modules as string
     std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
     ui->treeWidget->setColumnCount(1);
-    for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) {
+	// iterate through groups
+    for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) 
+	{
+		// create tree group
         QTreeWidgetItem * items = new QTreeWidgetItem(ui->treeWidget);
-        std::string name = it->first;
-        items->setText(0, QString::fromStdString(name));
-        std::vector<std::string> names = it->second;
-        std::sort(names.begin(), names.end());
-        foreach(std::string name, names) {
+        items->setText(0, QString::fromStdString(it->first));
+		// get modules, sort alphabetically
+        std::vector<std::string> moduleNames = it->second;
+        std::sort(moduleNames.begin(), moduleNames.end());
+		// iterate through modules
+        foreach(std::string name, moduleNames) 
+		{
             QTreeWidgetItem * item;
             item = new QTreeWidgetItem(items);
             item->setText(0,QString::fromStdString(name));
             item->setText(1,"Module");
         }
     }
-
+	/*
     //Add VIBe Modules
     QStringList filters;
     filters << "*.dyn";
