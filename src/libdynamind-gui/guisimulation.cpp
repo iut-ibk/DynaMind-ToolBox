@@ -25,9 +25,15 @@
  */
 
 #include "guisimulation.h"
+#include <dmmoduleregistry.h>
 #include <modelnode.h>
 #include <groupnode.h>
 #include <rootgroupnode.h>
+#include <dmlogger.h>
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+#include <dmpythonenv.h>
+#endif
 
 GUISimulation::GUISimulation() : Simulation()
 {
@@ -120,4 +126,64 @@ void GUISimulation::clearSimulation() {
 
 void GUISimulation::showHelp(string classname, string uuid) {
     //emit showHelpForModule(classname, uuid);
+}
+
+void GUISimulation::loadModulesFromDefaultLocation()
+{
+    QVector<QDir> cpv;
+    cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
+    cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
+#if defined DEBUG || _DEBUG
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
+#else
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/RelWithDebInfo"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo"));
+#endif
+    
+    foreach (QDir cp, cpv)  
+	{
+        QStringList modulesToLoad = cp.entryList();
+        std::cout <<  "loading modules from " << cp.absolutePath().toStdString() << std::endl;
+        foreach (QString module, modulesToLoad) 
+		{
+			if (module == ".." || module == "." || !module.endsWith(".dll"))
+                continue;
+            //DM::Logger(DM::Debug) << module.toStdString();
+            //std::cout <<  module.toStdString() << std::endl;
+            QString ml = cp.absolutePath() +"/" + module;
+            if (moduleRegistry->addNativePlugin(ml.toStdString()))
+                ;//loadedModuleFiles.push_back(ml.toStdString());
+        }
+    }
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+    QDir cp;
+    cp = QDir(QDir::currentPath() + "/bin/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+
+    cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+#endif
+}
+
+void GUISimulation::loadPythonModulesFromDirectory(std::string path) {
+#ifndef PYTHON_EMBEDDING_DISABLED
+    QDir pythonDir = QDir(QString::fromStdString(path));
+    QStringList filters;
+    filters << "*.py";
+    QStringList files = pythonDir.entryList(filters);
+    DM::PythonEnv::getInstance()->addPythonPath((path));
+    foreach(QString file, files) 
+	{
+        try{
+            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
+            //loadedModuleFiles.push_back(file.toStdString());
+        } catch(...) {
+            DM::Logger(DM::Warning)  << "Can't load Module " << file.toStdString();
+
+        }
+    }
+#endif
 }

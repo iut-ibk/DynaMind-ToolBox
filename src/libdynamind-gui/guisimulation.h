@@ -34,8 +34,9 @@
 
 class ModelNode;
 //class GroupNode;
-class GUILink;
-class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation, QObject
+//class GUILink;
+
+class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation, public QObject
 {
     //Q_OBJECT
 public:
@@ -45,7 +46,11 @@ public:
     //void changeGroupName(GroupNode*);
     void clearSimulation();
 
+	/** @brief loads modules from default locations */
+    void loadModulesFromDefaultLocation();
 private:
+	void loadPythonModulesFromDirectory(std::string path);
+
     QVector<ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 

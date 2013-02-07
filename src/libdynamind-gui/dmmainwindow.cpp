@@ -163,11 +163,10 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
 
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
-	
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
-#ifdef DEBUG
+#if defined DEBUG || _DEBUG
     DM::Log::init(log_updater,DM::Debug);
 #else
     DM::Log::init(log_updater,DM::Standard);
@@ -179,13 +178,13 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     env->addOverWriteStdCout();
 
     this->simulation = new GUISimulation();
-	/*
-    connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
-    this->simulation->registerRootNode();
+	
+    //connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
+    //this->simulation->registerRootNode();
     this->simulation->loadModulesFromDefaultLocation();
-    this->simulation->addModulesFromSettings();
+    //this->simulation->addModulesFromSettings();
     this->helpviewer = new GUIHelpViewer(this->simulation);
-	*/
+	
 
 
     ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
