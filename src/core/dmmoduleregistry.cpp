@@ -51,7 +51,7 @@ bool ModuleRegistry::addNodeFactory(INodeFactory *factory)
 bool ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
 
     QLibrary lib(QString::fromStdString(plugin_path));
-    if (lib.load()) 
+    if (!lib.load()) 
 	{
 		std::cout << "Error loading module " << plugin_path << " : " << lib.errorString().toStdString() << std::endl;
         return false;

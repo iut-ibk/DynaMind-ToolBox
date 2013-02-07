@@ -116,6 +116,8 @@ public:
 
 	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
+	/** @brief accessor to module registry */
+	ModuleRegistry* getModuleRegistry(){return moduleRegistry;};
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
@@ -150,7 +152,6 @@ private:
 	std::list<Link*>	links;
 
 	SimulationStatus	status;
-protected:
 	ModuleRegistry*		moduleRegistry;
 };
 
