@@ -245,11 +245,15 @@ void DMMainWindow::createModuleListView()
     QStringList filters;
     filters << "*.dyn";
     QSettings settings;
-    QStringList moduleshome = settings.value("VIBeModules",QStringList()).toString().replace("\\","/").split(",");
-    for (int index = 0; index < moduleshome.size(); index++) {
-        QDir d = QDir(moduleshome[index]);
-        QStringList list = d.entryList(filters);
-        QString module_name = d.absolutePath().split("/").last();
+    QStringList moduleDirs = settings.value("VIBeModules",QStringList()).toString().replace("\\","/").split(",");
+
+	foreach(QString strDir, moduleDirs)
+	{
+    //for (int index = 0; index < moduleDirs.size(); index++) 
+	//{
+        QDir dir = QDir(strDir);
+        QStringList list = dir.entryList(filters);
+        QString module_name = dir.absolutePath().split("/").last();
         mMap.clear();
         foreach(QString name, list) {
             std::vector<std::string> vec = mMap[module_name.toStdString()];
@@ -270,7 +274,7 @@ void DMMainWindow::createModuleListView()
                 item->setText(0,QString::fromStdString(name));
                 item->setText(1,"VIBe");
                 stringstream filename;
-                filename << moduleshome[0].toStdString() << "/" << name;
+                filename << moduleDirs[0].toStdString() << "/" << name;
                 item->setText(2,QString::fromStdString(filename.str()));
             }
         }
