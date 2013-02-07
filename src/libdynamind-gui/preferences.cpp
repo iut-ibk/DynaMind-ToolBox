@@ -49,8 +49,6 @@ Preferences::Preferences(QWidget *parent)
     connect(pushButton_swmm, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
     connect(pushButton_Editra, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
 
-
-
     this->setParent(parent, Qt::Dialog);
     QSettings settings;
     QString text = settings.value("pythonModules").toString();
@@ -76,12 +74,10 @@ Preferences::Preferences(QWidget *parent)
 
     text = settings.value("Editra").toString();
     this->lineEdit_Editra->setText(text);
-
 }
 
-
-void Preferences::writePreference() {
-
+void Preferences::writePreference() 
+{
     QSettings settings;
     //settings.beginGroup("Preferences");
     QStringList pythonModules;
@@ -99,76 +95,60 @@ void Preferences::writePreference() {
     settings.setValue("UrbanSim", this->lineEdit_urbansim->text());
     settings.setValue("SWMM", this->lineEdit_swmm->text());
     settings.setValue("Editra", this->lineEdit_Editra->text());
-
 }
-void Preferences::openFileDialog() {
+void Preferences::openFileDialog() 
+{
     QString sender = QObject::sender()->objectName();
-    if (sender.compare("pushButton_NativeModule") == 0) {
+    if (sender == "pushButton_NativeModule") 
+	{
          QString s = QFileDialog::getOpenFileName(this, tr("File to"), "");
          this->lineEdit_NativeModule->setText(s);
         return;
     }
     QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "");
-    if(!s.isEmpty()) {
-        if (sender.compare("pushButton_urbansim") == 0)
-            this->lineEdit_urbansim->setText(s);
-        else if (sender.compare("pushButton_swmm") == 0)
-            this->lineEdit_swmm->setText(s);
-        else if (sender.compare("pushButton_Editra") == 0)
-            this->lineEdit_Editra->setText(s);
-        else if (sender.compare("pushButton_VIBePath") == 0)
-            this->lineEdit_VIBePath->setText(s);
-        else
-            this->lineEdit->setText(s);
+    if(!s.isEmpty()) 
+	{
+        if (sender == "pushButton_urbansim")		this->lineEdit_urbansim->setText(s);
+        else if (sender == "pushButton_swmm")		this->lineEdit_swmm->setText(s);
+        else if (sender == "pushButton_Editra")		this->lineEdit_Editra->setText(s);
+        else if (sender == "pushButton_VIBePath")	this->lineEdit_VIBePath->setText(s);
+        else										this->lineEdit->setText(s);
     }
-
-
 }
-void Preferences::add() {
+void Preferences::add() 
+{
     QString sender = QObject::sender()->objectName();
 
-    if (sender.compare("pushButton_VIBePathAdd") == 0) {
+    if (sender == "pushButton_VIBePathAdd") 
+	{
         if (lineEdit_VIBePath->text().size() > 0)
             this->listWidget_VIBePath->addItem(new QListWidgetItem(this->lineEdit_VIBePath->text()));
         this->lineEdit_VIBePath->clear();
-
-        return;
     }
-    if (sender.compare("pushButton_NativeModuleAdd") == 0) {
+    else if (sender == "pushButton_NativeModuleAdd") 
+	{
         if (lineEdit_NativeModule->text().size() > 0)
             this->listWidget_NativeModule->addItem(new QListWidgetItem(this->lineEdit_NativeModule->text()));
         this->lineEdit_NativeModule->clear();
-
-        return;
     }
-    if (lineEdit->text().size() > 0)
-        this->listWidget->addItem(new QListWidgetItem(this->lineEdit->text()));
-    this->lineEdit->clear();
-
-
-
+	else
+	{
+		if (lineEdit->text().size() > 0)
+			this->listWidget->addItem(new QListWidgetItem(this->lineEdit->text()));
+		this->lineEdit->clear();
+	}
 }
 
-void Preferences::remove() {
+void Preferences::remove() 
+{
     QString sender = QObject::sender()->objectName();
-
-    if (sender.compare("pushButton_VIBePathRemove") == 0) {
-        if (this->listWidget_VIBePath->selectedItems().size() < 1)
-            return;
-        QListWidgetItem * item =this->listWidget_VIBePath->selectedItems()[0];
-        delete item;
-        return;
-    }
-    if (sender.compare("pushButton_NativeModuleRemove") == 0) {
-        if (this->listWidget_NativeModule->selectedItems().size() < 1)
-            return;
-        QListWidgetItem * item =this->listWidget_NativeModule->selectedItems()[0];
-        delete item;
-        return;
-    }
-    if (this->listWidget->selectedItems().size() < 1)
-        return;
-    QListWidgetItem * item =this->listWidget->selectedItems()[0];
-    delete item;
-
+	QListWidgetItem * item = 0;
+    if (sender == "pushButton_VIBePathRemove" && this->listWidget_VIBePath->selectedItems().size())
+		item = this->listWidget_VIBePath->selectedItems()[0];
+    else if (sender == "pushButton_NativeModuleRemove" && this->listWidget_NativeModule->selectedItems().size())
+		item = this->listWidget_NativeModule->selectedItems()[0];
+	else if (this->listWidget->selectedItems().size())
+		item = this->listWidget->selectedItems()[0];
+	if(item)
+		delete item;
 }
