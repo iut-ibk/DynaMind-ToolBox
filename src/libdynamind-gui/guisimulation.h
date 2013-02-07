@@ -51,6 +51,11 @@ public:
     void loadModulesFromDefaultLocation();
 	/** @brief Add the modules set in the QSetting **/
     bool loadModulesFromSettings();
+
+
+	
+	void guiUpdatePorts(ModelNode* node);
+	ModelNode* guiAddModule(QString moduleName);
 private:
 	void loadPythonModulesFromDirectory(std::string path);
     QVector<ModelNode*> modelNodes;
@@ -70,8 +75,7 @@ public slots:
     void reset();
     void showHelp(std::string classname, std::string uuid);
 
-
-
+	std::map<ModelNode*,DM::Module*> moduleGuiMap;
 };
 
 #endif // GUISIMULATION_H

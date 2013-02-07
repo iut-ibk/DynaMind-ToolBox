@@ -13,9 +13,9 @@
 #define COLOR_RASTERPORT  QColor(105,210,231);
 #define COLOR_VECTORPORT  QColor(243,134,48);
 #define COLOR_DOUBLEPORT  Qt::gray;
-#define COLOR_MODULESELECTED Qt::lightGray;
+#define COLOR_MODULESELECTED Qt::gray;
 #define COLOR_EXECUTED Qt::yellow;
-#define COLOR_MODULE  Qt::white;
+#define COLOR_MODULE  Qt::lightGray;
 #define COLOR_DEBUG Qt::green;
 //#define COLOR_DOUBLEPORT  QColor(250,105,0);
 #endif // COLORPALETTE_H

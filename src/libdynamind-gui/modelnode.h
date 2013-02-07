@@ -54,6 +54,14 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
     enum { Type = UserType + 1 };
+
+private:
+	QString moduleName;
+public:
+	QStringList inPorts;
+	QStringList outPorts;
+
+
 protected:
     GUIPortObserver guiPortObserver;
     float x1;
@@ -87,7 +95,7 @@ public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
     ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
-    ModelNode(DM::Module *VIBeModuleUUID, GUISimulation *simulation);
+    ModelNode(QString moduleName);
 
     int type() const {return Type; }
     virtual ~ModelNode();

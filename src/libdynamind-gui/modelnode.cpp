@@ -195,9 +195,10 @@ DM::Module * ModelNode::getDMModel() {
 	return 0;
 }
 
-ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
+ModelNode::ModelNode(QString moduleName)
 {
-    this->guiPortObserver.setModelNode(this);
+	/*
+    //this->guiPortObserver.setModelNode(this);
     this->minimized = false;
     this->visible = true;
     this->setParentItem(0);
@@ -208,15 +209,16 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     //this->id = VIBeModule->getID();
     this->simulation = simulation;
     this->nodes = 0;
-
+	*/
+	this->moduleName = moduleName;
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-    this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " /*+ QString::fromStdString(VIBeModule->getClassName())*/);
+    this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + moduleName);
     double w = this->simpleTextItem->boundingRect().width()+40;
 
-    QGraphicsSimpleTextItem tn ("Name: " /*+ QString::fromStdString(VIBeModule->getName())*/);
+    QGraphicsSimpleTextItem tn ("Name: " + moduleName);
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
@@ -224,7 +226,7 @@ ModelNode::ModelNode(DM::Module *VIBeModule, GUISimulation * simulation)
     l = w+4;
     h =  35;
     //VIBeModule->addPortObserver( & this->guiPortObserver);
-    this->updatePorts();
+    //this->updatePorts();
 
     Color = COLOR_MODULE;
 }
@@ -265,12 +267,11 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         path.addRect(0, 0,l,h);
         painter->fillPath(path, brush);
         painter->strokePath(path, pen);
-		/*
-        if (!this->getDMModel()->getName().empty())
-            painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
-
-        painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(this->getDMModel()->getClassName()));
-		*/
+		
+        
+        //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
+        painter->drawText(QPoint(22,15), "Module: " + moduleName);
+		
 
     }
 }

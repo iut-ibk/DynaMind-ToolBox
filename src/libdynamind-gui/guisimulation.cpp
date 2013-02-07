@@ -224,3 +224,23 @@ bool GUISimulation::loadModulesFromSettings() {
 
     return true;
 }
+
+ModelNode* GUISimulation::guiAddModule(QString moduleName)
+{
+	DM::Module* m = addModule(moduleName.toStdString());
+	ModelNode* node = new ModelNode(moduleName);
+	moduleGuiMap[node] = m;
+}
+
+void GUISimulation::guiUpdatePorts(ModelNode* node)
+{
+	DM::Module* m;
+	if(map_contains(&moduleGuiMap, node, m))
+	{
+		// reset ports
+		node->inPorts.clear();
+		node->outPorts.clear();
+		// apply port settings of DM::Module
+		
+	}
+}
