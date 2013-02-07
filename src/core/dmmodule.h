@@ -258,6 +258,8 @@ public:
 	{
 		setParameter<T>(name, value);
 	}
+	std::vector<std::string> getInPortNames();
+	std::vector<std::string> getOutPortNames();
 protected:
 
 

@@ -258,6 +258,24 @@ std::string Module::getParameterAsString(std::string name)
 	return strValue.str();
 }
 
+std::vector<std::string> Module::getInPortNames()
+{
+	std::vector<std::string> list;
+	std::map<std::string, System*>::iterator it = inPorts.begin();
+	for(;it != inPorts.end(); ++it)
+		list.push_back(it->first);
+	return list;
+}
+std::vector<std::string> Module::getOutPortNames()
+{
+	std::vector<std::string> list;
+	std::map<std::string, System*>::iterator it = outPorts.begin();
+	for(;it != outPorts.end(); ++it)
+		list.push_back(it->first);
+	return list;
+}
+
+
 #ifdef OLD_WF
 struct ModulePrivate {
 
