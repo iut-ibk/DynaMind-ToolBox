@@ -69,24 +69,24 @@ class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 public:
     DMMainWindow(QWidget *parent = 0);
     ~DMMainWindow();
-    QTreeWidgetItem * getRootItemModelTree(){return this->rootItemModelTree;}
+    //QTreeWidgetItem * getRootItemModelTree(){return this->rootItemModelTree;}
     GuiLogSink *log_updater;
     GUISimulation * getSimulation() {return this->simulation;}
 private:
     Ui::DMMainWindow *ui;
     GUISimulation * simulation;
-    SimulationManagment * simmanagment;
-    GUISimulationObserver * simobserver;
+    //SimulationManagment * simmanagment;
+    //GUISimulationObserver * simobserver;
     GUIHelpViewer * helpviewer;
 
     void createModuleListView();
-    QMap<QString, ModuleDescription> modules;
-    QMap<ProjectViewer *, QWidget *> tabmap;
-    QMap<int, ProjectViewer * >  groupscenes;
+    //QMap<QString, ModuleDescription> modules;
+    //QMap<ProjectViewer *, QWidget *> tabmap;
+    //QMap<int, ProjectViewer * >  groupscenes;
     QString currentDocument;
-    int counter;
+    //int counter;
     bool running;
-    QTreeWidgetItem * rootItemModelTree;
+    //QTreeWidgetItem * rootItemModelTree;
     void writeGUIInformation(QString FileName);
     void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     void loadGUILinks(std::map<std::string, std::string> UUID_Translation);

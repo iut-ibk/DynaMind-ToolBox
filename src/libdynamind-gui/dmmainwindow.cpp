@@ -206,13 +206,14 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     //connect(ui->actionReset, SIGNAL(triggered()), this->simulation , SLOT(reset()), Qt::DirectConnection);
     currentDocument = "";
 
-    this->simmanagment = new SimulationManagment();
+    //this->simmanagment = new SimulationManagment();
 
     createModuleListView();
+	/*
     this->rootItemModelTree = new QTreeWidgetItem();
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
-    this->rootItemModelTree->setExpanded(true);
+    this->rootItemModelTree->setExpanded(true);*/
 	
 
 }
