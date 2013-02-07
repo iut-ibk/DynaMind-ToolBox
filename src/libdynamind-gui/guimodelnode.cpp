@@ -281,8 +281,8 @@ void GUIModelNode::addUserDefinedItem() {
             DM::Logger(DM::Debug) << "addUserDefinedItem" << text.toStdString();
             //this->module->appendToUserDefinedParameter(stds,text.toStdString());
 
-            if (this->modelnode != 0)
-                this->modelnode->updatePorts();
+            //if (this->modelnode != 0)
+                //this->modelnode->updatePorts();
             // }
 
 

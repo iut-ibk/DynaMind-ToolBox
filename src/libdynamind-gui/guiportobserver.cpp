@@ -32,7 +32,7 @@ GUIPortObserver::GUIPortObserver()
 {
 }
 void GUIPortObserver::changedPorts() {
-    mn->updatePorts();
+    //mn->updatePorts();
 }
 void GUIPortObserver::setModelNode(ModelNode * mn) {
     this->mn = mn;

@@ -94,7 +94,7 @@ protected:
 public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
-    ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
+    //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
     ModelNode(QString moduleName);
 
     int type() const {return Type; }
@@ -104,21 +104,21 @@ public:
     void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
 
     int getID(){return this->id;}
-    QString getName(){return QString::fromStdString(this->getDMModel()->getName());}
+    //QString getName(){return QString::fromStdString(this->getDMModel()->getName());}
     //void setID(int id){this->getDMModel()->setID(id); this->id = id;}
 
     //void addPort(DM::Port * p);
     //virtual GUIPort * getGUIPort(DM::Port * p);
     //std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
 
-    std::string getParameterAsString(std::string name);
+    //std::string getParameterAsString(std::string name);
 
     //void removePort(int Type, QString s);
     bool isMinimized(){return this->minimized;}
 
     virtual bool isGroup(){return false;}
 
-    virtual void setMinimized(bool b);
+    //virtual void setMinimized(bool b);
 
 
     bool GroupVisible(){return this->visible;}
@@ -128,25 +128,25 @@ public:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
 
-    DM::Module * getDMModel();
+    //DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 
-    virtual void updatePorts();
+    //virtual void updatePorts();
 
     virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}
 
-    virtual void resetModel();
+    //virtual void resetModel();
 
     //std::string getGroupUUID();
 
 public slots:
     //void addGroup();
     //void removeGroup();
-    void deleteModelNode();
-    void editModelNode();
-    void renameModelNode();
-    void printData();
+    //void deleteModelNode();
+    //void editModelNode();
+    //void renameModelNode();
+    //void printData();
     //void viewData();
     //void showHelp();
     //void setDebug();

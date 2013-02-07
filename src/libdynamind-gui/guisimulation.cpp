@@ -230,6 +230,7 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 	DM::Module* m = addModule(moduleName.toStdString());
 	ModelNode* node = new ModelNode(moduleName);
 	moduleGuiMap[node] = m;
+	return node;
 }
 
 void GUISimulation::guiUpdatePorts(ModelNode* node)
@@ -240,7 +241,11 @@ void GUISimulation::guiUpdatePorts(ModelNode* node)
 		// reset ports
 		node->inPorts.clear();
 		node->outPorts.clear();
-		// apply port settings of DM::Module
-		
+		// get names from DM::Module
+		foreach(std::string portName, m->getInPortNames())
+			node->inPorts.push_back(QString::fromStdString(portName));
+
+		foreach(std::string portName, m->getOutPortNames())
+			node->outPorts.push_back(QString::fromStdString(portName));
 	}
 }
