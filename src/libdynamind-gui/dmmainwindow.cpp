@@ -1,6 +1,7 @@
 /**
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
@@ -8,7 +9,7 @@
  * strategic planning tool ti identify the transtion from an from a conventional
  * urban water system to an adaptable and sustainable system at a city scale
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
