@@ -190,3 +190,37 @@ void GUISimulation::loadPythonModulesFromDirectory(std::string path) {
     }
 #endif
 }
+
+bool GUISimulation::loadModulesFromSettings() {
+    QSettings settings;
+    QString text;
+    QStringList list;
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+    //Init Python
+    QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
+    for (int index = 0; index < pythonhome.size(); index++)
+        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
+
+    QDir pythonDir;
+    text = settings.value("pythonModules").toString();
+    list = text.replace("\\","/").split(",");
+    foreach (QString s, list){
+        loadPythonModulesFromDirectory(s.toStdString());
+    }
+#endif
+
+    // Native Modules
+    text = settings.value("nativeModules").toString();
+    list = text.replace("\\","/").split(",");
+    foreach (QString s, list) {
+        if (s.isEmpty())
+            continue;
+        DM::Logger(DM::Standard) << "Loading Native Modules " <<s.toStdString();
+        if (getModuleRegistry()->addNativePlugin(s.toStdString())) {
+            //loadedModuleFiles.push_back(s.toStdString());
+        }
+    }
+
+    return true;
+}

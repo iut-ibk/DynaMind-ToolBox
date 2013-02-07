@@ -185,8 +185,10 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     //connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     //this->simulation->registerRootNode();
     this->simulation->loadModulesFromDefaultLocation();
-    //this->simulation->addModulesFromSettings();
+    this->simulation->loadModulesFromSettings();
     this->helpviewer = new GUIHelpViewer(this->simulation);
+
+	//ui->tabWidget_4->addTab(gv,name)
 	
 
 

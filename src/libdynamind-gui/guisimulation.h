@@ -49,9 +49,10 @@ public:
 
 	/** @brief loads modules from default locations */
     void loadModulesFromDefaultLocation();
+	/** @brief Add the modules set in the QSetting **/
+    bool loadModulesFromSettings();
 private:
 	void loadPythonModulesFromDirectory(std::string path);
-
     QVector<ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
