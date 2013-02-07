@@ -146,11 +146,12 @@ private:
 		}
 	};
 
-	ModuleRegistry*		moduleRegistry;
 	std::list<Module*>	modules;
 	std::list<Link*>	links;
 
 	SimulationStatus	status;
+protected:
+	ModuleRegistry*		moduleRegistry;
 };
 
 
