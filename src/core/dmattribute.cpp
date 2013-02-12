@@ -32,7 +32,16 @@
 
 using namespace DM;
 
-static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1000000);
+static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1e7);
+
+void Attribute::ResizeCache(unsigned int size)
+{
+	attributeCache.resize(size);
+}
+unsigned int Attribute::GetCacheSize()
+{
+	return attributeCache.getSize();
+}
 
 #ifdef CACHE_PROFILING
 void Attribute::PrintStatistics()
@@ -290,6 +299,8 @@ Attribute::~Attribute()
 	if(isInserted)
 		DBConnector::getInstance()->Delete("attributes", _uuid);
 	if(value)
+		delete value;
+	else
 		attributeCache.remove(this);
 }
 
@@ -528,6 +539,7 @@ void Attribute::SetOwner(Component* owner)
 	{
 		this->owner = owner;
 		attributeCache.add(this, value);
+		value = 0;
 	}
 	else
 		this->owner = owner;
@@ -539,10 +551,11 @@ void Attribute::SetOwner(Component* owner)
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
+	std::string struuid = _uuid.toString().toStdString();
     DBConnector::getInstance()->Select("attributes", _uuid,
                                        "type",     &t,
                                        "value",     &v);
-    return new AttributeValue(t,(AttributeType)v.toInt());
+    return new AttributeValue(v,(AttributeType)t.toInt());
 }
 
 void Attribute::SaveToDb(Attribute::AttributeValue *val)

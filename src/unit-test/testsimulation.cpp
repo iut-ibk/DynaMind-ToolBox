@@ -716,6 +716,34 @@ TEST_F(TestSimulation, SQLattributes)
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test attributes (SQL)";
+	
+    DM::Logger(DM::Standard) << "Test attribute cache";
+	
+	{
+		// test attribute cache
+		// generate new component, as cache wont be used if attribute is not owned
+		Component* c = new Component;
+		// resize cache, so we dont have to wait too long for reaching the limits
+		unsigned int cacheBefore = Attribute::GetCacheSize();
+		Attribute::ResizeCache(5);
+		// add
+		for(int i=0;i<10;i++)
+		{
+			std::stringstream str;
+			str << "name " << i;
+			c->addAttribute(str.str(), i+1);
+		}
+
+		for(int i=0;i<10;i++)
+		{
+			std::stringstream str;
+			str << "name " << i;
+			ASSERT_TRUE(c->getAttribute(str.str())->getDouble() == i+1.0);
+		}
+		// reset cache
+		Attribute::ResizeCache(cacheBefore);
+		delete c;
+	}
 
 
     DM::Logger(DM::Debug) << "checking add attributes";

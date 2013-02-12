@@ -270,7 +270,7 @@ public:
             delete cur;
         }
     }
-
+	unsigned int getSize(){return _size;};
     virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
@@ -364,6 +364,16 @@ public:
             n = n->next;
         }
     }
+	// resize cache
+	void resize(unsigned int size)
+	{
+		Cache<Tkey,Tvalue>::_size = size;
+		while(Cache<Tkey,Tvalue>::_cnt > size)
+		{
+            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+		}
+	}
 };
 
 }   // namespace DM
