@@ -84,7 +84,7 @@ void CalculateCentroid::init()
     this->addData("Data", data);
     vData = writeView;
 
-    this->updateParameter();
+    //this->updateParameter();
 }
 
 

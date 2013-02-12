@@ -110,7 +110,7 @@ private:
     double * repeater;
 
     Parameter param;
-    parameter_type paramRaw;
+    std::map<std::string, std::string> paramRaw;
 
     void deinit();
 

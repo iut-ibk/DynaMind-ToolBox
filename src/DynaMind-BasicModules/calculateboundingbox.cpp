@@ -95,7 +95,7 @@ void CalculateBoundingBox::init() {
     this->addData("Data", data);
     vData = writeView;
 
-    this->updateParameter();
+    //this->updateParameter();
 }
 
 void CalculateBoundingBox::caculateBoundingBox()
