@@ -301,7 +301,7 @@ public:
 			removeNode(_last);
             //delete pop(_last);
     }
-    bool replace(const Tkey& key,Tvalue* value)
+    virtual bool replace(const Tkey& key,Tvalue* value)
     {
         Node *n = search(key);
         if(n==NULL)
@@ -354,6 +354,9 @@ public:
         }
         return v;
     }
+	// note: currently removing from db is handled by the main class
+    // void remove(const Tkey& key)
+
     // save everything to db
     void Synchronize()
     {

@@ -725,20 +725,38 @@ TEST_F(TestSimulation, SQLattributes)
 		Component* c = new Component;
 		// resize cache, so we dont have to wait too long for reaching the limits
 		unsigned int cacheBefore = Attribute::GetCacheSize();
-		Attribute::ResizeCache(5);
+		Attribute::ResizeCache(7);
 		// add
 		for(int i=0;i<10;i++)
 		{
-			std::stringstream str;
-			str << "name " << i;
-			c->addAttribute(str.str(), i+1);
+			std::stringstream name;
+			name << "name " << i;
+			c->addAttribute(name.str(), i+1);
 		}
-
+		// check
 		for(int i=0;i<10;i++)
 		{
-			std::stringstream str;
-			str << "name " << i;
-			ASSERT_TRUE(c->getAttribute(str.str())->getDouble() == i+1.0);
+			std::stringstream name;
+			name << "name " << i;
+			ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+1.0);
+		}
+		// change attributes
+		for(int i=0;i<10;i++)
+		{
+			std::stringstream name, newname;
+			name << "name " << i;
+			//newname << "changed name " << i;
+			Attribute newatt(name.str(), i+20.0);
+			c->getAttribute(name.str())->Change(newatt);
+		}
+		//DBConnector::getInstance()->Synchronize();
+		// check
+		for(int i=0;i<10;i++)
+		{
+			std::stringstream name;
+			name << "name " << i;
+			ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+20.0);
+			//Logger(Error) << name.str() << ": " << c->getAttribute(name.str())->getDouble();
 		}
 		// reset cache
 		Attribute::ResizeCache(cacheBefore);

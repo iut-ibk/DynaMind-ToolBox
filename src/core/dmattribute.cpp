@@ -333,6 +333,7 @@ void Attribute::setDouble(double v)
 {
 	AttributeValue* a = getValue();
 	a->Free();
+	delete a->ptr;
 	a->type = DOUBLE;
 	a->ptr = new double(v);
 }
@@ -504,8 +505,18 @@ void Attribute::setType(AttributeType type)
 }
 void Attribute::Change(const Attribute &attribute)
 {
-    name=attribute.name;
-	value = new AttributeValue(*attribute.value);
+    //name = attribute.name; name should never be changed!
+	AttributeValue* newValue = new AttributeValue(*attribute.value);
+	if(value)
+	{
+		delete value;
+		value = newValue;
+	}
+	else
+	{
+		if(!attributeCache.replace(this, newValue))
+			this->SaveToDb(newValue);
+	}
 }
 
 const char *Attribute::getTypeName() const
