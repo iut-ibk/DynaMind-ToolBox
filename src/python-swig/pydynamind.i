@@ -228,7 +228,7 @@ public:
 
 %pythoncode %{
 def my_del(self):
-    print "Force no delete of python garbage collector"
+    #print "Force no delete of python garbage collector"
     self.__disown__()
 
 Component.__del__ = my_del
