@@ -55,7 +55,7 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
     ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("NameOfOutput")) );
-    std::map<std::string, std::vector<DM::View> > views =  m->getViews();
+    //std::map<std::string, std::vector<DM::View> > views =  m->getViews();
 
     foreach (std::string s, this->m->getLandscapes())
         ui->listWidget_landscapes->addItem(QString::fromStdString(s));

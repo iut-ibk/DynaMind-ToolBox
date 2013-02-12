@@ -113,7 +113,7 @@ void CellularAutomata::run()  {
 
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
     this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,0,0);
-    std::map<std::string, std::vector<DM::View> > views =  this->getViews();
+    //std::map<std::string, std::vector<DM::View> > views =  this->getViews();
 
     foreach (std::string s, param.ListOfLandscapes) {
         View rdata(s, DM::RASTERDATA, DM::READ);

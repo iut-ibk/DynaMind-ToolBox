@@ -29,6 +29,7 @@
 #ifndef APPENDATTRIBUTES_H
 #define APPENDATTRIBUTES_H
 #include <dmmodule.h>
+#include <dmview.h>
 
 /** @ingroup Modules
   * @author Christian Urich

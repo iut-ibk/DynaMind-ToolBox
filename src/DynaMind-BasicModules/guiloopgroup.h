@@ -24,6 +24,7 @@
  *
  */
 
+//#define GUIGROUPTEST_H
 #ifndef GUIGROUPTEST_H
 #define GUIGROUPTEST_H
 

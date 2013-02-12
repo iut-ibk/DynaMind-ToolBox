@@ -41,14 +41,23 @@ static double WaterBodies;
 static double AgriculturalAreas;
 static double ForestsSemiNatural;
 
+/*enum CORINE {
+    ContUrbanFabric = 2,
+    DisContUrbanFabric = 3,
+    RoadRailNetwork = 4,
+    AgriculturalAreas = 5,
+    ForestsSemiNatural = 6,
+    WaterBodies = 7
+};*/
+
 inline void addCorineConstants(mu::Parser * p){
 
-    mu::ContUrbanFabric = DM::ContUrbanFabric;
-    mu::DisContUrbanFabric= DM::DisContUrbanFabric;
-    mu:: RoadRailNetwork= DM::RoadRailNetwork;
-    mu::WaterBodies= DM::WaterBodies;
-    mu::AgriculturalAreas= DM::AgriculturalAreas;
-    mu::ForestsSemiNatural= DM::ForestsSemiNatural;
+    mu::ContUrbanFabric = 2;
+    mu::DisContUrbanFabric = 3;
+    mu:: RoadRailNetwork = 4;
+    mu::WaterBodies = 5;
+    mu::AgriculturalAreas = 6;
+    mu::ForestsSemiNatural = 7;
 
 
     p->DefineVar("ContUrbanFabric", & mu::ContUrbanFabric);

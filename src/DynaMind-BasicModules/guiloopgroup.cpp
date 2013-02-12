@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
@@ -100,3 +100,4 @@ void GUILoopGroup::accept() {
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
 }
+*/

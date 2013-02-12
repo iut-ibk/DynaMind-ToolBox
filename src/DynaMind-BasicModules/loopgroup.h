@@ -24,6 +24,7 @@
  *
  */
 
+#define GROUPTEST_H
 #ifndef GROUPTEST_H
 #define GROUPTEST_H
 
