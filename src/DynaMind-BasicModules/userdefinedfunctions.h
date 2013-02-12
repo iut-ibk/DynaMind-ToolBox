@@ -92,7 +92,6 @@ public:
     }
 };
 
-
 }
 inline void addCorineConstants(mu::Parser * p){
 

@@ -24,7 +24,12 @@
  *
  */
 
+<<<<<<< HEAD
 /*
+=======
+#ifdef SIMENV_GROUP
+
+>>>>>>> changes to fit new simenv gui
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
