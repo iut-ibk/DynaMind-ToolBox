@@ -24,32 +24,7 @@
  *
  */
 
-
-#ifndef LOOPGROUP_H
-#define LOOPGROUP_H
-
-#include "dmgroup.h"
-
-class DM_HELPER_DLL_EXPORT LoopGroup: public DM::Group 
-{
-	DM_DECLARE_NODE(LoopGroup)
-public:
-	LoopGroup()
-	{
-		//addParameter("ports", DM::STRING_LIST, &loopPorts);
-	}
-
-	//void init(){};
-	void run(){};
-private:
-	std::vector<std::string> loopPorts;
-};
-
-
-#endif //LOOPGROUP_H
-
-#ifdef SIMENV_GROUP
-
+#define GROUPTEST_H
 #ifndef GROUPTEST_H
 #define GROUPTEST_H
 

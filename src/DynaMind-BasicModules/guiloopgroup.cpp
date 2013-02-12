@@ -24,9 +24,7 @@
  *
  */
 
-
-#ifdef SIMENV_GROUP
-
+/*
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
@@ -103,5 +101,4 @@ void GUILoopGroup::accept() {
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
 }
-
-#endif //SIMENV_GROUP
+*/

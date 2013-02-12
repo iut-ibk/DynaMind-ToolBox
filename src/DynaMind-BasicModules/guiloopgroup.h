@@ -24,12 +24,6 @@
  *
  */
 
-<<<<<<< HEAD
-//#define GUIGROUPTEST_H
-=======
-#ifdef SIMENV_GROUP
-
->>>>>>> 006d1c6... added group and loopgroup class prototypes
 #ifndef GUIGROUPTEST_H
 #define GUIGROUPTEST_H
 
