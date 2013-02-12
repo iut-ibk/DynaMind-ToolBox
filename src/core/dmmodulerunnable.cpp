@@ -44,8 +44,10 @@ void DM::ModuleRunnable::run()
 {
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
-    if (!m->isExecuted() || m->isGroup()) 
-	{
+    if (!m->isExecuted() || m->isGroup())
+    {
+        if (!m->isFullyLinked())
+            m->resetParameter();
         m->updateParameter();
         m->init();
         //Called twice since the user can change data in the init method!

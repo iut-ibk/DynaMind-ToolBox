@@ -62,8 +62,8 @@ void Module::resetParameter() {
     this->setExecuted(false);
     Logger(Debug) << this->getUuid() <<" Reset Parameter";
     this->internalCounter = 0;
-	deep_delete(&ownedSystems_prev);
-	deep_delete(&ownedSystems);
+    deep_delete(&ownedSystems_prev);
+    deep_delete(&ownedSystems);
 }
 Module::Module() {    
     this->uuid = QUuid::createUuid().toString().toStdString();
@@ -78,6 +78,7 @@ Module::Module() {
     simulation = 0;
     hasBeenExecuted = false;
     debugMode = false;
+    _isFullyLinked = false;
 }
 
 Module::~Module() {
@@ -90,22 +91,22 @@ Module::~Module() {
 }
 Port * Module::getInPort(std::string name) const 
 {
-	foreach(Port* p, InPorts)
-		if(p->getLinkedDataName() == name)
-			return p;
+    foreach(Port* p, InPorts)
+        if(p->getLinkedDataName() == name)
+            return p;
     return 0;
 }
 Port * Module::getOutPort(std::string name) const 
 {	
-	foreach(Port* p, OutPorts)
-		if(p->getLinkedDataName() == name)
-			return p;
+    foreach(Port* p, OutPorts)
+        if(p->getLinkedDataName() == name)
+            return p;
     return 0;
 }
 bool Module::checkPreviousModuleUnchanged() {
     Logger(Debug) << this->getUuid() <<" Update Parameter";
-    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) 
-	{
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it)
+    {
         if (it->second != DM::SYSTEM)
             continue;
 
@@ -114,8 +115,8 @@ bool Module::checkPreviousModuleUnchanged() {
         //Check Reads
         if (!DataValidation::isVectorOfViewRead(views))
             continue;
-		
-		const DM::System * sys = this->getConstSystemData(s);
+
+        const DM::System * sys = this->getConstSystemData(s);
         if (sys == 0 || !sys->getLastModule() || !sys->getLastModule()->isExecuted())
             return false;
     }
@@ -129,24 +130,33 @@ void Module::setInternalCounter(int counter)
 
 void Module::updateParameter() 
 {
+
+    //TODO: Clenaing this whole section
     Logger(Debug) << this->getUuid() <<" Update Parameter";
-    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) 
-	{
+
+    this->_isFullyLinked = false;
+    //If module just has an outport it's always fully linked
+    if (this->InPorts.size() == 0) {
+        this->_isFullyLinked = true;
+    }
+
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it)
+    {
         std::string s = it->first;
         if (it->second != DM::SYSTEM)
             continue;
         
         std::vector<DM::View> views = this->views[s];
         //Check Reads
-        if (DataValidation::isVectorOfViewRead(views)) 
-		{
+        if (DataValidation::isVectorOfViewRead(views))
+        {
             //If the internal counter is > 0 data could be need for back link!
             if (this->internalCounter == 0)
                 this->data_vals[s] = 0;
             //Default links are not fulfilled
-			Port* inPort = this->getInPort(s);
-			Port* outPort = this->getOutPort(s);
-			
+            Port* inPort = this->getInPort(s);
+            Port* outPort = this->getOutPort(s);
+
             inPort->setFullyLinked(false);
             if (outPort != 0)
                 outPort->setFullyLinked(false);
@@ -156,8 +166,8 @@ void Module::updateParameter()
                 continue;
 
             //check for reads data. For read access only no new system state is created.
-            foreach (DM::View view,  views)  
-			{
+            foreach (DM::View view,  views)
+            {
                 if ( !view.reads() )
                     continue;
 
@@ -191,11 +201,11 @@ void Module::updateParameter()
                     break;
                 }
                 //Check if attributes to read are avalible in component
-                foreach (std::string a, view.getReadAttributes()) 
-				{
+                foreach (std::string a, view.getReadAttributes())
+                {
                     std::map<std::string, DM::Attribute*> existing_attributes = c->getAllAttributes();
-					if(!map_contains(&existing_attributes, a))
-					{
+                    if(!map_contains(&existing_attributes, a))
+                    {
                         sys = 0;
                         DM::Logger(DM::Warning) << "Couldn't valideate View " << view.getName() << "Attribute missing" << a;
                         break;
@@ -208,6 +218,8 @@ void Module::updateParameter()
                 continue;
             //All Checks successful -> update data
             this->data_vals[s] = sys;
+            //this->getInPort(s)->setFullyLinked(true);
+            this->_isFullyLinked = true;
             inPort->setFullyLinked(true);
             if (outPort)
                 outPort->setFullyLinked(true);
@@ -218,10 +230,10 @@ void Module::updateParameter()
             this->data_vals[s] = this->getSystem_Write(s, views);
             this->getOutPort(s)->setFullyLinked(true);
         }
-		else	//Create new system state for data that get modified
-		{
+        else	//Create new system state for data that get modified
+        {
             DM::System * sys_old = this->data_vals[s];
-            if (sys_old != 0) 
+            if (sys_old != 0)
                 foreach (DM::View v, views)
                     sys_old->addView(v);
         }
@@ -231,12 +243,12 @@ void Module::updateParameter()
 
 bool Module::checkIfAllSystemsAreSet() 
 {
-    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it) 
-	{
+    for (std::map<std::string,int>::const_iterator it = parameter.begin(); it != parameter.end(); ++it)
+    {
         if (it->second != DM::SYSTEM)
             continue;
         std::string name = it->first;
-		if(!map_contains(&data_vals, name) || this->data_vals[name] == 0) {
+        if(!map_contains(&data_vals, name) || this->data_vals[name] == 0) {
             Logger(Error) << name << " " << "Not Set for module " << this->getUuid() << " " << this->getName();
             this->simulation->setSimulationStatus(SIM_ERROR_SYSTEM_NOT_SET);
             return false;
@@ -249,14 +261,14 @@ void Module::setParameterValue(std::string name, std::string v)
 {
     this->setExecuted(false);
     //Check if parameter exists
-	if(!map_contains(&parameter, name))
+    if(!map_contains(&parameter, name))
         Logger(Error) << "Parameter " << name << "does not exist";
-	else
-	{
-		void* ref = NULL;
-		if(map_contains(&parameter_vals, name, ref))
-			convertValues(ref, parameter[name], QString::fromStdString(v));
-	}
+    else
+    {
+        void* ref = NULL;
+        if(map_contains(&parameter_vals, name, ref))
+            convertValues(ref, parameter[name], QString::fromStdString(v));
+    }
 }
 
 
@@ -264,9 +276,11 @@ void Module::postRun()
 {
     this->internalCounter++;
     //To make sure that a module gets the right data when used in backlinks
+    if (!_isFullyLinked)
+        data_vals.clear();
     this->data_vals_prev = data_vals;
     //delete prev data
-	deep_delete(&ownedSystems_prev);
+    deep_delete(&ownedSystems_prev);
     ownedSystems_prev = ownedSystems;
     ownedSystems.clear();
 }
@@ -277,45 +291,45 @@ std::string Module::getParameterAsString(std::string Name)
     std::stringstream ss;
     ss.precision(16);
 
-	switch(parameter[Name])
-	{
-	case DM::DOUBLE:	ss << this->getParameter<double>(Name);
-		return ss.str();
-	case DM::INT:		ss << this->getParameter<int>(Name);
-		return ss.str();
-	case DM::BOOL:		ss << this->getParameter<bool>(Name);
-		return ss.str();
-	case DM::LONG:		ss << this->getParameter<long>(Name);
-		return ss.str();
-	case DM::STRING:
-	case DM::FILENAME:	ss <<  this->getParameter<std::string>(Name);
-		return ss.str();
-	case DM::STRING_LIST:
-		{
-			std::vector<std::string> vec = this->getParameter<std::vector<std::string> >(Name);
-			foreach (std::string s, vec)
-				ss << s << "*|*" ;
-			return ss.str();
-		}
-	case DM::STRING_MAP:
-		{
-			std::map<std::string, std::string> map = this->getParameter<std::map<std::string, std::string> >(Name);
-			for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); ++it)
-				ss << it->first << "*|*" << it->second << "*||*" ;
-			return ss.str();
-		}
-	}
+    switch(parameter[Name])
+    {
+    case DM::DOUBLE:	ss << this->getParameter<double>(Name);
+        return ss.str();
+    case DM::INT:		ss << this->getParameter<int>(Name);
+        return ss.str();
+    case DM::BOOL:		ss << this->getParameter<bool>(Name);
+        return ss.str();
+    case DM::LONG:		ss << this->getParameter<long>(Name);
+        return ss.str();
+    case DM::STRING:
+    case DM::FILENAME:	ss <<  this->getParameter<std::string>(Name);
+        return ss.str();
+    case DM::STRING_LIST:
+    {
+        std::vector<std::string> vec = this->getParameter<std::vector<std::string> >(Name);
+        foreach (std::string s, vec)
+            ss << s << "*|*" ;
+        return ss.str();
+    }
+    case DM::STRING_MAP:
+    {
+        std::map<std::string, std::string> map = this->getParameter<std::map<std::string, std::string> >(Name);
+        for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); ++it)
+            ss << it->first << "*|*" << it->second << "*||*" ;
+        return ss.str();
+    }
+    }
     return ss.str();
 }
 void Module::addData(std::string name,  std::vector<DM::View> views) {
-    if (views.size() == 0) 
-	{
+    if (views.size() == 0)
+    {
         Logger(Error) << "No views added data not created";
         return;
     }
     this->data_vals[name] = 0;
     //Only add to parameterList if not already in vector parameterList
-	if(!vector_contains(&parameterList, name))
+    if(!vector_contains(&parameterList, name))
         this->parameterList.push_back(name);
     this->views[name] = views;
     this->parameter[name] = DM::SYSTEM;
@@ -327,17 +341,23 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
 }
 DM::System* Module::getData(std::string dataname)
 {
-	if(!map_contains(&data_vals, dataname))
-	{
+    if(!map_contains(&data_vals, dataname))
+    {
         Logger(Debug) << "No System " << dataname;
         return 0;
     }
-	else if(!map_contains(&data_vals,dataname))
-	{
+    else if(!map_contains(&data_vals,dataname))
+    {
         Logger(Debug) << "No System " << dataname;
-		return 0;
-	}
-	return data_vals[dataname];
+        return 0;
+    }
+
+    if (!this->_isFullyLinked) {
+        Logger(Debug) << "Module not fully linked return sys 0";
+        return 0;
+
+    }
+    return data_vals[dataname];
 }
 
 std::map<std::string, std::vector<DM::View> > Module::getViews() 
@@ -351,14 +371,14 @@ DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
     if (v.getAccessType() == DM::WRITE)
         return sys->addRasterData(new RasterData(), v);
 
-	std::map<std::string, DM::Component*> components = sys->getAllComponentsInView(v);
-	mforeach(Component* c, components)
-		if(c->getType() == DM::RASTERDATA)
-			return (RasterData*)c;
-	
-	Logger(Error) << "RasterData don't exists";
+    std::map<std::string, DM::Component*> components = sys->getAllComponentsInView(v);
+    mforeach(Component* c, components)
+            if(c->getType() == DM::RASTERDATA)
+            return (RasterData*)c;
+
+    Logger(Error) << "RasterData don't exists";
     this->getSimulation()->setSimulationStatus(DM::SIM_ERROR_SYSTEM_NOT_SET);
-	return 0;
+    return 0;
 }
 
 void Module::addParameter(std::string name,int type, void * ref, std::string description) 
@@ -371,82 +391,82 @@ void Module::addParameter(std::string name,int type, void * ref, std::string des
 
 void Module::Destructor() 
 {
-    if (this->group != 0) 
-	{
-		deep_delete(&InPorts);
-		deep_delete(&OutPorts);
+    if (this->group != 0)
+    {
+        deep_delete(&InPorts);
+        deep_delete(&OutPorts);
 
         this->group->removeModule(this);
         this->group = 0;
     }
-	deep_delete(&ownedSystems);
+    deep_delete(&ownedSystems);
 }
 
 void Module::convertValues(void * out, int Type, QString in) 
 {
-	if(!out)
-		return;
+    if(!out)
+        return;
 
-	switch(Type)
-	{
-	case DM::LONG:
-		*(long*)out = in.toLong();
-		return;
-	case DM::INT:
-		*(int*)out = in.toInt();
-		return;
-	case DM::BOOL:
-		*(bool*)out = in.toInt();
-		return;
-	case DM::DOUBLE:
-		*(double*)out = in.toDouble();
-		return;
-	case DM::STRING:
-	case DM::FILENAME:
-		*(std::string*)out = in.toStdString();
-		return;
-	case DM::STRING_LIST:
-		{
-			((std::vector<std::string>*)out)->clear();
-			QStringList list = in.split("*|*");
-			foreach(QString s, list)
-				if (! s.isEmpty())
-					((std::vector<std::string>*)out)->push_back(s.toStdString());
-		}
-		return;
-	case DM::STRING_MAP:
-		{
-			((std::map<std::string, std::string>*)out)->clear();
-			QStringList list = in.split("*||*");
-			foreach(QString s, list) 
-			{
-				if (! s.isEmpty()) 
-				{
-					QStringList list2 = s.split("*|*");
-					((std::map<std::string, std::string>*)out)->insert( 
-						std::pair<std::string,std::string>(list2[0].toStdString(),list2[1].toStdString()) );
-				}
-			}
-		}
-		return;
-	}
+    switch(Type)
+    {
+    case DM::LONG:
+        *(long*)out = in.toLong();
+        return;
+    case DM::INT:
+        *(int*)out = in.toInt();
+        return;
+    case DM::BOOL:
+        *(bool*)out = in.toInt();
+        return;
+    case DM::DOUBLE:
+        *(double*)out = in.toDouble();
+        return;
+    case DM::STRING:
+    case DM::FILENAME:
+        *(std::string*)out = in.toStdString();
+        return;
+    case DM::STRING_LIST:
+    {
+        ((std::vector<std::string>*)out)->clear();
+        QStringList list = in.split("*|*");
+        foreach(QString s, list)
+            if (! s.isEmpty())
+                ((std::vector<std::string>*)out)->push_back(s.toStdString());
+    }
+        return;
+    case DM::STRING_MAP:
+    {
+        ((std::map<std::string, std::string>*)out)->clear();
+        QStringList list = in.split("*||*");
+        foreach(QString s, list)
+        {
+            if (! s.isEmpty())
+            {
+                QStringList list2 = s.split("*|*");
+                ((std::map<std::string, std::string>*)out)->insert(
+                            std::pair<std::string,std::string>(list2[0].toStdString(),list2[1].toStdString()) );
+            }
+        }
+    }
+        return;
+    }
     return;
 }
 void Module::removePort(std::string LinkedDataName, int PortType) 
 {
     Logger(Debug) << "RemovePort" << LinkedDataName;
-	std::vector<Port*>* ports = (PortType < DM::OUTPORTS) ? &OutPorts : &InPorts;
+    std::vector<Port*>* ports = (PortType < DM::OUTPORTS) ? &OutPorts : &InPorts;
 
-	for (std::vector<Port * >::iterator it = ports->begin(); it != ports->end(); ++it)
-	{
-		if((*it)->getLinkedDataName() == LinkedDataName)
-		{
-			Logger(Debug) << "Delete Port" << LinkedDataName;
-			delete *it;
-			ports->erase(it);
-			break;
-		}
-	}
+    for (std::vector<Port * >::iterator it = ports->begin(); it != ports->end(); ++it)
+    {
+        if((*it)->getLinkedDataName() == LinkedDataName)
+        {
+            Logger(Debug) << "Delete Port" << LinkedDataName;
+            delete *it;
+            ports->erase(it);
+            break;
+        }
+    }
     foreach(PortObserver * po, this->portobserver)
         po->changedPorts();
 }
@@ -454,14 +474,14 @@ void Module::addPort(std::string LinkedDataName, int PortType)
 {
     Logger(Debug) << "AddPort" << LinkedDataName;
 
-	foreach (Port *p_existing, (PortType < DM::OUTPORTS)?getOutPorts():getInPorts()) 
-	{
-		if (p_existing->getLinkedDataName() == LinkedDataName)
-			return;
-	}
-	Port *p = new Port(this, PortType, LinkedDataName);
+    foreach (Port *p_existing, (PortType < DM::OUTPORTS)?getOutPorts():getInPorts())
+    {
+        if (p_existing->getLinkedDataName() == LinkedDataName)
+            return;
+    }
+    Port *p = new Port(this, PortType, LinkedDataName);
     if(PortType < DM::OUTPORTS)	OutPorts.push_back(p);
-	else						InPorts.push_back(p);
+    else						InPorts.push_back(p);
 
     foreach(PortObserver * po, this->portobserver)
         po->changedPorts();
@@ -480,16 +500,16 @@ void Module::init() {
 
 const DM::System* Module::getConstSystemData(const std::string &name)
 {
-	Port * p = this->getInPort(name);
+    Port * p = this->getInPort(name);
     if (!p || p->getLinks().size() == 0)
-		return 0;
+        return 0;
 
     int LinkId = -1;
     int BackId = -1;
     int counter = 0;
     //Identify Positions in the Link Vector
-    foreach (ModuleLink * l, p->getLinks()) 
-	{
+    foreach (ModuleLink * l, p->getLinks())
+    {
         if (!l->isBackLink())	LinkId = counter++;
         else					BackId = counter++;
     }
@@ -499,7 +519,7 @@ const DM::System* Module::getConstSystemData(const std::string &name)
     ModuleLink * l = p->getLinks()[LinkId];
 
     if (this->internalCounter > 0 && BackId != -1)
-	{
+    {
         l = p->getLinks()[BackId];
         Logger(Debug) << "BackLink for " << name;
         Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
@@ -514,19 +534,19 @@ DM::System* Module::getSystemData(const std::string &name)
 {
     Port * p = this->getInPort(name);
     if (!p || p->getLinks().size() == 0)
-		return 0;
+        return 0;
 
     int LinkId = -1;
     int BackId = -1;
     int counter = 0;
     int CounterBackLink = 0;
     //Identify Positions in the Link Vector
-    foreach (ModuleLink * l, p->getLinks()) 
-	{
+    foreach (ModuleLink * l, p->getLinks())
+    {
         if (!l->isBackLink())
             LinkId = counter++;
-        else 
-		{
+        else
+        {
             BackId = counter++;
             CounterBackLink++;
         }
@@ -537,7 +557,7 @@ DM::System* Module::getSystemData(const std::string &name)
     ModuleLink * l = p->getLinks()[LinkId];
 
     if (this->internalCounter > 0 && BackId != -1)
-	{
+    {
         l = p->getLinks()[BackId];
         Logger(Debug) << "BackLink for " << name;
         Logger(Debug) << "BackLink for " << l->getInPort()->getLinkedDataName();
@@ -547,35 +567,40 @@ DM::System* Module::getSystemData(const std::string &name)
     DM::System * returnSys =  m->getSystemState(l->getDataNameFromOutPort());
     if (!returnSys)
         return 0;
-    if (m->getGroup() != this->getGroup()) 
-	{
-         Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
-         return returnSys->createSuccessor();
+    if (m->getGroup() != this->getGroup())
+    {
+        Logger(Debug) << "Create successor for module outside group " << l->getInPort()->getLinkedDataName();
+        return returnSys->createSuccessor();
     }
     DM::Port * out_p = m->getOutPort(l->getDataNameFromOutPort());
     // more than 1 standard link?
-    if (out_p->getLinks().size() - CounterBackLink > 1) 
-	{
-         Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
-         return returnSys->createSuccessor();
+    if (out_p->getLinks().size() - CounterBackLink > 1)
+    {
+        Logger(Debug) << "Create for Split " << l->getInPort()->getLinkedDataName();
+        return returnSys->createSuccessor();
     }
-    if (isDebugMode()) 
-	{
+    if (isDebugMode())
+    {
         Logger(Debug) << "Debug Split " << l->getInPort()->getLinkedDataName();
-        return returnSys->createSuccessor();    
-	}
+        return returnSys->createSuccessor();
+    }
     return returnSys;
 }
 
 
 DM::System* Module::getSystemState(const std::string &name)
 {
-	// may use map_contains
+    // may use map_contains
     DM::System  * sys = this->data_vals_prev[name];
 
     if (sys == 0)
         return 0;
-  
+
+    if (!_isFullyLinked) {
+        Logger(Debug) << "System is not fully linked return sys 0";
+        return 0;
+
+    }
     sys->setAccessedByModule(this);
     return sys;
 }
@@ -583,10 +608,10 @@ DM::System* Module::getSystemState(const std::string &name)
 
 DM::System*   Module::getSystem_Write(std::string name, std::vector<DM::View> views)  
 {
-	DM::System * sys = NULL;
-	if(!map_contains(&ownedSystems, name, sys))
-		this->ownedSystems[name] = sys = new DM::System();
-	
+    DM::System * sys = NULL;
+    if(!map_contains(&ownedSystems, name, sys))
+        this->ownedSystems[name] = sys = new DM::System();
+
     if (!sys)
         return 0;
 
@@ -608,9 +633,9 @@ int Module::getID() const {
 
 void Module::setGroup(Group *group) 
 {
-	if(this->group)
-		this->group->removeModule(this);
-	this->group = group;
+    if(this->group)
+        this->group->removeModule(this);
+    this->group = group;
     this->group->addModule(this);
 }
 Group * Module::getGroup() const {
@@ -626,8 +651,8 @@ void Module::copyParameterFromOtherModule(Module * m) {
     this->uuid = m->getUuid();
     this->debugMode = m->isDebugMode();
     //if (name_origin.compare(name_this) == 0) {
-	if(name_origin == name_this)
-	{
+    if(name_origin == name_this)
+    {
         std::map<std::string, int> parameterList = m->getParameterList();
         for ( std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it)
             if (it->second < DM::USER_DEFINED_INPUT)
@@ -641,8 +666,8 @@ void Module::copyParameterFromOtherModule(Module * m) {
 
         foreach(ResultObserver * p, m->getResultObserver())
             this->resultobserver.push_back(p);
-    } 
-	else
+    }
+    else
         Logger(Error) << "Can't Copy Model Parameter from different Type of Module";
 }
 bool Module::isExecuted() {
@@ -654,20 +679,24 @@ void Module::setExecuted(bool ex)
     Logger(Debug) << "SetExecuted " << ex << this->getClassName() << " " << this->getUuid();
     this->hasBeenExecuted = ex;
 
-	if(!ex && this->getGroup())
-		this->getGroup()->setContentOfModuleHasChanged(true);
+    if(!ex && this->getGroup())
+        this->getGroup()->setContentOfModuleHasChanged(true);
 }
 
-    
+
 std::string Module::getHelpUrl() {
     return "";
 }
-    
+
 void Module::setDebugMode(bool mode) {
     this->debugMode = mode;
 }
-    
+
 bool Module::isDebugMode() {
     return debugMode;
+}
+bool Module::isFullyLinked(){
+    return this->_isFullyLinked;
+
 }
 }
