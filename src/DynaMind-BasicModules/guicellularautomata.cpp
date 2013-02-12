@@ -59,6 +59,7 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("NameOfOutput")) );
 
+    //std::map<std::string, std::vector<DM::View> > views =  m->getViews();
 
     ui->comboBox_nameOfExisting->clear();
 
