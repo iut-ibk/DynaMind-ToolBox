@@ -24,9 +24,7 @@
  *
  */
 
-
 #include "loopgroup.h"
-
 
 DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
@@ -134,3 +132,4 @@ bool LoopGroup::createInputDialog() {
 }
 
 #endif
+

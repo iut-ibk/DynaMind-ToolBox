@@ -24,7 +24,6 @@
  *
  */
 
-
 #ifndef LOOPGROUP_H
 #define LOOPGROUP_H
 

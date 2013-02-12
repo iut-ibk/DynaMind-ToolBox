@@ -24,7 +24,6 @@
  *
  */
 
-
 #ifdef SIMENV_GROUP
 
 #include "guiloopgroup.h"

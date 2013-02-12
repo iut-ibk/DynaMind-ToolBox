@@ -66,8 +66,6 @@ inline void addCorineConstants(mu::Parser * p)
     p->DefineVar("AgriculturalAreas",& mu::AgriculturalAreas);
     p->DefineVar("ForestsSemiNatural", & mu::ForestsSemiNatural);
     p->DefineVar("WaterBodies",& mu::WaterBodies);
-
-
 }
 }
 
