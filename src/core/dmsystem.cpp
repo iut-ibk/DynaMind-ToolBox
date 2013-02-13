@@ -426,13 +426,11 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 }
 Face* System::getFace(std::string uuid)
 {
-	QUuid quuid = getChild(uuid)->getQUUID();
-	Face* f = 0;
-	map_contains(&faces, quuid, f);
-	return f;
-    /*if(faces.find(quuid)==faces.end())
-        return 0;
-    return faces[quuid];*/
+    Component* c = getChild(uuid);
+    if(c && c->getType() == FACE)
+        return (Face*)c;
+
+    return NULL;
 }
 bool System::removeFace(std::string name)
 {

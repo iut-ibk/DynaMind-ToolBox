@@ -272,9 +272,9 @@ public:
 
 		
 		viewdefinitions = sys->viewdefinitions;
-		//predecessors = sys->predecessors;
-		//views = sys->views;
-		//lastModule = sys->lastModule;
+		predecessors = sys->predecessors;
+		views = sys->views;
+		lastModule = sys->lastModule;
 	}
 
     Node* getNode(QUuid uuid);
