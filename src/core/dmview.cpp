@@ -47,7 +47,6 @@ View::View() {
     this->type = -1;
     this->dummy = NULL;
 }
-
 std::string View::getIdOfDummyComponent()
 {
     return dummy->getUUID();

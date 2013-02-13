@@ -62,8 +62,12 @@ typedef std::pair<std::string, Face*> FacePair;
       * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
       * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
       */
+
+class DerivedSystem;
+
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
+	friend DerivedSystem;
 private:
     //QMutex * mutex;
     std::map<QUuid, Node* > nodes;
@@ -265,6 +269,12 @@ public:
 		allNodesLoaded = false;
 		allSubSystemsLoaded = false;
 		//allRasterDataLoaded = false;
+
+		
+		viewdefinitions = sys->viewdefinitions;
+		//predecessors = sys->predecessors;
+		//views = sys->views;
+		//lastModule = sys->lastModule;
 	}
 
     Node* getNode(QUuid uuid);

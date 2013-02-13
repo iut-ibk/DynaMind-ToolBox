@@ -187,8 +187,10 @@ void Module::updateParameter()
                     break;
                 }
                 //Get DummyComponent
-                DM::Component *c = checkView->getDummyComponent();
-                //Check if attributes are avalible
+                //DM::Component *c = checkView->getDummyComponent();
+				Component* c = sys->getComponent(checkView->getDummyComponent()->getUUID());
+				checkView->setDummyComponent(c);
+				//Check if attributes are avalible
                 if (c == 0){
                     sys = 0;
                     DM::Logger(DM::Warning) << "Dummy component does not exist in view: " << checkView->getName();

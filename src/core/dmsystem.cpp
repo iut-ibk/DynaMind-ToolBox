@@ -159,8 +159,9 @@ System::~System()
     foreach (DM::System * sys, this->sucessors)
         if (sys)	delete sys;
 
-	mforeach(View *v, viewdefinitions)
-        delete v;
+	//mforeach(View *v, viewdefinitions)
+    //    delete v;
+	// memory leak
 
 	viewdefinitions.clear();
     //delete mutex;
