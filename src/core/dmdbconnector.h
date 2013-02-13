@@ -23,13 +23,10 @@
  *
  */
 
+
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
-
 #include <dmcompilersettings.h>
-#include <qvariant.h>
-#include <quuid.h>
-
 
 class QSqlQuery;
 class QSqlError;
@@ -273,7 +270,7 @@ public:
             delete cur;
         }
     }
-
+	unsigned int getSize(){return _size;};
     virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
@@ -304,7 +301,7 @@ public:
 			removeNode(_last);
             //delete pop(_last);
     }
-    bool replace(const Tkey& key,Tvalue* value)
+    virtual bool replace(const Tkey& key,Tvalue* value)
     {
         Node *n = search(key);
         if(n==NULL)
@@ -357,6 +354,9 @@ public:
         }
         return v;
     }
+	// note: currently removing from db is handled by the main class
+    // void remove(const Tkey& key)
+
     // save everything to db
     void Synchronize()
     {
@@ -367,6 +367,16 @@ public:
             n = n->next;
         }
     }
+	// resize cache
+	void resize(unsigned int size)
+	{
+		Cache<Tkey,Tvalue>::_size = size;
+		while(Cache<Tkey,Tvalue>::_cnt > size)
+		{
+            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+		}
+	}
 };
 
 }   // namespace DM

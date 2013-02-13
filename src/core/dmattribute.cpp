@@ -32,7 +32,16 @@
 
 using namespace DM;
 
-static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1000000);
+static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1e7);
+
+void Attribute::ResizeCache(unsigned int size)
+{
+	attributeCache.resize(size);
+}
+unsigned int Attribute::GetCacheSize()
+{
+	return attributeCache.getSize();
+}
 
 #ifdef CACHE_PROFILING
 void Attribute::PrintStatistics()
@@ -290,6 +299,8 @@ Attribute::~Attribute()
 	if(isInserted)
 		DBConnector::getInstance()->Delete("attributes", _uuid);
 	if(value)
+		delete value;
+	else
 		attributeCache.remove(this);
 }
 
@@ -322,6 +333,7 @@ void Attribute::setDouble(double v)
 {
 	AttributeValue* a = getValue();
 	a->Free();
+	delete a->ptr;
 	a->type = DOUBLE;
 	a->ptr = new double(v);
 }
@@ -493,8 +505,18 @@ void Attribute::setType(AttributeType type)
 }
 void Attribute::Change(const Attribute &attribute)
 {
-    name=attribute.name;
-	value = new AttributeValue(*attribute.value);
+    //name = attribute.name; name should never be changed!
+	AttributeValue* newValue = new AttributeValue(*attribute.value);
+	if(value)
+	{
+		delete value;
+		value = newValue;
+	}
+	else
+	{
+		if(!attributeCache.replace(this, newValue))
+			this->SaveToDb(newValue);
+	}
 }
 
 const char *Attribute::getTypeName() const
@@ -528,6 +550,7 @@ void Attribute::SetOwner(Component* owner)
 	{
 		this->owner = owner;
 		attributeCache.add(this, value);
+		value = 0;
 	}
 	else
 		this->owner = owner;
@@ -539,10 +562,11 @@ void Attribute::SetOwner(Component* owner)
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
+	std::string struuid = _uuid.toString().toStdString();
     DBConnector::getInstance()->Select("attributes", _uuid,
                                        "type",     &t,
                                        "value",     &v);
-    return new AttributeValue(t,(AttributeType)v.toInt());
+    return new AttributeValue(v,(AttributeType)t.toInt());
 }
 
 void Attribute::SaveToDb(Attribute::AttributeValue *val)

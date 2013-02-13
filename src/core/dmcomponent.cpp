@@ -240,8 +240,10 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
-	Attribute* a = ownedattributes[name];
-	if(!a)
+	Attribute* a;
+	if(!map_contains(&ownedattributes, name, a))
+	//Attribute* a = ownedattributes[name];
+	//if(!a)
 	{
 		a = new Attribute(name);
 		a->SetOwner(this);

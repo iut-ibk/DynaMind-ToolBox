@@ -192,6 +192,9 @@ public:
 	/** @brief saves the sql database 
 		@internal*/
 	void SaveToDb(AttributeValue *val);
+
+	static void ResizeCache(unsigned int size);
+	static unsigned int GetCacheSize();
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif
