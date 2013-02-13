@@ -130,7 +130,7 @@ public:
      */
     Node * addNode(Node* node);
 	/** @brief for Edge::LoadDb() */
-    virtual Node* getNode(QUuid uuid) const;	// protected for DM::Edge
+    virtual Node* getNode(QUuid uuid);	// protected for DM::Edge
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
     /** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
@@ -145,22 +145,22 @@ public:
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
     /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
-    virtual Component* getComponent(std::string uuid) const;
+    virtual Component* getComponent(std::string uuid);
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
         @deprecated*/
-    virtual Node* getNode(std::string uuid) const;
+    virtual Node* getNode(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exis
         @deprecated*/
-    virtual Edge* getEdge(std::string uuid) const;
+    virtual Edge* getEdge(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
-    Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid) const;
+    Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
-    virtual Edge* getEdge(const Node* start, const Node* end) const;
+    virtual Edge* getEdge(const Node* start, const Node* end);
     /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist
         @deprecated*/
-    virtual Face * getFace(std::string uuid) const;
+    virtual Face * getFace(std::string uuid);
     /** @brief Removes an Edge. Returns false if the edge doesn't exist
         @deprecated*/
     bool removeEdge(std::string uuid);
@@ -174,22 +174,22 @@ public:
     bool removeFace(std::string uuid);
     /** @brief Returns a map of nodes stored in the system
         @deprecated*/
-    virtual std::map<std::string, Component*> getAllComponents() const;
+    virtual std::map<std::string, Component*> getAllComponents();
     /** @brief Returns a map of nodes stored in the system
         @deprecated*/
-    virtual std::map<std::string, Node*> getAllNodes() const;
+    virtual std::map<std::string, Node*> getAllNodes();
     /** @brief Returns a map of edges stored in the system
         @deprecated*/
-    virtual std::map<std::string, Edge*> getAllEdges() const;
+    virtual std::map<std::string, Edge*> getAllEdges();
     /** @brief Returns a map of faces stored in the system
         @deprecated*/
-    virtual std::map<std::string, Face*> getAllFaces() const;
+    virtual std::map<std::string, Face*> getAllFaces();
     /** @brief Returns a map of subsystems stored in the system
         @deprecated*/
-    virtual std::map<std::string, System*> getAllSubSystems() const;
+    virtual std::map<std::string, System*> getAllSubSystems();
     /** @brief Returns a map of rasterdata stored in the system
         @deprecated*/
-    virtual std::map<std::string, RasterData*> getAllRasterData() const;
+    virtual std::map<std::string, RasterData*> getAllRasterData();
     /** @brief Returns the predecessor of the system */
     std::vector<System*> getPredecessors() const;
     /** @brief Returns the sucessor of the system */
@@ -247,7 +247,7 @@ typedef std::map<std::string, DM::System*> SystemMap;
 class DerivedSystem: public System
 {
 private:
-	const System* predecessorSys;
+	System* predecessorSys;
 	
 	bool allComponentsLoaded;
 	bool allEdgesLoaded;

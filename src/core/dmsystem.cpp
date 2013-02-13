@@ -229,7 +229,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
     return c;
 }
-Component * System::getComponent(std::string uuid) const
+Component * System::getComponent(std::string uuid)
 {
     return this->getChild(uuid);
 }
@@ -271,7 +271,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
     return n;
 }
 
-Node* System::getNode(std::string uuid) const
+Node* System::getNode(std::string uuid)
 {
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
@@ -280,7 +280,7 @@ Node* System::getNode(std::string uuid) const
     return NULL;
 }
 
-Node* System::getNode(QUuid uuid) const
+Node* System::getNode(QUuid uuid)
 {
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
@@ -359,7 +359,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 
     return e;
 }
-Edge* System::getEdge(std::string uuid) const
+Edge* System::getEdge(std::string uuid)
 {
 	return (Edge*)getChild(uuid);
 }
@@ -369,7 +369,7 @@ Edge* System::getEdge(QUuid uuid)
         return 0;
     return edges[uuid];
 }
-Edge* System::getEdge(const std::string & startnode, const std::string & endnode) const
+Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
 {
 	return getEdge(getNode(startnode),getNode(endnode));
 	/*
@@ -378,7 +378,7 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
         return 0;
     return EdgeNodeMap[key];*/
 }
-Edge* System::getEdge(const Node* start, const Node* end) const
+Edge* System::getEdge(const Node* start, const Node* end)
 {
 	foreach(Edge* e,start->getEdges())
 		if(e->getStartNode()==start || e->getEndNode()==end)
@@ -423,7 +423,7 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
     }
     return f;
 }
-Face* System::getFace(std::string uuid) const
+Face* System::getFace(std::string uuid)
 {
 	QUuid quuid = getChild(uuid)->getQUUID();
 	Face* f = 0;
@@ -464,7 +464,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     return r;
 }
 
-std::map<std::string, Component*>  System::getAllComponents() const
+std::map<std::string, Component*>  System::getAllComponents()
 {
     std::map<std::string, Component*> comps;
     mforeach(Component* c, components)
@@ -472,7 +472,7 @@ std::map<std::string, Component*>  System::getAllComponents() const
 
     return comps;
 }
-std::map<std::string, Node*> System::getAllNodes() const
+std::map<std::string, Node*> System::getAllNodes()
 {
     std::map<std::string, Node*> n;
 	mforeach(Node* it, nodes)	
@@ -480,7 +480,7 @@ std::map<std::string, Node*> System::getAllNodes() const
 
     return n;
 }
-std::map<std::string, Edge*> System::getAllEdges() const
+std::map<std::string, Edge*> System::getAllEdges()
 {
     std::map<std::string, Edge*> e;
 	mforeach(Edge* it, edges)	
@@ -488,7 +488,7 @@ std::map<std::string, Edge*> System::getAllEdges() const
 
     return e;
 }
-std::map<std::string, Face*> System::getAllFaces() const
+std::map<std::string, Face*> System::getAllFaces()
 {
     std::map<std::string, Face*> f;
 	mforeach(Face* it, faces)	
@@ -567,7 +567,7 @@ std::vector<std::string> System::getUUIDs(const DM::View  & view)
     return this->getUUIDsOfComponentsInView(view);
 }
 
-std::map<std::string, System*> System::getAllSubSystems() const
+std::map<std::string, System*> System::getAllSubSystems()
 {
     std::map<std::string, System*> syss;
     mforeach(System* s, subsystems)
@@ -576,7 +576,7 @@ std::map<std::string, System*> System::getAllSubSystems() const
     return syss;
 }
 
-std::map<std::string, RasterData*> System::getAllRasterData() const
+std::map<std::string, RasterData*> System::getAllRasterData()
 {
     std::map<std::string, RasterData*> rasters;
     mforeach(RasterData* r, rasterdata)
@@ -668,8 +668,8 @@ const std::vector<DM::View> System::getViews()
 System* System::createSuccessor()
 {
     Logger(Debug) << "Create Sucessor ";// << this->getUUID();
-    System* result = new System(*this);
-    //System* result = new DerivedSystem(this);
+    //System* result = new System(*this);
+    System* result = new DerivedSystem(this);
     this->sucessors.push_back(result);
 	this->SQLUpdateStates();
     result->addPredecessors(this);
