@@ -229,7 +229,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
     return c;
 }
-Component * System::getComponent(std::string uuid)
+Component * System::getComponent(std::string uuid) const
 {
     return this->getChild(uuid);
 }
@@ -271,7 +271,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
     return n;
 }
 
-Node* System::getNode(std::string uuid)
+Node* System::getNode(std::string uuid) const
 {
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
@@ -280,7 +280,7 @@ Node* System::getNode(std::string uuid)
     return NULL;
 }
 
-Node* System::getNode(QUuid uuid)
+Node* System::getNode(QUuid uuid) const
 {
     Component* c = getChild(uuid);
     if(c && c->getType() == NODE)
@@ -359,7 +359,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 
     return e;
 }
-Edge* System::getEdge(std::string uuid)
+Edge* System::getEdge(std::string uuid) const
 {
 	return (Edge*)getChild(uuid);
 }
@@ -369,7 +369,7 @@ Edge* System::getEdge(QUuid uuid)
         return 0;
     return edges[uuid];
 }
-Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
+Edge* System::getEdge(const std::string & startnode, const std::string & endnode) const
 {
 	return getEdge(getNode(startnode),getNode(endnode));
 	/*
@@ -378,7 +378,7 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
         return 0;
     return EdgeNodeMap[key];*/
 }
-Edge* System::getEdge(const Node* start, const Node* end)
+Edge* System::getEdge(const Node* start, const Node* end) const
 {
 	foreach(Edge* e,start->getEdges())
 		if(e->getStartNode()==start || e->getEndNode()==end)
@@ -423,13 +423,15 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
     }
     return f;
 }
-Face* System::getFace(std::string uuid)
+Face* System::getFace(std::string uuid) const
 {
 	QUuid quuid = getChild(uuid)->getQUUID();
-    if(faces.find(quuid)==faces.end())
+	Face* f = 0;
+	map_contains(&faces, quuid, f);
+	return f;
+    /*if(faces.find(quuid)==faces.end())
         return 0;
-    return faces[quuid];
-
+    return faces[quuid];*/
 }
 bool System::removeFace(std::string name)
 {
@@ -462,7 +464,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
     return r;
 }
 
-std::map<std::string, Component*>  System::getAllComponents()
+std::map<std::string, Component*>  System::getAllComponents() const
 {
     std::map<std::string, Component*> comps;
     mforeach(Component* c, components)
@@ -470,7 +472,7 @@ std::map<std::string, Component*>  System::getAllComponents()
 
     return comps;
 }
-std::map<std::string, Node*> System::getAllNodes()
+std::map<std::string, Node*> System::getAllNodes() const
 {
     std::map<std::string, Node*> n;
 	mforeach(Node* it, nodes)	
@@ -478,7 +480,7 @@ std::map<std::string, Node*> System::getAllNodes()
 
     return n;
 }
-std::map<std::string, Edge*> System::getAllEdges()
+std::map<std::string, Edge*> System::getAllEdges() const
 {
     std::map<std::string, Edge*> e;
 	mforeach(Edge* it, edges)	
@@ -486,7 +488,7 @@ std::map<std::string, Edge*> System::getAllEdges()
 
     return e;
 }
-std::map<std::string, Face*> System::getAllFaces()
+std::map<std::string, Face*> System::getAllFaces() const
 {
     std::map<std::string, Face*> f;
 	mforeach(Face* it, faces)	
@@ -565,7 +567,7 @@ std::vector<std::string> System::getUUIDs(const DM::View  & view)
     return this->getUUIDsOfComponentsInView(view);
 }
 
-std::map<std::string, System*> System::getAllSubSystems()
+std::map<std::string, System*> System::getAllSubSystems() const
 {
     std::map<std::string, System*> syss;
     mforeach(System* s, subsystems)
@@ -574,7 +576,7 @@ std::map<std::string, System*> System::getAllSubSystems()
     return syss;
 }
 
-std::map<std::string, RasterData*> System::getAllRasterData()
+std::map<std::string, RasterData*> System::getAllRasterData() const
 {
     std::map<std::string, RasterData*> rasters;
     mforeach(RasterData* r, rasterdata)
@@ -667,6 +669,7 @@ System* System::createSuccessor()
 {
     Logger(Debug) << "Create Sucessor ";// << this->getUUID();
     System* result = new System(*this);
+    //System* result = new DerivedSystem(this);
     this->sucessors.push_back(result);
 	this->SQLUpdateStates();
     result->addPredecessors(this);
@@ -674,11 +677,11 @@ System* System::createSuccessor()
 
     return result;
 }
-std::vector<System*> System::getSucessors()
+std::vector<System*> System::getSucessors() const
 {
     return sucessors;
 }
-std::vector<System*> System::getPredecessors()
+std::vector<System*> System::getPredecessors() const
 {
     return predecessors;
 }
@@ -741,7 +744,7 @@ bool System::removeChild(QUuid uuid)
 }
 
 
-Component* System::getChild(std::string name)
+Component* System::getChild(std::string name) const
 {
 	Component *c = NULL;
 	map_contains(&componentNameMap, name, c);
@@ -756,9 +759,12 @@ Component* System::getChild(std::string name)
 	return NULL;*/
 }
 
-Component* System::getChild(QUuid uuid)
+Component* System::getChild(QUuid uuid) const
 {
-    return ownedchilds[uuid];
+	Component *c = NULL;
+	map_contains(&ownedchilds, uuid, c);
+	return c;
+    //return ownedchilds[uuid];
 }
 Component* System::findChild(QUuid uuid) const
 {
@@ -803,3 +809,162 @@ void System::SQLUpdateStates()
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
 }
+
+
+/******************************
+ * Derived System
+ *******************************/
+
+
+Node* DerivedSystem::getNode(QUuid uuid)
+{
+	Node* n = System::getNode(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getNode(uuid);
+		if(n)
+			n = addNode(new Node(*n));
+	}
+	return n;
+}
+Component* DerivedSystem::getComponent(std::string uuid)
+{
+	Component* n = System::getComponent(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getComponent(uuid);
+		if(n)
+			n = addComponent(new Component(*n));
+	}
+	return n;
+}
+Node* DerivedSystem::getNode(std::string uuid)
+{
+	Node* n = System::getNode(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getNode(uuid);
+		if(n)
+			n = addNode(new Node(*n));
+	}
+	return n;
+}
+Edge* DerivedSystem::getEdge(std::string uuid)
+{
+	Edge* n = System::getEdge(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getEdge(uuid);
+		if(n)
+			n = addEdge(new Edge(*n));
+	}
+	return n;
+}
+
+Edge* DerivedSystem::getEdge(const Node* start, const Node* end)
+{
+	Edge* n = System::getEdge(start,end);
+	if(!n)
+	{
+		n = predecessorSys->getEdge(start,end);
+		if(n)
+			n = addEdge(new Edge(addNode(*start),addNode(*end)));
+	}
+	return n;
+}
+
+Face * DerivedSystem::getFace(std::string uuid)
+{
+	Face* f = System::getFace(uuid);
+	if(!f)
+	{
+		f = predecessorSys->getFace(uuid);
+		if(f)
+		{
+			std::vector<Node*> nodes = f->getNodePointers();
+			std::vector<Node*> newNodes;
+			foreach(Node* node, nodes)
+				newNodes.push_back(getNode(node->getUUID()));
+			
+			std::vector<Face*> holes = f->getHolePointers();
+			f = addFace(newNodes);
+
+			foreach(Face *hole, holes)
+				f->addHole(getFace(hole->getUUID()));
+		}
+	}
+	return f;
+}
+std::map<std::string, Component*> DerivedSystem::getAllComponents()
+{
+	if(!allComponentsLoaded)
+	{
+		// load all components
+		std::map<std::string, Component*> comps = predecessorSys->getAllComponents();
+		mforeach(Component* c, comps)
+			getComponent(c->getUUID());
+		allComponentsLoaded = true;
+	}
+	return System::getAllComponents();
+}
+std::map<std::string, Node*> DerivedSystem::getAllNodes()
+{
+	if(!allNodesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Node*> nodes = predecessorSys->getAllNodes();
+		mforeach(Node* n, nodes)
+			getNode(n->getUUID());
+		allNodesLoaded = true;
+	}
+	return System::getAllNodes();
+}
+std::map<std::string, Edge*> DerivedSystem::getAllEdges()
+{
+	if(!allEdgesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Edge*> edges = predecessorSys->getAllEdges();
+		mforeach(Edge* n, edges)
+			getEdge(n->getUUID());
+		allEdgesLoaded = true;
+	}
+	return System::getAllEdges();
+}
+std::map<std::string, Face*> DerivedSystem::getAllFaces()
+{
+	if(!allFacesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Face*> faces = predecessorSys->getAllFaces();
+		mforeach(Face* n, faces)
+			getFace(n->getUUID());
+		allFacesLoaded = true;
+	}
+	return System::getAllFaces();
+}
+std::map<std::string, System*> DerivedSystem::getAllSubSystems()
+{
+	if(!allSubSystemsLoaded)
+	{
+		// load all nodes
+		std::map<std::string, System*> subsystems = predecessorSys->getAllSubSystems();
+		mforeach(System* sys, subsystems)
+			getSubSystem(sys->getUUID());
+		allSubSystemsLoaded = true;
+	}
+	return System::getAllSubSystems();
+}
+/*
+std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()
+{
+	if(!allRasterDataLoaded)
+	{
+		// load all nodes
+		std::map<std::string, RasterData*> rasterdatas = predecessorSys->getAllRasterData();
+		mforeach(RasterData* rd, rasterdatas)
+			getRasterData(rd->getUUID());
+		allRasterDataLoaded = true;
+	}
+	return System::getAllRasterData();
+}*/

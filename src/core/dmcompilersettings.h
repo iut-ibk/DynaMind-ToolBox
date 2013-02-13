@@ -102,9 +102,9 @@
 
 
 template <typename T1, typename T2>
-inline bool map_contains(std::map<T1,T2> *m, const T1 &key, T2 &to)
+inline bool map_contains(const std::map<T1,T2> *m, const T1 &key, T2 &to)
 {
-    typename std::map<T1,T2>::iterator i = m->find(key);
+    typename std::map<T1,T2>::const_iterator i = m->find(key);
 	if(i==m->end())	return false;
 
 	to = i->second;
@@ -112,7 +112,7 @@ inline bool map_contains(std::map<T1,T2> *m, const T1 &key, T2 &to)
 }
 
 template <typename T1, typename T2>
-inline bool map_contains(std::map<T1,T2> *m, const T1 &key)
+inline bool map_contains(const std::map<T1,T2> *m, const T1 &key)
 {
 	if(m->find(key)==m->end())	return false;
 	return true;
