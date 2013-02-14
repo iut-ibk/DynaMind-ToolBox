@@ -248,7 +248,7 @@ typedef std::map<std::string, DM::System*> SystemMap;
 
 // This system class holds a pointer to a predecessor system - for read only purpose
 
-class DerivedSystem: public System
+class DM_HELPER_DLL_EXPORT DerivedSystem: public System
 {
 private:
 	System* predecessorSys;
