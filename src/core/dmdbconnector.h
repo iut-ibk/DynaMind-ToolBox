@@ -138,6 +138,7 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
+#define CACHE_INFINITE
 /*
 template<typename T>
 struct is_pointer { static const bool value = false; };
@@ -296,9 +297,10 @@ public:
 
         Node *n = newNode(key,value);
         push_front(n);
-
+#ifndef CACHE_INFINITE
         if(_cnt>_size)
 			removeNode(_last);
+#endif
             //delete pop(_last);
     }
     virtual bool replace(const Tkey& key,Tvalue* value)
@@ -336,12 +338,13 @@ public:
 
         Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
         Cache<Tkey,Tvalue>::push_front(n);
-
+#ifndef CACHE_INFINITE
         if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
         {
             Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
             Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
         }
+#endif
     }
     // get node, if not found, we may find it in the db
     Tvalue* get(const Tkey& key)
@@ -371,11 +374,13 @@ public:
 	void resize(unsigned int size)
 	{
 		Cache<Tkey,Tvalue>::_size = size;
+#ifndef CACHE_INFINITE
 		while(Cache<Tkey,Tvalue>::_cnt > size)
 		{
             Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
             Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
 		}
+#endif
 	}
 };
 
