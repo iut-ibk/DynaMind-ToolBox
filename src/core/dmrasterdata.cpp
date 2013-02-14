@@ -459,7 +459,8 @@ void RasterData::SQLCopyField(const RasterData *ref)
 	{
 		for(long y = 0; y<blHeight; y++)
 		{
-			cache->add(&blockLabels[x+y*blWidth], ref->cache->get(&ref->blockLabels[x+y*blWidth]));
+			*cache->get(&blockLabels[x+y*blWidth]) = *ref->cache->get(&ref->blockLabels[x+y*blWidth]);
+			//cache->add(&blockLabels[x+y*blWidth], ref->cache->get(&ref->blockLabels[x+y*blWidth]));
 		}
 	}
 }
