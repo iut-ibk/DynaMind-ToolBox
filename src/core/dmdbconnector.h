@@ -65,7 +65,6 @@ private:
 	static DBConnector* instance;
     DBConnector();
 	
-    //static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
 
@@ -123,7 +122,6 @@ public:
 /*
     void Duplicate(QString table, QByteArray uuid, QString stateuuid,
                                                QString newuuid, QString newStateUuid);*/
-    //static int GetNewLinkID();
 };
 
 class SingletonDestroyer
@@ -139,13 +137,7 @@ class SingletonDestroyer
 
 #define CACHE_PROFILING
 #define CACHE_INFINITE
-/*
-template<typename T>
-struct is_pointer { static const bool value = false; };
 
-template<typename T>
-struct is_pointer<T*> { static const bool value = true; };
-*/
 template<class Tkey,class Tvalue>
 class Cache
 {
@@ -223,16 +215,6 @@ protected:
 		if(it==map.end())
 			return NULL;
 		return it->second;
-		/*
-        Node *n = _root;
-        while(n!=NULL)
-        {
-            if(n->key == key)
-                return n;
-            else
-                n = n->next;
-        }
-        return NULL;*/
     }
 
 public:
@@ -301,7 +283,6 @@ public:
         if(_cnt>_size)
 			removeNode(_last);
 #endif
-            //delete pop(_last);
     }
     virtual bool replace(const Tkey& key,Tvalue* value)
     {
@@ -310,7 +291,6 @@ public:
             return false;
 
 		removeNode(n);
-        //delete pop(n);
         add(key, value);
         return true;
     }
@@ -318,7 +298,6 @@ public:
     {
         Node *n = search(key);
         if(n)	removeNode(n);
-            //delete pop(n);
     }
 };
 
