@@ -251,7 +251,7 @@ bool Module::checkIfAllSystemsAreSet()
             continue;
         std::string name = it->first;
         if(!map_contains(&data_vals, name) || this->data_vals[name] == 0) {
-            Logger(Error) << name << " " << "Not Set for module " << this->getUuid() << " " << this->getName();
+            Logger(Error) << name << " " << " not set for module " << this->getUuid() << " " << this->getName();
             this->simulation->setSimulationStatus(SIM_ERROR_SYSTEM_NOT_SET);
             return false;
         }

@@ -32,7 +32,7 @@
 
 using namespace DM;
 
-static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1e7);
+static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1e8);
 
 void Attribute::ResizeCache(unsigned int size)
 {
