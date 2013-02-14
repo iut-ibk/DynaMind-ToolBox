@@ -65,7 +65,6 @@ private:
 	static DBConnector* instance;
     DBConnector();
 	
-    //static int _linkID;
     static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
 
@@ -123,7 +122,6 @@ public:
 /*
     void Duplicate(QString table, QByteArray uuid, QString stateuuid,
                                                QString newuuid, QString newStateUuid);*/
-    //static int GetNewLinkID();
 };
 
 class SingletonDestroyer
@@ -138,13 +136,8 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
-/*
-template<typename T>
-struct is_pointer { static const bool value = false; };
+#define CACHE_INFINITE
 
-template<typename T>
-struct is_pointer<T*> { static const bool value = true; };
-*/
 template<class Tkey,class Tvalue>
 class Cache
 {
@@ -174,8 +167,8 @@ private:
 protected:
     Node*   _root;
     Node*   _last;
-    unsigned int    _size;
-    unsigned int    _cnt;
+    unsigned long    _size;
+    unsigned long    _cnt;
 	// internal
 	inline Node* newNode(const Tkey &k, Tvalue* v)
 	{
@@ -222,16 +215,6 @@ protected:
 		if(it==map.end())
 			return NULL;
 		return it->second;
-		/*
-        Node *n = _root;
-        while(n!=NULL)
-        {
-            if(n->key == key)
-                return n;
-            else
-                n = n->next;
-        }
-        return NULL;*/
     }
 
 public:
@@ -247,7 +230,7 @@ public:
 
 #endif
 
-    Cache(unsigned int size)
+    Cache(unsigned long size)
     {
         _size=size;
         _cnt=0;
@@ -270,7 +253,7 @@ public:
             delete cur;
         }
     }
-	unsigned int getSize(){return _size;};
+	unsigned long getSize(){return _size;};
     virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
@@ -296,10 +279,10 @@ public:
 
         Node *n = newNode(key,value);
         push_front(n);
-
+#ifndef CACHE_INFINITE
         if(_cnt>_size)
 			removeNode(_last);
-            //delete pop(_last);
+#endif
     }
     virtual bool replace(const Tkey& key,Tvalue* value)
     {
@@ -308,7 +291,6 @@ public:
             return false;
 
 		removeNode(n);
-        //delete pop(n);
         add(key, value);
         return true;
     }
@@ -316,7 +298,6 @@ public:
     {
         Node *n = search(key);
         if(n)	removeNode(n);
-            //delete pop(n);
     }
 };
 
@@ -327,7 +308,7 @@ class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 public:
     typedef typename Cache<Tkey,Tvalue>::Node Node;
 
-    DbCache(unsigned int size): Cache<Tkey,Tvalue>(size){}
+    DbCache(unsigned long size): Cache<Tkey,Tvalue>(size){}
     // add, save to db if something is dropped
     void add(Tkey key,Tvalue* value)
     {
@@ -336,12 +317,13 @@ public:
 
         Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
         Cache<Tkey,Tvalue>::push_front(n);
-
+#ifndef CACHE_INFINITE
         if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
         {
             Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
             Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
         }
+#endif
     }
     // get node, if not found, we may find it in the db
     Tvalue* get(const Tkey& key)
@@ -368,14 +350,16 @@ public:
         }
     }
 	// resize cache
-	void resize(unsigned int size)
+	void resize(unsigned long size)
 	{
 		Cache<Tkey,Tvalue>::_size = size;
+#ifndef CACHE_INFINITE
 		while(Cache<Tkey,Tvalue>::_cnt > size)
 		{
             Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
             Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
 		}
+#endif
 	}
 };
 

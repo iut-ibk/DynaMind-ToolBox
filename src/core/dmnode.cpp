@@ -36,7 +36,7 @@
 
 using namespace DM;
 
-static DbCache<Node*,Vector3> nodeCache(1e6);
+static DbCache<Node*,Vector3> nodeCache(1e7);
 
 #ifdef CACHE_PROFILING
 void Node::PrintStatistics()
