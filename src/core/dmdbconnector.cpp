@@ -173,12 +173,15 @@ bool DBConnector::DropTables()
 
 DBConnector::DBConnector()
 {
-    if(QFile::exists("testdb"))
-        QFile::remove("testdb");
+	QString dbpath = QDir::tempPath() + "\\dynaminddb";
+
+    if(QFile::exists(dbpath))
+        QFile::remove(dbpath);
 
     *_db = QSqlDatabase::addDatabase("QSQLITE");
     //_db.setDatabaseName(":memory:");
-    _db->setDatabaseName("testdb");
+    _db->setDatabaseName(dbpath);
+	
 /*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -191,14 +194,14 @@ DBConnector::DBConnector()
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
     db.setDatabaseName(connectionString);
     db.setUserName("postgres");
-    db.setPassword("this00");
+    db.setPassword("");
 */
     /*
     //QString connectionString = "SERVER=localhost;DATABASE=dynamind;";
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("dynamind");
     db.setUserName("postgres");
-    db.setPassword("this00");
+    db.setPassword("");
 */
     if(!_db->open())
 	{
