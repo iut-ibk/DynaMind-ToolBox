@@ -410,7 +410,11 @@ TEST_F(TestSimulation,cachetest) {
     c.add(4,four);
 
     ASSERT_TRUE(c.get(1)==one);
+#ifndef CACHE_INFINITE
     ASSERT_TRUE(c.get(2)==NULL);
+#else
+    ASSERT_TRUE(c.get(2)==two);
+#endif
     ASSERT_TRUE(c.get(3)==three);
     ASSERT_TRUE(c.get(4)==four);
     ASSERT_TRUE(c.get(10)==NULL);
