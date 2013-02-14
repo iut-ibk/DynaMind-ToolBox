@@ -167,8 +167,8 @@ private:
 protected:
     Node*   _root;
     Node*   _last;
-    unsigned int    _size;
-    unsigned int    _cnt;
+    unsigned long    _size;
+    unsigned long    _cnt;
 	// internal
 	inline Node* newNode(const Tkey &k, Tvalue* v)
 	{
@@ -230,7 +230,7 @@ public:
 
 #endif
 
-    Cache(unsigned int size)
+    Cache(unsigned long size)
     {
         _size=size;
         _cnt=0;
@@ -253,7 +253,7 @@ public:
             delete cur;
         }
     }
-	unsigned int getSize(){return _size;};
+	unsigned long getSize(){return _size;};
     virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
@@ -308,7 +308,7 @@ class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 public:
     typedef typename Cache<Tkey,Tvalue>::Node Node;
 
-    DbCache(unsigned int size): Cache<Tkey,Tvalue>(size){}
+    DbCache(unsigned long size): Cache<Tkey,Tvalue>(size){}
     // add, save to db if something is dropped
     void add(Tkey key,Tvalue* value)
     {
@@ -350,7 +350,7 @@ public:
         }
     }
 	// resize cache
-	void resize(unsigned int size)
+	void resize(unsigned long size)
 	{
 		Cache<Tkey,Tvalue>::_size = size;
 #ifndef CACHE_INFINITE
