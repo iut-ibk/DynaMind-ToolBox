@@ -258,7 +258,6 @@ private:
 	bool allFacesLoaded;
 	bool allNodesLoaded;
 	bool allSubSystemsLoaded;
-	//bool allRasterDataLoaded;
 public:
 	DerivedSystem(System* sys);
 
