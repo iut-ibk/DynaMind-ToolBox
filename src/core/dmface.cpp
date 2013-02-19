@@ -222,3 +222,8 @@ void Face::SetOwner(Component *owner)
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
 		it->second->SetOwner(this);
 }
+
+void Face::setNodes(std::vector<Node*> nodes)
+{
+	this->_nodes = nodes;
+}

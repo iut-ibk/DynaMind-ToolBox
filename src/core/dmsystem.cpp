@@ -850,7 +850,23 @@ Component* DerivedSystem::getComponent(std::string uuid)
 	{
 		n = predecessorSys->getComponent(uuid);
 		if(n)
-			n = addComponent(new Component(*n));
+		{
+			switch(n->getType())
+			{
+			case COMPONENT:
+				return addComponent(new Component(*n));
+			case NODE:
+				return getNode(uuid);
+			case EDGE:
+				return getEdge(uuid);
+			case FACE:
+				return getFace(uuid);
+			case SUBSYSTEM:
+			default:
+				return addComponent(new Component(*n));
+			//case RASTERDATA:
+			}
+		}
 	}
 	return n;
 }
@@ -897,16 +913,34 @@ Face * DerivedSystem::getFace(std::string uuid)
 		f = predecessorSys->getFace(uuid);
 		if(f)
 		{
-			std::vector<Node*> nodes = f->getNodePointers();
+			Face* newf = new Face(*f);
+
+			std::vector<Node*> newNodes;
+			foreach(Node* node, f->getNodePointers())
+				newNodes.push_back(getNode(node->getUUID()));
+
+			newf->setNodes(newNodes);
+			
+			foreach(Face *hole, f->getHolePointers())
+				f->addHole(getFace(hole->getUUID()));
+
+			return this->addFace(newf);
+
+			/*std::vector<Node*> nodes = f->getNodePointers();
 			std::vector<Node*> newNodes;
 			foreach(Node* node, nodes)
 				newNodes.push_back(getNode(node->getUUID()));
 			
 			std::vector<Face*> holes = f->getHolePointers();
+			std::map<std::string, Attribute*> attributes = f->getAllAttributes();
+
 			f = addFace(newNodes);
 
 			foreach(Face *hole, holes)
 				f->addHole(getFace(hole->getUUID()));
+
+			mforeach(Attribute* a, attributes)
+				f->addAttribute(*a);*/
 		}
 	}
 	return f;
