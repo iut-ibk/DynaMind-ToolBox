@@ -814,6 +814,23 @@ void System::SQLUpdateStates()
  * Derived System
  *******************************/
 
+DerivedSystem::DerivedSystem(System* sys): System()
+{
+	predecessorSys = sys;
+	allComponentsLoaded = false;
+	allEdgesLoaded = false;
+	allFacesLoaded = false;
+	allNodesLoaded = false;
+	allSubSystemsLoaded = false;
+	//allRasterDataLoaded = false;
+
+	viewdefinitions = sys->viewdefinitions;
+	predecessors = sys->predecessors;
+	views = sys->views;
+
+	lastModule = sys->lastModule;
+}
+
 
 Node* DerivedSystem::getNode(QUuid uuid)
 {
@@ -954,16 +971,35 @@ std::map<std::string, System*> DerivedSystem::getAllSubSystems()
 	}
 	return System::getAllSubSystems();
 }
-/*
+
+
+std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const View &view)
+{
+	// System::getAllComponentsInView(view) + 
+	std::map<std::string, Component*> pred_comps = this->predecessorSys->getAllComponentsInView(view);
+	std::map<std::string, Component*> comps = System::getAllComponentsInView(view);
+	// fill the map from predecessor system with the elements in this system
+	for(std::map<std::string, Component*>::iterator it = comps.begin();
+		it != comps.end(); ++it)
+	{
+		pred_comps[it->first] = it->second;
+	}
+
+    return pred_comps;
+
+}
+
+
 std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()
 {
-	if(!allRasterDataLoaded)
+	std::map<std::string, RasterData*> pred_rd = this->predecessorSys->getAllRasterData();
+	std::map<std::string, RasterData*> rd = System::getAllRasterData();
+
+	for(std::map<std::string, RasterData*>::iterator it = rd.begin();
+		it != rd.end(); ++it)
 	{
-		// load all nodes
-		std::map<std::string, RasterData*> rasterdatas = predecessorSys->getAllRasterData();
-		mforeach(RasterData* rd, rasterdatas)
-			getRasterData(rd->getUUID());
-		allRasterDataLoaded = true;
+		pred_rd[it->first] = it->second;
 	}
-	return System::getAllRasterData();
-}*/
+
+    return pred_rd;
+}

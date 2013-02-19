@@ -225,7 +225,7 @@ public:
     /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
     /** @brief retrun all components related to a view */
-    std::map<std::string, Component*> getAllComponentsInView(const View &view);
+    virtual std::map<std::string, Component*> getAllComponentsInView(const View &view);
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
     /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
@@ -260,22 +260,7 @@ private:
 	bool allSubSystemsLoaded;
 	//bool allRasterDataLoaded;
 public:
-	DerivedSystem(System* sys): System()
-	{
-		predecessorSys = sys;
-		allComponentsLoaded = false;
-		allEdgesLoaded = false;
-		allFacesLoaded = false;
-		allNodesLoaded = false;
-		allSubSystemsLoaded = false;
-		//allRasterDataLoaded = false;
-
-		
-		viewdefinitions = sys->viewdefinitions;
-		predecessors = sys->predecessors;
-		views = sys->views;
-		lastModule = sys->lastModule;
-	}
+	DerivedSystem(System* sys);
 
     Node* getNode(QUuid uuid);
     Component* getComponent(std::string uuid);
@@ -288,7 +273,8 @@ public:
     std::map<std::string, Edge*> getAllEdges();
     std::map<std::string, Face*> getAllFaces();
     std::map<std::string, System*> getAllSubSystems();
-    //std::map<std::string, RasterData*> getAllRasterData();
+    std::map<std::string, RasterData*> getAllRasterData();
+    std::map<std::string, Component*> getAllComponentsInView(const View &view);
 };
 
 }
