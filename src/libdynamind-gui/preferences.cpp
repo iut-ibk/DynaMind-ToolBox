@@ -27,6 +27,8 @@
 #include "QSettings"
 #include "QFileDialog"
 #include "QListWidget"
+#include "guiaddwfs.h"
+
 #include <iostream>
 
 Preferences::Preferences(QWidget *parent)
@@ -77,13 +79,35 @@ Preferences::Preferences(QWidget *parent)
     text = settings.value("Editra").toString();
     this->lineEdit_Editra->setText(text);
 
+    this->treeWidget_wfs_server->setColumnCount(4);
+    QTreeWidgetItem* headerItem = new QTreeWidgetItem();
+    headerItem->setText(0,QString("Name"));
+    headerItem->setText(1,QString("Server"));
+    headerItem->setText(2,QString("User"));
+    headerItem->setText(3,QString("Password"));
+    treeWidget_wfs_server->setHeaderItem(headerItem);
+
+    text = settings.value("wfs_server").toString();
+    list = text.replace("\\","/").split("*||*");
+
+    foreach(QString s, list) {
+        QStringList server_description = text.replace("\\","/").split("*|*");
+        if (server_description.size() != 4)
+            continue;
+        QTreeWidgetItem* item = new QTreeWidgetItem();
+        item->setText(0, server_description[0]);
+        item->setText(1, server_description[1]);
+        item->setText(2, server_description[2]);
+        item->setText(2, server_description[3]);
+        treeWidget_wfs_server->addTopLevelItem(item);
+    }
 }
 
 
 void Preferences::writePreference() {
 
     QSettings settings;
-    //settings.beginGroup("Preferences");
+
     QStringList pythonModules;
     for (int i = 0; i < this->listWidget->count(); i++)
         pythonModules << this->listWidget->item(i)->text();
@@ -104,8 +128,8 @@ void Preferences::writePreference() {
 void Preferences::openFileDialog() {
     QString sender = QObject::sender()->objectName();
     if (sender.compare("pushButton_NativeModule") == 0) {
-         QString s = QFileDialog::getOpenFileName(this, tr("File to"), "");
-         this->lineEdit_NativeModule->setText(s);
+        QString s = QFileDialog::getOpenFileName(this, tr("File to"), "");
+        this->lineEdit_NativeModule->setText(s);
         return;
     }
     QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "");
@@ -171,4 +195,10 @@ void Preferences::remove() {
     QListWidgetItem * item =this->listWidget->selectedItems()[0];
     delete item;
 
+}
+
+void Preferences::on_pushButton_add_wfs_clicked()
+{
+    GUIAddWFS * addwfs = new  GUIAddWFS(this);
+    addwfs->show();
 }
