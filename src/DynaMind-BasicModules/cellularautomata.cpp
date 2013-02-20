@@ -124,6 +124,12 @@ void CellularAutomata::run()  {
     foreach (std::string s, param.ListOfLandscapes) {
         View rdata(s, DM::RASTERDATA, DM::READ);
         this->landscapes[s] = this->getRasterData("RasterDataIn",rdata);
+        if  (!this->landscapes[s] ) {
+            assert (this->landscapes[s]!=NULL);
+            Logger(DM::Error) << "RasterData  " << s << " not set";
+            return;
+
+        }
     }
 
     if (runinit == false) {
