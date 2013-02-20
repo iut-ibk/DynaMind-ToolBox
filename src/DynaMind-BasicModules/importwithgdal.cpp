@@ -26,8 +26,10 @@
 
 #include "importwithgdal.h"
 #include "tbvectordata.h"
+#include "simplecrypt.h"
+#include <sstream>
+#include <guiimportwithgdal.h>
 #include <algorithm>
-
 #include <QHash>
 
 DM_DECLARE_NODE_NAME(ImportwithGDAL, Modules)
@@ -47,8 +49,21 @@ ImportwithGDAL::ImportwithGDAL()
     this->addParameter("AppendToExisting", DM::BOOL, &this->append);
     this->attributesToImport = std::map<std::string, std::string>();
     this->addParameter("AttributesToImport", DM::STRING_MAP, &this->attributesToImport);
-    this->ImportAll = false;
+    this->ImportAll = true;
     this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
+
+    //WFS Input
+    this->WFSDataName = "";
+    this->addParameter("WFSDataName", DM::STRING, &this->WFSDataName);
+    this->WFSServer = "";
+    this->addParameter("WFSServer", DM::STRING, &this->WFSServer);
+    this->WFSUsername = "";
+    this->addParameter("WFSUsername", DM::STRING, &this->WFSUsername);
+    this->WFSPassword = "";
+    this->addParameter("WFSPassword", DM::STRING, &this->WFSPassword);
+    fileok=false;
+
+
     poCT=NULL;
 }
 ImportwithGDAL::~ImportwithGDAL()
@@ -116,8 +131,10 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
             && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
     {
         OGRPoint *poPoint = (OGRPoint *) poGeometry;
+
         double x = poPoint->getX();
         double y = poPoint->getY();
+
         transform(&x,&y);
         n = this->addNode(sys, x, y, 0);
         sys->addComponentToView(n, this->view);
@@ -197,6 +214,39 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
         delete poPoint;
         return sys->addFace(nlist, this->view);
     }
+
+    if( poGeometry != NULL
+            && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
+    {
+        OGRMultiPolygon *mpoPolygon = (OGRMultiPolygon *) poGeometry;
+        int number_of_faces = mpoPolygon->getNumGeometries();
+        for (int i = 0; i < number_of_faces; i++) {
+            OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
+            OGRLinearRing * ring = poPolygon->getExteriorRing();
+            int npoints = ring->getNumPoints();
+            if (npoints == 0)
+                return 0;
+            OGRPoint *poPoint = new OGRPoint();
+            std::vector<Node*> nlist;
+
+            for (int i = 0; i < npoints; i++) {
+                ring->getPoint(i, poPoint);
+                double x = poPoint->getX();
+                double y = poPoint->getY();
+                transform(&x,&y);
+                n = this->addNode(sys, x, y, 0);
+                if (find(nlist.begin(), nlist.end(), n) == nlist.end())
+                    nlist.push_back(n);
+
+            }
+            if (nlist.size() < 3)
+                return 0;
+            nlist.push_back(nlist[0]);
+            delete poPoint;
+            return sys->addFace(nlist, this->view);
+        }
+    }
+
     return 0;
 
 }
@@ -229,6 +279,53 @@ QString ImportwithGDAL::createHash(double x, double y)
 }
 
 void ImportwithGDAL::init() {
+
+    //Only update if something has changed
+    bool changed = false;
+    if (FileName_old != FileName) changed = true; FileName = FileName_old;
+    if (ViewName_old != ViewName) changed = true; ViewName_old = ViewName;
+    if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
+    if (WFSServer_old != WFSServer) changed = true; WFSServer_old = WFSServer;
+    if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
+    if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
+    if (append_old != append) changed = true; append_old = append;
+
+
+
+    if (!changed)
+        return;
+
+
+
+    if (!this->WFSServer.empty()) driverType = WFS;
+    else driverType = ShapeFile;
+
+
+
+    if (driverType == WFS) {
+        //create server name
+        std::stringstream servername;
+        servername << "WFS:http://";
+        servername <<  this->WFSUsername; //Username
+        servername <<  ":";
+        SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
+        servername <<  crypto.decryptToString(QString::fromStdString(this->WFSPassword)).toStdString(); //Password
+        servername <<  "@";
+        servername << this->WFSServer;
+        this->server_full_name = servername.str();
+        OGRLayer * poLayer = this->LoadLayer();
+        if (!poLayer) {
+            fileok=false;
+            return;
+        }
+
+        fileok=true;
+        view = DM::View();
+        view.setName(ViewName);
+        this->vectorDataInit(poLayer);
+        return;
+    }
+
     fileok=true;
 
     if(FileName.empty())
@@ -260,9 +357,9 @@ void ImportwithGDAL::init() {
         poDataset = (GDALDataset *) GDALOpen( FileName.c_str(), GA_ReadOnly );
         if( poDataset == NULL )
         {
-             DM::Logger(DM::Error) << "Open failed.";
-             fileok=false;
-             return;
+            DM::Logger(DM::Error) << "Open failed.";
+            fileok=false;
+            return;
         }
         else
         {
@@ -271,20 +368,28 @@ void ImportwithGDAL::init() {
     }
     else
     {
-        vectorDataInit(poDS);
+        vectorDataInit(LoadLayer());
     }
 
     return;
 }
 
-void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
+bool ImportwithGDAL::createInputDialog()
+{
+    QWidget * w = new GUIImportWithGDAL(this);
+    w->show();
+    return true;
+}
+
+void ImportwithGDAL::vectorDataInit(OGRLayer       *poLayer)
 {
     isvectordata = true;
-    OGRLayer  *poLayer;
-    poLayer = poDS->GetLayer(0);
+    // OGRLayer  *poLayer;
+    //poLayer = poDS->GetLayer(0);
     OGRFeature *poFeature;
 
     poLayer->ResetReading();
+    int wkbtype = -1;
     while( (poFeature = poLayer->GetNextFeature()) != NULL )
     {
         OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
@@ -308,7 +413,7 @@ void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
 
 
         poGeometry = poFeature->GetGeometryRef();
-        int type = wkbFlatten(poGeometry->getGeometryType());
+        wkbtype = wkbFlatten(poGeometry->getGeometryType());
         if( poGeometry != NULL
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
         {
@@ -325,6 +430,13 @@ void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
             DM::Logger(DM::Debug) << "Found: Geometry type wkbPolygon";
         }
 
+        if( poGeometry != NULL
+                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon)
+        {
+            view.setType(DM::FACE);
+            view.setAccessType(DM::WRITE);
+            DM::Logger(DM::Debug) << "Found: Geometry type wkbMultiPolygon";
+        }
         if( poGeometry != NULL
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
         {
@@ -437,6 +549,8 @@ void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
             return;
         }
 
+
+
         if( poGeometry != NULL
                 && wkbFlatten(poGeometry->getGeometryType()) == wkbUnknown )
         {
@@ -449,6 +563,13 @@ void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
 
         break;
     }
+    if (!fileok)
+        return;
+    if (view.getType() == -1) {
+        DM::Logger(DM::Error) << "Unknown wbk type " << wkbtype;
+        fileok = false;
+        return;
+    }
 
     std::vector<DM::View> data;
     if (append) {
@@ -457,7 +578,7 @@ void ImportwithGDAL::vectorDataInit(OGRDataSource       *poDS)
     data.push_back(view);
 
     this->addData("Data", data);
-    OGRDataSource::DestroyDataSource( poDS );
+    //OGRDataSource::DestroyDataSource( poDS );
 
     return;
 }
@@ -554,19 +675,23 @@ bool ImportwithGDAL::importVectorData()
 
     OGRRegisterAll();
 
-    OGRDataSource       *poDS;
-    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-    poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
-    if( poDS == NULL )
+    //OGRDataSource       *poDS;
+    //OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    //poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+    /*if( poDS == NULL )
     {
         DM::Logger(DM::Error) << "Open failed.";
         return false;
+    }*/
+
+    OGRLayer  *poLayer = this->LoadLayer();
+    if (!poLayer) {
+        Logger(Error) << "Something went wrong while loading layer in ImportVectorData";
+        return false;
     }
 
-    OGRLayer  *poLayer;
-
-    int layerCount = poDS->GetLayerCount();
-    poLayer = poDS->GetLayer(0);
+    //int layerCount = poDS->GetLayerCount();
+    //poLayer = poDS->GetLayer(0);
 
     OGRFeature *poFeature;
 
@@ -603,7 +728,7 @@ bool ImportwithGDAL::importVectorData()
         OGRFeature::DestroyFeature( poFeature );
     }
 
-    OGRDataSource::DestroyDataSource( poDS );
+    //OGRDataSource::DestroyDataSource( poDS );
     return true;
 }
 
@@ -656,6 +781,13 @@ bool ImportwithGDAL::importRasterData()
 
 bool ImportwithGDAL::transform(double *x, double *y)
 {
+
+    if (this->driverType == WFS) {
+        double tmp_x = *x;
+        *x = *y;
+        *y = tmp_x;
+    }
+
     if(!transformok)
         return false;
 
@@ -669,4 +801,36 @@ bool ImportwithGDAL::transform(double *x, double *y)
     }
 
     return false;
+}
+
+OGRLayer *ImportwithGDAL::LoadLayer()
+{
+    if (driverType == WFS) {
+        OGRDataSource       *poDS;
+        OGRLayer            *poLayer;
+        poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
+
+        int LayerCount = poDS->GetLayerCount();
+
+        for (int i = 0; i < LayerCount; i++) {
+            poLayer = poDS->GetLayer(i);
+            std::string currentLayerName =  poLayer->GetName();
+            if (currentLayerName == this->WFSDataName) {
+                return poLayer;
+            }
+        }
+        return 0;
+    }
+
+    OGRDataSource       *poDS;
+    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+
+    if( poDS == NULL )
+    {
+        return 0;
+    }
+
+    return poDS->GetLayer(0);
+
 }
