@@ -26,14 +26,8 @@
 #include "cgalskeletonisation.h"
 #include <sstream>
 #include <ostream>
-#if defined(_WIN32)
 #define _USE_MATH_DEFINES
-#include <cmath>
-#else
 #include <math.h>
-#endif
-
-
 
 #include <QString>
 #include <boost/foreach.hpp>
