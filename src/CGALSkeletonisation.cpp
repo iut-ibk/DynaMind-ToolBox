@@ -26,7 +26,14 @@
 #include "cgalskeletonisation.h"
 #include <sstream>
 #include <ostream>
+#if defined(_WIN32)
+#define _USE_MATH_DEFINES
+#include <cmath>
+#else
 #include <math.h>
+#endif
+
+
 
 #include <QString>
 #include <boost/foreach.hpp>
@@ -39,7 +46,6 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Point_2.h>
-#include <CGAL/create_straight_skeleton_2.h>
 #include <CGAL/create_offset_polygons_2.h>
 #include <cgalgeometry.h>
 
