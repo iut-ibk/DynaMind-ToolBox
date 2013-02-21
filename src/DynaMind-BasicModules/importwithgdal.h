@@ -97,7 +97,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
         WFS
     };
 
-    int driverType = ShapeFile;
+    int driverType;
 public:
     void run();
     void init();

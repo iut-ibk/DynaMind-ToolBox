@@ -36,6 +36,8 @@ DM_DECLARE_NODE_NAME(ImportwithGDAL, Modules)
 
 ImportwithGDAL::ImportwithGDAL()
 {
+    driverType = ShapeFile;
+
     this->FileName = "";
     this->addParameter("Filename", DM::FILENAME, &this->FileName);
     this->epsgcode=31254;
