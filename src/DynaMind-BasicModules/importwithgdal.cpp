@@ -284,7 +284,7 @@ void ImportwithGDAL::init() {
 
     //Only update if something has changed
     bool changed = false;
-    if (FileName_old != FileName) changed = true; FileName = FileName_old;
+    if (FileName_old != FileName) changed = true; FileName_old = FileName;
     if (ViewName_old != ViewName) changed = true; ViewName_old = ViewName;
     if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
     if (WFSServer_old != WFSServer) changed = true; WFSServer_old = WFSServer;
