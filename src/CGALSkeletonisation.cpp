@@ -26,6 +26,7 @@
 #include "cgalskeletonisation.h"
 #include <sstream>
 #include <ostream>
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include <QString>
