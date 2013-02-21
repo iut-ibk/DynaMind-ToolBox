@@ -11,7 +11,7 @@
 
 
 
-class SpatialSearchNearestNodes
+class DM_HELPER_DLL_EXPORT SpatialSearchNearestNodes
 {
     typedef CGAL::Simple_cartesian<double> K;
     typedef K::Point_2 Point_d;

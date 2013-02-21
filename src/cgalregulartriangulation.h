@@ -29,7 +29,7 @@
 
 #include <dm.h>
 
-class CGALRegularTriangulation
+class DM_HELPER_DLL_EXPORT CGALRegularTriangulation
 {
 public:
 static void Triangulation(DM::System * sys, DM::Face * f, std::vector<DM::Node> & triangels, double meshsize,  std::vector<int> & ids);
