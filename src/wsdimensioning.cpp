@@ -45,6 +45,9 @@
 #include <epanetmodelcreator.h>
 #include <epanetdynamindconverter.h>
 
+//QT
+#include <QDir>
+
 //boost
 #include<boost/range/numeric.hpp>
 

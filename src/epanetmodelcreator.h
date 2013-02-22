@@ -54,7 +54,9 @@ private:
         enum ComponentTypes {TYPES};
     #undef X
     #define X(a) #a,
-        std::vector<std::string>ComponentStrings = {TYPES};
+        std::vector<std::string> ComponentStrings = {
+            TYPES
+        };
     #undef X
     #undef TYPES
 
@@ -67,7 +69,9 @@ public:
 
 private:
     #define X(a) #a,
-        std::vector<QString>UnitStrings = {TYPES};
+        std::vector<QString> UnitStrings = {
+            TYPES
+        };
     #undef X
     #undef TYPES
 
@@ -75,7 +79,7 @@ public:
     enum HEADLOSS {HW,DW,CM};
 
 private:
-    std::vector<QString>HeadlossStrings = {"H-W","D-W","C-M"};
+    std::vector<QString> HeadlossStrings = {"H-W","D-W","C-M"};
 
     #define TYPES X(STOP) X(CONTINUE)
 
