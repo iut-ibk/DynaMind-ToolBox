@@ -96,8 +96,8 @@ void Dimensioning::run()
 bool Dimensioning::SitzenfreiDimensioning()
 {
     int nnodes, nlinks;
-    std::vector<int> diameter={80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 800, 1000, 1500, 2000, 4000, 8000};
-    std::vector<double> designvelocity={0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 1.75, 1.75, 2, 2, 2, 2, 2};
+    int diameter[] = {80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 800, 1000, 1500, 2000, 4000, 8000};
+    double designvelocity[] = {0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 1.75, 1.75, 2, 2, 2, 2, 2};
 
     //Get number of nodes and links
     if(!EpanetDynamindConverter::checkENRet(EPANET::ENgetcount(EN_NODECOUNT,&nnodes)))return false;
@@ -120,7 +120,7 @@ bool Dimensioning::SitzenfreiDimensioning()
     //auto-design process
     DM::Logger(DM::Standard) << "Start auto design";
     int i = 0;
-    while( (boost::accumulate(resV, 0)>=1) && (i < diameter.size()))
+    while( (boost::accumulate(resV, 0)>=1) && (i < (sizeof(diameter)/sizeof(int))))
     {
         i++;
         if(!EpanetDynamindConverter::checkENRet(EPANET::ENopenH()))return false;
