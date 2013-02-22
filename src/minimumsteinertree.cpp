@@ -53,21 +53,17 @@ MinimumSteinerTree::MinimumSteinerTree()
     std::vector<DM::View> views;
     DM::View view;
 
-    view = defhelper.getCompleteView(DM::GRAPH::EDGES,DM::READ);
+    view = defhelper.getCompleteView(DM::GRAPH::EDGES,DM::WRITE);
     views.push_back(view);
     viewdef[DM::GRAPH::EDGES]=view;
 
-    view = defhelper.getView(DM::GRAPH::NODES,DM::READ);
+    view = defhelper.getView(DM::GRAPH::NODES,DM::WRITE);
     views.push_back(view);
     viewdef[DM::GRAPH::NODES]=view;
 
     view = DM::View("FORCEDNODES", DM::NODE, DM::READ);
     views.push_back(view);
     forcednodesview = view;
-
-    view = defhelper.getView(DM::GRAPH::SPANNINGTREE,DM::WRITE);
-    views.push_back(view);
-    viewdef[DM::GRAPH::SPANNINGTREE]=view;
 
     this->addData("Layout", views);
 }
@@ -126,7 +122,7 @@ void MinimumSteinerTree::run()
         if(componentsizes[maxgraphindex] < componentsizes[index])
             maxgraphindex = index;
 
-        DM::Logger(DM::Standard) << "Tree " << (int)index+1 << " has " << componentsizes[index] << " elements";
+        DM::Logger(DM::Standard) << "Graph " << (int)index+1 << " has " << componentsizes[index] << " elements";
     }
 
     if(num!=1)
@@ -146,9 +142,17 @@ void MinimumSteinerTree::run()
     SteinerGraph completegraph(num_vertices(g));
 
     //create complete graph between forced nodes
+    int finished=0;
+    int lastlog=-1;
+
     #pragma omp parallel for
     for(int vai = 0; vai<num_vertices(g); vai++)
     {
+        #pragma omp critical
+        {
+            finished++;
+        }
+
         if(std::find(forcednodeslist.begin(),forcednodeslist.end(),vai) == forcednodeslist.end())
             continue;
 
@@ -185,7 +189,23 @@ void MinimumSteinerTree::run()
                 add_edge(*vi,vai,d[*vi],completegraph);
             }
         }
+
+
+
+        double completepercent = (100.0/num_vertices(g))*finished;
+        int steps = 5;
+
+        #pragma omp critical
+        {
+            if(int(completepercent)%steps==0 && lastlog!=int(completepercent))
+            {
+                DM::Logger(DM::Standard) << "DONE..........." << completepercent << "%";
+                lastlog = int(completepercent);
+            }
+        }
     }
+
+    DM::Logger(DM::Standard) << "Steiner calculation has finished -> extracting results";
 
     //calculate minimum spanning tree of complete tree
     std::vector < graph_traits < SteinerGraph >::vertex_descriptor >p(num_vertices(completegraph));
@@ -212,6 +232,13 @@ void MinimumSteinerTree::run()
         }
     }
 
+    //clean view
+    for(uint index = 0; index < nodes.size(); index++)
+        sys->removeComponentFromView(sys->getComponent(nodes[index]),viewdef[DM::GRAPH::NODES]);
+
+    for(uint index = 0; index < dedges.size(); index++)
+        sys->removeComponentFromView(sys->getComponent(dedges[index]),viewdef[DM::GRAPH::EDGES]);
+
     //map to dynamind data structure
     graph_traits< SteinerGraph >::edge_iterator ei,eend;
 
@@ -219,12 +246,20 @@ void MinimumSteinerTree::run()
     {
         int s = source(*ei,completegraph);
         int t = target(*ei,completegraph);
+        DM::Edge *e = 0;
 
         if(nodes2edge.find(std::make_pair(s,t))!=nodes2edge.end())
-            sys->addComponentToView(nodes2edge[std::make_pair(s,t)],viewdef[DM::GRAPH::SPANNINGTREE]);
+            e = nodes2edge[std::make_pair(s,t)];
 
         if(nodes2edge.find(std::make_pair(t,s))!=nodes2edge.end())
-            sys->addComponentToView(nodes2edge[std::make_pair(t,s)],viewdef[DM::GRAPH::SPANNINGTREE]);
+            e = nodes2edge[std::make_pair(t,s)];
+
+        if(e)
+        {
+            sys->addComponentToView(e,viewdef[DM::GRAPH::EDGES]);
+            sys->addComponentToView(e->getStartNode(),viewdef[DM::GRAPH::NODES]);
+            sys->addComponentToView(e->getEndNode(),viewdef[DM::GRAPH::NODES]);
+        }
     }
 }
 

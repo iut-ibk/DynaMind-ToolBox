@@ -35,6 +35,8 @@
 #include <simulatewithepanet.h>
 #include <createepanetmodel.h>
 #include <minimumsteinertree.h>
+#include <wsdimensioning.h>
+#include <initws.h>
 
 using namespace std;
 
@@ -49,4 +51,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
     registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
     registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
+    registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
+    registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
 }

@@ -24,27 +24,18 @@
  *
  */
 
-#ifndef SimulateWithEPANET_H
-#define SimulateWithEPANET_H
+#ifndef EpanetDynamindConverter_H
+#define EpanetDynamindConverter_H
 
-#include <dmmodule.h>
 #include <dm.h>
-#include <watersupplyviewdef.h>
 
-class SimulateWithEPANET : public DM::Module
+class EPANETModelCreator;
+
+class EpanetDynamindConverter
 {
-    DM_DECLARE_NODE(SimulateWithEPANET)
-
-private:
-    DM::System *sys;
-    DM::WS::ViewDefinitionHelper wsd;
-
-
 public:
-    SimulateWithEPANET();
-
-    void run();
-    bool checkENRet(int ret);
+    static bool createEpanetModel(DM::System *sys, EPANETModelCreator *creator, std::string inpfilepath);
+    static bool checkENRet(int ret);
 };
 
-#endif // SimulateWithEPANET_H
+#endif // EpanetDynamindConverter_H

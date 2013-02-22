@@ -41,8 +41,9 @@
 #include <cmath>
 
 //Watersupply
-#include <watersupplyviewdef.h>
 #include <dmepanet.h>
+#include <epanetdynamindconverter.h>
+#include <epanetmodelcreator.h>
 
 using namespace DM;
 
@@ -50,31 +51,26 @@ DM_DECLARE_NODE_NAME(SimulateWithEPANET,Watersupply)
 
 SimulateWithEPANET::SimulateWithEPANET()
 {   
-    //WS::ViewDefinitionHelper wsd;
-    //this->addData("Watersupply", wsd.getAll(DM::MODIFY));
-    //wsd.getCompleteView(WS::JUNCTION,DM::READ);
+    this->addData("Watersupply", wsd.getAll(DM::READ));
 }
 
 void SimulateWithEPANET::run()
 {
-    std::stringstream buffer;
-    EPANET::Redirect re(&buffer);
-    //write EPANET input file
-    //std::string inputfile = "";
+    char inpfile[] = "/tmp/test.inp";
+    char rptfile[] = "/tmp/test.rpt";
+    EPANETModelCreator creator;
 
-    //write Junctions
-    //Logger(Debug) << WSSTRING[JUNCTION];
 
-    int ret = EPANET::ENopen("/home/csae6550/Desktop/EN_goefis.inp","/home/csae6550/Desktop/EN_goefis.rpt","");
-    ret+=EPANET::ENopenH();
-    ret+=EPANET::ENinitH(1);
-    ret+=EPANET::ENsolveH();
-    //ret+=ENinitQ(1);
-    //ret+=ENsolveQ();
-    //ret+=ENcloseH();
-    //ret+=ENcloseQ();
-    ret+=EPANET::ENclose();
-    Logger(Debug) << buffer.str();
+    this->sys = this->getData("Watersupply");
 
-    DM::Logger(DM::Debug) << "EPANET result: " << ret;
+    if(!EpanetDynamindConverter::createEpanetModel(this->sys, &creator, inpfile))
+    {
+        DM::Logger(DM::Error) << "Could not create a valid EPANET inp file";
+        return;
+    }
+
+    if(!EpanetDynamindConverter::checkENRet(EPANET::ENopen(inpfile,rptfile,""))) return;
+    if(!EpanetDynamindConverter::checkENRet(EPANET::ENopenH()))return;
+    if(!EpanetDynamindConverter::checkENRet(EPANET::ENsolveH()))return;
+    if(!EpanetDynamindConverter::checkENRet(EPANET::ENclose()))return;
 }

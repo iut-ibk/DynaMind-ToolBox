@@ -36,21 +36,6 @@ namespace EPANET{
         #define SOL
     #endif
 
-    class Redirect
-    {
-    public:
-        Redirect( std::stringstream * new_buffer )
-            : old( std::cout.rdbuf( new_buffer->rdbuf()))
-        { }
-
-        ~Redirect( ) {
-            std::cout.rdbuf( old );
-        }
-
-    private:
-        std::streambuf * old;
-    };
-
     extern "C"
     {
         #include <toolkit.h>

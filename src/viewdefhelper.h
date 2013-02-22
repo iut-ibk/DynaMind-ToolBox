@@ -77,6 +77,11 @@ public:
         return DM::View(NAMECOMPONENTSTRING[c], NAMETYPE[c], a);
     }
 
+    std::string getComponentString(NAMECOMP c)
+    {
+        return NAMECOMPONENTSTRING[c];
+    }
+
     std::string getAttributeString(NAMECOMP c, uint index)
     {
         return ATTRIBUTESTRING[c][index];
@@ -113,7 +118,7 @@ public:
     {
         std::vector<DM::View> result;
 
-        for(uint index = 0; index < sizeof(NAMECOMPONENTSTRING)/sizeof(NAMECOMPONENTSTRING[0]); index++)
+        for(uint index = 0; index < NAMECOMPONENTSTRING.size(); index++)
             result.push_back(getCompleteView(static_cast<NAMECOMP>(index),a));
 
         return result;

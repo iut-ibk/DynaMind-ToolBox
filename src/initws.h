@@ -24,27 +24,26 @@
  *
  */
 
-#ifndef SimulateWithEPANET_H
-#define SimulateWithEPANET_H
+#ifndef InitWaterSupplySystem_H
+#define InitWaterSupplySystem_H
 
 #include <dmmodule.h>
 #include <dm.h>
+
 #include <watersupplyviewdef.h>
 
-class SimulateWithEPANET : public DM::Module
+class InitWaterSupplySystem : public DM::Module
 {
-    DM_DECLARE_NODE(SimulateWithEPANET)
+    DM_DECLARE_NODE(InitWaterSupplySystem)
 
-private:
-    DM::System *sys;
     DM::WS::ViewDefinitionHelper wsd;
-
+    vector<DM::View> data;
+    bool append;
 
 public:
-    SimulateWithEPANET();
-
+    InitWaterSupplySystem();
+    void init();
     void run();
-    bool checkENRet(int ret);
 };
 
-#endif // SimulateWithEPANET_H
+#endif // InitWaterSupplySystem_H

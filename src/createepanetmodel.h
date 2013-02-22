@@ -30,9 +30,15 @@
 #include <dmmodule.h>
 #include <dm.h>
 
+#include <watersupplyviewdef.h>
+
 class CreateEPANETModel : public DM::Module
 {
     DM_DECLARE_NODE(CreateEPANETModel)
+
+    DM::WS::ViewDefinitionHelper wsd;
+    DM::System * sys;
+    std::string inpfilepath;
 
 public:
     CreateEPANETModel();

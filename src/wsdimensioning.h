@@ -24,27 +24,27 @@
  *
  */
 
-#ifndef SimulateWithEPANET_H
-#define SimulateWithEPANET_H
+#ifndef Dimensioning_H
+#define Dimensioning_H
 
 #include <dmmodule.h>
 #include <dm.h>
+
 #include <watersupplyviewdef.h>
 
-class SimulateWithEPANET : public DM::Module
+class Dimensioning : public DM::Module
 {
-    DM_DECLARE_NODE(SimulateWithEPANET)
+    DM_DECLARE_NODE(Dimensioning)
 
-private:
-    DM::System *sys;
     DM::WS::ViewDefinitionHelper wsd;
-
+    DM::System * sys;
 
 public:
-    SimulateWithEPANET();
-
+    Dimensioning();
     void run();
-    bool checkENRet(int ret);
+
+private:
+    bool SitzenfreiDimensioning();
 };
 
-#endif // SimulateWithEPANET_H
+#endif // Dimensioning_H

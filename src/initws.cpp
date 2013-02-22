@@ -24,27 +24,45 @@
  *
  */
 
-#ifndef SimulateWithEPANET_H
-#define SimulateWithEPANET_H
+#include <initws.h>
 
-#include <dmmodule.h>
-#include <dm.h>
-#include <watersupplyviewdef.h>
+//DynaMind includes
+#include <dmsystem.h>
+#include <dmlogsink.h>
+#include <math.h>
+#include <tbvectordata.h>
 
-class SimulateWithEPANET : public DM::Module
+//CGAL
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <CGAL/Search_traits_2.h>
+#include <list>
+#include <cmath>
+
+//Watersupply
+#include <dmepanet.h>
+#include <epanetmodelcreator.h>
+
+using namespace DM;
+
+DM_DECLARE_NODE_NAME(InitWaterSupplySystem,Watersupply)
+
+InitWaterSupplySystem::InitWaterSupplySystem()
+{   
+    this->append=false;
+    this->addParameter("AppendToExistingDataStream", DM::BOOL, &this->append);
+
+}
+
+void InitWaterSupplySystem::init()
 {
-    DM_DECLARE_NODE(SimulateWithEPANET)
+    this->data = wsd.getAll(DM::WRITE);
 
-private:
-    DM::System *sys;
-    DM::WS::ViewDefinitionHelper wsd;
+    if (this->append)
+        data.push_back( DM::View("dummy", SUBSYSTEM, READ));
 
+    this->addData("Watersupply", data);
+}
 
-public:
-    SimulateWithEPANET();
-
-    void run();
-    bool checkENRet(int ret);
-};
-
-#endif // SimulateWithEPANET_H
+void InitWaterSupplySystem::run(){}

@@ -24,7 +24,7 @@
  *
  */
 
-#include <createepanetmodel.h>
+#include <epanetdynamindconverter.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -32,77 +32,72 @@
 #include <math.h>
 #include <tbvectordata.h>
 
-//CGAL
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/point_generators_2.h>
-#include <CGAL/Orthogonal_k_neighbor_search.h>
-#include <CGAL/Search_traits_2.h>
-#include <list>
-#include <cmath>
-
 //Watersupply
 #include <dmepanet.h>
 #include <epanetmodelcreator.h>
+#include <watersupplyviewdef.h>
 
 using namespace DM;
 
-DM_DECLARE_NODE_NAME(CreateEPANETModel,Watersupply)
-
-CreateEPANETModel::CreateEPANETModel()
-{   
-    this->inpfilepath="";
-    this->addParameter("Path of inp file", DM::FILENAME, &this->inpfilepath);
-
-    std::vector<DM::View> views;
-    views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::READ));
-    views.push_back(wsd.getCompleteView(WS::PIPE,DM::READ));
-    views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
-    views.push_back(wsd.getCompleteView(WS::TANK,DM::READ));
-    this->addData("Watersupply", views);
-}
-
-void CreateEPANETModel::run()
+bool EpanetDynamindConverter::createEpanetModel(System *sys, EPANETModelCreator *creator, string inpfilepath)
 {
+    DM::WS::ViewDefinitionHelper wsd;
     typedef std::map<std::string, DM::Component*> cmap;
     cmap::iterator itr;
 
-    this->sys = this->getData("Watersupply");
-    EPANETModelCreator creator;
-
-    if(!this->inpfilepath.size())
-    {
-        DM::Logger(DM::Error) << "No inp file path set";
-        return;
-    }
-
     //SET OPTIONS
-    creator.setOptionUnits(EPANETModelCreator::LPS);
-    creator.setOptionHeadloss(EPANETModelCreator::DW);
+    if(!creator->setOptionUnits(EPANETModelCreator::LPS))return false;
+    if(!creator->setOptionHeadloss(EPANETModelCreator::DW))return false;
 
     //JUNCTIONS
     cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::READ));
 
     for(itr = junctions.begin(); itr != junctions.end(); ++itr)
-        creator.addJunction(static_cast<DM::Node*>((*itr).second));
+        if(!creator->addJunction(static_cast<DM::Node*>((*itr).second)))return false;
 
     //RESERVOIRS
     cmap reservoir = sys->getAllComponentsInView(wsd.getView(DM::WS::RESERVOIR, DM::READ));
 
     for(itr = reservoir.begin(); itr != reservoir.end(); ++itr)
-        creator.addReservoir(static_cast<DM::Node*>((*itr).second));
+        if(!creator->addReservoir(static_cast<DM::Node*>((*itr).second)))return false;
 
     //TANKS
     cmap tank = sys->getAllComponentsInView(wsd.getView(DM::WS::TANK, DM::READ));
 
     for(itr = tank.begin(); itr != tank.end(); ++itr)
-        creator.addTank(static_cast<DM::Node*>((*itr).second));
+        if(!creator->addTank(static_cast<DM::Node*>((*itr).second)))return false;
 
     //PIPES
     cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::READ));
 
     for(itr = pipes.begin(); itr != pipes.end(); ++itr)
-        creator.addPipe(static_cast<DM::Edge*>((*itr).second));
+        if(!creator->addPipe(static_cast<DM::Edge*>((*itr).second)))return false;
 
 
-    creator.save(inpfilepath);
+    if(!creator->save(inpfilepath))return false;
+
+    return true;
+}
+
+bool EpanetDynamindConverter::checkENRet(int ret)
+{
+    if(ret>0)
+    {
+        const uint SIZE = 100;
+        char errorstring[SIZE];
+        EPANET::ENgeterror(ret,errorstring,SIZE);
+
+        if(ret > 7)
+        {
+            DM::Logger(DM::Error) << "EPANET error code: " << ret << " (" << errorstring << ")";
+            return false;
+        }
+        else
+        {
+            DM::Logger(DM::Warning) << "EPANET warning code: " << ret << " (" << errorstring << ")";
+            return true;
+        }
+    }
+
+    return true;
 }

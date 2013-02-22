@@ -34,20 +34,10 @@ namespace DM
 {
     namespace WS
     {
-        #define EPANETMODEL_ATTR \
-        A(Inpfilepath)
-
-        #define EPANETMODEL_LINK
-
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
-        A(Elevation)
-
-        #define DEMAND_ATTR \
         A(Demand)
-
-        #define DEMAND_LINK
 
         #define PIPE_LINK
 
@@ -55,11 +45,19 @@ namespace DM
         A(Diameter) \
         A(Length)
 
+        #define RESERVOIR_LINK
+
+        #define RESERVOIR_ATTR
+
+        #define TANK_LINK
+
+        #define TANK_ATTR
+
         #define TABLE \
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \
         X(PIPE,DM::EDGE,PIPE_ATTR, PIPE_LINK) \
-        X(EPANETMODEL,DM::COMPONENT,EPANETMODEL_ATTR, EPANETMODEL_LINK) \
-        X(DEMAND,DM::NODE,DEMAND_ATTR,DEMAND_LINK)
+        X(RESERVOIR, DM::NODE, RESERVOIR_ATTR, RESERVOIR_LINK) \
+        X(TANK, DM::NODE, TANK_ATTR, TANK_LINK)
 
         #include<viewdefhelper.h> //This would be the header if code completion would work correctly in qtcreator
     }
