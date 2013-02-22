@@ -28,6 +28,16 @@
 
 EPANETModelCreator::EPANETModelCreator(bool vertex)
 {
+    #define X(a) #a,
+    ComponentStrings = {TYPES};
+    #undef X
+    #undef TYPES
+
+    UnitStrings = {"CFS", "GPM", "MGD", "IMGD", "AFD", "LPS", "LPM", "MLD", "CMH", "CMD"};
+    HeadlossStrings = {"H-W","D-W","C-M"};
+    UnbalancedStrings = {"STOP","CONTINUE"};
+    HydraulicsStrings = {"USE", "SAVE"};
+
     this->vertex=vertex;
     for(uint index=0; index<ComponentStrings.size(); index++)
         model[static_cast<ComponentTypes>(index)] = make_shared<EpanetElements>();

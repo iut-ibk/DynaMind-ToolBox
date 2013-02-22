@@ -53,59 +53,12 @@ private:
     #define X(a) a,
         enum ComponentTypes {TYPES};
     #undef X
-    #define X(a) #a,
-        std::vector<std::string> ComponentStrings = {
-            TYPES
-        };
-    #undef X
-    #undef TYPES
 
-    #define TYPES X(CFS) X(GPM) X(MGD) X(IMGD) X(AFD) X(LPS) X(LPM) X(MLD) X(CMH) X(CMD)
-
-public:
-    #define X(a) a,
-        enum UNITS {TYPES};
-    #undef X
-
-private:
-    #define X(a) #a,
-        std::vector<QString> UnitStrings = {
-            TYPES
-        };
-    #undef X
-    #undef TYPES
-
-public:
-    enum HEADLOSS {HW,DW,CM};
-
-private:
-    std::vector<QString> HeadlossStrings = {"H-W","D-W","C-M"};
-
-    #define TYPES X(STOP) X(CONTINUE)
-
-public:
-    #define X(a) a,
-        enum UNBALANCED {TYPES};
-    #undef X
-
-private:
-    #define X(a) #a,
-        std::vector<QString>UnbalancedStrings = {TYPES};
-    #undef X
-    #undef TYPES
-
-    #define TYPES X(USE) X(SAVE)
-
-public:
-    #define X(a) a,
-        enum HYDRAULICS {TYPES};
-    #undef X
-
-private:
-    #define X(a) #a,
-        std::vector<QString>HydraulicsStrings = {TYPES};
-    #undef X
-    #undef TYPES
+    std::vector<std::string> ComponentStrings;
+    std::vector<QString> UnitStrings;
+    std::vector<QString> HeadlossStrings;
+    std::vector<QString> UnbalancedStrings;
+    std::vector<QString> HydraulicsStrings;
 
     typedef std::map<QString,QString> EpanetElements;
 
@@ -115,6 +68,11 @@ private:
     QVector<DM::Component*> components;
 
 public:
+    enum UNITS {CFS, GPM, MGD, IMGD, AFD, LPS, LPM, MLD, CMH, CMD};
+    enum HEADLOSS {HW,DW,CM};
+    enum UNBALANCED {STOP, CONTINUE};
+    enum HYDRAULICS {USE, SAVE};
+
     EPANETModelCreator(bool vertex=true);
 
     //NODE COMPONENTS OF EPANET
