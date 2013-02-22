@@ -28,15 +28,31 @@
 
 EPANETModelCreator::EPANETModelCreator(bool vertex)
 {
-    #define X(a) #a,
-    ComponentStrings = {TYPES};
+    #define X(a) ComponentStrings.push_back(#a);
+    TYPES;
     #undef X
     #undef TYPES
 
-    UnitStrings = {"CFS", "GPM", "MGD", "IMGD", "AFD", "LPS", "LPM", "MLD", "CMH", "CMD"};
-    HeadlossStrings = {"H-W","D-W","C-M"};
-    UnbalancedStrings = {"STOP","CONTINUE"};
-    HydraulicsStrings = {"USE", "SAVE"};
+    UnitStrings.push_back("CFS");
+    UnitStrings.push_back("GPM");
+    UnitStrings.push_back("MGD");
+    UnitStrings.push_back("IMGD");
+    UnitStrings.push_back("AFD");
+    UnitStrings.push_back("LPS");
+    UnitStrings.push_back("LPM");
+    UnitStrings.push_back("MLD");
+    UnitStrings.push_back("CMH");
+    UnitStrings.push_back("CMD");
+
+    HeadlossStrings.push_back("H-W");
+    HeadlossStrings.push_back("D-W");
+    HeadlossStrings.push_back("C-M");
+
+    UnbalancedStrings.push_back("STOP");
+    UnbalancedStrings.push_back("CONTINUE");
+
+    HydraulicsStrings.push_back("USE");
+    HydraulicsStrings.push_back("SAVE");
 
     this->vertex=vertex;
     for(uint index=0; index<ComponentStrings.size(); index++)
