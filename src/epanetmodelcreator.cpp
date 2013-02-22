@@ -40,7 +40,7 @@ EPANETModelCreator::EPANETModelCreator(bool vertex)
 
     this->vertex=vertex;
     for(uint index=0; index<ComponentStrings.size(); index++)
-        model[static_cast<ComponentTypes>(index)] = make_shared<EpanetElements>();
+        model[static_cast<ComponentTypes>(index)] = boost::make_shared<EpanetElements>();
 
     initModel();
 }
@@ -178,7 +178,7 @@ bool EPANETModelCreator::save(string filepath)
     for(uint index=0; index<ComponentStrings.size(); index++)
     {
         out << "\n[" << QString::fromStdString(ComponentStrings[index]) + "]\n";
-        std::shared_ptr<EpanetElements> elements = model[static_cast<ComponentTypes>(index)];
+        boost::shared_ptr<EpanetElements> elements = model[static_cast<ComponentTypes>(index)];
         EpanetElements::iterator itr;
 
         for(itr=elements.get()->begin(); itr!=elements.get()->end(); ++itr)

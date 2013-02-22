@@ -33,6 +33,8 @@
 #include <memory>
 #include <QString>
 #include <iostream>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 #include <watersupplyviewdef.h>
 
@@ -63,7 +65,7 @@ private:
     typedef std::map<QString,QString> EpanetElements;
 
     bool vertex;
-    std::map<ComponentTypes,std::shared_ptr<EpanetElements> > model;
+    std::map<ComponentTypes,boost::shared_ptr<EpanetElements> > model;
     DM::WS::ViewDefinitionHelper wsd;
     QVector<DM::Component*> components;
 
