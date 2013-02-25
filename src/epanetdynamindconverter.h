@@ -28,14 +28,34 @@
 #define EpanetDynamindConverter_H
 
 #include <dm.h>
-
-class EPANETModelCreator;
+#include <watersupplyviewdef.h>
+#include <epanetmodelcreator.h>
 
 class EpanetDynamindConverter
 {
+
+private:
+    DM::WS::ViewDefinitionHelper wsd;
+    QMap<DM::Component*,uint> components;
+    EPANETModelCreator creator;
+    bool openedepanetfile;
+
 public:
-    static bool createEpanetModel(DM::System *sys, EPANETModelCreator *creator, std::string inpfilepath);
-    static bool checkENRet(int ret);
+    EpanetDynamindConverter(EPANETModelCreator &creator);
+    bool createEpanetModel(DM::System *sys, std::string inpfilepath);
+    bool mapEpanetAttributes(DM::System *sys);
+    bool mapPipeAttributes(DM::System *sys);
+    bool checkENRet(int ret);
+    bool openEpanetModel(std::string inpfilepath, string rptfilepath);
+    bool closeEpanetModel();
+
+    //NODE COMPONENTS OF EPANET
+    bool addJunction(DM::Node *junction);
+    bool addReservoir(DM::Node *reservoir);
+    bool addTank(DM::Node *tank);
+
+    //LINK COMPONENTS OF EPANET
+    bool addPipe(DM::Edge *pipe);
 };
 
 #endif // EpanetDynamindConverter_H

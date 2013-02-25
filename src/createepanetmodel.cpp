@@ -42,7 +42,7 @@
 
 //Watersupply
 #include <dmepanet.h>
-#include <epanetmodelcreator.h>
+#include <epanetdynamindconverter.h>
 
 using namespace DM;
 
@@ -67,7 +67,9 @@ void CreateEPANETModel::run()
     cmap::iterator itr;
 
     this->sys = this->getData("Watersupply");
+
     EPANETModelCreator creator;
+    EpanetDynamindConverter converter(creator);
 
     if(!this->inpfilepath.size())
     {
@@ -83,25 +85,25 @@ void CreateEPANETModel::run()
     cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::READ));
 
     for(itr = junctions.begin(); itr != junctions.end(); ++itr)
-        creator.addJunction(static_cast<DM::Node*>((*itr).second));
+        converter.addJunction(static_cast<DM::Node*>((*itr).second));
 
     //RESERVOIRS
     cmap reservoir = sys->getAllComponentsInView(wsd.getView(DM::WS::RESERVOIR, DM::READ));
 
     for(itr = reservoir.begin(); itr != reservoir.end(); ++itr)
-        creator.addReservoir(static_cast<DM::Node*>((*itr).second));
+        converter.addReservoir(static_cast<DM::Node*>((*itr).second));
 
     //TANKS
     cmap tank = sys->getAllComponentsInView(wsd.getView(DM::WS::TANK, DM::READ));
 
     for(itr = tank.begin(); itr != tank.end(); ++itr)
-        creator.addTank(static_cast<DM::Node*>((*itr).second));
+        converter.addTank(static_cast<DM::Node*>((*itr).second));
 
     //PIPES
     cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::READ));
 
     for(itr = pipes.begin(); itr != pipes.end(); ++itr)
-        creator.addPipe(static_cast<DM::Edge*>((*itr).second));
+        converter.addPipe(static_cast<DM::Edge*>((*itr).second));
 
 
     creator.save(inpfilepath);

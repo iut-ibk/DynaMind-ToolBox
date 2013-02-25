@@ -42,8 +42,6 @@
 
 //Watersupply
 #include <dmepanet.h>
-#include <epanetmodelcreator.h>
-#include <epanetdynamindconverter.h>
 
 //QT
 #include <QDir>
@@ -68,29 +66,24 @@ void Dimensioning::run()
 {
 
     QString dir = QDir::tempPath();
-    QString inpfilename = "test.inp";
-    QString rptfilename = "test.rpt";
-
-
-    char inpfile[256];
-    strcpy(inpfile,QString(dir+"/"+inpfilename).toStdString().c_str());
-    char rptfile[256];
-    strcpy(rptfile,QString(dir+"/"+rptfilename).toStdString().c_str());
+    std::string inpfilename = dir.toStdString() + "/test.inp";
+    std::string rptfilename = dir.toStdString() + "/test.rpt";
     EPANETModelCreator creator;
-
+    converter = boost::make_shared<EpanetDynamindConverter>(creator);
 
     this->sys = this->getData("Watersupply");
 
-    if(!EpanetDynamindConverter::createEpanetModel(this->sys, &creator, inpfile))
+    if(!converter->createEpanetModel(this->sys,inpfilename))
     {
         DM::Logger(DM::Error) << "Could not create a valid EPANET inp file";
         return;
     }
 
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENopen(inpfile,rptfile,""))) return;
+    if(!converter->openEpanetModel(inpfilename,rptfilename)) return;
     if(!SitzenfreiDimensioning())return;
-    //if(!EpanetDynamindConverter::checkENRet(EPANET::ENsaveinpfile("/tmp/designed.inp")))return;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENclose()))return;
+    if(!converter->mapEpanetAttributes(this->sys)) return;
+    //if(!converter->checkENRet(EPANET::ENsaveinpfile("/tmp/designed.inp")))return;
+    converter->closeEpanetModel();
 }
 
 bool Dimensioning::SitzenfreiDimensioning()
@@ -100,19 +93,19 @@ bool Dimensioning::SitzenfreiDimensioning()
     double designvelocity[] = {0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 1.75, 1.75, 2, 2, 2, 2, 2};
 
     //Get number of nodes and links
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENgetcount(EN_NODECOUNT,&nnodes)))return false;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENgetcount(EN_LINKCOUNT,&nlinks)))return false;
+    if(!converter->checkENRet(EPANET::ENgetcount(EN_NODECOUNT,&nnodes)))return false;
+    if(!converter->checkENRet(EPANET::ENgetcount(EN_LINKCOUNT,&nlinks)))return false;
 
     DM::Logger(DM::Standard) << "Starting SitzenfreiDimensioning with " << nnodes << " nodes and " << nlinks << " links.";
 
     //Set all diameters to smallest available diameter
     for(int index=1; index<=nlinks; index++)
-        if(!EpanetDynamindConverter::checkENRet(EPANET::ENsetlinkvalue(index,EN_DIAMETER,diameter[0])))return false;
+        if(!converter->checkENRet(EPANET::ENsetlinkvalue(index,EN_DIAMETER,diameter[0])))return false;
 
     //Simulate model the first time
     DM::Logger(DM::Standard) << "Simulate model the first time";
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENsolveH()))return false;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENsolveQ()))return false;
+    if(!converter->checkENRet(EPANET::ENsolveH()))return false;
+    if(!converter->checkENRet(EPANET::ENsolveQ()))return false;
 
     //initialize design criteria for velocities for the first iteration
     std::vector<double> resV(nlinks,2*designvelocity[0]);
@@ -123,13 +116,13 @@ bool Dimensioning::SitzenfreiDimensioning()
     while( (boost::accumulate(resV, 0)>=1) && (i < (sizeof(diameter)/sizeof(int))))
     {
         i++;
-        if(!EpanetDynamindConverter::checkENRet(EPANET::ENopenH()))return false;
-        if(!EpanetDynamindConverter::checkENRet(EPANET::ENinitH(1)))return false;
+        if(!converter->checkENRet(EPANET::ENopenH()))return false;
+        if(!converter->checkENRet(EPANET::ENinitH(1)))return false;
 
         //set new diameters
         for(int index=0; index<nlinks; index++)
             if(resV[index]>=designvelocity[i])
-                if(!EpanetDynamindConverter::checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
+                if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
 
         //simulate
         long int t=0;
@@ -137,19 +130,19 @@ bool Dimensioning::SitzenfreiDimensioning()
 
         while(tstep)
         {
-            if(!EpanetDynamindConverter::checkENRet(EPANET::ENrunH(&t)))return false;
-            if(!EpanetDynamindConverter::checkENRet(EPANET::ENnextH(&tstep)))return false;
+            if(!converter->checkENRet(EPANET::ENrunH(&t)))return false;
+            if(!converter->checkENRet(EPANET::ENnextH(&tstep)))return false;
         }
 
         //extract results of simulation
         for(int index=0; index<nlinks; index++)
         {
             float val;
-            if(!EpanetDynamindConverter::checkENRet(EPANET::ENgetlinkvalue(index+1,EN_VELOCITY,&val)))return false;
+            if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_VELOCITY,&val)))return false;
             resV[index]=val;
         }
 
-        if(!EpanetDynamindConverter::checkENRet(EPANET::ENcloseH()))return false;
+        if(!converter->checkENRet(EPANET::ENcloseH()))return false;
     }
 
     DM::Logger(DM::Standard) << "Auto designer needed " << i+1 << " iterations.";

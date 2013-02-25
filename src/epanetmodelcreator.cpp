@@ -54,6 +54,11 @@ EPANETModelCreator::EPANETModelCreator(bool vertex)
     HydraulicsStrings.push_back("USE");
     HydraulicsStrings.push_back("SAVE");
 
+    PipeStatusString.push_back("OPEN");
+    PipeStatusString.push_back("CLOSED");
+    PipeStatusString.push_back("CV");
+
+    cindex=0;
     this->vertex=vertex;
     for(uint index=0; index<ComponentStrings.size(); index++)
         model[static_cast<ComponentTypes>(index)] = boost::make_shared<EpanetElements>();
@@ -61,120 +66,107 @@ EPANETModelCreator::EPANETModelCreator(bool vertex)
     initModel();
 }
 
-bool EPANETModelCreator::addJunction(DM::Node *junction)
+uint EPANETModelCreator::addJunction(double x, double y, double elevation, double basedemand, std::string demandpattern)
 {
-    components.push_back(junction);
-    int cindex = components.size()-1;
+    cindex++;
     QString id = QString::number(cindex);
 
     QString result = "";
 
     result += id + "\t";
-    result += QString::number(junction->getZ()) + "\t";
-    result += QString::number(junction->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Demand))->getDouble()) + "\t";
+    result += QString::number(elevation) + "\t";
+    result += QString::number(basedemand) + "\t";
+    result += QString::fromStdString(demandpattern) + "\t";
 
     (*model[EPANETModelCreator::JUNCTIONS])[id] = result;
 
-    if(vertex)
-        return addCoordinate(junction,QString::number(cindex));
+    if(!addCoordinate(x,y,QString::number(cindex)))
+        return false;
 
-    return true;
+    return cindex;
 }
 
-bool EPANETModelCreator::addReservoir(DM::Node *reservoir)
+uint EPANETModelCreator::addReservoir(double x, double y, double head, std::string headpattern)
 {
-    components.push_back(reservoir);
-    int cindex = components.size()-1;
+    cindex++;
     QString id = QString::number(cindex);
 
     QString result = "";
-
     result += QString::number(cindex) + "\t";
-    result += QString::number(reservoir->getZ()) + "\t";
+    result += QString::number(head) + "\t";
+    result += QString::fromStdString(headpattern) + "\t";
 
     (*model[EPANETModelCreator::RESERVOIRS])[id]=result;
 
-    if(vertex)
-        return addCoordinate(reservoir,QString::number(cindex));
+    if(!addCoordinate(x,y,QString::number(cindex)))
+        return false;
 
-    return true;
+    return cindex;
 }
 
-bool EPANETModelCreator::addTank(DM::Node *tank)
+uint EPANETModelCreator::addTank(double x, double y, double bottomelevation, double initiallevel, double minlevel, double maxlevel, double nominaldiamter, double minvolume, std::string volumecurve)
 {
-    components.push_back(tank);
-    int cindex = components.size()-1;
+    cindex++;
     QString id = QString::number(cindex);
 
     QString result = "";
 
     result += QString::number(cindex) + "\t";
-    result += QString::number(tank->getZ()) + "\t";
-    result += QString::number(5) + "\t";
-    result += QString::number(0) + "\t";
-    result += QString::number(5) + "\t";
-    result += QString::number(10) + "\t";
-    result += QString::number(0) + "\t";
+    result += QString::number(bottomelevation) + "\t";
+    result += QString::number(initiallevel) + "\t";
+    result += QString::number(minlevel) + "\t";
+    result += QString::number(maxlevel) + "\t";
+    result += QString::number(nominaldiamter) + "\t";
+    result += QString::number(minvolume) + "\t";
+    result += QString::fromStdString(volumecurve) + "\t";
 
     (*model[EPANETModelCreator::TANKS])[id]=result;
 
-    if(vertex)
-        return addCoordinate(tank,QString::number(cindex));
+    if(!addCoordinate(x,y,QString::number(cindex)))
+        return false;
 
-    return true;
+    return cindex;
 }
 
-bool EPANETModelCreator::addPipe(DM::Edge *pipe)
+uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status)
 {
-    QString id;
-    uint startnode, endnode, cindex;
-    components.push_back(pipe);
-    cindex = components.size()-1;
-    id = QString::number(cindex);
-    startnode = components.indexOf(pipe->getStartNode());
-    endnode = components.indexOf(pipe->getEndNode());
+    cindex++;
+    QString id = QString::number(cindex);
 
     QString result = "";
     result += id + "\t";
     result += QString::number(startnode) + "\t";
     result += QString::number(endnode) + "\t";
-    result += QString::number(pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Length))->getDouble()) + "\t";
-    result += QString::number(pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter))->getDouble()) + "\t";
-    result += "0.04\t";
-    result += "0\t";
-    result += "OPEN\t";
+    result += QString::number(length) + "\t";
+    result += QString::number(diameter) + "\t";
+    result += QString::number(roughness) + "\t";
+    result += QString::number(minorloss) + "\t";
+    result += PipeStatusString[status] + "\t";
 
     (*model[EPANETModelCreator::PIPES])[id]=result;
 
-    if(vertex)
-        return addVertex(pipe,QString::number(cindex));
-
-    return true;
+    return cindex;
 }
 
-bool EPANETModelCreator::addCoordinate(DM::Node *node, QString id)
+bool EPANETModelCreator::addCoordinate(double x, double y, QString id)
 {
     QString result = "";
     result += id + "\t";
-    result += QString::number(node->getX()) + "\t";
-    result += QString::number(node->getY()) + "\t";
+    result += QString::number(x) + "\t";
+    result += QString::number(y) + "\t";
     (*model[EPANETModelCreator::COORDINATES])[id]=result;
     return true;
 }
 
-bool EPANETModelCreator::addVertex(DM::Edge *edge, QString id)
+bool EPANETModelCreator::addVertex(double x1, double y1, double x2, double y2, QString id)
 {
-    DM::Node *startnode, *endnode;
-    startnode = edge->getStartNode();
-    endnode = edge->getEndNode();
-
     QString result = "";
     result += id + "\t";
-    result += QString::number(startnode->getX()) + "\t";
-    result += QString::number(startnode->getY()) + "\n";
+    result += QString::number(x1) + "\t";
+    result += QString::number(y1) + "\n";
     result += id + "\t";
-    result += QString::number(endnode->getX()) + "\t";
-    result += QString::number(endnode->getY()) + "\t";
+    result += QString::number(x2) + "\t";
+    result += QString::number(y2) + "\t";
     (*model[EPANETModelCreator::VERTICES])[id]=result;
 
     return true;
@@ -193,6 +185,12 @@ bool EPANETModelCreator::save(string filepath)
     QTextStream out(&file);
     for(uint index=0; index<ComponentStrings.size(); index++)
     {
+        if(index==VERTICES && !vertex)
+            continue;
+
+        if(index==COORDINATES && !vertex)
+            continue;
+
         out << "\n[" << QString::fromStdString(ComponentStrings[index]) + "]\n";
         boost::shared_ptr<EpanetElements> elements = model[static_cast<ComponentTypes>(index)];
         EpanetElements::iterator itr;

@@ -56,21 +56,22 @@ SimulateWithEPANET::SimulateWithEPANET()
 
 void SimulateWithEPANET::run()
 {
-    char inpfile[] = "/tmp/test.inp";
-    char rptfile[] = "/tmp/test.rpt";
+    QString dir = QDir::tempPath();
+    std::string inpfilename = dir.toStdString() + "/test.inp";
+    std::string rptfilename = dir.toStdString() + "/test.rpt";
     EPANETModelCreator creator;
-
+    converter = boost::make_shared<EpanetDynamindConverter>(creator);
 
     this->sys = this->getData("Watersupply");
 
-    if(!EpanetDynamindConverter::createEpanetModel(this->sys, &creator, inpfile))
+    if(!converter->createEpanetModel(this->sys,inpfilename))
     {
         DM::Logger(DM::Error) << "Could not create a valid EPANET inp file";
         return;
     }
 
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENopen(inpfile,rptfile,""))) return;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENopenH()))return;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENsolveH()))return;
-    if(!EpanetDynamindConverter::checkENRet(EPANET::ENclose()))return;
+    if(!converter->openEpanetModel(inpfilename,rptfilename)) return;
+    if(!converter->checkENRet(EPANET::ENopenH()))return;
+    if(!converter->checkENRet(EPANET::ENsolveH()))return;
+    if(!converter->closeEpanetModel())return;
 }

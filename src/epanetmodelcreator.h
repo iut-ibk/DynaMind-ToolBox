@@ -25,7 +25,7 @@
  */
 
 #ifndef EpanetModelCreator_H
-#define EpanetModelCreato_H
+#define EpanetModelCreator_H
 
 #include <dmsystem.h>
 #include <map>
@@ -61,29 +61,30 @@ private:
     std::vector<QString> HeadlossStrings;
     std::vector<QString> UnbalancedStrings;
     std::vector<QString> HydraulicsStrings;
+    std::vector<QString> PipeStatusString;
 
     typedef std::map<QString,QString> EpanetElements;
 
     bool vertex;
     std::map<ComponentTypes,boost::shared_ptr<EpanetElements> > model;
-    DM::WS::ViewDefinitionHelper wsd;
-    QVector<DM::Component*> components;
+    uint cindex;
 
 public:
     enum UNITS {CFS, GPM, MGD, IMGD, AFD, LPS, LPM, MLD, CMH, CMD};
     enum HEADLOSS {HW,DW,CM};
     enum UNBALANCED {STOP, CONTINUE};
     enum HYDRAULICS {USE, SAVE};
+    enum PIPESTATUS {OPEN, CLOSED, CV};
 
     EPANETModelCreator(bool vertex=true);
 
     //NODE COMPONENTS OF EPANET
-    bool addJunction(DM::Node *junction);
-    bool addReservoir(DM::Node *reservoir);
-    bool addTank(DM::Node *tank);
+    uint addJunction(double x, double y, double elevation, double basedemand=0, std::string demandpattern="");
+    uint addReservoir(double x, double y, double head, std::string headpattern);
+    uint addTank(double x, double y, double bottomelevation, double initiallevel, double minlevel, double maxlevel, double nominaldiamter, double minvolume, std::string volumecurve);
 
     //LINK COMPONENTS OF EPANET
-    bool addPipe(DM::Edge *pipe);
+    uint addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status);
 
     //OPTIONS
     bool setOptionUnits(UNITS unit);
@@ -105,11 +106,14 @@ public:
     bool save(std::string filepath);
     ~EPANETModelCreator(){}
 
+    //Coordinates
+    bool addCoordinate(double x, double y, QString id);
+    bool addVertex(double x1, double y1, double x2, double y2, QString id);
+
+
 private:
-    bool addCoordinate(DM::Node *node, QString id);
-    bool addVertex(DM::Edge *edge, QString id);
     bool addEntry(ComponentTypes type, QString id, QString values);
     void initModel();
 };
 
-#endif // EpanetModelCreato_H
+#endif // EpanetModelCreator_H

@@ -31,6 +31,7 @@
 #include <dm.h>
 
 #include <watersupplyviewdef.h>
+#include <epanetdynamindconverter.h>
 
 class Dimensioning : public DM::Module
 {
@@ -38,6 +39,7 @@ class Dimensioning : public DM::Module
 
     DM::WS::ViewDefinitionHelper wsd;
     DM::System * sys;
+    boost::shared_ptr<EpanetDynamindConverter> converter;
 
 public:
     Dimensioning();

@@ -30,6 +30,8 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include <watersupplyviewdef.h>
+#include <epanetdynamindconverter.h>
+#include <boost/shared_ptr.hpp>
 
 class SimulateWithEPANET : public DM::Module
 {
@@ -38,6 +40,7 @@ class SimulateWithEPANET : public DM::Module
 private:
     DM::System *sys;
     DM::WS::ViewDefinitionHelper wsd;
+    boost::shared_ptr<EpanetDynamindConverter> converter;
 
 
 public:
