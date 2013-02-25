@@ -37,10 +37,14 @@
 
 using namespace DM;
 
-EpanetDynamindConverter::EpanetDynamindConverter(EPANETModelCreator &creator)
+EpanetDynamindConverter::EpanetDynamindConverter()
 {
     openedepanetfile=false;
-    this->creator=&creator;
+}
+
+EPANETModelCreator *EpanetDynamindConverter::getCreator()
+{
+    return &creator;
 }
 
 bool EpanetDynamindConverter::createEpanetModel(System *sys, string inpfilepath)

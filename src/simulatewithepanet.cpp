@@ -59,8 +59,7 @@ void SimulateWithEPANET::run()
     QString dir = QDir::tempPath();
     std::string inpfilename = dir.toStdString() + "/test.inp";
     std::string rptfilename = dir.toStdString() + "/test.rpt";
-    EPANETModelCreator creator;
-    converter = boost::make_shared<EpanetDynamindConverter>(creator);
+    converter = boost::make_shared<EpanetDynamindConverter>();
 
     this->sys = this->getData("Watersupply");
 

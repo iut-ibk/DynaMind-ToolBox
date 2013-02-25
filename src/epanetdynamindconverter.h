@@ -41,7 +41,8 @@ private:
     bool openedepanetfile;
 
 public:
-    EpanetDynamindConverter(EPANETModelCreator &creator);
+    EpanetDynamindConverter();
+    EPANETModelCreator* getCreator();
     bool createEpanetModel(DM::System *sys, std::string inpfilepath);
     bool mapEpanetAttributes(DM::System *sys);
     bool mapPipeAttributes(DM::System *sys);

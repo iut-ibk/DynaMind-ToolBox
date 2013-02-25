@@ -68,8 +68,8 @@ void CreateEPANETModel::run()
 
     this->sys = this->getData("Watersupply");
 
-    EPANETModelCreator creator;
-    EpanetDynamindConverter converter(creator);
+    EpanetDynamindConverter converter;
+    EPANETModelCreator *creator = converter.getCreator();
 
     if(!this->inpfilepath.size())
     {
@@ -78,8 +78,8 @@ void CreateEPANETModel::run()
     }
 
     //SET OPTIONS
-    creator.setOptionUnits(EPANETModelCreator::LPS);
-    creator.setOptionHeadloss(EPANETModelCreator::DW);
+    creator->setOptionUnits(EPANETModelCreator::LPS);
+    creator->setOptionHeadloss(EPANETModelCreator::DW);
 
     //JUNCTIONS
     cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::READ));
@@ -106,5 +106,5 @@ void CreateEPANETModel::run()
         converter.addPipe(static_cast<DM::Edge*>((*itr).second));
 
 
-    creator.save(inpfilepath);
+    creator->save(inpfilepath);
 }

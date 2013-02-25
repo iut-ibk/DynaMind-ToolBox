@@ -68,8 +68,8 @@ void Dimensioning::run()
     QString dir = QDir::tempPath();
     std::string inpfilename = dir.toStdString() + "/test.inp";
     std::string rptfilename = dir.toStdString() + "/test.rpt";
-    EPANETModelCreator creator;
-    converter = boost::make_shared<EpanetDynamindConverter>(creator);
+
+    converter = boost::make_shared<EpanetDynamindConverter>();
 
     this->sys = this->getData("Watersupply");
 
@@ -105,7 +105,7 @@ bool Dimensioning::SitzenfreiDimensioning()
     //Simulate model the first time
     DM::Logger(DM::Standard) << "Simulate model the first time";
     if(!converter->checkENRet(EPANET::ENsolveH()))return false;
-    if(!converter->checkENRet(EPANET::ENsolveQ()))return false;
+    //if(!converter->checkENRet(EPANET::ENsolveQ()))return false;
 
     //initialize design criteria for velocities for the first iteration
     std::vector<double> resV(nlinks,2*designvelocity[0]);
