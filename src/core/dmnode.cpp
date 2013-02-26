@@ -145,6 +145,8 @@ const double Node::get(unsigned int i) const {
 
 std::vector<Edge*> Node::getEdges() const
 {
+	if(!connectedEdges)
+		return std::vector<Edge*>();
     return *connectedEdges;
 }
 
