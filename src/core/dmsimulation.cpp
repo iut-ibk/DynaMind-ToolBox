@@ -421,8 +421,10 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->addModule(me.ClassName.toStdString(), false);
         if (!m) {
-            this->setSimulationStatus(SIM_FAILED_LOAD);
-            return std::map<std::string, std::string>();
+            //this->setSimulationStatus(SIM_FAILED_LOAD);
+            //return std::map<std::string, std::string>();
+            Logger(DM::Warning) << "Missing Module " << me.ClassName.toStdString();
+            continue;
         }
 
         m->setName(me.Name.toStdString());
@@ -444,6 +446,7 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     //Call init Functions of the modules
     foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
+        if (!m) continue;
         m->init();
     }
 
