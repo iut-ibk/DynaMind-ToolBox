@@ -266,6 +266,7 @@ void Marker::run() {
     this->OutputMap = this->getRasterData("Result", DM::View (param.resultName, DM::RASTERDATA, DM::WRITE));
     this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,param.OffsetX,param.OffsetY);
     this->OutputMap->clear();
+    double noValue = this->OutputMap->getNoValue();
 
     //Init MuParser
     std::map<std::string, double*> VariableMap;
@@ -405,15 +406,15 @@ void Marker::run() {
                             value = this->OutputMap->getCell(i,j);
                         }
                     } else if ( param.PlacementOption.compare("KeepLowerValue") == 0 ) {
-                        if ( this->OutputMap->getCell(i,j) < value && this->OutputMap->getCell(i,j) != 0 ) {
+                        if ( this->OutputMap->getCell(i,j) < value && this->OutputMap->getCell(i,j) != noValue ) {
                             value = this->OutputMap->getCell(i,j);
                         }
                     } else if ( param.PlacementOption.compare("KeepValue") == 0 ) {
-                        if ( this->OutputMap->getCell(i,j) != 0) {
+                        if ( this->OutputMap->getCell(i,j) != noValue) {
                             value = this->OutputMap->getCell(i,j);
 
                         }
-                    } else if ( param.PlacementOption.compare("Add") == 0 ) {
+                    } else if ( param.PlacementOption.compare("Add") == noValue ) {
                         double val =  this->OutputMap->getCell(i,j);
 
                         value = value + val;
