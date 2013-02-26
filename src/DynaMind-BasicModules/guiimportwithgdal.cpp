@@ -20,6 +20,7 @@ GUIImportWithGDAL::GUIImportWithGDAL(DM::Module *m, QWidget *parent) :
     this->ui->lineEdit_wfs_password->setText(QString::fromStdString(m->getParameterAsString("WFSPassword")));
     this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(m->getParameterAsString("WFSDataName")));
     this->ui->lineEdit_epsgCode->setText(QString::fromStdString(m->getParameterAsString("Transform to EPSG:")));
+    this->ui->checkBox_flip->setChecked(m->getParameter<bool>("flip_wfs"));
 
 }
 
@@ -37,6 +38,7 @@ void GUIImportWithGDAL::accept()
     m->setParameterNative<std::string>("WFSUsername", this->ui->lineEdit_wfs_username->text().toStdString());
     m->setParameterNative<std::string>("WFSPassword", this->ui->lineEdit_wfs_password->text().toStdString());
     m->setParameterNative<std::string>("WFSDataName", this->ui->lineEdit_wfs_dataset->text().toStdString());
+    m->setParameterNative<bool>("flip_wfs", this->ui->checkBox_flip->isChecked());
     m->setParameterNative<int>("Transform to EPSG:", this->ui->lineEdit_epsgCode->text().toInt());
 
     QDialog::accept();

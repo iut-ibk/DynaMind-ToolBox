@@ -64,6 +64,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     std::string WFSServer_old;
     std::string WFSUsername_old;
     std::string WFSPassword_old;
+    bool flip_wfs;
 
     bool append_old;
 
