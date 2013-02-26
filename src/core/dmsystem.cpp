@@ -861,10 +861,16 @@ Component* DerivedSystem::getComponent(std::string uuid)
 				return getEdge(uuid);
 			case FACE:
 				return getFace(uuid);
+			case RASTERDATA:
+				//return addComponent(new Component(*n));
+				//return getComponent(uuid);
+				return n;
 			case SUBSYSTEM:
-			default:
+			//default:
 				return addComponent(new Component(*n));
 			//case RASTERDATA:
+			default:
+				return NULL;
 			}
 		}
 	}

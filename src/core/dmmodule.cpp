@@ -196,12 +196,12 @@ void Module::updateParameter()
                     DM::Logger(DM::Warning) << "Dummy component does not exist in view: " << checkView->getName();
                     break;
                 }
-                if (c->getCurrentSystem() != sys){
+                /*if (c->getCurrentSystem() != sys){
                     sys = 0;
                     DM::Logger(DM::Warning) << "Dummy component not found in system: "
                                             << c->getQUUID().toString().toStdString();
                     break;
-                }
+                }*/
                 //Check if attributes to read are avalible in component
                 foreach (std::string a, view.getReadAttributes())
                 {
