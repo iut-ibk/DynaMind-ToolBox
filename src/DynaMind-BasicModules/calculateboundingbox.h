@@ -40,10 +40,14 @@ class DM_HELPER_DLL_EXPORT CalculateBoundingBox : public Module
         DM::View vData;
         DM::View newFaces;
         bool MinBounding;
+        bool overAll;
 
 private:
         void caculateBoundingBox();
         void caculateMinBoundingBox();
+        void getNodesFromNodes(std::vector<DM::Node*> &nodes);
+        void getNodesFromEdges(std::vector<DM::Node*> &nodes);
+        void getNodesFromFaces(std::vector<DM::Node*> &nodes);
 public:
         void run();
     void init();
