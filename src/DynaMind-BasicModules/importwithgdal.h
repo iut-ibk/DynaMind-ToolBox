@@ -42,38 +42,69 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
 
     private:
         bool fileok;
-        std::string FileName;
-        std::string ViewName;
-        bool isvectordata;
-        int epsgcode;
-        bool transformok;
-        double tol;
-        bool append;
-        DM::View view;
-        double devider;
-        std::map<std::string, std::string> attributesToImport;
-        bool ImportAll;
-        OGRCoordinateTransformation *poCT;
 
-        QHash<QString, std::vector<DM::Node* > *> nodeList;
-        DM::Node * addNode(DM::System * sys, double x, double y, double z);
-        void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
-        DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
-        DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
-        DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
-        void initPointList(DM::System * sys);
-        QString createHash(double x, double y);
-        void vectorDataInit(OGRDataSource       *poDS);
-        void rasterDataInit(GDALDataset  *poDataset);
-        bool importVectorData();
-        bool importRasterData();
-        bool transform(double *x, double *y);
+    std::string FileName;
+    std::string ViewName;
 
-    public:
-        void run();
-        void init();
-        ImportwithGDAL();
-        ~ImportwithGDAL();
+    std::string WFSDataName;
+    std::string WFSServer;
+    std::string WFSUsername;
+    std::string WFSPassword;
+
+    bool isvectordata;
+    int epsgcode;
+    bool transformok;
+    double tol;
+    bool append;
+
+    std::string FileName_old;
+    std::string ViewName_old;
+
+    std::string WFSDataName_old;
+    std::string WFSServer_old;
+    std::string WFSUsername_old;
+    std::string WFSPassword_old;
+    bool flip_wfs;
+
+    bool append_old;
+
+
+
+    DM::View view;
+    double devider;
+    std::map<std::string, std::string> attributesToImport;
+    bool ImportAll;
+    OGRCoordinateTransformation *poCT;
+
+    QHash<QString, std::vector<DM::Node* > *> nodeList;
+    DM::Node * addNode(DM::System * sys, double x, double y, double z);
+    void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
+    DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
+    DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
+    DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
+    void initPointList(DM::System * sys);
+    QString createHash(double x, double y);
+    void vectorDataInit(OGRLayer       *poLayer);
+    void rasterDataInit(GDALDataset  *poDataset);
+    bool importVectorData();
+    bool importRasterData();
+    bool transform(double *x, double *y);
+    std::string server_full_name;
+
+    OGRLayer * LoadLayer();
+
+    enum DRIVERTYPE {
+        ShapeFile,
+        WFS
+    };
+
+    int driverType;
+public:
+    void run();
+    void init();
+    virtual bool  createInputDialog();
+    ImportwithGDAL();
+    ~ImportwithGDAL();
 };
 
 #endif // IMPORTWITHGDAL_H

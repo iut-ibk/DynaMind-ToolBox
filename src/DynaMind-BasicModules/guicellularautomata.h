@@ -29,6 +29,7 @@
 #include <dmcompilersettings.h>
 #include <QDialog>
 #include <QStringList>
+
 namespace DM{
     class Module;
 }

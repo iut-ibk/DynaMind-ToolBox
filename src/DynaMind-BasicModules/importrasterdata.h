@@ -39,6 +39,7 @@ private:
     std::string FileName;
     std::string dataname;
     std::string dataname_old;
+    DM::View Coords;
 public:
     ImportRasterData();
     void run();
