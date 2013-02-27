@@ -162,7 +162,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
-#ifdef DEBUG
+#if defined DEBUG || _DEBUG
     DM::Log::init(log_updater,DM::Debug);
 #else
     DM::Log::init(log_updater,DM::Standard);
