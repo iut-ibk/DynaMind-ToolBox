@@ -51,9 +51,9 @@ void SeperateInsert(long nx, long ny)
         for(long y = 0; y < ny; y++)
         {
             if(!q.exec("INSERT INTO rasterfields VALUES (0,"
-                        +QString::number(x)+","
-                        +QString::number(y)+",0)"))
-                    DM::PrintSqlError(&q);
+                       +QString::number(x)+","
+                       +QString::number(y)+",0)"))
+                DM::PrintSqlError(&q);
         }
     }
 }
@@ -418,51 +418,51 @@ TEST_F(TestSimulation,cachetest) {
     ASSERT_TRUE(c.get(3)==three);
     ASSERT_TRUE(c.get(4)==four);
     ASSERT_TRUE(c.get(10)==NULL);
-	/*
-	int size = 4000;
-	Cache<int,double> cache(size);
-	for(int i=0;i<size;i++)
-	{
-		double* d = new double;
-		*d = (double)i;
-		cache.add(i,d);
-	}
-	
-	QElapsedTimer time;
-	time.start();
-	for(int j=0;j<10;j++)
-		for(int i=0;i<size;i++)
-			cache.get(i);
-	
-	DM::Logger(Error) << "elapsed time for searching " << GetElapsedTime(&time);
-	*/
-	/*
-	int size = 20000;
-	//for(int i=0;i<size;i++)
-	//	buf[i] = (double)rand();
+    /*
+    int size = 4000;
+    Cache<int,double> cache(size);
+    for(int i=0;i<size;i++)
+    {
+        double* d = new double;
+        *d = (double)i;
+        cache.add(i,d);
+    }
 
-	QElapsedTimer time;
-	time.start();
+    QElapsedTimer time;
+    time.start();
+    for(int j=0;j<10;j++)
+        for(int i=0;i<size;i++)
+            cache.get(i);
 
-	for(int i=0;i<10;i++)
-	{
-		double *buf = new double[size];
-		QByteArray qba((char*)buf, size*sizeof(double));
-	}
+    DM::Logger(Error) << "elapsed time for searching " << GetElapsedTime(&time);
+    */
+    /*
+    int size = 20000;
+    //for(int i=0;i<size;i++)
+    //	buf[i] = (double)rand();
 
-	DM::Logger(Error) << "elapsed time for 10x1 buffers: " << GetElapsedTime(&time);
-	time.restart();
-	
-	double *buf = new double[size*10];
-	double* p = buf;
-	for(int i=0;i<10;i++)
-	{
-		QByteArray::fromRawData((char*)p,size*sizeof(double));
-		p += size;
-	}
-	
-	DM::Logger(Error) << "elapsed time for 1x10 buffers: " << GetElapsedTime(&time);
-	delete buf;*/
+    QElapsedTimer time;
+    time.start();
+
+    for(int i=0;i<10;i++)
+    {
+        double *buf = new double[size];
+        QByteArray qba((char*)buf, size*sizeof(double));
+    }
+
+    DM::Logger(Error) << "elapsed time for 10x1 buffers: " << GetElapsedTime(&time);
+    time.restart();
+
+    double *buf = new double[size*10];
+    double* p = buf;
+    for(int i=0;i<10;i++)
+    {
+        QByteArray::fromRawData((char*)p,size*sizeof(double));
+        p += size;
+    }
+
+    DM::Logger(Error) << "elapsed time for 1x10 buffers: " << GetElapsedTime(&time);
+    delete buf;*/
 }
 
 TEST_F(TestSimulation,simplesqltest) {
@@ -511,45 +511,45 @@ TEST_F(TestSimulation,sqlsuccessortest) {
 
 TEST_F(TestSimulation,sqlsuccessortest)
 {
-	ostream *out = &cout;
+    ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Successor states (SQL)";
 
-	// check if uuids are created
-	Component* c = new Component();
-	ASSERT_TRUE(c->getUUID() != "");
-	// check if attribute is added
-	ASSERT_TRUE(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() != "");
-	delete c;
-	
-	// check if no name is created if there is no element
-	System *sys = new System();
-	c = sys->getComponent((std::string)"test");
-	ASSERT_TRUE(c == NULL);
-	delete sys;
-	
-	// check if successor names conserved
-	sys = new System();
-	Node* n = new Node(1,2,3);
-	sys->addNode(n);
-	std::string name = n->getUUID();	// add, then init uuid
-	Node* n2 = new Node(4,5,6);
-	sys->addNode(n2);
-	System *sys2 = sys->createSuccessor();
-	std::string name2 = n2->getUUID();	// add, successor then get name
-	
-	Node* sysn = sys->getNode(name);
-	Node* sysn2 = sys2->getNode(name);
-	Node* sysn22 = sys2->getNode(name2);
-	ASSERT_TRUE(*sysn2 == *n);
-	ASSERT_TRUE(*sysn22 == *n2);
-	ASSERT_TRUE(sysn2->getUUID() == n->getUUID());
-	ASSERT_TRUE(sysn22->getUUID() == n2->getUUID());
-	ASSERT_TRUE(sysn->getQUUID() == n->getQUUID());
-	ASSERT_TRUE(sysn22->getQUUID() != n2->getQUUID());
-	
-	delete sys;
-	//delete sys2;	successor states are deleted by sys
+    // check if uuids are created
+    Component* c = new Component();
+    ASSERT_TRUE(c->getUUID() != "");
+    // check if attribute is added
+    ASSERT_TRUE(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() != "");
+    delete c;
+
+    // check if no name is created if there is no element
+    System *sys = new System();
+    c = sys->getComponent((std::string)"test");
+    ASSERT_TRUE(c == NULL);
+    delete sys;
+
+    // check if successor names conserved
+    sys = new System();
+    Node* n = new Node(1,2,3);
+    sys->addNode(n);
+    std::string name = n->getUUID();	// add, then init uuid
+    Node* n2 = new Node(4,5,6);
+    sys->addNode(n2);
+    System *sys2 = sys->createSuccessor();
+    std::string name2 = n2->getUUID();	// add, successor then get name
+
+    Node* sysn = sys->getNode(name);
+    Node* sysn2 = sys2->getNode(name);
+    Node* sysn22 = sys2->getNode(name2);
+    ASSERT_TRUE(*sysn2 == *n);
+    ASSERT_TRUE(*sysn22 == *n2);
+    ASSERT_TRUE(sysn2->getUUID() == n->getUUID());
+    ASSERT_TRUE(sysn22->getUUID() == n2->getUUID());
+    ASSERT_TRUE(sysn->getQUUID() == n->getQUUID());
+    ASSERT_TRUE(sysn22->getQUUID() != n2->getQUUID());
+
+    delete sys;
+    //delete sys2;	successor states are deleted by sys
 }
 
 TEST_F(TestSimulation, SqlNodeTest)
@@ -563,17 +563,17 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(node->getY()==2);
     ASSERT_TRUE(node->getZ()==3);
 
-	DM::Node *copy = new DM::Node(*node);
-	*copy = *node;
-	DM::Node* copy2 = new DM::Node(*node);
-	DM::Node *copy3 = new DM::Node();
-	*copy3 = *node;
+    DM::Node *copy = new DM::Node(*node);
+    *copy = *node;
+    DM::Node* copy2 = new DM::Node(*node);
+    DM::Node *copy3 = new DM::Node();
+    *copy3 = *node;
     delete node;
 
     ASSERT_TRUE(copy->getX()==1);
     ASSERT_TRUE(copy->getY()==2);
     ASSERT_TRUE(copy->getZ()==3);
-	
+
     ASSERT_TRUE(copy2->getX()==1);
     ASSERT_TRUE(copy2->getY()==2);
     ASSERT_TRUE(copy2->getZ()==3);
@@ -582,15 +582,106 @@ TEST_F(TestSimulation, SqlNodeTest)
     ASSERT_TRUE(copy3->getY()==2);
     ASSERT_TRUE(copy3->getZ()==3);
 
-	delete copy;
-	delete copy2;
-	delete copy3;
+    delete copy;
+    delete copy2;
+    delete copy3;
 
     DBConnector::getInstance()->Synchronize();
     // print cache statistics
     DM::Node::PrintStatistics();
     DM::Attribute::PrintStatistics();
     //DM::RasterData::PrintStatistics();
+}
+
+/** @brief Tests deleting accessing nodes with edge pointers
+ *
+ * This method is often used in dynamind modules to go through a directed graph.
+ *
+ * First a map of start nodes over all edges is created. As key the pointers of the start nodes are used.
+ * To go through the graph you use a leaf. Now you use the start node map to get the edge. To get the next element
+ * you now use the pointer of the end node of the edge as start node for the start node map.
+ * The method is tested with 3 points and two edges. n1->n2->n3.
+ */
+TEST_F(TestSimulation, EdgeTestTreeSearch)
+{
+    DM::System * sys = new DM::System();
+
+    DM::View nv("nv", DM::EDGE, DM::WRITE);
+
+    DM::Node * n1 = sys->addNode(0,0,0,nv);
+    DM::Node * n2 = sys->addNode(0,1,0,nv);
+    DM::Node * n3 = sys->addNode(0,2,0,nv);
+
+
+    DM::View ev("ev", DM::EDGE, DM::WRITE);
+    sys->addEdge(n1, n2, ev);
+    sys->addEdge(n2, n3, ev);
+
+    std::string startNode_uuid = n1->getUUID();
+
+    DM::System * sys_succ = sys;
+
+    sys_succ->getUUIDs(nv);
+
+    std::vector<std::string> uuids = sys_succ->getUUIDs(ev);
+    std::map<DM::Node *, DM::Edge*> startNodeMap;
+    foreach (std::string uuid, uuids) {
+        DM::Edge * c = sys_succ->getEdge(uuid);
+        startNodeMap[sys_succ->getNode(c->getStartpointName())] = c;
+    }
+
+    DM::Node * startNode = sys_succ->getNode(startNode_uuid);
+    DM::Edge * se1 = startNodeMap[startNode];
+    DM::Node * nextNode = sys_succ->getNode(se1->getEndpointName());
+    DM::Edge * se2 = startNodeMap[nextNode];
+
+    ASSERT_TRUE(nextNode->getUUID() == n2->getUUID());
+
+    ASSERT_TRUE(se2 != NULL);
+
+    delete sys;
+}
+
+/** @brief Similar to EdgeTestTreeSearch, but with successor starte*/
+TEST_F(TestSimulation, PredecessorEdgeTestTreeSearch)
+{
+
+    DM::System * sys = new DM::System();
+
+    DM::View nv("nv", DM::EDGE, DM::WRITE);
+
+    DM::Node * n1 = sys->addNode(0,0,0,nv);
+    DM::Node * n2 = sys->addNode(0,1,0,nv);
+    DM::Node * n3 = sys->addNode(0,2,0,nv);
+
+
+    DM::View ev("ev", DM::EDGE, DM::WRITE);
+    sys->addEdge(n1, n2, ev);
+    sys->addEdge(n2, n3, ev);
+
+    std::string startNode_uuid = n1->getUUID();
+
+    DM::System * sys_succ = sys->createSuccessor();
+
+    sys_succ->getUUIDs(nv);
+
+    std::vector<std::string> uuids = sys_succ->getUUIDs(ev);
+    std::map<DM::Node *, DM::Edge*> startNodeMap;
+    foreach (std::string uuid, uuids) {
+        DM::Edge * c = sys_succ->getEdge(uuid);
+        startNodeMap[sys_succ->getNode(c->getStartpointName())] = c;
+    }
+
+    DM::Node * startNode = sys_succ->getNode(startNode_uuid);
+    DM::Edge * se1 = startNodeMap[startNode];
+    DM::Node * nextNode = sys_succ->getNode(se1->getEndpointName());
+    DM::Edge * se2 = startNodeMap[nextNode];
+
+    ASSERT_TRUE(nextNode->getUUID() == n2->getUUID());
+
+    ASSERT_TRUE(se2 != NULL);
+
+    delete sys;
 }
 
 TEST_F(TestSimulation, SqlEdgeTest)
@@ -720,52 +811,52 @@ TEST_F(TestSimulation, SQLattributes)
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test attributes (SQL)";
-	
+
     DM::Logger(DM::Standard) << "Test attribute cache";
-	
-	{
-		// test attribute cache
-		// generate new component, as cache wont be used if attribute is not owned
-		Component* c = new Component;
-		// resize cache, so we dont have to wait too long for reaching the limits
-		unsigned int cacheBefore = Attribute::GetCacheSize();
-		Attribute::ResizeCache(7);
-		// add
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name;
-			name << "name " << i;
-			c->addAttribute(name.str(), i+1);
-		}
-		// check
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name;
-			name << "name " << i;
-			ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+1.0);
-		}
-		// change attributes
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name, newname;
-			name << "name " << i;
-			//newname << "changed name " << i;
-			Attribute newatt(name.str(), i+20.0);
-			c->getAttribute(name.str())->Change(newatt);
-		}
-		//DBConnector::getInstance()->Synchronize();
-		// check
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name;
-			name << "name " << i;
-			ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+20.0);
-			//Logger(Error) << name.str() << ": " << c->getAttribute(name.str())->getDouble();
-		}
-		// reset cache
-		Attribute::ResizeCache(cacheBefore);
-		delete c;
-	}
+
+    {
+        // test attribute cache
+        // generate new component, as cache wont be used if attribute is not owned
+        Component* c = new Component;
+        // resize cache, so we dont have to wait too long for reaching the limits
+        unsigned int cacheBefore = Attribute::GetCacheSize();
+        Attribute::ResizeCache(7);
+        // add
+        for(int i=0;i<10;i++)
+        {
+            std::stringstream name;
+            name << "name " << i;
+            c->addAttribute(name.str(), i+1);
+        }
+        // check
+        for(int i=0;i<10;i++)
+        {
+            std::stringstream name;
+            name << "name " << i;
+            ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+1.0);
+        }
+        // change attributes
+        for(int i=0;i<10;i++)
+        {
+            std::stringstream name, newname;
+            name << "name " << i;
+            //newname << "changed name " << i;
+            Attribute newatt(name.str(), i+20.0);
+            c->getAttribute(name.str())->Change(newatt);
+        }
+        //DBConnector::getInstance()->Synchronize();
+        // check
+        for(int i=0;i<10;i++)
+        {
+            std::stringstream name;
+            name << "name " << i;
+            ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+20.0);
+            //Logger(Error) << name.str() << ": " << c->getAttribute(name.str())->getDouble();
+        }
+        // reset cache
+        Attribute::ResizeCache(cacheBefore);
+        delete c;
+    }
 
 
     DM::Logger(DM::Debug) << "checking add attributes";
@@ -777,21 +868,21 @@ TEST_F(TestSimulation, SQLattributes)
     ASSERT_TRUE(pa->getDouble()==50);
     delete c;
 
-	// check getUuid, assignment operators
-	c = new DM::Component();
-	std::string name = c->getUUID();
-	ASSERT_TRUE(c->getUUID() == name);
-	
-	DM::Component* c2 = new DM::Component(*c);
-	DM::Component* c3 = new DM::Component();
-	*c3 = *c;
-	delete c;
-	
-	ASSERT_TRUE(c2->getUUID() == name);
-	ASSERT_TRUE(c3->getUUID() == name);
-	delete c2;
-	delete c3;
-	//
+    // check getUuid, assignment operators
+    c = new DM::Component();
+    std::string name = c->getUUID();
+    ASSERT_TRUE(c->getUUID() == name);
+
+    DM::Component* c2 = new DM::Component(*c);
+    DM::Component* c3 = new DM::Component();
+    *c3 = *c;
+    delete c;
+
+    ASSERT_TRUE(c2->getUUID() == name);
+    ASSERT_TRUE(c3->getUUID() == name);
+    delete c2;
+    delete c3;
+    //
 
     double dbl = 13.0;
     std::vector<double> vecDbl;
@@ -887,11 +978,11 @@ TEST_F(TestSimulation, System)
     DM::Logger(DM::Standard) << "Test GetEdges";
 
 
-	System sys;
-	Node* n0 = sys.addNode(1,2,3);
-	Node* n1 = sys.addNode(4,5,6);
-	Edge *e = sys.addEdge(n0,n1);
-	ASSERT_TRUE(e==sys.getEdge(n0->getUUID(), n1->getUUID()));
+    System sys;
+    Node* n0 = sys.addNode(1,2,3);
+    Node* n1 = sys.addNode(4,5,6);
+    Edge *e = sys.addEdge(n0,n1);
+    ASSERT_TRUE(e==sys.getEdge(n0->getUUID(), n1->getUUID()));
 }
 
 #endif
@@ -1050,7 +1141,7 @@ TEST_F(TestSimulation,testMemory){
     ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
     for (int i = 0; i < 5; i++) {
         sim.removeModule(m_uuid);
-		DM::Logger(DM::Standard) << "#" << i;
+        DM::Logger(DM::Standard) << "#" << i;
         m_uuid = sim.addModule("CreateNodes")->getUuid();
         sim.run();
     }
