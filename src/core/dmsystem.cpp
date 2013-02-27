@@ -371,7 +371,7 @@ Edge* System::getEdge(const std::string & startnode, const std::string & endnode
 {
 	return getEdge(getNode(startnode),getNode(endnode));
 }
-Edge* System::getEdge(const Node* start, const Node* end)
+Edge* System::getEdge(Node* start, Node* end)
 {
 	foreach(Edge* e,start->getEdges())
 		if(e->getStartNode()==start || e->getEndNode()==end)
@@ -884,14 +884,14 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 	return n;
 }
 
-Edge* DerivedSystem::getEdge(const Node* start, const Node* end)
+Edge* DerivedSystem::getEdge(Node* start, Node* end)
 {
 	Edge* n = System::getEdge(start,end);
 	if(!n)
 	{
 		n = predecessorSys->getEdge(start,end);
 		if(n)
-			n = addEdge(new Edge(addNode(*start),addNode(*end)));
+			return addEdge(getNode(start->getUUID()),getNode(end->getUUID()));
 	}
 	return n;
 }
