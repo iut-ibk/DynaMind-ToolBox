@@ -339,7 +339,6 @@ Edge* System::addEdge(Edge* edge)
     foreach (std::string v, edge->getInViews()) {
         views[v][edge->getUUID()]=edge;
     }
-    //this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
     this->updateViews(edge);
     return edge;
 }
@@ -356,8 +355,6 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
         e->setView(view.getName());
     }
 
-    //this->EdgeNodeMap[std::pair<std::string, std::string>(start->getUUID(), end->getUUID())] = e;
-
     return e;
 }
 Edge* System::getEdge(std::string uuid)
@@ -373,11 +370,6 @@ Edge* System::getEdge(QUuid uuid)
 Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
 {
 	return getEdge(getNode(startnode),getNode(endnode));
-	/*
-    std::pair<std::string, std::string> key(startnode, endnode);
-    if(EdgeNodeMap.find(key)==EdgeNodeMap.end())
-        return 0;
-    return EdgeNodeMap[key];*/
 }
 Edge* System::getEdge(const Node* start, const Node* end)
 {
@@ -397,7 +389,6 @@ bool System::removeEdge(std::string name)
     if(!removeChild(quuid))
         return false;
     DM::Edge * e  = this->getEdge(quuid);
-    //this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
     edges.erase(quuid);
     return true;
 }
@@ -505,10 +496,7 @@ bool System::addComponentToView(Component *comp, const View &view)
 
 bool System::removeComponentFromView(Component *comp, const View &view) 
 {
-    //std::map<std::string, Component*> entries = this->views[view.getName()];
-    //entries.erase(comp->getUUID());
     comp->removeView(view);
-    //this->views[view.getName()] = entries;
 	this->views[view.getName()].erase(comp->getUUID());
     return true;
 }
@@ -668,7 +656,6 @@ const std::vector<DM::View> System::getViews()
 System* System::createSuccessor()
 {
     Logger(Debug) << "Create Sucessor ";// << this->getUUID();
-    //System* result = new System(*this);
     System* result = new DerivedSystem(this);
     this->sucessors.push_back(result);
 	this->SQLUpdateStates();
@@ -749,14 +736,6 @@ Component* System::getChild(std::string name) const
 	Component *c = NULL;
 	map_contains(&componentNameMap, name, c);
 	return c;
-	/*
-	mforeach(Component* c, ownedchilds)
-	{
-		if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
-			if(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() == name)
-				return c;
-	}
-	return NULL;*/
 }
 
 Component* System::getChild(QUuid uuid) const
@@ -764,7 +743,6 @@ Component* System::getChild(QUuid uuid) const
 	Component *c = NULL;
 	map_contains(&ownedchilds, uuid, c);
 	return c;
-    //return ownedchilds[uuid];
 }
 Component* System::findChild(QUuid uuid) const
 {
@@ -938,22 +916,6 @@ Face * DerivedSystem::getFace(std::string uuid)
 				f->addHole(getFace(hole->getUUID()));
 
 			return this->addFace(newf);
-
-			/*std::vector<Node*> nodes = f->getNodePointers();
-			std::vector<Node*> newNodes;
-			foreach(Node* node, nodes)
-				newNodes.push_back(getNode(node->getUUID()));
-			
-			std::vector<Face*> holes = f->getHolePointers();
-			std::map<std::string, Attribute*> attributes = f->getAllAttributes();
-
-			f = addFace(newNodes);
-
-			foreach(Face *hole, holes)
-				f->addHole(getFace(hole->getUUID()));
-
-			mforeach(Attribute* a, attributes)
-				f->addAttribute(*a);*/
 		}
 	}
 	return f;
@@ -1018,24 +980,6 @@ std::map<std::string, System*> DerivedSystem::getAllSubSystems()
 	}
 	return System::getAllSubSystems();
 }
-
-/*
-std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const View &view)
-{
-	// System::getAllComponentsInView(view) + 
-	std::map<std::string, Component*> pred_comps = this->predecessorSys->getAllComponentsInView(view);
-	std::map<std::string, Component*> comps = System::getAllComponentsInView(view);
-	// fill the map from predecessor system with the elements in this system
-	for(std::map<std::string, Component*>::iterator it = comps.begin();
-		it != comps.end(); ++it)
-	{
-		pred_comps[it->first] = it->second;
-	}
-
-    return pred_comps;
-
-}*/
-
 
 std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()
 {
