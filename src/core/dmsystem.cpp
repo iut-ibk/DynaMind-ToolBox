@@ -505,10 +505,11 @@ bool System::addComponentToView(Component *comp, const View &view)
 
 bool System::removeComponentFromView(Component *comp, const View &view) 
 {
-    std::map<std::string, Component*> entries = this->views[view.getName()];
-    entries.erase(comp->getUUID());
+    //std::map<std::string, Component*> entries = this->views[view.getName()];
+    //entries.erase(comp->getUUID());
     comp->removeView(view);
-    this->views[view.getName()] = entries;
+    //this->views[view.getName()] = entries;
+	this->views[view.getName()].erase(comp->getUUID());
     return true;
 }
 
@@ -715,7 +716,7 @@ bool System::removeChild(Component* c)
     if(ownedchilds.find(id)==ownedchilds.end())
         return false;
 
-    ownedchilds.erase(id);
+	ownedchilds.erase(id);
 
     switch (c->getType())
     {
@@ -843,6 +844,12 @@ Node* DerivedSystem::getNode(QUuid uuid)
 	}
 	return n;
 }
+
+Component* DerivedSystem::getChild(std::string name)
+{
+	return getComponent(name);
+}
+
 Component* DerivedSystem::getComponent(std::string uuid)
 {
 	Component* n = System::getComponent(uuid);
@@ -1012,7 +1019,7 @@ std::map<std::string, System*> DerivedSystem::getAllSubSystems()
 	return System::getAllSubSystems();
 }
 
-
+/*
 std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const View &view)
 {
 	// System::getAllComponentsInView(view) + 
@@ -1027,7 +1034,7 @@ std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const Vi
 
     return pred_comps;
 
-}
+}*/
 
 
 std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()

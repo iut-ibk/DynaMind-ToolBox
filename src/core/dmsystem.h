@@ -100,7 +100,7 @@ private:
     bool removeChild(std::string name);
     bool removeChild(QUuid uuid);
     /*@deprecated*/
-    Component* getChild(std::string name) const;
+    virtual Component* getChild(std::string name) const;
     Component* getChild(QUuid uuid) const;
     Component* findChild(QUuid uuid) const;
     /** @brief return table name */
@@ -225,7 +225,7 @@ public:
     /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
     /** @brief retrun all components related to a view */
-    virtual std::map<std::string, Component*> getAllComponentsInView(const View &view);
+    std::map<std::string, Component*> getAllComponentsInView(const View &view);
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
     /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
@@ -267,13 +267,14 @@ public:
     Edge* getEdge(std::string uuid);
     Edge* getEdge(const Node* start, const Node* end);
     Face * getFace(std::string uuid);
+    Component* getChild(std::string name);
     std::map<std::string, Component*> getAllComponents();
     std::map<std::string, Node*> getAllNodes();
     std::map<std::string, Edge*> getAllEdges();
     std::map<std::string, Face*> getAllFaces();
     std::map<std::string, System*> getAllSubSystems();
     std::map<std::string, RasterData*> getAllRasterData();
-    std::map<std::string, Component*> getAllComponentsInView(const View &view);
+    //std::map<std::string, Component*> getAllComponentsInView(const View &view);
 };
 
 }
