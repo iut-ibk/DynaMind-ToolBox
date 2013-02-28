@@ -28,7 +28,7 @@
 #include <dmedge.h>
 #include <dmnode.h>
 #include <dmsystem.h>
-
+#include <dmlogger.h>
 #include <QSqlQuery>
 #include <dmdbconnector.h>
 
@@ -103,6 +103,11 @@ void Edge::setStartpoint(Node *start)
 
 void Edge::setStartpointName(std::string name)
 {
+	if(!currentSys)
+	{
+		Logger(Error) << "setStartpointName in unattached edge not possible";
+		return;
+	}
 	setStartpoint(currentSys->getNode(name));
 }
 
@@ -114,6 +119,11 @@ void Edge::setEndpoint(Node *end)
 
 void Edge::setEndpointName(std::string name)
 {
+	if(!currentSys)
+	{
+		Logger(Error) << "setEndpointName in unattached edge not possible";
+		return;
+	}
 	setEndpoint(currentSys->getNode(name));
 }
 
