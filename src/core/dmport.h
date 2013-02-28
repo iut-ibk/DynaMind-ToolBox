@@ -53,7 +53,7 @@ namespace DM {
         Module * getModule();
         std::vector<ModuleLink*> getLinks();
         void addLink(ModuleLink * link);
-        std::string getLinkedDataName(){return this->linkedDataName;}
+        std::string getLinkedDataName() const {return this->linkedDataName;}
         int getPortType() const {return this->PortType;}
         void removeLink(ModuleLink * l);
         bool isPortTuple() {return tuplePort;}

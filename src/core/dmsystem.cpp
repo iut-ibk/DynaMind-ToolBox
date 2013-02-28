@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,40 +34,165 @@
 #include <dmlogger.h>
 #include <dmmodule.h>
 
+#include <dmdbconnector.h>
+#include <QSqlQuery>
+#include <QUuid>
 
 using namespace DM;
 
-
-System::System() : Component()
+System::System() : Component(true)
 {
     this->lastModule = 0;
+    //this->mutex = new QMutex(QMutex::Recursive);
 
+	currentSys = this;
+	
+    ownedchilds = std::map<QUuid, Component*>();
+	DBConnector::getInstance();
+	SQLInsert();
+}
+System::System(const System& s) : Component(s, true)
+{
+    predecessors = s.predecessors;
+    lastModule = s.lastModule;
+    //mutex = new QMutex(QMutex::Recursive);
+	SQLInsert();
+	
+    currentSys = this;
+
+    std::map<Component*,Component*> childReplaceMap;
+
+	mforeach(Component* oldComp, s.ownedchilds)
+    {
+		// init name generation
+		oldComp->getUUID();
+		// copy elements
+        switch(oldComp->getType())
+        {
+        case DM::COMPONENT:
+            childReplaceMap[oldComp] = addComponent(oldComp->clone());
+            break;
+        case DM::NODE:
+            childReplaceMap[oldComp] = addNode((Node*)oldComp->clone());
+            break;
+        case DM::SUBSYSTEM:
+            childReplaceMap[oldComp] = addSubSystem((System*)oldComp->clone());
+            break;
+        case DM::RASTERDATA:
+            childReplaceMap[oldComp] = addRasterData((RasterData*)oldComp->clone());
+            break;
+        default:    break;
+        }
+    }
+	// copy edges
+	mforeach(Edge* oldEdge, s.edges)
+    {
+        Edge *e = (Edge*)oldEdge->clone();
+		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStartNode()->getQUUID())]);
+        e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEndNode()->getQUUID())]);
+
+        childReplaceMap[oldEdge] = addEdge(e);
+    }
+	// copy faces
+	mforeach(Face* oldFace, s.faces)
+	{
+		std::vector<Node*> faceNodes = oldFace->getNodePointers();
+		for(int i=0;i<faceNodes.size();i++)
+			faceNodes[i] = (Node*)childReplaceMap[faceNodes[i]];
+
+		Face* newFace = this->addFace(faceNodes);
+        childReplaceMap[oldFace] = newFace;
+		mforeach(Attribute* a, oldFace->getAllAttributes())
+			newFace->addAttribute(*a);
+	}
+	// after all faces are initialized, we can copy the holes
+	mforeach(Face* oldFace, s.faces)
+	{
+		Face* f = (Face*)childReplaceMap[oldFace];
+		if(!f)
+		{
+			Logger(Error) << "Not found in child replace map: " << oldFace->getUUID();
+			continue;
+		}
+		std::vector<Face*> faceHoles = oldFace->getHolePointers();
+		foreach(Face* h, oldFace->getHolePointers())
+			f->addHole( (Face*)childReplaceMap[h] );
+	}
+    // update view definitions
+	mforeach(View* v, s.viewdefinitions)
+	{
+		View *newv = new View(*v);
+        viewdefinitions[v->getName()] = newv;
+		Component* dummy = v->getDummyComponent();
+		if(dummy)	newv->setDummyComponent(childReplaceMap[dummy]);
+    }
+	// copy component views
+    for ( std::map<Component*, Component*>::const_iterator it = childReplaceMap.begin(); it != childReplaceMap.end(); ++it  )
+		it->second->inViews = it->first->inViews;
+	
+    // update views
+    mforeach(Component* c, ownedchilds)
+        this->updateViews(c);
+
+	// update componentNameMap
+	mforeach(Component *c, s.componentNameMap)
+	{
+		Component *newc = NULL;
+		if(map_contains(&childReplaceMap, c, newc))
+			this->componentNameMap[newc->getUUID()] = newc;
+		else
+			Logger(Error) << "Not found in child replace map: " << c->getUUID();
+	}
+}
+System::~System()
+{
+    /*while(ownedchilds.size())
+    {
+        delete (*ownedchilds.begin()).second;
+        ownedchilds.erase(ownedchilds.begin());
+    }*/
+	mforeach(Component* c, ownedchilds)
+		delete c;
+
+	ownedchilds.clear();
+
+    foreach (DM::System * sys, this->sucessors)
+        if (sys)	delete sys;
+
+	//mforeach(View *v, viewdefinitions)
+    //    delete v;
+	// memory leak
+
+	viewdefinitions.clear();
+    //delete mutex;
+
+    Component::SQLDelete();
 }
 
 void System::setAccessedByModule(Module * m) {
     this->lastModule = m;
 }
 
-Module * System::getLastModule() {
+Module * System::getLastModule() const {
     return this->lastModule;
 }
 
 void System::updateViews(Component * c) {
-    if (!c) {
-        DM::Logger(DM::Error)  << "Component 0 in updateView";
+    if (!c) 
+	{
+        DM::Logger(DM::Error)  << "Component NULL in updateView";
         return;
     }
-    foreach (std::string view, c->getInViews()) {
+    foreach (std::string view, c->getInViews())
         this->views[view][c->getUUID()] = c;
-    }
 }
 
-std::vector<std::string> System::getNamesOfViews() {
+std::vector<std::string> System::getNamesOfViews() 
+{
     std::vector<std::string> names;
-
-    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  ) {
+    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  )
         names.push_back(it->first);
-    }
+
     return names;
 }
 
@@ -80,42 +205,22 @@ DM::View * System::getViewDefinition(string name) {
     return viewdefinitions[name];
 }
 
-System::System(const System& s) : Component(s)
+Components System::getType()
 {
-
-    subsystems=s.subsystems;
-    components = s.components;
-    nodes=s.nodes;
-    edges=s.edges;
-    faces = s.faces;
-    rasterdata = s.rasterdata;
-    EdgeNodeMap = s.EdgeNodeMap;
-    viewdefinitions = s.viewdefinitions;
-    predecessors = s.predecessors;
-    views = s.views;
-    lastModule = s.lastModule;
+	return DM::SUBSYSTEM;
 }
-
-System::~System()
+QString System::getTableName()
 {
-    foreach (DM::System * sys, sucessor)
-        if (sys)
-            delete sys;
-    foreach (DM::View * v, ownedView) {
-        delete v;
-    }
-    ownedView.clear();
-
-
+    return "systems";
 }
-
 Component * System::addComponent(Component* c, const DM::View & view)
 {
+    //QMutexLocker locker(mutex);
     if(!addChild(c)) {
         delete c;
         return 0;
     }
-    components[c->getUUID()]=c;
+    components[c->getQUUID()] = c;
 
     if (!view.getName().empty()) {
         this->views[view.getName()][c->getUUID()] = c;
@@ -125,295 +230,88 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
     return c;
 }
-
-
-Node * System::addNode(Node* node)
+Component * System::getComponent(std::string uuid)
 {
-    QMutexLocker(this->mutex);
+    return this->getChild(uuid);
+}
+bool System::removeComponent(std::string name)
+{
+    return removeChild(name);
+}
+
+Node* System::addNode(Node* node)
+{
+    //QMutexLocker locker(mutex);
     if(!addChild(node)) {
         delete node;
         return 0;
     }
+    nodes[node->getQUUID()] = node;
 
-    nodes[node->getUUID()]=node;
     this->updateViews(node);
     return node;
 }
-
-RasterData * System::addRasterData(RasterData *r, const DM::View & view)
+Node* System::addNode(const Node &n,  const DM::View & view)
 {
-    if(!addChild(r)) {
-        delete r;
-        return 0;
-    }
-
-    rasterdata[r->getUUID()] = r;
-
-    if (!view.getName().empty()) {
-        this->views[view.getName()][r->getUUID()] = r;
-        r->setView(view.getName());
-    }
-    this->updateViews(r);
-    return r;
+    double v[3];
+    n.get(v);
+    return this->addNode(v[0],v[1],v[2], view);
 }
 
-Node * System::addNode(double x, double y, double z,  const DM::View & view) {
-    QMutexLocker(this->mutex);
+Node * System::addNode(double x, double y, double z,  const DM::View & view)
+{
+    //QMutexLocker locker(mutex);
     Node * n = this->addNode(new Node(x, y, z));
 
-    if (n == 0)
-        return 0;
+    if (n == NULL)
+        return NULL;
     if (!view.getName().empty()) {
         this->views[view.getName()][n->getUUID()] = n;
         n->setView(view.getName());
     }
-
-
     return n;
-}
-
-Node * System::addNode(Node n,  const DM::View & view) {
-    QMutexLocker(this->mutex);
-    return this->addNode(n.getX(), n.getY(), n.getZ(), view);
-
-}
-
-Edge * System::addEdge(Edge* edge)
-{
-    QMutexLocker(this->mutex);
-    if(!getNode(edge->getStartpointName()) || !getNode(edge->getEndpointName())) {
-        delete edge;
-        return 0;
-    }
-
-    if(!addChild(edge)) {
-        delete edge;
-        return 0;
-    }
-
-    edges[edge->getUUID()]=edge;
-    foreach (std::string v, edge->getInViews()) {
-        views[v][edge->getUUID()]=edge;
-    }
-    this->EdgeNodeMap[std::pair<std::string, std::string>(edge->getStartpointName(), edge->getEndpointName())] = edge;
-    this->updateViews(edge);
-    return edge;
-}
-Edge * System::addEdge(Node * start, Node * end, const View &view)
-{
-    QMutexLocker(this->mutex);
-    Edge * e = this->addEdge(new Edge(start->getUUID(), end->getUUID()));
-
-    if (e == 0)
-        return 0;
-    if (!view.getName().empty()) {
-        this->views[view.getName()][e->getUUID()] = e;
-        e->setView(view.getName());
-    }
-
-    this->EdgeNodeMap[std::pair<std::string, std::string>(start->getUUID(), end->getUUID())] = e;
-
-    return e;
-}
-
-Face * System::addFace(Face *f) {
-    QMutexLocker(this->mutex);
-    if(!addChild(f)) {
-        delete f;
-        return 0;
-    }
-
-    faces[f->getUUID()]=f;
-    this->updateViews(f);
-    return f;
-}
-
-Face * System::addFace(vector<DM::Node*> nodes,  const DM::View & view)
-{
-    QMutexLocker(this->mutex);
-    std::vector<std::string> stringNodes;
-
-    foreach (Node* n, nodes)
-        stringNodes.push_back(n->getUUID());
-    Face * f = this->addFace(new Face(stringNodes));
-
-    if (f == 0)
-        return 0;
-    if (!view.getName().empty()) {
-        this->views[view.getName()][f->getUUID()] = f;
-        f->setView(view.getName());
-    }
-    return f;
 }
 
 Node* System::getNode(std::string uuid)
 {
-    QMutexLocker(this->mutex);
-    if(nodes.find(uuid)==nodes.end())
-        return 0;
-    Node * n = nodes[uuid];
-    if (n->getCurrentSystem() != this) {
-        n = static_cast<Node*>(updateChild(nodes[uuid]));
-        nodes[uuid] = n;
-        this->updateViews(n);
-        n->setCurrentSystem(this);
-    }
+    Component* c = getChild(uuid);
+    if(c && c->getType() == NODE)
+        return (Node*)c;
 
-    return nodes[uuid];
+    return NULL;
 }
 
-Edge* System::getEdge(std::string uuid)
+Node* System::getNode(QUuid uuid)
 {
-    QMutexLocker(this->mutex);
-    if(edges.find(uuid)==edges.end())
-        return 0;
-    Edge * e = edges[uuid];
-    if (e->getCurrentSystem() != this) {
-        e = static_cast<Edge*>(updateChild(edges[uuid]));
-        edges[uuid] = e;
-        this->updateViews(e);
-        e->setCurrentSystem(this);
-    }
+    Component* c = getChild(uuid);
+    if(c && c->getType() == NODE)
+        return (Node*)c;
 
-    return edges[uuid];
+    return NULL;
 }
-
-Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
-{
-    std::pair<std::string, std::string> key(startnode, endnode);
-    if(EdgeNodeMap.find(key)==EdgeNodeMap.end())
-        return 0;
-    return EdgeNodeMap[key];
-}
-
-Face* System::getFace(std::string uuid)
-{
-    QMutexLocker(this->mutex);
-    if(faces.find(uuid)==faces.end())
-        return 0;
-    Face * f = faces[uuid];
-    if (f->getCurrentSystem() != this) {
-        f = static_cast<Face*>(updateChild(faces[uuid]));
-        faces[uuid] = f;
-        this->updateViews(f);
-        f->setCurrentSystem(this);
-    }
-    return faces[uuid];
-
-}
-
-
-Component * System::getComponent(std::string uuid) {
-    QMutexLocker(this->mutex);
-    if(nodes.find(uuid)!=nodes.end())
-        return this->getNode(uuid);
-    if(edges.find(uuid)!=edges.end())
-        return this->getEdge(uuid);
-    if(faces.find(uuid)!=faces.end())
-        return this->getFace(uuid);
-    if(subsystems.find(uuid)!=subsystems.end())
-        return this->getSubSystem(uuid);
-    if(rasterdata.find(uuid)!=rasterdata.end())
-        return rasterdata[uuid];
-    if(components.find(uuid)!=components.end()) {
-        Component * c = components[uuid];
-        if (c->getCurrentSystem() != this) {
-            c = static_cast<Component*>(updateChild(components[uuid]));
-            components[uuid] = c;
-            this->updateViews(c);
-            c->setCurrentSystem(this);
-        }
-        return c;
-    }
-    return 0;
-
-}
-
-bool System::removeFace(std::string name)
-{
-    //check if name is a edge instance
-    if(faces.find(name)==faces.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-
-    faces.erase(name);
-    return true;
-}
-
-std::map<std::string, Component*>  System::getAllComponents()
-{
-    QMutexLocker(this->mutex);
-    for (ComponentMap::const_iterator it = components.begin(); it != components.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Component * c = it->second;
-        if (c->getCurrentSystem() != this) {
-            c = static_cast<Component*>(updateChild(components[uuid]));
-            components[uuid] = c;
-            this->updateViews(c);
-            c->setCurrentSystem(this);
-        }
-    }
-    return this->components;
-}
-
-bool System::removeComponent(std::string name)
-{
-    QMutexLocker(this->mutex);
-    //check if name is a edge instance
-    if(components.find(name)==components.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-
-    components.erase(name);
-    return true;
-}
-
-
-bool System::removeEdge(std::string name)
-{
-    QMutexLocker(this->mutex);
-    //check if name is a edge instance
-    if(edges.find(name)==edges.end())
-        return false;
-
-    if(!removeChild(name))
-        return false;
-    DM::Edge * e  = this->getEdge(name);
-    this->EdgeNodeMap.erase(std::pair<std::string, std::string>(e->getUUID(), e->getUUID()));
-    edges.erase(name);
-    return true;
-}
-
 bool System::removeNode(std::string name)
 {
-    QMutexLocker(this->mutex);
+	QUuid quuid = getChild(name)->getQUUID();
     //check if name is a node instance
-    if(nodes.find(name)==nodes.end())
-        return false;
-
+    if(nodes.find(quuid)==nodes.end())
+       return false;
+	
     //remove node
-    if(!removeChild(name))
+    if(!removeChild(quuid))
         return false;
 
-    nodes.erase(name);
 
     //find all connected edges and remove them
     std::vector<std::string> connectededges;
-
-    std::map<std::string,Edge*>::iterator ite;
-
-
+    std::map<QUuid,Edge*>::iterator ite;
     for ( ite=edges.begin() ; ite != edges.end(); ite++ )
     {
         Edge* tmpedge = edges[(*ite).first];
-
-        if(!tmpedge->getStartpointName().compare(name) || !tmpedge->getEndpointName().compare(name))
+        if(tmpedge->getStartpoint() == quuid
+        || tmpedge->getEndpoint() == quuid)
             connectededges.push_back(tmpedge->getUUID());
     }
+    nodes.erase(quuid);
 
     for(unsigned int index=0; index<connectededges.size(); index++)
     {
@@ -423,34 +321,195 @@ bool System::removeNode(std::string name)
 
     return true;
 }
-bool System::addComponentToView(Component *comp, const View &view) {
-    QMutexLocker(this->mutex);
+
+Edge* System::addEdge(Edge* edge)
+{
+    //QMutexLocker locker(mutex);
+    if(!map_contains(&nodes, edge->getStartpoint()) || !map_contains(&nodes, edge->getEndpoint())){
+        delete edge;
+        return 0;
+    }
+
+    if(!addChild(edge)) {
+        delete edge;
+        return 0;
+    }
+
+    edges[edge->getQUUID()]=edge;
+    foreach (std::string v, edge->getInViews()) {
+        views[v][edge->getUUID()]=edge;
+    }
+    this->updateViews(edge);
+    return edge;
+}
+Edge* System::addEdge(Node * start, Node * end, const View &view)
+{
+    //QMutexLocker locker(mutex);
+    Edge * e = this->addEdge(new Edge(start, end));
+
+    if (e == 0)
+        return 0;
+    if (!view.getName().empty()) 
+	{
+        this->views[view.getName()][e->getUUID()] = e;
+        e->setView(view.getName());
+    }
+
+    return e;
+}
+Edge* System::getEdge(std::string uuid)
+{
+	return (Edge*)getChild(uuid);
+}
+Edge* System::getEdge(QUuid uuid)
+{
+    if(edges.find(uuid)==edges.end())
+        return 0;
+    return edges[uuid];
+}
+Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
+{
+	return getEdge(getNode(startnode),getNode(endnode));
+}
+Edge* System::getEdge(Node* start, Node* end)
+{
+	foreach(Edge* e,start->getEdges())
+		if(e->getStartNode()==start || e->getEndNode()==end)
+			return e;
+	return 0;
+}
+
+bool System::removeEdge(std::string name)
+{
+	QUuid quuid = getChild(name)->getQUUID();
+    //check if name is a edge instance
+    if(edges.find(quuid)==edges.end())
+        return false;
+
+    if(!removeChild(quuid))
+        return false;
+    DM::Edge * e  = this->getEdge(quuid);
+    edges.erase(quuid);
+    return true;
+}
+
+Face* System::addFace(Face *f) {
+    if(!addChild(f)) {
+        delete f;
+        return 0;
+    }
+
+    faces[f->getQUUID()]=f;
+    this->updateViews(f);
+    return f;
+}
+Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
+{
+    Face *f = this->addFace(new Face(nodes));
+
+    if (f == 0)
+        return 0;
+    if (!view.getName().empty()) {
+        this->views[view.getName()][f->getUUID()] = f;
+        f->setView(view.getName());
+    }
+    return f;
+}
+Face* System::getFace(std::string uuid)
+{
+    Component* c = getChild(uuid);
+    if(c && c->getType() == FACE)
+        return (Face*)c;
+
+    return NULL;
+}
+bool System::removeFace(std::string name)
+{
+	QUuid quuid = getChild(name)->getQUUID();
+    //check if name is a edge instance
+    if(faces.find(quuid)==faces.end())
+        return false;
+
+    if(!removeChild(quuid))
+        return false;
+
+    faces.erase(quuid);
+    return true;
+}
+
+RasterData * System::addRasterData(RasterData *r, const DM::View & view)
+{
+    if(!addChild(r)) {
+        delete r;
+        return 0;
+    }
+
+    rasterdata[r->getQUUID()] = r;
+
+    if (!view.getName().empty()) {
+        this->views[view.getName()][r->getUUID()] = r;
+        r->setView(view.getName());
+    }
+    this->updateViews(r);
+    return r;
+}
+
+std::map<std::string, Component*>  System::getAllComponents()
+{
+    std::map<std::string, Component*> comps;
+    mforeach(Component* c, components)
+            comps[c->getUUID()] = c;
+
+    return comps;
+}
+std::map<std::string, Node*> System::getAllNodes()
+{
+    std::map<std::string, Node*> n;
+	mforeach(Node* it, nodes)	
+		n[it->getUUID()] = it;
+
+    return n;
+}
+std::map<std::string, Edge*> System::getAllEdges()
+{
+    std::map<std::string, Edge*> e;
+	mforeach(Edge* it, edges)	
+		e[it->getUUID()] = it;
+
+    return e;
+}
+std::map<std::string, Face*> System::getAllFaces()
+{
+    std::map<std::string, Face*> f;
+	mforeach(Face* it, faces)	
+		f[it->getUUID()] = it;
+
+    return f;
+}
+
+bool System::addComponentToView(Component *comp, const View &view) 
+{
     this->views[view.getName()][comp->getUUID()] = comp;
     comp->setView(view.getName());
     return true;
 }
 
-bool System::removeComponentFromView(Component *comp, const View &view) {
-    QMutexLocker(this->mutex);
-    std::map<std::string, Component*> entries = this->views[view.getName()];
-    entries.erase(comp->getUUID());
+bool System::removeComponentFromView(Component *comp, const View &view) 
+{
     comp->removeView(view);
-    this->views[view.getName()] = entries;
+	this->views[view.getName()].erase(comp->getUUID());
     return true;
 }
 
 System * System::addSubSystem(System *newsystem,  const DM::View & view)
 {
-    QMutexLocker(this->mutex);
     //TODO add View to subsystem
     if(!addChild(newsystem)) {
         delete newsystem;
         return 0;
     }
 
-    subsystems[newsystem->getUUID()]=newsystem;
-
-
+    subsystems[newsystem->getQUUID()]=newsystem;
 
     if (!view.getName().empty()) {
         this->views[view.getName()][newsystem->getUUID()] = newsystem;
@@ -459,27 +518,35 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
     return newsystem;
 }
+System* System::getSubSystem(std::string uuid)
+{
+	return (System*)getChild(uuid);
+}
+System* System::getSubSystem(QUuid uuid)
+{
+    if(subsystems.find(uuid)==subsystems.end())
+        return 0;
 
+    return subsystems[uuid];
+}
 bool System::removeSubSystem(std::string name)
 {
-    QMutexLocker(this->mutex);
     if(!removeChild(name))
         return false;
-
-    subsystems.erase(name);
-
     return true;
 }
-std::map<std::string, Component*> System::getAllComponentsInView(const DM::View & view) {
 
+std::map<std::string, Component*> System::getAllComponentsInView(const DM::View & view)
+{
     return views[view.getName()];
 }
-std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) {
+std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) 
+{
     std::vector<std::string> names;
     std::map<std::string, DM::Component*> components_view = this->getAllComponentsInView(view);
-    for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it) {
+    for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it)
         names.push_back(it->first);
-    }
+
     return names;
 }
 
@@ -487,38 +554,23 @@ std::vector<std::string> System::getUUIDs(const DM::View  & view)
 {
     return this->getUUIDsOfComponentsInView(view);
 }
-System* System::getSubSystem(std::string uuid)
-{
-    QMutexLocker(this->mutex);
-    if(subsystems.find(uuid)==subsystems.end())
-        return 0;
-
-    System * s= static_cast<System*>(updateChild(subsystems[uuid]));
-    subsystems[uuid] = s;
-    this->updateViews(s);
-    return subsystems[uuid];
-
-
-}
 
 std::map<std::string, System*> System::getAllSubSystems()
 {
-    return subsystems;
+    std::map<std::string, System*> syss;
+    mforeach(System* s, subsystems)
+		syss[s->getUUID()] = s;
+
+    return syss;
 }
 
 std::map<std::string, RasterData*> System::getAllRasterData()
 {
-    return rasterdata;
-}
+    std::map<std::string, RasterData*> rasters;
+    mforeach(RasterData* r, rasterdata)
+		rasters[r->getUUID()] = r;
 
-System* System::createSuccessor()
-{
-    QMutexLocker(this->mutex);
-    Logger(Debug) << "Create Sucessor " << this->getUUID();
-    System* result = new System(*this);
-    this->sucessor.push_back(result);
-    result->addPredecessors(this);
-    return result;
+    return rasters;
 }
 
 Component* System::clone()
@@ -528,140 +580,437 @@ Component* System::clone()
 
 bool System::addView(View view)
 {
-    QMutexLocker(this->mutex);
-
-    //For each view one dummy element will be created
-    //Check for existing View
-    if (this->viewdefinitions.find(view.getName()) == this->viewdefinitions.end()) {
-        this->viewdefinitions[view.getName()] = new View(view);
-        ownedView.push_back(this->viewdefinitions[view.getName()]);
-    }
-
+    //For each view create one dummy element
     DM::View  * existingView = this->viewdefinitions[view.getName()];
-    if (!existingView) {
-        this->viewdefinitions[view.getName()] = new View(view);
-        existingView = this->viewdefinitions[view.getName()];
-        ownedView.push_back(this->viewdefinitions[view.getName()]);
+    if (!existingView) 
+	{
+		existingView = new View(view);
+        this->viewdefinitions[view.getName()] = existingView;
     }
 
-    if (!view.writes()) {
+    if (!view.writes())
         return true;
-    }
-    DM::Component * dummy  = 0;
-    if (!existingView->getIdOfDummyComponent().empty()) {
-        dummy = this->getComponent(existingView->getIdOfDummyComponent());
-    } else {
-        if ( DM::COMPONENT == view.getType()) {
+    
+    DM::Component * dummy  = existingView->getDummyComponent();
+    if (existingView->getDummyComponent() == NULL)
+    {
+        switch(view.getType())
+        {
+        case DM::COMPONENT:
             dummy = this->addComponent(new Component());
-        }
-        if ( DM::NODE == view.getType()) {
+            break;
+        case DM::NODE:
             dummy = this->addNode(0,0,0);
-        }
-        if (  DM::EDGE == view.getType()) {
-            DM::Node * n1 =this->addNode(0,0,0);
-            DM::Node * n2 =this->addNode(0,0,0);
-            dummy = this->addEdge(n1,n2);
-        }
-        if (  DM::FACE == view.getType()) {
+            break;
+        case DM::EDGE:{
+            DM::Node * n1 = this->addNode(0,0,0);
+            DM::Node * n2 = this->addNode(0,0,0);
+            dummy = this->addEdge(n1,n2);}
+            break;
+        case DM::FACE:{
             DM::Node * n1 =this->addNode(0,0,0);
             std::vector<Node*> ve;
             ve.push_back(n1);
-            dummy = this->addFace(ve);
-        }
-        if (  DM::SUBSYSTEM == view.getType()) {
+            dummy = this->addFace(ve);}
+            break;
+        case DM::SUBSYSTEM:
             dummy = new DM::System();
             this->addSubSystem((DM::System*) dummy);
-        }
-        if (  DM::RASTERDATA == view.getType()) {
+            break;
+        case DM::RASTERDATA:
             dummy = new DM::RasterData();
             this->addRasterData((DM::RasterData*) dummy);
+            break;
+        default:
+            break;
         }
     }
-    existingView->setIdOfDummyComponent(dummy->getUUID());
+    if(dummy==NULL)
+        Logger(Error) << "Error: dummy object could not be initialized";
 
+    existingView->setDummyComponent(dummy);
 
     //extend Dummy Attribute
-    foreach (std::string a , view.getWriteAttributes()) {
+    foreach (std::string a , view.getWriteAttributes()) 
+	{
         DM::Attribute attr(a);
         attr.setType(view.getAttributeType(a));
-        if (view.getAttributeType(a) == Attribute::LINK) {
+        if (view.getAttributeType(a) == Attribute::LINK)
             attr.setLink(view.getNameOfLinkedView(a), "");
-        }
+        
         dummy->addAttribute(attr);
     }
 
     return true;
 }
+const std::vector<DM::View> System::getViews()  
+{
+    std::vector<DM::View> viewlist;
 
-std::vector<System*> System::getPredecessorStates()
+	mforeach(View* v, viewdefinitions)
+		viewlist.push_back(View(*v));
+
+    return viewlist;
+}
+
+System* System::createSuccessor()
+{
+    Logger(Debug) << "Create Sucessor ";// << this->getUUID();
+    System* result = new DerivedSystem(this);
+    this->sucessors.push_back(result);
+	this->SQLUpdateStates();
+    result->addPredecessors(this);
+    result->SQLUpdateStates();
+
+    return result;
+}
+std::vector<System*> System::getSucessors() const
+{
+    return sucessors;
+}
+std::vector<System*> System::getPredecessors() const
 {
     return predecessors;
 }
-
 void System::addPredecessors(System *s)
 {
     this->predecessors.push_back(s);
+	this->SQLUpdateStates();
 }
 
-std::map<std::string, Node*> System::getAllNodes()
+
+bool System::addChild(Component *newcomponent)
 {
-    QMutexLocker(this->mutex);
-    //Update All Nodes
-    for (NodeMap::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Node * n = it->second;
-        if (n->getCurrentSystem() != this) {
-            n = static_cast<Node*>(updateChild(nodes[uuid]));
-            nodes[uuid] = n;
-            this->updateViews(n);
-            n->setCurrentSystem(this);
-        }
-    }
-    return nodes;
-}
+    if(!newcomponent)
+        return false;
+    ownedchilds[newcomponent->getQUUID()] = newcomponent;
 
-std::map<std::string, Edge*> System::getAllEdges()
+	newcomponent->SetOwner(this);
+	// set componentNameMap - if the name is already initialized
+	if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
+		this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
+
+    return true;
+}
+bool System::removeChild(std::string name)
 {
-    QMutexLocker(this->mutex);
-    //Update all Edges
-    for (EdgeMap::const_iterator it = edges.begin(); it != edges.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Edge * e = it->second;
-        if (e->getCurrentSystem() != this) {
-            e = static_cast<Edge*>(updateChild(edges[uuid]));
-            edges[uuid] = e;
-            this->updateViews(e);
-            e->setCurrentSystem(this);
-        }
-    }
-    return edges;
+	return removeChild(getChild(name));
 }
 
-std::map<std::string, Face*> System::getAllFaces()
+bool System::removeChild(Component* c)
 {
-    QMutexLocker(this->mutex);
-    for (FaceMap::const_iterator it = faces.begin(); it != faces.end(); ++it) {
-        std::string uuid = it->first;
-        DM::Face * f = it->second;
-        if (f->getCurrentSystem() != this) {
-            f = static_cast<Face*>(updateChild(faces[uuid]));
-            faces[uuid] = f;
-            this->updateViews(f);
-            f->setCurrentSystem(this);
-        }
-    }
-    return faces;
-}
+    QUuid id = c->getQUUID();
+    if(ownedchilds.find(id)==ownedchilds.end())
+        return false;
 
-const std::vector<DM::View> System::getViews()  {
+	ownedchilds.erase(id);
 
-    std::vector<DM::View> viewlist;
-
-    for (std::map<std::string, View*>::const_iterator it = viewdefinitions.begin(); it != viewdefinitions.end(); ++it) {
-        viewlist.push_back(View(*it->second));
+    switch (c->getType())
+    {
+    case COMPONENT: components.erase(id);   break;
+    case NODE:      nodes.erase(id);   break;
+    case FACE:      faces.erase(id);   break;
+    case EDGE:      edges.erase(id);   break;
+    case RASTERDATA: rasterdata.erase(id);   break;
+    case SYSTEM:    subsystems.erase(id);   break;
     }
 
-    return viewlist;
+	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
+		componentNameMap.erase(c->getUUID());
 
+    delete c;
+    return true;
 }
 
+bool System::removeChild(QUuid uuid)
+{
+    if(ownedchilds.find(uuid)==ownedchilds.end())
+        return false;
+    Component *c = ownedchilds[uuid];
+    return removeChild(c);
+}
+
+
+Component* System::getChild(std::string name) const
+{
+	Component *c = NULL;
+	map_contains(&componentNameMap, name, c);
+	return c;
+}
+
+Component* System::getChild(QUuid uuid) const
+{
+	Component *c = NULL;
+	map_contains(&ownedchilds, uuid, c);
+	return c;
+}
+Component* System::findChild(QUuid uuid) const
+{
+    if(ownedchilds.find(uuid)==ownedchilds.end())
+        return NULL;
+    return ownedchilds.find(uuid)->second;
+}
+
+std::map<std::string, Component*> System::getAllChilds()
+{
+    std::map<std::string, Component*> resultMap;
+    mforeach(Component* c,ownedchilds)
+        resultMap[c->getUUID()] = c;
+
+    return resultMap;
+}
+std::vector<Component*> System::getChilds()
+{
+     std::vector<Component*> resultVec;
+     mforeach(Component* c,ownedchilds)
+         resultVec.push_back(c);
+
+    return resultVec;
+}
+
+void System::SQLInsert()
+{
+	isInserted = true;
+    DBConnector::getInstance()->Insert("systems", uuid);
+}
+void System::SQLUpdateStates()
+{
+	QStringList sucList;
+	foreach(System* sys, sucessors)
+        sucList.push_back(sys->getQUUID().toString());
+	
+	QStringList preList;
+	foreach(System* sys, predecessors)
+        preList.push_back(sys->getQUUID().toString());
+	
+    DBConnector::getInstance()->Update("systems",       uuid,
+                                       "sucessors",     sucList,
+                                       "predecessors",  preList);
+}
+
+
+/******************************
+ * Derived System
+ *******************************/
+
+DerivedSystem::DerivedSystem(System* sys): System()
+{
+	predecessorSys = sys;
+	allComponentsLoaded = false;
+	allEdgesLoaded = false;
+	allFacesLoaded = false;
+	allNodesLoaded = false;
+	allSubSystemsLoaded = false;
+	//allRasterDataLoaded = false;
+
+	viewdefinitions = sys->viewdefinitions;
+	predecessors = sys->predecessors;
+	views = sys->views;
+
+	lastModule = sys->lastModule;
+}
+
+
+Node* DerivedSystem::getNode(QUuid uuid)
+{
+	Node* n = System::getNode(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getNode(uuid);
+		if(n)
+			n = addNode(new Node(*n));
+	}
+	return n;
+}
+
+Component* DerivedSystem::getChild(std::string name)
+{
+	return getComponent(name);
+}
+
+Component* DerivedSystem::getComponent(std::string uuid)
+{
+	Component* n = System::getComponent(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getComponent(uuid);
+		if(n)
+		{
+			switch(n->getType())
+			{
+			case COMPONENT:
+				return addComponent(new Component(*n));
+			case NODE:
+				return getNode(uuid);
+			case EDGE:
+				return getEdge(uuid);
+			case FACE:
+				return getFace(uuid);
+			case RASTERDATA:
+				//return addComponent(new Component(*n));
+				//return getComponent(uuid);
+				return n;
+			case SUBSYSTEM:
+			//default:
+				return addComponent(new Component(*n));
+			//case RASTERDATA:
+			default:
+				return NULL;
+			}
+		}
+	}
+	return n;
+}
+Node* DerivedSystem::getNode(std::string uuid)
+{
+	Node* n = System::getNode(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getNode(uuid);
+		if(n)
+			n = addNode(new Node(*n));
+	}
+	return n;
+}
+Edge* DerivedSystem::getEdge(std::string uuid)
+{
+	Edge* n = System::getEdge(uuid);
+	if(!n)
+	{
+		n = predecessorSys->getEdge(uuid);
+		if(n)
+		{
+			n = new Edge(*n);
+			n->setStartpoint(getNode(n->getStartpointName()));
+			n->setEndpoint(getNode(n->getEndpointName()));
+			n = addEdge(n);
+		}
+	}
+	return n;
+}
+
+Edge* DerivedSystem::getEdge(Node* start, Node* end)
+{
+	Edge* n = System::getEdge(start,end);
+	if(!n)
+	{
+		n = predecessorSys->getEdge(start,end);
+		if(n)
+		{
+			n = new Edge(*n);
+			n->setStartpoint(getNode(start->getUUID()));
+			n->setEndpoint(getNode(end->getUUID()));
+			n = addEdge(n);
+		}
+	}
+	return n;
+}
+
+Face * DerivedSystem::getFace(std::string uuid)
+{
+	Face* f = System::getFace(uuid);
+	if(!f)
+	{
+		f = predecessorSys->getFace(uuid);
+		if(f)
+		{
+			Face* newf = new Face(*f);
+
+			std::vector<Node*> newNodes;
+			foreach(Node* node, f->getNodePointers())
+				newNodes.push_back(getNode(node->getUUID()));
+
+			newf->setNodes(newNodes);
+			
+			foreach(Face *hole, f->getHolePointers())
+				f->addHole(getFace(hole->getUUID()));
+
+			return this->addFace(newf);
+		}
+	}
+	return f;
+}
+std::map<std::string, Component*> DerivedSystem::getAllComponents()
+{
+	if(!allComponentsLoaded)
+	{
+		// load all components
+		std::map<std::string, Component*> comps = predecessorSys->getAllComponents();
+		mforeach(Component* c, comps)
+			getComponent(c->getUUID());
+		allComponentsLoaded = true;
+	}
+	return System::getAllComponents();
+}
+
+std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
+{
+    //return views[view.getName()];
+	std::map<std::string, Component*> comps = views[view.getName()];
+	for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
+		it->second = getComponent(it->first);
+
+	return comps;
+}
+std::map<std::string, Node*> DerivedSystem::getAllNodes()
+{
+	if(!allNodesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Node*> nodes = predecessorSys->getAllNodes();
+		mforeach(Node* n, nodes)
+			getNode(n->getUUID());
+		allNodesLoaded = true;
+	}
+	return System::getAllNodes();
+}
+std::map<std::string, Edge*> DerivedSystem::getAllEdges()
+{
+	if(!allEdgesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Edge*> edges = predecessorSys->getAllEdges();
+		mforeach(Edge* n, edges)
+			getEdge(n->getUUID());
+		allEdgesLoaded = true;
+	}
+	return System::getAllEdges();
+}
+std::map<std::string, Face*> DerivedSystem::getAllFaces()
+{
+	if(!allFacesLoaded)
+	{
+		// load all nodes
+		std::map<std::string, Face*> faces = predecessorSys->getAllFaces();
+		mforeach(Face* n, faces)
+			getFace(n->getUUID());
+		allFacesLoaded = true;
+	}
+	return System::getAllFaces();
+}
+std::map<std::string, System*> DerivedSystem::getAllSubSystems()
+{
+	if(!allSubSystemsLoaded)
+	{
+		// load all nodes
+		std::map<std::string, System*> subsystems = predecessorSys->getAllSubSystems();
+		mforeach(System* sys, subsystems)
+			getSubSystem(sys->getUUID());
+		allSubSystemsLoaded = true;
+	}
+	return System::getAllSubSystems();
+}
+
+std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()
+{
+	std::map<std::string, RasterData*> pred_rd = this->predecessorSys->getAllRasterData();
+	std::map<std::string, RasterData*> rd = System::getAllRasterData();
+
+	for(std::map<std::string, RasterData*>::iterator it = rd.begin();
+		it != rd.end(); ++it)
+	{
+		pred_rd[it->first] = it->second;
+	}
+
+    return pred_rd;
+}

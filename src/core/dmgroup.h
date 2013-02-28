@@ -66,7 +66,7 @@ namespace DM {
     class DM_HELPER_DLL_EXPORT  Group : public Module
     {
     private:
-        ::QMutex * mutex;
+        //::QMutex * mutex;
         std::vector<Module*> modules;
         std::vector<PortTuple * > inPortTuple;
         std::vector<PortTuple * > outPortTuple;
@@ -78,9 +78,11 @@ namespace DM {
 
          QVector<QRunnable *> getNextJobs();
          bool moduleHasChanged;
+
+		 Port* getPort(std::string name) const;
     protected:
          int Steps;
-         int step;
+         int curStep;
     public:
          /** @brief default constructor for the group
            *
@@ -98,25 +100,25 @@ namespace DM {
         /** @brief Remove tuple port */
         void removeTuplePort(PortTuple * pt);
         /** @brief Returns pointer to in port tuple by name */
-        PortTuple * getInPortTuple(std::string name);
+        PortTuple * getInPortTuple(std::string name) const;
         /** @brief Returns pointer to out port tuple by name */
-        PortTuple * getOutPortTuple(std::string name);
+        PortTuple * getOutPortTuple(std::string name) const;
         /** @brief Returns in port tuples as pointer vector */
         std::vector<PortTuple * >  getInPortTuples(){return this->inPortTuple;}
         /** @brief Returns out port tuples as pointer vector */
         std::vector<PortTuple * >  getOutPortTuples(){return this->outPortTuple;}
-        /** @brief A Destructur :-), I'm sure their was a very good reason to not put this make an extra destructure... just can't rember why */
+        /** @brief A Destructor :-), I'm sure their was a very good reason to not put this make an extra destructure... just can't rember why */
         virtual void Destructor();
         /** @brief Returns true */
         virtual bool isGroup() const{return true;}
         /** @brief Returns in port from port tuple,  if outport tuple and inport tuple have the same name, the in port from the outport tuple is returned
          * @TODO remove this method in the next version
          */
-        virtual Port * getInPort(std::string Name);
+        virtual Port * getInPort(std::string Name) const;
         /** @brief Returns out port from port tuple,  if outport tuple and inport tuple have the same name, the in port from the outport tuple is returned
          * @TODO remove this method in the next version
          */
-        virtual Port * getOutPort(std::string Name);
+        virtual Port * getOutPort(std::string Name) const;
         /** @brief Used after a module has been executed
          *
          * After a module the run method of a module is executed it is removed from the notUsedModules
@@ -133,7 +135,8 @@ namespace DM {
          * A group is executed as long as step < Steps. Steps can be set from a derived class. Is used
          * for for loops
          */
-        bool isRunnable(){return step < Steps;}
+        //bool isRunnable(){return step < Steps;}
+		int StepsLeft() {return Steps-curStep;};
         /** @brief Resets all containing modules and step to 0 */
         void resetSteps();
         /** @brief Clears Module list, modules still exist!*/
@@ -144,7 +147,7 @@ namespace DM {
         virtual ~Group();
 
         /** @brief Set Steps */
-        void setStep(int s) {this->step = s;}
+        void setStep(int s) {this->curStep = s;}
 
         /** @brief Return Steps */
         int getSteps() {return this->Steps;}

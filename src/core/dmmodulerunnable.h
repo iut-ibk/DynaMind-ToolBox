@@ -49,7 +49,7 @@ public:
     /**
      * @brief Runs module
      *
-     * Befor we call the run mehtod from the module the updateParameter method is then the init method. Since the
+     * Befor we call the run method from the module the updateParameter method is then the init method. Since the
      * module can change data in the init method the update method is called again after!
      * Then we check if all data are set, if not the simulation status is set to SIM_ERROR_SYSTEM_NOT_SET.
      */

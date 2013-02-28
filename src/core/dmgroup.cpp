@@ -45,60 +45,46 @@
 namespace DM {
 Group::Group()
 {
-    mutex = new QMutex(QMutex::Recursive );
+    //mutex = new QMutex(QMutex::Recursive );
     moduleHasChanged = true;
-    step = 0;
+    curStep = 0;
     Steps = 0;
 }
 void Group::addModule(Module *module) {
-    if(!module)
-        return;
-    this->modules.push_back(module);
+    if(module)
+        this->modules.push_back(module);
 }
-Group::~Group() {
+Group::~Group() 
+{
     this->Destructor();
     Module::Destructor();
-    delete mutex;
+    //delete mutex;
 }
 
 void Group::setContentOfModuleHasChanged(bool c)
 {
     this->moduleHasChanged = c;
 }
-void Group::Destructor() {
-    while(this->modules.size() > 0) {
+void Group::Destructor() 
+{
+    while(this->modules.size() > 0)
         delete *(this->modules.begin());
-
-    }
-    foreach(PortTuple * p, this->inPortTuple) {
-        delete p;
-    }
-    foreach(PortTuple * p, this->outPortTuple) {
-        delete p;
-    }
-    this->inPortTuple.clear();
-    this->outPortTuple.clear();
-
+    deep_delete(&inPortTuple);
+    deep_delete(&outPortTuple);
 }
 void Group::finishedModule(Module *m) {
-    QMutexLocker locker(mutex);
+    //QMutexLocker locker(mutex);
     currentRunning.erase(std::find(currentRunning.begin(), currentRunning.end(), m));
-    bool remove = true;
-    if (m->isGroup()) {
-        Group * g = (Group *) m;
-        if (g->isRunnable()) {
-            remove = false;
-        }
-    }
-
-
-    if (remove) {
+    if(!m->isGroup() || !((Group*)m)->StepsLeft())
+    {
         UsedModules.push_back(m);
         notUsedModules.erase(std::find(notUsedModules.begin(), notUsedModules.end(), m));
-        if (m->isGroup()) {
-            Group * g = (Group * )m;
+        if(m->isGroup())
+        {
+            Group* g = (Group*)m;
             //Don't change status if virtualRun
-            if (!g->getSimulation()->isVirtualRun()) {
+            if (!g->getSimulation()->isVirtualRun())
+            {
                 g->setExecuted(true);
                 g->setContentOfModuleHasChanged(false);
             }
@@ -106,63 +92,77 @@ void Group::finishedModule(Module *m) {
         }
     }
     QVector<QRunnable * > modules = this->getNextJobs();
-    foreach (QRunnable * r, modules) {
+    foreach (QRunnable * r, modules)
         DMRootGroup::getThreadPool()->start(r);
-    }
-
-
 }
 void Group::clearModules() {
     this->modules.clear();
 }
 
-void Group::resetModules() {
-    foreach(Module * m, this->modules) {
-        if (!m->isExecuted() || m->isGroup()){
-            // if (HasContaingModuleChanged()) {
+void Group::resetModules() 
+{
+    foreach(Module * m, this->modules)
+    {
+        if (!m->isExecuted() || m->isGroup())
+        {
             m->resetParameter();
             m->setExecuted(false);
-            if (m->isGroup()) {
-                Group * g = (Group *) m;
+            if (m->isGroup())
+            {
+                Group* g = (Group*)m;
                 g->setContentOfModuleHasChanged(true);
                 g->resetSteps();
             }
-            //}
         }
     }
 }
 
-void Group::removeModule(Module *module) {
-    if (this->modules.size() > 0 ) {
-        for (std::vector<Module * >::iterator it = this->modules.begin(); it != this->modules.end();) {
-            if (*it == module) {
-                it = this->modules.erase(it);
-                break;
-            } else {
-                ++it;
-            }
+void Group::removeModule(Module *module) 
+{
+    for (std::vector<Module * >::iterator it = this->modules.begin(); it != this->modules.end();++it)
+    {
+        if (*it == module)
+        {
+            it = this->modules.erase(it);
+            return;
         }
     }
 }
-PortTuple * Group::getInPortTuple(std::string name) {
-    for (std::vector<PortTuple*>::iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
-        PortTuple * p = *it;
-        if (p->getName().compare(name) == 0)
-            return p;
-    }
+PortTuple * Group::getInPortTuple(std::string name) const
+{
+    foreach(PortTuple* pt, inPortTuple)
+        if(pt->getName() == name)
+            return pt;
+    return 0;
+}
+PortTuple * Group::getOutPortTuple(std::string name) const
+{
+    foreach(PortTuple* pt, outPortTuple)
+        if(pt->getName() == name)
+            return pt;
+    return 0;
+}
+Port* Group::getPort(std::string name) const
+{
+    PortTuple *p = NULL;
+    if(p = getInPortTuple(name))
+        return p->getInPort();
+    else if(p = getOutPortTuple(name))
+        return p->getOutPort();
 
     return 0;
 }
-Port * Group::getInPort( std::string name)  {
 
-    for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
+Port * Group::getInPort( std::string name) const
+{
+    for (std::vector<PortTuple*>::const_iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getInPort();
         if (pt->getName().compare(name) == 0) {
             return p;
         }
     }
-    for (std::vector<PortTuple*>::iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
+    for (std::vector<PortTuple*>::const_iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getInPort();
         if (pt->getName().compare(name) == 0) {
@@ -173,16 +173,18 @@ Port * Group::getInPort( std::string name)  {
     return Module::getInPort(name);
 
     return 0;
+
 }
-Port * Group::getOutPort(std::string name) {
-    for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
+Port * Group::getOutPort(std::string name) const
+{
+    for (std::vector<PortTuple*>::const_iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getOutPort();
         if (pt->getName().compare(name) == 0) {
             return p;
         }
     }
-    for (std::vector<PortTuple*>::iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
+    for (std::vector<PortTuple*>::const_iterator it = this->inPortTuple.begin(); it != this->inPortTuple.end(); ++it) {
         PortTuple * pt = *it;
         Port * p = pt->getOutPort();
         if (pt->getName().compare(name) == 0) {
@@ -195,17 +197,9 @@ Port * Group::getOutPort(std::string name) {
     return 0;
 }
 
-PortTuple * Group::getOutPortTuple(std::string name) {
-    for (std::vector<PortTuple*>::iterator it = this->outPortTuple.begin(); it != this->outPortTuple.end(); ++it) {
-        PortTuple * p = *it;
 
-        if (p->getName().compare(name) == 0)
-            return p;
-    }
-
-    return 0;
-}
-PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) {
+PortTuple * Group::addTuplePort(std::string LinkedDataName, int PortType) 
+{
     PortTuple * pt = 0;
     Logger(Debug) << "Add Tuple Port" << LinkedDataName;
 
@@ -235,124 +229,113 @@ void Group::removeTuplePort(PortTuple *pt)
 {
     Logger(Debug) << "Remove Tuple Port" << pt->getName();
     int PortType = pt->getPortType();
-    if (PortType < DM::OUTPORTS) {
-        std::vector<PortTuple*>::iterator pt_it = find(outPortTuple.begin(), outPortTuple.end(), pt);
-        if (pt_it == outPortTuple.end() )
-            return;
-        this->outPortTuple.erase(pt_it);
-    } else {
-        std::vector<PortTuple*>::iterator pt_it = find(inPortTuple.begin(), inPortTuple.end(), pt);
-        if (pt_it == inPortTuple.end() )
-            return;
-        this->inPortTuple.erase(pt_it);
-    }
-    foreach(PortObserver * po, this->portobserver) {
-        po->changedPorts();
+    std::vector<PortTuple*> *portTuples = (PortType <= DM::OUTPORTS) ? &outPortTuple : &inPortTuple;
+
+    std::vector<PortTuple*>::iterator pt_it = find(portTuples->begin(), portTuples->end(), pt);
+    if (pt_it != portTuples->end() )
+    {
+        portTuples->erase(pt_it);
+        foreach(PortObserver * po, this->portobserver)
+            po->changedPorts();
     }
 }
 
-QVector<QRunnable *>  Group::getNextJobs() {
+QVector<QRunnable *>  Group::getNextJobs() 
+{
     QVector<QRunnable * > RunnedModulesInStep;
-    for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it) {
-        Module * m = *it;
-        if (std::find(currentRunning.begin(), currentRunning.end(), m) !=  currentRunning.end())
+    //for (std::vector<Module *>::iterator it = notUsedModules.begin(); it != notUsedModules.end(); ++it)
+    foreach(Module* m, notUsedModules)
+    {
+        if(vector_contains(&currentRunning, m))
             continue;
 
         bool runnable = true;
         std::vector<Port*> inPorts = m->getInPorts();
-        if (m->isGroup()) {
-            Group * g = (Group*) m;
-            foreach(PortTuple * pt , g->getInPortTuples()) {
+        if (m->isGroup())
+            foreach(PortTuple * pt , ((Group*)m)->getInPortTuples())
                 inPorts.push_back(pt->getInPort());
-            }
-        }
-        foreach(Port * p, inPorts) {
-            foreach( ModuleLink * l, p->getLinks() ) {
-                if (!l->isBackLink()) {
+
+        foreach(Port * p, inPorts)
+        {
+            foreach( ModuleLink * l, p->getLinks() )
+            {
+                if (!l->isBackLink())
+                {
                     Module * neededM = l->getOutPort()->getModule();
-                    bool ModuleExists = false;
-                    foreach(Module* usedM, UsedModules) {
-                        if (usedM == neededM) {
-                            if (!neededM->isExecuted())
-                                m->setExecuted(false);
-                            ModuleExists = true;
-                            break;
-                        }
+                    if(vector_contains(&UsedModules, neededM))
+                    {
+                        if (!neededM->isExecuted())
+                            m->setExecuted(false);
                     }
-                    if (!ModuleExists) {
+                    else
+                    {
                         runnable = false;
                         break;
                     }
                 }
             }
         }
-        if (runnable) {
+        if (runnable)
+        {
             currentRunning.push_back(m);
             RunnedModulesInStep.push_back(new ModuleRunnable(m));
         }
 
     }
     //Run Parallelisation TODO
-    if(!this->notUsedModules.size()) {
-        if (this->group != 0) {
-            this->run();
-        }
+    if(!this->notUsedModules.size() && this->group)
+        this->run();
 
-    }
     return RunnedModulesInStep;
 }
 void Group::resetSteps()
 {
-    this->step = 0;
-    foreach (DM::Module * m, this->modules) {
+    this->curStep = 0;
+    foreach (DM::Module * m, this->modules)
         m->setInternalCounter(0);
-    }
-
-
 }
 
-void Group::run() {
-    if (this->step ==0) {
-        if (!this->isExecuted())
-            this->resetModules();
-    }
+void Group::run() 
+{
+    if (this->curStep == 0 && !this->isExecuted())
+        this->resetModules();
 
-    notUsedModules  = this->modules;
-    if (notUsedModules.size() == 0) {
-        this->step = Steps;
-    }
+    this->notUsedModules = this->modules;
+    if (notUsedModules.size() == 0)
+        this->curStep = Steps;
+
     UsedModules.clear();
     currentRunning.clear();
     UsedModules.push_back(this);
-    if (this->isRunnable()) {
-        QMutexLocker locker(mutex);
-        QVector<QRunnable * > modules = this->getNextJobs();
-        foreach (QRunnable * r, modules) {
-            if (!r) {
-                Logger(Error) << "Null Pointer";
+    if (this->StepsLeft())
+    {
+        //QMutexLocker locker(mutex);
+        QVector<QRunnable * > nextJobs = this->getNextJobs();
+        foreach (QRunnable * r, nextJobs)
+        {
+            if (!r)
+            {
+                Logger(Error) << "Null Pointer in getNextJobs";
                 return;
-
             }
             DMRootGroup::getThreadPool()->start(r);
         }
 
-        if (this->getSimulation()->isVirtualRun() || this->moduleHasChanged == false)
-            this->step = Steps;
-
-        this->step++;
-
-        if (this->isRunnable()) {
-            foreach (DM::Module * m, this->modules) {
-                m->setExecuted(false);
-            }
+        if (this->getSimulation()->isVirtualRun() || !this->moduleHasChanged)
+            this->setStep(Steps);
+        else
+        {
+            this->curStep++;
+            if (this->StepsLeft())
+                foreach (DM::Module * m, this->modules)
+                    m->setExecuted(false);
         }
-    } else {
-        this->group->finishedModule(this);
     }
-
-
+    else
+        this->group->finishedModule(this);
 }
-void Group::setExecuted(bool ex) {
+void Group::setExecuted(bool ex) 
+{
     Module::setExecuted(ex);
     if (!ex)
         this->resetSteps();

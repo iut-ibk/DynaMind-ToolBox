@@ -28,28 +28,35 @@
 #include "dmview.h"
 #include <dmmodule.h>
 #include <dmattribute.h>
+#include <dmcomponent.h>
+
+namespace DM {
 
 typedef std::map<std::string, std::string> stringmap;
 
-namespace DM {
 View::View(std::string name, int type, int accesstypeGeometry)
 {
     this->name = name;
     this->type = type;
     this->accesstypeGeometry = accesstypeGeometry;
+    this->dummy = NULL;
 
 }
 View::View() {
     this->name = "";
     this->type = -1;
+    this->dummy = NULL;
+}
+std::string View::getIdOfDummyComponent()
+{
+    return dummy->getUUID();
+}
+void View::setDummyComponent(Component* c) {
+    dummy = c;
 }
 
-void View::setIdOfDummyComponent(std::string UUID) {
-    this->IdofDummyComponent = UUID;
-}
-
-std::string View::getIdOfDummyComponent() {
-    return this->IdofDummyComponent;
+Component* View::getDummyComponent() {
+    return this->dummy;
 }
 
 void View::addAttribute(std::string name) {
@@ -68,47 +75,41 @@ void View::modifyAttribute(std::string name) {
 
 std::vector<std::string> View::getWriteAttributes() const {
     std::vector<std::string> attrs;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second > READ)
             attrs.push_back(it->first);
-    }
 
     return attrs;
 }
 
 std::vector<std::string> View::getReadAttributes() const {
     std::vector<std::string> attrs;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second < WRITE)
             attrs.push_back(it->first);
-    }
 
     return attrs;
-
-
-
 }
 
-
-bool View::reads() {
+bool View::reads() const
+{
     if (this->accesstypeGeometry < WRITE)
         return true;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second < WRITE)
             return true;
-    }
 
     return false;
 }
 
 
-bool View::writes() {
+bool View::writes() const
+{
     if (this->accesstypeGeometry > READ)
         return true;
-    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it) {
+    for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
         if (it->second > READ)
             return true;
-    }
 
     return false;
 }
@@ -146,11 +147,19 @@ std::vector<std::string> View::getNamesOfLinks()
     return namesOfView;
 
 }
+/*
+std::string View::getNameOfLinkedView(string name)
+{
+    std::vector<std::string> namesOfView;
+    for (stringmap::const_iterator it = attributeLinks.begin(); it != attributeLinks.end(); ++it) {
+        namesOfView.push_back(it->first);
+    }
+    return namesOfView;
+}*/
 
 std::string View::getNameOfLinkedView(string name)
 {
     return this->attributeLinks[name];
-
 }
 
 }

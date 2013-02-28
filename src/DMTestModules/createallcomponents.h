@@ -1,6 +1,6 @@
 /**
  * @file
- * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
@@ -24,23 +24,38 @@
  *
  */
 
-#include "createnodes.h"
+#ifndef CREATEALLCOMPONENTS_H
+#define CREATEALLCOMPONENTS_H
 
-DM_DECLARE_NODE_NAME(CreateNodes, Modules)
-CreateNodes::CreateNodes()
+#include <dmmodule.h>
+#include <dm.h>
+
+/** @ingroup TestModules
+ * @brief Creates all component types for testing purposes
+
+ */
+
+class DM_HELPER_DLL_EXPORT CreateAllComponenets: public DM::Module
 {
-    std::vector<DM::View> data;
-    data.push_back( DM::View("Nodes", DM::NODE, DM::WRITE));
-    this->addData("sys",data);
-}
+    DM_DECLARE_NODE(CreateAllComponenets)
+public:
+    CreateAllComponenets();
+    void run();
+};
 
-void CreateNodes::run() {
-    DM::System * sys = this->getData("sys");
-    DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
+class DM_HELPER_DLL_EXPORT CheckAllComponenets: public DM::Module
+{
+    DM_DECLARE_NODE(CheckAllComponenets)
+public:
+    CheckAllComponenets();
+    void run();
+};
 
-    for (int i = 0; i < 10; i++)
-    {
-        DM::Node  n =  DM::Node(0,0,0);
-        sys->addNode(n, v);
-    }
-}
+class DM_HELPER_DLL_EXPORT SuccessorCheck: public DM::Module
+{
+    DM_DECLARE_NODE(SuccessorCheck)
+public:
+    SuccessorCheck();
+    void run();
+};
+#endif // CREATEALLCOMPONENTS_H

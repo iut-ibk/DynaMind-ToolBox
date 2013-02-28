@@ -36,7 +36,6 @@
 namespace {
     class TestSimulation : public ::testing::Test
     {
-
     };
 }
 

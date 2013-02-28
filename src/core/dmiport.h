@@ -41,7 +41,7 @@ namespace DM {
         virtual int getPortType() const = 0;
         virtual Module * getModule() = 0;
         virtual std::vector<ModuleLink * > getLinks() = 0;
-        virtual std::string getLinkedDataName() = 0;
+		virtual std::string getLinkedDataName() const = 0;
     };
 }
 #endif // IPORT_H

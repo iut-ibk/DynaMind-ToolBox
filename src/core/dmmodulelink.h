@@ -47,15 +47,15 @@ namespace DM {
         Port * InPort;
         Port * OutPort;
         bool backLink;
-        ModuleLink * getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple);
-        bool isBackLinkFromOrigin;
+        ModuleLink * getPortFromTuplePort(const ModuleLink * origin, bool fromInportTuple) const;
+        //bool isBackLinkFromOrigin;
     public:
         /** @brief Creats a new ModuleLink*/
         ModuleLink(Port * InPort, Port * OutPort,bool isBackPort = false);
         /** @brief Retruns pointer to in port*/
-        Port * getInPort();
+        Port * getInPort() const;
         /** @brief Retruns pointer to out port*/
-        Port * getOutPort();
+        Port * getOutPort() const;
         /** @brief Retruns true if module link is back link*/
         bool isBackLink();
         /** @brief Retruns true there is a back link in a link chain.
@@ -71,7 +71,7 @@ namespace DM {
         /** @brief Returns name of the data connected to the out port
          *
          * If port is tuple port, the link chain is followed to the origin */
-        std::string getDataNameFromOutPort();
+        std::string getDataNameFromOutPort() const;
         /** @brief Returns module uuid connected to the out port
          *
          * If port is tuple port, the link chain is followed to the origin */

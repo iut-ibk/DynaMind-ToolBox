@@ -1,6 +1,6 @@
 /**
  * @file
- * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
@@ -23,24 +23,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#ifndef REALLOCATOR_H
+#define REALLOCATOR_H
 
-#include "createnodes.h"
+#include <dmmodule.h>
+#include <dm.h>
 
-DM_DECLARE_NODE_NAME(CreateNodes, Modules)
-CreateNodes::CreateNodes()
+/** @ingroup TestModules
+ * @brief reallocates alle components and attributes
+
+ */
+
+class DM_HELPER_DLL_EXPORT Reallocator: public DM::Module
 {
-    std::vector<DM::View> data;
-    data.push_back( DM::View("Nodes", DM::NODE, DM::WRITE));
-    this->addData("sys",data);
-}
+    DM_DECLARE_NODE(Reallocator)
+public:
+    Reallocator();
+    void run();
+};
 
-void CreateNodes::run() {
-    DM::System * sys = this->getData("sys");
-    DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
 
-    for (int i = 0; i < 10; i++)
-    {
-        DM::Node  n =  DM::Node(0,0,0);
-        sys->addNode(n, v);
-    }
-}
+
+
+
+#endif // REALLOCATOR_H

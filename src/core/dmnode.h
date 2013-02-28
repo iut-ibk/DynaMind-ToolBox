@@ -28,17 +28,18 @@
 #define DMNODE_H
 
 #include <dmcompilersettings.h>
+#include "dmdbconnector.h"
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
 #endif
 
 #include <string>
-#include <QVector>
 
 namespace DM {
-class  Component;
-
+class Component;
+class Vector3;
+class Edge;
 /**
      * @ingroup DynaMind-Core
      * @brief Provides a 3D node object
@@ -51,33 +52,59 @@ class  Component;
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
 private:
-    union {
-        struct { double x, y, z; };
-        double v_[3];
-    };
-
+    Vector3* vector;
+    //bool    isInserted;
+    /** @brief return table name */
+    QString getTableName();
+	
+	std::list<Edge*> *connectedEdges;	// not cached, for now
+	void addEdge(Edge* e)
+	{
+		if(!connectedEdges)
+			connectedEdges = new std::list<Edge*>();
+		connectedEdges->push_back(e);
+	}
+	void removeEdge(Edge* e)
+	{
+		if(connectedEdges)
+			connectedEdges->remove(e);
+	}
+	friend class Edge;
+protected:
+    virtual void SetOwner(Component *owner);
 public:
     /** @brief create new Node object defined by x, y and z */
     Node( double x, double y, double z );
     /** @brief create empty Node object. x, y and z are 0 */
     Node();
+    /** @brief destructor*/
+    ~Node();
     /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
     Node(const Node& n);
+	/** @brief return Type */
+	Components getType();
     /** @brief return x */
     double getX() const;
     /** @brief return y*/
     double getY() const;
     /** @brief return z*/
     double getZ() const;
-    /** @brief return QVector*/
-    const QVector<double> get() const;
+    /** @brief return coordinates */
+    const double get(unsigned int i) const;
+    /** @brief writes a xyz-double[3] into the given vector */
+    const void get(double *vector) const;
+    /** @brief returns all edges connecting this node */
+    std::vector<Edge*> getEdges() const;
     /** @brief set x*/
     void setX(double x);
     /** @brief set y*/
     void setY(double y);
     /** @brief set z*/
     void setZ(double z);
-
+    /** @brief set xyz*/
+    void set(double x, double y, double z);
+	/** @brief =operator */
+	Node& operator=(Node const& other);
     /** @brief return true if x, y and z are the same*/
     bool operator==(const Node & other) const;
     /** @brief x1-x2, y1-y2, z1-z2*/
@@ -95,7 +122,21 @@ public:
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
 
-    void operator =(const Node &n);
+#ifdef CACHE_PROFILING
+    static void PrintStatistics();
+#endif
+    Vector3* LoadFromDb();
+    void SaveToDb(Vector3* v);
+};
+
+class Vector3
+{
+public:
+    double x,y,z;
+
+    Vector3(){}
+    Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
+    Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
 };
 
 typedef std::map<std::string, DM::Node*> NodeMap;

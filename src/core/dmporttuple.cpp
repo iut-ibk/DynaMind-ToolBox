@@ -48,13 +48,13 @@ std::vector<ModuleLink * > PortTuple::getLinks() {
 }
 
 
-std::string PortTuple::getLinkedDataName() {
+std::string PortTuple::getLinkedDataName() const {
     return "";
 }
-Port * PortTuple::getInPort() {
+Port * PortTuple::getInPort() const {
     return this->inPort;
 }
-Port * PortTuple::getOutPort() {
+Port * PortTuple::getOutPort() const {
     return this->outPort;
 }
 PortTuple::~PortTuple() {

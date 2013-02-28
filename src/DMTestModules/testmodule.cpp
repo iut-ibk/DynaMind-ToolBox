@@ -83,8 +83,9 @@ void TestModule::run() {
     outputRasterData = this->getRasterData("RasterData", rdata);
 
     outputRasterData->setSize(200, 200, 20, 20, 0, 0);
-    for (int i = 0; i < outputRasterData->getWidth(); i++) {
-        for (int j = 0; j < outputRasterData->getHeight(); j++) {
+
+    for (unsigned int i = 0; i < outputRasterData->getWidth(); i++) {
+        for (unsigned int j = 0; j < outputRasterData->getHeight(); j++) {
             outputRasterData->setCell(i,j,15);
         }
 

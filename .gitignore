@@ -1,5 +1,6 @@
 CMakeCache.txt
 CMakeFiles/
+BuildWin/
 cmake_install.cmake
 ui_*.h
 *.pro.user

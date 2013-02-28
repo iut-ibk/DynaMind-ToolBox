@@ -3,6 +3,7 @@
 #include <dm.h>
 
 namespace {
+
 TEST_F(TestTBVectorData,calculateArea){
     DM::System * sys = new DM::System();
 

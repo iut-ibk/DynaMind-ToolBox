@@ -34,7 +34,6 @@
 namespace DM {
     Port::Port(Module * module, int PortType, std::string linkedDataName, bool tuplePort,  bool tupleInPort)
     {
-
         this->uuid = QUuid::createUuid().toString().toStdString();
         this->module = module;
         this->PortType = PortType;
@@ -56,19 +55,20 @@ namespace DM {
        DM::Logger(DM::Debug) << "delete Port " << this->linkedDataName;
         while (this->links.size() > 0)
             delete *(this->links.begin());
+		links.clear();
     }
 
     void Port::removeLink(ModuleLink * l) {
         Logger(Debug) << this->links.size();
-        for (std::vector<ModuleLink* >::iterator it = this->links.begin(); it!=this->links.end();) {
-            if (*it == l) {
+
+        for (std::vector<ModuleLink* >::iterator it = this->links.begin(); it!=this->links.end();++it) 
+		{
+            if (*it == l) 
+			{
                 it = this->links.erase(it);
-            } else {
-                ++it;
+				break;
             }
-
         }
-         Logger(Debug) << "Remove Link" << this->links.size();
+        Logger(Debug) << "Remove Link" << this->links.size();
     }
-
 }

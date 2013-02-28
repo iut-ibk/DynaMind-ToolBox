@@ -7,17 +7,17 @@
  * This file is part of DynaMind
  *
  * Copyright (C) 2011-2012  Christian Urich
- 
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- 
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -129,7 +129,7 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
 
 void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
     DM::Edge * e1 = new DM::Edge(*e);
-    e1->createNewUUID();
+    //e1->createNewUUID();
 
     DM::Node * n1 = sys->getNode(e1->getStartpointName());
     DM::Node * n2 = sys->getNode(e1->getEndpointName());
@@ -149,7 +149,7 @@ void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View
     sys->addComponentToView(e1, view);
 
     DM::Edge * e2 = new DM::Edge(*e);
-    e2->createNewUUID();
+    //e2->createNewUUID();
     e2 = sys->addEdge(e2);
     views = e2->getInViews();
     foreach (std::string v, views) {
@@ -201,13 +201,8 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
 
     }
 
-
-
     DM::Node n1 = *(nodes[0]) - *(nodes[1]);
     DM::Node n2 = *(nodes[1]) - *(nodes[2]);
-
-
-
     DM::Node n = NormalVector(n1, n2);
     if (n.getZ() < 0) {
         x = x*-1;
@@ -224,7 +219,6 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     double E_to[3][3];
 
-
     TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
 
     double alphas[3][3];
@@ -239,8 +233,6 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
     }
-
-
 
     DM::Node * pend = ns_t[nodes.size()-1];
     DM::Node * pstart = ns_t[0];
@@ -485,9 +477,8 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     if (!withLid)
             return newFaces;
     newFaces.push_back(sys->addFace(opposite_ids, view));
+
     return newFaces;
-
-
 }
 
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)

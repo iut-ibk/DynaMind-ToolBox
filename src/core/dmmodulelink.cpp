@@ -36,45 +36,42 @@ ModuleLink::ModuleLink(Port * InPort, Port * OutPort, bool isBackPort)
     this->OutPort = OutPort;
     this->OutPort->addLink(this);
     this->backLink = isBackPort;
-    isBackLinkFromOrigin = false;
-
+    //isBackLinkFromOrigin = false;
 }
-void ModuleLink::setInPort(Port * p) {
+void ModuleLink::setInPort(Port * p) 
+{
     this->InPort = p;
     this->InPort->addLink(this);
 }
-void ModuleLink::setOutPort(Port * p) {
+void ModuleLink::setOutPort(Port * p) 
+{
     this->OutPort = p;
     this->OutPort->addLink(this);
 }
-Port * ModuleLink::getInPort() {
+Port * ModuleLink::getInPort() const {
     return this->InPort;
 }
-Port * ModuleLink::getOutPort() {
+Port * ModuleLink::getOutPort() const {
     return this->OutPort;
 }
 std::string ModuleLink::getUuidFromOutPort() {
-    if (this->OutPort->isPortTuple()) {
-        if (getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
-            return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getModule()->getUuid();
-    }
+    if (this->OutPort->isPortTuple() && getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
+		return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getModule()->getUuid();
 
     return this->OutPort->getModule()->getUuid();
 }
-std::string ModuleLink::getDataNameFromOutPort() {
-    if (this->OutPort->isPortTuple()) {
-        if (getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
-            return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getLinkedDataName();
-    }
+std::string ModuleLink::getDataNameFromOutPort() const {
+    if (this->OutPort->isPortTuple() && getPortFromTuplePort(this, this->OutPort->isInPortTuple()) != 0 )
+		return getPortFromTuplePort(this, this->OutPort->isInPortTuple())->getOutPort()->getLinkedDataName();
+    
     return this->OutPort->getLinkedDataName();
 }
-ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInportTuple) {
-
+ModuleLink *  ModuleLink::getPortFromTuplePort(const ModuleLink * origin, bool fromInportTuple) const 
+{
     Group * g = (Group*) this->OutPort->getModule();
     PortTuple * pt = g->getInPortTuple(this->OutPort->getLinkedDataName());
-    if (pt == 0 || !fromInportTuple) {
+    if (pt == 0 || !fromInportTuple)
         pt = g->getOutPortTuple(this->OutPort->getLinkedDataName());
-    }
 
     Port * p =  pt->getInPort();
 
@@ -82,87 +79,66 @@ ModuleLink *  ModuleLink::getPortFromTuplePort(ModuleLink * origin, bool fromInp
     int BackId = -1;
     int counter = 0;
     foreach (ModuleLink * l, p->getLinks()) {
-        if (!l->isBackLink()||p->getLinks().size() == 1) {
-            LinkId = counter;
-        } else {
-            BackId = counter;
-        }
-        counter++;
+        if (!l->isBackLink()||p->getLinks().size() == 1)
+            LinkId = counter++;
+        else
+            BackId = counter++;
     }
-    if (LinkId < 0) {
+    if (LinkId < 0)
         return 0;
-    }
+
     ModuleLink *l = p->getLinks()[LinkId];
 
-    if (g->getInternalCounter() > 1 && BackId != -1){
+    if (g->getInternalCounter() > 1 && BackId != -1)
+	{
         l = p->getLinks()[BackId];
         Logger(Debug)<< "Internal Counter" << g->getInternalCounter();
         Logger(Debug) << "BackLink for TuplePort" << this->OutPort->getLinkedDataName();
-        origin->isBackLinkFromOrigin = true;
-
+        //origin->isBackLinkFromOrigin = true;
         Logger(Debug) << "Set Back link From Origin" << origin->getInPort()->getLinkedDataName();
-
     }
-    if (l == 0)
-        return 0;
-    if (l->getOutPort()->isPortTuple()) {
+    if (l && l->getOutPort()->isPortTuple())
         l = l->getPortFromTuplePort(origin,l->getOutPort()->isInPortTuple());
-    }
     if (l == 0)
         return 0;
 
-    if (origin->isBackLinkFromOrigin)
-        l->isBackLinkFromOrigin = true;
     return l;
 }
-ModuleLink::~ModuleLink() {
-
+ModuleLink::~ModuleLink() 
+{
     Logger(Debug) << "Remove Link";
-    if (InPort != 0)
-        this->InPort->removeLink(this);
-    if (OutPort != 0)
-        this->OutPort->removeLink(this);
-
+    if (InPort != 0)	this->InPort->removeLink(this);
+    if (OutPort != 0)	this->OutPort->removeLink(this);
 }
 
-
-bool ModuleLink::isBackLink() {
-
+bool ModuleLink::isBackLink() 
+{
     return this->backLink;
 }
-bool ModuleLink::isBackLinkInChain() {
-    if (this->OutPort->isPortTuple()) {
-
+bool ModuleLink::isBackLinkInChain() 
+{
+    if (this->OutPort->isPortTuple()) 
+	{
         Group * g = (Group*) this->OutPort->getModule();
         PortTuple * pt = g->getInPortTuple(this->OutPort->getLinkedDataName());
-        if (pt == 0) {
+        if (pt == 0)
             pt = g->getOutPortTuple(this->OutPort->getLinkedDataName());
-        }
+
         Port * p =  pt->getInPort();
         int LinkId = -1;
         int BackId = -1;
         int counter = 0;
-        foreach (ModuleLink * l, p->getLinks()) {
 
-            if (!l->isBackLink()) {//||p->getLinks().size() == 1) {
-                LinkId = counter;
-            } else {
-                BackId = counter;
-            }
-            counter++;
-
+        foreach (ModuleLink * l, p->getLinks()) 
+		{
+            if (!l->isBackLink())//||p->getLinks().size() == 1) {
+                LinkId = counter++;
+            else
+                BackId = counter++;
         }
-        if (g->getInternalCounter() > 1 && BackId != -1 && counter > 1){
-            return true;
-        }
-        else if (BackId != -1 && counter == 1){
-            return true;
-
-        }
-
-
+		if(BackId != -1 && (counter == 1 || (counter > 1 && g->getInternalCounter() > 1)))
+			return true;
     }
-
     return this->isBackLink();
 }
 

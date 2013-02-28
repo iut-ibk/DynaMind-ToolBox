@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,37 +26,107 @@
 
 #include <dmcomponent.h>
 #include <dmedge.h>
+#include <dmnode.h>
+#include <dmsystem.h>
+#include <dmlogger.h>
+#include <QSqlQuery>
+#include <dmdbconnector.h>
 
 using namespace DM;
 
-Edge::Edge(std::string startpoint, std::string endpoint) : Component()
+Edge::Edge(Node *start, Node *end) : Component(true)
 {
-    start=startpoint;
-    end=endpoint;
+	this->start = start;
+	this->end = end;
+	start->addEdge(this);
+	end->addEdge(this);
+
+	isInserted = false;
 }
 
-Edge::Edge(const Edge& e) : Component(e)
+Edge::Edge(const Edge& e) : Component(e, true)
 {
-    start=e.start;
-    end=e.end;
+	start = e.getStartNode();
+	end = e.getEndNode();
+	start->addEdge(this);
+	end->addEdge(this);
+
+	isInserted = false;
 }
 
-std::string Edge::getStartpointName()
+Edge::~Edge()
 {
-    return start;
+    if(isInserted)
+        Component::SQLDelete();
 }
-
-std::string Edge::getEndpointName()
+DM::Components Edge::getType()
 {
-    return end;
+	return DM::EDGE;
+}
+QString Edge::getTableName()
+{
+    return "edges";
 }
 
-void Edge::setStartpointName(std::string name) {
-    this->start = name;
+Node* Edge::getStartNode() const
+{
+	return start;
+}
+const QUuid Edge::getStartpoint() const
+{
+	return start->getQUUID();
 }
 
-void Edge::setEndpointName(std::string name) {
-    this->end = name;
+const std::string Edge::getStartpointName() const
+{
+	return start->getUUID();
+}
+Node* Edge::getEndNode() const
+{
+	return end;
+}
+const QUuid Edge::getEndpoint() const
+{
+	return end->getQUUID();
+}
+
+const std::string Edge::getEndpointName() const
+{
+	return end->getUUID();
+}
+
+void Edge::setStartpoint(Node *start)
+{
+	this->start->removeEdge(this);
+	this->start = start;
+	start->addEdge(this);
+}
+
+void Edge::setStartpointName(std::string name)
+{
+	if(!currentSys)
+	{
+		Logger(Error) << "setStartpointName in unattached edge not possible";
+		return;
+	}
+	setStartpoint(currentSys->getNode(name));
+}
+
+void Edge::setEndpoint(Node *end)
+{
+	this->end->removeEdge(this);
+	this->end = end;
+	end->addEdge(this);
+}
+
+void Edge::setEndpointName(std::string name)
+{
+	if(!currentSys)
+	{
+		Logger(Error) << "setEndpointName in unattached edge not possible";
+		return;
+	}
+	setEndpoint(currentSys->getNode(name));
 }
 
 Component* Edge::clone()
@@ -64,3 +134,19 @@ Component* Edge::clone()
     return new Edge(*this);
 }
 
+void Edge::Synchronize()
+{
+    if(isInserted)
+    {
+        DBConnector::getInstance()->Update("edges", uuid,
+                                       "startnode",  start->getQUUID().toByteArray(),
+                                       "endnode",  end->getQUUID().toByteArray());
+    }
+    else
+    {
+        DBConnector::getInstance()->Insert("edges", uuid,
+                                       "startnode",  start->getQUUID().toByteArray(),
+                                       "endnode",  end->getQUUID().toByteArray());
+        isInserted = true;
+    }
+}

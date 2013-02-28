@@ -1,4 +1,5 @@
 /**
+ *
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @author  Michael Mair <abroxos@gmail.com>
@@ -27,11 +28,13 @@
 #ifndef DMEDGE_H
 #define DMEDGE_H
 #include <dmcompilersettings.h>
+#include <dmnode.h>
 
 
 namespace DM {
 
     class Component;
+    //class Node;
     /** @ingroup DynaMind-Core
       * @brief Provides an Edge object. An Edge just contains references to a start and end node.
       *
@@ -39,27 +42,55 @@ namespace DM {
       * unlimeted number of Attributes. Edges only contain references to nodes stored in the system. As reference the uuid
       * of the Node is used.
       */
-    class DM_HELPER_DLL_EXPORT Edge : public Component
+    class DM_HELPER_DLL_EXPORT Edge : public Component, Asynchron
     {
     private:
-        std::string start;
-        std::string end;
-
+        //void SQLSetValues(QUuid start, QUuid end);
+        /** @brief return table name */
+        QString getTableName();
+		Node* start;
+		Node* end;
     public:
         /** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
-        Edge(std::string startpoint, std::string endpoint);
+        //Edge(QUuid startpoint, QUuid endpoint);
+        Edge(Node* start, Node* end);
         /** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
         Edge(const Edge& e);
+        /** @brief destructor */
+        ~Edge();
+		/** @brief return Type */
+		Components getType();
+        /** @brief return uuid to the startpoint 
+			@deprecated*/
+        const QUuid getStartpoint() const;
         /** @brief return uuid to the startpoint */
-        std::string getStartpointName();
+		Node*	getStartNode() const;
+        /** @brief return uuid to the endpoint 
+			@deprecated*/
+        const QUuid getEndpoint() const;
         /** @brief return uuid to the endpoint */
-        std::string getEndpointName();
+		Node*	getEndNode() const;
+        /** @brief return uuid to the startpoint */
+        const std::string getStartpointName() const;
+        /** @brief return uuid to the endpoint */
+        const std::string getEndpointName() const;
         /** @brief set uuid to that points to the start node */
+        void setStartpoint(Node* start);
+        /** @brief set uuid to that points to the start node
+            @deprecated*/
         void setStartpointName(std::string name);
         /** @brief set uuid that points to the end node */
-        void setEndpointName(std::string name);        
+        void setEndpoint(Node* end);
+        /** @brief set uuid that points to the end node
+            @deprecated*/
+        void setEndpointName(std::string name);
         /** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
         Component* clone();
+        /** @brief returns both points*/
+        //const void getPoints(Node *points) const;
+		//bool* LoadFromDb();
+		//void SaveToDb(bool* b);
+		void Synchronize();
     };
     typedef std::map<std::string, DM::Edge*> EdgeMap;
 }

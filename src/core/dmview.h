@@ -89,7 +89,7 @@ private:
 
     int type;
     std::string name;
-    std::string IdofDummyComponent;
+    Component *dummy;
     int accesstypeGeometry;
 
     std::map<std::string, int> ownedAttributes;
@@ -133,14 +133,17 @@ public:
     void setAccessType(int Type) {this->accesstypeGeometry = Type;}
 
     /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
-    bool reads();
+    bool reads() const;
 
     /** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
-    bool writes();
+    bool writes() const;
 
-    void setIdOfDummyComponent(std::string UUID);
+    //void setIdOfDummyComponent(std::string UUID);
+    void setDummyComponent(Component *c);
+    Component* getDummyComponent();
 
-    /** @brief returns uuid of the dummy object */
+    /** @brief returns uuid of the dummy object
+        @deprecated*/
     std::string getIdOfDummyComponent();
 
     bool operator<(const View & other) const;

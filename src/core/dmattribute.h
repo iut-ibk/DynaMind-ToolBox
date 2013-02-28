@@ -6,7 +6,7 @@
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich, Michael Mair
+ * Copyright (C) 2011-2012  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 #include <set>
 #include <map>
 #include <dmcompilersettings.h>
+#include <QtCore>
+#include "dmdbconnector.h"
 
 using namespace std;
 
@@ -41,6 +43,20 @@ struct LinkAttribute {
     std::string viewname;
     std::string uuid;
 };
+class TimeSeriesAttribute
+{
+public:
+	TimeSeriesAttribute(std::vector<std::string>* timestamp, std::vector<double>* value)
+	{
+		this->timestamp = *timestamp;
+		this->value = *value;
+	}
+	TimeSeriesAttribute(){};
+	std::vector<std::string> timestamp;
+	std::vector<double> value;
+};
+
+class Component;
 
 /** @ingroup DynaMind-Core
   * An Attribute is used to add informations to an object.
@@ -59,18 +75,49 @@ public:
         DOUBLEVECTOR,
         STRINGVECTOR
     };
-    
+    class AttributeValue
+	{
+	public:
+		Attribute::AttributeType type;
+		void*	ptr;
+
+		AttributeValue()
+		{
+			ptr = NULL;
+			type = NOTYPE;
+		}
+		AttributeValue(const AttributeValue& ref);
+		AttributeValue(double d);
+		AttributeValue(std::string string);
+		~AttributeValue()
+		{
+			Free();
+		}
+		void Free()
+		{
+			if(ptr)	delete ptr;
+			ptr = NULL;
+			type = NOTYPE;
+		}
+		AttributeValue(QVariant var, AttributeType type);
+		QVariant toQVariant();
+	};
 private:
+    QUuid _uuid;
     std::string name;
-    double doublevalue;
-    std::string stringvalue;
-    std::vector<double> doublevector;
-    std::vector<std::string> stringvector;
     std::set<std::string> inViews;
-
-    AttributeType type;
-
+	Component* owner;
+	AttributeValue	*value;
+	bool	isInserted;
+	AttributeValue*	getValue() const;
+protected:
 public:
+	/** @brief =operator */
+	Attribute& operator=(Attribute const& other);
+    /** @brief copies type and value to this attribute**/
+    void Change(const Attribute &attribute);
+    /** @brief changes the owner **/
+	void SetOwner(Component* owner);
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/
@@ -108,10 +155,11 @@ public:
     /** @brief set attribute name */
     void setName(std::string name);
     /** @brief get name */
-    std::string getName();
+    std::string getName() const;
+    /** @brief destructor */
     ~Attribute();
     /** @brief return datatype*/
-    AttributeType getType();
+    AttributeType getType() const;
     /** @brief add link object **/
     void setLink(std::string viewname, std::string uuid);
     /** @brief Sets attribute links the existing vector is cleared! **/
@@ -122,9 +170,10 @@ public:
     std::vector<LinkAttribute> getLinks();
     /** @brief add TimeSeries **/
     void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
-    /** @brief Sets attribute tyoe */
+    /** @brief add TimeSeries **/
+    void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
+    /** @brief Sets attribute type */
     void setType(AttributeType type);
-    
     /**
      * @brief get a printable name of the type, e.g. for gui displaying
      * @return the name of the type as string
@@ -137,6 +186,18 @@ public:
      * @return the name of the @arg type
      */
     static const char*getTypeName(AttributeType type);
+	/** @brief loads the sql database 
+		@internal*/
+	AttributeValue* LoadFromDb();
+	/** @brief saves the sql database 
+		@internal*/
+	void SaveToDb(AttributeValue *val);
+
+	static void ResizeCache(unsigned int size);
+	static unsigned int GetCacheSize();
+#ifdef CACHE_PROFILING
+    static void PrintStatistics();
+#endif
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

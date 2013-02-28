@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich, Markus Sengthaler
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,21 +27,103 @@
 #include <dmcomponent.h>
 #include "dmface.h"
 #include "dmnode.h"
+#include "dmsystem.h"
+#include "dmlogger.h"
 
+#include "dmdbconnector.h"
+#include <QByteArray>
 
 using namespace DM;
 
-Face::Face(std::vector<std::string> nodes) : Component()
+QByteArray GetBytes(std::vector<Node*> nodevector)
 {
-    this->nodes = nodes;
+    QByteArray qba;
+    QDataStream stream(&qba, QIODevice::WriteOnly);
+
+    stream << (int)nodevector.size();
+    for(unsigned int i=0;i<nodevector.size();i++)
+        stream << nodevector[i]->getQUUID();
+
+    return qba;
 }
-Face::Face(const Face& e) : Component(e)
+
+QByteArray GetBytes(std::vector<Face*> facevector)
 {
-    this->nodes=e.nodes;
-    this->holes=e.holes;
+    QByteArray qba;
+    QDataStream stream(&qba, QIODevice::WriteOnly);
+
+    stream << (int)facevector.size();
+    for(unsigned int i=0;i<facevector.size();i++)
+    {
+        stream << GetBytes(facevector[i]->getNodePointers());
+    }
+    return qba;
 }
-std::vector<std::string> Face::getNodes() {
-    return this->nodes;
+
+Face::Face(std::vector<std::string> nodes) : Component(true)
+{
+    Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
+                         doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
+    /*
+    foreach(std::string nodeUuid, nodes)
+    {
+        _nodes.push_back(this->getCurrentSystem()->getNode(nodeUuid));
+    }
+
+    DBConnector::getInstance()->Insert("faces", uuid,
+                                       "nodes", GetBytes(_nodes));*/
+}
+
+Face::Face(std::vector<Node*> nodes) : Component(true)
+{
+    this->_nodes = nodes;
+	isInserted = false;
+    /*DBConnector::getInstance()->Insert("faces", uuid,
+                                       "nodes", GetBytes(_nodes));*/
+}
+
+Face::Face(const Face& e) : Component(e, true)
+{
+    this->_nodes = e._nodes;
+    this->_holes = e._holes;
+	isInserted = false;
+    /*DBConnector::getInstance()->Insert("faces", uuid,
+                                       "nodes", GetBytes(e._nodes),
+                                       "holes", GetBytes(e._holes));*/
+}
+Face::~Face()
+{
+    Component::SQLDelete();
+}
+
+std::vector<std::string> GetVector(QByteArray qba)
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	QString str;
+	std::vector<std::string> result;
+
+	unsigned int len=0;
+	stream >> len;
+	for(unsigned int i=0;i<len;i++)
+	{
+		stream>>str;
+		result.push_back(str.toStdString());
+	}
+	return result;
+}	
+
+std::vector<std::string> Face::getNodes() const
+{
+    std::vector<std::string> nodes;
+    foreach(Node* n, _nodes)
+    {
+        nodes.push_back(n->getUUID());
+    }
+    return nodes;
+}
+std::vector<Node*> Face::getNodePointers() const
+{
+    return _nodes;
 }
 
 Component* Face::clone()
@@ -49,23 +131,104 @@ Component* Face::clone()
     return new Face(*this);
 }
 
-const std::vector<std::vector<std::string> > & Face::getHoles() const
+DM::Components Face::getType()
 {
+	return DM::FACE;
+}
+QString Face::getTableName()
+{
+    return "faces";
+}
+
+const std::vector<std::vector<std::string> > Face::getHoles() const
+{
+    std::vector<std::vector<std::string> > holes;
+    foreach(Face* f, _holes)
+    {
+        std::vector<std::string> hole;
+        foreach(Node* n, f->getNodePointers())
+        {
+            hole.push_back(n->getUUID());
+        }
+        holes.push_back(hole);
+    }
     return holes;
+}
+
+const std::vector<Face*> Face::getHolePointers() const
+{
+    return _holes;
 }
 
 void Face::addHole(std::vector<std::string> hole)
 {
-    this->holes.push_back(hole);
+    System *curSys = this->getCurrentSystem();
+    std::vector<Node*> holeNodes;
+    foreach(std::string uuidNodes, hole)
+        holeNodes.push_back(curSys->getNode(uuidNodes));
+
+    addHole(holeNodes);
 }
 
-void Face::addHole(std::vector<DM::Node*> hole)
+void Face::addHole(std::vector<Node*> hole)
 {
-    std::vector<std::string> shole;
-    for (std::vector<DM::Node *>::const_iterator it = hole.begin(); it != hole.end(); ++it)
+    _holes.push_back(getCurrentSystem()->addFace(hole));
+}
+
+void Face::addHole(Face* hole)
+{
+    if(hole==this)
     {
-        DM::Node * n = *it;
-        shole.push_back(n->getUUID());
+        Logger(Error) << "addHole: self reference not possible";
+        return;
     }
-    this->addHole(shole);
+    _holes.push_back(hole);
+    //SQLUpdateValues();
+}
+/*
+void Face::SQLUpdateValues()
+{
+    DBConnector::getInstance()->Update("faces", uuid,
+                                       "nodes", GetBytes(_nodes),
+                                       "holes", GetBytes(_holes));
+}
+*/
+void Face::Synchronize()
+{
+	if(!getCurrentSystem())
+		return;
+	if(isInserted)
+	{
+		DBConnector::getInstance()->Update("faces", uuid,
+										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
+		                                  "nodes", GetBytes(_nodes),
+		                                  "holes", GetBytes(_holes));
+	}
+	else
+	{
+		isInserted = true;
+		DBConnector::getInstance()->Insert("faces", uuid,
+										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
+		                                  "nodes", GetBytes(_nodes),
+		                                  "holes", GetBytes(_holes));
+	}
+}
+
+void Face::SetOwner(Component *owner)
+{
+	//SQLSetOwner(owner);
+    currentSys = owner->getCurrentSystem();
+
+    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+		it->second->SetOwner(this);
+}
+
+void Face::setNodes(std::vector<Node*> nodes)
+{
+	this->_nodes = nodes;
+}
+
+void Face::clearHoles()
+{
+	this->_holes.clear();
 }

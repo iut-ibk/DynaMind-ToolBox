@@ -40,10 +40,12 @@ DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 
 }
 
-void DM::ModuleRunnable::run() {
+void DM::ModuleRunnable::run() 
+{
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
-    if (!m->isExecuted() || m->isGroup()) {
+    if (!m->isExecuted() || m->isGroup())
+    {
         if (!m->isFullyLinked())
             m->resetParameter();
         m->updateParameter();
@@ -61,11 +63,13 @@ void DM::ModuleRunnable::run() {
                 DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
                 m->run();
                 m->setExecuted(true);
+
                 DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  (double) timer.elapsed()/1000;
             }
         }
         m->postRun();
     }
+
     DM::Group * g = m->getGroup();
     if (g!=0 && !m->isGroup())
         g->finishedModule(this->m);

@@ -2,11 +2,12 @@
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @author  Michael Mair <abroxos@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,258 +27,238 @@
 
 #include <QtCore>
 #include <dmcomponent.h>
+#include <dmnode.h>
+#include <dmedge.h>
+#include <dmrasterdata.h>
 #include <dmattribute.h>
 #include <dmsystem.h>
 #include <assert.h>
 #include <dmlogger.h>
 
+#include "dmface.h"
 #include <QUuid>
 
-using namespace DM;
+#include <dmdbconnector.h>
+#include <QSqlQuery>
+
 using namespace DM;
 
+class ComponentSyncMap: public Asynchron, public std::set<Component*>
+{
+public:
+	void Synchronize()
+	{
+		foreach(Component* c, *this)
+			c->SaveToDb();
+	}
+};
+
+static ComponentSyncMap componentSyncMap;
 
 Component::Component()
 {
-    this->uuid = QUuid::createUuid().toString().toStdString();
-    name = "";
-    childsview = std::map<std::string,Component*>();
-    attributesview = std::map<std::string,Attribute*>();
-    ownedchilds = std::map<std::string,Component*>();
-    ownedattributes =  std::map<std::string,Attribute*>();
+    DBConnector::getInstance();
+    uuid = QUuid::createUuid();
+    ownedattributes = std::map<std::string,Attribute*>();
+
+    //mMutex = new QMutex(QMutex::Recursive);
+
     inViews = std::set<std::string>();
-    currentSys = 0;
-    mutex = new QMutex(QMutex::Recursive);
+    currentSys = NULL;
 
+    DBConnector::getInstance();
+    //SQLInsertComponent();
+	isCached = true;
+	componentSyncMap.insert(this);
+	//componentSyncMap.push_back(this);
 }
 
-void Component::createNewUUID() {
-    this->uuid = QUuid::createUuid().toString().toStdString();
+Component::Component(bool b)
+{
+    DBConnector::getInstance();
+    uuid = QUuid::createUuid();
+    ownedattributes = std::map<std::string,Attribute*>();
+
+    inViews = std::set<std::string>();
+    currentSys = NULL;
+	isCached = false;
 }
 
-bool Component::isInView(View view) const {
-    foreach (std::string s, inViews) {
-        if (view.getName().compare(s) == 0)
-            return true;
-    }
 
-    return false;
+void Component::CopyFrom(const Component &c)
+{
+	uuid = QUuid::createUuid();
+    inViews = c.inViews;
+	currentSys = NULL;
+
+	mforeach(Attribute* a, c.ownedattributes)
+	{
+		//this->addAttribute(*a);
+		Attribute* newa = new Attribute(*a);
+		ownedattributes[newa->getName()] = newa;
+		newa->SetOwner(this);
+	}
 }
-
-void Component::setName(std::string name) {
-    this->name = name;
-}
-
-//std::string Component::getName() const {
-//return name;
-//}
 
 Component::Component(const Component& c)
 {
-
-    this->uuid=c.uuid;
-    attributesview=c.attributesview;
-    ownedchilds=c.ownedchilds;
-    inViews = c.inViews;
-    std::map<std::string,Component*>::iterator it;
-
-    for ( it=ownedchilds.begin() ; it != ownedchilds.end(); it++ )
-    {
-
-        childsview[(*it).first]=ownedchilds[(*it).first];
-    }
-    ownedchilds.clear();
-
-    this->mutex = new QMutex();
-
+	CopyFrom(c);
+	//SQLInsertComponent();
+	componentSyncMap.insert(this);
+	isCached = true;
+	//componentSyncMap.push_back(this);
 }
-Component * Component::updateChild(Component * c) {
-    if (ownedchilds.find(c->getUUID()) != ownedchilds.end())
-        return c;
-    Component * c_new = c->clone();
-    changeChild(c_new);
 
-    return c_new;
+Component::Component(const Component& c, bool bInherited)
+{
+    CopyFrom(c);
+	isCached = false;
 }
 
 Component::~Component()
 {
-    while(ownedchilds.size())
-    {
-        delete (*ownedchilds.begin()).second;
-        ownedchilds.erase(ownedchilds.begin());
-    }
+	mforeach(Attribute* a, ownedattributes)
+		delete a;
 
-    while(ownedattributes.size())
-    {
-        delete (*ownedattributes.begin()).second;
-        ownedattributes.erase(ownedattributes.begin());
-    }
-
-    delete mutex;
+	ownedattributes.clear();
+	//componentSyncMap.remove(this);
+	if(isCached)
+		componentSyncMap.erase(this);
+	// if this class is not of type component, nothing will happen
+    SQLDelete();
 }
 
-void Component::setUUID(std::string uuid)
+Component& Component::operator=(const Component& other)
 {
-    this->uuid=uuid;
+	if(this != &other)
+	{
+		mforeach(Attribute* a, other.ownedattributes)
+			this->addAttribute(*a);
+	}
+	return *this;
 }
 
+bool Component::isInView(View view) const 
+{
+    foreach (std::string s, inViews) {
+        if (view.getName().compare(s) == 0)
+            return true;
+    }
+    return false;
+}
 std::string Component::getUUID()
+{
+	Attribute* a = this->getAttribute(UUID_ATTRIBUTE_NAME);
+	std::string name = a->getString();
+	if(name == "")	
+	{
+		name = QUuid::createUuid().toString().toStdString();
+		a->setString(name);
+		if(this->currentSys && currentSys != this)	// avoid self referencing
+			currentSys->componentNameMap[name] = this;
+	}
+	return name;
+}
+QUuid Component::getQUUID() const
 {
     return uuid;
 }
 
-bool Component::addAttribute(std::string name, double val) {
-    QMutexLocker(this->mutex);
-    if(attributesview.find(name)!=attributesview.end()) {
-        return this->changeAttribute(name, val);
-    }
-    Attribute  attr = Attribute(name, val);
-    return this->addAttribute(attr);
-}
-
-bool Component::addAttribute(std::string name, std::string val) {
-    QMutexLocker(this->mutex);
-    if(attributesview.find(name)!=attributesview.end()) {
-        return this->changeAttribute(name, val);
-    }
-    Attribute  attr = Attribute(name, val);
-    return this->addAttribute(attr);
-}
-
-bool Component::addAttribute(Attribute newattribute)
+DM::Components Component::getType()
 {
-    QMutexLocker(this->mutex);
-    if(attributesview.find(newattribute.getName())!=attributesview.end())
+    return DM::COMPONENT;
+}
+QString Component::getTableName()
+{
+    return "components";
+}
+
+bool Component::addAttribute(std::string name, double val) 
+{
+    //QMutexLocker locker(mMutex);
+	if(HasAttribute(name))
+        return this->changeAttribute(name, val);
+
+    return this->addAttribute(new Attribute(name, val));
+}
+
+bool Component::addAttribute(std::string name, std::string val) 
+{
+    //QMutexLocker locker(mMutex);
+	if(HasAttribute(name))
+        return this->changeAttribute(name, val);
+
+    return this->addAttribute(new Attribute(name, val));
+}
+
+bool Component::addAttribute(const Attribute &newattribute)
+{
+    //QMutexLocker locker(mMutex);
+    if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
+
     Attribute * a = new Attribute(newattribute);
-    attributesview[newattribute.getName()] = a;
     ownedattributes[newattribute.getName()] = a;
 
+    a->SetOwner(this);
     return true;
 }
 
-bool Component::changeAttribute(Attribute newattribute)
+bool Component::addAttribute(Attribute *pAttribute)
 {
-    QMutexLocker(this->mutex);
-    if(attributesview.find(newattribute.getName())==attributesview.end()) {
-        return this->addAttribute(newattribute);
-    }
-    if(ownedattributes.find(newattribute.getName())==ownedattributes.end()) {
-        ownedattributes[newattribute.getName()] = new Attribute(*(attributesview[newattribute.getName()]));
-        attributesview[newattribute.getName()] = ownedattributes[newattribute.getName()];
-    }
-    Attribute * attr = attributesview[newattribute.getName()];
-    Attribute::AttributeType type = attr->getType();
-    attr->setDouble(newattribute.getDouble());
-    attr->setDoubleVector(newattribute.getDoubleVector());
-    attr->setString(newattribute.getString());
-    attr->setStringVector(newattribute.getStringVector());
-    attr->setType(type);
+    //QMutexLocker locker(mMutex);
+    if(HasAttribute(pAttribute->getName()))
+        delete ownedattributes[pAttribute->getName()];
+
+	ownedattributes[pAttribute->getName()] = pAttribute;
+    pAttribute->SetOwner(this);
+    return true;
+}
+
+bool Component::changeAttribute(const Attribute &newattribute)
+{
+    getAttribute(newattribute.getName())->Change(newattribute);
     return true;
 }
 
 bool Component::changeAttribute(std::string s, double val)
 {
-    return this->changeAttribute(Attribute(s, val));
+    getAttribute(s)->setDouble(val);
+    return true;
 }
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
-    return this->changeAttribute(Attribute(s, val));
+    getAttribute(s)->setString(val);
+    return true;
 }
 
 bool Component::removeAttribute(std::string name)
 {
-
-    QMutexLocker(this->mutex);
-    if(attributesview.find(name)!=attributesview.end())
-    {
-        if(ownedattributes.find(name)!=ownedattributes.end())
-        {
-            delete ownedattributes[name];
-            ownedattributes.erase(name);
-        }
-
-        attributesview.erase(name);
-        return true;
-    }
-
-    return false;
+	return delete_element(&ownedattributes, name);
 }
 
 Attribute* Component::getAttribute(std::string name)
 {
-    QMutexLocker(this->mutex);
-    if(attributesview.find(name)==attributesview.end()) {
-        this->addAttribute(Attribute(name));
-    }
-    return attributesview[name];
+	Attribute* a;
+	if(!map_contains(&ownedattributes, name, a))
+	//Attribute* a = ownedattributes[name];
+	//if(!a)
+	{
+		a = new Attribute(name);
+		a->SetOwner(this);
+		ownedattributes[name] = a;
+	}
+	return a;
 }
 
 const std::map<std::string, Attribute*> & Component::getAllAttributes() const
 {
-    return attributesview;
+    return ownedattributes;
 }
 
-bool Component::addChild(Component *newcomponent)
-{
-    QMutexLocker(this->mutex);
-    if(!newcomponent)
-        return false;
-
-    if(childsview.find(newcomponent->getUUID())!=childsview.end())
-        return false;
-
-    childsview[newcomponent->getUUID()] = newcomponent;
-    ownedchilds[newcomponent->getUUID()] = newcomponent;
-
-
-    return true;
-}
 Component* Component::clone() {
     return new Component(*this);
-}
-
-bool Component::changeChild(Component *newcomponent)
-{
-    QMutexLocker(this->mutex);
-    if(!newcomponent)
-        return false;
-
-    if(ownedchilds.find(newcomponent->getUUID())!=ownedchilds.end())
-        delete ownedchilds[newcomponent->getUUID()];
-
-    ownedchilds[newcomponent->getUUID()] = newcomponent;
-    childsview[newcomponent->getUUID()] = newcomponent;
-
-    return true;
-}
-
-bool Component::removeChild(std::string name)
-{
-    QMutexLocker(this->mutex);
-    if(childsview.find(name)!=childsview.end())
-    {
-        if(ownedchilds.find(name)!=ownedchilds.end())
-        {
-            delete ownedchilds[name];
-            ownedchilds.erase(name);
-        }
-
-        childsview.erase(name);
-        return true;
-    }
-
-    return false;
-}
-
-Component* Component::getChild(std::string name)
-{
-
-    if(childsview.find(name)==childsview.end())
-        return 0;
-    return childsview[name];
 }
 
 void Component::setView(std::string view)
@@ -297,11 +278,6 @@ void Component::removeView(const View &view)
 
 const set<std::string> &Component::getInViews() const {
     return this->inViews;
-
-}
-std::map<std::string, Component*> Component::getAllChilds()
-{
-    return childsview;
 }
 
 System * Component::getCurrentSystem() {
@@ -312,12 +288,53 @@ void Component::setCurrentSystem(System *sys) {
     this->currentSys = sys;
 }
 
-void Component::operator =(const Component &c)
+void Component::SetOwner(Component *owner)
 {
-    this->uuid=c.uuid;
-    attributesview=c.attributesview;
-    ownedchilds=c.ownedchilds;
-    inViews = c.inViews;
-    this->mutex = new QMutex();
+	//SQLSetOwner(owner);
+    currentSys = owner->getCurrentSystem();
+
+    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+		it->second->SetOwner(this);
 }
 
+void Component::SaveToDb()
+{
+	if(this->getType() != DM::COMPONENT || !currentSys)
+		return;
+
+	if(!isInserted)
+	{
+		isInserted = true;
+		DBConnector::getInstance()->Insert(	"components", uuid, 
+											"owner", currentSys->getQUUID().toByteArray());
+	}
+	else
+		DBConnector::getInstance()->Update(	"components", uuid, 
+											"owner", currentSys->getQUUID().toByteArray());
+}
+
+/*
+void Component::SQLSetOwner(Component * owner)
+{
+    DBConnector::getInstance()->Update(getTableName(), uuid,
+                                       "owner", owner->uuid.toByteArray());
+}
+
+void Component::SQLInsertComponent()
+{
+	isInserted = true;
+    DBConnector::getInstance()->Insert("components",	uuid);
+}*/
+void Component::SQLDelete()
+{
+	if(isInserted)
+	{
+		isInserted = false;
+		DBConnector::getInstance()->Delete(getTableName(), uuid);
+	}
+}
+
+bool Component::HasAttribute(std::string name)
+{
+	return ownedattributes.find(name)!=ownedattributes.end();
+}

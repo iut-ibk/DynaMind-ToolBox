@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,105 +30,137 @@
 #include <QMutex>
 #include <dmlogger.h>
 #include <math.h>
+#include "dmdbconnector.h"
+#include <QVariant>
+#include <QSqlQuery>
 
 using namespace DM;
-
-
-RasterData::RasterData(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) : Component()
+/*
+const unsigned int rowOverlapp = 3;
+static Cache<std::pair<QUuid,long>,QByteArray> rowCache(4096);
+static std::map<std::pair<QUuid,long>,QByteArray*> rowUpdateCache;
+*/
+#ifdef CACHE_PROFILING
+/*void RasterData::PrintStatistics()
 {
-    DM::Logger(DM::Warning) << "New implemented RasterData --- please check existing code";
+    Logger(Standard) << "Rasterdata row cache statistics:\t"
+                     << "misses: " << (long)rowCache.misses
+                     << "\thits: " << (long)rowCache.hits;
+    rowCache.ResetProfilingCounters();
+}*/
+#endif
+
+
+RasterData::RasterData(long width, long height,
+                       double cellsizeX, double cellsizeY,
+                       double xoffset, double yoffset)
+    : Component(true)
+{
     this->width = width;
     this->height = height;
-    this->cellSizeX = cellSizeX;
-    this->cellSizeY = cellSizeY;
+    this->cellSizeX = cellsizeX;
+    this->cellSizeY = cellsizeY;
     this->xoffset = xoffset;
     this->yoffset = yoffset;
-    this->NoValue = -9999;
+
     this->minValue = -9999;
     this->maxValue = -9999;
+    this->NoValue = -9999;
     this->debugValue = 0;
-    data = new float*[width];
-    for (long i = 0; i < width; i++) {
-        data[i] = new float[height];
-    }
+
+	cache = NULL;
+
+	SQLInsert();
+    SQLInsertField(width, height);
+}
+RasterData::RasterData() : Component(true)
+{
+    this->cellSizeX = 0;
+    this->cellSizeY = 0;
+    this->xoffset = 0;
+    this->yoffset = 0;
+    this->width = 0;
+    this->height = 0;
+	
+	cache = NULL;
+    SQLInsert();
+}
+RasterData::RasterData(const RasterData &other) : Component(other, true)
+{
+    this->width = other.width;
+    this->height = other.height;
+    this->NoValue = other.NoValue;
+    this->minValue = other.minValue;
+    this->maxValue = other.maxValue;
+    this->debugValue = other.debugValue;
+
+    this->cellSizeX = other.cellSizeX;
+    this->cellSizeY = other.cellSizeY;
+    this->xoffset = other.xoffset;
+    this->yoffset = other.yoffset;
+	
+	cache = NULL;
+	SQLInsert();
+    SQLInsertField(width, height);
+
+    //for(long y=0;y<height;y++)
+    //    this->SQLSetRow(y, other.SQLGetRow(y));
+
+	SQLCopyField(&other);
 }
 
-double RasterData::getSum() const {
+Components RasterData::getType()
+{
+	return DM::RASTERDATA;
+}
+QString RasterData::getTableName()
+{
+    return "rasterdatas";
+}
+double RasterData::getSum() const
+{
     double sum = 0;
-    for ( long i = 0; i < width; i++ ) {
-        for (  long j = 0; j < height; j++ ) {
-            double val = data[i][j];
+    for ( long i = 0; i < width; i++ )
+	{
+        for (  long j = 0; j < height; j++ ) 
+        {
+            double val = SQLGetValue(i,j);
             if ( val != NoValue)
                 sum += val;
         }
     }
-
     return sum;
 }
 
-double RasterData::getCell(long x, long y) const {
-    if (  x >-1 && y >-1 && x < this->width && y < this->height) {
-        //std::cout << data[x][y] << std::endl;
-        return  data[x][y];
-    } else {
+double RasterData::getCell(long x, long y) const
+{
+    if (  x >-1 && y >-1 && x < this->width && y < this->height) 
+        return  SQLGetValue(x,y);
+    else
         return  this->NoValue;
-    }
-
-}
-void RasterData::createNewDataSet() {
-    float **data_old = this->data;
-    this->minValue = 0;
-    this->maxValue = 0;
-
-    data = new float*[width];
-    for (long i = 0; i < width; i++) {
-        data[i] = new float[height];
-    }
-
-    for (unsigned int i = 0; i < getWidth(); i++) {
-        for (unsigned int j = 0; j < getHeight();j++) {
-            data[i][j] =  data_old[i][j];
-        }
-    }
-
-    this->isClone = false;
-
 }
 
-bool RasterData::setCell(long x, long y, double value) {
-    if (this->isClone == true)
-        this->createNewDataSet();
+bool RasterData::setCell(long x, long y, double value)
+{
+    if (  x >-1 && y >-1 && x < this->width && y < this->height) 
+	{
+		SQLSetValue(x,y,value);
 
-    if (  x >-1 && y >-1 && x < this->width && y < this->height) {
-        data[x][y] = value;
-
-        if (minValue == this->NoValue || minValue > value) {
+        if (minValue == this->NoValue || minValue > value)
             minValue = value;
-        }
 
-        if (maxValue == this->NoValue || maxValue < value) {
+        if (maxValue == this->NoValue || maxValue < value)
             maxValue = value;
-        }
 
         return true;
-    } else {
-        return false;
-    }
+    } 
     return false;
 }
 
-RasterData::~RasterData() {
-
-    if (isClone)
-        return;
-    for (long i = 0; i < width; i++) {
-        delete[] this->data[i];
-    }
-
-    if (height != 0)
-        delete[] data;
-
-    data = 0;
+RasterData::~RasterData()
+{
+    SQLDeleteField();
+    Component::SQLDelete();
 }
 
 void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
@@ -155,8 +187,7 @@ void RasterData::getNeighboorhood(double** d, int width, int height, int x, int 
             if ( j >= this->height) {
                 y_cell = j - this->height;
             }
-            float val = this->getCell(x_cell,y_cell);
-            d[k][l] = val;
+            d[k][l] = this->getCell(x_cell,y_cell);
 
             l++;
         }
@@ -288,42 +319,11 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 
 }
 
-
-RasterData::RasterData() : Component() {
-    this->cellSizeX = 0;
-    this->cellSizeY = 0;
-    this->width = 0;
-    this->height = 0;
-    this->data = 0;
-    this->isClone = false;
-}
-RasterData::RasterData(const RasterData &other) : Component(other) {
-
-    this->cellSizeX = other.cellSizeX;
-    this->cellSizeY = other.cellSizeY;
-    this->xoffset = other.xoffset;
-    this->yoffset = other.yoffset;
-    this->width = other.width;
-    this->height = other.height;
-    this->NoValue = other.NoValue;
-    this->minValue = other.minValue;
-    this->maxValue = other.maxValue;
-    this->debugValue = other.debugValue;
-    this->data = other.data;
-    this->isClone = true;
-
-}
-
 void RasterData::setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) {
     if (width != this->width || height != this->height || this->cellSizeX != cellsizeX || this->cellSizeY != cellsizeY)
     {
-        for (long i = 0; i < this->width; i++)
-        {
-            delete[] this->data[i];
-        }
-
-        if (this->height != 0)
-            delete[] data;
+        if(this->width != 0 || this->height != 0)
+            SQLDeleteField();
 
         this->width = width;
         this->height = height;
@@ -335,14 +335,26 @@ void RasterData::setSize(long width, long height, double cellsizeX, double cells
         this->minValue = -9999;
         this->maxValue = -9999;
 
-        data = new float*[width];
-
-        for (long i = 0; i < width; i++)
-        {
-            data[i] = new float[height];
-        }
+        SQLInsertField(width, height);
     }
 }
+
+void RasterData::clear() {
+    for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
+            SQLSetValue(x,y,NoValue);
+}
+
+Component * RasterData::clone() {
+    return new RasterData(*this);
+}
+
+void RasterData::SQLInsert()
+{
+	isInserted = true;
+    DBConnector::getInstance()->Insert("rasterdatas", uuid);
+}
+
 
 bool RasterData::setValue(long x, long y, double value)
 {
@@ -354,14 +366,252 @@ double RasterData::getValue(long x, long y) const
     return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
 }
 
-void RasterData::clear() {
-    for (int y = 0; y < this->height; y++) {
-        for (int x = 0; x < this->width; x++) {
-            this->data[x][y] = 0;
-        }
-    }
+void RasterData::SQLInsertField(long width, long height)
+{
+	if(width == 0 || height == 0)
+        return;
+	
+	long blWidth = width/RASTERBLOCKSIZE+1;
+	long blHeight = height/RASTERBLOCKSIZE+1;
+
+	if(cache)
+		return;
+
+	cache = new DbCache<RasterBlockLabel*, QByteArray>(RASTERBLOCKCACHESIZE);
+	blockLabels = new RasterBlockLabel[blWidth*blHeight];
+
+	double buffer[RASTERBLOCKSIZE*RASTERBLOCKSIZE];
+	for(int i=0;i<RASTERBLOCKSIZE*RASTERBLOCKSIZE;i++)
+		buffer[i] = NoValue;
+
+	int buffersize = sizeof(buffer);
+	char* pBuffer = (char*)&buffer;
+	for(long x = 0; x<blWidth; x++)
+	{
+		for(long y = 0; y<blHeight; y++)
+		{
+			RasterBlockLabel* pBlock = &blockLabels[x+y*blWidth];
+			pBlock->backRef = this;
+			pBlock->x = x;
+			pBlock->y = y;
+			pBlock->isInserted = false;
+			QByteArray *qba = new QByteArray(pBuffer, buffersize);
+			cache->add(pBlock,qba);
+			/*
+			QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,x,y,data) VALUES (?,?,?,?)");
+			q->addBindValue(uuid.toByteArray());
+			q->addBindValue(QVariant::fromValue(x));
+			q->addBindValue(QVariant::fromValue(y));
+			q->addBindValue(*qba);
+			DBConnector::getInstance()->ExecuteQuery(q);*/
+		}
+	}
+}
+void RasterData::SQLDeleteField()
+{
+    if(width==0 || height==0)
+        return;
+
+	if(!cache)
+		return;
+
+	delete cache;
+	delete blockLabels;
+	cache = NULL;
+
+	QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
+    q->addBindValue(uuid.toByteArray());
+    DBConnector::getInstance()->ExecuteQuery(q);
 }
 
-Component * RasterData::clone() {
-    return new RasterData(*this);
+double RasterData::SQLGetValue(long x, long y) const
+{
+	if(!cache)	return NoValue;
+	
+	long xBl = x/RASTERBLOCKSIZE;
+	long yBl = y/RASTERBLOCKSIZE;
+	long blWidth = width/RASTERBLOCKSIZE;
+	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
+
+	return ((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE];
 }
+
+void RasterData::SQLSetValue(long x, long y, double value)
+{
+	if(!cache) return;
+	
+	long xBl = x/RASTERBLOCKSIZE;
+	long yBl = y/RASTERBLOCKSIZE;
+	long blWidth = width/RASTERBLOCKSIZE;
+	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
+
+	((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE] = value;
+}
+
+void RasterData::SQLCopyField(const RasterData *ref)
+{
+	if(!cache || !ref->cache)	return;
+
+	long blWidth = width/RASTERBLOCKSIZE+1;
+	long blHeight = height/RASTERBLOCKSIZE+1;
+
+	for(long x = 0; x<blWidth; x++)
+	{
+		for(long y = 0; y<blHeight; y++)
+		{
+			*cache->get(&blockLabels[x+y*blWidth]) = *ref->cache->get(&ref->blockLabels[x+y*blWidth]);
+			//cache->add(&blockLabels[x+y*blWidth], ref->cache->get(&ref->blockLabels[x+y*blWidth]));
+		}
+	}
+}
+
+QByteArray* RasterData::RasterBlockLabel::LoadFromDb()
+{
+	QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT data FROM rasterfields WHERE owner LIKE ? AND x=? AND y=?");
+    q->addBindValue(backRef->uuid.toByteArray());
+    q->addBindValue(QVariant::fromValue(x));
+    q->addBindValue(QVariant::fromValue(y));
+    if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
+        return NULL;
+
+	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
+	long blWidth = x/RASTERBLOCKSIZE+1;
+	long blHeight = y/RASTERBLOCKSIZE+1;
+	backRef->cache->add(&backRef->blockLabels[x+y*blWidth], qba);
+    return qba;
+}
+
+void RasterData::RasterBlockLabel::SaveToDb(QByteArray *qba)
+{
+	if(!isInserted)
+	{
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,x,y,data) VALUES (?,?,?,?)");
+		q->addBindValue(backRef->uuid.toByteArray());
+		q->addBindValue(QVariant::fromValue(x));
+		q->addBindValue(QVariant::fromValue(y));
+		q->addBindValue(*qba);
+		DBConnector::getInstance()->ExecuteQuery(q);
+		isInserted = true;
+	}
+	else
+	{
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data=? WHERE owner=? AND x=? AND y=?");
+		q->addBindValue(*qba);
+		q->addBindValue(backRef->uuid.toByteArray());
+		q->addBindValue(QVariant::fromValue(x));
+		q->addBindValue(QVariant::fromValue(y));
+		DBConnector::getInstance()->ExecuteQuery(q);
+	}
+}
+
+/*
+void RasterData::SQLInsertField(long width, long height)
+{
+	if(width == 0 || height == 0)
+        return;
+
+	//Logger(Debug) << "inserting field into sql: "<<width<<"x"<<height;
+	
+    double* buffer = new double[width];
+    for(long x = 0; x < width; x++)
+        buffer[x] = NoValue;
+
+	char* pBuffer = (char*) buffer;
+	int rowsize = sizeof(double)*width;
+
+    for(long y = 0; y < height; y++)
+    {
+        QByteArray *qba = new QByteArray(pBuffer, rowsize);
+		rowCache.add(std::pair<QUuid,long>(getQUUID(),y), qba);
+
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO rasterfields(owner,y,data) VALUES (?,?,?)");
+        q->addBindValue(uuid.toByteArray());
+        q->addBindValue(QVariant::fromValue(y));
+        q->addBindValue(*qba);
+        DBConnector::getInstance()->ExecuteQuery(q);
+    }
+    delete buffer;
+}
+void RasterData::SQLDeleteField()
+{
+    if(width==0 || height==0)
+        return;
+
+    for(int y=0;y<height;y++)
+    {
+         rowCache.remove(std::pair<QUuid,long>(uuid,y));
+         rowUpdateCache.erase(std::pair<QUuid,long>(uuid,y));
+    }
+
+    QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
+    q->addBindValue(uuid.toByteArray());
+    DBConnector::getInstance()->ExecuteQuery(q);
+}
+
+double RasterData::SQLGetValue(long x, long y) const
+{
+    QByteArray *qba = SQLGetRow(y);
+	return ((double*)qba->data())[x];
+}
+QByteArray* RasterData::SQLGetRow(long y) const
+{
+    QByteArray* qba = rowCache.get(std::pair<QUuid,long>(uuid,y));
+    if(qba != NULL)
+        return qba;
+
+    ForceUpdate();
+
+    // get row+overlapp
+    for(long i=1; i<=rowOverlapp && y-i>=0 && y-i<height; i++)
+        SQLForceGetRow(y-i);
+    for(long i=1; i<=rowOverlapp && y+i>=0 && y+i<height; i++)
+        SQLForceGetRow(y+i);
+
+    return SQLForceGetRow(y);
+}
+QByteArray* RasterData::SQLForceGetRow(long y) const
+{
+    QSqlQuery *q = DBConnector::getInstance()->getQuery("SELECT data FROM rasterfields WHERE owner LIKE ? AND y=?");
+    q->addBindValue(uuid.toByteArray());
+    q->addBindValue(QVariant::fromValue(y));
+    if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
+        return NULL;
+
+	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
+    rowCache.add(std::pair<QUuid,long>(uuid,y),qba);
+    return qba;
+}
+
+
+void RasterData::SQLSetValue(long x, long y, double value)
+{
+    QByteArray* qba = SQLGetRow(y);
+    ((double*)qba->data())[x] = value;
+    SQLSetRow(y,qba);
+}
+void RasterData::SQLSetRow(long y, QByteArray *data)
+{
+    rowUpdateCache[std::pair<QUuid,long>(uuid,y)] = data;
+}
+
+void ApplyRowUpdates()
+{
+    for(std::map<std::pair<QUuid,long>,QByteArray*>::const_iterator it = rowUpdateCache.begin();
+        it != rowUpdateCache.end();
+        ++it)
+    {
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE rasterfields SET data = ? WHERE owner LIKE ? AND y=?");
+        q->addBindValue(*(it->second));
+        q->addBindValue(it->first.first.toByteArray());
+        q->addBindValue(QVariant::fromValue(it->first.second));
+        DBConnector::getInstance()->ExecuteQuery(q);
+    }
+    rowUpdateCache.clear();
+}
+
+void RasterData::ForceUpdate() const
+{
+    ApplyRowUpdates();
+}
+
+*/
