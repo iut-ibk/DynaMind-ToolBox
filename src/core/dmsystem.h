@@ -274,6 +274,7 @@ public:
     std::map<std::string, Face*> getAllFaces();
     std::map<std::string, System*> getAllSubSystems();
     std::map<std::string, RasterData*> getAllRasterData();
+	std::map<std::string, Component*> getAllComponentsInView(const DM::View & view);
 };
 
 }

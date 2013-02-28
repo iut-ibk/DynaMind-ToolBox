@@ -942,6 +942,16 @@ std::map<std::string, Component*> DerivedSystem::getAllComponents()
 	}
 	return System::getAllComponents();
 }
+
+std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
+{
+    //return views[view.getName()];
+	std::map<std::string, Component*> comps = views[view.getName()];
+	for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
+		it->second = getComponent(it->first);
+
+	return comps;
+}
 std::map<std::string, Node*> DerivedSystem::getAllNodes()
 {
 	if(!allNodesLoaded)
