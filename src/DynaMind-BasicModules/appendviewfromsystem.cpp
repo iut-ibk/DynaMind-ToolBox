@@ -31,13 +31,40 @@ void AppendViewFromSystem::run() {
             sys_out->addNode(new DM::Node(*(it->second)));
         }
         DM::EdgeMap em = sys->getAllEdges();
-        for (DM::EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it ){
-            sys_out->addEdge(new DM::Edge(*(it->second)));
+        for (DM::EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it )
+		{
+			DM::Edge* e = new DM::Edge(*(it->second));
+			e->setStartpoint(sys_out->getNode(e->getStartpointName()));
+			e->setEndpoint(sys_out->getNode(e->getEndpointName()));
+            sys_out->addEdge(e);
         }
         DM::FaceMap fm = sys->getAllFaces();
-        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it ){
-            sys_out->addFace(new DM::Face(*(it->second)));
+        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it )
+		{
+			// relink nodes
+			std::vector<DM::Node*> nodes;
+			DM::Face* f = new DM::Face(*(it->second));
+			foreach(DM::Node* n, f->getNodePointers())
+				nodes.push_back(sys_out->getNode(n->getUUID()));
+
+			f->setNodes(nodes);
+			sys_out->addFace(f);
         }
+		// get new systems faces
+        fm = sys_out->getAllFaces();
+        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it )
+		{
+			// relink holes
+			
+			std::vector<DM::Face*>holes;
+			foreach(DM::Face* f, it->second->getHolePointers())
+				holes.push_back(sys_out->getFace(f->getUUID()));
+			
+			it->second->clearHoles();
+			foreach(DM::Face* f, holes)
+				it->second->addHole(f);
+		}
+
         DM::SystemMap sm = sys->getAllSubSystems();
         for (DM::SystemMap::const_iterator it = sm.begin(); it != sm.end(); ++it ){
             sys_out->addSubSystem(new DM::System(*(it->second)));
