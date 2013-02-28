@@ -97,6 +97,7 @@ const std::string Edge::getEndpointName() const
 
 void Edge::setStartpoint(Node *start)
 {
+	this->start->removeEdge(this);
 	this->start = start;
 	start->addEdge(this);
 }
@@ -113,6 +114,7 @@ void Edge::setStartpointName(std::string name)
 
 void Edge::setEndpoint(Node *end)
 {
+	this->end->removeEdge(this);
 	this->end = end;
 	end->addEdge(this);
 }

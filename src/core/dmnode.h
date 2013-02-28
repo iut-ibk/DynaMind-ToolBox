@@ -57,12 +57,17 @@ private:
     /** @brief return table name */
     QString getTableName();
 	
-	std::vector<Edge*> *connectedEdges;	// not cached, for now
+	std::list<Edge*> *connectedEdges;	// not cached, for now
 	void addEdge(Edge* e)
 	{
 		if(!connectedEdges)
-			connectedEdges = new std::vector<Edge*>();
+			connectedEdges = new std::list<Edge*>();
 		connectedEdges->push_back(e);
+	}
+	void removeEdge(Edge* e)
+	{
+		if(connectedEdges)
+			connectedEdges->remove(e);
 	}
 	friend class Edge;
 protected:

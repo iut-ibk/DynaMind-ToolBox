@@ -147,7 +147,11 @@ std::vector<Edge*> Node::getEdges() const
 {
 	if(!connectedEdges)
 		return std::vector<Edge*>();
-    return *connectedEdges;
+
+	std::vector<Edge*> edges;
+	foreach(Edge* e,*connectedEdges)
+		edges.push_back(e);
+    return edges;
 }
 
 void Node::set(double x, double y, double z)
