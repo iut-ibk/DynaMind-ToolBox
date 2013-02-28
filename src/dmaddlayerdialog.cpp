@@ -183,8 +183,11 @@ void AddLayerDialog::getAttributesFromComponent(DM::View & view, QMap<string, DM
     }
 
     std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(view);
-    QMap<std::string, DM::Attribute*> attributes_tmp(system->getComponent(uuid)->getAllAttributes());
-
+	
+    QMap<std::string, DM::Attribute*> attributes_tmp;
+	Component* c = system->getComponent(uuid);
+	if(c)
+		attributes_tmp = QMap<std::string, DM::Attribute*>(c->getAllAttributes());
 
     foreach (std::string k, attributes_tmp.keys()) {
         if (attributes_tmp[k]) {
