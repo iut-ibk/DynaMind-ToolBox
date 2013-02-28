@@ -325,7 +325,7 @@ bool System::removeNode(std::string name)
 Edge* System::addEdge(Edge* edge)
 {
     //QMutexLocker locker(mutex);
-    if(!getNode(edge->getStartpoint()) || !getNode(edge->getEndpoint())){
+    if(!map_contains(&nodes, edge->getStartpoint()) || !map_contains(&nodes, edge->getEndpoint())){
         delete edge;
         return 0;
     }
@@ -879,7 +879,12 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 	{
 		n = predecessorSys->getEdge(uuid);
 		if(n)
-			n = addEdge(new Edge(*n));
+		{
+			n = new Edge(*n);
+			n->setStartpoint(getNode(n->getStartpointName()));
+			n->setEndpoint(getNode(n->getEndpointName()));
+			n = addEdge(n);
+		}
 	}
 	return n;
 }
@@ -891,7 +896,12 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 	{
 		n = predecessorSys->getEdge(start,end);
 		if(n)
-			return addEdge(getNode(start->getUUID()),getNode(end->getUUID()));
+		{
+			n = new Edge(*n);
+			n->setStartpoint(getNode(start->getUUID()));
+			n->setEndpoint(getNode(end->getUUID()));
+			n = addEdge(n);
+		}
 	}
 	return n;
 }
