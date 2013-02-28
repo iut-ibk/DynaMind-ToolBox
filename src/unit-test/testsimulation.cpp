@@ -646,10 +646,13 @@ TEST_F(TestSimulation, PredecessorEdgeTestTreeSearch)
 	DM::View ev("ev", DM::EDGE, DM::WRITE);
 	sys->addEdge(n1, n2, ev);
 	sys->addEdge(n2, n3, ev);
-
+	
 	DM::System * sys_succ = sys->createSuccessor();
 
 	std::vector<std::string> uuids = sys_succ->getUUIDs(ev);
+
+	std::map<std::string, Component*> uuidmap = sys_succ->getAllComponentsInView(ev);
+
 	std::map<DM::Node *, DM::Edge*> startNodeMap;
 	foreach (std::string uuid, uuids) {
 		DM::Edge * c = sys_succ->getEdge(uuid);
@@ -660,6 +663,10 @@ TEST_F(TestSimulation, PredecessorEdgeTestTreeSearch)
 	DM::Edge * se1 = startNodeMap[startNode];
 	DM::Node * nextNode = sys_succ->getNode(se1->getEndpointName());
 	DM::Edge * se2 = startNodeMap[nextNode];
+	
+	// view update
+	ASSERT_TRUE(uuidmap[se1->getUUID()] == se1);
+	ASSERT_TRUE(uuidmap[se2->getUUID()] == se2);
 
 	ASSERT_TRUE(nextNode->getUUID() == n2->getUUID());
 

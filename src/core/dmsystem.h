@@ -225,7 +225,7 @@ public:
     /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
     /** @brief retrun all components related to a view */
-    std::map<std::string, Component*> getAllComponentsInView(const View &view);
+    virtual std::map<std::string, Component*> getAllComponentsInView(const View &view);
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
     /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
