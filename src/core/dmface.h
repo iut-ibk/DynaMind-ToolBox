@@ -88,6 +88,7 @@ public:
 
 	/** @brief this function is neccessary to make the copy constructor a usefull */
 	void setNodes(std::vector<Node*> nodes);
+	void clearHoles();
 };
 typedef std::map<std::string, DM::Face*> FaceMap;
 }

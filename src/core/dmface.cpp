@@ -227,3 +227,8 @@ void Face::setNodes(std::vector<Node*> nodes)
 {
 	this->_nodes = nodes;
 }
+
+void Face::clearHoles()
+{
+	this->_holes.clear();
+}
