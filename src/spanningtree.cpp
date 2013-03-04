@@ -88,7 +88,7 @@ void SpanningTree::run()
     std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
     std::map<std::string,int> nodesindex;
     std::map<E,DM::Edge*> nodes2edge;
-    boost::mt19937 rng(time(NULL) + getpid());
+    boost::mt19937 rng(time(NULL));
 
     for(uint index=0; index<nodes.size(); index++)
         nodesindex[nodes[index]]=index;
