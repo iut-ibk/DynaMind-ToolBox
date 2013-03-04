@@ -24,7 +24,7 @@
  *
  */
 
-#include <minimumspanningtree.h>
+#include <spanningtree.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -41,15 +41,23 @@
 //BOOST GRAPH includes
 //#include <boosttraits.h>
 #include <boost/graph/prim_minimum_spanning_tree.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <time.h>
 
 using namespace boost;
 
-DM_DECLARE_NODE_NAME(MinimumSpanningTree,Graph)
+DM_DECLARE_NODE_NAME(SpanningTree,Graph)
 
-MinimumSpanningTree::MinimumSpanningTree()
-{   
+SpanningTree::SpanningTree()
+{    
+    this->algprim=true;
+    this->algrand=false;
+    this->addParameter("Prim minimum spanning tree", DM::BOOL, &this->algprim);
+    this->addParameter("Random spanning tree", DM::BOOL, &this->algrand);
+
     std::vector<DM::View> views;
     DM::View view;
 
@@ -68,7 +76,7 @@ MinimumSpanningTree::MinimumSpanningTree()
     this->addData("Layout", views);
 }
 
-void MinimumSpanningTree::run()
+void SpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
@@ -80,6 +88,7 @@ void MinimumSpanningTree::run()
     std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
     std::map<std::string,int> nodesindex;
     std::map<E,DM::Edge*> nodes2edge;
+    boost::mt19937 rng(time(NULL) + getpid());
 
     for(uint index=0; index<nodes.size(); index++)
         nodesindex[nodes[index]]=index;
@@ -126,11 +135,20 @@ void MinimumSpanningTree::run()
         DM::Logger(DM::Warning) << "Graph " << maxgraphindex+1 << " is used for building a minimum spanning tree";
     }
 
-    //calculate min spanning tree or forest of minimum spanning trees
+    //calculate spanning tree or forest of minimum spanning trees
     std::vector < graph_traits < Graph >::vertex_descriptor >p(num_vertices(g));
-    DM::Logger(DM::Standard) << "Start prim algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
 
-    prim_minimum_spanning_tree(g, &p[0]);
+    if(this->algprim)
+    {
+        DM::Logger(DM::Standard) << "Start prim minimum spanning tree algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
+        prim_minimum_spanning_tree(g, &p[0]);
+    }
+
+    if(this->algrand)
+    {
+        DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
+        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]));
+    }
 
     for (std::size_t i = 0; i != p.size(); ++i)
     {
@@ -157,6 +175,6 @@ void MinimumSpanningTree::run()
     DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 
-void MinimumSpanningTree::initmodel()
+void SpanningTree::initmodel()
 {
 }

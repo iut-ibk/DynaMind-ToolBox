@@ -24,16 +24,16 @@
  *
  */
 
-#ifndef MinimumSpanningTree_H
-#define MinimumSpanningTree_H
+#ifndef SpanningTree_H
+#define SpanningTree_H
 
 #include <dmmodule.h>
 #include <dm.h>
 #include <graphviewdef.h>
 
-class MinimumSpanningTree : public DM::Module
+class SpanningTree : public DM::Module
 {
-    DM_DECLARE_NODE(MinimumSpanningTree)
+    DM_DECLARE_NODE(SpanningTree)
 
 private:
     typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
@@ -41,9 +41,10 @@ private:
     DM::System *sys;
     viewmap viewdef;
     DM::GRAPH::ViewDefinitionHelper defhelper;
+    bool algprim, algrand;
 
 public:
-    MinimumSpanningTree();
+    SpanningTree();
     typedef std::map<std::string,std::string> stringmap;
     typedef std::map<std::string, stringmap * > conversionmap;
 
@@ -51,4 +52,4 @@ public:
     void initmodel();
 };
 
-#endif // MinimumSpanningTree_H
+#endif // SpanningTree_H
