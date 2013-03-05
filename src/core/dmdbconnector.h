@@ -136,7 +136,15 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
-#define CACHE_INFINITE
+//#define CACHE_INFINITE
+
+#define ATTRIBUTE_CACHE_SIZE 1e8
+// edge cache is infinite (Asynchron)
+// component cache is infinite (ComponentSyncMap: Asynchron)
+#define NODE_CACHE_SIZE 1e7
+// face cache is infinite (Asynchron)
+#define RASTERBLOCKSIZE 64
+#define RASTERBLOCKCACHESIZE 4096
 
 template<class Tkey,class Tvalue>
 class Cache

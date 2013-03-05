@@ -29,9 +29,7 @@
 #include "dmcompilersettings.h"
 #include <dmcomponent.h>
 #include "dmdbconnector.h"
-
-#define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 4096
+// cache sizes defined in dmdbconnector.h
 
 namespace DM {
 

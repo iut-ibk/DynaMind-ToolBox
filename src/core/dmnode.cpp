@@ -36,7 +36,7 @@
 
 using namespace DM;
 
-static DbCache<Node*,Vector3> nodeCache(1e7);
+static DbCache<Node*,Vector3> nodeCache(NODE_CACHE_SIZE); // defined in dmdbconnector.h
 
 #ifdef CACHE_PROFILING
 void Node::PrintStatistics()
