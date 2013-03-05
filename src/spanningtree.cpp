@@ -132,10 +132,10 @@ void SpanningTree::run()
     if(num!=1)
     {
         DM::Logger(DM::Warning) << "Graph is not connected -> Forest of size: " << num;
-        DM::Logger(DM::Warning) << "Graph " << maxgraphindex+1 << " is used for building a minimum spanning tree";
+        DM::Logger(DM::Warning) << "Graph " << maxgraphindex+1 << " is used for building a spanning tree";
     }
 
-    //calculate spanning tree or forest of minimum spanning trees
+    //calculate spanning tree or forest of graphs
     std::vector < graph_traits < Graph >::vertex_descriptor >p(num_vertices(g));
 
     if(this->algprim)

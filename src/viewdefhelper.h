@@ -1,5 +1,4 @@
 //THIS CODE SHOULD BE IN AN OWN HEADER BUT QTCREATER CANNOT RESOLVE THESE MACROS
-
 #define A(a) a,
 #define X(b,c,d,e) namespace b##_ATTR_DEF{ enum TYPES{d};};
 TABLE
