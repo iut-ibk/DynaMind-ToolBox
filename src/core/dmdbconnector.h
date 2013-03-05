@@ -136,7 +136,7 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
-//#define CACHE_INFINITE
+#define CACHE_INFINITE
 
 #define ATTRIBUTE_CACHE_SIZE 1e8
 // edge cache is infinite (Asynchron)
