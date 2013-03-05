@@ -242,8 +242,6 @@ Attribute* Component::getAttribute(std::string name)
 {
 	Attribute* a;
 	if(!map_contains(&ownedattributes, name, a))
-	//Attribute* a = ownedattributes[name];
-	//if(!a)
 	{
 		a = new Attribute(name);
 		a->SetOwner(this);
@@ -290,7 +288,6 @@ void Component::setCurrentSystem(System *sys) {
 
 void Component::SetOwner(Component *owner)
 {
-	//SQLSetOwner(owner);
     currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
@@ -312,19 +309,6 @@ void Component::SaveToDb()
 		DBConnector::getInstance()->Update(	"components", uuid, 
 											"owner", currentSys->getQUUID().toByteArray());
 }
-
-/*
-void Component::SQLSetOwner(Component * owner)
-{
-    DBConnector::getInstance()->Update(getTableName(), uuid,
-                                       "owner", owner->uuid.toByteArray());
-}
-
-void Component::SQLInsertComponent()
-{
-	isInserted = true;
-    DBConnector::getInstance()->Insert("components",	uuid);
-}*/
 void Component::SQLDelete()
 {
 	if(isInserted)

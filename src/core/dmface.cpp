@@ -64,22 +64,12 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
 {
     Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
                          doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
-    /*
-    foreach(std::string nodeUuid, nodes)
-    {
-        _nodes.push_back(this->getCurrentSystem()->getNode(nodeUuid));
-    }
-
-    DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(std::vector<Node*> nodes) : Component(true)
 {
     this->_nodes = nodes;
 	isInserted = false;
-    /*DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(const Face& e) : Component(e, true)
@@ -87,9 +77,6 @@ Face::Face(const Face& e) : Component(e, true)
     this->_nodes = e._nodes;
     this->_holes = e._holes;
 	isInserted = false;
-    /*DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(e._nodes),
-                                       "holes", GetBytes(e._holes));*/
 }
 Face::~Face()
 {
@@ -183,16 +170,7 @@ void Face::addHole(Face* hole)
         return;
     }
     _holes.push_back(hole);
-    //SQLUpdateValues();
 }
-/*
-void Face::SQLUpdateValues()
-{
-    DBConnector::getInstance()->Update("faces", uuid,
-                                       "nodes", GetBytes(_nodes),
-                                       "holes", GetBytes(_holes));
-}
-*/
 void Face::Synchronize()
 {
 	if(!getCurrentSystem())
@@ -216,7 +194,6 @@ void Face::Synchronize()
 
 void Face::SetOwner(Component *owner)
 {
-	//SQLSetOwner(owner);
     currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )

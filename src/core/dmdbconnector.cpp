@@ -130,14 +130,6 @@ bool DBConnector::CreateTables()
                                             type SMALLINT, \
                                             value BYTEA, \
                                             PRIMARY KEY (uuid))")
-    /*&& query.exec("CREATE UNIQUE INDEX idx_systems ON systems(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_components ON components(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_nodes ON nodes(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_edges ON edges(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_faces ON faces(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_rasterdatas ON rasterdatas(uuid, stateuuid)")
-    && query.exec("CREATE UNIQUE INDEX idx_rasterfields ON rasterfields(datalink, x, y)")
-    && query.exec("CREATE UNIQUE INDEX idx_attributes ON attributes(uuid)")*/
     )
         return true;
 
@@ -156,14 +148,6 @@ bool DBConnector::DropTables()
     &&	query.exec("DROP TABLE IF EXISTS rasterdatas")
     &&	query.exec("DROP TABLE IF EXISTS rasterfields")
     &&	query.exec("DROP TABLE IF EXISTS attributes")
-    /*&&	query.exec("DROP INDEX IF EXISTS idx_systems")
-    &&	query.exec("DROP INDEX IF EXISTS idx_components")
-    &&	query.exec("DROP INDEX IF EXISTS idx_nodes")
-    &&	query.exec("DROP INDEX IF EXISTS idx_edges")
-    &&	query.exec("DROP INDEX IF EXISTS idx_faces")
-    &&	query.exec("DROP INDEX IF EXISTS idx_rasterdatas")
-    &&	query.exec("DROP INDEX IF EXISTS idx_rasterfields")
-    &&	query.exec("DROP INDEX IF EXISTS idx_attributes")*/
             )
         return true;
 

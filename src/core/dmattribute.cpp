@@ -166,7 +166,6 @@ TimeSeriesAttribute ToTimeSeriesAttribute(QVariant q)
 Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 {
 	this->type = ref.type;
-	//this->size = ref.size;
 	switch(ref.type)
 	{
 	case NOTYPE:
@@ -224,7 +223,6 @@ Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type)
 }
 void Attribute::AttributeValue::Free()
 {
-	//if(ptr)	delete ptr;
 	switch(type)
 	{
 	case DOUBLE:	delete (double*)ptr;
