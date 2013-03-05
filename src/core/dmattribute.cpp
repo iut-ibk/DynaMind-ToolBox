@@ -222,6 +222,29 @@ Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type)
 		break;
 	}
 }
+void Attribute::AttributeValue::Free()
+{
+	//if(ptr)	delete ptr;
+	switch(type)
+	{
+	case DOUBLE:	delete (double*)ptr;
+		break;
+	case STRING:		delete (std::string*)ptr;
+		break;
+	case TIMESERIES:	delete (TimeSeriesAttribute*)ptr;
+		break;
+	case LINK:			delete (std::vector<LinkAttribute>*)ptr;
+		break;
+	case DOUBLEVECTOR:		delete (std::vector<double>*)ptr;
+		break;
+	case STRINGVECTOR:		delete (std::vector<std::string>*)ptr;
+		break;
+	default:
+		break;
+	}
+	ptr = NULL;
+	type = NOTYPE;
+}
 Attribute::AttributeValue::AttributeValue(double d)
 {
 	type = DOUBLE;

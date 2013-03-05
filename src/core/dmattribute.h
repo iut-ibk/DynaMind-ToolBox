@@ -93,12 +93,7 @@ public:
 		{
 			Free();
 		}
-		void Free()
-		{
-			if(ptr)	delete ptr;
-			ptr = NULL;
-			type = NOTYPE;
-		}
+		void Free();
 		AttributeValue(QVariant var, AttributeType type);
 		QVariant toQVariant();
 	};
