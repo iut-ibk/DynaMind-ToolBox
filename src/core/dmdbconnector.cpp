@@ -173,7 +173,8 @@ bool DBConnector::DropTables()
 
 DBConnector::DBConnector()
 {
-	QString dbpath = QDir::tempPath() + "\\dynaminddb";
+	QString dbpath = QDir::tempPath() + "/dynaminddb";
+	std::string str = dbpath.toStdString();
 
     if(QFile::exists(dbpath))
         QFile::remove(dbpath);
