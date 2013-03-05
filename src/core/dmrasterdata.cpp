@@ -470,7 +470,7 @@ QByteArray* RasterData::RasterBlockLabel::LoadFromDb()
 	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
 	long blWidth = x/RASTERBLOCKSIZE+1;
 	long blHeight = y/RASTERBLOCKSIZE+1;
-	backRef->cache->add(&backRef->blockLabels[x+y*blWidth], qba);
+	//backRef->cache->add(&backRef->blockLabels[x+y*blWidth], qba);
     return qba;
 }
 
