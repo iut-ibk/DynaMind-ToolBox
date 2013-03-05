@@ -183,7 +183,19 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
         }
 
+        if (ID == DM::STRING_LIST ) {
+            std::string s_tmp = name;
+            QString s  = QString::fromStdString(name);
+            QString val  = "CURRENTLY NOT IMPLEMENTED";
+            QLabel * l = new QLabel;
+            QLineEdit * le = new QLineEdit;
+            le->setText(val);
+            l->setText(s);
+            elements.insert(s, le);
 
+            layout1->addWidget(l, layout1->rowCount(),0);
+            layout1->addWidget(le,layout1->rowCount()-1,1);
+        }
     }
 
 
