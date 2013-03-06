@@ -354,7 +354,7 @@ void Attribute::setDouble(double v)
 {
 	AttributeValue* a = getValue();
 	a->Free();
-	delete a->ptr;
+	//delete a->ptr;
 	a->type = DOUBLE;
 	a->ptr = new double(v);
 }
