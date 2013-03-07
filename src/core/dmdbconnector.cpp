@@ -219,6 +219,13 @@ DBConnector::DBConnector()
 	worker = new DBWorker();
 	worker->start();
 }
+//#define DBWORKER_COUNTERS
+#ifdef DBWORKER_COUNTERS
+unsigned long loopCount = 0;
+unsigned long writeCount = 0;
+unsigned long readCount = 0;
+unsigned long writesBeforeReadsCount = 0;
+#endif
 
 void DBWorker::run()
 {
@@ -236,14 +243,25 @@ void DBWorker::run()
 				}
 			}
 		}
-
+#ifdef DBWORKER_COUNTERS
+		loopCount++;
+#endif
+		unsigned long cnt = 0;
 		while(QSqlQuery* q = queryStack.pop())
 		{
+#ifdef DBWORKER_COUNTERS
+			writeCount++;
+			cnt++;
+#endif
 			if(!q->exec())	PrintSqlError(q);
 			delete q;
 		}
 		if(qSelect)
 		{
+#ifdef DBWORKER_COUNTERS
+			writesBeforeReadsCount += cnt;
+			readCount++;
+#endif
 			selectMutex.lock();
 			selectStatus = (!qSelect->exec() || !qSelect->next())?SS_FALSE:SS_TRUE;
 			qSelect = NULL;
