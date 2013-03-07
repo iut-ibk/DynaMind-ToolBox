@@ -81,6 +81,7 @@ public:
      * Log takes ownership of the instance
      */
     static void init(LogSink *sink, LogLevel max = Debug);
+    static void addLogSink(LogSink *sink);
     /** @brief Delets sink and instance*/
     static void shutDown();
     /** @brief Returns the current Instance */
@@ -93,7 +94,7 @@ private:
 
     static Log *instance;
 
-    LogSink *sink;
+    std::vector<LogSink*> *sinks;
     LogLevel max;
 };
 }

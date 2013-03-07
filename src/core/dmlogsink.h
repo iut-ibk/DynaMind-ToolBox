@@ -55,7 +55,7 @@ namespace DM {
         virtual LogSink &operator<<(LSEndl) = 0;
     };
 
-    /** @brief implements class LogSing
+    /** @brief implements class LogSink
      *
      * can be used together with cout see Log for an example */
     class DM_HELPER_DLL_EXPORT OStreamLogSink : public LogSink {
