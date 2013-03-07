@@ -215,9 +215,10 @@ DBConnector::DBConnector()
 	}
 
 	Logger(Debug) << "DB created";
-
+#ifndef NO_DB_SYNC
 	worker = new DBWorker();
 	worker->start();
+#endif
 }
 //#define DBWORKER_COUNTERS
 #ifdef DBWORKER_COUNTERS
@@ -329,9 +330,12 @@ DBWorker::~DBWorker()
 
 DBConnector::~DBConnector()
 {
-	worker->Kill();
-	worker->terminate();
-	delete worker;
+	if(worker)
+	{
+		worker->Kill();
+		worker->terminate();
+		delete worker;
+	}
 }
 
 DBConnector* DBConnector::getInstance()
@@ -366,8 +370,10 @@ bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 
 void DBConnector::Synchronize()
 {
+#ifndef NO_DB_SYNC
     foreach(Asynchron *a, *syncList)
         a->Synchronize();
+#endif
 }
 
 /*

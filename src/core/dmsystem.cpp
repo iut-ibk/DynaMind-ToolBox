@@ -781,7 +781,9 @@ std::vector<Component*> System::getChilds()
 void System::SQLInsert()
 {
 	isInserted = true;
+#ifndef NO_DB_SYNC
     DBConnector::getInstance()->Insert("systems", uuid);
+#endif
 }
 void System::SQLUpdateStates()
 {
@@ -792,10 +794,11 @@ void System::SQLUpdateStates()
 	QStringList preList;
 	foreach(System* sys, predecessors)
         preList.push_back(sys->getQUUID().toString());
-	
+#ifndef NO_DB_SYNC
     DBConnector::getInstance()->Update("systems",       uuid,
                                        "sucessors",     sucList,
                                        "predecessors",  preList);
+#endif
 }
 
 

@@ -316,7 +316,6 @@ Attribute::Attribute(std::string name, std::string val)
 
 Attribute::~Attribute()
 {
-	//if(value)	delete value;
 	if(isInserted)
 		DBConnector::getInstance()->Delete("attributes", _uuid);
 	if(value)

@@ -36,6 +36,7 @@
 #define SQLQUERY_STACKSIZE 100
 #define CACHE_PROFILING
 #define CACHE_INFINITE
+#define NO_DB_SYNC
 
 #define ATTRIBUTE_CACHE_SIZE 10000
 #define NODE_CACHE_SIZE 10000
@@ -481,6 +482,9 @@ public:
     // save everything to db
     void Synchronize()
     {
+#ifdef NO_DB_SYNC
+		return;
+#endif
         Node* n=Cache<Tkey,Tvalue>::_root;
         while(n)
         {

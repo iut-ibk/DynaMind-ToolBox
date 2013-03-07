@@ -352,7 +352,9 @@ Component * RasterData::clone() {
 void RasterData::SQLInsert()
 {
 	isInserted = true;
+#ifndef NO_DB_SYNC
     DBConnector::getInstance()->Insert("rasterdatas", uuid);
+#endif
 }
 
 
@@ -411,10 +413,11 @@ void RasterData::SQLDeleteField()
 	delete cache;
 	delete blockLabels;
 	cache = NULL;
-
+#ifndef NO_DB_SYNC
 	QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
     q->addBindValue(uuid.toByteArray());
     DBConnector::getInstance()->ExecuteQuery(q);
+#endif
 }
 
 double RasterData::SQLGetValue(long x, long y) const
