@@ -162,11 +162,21 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
+    QString logfilepath = QDir::tempPath() + "/dynamind.log";
+
+    if(QFile::exists(logfilepath))
+        QFile::remove(logfilepath);
+
+    outputFile = new ofstream();
+    outputFile->open(logfilepath.toStdString());
+    DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
 #ifdef DEBUG
     DM::Log::init(log_updater,DM::Debug);
 #else
     DM::Log::init(log_updater,DM::Standard);
 #endif
+
+    DM::Log::addLogSink(file_log_updater);
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
