@@ -251,11 +251,21 @@ Node* System::addNode(Node* node)
     this->updateViews(node);
     return node;
 }
-Node* System::addNode(const Node &n,  const DM::View & view)
+Node* System::addNode(const Node &ref,  const DM::View & view)
 {
-    double v[3];
+	Node * n = this->addNode(new Node(ref));
+
+    if (n == NULL)
+        return NULL;
+    if (!view.getName().empty()) {
+        this->views[view.getName()][n->getUUID()] = n;
+        n->setView(view.getName());
+    }
+    return n;
+
+    /*double v[3];
     n.get(v);
-    return this->addNode(v[0],v[1],v[2], view);
+    return this->addNode(v[0],v[1],v[2], view);*/
 }
 
 Node * System::addNode(double x, double y, double z,  const DM::View & view)
