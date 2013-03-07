@@ -229,10 +229,14 @@ unsigned long writesBeforeReadsCount = 0;
 
 void DBWorker::run()
 {
+	std::list<QueryList*>::iterator it;
+	QueryList* ql;
 	while(!kill)
 	{
-		foreach(QueryList* ql, queryLists)
+		for(it = queryLists.begin(); it != queryLists.end(); ++it)
+		//foreach(QueryList* ql, queryLists)
 		{
+			ql = *it;
 			if(ql->queryStack.IsMaxOneLeft())
 			{
 				for(int i=0;i<SQLQUERY_STACKSIZE;i++)
@@ -268,7 +272,6 @@ void DBWorker::run()
 			selectMutex.unlock();
 		}
 	}
-	DM::Logger(Error) << "closing";
 	exec();
 }
 
