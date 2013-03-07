@@ -32,6 +32,22 @@
 #include <queue>
 #include <qatomic.h>
 
+
+#define SQLQUERY_STACKSIZE 1000
+#define CACHE_PROFILING
+//#define CACHE_INFINITE
+
+#define ATTRIBUTE_CACHE_SIZE 100
+#define NODE_CACHE_SIZE 100
+#define RASTERBLOCKSIZE 64
+#define RASTERBLOCKCACHESIZE 20
+// edge cache is infinite (Asynchron)
+// component cache is infinite (ComponentSyncMap: Asynchron)
+// face cache is infinite (Asynchron)
+#define CACHE_WRITEBLOCK 20
+
+
+
 class QSqlQuery;
 class QSqlError;
 class QSqlDatabase;
@@ -247,17 +263,6 @@ class SingletonDestroyer
         DBConnector* _singleton;
 };
 
-#define CACHE_PROFILING
-//#define CACHE_INFINITE
-
-#define ATTRIBUTE_CACHE_SIZE 100
-#define NODE_CACHE_SIZE 100
-#define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 20
-// edge cache is infinite (Asynchron)
-// component cache is infinite (ComponentSyncMap: Asynchron)
-// face cache is infinite (Asynchron)
-#define CACHE_WRITEBLOCK 50
 
 template<class Tkey,class Tvalue>
 class Cache

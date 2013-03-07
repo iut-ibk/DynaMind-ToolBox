@@ -228,7 +228,7 @@ void DBWorker::run()
 		{
 			if(ql->queryStack.IsEmpty())
 			{
-				for(int i=0;i<20;i++)
+				for(int i=0;i<SQLQUERY_STACKSIZE;i++)
 				{
 					QSqlQuery* q = new QSqlQuery();
 					q->prepare(ql->cmd);
