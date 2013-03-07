@@ -1007,9 +1007,9 @@ TEST_F(TestSimulation,sqlprofiling) {
 	for(int i=0;i<n;i++)
 		aptBuffer[i] = new DM::Attribute(*a0);
 
-	delete a0;
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "copy " << n << " attributes " << (long)timer.elapsed();
+	delete a0;
 	for(int i=0;i<n;i++)
 		delete aptBuffer[i];
 
@@ -1064,8 +1064,23 @@ TEST_F(TestSimulation,sqlprofiling) {
 		sys->addNode(node);
 	}
 	DM::DBConnector::getInstance()->Synchronize();
-	DM::Logger(DM::Standard) << "attache and copy " << n << "  nodes " << (long)timer.elapsed();
+	DM::Logger(DM::Standard) << "attach and copy " << n << "  nodes " << (long)timer.elapsed();
+	
+	delete sys;
+	sys = new System();
+	baseNode->addAttribute("d_att",40);
+	
+	timer.restart();
+	for(int i=0;i<n;i++)
+		sys->addNode(*baseNode);
 
+	std::vector<Component*> comps = sys->getChilds();
+	foreach(Component* c, comps)
+		sys->addNode(*(Node*)c);
+
+	DM::DBConnector::getInstance()->Synchronize();
+	DM::Logger(DM::Standard) << "create and copy " << n << " attached nodes " << (long)timer.elapsed();
+	
 	delete baseNode;
 	delete sys;
 	DM::DBConnector::getInstance()->Synchronize();
