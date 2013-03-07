@@ -78,7 +78,8 @@ namespace DM {
         string logstring;
         bool dirty;
     public:
-        LogSink &sink;
+        std::vector <LogSink*> sinks;
+        //LogSink &sink;
     };
 }
 

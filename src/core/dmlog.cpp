@@ -47,18 +47,35 @@ void Log::init(LogSink *sink, LogLevel max) {
         if (!instance) {
                 instance = new Log();
         }
-        instance->sink = sink;
+        instance->sinks = new std::vector< LogSink *>();
+        instance->sinks->push_back(sink);
         instance->max = max;
 }
 
-void Log::shutDown() {
-        instance->sink->close();
-        delete instance->sink;
-        instance->sink = 0;
-        delete instance;
+void Log::addLogSink(LogSink *sink) {
+    instance->sinks->push_back(sink);
 }
 
-Log::Log(){}
+void Log::shutDown() {
+    for(uint index=0; index < instance->sinks->size(); index++)
+    {
+        instance->sinks->at(index)->close();
+        delete instance->sinks->at(index);
+    }
 
-Log::~Log(){}
+    delete instance->sinks;
+    instance->sinks = 0;
+    delete instance;
+}
+
+Log::Log()
+{
+
+}
+
+Log::~Log()
+{
+    if(!instance->sinks)
+        delete sinks;
+}
 }

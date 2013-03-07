@@ -30,7 +30,8 @@
 
 namespace DM {
     Logger::Logger(LogLevel level)
-        : level(level), sink(*Log::getInstance()->sink) {
+        : level(level) {
+        this->sinks = *(Log::getInstance()->sinks);
         dirty = false;
         this->max = Log::getInstance()->max;
         logstring="";
@@ -41,9 +42,12 @@ namespace DM {
     }
 
     Logger::~Logger() {
-        sink << logstring;
-        if (dirty)
-            sink << LSEndl();
+        for(uint index=0; index < sinks.size(); index++)
+        {
+            (*sinks[index]) << logstring;
+            if (dirty)
+                (*sinks[index]) << LSEndl();
+        }
     }
 
     Logger &Logger::operator <<(LogLevel new_level) {
@@ -143,7 +147,7 @@ namespace DM {
         case Warning:
             return "WARN\t";
         case Standard:
-            return "STANDARD\t";
+            return "INFO\t";
         case Error:
             return "ERROR\t";
         }
