@@ -35,16 +35,16 @@
 
 #define SQLQUERY_STACKSIZE 100
 #define CACHE_PROFILING
-//#define CACHE_INFINITE
+#define CACHE_INFINITE
 
-#define ATTRIBUTE_CACHE_SIZE 100
-#define NODE_CACHE_SIZE 100
+#define ATTRIBUTE_CACHE_SIZE 10000
+#define NODE_CACHE_SIZE 10000
 #define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 20
+#define RASTERBLOCKCACHESIZE 100
 // edge cache is infinite (Asynchron)
 // component cache is infinite (ComponentSyncMap: Asynchron)
 // face cache is infinite (Asynchron)
-#define CACHE_WRITEBLOCK 10
+#define CACHE_WRITEBLOCK 50
 
 
 
