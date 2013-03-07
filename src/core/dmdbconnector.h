@@ -37,14 +37,14 @@
 #define CACHE_PROFILING
 //#define CACHE_INFINITE
 
-#define ATTRIBUTE_CACHE_SIZE 10000
-#define NODE_CACHE_SIZE 10000
+#define ATTRIBUTE_CACHE_SIZE 100
+#define NODE_CACHE_SIZE 100
 #define RASTERBLOCKSIZE 64
 #define RASTERBLOCKCACHESIZE 20
 // edge cache is infinite (Asynchron)
 // component cache is infinite (ComponentSyncMap: Asynchron)
 // face cache is infinite (Asynchron)
-#define CACHE_WRITEBLOCK 50
+#define CACHE_WRITEBLOCK 10
 
 
 
@@ -94,12 +94,14 @@ class FIFOQueue
 	Node* last;
 	QMutex m;
 	QAtomicInt isEmpty;
+	QAtomicInt maxOneLeft;
 public:
 	FIFOQueue()
 	{
 		root = NULL;
 		last = NULL;
 		isEmpty = true;
+		maxOneLeft = true;
 	}
 	~FIFOQueue(){}
 	T* pop()
@@ -114,8 +116,11 @@ public:
 		if(root == last)
 		{
 			isEmpty = true;
+			maxOneLeft = true;
 			last = NULL;
 		}
+		else if(root->next == last)
+			maxOneLeft = true;
 
 		root = n->next;
 		delete n;
@@ -131,13 +136,18 @@ public:
 		{
 			last->next = new Node(data);
 			last = last->next;
+			maxOneLeft = false;
 		}
 		isEmpty = false;
 		m.unlock();
 	}
-	bool IsEmpty()
+	inline bool IsEmpty()
 	{
 		return isEmpty;
+	}
+	inline bool IsMaxOneLeft()
+	{
+		return maxOneLeft;
 	}
 };
 

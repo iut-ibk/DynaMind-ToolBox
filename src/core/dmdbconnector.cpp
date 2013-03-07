@@ -233,7 +233,7 @@ void DBWorker::run()
 	{
 		foreach(QueryList* ql, queryLists)
 		{
-			if(ql->queryStack.IsEmpty())
+			if(ql->queryStack.IsMaxOneLeft())
 			{
 				for(int i=0;i<SQLQUERY_STACKSIZE;i++)
 				{
