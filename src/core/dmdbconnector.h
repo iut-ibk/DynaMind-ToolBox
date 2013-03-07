@@ -26,7 +26,11 @@
 
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
+
 #include <dmcompilersettings.h>
+#include <qobject.h>
+#include <queue>
+#include <qatomic.h>
 
 class QSqlQuery;
 class QSqlError;
@@ -56,6 +60,113 @@ public:
     }
 };
 
+template<typename T>
+class FIFOQueue
+{
+	class Node
+	{
+	public:
+		Node(T* data)
+		{
+			next = NULL;
+			pData = data;
+		}
+		Node* next;
+		T*	pData;
+	};
+	Node* root;
+	Node* last;
+	QMutex m;
+	QAtomicInt isEmpty;
+public:
+	FIFOQueue()
+	{
+		root = NULL;
+		last = NULL;
+		isEmpty = true;
+	}
+	~FIFOQueue(){}
+	T* pop()
+	{
+		if(isEmpty)
+			return NULL;
+
+		m.lock();
+		Node* n = root;
+		T* d = root->pData;
+
+		if(root == last)
+		{
+			isEmpty = true;
+			last = NULL;
+		}
+
+		root = n->next;
+		delete n;
+		m.unlock();
+		return d;
+	}
+	void push(T* data)
+	{
+		m.lock();
+		if(isEmpty)
+			root = last = new Node(data);
+		else
+		{
+			last->next = new Node(data);
+			last = last->next;
+		}
+		isEmpty = false;
+		m.unlock();
+	}
+	bool IsEmpty()
+	{
+		return isEmpty;
+	}
+};
+
+struct QueryList
+{
+	QString cmd;
+	FIFOQueue<QSqlQuery> queryStack;
+};
+
+class DBWorker: public QThread
+{
+private:
+	bool	kill;
+	QMutex	selectMutex;
+	FIFOQueue<QSqlQuery> queryStack;
+
+	QSqlQuery *qSelect;
+protected:
+	std::list<QueryList*> queryLists;
+	void run();
+public:
+	enum SelectStatus
+	{
+		SS_NOTDONE,
+		SS_TRUE,
+		SS_FALSE,
+	}selectStatus;
+
+	void addQuery(QSqlQuery *q);
+
+	bool ExecuteSelect(QSqlQuery* q);
+
+	DBWorker(): QThread()
+	{
+		qSelect = NULL;
+		kill = false;
+	}
+	void Kill()
+	{
+		kill = true;
+	}
+	~DBWorker();
+	QSqlQuery *getQuery(QString cmd);
+};
+
 class SingletonDestroyer;
 
 class DM_HELPER_DLL_EXPORT DBConnector
@@ -65,15 +176,14 @@ private:
 	static DBConnector* instance;
     DBConnector();
 	
-    static QMap<QString,QSqlQuery*> mapQuery;
     static bool _bTransaction;
 
     static SingletonDestroyer _destroyer;
-    static QSqlDatabase* _db;
+
+	static DBWorker* worker;
+
     bool CreateTables();
     bool DropTables();
-
-    void CommitTransaction();
 
 protected:
     virtual ~DBConnector();
@@ -83,7 +193,6 @@ public:
     bool ExecuteSelectQuery(QSqlQuery *q);
 
     static DBConnector* getInstance();
-    void BeginTransaction();
 
     void Synchronize();
     // inserts with uuid
@@ -119,6 +228,9 @@ public:
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
+
+	
+
 /*
     void Duplicate(QString table, QByteArray uuid, QString stateuuid,
                                                QString newuuid, QString newStateUuid);*/
@@ -136,15 +248,16 @@ class SingletonDestroyer
 };
 
 #define CACHE_PROFILING
-#define CACHE_INFINITE
+//#define CACHE_INFINITE
 
-#define ATTRIBUTE_CACHE_SIZE 1e8
+#define ATTRIBUTE_CACHE_SIZE 100
+#define NODE_CACHE_SIZE 100
+#define RASTERBLOCKSIZE 64
+#define RASTERBLOCKCACHESIZE 20
 // edge cache is infinite (Asynchron)
 // component cache is infinite (ComponentSyncMap: Asynchron)
-#define NODE_CACHE_SIZE 1e7
 // face cache is infinite (Asynchron)
-#define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 4096
+#define CACHE_WRITEBLOCK 50
 
 template<class Tkey,class Tvalue>
 class Cache
@@ -328,8 +441,11 @@ public:
 #ifndef CACHE_INFINITE
         if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
         {
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+			for(int i=0;i<CACHE_WRITEBLOCK && Cache<Tkey,Tvalue>::_cnt>1;i++)
+			{
+				Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+				Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+			}
         }
 #endif
     }
@@ -364,8 +480,8 @@ public:
 #ifndef CACHE_INFINITE
 		while(Cache<Tkey,Tvalue>::_cnt > size)
 		{
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+			Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+			Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
 		}
 #endif
 	}

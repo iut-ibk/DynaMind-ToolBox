@@ -78,10 +78,14 @@ Asynchron::~Asynchron()
 
 DBConnector* DBConnector::instance = 0;
 //int DBConnector::_linkID = 1;
-QMap<QString,QSqlQuery*> DBConnector::mapQuery;
+//QMap<QString,QSqlQuery*> DBConnector::mapQuery;
 bool DBConnector::_bTransaction = false;
-QSqlDatabase* DBConnector::_db = new QSqlDatabase();
 SingletonDestroyer DBConnector::_destroyer;
+//QSqlDatabase DBConnector::_db;
+DBWorker* DBConnector::worker = NULL;
+//QThread DBConnector::workerThread;
+
+QSqlDatabase getDatabase() { return QSqlDatabase::database(); }
 
 bool DBConnector::CreateTables()
 {
@@ -162,11 +166,10 @@ DBConnector::DBConnector()
 
     if(QFile::exists(dbpath))
         QFile::remove(dbpath);
-
-    *_db = QSqlDatabase::addDatabase("QSQLITE");
+	//_db = new QSqlDatabase();
+    QSqlDatabase _db = QSqlDatabase::addDatabase("QSQLITE");
     //_db.setDatabaseName(":memory:");
-    _db->setDatabaseName(dbpath);
-	
+    _db.setDatabaseName(dbpath);
 /*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -188,11 +191,11 @@ DBConnector::DBConnector()
     db.setUserName("postgres");
     db.setPassword("");
 */
-    if(!_db->open())
+    if(!_db.open())
 	{
 		Logger(Error) << "Failed to open db connection";
 		
-        QSqlError e = _db->lastError();
+        QSqlError e = _db.lastError();
 		Logger(Error) << "driver error: " << e.driverText();
 		Logger(Error) << "database error: " << e.databaseText();
         return;
@@ -206,20 +209,108 @@ DBConnector::DBConnector()
         Logger(Error) << "Cannot initialize db tables";
         DropTables();
         //db.removeDatabase("QODBC");
-        _db->removeDatabase("QSQLITE");
-        _db->close();
+        _db.removeDatabase("QSQLITE");
+        _db.close();
 		return;
 	}
 
 	Logger(Debug) << "DB created";
+
+	worker = new DBWorker();
+	worker->start();
 }
+
+void DBWorker::run()
+{
+	while(!kill)
+	{
+		foreach(QueryList* ql, queryLists)
+		{
+			if(ql->queryStack.IsEmpty())
+			{
+				for(int i=0;i<20;i++)
+				{
+					QSqlQuery* q = new QSqlQuery();
+					q->prepare(ql->cmd);
+					ql->queryStack.push(q);
+				}
+			}
+		}
+
+		while(QSqlQuery* q = queryStack.pop())
+		{
+			if(!q->exec())	PrintSqlError(q);
+			delete q;
+		}
+		if(qSelect)
+		{
+			selectMutex.lock();
+			selectStatus = (!qSelect->exec() || !qSelect->next())?SS_FALSE:SS_TRUE;
+			qSelect = NULL;
+			selectMutex.unlock();
+		}
+	}
+	DM::Logger(Error) << "closing";
+	exec();
+}
+
+void DBWorker::addQuery(QSqlQuery *q)
+{
+	queryStack.push(q);
+}
+
+bool DBWorker::ExecuteSelect(QSqlQuery *q)
+{
+	selectMutex.lock();
+	qSelect = q;
+	selectStatus = SS_NOTDONE;
+	selectMutex.unlock();
+
+	while(selectStatus == SS_NOTDONE)
+		;
+	return selectStatus==SS_TRUE;
+}
+
+QSqlQuery* DBWorker::getQuery(QString cmd)
+{
+	QueryList* ql = NULL;
+	// search for query list
+	foreach(QueryList* it, queryLists)
+	{
+		if(it->cmd == cmd)
+		{
+			ql = it;
+			break;
+		}
+	}
+	if(!ql)
+	{
+		// no list found, create
+		ql = new QueryList;
+		ql->cmd = cmd;
+		queryLists.push_back(ql);
+	}
+
+	QSqlQuery *q = NULL;
+	while(!(q = ql->queryStack.pop()))
+		;
+	return q;
+}
+
+
+DBWorker::~DBWorker()
+{
+	selectMutex.unlock();
+	getDatabase();
+	foreach(QueryList* it, queryLists)
+		delete it;
+}
+
 DBConnector::~DBConnector()
 {
-    // commit (destructor called sql deletes may exist!)
-    CommitTransaction();
-    //for(QMap<QString,QSqlQuery*>::const_iterator it = mapQuery.begin(); it != mapQuery.end(); ++it)
-    //    delete it;
-    delete _db;
+	worker->Kill();
+	worker->terminate();
+	delete worker;
 }
 
 DBConnector* DBConnector::getInstance()
@@ -231,76 +322,29 @@ DBConnector* DBConnector::getInstance()
     }
 	return DBConnector::instance;
 }
-/*int DBConnector::GetNewLinkID()
-{
-    return DBConnector::_linkID++;
-}*/
-
 QSqlQuery* DBConnector::getQuery(QString cmd)
 {
-    if(DBConnector::mapQuery.find(cmd)!=DBConnector::mapQuery.end())
-        return DBConnector::mapQuery[cmd];
-    else
-    {
-        QSqlQuery *q = new QSqlQuery();
-        q->prepare(cmd);
-        DBConnector::mapQuery[cmd] = q;
-        return q;
-    }
+	return worker->getQuery(cmd);
+	/*
+	QSqlQuery *q = NULL;
+	while(!(q = worker->queryNewStack.pop()))
+		;
+	q->prepare(cmd);
+	return q;*/
 }
 void DBConnector::ExecuteQuery(QSqlQuery *q)
 {   
-    this->BeginTransaction();
-
-    if(!q->exec())	PrintSqlError(q);
+	// submit to worker
+	worker->addQuery(q);
 }
 
 bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 {
-
-    if(_bTransaction)
-        this->CommitTransaction();
-
-    if(!q->exec() || !q->next())
-    {
-        PrintSqlError(q);
-        return false;
-    }
-    return true;
-}
-
-void DBConnector::BeginTransaction()
-{
-    if(!_bTransaction)
-    {
-        _bTransaction = true;
-        _db->transaction();
-    }
-    //QSqlQuery q;
-    //if(!q.exec("BEGIN TRANSACTION"))
-    //    PrintSqlError(&q);
-}
-
-void DBConnector::CommitTransaction()
-{
-    if(_bTransaction)
-    {
-        _bTransaction = false;
-        if(!_db->commit())
-        //QSqlQuery q;
-        //if(!q.exec("END TRANSACTION"))
-        {
-            Logger(Error) << "rolling back commit";
-            PrintSqlErrorE(_db->lastError());
-            if(_db->rollback())
-                Logger(Error) << "rollback failed";
-        }
-    }
+	return worker->ExecuteSelect(q);
 }
 
 void DBConnector::Synchronize()
 {
-    CommitTransaction();
     foreach(Asynchron *a, *syncList)
         a->Synchronize();
 }
