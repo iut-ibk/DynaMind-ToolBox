@@ -168,7 +168,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
         QFile::remove(logfilepath);
 
     outputFile = new ofstream();
-    outputFile->open(logfilepath.toStdString());
+    outputFile->open(logfilepath.toStdString().c_str());
     DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
 #ifdef DEBUG
     DM::Log::init(log_updater,DM::Debug);
