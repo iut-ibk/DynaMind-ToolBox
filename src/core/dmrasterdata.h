@@ -33,6 +33,10 @@
 
 namespace DM {
 
+/** @class DM::RasterData
+  * @ingroup DynaMind-Core
+  * @brief Provides a raster data set
+*/
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
