@@ -51,20 +51,22 @@ typedef std::pair<std::string, Edge*> EdgePair;
 typedef std::pair<std::string, Node*> NodePair;
 typedef std::pair<std::string, Face*> FacePair;
 
-/** @ingroup DynaMind-Core
-      * @brief The system class provides a description for complex objects.
-      *
-      * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
-      * Systems are used to describe urban environment - water infrastructure, streets, houses ...
-      *
-      * The System class is derived from the Component class. Therefore every system has a UUID and can hold Attributes.
-      *
-      * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
-      * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
-      */
+
 
 class DerivedSystem;
 
+/** @class DM::System
+  * @ingroup DynaMind-Core
+  * @brief The system class provides a description for complex objects.
+  *
+  * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
+  * Systems are used to describe urban environment - water infrastructure, streets, houses ...
+  *
+  * The System class is derived from the Component class. Therefore every system has a UUID and can hold Attributes.
+  *
+  * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
+  * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
+*/
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 	friend DerivedSystem;
