@@ -43,6 +43,9 @@
 #include <moduledescription.h>
 #include <ui_dmmainwindow.h>
 #include <simulationio.h>
+#include <fstream>
+#include <iostream>
+
 class QTreeWidgetItem;
 
 
@@ -86,6 +89,7 @@ private:
     QString currentDocument;
     int counter;
     bool running;
+    std::ofstream *outputFile;
     QTreeWidgetItem * rootItemModelTree;
     void writeGUIInformation(QString FileName);
     void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
