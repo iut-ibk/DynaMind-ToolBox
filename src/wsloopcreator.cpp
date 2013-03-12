@@ -180,7 +180,14 @@ void LoopCreator::run()
             std::vector<int> d(num_vertices(g));
             std::vector < graph_traits < Graph >::vertex_descriptor > p(num_vertices(g));
 
-            boost::dijkstra_shortest_paths(g,nodesindex[junctions->at(source)],predecessor_map(&p[0]).distance_map(&d[0]));
+            //Use this line if you have the possibility to compile it with VS > 2008 or all other compilers
+            //boost::dijkstra_shortest_paths( g,nodesindex[junctions->at(source)],predecessor_map(&p[0]).distance_map(&d[0]));
+
+            //boost::make_iterator_map is a bug fix for VS2008 with boost > 1.49
+            boost::dijkstra_shortest_paths( g,
+                                            nodesindex[junctions->at(source)],
+                                            predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g)))
+                                            .distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
             graph_traits< Graph >::vertex_iterator vi, vend;
 
             for(uint n = 0; n < junctions->size(); n++)
