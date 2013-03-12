@@ -163,7 +163,6 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     ui->setupUi(this);
     log_updater = new GuiLogSink();
 
-#if defined DEBUG || _DEBUG
 
     QString logfilepath = QDir::tempPath() + "/dynamind.log";
 
@@ -173,7 +172,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     outputFile = new ofstream();
     outputFile->open(logfilepath.toStdString().c_str());
     DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
-
+	
+#if defined DEBUG || _DEBUG
     DM::Log::init(log_updater,DM::Debug);
 #else
     DM::Log::init(log_updater,DM::Standard);
