@@ -60,18 +60,15 @@ SpanningTree::SpanningTree()
 
     std::vector<DM::View> views;
     DM::View view;
+    DM::GRAPH::ViewDefinitionHelper defhelper;
 
-    view = defhelper.getCompleteView(DM::GRAPH::EDGES,DM::READ);
+    view = defhelper.getCompleteView(DM::GRAPH::EDGES,DM::MODIFY);
     views.push_back(view);
     viewdef[DM::GRAPH::EDGES]=view;
 
-    view = defhelper.getView(DM::GRAPH::NODES,DM::READ);
+    view = defhelper.getView(DM::GRAPH::NODES,DM::MODIFY);
     views.push_back(view);
     viewdef[DM::GRAPH::NODES]=view;
-
-    view = defhelper.getView(DM::GRAPH::SPANNINGTREE,DM::WRITE);
-    views.push_back(view);
-    viewdef[DM::GRAPH::SPANNINGTREE]=view;
 
     this->addData("Layout", views);
 }
@@ -150,28 +147,55 @@ void SpanningTree::run()
         random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]));
     }
 
-    for (std::size_t i = 0; i != p.size(); ++i)
+    //clean view
+    for(uint index = 0; index < nodes.size(); index++)
+        sys->removeComponentFromView(sys->getComponent(nodes[index]),viewdef[DM::GRAPH::NODES]);
+
+    for(uint index = 0; index < edges.size(); index++)
+        sys->removeComponentFromView(sys->getComponent(edges[index]),viewdef[DM::GRAPH::EDGES]);
+
+
+    //extract spanning tree
+    vector< DM::Component* > insertednodes;
+
+    for (std::size_t i = 0; i < p.size(); i++
+         )
     {
         if(i != p[i])
         {
             if(component[i]!=maxgraphindex)
                 continue;
 
+            DM::Edge* edge = 0;
+            DM::Node* start = 0;
+            DM::Node* end = 0;
+
             if(nodes2edge.find(E(p[i],i))!=nodes2edge.end())
+                edge = static_cast<DM::Edge*>(nodes2edge[E(p[i],i)]);
+
+            if(nodes2edge.find(E(i,p[i]))!=nodes2edge.end())
+                edge = static_cast<DM::Edge*>(nodes2edge[E(i,p[i])]);
+
+            if(!edge)
             {
-                this->sys->addComponentToView(nodes2edge[E(p[i],i)],viewdef[DM::GRAPH::SPANNINGTREE]);
+                DM::Logger(DM::Error) << "Could not find specific edge which should exist";
                 continue;
             }
 
-            if(nodes2edge.find(E(i,p[i]))!=nodes2edge.end())
-            {
-                this->sys->addComponentToView(nodes2edge[E(i,p[i])],viewdef[DM::GRAPH::SPANNINGTREE]);
-                continue;
-            }
+            this->sys->addComponentToView(edge,viewdef[DM::GRAPH::EDGES]);
+
+            start = edge->getStartNode();
+            end = edge->getEndNode();
+
+            if(find(insertednodes.begin(),insertednodes.end(),start)==insertednodes.end())
+                this->sys->addComponentToView(start,viewdef[DM::GRAPH::NODES]);
+
+            if(find(insertednodes.begin(),insertednodes.end(),end)==insertednodes.end())
+                this->sys->addComponentToView(end,viewdef[DM::GRAPH::NODES]);
         }
     }
 
-    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::SPANNINGTREE]).size();
+    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]).size();
     DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 

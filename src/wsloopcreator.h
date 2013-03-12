@@ -33,6 +33,10 @@
 #include <graphviewdef.h>
 #include <watersupplyviewdef.h>
 
+#include <boost/graph/adjacency_list.hpp>
+
+#define NULLPOINT -100
+
 class LoopCreator : public DM::Module
 {
     DM_DECLARE_NODE(LoopCreator)
@@ -47,6 +51,14 @@ public:
 
     void run();
     void initmodel();
+
+private:
+    uint getZone(double elevation, double zonesize);
+    bool createBoostGraph(std::map<std::string,DM::Component*> &nodes,
+                          std::map<std::string,DM::Component*> &edges,
+                          boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS, boost::property<boost::vertex_distance_t, int>, boost::property < boost::edge_weight_t, double > > &Graph,
+                          std::map<DM::Node*,int> &nodesindex,
+                          std::map<std::pair < int, int >, DM::Edge*> &nodes2edge);
 };
 
 #endif // LoopCreator_H

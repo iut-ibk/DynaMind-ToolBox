@@ -30,16 +30,19 @@
 #include <dmmodule.h>
 #include <dm.h>
 
+//Viewdef
+#include <graphviewdef.h>
+
+
 class ReduceTree : public DM::Module
 {
     DM_DECLARE_NODE(ReduceTree)
 
 private:
-    typedef std::map<std::string,DM::View> viewmap;
+    typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
 
     DM::System *sys;
     viewmap viewdef;
-
 
 public:
     ReduceTree();
@@ -48,6 +51,9 @@ public:
     bool deleteflagrecursive(std::vector<std::string> &edges, std::vector<std::string> &forcednodes, std::string currentnode, std::vector<std::string> &visitednodes, std::map<std::string, bool> &deletenodes);
     void deleteflagiterative(std::vector<std::string> &edges, std::vector<std::string> &forcednodes, std::vector<std::string> &deleteedges);
     void initmodel(){}
+
+private:
+    std::vector<DM::Edge*> getEdgesInView(DM::Node* node, std::map<std::string, DM::Component*> &edges);
 };
 
 #endif // ReduceTree_H

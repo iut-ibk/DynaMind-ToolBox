@@ -55,29 +55,31 @@ void ExtractNodesFromEdges::run()
 {
     this->sys = this->getData("Layout");
 
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
-    std::map<std::string,bool> nodesadded;
+    std::map<std::string,DM::Component*> edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
+    std::vector<DM::Component*> nodesadded;
+
+    typedef std::map<std::string,DM::Component*>::iterator itr;
 
     DM::Logger(DM::Standard) << "Number of Edges found:" << edges.size();
 
-    for(uint index=0; index<edges.size(); index++)
+    for(itr i = edges.begin(); i != edges.end(); i++)
     {
-        DM::Edge *edge = this->sys->getEdge(edges.at(index));
-        string sname = edge->getStartpointName();
-        string tname = edge->getEndpointName();
+        DM::Edge *edge = static_cast<DM::Edge*>((*i).second);
+        DM::Node* sname = edge->getStartNode();
+        DM::Node* tname = edge->getEndNode();
 
         //SOURCE
-        if(nodesadded.find(sname)==nodesadded.end())
+        if(std::find(nodesadded.begin(),nodesadded.end(),sname)==nodesadded.end())
         {
-            this->sys->addComponentToView(this->sys->getNode(sname),viewdef[DM::GRAPH::NODES]);
-            nodesadded[sname]=true;
+            this->sys->addComponentToView(sname,viewdef[DM::GRAPH::NODES]);
+            nodesadded.push_back(sname);
         }
 
         //TARGET
-        if(nodesadded.find(tname)==nodesadded.end())
+        if(std::find(nodesadded.begin(),nodesadded.end(), tname)==nodesadded.end())
         {
-            this->sys->addComponentToView(this->sys->getNode(tname),viewdef[DM::GRAPH::NODES]);
-            nodesadded[tname]=true;
+            this->sys->addComponentToView(tname,viewdef[DM::GRAPH::NODES]);
+            nodesadded.push_back(tname);
         }   
     }
 

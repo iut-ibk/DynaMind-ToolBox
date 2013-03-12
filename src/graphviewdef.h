@@ -43,8 +43,7 @@ namespace DM
 
         #define TABLE \
         X(NODES,DM::NODE, NODES_ATTR, NODES_LINK) \
-        X(EDGES,DM::EDGE,EDGES_ATTR, EDGES_LINK) \
-        X(SPANNINGTREE,DM::EDGE,EDGES_ATTR,EDGES_LINK)
+        X(EDGES,DM::EDGE,EDGES_ATTR, EDGES_LINK)
 
         #include<viewdefhelper.h>
     }
