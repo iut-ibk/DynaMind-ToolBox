@@ -38,10 +38,11 @@
 #define CACHE_INFINITE
 #define NO_DB_SYNC
 
-#define ATTRIBUTE_CACHE_SIZE 10000
-#define NODE_CACHE_SIZE 10000
+#define ATTRIBUTE_CACHE_SIZE 1e4
+#define NODE_CACHE_SIZE 1e3
+
 #define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 100
+#define RASTERBLOCKCACHESIZE 1000
 // edge cache is infinite (Asynchron)
 // component cache is infinite (ComponentSyncMap: Asynchron)
 // face cache is infinite (Asynchron)
@@ -166,6 +167,9 @@ private:
 	FIFOQueue<QSqlQuery> queryStack;
 
 	QSqlQuery *qSelect;
+
+	QMutex waiterMutex;
+	QWaitCondition waiterCondition;
 protected:
 	std::list<QueryList*> queryLists;
 	void run();
@@ -190,6 +194,17 @@ public:
 	{
 		kill = true;
 	}
+	void WaitIfNothingToDo()
+	{
+		waiterCondition.wait(&waiterMutex);
+		waiterMutex.lock();
+	}
+	void SignalWork()
+	{
+		waiterMutex.unlock();
+		waiterCondition.wakeOne();
+	}
+
 	~DBWorker();
 	QSqlQuery *getQuery(QString cmd);
 };
