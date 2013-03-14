@@ -163,8 +163,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     ui->setupUi(this);
     log_updater = new GuiLogSink();
 
-
-    QString logfilepath = QDir::tempPath() + "/dynamind.log";
+	QDateTime time = QDateTime::currentDateTime();
+    QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
 
     if(QFile::exists(logfilepath))
         QFile::remove(logfilepath);
