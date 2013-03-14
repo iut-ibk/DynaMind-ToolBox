@@ -161,7 +161,8 @@ bool DBConnector::DropTables()
 
 DBConnector::DBConnector()
 {
-	QString dbpath = QDir::tempPath() + "/dynaminddb";
+	QDateTime time = QDateTime::currentDateTime();
+	QString dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
 	std::string str = dbpath.toStdString();
 
     if(QFile::exists(dbpath))
