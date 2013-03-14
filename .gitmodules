@@ -43,3 +43,6 @@
 [submodule "DynaMind-Extensions"]
 	path = DynaMind-Extensions
 	url = git@github.com:iut-ibk/DynaMind-Extensions.git
+[submodule "DynaMind-Executable"]
+	path = DynaMind-Executable
+	url = ./DynaMind-Executable.git
