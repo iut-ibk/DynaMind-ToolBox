@@ -121,7 +121,8 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
-
+	
+	static void ResizeCache(unsigned int size);
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif

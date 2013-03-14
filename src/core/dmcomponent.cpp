@@ -314,9 +314,7 @@ void Component::SQLDelete()
 	if(isInserted)
 	{
 		isInserted = false;
-#ifndef NO_DB_SYNC
 		DBConnector::getInstance()->Delete(getTableName(), uuid);
-#endif
 	}
 }
 

@@ -32,30 +32,12 @@
 #include <queue>
 #include <qatomic.h>
 
-
-#define SQLQUERY_STACKSIZE 100
-#define CACHE_PROFILING
-#define CACHE_INFINITE
-#define NO_DB_SYNC
-
-#define ATTRIBUTE_CACHE_SIZE 1e4
-#define NODE_CACHE_SIZE 1e3
-
-#define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 1000
-// edge cache is infinite (Asynchron)
-// component cache is infinite (ComponentSyncMap: Asynchron)
-// face cache is infinite (Asynchron)
-#define CACHE_WRITEBLOCK 50
-
-
-
 class QSqlQuery;
 class QSqlError;
 class QSqlDatabase;
 
 namespace DM {
-
+	
 void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
 
 class Asynchron
@@ -209,6 +191,35 @@ public:
 	QSqlQuery *getQuery(QString cmd);
 };
 
+#define CACHE_PROFILING
+
+// raster block size would change the address<->coordinate mapping
+// therefore its hard encoded
+#define RASTERBLOCKSIZE 64
+// castercachesize is initialized when creating a rasterfield
+// would require a raster registration class to change the value in runtime
+#define RASTERBLOCKCACHESIZE 1000
+
+// edge cache is infinite (Asynchron)
+// component cache is infinite (ComponentSyncMap: Asynchron)
+// face cache is infinite (Asynchron)
+
+class DBConnectorConfig
+	{
+	private:
+		bool noDBSync;
+	public:
+		// no db sync disables the worker - it cant be started afterwards
+		// its possible, but not implemented
+		bool NoDBSync()	{return noDBSync;};	
+
+		bool infiniteCache;
+		unsigned long queryStackSize;
+		unsigned long cacheBlockwritingSize;
+
+		DBConnectorConfig();
+	};
+
 class SingletonDestroyer;
 
 class DM_HELPER_DLL_EXPORT DBConnector
@@ -226,15 +237,18 @@ private:
 
     bool CreateTables();
     bool DropTables();
-
+	DBConnectorConfig config;
 protected:
     virtual ~DBConnector();
 public:
-    QSqlQuery *getQuery(QString cmd);
+
     void ExecuteQuery(QSqlQuery *q);
     bool ExecuteSelectQuery(QSqlQuery *q);
 
     static DBConnector* getInstance();
+	static DBConnectorConfig* getConfig();
+	void setConfig(DBConnectorConfig cfg);
+    QSqlQuery *getQuery(QString cmd);
 
     void Synchronize();
     // inserts with uuid
@@ -431,10 +445,10 @@ public:
 
         Node *n = newNode(key,value);
         push_front(n);
-#ifndef CACHE_INFINITE
-        if(_cnt>_size)
-			removeNode(_last);
-#endif
+
+		if(!DBConnector::getConfig()->infiniteCache)
+			if(_cnt>_size)
+				removeNode(_last);
     }
     virtual bool replace(const Tkey& key,Tvalue* value)
     {
@@ -469,16 +483,19 @@ public:
 
         Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
         Cache<Tkey,Tvalue>::push_front(n);
-#ifndef CACHE_INFINITE
-        if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
-        {
-			for(int i=0;i<CACHE_WRITEBLOCK && Cache<Tkey,Tvalue>::_cnt>1;i++)
+
+		if(_size)
+		{
+			if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
 			{
-				Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-				Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+				for(int i=0;i<DBConnector::getConfig()->cacheBlockwritingSize 
+					&& Cache<Tkey,Tvalue>::_cnt>1;i++)
+				{
+					Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+					Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+				}
 			}
-        }
-#endif
+		}
     }
     // get node, if not found, we may find it in the db
     Tvalue* get(const Tkey& key)
@@ -497,9 +514,9 @@ public:
     // save everything to db
     void Synchronize()
     {
-#ifdef NO_DB_SYNC
-		return;
-#endif
+		if(DBConnector::getConfig()->NoDBSync())
+			return;
+
         Node* n=Cache<Tkey,Tvalue>::_root;
         while(n)
         {
@@ -511,13 +528,15 @@ public:
 	void resize(unsigned long size)
 	{
 		Cache<Tkey,Tvalue>::_size = size;
-#ifndef CACHE_INFINITE
-		while(Cache<Tkey,Tvalue>::_cnt > size)
+
+		if(_size)
 		{
-			Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-			Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+			while(Cache<Tkey,Tvalue>::_cnt > size)
+			{
+				Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+				Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
+			}
 		}
-#endif
 	}
 };
 
