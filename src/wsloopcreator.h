@@ -41,10 +41,18 @@ class LoopCreator : public DM::Module
 {
     DM_DECLARE_NODE(LoopCreator)
 
+    typedef std::map<std::string, DM::Component*> Compmap;
+    typedef std::map<uint, boost::shared_ptr< std::vector< DM::Node* > > > PressureZones;
+    typedef Compmap::iterator Compitr;
+
+    typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS, boost::property<boost::vertex_distance_t, double>, boost::property < boost::edge_weight_t, double > > Graph;
+
 private:
     DM::System *sys;
     DM::GRAPH::ViewDefinitionHelper defhelper_graph;
     DM::WS::ViewDefinitionHelper defhelper_ws;
+
+    double maxelements, minlengthrelation, searchdistance;
 
 public:
     LoopCreator();
@@ -56,9 +64,24 @@ private:
     uint getZone(double elevation, double zonesize);
     bool createBoostGraph(std::map<std::string,DM::Component*> &nodes,
                           std::map<std::string,DM::Component*> &edges,
-                          boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS, boost::property<boost::vertex_distance_t, int>, boost::property < boost::edge_weight_t, double > > &Graph,
+                          Graph &Graph,
                           std::map<DM::Node*,int> &nodesindex,
                           std::map<std::pair < int, int >, DM::Edge*> &nodes2edge);
+
+    void calculatePressureZones(Compmap &nodes, PressureZones &zones, double zonesize);
+    void removeCrossingZoneEdges(Compmap &edges,double zonesize);
+    void subtractGraphs(Compmap &a, Compmap &b); // result = a-b
+    bool findShortestPath(std::vector<DM::Node*> &pathnodes,
+                          std::vector<DM::Edge*> &pathedges,
+                          double &distance,
+                          std::map<DM::Node*,int> &nodesindex,
+                          std::map<std::pair < int, int >, DM::Edge*> &nodes2edge,
+                          boost::property_map<Graph, boost::vertex_distance_t>::type &distancevector,
+                          std::vector<long unsigned int> &predecessors,
+                          DM::Node* root, DM::Node* target);
+
+    void addPathToSystem(std::vector<DM::Node*> pathnodes, std::vector<DM::Edge*> pathedges, std::vector<DM::Component*> &addedcomponents);
+    std::vector<DM::Node*> findNearestNeighbours(DM::Node* root, double maxdistance, std::vector<DM::Node*> nodefield);
 };
 
 #endif // LoopCreator_H

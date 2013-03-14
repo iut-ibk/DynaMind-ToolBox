@@ -77,7 +77,7 @@ void SpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
-    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, double > > Graph;
+    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, double>, property < edge_weight_t, double > > Graph;
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
@@ -144,7 +144,7 @@ void SpanningTree::run()
     if(this->algrand)
     {
         DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
-        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]));
+        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
     }
 
     //clean view

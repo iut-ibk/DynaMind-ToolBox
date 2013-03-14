@@ -57,6 +57,15 @@ DM_DECLARE_NODE_NAME(LoopCreator,Watersupply)
 
 LoopCreator::LoopCreator()
 {    
+    this->searchdistance=200;
+    this->maxelements=5;
+    this->minlengthrelation=3;
+    //Define input parameter
+    this->addParameter("Search distance for alternative paths [m]", DM::DOUBLE, &this->searchdistance);
+    this->addParameter("Max number of elements within an alternative path [-]", DM::DOUBLE, &this->maxelements);
+    this->addParameter("Min quotient between alternative path and original path [-]", DM::DOUBLE, &this->minlengthrelation);
+
+    //Define model input
     DM::ER::ViewDefinitionHelper defhelper_er;
     std::vector<DM::View> views;
 
@@ -76,13 +85,9 @@ LoopCreator::LoopCreator()
 
 void LoopCreator::run()
 {
-    typedef std::map<std::string, DM::Component*> Compmap;
-    typedef std::map<uint, boost::shared_ptr< std::vector< DM::Node* > > > PressureZones;
-    typedef Compmap::iterator Compitr;
-
     //Define vars
-    DM::ER::ViewDefinitionHelper defhelper_er;
-    PressureZones zones, graph_zones;
+    //DM::ER::ViewDefinitionHelper defhelper_er;
+    PressureZones zones;
     double zonesize = 10;
 
     //Get System information
@@ -94,92 +99,51 @@ void LoopCreator::run()
     //Compmap erm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
     DM::Logger(DM::Standard) << "Calculate pressure zones of water supply system";
-    for(Compitr itr = jm.begin(); itr != jm.end(); itr++)
-    {
-        DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
-        uint currentzone = getZone(currentnode->getZ(),zonesize);
+    calculatePressureZones(jm, zones,zonesize);
 
-        if(zones.find(currentzone)==zones.end())
-            zones[currentzone]=boost::make_shared< std::vector< DM::Node* > >(std::vector< DM::Node* >());
-
-        zones[currentzone]->push_back(currentnode);
-    }
-
-    /*
-    DM::Logger(DM::Standard) << "Calculate possible pressure zones of additional nodes";
-    for(Compitr itr = nm.begin(); itr != nm.end(); itr++)
-    {
-        DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
-        uint currentzone = getZone(currentnode->getZ(),zonesize);
-
-        if(graph_zones.find(currentzone)==graph_zones.end())
-            graph_zones[currentzone]=boost::make_shared< std::vector< DM::Node* > >(std::vector< DM::Node* >());
-
-        graph_zones[currentzone]->push_back(currentnode);
-    }
-    */
-
-
-    DM::Logger(DM::Debug) << "Graph has " << em.size() << " edges";
-    DM::Logger(DM::Standard) << "Remove all edges which are element of a dead end path";
-    for(Compitr itr = nm.begin(); itr != nm.end(); ++itr)
-    {
-        DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
-
-        while(currentnode->getEdges().size()==1)
-        {
-            DM::Edge* currentedge = currentnode->getEdges()[0];
-
-            if(currentedge->getStartNode()==currentnode)
-                currentnode=currentedge->getEndNode();
-            else
-                currentnode=currentedge->getStartNode();
-
-            em.erase(currentedge->getUUID());
-        }
-    }
-
-    DM::Logger(DM::Debug) << "Graph has " << em.size() << " edges";
     DM::Logger(DM::Standard) << "Remove all edges which are crossing two pressure zones from graph";
-    for(Compitr itr = em.begin(); itr != em.end(); ++itr)
-    {
-        DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
+    removeCrossingZoneEdges(em,zonesize);
 
-        if(getZone(currentedge->getStartNode()->getZ(),NULLPOINT) != getZone(currentedge->getEndNode()->getZ(),NULLPOINT))
-            em.erase(currentedge->getUUID());
-    }
-
-    DM::Logger(DM::Debug) << "Graph has " << em.size() << " edges";
     DM::Logger(DM::Standard) << "Remove all edges which are already pipes from graph";
-    for(Compitr itr = pm.begin(); itr != pm.end(); ++itr)
-    {
-        DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
-        em.erase(currentedge->getUUID());
-    }
-    DM::Logger(DM::Debug) << "Graph has " << em.size() << " edges";
+    subtractGraphs(em,pm);
 
-    //Create boost graph object
-    typedef boost::adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, double > > Graph;
+    //Create boost graph object of original network
+    Graph org_g;
+    std::map<DM::Node*,int> org_nodesindex;
+    std::map<std::pair < int, int >, DM::Edge*> org_nodes2edge;
+
+    createBoostGraph(jm, pm,org_g,org_nodesindex,org_nodes2edge);
+
+    //Create boost graph object of possible path network
     Graph g;
     std::map<DM::Node*,int> nodesindex;
     std::map<std::pair < int, int >, DM::Edge*> nodes2edge;
 
     createBoostGraph(nm, em,g,nodesindex,nodes2edge);
 
+    //starting algorithm for finding alternative paths
     DM::Logger(DM::Standard) << "System has " << zones.size() << " pressure zones";
     DM::Logger(DM::Standard) << "Searching for alternative paths within pressure zones";
 
+    int pzone = 1;
+
     for(PressureZones::iterator itr = zones.begin(); itr!= zones.end(); itr++)
     {
+        DM::Logger(DM::Standard) << "Finding alternative paths within pressure zone number " << pzone++ << "and label " << (int)((*itr).first);
+        std::vector<DM::Component*> addedcomponents;
         //uint currentzone = (*itr).first;
         boost::shared_ptr< std::vector< DM::Node* > > junctions = (*itr).second;
 
         //Try to find an alternative path between junctions within one pressure zone
+        #pragma omp parallel for
         for(uint source=0; source < junctions->size(); source++)
         {
-            std::vector<int> d(num_vertices(g));
+            property_map<Graph, vertex_distance_t>::type d = get(vertex_distance, g);
+            property_map<Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
             std::vector < graph_traits < Graph >::vertex_descriptor > p(num_vertices(g));
+            std::vector < graph_traits < Graph >::vertex_descriptor > org_p(num_vertices(org_g));
 
+            //calculate shortestpaths in alternative paths graph
             //Use this line if you have the possibility to compile it with VS > 2008 or all other compilers
             //boost::dijkstra_shortest_paths( g,nodesindex[junctions->at(source)],predecessor_map(&p[0]).distance_map(&d[0]));
 
@@ -187,59 +151,48 @@ void LoopCreator::run()
             boost::dijkstra_shortest_paths( g,
                                             nodesindex[junctions->at(source)],
                                             predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g)))
-                                            .distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
-            graph_traits< Graph >::vertex_iterator vi, vend;
+                                            .distance_map(d));
 
-            for(uint n = 0; n < junctions->size(); n++)
+            //calculate shortestpaths in original paths
+            //Use this line if you have the possibility to compile it with VS > 2008 or all other compilers
+            //boost::dijkstra_shortest_paths( org_g,org_nodesindex[junctions->at(source)],predecessor_map(&org_p[0]).distance_map(&org_d[0]));
+
+            //boost::make_iterator_map is a bug fix for VS2008 with boost > 1.49
+            boost::dijkstra_shortest_paths( org_g,
+                                            org_nodesindex[junctions->at(source)],
+                                            predecessor_map(boost::make_iterator_property_map(org_p.begin(), get(boost::vertex_index, org_g)))
+                                            .distance_map(org_d));
+
+            //find alternative paths within a circle
+            std::vector<DM::Node*> nearest = findNearestNeighbours(junctions->at(source),this->searchdistance,*junctions);
+
+            for(uint n = 0; n < nearest.size(); n++)
             {
-                DM::Node *sourcejunction = junctions->at(n);
+                DM::Node *targetjunction = nearest[n];
+                DM::Node *rootjunction = junctions->at(source);
 
-                while(true)
-                {
-                    int sindex = nodesindex[sourcejunction];
-                    int tindex = p[sindex];
-                    DM::Edge *newpipe = 0;
+                std::vector<DM::Node*> pathnodes, org_pathnodes;
+                std::vector<DM::Edge*> pathedges, org_pathedges;
+                double distance, org_distance;
 
-                    if(sindex==tindex)
-                        break;
+                if(!findShortestPath(pathnodes,pathedges,distance,nodesindex,nodes2edge,d,p,rootjunction,targetjunction))
+                    continue;
 
-                    if(nodes2edge.find(std::make_pair(sindex,tindex))!=nodes2edge.end())
-                        newpipe = nodes2edge[std::make_pair(sindex,tindex)];
+                if(!findShortestPath(org_pathnodes,org_pathedges,org_distance,org_nodesindex,org_nodes2edge,org_d,org_p,rootjunction,targetjunction))
+                    continue;
 
-                    if(nodes2edge.find(std::make_pair(tindex,sindex))!=nodes2edge.end())
-                        newpipe = nodes2edge[std::make_pair(tindex,sindex)];
+                if(pathedges.size()>maxelements)
+                    continue;
 
-                    if(!newpipe)
-                    {
-                        DM::Logger(DM::Warning) << "Could not find specific pipe in system (ERROR ?)";
-                        continue;
-                    }
+                double lpath = max<double>(distance,org_distance);
+                double spath = min<double>(distance,org_distance);
 
-                    DM::Node *targetjunction = newpipe->getEndNode();
+                if(lpath/spath <= this->minlengthrelation)
+                    continue;
 
-                    if(sourcejunction != newpipe->getStartNode())
-                    {
-                        sourcejunction = newpipe->getEndNode();
-                        targetjunction = newpipe->getStartNode();
-                    }
-
-                    Compmap tmppm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
-
-                    if(tmppm.find(newpipe->getUUID())==tmppm.end())
-                        sys->addComponentToView(newpipe,defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
-
-                    Compmap tmpjm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
-
-                    if(tmpjm.find(sourcejunction->getUUID())==tmpjm.end())
-                        sys->addComponentToView(sourcejunction,defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
-
-                    if(tmpjm.find(targetjunction->getUUID())==tmpjm.end())
-                        sys->addComponentToView(targetjunction,defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
-
-                    if(std::find(junctions->begin(),junctions->end(),targetjunction)!=junctions->end())
-                        break;
-                }
+                addPathToSystem(pathnodes, pathedges, addedcomponents);
             }
+
         }
     }
 }
@@ -255,7 +208,7 @@ uint LoopCreator::getZone(double elevation, double zonesize)
 
 bool LoopCreator::createBoostGraph(std::map<std::string,DM::Component*> &nodes,
                                    std::map<std::string,DM::Component*> &edges,
-                                   boost::adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, double > > &g,
+                                   Graph &g,
                                    std::map<DM::Node*,int> &nodesindex,
                                    std::map<std::pair < int, int >, DM::Edge*> &nodes2edge)
 {
@@ -286,4 +239,143 @@ bool LoopCreator::createBoostGraph(std::map<std::string,DM::Component*> &nodes,
     }
 
     return true;
+}
+
+void LoopCreator::calculatePressureZones(LoopCreator::Compmap &nodes, LoopCreator::PressureZones &zones, double zonesize)
+{
+    for(Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
+    {
+        DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
+        uint currentzone = getZone(currentnode->getZ(),zonesize);
+
+        if(zones.find(currentzone)==zones.end())
+            zones[currentzone]=boost::make_shared< std::vector< DM::Node* > >(std::vector< DM::Node* >());
+
+        zones[currentzone]->push_back(currentnode);
+    }
+}
+
+void LoopCreator::removeCrossingZoneEdges(LoopCreator::Compmap &edges, double zonesize)
+{
+    for(Compitr itr = edges.begin(); itr != edges.end(); ++itr)
+    {
+        DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
+
+        if(getZone(currentedge->getStartNode()->getZ(),zonesize) != getZone(currentedge->getEndNode()->getZ(),zonesize))
+            edges.erase(currentedge->getUUID());
+    }
+}
+
+void LoopCreator::subtractGraphs(LoopCreator::Compmap &a, LoopCreator::Compmap &b)
+{
+    for(Compitr itr = b.begin(); itr != b.end(); ++itr)
+    {
+        DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
+        a.erase(currentedge->getUUID());
+    }
+}
+
+bool LoopCreator::findShortestPath(std::vector<DM::Node*> &pathnodes,
+                                   std::vector<DM::Edge*> &pathedges,
+                                   double &distance,
+                                   std::map<DM::Node*,int> &nodesindex,
+                                   std::map<std::pair < int, int >, DM::Edge*> &nodes2edge,
+                                   property_map<Graph, vertex_distance_t>::type &distancevector,
+                                   std::vector<long unsigned int> &predecessors,
+                                   DM::Node* root, DM::Node* target)
+{
+    DM::Node *targetjunction = target;
+    DM::Node *rootjunction = root;
+    int tindex = nodesindex[targetjunction];
+    int rindex = nodesindex[rootjunction];
+    pathnodes.push_back(target);
+    std::vector<int> path;
+    path.push_back(tindex);
+
+    if(targetjunction==rootjunction)
+        return false;
+
+    while( predecessors[tindex] != tindex &&  path[path.size()-1] != rindex)
+    {
+        tindex = predecessors[tindex];
+        path.push_back(tindex);
+    }
+
+    if(path[path.size()-1] != rindex)
+        return false;
+
+    for(uint s=0; s < path.size()-1; s++)
+    {
+        int sindex=path[s];
+        tindex=path[s+1];
+
+        DM::Edge *newpipe = 0;
+
+        if(nodes2edge.find(std::make_pair(sindex,tindex))!=nodes2edge.end())
+            newpipe = nodes2edge[std::make_pair(sindex,tindex)];
+
+        if(nodes2edge.find(std::make_pair(tindex,sindex))!=nodes2edge.end())
+            newpipe = nodes2edge[std::make_pair(tindex,sindex)];
+
+        if(!newpipe)
+        {
+            DM::Logger(DM::Warning) << "Could not find specific pipe in system (ERROR ?)";
+            return false;
+        }
+
+        DM::Node *targetjunction = newpipe->getEndNode();
+        DM::Node *sourcejunction = newpipe->getStartNode();
+
+        if(sourcejunction != newpipe->getStartNode())
+        {
+            sourcejunction = newpipe->getEndNode();
+            targetjunction = newpipe->getStartNode();
+        }
+
+        pathnodes.push_back(sourcejunction);
+        pathnodes.push_back(targetjunction);
+        pathedges.push_back(newpipe);
+    }
+
+    distance = distancevector[path[0]];
+    return true;
+}
+
+void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector<DM::Edge *> pathedges, std::vector<DM::Component *> &addedcomponents)
+{
+    #pragma omp critical
+    {
+        for(uint index=0; index < pathnodes.size(); index++)
+        {
+            if(find(addedcomponents.begin(), addedcomponents.end(), pathnodes[index]) == addedcomponents.end())
+            {
+                sys->addComponentToView(pathnodes[index],defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
+                addedcomponents.push_back(pathnodes[index]);
+            }
+        }
+
+        for(uint index=0; index < pathedges.size(); index++)
+        {
+            if(find(addedcomponents.begin(), addedcomponents.end(), pathedges[index]) == addedcomponents.end())
+            {
+                sys->addComponentToView(pathedges[index],defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
+                addedcomponents.push_back(pathedges[index]);
+            }
+        }
+
+    }
+}
+
+std::vector<DM::Node*> LoopCreator::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
+{
+    std::vector<DM::Node*> result;
+    result.push_back(root);
+
+    for(uint i=0; i < nodefield.size(); i++)
+    {
+        double currentdistance=TBVectorData::calculateDistance(root,nodefield[i]);
+        if(currentdistance <= maxdistance)
+            result.push_back(nodefield[i]);
+    }
+    return result;
 }
