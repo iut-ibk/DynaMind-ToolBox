@@ -28,6 +28,7 @@ OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
 OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" OFF)
 OPTION(WITH_PLUGIN_QGIS "if with QGIS plugin" OFF)
 OPTION(WITH_PLUGIN_BASICMODULES "if with BASICMODULES plugin" ON)
+OPTION(WITH_STANDALONE_EXE "if with standalon executeable" OFF)
 OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 
@@ -95,6 +96,10 @@ endif(WITH_PLUGIN_CITYBLOCKS)
 if(WITH_PLUGIN_QGIS)
     set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
 endif(WITH_PLUGIN_QGIS)
+
+if(WITH_STANDALONE_EXE)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Executable)
+endif(WITH_STANDALONE_EXE)
 
 file(MAKE_DIRECTORY ${DynaMind-ToolBox_BINARY_DIR}/output)
 
