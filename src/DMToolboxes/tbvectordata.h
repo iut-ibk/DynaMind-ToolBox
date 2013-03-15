@@ -36,6 +36,7 @@ class Node;
 class Edge;
 class Face;
 class View;
+class Component;
 }
 
 /**
@@ -133,6 +134,27 @@ public:
 
     /** @brief Calculate distance of two nodes A and B */
     static double calculateDistance(DM::Node *a, DM::Node *b);
+
+    /** @brief Returns true if a point is within a Face otherwise false */
+    static bool PointWithinFace(DM::Face *f, DM::Node *n);
+
+    /** @brief Returns ture if a point is within a Face of the face vector otherwise false */
+    static bool PointWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Node *n);
+
+    /** @brief Returns true if start and end node of a edge are point within a face otherwise false */
+    static bool EdgeWithinFace(DM::Face *f, DM::Edge *e);
+
+    /** @brief Returns true if an edge is within one Face of the face vector otherwise false */
+    static bool EdgeWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Edge *e);
+
+    /** @brief Returns true if a point is within a Polygon othwerwise false */
+    static int CalculateWindingNumber(std::vector<DM::Node*> poly, DM::Node *n);
+
+    /** @brief Find nearest neighbours of root node within a node field */
+    static std::vector<DM::Node*> findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield);
+
+    /** @brief Returns the maximum distance of a center node to all other nodes within a point field*/
+    static double maxDistance(std::vector<DM::Node*> pointfield, DM::Node* centernode);
 
     /** @brief Creates a circle */
     static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);

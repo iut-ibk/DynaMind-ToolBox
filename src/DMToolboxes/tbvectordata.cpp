@@ -486,6 +486,112 @@ double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
     return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
 }
 
+bool TBVectorData::PointWithinFace(DM::Face *f, DM::Node *n)
+{
+    std::vector<DM::Node*> face = f->getNodePointers();
+
+    if(CalculateWindingNumber(face,n) == 0)
+        return false;
+
+    std::vector<DM::Face*> holes = f->getHolePointers();
+
+    for(uint index=0; index < holes.size(); index++)
+        if(CalculateWindingNumber(holes[index]->getNodePointers(),n) != 0)
+            return false;
+
+    return true;
+}
+
+bool TBVectorData::PointWithinAnyFace(std::map<std::string, DM::Component *> fv, DM::Node *n)
+{
+    typedef std::pair<std::string,DM::Component*> Cp;
+    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+
+    for(CompItr i = fv.begin(); i != fv.end(); i++)
+    {
+        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+
+        if(TBVectorData::PointWithinFace(currentface,n))
+            return true;
+    }
+
+    return false;
+}
+
+bool TBVectorData::EdgeWithinFace(DM::Face *f, DM::Edge *e)
+{
+    if(!TBVectorData::PointWithinFace(f,e->getStartNode()))
+        return false;
+
+    if(!TBVectorData::PointWithinFace(f,e->getEndNode()))
+        return false;
+
+    return true;
+}
+
+bool TBVectorData::EdgeWithinAnyFace(std::map<string, DM::Component *> fv, DM::Edge *e)
+{
+    typedef std::pair<std::string,DM::Component*> Cp;
+    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+
+    for(CompItr i = fv.begin(); i != fv.end(); i++)
+    {
+        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+
+        if(TBVectorData::EdgeWithinFace(currentface,e))
+            return true;
+    }
+
+    return false;
+}
+
+int TBVectorData::CalculateWindingNumber(std::vector<DM::Node *> poly, DM::Node *n)
+{
+    if(!poly.size())
+        return 0;
+
+    int windindnumber=0;
+    DM::Node *center = n;
+
+    for(int index=0; index<poly.size(); ++index)
+    {
+        DM::Node *point1 = poly[index];
+        DM::Node *point2;
+
+        if(index == (poly.size()-1))
+            point2 = poly[0];
+        else
+            point2 = poly[index+1];
+
+        if(point1->getY() <= center->getY())
+        {
+            if(point2->getY() > center->getY())
+            {
+                double isleft = ((point2->getX() - point1->getX()) * (center->getY() - point1->getY()) -
+                              (center->getX() - point1->getX()) * (point2->getY() - point1->getY()));
+
+                if(isleft > 0)
+                    windindnumber++;
+
+            }
+        }
+        else
+        {
+            if(point2->getY() <= center->getY())
+            {
+                double isleft = ((point2->getX() - point1->getX()) * (center->getY() - point1->getY()) -
+                              (center->getX() - point1->getX()) * (point2->getY() - point1->getY()));
+
+                if(isleft < 0)
+                    windindnumber--;
+            }
+        }
+
+    }
+
+    return windindnumber;
+}
+
 vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segments)
 {
     const double pi =  3.14159265358979323846;
@@ -638,14 +744,14 @@ DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
 {
     double minx, miny, minz;
 
-    if (nodes.size() < 1) {
+    if (!nodes.size()) {
         DM::Logger(DM::Warning) << "no nodes";
         return DM::Node();
     }
 
     minx = nodes[0]->getX();
-    miny = nodes[1]->getY();
-    minz = nodes[2]->getZ();
+    miny = nodes[0]->getY();
+    minz = nodes[0]->getZ();
 
     foreach (DM::Node * n, nodes) {
         if (minx > n->getX())
@@ -658,5 +764,33 @@ DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
 
     return DM::Node(minx, miny, minz);
 
+}
+
+std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
+{
+    std::vector<DM::Node*> result;
+    result.push_back(root);
+
+    for(uint i=0; i < nodefield.size(); i++)
+    {
+        double currentdistance=TBVectorData::calculateDistance(root,nodefield[i]);
+        if(currentdistance <= maxdistance)
+            result.push_back(nodefield[i]);
+    }
+    return result;
+}
+
+double TBVectorData::maxDistance(std::vector<DM::Node *> pointfield, DM::Node *centernode)
+{
+    double result = 0;
+    for(uint index=0; index < pointfield.size(); index++)
+    {
+        double distance = calculateDistance(centernode, pointfield[index]);
+
+        if(distance > result)
+            result = distance;
+    }
+
+    return result;
 }
 
