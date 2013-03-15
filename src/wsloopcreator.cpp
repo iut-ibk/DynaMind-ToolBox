@@ -140,8 +140,8 @@ void LoopCreator::run()
         {
             property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
             property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
-            std::vector < graph_traits < DynamnindBoostGraph::Graph >::vertex_descriptor > p(num_vertices(g));
-            std::vector < graph_traits < DynamnindBoostGraph::Graph >::vertex_descriptor > org_p(num_vertices(org_g));
+            std::vector < int > p(num_vertices(g));
+            std::vector < int > org_p(num_vertices(org_g));
 
             //calculate shortestpaths in alternative paths graph
             //Use this line if you have the possibility to compile it with VS > 2008 or all other compilers
