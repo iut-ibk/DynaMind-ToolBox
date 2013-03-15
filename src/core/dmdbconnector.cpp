@@ -161,7 +161,8 @@ bool DBConnector::DropTables()
 
 DBConnector::DBConnector()
 {
-	QString dbpath = QDir::tempPath() + "/dynaminddb";
+	QDateTime time = QDateTime::currentDateTime();
+	QString dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
 	std::string str = dbpath.toStdString();
 
     if(QFile::exists(dbpath))
@@ -261,6 +262,7 @@ void DBWorker::run()
 			if(!q->exec())	PrintSqlError(q);
 			delete q;
 		}
+		WaitIfNothingToDo();
 		if(qSelect)
 		{
 #ifdef DBWORKER_COUNTERS
@@ -279,22 +281,25 @@ void DBWorker::run()
 void DBWorker::addQuery(QSqlQuery *q)
 {
 	queryStack.push(q);
+	SignalWork();
 }
 
 bool DBWorker::ExecuteSelect(QSqlQuery *q)
 {
+	
 	selectMutex.lock();
 	qSelect = q;
 	selectStatus = SS_NOTDONE;
 	selectMutex.unlock();
 
 	while(selectStatus == SS_NOTDONE)
-		;
+		SignalWork();
 	return selectStatus==SS_TRUE;
 }
 
 QSqlQuery* DBWorker::getQuery(QString cmd)
 {
+	
 	QueryList* ql = NULL;
 	// search for query list
 	foreach(QueryList* it, queryLists)
@@ -315,7 +320,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 
 	QSqlQuery *q = NULL;
 	while(!(q = ql->queryStack.pop()))
-		;
+		SignalWork();
 	return q;
 }
 
