@@ -72,7 +72,7 @@ bool DynamnindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
                                    std::map<DM::Node*,int> &nodesindex,
                                    std::map<std::pair < int, int >, DM::Edge*> &nodes2edge,
                                    boost::property_map<Graph, boost::vertex_distance_t>::type &distancevector,
-                                   std::vector<long unsigned int> &predecessors,
+                                   std::vector<int> &predecessors,
                                    DM::Node* root, DM::Node* target)
 {
     DM::Node *targetjunction = target;

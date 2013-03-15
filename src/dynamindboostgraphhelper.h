@@ -52,7 +52,7 @@ public:
                           std::map<DM::Node*,int> &nodesindex,
                           std::map<std::pair < int, int >, DM::Edge*> &nodes2edge,
                           boost::property_map<Graph, boost::vertex_distance_t>::type &distancevector,
-                          std::vector<long unsigned int> &predecessors,
+                          std::vector<int> &predecessors,
                           DM::Node* root, DM::Node* target);
     static void subtractGraphs(Compmap &a, Compmap &b); // result = a-b
     static bool createBoostGraph(std::map<std::string,DM::Component*> &nodes,
