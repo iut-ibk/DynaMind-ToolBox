@@ -136,7 +136,7 @@ void LoopCreator::run()
 
         //Try to find an alternative path between junctions within one pressure zone
         #pragma omp parallel for
-        for(uint source=0; source < junctions->size(); source++)
+        for(int source=0; source < junctions->size(); source++)
         {
             property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
             property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
