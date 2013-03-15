@@ -24,44 +24,27 @@
  *
  */
 
-#ifndef LoopCreator_H
-#define LoopCreator_H
+#ifndef TrimGraph_H
+#define TrimGraph_H
 
 #include <dmmodule.h>
 #include <dm.h>
 
 #include <graphviewdef.h>
-#include <watersupplyviewdef.h>
 
-#include <dynamindboostgraphhelper.h>
-
-#define NULLPOINT -100
-
-class LoopCreator : public DM::Module
+class TrimGraph : public DM::Module
 {
-    DM_DECLARE_NODE(LoopCreator)
-
-public:
-    typedef std::map<uint, boost::shared_ptr< std::vector< DM::Node* > > > PressureZones;
+    DM_DECLARE_NODE(TrimGraph)
 
 private:
     DM::System *sys;
     DM::GRAPH::ViewDefinitionHelper defhelper_graph;
-    DM::WS::ViewDefinitionHelper defhelper_ws;
-
-    double maxelements, minlengthrelation, searchdistance;
 
 public:
-    LoopCreator();
+    TrimGraph();
 
     void run();
     void initmodel();
-
-private:
-    uint getZone(double elevation, double zonesize);
-    void calculatePressureZones(DynamnindBoostGraph::Compmap &nodes, PressureZones &zones, double zonesize);
-    void removeCrossingZoneEdges(DynamnindBoostGraph::Compmap &edges,double zonesize);
-    void addPathToSystem(std::vector<DM::Node*> pathnodes, std::vector<DM::Edge*> pathedges, std::vector<DM::Component*> &addedcomponents);
 };
 
-#endif // LoopCreator_H
+#endif // TrimGraph_H

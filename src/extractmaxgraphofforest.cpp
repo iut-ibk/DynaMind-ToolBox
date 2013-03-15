@@ -119,7 +119,7 @@ void ExtractMaxGraph::run()
 
     DM::Logger(DM::Standard) << "Graph " << maxgraphindex+1 << " is extracted";
 
-    //extract graph
+    //remove edges from forest of graphs
     for(uint index=0; index < edges.size(); index++)
     {
         E current = edgeindex[index];
@@ -128,9 +128,18 @@ void ExtractMaxGraph::run()
         {
             DM::Edge *realedge = nodes2edge[current];
             this->sys->removeComponentFromView(realedge,viewdef[DM::GRAPH::EDGES]);
-            this->sys->removeComponentFromView(sys->getNode(realedge->getStartpointName()),viewdef[DM::GRAPH::NODES]);
-            this->sys->removeComponentFromView(sys->getNode(realedge->getEndpointName()),viewdef[DM::GRAPH::NODES]);
+            this->sys->removeComponentFromView(realedge->getStartNode(),viewdef[DM::GRAPH::NODES]);
+            this->sys->removeComponentFromView(realedge->getEndNode(),viewdef[DM::GRAPH::NODES]);
         }
+    }
+
+    //remove edges from forest of graphs
+    for(uint index=0; index < nodes.size(); index++)
+    {
+        std::string nodeid = nodes[index];
+
+        if(component[nodesindex[nodeid]]!=maxgraphindex)
+            this->sys->removeComponentFromView(sys->getComponent(nodeid),viewdef[DM::GRAPH::NODES]);
     }
 }
 

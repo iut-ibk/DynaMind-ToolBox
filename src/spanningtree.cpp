@@ -123,13 +123,14 @@ void SpanningTree::run()
         if(componentsizes[maxgraphindex] < componentsizes[index])
             maxgraphindex = index;
 
-        DM::Logger(DM::Standard) << "Tree " << (int)index+1 << " has " << componentsizes[index] << " elements";
+        DM::Logger(DM::Standard) << "Graph " << (int)index+1 << " has " << componentsizes[index] << " elements";
     }
 
     if(num!=1)
     {
         DM::Logger(DM::Warning) << "Graph is not connected -> Forest of size: " << num;
-        DM::Logger(DM::Warning) << "Graph " << maxgraphindex+1 << " is used for building a spanning tree";
+        DM::Logger(DM::Warning) << "PLEASE USE MODULE NAMED EXTRACTMAXGRAPH TO CLEAN THE FOREST";
+        return;
     }
 
     //calculate spanning tree or forest of graphs
@@ -154,6 +155,7 @@ void SpanningTree::run()
     for(uint index = 0; index < edges.size(); index++)
         sys->removeComponentFromView(sys->getComponent(edges[index]),viewdef[DM::GRAPH::EDGES]);
 
+    DM::Logger(DM::Standard) << "Starting extracting results from algorithm";
 
     //extract spanning tree
     vector< DM::Component* > insertednodes;

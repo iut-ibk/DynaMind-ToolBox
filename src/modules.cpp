@@ -38,6 +38,7 @@
 #include <wsdimensioning.h>
 #include <initws.h>
 #include <wsloopcreator.h>
+#include <trimgraph.h>
 
 using namespace std;
 
@@ -55,4 +56,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
     registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
     registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
+    registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
 }
