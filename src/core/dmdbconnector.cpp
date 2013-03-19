@@ -78,17 +78,8 @@ Asynchron::~Asynchron()
 }
 
 DBConnector* DBConnector::instance = 0;
-//int DBConnector::_linkID = 1;
-//QMap<QString,QSqlQuery*> DBConnector::mapQuery;
-//bool DBConnector::_bTransaction = false;
 SingletonDestroyer DBConnector::_destroyer;
-//QSqlDatabase DBConnector::_db;
 DBWorker* DBConnector::worker = NULL;
-//QThread DBConnector::workerThread;
-
-//unsigned long DBConnector::queryStackSize = 0;
-//unsigned long DBConnector::cacheBlockwritingSize = 0;
-
 
 QSqlDatabase getDatabase() { return QSqlDatabase::database(); }
 
@@ -251,8 +242,7 @@ void DBWorker::run()
 	QueryList* ql;
 	while(!kill)
 	{
-		for(it = queryLists.begin(); it != queryLists.end(); ++it)
-		//foreach(QueryList* ql, queryLists)
+		for(it = queryLists.begin(); it != queryLists.end(); ++it)	// faster then foreach
 		{
 			ql = *it;
 			if(ql->queryStack.IsMaxOneLeft())
