@@ -163,13 +163,13 @@ void Simulation::loadModulesFromDefaultLocation()
     foreach (QDir cp, cpv)  
 	{
         QStringList modulesToLoad = cp.entryList();
-        std::cout <<  cp.absolutePath().toStdString() << std::endl;
+        DM::Logger(DM::Standard) <<  cp.absolutePath().toStdString();
         foreach (QString module, modulesToLoad) 
 		{
             if (module == ".." || module == ".")
                 continue;
             DM::Logger(DM::Debug) << module.toStdString();
-            std::cout <<  module.toStdString() << std::endl;
+            DM::Logger(DM::Standard) <<  module.toStdString();
             QString ml = cp.absolutePath() +"/" + module;
             if (this->moduleRegistry->addNativePlugin(ml.toStdString()))
                 loadedModuleFiles.push_back(ml.toStdString());
