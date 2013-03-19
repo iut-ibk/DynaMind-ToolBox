@@ -159,7 +159,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		s.run();
 		times.push_back(timer.elapsed());
 		if(verbose && repeat>1)
-			std::cout << "iteration " << timer.elapsed() << endl;
+			std::cout << "took " << timer.elapsed() << "ms" << endl;
 	}
 	qint64 avg = 0;
 	foreach(qint64 i, times)
