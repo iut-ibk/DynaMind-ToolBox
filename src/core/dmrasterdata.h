@@ -108,9 +108,9 @@ public:
 		@internal */
     //void ForceUpdate() const;
 
-#ifdef CACHE_PROFILING
-    //static void PrintStatistics();
-#endif
+
+    //static void PrintCacheStatistics();
+
 private:
     long width;
     long height;

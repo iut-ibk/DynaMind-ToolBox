@@ -43,15 +43,15 @@ unsigned long Attribute::GetCacheSize()
 	return attributeCache.getSize();
 }
 
-#ifdef CACHE_PROFILING
-void Attribute::PrintStatistics()
+void Attribute::PrintCacheStatistics()
 {
+#ifdef CACHE_PROFILING
     Logger(Standard) << "Attribute cache statistics:\t"
                      << "misses: " << (long)attributeCache.misses
                      << "\thits: " << (long)attributeCache.hits;
     attributeCache.ResetProfilingCounters();
-}
 #endif
+}
 
 QByteArray GetBinaryValue(std::vector<double> v)
 {

@@ -40,14 +40,6 @@ namespace DM {
 	
 void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
 
-class Asynchron
-{
-public:
-    Asynchron();
-	~Asynchron();
-    virtual void Synchronize() = 0;
-};
-
 class DMSqlParameter
 {
 public:
@@ -141,21 +133,64 @@ struct QueryList
 	FIFOQueue<QSqlQuery> queryStack;
 };
 
+/**************************************************************//**
+@class DM::DBWorker
+@ingroup DynaMind-Core
+@brief 
+A threadclass, asuring asynchron query execution. 
+As QT requires
+the query to be created and prepared in the same thread as
+executed, this also takes place in here.
+
+COMMENTS
+
+******************************************************************/
 class DBWorker: public QThread
 {
 private:
+	// flag for leaving run() loop
 	bool	kill;
-	QMutex	selectMutex;
+	
+	// a stack offering created and prepared queries
 	FIFOQueue<QSqlQuery> queryStack;
 
+	// a mutex guaranties the receiver to wait until the worker
+	// returns the value (synchronized read)
+	QMutex	selectMutex;
+
+	// single select query
 	QSqlQuery *qSelect;
 
+	// list of write queries
+	std::list<QueryList*> queryLists;
+	
+	// to prevent the thread from blocking ressources, a waiter
+	// ensures the thread to sleep while no operations are queued
 	QMutex waiterMutex;
 	QWaitCondition waiterCondition;
-protected:
-	std::list<QueryList*> queryLists;
+
+	// infinite loop to process queries
+	// workflow: prepare-sleep if nothing to do-write-read
+	// even though it would be fast to wait before read, it may lead to
+	// an inconsistent database on small cache sizes or improper
+	// data updates
 	void run();
+
+	// blocking idle method
+	void WaitIfNothingToDo()
+	{
+		waiterCondition.wait(&waiterMutex);
+		waiterMutex.lock();
+	}
 public:
+	DBWorker(): QThread()
+	{
+		qSelect = NULL;
+		kill = false;
+	}
+	~DBWorker();
+	
+	// exchange value between worker <-> receiver
 	enum SelectStatus
 	{
 		SS_NOTDONE,
@@ -163,61 +198,71 @@ public:
 		SS_FALSE,
 	}selectStatus;
 
+	//!< add a new query to the write list (asynchron)
 	void addQuery(QSqlQuery *q);
-
+	//!< execute a select query (synchron)
 	bool ExecuteSelect(QSqlQuery* q);
-
-	DBWorker(): QThread()
-	{
-		qSelect = NULL;
-		kill = false;
-	}
+	//!< forces the loop to break up
 	void Kill()
 	{
 		kill = true;
 	}
-	void WaitIfNothingToDo()
-	{
-		waiterCondition.wait(&waiterMutex);
-		waiterMutex.lock();
-	}
+	//!< forces the worker to leave idle status
 	void SignalWork()
 	{
 		waiterMutex.unlock();
 		waiterCondition.wakeOne();
 	}
-
-	~DBWorker();
+	//!< receive a prepared query for execution
 	QSqlQuery *getQuery(QString cmd);
 };
 
-#define CACHE_PROFILING
+/**************************************************************//**
+** CACHE SETTINGS
+******************************************************************/
+// records cache hits and misses, it may decrease performance
+#define CACHE_PROFILING 
 
 // raster block size would change the address<->coordinate mapping
-// therefore its hard encoded
+// changing will corrupt database!
 #define RASTERBLOCKSIZE 64
+
 // castercachesize is initialized when creating a rasterfield
 // would require a raster registration class to change the value in runtime
 #define RASTERBLOCKCACHESIZE 1000
 
-// edge cache is infinite (Asynchron)
-// component cache is infinite (ComponentSyncMap: Asynchron)
-// face cache is infinite (Asynchron)
+// edge cache is infinite (Asynchron member)
+// component cache is infinite (ComponentSyncMap: Asynchron member)
+// face cache is infinite (Asynchron member)
 
+// this flag will prevent the DBConnector to establish any db connection
+// greatly improves performance
 //#define NO_DB_SYNC
 
+
+/**************************************************************//**
+@class DM::DBConnectorConfig
+@ingroup DynaMind-Core
+@brief Offers a structure to get and set settings from the  DBConnector.
+
+COMMENTS
+The constructor, although its neither performant nor advisable,
+ensures a working db connector. The constructor default values
+are also applied in the DBConnector constructor.
+queryStackSize and cacheBlockwritingSize may not be smaller then 1.
+cacheBlockwritingSize may not be smaller than any cache size-1.
+
+******************************************************************/
 class DBConnectorConfig
 {
-private:
-	//bool noDBSync;
 public:
-	// no_db_sync disables the worker - it cant be started afterwards
-	// its possible, but not implemented
-	//bool NoDBSync()	{return noDBSync;};	
-
+	//!< the maximum size of prepared queries
 	unsigned long queryStackSize;
+	//!< values over 1 enable blocked writes on db
 	unsigned long cacheBlockwritingSize;
+	//!< size of the attribute cache, values over 1e7 recommended; 0 enables an infinite cache
 	unsigned long attributeCacheSize;
+	//!< size of the node cache, values over 1e7 recommended; 0 enables an infinite cache
 	unsigned long nodeCacheSize;
 
 	DBConnectorConfig()
@@ -229,50 +274,71 @@ public:
 	}
 };
 
-class SingletonDestroyer;
+/**************************************************************//**
+@class DM::DBConnector
+@ingroup DynaMind-Core
+@brief Main class to access the database. It offers all neccessary 
+operations to create a db and read, write and delete entries in
+the db.
 
+COMMENTS
+May only be used in the core, for unit tests and for syncronizing
+purposes in the simulation class.
+
+INTERNAL WORKFLOW
+q = getQuery(string cmd)
+q->addBindValue(param)
+...
+ExecuteQuery(q)/ExecuteSelectQuery(q);
+******************************************************************/
+class SingletonDestroyer;
 class DM_HELPER_DLL_EXPORT DBConnector
 {
-    friend class SingletonDestroyer;
 private:
+	// singleton stuff
 	static DBConnector* instance;
     DBConnector();
-	
-    static bool _bTransaction;
 
+	// destructor stuff
+    friend class SingletonDestroyer;
     static SingletonDestroyer _destroyer;
 
+	// worker thread
 	static DBWorker* worker;
 
+	// internal init functions
     bool CreateTables();
     bool DropTables();
-	//DBConnectorConfig config;
-	
+
+	// settings
 	bool noDBSync;
 	unsigned long queryStackSize;
 	unsigned long cacheBlockwritingSize;
+
 protected:
     virtual ~DBConnector();
 public:
-	unsigned long  GetQueryStackSize()
-	{
-		return queryStackSize;
-	}
-	unsigned long  GetCacheBlockwritingSize()
-	{
-		return cacheBlockwritingSize;
-	}
+	//!< returns the pointer to the singleton generated instance of DBConnector
+    static DBConnector* getInstance();
 
+	//<! get the current configuration, refer to DBConnectorConfig
+	DBConnectorConfig getConfig();
+	//<! sets a new configuration, it is applied instantly, refer to DBConnectorConfig
+	void setConfig(DBConnectorConfig cfg);
+	//<! accessor to query stack size, refer to DBConnectorConfig
+	unsigned long  GetQueryStackSize()			{return queryStackSize;}
+	//<! accessor to cache block writing size, refer to DBConnectorConfig
+	unsigned long  GetCacheBlockwritingSize()	{return cacheBlockwritingSize;}
+	//<! get a already prepared query. prepare parameters and send back via Execute(Select)Query
+    QSqlQuery *getQuery(QString cmd);
+	//<! enqueues a WRITE query (asynchron)
     void ExecuteQuery(QSqlQuery *q);
+	//<! executes a select query, the value can be accessed via QSqlQuery::value(#)
     bool ExecuteSelectQuery(QSqlQuery *q);
 
-    static DBConnector* getInstance();
-	DBConnectorConfig getConfig();
-	void setConfig(DBConnectorConfig cfg);
-    QSqlQuery *getQuery(QString cmd);
-
+	//<! synchronizes ALL classes with inherited asynchron class
     void Synchronize();
-    // inserts with uuid
+    //<! various insert methods to insert a NEW row in the database
     void Insert(QString table,  QUuid uuid);
     void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
@@ -283,7 +349,8 @@ public:
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
-    // updates with uuid
+    
+    //<! various update methods to update an EXISTING row in the database
     void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
     void Update(QString table,  QUuid uuid,
@@ -293,9 +360,10 @@ public:
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
-    // delete with uuid
+    
+    //<! delete a database row, existence is not neccessary
     void Delete(QString table,  QUuid uuid);
-    // select single entry with uuid
+    //<! various select methods to retrieve row data from database
     bool Select(QString table, QUuid uuid,
                 QString valName, QVariant *value);
     bool Select(QString table, QUuid uuid,
@@ -305,14 +373,17 @@ public:
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
-
-	
-
-/*
-    void Duplicate(QString table, QByteArray uuid, QString stateuuid,
-                                               QString newuuid, QString newStateUuid);*/
 };
 
+/**************************************************************//**
+@class DM::SingletonDestroyer
+@ingroup DynaMind-Core
+@brief To ensure a specific order when destructing a singleton,
+we implement a destructor class.
+
+COMMENTS
+http://libassa.sourceforge.net/libassa-manual/C/x2988.html
+******************************************************************/
 class SingletonDestroyer
 {
     public:
@@ -324,6 +395,28 @@ class SingletonDestroyer
         DBConnector* _singleton;
 };
 
+/**************************************************************//**
+@class DM::Asynchron
+@ingroup DynaMind-Core
+@brief inheriting this class enables the DbConnector to synchronize 
+this element. The registration and deregistration is done in the
+constructor and destructor respectively, while the synchronizing
+can be implemented via the pure virtual Synchronize method.
+
+COMMENTS
+We may use this class for lightweight structures, which should be
+synchronized, like Edge (only 2 pointers).
+******************************************************************/
+class Asynchron
+{
+public:
+    Asynchron();
+	~Asynchron();
+private:
+    virtual void Synchronize() = 0;
+
+friend void DBConnector::Synchronize();
+};
 
 template<class Tkey,class Tvalue>
 class Cache

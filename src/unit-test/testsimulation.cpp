@@ -510,9 +510,9 @@ TEST_F(TestSimulation,simplesqltest) {
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 
 /* DOES NOT WORK ANYMORE (VALIDATION TOOL ON SUCCESSORSTATE)
@@ -611,9 +611,9 @@ TEST_F(TestSimulation, SqlNodeTest)
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 
 /** @brief Tests deleting accessing nodes with edge pointers
@@ -726,9 +726,9 @@ TEST_F(TestSimulation, SqlEdgeTest)
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 
 TEST_F(TestSimulation, SqlFaceOrder)
@@ -763,9 +763,9 @@ TEST_F(TestSimulation, SqlFaceOrder)
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 TEST_F(TestSimulation, SQLRasterdata)
 {
@@ -817,9 +817,9 @@ TEST_F(TestSimulation, SQLRasterdata)
 
 		DBConnector::getInstance()->Synchronize();
 		// print cache statistics
-		DM::Node::PrintStatistics();
-		DM::Attribute::PrintStatistics();
-		//DM::RasterData::PrintStatistics();
+		DM::Node::PrintCacheStatistics();
+		DM::Attribute::PrintCacheStatistics();
+		//DM::RasterData::PrintCacheStatistics();
 }
 
 TEST_F(TestSimulation, SQLattributes)
@@ -983,9 +983,9 @@ TEST_F(TestSimulation, SQLattributes)
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 TEST_F(TestSimulation, System)
 {
@@ -1110,9 +1110,9 @@ TEST_F(TestSimulation,sqlprofiling) {
 	DM::Logger(DM::Standard) << "delete " << n << "  nodes with system " << (long)timer.elapsed();
 
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 /**/
 
@@ -1151,9 +1151,9 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
-	DM::Node::PrintStatistics();
-	DM::Attribute::PrintStatistics();
-	//DM::RasterData::PrintStatistics();
+	DM::Node::PrintCacheStatistics();
+	DM::Attribute::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 
 #endif

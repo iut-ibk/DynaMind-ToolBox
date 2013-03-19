@@ -47,15 +47,15 @@ unsigned long Node::GetCacheSize()
 	return nodeCache.getSize();
 }
 
-#ifdef CACHE_PROFILING
-void Node::PrintStatistics()
+void Node::PrintCacheStatistics()
 {
+#ifdef CACHE_PROFILING
     Logger(Standard) << "Node cache statistics:\t"
                      << "misses: " << (long)nodeCache.misses
                      << "\thits: " << (long)nodeCache.hits;
     nodeCache.ResetProfilingCounters();
-}
 #endif
+}
 
 Node::Node( double x, double y, double z) : Component(true)
 {

@@ -124,9 +124,9 @@ public:
 	
 	static void ResizeCache(unsigned long size);
 	static unsigned long GetCacheSize();
-#ifdef CACHE_PROFILING
-    static void PrintStatistics();
-#endif
+
+    static void PrintCacheStatistics();
+
     Vector3* LoadFromDb();
     void SaveToDb(Vector3* v);
 };

@@ -190,9 +190,8 @@ public:
 
 	static void ResizeCache(unsigned long size);
 	static unsigned long GetCacheSize();
-#ifdef CACHE_PROFILING
-    static void PrintStatistics();
-#endif
+
+    static void PrintCacheStatistics();
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

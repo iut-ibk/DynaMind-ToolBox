@@ -80,7 +80,7 @@ Asynchron::~Asynchron()
 DBConnector* DBConnector::instance = 0;
 //int DBConnector::_linkID = 1;
 //QMap<QString,QSqlQuery*> DBConnector::mapQuery;
-bool DBConnector::_bTransaction = false;
+//bool DBConnector::_bTransaction = false;
 SingletonDestroyer DBConnector::_destroyer;
 //QSqlDatabase DBConnector::_db;
 DBWorker* DBConnector::worker = NULL;
@@ -168,10 +168,10 @@ bool DBConnector::DropTables()
 DBConnector::DBConnector()
 {
 	DBConnectorConfig cfg;
-	cfg.queryStackSize = 100;
+	/*cfg.queryStackSize = 100;
 	cfg.cacheBlockwritingSize = 50;
 	cfg.attributeCacheSize = 1e8;
-	cfg.nodeCacheSize = 1e7;
+	cfg.nodeCacheSize = 1e7;*/
 	setConfig(cfg);
 
 	worker = NULL;
@@ -265,6 +265,7 @@ void DBWorker::run()
 				}
 			}
 		}
+		WaitIfNothingToDo();
 #ifdef DBWORKER_COUNTERS
 		loopCount++;
 #endif
@@ -278,7 +279,6 @@ void DBWorker::run()
 			if(!q->exec())	PrintSqlError(q);
 			delete q;
 		}
-		WaitIfNothingToDo();
 		if(qSelect)
 		{
 #ifdef DBWORKER_COUNTERS
@@ -379,8 +379,22 @@ void DBConnector::setConfig(DBConnectorConfig cfg)
 {
 	Node::ResizeCache(cfg.nodeCacheSize);
 	Attribute::ResizeCache(cfg.attributeCacheSize);
-	this->cacheBlockwritingSize = cfg.cacheBlockwritingSize;
-	this->queryStackSize = cfg.queryStackSize;
+
+	if(cacheBlockwritingSize>cfg.nodeCacheSize-1)
+		Logger(Error) << "invalid value: cache block writing"
+		<< "size cannot be bigger then node cache size -1";
+	else if(cacheBlockwritingSize>cfg.attributeCacheSize-1)
+		Logger(Error) << "invalid value: cache block writing"
+		<< "size cannot be bigger then attribute cache size -1";
+	else if(cfg.cacheBlockwritingSize<1)
+		Logger(Error) << "invalid value: cache block writing size cannot be <1";
+	else
+		this->cacheBlockwritingSize = cfg.cacheBlockwritingSize;
+
+	if(cfg.queryStackSize<1)
+		Logger(Error) << "invalid value: query stack size cannot be <1";
+	else
+		this->queryStackSize = cfg.queryStackSize;
 }
 
 QSqlQuery* DBConnector::getQuery(QString cmd)
