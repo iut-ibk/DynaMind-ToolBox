@@ -321,24 +321,24 @@ public:
 	//!< returns the pointer to the singleton generated instance of DBConnector
     static DBConnector* getInstance();
 
-	//<! get the current configuration, refer to DBConnectorConfig
+	//!< get the current configuration, refer to DBConnectorConfig
 	DBConnectorConfig getConfig();
-	//<! sets a new configuration, it is applied instantly, refer to DBConnectorConfig
+	//!< sets a new configuration, it is applied instantly, refer to DBConnectorConfig
 	void setConfig(DBConnectorConfig cfg);
-	//<! accessor to query stack size, refer to DBConnectorConfig
+	//!< accessor to query stack size, refer to DBConnectorConfig
 	unsigned long  GetQueryStackSize()			{return queryStackSize;}
-	//<! accessor to cache block writing size, refer to DBConnectorConfig
+	//!< accessor to cache block writing size, refer to DBConnectorConfig
 	unsigned long  GetCacheBlockwritingSize()	{return cacheBlockwritingSize;}
-	//<! get a already prepared query. prepare parameters and send back via Execute(Select)Query
+	//!< get a already prepared query. prepare parameters and send back via Execute(Select)Query
     QSqlQuery *getQuery(QString cmd);
-	//<! enqueues a WRITE query (asynchron)
+	//!< enqueues a WRITE query (asynchron)
     void ExecuteQuery(QSqlQuery *q);
-	//<! executes a select query, the value can be accessed via QSqlQuery::value(#)
+	//!< executes a select query, the value can be accessed via QSqlQuery::value(#)
     bool ExecuteSelectQuery(QSqlQuery *q);
 
-	//<! synchronizes ALL classes with inherited asynchron class
+	//!< synchronizes ALL classes with inherited asynchron class
     void Synchronize();
-    //<! various insert methods to insert a NEW row in the database
+    //!< various insert methods to insert a NEW row in the database
     void Insert(QString table,  QUuid uuid);
     void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
@@ -350,7 +350,7 @@ public:
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     
-    //<! various update methods to update an EXISTING row in the database
+    //!< various update methods to update an EXISTING row in the database
     void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
     void Update(QString table,  QUuid uuid,
@@ -361,9 +361,9 @@ public:
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
     
-    //<! delete a database row, existence is not neccessary
+    //!< delete a database row, existence is not neccessary
     void Delete(QString table,  QUuid uuid);
-    //<! various select methods to retrieve row data from database
+    //!< various select methods to retrieve row data from database
     bool Select(QString table, QUuid uuid,
                 QString valName, QVariant *value);
     bool Select(QString table, QUuid uuid,
@@ -418,10 +418,24 @@ private:
 friend void DBConnector::Synchronize();
 };
 
+/**************************************************************//**
+@class DM::Cache
+@ingroup DynaMind-Core
+@brief a dictionary, with limited size, sorted by access order.
+Offers get, add, replace, remove for a key value pair.
+
+COMMENTS
+Implemented as highly performant double-ended list without iterator,
+NULL pointer checks or similar safty structures. Searching is
+accelerated by a std::map with pointers to the desired element.
+Each method is optimized to maximum performance in several test
+cases (e.g. unit tests). Modify with care.
+******************************************************************/
 template<class Tkey,class Tvalue>
 class Cache
 {
 protected:
+	// double ended node structure
     class Node
     {
     public:
@@ -443,25 +457,27 @@ protected:
         }
     };
 private:
+	// map for fast searching
 	std::map<Tkey,Node*> map;
 protected:
     Node*   _root;
     Node*   _last;
     unsigned long    _size;
     unsigned long    _cnt;
-	// internal
+	// sets up a new node; be aware that no linking is done
 	inline Node* newNode(const Tkey &k, Tvalue* v)
 	{
 		Node* n = new Node(k,v);
 		map[k] = n;
 		return n;
 	}
+	// removes a node; does not accoutn for linking
 	inline void removeNode(Node* n)
 	{
 		map.erase(n->key);
 		delete pop(n);
 	}
-	//
+	// pushes the given node to the front
     void push_front(Node* n)
     {
         if(_last==NULL)
@@ -474,6 +490,7 @@ protected:
         _root = n;
         _cnt++;
     }
+	// releases the first list node
     Node* pop(Node* n)
     {
         Node* last = n->last;
@@ -489,6 +506,7 @@ protected:
         _cnt--;
         return n;
     }
+	// search for the node with the given key
     Node* search(const Tkey &key)
     {
         typename std::map<Tkey,Node*>::iterator it = map.find(key);
@@ -499,17 +517,16 @@ protected:
 
 public:
 #ifdef CACHE_PROFILING
+	// counters for profiling
     unsigned long hits;
     unsigned long misses;
-
     void ResetProfilingCounters()
     {
         misses = 0;
         hits = 0;
     }
-
 #endif
-
+	//!< initializes a new cache structure with the given maximum size; a size of 0 results in an infinite cache
     Cache(unsigned long size)
     {
         _size=size;
@@ -521,6 +538,7 @@ public:
             misses = 0;
 #endif
     }
+	//!< deletes all nodes, leaves the values untouched (non-deep delete)
     ~Cache()
     {
         Node* cur;
@@ -533,7 +551,9 @@ public:
             delete cur;
         }
     }
+	//!< returns the current element count
 	unsigned long getSize(){return _size;};
+	//!< returns the value associated with the given key 
     virtual Tvalue* get(const Tkey& key)
     {
         Node *n = search(key);
@@ -552,6 +572,8 @@ public:
 #endif
         return NULL;
     }
+	//!< adds a new key-value pair, does nothing if key exists. 
+	// If the maximum size is reached, it will remove the last key
     virtual void add(const Tkey& key,Tvalue* value)
     {
         if(search(key)!=NULL)
@@ -564,6 +586,7 @@ public:
 			if(_cnt>_size)
 				removeNode(_last);
     }
+	//!< replaces the value associated with the given key, returns false if key was not existant
     virtual bool replace(const Tkey& key,Tvalue* value)
     {
         Node *n = search(key);
@@ -574,6 +597,7 @@ public:
         add(key, value);
         return true;
     }
+	//!< removes the element from cache
     void remove(const Tkey& key)
     {
         Node *n = search(key);
@@ -581,15 +605,42 @@ public:
     }
 };
 
-// like cache, but with db-functions
+/**************************************************************//**
+@class DM::DbCache
+@ingroup DynaMind-Core
+@brief similar to DM::Cache, but saves data to database when size
+limit is reached and tries to load data from database when element
+is not found.
+The key class has to implement:
+Tkey::SaveToDb(Tvalue);
+Tkey::LoadFromDb();
+
+COMMENTS
+Inherits DM::Asynchron
+
+******************************************************************/
 template<class Tkey,class Tvalue>
 class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 {
+    //!< Save all elements to db, called by DBConnector
+    void Synchronize()
+    {
+#ifdef NO_DB_SYNC
+		return
+#endif
+
+        Node* n=Cache<Tkey,Tvalue>::_root;
+        while(n)
+        {
+            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            n = n->next;
+        }
+    }
 public:
     typedef typename Cache<Tkey,Tvalue>::Node Node;
-
+	//!< initializes a new cache with the given size, 0 results in an infinite cache
     DbCache(unsigned long size): Cache<Tkey,Tvalue>(size){}
-    // add, save to db if something is dropped
+    //!< add a new key-value pair, calls SaveToDb if last element is dropped
     void add(Tkey key,Tvalue* value)
     {
         if(Cache<Tkey,Tvalue>::search(key)!=NULL)
@@ -611,7 +662,7 @@ public:
 			}
 		}
     }
-    // get node, if not found, we may find it in the db
+    //!< returns the value associated with the given key, if not found LoadFromDb is called. Neither found in db, returns NULL
     Tvalue* get(const Tkey& key)
     {
         Tvalue* v = Cache<Tkey,Tvalue>::get(key);
@@ -622,24 +673,10 @@ public:
         }
         return v;
     }
-	// note: currently removing from db is handled by the main class
+	// NOTE: currently removing from db is handled by the main class
     // void remove(const Tkey& key)
 
-    // save everything to db
-    void Synchronize()
-    {
-#ifdef NO_DB_SYNC
-		return
-#endif
-
-        Node* n=Cache<Tkey,Tvalue>::_root;
-        while(n)
-        {
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            n = n->next;
-        }
-    }
-	// resize cache
+	//<! resizes the cache, if the given value is 0, the cache is set to infinite
 	void resize(unsigned long size)
 	{
 		Cache<Tkey,Tvalue>::_size = size;
