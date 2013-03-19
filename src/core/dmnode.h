@@ -122,7 +122,8 @@ public:
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
 	
-	static void ResizeCache(unsigned int size);
+	static void ResizeCache(unsigned long size);
+	static unsigned long GetCacheSize();
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif

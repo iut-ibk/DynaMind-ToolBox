@@ -38,9 +38,13 @@ using namespace DM;
 
 static DbCache<Node*,Vector3> nodeCache(0); // defined in dmdbconnector.h
 
-void Node::ResizeCache(unsigned int size)
+void Node::ResizeCache(unsigned long size)
 {
 	nodeCache.resize(size);
+}
+unsigned long Node::GetCacheSize()
+{
+	return nodeCache.getSize();
 }
 
 #ifdef CACHE_PROFILING

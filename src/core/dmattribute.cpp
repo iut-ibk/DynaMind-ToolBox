@@ -34,11 +34,11 @@ using namespace DM;
 
 static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(0);
 
-void Attribute::ResizeCache(unsigned int size)
+void Attribute::ResizeCache(unsigned long size)
 {
 	attributeCache.resize(size);
 }
-unsigned int Attribute::GetCacheSize()
+unsigned long Attribute::GetCacheSize()
 {
 	return attributeCache.getSize();
 }

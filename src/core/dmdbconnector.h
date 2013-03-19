@@ -204,21 +204,30 @@ public:
 // component cache is infinite (ComponentSyncMap: Asynchron)
 // face cache is infinite (Asynchron)
 
+//#define NO_DB_SYNC
+
 class DBConnectorConfig
+{
+private:
+	//bool noDBSync;
+public:
+	// no_db_sync disables the worker - it cant be started afterwards
+	// its possible, but not implemented
+	//bool NoDBSync()	{return noDBSync;};	
+
+	unsigned long queryStackSize;
+	unsigned long cacheBlockwritingSize;
+	unsigned long attributeCacheSize;
+	unsigned long nodeCacheSize;
+
+	DBConnectorConfig()
 	{
-	private:
-		bool noDBSync;
-	public:
-		// no db sync disables the worker - it cant be started afterwards
-		// its possible, but not implemented
-		bool NoDBSync()	{return noDBSync;};	
-
-		bool infiniteCache;
-		unsigned long queryStackSize;
-		unsigned long cacheBlockwritingSize;
-
-		DBConnectorConfig();
-	};
+		queryStackSize = 100;
+		cacheBlockwritingSize = 50;
+		attributeCacheSize = 0;
+		nodeCacheSize = 0;
+	}
+};
 
 class SingletonDestroyer;
 
@@ -237,16 +246,28 @@ private:
 
     bool CreateTables();
     bool DropTables();
-	DBConnectorConfig config;
+	//DBConnectorConfig config;
+	
+	bool noDBSync;
+	unsigned long queryStackSize;
+	unsigned long cacheBlockwritingSize;
 protected:
     virtual ~DBConnector();
 public:
+	unsigned long  GetQueryStackSize()
+	{
+		return queryStackSize;
+	}
+	unsigned long  GetCacheBlockwritingSize()
+	{
+		return cacheBlockwritingSize;
+	}
 
     void ExecuteQuery(QSqlQuery *q);
     bool ExecuteSelectQuery(QSqlQuery *q);
 
     static DBConnector* getInstance();
-	static DBConnectorConfig* getConfig();
+	DBConnectorConfig getConfig();
 	void setConfig(DBConnectorConfig cfg);
     QSqlQuery *getQuery(QString cmd);
 
@@ -446,7 +467,7 @@ public:
         Node *n = newNode(key,value);
         push_front(n);
 
-		if(!DBConnector::getConfig()->infiniteCache)
+		if(_size)
 			if(_cnt>_size)
 				removeNode(_last);
     }
@@ -488,7 +509,7 @@ public:
 		{
 			if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
 			{
-				for(int i=0;i<DBConnector::getConfig()->cacheBlockwritingSize 
+				for(int i=0;i<DBConnector::getInstance()->GetCacheBlockwritingSize() 
 					&& Cache<Tkey,Tvalue>::_cnt>1;i++)
 				{
 					Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
@@ -514,8 +535,9 @@ public:
     // save everything to db
     void Synchronize()
     {
-		if(DBConnector::getConfig()->NoDBSync())
-			return;
+#ifdef NO_DB_SYNC
+		return
+#endif
 
         Node* n=Cache<Tkey,Tvalue>::_root;
         while(n)

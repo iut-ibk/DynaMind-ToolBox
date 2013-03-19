@@ -411,7 +411,7 @@ TEST_F(TestSimulation,cachetest) {
 
 	ASSERT_TRUE(c.get(1)==one);
 
-	if(!DM::DBConnector::getConfig()->infiniteCache)
+	if(c.getSize())
 		ASSERT_TRUE(c.get(2)==NULL);
 	else
 		ASSERT_TRUE(c.get(2)==two);
@@ -419,6 +419,28 @@ TEST_F(TestSimulation,cachetest) {
 	ASSERT_TRUE(c.get(3)==three);
 	ASSERT_TRUE(c.get(4)==four);
 	ASSERT_TRUE(c.get(10)==NULL);
+
+	// get current config
+	DBConnectorConfig cfg = DBConnector::getInstance()->getConfig();
+	// prepare a new one
+	DBConnectorConfig cfgNew = cfg;
+	cfgNew.queryStackSize = 1234;
+	cfgNew.cacheBlockwritingSize = 1234;
+	cfgNew.attributeCacheSize = 1234;
+	cfgNew.nodeCacheSize = 1234;
+	DBConnector::getInstance()->setConfig(cfgNew);
+	// check if config is applied correctly
+	DBConnectorConfig cfgNewReturned = DBConnector::getInstance()->getConfig();
+	ASSERT_TRUE(cfgNewReturned.queryStackSize == cfgNew.queryStackSize);
+	ASSERT_TRUE(cfgNewReturned.cacheBlockwritingSize == cfgNew.cacheBlockwritingSize);
+	ASSERT_TRUE(cfgNewReturned.attributeCacheSize == cfgNew.attributeCacheSize);
+	ASSERT_TRUE(cfgNewReturned.nodeCacheSize == cfgNew.nodeCacheSize);
+	ASSERT_TRUE(Attribute::GetCacheSize() == cfgNew.attributeCacheSize);
+	ASSERT_TRUE(Node::GetCacheSize() == cfgNew.nodeCacheSize);
+
+	// reset config
+	DBConnector::getInstance()->setConfig(cfg);
+
     /*
     int size = 4000;
     Cache<int,double> cache(size);

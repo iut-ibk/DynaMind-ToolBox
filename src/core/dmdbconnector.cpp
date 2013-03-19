@@ -86,6 +86,10 @@ SingletonDestroyer DBConnector::_destroyer;
 DBWorker* DBConnector::worker = NULL;
 //QThread DBConnector::workerThread;
 
+//unsigned long DBConnector::queryStackSize = 0;
+//unsigned long DBConnector::cacheBlockwritingSize = 0;
+
+
 QSqlDatabase getDatabase() { return QSqlDatabase::database(); }
 
 bool DBConnector::CreateTables()
@@ -160,21 +164,20 @@ bool DBConnector::DropTables()
     return false;
 }
 
-DBConnectorConfig::DBConnectorConfig()
-{
-	noDBSync = false;
-	infiniteCache = false;
-	queryStackSize = 100;
-	cacheBlockwritingSize = 50;
-	Attribute::ResizeCache(1e8);
-	Node::ResizeCache(1e7);
-}
 
 DBConnector::DBConnector()
 {
+	DBConnectorConfig cfg;
+	cfg.queryStackSize = 100;
+	cfg.cacheBlockwritingSize = 50;
+	cfg.attributeCacheSize = 1e8;
+	cfg.nodeCacheSize = 1e7;
+	setConfig(cfg);
+
 	worker = NULL;
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
 	QDateTime time = QDateTime::currentDateTime();
 	QString dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
@@ -254,7 +257,7 @@ void DBWorker::run()
 			ql = *it;
 			if(ql->queryStack.IsMaxOneLeft())
 			{
-				for(int i=0;i<DBConnector::getConfig()->queryStackSize;i++)
+				for(int i=0;i<DBConnector::getInstance()->GetQueryStackSize();i++)
 				{
 					QSqlQuery* q = new QSqlQuery();
 					q->prepare(ql->cmd);
@@ -363,19 +366,28 @@ DBConnector* DBConnector::getInstance()
     }
 	return DBConnector::instance;
 }
-DBConnectorConfig* DBConnector::getConfig()
+DBConnectorConfig DBConnector::getConfig()
 {
-	return &getInstance()->config;
+	DBConnectorConfig cfg;
+	cfg.nodeCacheSize = Node::GetCacheSize();
+	cfg.attributeCacheSize = Attribute::GetCacheSize();
+	cfg.cacheBlockwritingSize = cacheBlockwritingSize;
+	cfg.queryStackSize = queryStackSize;
+	return cfg;
 }
 void DBConnector::setConfig(DBConnectorConfig cfg)
 {
-	config = cfg;
+	Node::ResizeCache(cfg.nodeCacheSize);
+	Attribute::ResizeCache(cfg.attributeCacheSize);
+	this->cacheBlockwritingSize = cfg.cacheBlockwritingSize;
+	this->queryStackSize = cfg.queryStackSize;
 }
 
 QSqlQuery* DBConnector::getQuery(QString cmd)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return NULL;
+#endif
 	return worker->getQuery(cmd);
 }
 void DBConnector::ExecuteQuery(QSqlQuery *q)
@@ -391,8 +403,9 @@ bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 
 void DBConnector::Synchronize()
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     foreach(Asynchron *a, *syncList)
         a->Synchronize();
@@ -403,8 +416,9 @@ void DBConnector::Synchronize()
  */
 void DBConnector::Insert(QString table, QUuid uuid)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
     q->addBindValue(uuid.toByteArray());
@@ -413,8 +427,9 @@ void DBConnector::Insert(QString table, QUuid uuid)
 void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
                             parName0+") VALUES (?,?)");
@@ -426,8 +441,9 @@ void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
  {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
      QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
                              parName0+","+
@@ -442,8 +458,9 @@ void DBConnector::Insert(QString table,  QUuid uuid,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
  {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
      QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
                              parName0+","+
@@ -460,8 +477,9 @@ void DBConnector::Insert(QString table,  QUuid uuid,
  */
 void DBConnector::Delete(QString table,  QUuid uuid)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
     q->addBindValue(uuid.toByteArray());
@@ -473,8 +491,9 @@ void DBConnector::Delete(QString table,  QUuid uuid)
 void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
     q->addBindValue(parValue0);
@@ -486,8 +505,9 @@ void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName0, QVariant parValue0,
                          QString parName1, QVariant parValue1)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "
                             +parName0+"=?,"
@@ -502,8 +522,9 @@ void DBConnector::Update(QString table,  QUuid uuid,
                          QString parName1, QVariant parValue1,
                          QString parName2, QVariant parValue2)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return;
+#endif
 
     QSqlQuery *q = getQuery("UPDATE "+table+" SET "
                             +parName0+"=?,"
@@ -521,8 +542,9 @@ void DBConnector::Update(QString table,  QUuid uuid,
 bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName, QVariant *value)
 {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return false;
+#endif
 
     QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
     q->addBindValue(uuid.toByteArray());
@@ -536,8 +558,9 @@ bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName0, QVariant *value0,
                          QString valName1, QVariant *value1)
  {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return false;
+#endif
 
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
      q->addBindValue(uuid.toByteArray());
@@ -553,8 +576,9 @@ bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName1, QVariant *value1,
                          QString valName2, QVariant *value2)
  {
-	if(config.NoDBSync())
+#ifdef NO_DB_SYNC
 		return false;
+#endif
 
      QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
      q->addBindValue(uuid.toByteArray());

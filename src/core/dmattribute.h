@@ -188,8 +188,8 @@ public:
 		@internal*/
 	void SaveToDb(AttributeValue *val);
 
-	static void ResizeCache(unsigned int size);
-	static unsigned int GetCacheSize();
+	static void ResizeCache(unsigned long size);
+	static unsigned long GetCacheSize();
 #ifdef CACHE_PROFILING
     static void PrintStatistics();
 #endif
