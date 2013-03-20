@@ -37,6 +37,8 @@
 #include <QTime>
 #include <map>
 #include <math.h>
+#include <algorithm>
+#include <numeric>
 
 //BOOST GRAPH includes
 //#include <boosttraits.h>
@@ -58,12 +60,14 @@ DM_DECLARE_NODE_NAME(LoopCreator,Watersupply)
 LoopCreator::LoopCreator()
 {    
     this->searchdistance=200;
-    this->maxelements=5;
-    this->minlengthrelation=3;
+    this->minloopdiameter=250;
+    this->maxnumberelements=3;
+    this->zonesize = 60;
     //Define input parameter
     this->addParameter("Search distance for alternative paths [m]", DM::DOUBLE, &this->searchdistance);
-    this->addParameter("Max number of elements within an alternative path [-]", DM::DOUBLE, &this->maxelements);
-    this->addParameter("Min quotient between alternative path and original path [-]", DM::DOUBLE, &this->minlengthrelation);
+    this->addParameter("Minimum diameter of loop [m]", DM::DOUBLE, &this->minloopdiameter);
+    this->addParameter("Maximum number of additional elements to create one loop [-]", DM::DOUBLE, &this->maxnumberelements);
+    this->addParameter("Pressure within one zone [m]", DM::DOUBLE, &this->zonesize);
 
     //Define model input
     DM::ER::ViewDefinitionHelper defhelper_er;
@@ -88,38 +92,41 @@ void LoopCreator::run()
     //Define vars
     //DM::ER::ViewDefinitionHelper defhelper_er;
     PressureZones zones;
-    double zonesize = 10;
 
     //Get System information
     this->sys = this->getData("Layout");
-    DynamnindBoostGraph::Compmap em = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::EDGES,DM::READ));
-    DynamnindBoostGraph::Compmap nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::READ));
-    DynamnindBoostGraph::Compmap jm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
-    DynamnindBoostGraph::Compmap pm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
+    DynamindBoostGraph::Compmap em = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::EDGES,DM::READ));
+    DynamindBoostGraph::Compmap nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::READ));
+    DynamindBoostGraph::Compmap jm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
+    DynamindBoostGraph::Compmap pm = sys->getAllComponentsInView(defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
     //Compmap erm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
+    DM::Logger(DM::Standard) << "Calculate pressure zone boundaries of water supply system";
+    double minelevation, maxelevation, meanelevation;
+    calcPressureZonesBoundaries(jm,minelevation,maxelevation, meanelevation);
+
     DM::Logger(DM::Standard) << "Calculate pressure zones of water supply system";
-    calculatePressureZones(jm, zones,zonesize);
+    calculatePressureZones(jm, zones,zonesize,meanelevation);
 
     DM::Logger(DM::Standard) << "Remove all edges which are crossing two pressure zones from graph";
-    removeCrossingZoneEdges(em,zonesize);
+    removeCrossingZoneEdges(em,zonesize,meanelevation);
 
     DM::Logger(DM::Standard) << "Remove all edges which are already pipes from graph";
-    DynamnindBoostGraph::subtractGraphs(em,pm);
+    DynamindBoostGraph::subtractGraphs(em,pm);
 
     //Create boost graph object of original network
-    DynamnindBoostGraph::Graph org_g;
+    DynamindBoostGraph::Graph org_g;
     std::map<DM::Node*,int> org_nodesindex;
     std::map<std::pair < int, int >, DM::Edge*> org_nodes2edge;
 
-    DynamnindBoostGraph::createBoostGraph(jm, pm,org_g,org_nodesindex,org_nodes2edge);
+    DynamindBoostGraph::createBoostGraph(jm, pm,org_g,org_nodesindex,org_nodes2edge);
 
     //Create boost graph object of possible path network
-    DynamnindBoostGraph::Graph g;
+    DynamindBoostGraph::Graph g;
     std::map<DM::Node*,int> nodesindex;
     std::map<std::pair < int, int >, DM::Edge*> nodes2edge;
 
-    DynamnindBoostGraph::createBoostGraph(nm, em,g,nodesindex,nodes2edge);
+    DynamindBoostGraph::createBoostGraph(nm, em,g,nodesindex,nodes2edge);
 
     //starting algorithm for finding alternative paths
     DM::Logger(DM::Standard) << "System has " << zones.size() << " pressure zones";
@@ -138,8 +145,8 @@ void LoopCreator::run()
         #pragma omp parallel for
         for(int source=0; source < junctions->size(); source++)
         {
-            property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
-            property_map<DynamnindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
+            property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
+            property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
             std::vector < int > p(num_vertices(g));
             std::vector < int > org_p(num_vertices(org_g));
 
@@ -175,28 +182,19 @@ void LoopCreator::run()
                 std::vector<DM::Edge*> pathedges, org_pathedges;
                 double distance, org_distance;
 
-                if(!DynamnindBoostGraph::findShortestPath(pathnodes,pathedges,distance,nodesindex,nodes2edge,d,p,rootjunction,targetjunction))
+                if(!DynamindBoostGraph::findShortestPath(pathnodes,pathedges,distance,nodesindex,nodes2edge,d,p,rootjunction,targetjunction))
                     continue;
 
-                if(!DynamnindBoostGraph::findShortestPath(org_pathnodes,org_pathedges,org_distance,org_nodesindex,org_nodes2edge,org_d,org_p,rootjunction,targetjunction))
+                if(!DynamindBoostGraph::findShortestPath(org_pathnodes,org_pathedges,org_distance,org_nodesindex,org_nodes2edge,org_d,org_p,rootjunction,targetjunction))
                     continue;
 
-                if(pathedges.size()>maxelements)
+                if(pathedges.size()>maxnumberelements)
                     continue;
 
                 double maxdistance = TBVectorData::maxDistance(pathnodes,pathnodes[pathnodes.size()-1]);
                 double org_maxdistance = TBVectorData::maxDistance(org_pathnodes,org_pathnodes[org_pathnodes.size()-1]);
 
-                if(maxdistance < 100 && org_maxdistance < 100)
-                    continue;
-
-                if(org_distance < distance)
-                    continue;
-
-                double lpath = max<double>(distance,org_distance);
-                double spath = min<double>(distance,org_distance);
-
-                if(lpath/spath <= this->minlengthrelation)
+                if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
                     continue;
 
                 addPathToSystem(pathnodes, pathedges, addedcomponents);
@@ -210,17 +208,18 @@ void LoopCreator::initmodel()
 {
 }
 
-uint LoopCreator::getZone(double elevation, double zonesize)
+uint LoopCreator::getZone(double elevation, double zonesize, double mean)
 {
+    double NULLPOINT = (int)(mean-(zonesize/2))%((int)zonesize);
     return (uint)((elevation - NULLPOINT)/zonesize);
 }
 
-void LoopCreator::calculatePressureZones(DynamnindBoostGraph::Compmap &nodes, LoopCreator::PressureZones &zones, double zonesize)
+void LoopCreator::calculatePressureZones(DynamindBoostGraph::Compmap &nodes, LoopCreator::PressureZones &zones, double zonesize, double mean)
 {
-    for(DynamnindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
+    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
     {
         DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
-        uint currentzone = getZone(currentnode->getZ(),zonesize);
+        uint currentzone = getZone(currentnode->getZ(),zonesize,mean);
 
         if(zones.find(currentzone)==zones.end())
             zones[currentzone]=boost::make_shared< std::vector< DM::Node* > >(std::vector< DM::Node* >());
@@ -229,13 +228,13 @@ void LoopCreator::calculatePressureZones(DynamnindBoostGraph::Compmap &nodes, Lo
     }
 }
 
-void LoopCreator::removeCrossingZoneEdges(DynamnindBoostGraph::Compmap &edges, double zonesize)
+void LoopCreator::removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges, double zonesize, double mean)
 {
-    for(DynamnindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
+    for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
     {
         DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
 
-        if(getZone(currentedge->getStartNode()->getZ(),zonesize) != getZone(currentedge->getEndNode()->getZ(),zonesize))
+        if(getZone(currentedge->getStartNode()->getZ(),zonesize,mean) != getZone(currentedge->getEndNode()->getZ(),zonesize,mean))
             edges.erase(currentedge->getUUID());
     }
 }
@@ -263,4 +262,18 @@ void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector
         }
 
     }
+}
+
+void LoopCreator::calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes, double &min, double &max, double &mean)
+{
+    std::vector<double> elevations;
+
+    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
+        elevations.push_back(static_cast<DM::Node*>((*itr).second)->getZ());
+
+    min = *std::min_element(elevations.begin(), elevations.end());
+    max = *std::max_element(elevations.begin(), elevations.end());
+    mean = std::accumulate(elevations.begin(), elevations.end(),0.0)/elevations.size();
+
+    return;
 }

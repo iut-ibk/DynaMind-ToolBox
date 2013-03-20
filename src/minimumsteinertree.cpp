@@ -43,6 +43,7 @@
 #include <boost/graph/prim_minimum_spanning_tree.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <dynamindboostgraphhelper.h>
 
 using namespace boost;
 
@@ -72,39 +73,21 @@ void MinimumSteinerTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
-    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, double>, property < edge_weight_t, double > > Graph;
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::NODES]));
-    std::vector<std::string> dedges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
-    std::vector<std::string> forcednodes(sys->getUUIDsOfComponentsInView(forcednodesview));
-    std::map<std::string,int> nodesindex;
-    std::map<E,DM::Edge*> nodes2edge;
+    DynamindBoostGraph::Compmap nodes = sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]);
+    DynamindBoostGraph::Compmap dedges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
+    DynamindBoostGraph::Compmap forcednodes = sys->getAllComponentsInView(forcednodesview);
+    std::map<DM::Node* ,int> nodesindex;
+    std::map< std::pair<int,int> ,DM::Edge*> nodes2edge;
     std::list<int> forcednodeslist;
+    DynamindBoostGraph::Graph g;
+    DynamindBoostGraph::createBoostGraph(nodes,dedges,g,nodesindex,nodes2edge);
 
-    for(uint index=0; index<nodes.size(); index++)
-        nodesindex[nodes[index]]=index;
+    for(DynamindBoostGraph::Compitr itr = forcednodes.begin(); itr != forcednodes.end(); ++itr)
+        forcednodeslist.push_back(nodesindex[static_cast<DM::Node*>((*itr).second)]);
 
-    for(uint index=0; index<forcednodes.size(); index++)
-        forcednodeslist.push_back(nodesindex[forcednodes[index]]);
-
-    const int num_nodes = nodes.size();
-    Graph g(num_nodes);
-
-    for(uint counter=0; counter<dedges.size(); counter++)
-    {
-        int sourceindex, targetindex;
-        DM::Edge *edge=this->sys->getEdge(dedges[counter]);
-
-        double distance = edge->getAttribute(defhelper.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
-
-        sourceindex=nodesindex[edge->getStartpointName()];
-        targetindex=nodesindex[edge->getEndpointName()];
-
-        nodes2edge[E(sourceindex,targetindex)]=edge;
-        add_edge(sourceindex, targetindex, distance, g);
-    }
 
     //check if graph is conntected
     std::vector<int> component(num_vertices(g));
@@ -133,9 +116,9 @@ void MinimumSteinerTree::run()
 
     //calculate min steiner tree approximation
 
-    DM::Logger(DM::Standard) << "Start steiner tree algorithm with " << num_nodes << " nodes and " << dedges.size() << " edges";
+    DM::Logger(DM::Standard) << "Start steiner tree algorithm with " << num_vertices(g) << " nodes and " << dedges.size() << " edges";
 
-    typedef std::vector<graph_traits<Graph>::vertex_descriptor> path;
+    typedef std::vector<graph_traits<DynamindBoostGraph::Graph>::vertex_descriptor> path;
     typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, int>, property < edge_weight_t, double > > SteinerGraph;
 
     std::map<std::pair<graph_traits<SteinerGraph>::vertex_descriptor, graph_traits<SteinerGraph>::vertex_descriptor>, path> edgetopath;
@@ -157,14 +140,14 @@ void MinimumSteinerTree::run()
             continue;
 
         std::vector<int> d(num_vertices(g));
-        std::vector < graph_traits < Graph >::vertex_descriptor > p(num_vertices(g));
+        std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor > p(num_vertices(g));
         dijkstra_shortest_paths(g,vai,predecessor_map(&p[0]).distance_map(&d[0]));
-        graph_traits< Graph >::vertex_iterator vi, vend;
+        graph_traits< DynamindBoostGraph::Graph >::vertex_iterator vi, vend;
 
         for (boost::tie(vi, vend) = vertices(g); vi != vend; ++vi)
         {
             path currentpath;
-            graph_traits< Graph >::vertex_descriptor currentsoure = *vi;
+            graph_traits< DynamindBoostGraph::Graph >::vertex_descriptor currentsoure = *vi;
 
             if(*vi==vai)
                 continue;
@@ -233,11 +216,11 @@ void MinimumSteinerTree::run()
     }
 
     //clean view
-    for(uint index = 0; index < nodes.size(); index++)
-        sys->removeComponentFromView(sys->getComponent(nodes[index]),viewdef[DM::GRAPH::NODES]);
+    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
+        sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::NODES]);
 
-    for(uint index = 0; index < dedges.size(); index++)
-        sys->removeComponentFromView(sys->getComponent(dedges[index]),viewdef[DM::GRAPH::EDGES]);
+    for(DynamindBoostGraph::Compitr itr = dedges.begin(); itr != dedges.end(); ++itr)
+        sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::EDGES]);
 
     //map to dynamind data structure
     graph_traits< SteinerGraph >::edge_iterator ei,eend;

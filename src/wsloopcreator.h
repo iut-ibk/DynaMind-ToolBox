@@ -35,8 +35,6 @@
 
 #include <dynamindboostgraphhelper.h>
 
-#define NULLPOINT -100
-
 class LoopCreator : public DM::Module
 {
     DM_DECLARE_NODE(LoopCreator)
@@ -49,7 +47,7 @@ private:
     DM::GRAPH::ViewDefinitionHelper defhelper_graph;
     DM::WS::ViewDefinitionHelper defhelper_ws;
 
-    double maxelements, minlengthrelation, searchdistance;
+    double maxnumberelements,minloopdiameter, searchdistance, zonesize;
 
 public:
     LoopCreator();
@@ -58,10 +56,11 @@ public:
     void initmodel();
 
 private:
-    uint getZone(double elevation, double zonesize);
-    void calculatePressureZones(DynamnindBoostGraph::Compmap &nodes, PressureZones &zones, double zonesize);
-    void removeCrossingZoneEdges(DynamnindBoostGraph::Compmap &edges,double zonesize);
+    uint getZone(double elevation, double zonesize, double mean);
+    void calculatePressureZones(DynamindBoostGraph::Compmap &nodes, PressureZones &zones, double zonesize, double mean);
+    void removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges,double zonesize, double mean);
     void addPathToSystem(std::vector<DM::Node*> pathnodes, std::vector<DM::Edge*> pathedges, std::vector<DM::Component*> &addedcomponents);
+    void calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes, double &min, double &max, double &mean);
 };
 
 #endif // LoopCreator_H

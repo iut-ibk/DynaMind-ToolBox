@@ -27,12 +27,12 @@
 #include <dynamindboostgraphhelper.h>
 #include <graphviewdef.h>
 
-bool DynamnindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g,std::map<DM::Node*,int> &nodesindex,std::map<std::pair < int, int >, DM::Edge*> &nodes2edge)
+bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g,std::map<DM::Node*,int> &nodesindex,std::map<std::pair < int, int >, DM::Edge*> &nodes2edge)
 {
     DM::GRAPH::ViewDefinitionHelper defhelper_graph;
     g.clear();
     int nodeindex=0;
-    for(Compitr itr = nodes.begin(); itr!=nodes.end(); itr++)
+    for(Compitr itr = nodes.begin(); itr!=nodes.end(); ++itr)
     {
         nodesindex[static_cast<DM::Node*>((*itr).second)]=nodeindex;
         add_vertex(nodeindex,g);
@@ -40,7 +40,7 @@ bool DynamnindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &
     }
 
 
-    for(Compitr itr = edges.begin(); itr!=edges.end(); itr++)
+    for(Compitr itr = edges.begin(); itr!=edges.end(); ++itr)
     {
         int sourceindex, targetindex;
         DM::Edge *edge = static_cast<DM::Edge*>((*itr).second);
@@ -57,7 +57,7 @@ bool DynamnindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &
     return true;
 }
 
-void DynamnindBoostGraph::subtractGraphs(Compmap &a, Compmap &b)
+void DynamindBoostGraph::subtractGraphs(Compmap &a, Compmap &b)
 {
     for(Compitr itr = b.begin(); itr != b.end(); ++itr)
     {
@@ -66,7 +66,7 @@ void DynamnindBoostGraph::subtractGraphs(Compmap &a, Compmap &b)
     }
 }
 
-bool DynamnindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
+bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
                                    std::vector<DM::Edge*> &pathedges,
                                    double &distance,
                                    std::map<DM::Node*,int> &nodesindex,

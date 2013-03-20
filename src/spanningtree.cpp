@@ -46,6 +46,7 @@
 #include <boost/graph/connected_components.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <time.h>
+#include <dynamindboostgraphhelper.h>
 
 using namespace boost;
 
@@ -81,31 +82,16 @@ void SpanningTree::run()
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::NODES]));
-    std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
-    std::map<std::string,int> nodesindex;
-    std::map<E,DM::Edge*> nodes2edge;
+    DynamindBoostGraph::Compmap nodes = sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]);
+    DynamindBoostGraph::Compmap edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
+    std::map<DM::Node*,int> nodesindex;
+    std::map<std::pair<int,int> ,DM::Edge*> nodes2edge;
+
     boost::mt19937 rng(time(NULL));
 
-    for(uint index=0; index<nodes.size(); index++)
-        nodesindex[nodes[index]]=index;
+    DynamindBoostGraph::Graph g;
 
-    const int num_nodes = nodes.size();
-    Graph g(num_nodes);
-
-    for(uint counter=0; counter<edges.size(); counter++)
-    {
-        int sourceindex, targetindex;
-        DM::Edge *edge=this->sys->getEdge(edges[counter]);
-
-        double distance = edge->getAttribute(defhelper.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
-
-        sourceindex=nodesindex[edge->getStartpointName()];
-        targetindex=nodesindex[edge->getEndpointName()];
-
-        nodes2edge[E(sourceindex,targetindex)]=edge;
-        add_edge(sourceindex, targetindex, distance, g);
-    }
+    DynamindBoostGraph::createBoostGraph(nodes,edges,g,nodesindex,nodes2edge);
 
     //check if graph is conntected
     std::vector<int> component(num_vertices(g));
@@ -138,22 +124,22 @@ void SpanningTree::run()
 
     if(this->algprim)
     {
-        DM::Logger(DM::Standard) << "Start prim minimum spanning tree algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
+        DM::Logger(DM::Standard) << "Start prim minimum spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
         prim_minimum_spanning_tree(g, &p[0]);
     }
 
     if(this->algrand)
     {
-        DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << num_nodes << " nodes and " << edges.size() << " edges";
+        DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
         random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
     }
 
     //clean view
-    for(uint index = 0; index < nodes.size(); index++)
-        sys->removeComponentFromView(sys->getComponent(nodes[index]),viewdef[DM::GRAPH::NODES]);
+    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
+        sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::NODES]);
 
-    for(uint index = 0; index < edges.size(); index++)
-        sys->removeComponentFromView(sys->getComponent(edges[index]),viewdef[DM::GRAPH::EDGES]);
+    for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
+        sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::EDGES]);
 
     DM::Logger(DM::Standard) << "Starting extracting results from algorithm";
 

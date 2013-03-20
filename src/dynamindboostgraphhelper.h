@@ -32,7 +32,7 @@
 #include <string.h>
 #include <vector>
 
-class DM_HELPER_DLL_LOCAL DynamnindBoostGraph
+class DM_HELPER_DLL_LOCAL DynamindBoostGraph
 {
 public:
     //Typedef
