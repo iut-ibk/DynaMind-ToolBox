@@ -97,6 +97,12 @@ void CalculateCentroid::run() {
     for (int i = 0; i < elements; i++){
         Face * f = city->getFace(names[i]);
 
+        if(!f)
+        {
+            DM::Logger(DM::Error) << "Face does not exist";
+            return;
+        }
+
         Node p = DM::CGALGeometry::CalculateCentroid(this->city, f);
         double area = fabs(TBVectorData::CalculateArea(this->city, f));
         f->addAttribute("centroid_x", p.getX());
