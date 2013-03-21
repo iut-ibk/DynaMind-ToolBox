@@ -8,6 +8,9 @@
 #include <dmlog.h>
 namespace {
 TEST_F(TestCGAL, triangulation){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
     DM::System * sys = new DM::System();
 
     DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
@@ -55,6 +58,9 @@ TEST_F(TestCGAL, triangulation){
     EXPECT_DOUBLE_EQ(area_ref, a_triangles);
 }
 TEST_F(TestCGAL, triangulation_with_holes){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
     DM::System * sys = new DM::System();
 
     DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
@@ -119,6 +125,9 @@ TEST_F(TestCGAL, triangulation_with_holes){
 }
 
 TEST_F(TestCGAL, regular_triangulation){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
     DM::System * sys = new DM::System();
 
     DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
@@ -184,7 +193,7 @@ TEST_F(TestCGAL, regular_triangulation){
 
 TEST_F(TestCGAL, intersectionTest){
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::System * sys = new DM::System();
 
     DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
@@ -233,8 +242,9 @@ TEST_F(TestCGAL, intersectionTest){
 }
 
 TEST_F(TestCGAL, dointersectionTest){
+
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::System * sys = new DM::System();
 
     DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
@@ -282,6 +292,9 @@ TEST_F(TestCGAL, dointersectionTest){
 }
 
 TEST_F(TestCGAL, simpleNodeSearch){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
     DM::System * sys = new DM::System();
 
     DM::Node * n1_1 = sys->addNode(DM::Node(1,1,0));
@@ -306,6 +319,9 @@ TEST_F(TestCGAL, simpleNodeSearch){
 }
 
 TEST_F(TestCGAL, skeletonisation){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
     DM::System * sys = new DM::System();
 
     DM::Node * n1_1 = sys->addNode(DM::Node(0,1,0));
