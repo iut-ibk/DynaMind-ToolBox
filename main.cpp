@@ -1,12 +1,12 @@
 /**
  * @file
- * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011  Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,24 +23,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#define BOOST_ALL_DYN_LINK
-#include "dmcompilersettings.h"
+//#define BOOST_ALL_DYN_LINK
+#include <dmcompilersettings.h>
 
 #include <iostream>
 #include <vector>
-//#include <boost/python.hpp>
 #include <boost/program_options.hpp>
 #include "dmsimulation.h"
-//#include "dmsimulationwrapper.h"
 #include <stdio.h>
 #include <stdlib.h>
-//#include <simulation.h>
-//#include <database.h>
-//#include <datamanagement.h>
-//#include <porttuple.h>
-//#include <vibe_log.h>
-//#include <vibe_logger.h>
-//#include <vibe_logsink.h>
 #include <QThreadPool>
 
 #include <ostream>
