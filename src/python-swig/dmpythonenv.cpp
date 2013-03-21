@@ -90,12 +90,6 @@ PythonEnv::PythonEnv() {
 #else
     Logger(Standard) << "Pythonthreads disabled";
 #endif
-
-#if defined(OPENMP_ENABLED)
-    Logger(Standard) << "OMP enabled";
-#else
-    Logger(Standard) << "OMP disabled";
-#endif
 }
 
 PythonEnv::~PythonEnv()
