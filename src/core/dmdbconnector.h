@@ -649,7 +649,7 @@ public:
         Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
         Cache<Tkey,Tvalue>::push_front(n);
 
-		if(_size)
+        if(Cache<Tkey,Tvalue>::_size)
 		{
 			if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
 			{
@@ -681,7 +681,7 @@ public:
 	{
 		Cache<Tkey,Tvalue>::_size = size;
 
-		if(_size)
+        if(Cache<Tkey,Tvalue>::_size)
 		{
 			while(Cache<Tkey,Tvalue>::_cnt > size)
 			{
