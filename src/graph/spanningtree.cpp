@@ -46,7 +46,6 @@
 #include <boost/graph/connected_components.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <time.h>
-#include <dynamindboostgraphhelper.h>
 
 using namespace boost;
 
@@ -56,8 +55,11 @@ SpanningTree::SpanningTree()
 {    
     this->algprim=true;
     this->algrand=false;
+    this->algtest=false;
+
     this->addParameter("Prim minimum spanning tree", DM::BOOL, &this->algprim);
     this->addParameter("Random spanning tree", DM::BOOL, &this->algrand);
+    this->addParameter("Test algorithm not for productive use", DM::BOOL, &this->algtest);
 
     std::vector<DM::View> views;
     DM::View view;
@@ -78,7 +80,6 @@ void SpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
 
-    typedef adjacency_list < vecS, vecS, undirectedS, property<vertex_distance_t, double>, property < edge_weight_t, double > > Graph;
     typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
@@ -120,18 +121,30 @@ void SpanningTree::run()
     }
 
     //calculate spanning tree or forest of graphs
-    std::vector < graph_traits < Graph >::vertex_descriptor >p(num_vertices(g));
+    std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor >p(num_vertices(g));
+
+    if(this->algrand)
+    {
+        this->algprim = false;
+        this->algtest = false;
+        DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
+        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
+    }
+
+    if(this->algtest)
+    {
+        DM::Logger(DM::Warning) << "DO NOT USE THIS ALGORITHM IF YOU DO NOT KNOW WHAT IT IS DOING --- IT IS ONLY FOR TESTING";
+        DM::Logger(DM::Standard) << "Start test algorithm algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
+
+        testalg(g);
+        this->algprim = true;
+        //END TESTING
+    }
 
     if(this->algprim)
     {
         DM::Logger(DM::Standard) << "Start prim minimum spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
         prim_minimum_spanning_tree(g, &p[0]);
-    }
-
-    if(this->algrand)
-    {
-        DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
-        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
     }
 
     //clean view
@@ -146,8 +159,7 @@ void SpanningTree::run()
     //extract spanning tree
     vector< DM::Component* > insertednodes;
 
-    for (std::size_t i = 0; i < p.size(); i++
-         )
+    for (std::size_t i = 1; i < p.size(); i++)
     {
         if(i != p[i])
         {
@@ -187,6 +199,42 @@ void SpanningTree::run()
     DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 
-void SpanningTree::initmodel()
+void SpanningTree::testalg(DynamindBoostGraph::Graph &g)
 {
+    std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor >p(num_vertices(g));
+    typedef std::map< graph_traits < DynamindBoostGraph::Graph >::edge_descriptor , double> Prob;
+    typedef Prob::iterator Probitr;
+
+    Prob probability;
+    boost::mt19937 rng(time(NULL));
+
+    for(uint iteration = 0; iteration < 1000; iteration++)
+    {
+        random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
+
+        for (std::size_t i = 1; i < p.size(); i++)
+        {
+            if(i != p[i])
+            {
+                graph_traits < DynamindBoostGraph::Graph >::edge_descriptor e;
+                bool found;
+
+                boost::tie(e, found) = edge(p[i],i, g);
+
+                if(!found)
+                    boost::tie(e, found) = edge(i,p[i], g);
+
+                if(!found)
+                    continue;
+
+                probability[e]=probability[e]+1;
+            }
+        }
+    }
+
+    //update weights
+    for(Probitr i = probability.begin(); i != probability.end(); ++i)
+        if((*i).second != 0.0)
+            put(edge_weight,g,(*i).first,get(edge_weight,g,(*i).first)/(*i).second);
 }
+

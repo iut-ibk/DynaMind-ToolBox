@@ -30,6 +30,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include <graphviewdef.h>
+#include <dynamindboostgraphhelper.h>
 
 class SpanningTree : public DM::Module
 {
@@ -41,7 +42,7 @@ private:
     DM::System *sys;
     viewmap viewdef;
     DM::GRAPH::ViewDefinitionHelper defhelper;
-    bool algprim, algrand;
+    bool algprim, algrand, algtest;
 
 public:
     SpanningTree();
@@ -50,6 +51,9 @@ public:
 
     void run();
     void initmodel();
+
+private:
+    void testalg(DynamindBoostGraph::Graph &g);
 };
 
 #endif // SpanningTree_H
