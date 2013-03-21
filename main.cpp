@@ -45,6 +45,25 @@ namespace po = boost::program_options;
 typedef boost::error_info<struct tag_errno,int> errno_info;
 typedef boost::error_info<struct errinfo_type_info_name_,std::string> errinfo_type_info_name;
 
+void copyfiles(string &cpfile, int iteration)
+{
+    QStringList filelist = QString::fromStdString(cpfile).split(";");
+
+    for (QStringList::const_iterator i = filelist.constBegin(); i != filelist.constEnd(); ++i)
+    {
+        QStringList transfer = (*i).split(",");
+
+        if(transfer.size() == 2)
+        {
+            QString targetfile = transfer.at(1);
+            targetfile = targetfile.replace("DMITERATION",QString::number(iteration));
+            QString sourcefile = transfer.at(0);
+            QFile::copy(sourcefile,targetfile);
+            DM::Logger(DM::Standard) << "Copy: " << sourcefile.toStdString() << " -> " << targetfile.toStdString();
+        }
+    }
+}
+
 int main(int argc, char *argv[], char *envp[]) {
     QThreadPool::globalInstance()->setMaxThreadCount(1);
 
@@ -59,6 +78,7 @@ int main(int argc, char *argv[], char *envp[]) {
             ("help", "produce help message")
             ("input-file", po::value<string>(), "set simulation file")
             ("repeat", po::value<int>(), "repeat simulation")
+            ("cpfile", po::value<string>(), "Copy generated files: ([SOURCEFILE],[TARGETPATH]DMITERATION[FILENAME];)* ")
             ("verbose", "verbose output")
             ("nodecache", po::value<unsigned long>(), "node cache size")
             ("attributecache", po::value<unsigned long>(), "attribute cache size")
@@ -71,6 +91,8 @@ int main(int argc, char *argv[], char *envp[]) {
     std::vector<std::string> pythonModules;
     int repeat = 1;
 	bool verbose = false;
+    string cpfile = "";
+
 	DM::LogLevel ll = DM::Standard;
     try {
 
@@ -91,12 +113,16 @@ int main(int argc, char *argv[], char *envp[]) {
         else 
 		{
             std::cout << "Simulation file not set" << std::endl;
+            cout << desc << "\n";
             return -1;
         }
         //if (vm.count("python-modules")) {
         //    pythonModules =  vm["python-modules"].as<vector <string> >();
         //}
         if (vm.count("repeat"))		repeat = vm["repeat"].as<int>();
+
+        if (vm.count("cpfile"))     cpfile = vm["cpfile"].as<string>();
+
         if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
 		
@@ -132,9 +158,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	}
 	
     DM::Simulation s;
-	std::cout << ">> loading modules" << std::endl;
 	s.loadModulesFromDefaultLocation();
-	std::cout << ">> loading simulation file" << std::endl;
     s.loadSimulation(simulationfile);
 	DM::Logger(DM::Standard) << ">> starting simulation";
 
@@ -149,6 +173,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		timer.start();
 		s.run();
 		times.push_back(timer.elapsed());
+        copyfiles(cpfile, i);
 		if(verbose && repeat>1)
 			std::cout << "took " << timer.elapsed() << "ms" << endl;
 	}
