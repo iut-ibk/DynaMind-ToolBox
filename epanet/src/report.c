@@ -27,7 +27,7 @@ formatted string S to the report file.
 
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <math.h>
 #include <time.h>
 #include "hash.h"

@@ -18,7 +18,7 @@
 *********************************************************************
 */
 
-#include <malloc.h>
+//#include <malloc.h>
 #include <string.h>
 #include "hash.h"
 
