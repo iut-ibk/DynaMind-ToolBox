@@ -255,7 +255,21 @@ void DBWorker::run()
 				}
 			}
 		}
-		WaitIfNothingToDo();
+
+		// wait loop
+		while(true)
+		{
+			if(queryLists.size() || qSelect)
+				break;
+
+			for(it = queryLists.begin(); it != queryLists.end(); ++it)	// faster then foreach
+				if((*it)->queryStack.IsMaxOneLeft())
+					break;
+
+			msleep(1);
+		}
+
+		//WaitIfNothingToDo();
 #ifdef DBWORKER_COUNTERS
 		loopCount++;
 #endif
@@ -276,9 +290,10 @@ void DBWorker::run()
 			readCount++;
 #endif
 			selectMutex.lock();
-			selectStatus = (!qSelect->exec() || !qSelect->next())?SS_FALSE:SS_TRUE;
+			selectStatus = (!qSelect->exec() || !qSelect->next())?SELECT_FALSE:SELECT_TRUE;
 			qSelect = NULL;
 			selectMutex.unlock();
+			//selectWaiterCondition.wakeOne();
 		}
 	}
 	exec();
@@ -287,19 +302,32 @@ void DBWorker::run()
 void DBWorker::addQuery(QSqlQuery *q)
 {
 	queryStack.push(q);
-	SignalWork();
+	//SignalWork();
 }
 
 bool DBWorker::ExecuteSelect(QSqlQuery *q)
 {
 	selectMutex.lock();
 	qSelect = q;
-	selectStatus = SS_NOTDONE;
+	selectStatus = SELECT_NOTDONE;
 	selectMutex.unlock();
+	
+	// wait for finish
+	while(selectStatus == SELECT_NOTDONE)
+		msleep(1);
 
-	while(selectStatus == SS_NOTDONE)
-		SignalWork();
-	return selectStatus==SS_TRUE;
+	/*SignalWork();
+	selectWaiterMutex.lock();
+	selectWaiterCondition.wait(&selectWaiterMutex);
+	selectWaiterMutex.unlock()*/;
+
+	//waitForSelectExec.lock();
+	//waitForSelectExec.unlock();
+
+	/*while(selectStatus == SS_NOTDONE)
+		SignalWork();*/
+
+	return selectStatus==SELECT_TRUE;
 }
 
 QSqlQuery* DBWorker::getQuery(QString cmd)
@@ -324,7 +352,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 
 	QSqlQuery *q = NULL;
 	while(!(q = ql->queryStack.pop()))
-		SignalWork();
+		msleep(1);
 	return q;
 }
 
@@ -332,7 +360,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 DBWorker::~DBWorker()
 {
 	selectMutex.unlock();
-	getDatabase();
+	//getDatabase();
 	foreach(QueryList* it, queryLists)
 		delete it;
 }

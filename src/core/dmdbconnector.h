@@ -163,11 +163,12 @@ private:
 
 	// list of write queries
 	std::list<QueryList*> queryLists;
-	
+
+
 	// to prevent the thread from blocking ressources, a waiter
 	// ensures the thread to sleep while no operations are queued
-	QMutex waiterMutex;
-	QWaitCondition waiterCondition;
+	//QMutex waiterMutex;
+	//QWaitCondition waiterCondition;
 
 	// infinite loop to process queries
 	// workflow: prepare-sleep if nothing to do-write-read
@@ -177,26 +178,38 @@ private:
 	void run();
 
 	// blocking idle method
-	void WaitIfNothingToDo()
+	/*void WaitIfNothingToDo()
 	{
+		waiterMutex.lock();
 		waiterCondition.wait(&waiterMutex);
-		//waiterMutex.lock();
-	}
+		waiterMutex.unlock();
+	}*/
 public:
 	DBWorker(): QThread()
 	{
 		qSelect = NULL;
 		kill = false;
+		selectStatus = 0;
 	}
 	~DBWorker();
 	
 	// exchange value between worker <-> receiver
-	enum SelectStatus
+	/*enum SelectStatus
 	{
 		SS_NOTDONE,
 		SS_TRUE,
 		SS_FALSE,
-	}selectStatus;
+	}selectStatus;*/
+
+#define SELECT_NOTDONE 0
+#define SELECT_TRUE 1
+#define SELECT_FALSE 2
+	QAtomicInt selectStatus;
+	
+	//QMutex selectWaiterMutex;
+	//QWaitCondition selectWaiterCondition;
+
+	//QAtomicInt 
 
 	//!< add a new query to the write list (asynchron)
 	void addQuery(QSqlQuery *q);
@@ -208,11 +221,14 @@ public:
 		kill = true;
 	}
 	//!< forces the worker to leave idle status
-	void SignalWork()
+	/*void SignalWork()
 	{
+		todoCount = todoCount +1;
 		//waiterMutex.unlock();
+		/*waiterMutex.lock();
 		waiterCondition.wakeOne();
-	}
+		waiterMutex.unlock();
+	}*/
 	//!< receive a prepared query for execution
 	QSqlQuery *getQuery(QString cmd);
 };
