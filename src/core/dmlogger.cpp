@@ -88,8 +88,18 @@ namespace DM {
         dirty = true;
         return *this;
     }
-
+	
     Logger &Logger::operator<< (const long i) {
+        QMutexLocker locker(&mutex);
+        if (level < max) {
+            return *this;
+        }
+        logstring +=  " " + QString::number(i).toStdString();
+        dirty = true;
+        return *this;
+    }
+
+    Logger &Logger::operator<< (const unsigned long i) {
         QMutexLocker locker(&mutex);
         if (level < max) {
             return *this;
