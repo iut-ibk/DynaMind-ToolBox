@@ -34,9 +34,9 @@
 #include <stdlib.h>
 #include <QThreadPool>
 
-#include <ostream>
 #include <dmlog.h>
 #include <dmdbconnector.h>
+#include <fstream>
 
 using namespace std;
 //using namespace boost::python;
@@ -126,8 +126,22 @@ int main(int argc, char *argv[], char *envp[]) {
         if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
 		
-		ostream *out = &cout;
-		DM::Log::init(new DM::OStreamLogSink(*out), ll);
+
+		QDateTime time = QDateTime::currentDateTime();
+		QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
+
+		if(QFile::exists(logfilepath))
+			QFile::remove(logfilepath);
+
+		std::ofstream* outputFile = new ofstream();
+		outputFile->open(logfilepath.toStdString().c_str());
+		DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
+	
+	
+		//ostream *out = &cout;
+		DM::Log::init(new DM::OStreamLogSink(cout), ll);
+		DM::Log::addLogSink(file_log_updater);
+		//DM::Log::init(file_log_updater, ll);
 
 		DM::DBConnectorConfig cfg;
 		if(vm.count("nodecache"))		cfg.nodeCacheSize		 = vm["nodecache"].as<unsigned long>();
@@ -138,29 +152,29 @@ int main(int argc, char *argv[], char *envp[]) {
 
 		if(verbose)
 		{
-			std::cout << ">> config:" << endl;
-			std::cout << "node cache size: " << cfg.nodeCacheSize << endl;
-			std::cout << "attribute cache size: " << cfg.attributeCacheSize << endl;
-			std::cout << "sql query stack size: " << cfg.queryStackSize << endl;
-			std::cout << "sql write block size: " << cfg.cacheBlockwritingSize << endl;
+			DM::Logger(DM::Standard) << ">>>> config:";
+			DM::Logger(DM::Standard) << "node cache size: " << cfg.nodeCacheSize;
+			DM::Logger(DM::Standard) << "attribute cache size: " << cfg.attributeCacheSize;
+			DM::Logger(DM::Standard) << "sql query stack size: " << cfg.queryStackSize;
+			DM::Logger(DM::Standard) << "sql write block size: " << cfg.cacheBlockwritingSize;
 		}
     }
     catch (po::unknown_option & e)
 	{
-        std::cout << "unknown option" << std::endl;
+        DM::Logger(DM::Error) << "unknown option";
         cout << desc << "\n";
     }
 	
 	if(!QFile::exists(QString::fromStdString(simulationfile)))
 	{
-		std::cout << "simulation file not found" << std::endl;
+		DM::Logger(DM::Error) << "simulation file not found";
 		return -1;
 	}
 	
     DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
     s.loadSimulation(simulationfile);
-	DM::Logger(DM::Standard) << ">> starting simulation";
+	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
 	std::list<qint64> times;
 
@@ -169,13 +183,13 @@ int main(int argc, char *argv[], char *envp[]) {
 	{
 		s.resetSimulation();
 		if(verbose && repeat>1)
-			std::cout << "iteration " << i << endl;
+			DM::Logger(DM::Standard) << ">>>> iteration " << i;
 		timer.start();
 		s.run();
 		times.push_back(timer.elapsed());
         copyfiles(cpfile, i);
 		if(verbose && repeat>1)
-			std::cout << "took " << timer.elapsed() << "ms" << endl;
+			DM::Logger(DM::Standard) << ">>>> took " << (long)timer.elapsed() << "ms";
 	}
 	qint64 avg = 0;
 	foreach(qint64 i, times)
@@ -187,7 +201,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		sigma += (avg-i)*(avg-i)/max(1,repeat-1);
 	sigma = sqrt((float)sigma);
 
-	std::cout << ">> finished simulation at an average of " << avg << "+-"<< sigma << "ms" << std::endl;
+	DM::Logger(DM::Standard) << ">>>> finished simulation at an average of " << (long)avg << "+-"<< (long)sigma << "ms";
     QThreadPool::globalInstance()->waitForDone();
 
 }
