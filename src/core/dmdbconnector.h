@@ -180,7 +180,7 @@ private:
 	void WaitIfNothingToDo()
 	{
 		waiterCondition.wait(&waiterMutex);
-		waiterMutex.lock();
+		//waiterMutex.lock();
 	}
 public:
 	DBWorker(): QThread()
@@ -210,7 +210,7 @@ public:
 	//!< forces the worker to leave idle status
 	void SignalWork()
 	{
-		waiterMutex.unlock();
+		//waiterMutex.unlock();
 		waiterCondition.wakeOne();
 	}
 	//!< receive a prepared query for execution
