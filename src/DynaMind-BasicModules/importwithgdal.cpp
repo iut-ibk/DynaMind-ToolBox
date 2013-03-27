@@ -482,23 +482,18 @@ bool ImportwithGDAL::importVectorData()
     OGRRegisterAll();
 
     OGRDataSource *poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
-    if( poDS == NULL )
+    if( !poDS )
     {
         DM::Logger(DM::Error) << "Open failed.";
         return false;
     }
 
-    OGRLayer  *poLayer = poDS->GetLayer(0);
+    OGRLayer *poLayer = poDS->GetLayer(0);
     if (!poLayer) {
         Logger(Error) << "Something went wrong while loading layer in ImportVectorData";
         OGRDataSource::DestroyDataSource(poDS);
         return false;
     }
-
-    //int layerCount = poDS->GetLayerCount();
-    //poLayer = poDS->GetLayer(0);
-
-    OGRFeature *poFeature;
 
     poLayer->ResetReading();
 
@@ -509,30 +504,32 @@ bool ImportwithGDAL::importVectorData()
 
     if(poCT == NULL)
     {
-        transformok=false;
+        transformok = false;
         DM::Logger(DM::Error) << "Unknown transformation to EPSG:" << this->epsgcode;
     }
     else
+        transformok = true;
+	
+    while( OGRFeature* poFeature = poLayer->GetNextFeature() )
     {
-        transformok=true;
-    }
-
-    while( (poFeature = poLayer->GetNextFeature()) != NULL )
-    {
-
         OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
         DM::Component * cmp;
-        if (view.getType() == DM::NODE)
+		switch(view.getType())
+		{
+		case DM::NODE:
             cmp = this->loadNode(sys, poFeature);
-        if (view.getType() == DM::EDGE)
+			break;
+		case DM::EDGE:
             cmp = this->loadEdge(sys, poFeature);
-        if (view.getType() == DM::FACE)
+			break;
+		case DM::FACE:
             cmp = this->loadFace(sys, poFeature);
+			break;
+		}
         if (cmp)
             this->appendAttributes(cmp, poFDefn, poFeature);
         OGRFeature::DestroyFeature( poFeature );
     }
-
     OGRDataSource::DestroyDataSource(poDS);
     return true;
 }
@@ -569,14 +566,11 @@ bool ImportwithGDAL::importRasterData()
 
     pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
 
-    for(int index=0; index < nYSize; index++)
+    for(int index = 0; index < nYSize; index++)
     {
         poBand->RasterIO( GF_Read, 0, nYSize-index-1, nXSize, 1, pafScanline, nXSize, 1, GDT_Float32, 0, 0 );
-
-        for(int x=0; x < nXSize; x++)
-        {
-            r->setCell(x,index,pafScanline[x]);
-        }
+        for(int x = 0; x < nXSize; x++)
+            r->setCell(x, index, pafScanline[x]);
     }
 
     CPLFree(pafScanline);
@@ -585,8 +579,8 @@ bool ImportwithGDAL::importRasterData()
 
 bool ImportwithGDAL::transform(double *x, double *y)
 {
-
-    if (this->driverType == WFS && this->flip_wfs) {
+    if (this->driverType == WFS && this->flip_wfs) 
+	{
         double tmp_x = *x;
         *x = *y;
         *y = tmp_x;
@@ -595,10 +589,10 @@ bool ImportwithGDAL::transform(double *x, double *y)
     if(!transformok)
         return false;
 
-    if( !(poCT == NULL || !poCT->Transform( 1, x, y )))
-        return true;
+    if( poCT == NULL || !poCT->Transform( 1, x, y ) )
+        return false;
 
-    return false;
+    return true;
 }
 
 void ImportwithGDAL::reset()
@@ -610,13 +604,13 @@ void ImportwithGDAL::reset()
 bool ImportwithGDAL::moduleParametersChanged()
 {
     bool changed = false;
-    if (FileName_old != FileName) changed = true; FileName_old = FileName;
-    if (ViewName_old != ViewName) changed = true; ViewName_old = ViewName;
+    if (FileName_old != FileName)		changed = true; FileName_old = FileName;
+    if (ViewName_old != ViewName)		changed = true; ViewName_old = ViewName;
     if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
-    if (WFSServer_old != WFSServer) changed = true; WFSServer_old = WFSServer;
+    if (WFSServer_old != WFSServer)		changed = true; WFSServer_old = WFSServer;
     if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
     if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
-    if (append_old != append) changed = true; append_old = append;
+    if (append_old != append)			changed = true; append_old = append;
 
     return changed;
 }
@@ -624,18 +618,16 @@ bool ImportwithGDAL::moduleParametersChanged()
 OGRLayer *ImportwithGDAL::LoadWFSLayer(OGRDataSource *poDS)
 {
     OGRLayer            *poLayer;
-    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    //OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
     poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
 
     int LayerCount = poDS->GetLayerCount();
-
-    for (int i = 0; i < LayerCount; i++) {
+    for (int i = 0; i < LayerCount; i++) 
+	{
         poLayer = poDS->GetLayer(i);
         std::string currentLayerName =  poLayer->GetName();
-        if (currentLayerName == this->WFSDataName) {
+        if (currentLayerName == this->WFSDataName)
             return poLayer;
-        }
     }
-
     return 0;
 }
