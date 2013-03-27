@@ -78,6 +78,9 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     QHash<QString, std::vector<DM::Node* >> nodeList;
     DM::Node * addNode(DM::System * sys, double x, double y, double z);
     void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
+
+	std::vector<Node*> ExtractNodes(System* sys, OGRLineString *ls);
+
     DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
     DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
     DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);

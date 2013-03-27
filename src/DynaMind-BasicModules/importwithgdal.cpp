@@ -139,76 +139,58 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 	return n;
 }
 
+std::vector<Node*> ImportwithGDAL::ExtractNodes(System* sys, OGRLineString *ls)
+{
+	std::vector<Node*> nlist;
+	OGRPoint poPoint;
+	for(int i=0; i < ls->getNumPoints(); i++)
+	{
+		ls->getPoint(i, &poPoint);
+		double x = poPoint.getX();
+		double y = poPoint.getY();
+		transform(&x,&y);
+		DM::Node * n = this->addNode(sys, x, y, 0);
+
+		if(!vector_contains(&nlist, n))
+			nlist.push_back(n);
+	}
+	return nlist;
+}
+
 Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 {
-    OGRGeometry *poGeometry;
-    poGeometry = poFeature->GetGeometryRef();
-    DM::Node * n = 0;
-    if( poGeometry != NULL
-            && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString ) {
+    OGRGeometry *poGeometry = poFeature->GetGeometryRef();
+	if(!poGeometry)
+		return NULL;
 
+    DM::Node * n = 0;
+    if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString ) 
+	{
         OGRMultiLineString *mpoLineString = (OGRMultiLineString *) poGeometry;
         int number_of_linestrings = mpoLineString->getNumGeometries();
-        for (int i = 0; i < number_of_linestrings; i++) {
-            OGRLineString *poPolyline = (OGRLineString *) mpoLineString->getGeometryRef(i);
-            int npoints = poPolyline->getNumPoints();
-            if (npoints == 0)
-                return 0;
-            OGRPoint *poPoint = new OGRPoint();
-            std::vector<Node*> nlist;
+        for (int i = 0; i < number_of_linestrings; i++) 
+		{
+			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)mpoLineString->getGeometryRef(i));
 
-            for (int i = 0; i < npoints; i++) {
-                poPolyline->getPoint(i, poPoint);
-                double x = poPoint->getX();
-                double y = poPoint->getY();
-                transform(&x,&y);
-                n = this->addNode(sys, x, y, 0);
-                if (find(nlist.begin(), nlist.end(), n) == nlist.end())
-                    nlist.push_back(n);
-
-            }
             if (nlist.size() < 2)
                 return 0;
-            delete poPoint;
             std::vector<DM::Edge *> edges;
-            for (unsigned int i = 1; i < nlist.size(); i++) {
+            for (unsigned int i = 1; i < nlist.size(); i++)
                 edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
-            }
 
             if (edges.size() > 0)
                 return edges[0];
         }
     }
-
-
-
-    if( poGeometry != NULL
-            && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+    if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
     {
-        OGRLineString *poPolyline = (OGRLineString *) poGeometry;
-        int npoints = poPolyline->getNumPoints();
-        if (npoints == 0)
-            return 0;
-        OGRPoint *poPoint = new OGRPoint();
-        std::vector<Node*> nlist;
+		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
 
-        for (int i = 0; i < npoints; i++) {
-            poPolyline->getPoint(i, poPoint);
-            double x = poPoint->getX();
-            double y = poPoint->getY();
-            transform(&x,&y);
-            n = this->addNode(sys, x, y, 0);
-            if (find(nlist.begin(), nlist.end(), n) == nlist.end())
-                nlist.push_back(n);
-
-        }
         if (nlist.size() < 2)
             return 0;
-        delete poPoint;
         std::vector<DM::Edge *> edges;
-        for (unsigned int i = 1; i < nlist.size(); i++) {
+        for (unsigned int i = 1; i < nlist.size(); i++)
             edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
-        }
 
         if (edges.size() > 0)
             return edges[0];
@@ -218,70 +200,37 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 
 Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 {
-    OGRGeometry *poGeometry;
-    poGeometry = poFeature->GetGeometryRef();
+    OGRGeometry *poGeometry = poFeature->GetGeometryRef();
+	if(!poGeometry)
+		return 0;
+
     DM::Node * n = 0;
-    if( poGeometry != NULL
-            && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
+    if( wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
     {
-        OGRPolygon *poPolygon = (OGRPolygon *) poGeometry;
-        OGRLinearRing * ring = poPolygon->getExteriorRing();
-        int npoints = ring->getNumPoints();
-        if (npoints == 0)
-            return 0;
-		OGRPoint poPoint;
-        std::vector<Node*> nlist;
+		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
 
-        for (int i = 0; i < npoints; i++) {
-            ring->getPoint(i, &poPoint);
-            double x = poPoint.getX();
-            double y = poPoint.getY();
-            transform(&x,&y);
-            n = this->addNode(sys, x, y, 0);
-            if (find(nlist.begin(), nlist.end(), n) == nlist.end())
-                nlist.push_back(n);
-
-        }
         if (nlist.size() < 3)
             return 0;
         nlist.push_back(nlist[0]);
         return sys->addFace(nlist, this->view);
     }
-
-    if( poGeometry != NULL
-            && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
+	if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
     {
         OGRMultiPolygon *mpoPolygon = (OGRMultiPolygon *) poGeometry;
         int number_of_faces = mpoPolygon->getNumGeometries();
-        for (int i = 0; i < number_of_faces; i++) {
+        for (int i = 0; i < number_of_faces; i++) 
+		{
             OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
-            OGRLinearRing * ring = poPolygon->getExteriorRing();
-            int npoints = ring->getNumPoints();
-            if (npoints == 0)
-                return 0;
-            OGRPoint *poPoint = new OGRPoint();
-            std::vector<Node*> nlist;
+			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poPolygon->getExteriorRing());
 
-            for (int i = 0; i < npoints; i++) {
-                ring->getPoint(i, poPoint);
-                double x = poPoint->getX();
-                double y = poPoint->getY();
-                transform(&x,&y);
-                n = this->addNode(sys, x, y, 0);
-                if (find(nlist.begin(), nlist.end(), n) == nlist.end())
-                    nlist.push_back(n);
-
-            }
             if (nlist.size() < 3)
                 return 0;
             nlist.push_back(nlist[0]);
-            delete poPoint;
             return sys->addFace(nlist, this->view);
         }
     }
 
     return 0;
-
 }
 
 void ImportwithGDAL::initPointList(System *sys)
