@@ -481,7 +481,6 @@ bool ImportwithGDAL::importVectorData()
 
     OGRRegisterAll();
 
-    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
     OGRDataSource *poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
     if( poDS == NULL )
     {
