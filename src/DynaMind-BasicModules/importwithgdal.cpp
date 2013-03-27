@@ -249,9 +249,7 @@ QString ImportwithGDAL::createHash(double x, double y)
 {
     int ix = (int) x / devider;
     int iy = (int) y / devider;
-    QString key = QString::number(ix) + "|" +  QString::number(iy);
-
-    return key;
+    return QString::number(ix) + "|" +  QString::number(iy);
 }
 
 void ImportwithGDAL::init() {
@@ -259,11 +257,8 @@ void ImportwithGDAL::init() {
         return;
 
     if (!this->WFSServer.empty())
+	{
         driverType = WFS;
-    else
-        driverType = ShapeFile;
-
-    if (driverType == WFS) {
         //create server name
         std::stringstream servername;
         servername << "WFS:http://";
@@ -282,19 +277,21 @@ void ImportwithGDAL::init() {
 
         OGRLayer* poLayer = this->LoadWFSLayer(poDS);
         if (!poLayer) {
-            fileok=false;
+            fileok = false;
             return;
         }
 
-        fileok=true;
+        fileok = true;
         view = DM::View();
         view.setName(ViewName);
         this->vectorDataInit(poLayer);
         OGRDataSource::DestroyDataSource(poDS);
         return;
     }
+    else
+        driverType = ShapeFile;
 
-    fileok=true;
+    fileok = true;
 
     if(FileName.empty())
     {
@@ -320,27 +317,20 @@ void ImportwithGDAL::init() {
 
     if( poDS == NULL )
     {
-        GDALDataset  *poDataset;
-
-        poDataset = (GDALDataset *) GDALOpenShared(FileName.c_str(), GA_ReadOnly );
+        GDALDataset  *poDataset = (GDALDataset*) GDALOpenShared(FileName.c_str(), GA_ReadOnly );
         if( poDataset == NULL )
         {
             DM::Logger(DM::Error) << "Open failed.";
             fileok = false;
-            return;
         }
         else
-        {
             rasterDataInit(poDataset);
-        }
     }
     else
     {
         vectorDataInit(poDS->GetLayer(0));
         OGRDataSource::DestroyDataSource(poDS);
     }
-
-    return;
 }
 
 bool ImportwithGDAL::createInputDialog()
@@ -350,7 +340,7 @@ bool ImportwithGDAL::createInputDialog()
     return true;
 }
 
-void ImportwithGDAL::vectorDataInit(OGRLayer       *poLayer)
+void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 {
     isvectordata = true;
     // OGRLayer  *poLayer;
@@ -362,20 +352,19 @@ void ImportwithGDAL::vectorDataInit(OGRLayer       *poLayer)
     while( (poFeature = poLayer->GetNextFeature()) != NULL )
     {
         OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-        int iField;
 
-        for( iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
+        for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
         {
             OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-            bool exists = this->attributesToImport.find(poFieldDefn->GetNameRef()) != this->attributesToImport.end();
-            if (!ImportAll && !exists)
-                continue;
-            std::string attrName;
-            if (exists)
-                attrName = this->attributesToImport[poFieldDefn->GetNameRef()];
-            else
-                attrName = poFieldDefn->GetNameRef();
-            view.addAttribute(attrName);
+
+			std::string attrName = poFieldDefn->GetNameRef();
+
+			// if existent, attrName will be given the value of attributesToImport[attrName]
+			bool exists = map_contains(&attributesToImport, attrName, attrName);
+			if(!ImportAll && !exists)
+				continue;
+
+			view.addAttribute(attrName);
         }
 
         OGRGeometry *poGeometry;
