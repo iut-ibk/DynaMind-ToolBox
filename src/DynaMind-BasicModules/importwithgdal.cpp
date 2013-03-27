@@ -417,13 +417,11 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
     DM::Logger(DM::Debug) << "Size is " << poDataset->GetRasterXSize() << " " << poDataset->GetRasterYSize() << " " << poDataset->GetRasterCount();
 
     if( !std::string(poDataset->GetProjectionRef()).empty() )
-    {
         DM::Logger(DM::Debug) << "Projection is " << " " << poDataset->GetProjectionRef();
-    }
     else
     {
         DM::Logger(DM::Error) << "No projection found";
-        fileok=false;
+        fileok = false;
         return;
     }
 
@@ -441,7 +439,7 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
 
     adfMinMax[0] = poBand->GetMinimum( &bGotMin );
     adfMinMax[1] = poBand->GetMaximum( &bGotMax );
-    if( ! (bGotMin && bGotMax) )
+    if( !bGotMin || !bGotMax )
         GDALComputeRasterMinMax((GDALRasterBandH)poBand, TRUE, adfMinMax);
 
     DM::Logger(DM::Debug) << "Min=" << adfMinMax[0] << ", Max=" << adfMinMax[1];
@@ -452,31 +450,23 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
     if( poBand->GetColorTable() != NULL )
         DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
 
-
     view.setType(DM::RASTERDATA);
     view.setAccessType(DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(view);
-
     this->addData("Data", data);
-    return;
 }
 
 void ImportwithGDAL::run()
 {
     if(!fileok)
-    {
         DM::Logger(DM::Error) << "Cannot read file";
-        return;
-    }
-
-    if(isvectordata)
-        importVectorData();
-    else
-        importRasterData();
-
-    return;
+	else
+	{
+		if(isvectordata)	importVectorData();
+		else				importRasterData();
+	}
 }
 
 bool ImportwithGDAL::importVectorData()
@@ -484,7 +474,7 @@ bool ImportwithGDAL::importVectorData()
     DM::System * sys = this->getData("Data");
     this->initPointList(sys);
 
-    if(poCT!=NULL)
+    if(poCT != NULL)
         delete poCT;
 
     OGRSpatialReference *oSourceSRS, *oTargetSRS;
