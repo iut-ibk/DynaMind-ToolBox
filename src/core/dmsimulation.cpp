@@ -326,6 +326,7 @@ void Simulation::resetModules()
 
 void Simulation::resetSimulation()
 {
+    Logger(Debug) << "Reset Simulation";
     std::vector<DM::Module *> mv= this->getModules();
 
     foreach (Module * m, mv) 
@@ -349,7 +350,7 @@ bool Simulation::startSimulation(bool virtualRun)
     Logger(Standard) << "Run Simulation";
     Logger(Debug) << "Reset Steps";
     this->rootGroup->resetSteps();
-    Logger(Debug) << "Start Simulations";
+    Logger(Debug) << "Start Simulation";
     if (this->rootGroup->getModules().size() > 0)
         this->rootGroup->run();
 
