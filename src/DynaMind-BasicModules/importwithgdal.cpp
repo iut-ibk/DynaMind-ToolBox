@@ -67,10 +67,10 @@ ImportwithGDAL::ImportwithGDAL()
     this->flip_wfs = false;
     this->addParameter("flip_wfs", DM::BOOL, &this->flip_wfs);
 
-    fileok=false;
+    fileok = false;
 
 
-    poCT=NULL;
+    poCT = NULL;
 }
 ImportwithGDAL::~ImportwithGDAL()
 {
@@ -82,9 +82,7 @@ DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double 
     DM::Node n_tmp(x,y,z);
     QString key = this->createHash(x,y);
     std::vector<DM::Node* > * nodes = &nodeList[key];
-    //if (!nodes)
-    //    nodes = nodeList[key] = new std::vector<DM::Node* >;
-	
+
     foreach (DM::Node * n, *nodes)
         if (n->compare2d(&n_tmp, tol))
             return n;
@@ -293,22 +291,11 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 void ImportwithGDAL::initPointList(System *sys)
 {
     nodeList.clear();
-    /*std::map<std::string, Node*> nodes =  sys->getAllNodes();
-    for (std::map<std::string, Node*>::const_iterator it = sysnodes.begin();
-         it != sysnodes.end();
-         ++it) {
-        DM::Node * n = it->second;*/
-
 	double v[3];
 	mforeach(Node* n, sys->getAllNodes())
 	{
 		n->get(v);
         QString key = this->createHash(v[0], v[1]);
-        /*std::vector<DM::Node* > * nodes = nodeList[key];
-        if (!nodes)
-            nodeList[key] = nodes = new std::vector<DM::Node* >;
-		
-        nodes->push_back(n);*/
 		nodeList[key].push_back(n);
     }
 }
@@ -394,7 +381,7 @@ void ImportwithGDAL::init() {
         if( poDataset == NULL )
         {
             DM::Logger(DM::Error) << "Open failed.";
-            fileok=false;
+            fileok = false;
             return;
         }
         else
