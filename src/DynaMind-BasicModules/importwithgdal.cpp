@@ -343,203 +343,63 @@ bool ImportwithGDAL::createInputDialog()
 void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 {
     isvectordata = true;
-    // OGRLayer  *poLayer;
-    //poLayer = poDS->GetLayer(0);
     OGRFeature *poFeature;
-
     poLayer->ResetReading();
     int wkbtype = -1;
-    while( (poFeature = poLayer->GetNextFeature()) != NULL )
+    if( poFeature = poLayer->GetNextFeature() )
     {
         OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-
         for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
         {
             OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-
 			std::string attrName = poFieldDefn->GetNameRef();
-
 			// if existent, attrName will be given the value of attributesToImport[attrName]
 			bool exists = map_contains(&attributesToImport, attrName, attrName);
-			if(!ImportAll && !exists)
-				continue;
-
-			view.addAttribute(attrName);
+			if(ImportAll || exists)
+				view.addAttribute(attrName);
         }
+		if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
+		{
+			OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
+			std::string strType = OGRGeometryTypeToName(ogrType);
 
-        OGRGeometry *poGeometry;
-
-
-        poGeometry = poFeature->GetGeometryRef();
-        wkbtype = wkbFlatten(poGeometry->getGeometryType());
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
-        {
-            view.setType(DM::NODE);
-            view.setAccessType(DM::WRITE);
-            DM::Logger(DM::Debug) << "Found: Geometry type wkbPoint";
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
-        {
-            view.setType(DM::FACE);
-            view.setAccessType(DM::WRITE);
-            DM::Logger(DM::Debug) << "Found: Geometry type wkbPolygon";
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon)
-        {
-            view.setType(DM::FACE);
-            view.setAccessType(DM::WRITE);
-            DM::Logger(DM::Debug) << "Found: Geometry type wkbMultiPolygon";
-        }
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
-        {
-            view.setType(DM::EDGE);
-            view.setAccessType(DM::WRITE);
-            DM::Logger(DM::Debug) << "Found: Geometry type wkbLineString";
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString )
-        {
-            view.setType(DM::EDGE);
-            view.setAccessType(DM::WRITE);
-            DM::Logger(DM::Debug) << "Found: Geometry type wkbMultiLineString";
-        }
-
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbGeometryCollection )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbGeometryCollection";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbNone )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbNone";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbLinearRing )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbLinearRing";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint25D )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbPoint25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbLineString25D )
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbLineString25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon25D)
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbPolygon25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPoint25D)
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPoint25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString25D)
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiLineString25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon25D)
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbMultiPolygon25D";
-            fileok=false;
-            return;
-        }
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbGeometryCollection25D)
-        {
-            DM::Logger(DM::Error) << "Geometry type not implemented: " << "wkbGeometryCollection25D";
-            fileok=false;
-            return;
-        }
-
-
-
-        if( poGeometry != NULL
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbUnknown )
-        {
-            DM::Logger(DM::Error) << "Geometry type unknown";
-            fileok=false;
-            return;
-        }
-
-        OGRFeature::DestroyFeature( poFeature );
-
-        break;
+			switch(wkbFlatten(ogrType))
+			{
+			case wkbPoint:
+				view.setType(DM::NODE);
+				break;
+			case wkbPolygon:
+				view.setAccessType(DM::WRITE);
+				view.setType(DM::FACE);
+				break;
+			case wkbMultiPolygon:
+				view.setAccessType(DM::WRITE);
+				view.setType(DM::FACE);
+				break;
+			case wkbLineString:
+				view.setAccessType(DM::WRITE);
+				view.setType(DM::EDGE);
+				break;
+			case wkbMultiLineString:
+				view.setAccessType(DM::WRITE);
+				view.setType(DM::EDGE);
+				break;
+			default:
+				DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << wkbtype <<" )";
+				fileok = false;
+				return;
+			}
+			view.setAccessType(DM::WRITE);
+			DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
+			OGRFeature::DestroyFeature( poFeature );
+		}
     }
-    if (!fileok)
-        return;
-    if (view.getType() == -1) {
-        DM::Logger(DM::Error) << "Unknown wbk type " << wkbtype;
-        fileok = false;
-        return;
-    }
-
     std::vector<DM::View> data;
-    if (append) {
+    if (append)
         data.push_back( DM::View("dummy", SUBSYSTEM, READ));
-    }
+
     data.push_back(view);
-
     this->addData("Data", data);
-    //OGRDataSource::DestroyDataSource( poDS );
-
-    return;
 }
 
 void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
