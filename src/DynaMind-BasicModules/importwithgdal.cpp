@@ -94,53 +94,49 @@ DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double 
 
 void ImportwithGDAL::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature)
 {
-
-    int iField;
-
-
-    for( iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
+    for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
     {
         OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-        bool exists = this->attributesToImport.find(poFieldDefn->GetNameRef()) != this->attributesToImport.end();
-        if (!ImportAll && !exists)
-            continue;
-        std::string attrName;
-        if (exists)
-            attrName = this->attributesToImport[poFieldDefn->GetNameRef()];
-        else
-            attrName = poFieldDefn->GetNameRef();
-        Attribute attr(attrName);
-        if( poFieldDefn->GetType() == OFTInteger )
-            attr.setDouble(poFeature->GetFieldAsInteger( iField ));
-        else if( poFieldDefn->GetType() == OFTReal )
-            attr.setDouble(poFeature->GetFieldAsDouble( iField ));
-        else if( poFieldDefn->GetType() == OFTString )
-            attr.setString(poFeature->GetFieldAsString( iField ));
-        else
-            attr.setString(poFeature->GetFieldAsString( iField ));
-        cmp->addAttribute(attr);
+        std::string attrName = poFieldDefn->GetNameRef();
+
+		// if existent, attrName will be given the value of attributesToImport[attrName]
+        bool exists = map_contains(&attributesToImport, attrName, attrName);
+
+		if(ImportAll || exists)
+		{
+			switch(poFieldDefn->GetType())
+			{
+			case OFTInteger:
+				cmp->addAttribute(attrName, (double)poFeature->GetFieldAsInteger(iField));
+				break;
+			case OFTReal:
+				cmp->addAttribute(attrName, poFeature->GetFieldAsDouble(iField));
+				break;
+			default:
+				cmp->addAttribute(attrName, poFeature->GetFieldAsString(iField));
+				break;
+			}
+		}
     }
 }
 
 Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 {
-    OGRGeometry *poGeometry;
-    poGeometry = poFeature->GetGeometryRef();
-    DM::Node * n = 0;
-    if( poGeometry != NULL
-            && wkbFlatten(poGeometry->getGeometryType()) == wkbPoint )
-    {
-        OGRPoint *poPoint = (OGRPoint *) poGeometry;
+	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
+	if( poGeometry == NULL || wkbFlatten(poGeometry->getGeometryType()) != wkbPoint )
+		return NULL;
 
-        double x = poPoint->getX();
-        double y = poPoint->getY();
+	OGRPoint *poPoint = (OGRPoint *) poGeometry;
 
-        transform(&x,&y);
-        n = this->addNode(sys, x, y, 0);
-        sys->addComponentToView(n, this->view);
-    }
-    return n;
+	double x = poPoint->getX();
+	double y = poPoint->getY();
 
+	transform(&x,&y);
+
+	DM::Node * n = this->addNode(sys, x, y, 0);
+	sys->addComponentToView(n, this->view);
+
+	return n;
 }
 
 Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
