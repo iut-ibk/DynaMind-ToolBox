@@ -81,16 +81,13 @@ DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double 
     //CreateKey
     DM::Node n_tmp(x,y,z);
     QString key = this->createHash(x,y);
-    std::vector<DM::Node* > * nodes = nodeList[key];
-    if (!nodes) {
-        nodes = new std::vector<DM::Node* >;
-        nodeList[key] = nodes;
-    }
-
-    foreach (DM::Node * n, *nodes) {
+    std::vector<DM::Node* > * nodes = &nodeList[key];
+    //if (!nodes)
+    //    nodes = nodeList[key] = new std::vector<DM::Node* >;
+	
+    foreach (DM::Node * n, *nodes)
         if (n->compare2d(&n_tmp, tol))
             return n;
-    }
 
     DM::Node * res_n = sys->addNode(n_tmp);
     nodes->push_back(res_n);
@@ -238,13 +235,13 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
         int npoints = ring->getNumPoints();
         if (npoints == 0)
             return 0;
-        OGRPoint *poPoint = new OGRPoint();
+		OGRPoint poPoint;
         std::vector<Node*> nlist;
 
         for (int i = 0; i < npoints; i++) {
-            ring->getPoint(i, poPoint);
-            double x = poPoint->getX();
-            double y = poPoint->getY();
+            ring->getPoint(i, &poPoint);
+            double x = poPoint.getX();
+            double y = poPoint.getY();
             transform(&x,&y);
             n = this->addNode(sys, x, y, 0);
             if (find(nlist.begin(), nlist.end(), n) == nlist.end())
@@ -254,7 +251,6 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
         if (nlist.size() < 3)
             return 0;
         nlist.push_back(nlist[0]);
-        delete poPoint;
         return sys->addFace(nlist, this->view);
     }
 
@@ -297,18 +293,23 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 void ImportwithGDAL::initPointList(System *sys)
 {
     nodeList.clear();
-    std::map<std::string, Node*> nodes =  sys->getAllNodes();
-    for (std::map<std::string, Node*>::const_iterator it = nodes.begin();
-         it != nodes.end();
+    /*std::map<std::string, Node*> nodes =  sys->getAllNodes();
+    for (std::map<std::string, Node*>::const_iterator it = sysnodes.begin();
+         it != sysnodes.end();
          ++it) {
-        DM::Node * n = it->second;
-        QString key = this->createHash(n->getX(), n->getY());
-        std::vector<DM::Node* > * nodes = nodeList[key];
-        if (!nodes) {
-            nodes = new std::vector<DM::Node* >;
-            nodeList[key] = nodes;
-        }
-        nodes->push_back(n);
+        DM::Node * n = it->second;*/
+
+	double v[3];
+	mforeach(Node* n, sys->getAllNodes())
+	{
+		n->get(v);
+        QString key = this->createHash(v[0], v[1]);
+        /*std::vector<DM::Node* > * nodes = nodeList[key];
+        if (!nodes)
+            nodeList[key] = nodes = new std::vector<DM::Node* >;
+		
+        nodes->push_back(n);*/
+		nodeList[key].push_back(n);
     }
 }
 
