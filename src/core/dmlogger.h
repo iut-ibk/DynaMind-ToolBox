@@ -61,8 +61,6 @@ namespace DM {
         Logger &operator<< (const size_t i)
         /** @brief Sends a long to the sink*/;
         Logger &operator<< (const long i);
-        /** @brief Sends a unsigned long to the sink*/;
-        Logger &operator<< (const unsigned long i);
         /** @brief Sends a double to the sink*/
         Logger &operator<< (const double f);
         /** @brief Sends a float to the sink*/
