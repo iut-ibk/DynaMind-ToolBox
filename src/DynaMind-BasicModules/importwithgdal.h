@@ -59,7 +59,6 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
 
     std::string FileName_old;
     std::string ViewName_old;
-
     std::string WFSDataName_old;
     std::string WFSServer_old;
     std::string WFSUsername_old;
@@ -89,9 +88,11 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     bool importVectorData();
     bool importRasterData();
     bool transform(double *x, double *y);
+    void reset();
+    bool moduleParametersChanged();
     std::string server_full_name;
 
-    OGRLayer * LoadLayer();
+    OGRLayer* LoadWFSLayer(OGRDataSource *poDS);
 
     enum DRIVERTYPE {
         ShapeFile,

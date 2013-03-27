@@ -74,8 +74,7 @@ ImportwithGDAL::ImportwithGDAL()
 }
 ImportwithGDAL::~ImportwithGDAL()
 {
-    if(poCT)
-        delete poCT;
+    reset();
 }
 
 DM::Node * ImportwithGDAL::addNode(DM::System * sys, double x, double y, double z) {
@@ -323,28 +322,13 @@ QString ImportwithGDAL::createHash(double x, double y)
 }
 
 void ImportwithGDAL::init() {
-
-    //Only update if something has changed
-    bool changed = false;
-    if (FileName_old != FileName) changed = true; FileName_old = FileName;
-    if (ViewName_old != ViewName) changed = true; ViewName_old = ViewName;
-    if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
-    if (WFSServer_old != WFSServer) changed = true; WFSServer_old = WFSServer;
-    if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
-    if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
-    if (append_old != append) changed = true; append_old = append;
-
-
-
-    if (!changed)
+    if (!moduleParametersChanged())
         return;
 
-
-
-    if (!this->WFSServer.empty()) driverType = WFS;
-    else driverType = ShapeFile;
-
-
+    if (!this->WFSServer.empty())
+        driverType = WFS;
+    else
+        driverType = ShapeFile;
 
     if (driverType == WFS) {
         //create server name
@@ -357,7 +341,13 @@ void ImportwithGDAL::init() {
         servername <<  "@";
         servername << this->WFSServer;
         this->server_full_name = servername.str();
-        OGRLayer * poLayer = this->LoadLayer();
+        OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+        OGRDataSource *poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
+
+        if(!poDS)
+            return;
+
+        OGRLayer* poLayer = this->LoadWFSLayer(poDS);
         if (!poLayer) {
             fileok=false;
             return;
@@ -367,6 +357,7 @@ void ImportwithGDAL::init() {
         view = DM::View();
         view.setName(ViewName);
         this->vectorDataInit(poLayer);
+        OGRDataSource::DestroyDataSource(poDS);
         return;
     }
 
@@ -398,7 +389,7 @@ void ImportwithGDAL::init() {
     {
         GDALDataset  *poDataset;
 
-        poDataset = (GDALDataset *) GDALOpen( FileName.c_str(), GA_ReadOnly );
+        poDataset = (GDALDataset *) GDALOpenShared(FileName.c_str(), GA_ReadOnly );
         if( poDataset == NULL )
         {
             DM::Logger(DM::Error) << "Open failed.";
@@ -412,7 +403,8 @@ void ImportwithGDAL::init() {
     }
     else
     {
-        vectorDataInit(LoadLayer());
+        vectorDataInit(poDS->GetLayer(0));
+        OGRDataSource::DestroyDataSource(poDS);
     }
 
     return;
@@ -649,7 +641,6 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
     else
     {
         DM::Logger(DM::Error) << "No projection found";
-        GDALClose(poDataset);
         fileok=false;
         return;
     }
@@ -687,8 +678,6 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
     data.push_back(view);
 
     this->addData("Data", data);
-
-    GDALClose(poDataset);
     return;
 }
 
@@ -720,18 +709,18 @@ bool ImportwithGDAL::importVectorData()
 
     OGRRegisterAll();
 
-    //OGRDataSource       *poDS;
-    //OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-    //poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
-    /*if( poDS == NULL )
+    OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+    OGRDataSource *poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+    if( poDS == NULL )
     {
         DM::Logger(DM::Error) << "Open failed.";
         return false;
-    }*/
+    }
 
-    OGRLayer  *poLayer = this->LoadLayer();
+    OGRLayer  *poLayer = poDS->GetLayer(0);
     if (!poLayer) {
         Logger(Error) << "Something went wrong while loading layer in ImportVectorData";
+        OGRDataSource::DestroyDataSource(poDS);
         return false;
     }
 
@@ -773,7 +762,7 @@ bool ImportwithGDAL::importVectorData()
         OGRFeature::DestroyFeature( poFeature );
     }
 
-    //OGRDataSource::DestroyDataSource( poDS );
+    OGRDataSource::DestroyDataSource(poDS);
     return true;
 }
 
@@ -784,7 +773,7 @@ bool ImportwithGDAL::importRasterData()
     double adfGeoTransform[6];
     DM::RasterData * r = this->getRasterData("Data", view);
 
-    poDataset = (GDALDataset *) GDALOpen( FileName.c_str(), GA_ReadOnly );
+    poDataset = (GDALDataset *) GDALOpenShared( FileName.c_str(), GA_ReadOnly );
     poBand = poDataset->GetRasterBand( 1 );
 
     float *pafScanline;
@@ -820,7 +809,6 @@ bool ImportwithGDAL::importRasterData()
     }
 
     CPLFree(pafScanline);
-    GDALClose(poDataset);
     return true;
 }
 
@@ -836,46 +824,47 @@ bool ImportwithGDAL::transform(double *x, double *y)
     if(!transformok)
         return false;
 
-    if( poCT == NULL || !poCT->Transform( 1, x, y ) )
-    {
-        return false;
-    }
-    else
-    {
+    if( !(poCT == NULL || !poCT->Transform( 1, x, y )))
         return true;
-    }
 
     return false;
 }
 
-OGRLayer *ImportwithGDAL::LoadLayer()
+void ImportwithGDAL::reset()
 {
-    if (driverType == WFS) {
-        OGRDataSource       *poDS;
-        OGRLayer            *poLayer;
-        poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
+    if(poCT)
+        delete poCT;
+}
 
-        int LayerCount = poDS->GetLayerCount();
+bool ImportwithGDAL::moduleParametersChanged()
+{
+    bool changed = false;
+    if (FileName_old != FileName) changed = true; FileName_old = FileName;
+    if (ViewName_old != ViewName) changed = true; ViewName_old = ViewName;
+    if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
+    if (WFSServer_old != WFSServer) changed = true; WFSServer_old = WFSServer;
+    if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
+    if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
+    if (append_old != append) changed = true; append_old = append;
 
-        for (int i = 0; i < LayerCount; i++) {
-            poLayer = poDS->GetLayer(i);
-            std::string currentLayerName =  poLayer->GetName();
-            if (currentLayerName == this->WFSDataName) {
-                return poLayer;
-            }
-        }
-        return 0;
-    }
+    return changed;
+}
 
-    OGRDataSource       *poDS;
+OGRLayer *ImportwithGDAL::LoadWFSLayer(OGRDataSource *poDS)
+{
+    OGRLayer            *poLayer;
     OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-    poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+    poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
 
-    if( poDS == NULL )
-    {
-        return 0;
+    int LayerCount = poDS->GetLayerCount();
+
+    for (int i = 0; i < LayerCount; i++) {
+        poLayer = poDS->GetLayer(i);
+        std::string currentLayerName =  poLayer->GetName();
+        if (currentLayerName == this->WFSDataName) {
+            return poLayer;
+        }
     }
 
-    return poDS->GetLayer(0);
-
+    return 0;
 }
