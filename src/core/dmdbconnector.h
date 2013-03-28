@@ -245,7 +245,7 @@ public:
 
 // castercachesize is initialized when creating a rasterfield
 // would require a raster registration class to change the value in runtime
-#define RASTERBLOCKCACHESIZE 1000
+#define RASTERBLOCKCACHESIZE 10000
 
 // edge cache is infinite (Asynchron member)
 // component cache is infinite (ComponentSyncMap: Asynchron member)
