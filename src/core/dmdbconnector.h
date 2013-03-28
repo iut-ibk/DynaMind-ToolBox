@@ -225,7 +225,7 @@ public:
 	{
 		todoCount = todoCount +1;
 		//waiterMutex.unlock();
-		/*waiterMutex.lock();
+		waiterMutex.lock();
 		waiterCondition.wakeOne();
 		waiterMutex.unlock();
 	}*/

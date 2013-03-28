@@ -36,7 +36,7 @@
 
 using namespace DM;
 
-static DbCache<Node*,Vector3> nodeCache(0); // defined in dmdbconnector.h
+DbCache<Node*,Vector3> Node::nodeCache(0); // defined in dmdbconnector.h
 
 void Node::ResizeCache(unsigned long size)
 {

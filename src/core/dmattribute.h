@@ -105,6 +105,7 @@ private:
 	AttributeValue	*value;
 	bool	isInserted;
 	AttributeValue*	getValue() const;
+	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 protected:
 public:
 	/** @brief =operator */

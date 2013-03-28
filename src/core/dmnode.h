@@ -70,6 +70,9 @@ private:
 			connectedEdges->remove(e);
 	}
 	friend class Edge;
+
+	
+	static DbCache<Node*,Vector3> nodeCache; // defined in dmdbconnector.h
 protected:
     virtual void SetOwner(Component *owner);
 public:
