@@ -497,10 +497,14 @@ bool ImportwithGDAL::importVectorData()
 
     poLayer->ResetReading();
 
+	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
     oSourceSRS = poLayer->GetSpatialRef();
     oTargetSRS = new OGRSpatialReference();
     oTargetSRS->importFromEPSG(this->epsgcode);
+	// Input spatial reference system objects are assigned by copy
+	// (calling clone() method) and no ownership transfer occurs.
     poCT = OGRCreateCoordinateTransformation( oSourceSRS, oTargetSRS );
+	//OGRSpatialReference::DestroySpatialReference(oTargetSRS); // cannot be deleted (error)
 
     if(poCT == NULL)
     {
