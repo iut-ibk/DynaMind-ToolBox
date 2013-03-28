@@ -153,10 +153,10 @@ int main(int argc, char *argv[], char *envp[]) {
 		if(verbose)
 		{
 			DM::Logger(DM::Standard) << ">>>> config:";
-			DM::Logger(DM::Standard) << "node cache size: " << cfg.nodeCacheSize;
-			DM::Logger(DM::Standard) << "attribute cache size: " << cfg.attributeCacheSize;
-			DM::Logger(DM::Standard) << "sql query stack size: " << cfg.queryStackSize;
-			DM::Logger(DM::Standard) << "sql write block size: " << cfg.cacheBlockwritingSize;
+			DM::Logger(DM::Standard) << "node cache size: " << (long)cfg.nodeCacheSize;
+			DM::Logger(DM::Standard) << "attribute cache size: " << (long)cfg.attributeCacheSize;
+			DM::Logger(DM::Standard) << "sql query stack size: " << (long)cfg.queryStackSize;
+			DM::Logger(DM::Standard) << "sql write block size: " << (long)cfg.cacheBlockwritingSize;
 		}
     }
     catch (po::unknown_option & e)
@@ -181,9 +181,9 @@ int main(int argc, char *argv[], char *envp[]) {
 	QElapsedTimer timer;
 	for(int i=0;i<repeat;i++)
 	{
-		s.resetSimulation();
 		if(verbose && repeat>1)
 			DM::Logger(DM::Standard) << ">>>> iteration " << i;
+		s.resetSimulation();
 		timer.start();
 		s.run();
 		times.push_back(timer.elapsed());
