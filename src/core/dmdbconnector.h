@@ -566,6 +566,7 @@ public:
             next=cur->next;
             delete cur;
         }
+		map.clear();
     }
 	//!< returns the current element count
 	unsigned long getSize(){return _size;};

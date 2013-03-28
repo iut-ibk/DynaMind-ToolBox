@@ -441,7 +441,6 @@ void RasterData::SQLSetValue(long x, long y, double value)
 	long yBl = y/RASTERBLOCKSIZE;
 	long blWidth = width/RASTERBLOCKSIZE;
 	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
-
 	((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE] = value;
 }
 
@@ -469,9 +468,13 @@ QByteArray* RasterData::RasterBlockLabel::LoadFromDb()
     q->addBindValue(QVariant::fromValue(x));
     q->addBindValue(QVariant::fromValue(y));
     if(!DBConnector::getInstance()->ExecuteSelectQuery(q))
+	{
+		delete q;
         return NULL;
+	}
 
 	QByteArray* qba = new QByteArray(q->value(0).toByteArray());
+	delete q;
 	long blWidth = x/RASTERBLOCKSIZE+1;
 	long blHeight = y/RASTERBLOCKSIZE+1;
 	//backRef->cache->add(&backRef->blockLabels[x+y*blWidth], qba);

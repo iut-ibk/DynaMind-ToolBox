@@ -582,8 +582,12 @@ bool DBConnector::Select(QString table, QUuid uuid,
     q->addBindValue(uuid.toByteArray());
 
     if(!ExecuteSelectQuery(q))
+	{
+		delete q;
         return false;
+	}
     *value = q->value(0);
+	delete q;
     return true;
 }
 bool DBConnector::Select(QString table, QUuid uuid,
@@ -591,16 +595,20 @@ bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName1, QVariant *value1)
  {
 #ifdef NO_DB_SYNC
-		return false;
+	 return false;
 #endif
 
-     QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
-     q->addBindValue(uuid.toByteArray());
-     if(!ExecuteSelectQuery(q))
-         return false;
+	 QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
+	 q->addBindValue(uuid.toByteArray());
+	 if(!ExecuteSelectQuery(q))
+	 {
+		 delete q;
+		 return false;
+	 }
 
-     *value0 = q->value(0);
-     *value1 = q->value(1);
+	 *value0 = q->value(0);
+	 *value1 = q->value(1);
+	 delete q;
      return true;
  }
 bool DBConnector::Select(QString table, QUuid uuid,
@@ -609,16 +617,20 @@ bool DBConnector::Select(QString table, QUuid uuid,
                          QString valName2, QVariant *value2)
  {
 #ifdef NO_DB_SYNC
-		return false;
+	 return false;
 #endif
 
-     QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
-     q->addBindValue(uuid.toByteArray());
-     if(!ExecuteSelectQuery(q))
-         return false;
+	 QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
+	 q->addBindValue(uuid.toByteArray());
+	 if(!ExecuteSelectQuery(q))
+	 {
+		 delete q;
+		 return false;
+	 }
 
-     *value0 = q->value(0);
-     *value1 = q->value(1);
-     *value2 = q->value(2);
-     return true;
+	 *value0 = q->value(0);
+	 *value1 = q->value(1);
+	 *value2 = q->value(2);
+	 delete q;
+	 return true;
  }
