@@ -239,15 +239,18 @@ unsigned long writesBeforeReadsCount = 0;
 void DBWorker::run()
 {
 	std::list<QueryList*>::iterator it;
+	std::list<QueryList*>::iterator end;
 	QueryList* ql;
 	while(!kill)
 	{
-		for(it = queryLists.begin(); it != queryLists.end(); ++it)	// faster then foreach
+		end = queryLists.end();
+		unsigned long stackSize = DBConnector::getInstance()->GetQueryStackSize();
+		for(it = queryLists.begin(); it != end; ++it)	// faster then foreach
 		{
 			ql = *it;
 			if(ql->queryStack.IsMaxOneLeft())
 			{
-				for(int i=0;i<DBConnector::getInstance()->GetQueryStackSize();i++)
+				for(int i=1;i<stackSize;i++)
 				{
 					QSqlQuery* q = new QSqlQuery();
 					q->prepare(ql->cmd);
