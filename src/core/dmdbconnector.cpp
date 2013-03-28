@@ -272,8 +272,8 @@ void DBWorker::run()
 		//WaitIfNothingToDo();
 #ifdef DBWORKER_COUNTERS
 		loopCount++;
-#endif
 		unsigned long cnt = 0;
+#endif
 		while(QSqlQuery* q = queryStack.pop())
 		{
 #ifdef DBWORKER_COUNTERS

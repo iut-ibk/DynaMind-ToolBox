@@ -416,8 +416,8 @@ void RasterData::SQLDeleteField()
 	QSqlQuery *q = DBConnector::getInstance()->getQuery("DELETE FROM rasterfields WHERE owner LIKE ?");
 	if(q)
 	{
-    q->addBindValue(uuid.toByteArray());
-    DBConnector::getInstance()->ExecuteQuery(q);
+		q->addBindValue(uuid.toByteArray());
+		DBConnector::getInstance()->ExecuteQuery(q);
 	}
 }
 
