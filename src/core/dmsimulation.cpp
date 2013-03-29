@@ -162,12 +162,15 @@ void Simulation::loadModulesFromDefaultLocation()
     
     foreach (QDir cp, cpv)  
 	{
-        QStringList modulesToLoad = cp.entryList();
+		QStringList filters;
+		filters << "*.dll";
+		filters << "*.so";
+		filters << "*.dylib";
+        QStringList modulesToLoad = cp.entryList(filters);
+		
         DM::Logger(DM::Standard) <<  cp.absolutePath().toStdString();
         foreach (QString module, modulesToLoad) 
 		{
-            if (module == ".." || module == ".")
-                continue;
             DM::Logger(DM::Debug) << module.toStdString();
             DM::Logger(DM::Standard) <<  module.toStdString();
             QString ml = cp.absolutePath() +"/" + module;
