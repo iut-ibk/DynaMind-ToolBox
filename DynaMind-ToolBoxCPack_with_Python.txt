@@ -67,13 +67,9 @@ IF(WIN32 AND NOT UNIX)
      MESSAGE(STATUS "QT PLUGINS DIR: " ${QT_PLUGINS_DIR})
      INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
      INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin/plugins/sqldrivers)
-	
+
      if(WITH_GUI)
         set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
-     endif()
-
-     if(WITH_STANDALONE_EXE)
-        set(CPACK_PACKAGE_EXECUTABLES "dynamind;DynaMind-Standalone")
      endif()
 
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
