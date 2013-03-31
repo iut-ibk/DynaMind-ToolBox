@@ -99,78 +99,96 @@ void ImportwithGDAL::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, O
         OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
         std::string attrName = poFieldDefn->GetNameRef();
 
-		// if existent, attrName will be given the value of attributesToImport[attrName]
+        // if existent, attrName will be given the value of attributesToImport[attrName]
         bool exists = map_contains(&attributesToImport, attrName, attrName);
 
-		if(ImportAll || exists)
-		{
-			switch(poFieldDefn->GetType())
-			{
-			case OFTInteger:
-				cmp->addAttribute(attrName, (double)poFeature->GetFieldAsInteger(iField));
-				break;
-			case OFTReal:
-				cmp->addAttribute(attrName, poFeature->GetFieldAsDouble(iField));
-				break;
-			default:
-				cmp->addAttribute(attrName, poFeature->GetFieldAsString(iField));
-				break;
-			}
-		}
+        if(ImportAll || exists)
+        {
+            switch(poFieldDefn->GetType())
+            {
+            case OFTInteger:
+                cmp->addAttribute(attrName, (double)poFeature->GetFieldAsInteger(iField));
+                break;
+            case OFTReal:
+                cmp->addAttribute(attrName, poFeature->GetFieldAsDouble(iField));
+                break;
+            default:
+                cmp->addAttribute(attrName, poFeature->GetFieldAsString(iField));
+                break;
+            }
+        }
     }
 }
 
 Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 {
-	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
-	if( poGeometry == NULL || wkbFlatten(poGeometry->getGeometryType()) != wkbPoint )
-		return NULL;
+    OGRGeometry *poGeometry = poFeature->GetGeometryRef();
+    if( poGeometry == NULL || wkbFlatten(poGeometry->getGeometryType()) != wkbPoint )
+        return NULL;
 
-	OGRPoint *poPoint = (OGRPoint *) poGeometry;
+    OGRPoint *poPoint = (OGRPoint *) poGeometry;
 
-	double x = poPoint->getX();
-	double y = poPoint->getY();
+    double x = poPoint->getX();
+    double y = poPoint->getY();
 
-	transform(&x,&y);
+    transform(&x,&y);
 
-	DM::Node * n = this->addNode(sys, x, y, 0);
-	sys->addComponentToView(n, this->view);
+    DM::Node * n = this->addNode(sys, x, y, 0);
+    sys->addComponentToView(n, this->view);
 
-	return n;
+    return n;
 }
 
 std::vector<Node*> ImportwithGDAL::ExtractNodes(System* sys, OGRLineString *ls)
 {
-	std::vector<Node*> nlist;
-	OGRPoint poPoint;
-	for(int i=0; i < ls->getNumPoints(); i++)
-	{
-		ls->getPoint(i, &poPoint);
-		double x = poPoint.getX();
-		double y = poPoint.getY();
-		transform(&x,&y);
-		DM::Node * n = this->addNode(sys, x, y, 0);
+    std::vector<Node*> nlist;
+    OGRPoint poPoint;
+    for(int i=0; i < ls->getNumPoints(); i++)
+    {
+        ls->getPoint(i, &poPoint);
+        double x = poPoint.getX();
+        double y = poPoint.getY();
+        transform(&x,&y);
+        DM::Node * n = this->addNode(sys, x, y, 0);
 
-		if(!vector_contains(&nlist, n))
-			nlist.push_back(n);
-	}
-	return nlist;
+        if(!vector_contains(&nlist, n))
+            nlist.push_back(n);
+    }
+    return nlist;
+}
+
+std::vector<Node*> ImportwithGDAL::ExtractNodesFromFace(System* sys, OGRLinearRing *lr)
+{
+    std::vector<Node*> nlist;
+    OGRPoint poPoint;
+    for(int i=0; i < lr->getNumPoints(); i++)
+    {
+        lr->getPoint(i, &poPoint);
+        double x = poPoint.getX();
+        double y = poPoint.getY();
+        transform(&x,&y);
+        DM::Node * n = this->addNode(sys, x, y, 0);
+
+        if(!vector_contains(&nlist, n))
+            nlist.push_back(n);
+    }
+    return nlist;
 }
 
 Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 {
     OGRGeometry *poGeometry = poFeature->GetGeometryRef();
-	if(!poGeometry)
-		return NULL;
+    if(!poGeometry)
+        return NULL;
 
     DM::Node * n = 0;
-    if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString ) 
-	{
+    if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString )
+    {
         OGRMultiLineString *mpoLineString = (OGRMultiLineString *) poGeometry;
         int number_of_linestrings = mpoLineString->getNumGeometries();
-        for (int i = 0; i < number_of_linestrings; i++) 
-		{
-			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)mpoLineString->getGeometryRef(i));
+        for (int i = 0; i < number_of_linestrings; i++)
+        {
+            std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)mpoLineString->getGeometryRef(i));
 
             if (nlist.size() < 2)
                 return 0;
@@ -184,7 +202,7 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
     }
     if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
     {
-		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
+        std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
 
         if (nlist.size() < 2)
             return 0;
@@ -201,27 +219,28 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 {
     OGRGeometry *poGeometry = poFeature->GetGeometryRef();
-	if(!poGeometry)
-		return 0;
+    if(!poGeometry)
+        return 0;
 
     DM::Node * n = 0;
     if( wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
     {
-		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
+        OGRPolygon *poPolygon = (OGRPolygon *)poGeometry;
+        std::vector<Node*> nlist = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
         if (nlist.size() < 3)
             return 0;
         nlist.push_back(nlist[0]);
         return sys->addFace(nlist, this->view);
     }
-	if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
+    if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
     {
         OGRMultiPolygon *mpoPolygon = (OGRMultiPolygon *) poGeometry;
         int number_of_faces = mpoPolygon->getNumGeometries();
-        for (int i = 0; i < number_of_faces; i++) 
-		{
+        for (int i = 0; i < number_of_faces; i++)
+        {
             OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
-			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poPolygon->getExteriorRing());
+            std::vector<Node*> nlist = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
             if (nlist.size() < 3)
                 return 0;
@@ -236,12 +255,12 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 void ImportwithGDAL::initPointList(System *sys)
 {
     nodeList.clear();
-	double v[3];
-	mforeach(Node* n, sys->getAllNodes())
-	{
-		n->get(v);
+    double v[3];
+    mforeach(Node* n, sys->getAllNodes())
+    {
+        n->get(v);
         QString key = this->createHash(v[0], v[1]);
-		nodeList[key].push_back(n);
+        nodeList[key].push_back(n);
     }
 }
 
@@ -257,7 +276,7 @@ void ImportwithGDAL::init() {
         return;
 
     if (!this->WFSServer.empty())
-	{
+    {
         driverType = WFS;
         //create server name
         std::stringstream servername;
@@ -352,47 +371,47 @@ void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
         for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
         {
             OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-			std::string attrName = poFieldDefn->GetNameRef();
-			// if existent, attrName will be given the value of attributesToImport[attrName]
-			bool exists = map_contains(&attributesToImport, attrName, attrName);
-			if(ImportAll || exists)
-				view.addAttribute(attrName);
+            std::string attrName = poFieldDefn->GetNameRef();
+            // if existent, attrName will be given the value of attributesToImport[attrName]
+            bool exists = map_contains(&attributesToImport, attrName, attrName);
+            if(ImportAll || exists)
+                view.addAttribute(attrName);
         }
-		if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
-		{
-			OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
-			std::string strType = OGRGeometryTypeToName(ogrType);
+        if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
+        {
+            OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
+            std::string strType = OGRGeometryTypeToName(ogrType);
 
-			switch(wkbFlatten(ogrType))
-			{
-			case wkbPoint:
-				view.setType(DM::NODE);
-				break;
-			case wkbPolygon:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::FACE);
-				break;
-			case wkbMultiPolygon:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::FACE);
-				break;
-			case wkbLineString:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::EDGE);
-				break;
-			case wkbMultiLineString:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::EDGE);
-				break;
-			default:
-				DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << wkbtype <<" )";
-				fileok = false;
-				return;
-			}
-			view.setAccessType(DM::WRITE);
-			DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
-			OGRFeature::DestroyFeature( poFeature );
-		}
+            switch(wkbFlatten(ogrType))
+            {
+            case wkbPoint:
+                view.setType(DM::NODE);
+                break;
+            case wkbPolygon:
+                view.setAccessType(DM::WRITE);
+                view.setType(DM::FACE);
+                break;
+            case wkbMultiPolygon:
+                view.setAccessType(DM::WRITE);
+                view.setType(DM::FACE);
+                break;
+            case wkbLineString:
+                view.setAccessType(DM::WRITE);
+                view.setType(DM::EDGE);
+                break;
+            case wkbMultiLineString:
+                view.setAccessType(DM::WRITE);
+                view.setType(DM::EDGE);
+                break;
+            default:
+                DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << wkbtype <<" )";
+                fileok = false;
+                return;
+            }
+            view.setAccessType(DM::WRITE);
+            DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
+            OGRFeature::DestroyFeature( poFeature );
+        }
     }
     std::vector<DM::View> data;
     if (append)
@@ -462,11 +481,11 @@ void ImportwithGDAL::run()
 {
     if(!fileok)
         DM::Logger(DM::Error) << "Cannot read file";
-	else
-	{
-		if(isvectordata)	importVectorData();
-		else				importRasterData();
-	}
+    else
+    {
+        if(isvectordata)	importVectorData();
+        else				importRasterData();
+    }
 }
 
 bool ImportwithGDAL::importVectorData()
@@ -497,14 +516,14 @@ bool ImportwithGDAL::importVectorData()
 
     poLayer->ResetReading();
 
-	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
+    // GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
     oSourceSRS = poLayer->GetSpatialRef();
     oTargetSRS = new OGRSpatialReference();
     oTargetSRS->importFromEPSG(this->epsgcode);
-	// Input spatial reference system objects are assigned by copy
-	// (calling clone() method) and no ownership transfer occurs.
+    // Input spatial reference system objects are assigned by copy
+    // (calling clone() method) and no ownership transfer occurs.
     poCT = OGRCreateCoordinateTransformation( oSourceSRS, oTargetSRS );
-	//OGRSpatialReference::DestroySpatialReference(oTargetSRS); // cannot be deleted (error)
+    //OGRSpatialReference::DestroySpatialReference(oTargetSRS); // cannot be deleted (error)
 
     if(poCT == NULL)
     {
@@ -513,26 +532,26 @@ bool ImportwithGDAL::importVectorData()
     }
     else
         transformok = true;
-	
+
     while( OGRFeature* poFeature = poLayer->GetNextFeature() )
     {
         OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
         DM::Component * cmp;
-		switch(view.getType())
-		{
-		case DM::NODE:
+        switch(view.getType())
+        {
+        case DM::NODE:
             cmp = this->loadNode(sys, poFeature);
-			break;
-		case DM::EDGE:
+            break;
+        case DM::EDGE:
             cmp = this->loadEdge(sys, poFeature);
-			break;
-		case DM::FACE:
+            break;
+        case DM::FACE:
             cmp = this->loadFace(sys, poFeature);
-			break;
-		}
+            break;
+        }
         if (cmp)
             this->appendAttributes(cmp, poFDefn, poFeature);
-        OGRFeature::DestroyFeature( poFeature );
+        //OGRFeature::DestroyFeature( poFeature );
     }
     OGRDataSource::DestroyDataSource(poDS);
     return true;
@@ -583,8 +602,8 @@ bool ImportwithGDAL::importRasterData()
 
 bool ImportwithGDAL::transform(double *x, double *y)
 {
-    if (this->driverType == WFS && this->flip_wfs) 
-	{
+    if (this->driverType == WFS && this->flip_wfs)
+    {
         double tmp_x = *x;
         *x = *y;
         *y = tmp_x;
@@ -626,8 +645,8 @@ OGRLayer *ImportwithGDAL::LoadWFSLayer(OGRDataSource *poDS)
     poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
 
     int LayerCount = poDS->GetLayerCount();
-    for (int i = 0; i < LayerCount; i++) 
-	{
+    for (int i = 0; i < LayerCount; i++)
+    {
         poLayer = poDS->GetLayer(i);
         std::string currentLayerName =  poLayer->GetName();
         if (currentLayerName == this->WFSDataName)

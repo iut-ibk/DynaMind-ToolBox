@@ -80,6 +80,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
 	std::vector<Node*> ExtractNodes(System* sys, OGRLineString *ls);
+    std::vector<Node*> ExtractNodesFromFace(System* sys, OGRLinearRing *ls);
 
     DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
     DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
