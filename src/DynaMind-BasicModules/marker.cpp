@@ -108,7 +108,7 @@ bool Marker::createInputDialog() {
 void Marker::initRExpression () {
     R = new double;
     mu::Parser * p  = new mu::Parser();
-    long Vcounter = 0;
+
     long Rcounter = 0;
 
     RRasterData.clear();
@@ -177,7 +177,6 @@ void Marker::initMaxMinExpression() {
 void Marker::initrExpression () {
     mu::Parser * p  = new mu::Parser();
 
-    long Vcounter = 0;
     long rcounter = 0;
     /*for ( std::vector<std::string>::const_iterator it = param.rVariables.begin(); it != param.rVariables.end(); ++it) {
         if (paramRaw.find(*it) != paramRaw.end()) {
@@ -307,15 +306,15 @@ void Marker::run() {
         DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
         for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
             DM::Node * n = sys_in->getNode(it->first);
-            long X = (long) ( n->getX() - param.OffsetX +  param.CellSize/2 ) / param.CellSize;
-            long Y = (long) ( n->getY() - param.OffsetY +  param.CellSize/2 ) / param.CellSize;
+            ulong X = (ulong) ( n->getX() - param.OffsetX  ) / param.CellSize;
+            ulong Y = (ulong) ( n->getY() - param.OffsetY  ) / param.CellSize;
 
             if ( X >= param.Width)
                 continue;
             if ( Y >= param.Height)
                 continue;
 
-            points.push_back(Node(X   ,Y ,n->getZ()));
+            points.push_back(Node(X,Y ,n->getZ()));
         }
     }
     //AddLines as Points
@@ -335,8 +334,8 @@ void Marker::run() {
 
             long steps = (long) sqrt(dx*dx+dy*dy);
 
-            long x0 = (long) (p1->getX() - param.OffsetX +  param.CellSize/2. ) / param.CellSize;
-            long y0 = (long) (p1->getY() - param.OffsetY +  param.CellSize/2. ) / param.CellSize;
+            long x0 = (long) (p1->getX() - param.OffsetX ) / param.CellSize;
+            long y0 = (long) (p1->getY() - param.OffsetY ) / param.CellSize;
             for ( int i = 0; i < steps; i++ ) {
                 long X = (long) ( x0 + i* (dx /  steps) );
                 long Y = (long) ( y0 + i* (dy /  steps) );
@@ -349,9 +348,6 @@ void Marker::run() {
 
                 p.setX( X );
                 p.setY( Y );
-
-
-
                 points.push_back(p);
             }
         }
