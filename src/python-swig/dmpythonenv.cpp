@@ -156,6 +156,14 @@ bool PythonEnv::addOverWriteStdCout() {
     script << "        sys.stdout=Logger(sys.stdout,False)\n";
     script << "        sys.stderr=Logger(sys.stderr,True)\n";
     script << "print \"Redirect python stdout and stderr\"\n";
+	script << "print sys.path\n";
+	script << "import PyQt4\n";
+	script << "import reimport\n";
+	script << "import netCDF4\n";
+	script << "import osgeo\n";
+	script << "import numpy\n";
+	script << "import scipy\n";
+	script << "print \"Python environment is ready for use\"\n";
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
     PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
