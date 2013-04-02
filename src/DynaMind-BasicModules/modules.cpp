@@ -42,6 +42,8 @@
 #include "calculateboundingbox.h"
 #include "singlepoint.h"
 #include "facetoedge.h"
+#include "createhouses.h"
+#include "removecomponent.h"
 
 using namespace std;
 
@@ -65,5 +67,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<CalculateBoundingBox>());
     registry->addNodeFactory(new NodeFactory<SinglePoint>());
     registry->addNodeFactory(new NodeFactory<FaceToEdge>());
+    registry->addNodeFactory(new NodeFactory<CreateHouses>());
+    registry->addNodeFactory(new NodeFactory<RemoveComponent>());
 }
 
