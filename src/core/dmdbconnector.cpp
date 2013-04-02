@@ -269,7 +269,7 @@ void DBWorker::run()
 				if((*it)->queryStack.IsMaxOneLeft())
 					break;
 
-			msleep(1);
+			msleep(WORKER_SLEEP_TIME);
 		}
 
 		//WaitIfNothingToDo();
@@ -317,7 +317,7 @@ bool DBWorker::ExecuteSelect(QSqlQuery *q)
 	
 	// wait for finish
 	while(selectStatus == SELECT_NOTDONE)
-		msleep(1);
+		msleep(EXE_THREAD_SLEEP_TIME);
 
 	/*SignalWork();
 	selectWaiterMutex.lock();
@@ -355,7 +355,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 
 	QSqlQuery *q = NULL;
 	while(!(q = ql->queryStack.pop()))
-		msleep(1);
+		msleep(EXE_THREAD_SLEEP_TIME);
 	return q;
 }
 

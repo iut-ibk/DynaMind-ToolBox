@@ -255,6 +255,14 @@ public:
 // greatly improves performance
 //#define NO_DB_SYNC
 
+// time in milliseconds to wait, if worker is idle
+// recommendation 1ms
+#define WORKER_SLEEP_TIME 5
+
+// timeinterval in milliseconds to wait for finished select states and new queries
+// recommendation 1ms
+#define EXE_THREAD_SLEEP_TIME 1
+
 
 /**************************************************************//**
 @class DM::DBConnectorConfig
