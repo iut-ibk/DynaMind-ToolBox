@@ -67,8 +67,11 @@ Node *SpatialNodeHashMap::findNode(const double &x, const double &y, const doubl
 Node * SpatialNodeHashMap::addNode(double x, double y, double z, double tol, View v)
 {
     DM::Node * n = this->findNode(x, y, tol);
-    if (n)
-        return n;
+    if (n) {
+        if (n->isInView(v) ) return n;
+        else sys->addComponentToView(n,v); return n;
+    }
+
     n = sys->addNode(x,y,z,v);
     this->addNodeToSpatialNodeHashMap(n);
     return n;
@@ -85,7 +88,7 @@ SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool in
 {
     if (!init)
         return;
-    if (nodeView.getName().empty()) {
+    if (!nodeView.getName().empty()) {
         this->addNodesFromView(nodeView);
         return;
     }

@@ -250,7 +250,7 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (!startISEnd)
         A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
 
-    return A/2.;
+    return fabs(A/2.);
 }
 
 double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
@@ -278,7 +278,7 @@ double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
         //Remove Holes
          A -= CalculateArea(nodes_H);
     }
-    return A;
+    return fabs(A);
 }
 
 QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
