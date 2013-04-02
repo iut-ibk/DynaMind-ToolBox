@@ -29,6 +29,8 @@
 #include <iostream>
 #include <vector>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+
 #include "dmsimulation.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +38,9 @@
 
 #include <dmlog.h>
 #include <dmdbconnector.h>
+#include <dmpythonenv.h>
+
+
 #include <fstream>
 
 using namespace std;
@@ -143,6 +148,10 @@ int main(int argc, char *argv[], char *envp[]) {
 		DM::Log::addLogSink(file_log_updater);
 		//DM::Log::init(file_log_updater, ll);
 
+        //Init Python
+        DM::PythonEnv *env = DM::PythonEnv::getInstance();
+        env->addPythonPath(boost::filesystem::current_path().c_str());
+
 		DM::DBConnectorConfig cfg;
 		if(vm.count("nodecache"))		cfg.nodeCacheSize		 = vm["nodecache"].as<unsigned long>();
 		if(vm.count("attributecache"))	cfg.attributeCacheSize	 = vm["attributecache"].as<unsigned long>();
@@ -170,10 +179,13 @@ int main(int argc, char *argv[], char *envp[]) {
 		DM::Logger(DM::Error) << "simulation file not found";
 		return -1;
 	}
-	
+
+
+
     DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
     s.loadSimulation(simulationfile);
+
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
 	std::list<qint64> times;
