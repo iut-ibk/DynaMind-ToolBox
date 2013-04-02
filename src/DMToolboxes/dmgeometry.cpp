@@ -88,7 +88,7 @@ SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool in
 {
     if (!init)
         return;
-    if (nodeView.getName().empty()) {
+    if (!nodeView.getName().empty()) {
         this->addNodesFromView(nodeView);
         return;
     }
