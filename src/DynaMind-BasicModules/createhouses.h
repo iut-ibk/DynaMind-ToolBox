@@ -2,9 +2,10 @@
 #define CREATEHOUSES_H
 
 #include <dm.h>
+#include <dmcompilersettings.h>
 
 using namespace DM;
-class CreateHouses : public Module
+class DM_HELPER_DLL_EXPORT CreateHouses : public Module
 {
     DM_DECLARE_NODE(CreateHouses);
 

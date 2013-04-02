@@ -1,6 +1,7 @@
 #ifndef REMOVECOMPONENT_H
 #define REMOVECOMPONENT_H
 
+#include "dmcompilersettings.h"
 #include <dm.h>
 
 class  DM_HELPER_DLL_EXPORT RemoveComponent : public DM::Module
