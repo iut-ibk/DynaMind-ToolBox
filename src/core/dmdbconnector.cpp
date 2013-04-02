@@ -64,17 +64,17 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
     _singleton = s;
 }
 
-static std::list<Asynchron*>* syncList = NULL;
+static std::set<Asynchron*>* syncList = NULL;
 Asynchron::Asynchron()
 {
-	if(!syncList)	syncList = new std::list<Asynchron*>();
+	if(!syncList)	syncList = new std::set<Asynchron*>();
 
-    syncList->push_back(this);
+    syncList->insert(this);
 }
 Asynchron::~Asynchron()
 {
 	if(syncList)
-		syncList->remove(this);
+		syncList->erase(this);
 }
 
 DBConnector* DBConnector::instance = 0;
