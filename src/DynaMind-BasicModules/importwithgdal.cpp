@@ -207,7 +207,8 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
     DM::Node * n = 0;
     if( wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
     {
-		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
+		OGRPolygon *poPolygon = (OGRPolygon *) poGeometry;
+		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poPolygon->getExteriorRing());
 
         if (nlist.size() < 3)
             return 0;
