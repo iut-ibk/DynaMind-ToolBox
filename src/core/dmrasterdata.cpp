@@ -387,9 +387,15 @@ void RasterData::SQLInsertField(long width, long height)
 
 	int buffersize = sizeof(buffer);
 	char* pBuffer = (char*)&buffer;
-	for(long x = 0; x<blWidth; x++)
+	/*for(long x = 0; x<blWidth; x++)
 	{
 		for(long y = 0; y<blHeight; y++)
+		{*/
+	// we most commonly loop through rasterdata, so we reverse the cache inserts, 
+	// to gain a bit performance in the first loop iteration
+	for(long x = blWidth-1; x>=0; x--)
+	{
+		for(long y = blHeight-1; y>=0; y--)
 		{
 			RasterBlockLabel* pBlock = &blockLabels[x+y*blWidth];
 			pBlock->backRef = this;
