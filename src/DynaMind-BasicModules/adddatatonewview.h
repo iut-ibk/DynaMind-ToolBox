@@ -41,6 +41,8 @@ class DM_HELPER_DLL_EXPORT AddDataToNewView : public DM::Module{
     std::string NameOfExistingView;
     std::string NameOfNewView_old;
     std::vector<std::string> newAttributes;
+    bool onlySelected;
+
 
     std::vector<DM::View> data;
 

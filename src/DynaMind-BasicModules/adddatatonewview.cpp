@@ -34,12 +34,14 @@ AddDataToNewView::AddDataToNewView()
 {
     sys_in = 0;
     this->NameOfNewView = "";
+    this->onlySelected = false;
 
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 
     this->addParameter("NameOfNewView", DM::STRING, &this->NameOfNewView);
     this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
     this->addParameter("newAttributes", DM::STRING_LIST, &this->newAttributes);
+    this->addParameter("onlySelected", DM::BOOL, &this->onlySelected);
     this->addData("Data", data);
 }
 
@@ -59,6 +61,10 @@ void AddDataToNewView::run()
          it != cmp.end();
          ++it) {
         DM::Component * c = sys->getComponent(it->first);
+        if  (this->onlySelected) {
+            if (c->getAttribute("selected")->getDouble() < 0.0001)
+                continue;
+        }
         /*foreach (std::string attr, newAttributes) {
             DM::Attribute * a = c->getAttribute(attr)
         }*/

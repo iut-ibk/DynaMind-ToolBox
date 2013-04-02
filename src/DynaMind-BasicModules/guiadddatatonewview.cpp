@@ -22,6 +22,8 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
         ui->comboBox_views->addItem(QString::fromStdString(s));
     }
 
+    ui->checkBox_onlySelected->setChecked(m->getParameter<bool>("onlySelected"));
+
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
     if (!nameofexview.empty()) {
         int index = ui->comboBox_views->findText(QString::fromStdString(nameofexview));
@@ -62,6 +64,7 @@ void GUIAddDatatoNewView::accept() {
     std::string nameofExistingView = ui->comboBox_views->currentText().toStdString();
     this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
     this->m->setParameterValue("NameOfExistingView", nameofExistingView);
+    this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
 
     DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
