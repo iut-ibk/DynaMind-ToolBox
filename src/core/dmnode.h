@@ -139,7 +139,7 @@ class Vector3
 public:
     double x,y,z;
 
-    Vector3(){}
+    Vector3(){x=y=z=0.0;}
     Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
     Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
 };
