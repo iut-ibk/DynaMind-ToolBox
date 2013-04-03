@@ -72,7 +72,6 @@ void iterate_components(DM::System *system, DM::View v, CB &callback = CB()) {
                 color.setY(c[1]);
                 color.setZ(c[2]);*/
             }
-			// TODO change return type of triangluation
             std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
             foreach (DM::Node n, nodes) 
 			{
@@ -143,15 +142,11 @@ void iterate_rasterdata(DM::System *system, DM::View v, CB &callback = CB()) {
 
     callback(system, v, r, 0, 0, before);
 
-    std::vector<DM::Node> nodes;
-    TriangulateRasterData::Triangulation(nodes, r);
+    std::vector<DM::Vector3> points;
+    TriangulateRasterData::Triangulation(points, r);
 
-	foreach(DM::Node n, nodes)
-	{
-		DM::Vector3 vec;
-		n.get(&vec.x);
-		callback(system, v, r, &vec, 0, in_between);
-	}
+	for (unsigned int i = 0; i < points.size(); i++)
+		callback(system, v, r, &points[i], 0, in_between);
 
     /*for (unsigned int i = 0; i < nodes.size(); i++) {
         callback(system, v, r, &nodes[i], in_between);
