@@ -82,13 +82,11 @@ private:
 	bool isCached;
 
 protected:
-	QMutex mutex;
+	QMutex* mutex;
 
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
     void SQLDelete();
-
-    //QMutex * mMutex;
 
     QUuid uuid;
     std::map<std::string,Attribute*> ownedattributes;

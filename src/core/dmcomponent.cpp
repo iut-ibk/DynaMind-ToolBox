@@ -57,6 +57,7 @@ static ComponentSyncMap componentSyncMap;
 
 Component::Component()
 {
+	mutex = new QMutex(QMutex::Recursive);
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
     ownedattributes = std::map<std::string,Attribute*>();
@@ -71,6 +72,7 @@ Component::Component()
 
 Component::Component(bool b)
 {
+	mutex = new QMutex(QMutex::Recursive);
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
     ownedattributes = std::map<std::string,Attribute*>();
@@ -97,6 +99,7 @@ void Component::CopyFrom(const Component &c)
 
 Component::Component(const Component& c)
 {
+	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
 	componentSyncMap.insert(this);
 	isCached = true;
@@ -104,14 +107,14 @@ Component::Component(const Component& c)
 
 Component::Component(const Component& c, bool bInherited)
 {
+	mutex = new QMutex(QMutex::Recursive);
     CopyFrom(c);
 	isCached = false;
 }
 
 Component::~Component()
 {
-	QMutexLocker ml(&mutex);
-
+	mutex->lockInline();
 	mforeach(Attribute* a, ownedattributes)
 		delete a;
 
@@ -120,11 +123,13 @@ Component::~Component()
 		componentSyncMap.erase(this);
 	// if this class is not of type component, nothing will happen
     SQLDelete();
+	mutex->unlockInline();
+	delete mutex;
 }
 
 Component& Component::operator=(const Component& other)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	if(this != &other)
 	{
@@ -148,7 +153,7 @@ std::string Component::getUUID()
 	std::string name = a->getString();
 	if(name == "")	
 	{
-		QMutexLocker ml(&mutex);
+		QMutexLocker ml(mutex);
 
 		name = QUuid::createUuid().toString().toStdString();
 		a->setString(name);
@@ -173,7 +178,7 @@ QString Component::getTableName()
 
 bool Component::addAttribute(std::string name, double val) 
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
@@ -183,7 +188,7 @@ bool Component::addAttribute(std::string name, double val)
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	if(HasAttribute(name))
         return this->changeAttribute(name, val);
@@ -193,7 +198,7 @@ bool Component::addAttribute(std::string name, std::string val)
 
 bool Component::addAttribute(const Attribute &newattribute)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     if(HasAttribute(newattribute.getName()))
         return this->changeAttribute(newattribute);
@@ -207,7 +212,7 @@ bool Component::addAttribute(const Attribute &newattribute)
 
 bool Component::addAttribute(Attribute *pAttribute)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     if(HasAttribute(pAttribute->getName()))
         delete ownedattributes[pAttribute->getName()];
@@ -219,7 +224,7 @@ bool Component::addAttribute(Attribute *pAttribute)
 
 bool Component::changeAttribute(const Attribute &newattribute)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     getAttribute(newattribute.getName())->Change(newattribute);
     return true;
@@ -227,7 +232,7 @@ bool Component::changeAttribute(const Attribute &newattribute)
 
 bool Component::changeAttribute(std::string s, double val)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     getAttribute(s)->setDouble(val);
     return true;
@@ -235,7 +240,7 @@ bool Component::changeAttribute(std::string s, double val)
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     getAttribute(s)->setString(val);
     return true;
@@ -243,7 +248,7 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	return delete_element(&ownedattributes, name);
 }
@@ -253,7 +258,7 @@ Attribute* Component::getAttribute(std::string name)
 	Attribute* a;
 	if(!map_contains(&ownedattributes, name, a))
 	{
-		QMutexLocker ml(&mutex);
+		QMutexLocker ml(mutex);
 
 		a = new Attribute(name);
 		a->SetOwner(this);
@@ -274,21 +279,21 @@ Component* Component::clone()
 
 void Component::setView(std::string view)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     this->inViews.insert(view);
 }
 
 void Component::setView(const DM::View & view)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     this->inViews.insert(view.getName());
 }
 
 void Component::removeView(const View &view)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     this->inViews.erase(view.getName());
 }
@@ -305,14 +310,14 @@ System * Component::getCurrentSystem()
 
 void Component::setCurrentSystem(System *sys) 
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     this->currentSys = sys;
 }
 
 void Component::SetOwner(Component *owner)
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
     currentSys = owner->getCurrentSystem();
 
@@ -322,7 +327,7 @@ void Component::SetOwner(Component *owner)
 
 void Component::SaveToDb()
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	if(this->getType() != DM::COMPONENT || !currentSys)
 		return;
@@ -339,7 +344,7 @@ void Component::SaveToDb()
 }
 void Component::SQLDelete()
 {
-	QMutexLocker ml(&mutex);
+	QMutexLocker ml(mutex);
 
 	if(isInserted)
 	{
