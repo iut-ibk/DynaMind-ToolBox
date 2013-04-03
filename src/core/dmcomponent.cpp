@@ -61,16 +61,12 @@ Component::Component()
     uuid = QUuid::createUuid();
     ownedattributes = std::map<std::string,Attribute*>();
 
-    //mMutex = new QMutex(QMutex::Recursive);
-
     inViews = std::set<std::string>();
     currentSys = NULL;
 
     DBConnector::getInstance();
-    //SQLInsertComponent();
 	isCached = true;
 	componentSyncMap.insert(this);
-	//componentSyncMap.push_back(this);
 }
 
 Component::Component(bool b)
@@ -93,7 +89,6 @@ void Component::CopyFrom(const Component &c)
 
 	mforeach(Attribute* a, c.ownedattributes)
 	{
-		//this->addAttribute(*a);
 		Attribute* newa = new Attribute(*a);
 		ownedattributes[newa->getName()] = newa;
 		newa->SetOwner(this);
@@ -103,10 +98,8 @@ void Component::CopyFrom(const Component &c)
 Component::Component(const Component& c)
 {
 	CopyFrom(c);
-	//SQLInsertComponent();
 	componentSyncMap.insert(this);
 	isCached = true;
-	//componentSyncMap.push_back(this);
 }
 
 Component::Component(const Component& c, bool bInherited)
@@ -121,7 +114,6 @@ Component::~Component()
 		delete a;
 
 	ownedattributes.clear();
-	//componentSyncMap.remove(this);
 	if(isCached)
 		componentSyncMap.erase(this);
 	// if this class is not of type component, nothing will happen
