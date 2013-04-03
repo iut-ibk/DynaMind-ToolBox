@@ -132,7 +132,7 @@ execute function x and set the error code equal to its return value.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <math.h>
 #include <float.h>                                                             //(2.00.12 - LR)
 #include "hash.h"    

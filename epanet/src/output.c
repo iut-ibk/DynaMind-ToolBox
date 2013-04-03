@@ -14,7 +14,7 @@ AUTHOR:     L. Rossman
 
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <math.h>
 #include "text.h"
 #include "types.h"
