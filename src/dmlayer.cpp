@@ -304,7 +304,8 @@ struct FaceLineDrawer {
         glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
         glVertex3dv(tmp);*/
-		glColor3f(color->x, color->y, color->z);
+		if(color)	glColor3f(color->x, color->y, color->z);
+		else		glColor3f(0,0,0);
 		glVertex3d(point->x, point->y, point->z);
     }
 };
@@ -334,7 +335,8 @@ struct GeomtryDrawer {
         glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
         glVertex3dv(tmp);*/
-		glColor3f(color->x, color->y, color->z);
+		if(color)	glColor3f(color->x, color->y, color->z);
+		else		glColor3f(0,0,0);
 		glVertex3d(point->x, point->y, point->z);
     }
 };
