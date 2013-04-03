@@ -100,6 +100,8 @@ Node::~Node()
 }
 void Node::SetOwner(Component *owner)
 {
+	QMutexLocker ml(&mutex);
+
     currentSys = owner->getCurrentSystem();
     if(currentSys)
     {
@@ -165,6 +167,8 @@ std::vector<Edge*> Node::getEdges() const
 
 void Node::set(double x, double y, double z)
 {
+	QMutexLocker ml(&mutex);
+
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	v->x = x;
 	v->y = y;
@@ -174,18 +178,21 @@ void Node::set(double x, double y, double z)
 void Node::setX(double x)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(&mutex);
     v->x = x;
 }
 
 void Node::setY(double y)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(&mutex);
     v->y = y;
 }
 
 void Node::setZ(double z)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(&mutex);
     v->z = z;
 }
 
@@ -196,6 +203,8 @@ Component* Node::clone()
 
 Node& Node::operator=(const Node& other)
 {
+	QMutexLocker ml(&mutex);
+
 	if(this != &other)
 	{
 		this->isInserted = false;
