@@ -267,6 +267,12 @@ void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector
 void LoopCreator::calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes, double &min, double &max, double &mean)
 {
     std::vector<double> elevations;
+    min = 0;
+    max = 0;
+    mean = 0;
+
+    if(!nodes.size())
+        return;
 
     for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
         elevations.push_back(static_cast<DM::Node*>((*itr).second)->getZ());
