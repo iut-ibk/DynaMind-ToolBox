@@ -272,6 +272,11 @@ std::vector<DM::Node> CGALGeometry::FaceTriangulation(System *sys, Face *f)
     return triangles;
 }
 
+void CGALGeometry::FaceTriangulation(System *sys, Face *f, std::vector<DM::Node> &triangles)
+{
+    CGALTriangulation::Triangulation(sys, f, triangles);
+}
+
 std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *f, std::vector<int> & ids, double meshsize)
 {
     std::vector<DM::Node> triangles;

@@ -23,10 +23,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #include "triangulaterasterdata.h"
 
-void TriangulateRasterData::Triangulation(std::vector<DM::Node> & nodes, DM::RasterData * rData) {
+void TriangulateRasterData::Triangulation(std::vector<DM::Vector3> & nodes, DM::RasterData * rData) {
 
     unsigned long Y = rData->getHeight();
     unsigned long X = rData->getWidth();
@@ -38,22 +38,23 @@ void TriangulateRasterData::Triangulation(std::vector<DM::Node> & nodes, DM::Ras
     double lX = rData->getCellSizeX();
     double lY = rData->getCellSizeY();
 
-    nodes.reserve(Y*X*6);
+    //nodes.reserve(Y*X*6);
 
     for (unsigned long  y = 0; y < Y; y++) {
         for (unsigned long  x = 0; x < X; x++) {
             double val = rData->getCell(x,y);
             if (val == noData)
                 continue;
-            nodes.push_back( DM::Node( (x-0.5) * lX + OX ,  (y-0.5) * lY + OY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
-            nodes.push_back( DM::Node( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x-0.5) * lX + OX ,  (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
 
-            nodes.push_back( DM::Node( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
-            nodes.push_back( DM::Node( (x+0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x-0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x+0.5) * lX + OX,   (y-0.5) * lY + OY, val) );
+            nodes.push_back( DM::Vector3( (x+0.5) * lX + OX,   (y+0.5) * lY + OY, val) );
 
         }
     }
 
 }
+*/

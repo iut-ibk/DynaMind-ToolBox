@@ -48,6 +48,7 @@ namespace DM {
          * Every trinagle is defined by 3 nodes.
          */
         static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
+        static void FaceTriangulation(DM::System * sys, DM::Face * f,  std::vector<DM::Node> &triangles);
 
         /** @brief Regular Triangulation
          */

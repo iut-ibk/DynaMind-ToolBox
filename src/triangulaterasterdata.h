@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
+/*
 #ifndef TRIANGULATERASTERDATA_H
 #define TRIANGULATERASTERDATA_H
 
@@ -33,7 +33,8 @@
 class DM_HELPER_DLL_EXPORT TriangulateRasterData
 {
 public:
-    static void Triangulation(std::vector<DM::Node> & nodes, DM::RasterData * rData);
+    static void Triangulation(std::vector<DM::Vector3> & nodes, DM::RasterData * rData);
 };
 
 #endif // TRIANGULATERASTERDATA_H
+*/
