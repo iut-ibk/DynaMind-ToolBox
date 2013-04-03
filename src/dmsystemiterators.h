@@ -36,6 +36,7 @@
 #include "dmattribute.h"
 #include "tbvectordata.h"
 #include "cgalgeometry.h"
+//#include "cgaltriangulation.h"
 #include "triangulaterasterdata.h"
 
 #include <dmlogger.h>
@@ -73,9 +74,9 @@ void iterate_components(DM::System *system, DM::View v, CB &callback = CB())
             if (c.size() > 2)
 				color = DM::Vector3(c[0],c[1],c[2]);
 			
-            //std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
+           // std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
             std::vector<DM::Node> nodes;
-			DM::CGALGeometry::Triangulation(system, f, nodes);
+			DM::CGALGeometry::FaceTriangulation(system, f, nodes);
             
 			DM::Vector3 vec;
 			foreach (const DM::Node &n, nodes) 

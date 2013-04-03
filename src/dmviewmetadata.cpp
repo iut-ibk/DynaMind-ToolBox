@@ -55,7 +55,7 @@ ViewMetaData::ViewMetaData(std::string attribute)
 }
 
 void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component *c, DM::Vector3 *point, DM::Vector3 *color, iterator_pos pos) {
-    /*if (pos == before && !fromNode) {
+    if (pos == before && !fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
         if (a->getType() == Attribute::DOUBLE) {
             attr_max = std::max(attr_max, a->getDouble());
@@ -106,7 +106,7 @@ void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component 
 
     const double tmp[3] = {point->x, point->y, point->z};
     min_vec(tmp);
-    max_vec(tmp);*/
+    max_vec(tmp);
 
 }
 
