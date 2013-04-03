@@ -54,7 +54,7 @@ ViewMetaData::ViewMetaData(std::string attribute)
     fromNode = true;
 }
 
-void ViewMetaData::operator()(DM::System *sys, DM::View v, DM::Component *c, DM::Node *n, iterator_pos pos) {
+void ViewMetaData::operator()(DM::System *sys, DM::View v, DM::Component *c, DM::Vector3 *point, DM::Vector3 *color, iterator_pos pos) {
     if (pos == before && !fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
         if (a->getType() == Attribute::DOUBLE) {
@@ -104,7 +104,7 @@ void ViewMetaData::operator()(DM::System *sys, DM::View v, DM::Component *c, DM:
     }
     if (pos != in_between) return;
 
-    const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+    const double tmp[3] = {point->x, point->y, point->z};
     min_vec(tmp);
     max_vec(tmp);
 

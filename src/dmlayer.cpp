@@ -72,7 +72,7 @@ struct SimpleDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, void *f_e, DM::Node *n, iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, void *f_e, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             glBegin(SD_GL_PRIMITIVE);
@@ -85,8 +85,7 @@ struct SimpleDrawer {
             return;
         }
         glColor3f(0, 0, 0);
-        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        glVertex3dv(tmp);
+        glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -124,7 +123,7 @@ struct TesselatedFaceDrawer {
         delete dialog;
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Node *n, iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
         if (pos == after) {
             render();
             polygon.clear();
@@ -160,8 +159,7 @@ struct TesselatedFaceDrawer {
 
         if (pos != in_between) return;
 
-        Point_2 p(n->getX(), n->getY());
-        polygon.push_back(p);
+        polygon.push_back(Point_2(point->x, point->y));
     }
 
     void render() {
@@ -282,7 +280,7 @@ struct FaceLineDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             glBegin(GL_LINE_STRIP);
@@ -300,15 +298,14 @@ struct FaceLineDrawer {
             return;
         }
 
-        DM::Node * n = (DM::Node*) node;
+       /* DM::Node * n = (DM::Node*) node;
         if (!first)
             first = n;
         glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        glVertex3dv(tmp);
-
-
-
+        glVertex3dv(tmp);*/
+		glColor3f(color->x, color->y, color->z);
+		glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -320,7 +317,7 @@ struct GeomtryDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             //glBegin(GL_LINE_STRIP);
@@ -333,10 +330,12 @@ struct GeomtryDrawer {
             name_start++;
             return;
         }
-        DM::Node * n = (DM::Node*) node;
+        /*DM::Node * n = (DM::Node*) node;
         glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        glVertex3dv(tmp);
+        glVertex3dv(tmp);*/
+		glColor3f(color->x, color->y, color->z);
+		glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -353,7 +352,7 @@ struct RasterDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             const ViewMetaData &vmd = l.getViewMetaData();
             this->attr_span = vmd.attr_max - vmd.attr_min;
@@ -368,11 +367,11 @@ struct RasterDrawer {
             return;
         }
 
-        DM::Node * n = (DM::Node*) node;
-        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
+        //DM::Node * n = (DM::Node*) node;
+        //const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
         if (attr_span != 0) {
             const ViewMetaData &vmd = l.getViewMetaData();
-            current_tex = (n->getZ()- vmd.attr_min) / attr_span * 255;
+            current_tex = (point->z - vmd.attr_min) / attr_span * 255;
         } else {
             current_tex = 0.0;
         }
@@ -381,7 +380,7 @@ struct RasterDrawer {
 
         if (current_tex < 0) {
             glColor3f(0.0, 0.0, 0.0);
-            glVertex3dv(tmp);
+			glVertex3d(point->x, point->y, point->z);
             return;
         }
 
@@ -391,7 +390,7 @@ struct RasterDrawer {
         float a = l.LayerColor[(int)current_tex][3]/255.;
 
         glColor3f(r, g, b);
-        glVertex3dv(tmp);
+		glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -415,7 +414,7 @@ struct MeshDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Node *node,  iterator_pos pos) {
+    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
 
         if (pos == before) {
             const ViewMetaData &vmd = l.getViewMetaData();
@@ -444,16 +443,17 @@ struct MeshDrawer {
             current_tex = 0.0;
         }
 
-        DM::Node * n = (DM::Node*) node;
+        /*DM::Node * n = (DM::Node*) node;
 
 
         const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-
+		*/
 
 
         if (current_tex < 0) {
             glColor3f(0.0, 0.0, 0.0);
-            glVertex3dv(tmp);
+            //glVertex3dv(tmp);
+			glVertex3d(point->x, point->y, point->z);
             return;
         }
 
@@ -463,7 +463,8 @@ struct MeshDrawer {
         float a = l.LayerColor[(int)current_tex][3]/255.;
 
         glColor3f(r, g, b);
-        glVertex3dv(tmp);
+        //glVertex3dv(tmp);
+		glVertex3d(point->x, point->y, point->z);
     }
 };
 

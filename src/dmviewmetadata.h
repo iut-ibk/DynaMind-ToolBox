@@ -42,7 +42,7 @@ struct DM_HELPER_DLL_EXPORT ViewMetaData {
     void max_vec(const double *other);
     void min_vec(const double *other);
     
-    void operator()(System *, View , Component *f, Node *n, iterator_pos pos);
+    void operator()(System *, View , Component *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos);
     
     double radius() const;
     
