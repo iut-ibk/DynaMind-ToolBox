@@ -241,6 +241,7 @@ void DBWorker::run()
 	std::list<QueryList*>::iterator it;
 	std::list<QueryList*>::iterator end;
 	QueryList* ql;
+	unsigned long curWait = WORKER_SLEEP_TIME_MIN;
 	while(!kill)
 	{
 		end = queryLists.end();
@@ -260,16 +261,30 @@ void DBWorker::run()
 		}
 
 		// wait loop
-		while(true)
+		bool wait = true;
+		while(wait)
 		{
-			if(queryLists.size() || qSelect)
+			if(!queryStack.IsEmpty() || qSelect)
+			{
+				curWait = WORKER_SLEEP_TIME_MIN;
+				wait = false;
 				break;
+			}
 
 			for(it = queryLists.begin(); it != queryLists.end(); ++it)	// faster then foreach
+			{
 				if((*it)->queryStack.IsMaxOneLeft())
+				{
+					curWait = WORKER_SLEEP_TIME_MIN;
+					wait = false;
 					break;
-
-			msleep(WORKER_SLEEP_TIME);
+				}
+			}
+			if(wait)
+			{
+				msleep(curWait);
+				curWait = min(curWait*2,(unsigned long)WORKER_SLEEP_TIME_MAX);
+			}
 		}
 
 		//WaitIfNothingToDo();

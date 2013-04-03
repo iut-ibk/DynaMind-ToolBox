@@ -255,9 +255,11 @@ public:
 // greatly improves performance
 //#define NO_DB_SYNC
 
-// time in milliseconds to wait, if worker is idle
-// recommendation 1ms
-#define WORKER_SLEEP_TIME 5
+// time in milliseconds to wait, if worker is idle. starts with min, doubles
+// at each idle loop tick.
+// recommendation 1,128
+#define WORKER_SLEEP_TIME_MIN 1
+#define WORKER_SLEEP_TIME_MAX 64
 
 // timeinterval in milliseconds to wait for finished select states and new queries
 // recommendation 1ms
