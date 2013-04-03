@@ -73,19 +73,20 @@ struct SimpleDrawer {
     }
 
     void operator()(DM::System *s, const DM::View& v, void *f_e, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
-        if (pos == before) {
+		if(pos == in_between)
+			glVertex3dv(&point->x);
+		else if (pos == before) 
+		{
             glPushName(name_start);
             glBegin(SD_GL_PRIMITIVE);
-            return;
-        }
-        if (pos == after) {
+			glColor3f(0, 0, 0);
+        } 
+		else if (pos == after) 
+		{
             glEnd();
             glPopName();
             name_start++;
-            return;
         }
-        glColor3f(0, 0, 0);
-        glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -100,23 +101,21 @@ struct TesselatedFaceDrawer {
     QProgressDialog *dialog;
 
     TesselatedFaceDrawer(const Layer &l, QWidget *parent)
-        : l(l), height_scale(0.0), name_start(l.getNameStart()) {
-
+        : l(l), height_scale(0.0), name_start(l.getNameStart()) 
+	{
         dialog = new QProgressDialog("Tesselating Polygons...", "cancel",
                                      0, l.getViewMetaData().number_of_primitives,
                                      parent);
         dialog->show();
 
-        if (l.getAttribute() == "") {
+        if (l.getAttribute() == "")
             return;
-        }
 
         const ViewMetaData &vmd = l.getViewMetaData();
         this->attr_span = vmd.attr_max - vmd.attr_min;
 
-        if (l.getHeightInterpretation() > 0.0 && this->attr_span != 0.0) {
+        if (l.getHeightInterpretation() > 0.0 && this->attr_span != 0.0)
             this->height_scale = 1.0/this->attr_span*vmd.radius() * l.getHeightInterpretation();
-        }
     }
 
     ~TesselatedFaceDrawer() {
@@ -124,46 +123,48 @@ struct TesselatedFaceDrawer {
     }
 
     void operator()(DM::System *s, const DM::View& v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
-        if (pos == after) {
+        if (pos == after) 
+		{
             render();
             polygon.clear();
             name_start++;
             current_height = 0.0;
             current_tex = 0.0;
             dialog->setValue(dialog->value()+1);
-            return;
         }
-        if (pos == before) {
-            if (height_scale > 0) {
+        else if (pos == before) 
+		{
+            if (height_scale > 0) 
+			{
                 Attribute *a = f->getAttribute(l.getAttribute());
-                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
+                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) 
+				{
                     double attr_value = a->getDoubleVector()[l.getAttributeVectorName()];
                     current_height = attr_value * height_scale;
-                } else {
+                } 
+				else
                     current_height = f->getAttribute(l.getAttribute())->getDouble() * height_scale;
-                }
             }
-            if (glIsTexture(l.getColorInterpretation())) {
+            if (glIsTexture(l.getColorInterpretation())) 
+			{
                 const ViewMetaData &vmd = l.getViewMetaData();
                 Attribute *a = f->getAttribute(l.getAttribute());
-                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
+                if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) 
                     current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
-                } else {
+                else
                     current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
-                }
-            } else {
+			}
+            else
                 current_tex = 0.0;
-            }
-            return;
         }
-
-        if (pos != in_between) return;
-
-        polygon.push_back(Point_2(point->x, point->y));
+		else
+			polygon.push_back(Point_2(point->x, point->y));
     }
 
     void render() {
-        if (glIsTexture(l.getColorInterpretation())) {
+		bool withTexture = glIsTexture(l.getColorInterpretation());
+        if (withTexture)
+		{
             glEnable(GL_TEXTURE_1D);
             glBindTexture(GL_TEXTURE_1D, l.getColorInterpretation());
         }
@@ -189,25 +190,29 @@ struct TesselatedFaceDrawer {
                                                 std::back_inserter(tesselated), validity_traits);
 
         glPushName(name_start);
-        foreach(Polygon_2 poly, tesselated) {
+        foreach(Polygon_2 poly, tesselated) 
+		{
 #if 1
             glBegin(GL_POLYGON);
-
-            foreach(Point_2 p, poly.container()) {
-                if (glIsTexture(l.getColorInterpretation())) {
+			if(withTexture)
                     glColor4f(1.0, 1.0, 1.0, 0.75);
-                    glTexCoord1d(current_tex);
-                } else {
+			else
                     glColor3f(0.0, 0.0, 0.0);
-                }
+
+
+            foreach(Point_2 p, poly.container()) 
+			{
+                if (withTexture) 
+                    glTexCoord1d(current_tex);
+
                 glVertex3d(CGAL::to_double(p.x()), CGAL::to_double(p.y()), current_height);
             }
 #else
             glBegin(GL_LINE_STRIP);
             glColor3f(.0f, .0f, .0f);
-            foreach(Point_2 p, poly.container()) {
+            foreach(Point_2 p, poly.container())
                 glVertex3d(p.x(), p.y(), 0);
-            }
+
             Point_2 first = poly.container().front();
             glVertex3d(first.x(), first.y(), 0);
 #endif
@@ -215,7 +220,8 @@ struct TesselatedFaceDrawer {
             glEnd();
         }
         glPopName();
-        if (glIsTexture(l.getColorInterpretation())) glDisable(GL_TEXTURE_1D);
+        if (withTexture) 
+			glDisable(GL_TEXTURE_1D);
     }
 };
 
@@ -233,111 +239,100 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
     QStringList view_attr = attr.split(":");
 
 
-    if (view.getType() == DM::COMPONENT || this->as3DObject == true) {
+    if (view.getType() == DM::COMPONENT || this->as3DObject == true)
         this->rtype = GEOMETRYDRAWER;
+    else if (view.getType() == DM::FACE)
+	{
+		if(this->asMesh)
+			this->rtype = MESHDRAWER;
+		else if(!this->as3DObject && !this->asMesh)
+		{
+			if (!asLine)
+				this->rtype = DM::TESSELATEDFACEDRAWER;
+			else
+				this->rtype = DM::FACELINEDRAWER;
+		}
     }
-    if (view.getType() == DM::FACE && this->asMesh) {
-        this->rtype = MESHDRAWER;
-    }
-    if (view.getType() == DM::FACE && !this->as3DObject && !this->asMesh) {
-        if (!asLine)
-            this->rtype = DM::TESSELATEDFACEDRAWER;
-        else
-            this->rtype = DM::FACELINEDRAWER;
-
-    }
-    if (view.getType() == DM::EDGE) {
+    else if (view.getType() == DM::EDGE)
         this->rtype = SIMPLEDRAWEREDGES;
-    }
-    if (view.getType() == DM::NODE) {
+    else if (view.getType() == DM::NODE)
         this->rtype = SIMPLEDRAWERNODES;
-    }
-    if (view.getType() == DM::RASTERDATA) {
+    else if (view.getType() == DM::RASTERDATA)
+	{
         this->rtype = RASTERDRAWER;
         vmd = ViewMetaData("");
     }
 
+    if (view_attr.size() == 2)
+	{
+		this->attributeView = *(system->getViewDefinition(view_attr[0].toStdString()));
+		this->attribute = view_attr[1].toStdString();
 
-
-    if (view_attr.size() != 2)
-        return;
-    this->attributeView = *(system->getViewDefinition(view_attr[0].toStdString()));
-    this->attribute = view_attr[1].toStdString();
-
-    vmd = ViewMetaData(this->attribute);
-
-
-
-
+		vmd = ViewMetaData(this->attribute);
+	}
 }
 
-struct FaceLineDrawer {
-
+struct FaceLineDrawer 
+{
     GLuint name_start;
     DM::Node * first;
     DM::Node * last;
     FaceLineDrawer(const Layer &l) : name_start(l.getNameStart()) {
-
     }
 
     void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
-        if (pos == before) {
+		if(pos==in_between)
+		{
+			if(color)	glColor3dv(&color->x);
+			else		glColor3f(0,0,0);
+			glVertex3dv(&point->x);
+		}
+		else if (pos == before) 
+		{
             glPushName(name_start);
             glBegin(GL_LINE_STRIP);
             first = 0;
-            return;
         }
-        if (pos == after) {
-            if (first) {
+        else if (pos == after) 
+		{
+            if (first) 
+			{
                 const double tmp[3] = {first->getX(), first->getY(), first->getZ()};
                 glVertex3dv(tmp);
             }
             glEnd();
             glPopName();
             name_start++;
-            return;
         }
-
-       /* DM::Node * n = (DM::Node*) node;
-        if (!first)
-            first = n;
-        glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
-        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        glVertex3dv(tmp);*/
-		if(color)	glColor3f(color->x, color->y, color->z);
-		else		glColor3f(0,0,0);
-		glVertex3d(point->x, point->y, point->z);
     }
 };
 
-struct GeomtryDrawer {
-
+struct GeomtryDrawer 
+{
     GLuint name_start;
 
     GeomtryDrawer(const Layer &l) : name_start(l.getNameStart()) {
-
     }
 
     void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
-        if (pos == before) {
+		if(pos == in_between)
+		{
+			if(color)	glColor3dv(&color->x);
+			else		glColor3f(0,0,0);
+			glVertex3dv(&point->x);
+		}
+		else if (pos == before) 
+		{
             glPushName(name_start);
             //glBegin(GL_LINE_STRIP);
             glBegin(GL_TRIANGLES);
-            return;
         }
-        if (pos == after) {
+        else if (pos == after) 
+		{
             glEnd();
             glPopName();
             name_start++;
-            return;
         }
-        /*DM::Node * n = (DM::Node*) node;
-        glColor3f(node->getAttribute("r")->getDouble(), node->getAttribute("g")->getDouble(), node->getAttribute("b")->getDouble());
-        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        glVertex3dv(tmp);*/
-		if(color)	glColor3f(color->x, color->y, color->z);
-		else		glColor3f(0,0,0);
-		glVertex3d(point->x, point->y, point->z);
     }
 };
 
@@ -347,170 +342,168 @@ struct RasterDrawer {
     double current_tex;
     const Layer &l;
     double attr_span;
-    RasterDrawer(const Layer &l) : l(l), name_start(l.getNameStart()) {
-
+    RasterDrawer(const Layer &l) : l(l), name_start(l.getNameStart()) 
+	{
         const ViewMetaData &vmd = l.getViewMetaData();
         this->attr_span = vmd.attr_max - vmd.attr_min;
-
     }
 
-    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
-        if (pos == before) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) 
+	{
+		if(pos == in_between)
+		{
+			if (attr_span != 0) 
+			{
+				const ViewMetaData &vmd = l.getViewMetaData();
+				current_tex = (point->z - vmd.attr_min) / attr_span * 255;
+			} 
+			else
+				current_tex = 0.0;
+
+			if (current_tex < 0) 
+			{
+				glColor3f(0,0,0);
+				glVertex3dv(&point->x);
+				return;
+			}
+			else
+			{
+				float r = l.LayerColor[(int)current_tex][0]/255.;
+				float g = l.LayerColor[(int)current_tex][1]/255.;
+				float b = l.LayerColor[(int)current_tex][2]/255.;
+				//float a = l.LayerColor[(int)current_tex][3]/255.;
+
+				glColor3f(r, g, b);
+				glVertex3dv(&point->x);
+			}
+		}
+        else if (pos == before) 
+		{
             const ViewMetaData &vmd = l.getViewMetaData();
             this->attr_span = vmd.attr_max - vmd.attr_min;
             glPushName(name_start);
             glBegin(GL_TRIANGLES);
-            return;
         }
-        if (pos == after) {
+        else if (pos == after) 
+		{
             glEnd();
             glPopName();
             name_start++;
-            return;
         }
-
-        //DM::Node * n = (DM::Node*) node;
-        //const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-        if (attr_span != 0) {
-            const ViewMetaData &vmd = l.getViewMetaData();
-            current_tex = (point->z - vmd.attr_min) / attr_span * 255;
-        } else {
-            current_tex = 0.0;
-        }
-
-
-
-        if (current_tex < 0) {
-            glColor3f(0.0, 0.0, 0.0);
-			glVertex3d(point->x, point->y, point->z);
-            return;
-        }
-
-        float r = l.LayerColor[(int)current_tex][0]/255.;
-        float g = l.LayerColor[(int)current_tex][1]/255.;
-        float b = l.LayerColor[(int)current_tex][2]/255.;
-        float a = l.LayerColor[(int)current_tex][3]/255.;
-
-        glColor3f(r, g, b);
-		glVertex3d(point->x, point->y, point->z);
     }
 };
 
-struct MeshDrawer {
-
+struct MeshDrawer 
+{
     GLuint name_start;
     double current_tex;
     const Layer &l;
     double attr_span;
 
     MeshDrawer(const Layer &l)
-        : l(l), name_start(l.getNameStart()) {
-
-
-        if (l.getAttribute() == "") {
+        : l(l), name_start(l.getNameStart()) 
+	{
+        if (l.getAttribute() == "")
             return;
-        }
 
         const ViewMetaData &vmd = l.getViewMetaData();
         this->attr_span = vmd.attr_max - vmd.attr_min;
-
     }
 
-    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos)
+	{
+		if(pos == in_between)
+		{
+			if (attr_span != 0) 
+			{
+				const ViewMetaData &vmd = l.getViewMetaData();
+				Attribute *a = cmp->getAttribute(l.getAttribute());
 
-        if (pos == before) {
+				if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES)
+					current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span *255;
+				else
+					current_tex = (a->getDouble() - vmd.attr_min) / attr_span * 255;
+			}
+			else
+				current_tex = 0.0;
+
+			if (current_tex < 0)
+				glColor3f(0.0, 0.0, 0.0);
+			else
+			{
+				float r = l.LayerColor[(int)current_tex][0]/255.;
+				float g = l.LayerColor[(int)current_tex][1]/255.;
+				float b = l.LayerColor[(int)current_tex][2]/255.;
+				//float a = l.LayerColor[(int)current_tex][3]/255.;
+				glColor3f(r, g, b);
+			}
+			glVertex3dv(&point->x);
+		}
+        if (pos == before) 
+		{
             const ViewMetaData &vmd = l.getViewMetaData();
             this->attr_span = vmd.attr_max - vmd.attr_min;
             glPushName(name_start);
             glBegin(GL_TRIANGLES);
-            return;
         }
-        if (pos == after) {
+        if (pos == after) 
+		{
             glEnd();
             glPopName();
             name_start++;
-            return;
         }
-
-        if (attr_span != 0) {
-            const ViewMetaData &vmd = l.getViewMetaData();
-            Attribute *a = cmp->getAttribute(l.getAttribute());
-
-            if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES) {
-                current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span *255;
-            } else {
-                current_tex = (a->getDouble() - vmd.attr_min) / attr_span * 255;
-            }
-        } else {
-            current_tex = 0.0;
-        }
-
-        /*DM::Node * n = (DM::Node*) node;
-
-
-        const double tmp[3] = {n->getX(), n->getY(), n->getZ()};
-		*/
-
-
-        if (current_tex < 0) {
-            glColor3f(0.0, 0.0, 0.0);
-            //glVertex3dv(tmp);
-			glVertex3d(point->x, point->y, point->z);
-            return;
-        }
-
-        float r = l.LayerColor[(int)current_tex][0]/255.;
-        float g = l.LayerColor[(int)current_tex][1]/255.;
-        float b = l.LayerColor[(int)current_tex][2]/255.;
-        float a = l.LayerColor[(int)current_tex][3]/255.;
-
-        glColor3f(r, g, b);
-        //glVertex3dv(tmp);
-		glVertex3d(point->x, point->y, point->z);
     }
 };
 
 
-void Layer::draw(QWidget *parent) {
-    if (lists.size() <= attribute_vector_name) {
+void Layer::draw(QWidget *parent) 
+{
+    if (lists.size() <= attribute_vector_name)
         lists.resize(attribute_vector_name+1, -1);
-    }
-    if (!glIsList(lists[attribute_vector_name])) {
+
+    if (!glIsList(lists[attribute_vector_name])) 
+	{
         lists[attribute_vector_name] = glGenLists(1);
         glNewList(lists[attribute_vector_name], GL_COMPILE);
-        if (rtype == GEOMETRYDRAWER) {
-            GeomtryDrawer drawer(*this);
-            iterate_components(system, view, drawer);
-        }
-        if (rtype == MESHDRAWER) {
-            MeshDrawer drawer(*this);
-            iterate_mesh(system, view, drawer);
-        }
-        if (rtype ==  FACELINEDRAWER) {
-            FaceLineDrawer drawer(*this);
-            iterate_faces(system, view, drawer);
-        }
-        if (rtype == TESSELATEDFACEDRAWER) {
-            TesselatedFaceDrawer drawer(*this, parent);
-            iterate_faces(system, view, drawer);
-        }
-        if (rtype == SIMPLEDRAWERNODES) {
-            SimpleDrawer<GL_POINTS> drawer(*this);
-            iterate_nodes(system, view, drawer);
-        }
-        if (rtype == SIMPLEDRAWEREDGES) {
-            SimpleDrawer<GL_LINES> drawer(*this);
-            iterate_edges(system, view, drawer);
-        }
-        if (rtype == SIMPLEDRAWEREDGES) {
-            SimpleDrawer<GL_LINES> drawer(*this);
-            iterate_edges(system, view, drawer);
-        }
-        if (rtype == RASTERDRAWER) {
-            RasterDrawer drawer(*this);
-            iterate_rasterdata(system, view, drawer);
-        }
 
+		switch(rtype)
+		{
+		case GEOMETRYDRAWER:{
+				GeomtryDrawer drawer(*this);
+				iterate_components(system, view, drawer);
+				break;
+			}
+		case MESHDRAWER:{
+				MeshDrawer drawer(*this);
+				iterate_mesh(system, view, drawer);
+				break;
+			}
+		case FACELINEDRAWER:{
+				FaceLineDrawer drawer(*this);
+				iterate_faces(system, view, drawer);
+				break;
+			}
+		case TESSELATEDFACEDRAWER:{
+				TesselatedFaceDrawer drawer(*this, parent);
+				iterate_faces(system, view, drawer);
+				break;
+			}
+		case SIMPLEDRAWERNODES:{
+				SimpleDrawer<GL_POINTS> drawer(*this);
+				iterate_nodes(system, view, drawer);
+				break;
+			}
+		case SIMPLEDRAWEREDGES:{
+				SimpleDrawer<GL_LINES> drawer(*this);
+				iterate_edges(system, view, drawer);
+				break;
+			}
+		case RASTERDRAWER:{
+				RasterDrawer drawer(*this);
+				iterate_rasterdata(system, view, drawer);
+				break;
+			}
+		}
         glEndList();
     }
 
@@ -527,33 +520,34 @@ void Layer::drawWithNames(QWidget *parent) {
 
 void Layer::systemChanged() {
     vmd = ViewMetaData(attribute);
-    if (rtype ==  GEOMETRYDRAWER) {
-        iterate_components(system, view, vmd);
-    }
-    if (rtype ==  MESHDRAWER) {
-        iterate_mesh(system, view, vmd);
-    }
-    if (rtype ==  TESSELATEDFACEDRAWER) {
-        iterate_faces(system, view, vmd);
-    }
-    if (rtype ==  FACELINEDRAWER) {
-        iterate_faces(system, view, vmd);
-    }
-    if (rtype ==  SIMPLEDRAWERNODES) {
-        iterate_nodes(system, view, vmd);
-    }
-    if (rtype ==  SIMPLEDRAWEREDGES) {
-        iterate_edges(system, view, vmd);
-    }
 
-    if (rtype ==  RASTERDRAWER) {
+	switch(rtype)
+	{
+	case GEOMETRYDRAWER:
+        iterate_components(system, view, vmd);
+		break;
+	case MESHDRAWER:
+        iterate_mesh(system, view, vmd);
+		break;
+	case TESSELATEDFACEDRAWER:
+        iterate_faces(system, view, vmd);
+		break;
+	case FACELINEDRAWER:
+        iterate_faces(system, view, vmd);
+		break;
+	case SIMPLEDRAWERNODES:
+        iterate_nodes(system, view, vmd);
+		break;
+	case SIMPLEDRAWEREDGES:
+        iterate_edges(system, view, vmd);
+		break;
+	case RASTERDRAWER:
         iterate_rasterdata(system, view, vmd);
-    }
-    foreach (GLuint list, lists) {
-        if (glIsList(list)) {
+		break;
+	}
+    foreach (GLuint list, lists)
+        if (glIsList(list))
             glDeleteLists(list, 1);
-        }
-    }
 }
 
 
