@@ -372,7 +372,6 @@ struct RasterDrawer {
 				float g = l.LayerColor[(int)current_tex][1]/255.;
 				float b = l.LayerColor[(int)current_tex][2]/255.;
 				//float a = l.LayerColor[(int)current_tex][3]/255.;
-
 				glColor3f(r, g, b);
 				glVertex3dv(&point->x);
 			}
