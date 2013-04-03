@@ -131,6 +131,45 @@ void iterate_nodes(DM::System *system, DM::View v, CB &callback = CB()) {
 }
 
 template<typename CB>
+void rasterdata_triangluation_callback(DM::System *system, DM::RasterData * r, DM::View v, CB &callback)
+{
+	unsigned long Y = r->getHeight();
+    unsigned long X = r->getWidth();
+
+    unsigned long OX = r->getXOffset();
+    unsigned long OY = r->getYOffset();
+
+    double noData = r->getNoValue();
+    double lX = r->getCellSizeX();
+    double lY = r->getCellSizeY();
+
+    for (unsigned long  y = 0; y < Y; y++) {
+        for (unsigned long  x = 0; x < X; x++) {
+            double val = r->getCell(x,y);
+            if (val == noData)
+                continue;
+            DM::Vector3 vec( (x-0.5) * lX + OX ,  (y-0.5) * lY + OY, val);
+			callback(system, v, r, &vec, 0, in_between);
+			vec.x = (x+0.5) * lX + OX;
+			vec.y = (y-0.5) * lY + OY;
+			callback(system, v, r, &vec, 0, in_between);
+			vec.x = (x-0.5) * lX + OX;
+			vec.y = (y+0.5) * lY + OY;
+			callback(system, v, r, &vec, 0, in_between);
+			vec.x = (x-0.5) * lX + OX;
+			vec.y = (y+0.5) * lY + OY;
+			callback(system, v, r, &vec, 0, in_between);
+			vec.x = (x+0.5) * lX + OX;
+			vec.y = (y-0.5) * lY + OY;
+			callback(system, v, r, &vec, 0, in_between);
+			vec.x = (x+0.5) * lX + OX;
+			vec.y = (y+0.5) * lY + OY;
+			callback(system, v, r, &vec, 0, in_between);
+        }
+    }
+}
+
+template<typename CB>
 void iterate_rasterdata(DM::System *system, DM::View v, CB &callback = CB()) {
     DM::ComponentMap cmp = system->getAllComponentsInView(v);
     DM::RasterData * r = 0;
@@ -141,12 +180,15 @@ void iterate_rasterdata(DM::System *system, DM::View v, CB &callback = CB()) {
     }
 
     callback(system, v, r, 0, 0, before);
+	rasterdata_triangluation_callback(system, r, v, callback);
 
-    std::vector<DM::Vector3> points;
+
+
+   /* std::vector<DM::Vector3> points;
     TriangulateRasterData::Triangulation(points, r);
 
 	for (unsigned int i = 0; i < points.size(); i++)
-		callback(system, v, r, &points[i], 0, in_between);
+		callback(system, v, r, &points[i], 0, in_between);*/
 
     /*for (unsigned int i = 0; i < nodes.size(); i++) {
         callback(system, v, r, &nodes[i], in_between);
