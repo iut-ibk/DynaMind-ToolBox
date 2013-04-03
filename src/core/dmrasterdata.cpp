@@ -142,6 +142,8 @@ double RasterData::getCell(long x, long y) const
 
 bool RasterData::setCell(long x, long y, double value)
 {
+	QMutexLocker ml(mutex);
+
     if (  x >-1 && y >-1 && x < this->width && y < this->height) 
 	{
 		SQLSetValue(x,y,value);
@@ -163,7 +165,8 @@ RasterData::~RasterData()
     Component::SQLDelete();
 }
 
-void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) {
+void RasterData::getNeighboorhood(double** d, int width, int height, int x, int y) 
+{
     int dx = (int) (width -1)/2;
     int dy = (int) (height -1)/2;
     int x_cell;
@@ -194,7 +197,8 @@ void RasterData::getNeighboorhood(double** d, int width, int height, int x, int 
         k++;
     }
 }
-void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y) {
+void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y) 
+{
     int counter = 0;
     for ( long j = y-1; j <= y + 1; j++ ) {
         for ( long i = x-1; i <= x + 1; i++ ) {
@@ -255,7 +259,8 @@ void RasterData::getMoorNeighbourhood(std::vector<double> &neigh, long x, long y
     }
 
 }
-std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
+std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const 
+{
     std::vector<double> neigh(9);
     int counter = 0;
     for ( long j = y-1; j <= y + 1; j++ ) {
@@ -319,9 +324,16 @@ std::vector<double>  RasterData::getMoorNeighbourhood(long x, long y) const {
 
 }
 
-void RasterData::setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset) {
-    if (width != this->width || height != this->height || this->cellSizeX != cellsizeX || this->cellSizeY != cellsizeY)
+void RasterData::setSize(long width, long height, 
+						 double cellsizeX, double cellsizeY, 
+						 double xoffset, double yoffset) 
+{
+    if (width != this->width || height != this->height 
+		|| this->cellSizeX != cellsizeX 
+		|| this->cellSizeY != cellsizeY)
     {
+		QMutexLocker ml(mutex);
+
         if(this->width != 0 || this->height != 0)
             SQLDeleteField();
 
@@ -339,7 +351,10 @@ void RasterData::setSize(long width, long height, double cellsizeX, double cells
     }
 }
 
-void RasterData::clear() {
+void RasterData::clear() 
+{
+	QMutexLocker ml(mutex);
+
     for (int y = 0; y < this->height; y++)
         for (int x = 0; x < this->width; x++)
             SQLSetValue(x,y,NoValue);
@@ -359,6 +374,7 @@ void RasterData::SQLInsert()
 
 bool RasterData::setValue(long x, long y, double value)
 {
+	QMutexLocker ml(mutex);
     return setCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY),value);
 }
 

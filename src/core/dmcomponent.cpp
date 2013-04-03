@@ -53,6 +53,7 @@ public:
 	}
 };
 
+static QMutex componentSyncMutex;
 static ComponentSyncMap componentSyncMap;
 
 Component::Component()

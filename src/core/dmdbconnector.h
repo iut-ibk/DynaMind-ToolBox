@@ -159,6 +159,7 @@ private:
 	// a mutex guaranties the receiver to wait until the worker
 	// returns the value (synchronized read)
 	QMutex	selectMutex;
+	QMutex	clientSelectMutex;
 
 	// single select query
 	QSqlQuery *qSelect;
@@ -492,7 +493,7 @@ protected:
     Node*   _last;
     unsigned long    _size;
     unsigned long    _cnt;
-	QMutex	mutex;
+	QMutex*	mutex;
 
 	// sets up a new node; be aware that no linking is done
 	inline Node* newNode(const Tkey &k, Tvalue* v)
@@ -552,10 +553,10 @@ public:
     unsigned long misses;
     void ResetProfilingCounters()
     {
-		mutex.lockInline();
+		mutex->lockInline();
         misses = 0;
         hits = 0;
-		mutex.unlockInline();
+		mutex->unlockInline();
     }
 #endif
 	//!< initializes a new cache structure with the given maximum size; a size of 0 results in an infinite cache
@@ -565,6 +566,7 @@ public:
         _cnt=0;
         _root = NULL;
         _last = NULL;
+		mutex = new QMutex(QMutex::Recursive);
 #ifdef CACHE_PROFILING
             hits = 0;
             misses = 0;
@@ -573,6 +575,7 @@ public:
 	//!< deletes all nodes, leaves the values untouched (non-deep delete)
     ~Cache()
     {
+		mutex->lockInline();
         Node* cur;
         Node* next;
         next = _root;
@@ -583,13 +586,15 @@ public:
             delete cur;
         }
 		map.clear();
+		mutex->unlockInline();
+		delete mutex;
     }
 	//!< returns the current element count
 	unsigned long getSize(){return _size;};
 	//!< returns the value associated with the given key 
     virtual Tvalue* get(const Tkey& key)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         Node *n = search(key);
         // push front
         if(n!=NULL)
@@ -600,23 +605,23 @@ public:
             hits++;
 #endif
 			
-			mutex.unlockInline();
+			mutex->unlockInline();
             return n->value;
         }
 #ifdef CACHE_PROFILING
         misses++;
 #endif
-		mutex.unlockInline();
+		mutex->unlockInline();
         return NULL;
     }
 	//!< adds a new key-value pair, does nothing if key exists. 
 	// If the maximum size is reached, it will remove the last key
     virtual void add(const Tkey& key,Tvalue* value)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         if(search(key) != NULL)
 		{
-			mutex.unlockInline();
+			mutex->unlockInline();
             return;
 		}
 
@@ -627,31 +632,31 @@ public:
 			if(_cnt>_size)
 				removeNode(_last);
 		
-		mutex.unlockInline();
+		mutex->unlockInline();
     }
 	//!< replaces the value associated with the given key, returns false if key was not existant
     virtual bool replace(const Tkey& key,Tvalue* value)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         Node *n = search(key);
         if(n==NULL)
 		{
-			mutex.unlockInline();
+			mutex->unlockInline();
             return false;
 		}
 
 		removeNode(n);
         add(key, value);
-		mutex.unlockInline();
+		mutex->unlockInline();
         return true;
     }
 	//!< removes the element from cache
     void remove(const Tkey& key)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         Node *n = search(key);
         if(n)	removeNode(n);
-		mutex.unlockInline();
+		mutex->unlockInline();
     }
 };
 
@@ -693,10 +698,10 @@ public:
     //!< add a new key-value pair, calls SaveToDb if last element is dropped
     void add(Tkey key,Tvalue* value)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         if(Cache<Tkey,Tvalue>::search(key)!=NULL)
 		{
-			mutex.unlockInline();
+			mutex->unlockInline();
             return;
 		}
 
@@ -715,19 +720,19 @@ public:
 				}
 			}
 		}
-		mutex.unlockInline();
+		mutex->unlockInline();
     }
     //!< returns the value associated with the given key, if not found LoadFromDb is called. Neither found in db, returns NULL
     Tvalue* get(const Tkey& key)
     {
-		mutex.lockInline();
+		mutex->lockInline();
         Tvalue* v = Cache<Tkey,Tvalue>::get(key);
         if(!v)
         {
             v = key->LoadFromDb();
             if(v)   add(key,v);
         }
-		mutex.unlockInline();
+		mutex->unlockInline();
         return v;
     }
 	// NOTE: currently removing from db is handled by the main class
@@ -736,7 +741,7 @@ public:
 	//<! resizes the cache, if the given value is 0, the cache is set to infinite
 	void resize(unsigned long size)
 	{
-		mutex.lockInline();
+		mutex->lockInline();
 		Cache<Tkey,Tvalue>::_size = size;
 
         if(Cache<Tkey,Tvalue>::_size)
@@ -747,7 +752,7 @@ public:
 				Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
 			}
 		}
-		mutex.unlockInline();
+		mutex->unlockInline();
 	}
 };
 

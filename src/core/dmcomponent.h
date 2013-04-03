@@ -70,9 +70,6 @@ class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
 private:
-	//void SQLSetOwner(Component *owner);
-	//void SQLInsertComponent();
-    //void SQLDeleteComponent();
 
 	bool HasAttribute(std::string name);
 	void LoadAttribute(std::string name);
