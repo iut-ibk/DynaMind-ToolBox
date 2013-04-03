@@ -72,7 +72,7 @@ struct SimpleDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, void *f_e, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, void *f_e, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             glBegin(SD_GL_PRIMITIVE);
@@ -123,7 +123,7 @@ struct TesselatedFaceDrawer {
         delete dialog;
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
         if (pos == after) {
             render();
             polygon.clear();
@@ -280,7 +280,7 @@ struct FaceLineDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             glBegin(GL_LINE_STRIP);
@@ -318,7 +318,7 @@ struct GeomtryDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             glPushName(name_start);
             //glBegin(GL_LINE_STRIP);
@@ -354,7 +354,7 @@ struct RasterDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
         if (pos == before) {
             const ViewMetaData &vmd = l.getViewMetaData();
             this->attr_span = vmd.attr_max - vmd.attr_min;
@@ -416,7 +416,7 @@ struct MeshDrawer {
 
     }
 
-    void operator()(DM::System *s, DM::View v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
+    void operator()(DM::System *s, const DM::View& v, DM::Component *cmp, DM::Vector3* point, DM::Vector3* color,  iterator_pos pos) {
 
         if (pos == before) {
             const ViewMetaData &vmd = l.getViewMetaData();

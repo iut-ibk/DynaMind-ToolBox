@@ -143,27 +143,36 @@ void rasterdata_triangluation_callback(DM::System *system, DM::RasterData * r, D
     double lX = r->getCellSizeX();
     double lY = r->getCellSizeY();
 
+	double xp,xm,yp,ym;
+
     for (unsigned long  y = 0; y < Y; y++) {
         for (unsigned long  x = 0; x < X; x++) {
             double val = r->getCell(x,y);
             if (val == noData)
                 continue;
-            DM::Vector3 vec( (x-0.5) * lX + OX ,  (y-0.5) * lY + OY, val);
+			
+			xp = (x+0.5) * lX + OX;
+			xm = (x-0.5) * lX + OX;
+
+			yp = (y+0.5) * lY + OY;
+			ym = (y-0.5) * lY + OY;
+
+            DM::Vector3 vec( xm , ym, val);
 			callback(system, v, r, &vec, 0, in_between);
-			vec.x = (x+0.5) * lX + OX;
-			vec.y = (y-0.5) * lY + OY;
+			vec.x = xp;
+			vec.y = ym;
 			callback(system, v, r, &vec, 0, in_between);
-			vec.x = (x-0.5) * lX + OX;
-			vec.y = (y+0.5) * lY + OY;
+			vec.x = xm;
+			vec.y = yp;
 			callback(system, v, r, &vec, 0, in_between);
-			vec.x = (x-0.5) * lX + OX;
-			vec.y = (y+0.5) * lY + OY;
+			//vec.x = xm;
+			//vec.y = yp;
 			callback(system, v, r, &vec, 0, in_between);
-			vec.x = (x+0.5) * lX + OX;
-			vec.y = (y-0.5) * lY + OY;
+			vec.x = xp;
+			vec.y = ym;
 			callback(system, v, r, &vec, 0, in_between);
-			vec.x = (x+0.5) * lX + OX;
-			vec.y = (y+0.5) * lY + OY;
+			vec.x = xp;
+			vec.y = yp;
 			callback(system, v, r, &vec, 0, in_between);
         }
     }
