@@ -153,12 +153,13 @@ void Face::addHole(std::vector<std::string> hole)
     std::vector<Node*> holeNodes;
     foreach(std::string uuidNodes, hole)
         holeNodes.push_back(curSys->getNode(uuidNodes));
-
+	
     addHole(holeNodes);
 }
 
 void Face::addHole(std::vector<Node*> hole)
 {
+	QMutexLocker ml(&mutex);
     _holes.push_back(getCurrentSystem()->addFace(hole));
 }
 
@@ -169,6 +170,7 @@ void Face::addHole(Face* hole)
         Logger(Error) << "addHole: self reference not possible";
         return;
     }
+	QMutexLocker ml(&mutex);
     _holes.push_back(hole);
 }
 void Face::Synchronize()
@@ -194,6 +196,8 @@ void Face::Synchronize()
 
 void Face::SetOwner(Component *owner)
 {
+	QMutexLocker ml(&mutex);
+
     currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
@@ -202,10 +206,14 @@ void Face::SetOwner(Component *owner)
 
 void Face::setNodes(std::vector<Node*> nodes)
 {
+	QMutexLocker ml(&mutex);
+
 	this->_nodes = nodes;
 }
 
 void Face::clearHoles()
 {
+	QMutexLocker ml(&mutex);
+
 	this->_holes.clear();
 }
