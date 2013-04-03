@@ -65,16 +65,21 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
 }
 
 static std::set<Asynchron*>* syncList = NULL;
+static QMutex syncMutex;
 Asynchron::Asynchron()
 {
+	syncMutex.lockInline();
 	if(!syncList)	syncList = new std::set<Asynchron*>();
 
     syncList->insert(this);
+	syncMutex.unlockInline();
 }
 Asynchron::~Asynchron()
 {
+	syncMutex.lockInline();
 	if(syncList)
 		syncList->erase(this);
+	syncMutex.unlockInline();
 }
 
 DBConnector* DBConnector::instance = 0;
@@ -325,25 +330,15 @@ void DBWorker::addQuery(QSqlQuery *q)
 
 bool DBWorker::ExecuteSelect(QSqlQuery *q)
 {
-	selectMutex.lock();
+	selectMutex.lockInline();
 	qSelect = q;
 	selectStatus = SELECT_NOTDONE;
-	selectMutex.unlock();
 	
 	// wait for finish
 	while(selectStatus == SELECT_NOTDONE)
 		msleep(EXE_THREAD_SLEEP_TIME);
 
-	/*SignalWork();
-	selectWaiterMutex.lock();
-	selectWaiterCondition.wait(&selectWaiterMutex);
-	selectWaiterMutex.unlock()*/;
-
-	//waitForSelectExec.lock();
-	//waitForSelectExec.unlock();
-
-	/*while(selectStatus == SS_NOTDONE)
-		SignalWork();*/
+	selectMutex.unlockInline();
 
 	return selectStatus==SELECT_TRUE;
 }
@@ -352,6 +347,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 {
 	QueryList* ql = NULL;
 	// search for query list
+	queryMutex.lockInline();
 	foreach(QueryList* it, queryLists)
 	{
 		if(it->cmd == cmd)
@@ -371,6 +367,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 	QSqlQuery *q = NULL;
 	while(!(q = ql->queryStack.pop()))
 		msleep(EXE_THREAD_SLEEP_TIME);
+	queryMutex.unlockInline();
 	return q;
 }
 
