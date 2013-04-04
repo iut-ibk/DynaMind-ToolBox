@@ -281,6 +281,11 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			else
 				unstableLink->setOutPort(port);
 
+			// one of them is the current port, but instead of checking
+			// we just use the method - just laziness/good coding style
+			unstableLink->getInPort()->links.append(unstableLink);
+			unstableLink->getOutPort()->links.append(unstableLink);
+
 			unstableLink = NULL;
 			break;
 		}
@@ -353,10 +358,10 @@ void PortNode::setLink(GUILink * l)
 
 }
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) {
-    /*if(change == QGraphicsItem::ItemScenePositionHasChanged) {
+    if(change == QGraphicsItem::ItemScenePositionHasChanged) {
         this->refreshLinks();
     }
-    if (change == QGraphicsItem::ItemVisibleHasChanged) {
+    /*if (change == QGraphicsItem::ItemVisibleHasChanged) {
         foreach(GUILink * l, this->links)
             l->setVisible(this->isVisible());
     }*/
