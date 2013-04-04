@@ -100,12 +100,9 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(isHover){
         QPainterPath path;
         QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        path.addEllipse(-1, 1,PORT_DRAW_SIZE*1.2,PORT_DRAW_SIZE*1.2);
+        path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
         painter->fillPath(path, color);
         painter->strokePath(path, pen);
-
-
-
     } else {
         QPainterPath path;
         QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -164,20 +161,31 @@ void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
     this->update(this->boundingRect());*/
 }
 
-QPointF PortNode::getConnectionNode() {
-    QPointF p(this->scenePos());
-
-    //if (this->getPortType() > DM::OUTPORTS)
-        return  QPointF( p+QPointF(-7,14));
-    return  QPointF( p+QPointF(7,14));
+QPointF PortNode::getCenterPos() 
+{
+    return  QPointF( this->scenePos() + QPointF(PORT_DRAW_SIZE,PORT_DRAW_SIZE)/2);
 }
 
 /*int PortNode::getPortType() {
     return this->PortType;
 }*/
 
+static GUILink* unstableLink = NULL;
+
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
     this->scene()->sendEvent(0, event);
+
+	//DM::Logger(DM::Debug) << "PortNode::mouseMoveEvent";
+	if(unstableLink)
+	{
+		if(portType == INPORT)
+			unstableLink->setOutPort(event->scenePos());
+		else
+			unstableLink->setInPort(event->scenePos());
+	}
+
+
+	/*
     if (LinkMode) {
         this->tmp_link->setInPort(event->scenePos());
     }
@@ -202,13 +210,30 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
             this->hoverElement->setHover(false);
         }
         this->hoverElement = 0;
-    }
-
+    }*/
 }
 
 
-void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
-    std::cout << "Mouse Press event" << std::endl;
+void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  
+{
+	DM::Logger(DM::Debug) << "PortNode::mousePressEvent";
+
+	if(unstableLink)
+	{
+		DM::Logger(DM::Warning) << "deleting lost link";
+		delete unstableLink;
+	}
+
+	unstableLink = new GUILink();
+
+	if(portType == INPORT)
+		unstableLink->setInPort(this);
+	else
+		unstableLink->setOutPort(this);
+
+	this->scene()->addItem(unstableLink);
+	
+	/*std::cout << "Mouse Press event" << std::endl;
     //If currently in link mode delete node and proceed with other stuff
     if (LinkMode ) {
         if (this->tmp_link != 0) {
@@ -231,7 +256,7 @@ void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
         this->tmp_link->setOutPort(this);
         this->scene()->addItem(this->tmp_link);
     //}
-
+		*/
 }
 /*
 DM::Port * PortNode::getVIBePort() {
@@ -246,6 +271,14 @@ DM::Port * PortNode::getVIBePort() {
 
 void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
 {
+	DM::Logger(DM::Debug) << "PortNode::mouseReleaseEvent";
+
+	if(unstableLink)
+	{
+		delete unstableLink;
+		unstableLink = NULL;
+	}
+
 	/*
     //if (getPortType() < DM::OUTPORTS) {
         LinkMode = false;

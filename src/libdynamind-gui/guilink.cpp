@@ -93,8 +93,14 @@ void GUILink::setOutPort(PortNode * outPort)
         return;
     this->outPort = outPort;
     outPort->setLink(this);
-    source = outPort->getConnectionNode();
-    sink = outPort->getConnectionNode();
+    source = outPort->getCenterPos();
+    sink = outPort->getCenterPos();
+    prepareGeometryChange();
+    updatePaths();
+    this->update(this->boundingRect());
+}
+void GUILink::setOutPort(QPointF p) {
+    source = p;
     prepareGeometryChange();
     updatePaths();
     this->update(this->boundingRect());
@@ -105,7 +111,7 @@ void GUILink::setInPort(PortNode * inPort) {
         return;
     this->inPort = inPort;
     inPort->setLink(this);
-    sink = inPort->getConnectionNode();
+    sink = inPort->getCenterPos();
     prepareGeometryChange ();
     updatePaths();    
     this->update(this->boundingRect());
@@ -118,9 +124,10 @@ void GUILink::setInPort(QPointF p) {
     this->update(this->boundingRect());
 }
 void GUILink::refresh() {
-    source = outPort->getConnectionNode();
+	if(outPort)
+		source = outPort->getCenterPos();
 	if(inPort)
-		sink = inPort->getConnectionNode();
+		sink = inPort->getCenterPos();
     updatePaths();
     prepareGeometryChange ();
     this->update(this->boundingRect());

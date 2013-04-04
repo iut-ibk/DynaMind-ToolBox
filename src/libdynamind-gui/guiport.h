@@ -42,6 +42,7 @@ class Port;
 
 
 #define PORT_DRAW_SIZE 14
+#define PORT_DRAW_SELECTED_SIZE 16
 
 class ModelNode;
 class GUILink;
@@ -86,7 +87,7 @@ public:
     void setLink(GUILink * l);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
-    QPointF getConnectionNode();
+    QPointF getCenterPos();
     //int getPortType();
     QString getPortName(){return this->PortName;}
     bool isLinked();

@@ -64,6 +64,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     void setOutPort(PortNode * outPort);
+    void setOutPort(QPointF p);
     void setInPort(PortNode * inPort);
     void setInPort(QPointF p);
     int type() const {return Type; }
