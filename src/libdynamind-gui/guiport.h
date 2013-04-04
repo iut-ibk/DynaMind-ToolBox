@@ -35,10 +35,11 @@
 #include <QColor>
 #include <QObject>
 #include "dmcompilersettings.h"
-/*
+
 namespace DM {
-class Port;
-}*/
+//class Port;
+class Module;
+}
 
 
 #define PORT_DRAW_SIZE 14
@@ -57,8 +58,6 @@ public:
 		OUTPORT,
 	};
 private:
-
-
     QColor color;
     ModelNode * modelNode;
     GUILink * tmp_link;
@@ -102,6 +101,7 @@ public:
     //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
+	DM::Module* getModule();
 };
 
 #endif // GUIPORT_H

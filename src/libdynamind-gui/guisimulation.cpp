@@ -27,6 +27,7 @@
 #include "guisimulation.h"
 #include <dmmoduleregistry.h>
 #include <modelnode.h>
+#include <guiport.h>
 #include <groupnode.h>
 #include <rootgroupnode.h>
 #include <dmlogger.h>
@@ -231,6 +232,18 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 	ModelNode* node = new ModelNode(m, this);
 	//moduleGuiMap[node] = m;
 	return node;
+}
+
+bool GUISimulation::addLink(PortNode* out, PortNode* in)
+{
+	return Simulation::addLink(out->getModule(), out->getPortName().toStdString(),
+								in->getModule(), in->getPortName().toStdString());
+}
+
+bool GUISimulation::removeLink(PortNode* out, PortNode* in)
+{
+	return Simulation::removeLink(out->getModule(), out->getPortName().toStdString(),
+								in->getModule(), in->getPortName().toStdString());
 }
 
 /*void GUISimulation::guiUpdatePorts(ModelNode* node)

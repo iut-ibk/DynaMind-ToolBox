@@ -32,8 +32,8 @@
 #include <guiport.h>
 #include <guisimulation.h>
 #include <dmport.h>
-GUILink::GUILink(){
-
+GUILink::GUILink()
+{
     inPort = 0;
     outPort = 0;
     hovered = false;
@@ -44,12 +44,11 @@ GUILink::GUILink(){
 
 void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QColor c;
-    c = isSelected() ? Qt::gray : Qt::white;
-    if (hovered) {
-        c = Qt::green;
-    }
-    QBrush brush(c);
+	if(hovered)				c = Qt::green;
+	else if(isSelected())	c = Qt::gray;
+	else					c = Qt::white;
 
+    QBrush brush(c);
     QPen pen(Qt::black);
     /*
 	if (this->inPort != 0) {
@@ -60,26 +59,33 @@ void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->fillPath(handle_path, brush);
     painter->strokePath(handle_path, pen);
 }
-QRectF GUILink::boundingRect() const {
+QRectF GUILink::boundingRect() const 
+{
     return united.boundingRect();
 }
 
-GUILink::~GUILink() {
-    DM::Logger(DM::Debug) << "Remove GUILink" ;
+GUILink::~GUILink() 
+{
+    DM::Logger(DM::Debug) << "Deleting GUILink";
 
-    if (this->outPort != 0)
+	if(outPort && inPort)
+	{
+		outPort->getSimulation()->removeLink(outPort, inPort);
+	}
+
+    if (this->outPort)
         this->outPort->removeLink(this);
-    if (this->inPort != 0)
+    if (this->inPort)
         this->inPort->removeLink(this);
-    if (this->VIBelink != 0){
+    /*if (this->VIBelink != 0){
         //Check if Links exists
-		/*
+		
         std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
         if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
             this->VIBelink = 0;
         if (VIBelink != 0)
-            delete this->VIBelink;*/
-    }
+            delete this->VIBelink;
+    }*/
 
     this->VIBelink = 0;
     this->inPort = 0;

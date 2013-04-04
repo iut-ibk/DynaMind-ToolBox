@@ -40,7 +40,8 @@ PortNode::~PortNode () {
     }
     this->links.clear();
 }
-void PortNode::removeLink(GUILink * l) {
+void PortNode::removeLink(GUILink * l)
+{
     int index = this->links.indexOf(l);
     if (index > -1) {
         this->links.remove(index);
@@ -310,8 +311,7 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			PortNode* in = unstableLink->getInPort();
 			PortNode* out = unstableLink->getOutPort();
 
-			if(getSimulation()->addLink(out->modelNode->getModule(), out->getPortName().toStdString(),
-									in->modelNode->getModule(), in->getPortName().toStdString()))
+			if(getSimulation()->addLink(out, in))
 			{
 				in->links.append(unstableLink);
 				out->links.append(unstableLink);
@@ -400,6 +400,9 @@ QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value)
     return QGraphicsItem::itemChange(change, value);
 }
 
-
+DM::Module* PortNode::getModule()
+{
+	return modelNode->getModule();
+}
 
 

@@ -34,6 +34,7 @@
 #include <QPointF>
 
 class ModelNode;
+class PortNode;
 //class GroupNode;
 //class GUILink;
 
@@ -52,8 +53,10 @@ public:
 	/** @brief Add the modules set in the QSetting **/
     bool loadModulesFromSettings();
 
-
 	
+	bool addLink(PortNode* out, PortNode* in);
+	bool removeLink(PortNode* out, PortNode* in);
+
 	//void guiUpdatePorts(ModelNode* node);
 	ModelNode* guiAddModule(QString moduleName);
 private:
