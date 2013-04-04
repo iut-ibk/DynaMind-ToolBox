@@ -131,13 +131,15 @@ QRectF PortNode::boundingRect() const
 	return QRect(0,0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
 }
 
-void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
-    this->isHover = true;
+void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) 
+{
+	setHover(true);
+    //this->isHover = true;
 	/*
     //if (this->PortType  == DM::INSYSTEM||this->PortType  == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
-		*/
-    prepareGeometryChange ();/*
+		
+    prepareGeometryChange ();
     l = this->portname_graphics.boundingRect().width()+4;
 
     h = this->portname_graphics.boundingRect().height()+4;
@@ -147,15 +149,17 @@ void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
     this->update(this->boundingRect());*/
 }
 
-void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
-    this->isHover = false;
+void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) 
+{
+	setHover(false);
+    //this->isHover = false;
     /*if (!LinkMode) {
 
         //if (PortType  == DM::INSYSTEM || PortType == DM::OUTSYSTEM)
             color = COLOR_VECTORPORT;
 
-    }*/
-    prepareGeometryChange ();/*
+    }
+    prepareGeometryChange ();
     this->update(this->boundingRect());*/
 }
 
@@ -172,8 +176,6 @@ static GUILink* unstableLink = NULL;
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
-    //this->scene()->sendEvent(0, event);
-
 	//DM::Logger(DM::Debug) << "PortNode::mouseMoveEvent";
 	if(unstableLink)
 	{
@@ -182,6 +184,19 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 		else
 			unstableLink->setInPort(event->scenePos());
 	}
+	// reset all port hovers
+	QList<QGraphicsItem  *> items = this->scene()->items();
+	foreach (QGraphicsItem  * item, items)
+		if(PortNode* port = dynamic_cast<PortNode*>(item))
+			port->setHover(false);
+
+	// Check Hover Event
+	items = this->scene()->items(event->scenePos());
+    foreach (QGraphicsItem  * item, items)
+		if(PortNode* port = dynamic_cast<PortNode*>(item))
+			if(		port->portType + this->portType == 1 
+				&&	port->modelNode != this->modelNode)
+				port->setHover(true);
 
 
 	/*
@@ -215,7 +230,7 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 
 void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  
 {
-	DM::Logger(DM::Debug) << "PortNode::mousePressEvent";
+	//DM::Logger(DM::Debug) << "PortNode::mousePressEvent";
 
 	if(unstableLink)
 	{
@@ -270,17 +285,25 @@ DM::Port * PortNode::getVIBePort() {
 
 void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
 {
-	DM::Logger(DM::Debug) << "PortNode::mouseReleaseEvent";
+	//DM::Logger(DM::Debug) << "PortNode::mouseReleaseEvent";
+	if(!unstableLink)
+		return;
 
 	QList<QGraphicsItem*> items = this->scene()->items(event->scenePos());
 	foreach (QGraphicsItem  * item, items)
 	{
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
 		{
-			if(port->portType == INPORT)
+			// check self linking
+			if(port->modelNode == this->modelNode)
+				break;
+			// check port types
+			if(port->portType == INPORT && this->portType == OUTPORT)
 				unstableLink->setInPort(port);
-			else
+			else if(port->portType == OUTPORT && this->portType == INPORT)
 				unstableLink->setOutPort(port);
+			else
+				break;
 
 			// one of them is the current port, but instead of checking
 			// we just use the method - just laziness/good coding style

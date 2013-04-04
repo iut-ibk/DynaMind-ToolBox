@@ -91,7 +91,11 @@ public:
     //int getPortType();
     QString getPortName(){return this->PortName;}
     bool isLinked();
-    void setHover(bool b){this->isHover=b;}
+    void setHover(bool b)
+	{
+		this->isHover = b;
+		this->prepareGeometryChange();
+	}
     //void refreshLinks();
     //DM::Port * getVIBePort();
     void removeLink(GUILink * l);
