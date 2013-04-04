@@ -217,10 +217,10 @@ ModelNode::ModelNode(DM::Module* m)
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-	this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getClassName()));
+	this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getName()));
     double w = this->simpleTextItem->boundingRect().width()+40;
 
-    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getClassName()));
+    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
@@ -229,6 +229,11 @@ ModelNode::ModelNode(DM::Module* m)
     h =  35;
     //VIBeModule->addPortObserver( & this->guiPortObserver);
     //this->updatePorts();
+
+	foreach(std::string portname, m->getOutPortNames())
+	{
+		
+	}
 
     Color = COLOR_MODULE;
 }
@@ -272,7 +277,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		
         
         //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
-		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getClassName()));
+		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getName()));
 		
 
     }
