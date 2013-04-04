@@ -41,7 +41,7 @@ class Port;
 }*/
 
 
-
+#define PORT_DRAW_SIZE 14
 
 class ModelNode;
 class GUILink;

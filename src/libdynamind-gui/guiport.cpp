@@ -66,6 +66,14 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*
     this->LinkMode = false;
     this->modelNode = parentModelNode;
     this->portType = type;
+	if(type == INPORT)
+		this->setPos(-7,7);
+	else
+		this->setPos(-7+parentModelNode->boundingRect().width(),7);
+
+	
+
+
     this->simulation = parentModelNode->getSimulation();
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
@@ -92,7 +100,7 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(isHover){
         QPainterPath path;
         QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        path.addEllipse(-8, 8,16,16);
+        path.addEllipse(-1, 1,PORT_DRAW_SIZE*1.2,PORT_DRAW_SIZE*1.2);
         painter->fillPath(path, color);
         painter->strokePath(path, pen);
 
@@ -101,7 +109,7 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     } else {
         QPainterPath path;
         QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        path.addEllipse(-7, 7,14,14);
+        path.addEllipse(0, 0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
         painter->fillPath(path, color);
         painter->strokePath(path, pen);
 
@@ -117,14 +125,15 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setBrush(Qt::NoBrush);
 }
 
-QRectF PortNode::boundingRect() const {
-    //if(this->PortType < DM::OUTPORTS){
-        QRect r (-10, 10,20+this->portname_graphics.boundingRect().width(),20);
-        return r;
-    //} else {
-     //   QRect r (-10-this->portname_graphics.boundingRect().width(), 10,20+this->portname_graphics.boundingRect().width(),20);
-    //    return r;
-   // }
+QRectF PortNode::boundingRect() const
+{
+    /*if(portType == INPORT)
+        return QRect(-10, 10,20+this->portname_graphics.boundingRect().width(),20);
+    else
+        return QRect(-10-this->portname_graphics.boundingRect().width(), 10,20+this->portname_graphics.boundingRect().width(),20);
+	*/
+
+	return QRect(0,0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
 }
 
 void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
@@ -138,7 +147,7 @@ void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
 
     h = this->portname_graphics.boundingRect().height()+4;
     x1 = 0;
-    //if (this->PortType   > DM::OUTPORTS  )
+    if (portType == OUTPORT  )
         x1 = -l+14;
     this->update(this->boundingRect());
 }
@@ -291,13 +300,13 @@ void PortNode::setLink(GUILink * l) {
 
 }
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) {
-    if(change == QGraphicsItem::ItemScenePositionHasChanged) {
+    /*if(change == QGraphicsItem::ItemScenePositionHasChanged) {
         this->refreshLinks();
     }
     if (change == QGraphicsItem::ItemVisibleHasChanged) {
         foreach(GUILink * l, this->links)
             l->setVisible(this->isVisible());
-    }
+    }*/
     return QGraphicsItem::itemChange(change, value);
 }
 
