@@ -96,21 +96,19 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     //if (!this->getVIBePort()->isFullyLinked())
         color = Qt::red;
     painter->setBrush(color);
-
-    if(isHover){
-        QPainterPath path;
-        QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
-        painter->fillPath(path, color);
-        painter->strokePath(path, pen);
-    } else {
-        QPainterPath path;
-        QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+	
+    QPainterPath path;
+	QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    if(!isHover)
         path.addEllipse(0, 0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
-        painter->fillPath(path, color);
-        painter->strokePath(path, pen);
-
+	else 
+	{
+		pen.setWidth(1);
+        path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
     }
+	painter->fillPath(path, color);
+	painter->strokePath(path, pen);
+
     portname_graphics.setText(this->getPortName());
 
     //if (this->getPortType() > DM::OUTPORTS)
