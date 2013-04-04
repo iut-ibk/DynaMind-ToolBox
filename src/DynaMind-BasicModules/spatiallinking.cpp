@@ -173,7 +173,6 @@ void SpatialLinking::run() {
                 }
                 elementInSearchSpace=elementInSearchSpace+centers->size();
                 foreach (int id, (*centers)) {
-                    //Logger(Debug) << centerPoints[id].x() << "|" << centerPoints[id].y();
                     if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
                         LinkAttribute lto;
                         lto.viewname = linkto;
