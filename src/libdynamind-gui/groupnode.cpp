@@ -128,7 +128,7 @@ void GroupNode::addTuplePort(DM::PortTuple * p) {
             }
         }
         ExistingInPorts << QString::fromStdString(p->getName());
-        GUIPort * gui_p = new  GUIPort(this, p->getInPort());
+        PortNode * gui_p = new  PortNode(this, p->getInPort());
         this->ports.append(gui_p);
         gui_p->setPos(0,gui_p->boundingRect().height()*this->inputCounter++);
 
@@ -140,7 +140,7 @@ void GroupNode::addTuplePort(DM::PortTuple * p) {
         }
         ExistingOutPorts << QString::fromStdString(p->getName());
 
-        GUIPort * gui_p = new  GUIPort(this,p->getOutPort());
+        PortNode * gui_p = new  PortNode(this,p->getOutPort());
         this->ports.append(gui_p);
         gui_p->setPos( this->boundingRect().width(),gui_p->boundingRect().height()*this->outputCounter++);
 
@@ -148,7 +148,7 @@ void GroupNode::addTuplePort(DM::PortTuple * p) {
 
 
 }
-GUIPort *  GroupNode::getGUIPort(DM::Port * p) {
+PortNode *  GroupNode::getGUIPort(DM::Port * p) {
     foreach(GUIPortTuple * gui_pt,this->OutputTuplePorts) {
         if (gui_pt->inPort->getVIBePort() == p)
             return gui_pt->inPort;
@@ -213,7 +213,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
 }
 
 void GroupNode::RePosTuplePorts() {
-    foreach(GUIPort * gui_p, this->ports) {
+    foreach(PortNode * gui_p, this->ports) {
         if (gui_p->getPortType()  < DM::OUTPORTS) {
             gui_p->setPos(this->boundingRect().width(), gui_p->pos().y());
         }

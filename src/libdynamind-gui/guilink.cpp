@@ -86,7 +86,7 @@ GUILink::~GUILink() {
     this->outPort = 0;
 }
 
-void GUILink::setOutPort(GUIPort * outPort)
+void GUILink::setOutPort(PortNode * outPort)
 {
 
     if (outPort  == 0)
@@ -100,7 +100,7 @@ void GUILink::setOutPort(GUIPort * outPort)
     this->update(this->boundingRect());
 }
 
-void GUILink::setInPort(GUIPort * inPort) {
+void GUILink::setInPort(PortNode * inPort) {
     if (inPort == 0)
         return;
     this->inPort = inPort;

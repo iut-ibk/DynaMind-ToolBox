@@ -41,8 +41,8 @@ struct LinkNodeTuple;
 
 
 struct GUIPortTuple {
-    GUIPort * inPort;
-    GUIPort * outPort;
+    PortNode * inPort;
+    PortNode * outPort;
 };
 
 class DM_HELPER_DLL_EXPORT  GroupNode : public ModelNode
@@ -68,7 +68,7 @@ public:
     void addTuplePort(DM::PortTuple * p);
     void removeTuplePort(int Type, QString s);
     GroupNode( DM::Module *module, GUISimulation * s);
-     virtual GUIPort * getGUIPort(DM::Port * p);
+     virtual PortNode * getGUIPort(DM::Port * p);
 
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);

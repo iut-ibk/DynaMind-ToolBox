@@ -44,7 +44,7 @@ class ModelNode;
 class GUILink;
 class GUISimulation;
 
-class DM_HELPER_DLL_EXPORT GUIPort : public QGraphicsItem
+class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 {
 private:
 
@@ -57,7 +57,7 @@ private:
     int PortType;
     bool isHover;
     bool LinkMode;
-    GUIPort * hoverElement;
+    PortNode * hoverElement;
     float l;
     float h;
     float x1;
@@ -65,8 +65,8 @@ private:
      GUISimulation * simulation;
 
 public:
-    GUIPort(ModelNode * modelNode/*, DM::Port * p*/);
-    ~GUIPort();
+    PortNode(ModelNode * parentModelNode/*, DM::Port * p*/);
+    ~PortNode();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
     void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );

@@ -35,7 +35,7 @@
 #include <algorithm>
 
 #include "dmcompilersettings.h"
-class GUIPort;
+class PortNode;
 class GUISimulation;
 
 class  DM_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
@@ -45,8 +45,8 @@ class  DM_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
     enum { Type = UserType + 3 };
 private:
     QLineF line;
-    GUIPort * inPort;
-    GUIPort * outPort;
+    PortNode * inPort;
+    PortNode * outPort;
     void updatePaths();
     QPainterPath connection_path, handle_path, united;
     QPointF source, sink;
@@ -63,13 +63,13 @@ public:
     GUILink();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
-    void setOutPort(GUIPort * outPort);
-    void setInPort(GUIPort * inPort);
+    void setOutPort(PortNode * outPort);
+    void setInPort(PortNode * inPort);
     void setInPort(QPointF p);
     int type() const {return Type; }
     void refresh();
-    GUIPort * getOutPort(){return outPort;}
-    GUIPort * getInPort(){return inPort;}
+    PortNode * getOutPort(){return outPort;}
+    PortNode * getInPort(){return inPort;}
     //bool isBack(){return this->VIBelink->isBackLink();}
     //void setBack(bool b){this->VIBelink->setBackLink(b);}
     void setSimulation(GUISimulation * sim) {this->sim = sim;}

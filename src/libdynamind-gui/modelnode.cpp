@@ -75,7 +75,7 @@ void ModelNode::updatePorts () {
     }
 
     for (int i = this->ports.size()-1; i > -1; i--) {
-        GUIPort * gp = this->ports[i];
+        PortNode * gp = this->ports[i];
         if (!gp->getVIBePort()) {
             if (gp->getPortType() > DM::OUTPORTS) {
                 ExistingInPorts.removeAt(ExistingInPorts.indexOf(gp->getPortName()));
@@ -137,7 +137,7 @@ void ModelNode::resetModel() {
         DM::Logger(DM::Error) << "The code-base has changed for module \"" << this->getDMModel()->getName() << "\". There is an error in the new code-base";
     }
 
-    foreach(GUIPort * p, this->ports) {
+    foreach(PortNode * p, this->ports) {
         DM::Port * po = 0;
         if ((this->getDMModel()->getInPort( p->getPortName().toStdString()) == 0)) {
             po = this->getDMModel()->getOutPort( p->getPortName().toStdString());
@@ -166,7 +166,7 @@ void ModelNode::addPort(DM::Port * p) {
         ExistingOutPorts << QString::fromStdString(p->getLinkedDataName());
     }
 
-    GUIPort * gui_p = new  GUIPort(this, p);
+    PortNode * gui_p = new  PortNode(this, p);
     ports.append(gui_p);
     if  (p->getPortType() < DM::OUTPORTS) {
         gui_p->setPos(this->boundingRect().width(),30+gui_p->boundingRect().height()*this->outputCounter++);
@@ -232,7 +232,7 @@ ModelNode::ModelNode(DM::Module* m)
 
 	foreach(std::string portname, m->getOutPortNames())
 	{
-		
+		PortNode* port = new PortNode(this);
 	}
 
     Color = COLOR_MODULE;
@@ -301,7 +301,7 @@ ModelNode::~ModelNode() {
 
 
     if (m!=0) {
-        foreach (GUIPort * p, ports) {
+        foreach (PortNode * p, ports) {
             delete p;
             p = 0;
         }
@@ -351,9 +351,9 @@ void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
 }
 
 /*
-GUIPort * ModelNode::getGUIPort(DM::Port * p) {
+PortNode * ModelNode::getGUIPort(DM::Port * p) {
 
-    foreach (GUIPort * gui_p, this->ports){
+    foreach (PortNode * gui_p, this->ports){
         if (gui_p->getVIBePort() == p)
             return gui_p;
     }

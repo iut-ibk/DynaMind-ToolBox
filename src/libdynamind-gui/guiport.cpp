@@ -32,7 +32,7 @@
 #include <dmsimulation.h>
 #include <dmmodulelink.h>
 #include <guisimulation.h>
-GUIPort::~GUIPort () {
+PortNode::~PortNode () {
 
     foreach(GUILink *l, this->links) {
         delete l;
@@ -40,7 +40,7 @@ GUIPort::~GUIPort () {
     }
     this->links.clear();
 }
-void GUIPort::removeLink(GUILink * l) {
+void PortNode::removeLink(GUILink * l) {
     int index = this->links.indexOf(l);
     if (index > -1) {
         this->links.remove(index);
@@ -48,12 +48,12 @@ void GUIPort::removeLink(GUILink * l) {
     }
 }
 /*
-void GUIPort::updatePort(DM::Port * p) {
+void PortNode::updatePort(DM::Port * p) {
     this->p = p;
 }*/
-GUIPort::GUIPort(ModelNode *modelNode/*, DM::Port *p*/) : QGraphicsItem(modelNode)
+PortNode::PortNode(ModelNode *parentModelNode/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
 {
-    this->setParentItem(modelNode);
+    this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
     this->setAcceptHoverEvents(true);
     this->setAcceptsHoverEvents(true);
@@ -64,9 +64,9 @@ GUIPort::GUIPort(ModelNode *modelNode/*, DM::Port *p*/) : QGraphicsItem(modelNod
     this->x1 = 0;
     this->isHover = false;
     this->LinkMode = false;
-    this->modelNode = modelNode;
+    this->modelNode = parentModelNode;
     //this->PortType = p->getPortType();
-    this->simulation = modelNode->getSimulation();
+    this->simulation = parentModelNode->getSimulation();
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     //if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
@@ -76,13 +76,13 @@ GUIPort::GUIPort(ModelNode *modelNode/*, DM::Port *p*/) : QGraphicsItem(modelNod
 
 
 }
-bool GUIPort::isLinked() {
+bool PortNode::isLinked() {
     //if (this->getVIBePort()->getLinks().size() > 0)
         return true;
     return false;
 }
 
-void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     //if (this->getVIBePort()->isFullyLinked())
         color = Qt::green;
     //if (!this->getVIBePort()->isFullyLinked())
@@ -115,7 +115,7 @@ void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->setBrush(Qt::NoBrush);
 }
 
-QRectF GUIPort::boundingRect() const {
+QRectF PortNode::boundingRect() const {
     //if(this->PortType < DM::OUTPORTS){
         QRect r (-10, 10,20+this->portname_graphics.boundingRect().width(),20);
         return r;
@@ -125,7 +125,7 @@ QRectF GUIPort::boundingRect() const {
    // }
 }
 
-void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
+void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = true;
 
     //if (this->PortType  == DM::INSYSTEM||this->PortType  == DM::OUTSYSTEM)
@@ -141,7 +141,7 @@ void GUIPort::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
     this->update(this->boundingRect());
 }
 
-void GUIPort::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
+void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = false;
     if (!LinkMode) {
 
@@ -153,7 +153,7 @@ void GUIPort::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
     this->update(this->boundingRect());
 }
 
-QPointF GUIPort::getConnectionNode() {
+QPointF PortNode::getConnectionNode() {
     QPointF p(this->scenePos());
 
     //if (this->getPortType() > DM::OUTPORTS)
@@ -161,11 +161,11 @@ QPointF GUIPort::getConnectionNode() {
     return  QPointF( p+QPointF(7,14));
 }
 
-int GUIPort::getPortType() {
+int PortNode::getPortType() {
     return this->PortType;
 }
 
-void GUIPort::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
+void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
     this->scene()->sendEvent(0, event);
     if (LinkMode) {
         this->tmp_link->setInPort(event->scenePos());
@@ -175,7 +175,7 @@ void GUIPort::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
     bool setHover = false;
     foreach (QGraphicsItem  * item, items) {
         if ( this->type() == item->type() ) {
-            GUIPort * link  = (GUIPort *) item;
+            PortNode * link  = (PortNode *) item;
 
             //if (getPortType() == DM::OUTSYSTEM &&  link->getPortType() == DM::INSYSTEM ) {
                 link->setHover(true);
@@ -196,7 +196,7 @@ void GUIPort::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 }
 
 
-void GUIPort::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
+void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
     std::cout << "Mouse Press event" << std::endl;
     //If currently in link mode delete node and proceed with other stuff
     if (LinkMode ) {
@@ -223,7 +223,7 @@ void GUIPort::mousePressEvent ( QGraphicsSceneMouseEvent * event )  {
 
 }
 /*
-DM::Port * GUIPort::getVIBePort() {
+DM::Port * PortNode::getVIBePort() {
     DM::Port * p = 0;
     if (this->PortType > DM::OUTPORTS) {
         p = this->modelNode->getDMModel()->getInPort(this->getPortName().toStdString());
@@ -233,7 +233,7 @@ DM::Port * GUIPort::getVIBePort() {
    return p;
 }*/
 
-void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
+void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
 {
 	/*
     //if (getPortType() < DM::OUTPORTS) {
@@ -247,7 +247,7 @@ void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
         bool newLink = false;
         foreach (QGraphicsItem  * item, items) {
             if ( this->type() == item->type() ) {
-                GUIPort * endLink  = (GUIPort *) item;
+                PortNode * endLink  = (PortNode *) item;
 
                 //if (getPortType() == DM::OUTSYSTEM &&  endLink->getPortType() == DM::INSYSTEM ) {
                     this->tmp_link->setInPort(endLink);
@@ -272,14 +272,14 @@ void GUIPort::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
     //}
 	*/
 }
-void GUIPort::refreshLinks() {
+void PortNode::refreshLinks() {
     foreach(GUILink * l, this->links) {
         if ( l != 0) {
             l->refresh();
         }
     }
 }
-void GUIPort::setLink(GUILink * l) {
+void PortNode::setLink(GUILink * l) {
 
     int index = this->links.indexOf(l);
     if (index == -1) {
@@ -288,7 +288,7 @@ void GUIPort::setLink(GUILink * l) {
     }
 
 }
-QVariant GUIPort::itemChange(GraphicsItemChange change, const QVariant &value) {
+QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) {
     if(change == QGraphicsItem::ItemScenePositionHasChanged) {
         this->refreshLinks();
     }

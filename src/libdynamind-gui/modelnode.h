@@ -47,7 +47,7 @@
 
 class ModelNodeButton;
 class RootGroupNode;
-class GUIPort;
+class PortNode;
 class GUISimulation;
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
 {
@@ -72,7 +72,7 @@ protected:
     float h;
     int inputCounter;
     int outputCounter;
-    QVector<GUIPort*> ports;
+    QVector<PortNode*> ports;
     //QVector<ModelNode * > * nodes;
     RootGroupNode * parentGroup;
 
@@ -110,7 +110,7 @@ public:
     //void setID(int id){this->getDMModel()->setID(id); this->id = id;}
 
     //void addPort(DM::Port * p);
-    //virtual GUIPort * getGUIPort(DM::Port * p);
+    //virtual PortNode * getGUIPort(DM::Port * p);
     //std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
 
     //std::string getParameterAsString(std::string name);

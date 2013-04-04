@@ -99,7 +99,7 @@ public:
     //void addTuplePort(DM::PortTuple * p);
     //void removeTuplePort(int Type, QString s);
     RootGroupNode( /*DM::Module *module, */GUISimulation * s);
-    //virtual GUIPort * getGUIPort(DM::Port * p);
+    //virtual PortNode * getGUIPort(DM::Port * p);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     QVector<ModelNode * > getChildNodes(){return this->childnodes;}
