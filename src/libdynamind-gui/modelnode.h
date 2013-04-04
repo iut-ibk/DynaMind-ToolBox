@@ -97,7 +97,7 @@ public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
     //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
-    ModelNode(DM::Module* m);
+    ModelNode(DM::Module* m, GUISimulation* sim);
 
     int type() const {return Type; }
     virtual ~ModelNode();
@@ -132,7 +132,7 @@ public:
 
     //DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}
-    void  setSimulation(GUISimulation *s) {this->simulation = s;}
+    //void  setSimulation(GUISimulation *s) {this->simulation = s;}
 
     //virtual void updatePorts();
 
@@ -141,6 +141,10 @@ public:
     //virtual void resetModel();
 
     //std::string getGroupUUID();
+	DM::Module* getModule() const
+	{
+		return module;
+	}
 
 public slots:
     //void addGroup();

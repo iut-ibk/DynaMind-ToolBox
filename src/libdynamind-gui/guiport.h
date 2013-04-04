@@ -102,9 +102,6 @@ public:
     //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
-
-
-
 };
 
 #endif // GUIPORT_H

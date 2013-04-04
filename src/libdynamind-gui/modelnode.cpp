@@ -196,7 +196,7 @@ DM::Module * ModelNode::getDMModel() {
 	return 0;
 }*/
 
-ModelNode::ModelNode(DM::Module* m)
+ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 {
 	/*
     //this->guiPortObserver.setModelNode(this);
@@ -213,6 +213,7 @@ ModelNode::ModelNode(DM::Module* m)
 	*/
 	//this->moduleName = moduleName;
 	module = m;
+	simulation = sim;
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);

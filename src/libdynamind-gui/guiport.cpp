@@ -304,13 +304,19 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 				unstableLink->setOutPort(port);
 			else
 				break;
-
+			
 			// one of them is the current port, but instead of checking
 			// we just use the method - just laziness/good coding style
-			unstableLink->getInPort()->links.append(unstableLink);
-			unstableLink->getOutPort()->links.append(unstableLink);
+			PortNode* in = unstableLink->getInPort();
+			PortNode* out = unstableLink->getOutPort();
 
-			unstableLink = NULL;
+			if(getSimulation()->addLink(out->modelNode->getModule(), out->getPortName().toStdString(),
+									in->modelNode->getModule(), in->getPortName().toStdString()))
+			{
+				in->links.append(unstableLink);
+				out->links.append(unstableLink);
+				unstableLink = NULL;
+			}
 			break;
 		}
 	}
