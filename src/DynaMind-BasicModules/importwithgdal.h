@@ -75,7 +75,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     bool ImportAll;
     OGRCoordinateTransformation *poCT;
 
-    QHash<QString, std::vector<DM::Node* >> nodeList;
+    QHash<QString, std::vector<DM::Node* > > nodeList;
     DM::Node * addNode(DM::System * sys, double x, double y, double z);
     void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
