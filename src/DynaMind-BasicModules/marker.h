@@ -48,8 +48,8 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
         std::string VectorData;
 
 
-        int Points;
-        int Edges;
+        bool Points;
+        bool Edges;
         std::string KeepMap;
 
         std::vector<std::string> RData;

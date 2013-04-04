@@ -61,8 +61,8 @@ Marker::Marker()
     this->addParameter("maxExpression", DM::STRING, &param.maxExpression);
 
     this->addParameter("PlacementOption", DM::STRING, &param.PlacementOption);
-    this->addParameter("Points", DM::INT, &param.Points);
-    this->addParameter("Edges", DM::INT, &param.Edges);
+    this->addParameter("Points", DM::BOOL, &param.Points);
+    this->addParameter("Edges", DM::BOOL, &param.Edges);
     this->addParameter("Identifier", DM::STRING, &param.Identifier);
     this->addParameter("resultName", DM::STRING, &param.resultName);
 
