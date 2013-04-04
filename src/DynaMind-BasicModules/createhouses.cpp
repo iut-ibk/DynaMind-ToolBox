@@ -105,7 +105,7 @@ CreateHouses::CreateHouses()
 void CreateHouses::run()
 {
     DM::System * city = this->getData("City");
-    DM::SpatialNodeHashMap spatialNodeMap(city, 100);
+    DM::SpatialNodeHashMap spatialNodeMap(city, 100,false);
 
     std::vector<std::string> city_uuid = city->getUUIDs(cityView);
     if (city_uuid.size() != 0) {
@@ -205,5 +205,5 @@ void CreateHouses::run()
         numberOfHouseBuild++;
         
     }
-    Logger(Debug) << "Created Houses " << numberOfHouseBuild;
+    Logger(Standard) << "Created Houses " << numberOfHouseBuild;
 }
