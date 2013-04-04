@@ -138,30 +138,30 @@ QRectF PortNode::boundingRect() const
 
 void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = true;
-
+	/*
     //if (this->PortType  == DM::INSYSTEM||this->PortType  == DM::OUTSYSTEM)
         color = COLOR_VECTORPORT;
-
-    prepareGeometryChange ();
+		*/
+    prepareGeometryChange ();/*
     l = this->portname_graphics.boundingRect().width()+4;
 
     h = this->portname_graphics.boundingRect().height()+4;
     x1 = 0;
     if (portType == OUTPORT  )
         x1 = -l+14;
-    this->update(this->boundingRect());
+    this->update(this->boundingRect());*/
 }
 
 void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
     this->isHover = false;
-    if (!LinkMode) {
+    /*if (!LinkMode) {
 
         //if (PortType  == DM::INSYSTEM || PortType == DM::OUTSYSTEM)
             color = COLOR_VECTORPORT;
 
-    }
-    prepareGeometryChange ();
-    this->update(this->boundingRect());
+    }*/
+    prepareGeometryChange ();/*
+    this->update(this->boundingRect());*/
 }
 
 QPointF PortNode::getConnectionNode() {
@@ -283,20 +283,23 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
     //}
 	*/
 }
-void PortNode::refreshLinks() {
-    foreach(GUILink * l, this->links) {
+void PortNode::refreshLinks() 
+{
+	/*
+	foreach(GUILink * l, this->links) {
         if ( l != 0) {
             l->refresh();
         }
-    }
+    }*/
 }
-void PortNode::setLink(GUILink * l) {
-
+void PortNode::setLink(GUILink * l) 
+{
+/*
     int index = this->links.indexOf(l);
     if (index == -1) {
         this->links.append(l);
         DM::Logger(DM::Debug) << "Set Link" << this->getPortName();
-    }
+    }*/
 
 }
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) {
