@@ -94,60 +94,70 @@ GUILink::~GUILink()
 
 void GUILink::setOutPort(PortNode * outPort)
 {
-
-    if (outPort  == 0)
-        return;
+    //if (!outPort)
+    //    return;
     this->outPort = outPort;
-    outPort->setLink(this);
-    source = outPort->getCenterPos();
+	refresh();
+    //outPort->setLink(this);
+    /*source = outPort->getCenterPos();
     sink = outPort->getCenterPos();
     prepareGeometryChange();
     updatePaths();
-    this->update(this->boundingRect());
+    this->update(this->boundingRect());*/
 }
-void GUILink::setOutPort(QPointF p) {
+void GUILink::setOutPort(QPointF p) 
+{
     source = p;
-    prepareGeometryChange();
+	refresh();
+    /*prepareGeometryChange();
     updatePaths();
-    this->update(this->boundingRect());
+    this->update(this->boundingRect());*/
 }
 
-void GUILink::setInPort(PortNode * inPort) {
-    if (inPort == 0)
-        return;
+void GUILink::setInPort(PortNode * inPort) 
+{
+    //if (!inPort)
+    //    return;
     this->inPort = inPort;
-    inPort->setLink(this);
-    sink = inPort->getCenterPos();
+	refresh();
+
+    //inPort->setLink(this);
+    /*sink = inPort->getCenterPos();
     prepareGeometryChange ();
     updatePaths();    
-    this->update(this->boundingRect());
+    this->update(this->boundingRect());*/
 
 }
-void GUILink::setInPort(QPointF p) {
+void GUILink::setInPort(QPointF p) 
+{
     sink = p;
-    prepareGeometryChange();
+	refresh();
+    /*prepareGeometryChange();
     updatePaths();
-    this->update(this->boundingRect());
+    this->update(this->boundingRect());*/
 }
-void GUILink::refresh() {
-	if(outPort)
-		source = outPort->getCenterPos();
-	if(inPort)
-		sink = inPort->getCenterPos();
+
+
+void GUILink::refresh() 
+{
+	if(outPort)	source = outPort->getCenterPos();
+	if(inPort)	sink = inPort->getCenterPos();
+
     updatePaths();
+
     prepareGeometryChange ();
     this->update(this->boundingRect());
-
 }
+
 void GUILink::deleteLink() {
 
     delete this;
 
 
-}
+}/*
 void GUILink::backLink() {
     //this->VIBelink->setBackLink(true);
-}
+}*/
 
 void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu menu;
@@ -157,7 +167,7 @@ void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
 
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
-    connect( a_back, SIGNAL( triggered() ), this, SLOT( backLink() ), Qt::DirectConnection );
+    //connect( a_back, SIGNAL( triggered() ), this, SLOT( backLink() ), Qt::DirectConnection );
     menu.exec(event->screenPos());
 
 }

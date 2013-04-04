@@ -378,16 +378,16 @@ void PortNode::refreshLinks()
         }
     }
 }*/
-void PortNode::setLink(GUILink * l) 
+/*void PortNode::setLink(GUILink * l) 
 {
-/*
+
     int index = this->links.indexOf(l);
     if (index == -1) {
         this->links.append(l);
         DM::Logger(DM::Debug) << "Set Link" << this->getPortName();
-    }*/
+    }
 
-}
+}*/
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
 {
     if(change == QGraphicsItem::ItemScenePositionHasChanged) 

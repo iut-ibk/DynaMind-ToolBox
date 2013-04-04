@@ -83,7 +83,7 @@ public:
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    void setLink(GUILink * l);
+    //void setLink(GUILink * l);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     QPointF getCenterPos();

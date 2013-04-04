@@ -77,12 +77,13 @@ public:
     void setVIBeLink(DM::ModuleLink * link){this->VIBelink = link;}
     ~GUILink();
 
-    QPainterPath shape() const {
+    QPainterPath shape() const 
+	{
             return connection_path.united(handle_path);
     }
 public slots:
     void deleteLink();
-    void backLink();
+    //void backLink();
 
 };
 
