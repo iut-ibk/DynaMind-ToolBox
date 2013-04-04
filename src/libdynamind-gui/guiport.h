@@ -92,7 +92,7 @@ public:
     QString getPortName(){return this->PortName;}
     bool isLinked();
     void setHover(bool b){this->isHover=b;}
-    void refreshLinks();
+    //void refreshLinks();
     //DM::Port * getVIBePort();
     void removeLink(GUILink * l);
     //void updatePort(DM::Port * p);

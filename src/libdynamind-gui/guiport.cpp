@@ -170,7 +170,8 @@ QPointF PortNode::getCenterPos()
 
 static GUILink* unstableLink = NULL;
 
-void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
+void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
+{
     this->scene()->sendEvent(0, event);
 
 	//DM::Logger(DM::Debug) << "PortNode::mouseMoveEvent";
@@ -338,15 +339,16 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
     //}
 	*/
 }
+/*
 void PortNode::refreshLinks() 
 {
-	/*
+	
 	foreach(GUILink * l, this->links) {
         if ( l != 0) {
             l->refresh();
         }
-    }*/
-}
+    }
+}*/
 void PortNode::setLink(GUILink * l) 
 {
 /*
@@ -357,10 +359,11 @@ void PortNode::setLink(GUILink * l)
     }*/
 
 }
-QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) {
-    if(change == QGraphicsItem::ItemScenePositionHasChanged) {
-        this->refreshLinks();
-    }
+QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
+{
+    if(change == QGraphicsItem::ItemScenePositionHasChanged) 
+		foreach(GUILink* link, links)
+			link->refresh();
     /*if (change == QGraphicsItem::ItemVisibleHasChanged) {
         foreach(GUILink * l, this->links)
             l->setVisible(this->isVisible());
