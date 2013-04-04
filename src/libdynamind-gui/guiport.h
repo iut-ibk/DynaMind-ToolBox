@@ -65,7 +65,7 @@ private:
      GUISimulation * simulation;
 
 public:
-    PortNode(ModelNode * parentModelNode/*, DM::Port * p*/);
+    PortNode(QString portName, ModelNode * parentModelNode/*, DM::Port * p*/);
     ~PortNode();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );

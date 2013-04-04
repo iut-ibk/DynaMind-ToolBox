@@ -230,10 +230,10 @@ ModelNode::ModelNode(DM::Module* m)
     //VIBeModule->addPortObserver( & this->guiPortObserver);
     //this->updatePorts();
 
-	foreach(std::string portname, m->getOutPortNames())
-	{
-		PortNode* port = new PortNode(this);
-	}
+	foreach(std::string portName, m->getOutPortNames())
+		this->ports.append(new PortNode(QString::fromStdString(portName), this));
+	foreach(std::string portName, m->getInPortNames())
+		this->ports.append(new PortNode(QString::fromStdString(portName), this));
 
     Color = COLOR_MODULE;
 }

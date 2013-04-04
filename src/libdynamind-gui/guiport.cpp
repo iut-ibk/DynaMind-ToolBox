@@ -51,13 +51,13 @@ void PortNode::removeLink(GUILink * l) {
 void PortNode::updatePort(DM::Port * p) {
     this->p = p;
 }*/
-PortNode::PortNode(ModelNode *parentModelNode/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
+PortNode::PortNode(QString portName, ModelNode *parentModelNode/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
 {
     this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
     this->setAcceptHoverEvents(true);
     this->setAcceptsHoverEvents(true);
-    //this->PortName = QString::fromStdString(p->getLinkedDataName());
+    this->PortName = portName;
     tmp_link = 0;
     //this->hoverElement = 0;
     //this->p = p;
