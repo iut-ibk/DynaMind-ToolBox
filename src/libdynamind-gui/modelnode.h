@@ -56,7 +56,7 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
     enum { Type = UserType + 1 };
 
 private:
-	QString moduleName;
+	//QString moduleName;
 public:
 	QStringList inPorts;
 	QStringList outPorts;
@@ -91,11 +91,13 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     GUISimulation * simulation;
 
+	DM::Module* module;
+
 public:
     QStringList ExistingInPorts;
     QStringList ExistingOutPorts;
     //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
-    ModelNode(QString moduleName);
+    ModelNode(DM::Module* m);
 
     int type() const {return Type; }
     virtual ~ModelNode();

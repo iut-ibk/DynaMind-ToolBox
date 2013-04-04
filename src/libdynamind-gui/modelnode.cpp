@@ -196,7 +196,7 @@ DM::Module * ModelNode::getDMModel() {
 	return 0;
 }*/
 
-ModelNode::ModelNode(QString moduleName)
+ModelNode::ModelNode(DM::Module* m)
 {
 	/*
     //this->guiPortObserver.setModelNode(this);
@@ -211,15 +211,16 @@ ModelNode::ModelNode(QString moduleName)
     this->simulation = simulation;
     this->nodes = 0;
 	*/
-	this->moduleName = moduleName;
+	//this->moduleName = moduleName;
+	module = m;
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-    this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + moduleName);
+	this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getClassName()));
     double w = this->simpleTextItem->boundingRect().width()+40;
 
-    QGraphicsSimpleTextItem tn ("Name: " + moduleName);
+    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getClassName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
@@ -271,7 +272,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		
         
         //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
-        painter->drawText(QPoint(22,15), "Module: " + moduleName);
+		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getClassName()));
 		
 
     }

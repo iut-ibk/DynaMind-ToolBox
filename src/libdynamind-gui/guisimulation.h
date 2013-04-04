@@ -75,7 +75,7 @@ public slots:
     void reset();
     void showHelp(std::string classname, std::string uuid);
 
-	std::map<ModelNode*,DM::Module*> moduleGuiMap;
+	//std::map<ModelNode*,DM::Module*> moduleGuiMap;
 };
 
 #endif // GUISIMULATION_H

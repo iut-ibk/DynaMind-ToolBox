@@ -228,8 +228,8 @@ bool GUISimulation::loadModulesFromSettings() {
 ModelNode* GUISimulation::guiAddModule(QString moduleName)
 {
 	DM::Module* m = addModule(moduleName.toStdString());
-	ModelNode* node = new ModelNode(moduleName);
-	moduleGuiMap[node] = m;
+	ModelNode* node = new ModelNode(m);
+	//moduleGuiMap[node] = m;
 	return node;
 }
 
