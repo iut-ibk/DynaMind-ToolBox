@@ -698,10 +698,10 @@ public:
     //!< add a new key-value pair, calls SaveToDb if last element is dropped
     void add(Tkey key,Tvalue* value)
     {
-		mutex->lockInline();
+        this->mutex->lockInline();
         if(Cache<Tkey,Tvalue>::search(key)!=NULL)
 		{
-			mutex->unlockInline();
+            this->mutex->unlockInline();
             return;
 		}
 
@@ -720,19 +720,19 @@ public:
 				}
 			}
 		}
-		mutex->unlockInline();
+        this->mutex->unlockInline();
     }
     //!< returns the value associated with the given key, if not found LoadFromDb is called. Neither found in db, returns NULL
     Tvalue* get(const Tkey& key)
     {
-		mutex->lockInline();
+        this->mutex->lockInline();
         Tvalue* v = Cache<Tkey,Tvalue>::get(key);
         if(!v)
         {
             v = key->LoadFromDb();
             if(v)   add(key,v);
         }
-		mutex->unlockInline();
+        this->mutex->unlockInline();
         return v;
     }
 	// NOTE: currently removing from db is handled by the main class
@@ -741,7 +741,7 @@ public:
 	//<! resizes the cache, if the given value is 0, the cache is set to infinite
 	void resize(unsigned long size)
 	{
-		mutex->lockInline();
+        this->mutex->lockInline();
 		Cache<Tkey,Tvalue>::_size = size;
 
         if(Cache<Tkey,Tvalue>::_size)
@@ -752,7 +752,7 @@ public:
 				Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
 			}
 		}
-		mutex->unlockInline();
+        this->mutex->unlockInline();
 	}
 };
 
