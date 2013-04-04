@@ -111,7 +111,7 @@ public:
 	/** @brief connects to ports via a link */
 	bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief removes a link */
-	void removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
+	bool removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief starts the entire simulation */
 	void run();
 

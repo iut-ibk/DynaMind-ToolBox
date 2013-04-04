@@ -130,7 +130,7 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
     Logger(Debug) << "Added link from port " << outPort << "to" << inPort;
 	return true;
 }
-void Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
+bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
 {
 	Link* toDelete;
 	foreach(Link* l, links)
@@ -147,9 +147,10 @@ void Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	if(toDelete)
 	{
 		links.remove(toDelete);
-		Logger(Debug) << "Deleted link from port " 
-			<< outPort << "to" << inPort;
+		Logger(Debug) << "Deleted link from port " << outPort << "to" << inPort;
+		return true;
 	}
+	return false;
 }
 
 void Simulation::run()
