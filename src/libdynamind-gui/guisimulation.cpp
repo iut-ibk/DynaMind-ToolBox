@@ -53,10 +53,10 @@ GroupNode * GUISimulation::getGroupNode(DM::Group * g) {
 
     return 0;
 }*/
-
+/*
 void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
 {
-	/*
+	
     //Create Visual Representation of the Module
     if (!m->isGroup()) {
         ModelNode * node = new ModelNode(m, this);
@@ -74,17 +74,17 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
     }
 
     this->updateSimulation();
-	*/
-}
+	
+}*/
 
 void GUISimulation::registerRootNode() {
     //this->GUIaddModule(this->getRootGroup(), QPointF(0,0));
 }
-
+/*
 void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 {
     //Create Module in DynaMind
-	/*
+	
     DM::Module * m = this->addModule(name.toStdString());
     if (!m) {
         DM::Logger(DM::Error) << "Couldn't Create Module " << name.toStdString();
@@ -92,9 +92,9 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
     }
     m->setGroup((DM::Group*)group);
     this->GUIaddModule(m, pos);
-	*/
+	
 }
-
+*/
 
 
 void GUISimulation::updateSimulation()
