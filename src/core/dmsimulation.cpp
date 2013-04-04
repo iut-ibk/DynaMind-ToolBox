@@ -107,7 +107,19 @@ bool Simulation::registerNativeModules(const std::string Filename)
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
 {
 	if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
+	{
+		Logger(Warning) << "Cannot connect modules";
 		return false;
+	}
+
+	foreach(Link* l, links)
+	{
+		if(l->src == source && l->outPort == outPort && l->dest == dest && l->inPort == inPort)
+		{
+			Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
+			return false;
+		}
+	}
 
 	Link* l = new Link();
 	l->src = source;
