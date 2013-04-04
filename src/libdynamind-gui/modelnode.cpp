@@ -231,9 +231,9 @@ ModelNode::ModelNode(DM::Module* m)
     //this->updatePorts();
 
 	foreach(std::string portName, m->getOutPortNames())
-		this->ports.append(new PortNode(QString::fromStdString(portName), this));
+		this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::OUTPORT));
 	foreach(std::string portName, m->getInPortNames())
-		this->ports.append(new PortNode(QString::fromStdString(portName), this));
+		this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::INPORT));
 
     Color = COLOR_MODULE;
 }

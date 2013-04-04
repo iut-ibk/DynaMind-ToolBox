@@ -51,7 +51,7 @@ void PortNode::removeLink(GUILink * l) {
 void PortNode::updatePort(DM::Port * p) {
     this->p = p;
 }*/
-PortNode::PortNode(QString portName, ModelNode *parentModelNode/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
+PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
 {
     this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
@@ -65,7 +65,7 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode/*, DM::Port *p*/
     this->isHover = false;
     this->LinkMode = false;
     this->modelNode = parentModelNode;
-    //this->PortType = p->getPortType();
+    this->portType = type;
     this->simulation = parentModelNode->getSimulation();
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
@@ -109,7 +109,9 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     portname_graphics.setText(this->getPortName());
 
     //if (this->getPortType() > DM::OUTPORTS)
+	if(portType == INPORT)
         painter->drawText(QPoint(10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
+	else
     //if (this->getPortType() < DM::OUTPORTS)
         painter->drawText(QPoint(-portname_graphics.boundingRect().width()-10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
     painter->setBrush(Qt::NoBrush);
@@ -161,9 +163,9 @@ QPointF PortNode::getConnectionNode() {
     return  QPointF( p+QPointF(7,14));
 }
 
-int PortNode::getPortType() {
+/*int PortNode::getPortType() {
     return this->PortType;
-}
+}*/
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
     this->scene()->sendEvent(0, event);

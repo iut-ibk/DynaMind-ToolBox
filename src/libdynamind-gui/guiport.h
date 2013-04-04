@@ -40,12 +40,21 @@ namespace DM {
 class Port;
 }*/
 
+
+
+
 class ModelNode;
 class GUILink;
 class GUISimulation;
 
 class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 {
+public:
+	enum PortType
+	{
+		INPORT = 0,
+		OUTPORT,
+	};
 private:
 
 
@@ -54,18 +63,19 @@ private:
     GUILink * tmp_link;
     QVector<GUILink * > links;
     QString PortName;
-    int PortType;
+   // int PortType;
     bool isHover;
     bool LinkMode;
     PortNode * hoverElement;
     float l;
     float h;
     float x1;
-     QGraphicsSimpleTextItem portname_graphics;
-     GUISimulation * simulation;
-
+    QGraphicsSimpleTextItem portname_graphics;
+    GUISimulation * simulation;
+	 
+	PortType portType;
 public:
-    PortNode(QString portName, ModelNode * parentModelNode/*, DM::Port * p*/);
+    PortNode(QString portName, ModelNode * parentModelNode, PortType type/*, DM::Port * p*/);
     ~PortNode();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
@@ -77,7 +87,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     QPointF getConnectionNode();
-    int getPortType();
+    //int getPortType();
     QString getPortName(){return this->PortName;}
     bool isLinked();
     void setHover(bool b){this->isHover=b;}
