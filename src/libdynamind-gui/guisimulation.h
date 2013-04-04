@@ -37,7 +37,7 @@ class ModelNode;
 //class GroupNode;
 //class GUILink;
 
-class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation, public QObject
+class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObject
 {
     //Q_OBJECT
 public:
@@ -54,7 +54,7 @@ public:
 
 
 	
-	void guiUpdatePorts(ModelNode* node);
+	//void guiUpdatePorts(ModelNode* node);
 	ModelNode* guiAddModule(QString moduleName);
 private:
 	void loadPythonModulesFromDirectory(std::string path);

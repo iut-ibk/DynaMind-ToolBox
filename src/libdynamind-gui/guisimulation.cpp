@@ -233,7 +233,7 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 	return node;
 }
 
-void GUISimulation::guiUpdatePorts(ModelNode* node)
+/*void GUISimulation::guiUpdatePorts(ModelNode* node)
 {
 	DM::Module* m;
 	if(map_contains(&moduleGuiMap, node, m))
@@ -248,4 +248,4 @@ void GUISimulation::guiUpdatePorts(ModelNode* node)
 		foreach(std::string portName, m->getOutPortNames())
 			node->outPorts.push_back(QString::fromStdString(portName));
 	}
-}
+}*/

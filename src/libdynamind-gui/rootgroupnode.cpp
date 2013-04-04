@@ -87,7 +87,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 		// add module to render list
 		addItem(node);
 		// get ports
-		sim->guiUpdatePorts(node);
+		//sim->guiUpdatePorts(node);
 	}
 
     /*std::stringstream ss;
