@@ -172,7 +172,7 @@ static GUILink* unstableLink = NULL;
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
-    this->scene()->sendEvent(0, event);
+    //this->scene()->sendEvent(0, event);
 
 	//DM::Logger(DM::Debug) << "PortNode::mouseMoveEvent";
 	if(unstableLink)
