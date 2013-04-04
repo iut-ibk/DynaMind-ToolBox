@@ -271,10 +271,19 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
 	DM::Logger(DM::Debug) << "PortNode::mouseReleaseEvent";
 
-	if(unstableLink)
+	QList<QGraphicsItem*> items = this->scene()->items(event->scenePos());
+	foreach (QGraphicsItem  * item, items)
 	{
-		delete unstableLink;
-		unstableLink = NULL;
+		if(PortNode* port = dynamic_cast<PortNode*>(item))
+		{
+			if(port->portType == INPORT)
+				unstableLink->setInPort(port);
+			else
+				unstableLink->setOutPort(port);
+
+			unstableLink = NULL;
+			break;
+		}
 	}
 
 	/*
@@ -285,10 +294,12 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
             color = COLOR_VECTORPORT;
 
         this->update(this->boundingRect());
-        QList<QGraphicsItem  *> items = this->scene()->items(event->scenePos());
+        QList<QGraphicsItem*> items = this->scene()->items(event->scenePos());
         bool newLink = false;
-        foreach (QGraphicsItem  * item, items) {
-            if ( this->type() == item->type() ) {
+        foreach (QGraphicsItem  * item, items) 
+		{
+            if ( this->type() == item->type() ) 
+			{
                 PortNode * endLink  = (PortNode *) item;
 
                 //if (getPortType() == DM::OUTSYSTEM &&  endLink->getPortType() == DM::INSYSTEM ) {
@@ -305,6 +316,14 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
                 }
             }
         }
+		*/
+	
+	if(unstableLink)
+	{
+		delete unstableLink;
+		unstableLink = NULL;
+	}
+	/*
         if (!newLink ) {
             if (this->tmp_link != 0) {
                 delete this->tmp_link;
