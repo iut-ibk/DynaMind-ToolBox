@@ -73,10 +73,10 @@ protected:
     int inputCounter;
     int outputCounter;
     QVector<GUIPort*> ports;
-    QVector<ModelNode * > * nodes;
+    //QVector<ModelNode * > * nodes;
     RootGroupNode * parentGroup;
 
-    std::string  VIBeModuleUUID ;
+    //std::string  VIBeModuleUUID ;
     QGraphicsSimpleTextItem * simpleTextItem;
 
     int id;
