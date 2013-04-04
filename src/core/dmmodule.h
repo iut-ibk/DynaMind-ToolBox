@@ -204,7 +204,8 @@ public:
 		inports (those are set by the simulation) */
 	virtual void run() = 0;
 	/** @brief returns the name of the class - for e.g. logging purposes */
-	virtual char* getName() {return "<name not set>";};
+	virtual const char* getName() {return getClassName();};
+	virtual const char* getClassName() = 0;
 	/** @brief adds a Parameter to the module.
       * availiable types:
       * - DM::DOUBLE
