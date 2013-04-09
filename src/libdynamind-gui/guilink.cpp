@@ -86,7 +86,7 @@ GUILink::~GUILink()
         if (VIBelink != 0)
             delete this->VIBelink;
     }*/
-
+	
     this->VIBelink = 0;
     this->inPort = 0;
     this->outPort = 0;

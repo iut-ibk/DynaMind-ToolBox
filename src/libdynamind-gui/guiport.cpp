@@ -355,6 +355,7 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 	
 	if(unstableLink)
 	{
+		this->scene()->removeItem(unstableLink);
 		delete unstableLink;
 		unstableLink = NULL;
 	}
