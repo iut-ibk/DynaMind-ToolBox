@@ -133,7 +133,7 @@ inline bool delete_element(std::map<T1,T2*> *m, const T1 &key)
 	typename std::map<T1,T2*>::iterator i = m->find(key);
 	if(i==m->end())	return false;
 	delete i->second;
-	//m->erase(i);
+	m->erase(i);
 	return true;
 }
 
