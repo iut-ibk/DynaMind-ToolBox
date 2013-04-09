@@ -1,4 +1,6 @@
 INCLUDE(InstallRequiredSystemLibraries)
+#CMake has a bug and does not include vcomp90.dll in system libraries
+#as workaraound this dll is included in the python package for dynamind (as soon as this bug is fixed the durty workaround will be removed)
 
 SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-Toolbox")
