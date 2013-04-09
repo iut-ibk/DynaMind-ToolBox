@@ -649,11 +649,11 @@ std::vector<std::string> Simulation::getLoadModuleFiles()
 std::vector<Module*> Simulation::getModules() const{
     std::vector<Module*> ms;
 
-    /*for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
-        ms.push_back(it->second);*/
-
-	mforeach(Module* m, Modules)
-		ms.push_back(m);
+    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
+        ms.push_back(it->second);
+	// mforeach causes a crash for unknown reason
+	//mforeach(Module* m, Modules)
+	//	ms.push_back(m);
     return ms;
 }
 }
