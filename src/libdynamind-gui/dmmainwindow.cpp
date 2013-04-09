@@ -194,7 +194,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     this->simulation->addModulesFromSettings();
     this->helpviewer = new GUIHelpViewer(this->simulation);
 
-
+	ui->log_widget->setMaximumBlockCount(1000);	// ultimativly limited to 65k
 
     ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
     connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
