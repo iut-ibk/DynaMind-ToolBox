@@ -241,26 +241,28 @@ void LoopCreator::removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges, do
 
 void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector<DM::Edge *> pathedges, std::vector<DM::Component *> &addedcomponents)
 {
-    #pragma omp critical
+    for(uint index=0; index < pathnodes.size(); index++)
     {
-        for(uint index=0; index < pathnodes.size(); index++)
+        if(find(addedcomponents.begin(), addedcomponents.end(), pathnodes[index]) == addedcomponents.end())
         {
-            if(find(addedcomponents.begin(), addedcomponents.end(), pathnodes[index]) == addedcomponents.end())
+            sys->addComponentToView(pathnodes[index],defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
+            #pragma omp critical
             {
-                sys->addComponentToView(pathnodes[index],defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
                 addedcomponents.push_back(pathnodes[index]);
             }
         }
+    }
 
-        for(uint index=0; index < pathedges.size(); index++)
+    for(uint index=0; index < pathedges.size(); index++)
+    {
+        if(find(addedcomponents.begin(), addedcomponents.end(), pathedges[index]) == addedcomponents.end())
         {
-            if(find(addedcomponents.begin(), addedcomponents.end(), pathedges[index]) == addedcomponents.end())
+            sys->addComponentToView(pathedges[index],defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
+            #pragma omp critical
             {
-                sys->addComponentToView(pathedges[index],defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
                 addedcomponents.push_back(pathedges[index]);
             }
         }
-
     }
 }
 
