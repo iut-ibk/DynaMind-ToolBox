@@ -35,11 +35,12 @@
 
 #include <dmdbconnector.h>
 #include <QSqlQuery>
+#include <omp.h>
 
 #define SQLUNITTESTS
-#define SQLPROFILING
+//#define SQLPROFILING
 #define STDUNITTESTS
-
+//#define OMPUNITTESTS
 
 namespace {
 
@@ -1155,8 +1156,95 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
-
 #endif
+#ifdef OMPUNITTESTS
+
+TEST_F(TestSimulation,OMP) 
+{
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Logger(DM::Standard) << "testing omp";
+
+	int n = 1000;
+
+	DM::Component c;
+#pragma omp parallel for
+	for(int i=0;i<n;i++)
+		c.addAttribute(QString::number(i).toStdString(), (double)i);
+	
+	for(int i=0;i<n;i++)
+	{
+		double d = c.getAttribute(QString::number(i).toStdString())->getDouble();
+		ASSERT_TRUE(d == i);
+		//DM::Logger(Debug) << "successfully added double attribute #" << i << " with value = " << d;
+	}
+	
+#pragma omp parallel for
+	for(int i=0;i<n;i++)
+		c.removeAttribute(QString::number(i).toStdString());
+
+	//DM::Logger(Debug) << "elements left: " << c.getAllAttributes().size();
+	ASSERT_TRUE(c.getAllAttributes().size() == 0);
+}
+
+void InsertRemoveComponentTest(DM::Component& c,int n)
+{
+	#pragma omp parallel for
+	for(int i=0;i<n;i++)
+	{
+		c.addAttribute(QString::number(i).toStdString(), (double)i);
+		int k = 0;
+		for(int j=0;j<1e7;j++)
+			k++;
+			
+	}
+	#pragma omp parallel for
+	for(int i=0;i<n;i++)
+	{
+		c.removeAttribute(QString::number(i).toStdString());
+		int k = 0;
+		for(int j=0;j<1e7;j++)
+			k++;
+	}
+}
+
+TEST_F(TestSimulation,profilingOMP) 
+{
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Logger(DM::Standard) << "profiling omp";
+	
+	DM::Component c;
+	
+	//omp_set_num_threads(4);
+	//InsertRemoveComponentTest(c,5e5);
+
+	for(int n = 10; n<1e8;n*=10)
+	{
+		omp_set_num_threads(1);
+		QElapsedTimer timer;
+		timer.start();
+		InsertRemoveComponentTest(c,n);
+		long singleThreadTime = timer.elapsed();
+	
+		omp_set_num_threads(2);
+		timer.restart();
+		InsertRemoveComponentTest(c,n);
+		long dualThreadTime = timer.elapsed();
+
+		omp_set_num_threads(4);
+		timer.restart();
+		InsertRemoveComponentTest(c,n);
+		long quadThreadTime = timer.elapsed();
+	
+		DM::Logger(DM::Standard) << "results for n = "<<n<<" time[ms](threadcount)<speedup>: "
+			<< singleThreadTime <<"(1)<1>\t"
+			<< dualThreadTime <<"(2)<"<<singleThreadTime/(float)dualThreadTime<<">\t"
+			<< quadThreadTime <<"(4)<"<<singleThreadTime/(float)quadThreadTime<<">\t";
+	}
+}
+#endif
+
 #ifdef STDUNITTESTS
 
 TEST_F(TestSimulation,testMemory){

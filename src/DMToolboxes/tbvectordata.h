@@ -29,6 +29,7 @@
 #include <vector>
 #include <QPolygonF>
 #include <math.h>
+#include <map>
 
 namespace DM {
 class System;
