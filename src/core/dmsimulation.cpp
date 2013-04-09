@@ -371,7 +371,10 @@ bool Simulation::startSimulation(bool virtualRun)
 
 void Simulation::removeModule(std::string UUid) 
 {
-	delete_element(&Modules, UUid);
+	//delete_element(&Modules, UUid);
+	Module* m;
+	if(map_contains(&Modules, UUid, m))
+		delete m;
 }
 void Simulation::deregisterModule(std::string UUID) {
 
