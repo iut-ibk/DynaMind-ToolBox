@@ -73,6 +73,7 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("resultName")) );
     ui->checkBox_Points->setChecked(QString::fromStdString(m->getParameterAsString("Points")).toInt());
     ui->checkBox_Edges->setChecked(QString::fromStdString(m->getParameterAsString("Edges")).toInt());
+    ui->checkBox_Selected->setChecked(m->getParameter<bool>("selected"));
 
 
     QStringList optionList;
@@ -149,7 +150,7 @@ void GUIMarker::accept() {
     this->m->setParameterValue("PlacementOption", ui->comboBox_option->currentText().toStdString());
     this->m->setParameterValue("Edges", QString::number(ui->checkBox_Edges->isChecked()).toStdString());
     this->m->setParameterValue("Points", QString::number(ui->checkBox_Points->isChecked()).toStdString());
-
+    this->m->setParameterNative<bool>("selected", this->ui->checkBox_Selected->isChecked());
 
     QDialog::accept();
 }

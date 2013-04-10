@@ -68,6 +68,8 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
 
         std::string Identifier;
 
+        bool selected;
+
 
 
     };
