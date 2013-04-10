@@ -269,7 +269,7 @@ void DBWorker::run()
 
 		// wait loop
 		bool wait = true;
-		while(wait)
+        while(wait && !kill)
 		{
 			if(!queryStack.IsEmpty() || qSelect)
 			{
@@ -321,7 +321,7 @@ void DBWorker::run()
 			//selectWaiterCondition.wakeOne();
 		}
 	}
-	exec();
+    //exec();
 }
 
 void DBWorker::addQuery(QSqlQuery *q)
@@ -388,7 +388,7 @@ DBConnector::~DBConnector()
 	if(worker)
 	{
 		worker->Kill();
-		worker->terminate();
+        worker->wait();
 		delete worker;
 	}
 }
