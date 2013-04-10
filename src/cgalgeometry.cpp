@@ -524,7 +524,32 @@ Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
     Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
     //std::cout << c2 << std::endl;
     return DM::Node(c2.x(), c2.y(), 0.);
-
-
 }
+
+
+void CGALGeometry::CalculateCentroid(System *sys, Face *f, double &x, double &y)
+{
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
+    typedef K::Point_2                                          Point_2;
+    typedef CGAL::Polygon_2<K>                                  Polygon_2;
+    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
+    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
+    std::vector<DM::Node *> nodes = TBVectorData::getNodeListFromFace(sys, f);
+    int size_n1 = nodes.size();
+
+    std::list<Point_2>  poly1;
+
+	double v[3];
+    for (int i = 0; i < size_n1-1; i++) {
+		nodes[i]->get(v);
+        poly1.push_back(Point_2(v[0], v[1]));
+    }
+    Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
+
+	x = c2.x();
+	y = c2.y();
+}
+
 }

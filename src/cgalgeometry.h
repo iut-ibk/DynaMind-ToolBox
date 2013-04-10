@@ -64,9 +64,12 @@ namespace DM {
 
         /** @brief Check Orientation if CLOCKWISE return true */
         static bool CheckOrientation(std::vector<DM::Node*> nodes);
-
+		
         /** @brief Caclulate Centroid */
         static DM::Node CalculateCentroid(DM::System * sys, DM::Face * f);
+
+        /** @brief Caclulate Centroid */
+        static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y);
 
     };
 }
