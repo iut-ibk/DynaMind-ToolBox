@@ -30,6 +30,7 @@
 #include <dmcompilersettings.h>
 #include <QMutex>
 #include <QMutexLocker>
+#include <vector>
 
 using namespace std;
 

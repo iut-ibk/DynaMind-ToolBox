@@ -371,7 +371,10 @@ bool Simulation::startSimulation(bool virtualRun)
 
 void Simulation::removeModule(std::string UUid) 
 {
-	delete_element(&Modules, UUid);
+	//delete_element(&Modules, UUid);
+	Module* m;
+	if(map_contains(&Modules, UUid, m))
+		delete m;
 }
 void Simulation::deregisterModule(std::string UUID) {
 
@@ -649,11 +652,11 @@ std::vector<std::string> Simulation::getLoadModuleFiles()
 std::vector<Module*> Simulation::getModules() const{
     std::vector<Module*> ms;
 
-    /*for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
-        ms.push_back(it->second);*/
-
-	mforeach(Module* m, Modules)
-		ms.push_back(m);
+    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
+        ms.push_back(it->second);
+	// mforeach causes a crash for unknown reason
+	//mforeach(Module* m, Modules)
+	//	ms.push_back(m);
     return ms;
 }
 }
