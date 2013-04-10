@@ -28,7 +28,7 @@
 #define DMDBCONNECTOR_H
 
 #include <dmcompilersettings.h>
-#include <utilities.h>
+#include <dmstdutilities.h>
 #include <qobject.h>
 #include <queue>
 #include <qatomic.h>
