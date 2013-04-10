@@ -482,10 +482,12 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
     int size_n1 = nodes.size();
 
     Polygon_2 poly1;
-
+	double v[3];
     for (int i = 0; i < size_n1-1; i++) {
-        DM::Node * n = nodes[i];
-        poly1.push_back(Point(n->getX(), n->getY()));
+        //DM::Node * n = nodes[i];
+        //poly1.push_back(Point(n->getX(), n->getY()));
+		nodes[i]->get(v);
+        poly1.push_back(Point(v[0], v[1]));
     }
 
 
@@ -512,9 +514,12 @@ Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
 
     std::list<Point_2>  poly1;
 
+	double v[3];
     for (int i = 0; i < size_n1-1; i++) {
-        DM::Node * n = nodes[i];
-        poly1.push_back(Point_2(n->getX(), n->getY()));
+        //DM::Node * n = nodes[i];
+        //poly1.push_back(Point_2(n->getX(), n->getY()));
+		nodes[i]->get(v);
+        poly1.push_back(Point_2(v[0], v[1]));
     }
     Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
     //std::cout << c2 << std::endl;
