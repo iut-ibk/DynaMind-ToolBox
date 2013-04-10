@@ -38,9 +38,10 @@
 #include <omp.h>
 
 #define SQLUNITTESTS
-//#define SQLPROFILING
+#define SQLPROFILING
 #define STDUNITTESTS
-//#define OMPUNITTESTS
+#define OMPUNITTESTS
+#define OMPPROFILINGTESTS
 
 namespace {
 
@@ -1166,6 +1167,7 @@ TEST_F(TestSimulation,OMP)
 	DM::Logger(DM::Standard) << "testing omp";
 
 	int n = 1000;
+	omp_set_num_threads(8);
 
 	DM::Component c;
 #pragma omp parallel for
@@ -1186,25 +1188,25 @@ TEST_F(TestSimulation,OMP)
 	//DM::Logger(Debug) << "elements left: " << c.getAllAttributes().size();
 	ASSERT_TRUE(c.getAllAttributes().size() == 0);
 }
-
+#endif
+#ifdef OMPPROFILINGTESTS
 void InsertRemoveComponentTest(DM::Component& c,int n)
 {
 	#pragma omp parallel for
 	for(int i=0;i<n;i++)
 	{
 		c.addAttribute(QString::number(i).toStdString(), (double)i);
-		int k = 0;
-		for(int j=0;j<1e7;j++)
-			k++;
-			
+		/*int k = 0;
+		for(int j=0;j<1e8/n;j++)
+			k++;*/
 	}
 	#pragma omp parallel for
 	for(int i=0;i<n;i++)
 	{
 		c.removeAttribute(QString::number(i).toStdString());
-		int k = 0;
-		for(int j=0;j<1e7;j++)
-			k++;
+		/*int k = 0;
+		for(int j=0;j<1e8/n;j++)
+			k++;*/
 	}
 }
 
@@ -1219,7 +1221,7 @@ TEST_F(TestSimulation,profilingOMP)
 	//omp_set_num_threads(4);
 	//InsertRemoveComponentTest(c,5e5);
 
-	for(int n = 10; n<1e8;n*=10)
+	for(int n = 10; n<1e6;n*=10)
 	{
 		omp_set_num_threads(1);
 		QElapsedTimer timer;
