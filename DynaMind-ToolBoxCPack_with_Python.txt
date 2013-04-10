@@ -1,3 +1,4 @@
+SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION .)
 INCLUDE(InstallRequiredSystemLibraries)
 #CMake has a bug and does not include vcomp90.dll in system libraries
 #as workaraound this dll is included in the python package for dynamind (as soon as this bug is fixed the durty workaround will be removed)
@@ -57,18 +58,18 @@ IF(WIN32 AND NOT UNIX)
               ${GDALBIN}/*.dll)
 
 
-     INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION bin)
-     INSTALL (DIRECTORY "${PYTHONBIN}/" DESTINATION bin)
-     INSTALL (DIRECTORY "${GDALBIN}/projlib/" DESTINATION bin)
-     INSTALL (DIRECTORY "${GDALBIN}/gdalplugins/" DESTINATION bin)
-     INSTALL (DIRECTORY "${GDALBIN}/gdal-data/" DESTINATION bin)
+     INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION .)
+     INSTALL (DIRECTORY "${PYTHONBIN}/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/projlib/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/gdalplugins/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/gdal-data/" DESTINATION .)
 
-     INSTALL(FILES ${DLLS} DESTINATION bin)
+     INSTALL(FILES ${DLLS} DESTINATION .)
 
      FIND_PACKAGE(Qt4 REQUIRED QtSql)
      MESSAGE(STATUS "QT PLUGINS DIR: " ${QT_PLUGINS_DIR})
-     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION bin)
-     INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION bin/plugins/sqldrivers)
+     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION .)
+     INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION plugins/sqldrivers)
 
      if(WITH_GUI)
         set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
