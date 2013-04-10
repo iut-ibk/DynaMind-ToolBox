@@ -117,7 +117,7 @@ DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::No
 
 
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
-    std::vector<DM::Node*> result;
+    /*std::vector<DM::Node*> result;
     std::vector<std::string> nodelist= face->getNodes();
     foreach (std::string eid, nodelist) {
         DM::Node * n = sys->getNode(eid);
@@ -125,6 +125,8 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
 
     }
     return result;
+	*/
+	return face->getNodePointers();
 }
 
 void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
