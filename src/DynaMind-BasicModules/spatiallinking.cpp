@@ -104,7 +104,7 @@ void SpatialLinking::run() {
     int counterID = -1;
     foreach (std::string baseUUID, baseUUIDs) {
         counterID++;
-        Node c(0,0,0);
+        /*Node c(0,0,0);
         if (vbase.getType() == DM::FACE) {
             Face * f = city->getFace(baseUUID);
             DM::Node d (DM::CGALGeometry::CalculateCentroid(city, f));
@@ -121,7 +121,22 @@ void SpatialLinking::run() {
         centerPoints.push_back(QPointF(c.getX(), c.getY()));
 
         int x = c.getX() / spatialL;
-        int y = c.getY() / spatialL;
+        int y = c.getY() / spatialL;*/
+
+		double v[3];
+
+        if (vbase.getType() == DM::FACE) {
+            Face * f = city->getFace(baseUUID);
+            DM::CGALGeometry::CalculateCentroid(city, f, v[0], v[1]);
+        }
+        else if (vbase.getType() == DM::NODE) {
+            city->getNode(baseUUID)->get(v);
+        }
+        centerPoints.push_back(QPointF(v[0], v[1]));
+
+        int x = v[0] / spatialL;
+        int y = v[1] / spatialL;
+
 
         QPair<int,int> key(x,y);
         std::vector<int> * vn;
