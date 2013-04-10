@@ -46,6 +46,7 @@ Marker::Marker()
     param.Points = true;
     param.Edges = false;
     param.resultName = "Result";
+    param.selected = false;
 
     param.OffsetX = 0;
     param.OffsetY = 0;
@@ -65,6 +66,7 @@ Marker::Marker()
     this->addParameter("Edges", DM::BOOL, &param.Edges);
     this->addParameter("Identifier", DM::STRING, &param.Identifier);
     this->addParameter("resultName", DM::STRING, &param.resultName);
+    this->addParameter("selected", DM::BOOL, &this->param.selected);
 
     DM::View outputview(param.resultName, DM::RASTERDATA, DM::WRITE);
 
@@ -306,6 +308,10 @@ void Marker::run() {
         DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
         for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
             DM::Node * n = sys_in->getNode(it->first);
+            if (param.selected) {
+                if (n->getAttribute("selected")->getDouble() < 0.001) continue;
+            }
+
             ulong X = (ulong) ( n->getX() - param.OffsetX  ) / param.CellSize;
             ulong Y = (ulong) ( n->getY() - param.OffsetY  ) / param.CellSize;
 
@@ -326,6 +332,10 @@ void Marker::run() {
             if (!e) {
                 Logger(Warning) << "Not an Edge " << vIdentifier.getName();
                 continue;
+            }
+
+            if (param.selected) {
+                if (e->getAttribute("selected")->getDouble() < 0.001) continue;
             }
             Node * p1 = sys_in->getNode(e->getStartpointName());
             Node * p2 = sys_in->getNode(e->getEndpointName());
