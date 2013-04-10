@@ -340,7 +340,7 @@ bool DBWorker::ExecuteSelect(QSqlQuery *q)
 	
 	// wait for finish
 	while(selectStatus == SELECT_NOTDONE)
-		msleep(EXE_THREAD_SLEEP_TIME);
+		usleep(EXE_THREAD_SLEEP_TIME);
 
 	clientSelectMutex.unlock();
 	return selectStatus==SELECT_TRUE;
@@ -369,7 +369,7 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 
 	QSqlQuery *q = NULL;
 	while(!(q = ql->queryStack.pop()))
-		msleep(EXE_THREAD_SLEEP_TIME);
+		usleep(EXE_THREAD_SLEEP_TIME);
 	queryMutex.unlockInline();
 	return q;
 }

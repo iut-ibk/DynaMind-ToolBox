@@ -265,8 +265,8 @@ public:
 #define WORKER_SLEEP_TIME_MIN 1
 #define WORKER_SLEEP_TIME_MAX 64
 
-// timeinterval in milliseconds to wait for finished select states and new queries
-// recommendation 1ms
+// timeinterval in microseconds to wait for finished select states and new queries
+// recommendation 1us
 #define EXE_THREAD_SLEEP_TIME 1
 
 
