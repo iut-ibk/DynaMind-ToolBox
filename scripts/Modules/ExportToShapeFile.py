@@ -42,10 +42,10 @@ class ExportToShapeFile(Module):
                 self.Points = False
                 self.createParameter("Lines", BOOL,  "test")
                 self.Lines = True
-                self.createParameter("Faces", BOOL,  "test")		
+                self.createParameter("Faces", BOOL,  "test")        
                 self.Faces = False
-		self.createParameter("CoordinateSystem", STRING, "Coordinate System")
-		self.CoordinateSystem = "+proj=utm +zone=55 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0"
+                self.createParameter("CoordinateSystem", STRING, "Coordinate System")
+                self.CoordinateSystem = "+proj=utm +zone=55 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0"
                 self.vec = View("dummy", SUBSYSTEM, READ)
                 self.offsetX = 0
                 self.OffsetY = 0                
@@ -64,7 +64,7 @@ class ExportToShapeFile(Module):
                     self.exportPoints()         
 
             def exportFaces(self):
-		city = self.getData("City")
+                city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
                 spatialReference.ImportFromProj4(self.CoordinateSystem)
                 
@@ -81,28 +81,28 @@ class ExportToShapeFile(Module):
                 #Get Data 
                 v = View(self.Name, READ, FACE)
                 #Get Data 
-		unique = 0
+                unique = 0
                 NewAttriburteNamesForShape = {}  
                 names = city.getUUIDsOfComponentsInView(View(self.Name, READ, EDGE))
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
-			if (key in attr) == False:
-                        	attr.append(key)
-				unique = unique +1
-				NewAttriburteNamesForShape[key] = key[:7] + str(unique)
+                        if (key in attr) == False:
+                            attr.append(key)
+                            if len(key) > 7:
+                                unique = unique +1
+                                NewAttriburteNamesForShape[key] = key[:7] + str(unique)
+                            else:
+                                NewAttriburteNamesForShape[key] = key
                 for j in range(len(attr)):
-		     hasAttribute = True
+                     hasAttribute = True
                      if (attr[j] in AttributeList) == False:
                          attribute = city.getComponent(names[i]).getAttribute(attr[j])
                          fielddef = osgeo.ogr.FieldDefn(NewAttriburteNamesForShape[attr[j]], osgeo.ogr.OFTReal)
                          layer.CreateField(fielddef)
                          layerDefinition = layer.GetLayerDefn()  
                          AttributeList.append(attr[j])                        
-		for i in range(len(names)): 
-                    #Append Attributes
-                    alist = city.getComponent(names[i]).getAllAttributes().keys() 
-                    
+                for i in range(len(names)): 
                     face = city.getFace(names[i])
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbPolygon)
                     ring = osgeo.ogr.Geometry(osgeo.ogr.wkbLinearRing)
@@ -117,9 +117,9 @@ class ExportToShapeFile(Module):
                     feature.SetFID(featureIndex)  
                     #Append Attributes
                     if hasAttribute:        
-                        for k in range(len(alist)):
-                              value = city.getComponent(names[i]).getAttribute(alist[k]).getDouble()
-                              feature.SetField(NewAttriburteNamesForShape[attr[k]],value)
+                        for attr_name in AttributeList:
+                              value = city.getComponent(names[i]).getAttribute(attr_name).getDouble()
+                              feature.SetField(NewAttriburteNamesForShape[attr_name],value)
                     layer.CreateFeature(feature)    
 
                 shapeData.Destroy()    
@@ -138,16 +138,16 @@ class ExportToShapeFile(Module):
                 attr = []
                 hasAttribute = False
                 #Get Data 
-		unique = 0
+                unique = 0
                 NewAttriburteNamesForShape = {}  
                 names = city.getUUIDsOfComponentsInView(View(self.Name, READ, EDGE))
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
-			if (key in attr) == False:
-                        	attr.append(key)
-				unique = unique +1
-				NewAttriburteNamesForShape[key] = key[:7] + str(unique)
+                        if (key in attr) == False:
+                            attr.append(key)
+                            unique = unique +1
+                            NewAttriburteNamesForShape[key] = key[:7] + str(unique)
                 for j in range(len(attr)):
                     hasAttribute = True
                     if (attr[j] in AttributeList) == False:
@@ -162,7 +162,7 @@ class ExportToShapeFile(Module):
                          layerDefinition = layer.GetLayerDefn()  
                          AttributeList.append(attr[j]) 
                     
-		for i in range(len(names)):                             
+                for i in range(len(names)):                             
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbLineString)
                     edge = city.getEdge(names[i])
                     p1 = city.getNode(edge.getStartpointName())
@@ -187,7 +187,7 @@ class ExportToShapeFile(Module):
                 shapeData.Destroy()  
  
             def exportPoints(self):
-		city = self.getData("City")
+                city = self.getData("City")
                 spatialReference = osgeo.osr.SpatialReference()
                 spatialReference.ImportFromProj4(self.CoordinateSystem)
                 
@@ -202,8 +202,8 @@ class ExportToShapeFile(Module):
                 AttributeList = []
                 attr = []
                 hasAttribute = False
-          	unique = 0
- 		NewAttriburteNamesForShape = {}      
+                unique = 0
+                NewAttriburteNamesForShape = {}      
                 #fielddef = osgeo.ogr.FieldDefn("Z", osgeo.ogr.OFTReal)
                 #layer.CreateField(fielddef)
                 #layerDefinition = layer.GetLayerDefn()  
@@ -213,12 +213,12 @@ class ExportToShapeFile(Module):
                 for i in range(len(names)): 
                     attributemap = city.getComponent(names[i]).getAllAttributes()
                     for key in attributemap.keys():
-			if (key in attr) == False:
-                        	attr.append(key)
-				unique = unique +1
-				NewAttriburteNamesForShape[key] = key[:7] + str(unique)
+                        if (key in attr) == False:
+                            attr.append(key)
+                            unique = unique +1
+                            NewAttriburteNamesForShape[key] = key[:7] + str(unique)
                 for j in range(len(attr)):
-		     hasAttribute = True
+                     hasAttribute = True
                      if (attr[j] in AttributeList) == False:
                          attribute = city.getComponent(names[i]).getAttribute(attr[j])                         
                          if attribute.hasString() is True:
@@ -228,7 +228,7 @@ class ExportToShapeFile(Module):
                          layer.CreateField(fielddef)
                          layerDefinition = layer.GetLayerDefn()  
                          AttributeList.append(attr[j])                         
-		for i in range(len(names)): 
+                for i in range(len(names)): 
                     #Append Attributes
                     alist = city.getComponent(names[i]).getAllAttributes().keys()   
                     #Addend Points
