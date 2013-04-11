@@ -195,7 +195,8 @@ void SpatialLinking::run() {
                         Component * cmp = city->getComponent(baseUUIDs[id]);
                         Attribute * attr = cmp->getAttribute(linkto);
                         std::vector<LinkAttribute>  ls = attr->getLinks();
-                        ls.push_back(lto);
+                        if (std::find(ls.begin(), ls.end(), lto) == ls.end()) ls.push_back(lto);
+                        //else Logger(Standard) << "Link already existed";
                         attr->setLinks(ls);
 
                         LinkAttribute lbase;
