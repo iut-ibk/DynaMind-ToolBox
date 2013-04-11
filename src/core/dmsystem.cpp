@@ -993,7 +993,7 @@ Face * DerivedSystem::getFace(std::string uuid)
 				newNodes.push_back(getNode(node->getUUID()));
 
 			Face* newf = new Face(newNodes);
-			newf->CopyFrom(f);
+			newf->CopyFrom(*f,true);
 
 			foreach(Face *hole, f->getHolePointers())
 				newf->addHole(getFace(hole->getUUID()));
