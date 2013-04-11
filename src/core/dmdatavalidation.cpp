@@ -20,15 +20,16 @@ bool DataValidation::isVectorOfViewWrite(std::vector<DM::View> views) {
     return false;
 }
 
-bool DataValidation::isAvalibleInComponent(const DM::View & v,  const DM::Component  *  c) {
+/*bool DataValidation::isAvalibleInComponent(const DM::View & v,  const DM::Component  *  c) {
 
-    foreach (std::string attr, v.getReadAttributes()) {
-        std::map<std::string, Attribute*> c_attr = c->getAllAttributes();
+    foreach (std::string attr, v.getReadAttributes()) 
+	{
+        const std::map<std::string, Attribute*> c_attr = c->getAllAttributes();
         if (c_attr.find(attr) == c_attr.end())
             return false;
     }
 
     return true;
 
-}
+}*/
 }

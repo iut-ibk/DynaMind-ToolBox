@@ -564,7 +564,7 @@ Attribute::AttributeValue* Attribute::getValue() const
 	else		return attributeCache.get((Attribute*)this);
 }
 
-void Attribute::SetOwner(Component* owner)
+void Attribute::setOwner(Component* owner)
 {
 	if(!this->owner)
 	{
@@ -577,6 +577,11 @@ void Attribute::SetOwner(Component* owner)
 
 	//value = NULL;
 	// TODO: make shure its not bound to another component
+}
+
+Component* Attribute::GetOwner()
+{
+	return owner;
 }
 
 Attribute::AttributeValue* Attribute::LoadFromDb()

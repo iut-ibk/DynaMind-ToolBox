@@ -109,8 +109,10 @@ void Node::SetOwner(Component *owner)
         delete vector;
         vector = NULL;
     }
-    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-        it->second->SetOwner(this);
+	mforeach(Attribute* a, ownedattributes)
+		a->setOwner(this);
+    //for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+    //    it->second->SetOwner(this);
 }
 
 DM::Components Node::getType()

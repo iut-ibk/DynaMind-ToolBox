@@ -194,7 +194,7 @@ void Face::Synchronize()
 	}
 }
 
-void Face::SetOwner(Component *owner)
+/*void Face::SetOwner(Component *owner)
 {
 	QMutexLocker ml(mutex);
 
@@ -202,7 +202,7 @@ void Face::SetOwner(Component *owner)
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
 		it->second->SetOwner(this);
-}
+}*/
 
 void Face::setNodes(std::vector<Node*> nodes)
 {

@@ -154,6 +154,8 @@ System::~System()
     foreach (DM::System * sys, this->sucessors)
         if (sys)	delete sys;
 
+
+
 	//mforeach(View *v, viewdefinitions)
     //    delete v;
 	// memory leak
@@ -892,8 +894,6 @@ Component* DerivedSystem::getComponent(std::string uuid)
 		{
 			switch(n->getType())
 			{
-			case COMPONENT:
-				return addComponent(new Component(*n));
 			case NODE:
 				return getNode(uuid);
 			case EDGE:
@@ -905,8 +905,12 @@ Component* DerivedSystem::getComponent(std::string uuid)
 				//return getComponent(uuid);
 				return n;
 			case SUBSYSTEM:
-			//default:
-				return addComponent(new Component(*n));
+			case COMPONENT:
+				{
+					Component* c = new Component();
+					c->CopyFrom(*n, true);
+					return addComponent(new Component(*n));
+				}
 			//case RASTERDATA:
 			default:
 				return NULL;
@@ -924,7 +928,13 @@ Node* DerivedSystem::getNode(std::string uuid)
 
 		n = predecessorSys->getNode(uuid);
 		if(n)
-			n = addNode(new Node(*n));
+		{
+			Node* newn = new Node();
+			*newn = *n;
+			newn->CopyFrom(*n, true);
+			n = addNode(newn);
+			//n = addNode(new Node(*n));
+		}
 	}
 	return n;
 }
@@ -938,10 +948,9 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 		n = predecessorSys->getEdge(uuid);
 		if(n)
 		{
-			n = new Edge(*n);
-			n->setStartpoint(getNode(n->getStartpointName()));
-			n->setEndpoint(getNode(n->getEndpointName()));
-			n = addEdge(n);
+			Edge* newn = new Edge(getNode(n->getStartpointName()), getNode(n->getEndpointName()));
+			newn->CopyFrom(*n, true);
+			n = addEdge(newn);
 		}
 	}
 	return n;
@@ -957,10 +966,13 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 		n = predecessorSys->getEdge(start,end);
 		if(n)
 		{
-			n = new Edge(*n);
+			/*n = new Edge(*n);
 			n->setStartpoint(getNode(start->getUUID()));
 			n->setEndpoint(getNode(end->getUUID()));
-			n = addEdge(n);
+			n = addEdge(n);*/
+			Edge* newn = new Edge(getNode(start->getUUID()), getNode(end->getUUID()));
+			newn->CopyFrom(*n, true);
+			n = addEdge(newn);
 		}
 	}
 	return n;
@@ -976,16 +988,15 @@ Face * DerivedSystem::getFace(std::string uuid)
 		f = predecessorSys->getFace(uuid);
 		if(f)
 		{
-			Face* newf = new Face(*f);
-
 			std::vector<Node*> newNodes;
 			foreach(Node* node, f->getNodePointers())
 				newNodes.push_back(getNode(node->getUUID()));
 
-			newf->setNodes(newNodes);
-			
+			Face* newf = new Face(newNodes);
+			newf->CopyFrom(f);
+
 			foreach(Face *hole, f->getHolePointers())
-				f->addHole(getFace(hole->getUUID()));
+				newf->addHole(getFace(hole->getUUID()));
 
 			return this->addFace(newf);
 		}

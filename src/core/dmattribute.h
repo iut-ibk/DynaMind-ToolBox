@@ -113,7 +113,10 @@ public:
     /** @brief copies type and value to this attribute**/
     void Change(const Attribute &attribute);
     /** @brief changes the owner **/
-	void SetOwner(Component* owner);
+	void setOwner(Component* owner);
+    /** @brief returns the current owner, be aware on successor state generated attributes:
+		their owner is the component owning the element, not just the pointer **/
+	Component* GetOwner();
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/

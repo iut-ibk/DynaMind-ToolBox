@@ -69,14 +69,17 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
+    friend class DerivedSystem;
 private:
 
-	bool HasAttribute(std::string name);
+	bool HasAttribute(std::string name) const;
 	void LoadAttribute(std::string name);
     bool addAttribute(Attribute *pAttribute);
 
-	void CopyFrom(const Component &c);
+	void CopyFrom(const Component &c, bool successor = false);
 	bool isCached;
+
+	void CloneAllAttributes();
 
 protected:
 	QMutex* mutex;
@@ -138,7 +141,7 @@ public:
     /** @brief Returns a pointer to an Attribute */
     Attribute* getAttribute(std::string name);
     /** @brief Returns a map of all Attributes */
-    const std::map<std::string, Attribute*> & getAllAttributes() const;
+    const std::map<std::string, Attribute*> & getAllAttributes();
     /** @brief adds Component to a View by using the name of the view */
     void setView(std::string view);
     /** @brief adds Component to a View.
