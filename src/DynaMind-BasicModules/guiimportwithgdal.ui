@@ -108,27 +108,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBox_linkWithExistingView">
      <property name="title">
       <string>DynaMind</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>View Name</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEdit_viewName"/>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_append_existing">
-        <property name="text">
-         <string>append to existing datastream</string>
-        </property>
-       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_7">
@@ -139,6 +125,27 @@
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEdit_epsgCode"/>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_append_existing">
+        <property name="text">
+         <string>append to existing datastream</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>View Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="checkBox_linkWithExistingView">
+        <property name="text">
+         <string>link with existing view</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

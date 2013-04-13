@@ -56,6 +56,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     bool transformok;
     double tol;
     bool append;
+    bool linkWithExistingView;
 
     std::string FileName_old;
     std::string ViewName_old;

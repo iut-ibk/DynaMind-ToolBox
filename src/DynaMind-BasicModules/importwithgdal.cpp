@@ -53,6 +53,9 @@ ImportwithGDAL::ImportwithGDAL()
     this->addParameter("AttributesToImport", DM::STRING_MAP, &this->attributesToImport);
     this->ImportAll = true;
     this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
+    this->linkWithExistingView = false;
+    this->addParameter("linkWithExistingView", DM::BOOL, &this->linkWithExistingView);
+
 
     //WFS Input
     this->WFSDataName = "";
@@ -492,7 +495,9 @@ void ImportwithGDAL::run()
 bool ImportwithGDAL::importVectorData()
 {
     DM::System * sys = this->getData("Data");
-    this->initPointList(sys);
+
+    if (this->linkWithExistingView)
+        this->initPointList(sys);
 
     if(poCT != NULL)
         delete poCT;
