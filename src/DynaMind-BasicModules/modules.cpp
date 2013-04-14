@@ -44,6 +44,7 @@
 #include "facetoedge.h"
 #include "createhouses.h"
 #include "removecomponent.h"
+#include "joindatastreams.h"
 
 using namespace std;
 
@@ -69,5 +70,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<FaceToEdge>());
     registry->addNodeFactory(new NodeFactory<CreateHouses>());
     registry->addNodeFactory(new NodeFactory<RemoveComponent>());
+    registry->addNodeFactory(new NodeFactory<JoinDatastreams>());
 }
 
