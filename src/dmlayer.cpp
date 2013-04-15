@@ -295,7 +295,7 @@ struct FaceLineDrawer
         }
         else if (pos == after) 
 		{
-            if (first) 
+            if (first)
 			{
                 const double tmp[3] = {first->getX(), first->getY(), first->getZ()};
                 glVertex3dv(tmp);
