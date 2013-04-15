@@ -42,6 +42,7 @@ namespace DM {
 class LinkAttribute {
 public:
     LinkAttribute() {}
+    LinkAttribute(std::string viewname, std::string uuid) : viewname(viewname) , uuid(uuid){}
     std::string viewname;
     std::string uuid;
 
