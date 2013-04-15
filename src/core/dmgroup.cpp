@@ -145,9 +145,9 @@ PortTuple * Group::getOutPortTuple(std::string name) const
 Port* Group::getPort(std::string name) const
 {
     PortTuple *p = NULL;
-    if(p = getInPortTuple(name))
+    if( (p = getInPortTuple(name)) )
         return p->getInPort();
-    else if(p = getOutPortTuple(name))
+    else if( (p = getOutPortTuple(name)) )
         return p->getOutPort();
 
     return 0;
