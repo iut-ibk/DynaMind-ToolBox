@@ -52,6 +52,11 @@ CalculateBoundingBox::CalculateBoundingBox()
 
 }
 
+std::string CalculateBoundingBox::getHelpUrl()
+{
+    return "https://docs.google.com/document/d/1BQFbtPRwxLvArjyWl4KiMhdfruajEl9HdIRr-C7mei8/edit";
+}
+
 void CalculateBoundingBox::init() {
     city = this->getData("Data");
     if (city == 0)
@@ -246,7 +251,6 @@ void CalculateBoundingBox::getNodesFromFaces(std::vector<Node *> &nodes)
 }
 
 void CalculateBoundingBox::run() {
-
     city = this->getData("Data");
 
     if (this->MinBounding) {
@@ -254,11 +258,4 @@ void CalculateBoundingBox::run() {
         return;
     }
     caculateBoundingBox();
-
-
-
-
-
-
-
 }

@@ -52,6 +52,8 @@ public:
         void run();
     void init();
     CalculateBoundingBox();
+
+    std::string getHelpUrl();
 };
 
 #endif // CALCULATEBOUNDINGBOX_H
