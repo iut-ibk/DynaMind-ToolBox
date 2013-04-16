@@ -38,6 +38,10 @@
 #include <dmdbconnector.h>
 #include <fstream>
 
+#ifndef __clang__
+#include <omp.h>
+#endif
+
 using namespace std;
 //using namespace boost::python;
 namespace po = boost::program_options;
@@ -85,6 +89,7 @@ int main(int argc, char *argv[], char *envp[]) {
             ("sqlquerystack", po::value<unsigned long>(), "sql query cache size")
             ("blockwriting", po::value<unsigned long>(), "sql write block size")
             ("loglevel", po::value<int>(), "logger level 0-3 (Debug-Standard-Warning-Error)")
+            ("ompthreads", po::value<int>(), "number of threads used by omp")
             //("python-modules", po::value<vector <string> >(), "set path to python modules")
             ;
     std::string simulationfile;
@@ -92,6 +97,7 @@ int main(int argc, char *argv[], char *envp[]) {
     int repeat = 1;
 	bool verbose = false;
     string cpfile = "";
+	int numThreads = 1;
 
 	DM::LogLevel ll = DM::Standard;
     try {
@@ -150,6 +156,8 @@ int main(int argc, char *argv[], char *envp[]) {
 		if(vm.count("blockwriting"))	cfg.cacheBlockwritingSize = vm["blockwriting"].as<unsigned long>();
 		DM::DBConnector::getInstance()->setConfig(cfg);
 
+		if(vm.count("ompthreads"))	numThreads = vm["ompthreads"].as<int>();
+
 		if(verbose)
 		{
 			DM::Logger(DM::Standard) << ">>>> config:";
@@ -157,6 +165,7 @@ int main(int argc, char *argv[], char *envp[]) {
 			DM::Logger(DM::Standard) << "attribute cache size: " << (long)cfg.attributeCacheSize;
 			DM::Logger(DM::Standard) << "sql query stack size: " << (long)cfg.queryStackSize;
 			DM::Logger(DM::Standard) << "sql write block size: " << (long)cfg.cacheBlockwritingSize;
+			DM::Logger(DM::Standard) << "num threads: " << numThreads;
 		}
     }
     catch (po::unknown_option & e)
@@ -170,7 +179,9 @@ int main(int argc, char *argv[], char *envp[]) {
 		DM::Logger(DM::Error) << "simulation file not found";
 		return -1;
 	}
-	
+
+	omp_set_num_threads(numThreads);
+
     DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
     s.loadSimulation(simulationfile);
