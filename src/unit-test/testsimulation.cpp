@@ -35,7 +35,7 @@
 
 #include <dmdbconnector.h>
 #include <QSqlQuery>
-#ifdef _OPENMP
+#if !defined (__clang__)
 #include <omp.h>
 #endif
 
@@ -43,7 +43,9 @@
 #define SQLPROFILING
 #define STDUNITTESTS
 #define OMPUNITTESTS
+#if !defined (__clang__)
 #define OMPPROFILINGTESTS
+#endif
 
 namespace {
 
@@ -1161,7 +1163,6 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
 }
 #endif
 
-#ifdef _OPENMP
 #ifdef OMPUNITTESTS
 
 TEST_F(TestSimulation,OMP) 
@@ -1193,10 +1194,7 @@ TEST_F(TestSimulation,OMP)
 	ASSERT_TRUE(c.getAllAttributes().size() == 0);
 }
 #endif
-#endif
 
-
-#ifdef _OPENMP
 #ifdef OMPPROFILINGTESTS
 void InsertRemoveComponentTest(DM::Component& c,int n)
 {
@@ -1253,7 +1251,6 @@ TEST_F(TestSimulation,profilingOMP)
 			<< quadThreadTime <<"(4)<"<<singleThreadTime/(float)quadThreadTime<<">\t";
 	}
 }
-#endif
 #endif
 
 #ifdef STDUNITTESTS
