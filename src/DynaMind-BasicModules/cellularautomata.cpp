@@ -46,6 +46,8 @@ CellularAutomata::CellularAutomata()
     NameOfOutput_old  = "";
     param.offsetX = 0;
     param.offsetY = 0;
+    param.DimensionOfExisting = "user defined";
+    param.appendToStream = true;
 
     this->addParameter("Width", DM::LONG, &this->param.Width);
     this->addParameter("Height", DM::LONG, &this->param.Height);
@@ -59,11 +61,58 @@ CellularAutomata::CellularAutomata()
     this->addParameter("ListOfLandscapes", DM::STRING_LIST, &param.ListOfLandscapes);
     this->addParameter("NameOfOutput", DM::STRING, &NameOfOutput);
     this->addParameter("Desicion", DM::STRING, &this->param.Desicion);
+    this->addParameter("DimensionOfExisting", DM::STRING, &this->param.DimensionOfExisting);
+    this->addParameter("appendToStream", DM::BOOL, &this->param.appendToStream);
+
+
+    std::vector<DM::View> data;
+    if (param.appendToStream)
+        data.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::READ));
+    param.appendToStream_old = param.appendToStream;
+
+    this->addData("RasterDataIn", data);
 }
 
 void CellularAutomata::addLandscape(string s) {
     this->param.ListOfLandscapes.push_back(s);
     this->init();
+}
+
+void CellularAutomata::removeLandscape(string s)
+{
+    if (std::find(this->param.ListOfLandscapes.begin(), this->param.ListOfLandscapes.end(), s) == this->param.ListOfLandscapes.end())
+        return;
+    this->param.ListOfLandscapes.erase(std::find(this->param.ListOfLandscapes.begin(), this->param.ListOfLandscapes.end(), s));
+}
+
+void CellularAutomata::removeNeighboorhood(string neigh)
+{
+    Logger(Debug) << neigh;
+    if (param.neighs.find(neigh) ==param.neighs.end()) return;
+    param.neighs.erase(neigh);
+}
+
+void CellularAutomata::removeRule(string rule)
+{
+    Logger(Debug) << rule;
+    if (param.rules.find(rule) ==param.rules.end()) return;
+    param.rules.erase(rule);
+}
+
+std::vector<string> CellularAutomata::getLandscapesInStream()
+{
+    std::vector<std::string> landscapes;
+    DM::System * sys = this->getData("RasterDataIn");
+    if (!sys)
+        return landscapes;
+    std::vector<DM::View> views = sys->getViews();
+
+    foreach (DM::View v, views) {
+        if (v.getType() == DM::RASTERDATA)
+            landscapes.push_back(v.getName());
+    }
+    return landscapes;
+
 }
 
 bool CellularAutomata::createInputDialog() {
@@ -72,10 +121,10 @@ bool CellularAutomata::createInputDialog() {
     return true;
 }
 void CellularAutomata::updateInport() {
-    if(this->NameOfOutput.compare(this->NameOfOutput_old) == 0)
+    if(this->NameOfOutput == NameOfOutput_old)
         return;
 
-
+    this->removeData(this->NameOfOutput_old);
     View output(this->NameOfOutput, DM::RASTERDATA, DM::WRITE);
     std::vector<DM::View> data_out;
     data_out.push_back(output);
@@ -86,15 +135,17 @@ void CellularAutomata::updateInport() {
 
 void CellularAutomata::init() {
 
+    bool changed = false;
+
     updateInport();
 
-    bool changed = false;
+    if (param.appendToStream != param.appendToStream_old) changed = true;
+
     foreach (std::string s, param.ListOfLandscapes) {
         if (std::find(vExistingData.begin(), vExistingData.end(), s) != vExistingData.end()) {
             continue;
         }
         changed = true;
-
     }
     if (changed == false)
         return;
@@ -104,9 +155,13 @@ void CellularAutomata::init() {
         data.push_back(rdata);
         vExistingData.push_back(s);
     }
+    if (param.appendToStream)
+        data.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::READ));
+    else if (!data.size())
+        this->removeData("RasterDataIn");
+    param.appendToStream_old = param.appendToStream;
+    this->addData("RasterDataIn", data);
 
-    if (changed == true)
-        this->addData("RasterDataIn", data);
 
 
 }
@@ -117,8 +172,26 @@ void CellularAutomata::run()  {
         return;
     }
 
+    long Width = param.Width;
+    long Height = param.Height;
+    double CellSizeX = param.CellSize;
+    double CellSizeY = param.CellSize;
+    long offsetX = param.offsetX;
+    long offsetY = param.offsetY;
+
+    if ((this->param.appendToStream) && (this->param.DimensionOfExisting != "user defined")) {
+        DM::RasterData * r = this->getRasterData("RasterDataIn", DM::View(this->param.DimensionOfExisting, DM::RASTERDATA, DM::READ));
+
+        Width = r->getWidth();
+        Height = r->getHeight();
+        CellSizeX = r->getCellSizeX();
+        CellSizeY = r->getCellSizeX();
+        offsetX = r->getXOffset();
+        offsetY = r->getYOffset();
+    }
+
     this->param.OutputMap = this->getRasterData(this->NameOfOutput,View(this->NameOfOutput, DM::RASTERDATA, DM::WRITE));
-    this->param.OutputMap->setSize(param.Width, param.Height, param.CellSize,param.CellSize,param.offsetX,param.offsetY);
+    this->param.OutputMap->setSize(Width, Height, CellSizeX,CellSizeY,offsetX,offsetY);
     std::map<std::string, std::vector<DM::View> > views =  this->getViews();
 
     foreach (std::string s, param.ListOfLandscapes) {

@@ -61,6 +61,7 @@ private:
 
 public slots:
     void addRasterData();
+    void addLandscape(QString);
     void addVariable();
     void addFormula();
     void addExpression();
@@ -69,6 +70,9 @@ public slots:
     void updateEntries();
     void addRule(QStringList list);
     void accept();
+    void on_pushButton_remove_landscape_clicked();
+    void on_pushButton_remove_neigh_clicked();
+    void on_pushButton_remove_rules_clicked();
 
 };
 

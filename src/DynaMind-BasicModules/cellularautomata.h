@@ -59,9 +59,9 @@ class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
         std::vector<std::string> Values;
 
         std::vector<std::string> ListOfLandscapes;
-
-        //unordered_map<std::string, std::string> rules;
-
+        bool appendToStream;
+        bool appendToStream_old;
+        std::string DimensionOfExisting;
     };
 
 public:
@@ -69,9 +69,15 @@ public:
     void  initRuntime();
     void init();
     void run();
+
     virtual bool  createInputDialog();
     void addLandscape(std::string s);
+    void removeLandscape(std::string s);
+    void removeNeighboorhood(std::string neigh);
+    void removeRule(std::string rule);
+
     std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
+    std::vector<std::string> getLandscapesInStream();
     virtual ~CellularAutomata();
 
 private:

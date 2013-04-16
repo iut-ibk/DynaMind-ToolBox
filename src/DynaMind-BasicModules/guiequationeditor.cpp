@@ -50,7 +50,7 @@ GUIEquationEditor::GUIEquationEditor(QStringList SingelValues, QStringList Vecto
 
 }
 void GUIEquationEditor::hideName() {
-    this->ui->label->setVisible(false);
+    this->ui->label_name->setVisible(false);
     this->ui->lineEdit_name->setVisible(false);
 }
 
@@ -87,6 +87,7 @@ void GUIEquationEditor::accept() {
 void GUIEquationEditor::setFormula(QString name) {
     this->ui->lineEdit_exp->setText(name);
 }
+
 void GUIEquationEditor::setName(QString name) {
     this->ui->lineEdit_name->setText(name);
 }
