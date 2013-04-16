@@ -345,6 +345,21 @@ void Module::addData(std::string name,  std::vector<DM::View> views) {
     if (DM::DataValidation::isVectorOfViewWrite(views))
         this->addPort(name, DM::OUTSYSTEM);
 }
+
+void Module::removeData(string dataToRemove)
+{
+    if(!vector_contains(&parameterList, dataToRemove))
+        return;
+    this->parameter_vals.erase(dataToRemove);
+    this->views.erase(dataToRemove);
+    this->parameter.erase(dataToRemove);
+    this->data_vals.erase(dataToRemove);
+    this->parameterList.erase(find(parameterList.begin(), parameterList.end(), dataToRemove));
+
+    this->removePort(dataToRemove, DM::INSYSTEM);
+    this->removePort(dataToRemove, DM::OUTSYSTEM);
+}
+
 DM::System* Module::getData(std::string dataname)
 {
     if(!map_contains(&data_vals, dataname))

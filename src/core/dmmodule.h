@@ -228,6 +228,11 @@ public:
       */
     void addData(std::string name, std::vector<DM::View> view);
 
+
+    /** @brief Remove a dataset from the model
+      */
+    void removeData(std::string dataToRemove);
+
     /** @brief Returns a pointer to the system where the view is stored
       *
       * The pointer to the system is updated by the updateParameter method. The updateParameter
