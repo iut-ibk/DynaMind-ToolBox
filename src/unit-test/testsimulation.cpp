@@ -35,7 +35,9 @@
 
 #include <dmdbconnector.h>
 #include <QSqlQuery>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #define SQLUNITTESTS
 #define SQLPROFILING
@@ -958,9 +960,9 @@ TEST_F(TestSimulation, SQLattributes)
 	a = new DM::Attribute("fuzzi");
 
 	std::vector<DM::LinkAttribute> links;
-	DM::LinkAttribute link0 = {"0","a"};
-	DM::LinkAttribute link1 = {"1","b"};
-	DM::LinkAttribute link2 = {"2","c"};
+    DM::LinkAttribute link0 ("0","a");
+    DM::LinkAttribute link1 ("1","b");
+    DM::LinkAttribute link2 ("2","c");
 
 	links.push_back(link0);
 	links.push_back(link1);
@@ -1158,6 +1160,8 @@ TEST_F(TestSimulation,sqlRasterDataProfiling) {
 	//DM::RasterData::PrintCacheStatistics();
 }
 #endif
+
+#ifdef _OPENMP
 #ifdef OMPUNITTESTS
 
 TEST_F(TestSimulation,OMP) 
@@ -1189,6 +1193,10 @@ TEST_F(TestSimulation,OMP)
 	ASSERT_TRUE(c.getAllAttributes().size() == 0);
 }
 #endif
+#endif
+
+
+#ifdef _OPENMP
 #ifdef OMPPROFILINGTESTS
 void InsertRemoveComponentTest(DM::Component& c,int n)
 {
@@ -1245,6 +1253,7 @@ TEST_F(TestSimulation,profilingOMP)
 			<< quadThreadTime <<"(4)<"<<singleThreadTime/(float)quadThreadTime<<">\t";
 	}
 }
+#endif
 #endif
 
 #ifdef STDUNITTESTS
