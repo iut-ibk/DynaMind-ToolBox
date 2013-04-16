@@ -215,27 +215,19 @@ template<typename CB>
 void iterate_faces(DM::System *system, DM::View v, CB &callback = CB()) 
 {
 	DM::Vector3 vec;
-	DM::Vector3 closingvec;
 
     foreach(std::string face_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
         DM::Face *f = system->getFace(face_uuid);
 
-        std::vector<std::string> nodes = f->getNodes();
-        nodes.pop_back();
-
         callback(system, v, f, 0, 0, before);
-
-        system->getNode(nodes[0])->get(&closingvec.x);
-        callback(system, v, f, &closingvec, 0, in_between);
-
-		for(int i=1;i<nodes.size();i++) 
+		std::vector<DM::Node*> nodes = f->getNodePointers();
+		//nodes.pop_back();
+		foreach(DM::Node* n, nodes)
 		{
-            system->getNode(nodes[i])->get(&vec.x);
+            n->get(&vec.x);
             callback(system, v, f, &vec, 0, in_between);
         }
-
-        callback(system, v, f, &closingvec, 0, in_between);
 
         callback(system, v, f, 0, 0, after);
     }
