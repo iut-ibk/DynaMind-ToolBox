@@ -29,6 +29,8 @@
 #include <iostream>
 #include <vector>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+
 #include "dmsimulation.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +38,9 @@
 
 #include <dmlog.h>
 #include <dmdbconnector.h>
+#include <dmpythonenv.h>
+
+
 #include <fstream>
 
 #ifndef __clang__
@@ -53,10 +58,9 @@ void copyfiles(string &cpfile, int iteration)
 {
     QStringList filelist = QString::fromStdString(cpfile).split(";");
 
-    for (QStringList::const_iterator i = filelist.constBegin(); i != filelist.constEnd(); ++i)
+	foreach(QString file, filelist)
     {
-        QStringList transfer = (*i).split(",");
-
+        QStringList transfer = file.split(",");
         if(transfer.size() == 2)
         {
             QString targetfile = transfer.at(1);
@@ -149,6 +153,10 @@ int main(int argc, char *argv[], char *envp[]) {
 		DM::Log::addLogSink(file_log_updater);
 		//DM::Log::init(file_log_updater, ll);
 
+        //Init Python
+        DM::PythonEnv *env = DM::PythonEnv::getInstance();
+		env->addPythonPath(boost::filesystem::canonical(boost::filesystem::current_path()).string());
+
 		DM::DBConnectorConfig cfg;
 		if(vm.count("nodecache"))		cfg.nodeCacheSize		 = vm["nodecache"].as<unsigned long>();
 		if(vm.count("attributecache"))	cfg.attributeCacheSize	 = vm["attributecache"].as<unsigned long>();
@@ -185,6 +193,7 @@ int main(int argc, char *argv[], char *envp[]) {
     DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
     s.loadSimulation(simulationfile);
+
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
 	std::list<qint64> times;
