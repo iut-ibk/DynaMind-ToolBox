@@ -3,7 +3,7 @@
 #include <list>
 #include <cmath>
 #include <tbvectordata.h>
-#ifdef _OPENMP
+#ifndef __clang__
 #include <omp.h>
 #endif
 
