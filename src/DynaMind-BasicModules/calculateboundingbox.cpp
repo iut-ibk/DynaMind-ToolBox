@@ -52,11 +52,6 @@ CalculateBoundingBox::CalculateBoundingBox()
 
 }
 
-std::string CalculateBoundingBox::getHelpUrl()
-{
-    return "https://docs.google.com/document/d/1BQFbtPRwxLvArjyWl4KiMhdfruajEl9HdIRr-C7mei8/edit";
-}
-
 void CalculateBoundingBox::init() {
     city = this->getData("Data");
     if (city == 0)
@@ -194,6 +189,33 @@ void CalculateBoundingBox::caculateBoundingBox()
 void CalculateBoundingBox::caculateMinBoundingBox()
 {
 
+    if (this->overAll) {
+        std::vector<std::string> uuids = this->city->getUUIDs(vData);
+        std::vector<DM::Node *> nodes;
+        foreach (std::string uuid, uuids) {
+            DM::Face * f = city->getFace(uuid);
+            foreach (DM::Node * n, f->getNodePointers()) nodes.push_back(n);
+
+        }
+        std::vector<double> size;
+        std::vector<DM::Node> ress_nodes;
+
+        CGALGeometry::CalculateMinBoundingBox( nodes, ress_nodes, size );
+        std::vector<DM::Node*> vF;
+        foreach (DM::Node  n, ress_nodes) {
+            vF.push_back(city->addNode(n));
+        }
+        vF.push_back(vF[0]);
+
+
+        DM::Face * bF = city->addFace(vF, newFaces);
+
+        bF->addAttribute("l",size[0]);
+        bF->addAttribute("b",size[1]);
+
+        return;
+    }
+
     std::vector<std::string> uuids = this->city->getUUIDs(vData);
     foreach (std::string uuid, uuids) {
         DM::Face * f = city->getFace(uuid);
@@ -258,4 +280,9 @@ void CalculateBoundingBox::run() {
         return;
     }
     caculateBoundingBox();
+}
+
+std::string CalculateBoundingBox::getHelpUrl()
+{
+    return "https://docs.google.com/document/d/1BQFbtPRwxLvArjyWl4KiMhdfruajEl9HdIRr-C7mei8/edit";
 }

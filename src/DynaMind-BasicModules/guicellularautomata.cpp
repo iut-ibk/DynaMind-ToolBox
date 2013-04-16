@@ -32,6 +32,7 @@
 #include <QTableWidgetSelectionRange>
 #include <dm.h>
 #include <cellularautomata.h>
+#include <guicellularautomata_selectlandscape.h>
 
 using namespace DM;
 bool GUICellularAutomata::checkIfFromOutSide(QString name) {
@@ -57,16 +58,29 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     ui->lineEdit_OffsetX->setText( QString::fromStdString(m->getParameterAsString("OffsetX")) );
     ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
     ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("NameOfOutput")) );
+
+
+    ui->comboBox_nameOfExisting->clear();
+
+    ui->comboBox_nameOfExisting->addItem("user defined");
+    std::vector<std::string> landscapes =  this->m->getLandscapesInStream();
+    foreach(std::string l, landscapes)
+        ui->comboBox_nameOfExisting->addItem(QString::fromStdString(l));
+    //Choose Box
+    std::string n_dim = m->getParameter<std::string>("DimensionOfExisting");
+    int index = ui->comboBox_nameOfExisting->findText(QString::fromStdString(n_dim));
+    if (index > -1) ui->comboBox_nameOfExisting->setCurrentIndex(index);
+    else ui->comboBox_nameOfExisting->setCurrentIndex(0);
+
+    ui->checkBox_dimesionFromOutside->setChecked(m->getParameter<bool>("appendToStream"));
+
+
     std::map<std::string, std::vector<DM::View> > views =  m->getViews();
 
     foreach (std::string s, this->m->getLandscapes())
         ui->listWidget_landscapes->addItem(QString::fromStdString(s));
 
-
-
-
     ui->lineEdit_descision->setText(QString::fromStdString(m->getParameterAsString("Desicion")));
-    ui->spinBox_Steps->setValue(m->getParameter<int>("Steps"));
 
     QObject::connect(ui->pushButton_addLandscape, SIGNAL(clicked()), this, SLOT(addRasterData()));
     QObject::connect(ui->pushButton_addNeigh, SIGNAL(clicked()), this, SLOT(addVariable()));
@@ -76,20 +90,20 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
 
     QStringList headers;
     headers << "Name" << "Landscape" << "Type";
+    ui->tableWidget_neighs->clearContents();
+    ui->tableWidget_neighs->setRowCount(0);
     ui->tableWidget_neighs->setHorizontalHeaderLabels(headers);
-    ui->tableWidget_neighs->setColumnWidth (0,320);
-    ui->tableWidget_neighs->setColumnWidth (1,320);
-    ui->tableWidget_neighs->setColumnWidth (2,220);
+    ui->tableWidget_neighs->setColumnWidth (0,70);
+    ui->tableWidget_neighs->setColumnWidth (1,100);
+    ui->tableWidget_neighs->setColumnWidth (2,100);
 
     headers.clear();
-    headers << "Name" << "Rules";
+    headers << "Name" << "Rule";
     ui->tableWidget_rules->setHorizontalHeaderLabels(headers);
-    ui->tableWidget_rules->setColumnWidth (0,320);
-    ui->tableWidget_rules->setColumnWidth (1,540);
+    ui->tableWidget_rules->setColumnWidth (0,70);
+    ui->tableWidget_rules->setColumnWidth (1,200);
 
     updateEntries();
-
-
 
 }
 
@@ -119,7 +133,7 @@ void GUICellularAutomata::updateEntries() {
     }
 
     std::map<std::string, std::string> r = m->getParameter< std::map<std::string, std::string> >("Rules");
-    ui->tableWidget_rules->clear();
+    ui->tableWidget_rules->clearContents();
     ui->tableWidget_rules->setRowCount(0);
     rules.clear();
     for (std::map<std::string, std::string>::iterator it = r.begin(); it != r.end(); ++it) {
@@ -137,15 +151,21 @@ void GUICellularAutomata::updateEntries() {
 }
 
 void GUICellularAutomata::addRasterData() {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Name:"), QLineEdit::Normal, "" , &ok);
-    if (ok && !text.isEmpty()) {
+
+    std::vector<std::string> list = this->m->getLandscapesInStream();
+    QStringList lcs;
+    foreach (std::string l, list) lcs << QString::fromStdString(l);
+    GUICellularAutomata_SelectLandscape * dlg = new GUICellularAutomata_SelectLandscape(lcs, this);
+    QObject::connect(dlg, SIGNAL(selected(QString)), this, SLOT(addLandscape(QString)));
+    dlg->show();
+}
+
+void GUICellularAutomata::addLandscape(QString text)
+{
+    if (!text.isEmpty()) {
         m->addLandscape(text.toStdString());
         ui->listWidget_landscapes->addItem(text);
     }
-
-
 }
 void GUICellularAutomata::addVariable() {
     GUICellularAutomata_Neighbourhood * dlg = new GUICellularAutomata_Neighbourhood(this, this);
@@ -166,6 +186,9 @@ GUICellularAutomata::~GUICellularAutomata()
 }
 void GUICellularAutomata::addExpression() {
     GUIEquationEditor * dlg = new GUIEquationEditor(this->rules, QStringList(), this);
+
+    dlg->setFormula(ui->lineEdit_descision->text());
+    dlg->hideName();
     QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addExpressiontoVIBe(QStringList)));
     dlg->show();
 }
@@ -197,9 +220,6 @@ void GUICellularAutomata::addRule(QStringList list) {
     this->updateEntries();
 }
 
-
-
-
 void GUICellularAutomata::accept() {
     this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
     this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
@@ -207,5 +227,39 @@ void GUICellularAutomata::accept() {
     this->m->setParameterValue("OffsetX", ui->lineEdit_OffsetX->text().toStdString());
     this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
     this->m->setParameterValue("NameOfOutput", ui->lineEdit_resultName->text().toStdString());
+    bool ischecked = ui->checkBox_dimesionFromOutside->isChecked();
+    this->m->setParameterNative<bool>("appendToStream",ischecked);
+    this->m->setParameterNative<std::string>("DimensionOfExisting",ui->comboBox_nameOfExisting->currentText().toStdString());
+    this->m->setParameterNative<std::string>("Desicion", ui->lineEdit_descision->text().toStdString());
+
     QDialog::accept();
+}
+
+void GUICellularAutomata::on_pushButton_remove_landscape_clicked()
+{
+    QListWidgetItem * item = this->ui->listWidget_landscapes->currentItem();
+    if (!item) return;
+    Logger(Debug) << "remove";
+    this->m->removeLandscape( this->ui->listWidget_landscapes->currentItem()->text().toStdString() );
+    delete item;
+}
+
+void GUICellularAutomata::on_pushButton_remove_neigh_clicked()
+{
+    QTableWidgetItem * item =  this->ui->tableWidget_neighs->itemAt(0,ui->tableWidget_neighs->currentRow());
+
+    if (!item) return;
+    m->removeNeighboorhood(item->text().toStdString());
+
+    this->ui->tableWidget_neighs->removeRow(item->row());
+}
+
+void GUICellularAutomata::on_pushButton_remove_rules_clicked()
+{
+    QTableWidgetItem * item =  this->ui->tableWidget_rules->itemAt(0,ui->tableWidget_rules->currentRow());
+
+    if (!item) return;
+    m->removeRule(item->text().toStdString());
+
+    this->ui->tableWidget_rules->removeRow(item->row());
 }
