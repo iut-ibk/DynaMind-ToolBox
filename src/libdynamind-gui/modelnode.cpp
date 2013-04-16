@@ -145,7 +145,7 @@ void ModelNode::resetModel() {
 }
 
 void ModelNode::addPort(DM::Port * p) {
-    if (p->getPortType() < DM::OUTPORTS ) {
+    if (p->getPortType() > DM::OUTPORTS ) {
         foreach (QString pname, ExistingInPorts) {
             if (pname.compare(QString::fromStdString(p->getLinkedDataName())) == 0) {
                 return;
