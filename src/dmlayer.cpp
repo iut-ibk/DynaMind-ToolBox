@@ -192,13 +192,12 @@ struct TesselatedFaceDrawer {
         glPushName(name_start);
         foreach(Polygon_2 poly, tesselated) 
 		{
-#if 1
+
             glBegin(GL_POLYGON);
 			if(withTexture)
                     glColor4f(1.0, 1.0, 1.0, 0.75);
 			else
                     glColor3f(0.0, 0.0, 0.0);
-
 
             foreach(Point_2 p, poly.container()) 
 			{
@@ -206,16 +205,17 @@ struct TesselatedFaceDrawer {
                     glTexCoord1d(current_tex);
 
                 glVertex3d(CGAL::to_double(p.x()), CGAL::to_double(p.y()), current_height);
-            }
-#else
+			}
+//#else
+			/*
             glBegin(GL_LINE_STRIP);
             glColor3f(.0f, .0f, .0f);
             foreach(Point_2 p, poly.container())
                 glVertex3d(p.x(), p.y(), 0);
 
             Point_2 first = poly.container().front();
-            glVertex3d(first.x(), first.y(), 0);
-#endif
+            glVertex3d(first.x(), first.y(), 0);*/
+//#endif
 
             glEnd();
         }
