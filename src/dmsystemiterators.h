@@ -222,7 +222,7 @@ void iterate_faces(DM::System *system, DM::View v, CB &callback = CB())
 
         callback(system, v, f, 0, 0, before);
 		std::vector<DM::Node*> nodes = f->getNodePointers();
-		//nodes.pop_back();
+		nodes.pop_back();
 		foreach(DM::Node* n, nodes)
 		{
             n->get(&vec.x);

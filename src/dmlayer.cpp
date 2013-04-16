@@ -290,7 +290,7 @@ struct FaceLineDrawer
 		else if (pos == before) 
 		{
             glPushName(name_start);
-            glBegin(GL_LINE_STRIP);
+            glBegin(GL_LINE_LOOP);
             first = 0;
         }
         else if (pos == after) 
