@@ -39,18 +39,16 @@ using namespace std;
 
 namespace DM {
 
-class LinkAttribute {
+class LinkAttribute 
+{
 public:
     LinkAttribute() {}
     LinkAttribute(std::string viewname, std::string uuid) : viewname(viewname) , uuid(uuid){}
     std::string viewname;
     std::string uuid;
 
-    std::string const getViewName() const {return this->viewname;}
-    std::string const getUUID() const {return this->uuid;}
-
     bool operator==(const LinkAttribute & other) const {
-        return this->uuid == other.uuid && this->viewname == other.getViewName();
+        return this->uuid == other.uuid && this->viewname == other.viewname;
     }
 };
 class TimeSeriesAttribute
