@@ -34,6 +34,7 @@
 #include <dmcompilersettings.h>
 #include <QtCore>
 #include "dmdbconnector.h"
+#include <dmdbcache.h>
 
 using namespace std;
 
