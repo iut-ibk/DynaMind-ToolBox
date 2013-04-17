@@ -57,7 +57,7 @@ public:
         {
             if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
             {
-                for(int i=0;i<DBConnector::getInstance()->GetCacheBlockwritingSize()
+                for(unsigned long i=0;i<DBConnector::getInstance()->GetCacheBlockwritingSize()
                     && Cache<Tkey,Tvalue>::_cnt>1;i++)
                 {
                     Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
