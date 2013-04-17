@@ -135,6 +135,11 @@ void JoinDatastreams::addSystem(std::string sys) {
     this->init();
 }
 
+string JoinDatastreams::getHelpUrl()
+{
+    return "https://docs.google.com/document/d/1oKiIYtxeM-1ZRjBcXS1Ar9yZWg_TOB25QfIG7IZMhOo/edit";
+}
+
 bool JoinDatastreams::createInputDialog() {
     QWidget * w = new GUIJoinDatastreams(this);
     w->show();

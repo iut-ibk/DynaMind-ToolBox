@@ -22,7 +22,7 @@ public:
     void run();
     bool createInputDialog();
     void addSystem(std::string sys);
-    //std::string getHelpUrl();
+    std::string getHelpUrl();
 };
 
 #endif // JOINDATASTREAMS_H
