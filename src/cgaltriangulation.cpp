@@ -26,6 +26,7 @@
 
 #include "cgaltriangulation.h"
 #include <tbvectordata.h>
+#include <dmgeometry.h>
 
 void CGALTriangulation::mark_domains(CDT& ct,  CDT::Face_handle start, int index, std::list<CDT::Edge>& border)
 {
@@ -112,14 +113,13 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
     }
 
     DM::System transformedSys;
-
+    DM::SpatialNodeHashMap transfromedSysSNH(&transformedSys,100,false);
     std::vector<DM::Node*> ns_t;
-    double const_height;
     for (unsigned int i = 0; i < nodeList.size(); i++) {
         DM::Node n = *(nodeList[i]);
         DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
-        ns_t.push_back(transformedSys.addNode(n_t));
-        const_height = n_t.getZ();
+        transfromedSysSNH.addNode(n_t.getX(), n.getY(), n.getZ(), 0.0001);
+        ns_t.push_back( transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
     }
 
     DM::Face * f_t = transformedSys.addFace(ns_t);
@@ -144,10 +144,8 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
         foreach (std::string nuuid, hole) {
             DM::Node * n = sys->getNode(nuuid);
             DM::Node n_t = TBVectorData::RotateVector(alphas, *n);
-            nodes_h.push_back(transformedSys.addNode(n_t));
+            nodes_h.push_back(transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
         }
-        DM::Face * f_h = transformedSys.addFace(nodes_h);
-
         Polygon_2 hole_p;
         for (unsigned int  i = 0; i <nodes_h.size()-1; i++ ) {
             DM::Node * n = nodes_h[i];
@@ -165,8 +163,15 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
     {
         if ( fit->info().in_domain() ) ++count;
         if (fit->info().in_domain() ) {
-            for (int i = 0; i < 3; i++)
-                triangles.push_back( TBVectorData::RotateVector(alphas_t, DM::Node( fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), const_height)));
+            for (int i = 0; i < 3; i++) {
+                DM::Node * n_t = transfromedSysSNH.findNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), 0.0001);
+                if (!n_t) {
+                    DM::Logger(DM::Warning) << "Transformend Node doesn't exist trinagulation failed";
+                    return  triangles.clear();
+                }
+
+                triangles.push_back( TBVectorData::RotateVector(alphas_t, DM::Node( fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), n_t->getZ())));
+            }
         }
     }
 
