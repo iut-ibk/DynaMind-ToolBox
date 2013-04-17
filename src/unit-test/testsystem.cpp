@@ -804,6 +804,24 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
+	
+	timer.restart();
+	
+	for(int y=0;y<n;y++)
+	{
+		for(int x=0;x<n;x++)
+		{
+			std::vector<double> neigh;
+			neigh.resize(9,0.0);
+			raster->getMoorNeighbourhood(neigh, x , y);
+		}
+	}
+	
+	DM::DBConnector::getInstance()->Synchronize();
+	DM::Logger(DM::Standard) << "get neightboorhoods(" << n << "x" << n << ") " << (long)timer.elapsed();
+
+
+
 	timer.restart();
 	delete raster;
 	DM::DBConnector::getInstance()->Synchronize();
