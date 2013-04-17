@@ -7,7 +7,7 @@
 #include <dmhelper.h>
 #include <tbvectordata.h>
 #include <littlegeometryhelpers.h>
-#ifdef _OPENMP
+#ifndef __clang__
 #include <omp.h>
 #endif
 
