@@ -69,7 +69,7 @@ class DerivedSystem;
 */
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
-	friend DerivedSystem;
+	friend class DerivedSystem;
 private:
     //QMutex * mutex;
     std::map<QUuid, Node* > nodes;
