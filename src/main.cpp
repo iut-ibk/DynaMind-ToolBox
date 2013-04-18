@@ -29,7 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
 
 #include "dmsimulation.h"
 #include <stdio.h>
@@ -155,7 +155,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
         //Init Python
         DM::PythonEnv *env = DM::PythonEnv::getInstance();
-		env->addPythonPath(boost::filesystem::canonical(boost::filesystem::current_path()).string());
+		//env->addPythonPath(boost::filesystem::canonical(boost::filesystem::current_path()).string());
+		env->addPythonPath("");
 
 		DM::DBConnectorConfig cfg;
 		if(vm.count("nodecache"))		cfg.nodeCacheSize		 = vm["nodecache"].as<unsigned long>();
