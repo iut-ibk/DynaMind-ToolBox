@@ -88,7 +88,7 @@
             <item row="5" column="0" colspan="3">
              <widget class="QCheckBox" name="checkBox_dimesionFromOutside">
               <property name="text">
-               <string>Create Only</string>
+               <string>Rasterdata from outside</string>
               </property>
              </widget>
             </item>
