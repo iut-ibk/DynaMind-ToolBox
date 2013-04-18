@@ -7,7 +7,7 @@
 #include <dmhelper.h>
 #include <tbvectordata.h>
 #include <littlegeometryhelpers.h>
-#ifndef __clang__
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 
@@ -116,7 +116,10 @@ void CreateHouses::run()
 
     int nparcels = parcelUUIDs.size();
     int numberOfHouseBuild = 0;
-
+#ifdef _OPENMP
+    omp_set_num_threads(4);
+#endif
+#pragma omp parallel for
     for (int i = 0; i < nparcels; i++) {
         DM::Face * parcel = city->getFace(parcelUUIDs[i]);
 
