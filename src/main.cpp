@@ -43,7 +43,7 @@
 
 #include <fstream>
 
-#ifndef __clang__
+#ifndef _OPENMP
 #include <omp.h>
 #endif
 
@@ -188,7 +188,10 @@ int main(int argc, char *argv[], char *envp[]) {
 		return -1;
 	}
 
-	omp_set_num_threads(numThreads);
+#ifndef _OPENMP
+    omp_set_num_threads(numThreads);
+#endif
+
 
     DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
