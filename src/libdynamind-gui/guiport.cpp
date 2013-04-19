@@ -83,6 +83,8 @@ bool GUIPort::isLinked() {
 }
 
 void GUIPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    if (!this->getVIBePort())
+        return;
     if (this->getVIBePort()->isFullyLinked())
         color = Qt::green;
     if (!this->getVIBePort()->isFullyLinked())
