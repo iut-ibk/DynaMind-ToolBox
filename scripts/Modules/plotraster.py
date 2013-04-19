@@ -35,57 +35,52 @@ class PlotRaster(Module):
                 Module.__init__(self)
                 self.vmin = 0
                 self.vmax = 0                
-                self.createParameter("RasterDataName", STRING, "test" )
+                self.createParameter("RasterDataName", STRING, "" )
                 self.RasterDataName = ""
-                self.vec = View("dummy", SUBSYSTEM, READ)
+                self.vec = View("dummy", SUBSYSTEM, MODIFY)
                 self.offsetX = 0
                 self.OffsetY = 0                
                 views = []
                 views.append(self.vec)
-                self.addData("City", views)
+                self.addData("System", views)
+                self.counter = 0
+                self.createParameter("Folder", STRING, "")
+                self.Folder = ""
+
 
                    
         def run(self):
-                mapNames = []
-                mapNames.append(self.RasterDataName)
-                numberofFig = int((len(mapNames)+1)/2)
                 fig = figure()
                 index = 1
-                if len(mapNames) > 1:
-                        f = fig.add_subplot(numberofFig,2 ,1)
-                        index = 2
-                else:
-                        f = fig.add_subplot(numberofFig,1 ,1)  
+
+                f = fig.add_subplot(1,1 ,1)  
+                r = self.getRasterData("System",View(self.RasterDataName, RASTERDATA, READ))
+                f = fig.add_subplot(1,index,1)
+                f.set_title(self.RasterDataName)
+                a = array([])    
+                b = [] 
+                nameMap = ""
                 
-                for n in range(len(mapNames)):
-                        r_view = View(mapNames[n], RASTERDATA, READ)
-                        r = self.getRasterData("City",r_view)
-                        f = fig.add_subplot(numberofFig,index,n+1)
-                        f.set_title(mapNames[n])
-                        a = array([])    
-                        b = [] 
-                        nameMap = ""
-                        
-                        PlotStyle = ""
-                        width = r.getWidth()
-                        height = r.getHeight()                            
-                       
-                        val = []
-                        cval = array([])
-                        
-                        a.resize(height, width)
-                        for i in range(width):
-                            for j in range(height): 
-                                    a[j,i] = r.getValue(i,j) * 1
-                        
-                        #imshow(a, origin='lower', vmin=self.vmin, vmax=self.vmax, extent=[0,width,0,height], interpolation='nearest')
-                        imshow(a, origin='lower', extent=[0,width,0,height], interpolation='nearest')  
-                        colorbar(ax = f,   orientation='horizontal')
-                filename = "plot" 
-                        #filename+=str(self.getT())
-                filename+=".svg"
-                savefig(tempfile.gettempdir()+'/'+filename)
+                PlotStyle = ""
+                width = r.getWidth()
+                height = r.getHeight()                            
+               
+                val = []
+                cval = array([])
+                
+                a.resize(height, width)
+                for i in range(width):
+                    for j in range(height): 
+                            a[j,i] = r.getValue(i,j) * 1
+                
+                imshow(a, origin='lower', extent=[0,width,0,height], interpolation='nearest')  
+                colorbar(ax = f,   orientation='horizontal')
+                filename = "plot_" 
+                filename+=str(self.counter).zfill(4)
+                filename+=".png"
+                savefig(str(self.Folder)+'/'+filename, dpi=720)
                 #fig.show()
                 close()
+                self.counter+=1
 
 
