@@ -74,9 +74,6 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
 
     ui->checkBox_dimesionFromOutside->setChecked(m->getParameter<bool>("appendToStream"));
 
-
-    std::map<std::string, std::vector<DM::View> > views =  m->getViews();
-
     foreach (std::string s, this->m->getLandscapes())
         ui->listWidget_landscapes->addItem(QString::fromStdString(s));
 
