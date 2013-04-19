@@ -67,6 +67,7 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
 
 
         std::string Identifier;
+        std::string DimensionOfExisting;
 
         bool selected;
 
@@ -122,6 +123,7 @@ public:
     void init();
     virtual bool createInputDialog();
     DM::System * getSystemIn();
+    std::vector<std::string> getLandscapesInStream();
 
 };
 

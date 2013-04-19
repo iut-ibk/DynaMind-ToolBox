@@ -60,6 +60,19 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
         ui->comboBox->addItem("Connect Inport");
     }
 
+    ui->comboBox_Dimension->clear();
+
+    ui->comboBox_Dimension->addItem("user defined");
+    std::vector<std::string> landscapes =  this->m->getLandscapesInStream();
+    foreach(std::string l, landscapes)
+        ui->comboBox_Dimension->addItem(QString::fromStdString(l));
+    //Choose Box
+    std::string n_dim = m->getParameter<std::string>("DimensionOfExisting");
+    int index = ui->comboBox_Dimension->findText(QString::fromStdString(n_dim));
+    if (index > -1) ui->comboBox_Dimension->setCurrentIndex(index);
+    else ui->comboBox_Dimension->setCurrentIndex(0);
+
+
 
     ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
     ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
@@ -136,6 +149,7 @@ GUIMarker::~GUIMarker()
     delete ui;
 }
 void GUIMarker::accept() {
+     this->m->setParameterNative<std::string>("DimensionOfExisting",ui->comboBox_Dimension->currentText().toStdString());
     this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
     this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
     this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());

@@ -47,6 +47,7 @@ Marker::Marker()
     param.Edges = false;
     param.resultName = "Result";
     param.selected = false;
+    param.DimensionOfExisting = "user defined";
 
     param.OffsetX = 0;
     param.OffsetY = 0;
@@ -67,6 +68,7 @@ Marker::Marker()
     this->addParameter("Identifier", DM::STRING, &param.Identifier);
     this->addParameter("resultName", DM::STRING, &param.resultName);
     this->addParameter("selected", DM::BOOL, &this->param.selected);
+    this->addParameter("DimensionOfExisting", DM::STRING, &this->param.DimensionOfExisting);
 
     DM::View outputview(param.resultName, DM::RASTERDATA, DM::WRITE);
 
@@ -116,7 +118,6 @@ void Marker::initRExpression () {
     RRasterData.clear();
     RRasterVariables.clear();
     for ( std::vector<std::string>::const_iterator it = param.RData.begin(); it != param.RData.end(); ++it) {
-        std::cout << "Try: " << *it << std::endl;
         if (paramRaw.find(*it) != paramRaw.end()) {
             std::string buf;
             std::stringstream ss(paramRaw[*it]);
@@ -127,8 +128,8 @@ void Marker::initRExpression () {
             p->DefineVar(*it, RRasterVariables[Rcounter++] );
 
         } else {
-            std::cout << "Error: Variable not defined" << std::endl;
-            QThread::currentThread()->exit();;
+            Logger(Error) << "Error: Variable not defined";
+            return;
         }
     }
 
@@ -146,8 +147,6 @@ void Marker::initRExpression () {
 
 double Marker::evaluateExpresion_R(int index, Node &p) {
     try {
-
-
         for ( unsigned int i = 0; i < RDoubleAttributes.size(); i++ ) {
             *RVariables.at(i) = RDoubleAttributes.at(i)->at(index);
         }
@@ -160,7 +159,8 @@ double Marker::evaluateExpresion_R(int index, Node &p) {
 
     }
     catch (mu::Parser::exception_type &e) {
-        std::cout << e.GetMsg() << std::endl;
+        Logger(Error) << e.GetMsg();
+        return 0;
     }
 
 }
@@ -180,36 +180,9 @@ void Marker::initrExpression () {
     mu::Parser * p  = new mu::Parser();
 
     long rcounter = 0;
-    /*for ( std::vector<std::string>::const_iterator it = param.rVariables.begin(); it != param.rVariables.end(); ++it) {
-        if (paramRaw.find(*it) != paramRaw.end()) {
-            std::string buf;
-            std::stringstream ss(paramRaw.at(*it));
-            std::vector<std::string> tokens;
-            while (ss >> buf)
-                tokens.push_back(buf);
-
-            if (tokens[0].compare("value") <= 0) {
-                if ( tokens[1].compare("DoubleAttributes")<= 0) {
-                    rDoubleAttributes.push_back(& this->getVectorData(tokens[2]).getDoubleAttributes(tokens[3]) );
-                    rVariables.push_back(new double);
-                    rExpression->DefineVar(*it, rVariables[Vcounter++] );
-                }
-
-            }
-            if (tokens[0].compare("RasterData") <= 0) {
-                rRasterData.push_back(& this->getRasterData(tokens[1], this->getT() ) ) ;
-                rRasterVariables.push_back(new double);
-                rExpression->DefineVar(*it, rRaste    p->rVariables[Rcounter++] );
-            }
-        } else {
-            std::cout << "Error: Variable not defined" << std::endl;
-            QThread::currentThread()->exit();;
-        }
-    }*/
     rRasterData.clear();
     rRasterVariables.clear();
     for ( std::vector<std::string>::const_iterator it = param.RData.begin(); it != param.RData.end(); ++it) {
-        std::cout << "Try: " << *it << std::endl;
         if (paramRaw.find(*it) != paramRaw.end()) {
             std::string buf;
             std::stringstream ss;
@@ -224,8 +197,8 @@ void Marker::initrExpression () {
             rcounter++;
 
         } else {
-            std::cout << "Error: Variable not defined" << std::endl;
-            QThread::currentThread()->exit();;
+            Logger(Error) << "Error: Variable not defined";
+            return;
         }
     }
 
@@ -252,7 +225,8 @@ double Marker::evaluateExpresion_r(int index, Node &p ) {
         return rExpression->Eval();
     }
     catch (mu::Parser::exception_type &e) {
-        std::cout << e.GetMsg() << std::endl;
+        Logger(Error) << e.GetMsg();
+        return 0;
     }
 
 }
@@ -264,8 +238,27 @@ void Marker::run() {
     if (param.Edges == true )
         vIdentifier = DM::View(param.Identifier, DM::EDGE, DM::READ);
     sys_in = this->getData("Data");
+
+    long Width = param.Width;
+    long Height = param.Height;
+    double CellSizeX = param.CellSize;
+    double CellSizeY = param.CellSize;
+    long offsetX = param.OffsetX;
+    long offsetY = param.OffsetY;
+
+    if (this->param.DimensionOfExisting != "user defined") {
+        DM::RasterData * r = this->getRasterData("Data", DM::View(this->param.DimensionOfExisting, DM::RASTERDATA, DM::READ));
+
+        Width = r->getWidth();
+        Height = r->getHeight();
+        CellSizeX = r->getCellSizeX();
+        CellSizeY = r->getCellSizeX();
+        offsetX = r->getXOffset();
+        offsetY = r->getYOffset();
+    }
+
     this->OutputMap = this->getRasterData("Result", DM::View (param.resultName, DM::RASTERDATA, DM::WRITE));
-    this->OutputMap->setSize(param.Width, param.Height, param.CellSize, param.CellSize,param.OffsetX,param.OffsetY);
+    this->OutputMap->setSize(Width,Height,CellSizeX,CellSizeY,offsetX,offsetY);
     this->OutputMap->clear();
     double noValue = this->OutputMap->getNoValue();
 
@@ -453,4 +446,21 @@ void Marker::run() {
 
 DM::System * Marker::getSystemIn() {
     return this->sys_in;
+}
+
+
+std::vector<string> Marker::getLandscapesInStream()
+{
+    std::vector<std::string> landscapes;
+    DM::System * sys = this->getData("Data");
+    if (!sys)
+        return landscapes;
+    std::vector<DM::View> views = sys->getViews();
+
+    foreach (DM::View v, views) {
+        if (v.getType() == DM::RASTERDATA)
+            landscapes.push_back(v.getName());
+    }
+    return landscapes;
+
 }
