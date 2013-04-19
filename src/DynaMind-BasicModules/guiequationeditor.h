@@ -55,7 +55,7 @@ public slots:
     void addTan() {this->addString("tan(#Value#)");}
     void addIf() {this->addString("if(Expression, #Value#, #Value#)");}
     void addNov() {this->addString("nov(#Vector#)");}
-    void addRandom() {this->addString("random(#Value#)");}
+    void addRandom() {this->addString("rand(#Value#)");}
     void addVector();
     void addValue();
     void accept();
