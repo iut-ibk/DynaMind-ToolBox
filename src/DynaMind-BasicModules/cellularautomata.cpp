@@ -231,6 +231,7 @@ void CellularAutomata::run()  {
                 {
                     Logger(Error) << p->GetExpr()  ;
                     Logger(Error) << e.GetMsg()  ;
+                    return;
                 }
             }
             double ressult = this->Desicion->Eval();
@@ -239,6 +240,11 @@ void CellularAutomata::run()  {
     }
 
 
+}
+
+string CellularAutomata::getHelpUrl()
+{
+    return "https://docs.google.com/document/d/1aCObKJYYQV2Iq23xFfgq-uMdH1c1ecVXRg_mNC5twlk/edit#";
 }
 CellularAutomata::~CellularAutomata() {
     this->deinit();

@@ -69,6 +69,7 @@ public:
     void  initRuntime();
     void init();
     void run();
+    std::string getHelpUrl();
 
     virtual bool  createInputDialog();
     void addLandscape(std::string s);
