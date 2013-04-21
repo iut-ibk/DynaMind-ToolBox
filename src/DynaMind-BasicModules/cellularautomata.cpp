@@ -244,7 +244,7 @@ void CellularAutomata::run()  {
 
 string CellularAutomata::getHelpUrl()
 {
-    return "https://docs.google.com/document/d/1aCObKJYYQV2Iq23xFfgq-uMdH1c1ecVXRg_mNC5twlk/edit#";
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/CellularAutomata";
 }
 CellularAutomata::~CellularAutomata() {
     this->deinit();
