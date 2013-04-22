@@ -28,6 +28,7 @@ IF(WIN32 AND NOT UNIX)
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dynamind-toolbox.org")
     SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.dynamind-toolbox.org")
     SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com, michael.mair@uibk.ac.at")
+    SET(CPACK_NSIS_EXECUTABLES_DIRECTORY .)
 
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         !include \\\"winmessages.nsh\\\"
