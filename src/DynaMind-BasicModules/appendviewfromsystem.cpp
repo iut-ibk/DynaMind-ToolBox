@@ -145,6 +145,6 @@ void AppendViewFromSystem::addSystem(std::string sys) {
 }
 
 string AppendViewFromSystem::getHelpUrl(){
-    return "https://docs.google.com/document/pub?id=1mWbm8OVjYzblWIa45cvIvJLzmYR9ZaW-vogsX7zZVtg";
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/AppendViewFromSystem";
 }
 
