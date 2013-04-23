@@ -43,7 +43,7 @@
 
 #include <fstream>
 
-#ifndef _OPENMP
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 
@@ -189,7 +189,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		return -1;
 	}
 
-#ifndef _OPENMP
+#ifdef _OPENMP
     omp_set_num_threads(numThreads);
 #endif
 
