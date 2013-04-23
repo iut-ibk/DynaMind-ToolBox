@@ -1020,12 +1020,16 @@ std::map<std::string, Component*> DerivedSystem::getAllComponents()
 
 std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
 {
-    //return views[view.getName()];
-	std::map<std::string, Component*> comps = views[view.getName()];
-	for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
-		it->second = getComponent(it->first);
+	if(view.getAccessType() == READ)
+		return views[view.getName()];
+	else
+	{
+		std::map<std::string, Component*> comps = views[view.getName()];
+		for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
+			it->second = getComponent(it->first);
 
-	return comps;
+		return comps;
+	}
 }
 std::map<std::string, Node*> DerivedSystem::getAllNodes()
 {
