@@ -140,7 +140,9 @@ void ImportRasterData::run()
     std::cout <<" Rows " << nrows << std::endl;
     std::cout <<" Cellsize " << cellsize << std::endl;
     r->setNoValue(NoDataValue);
-    r->setSize(ncols, nrows, cellsize,cellsize,0,0);
+
+    r->setSize(ncols, nrows, cellsize,cellsize,xoffset,yoffset);
+
     while (!line.isNull()) {
         LineCounter++;
         line =stream.readLine();
