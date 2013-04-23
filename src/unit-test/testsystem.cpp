@@ -868,24 +868,23 @@ TEST_F(TestSystem,OMP)
 #endif
 
 #ifdef OMPPROFILINGTESTS
-void InsertRemoveComponentTest(DM::Component& c,int n)
+void InsertRemoveComponentTestOMP(DM::Component& c,unsigned long n)
 {
 	#pragma omp parallel for
 	for(int i=0;i<n;i++)
-	{
 		c.addAttribute(QString::number(i).toStdString(), (double)i);
-		/*int k = 0;
-		for(int j=0;j<1e8/n;j++)
-			k++;*/
-	}
+
 	#pragma omp parallel for
 	for(int i=0;i<n;i++)
-	{
 		c.removeAttribute(QString::number(i).toStdString());
-		/*int k = 0;
-		for(int j=0;j<1e8/n;j++)
-			k++;*/
-	}
+}
+void InsertRemoveComponentTest(DM::Component& c,unsigned long n)
+{
+	for(int i=0;i<n;i++)
+		c.addAttribute(QString::number(i).toStdString(), (double)i);
+
+	for(int i=0;i<n;i++)
+		c.removeAttribute(QString::number(i).toStdString());
 }
 
 TEST_F(TestSystem,profilingOMP) 
@@ -896,29 +895,34 @@ TEST_F(TestSystem,profilingOMP)
 	
 	DM::Component c;
 	
-	//omp_set_num_threads(4);
-	//InsertRemoveComponentTest(c,5e5);
-
-	for(int n = 10; n<1e6;n*=10)
+	unsigned long maxN = 1e6;
+#if !defined _DEBUG
+	maxN = 1e7;
+#endif
+	for(unsigned long n = 10; n<maxN;n*=10)
 	{
-		omp_set_num_threads(1);
 		QElapsedTimer timer;
 		timer.start();
 		InsertRemoveComponentTest(c,n);
+		long noompThreadTime = timer.elapsed();
+
+		omp_set_num_threads(1);
+		timer.start();
+		InsertRemoveComponentTestOMP(c,n);
 		long singleThreadTime = timer.elapsed();
 	
 		omp_set_num_threads(2);
 		timer.restart();
-		InsertRemoveComponentTest(c,n);
+		InsertRemoveComponentTestOMP(c,n);
 		long dualThreadTime = timer.elapsed();
 
 		omp_set_num_threads(4);
 		timer.restart();
-		InsertRemoveComponentTest(c,n);
+		InsertRemoveComponentTestOMP(c,n);
 		long quadThreadTime = timer.elapsed();
 	
-		DM::Logger(DM::Standard) << "results for n = "<<n<<" time[ms](threadcount)<speedup>: "
-			<< singleThreadTime <<"(1)<1>\t"
+		DM::Logger(DM::Standard) << "results for n = "<<(long)n<<" time[ms](threadcount)<speedup>: "
+			<< noompThreadTime <<"(no omp 1)<>\t" << singleThreadTime <<"(1)<1>\t"
 			<< dualThreadTime <<"(2)<"<<singleThreadTime/(float)dualThreadTime<<">\t"
 			<< quadThreadTime <<"(4)<"<<singleThreadTime/(float)quadThreadTime<<">\t";
 	}
