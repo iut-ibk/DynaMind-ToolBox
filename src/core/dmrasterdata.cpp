@@ -148,6 +148,8 @@ bool RasterData::setCell(long x, long y, double value)
 	{
 		SQLSetValue(x,y,value);
 
+        if (this->NoValue == value) return true;
+
         if (minValue == this->NoValue || minValue > value)
             minValue = value;
 
