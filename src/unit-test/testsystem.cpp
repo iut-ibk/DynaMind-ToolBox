@@ -32,15 +32,15 @@
 #include <dmcache.h>
 
 #include <QSqlQuery>
-#if !defined (__clang__)
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 
 #define SQLUNITTESTS
 #define SQLPROFILING
 
+#ifdef _OPENMP
 #define OMPUNITTESTS
-#if !defined (__clang__)
 #define OMPPROFILINGTESTS
 #endif
 

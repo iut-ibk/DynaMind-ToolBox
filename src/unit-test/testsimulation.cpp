@@ -33,6 +33,10 @@
 #include <grouptest.h>
 #include <dmporttuple.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #define STDUNITTESTS
 
 namespace {
@@ -126,6 +130,23 @@ TEST_F(TestSimulation,repeatedRunTest) {
 	}
 
 }
+
+#ifdef _OPENMP
+TEST_F(TestSimulation,openmptest) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test openmp redirecting";
+	DM::Simulation sim;
+	sim.registerNativeModules("dynamind-testmodules");
+	DM::Module * m = sim.addModule("TestModule");
+	ASSERT_TRUE(m != 0);
+	int testThreadNumber = 3;
+	omp_set_num_threads(testThreadNumber);
+	sim.run();
+	ASSERT_TRUE(sim.getNumOMPThreads() == testThreadNumber);
+	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}
+#endif
 
 TEST_F(TestSimulation,linkedModulesTest) {
 	ostream *out = &cout;
