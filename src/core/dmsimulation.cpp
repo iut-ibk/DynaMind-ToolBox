@@ -155,6 +155,7 @@ void Simulation::loadModulesFromDefaultLocation()
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
 #else
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules"));
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/RelWithDebInfo"));
     cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin/output/Modules/Release"));
     cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin//output/Modules/RelWithDebInfo"));
@@ -185,6 +186,9 @@ void Simulation::loadModulesFromDefaultLocation()
     loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
 
     cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+
+    cp = QDir(QDir::currentPath() + "/../PythonModules/scripts");
     loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
 #endif
 }

@@ -34,13 +34,17 @@ double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::v
     double cellSizeX = rdata->getCellSizeX();
     double cellSizeY = rdata->getCellSizeY();
 
+    double offsetX = rdata->getXOffset();
+    double offsetY = rdata->getYOffset();
+
+
     QPolygonF area;
     foreach(DM::Node * p , points ) {
         if (!offset) {
-            area.append(QPointF(p->getX(), p->getY()));
+            area.append(QPointF(p->getX() - offsetX, p->getY() - offsetY));
         }
         else {
-            area.append(QPointF(p->getX() + offset->getX(), p->getY() + offset->getY()));
+            area.append(QPointF(p->getX() + offset->getX() - offsetX, p->getY() + offset->getY() - offsetY ));
         }
     }
 
@@ -105,14 +109,17 @@ double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::No
     double cellSizeX = rdata->getCellSizeX();
     double cellSizeY = rdata->getCellSizeY();
 
+    double offsetX = rdata->getXOffset();
+    double offsetY = rdata->getYOffset();
+
     QPolygonF area;
 
     foreach(DM::Node * p , points ) {
         if (!offset) {
-            area.append(QPointF(p->getX(), p->getY()));
+            area.append(QPointF(p->getX() - offsetX, p->getY() - offsetY));
         }
         else {
-            area.append(QPointF(p->getX() + offset->getX(), p->getY() + offset->getY()));
+            area.append(QPointF(p->getX() + offset->getX() - offsetX, p->getY() + offset->getY() - offsetY));
         }
     }
 
