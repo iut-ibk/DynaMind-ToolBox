@@ -59,7 +59,7 @@ private:
     uint getZone(double elevation, double zonesize, double mean);
     void calculatePressureZones(DynamindBoostGraph::Compmap &nodes, PressureZones &zones, double zonesize, double mean);
     void removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges,double zonesize, double mean);
-    void addPathToSystem(std::vector<DM::Node*> pathnodes, std::vector<DM::Edge*> pathedges, std::vector<DM::Component*> &addedcomponents);
+    void addPathToSystem(std::vector<DM::Node*>& pathnodes, std::vector<DM::Edge*>& pathedges, std::vector<DM::Component*> &addedcomponents);
     void calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes, double &min, double &max, double &mean);
 };
 

@@ -196,7 +196,7 @@ void LoopCreator::run()
 
                 if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
                     continue;
-
+				#pragma omp critical
                 addPathToSystem(pathnodes, pathedges, addedcomponents);
             }
 
@@ -239,17 +239,14 @@ void LoopCreator::removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges, do
     }
 }
 
-void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector<DM::Edge *> pathedges, std::vector<DM::Component *> &addedcomponents)
+void LoopCreator::addPathToSystem(std::vector<DM::Node *>& pathnodes, std::vector<DM::Edge *>& pathedges, std::vector<DM::Component *> &addedcomponents)
 {
     for(uint index=0; index < pathnodes.size(); index++)
     {
         if(find(addedcomponents.begin(), addedcomponents.end(), pathnodes[index]) == addedcomponents.end())
         {
             sys->addComponentToView(pathnodes[index],defhelper_ws.getView(DM::WS::JUNCTION,DM::MODIFY));
-            #pragma omp critical
-            {
-                addedcomponents.push_back(pathnodes[index]);
-            }
+			addedcomponents.push_back(pathnodes[index]);
         }
     }
 
@@ -258,10 +255,7 @@ void LoopCreator::addPathToSystem(std::vector<DM::Node *> pathnodes, std::vector
         if(find(addedcomponents.begin(), addedcomponents.end(), pathedges[index]) == addedcomponents.end())
         {
             sys->addComponentToView(pathedges[index],defhelper_ws.getView(DM::WS::PIPE,DM::MODIFY));
-            #pragma omp critical
-            {
-                addedcomponents.push_back(pathedges[index]);
-            }
+            addedcomponents.push_back(pathedges[index]);
         }
     }
 }
