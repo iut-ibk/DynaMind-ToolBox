@@ -305,8 +305,8 @@ void Marker::run() {
                 if (n->getAttribute("selected")->getDouble() < 0.001) continue;
             }
 
-            ulong X = (ulong) ( n->getX() - param.OffsetX  ) / param.CellSize;
-            ulong Y = (ulong) ( n->getY() - param.OffsetY  ) / param.CellSize;
+            ulong X = (ulong) ( n->getX() - offsetX  ) / param.CellSize;
+            ulong Y = (ulong) ( n->getY() - offsetY  ) / param.CellSize;
 
             if ( X >= param.Width)
                 continue;
@@ -337,8 +337,8 @@ void Marker::run() {
 
             long steps = (long) sqrt(dx*dx+dy*dy);
 
-            long x0 = (long) (p1->getX() - param.OffsetX ) / param.CellSize;
-            long y0 = (long) (p1->getY() - param.OffsetY ) / param.CellSize;
+            long x0 = (long) (p1->getX() - offsetX ) / param.CellSize;
+            long y0 = (long) (p1->getY() - offsetY ) / param.CellSize;
             for ( int i = 0; i < steps; i++ ) {
                 long X = (long) ( x0 + i* (dx /  steps) );
                 long Y = (long) ( y0 + i* (dy /  steps) );
