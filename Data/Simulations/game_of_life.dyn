@@ -1,0 +1,181 @@
+<DynaMind>
+	<Info Version="0.3/">
+<DynaMindCore>
+	<Nodes>
+		<RootNode>
+			<UUID value="{bee6844f-9584-48f5-9541-540251518671}"/>
+		</RootNode>
+		<Node>
+			<ClassName value="CellularAutomata"/>
+			<UUID value="{898b0519-cb72-41ad-a2a7-ef842d8bceac}"/>
+			<Name value=""/>
+			<GroupUUID value="{a9b7fef2-ca08-488f-ac09-098f5cf93d69}"/>
+			<DebugMode value="0"/>
+			<parameter name="CellSize">
+				<![CDATA[20]]>
+			</parameter>
+			<parameter name="Desicion">
+				<![CDATA[rule1 + rule2]]>
+			</parameter>
+			<parameter name="DimensionOfExisting">
+				<![CDATA[GameOfLife]]>
+			</parameter>
+			<parameter name="Height">
+				<![CDATA[200]]>
+			</parameter>
+			<parameter name="ListOfLandscapes">
+				<![CDATA[GameOfLife*|*]]>
+			</parameter>
+			<parameter name="NameOfOutput">
+				<![CDATA[GameOfLife]]>
+			</parameter>
+			<parameter name="Neighs">
+				<![CDATA[cur*|*GameOfLife+|+CurrentValue+|+|1|*||*neigh*|*GameOfLife+|+Moore+|+|1,1,1;1,0,1;1,1,1|*||*]]>
+			</parameter>
+			<parameter name="OffsetX">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="OffsetY">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="Rules">
+				<![CDATA[rule1*|*if(cur==1,if(sum(neigh)==2 or sum(neigh)==3,1,0),0)*||*rule2*|*if(cur==0,if(sum(neigh)==3,1,0),0)*||*]]>
+			</parameter>
+			<parameter name="Steps">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Width">
+				<![CDATA[200]]>
+			</parameter>
+			<parameter name="appendToStream">
+				<![CDATA[1]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="LoopGroup"/>
+			<UUID value="{a9b7fef2-ca08-488f-ac09-098f5cf93d69}"/>
+			<Name value=""/>
+			<GroupUUID value="{bee6844f-9584-48f5-9541-540251518671}"/>
+			<DebugMode value="0"/>
+			<parameter name="Runs">
+				<![CDATA[100]]>
+			</parameter>
+			<parameter name="nameOfInViews">
+				<![CDATA[1*|*]]>
+			</parameter>
+			<parameter name="nameOfOutViews">
+				<![CDATA[]]>
+			</parameter>
+		</Node>
+		<Node>
+			<ClassName value="CellularAutomata"/>
+			<UUID value="{d8a8e217-5b09-494d-a3ab-91d07e3600a3}"/>
+			<Name value=""/>
+			<GroupUUID value="{bee6844f-9584-48f5-9541-540251518671}"/>
+			<DebugMode value="0"/>
+			<parameter name="CellSize">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Desicion">
+				<![CDATA[if(rand(100) < 10, 1, 0)]]>
+			</parameter>
+			<parameter name="DimensionOfExisting">
+				<![CDATA[user defined]]>
+			</parameter>
+			<parameter name="Height">
+				<![CDATA[100]]>
+			</parameter>
+			<parameter name="ListOfLandscapes">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="NameOfOutput">
+				<![CDATA[GameOfLife]]>
+			</parameter>
+			<parameter name="Neighs">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="OffsetX">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="OffsetY">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="Rules">
+				<![CDATA[]]>
+			</parameter>
+			<parameter name="Steps">
+				<![CDATA[1]]>
+			</parameter>
+			<parameter name="Width">
+				<![CDATA[100]]>
+			</parameter>
+			<parameter name="appendToStream">
+				<![CDATA[0]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+		<Link>
+			<BackLink value = "1"/>
+			<InPort>
+				<UUID value = "{898b0519-cb72-41ad-a2a7-ef842d8bceac}"/>
+				<PortName value = "RasterDataIn"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{898b0519-cb72-41ad-a2a7-ef842d8bceac}"/>
+				<PortName value = "GameOfLife"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{898b0519-cb72-41ad-a2a7-ef842d8bceac}"/>
+				<PortName value = "RasterDataIn"/>
+				<PortType value = "0"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{a9b7fef2-ca08-488f-ac09-098f5cf93d69}"/>
+				<PortName value = "1"/>
+				<PortType value = "1"/>
+			</OutPort>
+		</Link>
+		<Link>
+			<BackLink value = "0"/>
+			<InPort>
+				<UUID value = "{a9b7fef2-ca08-488f-ac09-098f5cf93d69}"/>
+				<PortName value = "1"/>
+				<PortType value = "1"/>
+			</InPort>
+			<OutPort>
+				<UUID value = "{d8a8e217-5b09-494d-a3ab-91d07e3600a3}"/>
+				<PortName value = "GameOfLife"/>
+				<PortType value = "0"/>
+			</OutPort>
+		</Link>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="{a9b7fef2-ca08-488f-ac09-098f5cf93d69}"/>
+			<GUI_PosX value="311.75"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{d8a8e217-5b09-494d-a3ab-91d07e3600a3}"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="2"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+		<GUI_Node>
+			<GUI_UUID value="{898b0519-cb72-41ad-a2a7-ef842d8bceac}"/>
+			<GUI_PosX value="1.57881e-13"/>
+			<GUI_PosY value="6.61106e-15"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>
