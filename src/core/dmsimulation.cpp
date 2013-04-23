@@ -349,6 +349,7 @@ void Simulation::resetSimulation()
 void Simulation::run() 
 {
 #ifdef _OPENMP
+	Logger(Debug) << "OPENMP enabled";
 	this->numOMPThreads = omp_get_max_threads();
 #endif
     this->resetModules();
