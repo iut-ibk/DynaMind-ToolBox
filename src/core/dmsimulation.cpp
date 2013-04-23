@@ -59,6 +59,10 @@
 #include <QDir>
 #include <QThread>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace DM {
 struct SimulationPrivate {
     ModuleRegistry registry;
@@ -257,7 +261,7 @@ Simulation::Simulation()
     this->rootGroup->setSimulation(this);
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
-
+	numOMPThreads = 0;
 }
 
 bool Simulation::registerNativeModules(string Filename) 
@@ -344,6 +348,9 @@ void Simulation::resetSimulation()
 }
 void Simulation::run() 
 {
+#ifdef _OPENMP
+	this->numOMPThreads = omp_get_max_threads();
+#endif
     this->resetModules();
     this->startSimulation(false);
 }

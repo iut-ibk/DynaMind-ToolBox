@@ -226,7 +226,13 @@ public:
     /**@brief returns List of successfully loaded module files*/
     std::vector<std::string> getLoadModuleFiles();
 
+	/**@brief returns max number of omp threads, 0 for automatic settings*/
+	int getNumOMPThreads()
+	{
+		return numOMPThreads;
+	}
 private:
+	int numOMPThreads;
     DMRootGroup * rootGroup;
     std::map<std::string, Module*> Modules;
     //std::vector<ModuleLink * > Links;

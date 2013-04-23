@@ -31,17 +31,20 @@
 #include <dmgroup.h>
 #include <dmlogger.h>
 #include <dmsimulation.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 DM::ModuleRunnable::ModuleRunnable(DM::Module * m)
 {
     this-> m = m;
     this->setAutoDelete(true);
-
-
 }
 
 void DM::ModuleRunnable::run() 
 {
+	int ompThreads = m->getSimulation()->getNumOMPThreads();
+
     if (!m->checkPreviousModuleUnchanged())
         m->setExecuted(false);
     if (!m->isExecuted() || m->isGroup())
@@ -59,9 +62,13 @@ void DM::ModuleRunnable::run()
             if (m->getSimulation()->getSimulationStatus() == DM::SIM_OK) {
                 DM::Logger(DM::Debug) << this->m->getUuid()<< "Run";
                 QElapsedTimer timer;
+#ifdef _OPENMP
+				if(ompThreads>0)
+					omp_set_num_threads(ompThreads);
+#endif
                 timer.start();
                 DM::Logger(DM::Standard) << "Start\t"  << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter();
-                m->run();
+				m->run();
                 m->setExecuted(true);
 
                 DM::Logger(DM::Standard) << "Success\t" << m->getClassName() << " "  << m->getName()<< " " << m->getUuid() << " Counter " << m->getInternalCounter()  <<  "\t time " <<  (double) timer.elapsed()/1000;
