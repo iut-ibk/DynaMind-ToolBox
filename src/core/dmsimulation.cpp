@@ -58,6 +58,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QThread>
+#include <QFileInfo>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -436,8 +437,6 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
     foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->addModule(me.ClassName.toStdString(), false);
         if (!m) {
-            //this->setSimulationStatus(SIM_FAILED_LOAD);
-            //return std::map<std::string, std::string>();
             Logger(DM::Warning) << "Missing Module " << me.ClassName.toStdString();
             continue;
         }
@@ -446,7 +445,21 @@ std::map<std::string, std::string>  Simulation::loadSimulation(std::string filen
         m->setDebugMode(me.DebugMode);
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
         foreach(QString s, me.ParemterList.keys()) {
-            m->setParameterValue(s.toStdString(), me.ParemterList[s].toStdString());
+            std::string parameterVal = me.ParemterList[s].toStdString();
+            if (m->getParameterType(s.toStdString()) == DM::FILENAME) {
+                QDir filedir(me.ParemterList[s]);
+                Logger(Debug) << me.ParemterList[s].toStdString();
+                Logger(Debug) << filedir.path().toStdString();
+                if (filedir.isRelative()) {
+                    Logger(Debug) << "load from relative";
+                    QDir simulation_file_dir  = QFileInfo(QString::fromStdString(filename)).absoluteDir();
+                    Logger(Debug) << simulation_file_dir.absolutePath().toStdString();
+                    Logger(Debug) <<  simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
+                    parameterVal = simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
+                }
+
+            }
+            m->setParameterValue(s.toStdString(),parameterVal);
         }
     }
     //Reconstruct Groups;
