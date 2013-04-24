@@ -113,53 +113,24 @@ TEST_F(TestSystem,cachetest) {
 	ASSERT_TRUE(Node::GetCacheSize() == cfgNew.nodeCacheSize);
 
 	// reset config
+	/*
+	cfgNew = cfg;
+	cfgNew.attributeCacheSize = 3;
+
+	DM::System sys;
+	DM::Component cmp;
+	sys.addComponent(&cmp);
+	QElapsedTimer timer;
+	timer.start();
+	for(int i=0;i<1003;i++)
+	{
+		std::stringstream name;
+		name << i;
+		cmp.addAttribute(name.str(),i);
+	}
+	DM::Logger(Error) << "writing 10.000 attributes into db takes " << (long)timer.elapsed() << " ms";
+	*/
 	DBConnector::getInstance()->setConfig(cfg);
-
-    /*
-    int size = 4000;
-    Cache<int,double> cache(size);
-    for(int i=0;i<size;i++)
-    {
-        double* d = new double;
-        *d = (double)i;
-        cache.add(i,d);
-    }
-
-    QElapsedTimer time;
-    time.start();
-    for(int j=0;j<10;j++)
-        for(int i=0;i<size;i++)
-            cache.get(i);
-
-    DM::Logger(Error) << "elapsed time for searching " << GetElapsedTime(&time);
-    */
-    /*
-    int size = 20000;
-    //for(int i=0;i<size;i++)
-    //	buf[i] = (double)rand();
-
-    QElapsedTimer time;
-    time.start();
-
-    for(int i=0;i<10;i++)
-    {
-        double *buf = new double[size];
-        QByteArray qba((char*)buf, size*sizeof(double));
-    }
-
-    DM::Logger(Error) << "elapsed time for 10x1 buffers: " << GetElapsedTime(&time);
-    time.restart();
-
-    double *buf = new double[size*10];
-    double* p = buf;
-    for(int i=0;i<10;i++)
-    {
-        QByteArray::fromRawData((char*)p,size*sizeof(double));
-        p += size;
-    }
-
-    DM::Logger(Error) << "elapsed time for 1x10 buffers: " << GetElapsedTime(&time);
-    delete buf;*/
 }
 
 TEST_F(TestSystem,simplesqltest) {
