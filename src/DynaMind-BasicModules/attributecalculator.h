@@ -44,7 +44,7 @@ private:
     std::string equation;
     std::map<std::string, DM::View> viewsmap;
     std::vector<std::string> varaibleNames;
-    void getLinkedAttriubte(std::vector<double> * varaible_container, DM::Component *currentcmp,std::string name);
+    void getLinkedAttribute(std::vector<double> * varaible_container, DM::Component *currentcmp,std::string name);
     bool asVector;
 
 public:

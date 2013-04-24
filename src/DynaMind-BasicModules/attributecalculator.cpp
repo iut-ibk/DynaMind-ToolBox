@@ -106,7 +106,7 @@ void AttributeCalculator::init() {
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_container, Component *currentcmp,std::string name ) {
+void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, Component *currentcmp,std::string name ) {
     QString viewNametotal = QString::fromStdString(name);
     QStringList viewNameList = viewNametotal.split(".");
     //Remove First Element, is already what comes with currentcmp
@@ -123,7 +123,7 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
                 Logger(Error) << "Linked Element does not exist in DB";
                 return;
             }
-            this->getLinkedAttriubte(varaible_container, nextcmp, newSearchName);
+            this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
         }
     }
 
@@ -135,30 +135,25 @@ void  AttributeCalculator::getLinkedAttriubte(std::vector<double> * varaible_con
 void AttributeCalculator::run() {
 
     this->sys_in = this->getData("Data");
-    std::map<std::string, double * > doubleVaraibles;
+    std::map<std::string, double * > doubleVariables;
     mu::Parser * p  = new mu::Parser();
-    foreach (std::string variable, varaibleNames) {
-        double * d = new double;
-        *d = 0;
-        doubleVaraibles[variable] = d;
+    foreach (std::string variable, varaibleNames) 
+	{
+        double * d = new double(0);
+        doubleVariables[variable] = d;
         p->DefineVar(variable, d);
 
-        std::stringstream nov_stream;
-        nov_stream << "nov_" << variable;
+		std::string nov_variable = "nov_" + variable;
 
-        d = new double;
-        *d = 0;
-        doubleVaraibles[nov_stream.str()] = d;
-        p->DefineVar(nov_stream.str(), d);
+        d = new double(0);
+        doubleVariables[nov_variable] = d;
+        p->DefineVar(nov_variable, d);
+		
+		std::string first_variable = "first_" + variable;
 
-        std::stringstream first_stream;
-        first_stream << "first_" << variable;
-        d = new double;
-        *d = 0;
-        doubleVaraibles[first_stream.str()] = d;
-        p->DefineVar(first_stream.str(), d);
-
-
+        d = new double(0);
+        doubleVariables[first_variable] = d;
+        p->DefineVar(first_variable, d);
     }
     p->DefineFun("rand", mu::random , false);
     p->DefineFun("round", mu::round);
@@ -168,40 +163,46 @@ void AttributeCalculator::run() {
     p->DefineVar("counter", &counter);
     p->SetExpr(equation);
 
-    std::vector<std::string> uuids = this->sys_in->getUUIDsOfComponentsInView(viewsmap[nameOfBaseView]);
-
-    foreach (std::string uuid, uuids) {
+	mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
+	{
         counter++;
-        //UpdateParameters
-        //House.Unit.Area
-        DM::Component * cmp = this->sys_in->getComponent(uuid); //House
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
              it != variablesMap.end();
-             ++it) {
+             ++it) 
+		{
+            std::string varname = it->first;
+			std::string varvalue = it->second;
 
             //All attributes are stored in one container that is evaluated Later.
-            std::vector<double> * varaible_container = new std::vector<double>();
+			std::vector<double> variable_container;
+            //std::vector<double> * varaible_container = new std::vector<double>();
 
             //Can be later replaced by a function
             double val = 0;
-            std::string varname = it->first;
-            getLinkedAttriubte(varaible_container, cmp, varname);
+            getLinkedAttribute(&variable_container, cmp, varname);
+			
 
-            std::stringstream nov_stream;
-            nov_stream << "nov_" << it->second;
+            /*std::stringstream nov_stream;
+            nov_stream << "nov_" << varvalue;
 
             std::stringstream first_stream;
-            first_stream << "first_" << it->second;
+            first_stream << "first_" << varvalue;*/
 
             double nov = 0;
-            foreach (double v, *varaible_container) {
-                val+=v;
-                nov+=1;
+            foreach (double v, variable_container) 
+			{
+                val += v;
+                nov ++;
             }
 
+			std::string nov_variable = "nov_" + varvalue;
+			std::string first_variable = "first_" + varvalue;
 
-
-            double * var = doubleVaraibles[it->second];
+			*doubleVariables[varvalue] = val;
+			*doubleVariables[nov_variable] = nov;
+			*doubleVariables[first_variable] = (variable_container.size() > 0) ? 
+													variable_container[0] : 0;            
+			/*double * var = doubleVaraibles[varvalue];
             (*var) = val;
             double * nov_var = doubleVaraibles[nov_stream.str()];
             (*nov_var) =  nov;
@@ -209,14 +210,17 @@ void AttributeCalculator::run() {
             if (varaible_container->size() > 0)
                 (*first_nov) = (*varaible_container)[0];
             else
-                (*first_nov) = 0;
-            delete varaible_container;
+                (*first_nov) = 0;*/
+
+            //delete varaible_container;
         }
-        try {
+        try 
+		{
             double d = p->Eval();
-            if (!this->asVector) {
+            if (!this->asVector)
                 cmp->addAttribute(nameOfNewAttribute, d);
-            } else {
+            else 
+			{
                 DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
                 std::vector<double> vD = attri->getDoubleVector();
                 vD.push_back(d);
@@ -224,17 +228,17 @@ void AttributeCalculator::run() {
             }
 
         }
-        catch (mu::Parser::exception_type &e) {
+        catch (mu::Parser::exception_type &e) 
+		{
             Logger(Error) << e.GetMsg();
         }
     }
 
-    foreach (std::string variable, varaibleNames) {
-        delete doubleVaraibles[variable];
-    }
-    doubleVaraibles.clear();
-    delete p;
+    foreach (std::string variable, varaibleNames)
+        delete doubleVariables[variable];
 
+    doubleVariables.clear();
+    delete p;
 }
 
 bool AttributeCalculator::createInputDialog() {
