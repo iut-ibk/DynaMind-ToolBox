@@ -85,7 +85,7 @@ public:
     /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
     Node(const Node& n);
 	/** @brief return Type */
-	Components getType();
+	Components getType() const;
     /** @brief return x */
     double getX() const;
     /** @brief return y*/

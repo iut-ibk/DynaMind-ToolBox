@@ -208,7 +208,7 @@ DM::View * System::getViewDefinition(string name)
     return viewdefinitions[name];
 }
 
-Components System::getType()
+Components System::getType() const
 {
 	return DM::SUBSYSTEM;
 }
@@ -893,10 +893,10 @@ Component* DerivedSystem::getComponent(std::string uuid)
 	{
 		QMutexLocker ml(mutex);
 
-		n = predecessorSys->getComponent(uuid);
-		if(n)
+		const Component *nconst = predecessorSys->getComponentReadOnly(uuid);
+		if(nconst)
 		{
-			switch(n->getType())
+			switch(nconst->getType())
 			{
 			case NODE:
 				return getNode(uuid);
@@ -907,13 +907,13 @@ Component* DerivedSystem::getComponent(std::string uuid)
 			case RASTERDATA:
 				//return addComponent(new Component(*n));
 				//return getComponent(uuid);
-				return n;
+				return (Component*)nconst;
 			case SUBSYSTEM:
 			case COMPONENT:
 				{
 					Component* c = new Component();
-					c->CopyFrom(*n, true);
-					return addComponent(new Component(*n));
+					c->CopyFrom(*nconst, true);
+					return addComponent(new Component(*nconst));
 				}
 			//case RASTERDATA:
 			default:
@@ -923,7 +923,7 @@ Component* DerivedSystem::getComponent(std::string uuid)
 	}
 	return n;
 }
-/*const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
+const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
 {
 	
 	const Component* n = System::getComponentReadOnly(uuid);
@@ -931,7 +931,7 @@ Component* DerivedSystem::getComponent(std::string uuid)
 		return predecessorSys->getComponentReadOnly(uuid);
 
 	return n;
-}*/
+}
 Node* DerivedSystem::getNode(std::string uuid)
 {
 	Node* n = System::getNode(uuid);
@@ -1033,9 +1033,9 @@ std::map<std::string, Component*> DerivedSystem::getAllComponents()
 
 std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
 {
-	/*if(view.getAccessType() == READ)
+	if(view.getWriteAttributes().size() == 0 && view.getAccessType() == READ)
 		return views[view.getName()];
-	else*/
+	else
 	{
 		std::map<std::string, Component*> comps = views[view.getName()];
 		for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)

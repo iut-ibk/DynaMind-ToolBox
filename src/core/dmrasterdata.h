@@ -47,7 +47,7 @@ public:
 	/** @brief constructor, does not initialize a field */
     RasterData();
 	/** @brief overloaded function for returning the internal type DM::RASTERDATA */
-	Components getType();
+	Components getType() const;
 	/** @brief destructor deletes the field and its values too */
     ~RasterData();
 	/** @brief sets the field to NoValue */

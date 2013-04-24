@@ -115,7 +115,7 @@ public:
     /** @brief Destructor */
     virtual ~Component();
     /** @brief return Type */
-    virtual Components getType();
+    virtual Components getType() const;
     /** @brief return UUID */
     std::string getUUID();
     /** @brief return UUID */

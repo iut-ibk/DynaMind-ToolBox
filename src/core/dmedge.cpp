@@ -59,7 +59,7 @@ Edge::~Edge()
     if(isInserted)
         Component::SQLDelete();
 }
-DM::Components Edge::getType()
+DM::Components Edge::getType() const
 {
 	return DM::EDGE;
 }

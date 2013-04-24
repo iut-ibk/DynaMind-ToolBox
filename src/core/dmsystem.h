@@ -110,8 +110,10 @@ private:
     Component* getComponent(QUuid uuid);
     Edge* getEdge(QUuid uuid);
     System* getSubSystem(QUuid uuid);
-protected:
-    //std::string getStateUuid();
+protected:    
+	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
+        @deprecated*/
+    virtual const Component* getComponentReadOnly(std::string uuid) const;
 public:
     bool removeChild(Component* c);
     /*@deprecated*/
@@ -128,7 +130,7 @@ public:
     /** @brief setUUID */
     //virtual void setUUID(std::string uuid);
 	/** @brief return Type */
-	virtual Components getType();
+	Components getType() const;
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system.
@@ -152,9 +154,6 @@ public:
     /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
     virtual Component* getComponent(std::string uuid);
-    /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
-        @deprecated*/
-    //virtual const Component* getComponentReadOnly(std::string uuid) const;
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
         @deprecated*/
     virtual Node* getNode(std::string uuid);
@@ -263,12 +262,13 @@ private:
 	bool allFacesLoaded;
 	bool allNodesLoaded;
 	bool allSubSystemsLoaded;
+
+    const Component* getComponentReadOnly(std::string uuid) const;
 public:
 	DerivedSystem(System* sys);
 
     Node* getNode(QUuid uuid);
     Component* getComponent(std::string uuid);
-    //const Component* getComponentReadOnly(std::string uuid) const;
     Node* getNode(std::string uuid);
     Edge* getEdge(std::string uuid);
     Edge* getEdge(Node* start, Node* end);

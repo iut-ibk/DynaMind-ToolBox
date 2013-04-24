@@ -115,7 +115,7 @@ void Node::SetOwner(Component *owner)
     //    it->second->SetOwner(this);
 }
 
-DM::Components Node::getType()
+DM::Components Node::getType() const
 {
 	return DM::NODE;
 }

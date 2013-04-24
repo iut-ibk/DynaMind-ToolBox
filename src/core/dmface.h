@@ -67,7 +67,7 @@ public:
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
 	/** @brief return Type */
-	Components getType();
+	Components getType() const;
     /** @brief return vector of nodes defining the face
         @deprecated*/
     std::vector<std::string> getNodes() const;

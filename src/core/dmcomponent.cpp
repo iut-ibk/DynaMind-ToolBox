@@ -173,7 +173,7 @@ QUuid Component::getQUUID() const
     return uuid;
 }
 
-DM::Components Component::getType()
+DM::Components Component::getType() const
 {
     return DM::COMPONENT;
 }

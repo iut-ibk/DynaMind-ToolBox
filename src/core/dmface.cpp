@@ -118,7 +118,7 @@ Component* Face::clone()
     return new Face(*this);
 }
 
-DM::Components Face::getType()
+DM::Components Face::getType() const
 {
 	return DM::FACE;
 }

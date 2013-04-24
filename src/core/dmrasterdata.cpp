@@ -109,7 +109,7 @@ RasterData::RasterData(const RasterData &other) : Component(other, true)
 	SQLCopyField(&other);
 }
 
-Components RasterData::getType()
+Components RasterData::getType() const
 {
 	return DM::RASTERDATA;
 }
