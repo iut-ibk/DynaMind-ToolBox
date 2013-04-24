@@ -170,24 +170,13 @@ void AttributeCalculator::run() {
              it != variablesMap.end();
              ++it) 
 		{
-            std::string varname = it->first;
 			std::string varvalue = it->second;
-
             //All attributes are stored in one container that is evaluated Later.
 			std::vector<double> variable_container;
-            //std::vector<double> * varaible_container = new std::vector<double>();
-
             //Can be later replaced by a function
-            double val = 0;
-            getLinkedAttribute(&variable_container, cmp, varname);
+            getLinkedAttribute(&variable_container, cmp, it->first);
 			
-
-            /*std::stringstream nov_stream;
-            nov_stream << "nov_" << varvalue;
-
-            std::stringstream first_stream;
-            first_stream << "first_" << varvalue;*/
-
+            double val = 0;
             double nov = 0;
             foreach (double v, variable_container) 
 			{
@@ -195,24 +184,10 @@ void AttributeCalculator::run() {
                 nov ++;
             }
 
-			std::string nov_variable = "nov_" + varvalue;
-			std::string first_variable = "first_" + varvalue;
-
 			*doubleVariables[varvalue] = val;
-			*doubleVariables[nov_variable] = nov;
-			*doubleVariables[first_variable] = (variable_container.size() > 0) ? 
-													variable_container[0] : 0;            
-			/*double * var = doubleVaraibles[varvalue];
-            (*var) = val;
-            double * nov_var = doubleVaraibles[nov_stream.str()];
-            (*nov_var) =  nov;
-            double * first_nov = doubleVaraibles[first_stream.str()];
-            if (varaible_container->size() > 0)
-                (*first_nov) = (*varaible_container)[0];
-            else
-                (*first_nov) = 0;*/
-
-            //delete varaible_container;
+			*doubleVariables["nov_" + varvalue] = nov;
+			*doubleVariables["first_" + varvalue] = (variable_container.size() > 0) ? 
+														variable_container[0] : 0;            
         }
         try 
 		{
@@ -226,7 +201,6 @@ void AttributeCalculator::run() {
                 vD.push_back(d);
                 attri->setDoubleVector(vD);
             }
-
         }
         catch (mu::Parser::exception_type &e) 
 		{
