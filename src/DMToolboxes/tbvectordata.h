@@ -63,17 +63,8 @@ public:
       **/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
 
-     /** @brief Returns pointer to existing node at n or 0 if point doesn't exist */
-    static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
-
-    /** @brief Checks if a node already exists in the system. If not a new node is created.*/
-    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
-
     /** @brief Returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
-
-    /** @todo Check if works */
-    static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
 
     /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
     static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);

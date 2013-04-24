@@ -75,47 +75,6 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e
                                  OrientationMatters);
 }
 
-
-
-DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, double err) {
-
-    if (view.getName().empty()) {
-        DM::NodeMap nmap = sys->getAllNodes();
-        for (DM::NodeMap::const_iterator it = nmap.begin(); it != nmap.end(); ++it) {
-            DM::Node * n_1 = it->second;
-            if (n_1->compare2d(n, err))
-                return n_1;
-        }
-    }
-
-    DM::ComponentMap cmap = sys->getAllComponentsInView(view);
-
-    for (DM::ComponentMap::const_iterator it = cmap.begin(); it != cmap.end(); ++it) {
-        DM::Node * n_1 = (DM::Node *) it->second;
-        if (n_1->compare2d(n, err))
-            return n_1;
-    }
-    return 0;
-
-}
-
-DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::Node n1,   double err, bool CreateNewNode) {
-    DM::Node * new_Node = 0;
-
-
-    new_Node = TBVectorData::getNode2D(sys, view, n1, err);
-    if (new_Node != 0 || !CreateNewNode) {
-        return new_Node;
-    }
-
-
-    new_Node =  sys->addNode(n1.getX(), n1.getY(), n1.getZ(), view);
-
-    return new_Node;
-}
-
-
-
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
     /*std::vector<DM::Node*> result;
     std::vector<std::string> nodelist= face->getNodes();
@@ -127,42 +86,6 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
     return result;
 	*/
 	return face->getNodePointers();
-}
-
-void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
-    DM::Edge * e1 = new DM::Edge(*e);
-    //e1->createNewUUID();
-
-    DM::Node * n1 = sys->getNode(e1->getStartpointName());
-    DM::Node * n2 = sys->getNode(e1->getEndpointName());
-
-    if (n1->compare2d(n) || n2->compare2d(n)) {
-        delete e1;
-        return;
-    }
-
-    std::set<std::string> views = e1->getInViews();
-    e1 = sys->addEdge(e1);
-    foreach (std::string v, views) {
-        sys->removeComponentFromView(e1, *sys->getViewDefinition(v));
-
-    }
-    e1->setEndpointName(n->getUUID());
-    sys->addComponentToView(e1, view);
-
-    DM::Edge * e2 = new DM::Edge(*e);
-    //e2->createNewUUID();
-    e2 = sys->addEdge(e2);
-    views = e2->getInViews();
-    foreach (std::string v, views) {
-        sys->removeComponentFromView(e2, *sys->getViewDefinition(v));
-    }
-    e2->setStartpointName(n->getUUID());
-    sys->addComponentToView(e2, view);
-
-
-    sys->removeComponentFromView(e, view);
-
 }
 
 DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
