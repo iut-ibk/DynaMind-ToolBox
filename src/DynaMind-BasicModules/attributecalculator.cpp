@@ -106,30 +106,31 @@ void AttributeCalculator::init() {
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, Component *currentcmp,std::string name ) {
-    QString viewNametotal = QString::fromStdString(name);
-    QStringList viewNameList = viewNametotal.split(".");
+void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, Component *currentcmp, std::string name ) 
+{
+    QStringList viewNameList = QString::fromStdString(name).split(".");
     //Remove First Element, is already what comes with currentcmp
     viewNameList.removeFirst();
-    //If viewNameList > 1
-    //Unit.Area
+
     Attribute * attr = currentcmp->getAttribute(viewNameList.front().toStdString());
 
-    if (attr->getType() == Attribute::LINK) {
+    if (attr->getType() == Attribute::LINK) 
+	{
         std::string newSearchName = viewNameList.join(".").toStdString();
-        foreach (LinkAttribute l, attr->getLinks()) {
+        foreach (LinkAttribute l, attr->getLinks()) 
+		{
             Component * nextcmp = this->sys_in->getComponent(l.uuid);
-            if(!nextcmp)  {
-                Logger(Error) << "Linked Element does not exist in DB";
+            if(!nextcmp)  
+			{
+                Logger(Error) << "Linked Element does not exist";
                 return;
             }
             this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
         }
     }
 
-    if (attr->getType() == Attribute::DOUBLE ||attr->getType() == Attribute::NOTYPE  ) {
+    if (attr->getType() == Attribute::DOUBLE ||attr->getType() == Attribute::NOTYPE  )
         varaible_container->push_back(attr->getDouble());
-    }
 }
 
 void AttributeCalculator::run() {
