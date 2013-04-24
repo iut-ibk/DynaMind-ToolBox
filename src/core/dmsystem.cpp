@@ -911,7 +911,7 @@ Component* DerivedSystem::getComponent(std::string uuid)
 				{
 					Component* c = new Component();
 					c->CopyFrom(*nconst, true);
-					return addComponent(new Component(*nconst));
+					return addComponent(c);
 				}
 			//case RASTERDATA:
 			default:
