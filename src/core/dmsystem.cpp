@@ -154,8 +154,6 @@ System::~System()
     foreach (DM::System * sys, this->sucessors)
         if (sys)	delete sys;
 
-
-
 	//mforeach(View *v, viewdefinitions)
     //    delete v;
 	// memory leak
@@ -238,10 +236,10 @@ Component * System::getComponent(std::string uuid)
 {
     return this->getChild(uuid);
 }
-/*const Component * System::getComponentReadOnly(std::string uuid) const
+const Component * System::getComponentReadOnly(std::string uuid) const
 {
     return this->getChild(uuid);
-}*/
+}
 bool System::removeComponent(std::string name)
 {
     return removeChild(name);
