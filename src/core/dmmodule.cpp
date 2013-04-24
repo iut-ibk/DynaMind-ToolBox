@@ -515,6 +515,15 @@ std::vector<Port*> Module::getOutPorts() const {
     return this->OutPorts;
 }
 
+int Module::getParameterType(string Name)
+{
+    if (this->parameter.find(Name) == this->parameter.end()) {
+        Logger(Error) << "No Parameter with this name";
+        return -1;
+    }
+    return this->parameter[Name];
+}
+
 void Module::init() {
 
 }

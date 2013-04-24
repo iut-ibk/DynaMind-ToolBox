@@ -275,6 +275,8 @@ public:
         *ref = val;
     }
 
+    /** @brief returns parameter type */
+    int getParameterType(std::string Name);
 
     /** @brief Returns the parameter as string value
       *
