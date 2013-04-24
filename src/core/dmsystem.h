@@ -152,6 +152,9 @@ public:
     /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
     virtual Component* getComponent(std::string uuid);
+    /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
+        @deprecated*/
+    //virtual const Component* getComponentReadOnly(std::string uuid) const;
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
         @deprecated*/
     virtual Node* getNode(std::string uuid);
@@ -265,6 +268,7 @@ public:
 
     Node* getNode(QUuid uuid);
     Component* getComponent(std::string uuid);
+    //const Component* getComponentReadOnly(std::string uuid) const;
     Node* getNode(std::string uuid);
     Edge* getEdge(std::string uuid);
     Edge* getEdge(Node* start, Node* end);
