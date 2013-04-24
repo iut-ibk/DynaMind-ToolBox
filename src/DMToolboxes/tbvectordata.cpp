@@ -408,7 +408,14 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
 
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
-    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
+	double p0[3], p1[3];
+	a->get(p0);
+	b->get(p1);
+	p0[0] -= p1[0];
+	p0[1] -= p1[1];
+	p0[2] -= p1[2];
+	return sqrt(p0[0]*p0[0] + p0[1]*p0[1] + p0[2]*p0[2]);
+    //return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
 }
 
 bool TBVectorData::PointWithinFace(DM::Face *f, DM::Node *n)
@@ -667,28 +674,23 @@ DM::Face * TBVectorData::AddFaceToSystem(DM::System *sys, std::vector<DM::Node> 
 
 DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
 {
-    double minx, miny, minz;
-
     if (!nodes.size()) {
         DM::Logger(DM::Warning) << "no nodes";
         return DM::Node();
     }
+	
+	double min[3];
+	double tmp[3];
+	nodes[0]->get(min);
 
-    minx = nodes[0]->getX();
-    miny = nodes[0]->getY();
-    minz = nodes[0]->getZ();
-
-    foreach (DM::Node * n, nodes) {
-        if (minx > n->getX())
-            minx = n->getX();
-        if (miny > n->getY())
-            miny = n->getY();
-        if (minz > n->getZ())
-            minz = n->getZ();
-    }
-
-    return DM::Node(minx, miny, minz);
-
+	foreach(DM::Node* n, nodes)
+	{
+		n->get(tmp);
+		if(min[0] > tmp[0]) min[0] = tmp[0];
+		if(min[1] > tmp[1]) min[1] = tmp[1];
+		if(min[2] > tmp[2]) min[2] = tmp[2];
+	}
+	return DM::Node(min[0],min[1],min[2]);
 }
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
