@@ -939,25 +939,15 @@ Component* DerivedSystem::getComponent(std::string uuid)
 			{
 			case NODE:
 				return SuccessorCopy((Node*)nconst);
-				//return getNode(uuid);
 			case EDGE:
 				return SuccessorCopy((Edge*)nconst);
-				//return getEdge(uuid);
 			case FACE:
 				return SuccessorCopy((Face*)nconst);
-				//return getFace(uuid);
 			case RASTERDATA:
-				//return addComponent(new Component(*n));
-				//return getComponent(uuid);
 				return (Component*)nconst;
 			case SUBSYSTEM:
 			case COMPONENT:
-				{
-					return SuccessorCopy(nconst);
-					/*Component* c = new Component();
-					c->CopyFrom(*nconst, true);
-					return addComponent(c);*/
-				}
+				return SuccessorCopy(nconst);
 			//case RASTERDATA:
 			default:
 				return NULL;
@@ -973,16 +963,9 @@ Node* DerivedSystem::getNode(std::string uuid)
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
-
 		n = predecessorSys->getNode(uuid);
 		if(n)
-		{
 			return SuccessorCopy(n);
-			/*Node* newn = new Node();
-			*newn = *n;
-			newn->CopyFrom(*n, true);
-			n = addNode(newn);*/
-		}
 	}
 	return n;
 }
@@ -992,15 +975,9 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
-
 		n = predecessorSys->getEdge(uuid);
 		if(n)
-		{
 			return SuccessorCopy(n);
-			/*Edge* newn = new Edge(getNode(n->getStartpointName()), getNode(n->getEndpointName()));
-			newn->CopyFrom(*n, true);
-			n = addEdge(newn);*/
-		}
 	}
 	return n;
 }
@@ -1011,15 +988,9 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
-
 		n = predecessorSys->getEdge(start,end);
 		if(n)
-		{
 			return SuccessorCopy(n);
-			/*Edge* newn = new Edge(getNode(start->getUUID()), getNode(end->getUUID()));
-			newn->CopyFrom(*n, true);
-			n = addEdge(newn);*/
-		}
 	}
 	return n;
 }
@@ -1030,23 +1001,9 @@ Face * DerivedSystem::getFace(std::string uuid)
 	if(!f)
 	{
 		QMutexLocker ml(mutex);
-
 		f = predecessorSys->getFace(uuid);
 		if(f)
-		{
 			return SuccessorCopy(f);
-			/*std::vector<Node*> newNodes;
-			foreach(Node* node, f->getNodePointers())
-				newNodes.push_back(getNode(node->getUUID()));
-
-			Face* newf = new Face(newNodes);
-			newf->CopyFrom(*f,true);
-
-			foreach(Face *hole, f->getHolePointers())
-				newf->addHole(getFace(hole->getUUID()));
-
-			return this->addFace(newf);*/
-		}
 	}
 	return f;
 }
