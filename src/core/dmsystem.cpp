@@ -868,7 +868,7 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	lastModule = sys->lastModule;
 }
 
-
+/*
 Node* DerivedSystem::getNode(QUuid uuid)
 {
 	Node* n = System::getNode(uuid);
@@ -881,7 +881,7 @@ Node* DerivedSystem::getNode(QUuid uuid)
 			n = addNode(new Node(*n));
 	}
 	return n;
-}
+}*/
 
 Component* DerivedSystem::getChild(std::string name)
 {
@@ -971,28 +971,10 @@ Component* DerivedSystem::getComponent(std::string uuid)
 Node* DerivedSystem::getNode(std::string uuid)
 {
 	return (Node*)getComponent(uuid);
-	/*Node* n = System::getNode(uuid);
-	if(!n)
-	{
-		QMutexLocker ml(mutex);
-		n = predecessorSys->getNode(uuid);
-		if(n)
-			return SuccessorCopy(n);
-	}
-	return n;*/
 }
 Edge* DerivedSystem::getEdge(std::string uuid)
 {
 	return (Edge*)getComponent(uuid);
-	/*Edge* n = System::getEdge(uuid);
-	if(!n)
-	{
-		QMutexLocker ml(mutex);
-		n = predecessorSys->getEdge(uuid);
-		if(n)
-			return SuccessorCopy(n);
-	}
-	return n;*/
 }
 
 // here is a little bottleneck, as we copy edges through all successor states
@@ -1012,15 +994,6 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 Face * DerivedSystem::getFace(std::string uuid)
 {
 	return (Face*)getComponent(uuid);
-	/*Face* f = System::getFace(uuid);
-	if(!f)
-	{
-		QMutexLocker ml(mutex);
-		f = predecessorSys->getFace(uuid);
-		if(f)
-			return SuccessorCopy(f);
-	}
-	return f;*/
 }
 std::map<std::string, Component*> DerivedSystem::getAllComponents()
 {

@@ -139,7 +139,7 @@ public:
      */
     Node * addNode(Node* node);
 	/** @brief for Edge::LoadDb() */
-    virtual Node* getNode(QUuid uuid);	// protected for DM::Edge
+    Node* getNode(QUuid uuid);	// protected for DM::Edge
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
     /** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
