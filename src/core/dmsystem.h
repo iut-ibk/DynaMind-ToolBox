@@ -114,6 +114,7 @@ protected:
 	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
     virtual const Component* getComponentReadOnly(std::string uuid) const;
+    const Edge* getEdgeReadOnly(Node* start, Node* end);
 public:
     bool removeChild(Component* c);
     /*@deprecated*/
@@ -262,8 +263,9 @@ private:
 	bool allFacesLoaded;
 	bool allNodesLoaded;
 	bool allSubSystemsLoaded;
-
+	
     const Component* getComponentReadOnly(std::string uuid) const;
+    const Edge* getEdgeReadOnly(Node* start, Node* end);
 	
 	Component* SuccessorCopy(const Component *src);
 	Node* SuccessorCopy(const Node *src);

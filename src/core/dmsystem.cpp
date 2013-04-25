@@ -240,6 +240,10 @@ const Component * System::getComponentReadOnly(std::string uuid) const
 {
     return this->getChild(uuid);
 }
+const Edge * System::getEdgeReadOnly(Node* start, Node* end)
+{
+    return (const Edge*)getEdge(start,end);
+}
 bool System::removeComponent(std::string name)
 {
     return removeChild(name);
@@ -925,6 +929,13 @@ const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
 
 	return predecessorSys->getComponentReadOnly(uuid);
 }
+const Edge* DerivedSystem::getEdgeReadOnly(Node* start, Node* end)
+{
+	if(const Edge* e = System::getEdgeReadOnly(start,end))
+		return e;
+
+	return predecessorSys->getEdgeReadOnly(start,end);
+}
 
 Component* DerivedSystem::getComponent(std::string uuid)
 {
@@ -959,7 +970,8 @@ Component* DerivedSystem::getComponent(std::string uuid)
 
 Node* DerivedSystem::getNode(std::string uuid)
 {
-	Node* n = System::getNode(uuid);
+	return (Node*)getComponent(uuid);
+	/*Node* n = System::getNode(uuid);
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
@@ -967,11 +979,12 @@ Node* DerivedSystem::getNode(std::string uuid)
 		if(n)
 			return SuccessorCopy(n);
 	}
-	return n;
+	return n;*/
 }
 Edge* DerivedSystem::getEdge(std::string uuid)
 {
-	Edge* n = System::getEdge(uuid);
+	return (Edge*)getComponent(uuid);
+	/*Edge* n = System::getEdge(uuid);
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
@@ -979,25 +992,27 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 		if(n)
 			return SuccessorCopy(n);
 	}
-	return n;
+	return n;*/
 }
 
+// here is a little bottleneck, as we copy edges through all successor states
 Edge* DerivedSystem::getEdge(Node* start, Node* end)
 {
-	Edge* n = System::getEdge(start,end);
-	if(!n)
+	if(Edge* e = System::getEdge(start,end))
+		return e;
 	{
 		QMutexLocker ml(mutex);
-		n = predecessorSys->getEdge(start,end);
-		if(n)
-			return SuccessorCopy(n);
+		const Edge *e = predecessorSys->getEdgeReadOnly(start,end);
+		if(e)
+			return SuccessorCopy(e);
 	}
-	return n;
+	return NULL;
 }
 
 Face * DerivedSystem::getFace(std::string uuid)
 {
-	Face* f = System::getFace(uuid);
+	return (Face*)getComponent(uuid);
+	/*Face* f = System::getFace(uuid);
 	if(!f)
 	{
 		QMutexLocker ml(mutex);
@@ -1005,7 +1020,7 @@ Face * DerivedSystem::getFace(std::string uuid)
 		if(f)
 			return SuccessorCopy(f);
 	}
-	return f;
+	return f;*/
 }
 std::map<std::string, Component*> DerivedSystem::getAllComponents()
 {
