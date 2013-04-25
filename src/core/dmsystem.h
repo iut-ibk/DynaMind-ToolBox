@@ -274,7 +274,7 @@ private:
 public:
 	DerivedSystem(System* sys);
 
-    Node* getNode(QUuid uuid);
+    //Node* getNode(QUuid uuid);
     Component* getComponent(std::string uuid);
     Node* getNode(std::string uuid);
     Edge* getEdge(std::string uuid);
