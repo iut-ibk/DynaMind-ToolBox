@@ -33,7 +33,7 @@ TEST_F(TestPerformance,node_one_attri_view) {
     for (int m = 3; m < 7; m++) {
         Logger(Debug) << "Start Writing";
         //Write
-        long n = pow(10,m)+3;
+        long n = pow(10.,m)+3;
         QElapsedTimer timer;
         timer.start();
 
@@ -112,7 +112,7 @@ TEST_F(TestPerformance,node_one_attri) {
     for (int m = 4; m < 5; m++) {
 
         //Write
-        long n = pow(10,m)+3;
+        long n = pow(10.,m)+3;
         QElapsedTimer timer;
         timer.start();
 
@@ -160,7 +160,7 @@ TEST_F(TestPerformance,component_one_attri) {
     //Causes Crach
     DM::System sys;
     for (int m = 4; m < 5; m++) {
-        long n = pow(10,m)+3;
+        long n = pow(10.,m)+3;
         QElapsedTimer timer;
         timer.start();
 
