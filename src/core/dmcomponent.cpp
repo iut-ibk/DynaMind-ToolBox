@@ -359,10 +359,10 @@ void Component::SetOwner(Component *owner)
 	QMutexLocker ml(mutex);
 
     currentSys = owner->getCurrentSystem();
-	CloneAllAttributes();
+	/*CloneAllAttributes();
 
 	mforeach(Attribute* a, ownedattributes)
-		a->setOwner(this);
+		a->setOwner(this);*/
 
     //for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
 	//	it->second->SetOwner(this);
