@@ -264,6 +264,11 @@ private:
 	bool allSubSystemsLoaded;
 
     const Component* getComponentReadOnly(std::string uuid) const;
+	
+	Component* SuccessorCopy(const Component *src);
+	Node* SuccessorCopy(const Node *src);
+	Edge* SuccessorCopy(const Edge *src);
+	Face* SuccessorCopy(const Face *src);
 public:
 	DerivedSystem(System* sys);
 

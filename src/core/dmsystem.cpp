@@ -884,24 +884,68 @@ Component* DerivedSystem::getChild(std::string name)
 	return getComponent(name);
 }
 
+Component* DerivedSystem::SuccessorCopy(const Component *src)
+{
+	Component *c = new Component;
+	c->CopyFrom(*src, true);
+	return addComponent(c);
+}
+Node* DerivedSystem::SuccessorCopy(const Node *src)
+{
+	Node* n = new Node();
+	*n = *src;
+	n->CopyFrom(*src, true);
+	return addNode(n);
+}
+Edge* DerivedSystem::SuccessorCopy(const Edge *src)
+{
+	Edge* e = new Edge(getNode(src->getStartpointName()), getNode(src->getEndpointName()));
+	e->CopyFrom(*src, true);
+	return addEdge(e);
+}
+Face* DerivedSystem::SuccessorCopy(const Face *src)
+{
+	std::vector<Node*> newNodes;
+	foreach(Node* node, src->getNodePointers())
+		newNodes.push_back(getNode(node->getUUID()));
+
+	Face* newf = new Face(newNodes);
+	newf->CopyFrom(*src,true);
+
+	foreach(Face *hole, src->getHolePointers())
+		newf->addHole(getFace(hole->getUUID()));
+
+	return addFace(newf);
+}
+
+const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
+{
+	if(const Component* n = System::getComponentReadOnly(uuid))
+		return n;
+
+	return predecessorSys->getComponentReadOnly(uuid);
+}
+
 Component* DerivedSystem::getComponent(std::string uuid)
 {
 	Component* n = System::getComponent(uuid);
 	if(!n)
 	{
 		QMutexLocker ml(mutex);
-
 		const Component *nconst = predecessorSys->getComponentReadOnly(uuid);
 		if(nconst)
 		{
 			switch(nconst->getType())
 			{
 			case NODE:
-				return getNode(uuid);
+				return SuccessorCopy((Node*)nconst);
+				//return getNode(uuid);
 			case EDGE:
-				return getEdge(uuid);
+				return SuccessorCopy((Edge*)nconst);
+				//return getEdge(uuid);
 			case FACE:
-				return getFace(uuid);
+				return SuccessorCopy((Face*)nconst);
+				//return getFace(uuid);
 			case RASTERDATA:
 				//return addComponent(new Component(*n));
 				//return getComponent(uuid);
@@ -909,9 +953,10 @@ Component* DerivedSystem::getComponent(std::string uuid)
 			case SUBSYSTEM:
 			case COMPONENT:
 				{
-					Component* c = new Component();
+					return SuccessorCopy(nconst);
+					/*Component* c = new Component();
 					c->CopyFrom(*nconst, true);
-					return addComponent(c);
+					return addComponent(c);*/
 				}
 			//case RASTERDATA:
 			default:
@@ -921,15 +966,7 @@ Component* DerivedSystem::getComponent(std::string uuid)
 	}
 	return n;
 }
-const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
-{
-	
-	const Component* n = System::getComponentReadOnly(uuid);
-	if(!n)
-		return predecessorSys->getComponentReadOnly(uuid);
 
-	return n;
-}
 Node* DerivedSystem::getNode(std::string uuid)
 {
 	Node* n = System::getNode(uuid);
@@ -940,11 +977,11 @@ Node* DerivedSystem::getNode(std::string uuid)
 		n = predecessorSys->getNode(uuid);
 		if(n)
 		{
-			Node* newn = new Node();
+			return SuccessorCopy(n);
+			/*Node* newn = new Node();
 			*newn = *n;
 			newn->CopyFrom(*n, true);
-			n = addNode(newn);
-			//n = addNode(new Node(*n));
+			n = addNode(newn);*/
 		}
 	}
 	return n;
@@ -959,9 +996,10 @@ Edge* DerivedSystem::getEdge(std::string uuid)
 		n = predecessorSys->getEdge(uuid);
 		if(n)
 		{
-			Edge* newn = new Edge(getNode(n->getStartpointName()), getNode(n->getEndpointName()));
+			return SuccessorCopy(n);
+			/*Edge* newn = new Edge(getNode(n->getStartpointName()), getNode(n->getEndpointName()));
 			newn->CopyFrom(*n, true);
-			n = addEdge(newn);
+			n = addEdge(newn);*/
 		}
 	}
 	return n;
@@ -977,13 +1015,10 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 		n = predecessorSys->getEdge(start,end);
 		if(n)
 		{
-			/*n = new Edge(*n);
-			n->setStartpoint(getNode(start->getUUID()));
-			n->setEndpoint(getNode(end->getUUID()));
-			n = addEdge(n);*/
-			Edge* newn = new Edge(getNode(start->getUUID()), getNode(end->getUUID()));
+			return SuccessorCopy(n);
+			/*Edge* newn = new Edge(getNode(start->getUUID()), getNode(end->getUUID()));
 			newn->CopyFrom(*n, true);
-			n = addEdge(newn);
+			n = addEdge(newn);*/
 		}
 	}
 	return n;
@@ -999,7 +1034,8 @@ Face * DerivedSystem::getFace(std::string uuid)
 		f = predecessorSys->getFace(uuid);
 		if(f)
 		{
-			std::vector<Node*> newNodes;
+			return SuccessorCopy(f);
+			/*std::vector<Node*> newNodes;
 			foreach(Node* node, f->getNodePointers())
 				newNodes.push_back(getNode(node->getUUID()));
 
@@ -1009,7 +1045,7 @@ Face * DerivedSystem::getFace(std::string uuid)
 			foreach(Face *hole, f->getHolePointers())
 				newf->addHole(getFace(hole->getUUID()));
 
-			return this->addFace(newf);
+			return this->addFace(newf);*/
 		}
 	}
 	return f;
