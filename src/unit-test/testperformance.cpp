@@ -30,7 +30,7 @@ TEST_F(TestPerformance,node_one_attri_view) {
 
     DM::System sys;
     DM::View node_view("TestNode", DM::WRITE, DM::READ);
-    for (long m = 3; m < 7; m++) {
+    for (int m = 3; m < 7; m++) {
         Logger(Debug) << "Start Writing";
         //Write
         long n = pow(10,m)+3;
@@ -109,7 +109,7 @@ TEST_F(TestPerformance,node_one_attri) {
     DBConnector::getInstance()->setConfig(cfgNew);
 
     DM::System sys;
-    for (long m = 4; m < 5; m++) {
+    for (int m = 4; m < 5; m++) {
 
         //Write
         long n = pow(10,m)+3;
@@ -159,7 +159,7 @@ TEST_F(TestPerformance,component_one_attri) {
 
     //Causes Crach
     DM::System sys;
-    for (long m = 4; m < 5; m++) {
+    for (int m = 4; m < 5; m++) {
         long n = pow(10,m)+3;
         QElapsedTimer timer;
         timer.start();
