@@ -31,9 +31,6 @@
 [submodule "DynaVIBe"]
 	path = DynaVIBe
 	url = git@github.com:iut-ibk/DynaVIBe.git
-[submodule "DynaMind-PostGIS"]
-	path = DynaMind-PostGIS
-	url = git@github.com:iut-ibk/DynaMind-PostGIS.git
 [submodule "PowerVIBe"]
 	path = PowerVIBe
 	url = git@github.com:iut-ibk/PowerVIBe.git
@@ -46,3 +43,6 @@
 [submodule "DynaMind-Executable"]
 	path = DynaMind-Executable
 	url = git@github.com:iut-ibk/DynaMind-Executable.git
+[submodule "DynaMind-DynAlp"]
+	path = DynaMind-DynAlp
+	url = git@github.com:iut-ibk/DynaMind-DynAlp.git
