@@ -1,4 +1,4 @@
-#include "createsinglefamilyhouses.h"
+#include "createbuilding.h"
 #include "dmgeometry.h"
 #include "cgalgeometry.h"
 #include "tbvectordata.h"
@@ -11,9 +11,9 @@
 #include <omp.h>
 #endif
 
-DM_DECLARE_NODE_NAME(CreateSingleFamilyHouses, BlockCity)
+DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
 
-CreateSingleFamilyHouses::CreateSingleFamilyHouses()
+CreateBuilding::CreateBuilding()
 {
 
     heatingT = 20;
@@ -25,10 +25,10 @@ CreateSingleFamilyHouses::CreateSingleFamilyHouses()
     alpha = 30;
     onSingal = false;
 
-    this->addParameter("l", DM::DOUBLE, &l);
-    this->addParameter("b", DM::DOUBLE, &b);
+    this->addParameter("length", DM::DOUBLE, &l);
+    this->addParameter("width", DM::DOUBLE, &b);
     this->addParameter("stories", DM::INT, &stories);
-    this->addParameter("alhpa", DM::DOUBLE, &alpha);
+    this->addParameter("alpha", DM::DOUBLE, &alpha);
     this->addParameter("built_year", DM::INT, &buildyear);
 
     this->addParameter("T_heating", DM::DOUBLE, &heatingT);
@@ -99,7 +99,7 @@ CreateSingleFamilyHouses::CreateSingleFamilyHouses()
 
 
 
-void CreateSingleFamilyHouses::run()
+void CreateBuilding::run()
 {
     DM::System * city = this->getData("City");
     DM::SpatialNodeHashMap spatialNodeMap(city, 100);

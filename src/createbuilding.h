@@ -1,12 +1,12 @@
-#ifndef CREATESINGLEFAMILYHOUSES_H
-#define CREATESINGLEFAMILYHOUSES_H
+#ifndef CreateBuilding_H
+#define CreateBuilding_H
 
 #include <dm.h>
 
 using namespace DM;
-class CreateSingleFamilyHouses : public Module
+class CreateBuilding : public Module
 {
-    DM_DECLARE_NODE(CreateSingleFamilyHouses);
+    DM_DECLARE_NODE(CreateBuilding);
 
 private:
     DM::View houses;
@@ -26,9 +26,9 @@ private:
 
     void createWindows(DM::Face * f, double distance, double width, double height);
 public:
-    CreateSingleFamilyHouses();
+    CreateBuilding();
     void run();
 
 };
 
-#endif // CREATESINGLEFAMILYHOUSES_H
+#endif // CreateBuilding_H

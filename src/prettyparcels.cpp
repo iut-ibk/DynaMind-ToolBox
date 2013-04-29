@@ -1,32 +1,32 @@
-#include "advancedparceling.h"
+#include "prettyparcels.h"
 #include "tbvectordata.h"
 #include "cgalgeometry.h"
 #include "dmgeometry.h"
 #include "QPolygonF"
 #include "QTransform"
 
-DM_DECLARE_NODE_NAME(AdvancedParceling, CityBlocks)
+DM_DECLARE_NODE_NAME(PrettyParcels, DynAlp)
 
-AdvancedParceling::AdvancedParceling()
+PrettyParcels::PrettyParcels()
 {
     this->cityblocks = DM::View("CITYBLOCK", DM::FACE, DM::READ);
     this->cityblocks.getAttribute("new");
     this->parcels = DM::View("PARCEL", DM::FACE, DM::WRITE);
     this->parcels.addAttribute("new");
-    this->bbs = DM::View("BBS", DM::FACE, DM::WRITE);
-    this->bbs.addAttribute("generation");
+    //this->bbs = DM::View("BBS", DM::FACE, DM::WRITE);
+    //this->bbs.addAttribute("generation");
 
     this->parcels.addAttribute("generation");
 
     aspectRatio = 2;
     length = 100;
-    offset = 1;
-    remove_new = false;
+    offset = 5;
+    FLAG_remove_new = false;
 
-    this->addParameter("AspectRatio", DM::DOUBLE, &aspectRatio);
     this->addParameter("Length", DM::DOUBLE, &length);
+    this->addParameter("AspectRatio", DM::DOUBLE, &aspectRatio);
     this->addParameter("offset", DM::DOUBLE, & offset);
-    this->addParameter("remove_new", DM::BOOL, & remove_new);
+    this->addParameter("Unset 'new' from Input", DM::BOOL, & FLAG_remove_new);
 
     InputViewName = "SUPERBLOCK";
     OutputViewName = "CITYBLOCK";
@@ -35,7 +35,7 @@ AdvancedParceling::AdvancedParceling()
     this->addParameter("OUTPUTVIEW", DM::STRING, &OutputViewName);
 
     std::vector<DM::View> datastream;
-    datastream.push_back(bbs);
+    //datastream.push_back(bbs);
     datastream.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
 
     this->addData("city", datastream);
@@ -43,7 +43,7 @@ AdvancedParceling::AdvancedParceling()
 
 }
 
-void AdvancedParceling::init()
+void PrettyParcels::init()
 {
     if (InputViewName.empty() || OutputViewName.empty())
         return;
@@ -68,7 +68,7 @@ void AdvancedParceling::init()
 
     datastream.push_back(cityblocks);
     datastream.push_back(parcels);
-    datastream.push_back(bbs);
+    //datastream.push_back(bbs);
 
 
     this->addData("city", datastream);
@@ -76,7 +76,7 @@ void AdvancedParceling::init()
 }
 
 /** The method is based on the minial bounding box */
-void AdvancedParceling::run(){
+void PrettyParcels::run(){
 
     DM::System * city = this->getData("city");
 
@@ -86,14 +86,14 @@ void AdvancedParceling::run(){
     foreach (std::string uuid, block_uuids) {
         DM::Face *f  =city->getFace(uuid);
         if (f->getAttribute("new")->getDouble() > 0.01) {
-            this->createSubdevision(city, f, 0);
+            this->createSubdivision(city, f, 0);
 
         }
 
     }
 
 
-    if (!remove_new)
+    if (!FLAG_remove_new)
         return;
     foreach (std::string uuid, block_uuids) {
         DM::Face *f  =city->getFace(uuid);
@@ -102,7 +102,7 @@ void AdvancedParceling::run(){
     }
 }
 
-void AdvancedParceling::createSubdevision(DM::System * sys, DM::Face *f, int gen)
+void PrettyParcels::createSubdivision(DM::System * sys, DM::Face *f, int gen)
 {
     std::vector<DM::Node> box;
     std::vector<double> size;
@@ -125,7 +125,7 @@ void AdvancedParceling::createSubdevision(DM::System * sys, DM::Face *f, int gen
 
 
     if (this->length*2 > size[0]) {
-        finalSubdevision(sys, f, gen+1);
+        finalSubdivision(sys, f, gen+1);
         return;
     }
     //Create New Face
@@ -162,12 +162,12 @@ void AdvancedParceling::createSubdevision(DM::System * sys, DM::Face *f, int gen
             intersection_p.push_back(sys->addNode(DM::Node(p.x(), p.y(), 0)));
         }
         intersection_p.push_back(intersection_p[0]);
-        DM::Face * bb = sys->addFace(intersection_p, bbs);
-        bb->addAttribute("generation", gen);
+        //DM::Face * bb = sys->addFace(intersection_p, bbs);
+        //bb->addAttribute("generation", gen);
         std::vector<DM::Node> intersected_nodes = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
         if (intersected_nodes.size() < 3) {
-            DM::Logger(DM::Warning) << "Advanced parceling createSubdevision interseciton failed";
+            DM::Logger(DM::Warning) << "PrettyParcels createSubdevision intersection failed";
             continue;
         }
         std::vector<DM::Node*> newFace;
@@ -181,11 +181,11 @@ void AdvancedParceling::createSubdevision(DM::System * sys, DM::Face *f, int gen
 
         f_new->addAttribute("generation", gen);
 
-        this->createSubdevision(sys, f_new, gen+1);
+        this->createSubdivision(sys, f_new, gen+1);
     }
 }
 
-void AdvancedParceling::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
+void PrettyParcels::finalSubdivision(DM::System *sys, DM::Face *f, int gen)
 {
     //DM::Logger(DM::Debug) << "Start Final Subdevision";
     std::vector<DM::Node> box;
@@ -253,7 +253,7 @@ void AdvancedParceling::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
             DM::Logger(DM::Debug) << "Start offset";
             std::vector<DM::Node> new_parcel = DM::CGALGeometry::OffsetPolygon(newFace, offset);
             if (new_parcel.size() < 3) {
-                DM::Logger(DM::Warning) << "Advaned offset interseciton failed";
+                DM::Logger(DM::Warning) << "PrettyParcels: Offset intersection failed";
                 return;
             }
             std::vector<DM::Node*> newFace_Offset;
@@ -265,7 +265,7 @@ void AdvancedParceling::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
             newFace = newFace_Offset;
             //DM::Logger(DM::Debug) << newFace.size();
             if (newFace.size() < 3) {
-                DM::Logger(DM::Warning) << "Advaned parceling interseciton failed";
+                DM::Logger(DM::Warning) << "PrettyParcels: intersection failed";
                 continue;
             }
         }
@@ -275,7 +275,7 @@ void AdvancedParceling::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
 
     }
 
-    //DM::Logger(DM::Debug) << "Done Final Subdevision";
+    //DM::Logger(DM::Debug) << "Pretty Parcels: Final Subdevision done";
 
 
 
