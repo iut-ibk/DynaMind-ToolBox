@@ -25,6 +25,8 @@ CreateBuilding::CreateBuilding()
     alpha = 30;
     onSingal = false;
 
+    // boolean: take data from View or enter values manually
+
     this->addParameter("length", DM::DOUBLE, &l);
     this->addParameter("width", DM::DOUBLE, &b);
     this->addParameter("stories", DM::INT, &stories);
