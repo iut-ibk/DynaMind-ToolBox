@@ -132,6 +132,6 @@ DM::System * CalculateCentroid::getSystemIn() {
 
 string CalculateCentroid::getHelpUrl()
 {
-    return "https://docs.google.com/document/pub?id=1owj87rP1Kdr_n8dvrWCU-VaKGwU-rLlvkCRXgZgXhoo";
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/CalculateCentroid";
 }
 
