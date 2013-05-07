@@ -53,7 +53,7 @@ System::System() : Component(true)
 }
 System::System(const System& s) : Component(s, true)
 {
-    predecessors = s.predecessors;
+    //predecessors = s.predecessors;
     lastModule = s.lastModule;
     //mutex = new QMutex(QMutex::Recursive);
 	SQLInsert();
@@ -862,7 +862,7 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	//allRasterDataLoaded = false;
 
 	viewdefinitions = sys->viewdefinitions;
-	predecessors = sys->predecessors;
+    //predecessors = sys->predecessors;
 	views = sys->views;
 
 	lastModule = sys->lastModule;
