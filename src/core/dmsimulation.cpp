@@ -171,12 +171,13 @@ void Simulation::run()
 		m->run();
 		// check for errors
 		ModuleStatus merr = m->getStatus();
-		if(merr)
+		if(m->getStatus() == MOD_ERROR)
 		{
-			Logger(Error) << "module " << m->getName() << " threw error " << merr;
+			Logger(Error) << "module " << m->getName() << " failed\n";
 			this->status = DM::SIM_FAILED;
 			return;
 		}
+		m->setStatus(MOD_OK);
 		// shift data from out port to next inport
 		std::list<Module*> nextModules = shiftModuleOutput(m);
 		if(nextModules.size()>0)
