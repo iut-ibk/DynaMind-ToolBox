@@ -110,6 +110,9 @@ private:
     Component* getComponent(QUuid uuid);
     Edge* getEdge(QUuid uuid);
     System* getSubSystem(QUuid uuid);
+
+	/** @brief add Predecessor **/
+    void addPredecessors(DM::System * s);
 protected:    
 	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
@@ -237,8 +240,6 @@ public:
     std::vector<std::string> getUUIDs(const DM::View &view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-    /** @brief add Predecessor **/
-    void addPredecessors(DM::System * s);
 
     void setAccessedByModule(Module * m);
     Module * getLastModule() const;
