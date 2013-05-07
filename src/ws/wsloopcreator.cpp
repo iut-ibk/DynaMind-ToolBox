@@ -50,6 +50,10 @@
 #include <time.h>
 #include <boost/make_shared.hpp>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 //viewdefs
 #include <examinationroomviewdef.h>
 
@@ -145,6 +149,10 @@ void LoopCreator::run()
         #pragma omp parallel for
         for(int source=0; source < junctions->size(); source++)
         {
+#ifdef _OPENMP
+			//DM::Logger(DM::Standard) << "zone " << pzone << " | source " << source << "/" << junctions->size()
+			//	<< " | thread " << omp_get_thread_num() << "/" << omp_get_num_threads() << "/" << omp_get_max_threads();
+#endif
             property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
             property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
             std::vector < int > p(num_vertices(g));
