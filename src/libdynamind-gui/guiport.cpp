@@ -121,6 +121,8 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     //if (this->getPortType() < DM::OUTPORTS)
         painter->drawText(QPoint(-portname_graphics.boundingRect().width()-10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
     painter->setBrush(Qt::NoBrush);
+
+	this->update();
 }
 
 QRectF PortNode::boundingRect() const
