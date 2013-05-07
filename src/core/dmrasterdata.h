@@ -133,6 +133,10 @@ public:
 
     //static void PrintCacheStatistics();
 
+	/** @brief fill a full block of RASTERBLOCKSIZE*RASTERBLOCKSIZE with data 
+		x and y represent the block coordinates, NOT the actual point coordinate */
+	void setBlock(long x, long y, double* data);
+
 private:
     long width;
     long height;
