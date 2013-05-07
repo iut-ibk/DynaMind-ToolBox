@@ -292,9 +292,9 @@ void LinkNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
         if (LinkType == OUTVEC || LinkType == OUTPOINT || LinkType == OUTEDGE )
             color = COLOR_VECTORPORT;
         if (LinkType  == INDOUBLE)
-            color = COLOR_DOUBLEPORT
-                    if (LinkType  == OUTDOUBLE)
-                        color = COLOR_DOUBLEPORT;
+            color = COLOR_DOUBLEPORT;
+        if (LinkType  == OUTDOUBLE)
+            color = COLOR_DOUBLEPORT;
 
             this->update(this->boundingRect());
             QList<QGraphicsItem  *> items = this->scene()->items(event->scenePos());
