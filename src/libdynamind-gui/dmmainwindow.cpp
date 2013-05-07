@@ -290,6 +290,7 @@ void DMMainWindow::createModuleListView()
 }
 
 void DMMainWindow::runSimulation() {
+	simulation->run();
     //simulation->start();
 }
 void DMMainWindow::updateSimulation() {
