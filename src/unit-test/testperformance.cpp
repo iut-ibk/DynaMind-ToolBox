@@ -10,58 +10,64 @@
 
 using namespace DM;
 
+#if 0
+
 TEST_F(TestPerformance,node_one_attri_view) {
 
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Test Node";
+    DM::Logger(DM::Standard) << "Test db I/O";
 
-
-    // reset config
     DBConnectorConfig cfg = DBConnector::getInstance()->getConfig();
-    // prepare a new one
+    // adjust configuration of cache
     DBConnectorConfig cfgNew = cfg;
-    cfgNew.queryStackSize = 1234;
-    cfgNew.cacheBlockwritingSize = 1234;
-    cfgNew.attributeCacheSize = 1234;
-    cfgNew.nodeCacheSize = 1234;
-
+    cfgNew.queryStackSize = 100;
+    cfgNew.cacheBlockwritingSize = 100;
+    cfgNew.attributeCacheSize = 1000;
+    cfgNew.nodeCacheSize = 1000;
     DBConnector::getInstance()->setConfig(cfgNew);
 
-    DM::System sys;
     DM::View node_view("TestNode", DM::WRITE, DM::READ);
-    for (int m = 3; m < 7; m++) {
-        Logger(Debug) << "Start Writing";
-        //Write
-        long n = pow(10.,m)+3;
+    for (long n = 1e3; n < 1e7; n*=10) 
+	{
+		std::list<DM::Node*> nodeList;
+		DM::System sys;
         QElapsedTimer timer;
-        timer.start();
-
         QElapsedTimer timer2;
-        timer2.start();
-        int counter = 0;
+        long counter;
 
+        Logger(Debug) << "Start Writing nodes and attributes";
+
+        timer.start();
+        timer2.start();
+		
         for(long i=0;i<n;i++) {
-            counter++;
-            DM::Node * node = sys.addNode(0,0,0, node_view);
-            node->addAttribute("test",i);
-            if (counter == 10000) {
-                DM::Logger(Debug)  <<  "write" << "\t"  <<  counter << "|" << (long)timer2.elapsed() << " ms";
-                counter = 0;
+			nodeList.push_back(sys.addNode(0,0,0, node_view));
+            if (n%10000 == 0 && i>0) {
+                DM::Logger(Debug)  <<  "write \t 10000 nodes | " << (long)timer2.elapsed() << " ms";
                 timer2.restart();
             }
-
         }
 
-        DM::Logger(Debug) <<  "write" << "\t" << n-3 << "|" << (long)timer.elapsed() << " ms";
-        Logger(Standard) << "Write access per element " << "\t" << n-3 << "\t"<< (double) timer.elapsed()/n << "\t" << "ms";
-        //Read
+		timer2.restart();
+		counter = 0;
+		foreach(DM::Node* node, nodeList){
+			counter++;
+			node->addAttribute("test", counter);
+            if (n%10000 == 0 && counter>0) {
+                DM::Logger(Debug)  <<  "write \t 10000 attributes | " << (long)timer2.elapsed() << " ms";
+                timer2.restart();
+            }
+        }
+
+        DM::Logger(Debug) <<  "write \t" << n << " nodes with one attribute | " << (long)timer.elapsed() << " ms";
+        Logger(Standard) << "write\t" << n << "\t | "<< (double) timer.elapsed()/n << "/element\t" << "ms";
+
         timer.restart();
         Logger(Debug) << "Start get UUID";
         std::vector<std::string> uuids = sys.getUUIDs(node_view);
         DM::Logger(Debug) <<  "getuuids" << "\t"  << (long)timer.elapsed();
         timer.restart();
-
 
         Logger(Debug) << "Start Reading";
         int touched = 0;
@@ -86,9 +92,10 @@ TEST_F(TestPerformance,node_one_attri_view) {
         Logger(Standard) << "Read access per element" << "\t" << n-3 << "\t" << (long) timer.elapsed()/touched << "\t" << "ms";
 
     }
+    // reset config
+    DBConnector::getInstance()->setConfig(cfg);
 }
 
-#if 0
 
 TEST_F(TestPerformance,node_one_attri) {
 
