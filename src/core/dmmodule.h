@@ -267,6 +267,7 @@ public:
 	bool outPortsSet();
 	/** @brief checks if all inports are set or not existing */
 	bool inPortsSet();
+	void reset();
 protected:
 
 

@@ -114,7 +114,8 @@ public:
 	bool removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief starts the entire simulation */
 	void run();
-
+    /** @brief Resets the whole simulation */
+    void reset();
 	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
 	/** @brief accessor to module registry */

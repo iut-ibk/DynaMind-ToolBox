@@ -275,6 +275,19 @@ std::vector<std::string> Module::getOutPortNames()
 	return list;
 }
 
+void Module::reset()
+{
+	for(std::map<std::string, System*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
+	{
+		delete it->second;
+		it->second = NULL;
+	}
+	for(std::map<std::string, System*>::iterator it = outPorts.begin(); it != outPorts.end(); ++it)
+	{
+		delete it->second;
+		it->second = NULL;
+	}
+}
 
 #ifdef OLD_WF
 struct ModulePrivate {

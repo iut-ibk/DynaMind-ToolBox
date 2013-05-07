@@ -218,6 +218,15 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 	return nextModules;
 }
 
+void Simulation::reset()
+{
+    Logger(Debug) << "Reset Simulation";
+	foreach(Module* m, this->modules)
+	{
+		m->reset();
+		m->setStatus(MOD_UNTOUCHED);
+	}
+}
 
 #ifdef OLD_WF
 struct SimulationPrivate {
