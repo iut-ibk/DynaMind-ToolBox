@@ -54,7 +54,7 @@ namespace DM {
 
 Module::Module()
 {
-	status = MOD_OK;
+	status = MOD_UNTOUCHED;
 }
 Module::~Module()
 {

@@ -188,8 +188,9 @@ class RasterData;
 
 enum ModuleStatus
 {
+	MOD_UNTOUCHED,
 	MOD_OK,
-	MOD_UNKNOWN_ERROR,
+	MOD_ERROR,
 };
 
 class DM_HELPER_DLL_EXPORT Module
@@ -261,6 +262,11 @@ public:
 	}
 	std::vector<std::string> getInPortNames();
 	std::vector<std::string> getOutPortNames();
+
+	/** @brief checks if all outports are set or not existing */
+	bool outPortsSet();
+	/** @brief checks if all inports are set or not existing */
+	bool inPortsSet();
 protected:
 
 
@@ -273,10 +279,6 @@ protected:
 	/** @brief checks if port exists */
 	bool hasInPort(const std::string &name);
 	bool hasOutPort(const std::string &name);
-	/** @brief checks if all inports are set or not existing */
-	bool inPortsSet();
-	/** @brief checks if all outports are set or not existing */
-	bool outPortsSet();
 	/** @brief get data from inport*/
 	System* getInPortData(const std::string &name);
 	/** @brief get data from outport*/
