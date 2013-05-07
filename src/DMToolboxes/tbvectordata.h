@@ -159,6 +159,19 @@ public:
 
     /** @brief Return node with min x, min y and min z */
     static DM::Node MinCoordinates(std::vector<DM::Node*> & nodes);
+
+    /** @brief Caclulate the extend of a View. Returns true if everything was fine */
+    static bool GetViewExtend(DM::System * sys, DM::View & view, double & x_min, double & y_min, double & x_max, double & y_max);
+
+    /** @brief Return all nodes in Nodes View */
+    static std::vector<DM::Node * > GetNodesFromNodes(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
+
+    /** @brief Return all nodes in Edges View */
+    static std::vector<DM::Node * > GetNodesFromEdges(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
+
+    /** @brief Return all nodes in Faces View */
+    static std::vector<DM::Node * > GetNodesFromFaces(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
+
 };
 
 #endif // TBVECTORDATA_H

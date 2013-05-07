@@ -900,6 +900,22 @@ TEST_F(TestSystem,profilingOMP)
 }
 #endif
 
+TEST_F(TestSystem,AttributesInSystem) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Attributes in System";
+    DM::System * sys = new System();
+    sys->addAttribute("year", 2010);
+    DM::System * sys_next = sys->createSuccessor();
 
+    double year = sys_next->getAttribute("year")->getDouble() + 1;
+
+    sys_next->addAttribute("year",year);
+
+    ASSERT_DOUBLE_EQ(sys->getAttribute("year")->getDouble(), 2010);
+    ASSERT_DOUBLE_EQ(sys_next->getAttribute("year")->getDouble(), 2011);
+
+    delete sys;
+}
 
 }

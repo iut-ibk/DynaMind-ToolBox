@@ -690,7 +690,76 @@ DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
 		if(min[1] > tmp[1]) min[1] = tmp[1];
 		if(min[2] > tmp[2]) min[2] = tmp[2];
 	}
-	return DM::Node(min[0],min[1],min[2]);
+    return DM::Node(min[0],min[1],min[2]);
+}
+
+bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_min, double & y_min, double & x_max, double & y_max)
+{
+    x_min = 0;
+    y_min = 0;
+    x_max = 0;
+    y_max = 0;
+
+    std::vector<DM::Node * > nodes;
+    if (view.getType() == DM::NODE) TBVectorData::GetNodesFromNodes(sys, view, nodes);
+    if (view.getType() == DM::EDGE) TBVectorData::GetNodesFromEdges(sys, view, nodes);
+    if (view.getType() == DM::FACE) TBVectorData::GetNodesFromFaces(sys, view, nodes);
+
+    if (nodes.size() < 2)  {
+        DM::Logger(DM::Warning) << "Number of Nodes < 2 no bounding box created";
+        return false;
+    }
+
+    x_min = nodes[0]->getX();
+    y_min = nodes[0]->getY();
+    x_max = nodes[0]->getX();
+    y_max = nodes[0]->getY();
+
+    foreach (DM::Node *n , nodes) {
+        if (x_min > n->getX()) x_min = n->getX();
+        if (x_max < n->getX()) x_max = n->getX();
+        if (y_min > n->getY()) y_min = n->getY();
+        if (y_max < n->getY()) y_max = n->getY();
+    }
+
+    return true;
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromNodes(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Node * n = sys->getNode(uuid);
+        nodes.push_back(n);
+    }
+    return nodes;
+
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromEdges(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Edge * e = sys->getEdge(uuid);
+        nodes.push_back(sys->getNode(e->getStartpointName()));
+        nodes.push_back(sys->getNode(e->getEndpointName()));
+    }
+    return nodes;
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Face * f = sys->getFace(uuid);
+        std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
+        foreach (DM::Node * n, nl)
+            nodes.push_back(n);
+    }
+    return nodes;
 }
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
