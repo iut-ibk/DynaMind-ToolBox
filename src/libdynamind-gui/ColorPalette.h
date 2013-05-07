@@ -14,7 +14,8 @@
 #define COLOR_VECTORPORT  QColor(243,134,48)
 #define COLOR_DOUBLEPORT  Qt::gray
 #define COLOR_MODULESELECTEDBORDER Qt::darkCyan
-#define COLOR_FINISHED Qt::green
+#define COLOR_MODULEFINISHED Qt::green
+#define COLOR_MODULEERROR Qt::red
 #define COLOR_MODULE  Qt::cyan
 #define COLOR_MODULEBORDER  Qt::black
 #define COLOR_DEBUG Qt::gray

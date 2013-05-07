@@ -40,6 +40,7 @@
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmviewerwindow.h>
+
 /*
 std::string ModelNode::getParameterAsString(std::string name) {
 	
@@ -251,10 +252,12 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 	if(isSelected())
         pencolor = COLOR_MODULESELECTEDBORDER;
-	if(module->outPortsSet())
-        fillcolor = COLOR_MODULE;
-    /*else if (this->getDMModel()->isDebugMode())
-        c = COLOR_DEBUG;*/
+
+	switch(module->getStatus())
+	{
+	case DM::MOD_OK:	fillcolor = COLOR_MODULEFINISHED;	break;
+	case DM::MOD_ERROR:	fillcolor = COLOR_MODULEERROR;		break;
+	}
 
     if(this->visible){
         QPen pen(pencolor, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -276,6 +279,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
 		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getName()));
     }
+	this->update();
 }
 
 
