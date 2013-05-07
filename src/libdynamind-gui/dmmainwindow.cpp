@@ -206,7 +206,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
     connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
     connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
-    //connect(ui->actionReset, SIGNAL(triggered()), this->simulation , SLOT(reset()), Qt::DirectConnection);
+    connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
     currentDocument = "";
 
     //this->simmanagment = new SimulationManagment();
@@ -289,19 +289,26 @@ void DMMainWindow::createModuleListView()
 	*/
 }
 
-void DMMainWindow::runSimulation() {
+void DMMainWindow::runSimulation() 
+{
 	simulation->run();
     //simulation->start();
 }
-void DMMainWindow::updateSimulation() {
+void DMMainWindow::updateSimulation() 
+{
 	/*
     this->simulation->reloadModules();
     createModuleListView();
     this->simulation->updateSimulation();
 	*/
 }
+void DMMainWindow::resetSimulation() 
+{
+	simulation->reset();
+}
 
-void DMMainWindow::SimulationFinished() {
+void DMMainWindow::SimulationFinished() 
+{
 
 }
 

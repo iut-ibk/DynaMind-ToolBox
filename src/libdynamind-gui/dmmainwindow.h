@@ -111,6 +111,7 @@ public slots:
     void renameGroupWindow(GroupNode *);
     void removeGroupWindows(QString uuid);
     void updateSimulation();
+    void resetSimulation();
     void showHelp(std::string classname, std::string uuid);
 
 

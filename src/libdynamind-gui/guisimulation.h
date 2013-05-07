@@ -74,8 +74,8 @@ signals:
 public slots:
     //void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
     //void GUIaddModule(DM::Module *, QPointF pos);
-    void updateSimulation();
-    void reset();
+    //void updateSimulation();
+    //void resetSimulation();
     void showHelp(std::string classname, std::string uuid);
 
 	//std::map<ModelNode*,DM::Module*> moduleGuiMap;

@@ -97,20 +97,18 @@ void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 }
 */
 
-
+/*
 void GUISimulation::updateSimulation()
 {    
     //this->startSimulation(true);
 }
 
-void GUISimulation::reset()
+void GUISimulation::resetSimulation()
 {
-	/*
-    this->resetSimulation();
+	this->resetSimulation();
     this->reloadModules();
     this->updateSimulation();
-	*/
-}
+}*/
 
 void GUISimulation::clearSimulation() {
 	/*
