@@ -16,31 +16,25 @@ DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
 CreateBuilding::CreateBuilding()
 {
 
-    heatingT = 20;
-    coolingT = 20;
-    buildyear = 1985;
-    stories = 2;
-    l = 16;
-    b = 10;
-    alpha = 30;
-    onSingal = false;
+    length = 16;
+    ratio = 0.8;
+    stories = 3;
+    buildyear = 2000;
+
+    DatafromView = false;
 
     // boolean: take data from View or enter values manually
 
-    this->addParameter("length", DM::DOUBLE, &l);
-    this->addParameter("width", DM::DOUBLE, &b);
+    this->addParameter("length", DM::INT, &length);
+    this->addParameter("aspect ratio", DM::DOUBLE, &ratio);
     this->addParameter("stories", DM::INT, &stories);
-    this->addParameter("alpha", DM::DOUBLE, &alpha);
-    this->addParameter("built_year", DM::INT, &buildyear);
 
-    this->addParameter("T_heating", DM::DOUBLE, &heatingT);
-    this->addParameter("T_cooling", DM::DOUBLE, &coolingT);
-
-    this->addParameter("onSignal", DM::BOOL, &onSingal);
+    this->addParameter("Data from View", DM::BOOL, &DatafromView);
 
     cityView = DM::View("CITY", DM::FACE, DM::READ);
     cityView.getAttribute("year");
     parcels = DM::View("PARCEL", DM::FACE, DM::READ);
+
     parcels.addAttribute("is_built");
 
     parcels.getAttribute("released");
@@ -103,6 +97,9 @@ CreateBuilding::CreateBuilding()
 
 void CreateBuilding::run()
 {
+
+    srand ( time(NULL) );
+
     DM::System * city = this->getData("City");
     DM::SpatialNodeHashMap spatialNodeMap(city, 100);
 
@@ -119,22 +116,39 @@ void CreateBuilding::run()
     for (int i = 0; i < nparcels; i++) {
         DM::Face * parcel = city->getFace(parcelUUIDs[i]);
 
-        if (parcel->getAttribute("released")->getDouble() < 0.01 && onSingal == true)
+        if (parcel->getAttribute("released")->getDouble() < 0.01)
             continue;
         if (parcel->getAttribute("is_built")->getDouble() > 0.01)
             continue;
+        if (DatafromView) {
+            stories = (int)(parcel->getAttribute("maxheight")->getDouble());
+        }
+
         std::vector<DM::Node * > nodes  = TBVectorData::getNodeListFromFace(city, parcel);
         
+        int length_rand = static_cast<int>(length/4*3 + (rand() % (length/3)));
+        int width_rand = static_cast<int>(length_rand*ratio);
+
+        DM::Logger(DM::Warning) << "Calc stories rand";
+
+        //int stories_rand = 0;
+
+        //stories_rand = (stories*2)/3 + ( rand() % (stories/2));
+        int stories_rand = (stories*2/3) + (rand() % ((stories/2)+2));
+
+        DM::Logger(DM::Warning) << "Calc stories rand: " << stories_rand;
+
+
         std::vector<DM::Node> bB;
         //Calcualte bounding minial bounding box
         std::vector<double> size;
         double angle = CGALGeometry::CalculateMinBoundingBox(nodes, bB,size);
         Node centroid = DM::Node(parcel->getAttribute("centroid_x")->getDouble(),  parcel->getAttribute("centroid_y")->getDouble(), 0);
 
-        QPointF f1 (- l/2,  - b/2);
-        QPointF f2 (+ l/2,- b/2);
-        QPointF f3 ( + l/2,  + b/2);
-        QPointF f4 (- l/2,  + b/2);
+        QPointF f1 (- length_rand/2,  - width_rand/2);
+        QPointF f2 (+ length_rand/2,- width_rand/2);
+        QPointF f3 ( + length_rand/2,  + width_rand/2);
+        QPointF f4 (- length_rand/2,  + width_rand/2);
 
         QPolygonF original = QPolygonF() << f1 << f2 << f3 << f4;
         QTransform transform = QTransform().rotate(angle);
@@ -159,47 +173,40 @@ void CreateBuilding::run()
         DM::Face * foot_print = city->addFace(houseNodes, footprint);
         foot_print->addAttribute("year", buildyear);
         foot_print->addAttribute("built_year", buildyear);
-        foot_print->addAttribute("height", stories*3);
+        foot_print->addAttribute("height", stories_rand*3);
         Node  n = TBVectorData::CaclulateCentroid(city, foot_print);
         building->addAttribute("type", "single_family_house");
         building->addAttribute("built_year", buildyear);
-        building->addAttribute("stories", stories);
+        building->addAttribute("stories", stories_rand);
         building->addAttribute("stories_below", 0); //cellar counts as story
         building->addAttribute("stories_height",3 );
 
-        building->addAttribute("floor_area", l*b);
-        building->addAttribute("roof_area", l*b);
-        building->addAttribute("gross_floor_area", l * b * stories * 3);
+        building->addAttribute("floor_area", length_rand*width_rand);
+        building->addAttribute("roof_area", length_rand*width_rand);
+        building->addAttribute("total_floor_area", length_rand * width_rand * stories_rand);
+        building->addAttribute("volume", length_rand*width_rand*stories_rand*3);
 
         building->addAttribute("centroid_x", n.getX());
         building->addAttribute("centroid_y", n.getY());
 
-        building->addAttribute("l_bounding", l);
-        building->addAttribute("b_bounding", b);
-        building->addAttribute("h_bounding", stories * 3);
+        building->addAttribute("l_bounding", length_rand);
+        building->addAttribute("b_bounding", width_rand);
+        building->addAttribute("h_bounding", stories_rand * 3);
 
-        building->addAttribute("alpha_bounding", angle);
-
-        building->addAttribute("alpha_roof", alpha);
+        building->addAttribute("DWF", length_rand * width_rand * stories_rand / 10000 );
+        building->addAttribute("EIA", length_rand * width_rand * 1.3);
 
         building->addAttribute("cellar_used", 1);
         building->addAttribute("roof_used", 0);
 
-        building->addAttribute("T_heating", heatingT);
-        building->addAttribute("T_cooling", coolingT);
-
-
-        building->addAttribute("V_living", l*b*stories * 3);
-
-        LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
-        if (alpha > 10) {
-            LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
-        }
+        LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories_rand);
 
         //Create Links
         building->getAttribute("PARCEL")->setLink(parcels.getName(), parcel->getUUID());
         parcel->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
         parcel->addAttribute("is_built",1);
+        parcel->addAttribute("DWF", length_rand * width_rand * stories_rand / 10000);
+        parcel->addAttribute("EIA", length_rand * width_rand * 1.3);
         numberOfHouseBuild++;
         
     }

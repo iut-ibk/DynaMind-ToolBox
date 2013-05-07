@@ -15,14 +15,11 @@ private:
     DM::View footprint;
     DM::View cityView;
 
-    double heatingT;
-    double coolingT;
-    int buildyear;
     int stories;
-    double alpha;
-    double l;
-    double b;
-    bool onSingal;
+    int length;
+    double ratio;
+    int buildyear;
+    bool DatafromView;
 
     void createWindows(DM::Face * f, double distance, double width, double height);
 public:
