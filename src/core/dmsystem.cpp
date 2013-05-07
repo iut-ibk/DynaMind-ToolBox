@@ -866,6 +866,8 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	views = sys->views;
 
 	lastModule = sys->lastModule;
+
+	CopyFrom(*sys, true);
 }
 
 /*
