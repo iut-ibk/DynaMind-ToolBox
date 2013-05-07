@@ -60,8 +60,12 @@ public:
 private:
     QColor color;
     ModelNode * modelNode;
-    GUILink * tmp_link;
+    //GUILink * tmp_link;
     QVector<GUILink * > links;
+	
+	GUILink* unstableLink;
+
+
     QString PortName;
    // int PortType;
     bool isHover;

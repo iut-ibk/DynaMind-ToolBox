@@ -59,7 +59,7 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*
     this->setAcceptHoverEvents(true);
     this->setAcceptsHoverEvents(true);
     this->PortName = portName;
-    tmp_link = 0;
+    unstableLink = NULL;
     //this->hoverElement = 0;
     //this->p = p;
     this->x1 = 0;
@@ -93,8 +93,10 @@ bool PortNode::isLinked() {
 
 void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     //if (this->getVIBePort()->isFullyLinked())
-        color = Qt::green;
+	if(links.size() || unstableLink)
+		color = Qt::yellow;
     //if (!this->getVIBePort()->isFullyLinked())
+	else
         color = Qt::red;
     painter->setBrush(color);
 	
@@ -173,7 +175,7 @@ QPointF PortNode::getCenterPos()
     return this->PortType;
 }*/
 
-static GUILink* unstableLink = NULL;
+//static GUILink* unstableLink = NULL;
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
