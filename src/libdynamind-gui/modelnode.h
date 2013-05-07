@@ -83,7 +83,7 @@ protected:
     bool minimized;
     bool visible;
 
-    QColor Color;
+    //QColor Color;
 
     virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
     virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );

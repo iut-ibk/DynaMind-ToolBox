@@ -236,7 +236,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 	foreach(std::string portName, m->getInPortNames())
 		this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::INPORT));
 
-    Color = COLOR_MODULE;
+    //Color = COLOR_MODULE;
 }
 /*
 ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent, scene) {
@@ -244,30 +244,27 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 }*/
 
 
-void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    /*if(this->isSelected() == true) {
-        Color = COLOR_MODULESELECTED;
-    }
-    else if (this->getDMModel()->isExecuted()) {
-        Color = COLOR_EXECUTED;
-    }
-    else if (this->getDMModel()->isDebugMode()){
-        Color = COLOR_DEBUG;
-    }
-    else {
-        Color = COLOR_MODULE;
-    }*/
+void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
+{
+	QColor c;    
+	if(isSelected())
+        c = COLOR_MODULESELECTED;
+    /*else if (this->getDMModel()->isExecuted()) 
+        c = COLOR_EXECUTED;
+    else if (this->getDMModel()->isDebugMode())
+        c = COLOR_DEBUG;*/
+	else
+        c = COLOR_MODULE;
 
     if(this->visible){
         QPen pen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
-
         QLinearGradient linearGrad(QPointF(0, h), QPointF(0, 0));
-        QColor c1 = Color;
-        QColor c2 = Color;
+        /*QColor c1 = COLOR_MODULE;
+		QColor c2 = Qt::white;
         linearGrad.setColorAt(0, c1);
-        linearGrad.setColorAt(.4, c2);
-        QBrush brush(linearGrad);
+        linearGrad.setColorAt(1, c2);*/
+        QBrush brush(c);
 
         painter->setBrush(Qt::white);
         painter->setPen(pen);
@@ -276,11 +273,8 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->fillPath(path, brush);
         painter->strokePath(path, pen);
 		
-        
         //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
 		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getName()));
-		
-
     }
 }
 
