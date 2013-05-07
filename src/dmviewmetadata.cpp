@@ -75,17 +75,18 @@ void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component 
     }
     //If Rasterdata use z as Attribute
     if (v.getType() == DM::RASTERDATA) {
-        DM::ComponentMap cmp = sys->getAllComponentsInView(v);
+        /*DM::ComponentMap cmp = sys->getAllComponentsInView(v);
         DM::RasterData * r = 0;
         for (DM::ComponentMap::const_iterator it = cmp.begin();
              it != cmp.end();
              ++it) {
             r = (DM::RasterData *) it->second;
-        }
+        }*/
+		DM::RasterData* r = (DM::RasterData*)c;
         attr_max = r->getMaxValue();
         attr_min = r->getMinValue();
     }
-    if (pos == in_between && fromNode) {
+    else if (pos == in_between && fromNode) {
         DM::Attribute *a = c->getAttribute(attr);
         if (a->getType() == Attribute::DOUBLE) {
             attr_max = std::max(attr_max, a->getDouble());
