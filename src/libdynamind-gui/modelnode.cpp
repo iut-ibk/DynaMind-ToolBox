@@ -246,25 +246,25 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
-	QColor c;    
+	QColor fillcolor = COLOR_MODULE;    
+	QColor pencolor = COLOR_MODULEBORDER;
+
 	if(isSelected())
-        c = COLOR_MODULESELECTED;
-    /*else if (this->getDMModel()->isExecuted()) 
-        c = COLOR_EXECUTED;
-    else if (this->getDMModel()->isDebugMode())
+        pencolor = COLOR_MODULESELECTEDBORDER;
+	if(module->outPortsSet())
+        fillcolor = COLOR_MODULE;
+    /*else if (this->getDMModel()->isDebugMode())
         c = COLOR_DEBUG;*/
-	else
-        c = COLOR_MODULE;
 
     if(this->visible){
-        QPen pen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        QPen pen(pencolor, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
         QLinearGradient linearGrad(QPointF(0, h), QPointF(0, 0));
         /*QColor c1 = COLOR_MODULE;
 		QColor c2 = Qt::white;
         linearGrad.setColorAt(0, c1);
         linearGrad.setColorAt(1, c2);*/
-        QBrush brush(c);
+        QBrush brush(fillcolor);
 
         painter->setBrush(Qt::white);
         painter->setPen(pen);
