@@ -38,6 +38,7 @@
 
 #define SQLUNITTESTS
 #define SQLPROFILING
+//#define BIGDATATEST
 
 #ifdef _OPENMP
 #define OMPUNITTESTS
@@ -804,6 +805,84 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
+#endif
+
+#ifdef BIGDATATEST
+long randlong()
+{
+	long q = (2*rand()+rand()%2);
+	q = (q<<16)+(2*rand()+rand()%2);
+	//q = (q<<16)+(2*rand()+rand()%2);
+	//q = (q<<16)+(2*rand()+rand()%2);
+	return q;
+}
+
+TEST_F(TestSystem,standardBigDataTest) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "standard big data test";
+	
+	// get current config
+	DBConnectorConfig cfg = DBConnector::getInstance()->getConfig();
+	// prepare a new one
+	DBConnectorConfig cfgNew = cfg;
+	
+	QElapsedTimer timer;
+	const long N = 1e7;
+	
+	DM::Logger(Standard) << "cachesize\tnumber of elements\toperation\ttime";
+	
+	for(long cachesize = 100; cachesize <= N; cachesize *= 10)
+	{
+		cfgNew.nodeCacheSize = cachesize;
+		DBConnector::getInstance()->setConfig(cfgNew);
+
+		for(long numelements = 100; numelements <= N; numelements *= 10)
+		{
+			long addTime, getTime, setTime;
+			DM::Node::ClearCache();
+			DM::System sys;
+			std::vector<DM::Node*> nodes;
+			std::vector<long> rndNumbers;
+
+			// measure addNode
+			timer.start();
+			for(long i = 0; i < numelements; i++)
+				nodes.push_back(sys.addNode(0,0,0));
+			addTime = timer.elapsed();
+			
+			// generate a new set of random numbers
+			rndNumbers.clear();
+			for(long i = 0; i < numelements; i++)
+				rndNumbers.push_back(abs(randlong()%numelements));
+			
+			// measure getX
+			timer.restart();
+			foreach(long l, rndNumbers)
+				nodes[l]->getX();
+			getTime = timer.elapsed();
+			
+			// generate a new set of random numbers
+			rndNumbers.clear();
+			for(long i = 0; i < numelements; i++)
+				rndNumbers.push_back(abs(randlong()%numelements));
+			
+			// measure setX
+			timer.restart();
+			foreach(long l, rndNumbers)
+				nodes[l]->setX(1.0);
+			setTime = timer.elapsed();
+			
+			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tadd\t\t" << addTime;
+			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tget\t\t" << getTime;
+			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tset\t\t" << setTime;
+		}
+	}
+	
+	// reset configs
+	DBConnector::getInstance()->setConfig(cfg);
+}
+
 #endif
 
 #ifdef OMPUNITTESTS
