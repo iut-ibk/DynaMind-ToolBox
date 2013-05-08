@@ -80,7 +80,14 @@ void ViewerWindow::addLayer(Layer *l, bool overdraw) {
     
 }
 
-void ViewerWindow::on_actionAdd_Layer_triggered() {
+void ViewerWindow::on_actionAdd_Layer_triggered() 
+{
+	if(!system)
+	{
+		DM::Logger(Error) << "no data at port";
+		return;
+	}
+
     AddLayerDialog dialog(system, this);
     if (dialog.exec()) {
         Layer *l = dialog.getLayer(ui->viewer);
