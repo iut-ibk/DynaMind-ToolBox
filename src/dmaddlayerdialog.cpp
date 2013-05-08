@@ -46,7 +46,7 @@ AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
     ui->setupUi(this);
     start = Qt::white;
     stop = Qt::black;
-    foreach (DM::View v, system->getViews()) {
+	foreach (DM::View v, system->getViews()) {
         QStringList strings;
         strings << QString::fromStdString(v.getName());
         
@@ -137,28 +137,40 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
     ui->attributeList->clear();
     ui->overdraw->setEnabled(current);
     view = system->getViewDefinition(current->text(0).toStdString());
-
+	if(!view)
+	{
+		DM::Logger(Error) << "view " << current->text(0).toStdString() << "not found";
+		return;
+	}
     if (view->getType() == DM::RASTERDATA)
         ui->interpreteGroup->setEnabled(current);
     else
         ui->interpreteGroup->setDisabled(current);
 
-    QMap<string, DM::Attribute *> attributes;
+    /*QMap<string, DM::Attribute *> attributes;
     getAttributesFromComponent(*view, attributes);
 
-    foreach(std::string key, attributes.keys()) {
+    foreach(std::string key, attributes.keys()) 
+	{
         DM::Attribute *attr = attributes[key];
         if (! (attr->getType() == Attribute::DOUBLE
                || attr->getType() == Attribute::DOUBLEVECTOR
                || attr->getType() == Attribute::TIMESERIES)) {
             continue;
-        }
-        
-        QStringList strings;
-        strings << QString::fromStdString(key);
-        strings << attr->getTypeName();
-        QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-        ui->attributeList->addTopLevelItem(item);
+        }*/
+	foreach(std::string name, view->getAllAttributes())
+	{
+		Attribute::AttributeType type = view->getAttributeType(name);
+		if(	type != Attribute::DOUBLE && 
+			type != Attribute::DOUBLEVECTOR && 
+			type != Attribute::TIMESERIES)
+		{
+			QStringList strings;
+			strings << QString::fromStdString(name);
+			strings << Attribute::getTypeName(type);
+			QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+			ui->attributeList->addTopLevelItem(item);
+		}
     }
 }
 
