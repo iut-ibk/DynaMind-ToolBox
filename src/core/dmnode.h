@@ -129,6 +129,7 @@ public:
 	static unsigned long GetCacheSize();
 
     static void PrintCacheStatistics();
+	static void ClearCache();
 
     Vector3* LoadFromDb();
     void SaveToDb(Vector3* v);

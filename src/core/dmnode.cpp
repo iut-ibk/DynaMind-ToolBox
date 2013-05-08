@@ -47,6 +47,11 @@ unsigned long Node::GetCacheSize()
 	return nodeCache.getSize();
 }
 
+void Node::ClearCache()
+{
+	nodeCache.Clear();
+}
+
 void Node::PrintCacheStatistics()
 {
 #ifdef CACHE_PROFILING

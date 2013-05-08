@@ -174,6 +174,12 @@ public:
 	//!< deletes all nodes, leaves the values untouched (non-deep delete)
     ~Cache()
     {
+		Clear();
+		delete mutex;
+    }
+	//!< deletes all nodes, leaves the values untouched (non-deep delete)
+	void Clear()
+	{
 		mutex->lockInline();
         Node* cur;
         Node* next;
@@ -186,8 +192,7 @@ public:
         }
 		map.clear();
 		mutex->unlockInline();
-		delete mutex;
-    }
+	}
 	//!< returns the current element count
 	unsigned long getSize(){return _size;};
 	//!< returns the value associated with the given key 
