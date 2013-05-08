@@ -767,7 +767,7 @@ bool System::removeChild(Component* c)
     case FACE:      faces.erase(id);   break;
     case EDGE:      edges.erase(id);   break;
     case RASTERDATA: rasterdata.erase(id);   break;
-    case SYSTEM:    subsystems.erase(id);   break;
+    case SUBSYSTEM:    subsystems.erase(id);   break;
     }
 
 	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
