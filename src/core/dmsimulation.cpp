@@ -199,22 +199,26 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
 				branches.push_back(l);
 
-		if(branches.size() == 0)
+		if(branches.size() > 0)
 		{
-			//Logger(Warning) << "port not connected";
-			continue;	// dead path
+			foreach(Link* l, branches)
+			{
+				l->ShiftData(this, branches.size()>1);
+				nextModules.push_back(l->dest);
+			}
+			// reset out port
+			it->second = NULL;
 		}
-		// the first entry gets the original data, all others a copy = successor
-		bool first = true;
-		foreach(Link* l, branches)
-		{
-			l->ShiftData(this, !first);
-			nextModules.push_back(l->dest);
-			first = false;
-		}
-		// reset port
+		else // dead path
+			Logger(Warning) << "port not connected";
+	}
+	// reset in port
+	for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
+		it != m->inPorts.end();	++it)
+	{
 		it->second = NULL;
 	}
+
 	return nextModules;
 }
 

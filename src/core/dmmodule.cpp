@@ -49,6 +49,7 @@
 //#include <dmrasterdata.h>
 //#include <algorithm>
 #include <dmrasterdata.h>
+#include <dmstdutilities.h>
 
 using namespace std;
 namespace DM {
@@ -167,6 +168,8 @@ System* Module::getOutPortData(const std::string &name)
 void Module::addData(std::string name, std::vector<View> views)
 {
 	DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
+	this->views = views;
+
 	bool inPort = false;
 	bool outPort = false;
 
@@ -190,12 +193,13 @@ System* Module::getData(std::string name)
 	DM::Logger(Warning) << "Module::getData deprecated, " << 
 		"create a new system and apply to port via setOutPortData instead";
 
-	System *sys = getOutPortData(name);
+	System *sys = getInPortData(name);
 	if(!sys)
-	{
 		sys = new System();
-		this->setOutPortData(name, sys);
-	}
+	
+	foreach(View v, views)
+		sys->addView(v);
+	this->setOutPortData(name, sys);
 	return sys;
 }
 
@@ -279,13 +283,19 @@ void Module::reset()
 {
 	for(std::map<std::string, System*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
 	{
-		delete it->second;
-		it->second = NULL;
+		if(it->second)
+		{
+			delete it->second;
+			it->second = NULL;
+		}
 	}
 	for(std::map<std::string, System*>::iterator it = outPorts.begin(); it != outPorts.end(); ++it)
 	{
-		delete it->second;
-		it->second = NULL;
+		if(it->second)
+		{
+			delete it->second;
+			it->second = NULL;
+		}
 	}
 }
 

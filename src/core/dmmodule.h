@@ -39,7 +39,7 @@
 #include <dmlog.h>
 #include <dmlogger.h>
 #include <dmlogsink.h>
-//#include <dmview.h>
+#include <dmview.h>
 //#include <dmrasterdata.h>
 #include <dmstdutilities.h>
 
@@ -184,7 +184,7 @@ enum PortType
 };*/
 
 class System;
-class View;
+//class View;
 class RasterData;
 
 enum ModuleStatus
@@ -311,6 +311,8 @@ private:
 	std::map<std::string, System*>	inPorts;
 	std::map<std::string, System*>	outPorts;
 	ModuleStatus status;
+
+	std::vector<View> views;
 };
 
 #ifdef OLD_WF
