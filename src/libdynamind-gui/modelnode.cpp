@@ -364,10 +364,19 @@ PortNode * ModelNode::getGUIPort(DM::Port * p) {
 void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 	
     QMenu menu;
-    QAction * a_viewData = menu.addAction("viewer");
-	
-    connect( a_viewData, SIGNAL(triggered() ), this, SLOT( viewData() ), Qt::DirectConnection);
+	QSignalMapper* signalMapper = new QSignalMapper(this);
+	int i=0;
+	foreach(string s, module->getOutPortNames())
+	{
+		QAction* action = menu.addAction(QString::fromStdString("view data at port '"+s+"'"));
+		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
 
+		signalMapper->setMapping(action, i++);
+	}
+	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(viewData(int)));
+	
+	
+    menu.exec(event->screenPos());
 
     /*QAction  * a_edit = menu.addAction("edit");
     QAction * a_rename = menu.addAction("rename");
@@ -509,12 +518,12 @@ void ModelNode::printData() {
     
 }*/
 
-void ModelNode::viewData() 
+void ModelNode::viewData(int portIndex) 
 {
     //TODO hook(er) me up
     //DM::Port *p = this->getDMModel()->getOutPorts()[0];
     //DM::System *system = this->getDMModel()->getData(p->getLinkedDataName());
-	DM::System *system = module->getOutPortData(module->getOutPortNames()[0]);
+	DM::System *system = module->getOutPortData(module->getOutPortNames()[portIndex]);
     DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
     viewer_window->show();
 }

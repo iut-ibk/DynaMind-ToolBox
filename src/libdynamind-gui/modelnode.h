@@ -153,7 +153,7 @@ public slots:
     //void editModelNode();
     //void renameModelNode();
     //void printData();
-    void viewData();
+    void viewData(int portIndex);
     //void showHelp();
     //void setDebug();
     //void setRelease();
