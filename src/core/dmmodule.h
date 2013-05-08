@@ -268,6 +268,12 @@ public:
 	/** @brief checks if all inports are set or not existing */
 	bool inPortsSet();
 	void reset();
+
+	
+	/** @brief get data from inport, public for viewer */
+	System* getInPortData(const std::string &name);
+	/** @brief get data from outport, public for viewer */
+	System* getOutPortData(const std::string &name);
 protected:
 
 
@@ -280,10 +286,6 @@ protected:
 	/** @brief checks if port exists */
 	bool hasInPort(const std::string &name);
 	bool hasOutPort(const std::string &name);
-	/** @brief get data from inport*/
-	System* getInPortData(const std::string &name);
-	/** @brief get data from outport*/
-	System* getOutPortData(const std::string &name);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
 	/** @brief */
