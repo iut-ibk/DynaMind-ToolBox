@@ -362,15 +362,15 @@ PortNode * ModelNode::getGUIPort(DM::Port * p) {
 }*/
 
 void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
-	/*
+	
     QMenu menu;
-    QAction  * a_edit = menu.addAction("edit");
+    /*QAction  * a_edit = menu.addAction("edit");
     QAction * a_rename = menu.addAction("rename");
     QAction * a_reset = menu.addAction("reset");
     QAction * a_delete = menu.addAction("delete");
-    QAction * a_showData = menu.addAction("stream");
+    QAction * a_showData = menu.addAction("stream");*/
     QAction * a_viewData = menu.addAction("viewer");
-
+	/*
     QAction * a_showHelp = menu.addAction("help");
     QAction * a_module_debug = 0;
     QAction * a_module_release = 0;
@@ -411,9 +411,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
     connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_rename, SIGNAL(triggered() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
-    connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
+    connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);*/
     connect( a_viewData, SIGNAL(triggered() ), this, SLOT( viewData() ), Qt::DirectConnection);
-    connect( a_module_debug, SIGNAL(triggered() ), this, SLOT( setDebug() ), Qt::DirectConnection);
+    /*connect( a_module_debug, SIGNAL(triggered() ), this, SLOT( setDebug() ), Qt::DirectConnection);
     connect( a_module_release, SIGNAL(triggered() ), this, SLOT( setRelease() ), Qt::DirectConnection);
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_reset, SIGNAL(triggered() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
