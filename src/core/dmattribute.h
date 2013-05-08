@@ -34,14 +34,23 @@
 #include <dmcompilersettings.h>
 #include <QtCore>
 #include "dmdbconnector.h"
+#include <dmdbcache.h>
 
 using namespace std;
 
 namespace DM {
 
-struct LinkAttribute {
+class LinkAttribute 
+{
+public:
+    LinkAttribute() {}
+    LinkAttribute(std::string viewname, std::string uuid) : viewname(viewname) , uuid(uuid){}
     std::string viewname;
     std::string uuid;
+
+    bool operator==(const LinkAttribute & other) const {
+        return this->uuid == other.uuid && this->viewname == other.viewname;
+    }
 };
 class TimeSeriesAttribute
 {
@@ -93,12 +102,7 @@ public:
 		{
 			Free();
 		}
-		void Free()
-		{
-			if(ptr)	delete ptr;
-			ptr = NULL;
-			type = NOTYPE;
-		}
+		void Free();
 		AttributeValue(QVariant var, AttributeType type);
 		QVariant toQVariant();
 	};
@@ -110,6 +114,7 @@ private:
 	AttributeValue	*value;
 	bool	isInserted;
 	AttributeValue*	getValue() const;
+	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 protected:
 public:
 	/** @brief =operator */
@@ -117,7 +122,10 @@ public:
     /** @brief copies type and value to this attribute**/
     void Change(const Attribute &attribute);
     /** @brief changes the owner **/
-	void SetOwner(Component* owner);
+	void setOwner(Component* owner);
+    /** @brief returns the current owner, be aware on successor state generated attributes:
+		their owner is the component owning the element, not just the pointer **/
+	Component* GetOwner();
     /** @brief Returns true if a double value is set **/
     bool hasDouble();
     /** @brief Returns true if a string value is set **/
@@ -193,11 +201,10 @@ public:
 		@internal*/
 	void SaveToDb(AttributeValue *val);
 
-	static void ResizeCache(unsigned int size);
-	static unsigned int GetCacheSize();
-#ifdef CACHE_PROFILING
-    static void PrintStatistics();
-#endif
+	static void ResizeCache(unsigned long size);
+	static unsigned long GetCacheSize();
+
+    static void PrintCacheStatistics();
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

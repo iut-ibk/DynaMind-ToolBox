@@ -53,28 +53,27 @@ public:
 	}
 };
 
+static QMutex componentSyncMutex;
 static ComponentSyncMap componentSyncMap;
 
 Component::Component()
 {
+	mutex = new QMutex(QMutex::Recursive);
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
     ownedattributes = std::map<std::string,Attribute*>();
-
-    //mMutex = new QMutex(QMutex::Recursive);
 
     inViews = std::set<std::string>();
     currentSys = NULL;
 
     DBConnector::getInstance();
-    //SQLInsertComponent();
 	isCached = true;
 	componentSyncMap.insert(this);
-	//componentSyncMap.push_back(this);
 }
 
 Component::Component(bool b)
 {
+	mutex = new QMutex(QMutex::Recursive);
     DBConnector::getInstance();
     uuid = QUuid::createUuid();
     ownedattributes = std::map<std::string,Attribute*>();
@@ -84,52 +83,60 @@ Component::Component(bool b)
 	isCached = false;
 }
 
-
-void Component::CopyFrom(const Component &c)
+void Component::CopyFrom(const Component &c, bool successor)
 {
 	uuid = QUuid::createUuid();
     inViews = c.inViews;
 	currentSys = NULL;
 
-	mforeach(Attribute* a, c.ownedattributes)
+	if(!successor)
 	{
-		//this->addAttribute(*a);
-		Attribute* newa = new Attribute(*a);
-		ownedattributes[newa->getName()] = newa;
-		newa->SetOwner(this);
+		mforeach(Attribute* a, c.ownedattributes)
+		{
+			Attribute* newa = new Attribute(*a);
+			ownedattributes[newa->getName()] = newa;
+			newa->setOwner(this);
+		}
 	}
+	else
+		ownedattributes = c.ownedattributes;
 }
 
 Component::Component(const Component& c)
 {
+	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
-	//SQLInsertComponent();
 	componentSyncMap.insert(this);
 	isCached = true;
-	//componentSyncMap.push_back(this);
 }
 
 Component::Component(const Component& c, bool bInherited)
 {
+	mutex = new QMutex(QMutex::Recursive);
     CopyFrom(c);
 	isCached = false;
 }
 
 Component::~Component()
 {
+	mutex->lockInline();
 	mforeach(Attribute* a, ownedattributes)
-		delete a;
+		if(a->GetOwner() == this)
+			delete a;
 
 	ownedattributes.clear();
-	//componentSyncMap.remove(this);
 	if(isCached)
 		componentSyncMap.erase(this);
 	// if this class is not of type component, nothing will happen
     SQLDelete();
+	mutex->unlockInline();
+	delete mutex;
 }
 
 Component& Component::operator=(const Component& other)
 {
+	QMutexLocker ml(mutex);
+
 	if(this != &other)
 	{
 		mforeach(Attribute* a, other.ownedattributes)
@@ -152,6 +159,8 @@ std::string Component::getUUID()
 	std::string name = a->getString();
 	if(name == "")	
 	{
+		QMutexLocker ml(mutex);
+
 		name = QUuid::createUuid().toString().toStdString();
 		a->setString(name);
 		if(this->currentSys && currentSys != this)	// avoid self referencing
@@ -164,7 +173,7 @@ QUuid Component::getQUUID() const
     return uuid;
 }
 
-DM::Components Component::getType()
+DM::Components Component::getType() const
 {
     return DM::COMPONENT;
 }
@@ -175,8 +184,10 @@ QString Component::getTableName()
 
 bool Component::addAttribute(std::string name, double val) 
 {
-    //QMutexLocker locker(mMutex);
-	if(HasAttribute(name))
+	QMutexLocker ml(mutex);
+
+	//if(HasAttribute(name))
+	if(map_contains(&ownedattributes, name))
         return this->changeAttribute(name, val);
 
     return this->addAttribute(new Attribute(name, val));
@@ -184,8 +195,10 @@ bool Component::addAttribute(std::string name, double val)
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
-    //QMutexLocker locker(mMutex);
-	if(HasAttribute(name))
+	QMutexLocker ml(mutex);
+	
+	//if(HasAttribute(name))
+	if(map_contains(&ownedattributes, name))
         return this->changeAttribute(name, val);
 
     return this->addAttribute(new Attribute(name, val));
@@ -193,112 +206,172 @@ bool Component::addAttribute(std::string name, std::string val)
 
 bool Component::addAttribute(const Attribute &newattribute)
 {
-    //QMutexLocker locker(mMutex);
-    if(HasAttribute(newattribute.getName()))
+	QMutexLocker ml(mutex);
+
+    //if(HasAttribute(newattribute.getName()))
+	if(map_contains(&ownedattributes, newattribute.getName()))
         return this->changeAttribute(newattribute);
 
     Attribute * a = new Attribute(newattribute);
     ownedattributes[newattribute.getName()] = a;
 
-    a->SetOwner(this);
+    a->setOwner(this);
     return true;
 }
 
 bool Component::addAttribute(Attribute *pAttribute)
 {
-    //QMutexLocker locker(mMutex);
-    if(HasAttribute(pAttribute->getName()))
+	QMutexLocker ml(mutex);
+
+    //if(HasAttribute(pAttribute->getName()))
+	if(map_contains(&ownedattributes, pAttribute->getName()))
         delete ownedattributes[pAttribute->getName()];
 
 	ownedattributes[pAttribute->getName()] = pAttribute;
-    pAttribute->SetOwner(this);
+    pAttribute->setOwner(this);
     return true;
 }
 
 bool Component::changeAttribute(const Attribute &newattribute)
 {
+	QMutexLocker ml(mutex);
+
     getAttribute(newattribute.getName())->Change(newattribute);
     return true;
 }
 
 bool Component::changeAttribute(std::string s, double val)
 {
+	QMutexLocker ml(mutex);
+
     getAttribute(s)->setDouble(val);
     return true;
 }
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
+	QMutexLocker ml(mutex);
+
     getAttribute(s)->setString(val);
     return true;
 }
 
 bool Component::removeAttribute(std::string name)
 {
-	return delete_element(&ownedattributes, name);
+	QMutexLocker ml(mutex);
+	Attribute * a;
+	if(map_contains(&ownedattributes, name, a))
+	{
+		if(a->GetOwner() == this)
+			delete a;
+		
+		ownedattributes.erase(name);
+		return true;
+	}
+	return false;
 }
 
 Attribute* Component::getAttribute(std::string name)
 {
 	Attribute* a;
 	if(!map_contains(&ownedattributes, name, a))
-	//Attribute* a = ownedattributes[name];
-	//if(!a)
 	{
+		QMutexLocker ml(mutex);
+
 		a = new Attribute(name);
-		a->SetOwner(this);
+		a->setOwner(this);
 		ownedattributes[name] = a;
 	}
+	else if(a->GetOwner() != this)
+	{
+		a = ownedattributes[name] = new Attribute(*a);
+		a->setOwner(this);
+	}
+
 	return a;
 }
 
-const std::map<std::string, Attribute*> & Component::getAllAttributes() const
+void Component::CloneAllAttributes()
 {
+	mforeach(Attribute* a, ownedattributes)
+	{
+		if(a->GetOwner() != this)
+		{
+			a = ownedattributes[a->getName()] = new Attribute(*a);
+			a->setOwner(this);
+		}
+	}
+}
+
+const std::map<std::string, Attribute*> & Component::getAllAttributes()
+{
+	CloneAllAttributes();
     return ownedattributes;
 }
 
-Component* Component::clone() {
+
+
+Component* Component::clone() 
+{
     return new Component(*this);
 }
 
 void Component::setView(std::string view)
 {
+	QMutexLocker ml(mutex);
+
     this->inViews.insert(view);
 }
 
 void Component::setView(const DM::View & view)
 {
+	QMutexLocker ml(mutex);
+
     this->inViews.insert(view.getName());
 }
 
 void Component::removeView(const View &view)
 {
+	QMutexLocker ml(mutex);
+
     this->inViews.erase(view.getName());
 }
 
-const set<std::string> &Component::getInViews() const {
+const set<std::string> &Component::getInViews() const 
+{
     return this->inViews;
 }
 
-System * Component::getCurrentSystem() {
+System * Component::getCurrentSystem() 
+{
     return this->currentSys;
 }
 
-void Component::setCurrentSystem(System *sys) {
+void Component::setCurrentSystem(System *sys) 
+{
+	QMutexLocker ml(mutex);
+
     this->currentSys = sys;
 }
 
 void Component::SetOwner(Component *owner)
 {
-	//SQLSetOwner(owner);
-    currentSys = owner->getCurrentSystem();
+	QMutexLocker ml(mutex);
 
-    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-		it->second->SetOwner(this);
+    currentSys = owner->getCurrentSystem();
+	/*CloneAllAttributes();
+
+	mforeach(Attribute* a, ownedattributes)
+		a->setOwner(this);*/
+
+    //for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+	//	it->second->SetOwner(this);
 }
 
 void Component::SaveToDb()
 {
+	QMutexLocker ml(mutex);
+
 	if(this->getType() != DM::COMPONENT || !currentSys)
 		return;
 
@@ -312,21 +385,10 @@ void Component::SaveToDb()
 		DBConnector::getInstance()->Update(	"components", uuid, 
 											"owner", currentSys->getQUUID().toByteArray());
 }
-
-/*
-void Component::SQLSetOwner(Component * owner)
-{
-    DBConnector::getInstance()->Update(getTableName(), uuid,
-                                       "owner", owner->uuid.toByteArray());
-}
-
-void Component::SQLInsertComponent()
-{
-	isInserted = true;
-    DBConnector::getInstance()->Insert("components",	uuid);
-}*/
 void Component::SQLDelete()
 {
+	QMutexLocker ml(mutex);
+
 	if(isInserted)
 	{
 		isInserted = false;
@@ -334,7 +396,7 @@ void Component::SQLDelete()
 	}
 }
 
-bool Component::HasAttribute(std::string name)
+bool Component::HasAttribute(std::string name) const
 {
 	return ownedattributes.find(name)!=ownedattributes.end();
 }

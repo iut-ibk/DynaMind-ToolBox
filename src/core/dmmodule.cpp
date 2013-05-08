@@ -48,6 +48,7 @@
 //#include <dmdatavalidation.h>
 //#include <dmrasterdata.h>
 //#include <algorithm>
+#include <dmrasterdata.h>
 
 using namespace std;
 namespace DM {
@@ -202,8 +203,7 @@ RasterData* Module::getRasterData(std::string name, View view)
 {
 	DM::Logger(Warning) << "Module::getData deprecated, " << 
 		"create a new system, add rasterdata and apply system to port via setOutPortData instead";
-
-	return getData(name)->addRasterData();
+	return getData(name)->addRasterData(new RasterData());
 }
 
 /*template<typename T>

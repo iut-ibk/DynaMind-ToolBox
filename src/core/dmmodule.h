@@ -41,6 +41,7 @@
 #include <dmlogsink.h>
 //#include <dmview.h>
 //#include <dmrasterdata.h>
+#include <dmstdutilities.h>
 
 class QThreadPool;
 class PortObserver;

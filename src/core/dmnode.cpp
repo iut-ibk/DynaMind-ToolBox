@@ -36,17 +36,31 @@
 
 using namespace DM;
 
-static DbCache<Node*,Vector3> nodeCache(1e7);
+DbCache<Node*,Vector3> Node::nodeCache(0); // defined in dmdbconnector.h
 
-#ifdef CACHE_PROFILING
-void Node::PrintStatistics()
+void Node::ResizeCache(unsigned long size)
 {
+	nodeCache.resize(size);
+}
+unsigned long Node::GetCacheSize()
+{
+	return nodeCache.getSize();
+}
+
+void Node::ClearCache()
+{
+	nodeCache.Clear();
+}
+
+void Node::PrintCacheStatistics()
+{
+#ifdef CACHE_PROFILING
     Logger(Standard) << "Node cache statistics:\t"
                      << "misses: " << (long)nodeCache.misses
                      << "\thits: " << (long)nodeCache.hits;
     nodeCache.ResetProfilingCounters();
-}
 #endif
+}
 
 Node::Node( double x, double y, double z) : Component(true)
 {
@@ -91,6 +105,8 @@ Node::~Node()
 }
 void Node::SetOwner(Component *owner)
 {
+	QMutexLocker ml(mutex);
+
     currentSys = owner->getCurrentSystem();
     if(currentSys)
     {
@@ -98,11 +114,13 @@ void Node::SetOwner(Component *owner)
         delete vector;
         vector = NULL;
     }
-    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-        it->second->SetOwner(this);
+	mforeach(Attribute* a, ownedattributes)
+		a->setOwner(this);
+    //for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+    //    it->second->SetOwner(this);
 }
 
-DM::Components Node::getType()
+DM::Components Node::getType() const
 {
 	return DM::NODE;
 }
@@ -145,11 +163,19 @@ const double Node::get(unsigned int i) const {
 
 std::vector<Edge*> Node::getEdges() const
 {
-    return *connectedEdges;
+	if(!connectedEdges)
+		return std::vector<Edge*>();
+
+	std::vector<Edge*> edges;
+	foreach(Edge* e,*connectedEdges)
+		edges.push_back(e);
+    return edges;
 }
 
 void Node::set(double x, double y, double z)
 {
+	QMutexLocker ml(mutex);
+
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	v->x = x;
 	v->y = y;
@@ -159,18 +185,21 @@ void Node::set(double x, double y, double z)
 void Node::setX(double x)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(mutex);
     v->x = x;
 }
 
 void Node::setY(double y)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(mutex);
     v->y = y;
 }
 
 void Node::setZ(double z)
 {
     Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	QMutexLocker ml(mutex);
     v->z = z;
 }
 
@@ -181,6 +210,8 @@ Component* Node::clone()
 
 Node& Node::operator=(const Node& other)
 {
+	QMutexLocker ml(mutex);
+
 	if(this != &other)
 	{
 		this->isInserted = false;

@@ -51,19 +51,25 @@ typedef std::pair<std::string, Edge*> EdgePair;
 typedef std::pair<std::string, Node*> NodePair;
 typedef std::pair<std::string, Face*> FacePair;
 
-/** @ingroup DynaMind-Core
-      * @brief The system class provides a description for complex objects.
-      *
-      * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
-      * Systems are used to describe urban environment - water infrastructure, streets, houses ...
-      *
-      * The System class is derived from the Component class. Therefore every system has a UUID and can hold Attributes.
-      *
-      * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
-      * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
-      */
+
+
+class DerivedSystem;
+
+/** @class DM::System
+  * @ingroup DynaMind-Core
+  * @brief The system class provides a description for complex objects.
+  *
+  * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
+  * Systems are used to describe urban environment - water infrastructure, streets, houses ...
+  *
+  * The System class is derived from the Component class. Therefore every system has a UUID and can hold Attributes.
+  *
+  * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
+  * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
+*/
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
+	friend class DerivedSystem;
 private:
     //QMutex * mutex;
     std::map<QUuid, Node* > nodes;
@@ -96,16 +102,22 @@ private:
     bool removeChild(std::string name);
     bool removeChild(QUuid uuid);
     /*@deprecated*/
-    Component* getChild(std::string name);
-    Component* getChild(QUuid uuid);
+    virtual Component* getChild(std::string name) const;
+    Component* getChild(QUuid uuid) const;
     Component* findChild(QUuid uuid) const;
     /** @brief return table name */
     QString getTableName();
     Component* getComponent(QUuid uuid);
     Edge* getEdge(QUuid uuid);
     System* getSubSystem(QUuid uuid);
-protected:
-    //std::string getStateUuid();
+
+	/** @brief add Predecessor **/
+    void addPredecessors(DM::System * s);
+protected:    
+	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
+        @deprecated*/
+    virtual const Component* getComponentReadOnly(std::string uuid) const;
+    const Edge* getEdgeReadOnly(Node* start, Node* end);
 public:
     bool removeChild(Component* c);
     /*@deprecated*/
@@ -122,7 +134,7 @@ public:
     /** @brief setUUID */
     //virtual void setUUID(std::string uuid);
 	/** @brief return Type */
-	virtual Components getType();
+	Components getType() const;
     /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
     Component * addComponent(Component* c, const DM::View & view = DM::View());
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system.
@@ -145,22 +157,22 @@ public:
     Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
     /** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
         @deprecated*/
-    Component* getComponent(std::string uuid);
+    virtual Component* getComponent(std::string uuid);
     /** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
         @deprecated*/
-    Node* getNode(std::string uuid);
+    virtual Node* getNode(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exis
         @deprecated*/
-    Edge* getEdge(std::string uuid);
+    virtual Edge* getEdge(std::string uuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
     Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
         @deprecated*/
-    Edge* getEdge(const Node* start, const Node* end);
+    virtual Edge* getEdge(Node* start, Node* end);
     /** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist
         @deprecated*/
-    Face * getFace(std::string uuid);
+    virtual Face * getFace(std::string uuid);
     /** @brief Removes an Edge. Returns false if the edge doesn't exist
         @deprecated*/
     bool removeEdge(std::string uuid);
@@ -174,26 +186,26 @@ public:
     bool removeFace(std::string uuid);
     /** @brief Returns a map of nodes stored in the system
         @deprecated*/
-    std::map<std::string, Component*> getAllComponents();
+    virtual std::map<std::string, Component*> getAllComponents();
     /** @brief Returns a map of nodes stored in the system
         @deprecated*/
-    std::map<std::string, Node*> getAllNodes();
+    virtual std::map<std::string, Node*> getAllNodes();
     /** @brief Returns a map of edges stored in the system
         @deprecated*/
-    std::map<std::string, Edge*> getAllEdges();
+    virtual std::map<std::string, Edge*> getAllEdges();
     /** @brief Returns a map of faces stored in the system
         @deprecated*/
-    std::map<std::string, Face*> getAllFaces();
+    virtual std::map<std::string, Face*> getAllFaces();
     /** @brief Returns a map of subsystems stored in the system
         @deprecated*/
-    std::map<std::string, System*> getAllSubSystems();
+    virtual std::map<std::string, System*> getAllSubSystems();
     /** @brief Returns a map of rasterdata stored in the system
         @deprecated*/
-    std::map<std::string, RasterData*> getAllRasterData();
+    virtual std::map<std::string, RasterData*> getAllRasterData();
     /** @brief Returns the predecessor of the system */
-    std::vector<System*> getPredecessors();
+    std::vector<System*> getPredecessors() const;
     /** @brief Returns the sucessor of the system */
-    std::vector<System*> getSucessors();
+    std::vector<System*> getSucessors() const;
     /** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
     System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
     /** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
@@ -221,17 +233,13 @@ public:
     /** @brief remove a component from a view */
     bool removeComponentFromView(Component * comp, const DM::View & view);
     /** @brief retrun all components related to a view */
-    std::map<std::string, Component*> getAllComponentsInView(const View &view);
+    virtual std::map<std::string, Component*> getAllComponentsInView(const View &view);
     /** @brief Returns a vector of all uuids stored in a view */
     std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
     /** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter*/
     std::vector<std::string> getUUIDs(const DM::View &view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-	/** @brief adds new RasterData to the system */
-	RasterData* addRasterData();
-    /** @brief add Predecessor **/
-    void addPredecessors(DM::System * s);
 
     void setAccessedByModule(Module * m);
     Module * getLastModule() const;
@@ -242,6 +250,47 @@ public:
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
+
+
+// This system class holds a pointer to a predecessor system - for read only purpose
+
+class DM_HELPER_DLL_EXPORT DerivedSystem: public System
+{
+private:
+	System* predecessorSys;
+	
+	bool allComponentsLoaded;
+	bool allEdgesLoaded;
+	bool allFacesLoaded;
+	bool allNodesLoaded;
+	bool allSubSystemsLoaded;
+	
+    const Component* getComponentReadOnly(std::string uuid) const;
+    const Edge* getEdgeReadOnly(Node* start, Node* end);
+	
+	Component* SuccessorCopy(const Component *src);
+	Node* SuccessorCopy(const Node *src);
+	Edge* SuccessorCopy(const Edge *src);
+	Face* SuccessorCopy(const Face *src);
+public:
+	DerivedSystem(System* sys);
+
+    //Node* getNode(QUuid uuid);
+    Component* getComponent(std::string uuid);
+    Node* getNode(std::string uuid);
+    Edge* getEdge(std::string uuid);
+    Edge* getEdge(Node* start, Node* end);
+    Face * getFace(std::string uuid);
+    Component* getChild(std::string name);
+    std::map<std::string, Component*> getAllComponents();
+    std::map<std::string, Node*> getAllNodes();
+    std::map<std::string, Edge*> getAllEdges();
+    std::map<std::string, Face*> getAllFaces();
+    std::map<std::string, System*> getAllSubSystems();
+    std::map<std::string, RasterData*> getAllRasterData();
+	std::map<std::string, Component*> getAllComponentsInView(const DM::View & view);
+};
+
 }
 
 #endif // SYSTEM_H

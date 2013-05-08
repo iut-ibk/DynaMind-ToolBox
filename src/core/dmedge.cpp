@@ -28,7 +28,7 @@
 #include <dmedge.h>
 #include <dmnode.h>
 #include <dmsystem.h>
-
+#include <dmlogger.h>
 #include <QSqlQuery>
 #include <dmdbconnector.h>
 
@@ -59,7 +59,7 @@ Edge::~Edge()
     if(isInserted)
         Component::SQLDelete();
 }
-DM::Components Edge::getType()
+DM::Components Edge::getType() const
 {
 	return DM::EDGE;
 }
@@ -97,23 +97,43 @@ const std::string Edge::getEndpointName() const
 
 void Edge::setStartpoint(Node *start)
 {
+	QMutexLocker ml(mutex);
+
+	this->start->removeEdge(this);
 	this->start = start;
 	start->addEdge(this);
 }
 
 void Edge::setStartpointName(std::string name)
 {
+	QMutexLocker ml(mutex);
+
+	if(!currentSys)
+	{
+		Logger(Error) << "setStartpointName in unattached edge not possible";
+		return;
+	}
 	setStartpoint(currentSys->getNode(name));
 }
 
 void Edge::setEndpoint(Node *end)
 {
+	QMutexLocker ml(mutex);
+
+	this->end->removeEdge(this);
 	this->end = end;
 	end->addEdge(this);
 }
 
 void Edge::setEndpointName(std::string name)
 {
+	QMutexLocker ml(mutex);
+
+	if(!currentSys)
+	{
+		Logger(Error) << "setEndpointName in unattached edge not possible";
+		return;
+	}
 	setEndpoint(currentSys->getNode(name));
 }
 

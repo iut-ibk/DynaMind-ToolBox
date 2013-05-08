@@ -59,7 +59,7 @@ namespace DM {
         /** @brief destructor */
         ~Edge();
 		/** @brief return Type */
-		Components getType();
+		Components getType() const;
         /** @brief return uuid to the startpoint 
 			@deprecated*/
         const QUuid getStartpoint() const;

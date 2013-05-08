@@ -29,12 +29,14 @@
 #include "dmcompilersettings.h"
 #include <dmcomponent.h>
 #include "dmdbconnector.h"
-
-#define RASTERBLOCKSIZE 64
-#define RASTERBLOCKCACHESIZE 4096
+// cache sizes defined in dmdbconnector.h
 
 namespace DM {
 
+/** @class DM::RasterData
+  * @ingroup DynaMind-Core
+  * @brief Provides a raster data set
+*/
 class DM_HELPER_DLL_EXPORT RasterData : public Component
 {
 public:
@@ -45,7 +47,7 @@ public:
 	/** @brief constructor, does not initialize a field */
     RasterData();
 	/** @brief overloaded function for returning the internal type DM::RASTERDATA */
-	Components getType();
+	Components getType() const;
 	/** @brief destructor deletes the field and its values too */
     ~RasterData();
 	/** @brief sets the field to NoValue */
@@ -89,9 +91,31 @@ public:
     void setYOffset(double value){this->yoffset=value;}
 	/** @brief resizes the field */
     void setSize(long width, long height, double cellsizeX, double cellsizeY, double xoffset, double yoffset);
-
+    /** @brief returns the moore neighbourhood of a cell as a vector
+     * The moore neighbourhoods from the cell at pos width / length are all adajanct cells
+     *
+     * x x x x x
+     * x 0 1 2 x
+     * x 3 4 5 x
+     * x 6 7 8 x
+     * x x x x x
+     *
+     * x ... non moore neighboors
+     * 0 - 8 moor neighboors and their appearance in the return vector (including the current position at 4)
+     *
+     * At the edge of the rasterfield elements from the neighbours from the opposite side are used
+     * e.g. if pos_x = -1 element at pos_x = raster_field_width - 1 is used
+     */
     std::vector<double> getMoorNeighbourhood(long x, long y) const;
+    /** @brief copies the moore neighbourhood of a cell in the neigh vector for detailed description
+     * see method std::vector<double> getMoorNeighbourhood(long x, long y) const;
+     */
     void getMoorNeighbourhood(std::vector<double> & neigh, long x, long y);
+    /** @brief returns the  neighbourhood of a cell defined by width an height.
+     *The current cell is defined as x = (int) (width -1)/2 and y = (int) (height -1)/2
+     * At the edge of the rasterfield elements from the neighbours from the opposite side are used
+     * e.g. if pos_x = -1 element at pos_x = raster_field_width - 1 is used
+    */
     void getNeighboorhood(double** d, int width, int height, int x, int y);
 	
 	/** @brief sets the debug value */
@@ -106,9 +130,13 @@ public:
 		@internal */
     //void ForceUpdate() const;
 
-#ifdef CACHE_PROFILING
-    //static void PrintStatistics();
-#endif
+
+    //static void PrintCacheStatistics();
+
+	/** @brief fill a full block of RASTERBLOCKSIZE*RASTERBLOCKSIZE with data 
+		x and y represent the block coordinates, NOT the actual point coordinate */
+	void setBlock(long x, long y, double* data);
+
 private:
     long width;
     long height;

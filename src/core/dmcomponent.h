@@ -52,8 +52,7 @@ enum Components {
     EDGE=2,
     FACE=3,
     SUBSYSTEM=4,
-    RASTERDATA=5,
-	SYSTEM=6,
+    RASTERDATA=5
 };
 
 class Attribute;
@@ -70,23 +69,24 @@ class System;
 class DM_HELPER_DLL_EXPORT Component
 {
     friend class System;
+    friend class DerivedSystem;
 private:
-	//void SQLSetOwner(Component *owner);
-	//void SQLInsertComponent();
-    //void SQLDeleteComponent();
 
-	bool HasAttribute(std::string name);
+	bool HasAttribute(std::string name) const;
 	void LoadAttribute(std::string name);
     bool addAttribute(Attribute *pAttribute);
 
-	void CopyFrom(const Component &c);
+	void CopyFrom(const Component &c, bool successor = false);
 	bool isCached;
+
+	void CloneAllAttributes();
+
 protected:
+	QMutex* mutex;
+
     /* @brief Sets stateUuid and ownership in sql db*/
     virtual void SetOwner(Component *owner);
     void SQLDelete();
-
-    //QMutex * mMutex;
 
     QUuid uuid;
     std::map<std::string,Attribute*> ownedattributes;
@@ -115,7 +115,7 @@ public:
     /** @brief Destructor */
     virtual ~Component();
     /** @brief return Type */
-    virtual Components getType();
+    virtual Components getType() const;
     /** @brief return UUID */
     std::string getUUID();
     /** @brief return UUID */
@@ -141,7 +141,7 @@ public:
     /** @brief Returns a pointer to an Attribute */
     Attribute* getAttribute(std::string name);
     /** @brief Returns a map of all Attributes */
-    const std::map<std::string, Attribute*> & getAllAttributes() const;
+    const std::map<std::string, Attribute*> & getAllAttributes();
     /** @brief adds Component to a View by using the name of the view */
     void setView(std::string view);
     /** @brief adds Component to a View.

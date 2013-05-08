@@ -57,14 +57,22 @@ private:
     /** @brief return table name */
     QString getTableName();
 	
-	std::vector<Edge*> *connectedEdges;	// not cached, for now
+	std::list<Edge*> *connectedEdges;	// not cached, for now
 	void addEdge(Edge* e)
 	{
 		if(!connectedEdges)
-			connectedEdges = new std::vector<Edge*>();
+			connectedEdges = new std::list<Edge*>();
 		connectedEdges->push_back(e);
 	}
+	void removeEdge(Edge* e)
+	{
+		if(connectedEdges)
+			connectedEdges->remove(e);
+	}
 	friend class Edge;
+
+	
+	static DbCache<Node*,Vector3> nodeCache; // defined in dmdbconnector.h
 protected:
     virtual void SetOwner(Component *owner);
 public:
@@ -77,7 +85,7 @@ public:
     /** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
     Node(const Node& n);
 	/** @brief return Type */
-	Components getType();
+	Components getType() const;
     /** @brief return x */
     double getX() const;
     /** @brief return y*/
@@ -116,10 +124,13 @@ public:
     bool compare2d(const Node * other, double round = 0) const;
     /** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
     Component* clone();
+	
+	static void ResizeCache(unsigned long size);
+	static unsigned long GetCacheSize();
 
-#ifdef CACHE_PROFILING
-    static void PrintStatistics();
-#endif
+    static void PrintCacheStatistics();
+	static void ClearCache();
+
     Vector3* LoadFromDb();
     void SaveToDb(Vector3* v);
 };
@@ -129,7 +140,7 @@ class Vector3
 public:
     double x,y,z;
 
-    Vector3(){}
+    Vector3(){x=y=z=0.0;}
     Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
     Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
 };

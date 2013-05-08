@@ -26,23 +26,21 @@
 
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
+
 #include <dmcompilersettings.h>
+#include <dmstdutilities.h>
+#include <qobject.h>
+#include <queue>
+#include <qatomic.h>
+#include "dmcache.h"
 
 class QSqlQuery;
 class QSqlError;
 class QSqlDatabase;
 
 namespace DM {
-
+	
 void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
-
-class Asynchron
-{
-public:
-    Asynchron();
-	~Asynchron();
-    virtual void Synchronize() = 0;
-};
 
 class DMSqlParameter
 {
@@ -56,37 +54,320 @@ public:
     }
 };
 
-class SingletonDestroyer;
+template<typename T>
+class FIFOQueue
+{
+	class Node
+	{
+	public:
+		Node(T* data)
+		{
+			next = NULL;
+			pData = data;
+		}
+		Node* next;
+		T*	pData;
+	};
+	Node* root;
+	Node* last;
+	QMutex m;
+	QAtomicInt isEmpty;
+	QAtomicInt maxOneLeft;
+public:
+	FIFOQueue()
+	{
+		root = NULL;
+		last = NULL;
+		isEmpty = true;
+		maxOneLeft = true;
+	}
+	~FIFOQueue(){}
+	T* pop()
+	{
+		if(isEmpty)
+			return NULL;
 
+		m.lock();
+		Node* n = root;
+		T* d = root->pData;
+
+		if(root == last)
+		{
+			isEmpty = true;
+			maxOneLeft = true;
+			last = NULL;
+		}
+		else if(root->next == last)
+			maxOneLeft = true;
+
+		root = n->next;
+		delete n;
+		m.unlock();
+		return d;
+	}
+	void push(T* data)
+	{
+		m.lock();
+		if(isEmpty)
+			root = last = new Node(data);
+		else
+		{
+			last->next = new Node(data);
+			last = last->next;
+			maxOneLeft = false;
+		}
+		isEmpty = false;
+		m.unlock();
+	}
+	inline bool IsEmpty()
+	{
+		return isEmpty;
+	}
+	inline bool IsMaxOneLeft()
+	{
+		return maxOneLeft;
+	}
+};
+
+struct QueryList
+{
+	QString cmd;
+	FIFOQueue<QSqlQuery> queryStack;
+};
+
+/**************************************************************//**
+@class DM::DBWorker
+@ingroup DynaMind-Core
+@brief 
+A threadclass, asuring asynchron query execution. 
+As QT requires
+the query to be created and prepared in the same thread as
+executed, this also takes place in here.
+
+COMMENTS
+
+******************************************************************/
+class DBWorker: public QThread
+{
+private:
+	QMutex queryMutex;
+
+	// flag for leaving run() loop
+	bool	kill;
+	
+	// a stack offering created and prepared queries
+	FIFOQueue<QSqlQuery> queryStack;
+
+	// a mutex guaranties the receiver to wait until the worker
+	// returns the value (synchronized read)
+	QMutex	selectMutex;
+	QMutex	clientSelectMutex;
+
+	// single select query
+	QSqlQuery *qSelect;
+
+	// list of write queries
+	std::list<QueryList*> queryLists;
+
+
+	// to prevent the thread from blocking ressources, a waiter
+	// ensures the thread to sleep while no operations are queued
+	//QMutex waiterMutex;
+	//QWaitCondition waiterCondition;
+
+	// infinite loop to process queries
+	// workflow: prepare-sleep if nothing to do-write-read
+	// even though it would be fast to wait before read, it may lead to
+	// an inconsistent database on small cache sizes or improper
+	// data updates
+	void run();
+
+	// blocking idle method
+	/*void WaitIfNothingToDo()
+	{
+		waiterMutex.lock();
+		waiterCondition.wait(&waiterMutex);
+		waiterMutex.unlock();
+	}*/
+public:
+	DBWorker(): QThread()
+	{
+		qSelect = NULL;
+		kill = false;
+		selectStatus = 0;
+	}
+	~DBWorker();
+	
+	// exchange value between worker <-> receiver
+	/*enum SelectStatus
+	{
+		SS_NOTDONE,
+		SS_TRUE,
+		SS_FALSE,
+	}selectStatus;*/
+
+#define SELECT_NOTDONE 0
+#define SELECT_TRUE 1
+#define SELECT_FALSE 2
+	QAtomicInt selectStatus;
+	
+	//QMutex selectWaiterMutex;
+	//QWaitCondition selectWaiterCondition;
+
+	//QAtomicInt 
+
+	//!< add a new query to the write list (asynchron)
+	void addQuery(QSqlQuery *q);
+	//!< execute a select query (synchron)
+	bool ExecuteSelect(QSqlQuery* q);
+	//!< forces the loop to break up
+	void Kill()
+	{
+		kill = true;
+	}
+	//!< forces the worker to leave idle status
+	/*void SignalWork()
+	{
+		todoCount = todoCount +1;
+		//waiterMutex.unlock();
+		waiterMutex.lock();
+		waiterCondition.wakeOne();
+		waiterMutex.unlock();
+	}*/
+	//!< receive a prepared query for execution
+	QSqlQuery *getQuery(QString cmd);
+};
+
+/**************************************************************//**
+** CACHE SETTINGS
+******************************************************************/
+
+// raster block size would change the address<->coordinate mapping
+// changing will corrupt database!
+#define RASTERBLOCKSIZE 64
+
+// castercachesize is initialized when creating a rasterfield
+// would require a raster registration class to change the value in runtime
+#define RASTERBLOCKCACHESIZE 10000
+
+// edge cache is infinite (Asynchron member)
+// component cache is infinite (ComponentSyncMap: Asynchron member)
+// face cache is infinite (Asynchron member)
+
+// this flag will prevent the DBConnector to establish any db connection
+// greatly improves performance
+//#define NO_DB_SYNC
+
+// time in milliseconds to wait, if worker is idle. starts with min, doubles
+// at each idle loop tick.
+// recommendation 1,128
+#define WORKER_SLEEP_TIME_MIN 1
+#define WORKER_SLEEP_TIME_MAX 64
+
+// timeinterval in microseconds to wait for finished select states and new queries
+// recommendation 1us
+#define EXE_THREAD_SLEEP_TIME 1
+
+
+/**************************************************************//**
+@class DM::DBConnectorConfig
+@ingroup DynaMind-Core
+@brief Offers a structure to get and set settings from the  DBConnector.
+
+COMMENTS
+The constructor, although its neither performant nor advisable,
+ensures a working db connector. The constructor default values
+are also applied in the DBConnector constructor.
+queryStackSize and cacheBlockwritingSize may not be smaller then 1.
+cacheBlockwritingSize may not be smaller than any cache size-1.
+
+******************************************************************/
+class DBConnectorConfig
+{
+public:
+	//!< the maximum size of prepared queries
+	unsigned long queryStackSize;
+	//!< values over 1 enable blocked writes on db
+	unsigned long cacheBlockwritingSize;
+	//!< size of the attribute cache, values over 1e7 recommended; 0 enables an infinite cache
+	unsigned long attributeCacheSize;
+	//!< size of the node cache, values over 1e7 recommended; 0 enables an infinite cache
+	unsigned long nodeCacheSize;
+
+	DBConnectorConfig()
+	{
+		queryStackSize = 100;
+		cacheBlockwritingSize = 50;
+		attributeCacheSize = 0;
+		nodeCacheSize = 0;
+	}
+};
+
+/**************************************************************//**
+@class DM::DBConnector
+@ingroup DynaMind-Core
+@brief Main class to access the database. It offers all neccessary 
+operations to create a db and read, write and delete entries in
+the db.
+
+COMMENTS
+May only be used in the core, for unit tests and for syncronizing
+purposes in the simulation class.
+
+INTERNAL WORKFLOW
+q = getQuery(string cmd)
+q->addBindValue(param)
+...
+ExecuteQuery(q)/ExecuteSelectQuery(q);
+******************************************************************/
+class SingletonDestroyer;
 class DM_HELPER_DLL_EXPORT DBConnector
 {
-    friend class SingletonDestroyer;
 private:
+	// singleton stuff
 	static DBConnector* instance;
     DBConnector();
-	
-    static QMap<QString,QSqlQuery*> mapQuery;
-    static bool _bTransaction;
 
+	// destructor stuff
+    friend class SingletonDestroyer;
     static SingletonDestroyer _destroyer;
-    static QSqlDatabase* _db;
+
+	// worker thread
+	static DBWorker* worker;
+
+	// internal init functions
     bool CreateTables();
     bool DropTables();
 
-    void CommitTransaction();
+	// settings
+	bool noDBSync;
+	unsigned long queryStackSize;
+	unsigned long cacheBlockwritingSize;
 
 protected:
     virtual ~DBConnector();
 public:
+	//!< returns the pointer to the singleton generated instance of DBConnector
+    static DBConnector* getInstance();
+
+	//!< get the current configuration, refer to DBConnectorConfig
+	DBConnectorConfig getConfig();
+	//!< sets a new configuration, it is applied instantly, refer to DBConnectorConfig
+	void setConfig(DBConnectorConfig cfg);
+	//!< accessor to query stack size, refer to DBConnectorConfig
+	unsigned long  GetQueryStackSize()			{return queryStackSize;}
+	//!< accessor to cache block writing size, refer to DBConnectorConfig
+	unsigned long  GetCacheBlockwritingSize()	{return cacheBlockwritingSize;}
+	//!< get a already prepared query. prepare parameters and send back via Execute(Select)Query
     QSqlQuery *getQuery(QString cmd);
+	//!< enqueues a WRITE query (asynchron)
     void ExecuteQuery(QSqlQuery *q);
+	//!< executes a select query, the value can be accessed via QSqlQuery::value(#)
     bool ExecuteSelectQuery(QSqlQuery *q);
 
-    static DBConnector* getInstance();
-    void BeginTransaction();
-
+	//!< synchronizes ALL classes with inherited asynchron class
     void Synchronize();
-    // inserts with uuid
+    //!< various insert methods to insert a NEW row in the database
     void Insert(QString table,  QUuid uuid);
     void Insert(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
@@ -97,7 +378,8 @@ public:
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
-    // updates with uuid
+    
+    //!< various update methods to update an EXISTING row in the database
     void Update(QString table,  QUuid uuid,
                                 QString parName0, QVariant parValue0);
     void Update(QString table,  QUuid uuid,
@@ -107,9 +389,10 @@ public:
                                 QString parName0, QVariant parValue0,
                                 QString parName1, QVariant parValue1,
                                 QString parName2, QVariant parValue2);
-    // delete with uuid
+    
+    //!< delete a database row, existence is not neccessary
     void Delete(QString table,  QUuid uuid);
-    // select single entry with uuid
+    //!< various select methods to retrieve row data from database
     bool Select(QString table, QUuid uuid,
                 QString valName, QVariant *value);
     bool Select(QString table, QUuid uuid,
@@ -119,11 +402,17 @@ public:
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
-/*
-    void Duplicate(QString table, QByteArray uuid, QString stateuuid,
-                                               QString newuuid, QString newStateUuid);*/
 };
 
+/**************************************************************//**
+@class DM::SingletonDestroyer
+@ingroup DynaMind-Core
+@brief To ensure a specific order when destructing a singleton,
+we implement a destructor class.
+
+COMMENTS
+http://libassa.sourceforge.net/libassa-manual/C/x2988.html
+******************************************************************/
 class SingletonDestroyer
 {
     public:
@@ -135,232 +424,27 @@ class SingletonDestroyer
         DBConnector* _singleton;
 };
 
-#define CACHE_PROFILING
-#define CACHE_INFINITE
+/**************************************************************//**
+@class DM::Asynchron
+@ingroup DynaMind-Core
+@brief inheriting this class enables the DbConnector to synchronize 
+this element. The registration and deregistration is done in the
+constructor and destructor respectively, while the synchronizing
+can be implemented via the pure virtual Synchronize method.
 
-template<class Tkey,class Tvalue>
-class Cache
+COMMENTS
+We may use this class for lightweight structures, which should be
+synchronized, like Edge (only 2 pointers).
+******************************************************************/
+class Asynchron
 {
-protected:
-    class Node
-    {
-    public:
-        Tkey key;
-        Tvalue* value;
-        Node* next;
-        Node* last;
-        Node(const Tkey &k, Tvalue* v)
-        {
-            key=k;
-            value=v;
-            next = NULL;
-            last = NULL;
-        }
-        ~Node()
-        {
-            if(value)
-                delete value;
-        }
-    };
+public:
+    Asynchron();
+	~Asynchron();
 private:
-	std::map<Tkey,Node*> map;
-protected:
-    Node*   _root;
-    Node*   _last;
-    unsigned long    _size;
-    unsigned long    _cnt;
-	// internal
-	inline Node* newNode(const Tkey &k, Tvalue* v)
-	{
-		Node* n = new Node(k,v);
-		map[k] = n;
-		return n;
-	}
-	inline void removeNode(Node* n)
-	{
-		map.erase(n->key);
-		delete pop(n);
-	}
-	//
-    void push_front(Node* n)
-    {
-        if(_last==NULL)
-            _last = n;
+    virtual void Synchronize() = 0;
 
-        n->next = _root;
-        n->last = NULL;
-        if(_root != NULL)
-            _root->last = n;
-        _root = n;
-        _cnt++;
-    }
-    Node* pop(Node* n)
-    {
-        Node* last = n->last;
-        Node* next = n->next;
-        if(last)
-            last->next = next;
-        if(next)
-            next->last = last;
-        if(n==_last)
-            _last = last;
-        if(n==_root)
-            _root = next;
-        _cnt--;
-        return n;
-    }
-    Node* search(const Tkey &key)
-    {
-        typename std::map<Tkey,Node*>::iterator it = map.find(key);
-		if(it==map.end())
-			return NULL;
-		return it->second;
-    }
-
-public:
-#ifdef CACHE_PROFILING
-    unsigned long hits;
-    unsigned long misses;
-
-    void ResetProfilingCounters()
-    {
-        misses = 0;
-        hits = 0;
-    }
-
-#endif
-
-    Cache(unsigned long size)
-    {
-        _size=size;
-        _cnt=0;
-        _root = NULL;
-        _last = NULL;
-#ifdef CACHE_PROFILING
-            hits = 0;
-            misses = 0;
-#endif
-    }
-    ~Cache()
-    {
-        Node* cur;
-        Node* next;
-        next = _root;
-        while(next!=NULL)
-        {
-            cur=next;
-            next=cur->next;
-            delete cur;
-        }
-    }
-	unsigned long getSize(){return _size;};
-    virtual Tvalue* get(const Tkey& key)
-    {
-        Node *n = search(key);
-        // push front
-        if(n!=NULL)
-        {
-            pop(n);
-            push_front(n);
-#ifdef CACHE_PROFILING
-            hits++;
-#endif
-            return n->value;
-        }
-#ifdef CACHE_PROFILING
-        misses++;
-#endif
-        return NULL;
-    }
-    virtual void add(const Tkey& key,Tvalue* value)
-    {
-        if(search(key)!=NULL)
-            return;
-
-        Node *n = newNode(key,value);
-        push_front(n);
-#ifndef CACHE_INFINITE
-        if(_cnt>_size)
-			removeNode(_last);
-#endif
-    }
-    virtual bool replace(const Tkey& key,Tvalue* value)
-    {
-        Node *n = search(key);
-        if(n==NULL)
-            return false;
-
-		removeNode(n);
-        add(key, value);
-        return true;
-    }
-    void remove(const Tkey& key)
-    {
-        Node *n = search(key);
-        if(n)	removeNode(n);
-    }
-};
-
-// like cache, but with db-functions
-template<class Tkey,class Tvalue>
-class DbCache: public Cache<Tkey,Tvalue>, Asynchron
-{
-public:
-    typedef typename Cache<Tkey,Tvalue>::Node Node;
-
-    DbCache(unsigned long size): Cache<Tkey,Tvalue>(size){}
-    // add, save to db if something is dropped
-    void add(Tkey key,Tvalue* value)
-    {
-        if(Cache<Tkey,Tvalue>::search(key)!=NULL)
-            return;
-
-        Node *n = Cache<Tkey,Tvalue>::newNode(key,value);
-        Cache<Tkey,Tvalue>::push_front(n);
-#ifndef CACHE_INFINITE
-        if(Cache<Tkey,Tvalue>::_cnt > Cache<Tkey,Tvalue>::_size)
-        {
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
-        }
-#endif
-    }
-    // get node, if not found, we may find it in the db
-    Tvalue* get(const Tkey& key)
-    {
-        Tvalue* v = Cache<Tkey,Tvalue>::get(key);
-        if(!v)
-        {
-            v = key->LoadFromDb();
-            if(v)   add(key,v);
-        }
-        return v;
-    }
-	// note: currently removing from db is handled by the main class
-    // void remove(const Tkey& key)
-
-    // save everything to db
-    void Synchronize()
-    {
-        Node* n=Cache<Tkey,Tvalue>::_root;
-        while(n)
-        {
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            n = n->next;
-        }
-    }
-	// resize cache
-	void resize(unsigned long size)
-	{
-		Cache<Tkey,Tvalue>::_size = size;
-#ifndef CACHE_INFINITE
-		while(Cache<Tkey,Tvalue>::_cnt > size)
-		{
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
-            Cache<Tkey,Tvalue>::removeNode(Cache<Tkey,Tvalue>::_last);
-		}
-#endif
-	}
+friend void DBConnector::Synchronize();
 };
 
 }   // namespace DM

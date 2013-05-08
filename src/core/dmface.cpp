@@ -64,22 +64,12 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
 {
     Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
                          doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
-    /*
-    foreach(std::string nodeUuid, nodes)
-    {
-        _nodes.push_back(this->getCurrentSystem()->getNode(nodeUuid));
-    }
-
-    DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(std::vector<Node*> nodes) : Component(true)
 {
     this->_nodes = nodes;
 	isInserted = false;
-    /*DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(_nodes));*/
 }
 
 Face::Face(const Face& e) : Component(e, true)
@@ -87,9 +77,6 @@ Face::Face(const Face& e) : Component(e, true)
     this->_nodes = e._nodes;
     this->_holes = e._holes;
 	isInserted = false;
-    /*DBConnector::getInstance()->Insert("faces", uuid,
-                                       "nodes", GetBytes(e._nodes),
-                                       "holes", GetBytes(e._holes));*/
 }
 Face::~Face()
 {
@@ -131,7 +118,7 @@ Component* Face::clone()
     return new Face(*this);
 }
 
-DM::Components Face::getType()
+DM::Components Face::getType() const
 {
 	return DM::FACE;
 }
@@ -166,12 +153,13 @@ void Face::addHole(std::vector<std::string> hole)
     std::vector<Node*> holeNodes;
     foreach(std::string uuidNodes, hole)
         holeNodes.push_back(curSys->getNode(uuidNodes));
-
+	
     addHole(holeNodes);
 }
 
 void Face::addHole(std::vector<Node*> hole)
 {
+	QMutexLocker ml(mutex);
     _holes.push_back(getCurrentSystem()->addFace(hole));
 }
 
@@ -182,17 +170,9 @@ void Face::addHole(Face* hole)
         Logger(Error) << "addHole: self reference not possible";
         return;
     }
+	QMutexLocker ml(mutex);
     _holes.push_back(hole);
-    //SQLUpdateValues();
 }
-/*
-void Face::SQLUpdateValues()
-{
-    DBConnector::getInstance()->Update("faces", uuid,
-                                       "nodes", GetBytes(_nodes),
-                                       "holes", GetBytes(_holes));
-}
-*/
 void Face::Synchronize()
 {
 	if(!getCurrentSystem())
@@ -214,11 +194,26 @@ void Face::Synchronize()
 	}
 }
 
-void Face::SetOwner(Component *owner)
+/*void Face::SetOwner(Component *owner)
 {
-	//SQLSetOwner(owner);
+	QMutexLocker ml(mutex);
+
     currentSys = owner->getCurrentSystem();
 
     for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
 		it->second->SetOwner(this);
+}*/
+
+void Face::setNodes(std::vector<Node*> nodes)
+{
+	QMutexLocker ml(mutex);
+
+	this->_nodes = nodes;
+}
+
+void Face::clearHoles()
+{
+	QMutexLocker ml(mutex);
+
+	this->_holes.clear();
 }

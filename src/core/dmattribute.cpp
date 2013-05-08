@@ -32,26 +32,26 @@
 
 using namespace DM;
 
-static DbCache<Attribute*,Attribute::AttributeValue> attributeCache(1e8);
+DbCache<Attribute*,Attribute::AttributeValue> Attribute::attributeCache(0);
 
-void Attribute::ResizeCache(unsigned int size)
+void Attribute::ResizeCache(unsigned long size)
 {
 	attributeCache.resize(size);
 }
-unsigned int Attribute::GetCacheSize()
+unsigned long Attribute::GetCacheSize()
 {
 	return attributeCache.getSize();
 }
 
-#ifdef CACHE_PROFILING
-void Attribute::PrintStatistics()
+void Attribute::PrintCacheStatistics()
 {
+#ifdef CACHE_PROFILING
     Logger(Standard) << "Attribute cache statistics:\t"
                      << "misses: " << (long)attributeCache.misses
                      << "\thits: " << (long)attributeCache.hits;
     attributeCache.ResetProfilingCounters();
-}
 #endif
+}
 
 QByteArray GetBinaryValue(std::vector<double> v)
 {
@@ -166,7 +166,6 @@ TimeSeriesAttribute ToTimeSeriesAttribute(QVariant q)
 Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 {
 	this->type = ref.type;
-	//this->size = ref.size;
 	switch(ref.type)
 	{
 	case NOTYPE:
@@ -221,6 +220,28 @@ Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type)
 		type = NOTYPE;
 		break;
 	}
+}
+void Attribute::AttributeValue::Free()
+{
+	switch(type)
+	{
+	case DOUBLE:	delete (double*)ptr;
+		break;
+	case STRING:		delete (std::string*)ptr;
+		break;
+	case TIMESERIES:	delete (TimeSeriesAttribute*)ptr;
+		break;
+	case LINK:			delete (std::vector<LinkAttribute>*)ptr;
+		break;
+	case DOUBLEVECTOR:		delete (std::vector<double>*)ptr;
+		break;
+	case STRINGVECTOR:		delete (std::vector<std::string>*)ptr;
+		break;
+	default:
+		break;
+	}
+	ptr = NULL;
+	type = NOTYPE;
 }
 Attribute::AttributeValue::AttributeValue(double d)
 {
@@ -295,7 +316,6 @@ Attribute::Attribute(std::string name, std::string val)
 
 Attribute::~Attribute()
 {
-	//if(value)	delete value;
 	if(isInserted)
 		DBConnector::getInstance()->Delete("attributes", _uuid);
 	if(value)
@@ -333,7 +353,7 @@ void Attribute::setDouble(double v)
 {
 	AttributeValue* a = getValue();
 	a->Free();
-	delete a->ptr;
+	//delete a->ptr;
 	a->type = DOUBLE;
 	a->ptr = new double(v);
 }
@@ -544,7 +564,7 @@ Attribute::AttributeValue* Attribute::getValue() const
 	else		return attributeCache.get((Attribute*)this);
 }
 
-void Attribute::SetOwner(Component* owner)
+void Attribute::setOwner(Component* owner)
 {
 	if(!this->owner)
 	{
@@ -557,6 +577,11 @@ void Attribute::SetOwner(Component* owner)
 
 	//value = NULL;
 	// TODO: make shure its not bound to another component
+}
+
+Component* Attribute::GetOwner()
+{
+	return owner;
 }
 
 Attribute::AttributeValue* Attribute::LoadFromDb()

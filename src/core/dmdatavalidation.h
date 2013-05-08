@@ -46,7 +46,7 @@ public:
     static bool isVectorOfViewWrite(std::vector<DM::View>);
 
     /** @brief Returns if all data from a view are avalible in a component */
-    static bool isAvalibleInComponent(const DM::View &,  const DM::Component * );
+    //static bool isAvalibleInComponent(const DM::View &,  const DM::Component * );
 };
 }
 #endif // DMDATABVALIDATION_H

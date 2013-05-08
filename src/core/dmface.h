@@ -54,7 +54,7 @@ private:
     //void SQLUpdateValues();
     /** @brief return table name */
     QString getTableName();
-	void SetOwner(Component *owner);
+	//void SetOwner(Component *owner);
 	//bool isInserted;
 public:
 	void Synchronize();
@@ -67,7 +67,7 @@ public:
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
 	/** @brief return Type */
-	Components getType();
+	Components getType() const;
     /** @brief return vector of nodes defining the face
         @deprecated*/
     std::vector<std::string> getNodes() const;
@@ -86,6 +86,9 @@ public:
     void addHole(std::vector<Node*> hole);
     void addHole(Face* hole);
 
+	/** @brief this function is neccessary to make the copy constructor a usefull */
+	void setNodes(std::vector<Node*> nodes);
+	void clearHoles();
 };
 typedef std::map<std::string, DM::Face*> FaceMap;
 }
