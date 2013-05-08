@@ -76,7 +76,7 @@ public slots:
     //void GUIaddModule(DM::Module *, QPointF pos);
     //void updateSimulation();
     //void resetSimulation();
-    void showHelp(std::string classname, std::string uuid);
+    void showHelp(std::string classname);
 
 	//std::map<ModelNode*,DM::Module*> moduleGuiMap;
 };

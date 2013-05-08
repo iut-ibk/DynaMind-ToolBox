@@ -149,12 +149,12 @@ public:
 public slots:
     //void addGroup();
     //void removeGroup();
-    //void deleteModelNode();
-    //void editModelNode();
+    void deleteModelNode();
+    void editModelNode();
     //void renameModelNode();
-    //void printData();
+    void printData();
     void viewData(int portIndex);
-    //void showHelp();
+    void showHelp();
     //void setDebug();
     //void setRelease();
     //void setResetModule();

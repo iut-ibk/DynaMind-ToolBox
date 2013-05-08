@@ -635,10 +635,10 @@ void DMMainWindow::on_actionZoomReset_triggered()
 
 }
 
-void DMMainWindow::showHelp(std::string classname, std::string uuid) {
-
+void DMMainWindow::showHelp(std::string classname) 
+{
     this->helpviewer->show();
-    this->helpviewer->showHelpForModule(classname, uuid);
+    this->helpviewer->showHelpForModule(classname);
 }
 
 void DMMainWindow::on_actionShow_Help_triggered() {

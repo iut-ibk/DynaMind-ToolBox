@@ -294,8 +294,9 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
     return QGraphicsItem::itemChange(change, value);
 }
 
-ModelNode::~ModelNode() {
-
+ModelNode::~ModelNode() 
+{
+	this->simulation->removeModule(module);
     /*DM::Module * m = this->getDMModel();
 
 
@@ -375,16 +376,22 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 	}
 	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(viewData(int)));
 	
+    QAction  * a_edit = menu.addAction("edit");
+    QAction * a_delete = menu.addAction("delete");
+    QAction * a_showHelp = menu.addAction("help");
+    QAction * a_showData = menu.addAction("stream");
+	
+    connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
+    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
+    connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
+    connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
 	
     menu.exec(event->screenPos());
 
-    /*QAction  * a_edit = menu.addAction("edit");
+	/*
     QAction * a_rename = menu.addAction("rename");
     QAction * a_reset = menu.addAction("reset");
-    QAction * a_delete = menu.addAction("delete");
-    QAction * a_showData = menu.addAction("stream");
     QAction * a_viewData = menu.addAction("viewer");
-    QAction * a_showHelp = menu.addAction("help");
     QAction * a_module_debug = 0;
     QAction * a_module_release = 0;
     
@@ -421,23 +428,20 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
         connect( a, SIGNAL( triggered() ), this, SLOT( addGroup() ), Qt::DirectConnection );
     }
 
-    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
-    connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_rename, SIGNAL(triggered() ), this, SLOT( renameModelNode() ), Qt::DirectConnection);
-    connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
     connect( a_viewData, SIGNAL(triggered() ), this, SLOT( viewData() ), Qt::DirectConnection);
     connect( a_module_debug, SIGNAL(triggered() ), this, SLOT( setDebug() ), Qt::DirectConnection);
     connect( a_module_release, SIGNAL(triggered() ), this, SLOT( setRelease() ), Qt::DirectConnection);
-    connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_reset, SIGNAL(triggered() ), this, SLOT( setResetModule() ), Qt::DirectConnection);
     menu.exec(event->screenPos());
 	*/
 }
-/*
-void ModelNode::editModelNode() {
-    GUIModelNode * gui  = new GUIModelNode(this->getDMModel() ,this);
+
+void ModelNode::editModelNode() 
+{
+    GUIModelNode * gui  = new GUIModelNode(module ,this);
     gui->show();
-}*/
+}
 /*
 void ModelNode::renameModelNode() {
     QString text =QInputDialog::getText(0, "Name", tr("Input:"), QLineEdit::Normal);
@@ -449,11 +453,11 @@ void ModelNode::renameModelNode() {
         this->simulation->changeGroupName((GroupNode*) this);
     }
 }*/
-/*
-void ModelNode::deleteModelNode() {
 
+void ModelNode::deleteModelNode() 
+{
     delete this;
-}*/
+}
 /*
 void ModelNode::removeGroup() {
     QString name = QObject::sender()->objectName();
@@ -509,14 +513,12 @@ void ModelNode::addGroup() {
 
 }
 */
-/*
-void ModelNode::printData() {
 
-    GUIViewDataForModules * gv = new GUIViewDataForModules(this->getDMModel());
+void ModelNode::printData() 
+{
+    GUIViewDataForModules * gv = new GUIViewDataForModules(module);
     gv->show();
-
-    
-}*/
+}
 
 void ModelNode::viewData(int portIndex) 
 {
@@ -527,12 +529,13 @@ void ModelNode::viewData(int portIndex)
     DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
     viewer_window->show();
 }
-/*
-void ModelNode::showHelp() {
-    emit showHelp(this->getDMModel()->getClassName(), this->getDMModel()->getUuid());
+
+void ModelNode::showHelp() 
+{
+    //emit showHelp(module->getClassName());
     //this->simulation->showHelp();
 }
-
+/*
 void ModelNode::setDebug() {
     this->getDMModel()->setDebugMode(true);
 }

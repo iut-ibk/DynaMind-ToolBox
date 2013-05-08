@@ -43,7 +43,8 @@ GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
     filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
     this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
 }
-void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
+void GUIHelpViewer::showHelpForModule(std::string classname) 
+{
     /*
 	this->currentUrl = this->url_view_not_avaiable;
     DM::Module * m = this->sim->getModuleWithUUID(uuid);
