@@ -19,3 +19,6 @@ CMakeLists.txt.user
 build
 *.bat
 bin
+BuildWin/
+*.dyn
+
