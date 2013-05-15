@@ -573,7 +573,7 @@ bool ImportwithGDAL::importRasterData()
     poDataset = (GDALDataset *) GDALOpenShared( FileName.c_str(), GA_ReadOnly );
     poBand = poDataset->GetRasterBand( 1 );
 
-    float *pafScanline;
+    //float *pafScanline;
     int nXSize = poBand->GetXSize();
     int nYSize = poBand->GetYSize();
     double xoff=0;
@@ -593,7 +593,20 @@ bool ImportwithGDAL::importRasterData()
 
     r->setSize(nXSize, nYSize, xsize,ysize,xoff,yoff);
 
-    pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
+	double* blockData = (double*)CPLMalloc(sizeof(double)*RASTERBLOCKSIZE*RASTERBLOCKSIZE);
+	for(int x = 0; x < nXSize/RASTERBLOCKSIZE; x++)
+	{	
+		for(int y = 0; y < nXSize/RASTERBLOCKSIZE; y++)
+		{
+			poBand->RasterIO(GF_Read, x, y, RASTERBLOCKSIZE, RASTERBLOCKSIZE, 
+				blockData, RASTERBLOCKSIZE, RASTERBLOCKSIZE, GDT_Float64, 0, 0);
+			r->setBlock(x,y,blockData);
+		}
+	}
+
+	CPLFree(blockData);
+
+    /*pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
 
     for(int index = 0; index < nYSize; index++)
     {
@@ -602,7 +615,7 @@ bool ImportwithGDAL::importRasterData()
             r->setCell(x, index, pafScanline[x]);
     }
 
-    CPLFree(pafScanline);
+    CPLFree(pafScanline);*/
     return true;
 }
 
