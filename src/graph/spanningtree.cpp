@@ -40,14 +40,8 @@
 
 //BOOST GRAPH includes
 //#include <boosttraits.h>
-#include <boost/graph/prim_minimum_spanning_tree.hpp>
-#include <boost/graph/random_spanning_tree.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/connected_components.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <time.h>
 
-using namespace boost;
+#include <time.h>
 
 DM_DECLARE_NODE_NAME(SpanningTree,Graph)
 
@@ -56,8 +50,10 @@ SpanningTree::SpanningTree()
     this->algprim=true;
     this->algrand=false;
     this->algtest=false;
+    this->algkruskal=false;
 
     this->addParameter("Prim minimum spanning tree", DM::BOOL, &this->algprim);
+    this->addParameter("Kruskal minimum spanning tree", DM::BOOL, &this->algkruskal);
     this->addParameter("Random spanning tree", DM::BOOL, &this->algrand);
     this->addParameter("Test algorithm not for productive use", DM::BOOL, &this->algtest);
 
@@ -79,8 +75,6 @@ SpanningTree::SpanningTree()
 void SpanningTree::run()
 {
     DM::Logger(DM::Standard) << "Setup Graph";
-
-    typedef std::pair < int, int >E;
 
     this->sys = this->getData("Layout");
     DynamindBoostGraph::Compmap nodes = sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]);
@@ -122,6 +116,7 @@ void SpanningTree::run()
 
     //calculate spanning tree or forest of graphs
     std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor >p(num_vertices(g));
+    std::vector < DynamindBoostGraph::Graph::edge_descriptor > spanning_tree;
 
     if(this->algrand)
     {
@@ -147,19 +142,79 @@ void SpanningTree::run()
         prim_minimum_spanning_tree(g, &p[0]);
     }
 
+    if(this->algkruskal)
+    {
+        DM::Logger(DM::Standard) << "Start kruskal minimum spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
+        kruskal_minimum_spanning_tree(g, std::back_inserter(spanning_tree));
+    }
+
     //clean view
-    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
+    for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
         sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::NODES]);
 
-    for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
+    for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); itr++)
         sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::EDGES]);
 
     DM::Logger(DM::Standard) << "Starting extracting results from algorithm";
 
     //extract spanning tree
+    if(this->algkruskal)
+        insertByEdges(spanning_tree,g,nodes2edge);
+    else
+        insertByPredecessors(p,nodesindex,nodes2edge,component,maxgraphindex);
+
+    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]).size();
+    DM::Logger(DM::Standard) << "Number of created trees: " << num;
+}
+
+void SpanningTree::insertByEdges(std::vector < DynamindBoostGraph::Graph::edge_descriptor > &spanning_tree,
+                                        DynamindBoostGraph::Graph &g,
+                                        std::map<std::pair<int,int> ,DM::Edge*> &nodes2edge)
+{
+    vector< DM::Component* > insertednodes;
+    for (std::vector < DynamindBoostGraph::Graph::edge_descriptor >::iterator ei = spanning_tree.begin();ei != spanning_tree.end(); ++ei)
+    {
+        DM::Edge* edge = 0;
+        DM::Node* start = 0;
+        DM::Node* end = 0;
+
+        uint s = source(*ei, g);
+        uint t = target(*ei, g);
+
+        if(nodes2edge.find(E(s,t))!=nodes2edge.end())
+            edge = static_cast<DM::Edge*>(nodes2edge[E(s,t)]);
+
+        if(nodes2edge.find(E(t,s))!=nodes2edge.end())
+            edge = static_cast<DM::Edge*>(nodes2edge[E(t,s)]);
+
+        if(!edge)
+        {
+            DM::Logger(DM::Error) << "Could not find specific edge which should exist";
+            continue;
+        }
+
+        this->sys->addComponentToView(edge,viewdef[DM::GRAPH::EDGES]);
+
+        start = edge->getStartNode();
+        end = edge->getEndNode();
+
+        if(find(insertednodes.begin(),insertednodes.end(),start)==insertednodes.end())
+            this->sys->addComponentToView(start,viewdef[DM::GRAPH::NODES]);
+
+        if(find(insertednodes.begin(),insertednodes.end(),end)==insertednodes.end())
+            this->sys->addComponentToView(end,viewdef[DM::GRAPH::NODES]);
+    }
+}
+
+void SpanningTree::insertByPredecessors(std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor > &p,
+                                        std::map<DM::Node*,int> &nodesindex,
+                                        std::map<std::pair<int,int> ,DM::Edge*> &nodes2edge,
+                                        std::vector<int> &component,
+                                        int &maxgraphindex)
+{
     vector< DM::Component* > insertednodes;
 
-    for (std::size_t i = 1; i < p.size(); i++)
+    for (int i = 0; i < p.size(); i++)
     {
         if(i != p[i])
         {
@@ -194,9 +249,6 @@ void SpanningTree::run()
                 this->sys->addComponentToView(end,viewdef[DM::GRAPH::NODES]);
         }
     }
-
-    DM::Logger(DM::Standard) << "Edges containt in spanning tree: " << sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]).size();
-    DM::Logger(DM::Standard) << "Number of created trees: " << num;
 }
 
 void SpanningTree::testalg(DynamindBoostGraph::Graph &g)
@@ -212,7 +264,7 @@ void SpanningTree::testalg(DynamindBoostGraph::Graph &g)
     {
         random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
 
-        for (std::size_t i = 1; i < p.size(); i++)
+        for (std::size_t i = 0; i < p.size(); i++)
         {
             if(i != p[i])
             {

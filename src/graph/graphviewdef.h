@@ -39,7 +39,8 @@ namespace DM
         A(Weight)
 
         #define NODES_LINK
-        #define NODES_ATTR
+        #define NODES_ATTR \
+        A(Weight)
 
         #define TABLE \
         X(NODES,DM::NODE, NODES_ATTR, NODES_LINK) \

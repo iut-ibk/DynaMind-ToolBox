@@ -55,6 +55,11 @@ public:
                           std::vector<int> &predecessors,
                           DM::Node* root, DM::Node* target);
     static void subtractGraphs(Compmap &a, Compmap &b); // result = a-b
+    static void createSkeletonizeBoostGraph(std::map<std::string,DM::Component*> &nodes,
+                                            std::map<std::string,DM::Component*> &edges,
+                                            Graph &Graph,
+                                            std::map<DM::Node*,int> &nodesindex,
+                                            std::map<std::pair < int, int >, std::vector<DM::Edge*> > &nodes2edge);
     static bool createBoostGraph(std::map<std::string,DM::Component*> &nodes,
                           std::map<std::string,DM::Component*> &edges,
                           Graph &Graph,

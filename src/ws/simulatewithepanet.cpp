@@ -51,7 +51,7 @@ DM_DECLARE_NODE_NAME(SimulateWithEPANET,Watersupply)
 
 SimulateWithEPANET::SimulateWithEPANET()
 {   
-    this->addData("Watersupply", wsd.getAll(DM::READ));
+    this->addData("Watersupply", wsd.getAll(DM::MODIFY));
 }
 
 void SimulateWithEPANET::run()
@@ -63,14 +63,24 @@ void SimulateWithEPANET::run()
 
     this->sys = this->getData("Watersupply");
 
+    DM::Logger(DM::Standard) << "Creating EPANET model";
+
     if(!converter->createEpanetModel(this->sys,inpfilename))
     {
         DM::Logger(DM::Error) << "Could not create a valid EPANET inp file";
         return;
     }
 
+    DM::Logger(DM::Standard) << "Simulation with EPANET";
+
     if(!converter->openEpanetModel(inpfilename,rptfilename)) return;
     if(!converter->checkENRet(EPANET::ENopenH()))return;
     if(!converter->checkENRet(EPANET::ENsolveH()))return;
+
+    DM::Logger(DM::Standard) << "Extracting results from EPANET run";
+
+
+
+
     if(!converter->closeEpanetModel())return;
 }

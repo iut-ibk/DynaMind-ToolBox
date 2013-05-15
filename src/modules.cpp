@@ -40,6 +40,12 @@
 #include <wsloopcreator.h>
 #include <trimgraph.h>
 #include <mapnodesattributes.h>
+#include <nodedistribute.h>
+#include <removeNodesOnZ.h>
+#include <distributeWeightOnNodes.h>
+
+#include <spatialpressureperformance.h>
+#include <totaldemandperformance.h>
 
 using namespace std;
 
@@ -59,4 +65,10 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
     registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
     registry->addNodeFactory(new DM::NodeFactory<MapNodes2Graph>());
+    registry->addNodeFactory(new DM::NodeFactory<DistributeNodes>());
+    registry->addNodeFactory(new DM::NodeFactory<RemoveNodesOnZ>());
+    registry->addNodeFactory(new DM::NodeFactory<DistributeWeightOnNodes>());
+
+    registry->addNodeFactory(new DM::NodeFactory<SpatialPressurePerformance>());
+    registry->addNodeFactory(new DM::NodeFactory<TotalDemandPerformance>());
 }

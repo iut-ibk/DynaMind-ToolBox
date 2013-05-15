@@ -46,6 +46,7 @@ public:
     bool createEpanetModel(DM::System *sys, std::string inpfilepath);
     bool mapEpanetAttributes(DM::System *sys);
     bool mapPipeAttributes(DM::System *sys);
+    bool mapJunctionAttributes(DM::System *sys);
     bool checkENRet(int ret);
     bool openEpanetModel(std::string inpfilepath, string rptfilepath);
     bool closeEpanetModel();

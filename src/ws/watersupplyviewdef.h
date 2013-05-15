@@ -37,13 +37,15 @@ namespace DM
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
-        A(Demand)
+        A(Demand) \
+        A(Pressure)
 
         #define PIPE_LINK
 
         #define PIPE_ATTR\
         A(Diameter) \
-        A(Length)
+        A(Length) \
+        A(Roughness)
 
         #define RESERVOIR_LINK
 

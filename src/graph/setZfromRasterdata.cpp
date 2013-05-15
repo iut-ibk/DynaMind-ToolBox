@@ -57,6 +57,8 @@ SetZfromRasterdata::SetZfromRasterdata()
     viewdef["ELEVATION"]=view;
 
     this->addData("Layout", views);
+
+    this->addParameter("Offset [m]", DM::DOUBLE, &this->offset);
 }
 
 void SetZfromRasterdata::run()
@@ -74,7 +76,7 @@ void SetZfromRasterdata::run()
     for(int index=0; index < nodes.size(); index++)
     {
         DM::Node *currentnode = sys->getNode(nodes[index]);
-        currentnode->setZ(r->getValue(currentnode->getX(),currentnode->getY()));
+        currentnode->setZ(r->getValue(currentnode->getX(),currentnode->getY())+offset);
     }
     return;
 }

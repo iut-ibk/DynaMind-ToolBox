@@ -31,18 +31,26 @@
 #include <dm.h>
 #include <graphviewdef.h>
 #include <dynamindboostgraphhelper.h>
+#include <boost/graph/prim_minimum_spanning_tree.hpp>
+#include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/random/mersenne_twister.hpp>
 
+using namespace boost;
 class SpanningTree : public DM::Module
 {
     DM_DECLARE_NODE(SpanningTree)
 
 private:
     typedef std::map<DM::GRAPH::COMPONENTS,DM::View> viewmap;
+    typedef std::pair < int, int >E;
 
     DM::System *sys;
     viewmap viewdef;
     DM::GRAPH::ViewDefinitionHelper defhelper;
-    bool algprim, algrand, algtest;
+    bool algprim, algrand, algtest, algkruskal;
 
 public:
     SpanningTree();
@@ -51,6 +59,14 @@ public:
 
     void run();
     void initmodel();
+    void insertByPredecessors(std::vector < graph_traits < DynamindBoostGraph::Graph >::vertex_descriptor > &p,
+                              std::map<DM::Node*,int> &nodesindex,
+                              std::map<std::pair<int,int> ,DM::Edge*> &nodes2edge,
+                              std::vector<int> &component,
+                              int &maxgraphindex);
+    void insertByEdges(std::vector < DynamindBoostGraph::Graph::edge_descriptor > &spanning_tree,
+                       DynamindBoostGraph::Graph &g,
+                       std::map<std::pair<int,int> ,DM::Edge*> &nodes2edge);
 
 private:
     void testalg(DynamindBoostGraph::Graph &g);

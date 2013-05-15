@@ -60,6 +60,9 @@ Dimensioning::Dimensioning()
     views.push_back(wsd.getCompleteView(WS::PIPE,DM::MODIFY));
     views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
     this->addData("Watersupply", views);
+
+    this->fixeddiameters=false;
+    this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
 }
 
 void Dimensioning::run()
@@ -91,6 +94,7 @@ bool Dimensioning::SitzenfreiDimensioning()
     int nnodes, nlinks;
     int diameter[] = {80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 800, 1000, 1500, 2000, 4000, 8000};
     double designvelocity[] = {0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 1.75, 1.75, 2, 2, 2, 2, 2};
+    std::vector<uint> fixedpipes;
 
     //Get number of nodes and links
     if(!converter->checkENRet(EPANET::ENgetcount(EN_NODECOUNT,&nnodes)))return false;
@@ -98,9 +102,18 @@ bool Dimensioning::SitzenfreiDimensioning()
 
     DM::Logger(DM::Standard) << "Starting SitzenfreiDimensioning with " << nnodes << " nodes and " << nlinks << " links.";
 
-    //Set all diameters to smallest available diameter
-    for(int index=1; index<=nlinks; index++)
-        if(!converter->checkENRet(EPANET::ENsetlinkvalue(index,EN_DIAMETER,diameter[0])))return false;
+    //Search for fixed pipe diamters and initialize all diameters with smallest diameter from diameter vector (fixed is if diameter > 0)
+    for(int index=0; index < nlinks; index++)
+    {
+        float currentdiameter = 0;
+        //Index in epanet always +1 (They start counting from 1 [Thumb up :-)])
+        if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_DIAMETER,&currentdiameter)))return false;
+
+        if(currentdiameter > 15 )
+            fixedpipes.push_back(index);
+        else
+            if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[0])))return false;
+    }
 
     //Simulate model the first time
     DM::Logger(DM::Standard) << "Simulate model the first time";
@@ -110,7 +123,7 @@ bool Dimensioning::SitzenfreiDimensioning()
     //initialize design criteria for velocities for the first iteration
     std::vector<double> resV(nlinks,2*designvelocity[0]);
 
-    //auto-design process
+    //auto-design process according to designevelocity
     DM::Logger(DM::Standard) << "Start auto design";
     int i = 0;
     while( (boost::accumulate(resV, 0)>=1) && (i < (sizeof(diameter)/sizeof(int))))
@@ -122,7 +135,55 @@ bool Dimensioning::SitzenfreiDimensioning()
         //set new diameters
         for(int index=0; index<nlinks; index++)
             if(resV[index]>=designvelocity[i])
-                if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
+                if(!this->fixeddiameters || std::find(fixedpipes.begin(),fixedpipes.end(),index)==fixedpipes.end())  //If the diameter is forced it often results in an model with negativ pressure
+                    if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
+
+        //simulate
+        long int t=0;
+        long int tstep=1;
+
+        while(tstep)
+        {
+            if(!converter->checkENRet(EPANET::ENrunH(&t)))return false;
+            if(!converter->checkENRet(EPANET::ENnextH(&tstep)))return false;
+        }
+
+        //extract results of simulation
+        for(int index=0; index<nlinks; index++)
+        {
+            float val;
+            if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_VELOCITY,&val)))return false;
+            resV[index]=val;
+        }
+
+        if(!converter->checkENRet(EPANET::ENcloseH()))return false;
+    }
+
+    //auto-design process according to headloss
+    while( (boost::accumulate(resV, 0)>=1) && (i-(sizeof(diameter)/sizeof(int)) < (sizeof(diameter)/sizeof(int))))
+    {
+        i++;
+        if(!converter->checkENRet(EPANET::ENopenH()))return false;
+        if(!converter->checkENRet(EPANET::ENinitH(1)))return false;
+        //set new diameters
+        for(int index=0; index<nlinks; index++)
+            if(std::find(fixedpipes.begin(),fixedpipes.end(),index)!=fixedpipes.end())
+            {
+                float headloss = 0;
+                float fixeddiameter = 0;
+                float pipelength = 0;
+                if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_HEADLOSS,&headloss)))return false;
+                if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_LENGTH,&pipelength)))return false;
+                if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_DIAMETER,&fixeddiameter)))return false;
+
+                if((headloss/pipelength)*1000 > 20.0)
+                {
+                    uint d = 1;
+                    while(fixeddiameter > diameter[d-1] && d <= sizeof(diameter)/sizeof(int)-1)d++;
+
+                    if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[d])))return false;
+                }
+            }
 
         //simulate
         long int t=0;

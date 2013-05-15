@@ -61,6 +61,7 @@ private:
     void removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges,double zonesize, double mean);
     void addPathToSystem(std::vector<DM::Node*>& pathnodes, std::vector<DM::Edge*>& pathedges, std::vector<DM::Component*> &addedcomponents);
     void calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes, double &min, double &max, double &mean);
+    double calcPathLength(std::vector<DM::Node*> &pathnodes);
 };
 
 #endif // LoopCreator_H

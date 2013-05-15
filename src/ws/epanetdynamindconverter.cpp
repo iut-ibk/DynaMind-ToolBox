@@ -93,6 +93,9 @@ bool EpanetDynamindConverter::mapEpanetAttributes(System *sys)
     if(!mapPipeAttributes(sys))
         return false;
 
+    if(!mapJunctionAttributes(sys))
+        return false;
+
     return true;
 }
 
@@ -106,7 +109,7 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
     typedef std::map<std::string, DM::Component*> cmap;
     cmap::iterator itr;
 
-    cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::READ));
+    cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::MODIFY));
 
     for(itr = pipes.begin(); itr != pipes.end(); ++itr)
     {
@@ -122,6 +125,37 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
             return false;
 
         currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),currentdiameter);
+    }
+
+    return true;
+}
+
+bool EpanetDynamindConverter::mapJunctionAttributes(System *sys)
+{
+    //TODO map more attributes (currently only the pressure of a junction is extracted)
+    if(!openedepanetfile)
+        return false;
+
+    DM::WS::ViewDefinitionHelper wsd;
+    typedef std::map<std::string, DM::Component*> cmap;
+    cmap::iterator itr;
+
+    cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::MODIFY));
+
+    for(itr = junctions.begin(); itr != junctions.end(); ++itr)
+    {
+        DM::Node *currentnode = static_cast<DM::Node*>((*itr).second);
+        float currentpressure;
+        char name[256];
+        strcpy(name, QString::number(components[currentnode]).toStdString().c_str());
+        int index;
+        if(!checkENRet(EPANET::ENgetnodeindex(name, &index)))
+            return false;
+
+        if(!checkENRet(EPANET::ENgetnodevalue(index,EN_PRESSURE,&currentpressure)))
+            return false;
+
+        currentnode->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),currentpressure);
     }
 
     return true;
@@ -220,7 +254,7 @@ bool EpanetDynamindConverter::addPipe(DM::Edge *pipe)
 
     double length = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Length))->getDouble();
     double diameter = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter))->getDouble();
-    double roughness = 0.04;
+    double roughness = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Roughness))->getDouble();
     double minorloss = 0;
 
     uint index = creator.addPipe(startnode, endnode,length,diameter,roughness,minorloss,EPANETModelCreator::OPEN);

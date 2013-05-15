@@ -124,8 +124,8 @@ void MapNodes2Graph::run()
         newconnecting.push_back(nearest);
 
         //calculate new attributes attributes
-        double newvalue = connectingnode->getAttribute("node_distance")->getDouble() + nearest->getAttribute("node_distance")->getDouble();
-        nearest->changeAttribute("node_distance",newvalue);
+        double newvalue = connectingnode->getAttribute("Weight")->getDouble() + nearest->getAttribute("Weight")->getDouble();
+        nearest->changeAttribute("Weight",newvalue);
     }
 
     //delete old connecting view

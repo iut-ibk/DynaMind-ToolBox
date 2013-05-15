@@ -66,6 +66,12 @@ void DynamindBoostGraph::subtractGraphs(Compmap &a, Compmap &b)
     }
 }
 
+void DynamindBoostGraph::createSkeletonizeBoostGraph(std::map<string, DM::Component *> &nodes, std::map<string, DM::Component *> &edges, DynamindBoostGraph::Graph &Graph, std::map<DM::Node *, int> &nodesindex, std::map<std::pair<int, int>, std::vector<DM::Edge *> > &nodes2edge)
+{
+    DM::Logger(DM::Error) << "createSkeletonizeBoostGraph Not implemented";
+    return;
+}
+
 bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
                                    std::vector<DM::Edge*> &pathedges,
                                    double &distance,

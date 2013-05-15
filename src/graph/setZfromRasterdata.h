@@ -40,6 +40,7 @@ private:
     DM::System *sys;
     DM::RasterData * r;
     viewmap viewdef;
+    double offset;
 
 
 public:

@@ -92,6 +92,7 @@ void ReduceTree::run()
     DM::Logger(DM::Standard) << "Reduceing tree";
     DM::Logger(DM::Standard) << "Grahp has " << edges.size() << " edges";
 
+    //TODO CONTAINS A BUG --- DOES NOT DELETE THE LAST ELEMENT
     for(uint i = 0; i < nodesvec.size(); i++)
     {
         DM::Node *currentnode = static_cast<DM::Node*>(nodesvec[i]);

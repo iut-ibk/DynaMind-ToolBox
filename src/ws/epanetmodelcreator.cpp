@@ -137,10 +137,10 @@ uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, do
     result += id + "\t";
     result += QString::number(startnode) + "\t";
     result += QString::number(endnode) + "\t";
-    result += QString::number(length) + "\t";
+    result += QString::number(length,'f',2) + "\t";
     result += QString::number(diameter) + "\t";
-    result += QString::number(roughness) + "\t";
-    result += QString::number(minorloss) + "\t";
+    result += QString::number(roughness,'f',3) + "\t";
+    result += QString::number(minorloss,'f',2) + "\t";
     result += PipeStatusString[status] + "\t";
 
     (*model[EPANETModelCreator::PIPES])[id]=result;

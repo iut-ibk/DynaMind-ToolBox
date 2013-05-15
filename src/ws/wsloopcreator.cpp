@@ -140,11 +140,40 @@ void LoopCreator::run()
         std::vector<DM::Component*> addedcomponents;
         //uint currentzone = (*itr).first;
         boost::shared_ptr< std::vector< DM::Node* > > junctions = (*itr).second;
+        std::vector<std::vector<DM::Node*> > vectorpathnodes;
+        std::vector<std::vector<DM::Edge*> > vectorpathedges;
+        std::vector<DM::Node*> checkednodes;
+        std::vector<std::pair<DM::Node*,DM::Node*> > checked_path;
 
         //Try to find an alternative path between junctions within one pressure zone
+        uint index = 0;
         #pragma omp parallel for
         for(int source=0; source < junctions->size(); source++)
         {
+            //for(uint index=0; index < checkednodes.size(); index++)
+            //    if(TBVectorData::calculateDistance(checkednodes[index],junctions->at(source)) < searchdistance)
+            //        continue;
+
+            #pragma omp critical
+            {
+                index++;
+                checkednodes.push_back(junctions->at(source));
+            }
+
+            if(int(index/float(junctions->size())*100)%5==0)
+                DM::Logger(DM::Standard) << index/float(junctions->size())*100 << "%";
+
+            //check if junction is part of an edge wich is not in the current graph
+            DM::Node *currentsource = junctions->at(source);
+            std::vector<DM::Edge*>  e = currentsource->getEdges();
+            bool possiblejunction=false;
+            for(int i = 0; i < e.size(); i++)
+                if(pm.find(e[i]->getUUID())==pm.end() && em.find(e[i]->getUUID())!=em.end())
+                    possiblejunction=true;
+
+            if(!possiblejunction)
+                continue;
+
             property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type d = get(vertex_distance, g);
             property_map<DynamindBoostGraph::Graph, vertex_distance_t>::type org_d = get(vertex_distance, org_g);
             std::vector < int > p(num_vertices(g));
@@ -178,6 +207,14 @@ void LoopCreator::run()
                 DM::Node *targetjunction = nearest[n];
                 DM::Node *rootjunction = junctions->at(source);
 
+                if(std::find(checked_path.begin(),checked_path.end(),std::pair<DM::Node*,DM::Node*>(rootjunction,targetjunction)) != checked_path.end())
+                    continue;
+
+                #pragma omp critical
+                {
+                    checked_path.push_back(std::pair<DM::Node*,DM::Node*>(targetjunction,rootjunction));
+                }
+
                 std::vector<DM::Node*> pathnodes, org_pathnodes;
                 std::vector<DM::Edge*> pathedges, org_pathedges;
                 double distance, org_distance;
@@ -196,11 +233,25 @@ void LoopCreator::run()
 
                 if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
                     continue;
-				#pragma omp critical
-                addPathToSystem(pathnodes, pathedges, addedcomponents);
-            }
 
+                for(uint check=1; check<pathnodes.size()-1; check++)
+                    if(std::find(junctions->begin(),junctions->end(),pathnodes[check])!=junctions->end())
+                        continue;
+
+                //TODO THIS IS AN IMPORTANT PARAMETER -> INPUT PARAMETER FOR MODULE
+                if(calcPathLength(pathnodes) < 150)
+                    continue;
+
+                #pragma omp critical
+                {
+                    vectorpathnodes.push_back(pathnodes);
+                    vectorpathedges.push_back(pathedges);
+                }
+            }
         }
+
+        for(uint index=0; index < vectorpathnodes.size(); index++)
+            addPathToSystem(vectorpathnodes[index], vectorpathedges[index], addedcomponents);
     }
 }
 
@@ -278,4 +329,14 @@ void LoopCreator::calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes
     mean = std::accumulate(elevations.begin(), elevations.end(),0.0)/elevations.size();
 
     return;
+}
+
+double LoopCreator::calcPathLength(std::vector<DM::Node *> &pathnodes)
+{
+    double result = 0;
+
+    for(int index=0; index<pathnodes.size()-1; index++)
+        result += TBVectorData::calculateDistance(pathnodes[index],pathnodes[index+1]);
+
+    return result;
 }

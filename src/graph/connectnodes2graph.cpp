@@ -31,6 +31,7 @@
 #include <dmlogsink.h>
 #include <math.h>
 #include <tbvectordata.h>
+#include <graphviewdef.h>
 
 //CGAL
 #include <CGAL/Simple_cartesian.h>
@@ -73,6 +74,7 @@ void ConnectNodes2Graph::run()
     typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
     typedef Neighbor_search::Tree Tree;
 
+    DM::GRAPH::ViewDefinitionHelper defhelper_graph;
     this->sys = this->getData("Layout");
     std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
     std::vector<std::string> connectingnodes(sys->getUUIDsOfComponentsInView(viewdef["CONNECTINGNODES"]));
@@ -119,10 +121,10 @@ void ConnectNodes2Graph::run()
 
         std::string nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
 
-
-
         //std::string nearest = findNearestNode(nodes,connectingnode);
-        sys->addEdge(connectingnode,sys->getNode(nearest),viewdef["EDGES"]);
+        DM::Edge* newedge = sys->addEdge(connectingnode,sys->getNode(nearest),viewdef["EDGES"]);
+        double weight = TBVectorData::calculateDistance(connectingnode,sys->getNode(nearest));
+        newedge->changeAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight),weight);
         sys->addComponentToView(connectingnode,viewdef["NODES"]);
     }
 

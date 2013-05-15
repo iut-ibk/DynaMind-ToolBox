@@ -40,6 +40,7 @@ class Dimensioning : public DM::Module
     DM::WS::ViewDefinitionHelper wsd;
     DM::System * sys;
     boost::shared_ptr<EpanetDynamindConverter> converter;
+    bool fixeddiameters;
 
 public:
     Dimensioning();
