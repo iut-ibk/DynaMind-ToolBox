@@ -50,6 +50,10 @@
 #include <time.h>
 #include <boost/make_shared.hpp>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 //viewdefs
 #include <examinationroomviewdef.h>
 
