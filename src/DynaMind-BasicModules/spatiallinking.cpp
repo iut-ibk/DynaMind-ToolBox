@@ -89,7 +89,7 @@ void SpatialLinking::init() {
 
 string SpatialLinking::getHelpUrl()
 {
-    return "https://docs.google.com/document/pub?id=1Vxx4vlj5lokvCAHEATsTIm0Q4n8kG92Krp8e2bLf9Zw";
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/SpatialLinking";
 }
 
 void SpatialLinking::run() {
