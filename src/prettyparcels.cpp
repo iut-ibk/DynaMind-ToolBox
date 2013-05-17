@@ -9,24 +9,24 @@ DM_DECLARE_NODE_NAME(PrettyParcels, DynAlp)
 
 PrettyParcels::PrettyParcels()
 {
-    this->cityblocks = DM::View("CITYBLOCK", DM::FACE, DM::READ);
-    this->cityblocks.getAttribute("new");
-    this->parcels = DM::View("PARCEL", DM::FACE, DM::WRITE);
-    this->parcels.addAttribute("new");
-    //this->bbs = DM::View("BBS", DM::FACE, DM::WRITE);
-    //this->bbs.addAttribute("generation");
+    this->in = DM::View("CITYBLOCK", DM::FACE, DM::READ);
+    this->in.getAttribute("selected");
+    this->out = DM::View("PARCEL", DM::FACE, DM::WRITE);
+    this->out.addAttribute("selected");
+    this->bbs = DM::View("BBS", DM::FACE, DM::WRITE);
+    this->bbs.addAttribute("generation");
 
-    this->parcels.addAttribute("generation");
+    this->out.addAttribute("generation");
 
     aspectRatio = 2;
     length = 100;
-    offset = 5;
-    FLAG_remove_new = false;
+    offset = 1;
+    remove_new = false;
 
-    this->addParameter("Length", DM::DOUBLE, &length);
     this->addParameter("AspectRatio", DM::DOUBLE, &aspectRatio);
+    this->addParameter("Length", DM::DOUBLE, &length);
     this->addParameter("offset", DM::DOUBLE, & offset);
-    this->addParameter("Unset 'new' from Input", DM::BOOL, & FLAG_remove_new);
+    this->addParameter("remove_new", DM::BOOL, & remove_new);
 
     InputViewName = "SUPERBLOCK";
     OutputViewName = "CITYBLOCK";
@@ -34,11 +34,14 @@ PrettyParcels::PrettyParcels()
     this->addParameter("INPUTVIEW", DM::STRING, &InputViewName);
     this->addParameter("OUTPUTVIEW", DM::STRING, &OutputViewName);
 
+    this->out.addLinks("SUPERBLOCK", in);
     std::vector<DM::View> datastream;
-    //datastream.push_back(bbs);
+    datastream.push_back(bbs);
     datastream.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
 
     this->addData("city", datastream);
+
+
 
 
 }
@@ -57,18 +60,18 @@ void PrettyParcels::init()
 
     if (!InputView)
         return;
-    cityblocks = DM::View(InputView->getName(), InputView->getType(), DM::READ);
-    this->cityblocks.getAttribute("new");
-    parcels = DM::View(OutputViewName, DM::FACE, DM::WRITE);
-    this->parcels.addAttribute("new");
-    this->parcels.addAttribute("generation");
+    in = DM::View(InputView->getName(), InputView->getType(), DM::READ);
+    this->in.getAttribute("selected");
+    out = DM::View(OutputViewName, DM::FACE, DM::WRITE);
+    this->out.addAttribute("selected");
+    this->out.addAttribute("generation");
 
     std::vector<DM::View> datastream;
 
 
-    datastream.push_back(cityblocks);
-    datastream.push_back(parcels);
-    //datastream.push_back(bbs);
+    datastream.push_back(in);
+    datastream.push_back(out);
+    datastream.push_back(bbs);
 
 
     this->addData("city", datastream);
@@ -80,29 +83,28 @@ void PrettyParcels::run(){
 
     DM::System * city = this->getData("city");
 
-    std::vector<std::string> block_uuids = city->getUUIDs(this->cityblocks);
+    std::vector<std::string> block_uuids = city->getUUIDs(this->in);
 
     //Here comes the action
     foreach (std::string uuid, block_uuids) {
         DM::Face *f  =city->getFace(uuid);
-        if (f->getAttribute("new")->getDouble() > 0.01) {
-            this->createSubdivision(city, f, 0);
+        if (f->getAttribute("selected")->getDouble() > 0.01) {
+            this->createSubdevision(city, f, 0);
 
         }
 
     }
 
 
-    if (!FLAG_remove_new)
+    if (!remove_new)
         return;
     foreach (std::string uuid, block_uuids) {
         DM::Face *f  =city->getFace(uuid);
-
-        f->addAttribute("new", 0);
+        f->addAttribute("selected", 0);
     }
 }
 
-void PrettyParcels::createSubdivision(DM::System * sys, DM::Face *f, int gen)
+void PrettyParcels::createSubdevision(DM::System * sys, DM::Face *f, int gen)
 {
     std::vector<DM::Node> box;
     std::vector<double> size;
@@ -125,7 +127,7 @@ void PrettyParcels::createSubdivision(DM::System * sys, DM::Face *f, int gen)
 
 
     if (this->length*2 > size[0]) {
-        finalSubdivision(sys, f, gen+1);
+        finalSubdevision(sys, f, gen+1);
         return;
     }
     //Create New Face
@@ -162,12 +164,12 @@ void PrettyParcels::createSubdivision(DM::System * sys, DM::Face *f, int gen)
             intersection_p.push_back(sys->addNode(DM::Node(p.x(), p.y(), 0)));
         }
         intersection_p.push_back(intersection_p[0]);
-        //DM::Face * bb = sys->addFace(intersection_p, bbs);
-        //bb->addAttribute("generation", gen);
+        DM::Face * bb = sys->addFace(intersection_p, bbs);
+        bb->addAttribute("generation", gen);
         std::vector<DM::Node> intersected_nodes = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
         if (intersected_nodes.size() < 3) {
-            DM::Logger(DM::Warning) << "PrettyParcels createSubdevision intersection failed";
+            DM::Logger(DM::Warning) << "Advanced parceling createSubdevision interseciton failed";
             continue;
         }
         std::vector<DM::Node*> newFace;
@@ -181,11 +183,11 @@ void PrettyParcels::createSubdivision(DM::System * sys, DM::Face *f, int gen)
 
         f_new->addAttribute("generation", gen);
 
-        this->createSubdivision(sys, f_new, gen+1);
+        this->createSubdevision(sys, f_new, gen+1);
     }
 }
 
-void PrettyParcels::finalSubdivision(DM::System *sys, DM::Face *f, int gen)
+void PrettyParcels::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
 {
     //DM::Logger(DM::Debug) << "Start Final Subdevision";
     std::vector<DM::Node> box;
@@ -253,7 +255,7 @@ void PrettyParcels::finalSubdivision(DM::System *sys, DM::Face *f, int gen)
             DM::Logger(DM::Debug) << "Start offset";
             std::vector<DM::Node> new_parcel = DM::CGALGeometry::OffsetPolygon(newFace, offset);
             if (new_parcel.size() < 3) {
-                DM::Logger(DM::Warning) << "PrettyParcels: Offset intersection failed";
+                DM::Logger(DM::Warning) << "Advaned offset interseciton failed";
                 return;
             }
             std::vector<DM::Node*> newFace_Offset;
@@ -265,22 +267,21 @@ void PrettyParcels::finalSubdivision(DM::System *sys, DM::Face *f, int gen)
             newFace = newFace_Offset;
             //DM::Logger(DM::Debug) << newFace.size();
             if (newFace.size() < 3) {
-                DM::Logger(DM::Warning) << "PrettyParcels: intersection failed";
+                DM::Logger(DM::Warning) << "Advaned parceling interseciton failed";
                 continue;
             }
         }
-        DM::Face * f_new = sys->addFace(newFace, this->parcels);
+        DM::Face * f_new = sys->addFace(newFace, this->out);
         f_new->addAttribute("generation", gen);
-        f_new->addAttribute("new", 1);
+        f_new->addAttribute("selected", 1);
+
+        f_new->getAttribute("SUPERBLOCK")->setLink(in.getName(), f->getUUID());
 
     }
-
-    //DM::Logger(DM::Debug) << "Pretty Parcels: Final Subdevision done";
+    //DM::Logger(DM::Debug) << "Done Final Subdevision";
 
 
 
 
 
 }
-
-

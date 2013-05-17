@@ -112,6 +112,7 @@ void CreateBuilding::run()
 
     int nparcels = parcelUUIDs.size();
     int numberOfHouseBuild = 0;
+    int totalareaofhouses = 0;
 
     for (int i = 0; i < nparcels; i++) {
         DM::Face * parcel = city->getFace(parcelUUIDs[i]);
@@ -198,6 +199,8 @@ void CreateBuilding::run()
 
         building->addAttribute("cellar_used", 1);
         building->addAttribute("roof_used", 0);
+
+        totalareaofhouses = totalareaofhouses + (length_rand * width_rand);
 
         LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories_rand);
 
