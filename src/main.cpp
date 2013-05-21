@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <QThreadPool>
+#include <QCoreApplication>
 
 #include <dmlog.h>
 #include <dmdbconnector.h>
@@ -73,6 +74,10 @@ void copyfiles(string &cpfile, int iteration)
 }
 
 int main(int argc, char *argv[], char *envp[]) {
+
+    QCoreApplication::setOrganizationName("IUT");
+    QCoreApplication::setApplicationName("DYNAMIND");
+
     QThreadPool::globalInstance()->setMaxThreadCount(1);
 
 
@@ -195,7 +200,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
 
     DM::Simulation s;
-	s.loadModulesFromDefaultLocation();
+    s.loadModulesFromDefaultLocation();
+    s.addModulesFromSettings();
     s.loadSimulation(simulationfile);
 
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
