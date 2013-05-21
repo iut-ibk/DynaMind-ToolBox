@@ -87,7 +87,7 @@ void Component::CopyFrom(const Component &c, bool successor)
 {
 	uuid = QUuid::createUuid();
     inViews = c.inViews;
-	currentSys = NULL;
+	//currentSys = NULL;
 
 	if(!successor)
 	{
@@ -104,6 +104,7 @@ void Component::CopyFrom(const Component &c, bool successor)
 
 Component::Component(const Component& c)
 {
+    currentSys = NULL;
 	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
 	componentSyncMap.insert(this);
@@ -112,6 +113,7 @@ Component::Component(const Component& c)
 
 Component::Component(const Component& c, bool bInherited)
 {
+    currentSys = NULL;
 	mutex = new QMutex(QMutex::Recursive);
     CopyFrom(c);
 	isCached = false;
