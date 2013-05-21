@@ -191,6 +191,8 @@ public:
             delete cur;
         }
 		map.clear();
+		_root = NULL;
+		_last = NULL;
 		mutex->unlockInline();
 	}
 	//!< returns the current element count
