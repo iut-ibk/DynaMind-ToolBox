@@ -205,6 +205,7 @@ public:
 	static unsigned long GetCacheSize();
 
     static void PrintCacheStatistics();
+	static void ClearCache();
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

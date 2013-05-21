@@ -38,6 +38,10 @@ void Attribute::ResizeCache(unsigned long size)
 {
 	attributeCache.resize(size);
 }
+void Attribute::ClearCache()
+{
+	attributeCache.Clear();
+}
 unsigned long Attribute::GetCacheSize()
 {
 	return attributeCache.getSize();
