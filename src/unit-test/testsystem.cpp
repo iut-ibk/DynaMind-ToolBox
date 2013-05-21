@@ -805,6 +805,70 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
+
+
+TEST_F(TestSystem,getComponentsInViewProfiling) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Profiling getAllComponentsInView";
+
+	long n = 1e3;
+	DM::View v("testview", DM::NODE, DM::MODIFY);
+	DM::View va("testview2", DM::COMPONENT, DM::MODIFY);
+	va.addAttribute("test_dbl");
+
+	DM::System sys, sysa;
+	sys.addView(v);
+	sysa.addView(va);
+	
+    DM::Logger(DM::Standard) << "initializing test system";
+	for(long i=0;i<n;i++)
+		sys.addComponent(new DM::Node, v);
+	DM::Node::ClearCache();
+
+    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+	QElapsedTimer timer;
+	timer.start();
+	std::map<std::string, Component*> cmps = sys.getAllComponentsInView(v);
+	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
+	ASSERT_TRUE(cmps.size() == n);
+	
+    DM::Logger(DM::Standard) << "initializing successor test system";
+	System* suc = sys.createSuccessor();
+	DM::Node::ClearCache();
+	
+    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+	timer.restart();
+	cmps = suc->getAllComponentsInView(v);
+	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
+	ASSERT_TRUE(cmps.size() == n);
+
+    DM::Logger(DM::Standard) << "initializing attribute test system";
+	for(long i=0;i<n;i++)
+	{
+		DM::Component *c = new DM::Component();
+		c->addAttribute("test_dbl", 1.0);
+		sysa.addComponent(c, va);
+	}
+	DM::Attribute::ClearCache();
+	
+    DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
+	timer.restart();
+	cmps = sysa.getAllComponentsInView(va);
+	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
+	ASSERT_TRUE(cmps.size() == n);
+	
+    DM::Logger(DM::Standard) << "initializing successor test system";
+	System* suca = sysa.createSuccessor();
+	DM::Attribute::ClearCache();
+
+    DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
+	timer.restart();
+	cmps = suca->getAllComponentsInView(va);
+	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
+	ASSERT_TRUE(cmps.size() == n);
+}
+
 #endif
 
 #ifdef BIGDATATEST
