@@ -199,6 +199,7 @@ void CreateBuilding::run()
 
         building->addAttribute("cellar_used", 1);
         building->addAttribute("roof_used", 0);
+        building->addAttribute("color", "0.3;0.4;0.8");
 
         totalareaofhouses = totalareaofhouses + (length_rand * width_rand);
 
