@@ -315,7 +315,37 @@ void DBWorker::run()
 			readCount++;
 #endif
 			selectMutex.lock();
-			selectStatus = (!qSelect->exec() || !qSelect->next())?SELECT_FALSE:SELECT_TRUE;
+			selectRows.clear();
+			if(qSelect->exec() && qSelect->next())
+			{
+				int i=0;
+				do
+				{
+					int j=0;
+					
+					QList<QVariant> row;
+					QVariant value = qSelect->value(j++);
+					while(value.isValid())
+					{
+						row.append(value);
+						value = qSelect->value(j++);
+					}
+					
+					selectRows.append(row);
+					i++;
+				}
+				while(qSelect->next());
+
+				selectStatus = i;
+			}
+			else
+			{
+				PrintSqlError(qSelect);
+				selectStatus = SELECT_FALSE;
+			}
+
+			//selectStatus = (qSelect->exec() && qSelect->next())?SELECT_TRUE:SELECT_FALSE;
+			delete qSelect;
 			qSelect = NULL;
 			selectMutex.unlock();
 			//selectWaiterCondition.wakeOne();
@@ -337,13 +367,13 @@ bool DBWorker::ExecuteSelect(QSqlQuery *q)
 	qSelect = q;
 	selectStatus = SELECT_NOTDONE;
 	selectMutex.unlockInline();
-	
+
 	// wait for finish
 	while(selectStatus == SELECT_NOTDONE)
 		usleep(EXE_THREAD_SLEEP_TIME);
 
 	clientSelectMutex.unlock();
-	return selectStatus==SELECT_TRUE;
+	return selectStatus>0;
 }
 
 QSqlQuery* DBWorker::getQuery(QString cmd)
@@ -449,6 +479,11 @@ void DBConnector::ExecuteQuery(QSqlQuery *q)
 bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 {
 	return worker->ExecuteSelect(q);
+}
+
+QList<QList<QVariant>>* DBConnector::getResults()
+{
+	return &worker->selectRows;
 }
 
 void DBConnector::Synchronize()
@@ -601,11 +636,14 @@ bool DBConnector::Select(QString table, QUuid uuid,
 
     if(!ExecuteSelectQuery(q))
 	{
-		delete q;
+		//delete q;
         return false;
 	}
-    *value = q->value(0);
-	delete q;
+    /**value = q->value(0);
+	delete q;*/
+
+	*value = getResults()->at(0).at(0);
+
     return true;
 }
 bool DBConnector::Select(QString table, QUuid uuid,
@@ -620,13 +658,16 @@ bool DBConnector::Select(QString table, QUuid uuid,
 	 q->addBindValue(uuid.toByteArray());
 	 if(!ExecuteSelectQuery(q))
 	 {
-		 delete q;
+		 //delete q;
 		 return false;
 	 }
 
-	 *value0 = q->value(0);
+	 /**value0 = q->value(0);
 	 *value1 = q->value(1);
-	 delete q;
+	 delete q;*/
+	*value0 = getResults()->at(0).at(0);
+	*value1 = getResults()->at(0).at(1);
+
      return true;
  }
 bool DBConnector::Select(QString table, QUuid uuid,
@@ -642,13 +683,69 @@ bool DBConnector::Select(QString table, QUuid uuid,
 	 q->addBindValue(uuid.toByteArray());
 	 if(!ExecuteSelectQuery(q))
 	 {
-		 delete q;
+		 //delete q;
 		 return false;
 	 }
 
-	 *value0 = q->value(0);
+	 /**value0 = q->value(0);
 	 *value1 = q->value(1);
 	 *value2 = q->value(2);
-	 delete q;
+	 delete q;*/
+	*value0 = getResults()->at(0).at(0);
+	*value1 = getResults()->at(0).at(1);
+	*value2 = getResults()->at(0).at(2);
 	 return true;
  }
+
+bool DBConnector::Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
+						 QString valName0, QList<QVariant> *value0,
+						 QString valName1, QList<QVariant> *value1,
+						 QString valName2, QList<QVariant> *value2)
+{
+#ifdef NO_DB_SYNC
+	return false;
+#endif
+	if(uuids.size() == 0)
+		return false;
+
+	QString queryString = "SELECT uuid,"+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?";
+
+	for(int i=1;i<uuids.size(); i++)
+		queryString.append(" OR uuid LIKE ?");
+
+	QSqlQuery *q = getQuery(queryString);
+	//q->prepare(queryString);
+
+	foreach(QUuid* uuid, uuids)
+		q->addBindValue(uuid->toByteArray());
+
+	if(!ExecuteSelectQuery(q))
+	{
+		//delete q;
+		return false;
+	}
+	
+	QList<QList<QVariant>>* results = getResults();
+
+	foreach(QList<QVariant> row, *results)
+	{
+		resultUuids->append(row.at(0).toByteArray());
+		
+		value0->append(row.at(1));
+		value1->append(row.at(2));
+		value2->append(row.at(3));
+	}
+
+	/*do
+	{
+	resultUuids->append(q->value(0).toByteArray());
+
+	value0->append(q->value(1));
+	value1->append(q->value(2));
+	value2->append(q->value(3));
+	}
+	while(q->next());
+
+	delete q;*/
+	return true;
+}
