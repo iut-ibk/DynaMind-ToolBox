@@ -207,9 +207,10 @@ public:
 	}selectStatus;*/
 
 #define SELECT_NOTDONE 0
-#define SELECT_TRUE 1
-#define SELECT_FALSE 2
+//#define SELECT_TRUE 1
+#define SELECT_FALSE -1
 	QAtomicInt selectStatus;
+	QList<QList<QVariant>>	selectRows;
 	
 	//QMutex selectWaiterMutex;
 	//QWaitCondition selectWaiterCondition;
@@ -267,6 +268,10 @@ public:
 // timeinterval in microseconds to wait for finished select states and new queries
 // recommendation 1us
 #define EXE_THREAD_SLEEP_TIME 1
+
+// when e.g. precaching or sleecting large junks of data via uuids, we may exceed 
+// the parameter count limit. 100 seems to work fine in all db products.
+#define SQLBLOCKQUERYSIZE 100
 
 
 /**************************************************************//**
@@ -365,6 +370,8 @@ public:
 	//!< executes a select query, the value can be accessed via QSqlQuery::value(#)
     bool ExecuteSelectQuery(QSqlQuery *q);
 
+	QList<QList<QVariant>>* getResults();
+
 	//!< synchronizes ALL classes with inherited asynchron class
     void Synchronize();
     //!< various insert methods to insert a NEW row in the database
@@ -402,6 +409,11 @@ public:
                 QString valName0, QVariant *value0,
                 QString valName1, QVariant *value1,
                 QString valName2, QVariant *value2);
+	
+    bool Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
+                QString valName0, QList<QVariant> *value0,
+                QString valName1, QList<QVariant> *value1,
+                QString valName2, QList<QVariant> *value2);
 };
 
 /**************************************************************//**
