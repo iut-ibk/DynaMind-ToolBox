@@ -261,6 +261,7 @@ void DBWorker::run()
 				for(int i=1;i<stackSize;i++)
 				{
 					QSqlQuery* q = new QSqlQuery();
+					q->setForwardOnly(true);
 					q->prepare(ql->cmd);
 					ql->queryStack.push(q);
 				}
