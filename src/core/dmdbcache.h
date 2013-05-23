@@ -32,7 +32,7 @@ class DbCache: public Cache<Tkey,Tvalue>, Asynchron
         Node* n=Cache<Tkey,Tvalue>::_root;
         while(n)
         {
-            Cache<Tkey,Tvalue>::_last->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            n->key->SaveToDb(n->value);
             n = n->next;
         }
     }
@@ -99,6 +99,50 @@ public:
         }
         this->mutex->unlockInline();
     }
+
+	void preCache(const QList<Tkey>& keys)
+	{
+        this->mutex->lockInline();
+
+		if(keys.size() > 0)
+		{
+			Tkey classHolder;	// just to get static _PreCache function
+			QList<Tvalue*> values;
+			// init with null
+			for(int i=0;i<keys.size();i++)
+				values.append(NULL);
+
+			classHolder->_PreCache(keys, values);
+
+			for(int i=0;i<keys.size();i++)
+				if(values[i] != NULL)
+					add(keys[i], values[i]);
+		}
+        this->mutex->unlockInline();
+	}
+	//!< deletes all nodes, leaves the values untouched (non-deep delete)
+	void Clear()
+	{
+		Synchronize();
+		Cache<Tkey,Tvalue>::Clear();
+		/*
+		mutex->lockInline();
+        Node* cur;
+        Node* next;
+        next = _root;
+        while(next != NULL)
+        {
+            cur=next;
+            next=cur->next;
+			cur->key->SaveToDb(Cache<Tkey,Tvalue>::_last->value);
+            delete cur;
+        }
+		map.clear();
+		_root = NULL;
+		_last = NULL;
+		_cnt = 0;
+		mutex->unlockInline();*/
+	}
 };
 
 }   // namespace DM
