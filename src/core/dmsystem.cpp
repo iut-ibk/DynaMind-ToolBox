@@ -581,7 +581,18 @@ bool System::removeSubSystem(std::string name)
 
 std::map<std::string, Component*> System::getAllComponentsInView(const DM::View & view)
 {
-    return views[view.getName()];
+	const std::map<std::string, Component*> &cmps = views[view.getName()];
+	// precaching
+	if(view.getType() == DM::NODE)
+	{
+		QList<Node*> nodes;
+		mforeach(DM::Component* c, cmps)
+			nodes.append((Node*)c);	// we assume, that the view is correctly assigned
+
+		Node::PreCache(nodes);
+	}
+
+    return cmps;
 }
 std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) 
 {
