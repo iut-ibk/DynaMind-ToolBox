@@ -133,6 +133,8 @@ public:
 
     Vector3* LoadFromDb();
     void SaveToDb(Vector3* v);
+	static void _PreCache(const QList<Node*>& keys, QList<Vector3*>& values);
+	static void PreCache(const QList<Node*>& keys);
 };
 
 class Vector3
