@@ -1014,8 +1014,10 @@ std::map<std::string, Component*> DerivedSystem::getAllComponents()
 
 std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
 {
+	const std::map<std::string, Component*> &predec_comps = System::getAllComponentsInView(view);
+
 	if(view.getWriteAttributes().size() == 0 && view.getAccessType() == READ)
-		return views[view.getName()];
+		return predec_comps;
 	else
 	{
 		std::map<std::string, Component*> comps = views[view.getName()];
