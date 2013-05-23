@@ -126,7 +126,7 @@ DM::Components Node::getType() const
 }
 QString Node::getTableName()
 {
-    return "nodes";
+    return "nodes";	// also give in precache
 }
 double Node::getX() const
 {
@@ -308,4 +308,43 @@ void Node::SaveToDb(Vector3 *v)
                                            "x",v->x,"y",v->y,"z",v->z);
         isInserted = true;
     }
+}
+
+void Node::_PreCache(const QList<Node*>& keys, QList<Vector3*>& values)
+{
+	QList<QUuid*> uuids;
+	long k = 0;
+	while(k<uuids.size())
+	{
+		foreach(Node* n, keys)
+		{
+			uuids.append(&n->uuid);
+			if(++k > SQLBLOCKQUERYSIZE)
+				break;
+		}
+
+		QList<QVariant> x,y,z;
+		QList<QUuid>	resultUuids;
+		if(!DBConnector::getInstance()->Select("nodes", uuids, &resultUuids,
+										   "x",     &x,
+										   "y",     &y,
+										   "z",     &z))
+			return;	// no elements retrieved
+
+		for(int i=0;i<resultUuids.size();i++)
+		{
+			int j=0;
+			for(;j<keys.size();j++)
+				if(keys[j]->uuid == resultUuids[i])
+					break;
+
+			if( j != keys.size())	// should always be the case
+				values[j] = new Vector3(x[i].toDouble(), y[i].toDouble(), z[i].toDouble());
+		}
+	}
+}
+
+void Node::PreCache(const QList<Node*>& keys)
+{
+	nodeCache.preCache(keys);
 }
