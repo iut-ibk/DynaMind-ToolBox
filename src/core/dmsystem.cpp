@@ -583,14 +583,14 @@ std::map<std::string, Component*> System::getAllComponentsInView(const DM::View 
 {
 	const std::map<std::string, Component*> &cmps = views[view.getName()];
 	// precaching
-	if(view.getType() == DM::NODE)
+	/*if(view.getType() == DM::NODE)
 	{
 		QList<Node*> nodes;
 		mforeach(DM::Component* c, cmps)
 			nodes.append((Node*)c);	// we assume, that the view is correctly assigned
 
 		Node::PreCache(nodes);
-	}
+	}*/
 
     return cmps;
 }
