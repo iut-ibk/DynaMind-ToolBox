@@ -84,10 +84,10 @@ protected:
                 delete value;
         }
     };
-private:
+protected:
 	// map for fast searching
 	std::map<Tkey,Node*> map;
-protected:
+
     Node*   _root;
     Node*   _last;
     unsigned long    _size;
@@ -162,7 +162,7 @@ public:
     Cache(unsigned long size)
     {
         _size=size;
-        _cnt=0;
+        _cnt = 0;
         _root = NULL;
         _last = NULL;
 		mutex = new QMutex(QMutex::Recursive);
@@ -178,7 +178,7 @@ public:
 		delete mutex;
     }
 	//!< deletes all nodes, leaves the values untouched (non-deep delete)
-	void Clear()
+	virtual void Clear()
 	{
 		mutex->lockInline();
         Node* cur;
@@ -193,6 +193,7 @@ public:
 		map.clear();
 		_root = NULL;
 		_last = NULL;
+		_cnt = 0;
 		mutex->unlockInline();
 	}
 	//!< returns the current element count
