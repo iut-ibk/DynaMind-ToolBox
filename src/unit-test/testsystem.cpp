@@ -843,7 +843,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	cmps = suc->getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
-
+	/*
     DM::Logger(DM::Standard) << "initializing attribute test system";
 	for(long i=0;i<n;i++)
 	{
@@ -867,7 +867,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	timer.restart();
 	cmps = suca->getAllComponentsInView(va);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
-	ASSERT_TRUE(cmps.size() == n);
+	ASSERT_TRUE(cmps.size() == n);*/
 }
 
 #endif
