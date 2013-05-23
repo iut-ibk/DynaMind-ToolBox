@@ -41,8 +41,8 @@
 //#define BIGDATATEST
 
 #ifdef _OPENMP
-#define OMPUNITTESTS
-#define OMPPROFILINGTESTS
+//#define OMPUNITTESTS
+//#define OMPPROFILINGTESTS
 #endif
 
 namespace DM {
@@ -255,6 +255,7 @@ TEST_F(TestSystem, SqlNodeTest)
  * you now use the pointer of the end node of the edge as start node for the start node map.
  * The method is tested with 3 points and two edges. n1->n2->n3.
  */
+
 TEST_F(TestSystem, EdgeTestTreeSearch)
 {
 	DM::System * sys = new DM::System();
@@ -635,7 +636,7 @@ TEST_F(TestSystem, System)
 
 
 #ifdef SQLPROFILING
-
+/*
 TEST_F(TestSystem,sqlprofiling) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -747,7 +748,7 @@ TEST_F(TestSystem,sqlprofiling) {
 	//DM::RasterData::PrintCacheStatistics();
 }
 /**/
-
+/*
 TEST_F(TestSystem,sqlRasterDataProfiling) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -805,14 +806,14 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
-
+*/
 
 TEST_F(TestSystem,getComponentsInViewProfiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Profiling getAllComponentsInView";
 
-	long n = 1e3;
+	long n = 1e4;
 	DM::View v("testview", DM::NODE, DM::MODIFY);
 	DM::View va("testview2", DM::COMPONENT, DM::MODIFY);
 	va.addAttribute("test_dbl");
@@ -826,7 +827,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 		sys.addComponent(new DM::Node, v);
 	DM::Node::ClearCache();
 
-    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	QElapsedTimer timer;
 	timer.start();
 	std::map<std::string, Component*> cmps = sys.getAllComponentsInView(v);
@@ -837,7 +838,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	System* suc = sys.createSuccessor();
 	DM::Node::ClearCache();
 	
-    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	timer.restart();
 	cmps = suc->getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
