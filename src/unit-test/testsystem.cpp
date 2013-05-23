@@ -808,6 +808,196 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 }
 */
 
+//#define SELECT_TEST
+#ifdef SELECT_TEST
+
+void insert(int numelements) {
+    QSqlQuery query;
+    QElapsedTimer timer;
+    timer.start();
+    query.exec("BEGIN");
+    query.prepare("INSERT INTO t3 (key, x, y, z) "
+                  "VALUES (?, ?, ?, ?)");
+    for (int i = 0; i < numelements; i++) 
+	{
+        query.addBindValue(i);
+        query.addBindValue((double)i*10);
+        query.addBindValue((double)i*100);
+        query.addBindValue((double)i*1000);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+    }
+    query.exec("COMMIT");
+	std::cout << "inserted " << numelements << "elements in " << timer.elapsed() << " ms" << std::endl;
+}
+
+void iterative_select(int numelements) 
+{
+    int counter = 0;
+    QElapsedTimer timer;
+    timer.start();
+    for (int i = 0; i < 1000; i++) 
+	{
+		QSqlQuery query;
+		query.prepare("SELECT x,y,z FROM t3 WHERE key = 1");
+        //query.addBindValue(i);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+		if(!query.next())
+            std::cout << "no entry found" << std::endl;
+
+        double v[3];
+
+		v[0] = query.value(0).toDouble();
+		v[1] = query.value(1).toDouble();
+		v[2] = query.value(2).toDouble();	
+		counter++;
+	}
+	
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+
+    long t = timer.elapsed();
+	std::cout << "iterative select of " << numelements << " elements took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+void range_select(int numelements, int blocksize) 
+{
+    QElapsedTimer timer;
+    timer.start();
+
+    int counter = 0;
+    for (int i = 0; i < numelements/blocksize; i++) 
+	{
+		QSqlQuery query;
+		query.prepare("SELECT key,x,y,z FROM t3  WHERE key>= ? AND key< ?");
+
+        query.addBindValue( i*blocksize );
+        query.addBindValue( (i+1)*blocksize );
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+        double v[3];
+
+        while (query.next()) 
+		{
+			v[0] = query.value(0).toDouble();
+			v[1] = query.value(1).toDouble();
+			v[2] = query.value(2).toDouble();
+            counter++;
+        }
+    }
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+	
+    long t = timer.elapsed();
+	std::cout << "range select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+void combined_select(int numelements, int blocksize) 
+{
+    QElapsedTimer timer;
+    timer.start();
+	
+
+    int counter = 0;
+    for (int i = 0; i < numelements/blocksize; i++) 
+	{
+		QString queryString = "SELECT key,x,y,z FROM t3  WHERE key = ?";
+
+		for(int j = 1; j < blocksize; j++)
+			queryString.append(" OR key = ?");
+
+		QSqlQuery query;
+		query.prepare(queryString);
+
+		for(int j = 0; j < blocksize; j++)
+			query.addBindValue( i*blocksize+j );
+
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+        double v[3];
+
+        while (query.next()) 
+		{
+			v[0] = query.value(0).toDouble();
+			v[1] = query.value(1).toDouble();
+			v[2] = query.value(2).toDouble();
+            counter++;
+        }
+    }
+
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+	
+    long t = timer.elapsed();
+	std::cout << "combined select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+#include <QSqlError>
+
+TEST_F(TestSystem,selectTest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Profiling sql select";
+
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.db");
+    if(!db.open())
+	{
+        std::cout << "error opening db" << std::endl<< std::endl;
+		return;
+	}
+
+    int N = 1e5;
+    for(long numelements = 100; numelements <= N; numelements *= 10)
+	{	
+		QSqlQuery query;
+        std::cout << "START N " << numelements << std::endl;
+		query.exec("DROP TABLE IF EXISTS t3");
+        if (!query.exec("create table t3 (key INTEGER, x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION)"))
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+
+        insert(numelements);
+
+		iterative_select(numelements);
+		range_select(numelements, 1);
+		combined_select(numelements, 1);
+		range_select(numelements, 10);
+		combined_select(numelements, 10);
+		range_select(numelements, 100);
+		combined_select(numelements, 100);
+
+        if (!query.exec("DROP TABLE t3"))
+            std::cout << "Error in droping" << std::endl;
+
+        std::cout << "END" << std::endl<< std::endl;
+    }
+
+    std::cout << "End test" << std::endl;
+    db.close(); // for close connection
+}
+
+#endif // SELECT_TEST
+
 TEST_F(TestSystem,getComponentsInViewProfiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
