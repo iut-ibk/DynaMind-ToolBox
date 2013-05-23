@@ -811,7 +811,8 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 //#define SELECT_TEST
 #ifdef SELECT_TEST
 
-void insert(int numelements) {
+void insert(int numelements) 
+{
     QSqlQuery query;
     QElapsedTimer timer;
     timer.start();
@@ -821,9 +822,9 @@ void insert(int numelements) {
     for (int i = 0; i < numelements; i++) 
 	{
         query.addBindValue(i);
-        query.addBindValue((double)i*10);
-        query.addBindValue((double)i*100);
-        query.addBindValue((double)i*1000);
+        query.addBindValue((double)i*2);
+        query.addBindValue((double)i*3);
+        query.addBindValue((double)i*5);
         if (!query.exec())
 		{
 			PrintSqlError(&query);
@@ -836,14 +837,16 @@ void insert(int numelements) {
 
 void iterative_select(int numelements) 
 {
-    int counter = 0;
     QElapsedTimer timer;
     timer.start();
-    for (int i = 0; i < numelements; i++) 
+    
+    int counter = 0;
+	QSqlQuery query;
+	query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+	
+	for (int i = 0; i < numelements; i++) 
 	{
-		QSqlQuery query;
-		query.prepare("SELECT x,y,z FROM t3 WHERE key = 1");
-        //query.addBindValue(i);
+		query.addBindValue(i);
         if (!query.exec())
 		{
 			PrintSqlError(&query);
@@ -852,11 +855,10 @@ void iterative_select(int numelements)
 		if(!query.next())
             std::cout << "no entry found" << std::endl;
 
-        double v[3];
-
-		v[0] = query.value(0).toDouble();
-		v[1] = query.value(1).toDouble();
-		v[2] = query.value(2).toDouble();	
+		int key = query.value(0).toInt();
+		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
 		counter++;
 	}
 	
@@ -873,11 +875,11 @@ void range_select(int numelements, int blocksize)
     timer.start();
 
     int counter = 0;
+	QSqlQuery query;
+	query.prepare("SELECT key,x,y,z FROM t3 WHERE key >= ? AND key < ?");
+
     for (int i = 0; i < numelements/blocksize; i++) 
 	{
-		QSqlQuery query;
-		query.prepare("SELECT key,x,y,z FROM t3  WHERE key>= ? AND key< ?");
-
         query.addBindValue( i*blocksize );
         query.addBindValue( (i+1)*blocksize );
         if (!query.exec())
@@ -886,13 +888,12 @@ void range_select(int numelements, int blocksize)
 			return;
 		}
 
-        double v[3];
-
         while (query.next()) 
 		{
-			v[0] = query.value(0).toDouble();
-			v[1] = query.value(1).toDouble();
-			v[2] = query.value(2).toDouble();
+			int key = query.value(0).toInt();
+			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
             counter++;
         }
     }
@@ -907,19 +908,17 @@ void combined_select(int numelements, int blocksize)
 {
     QElapsedTimer timer;
     timer.start();
-	
 
     int counter = 0;
-    for (int i = 0; i < numelements/blocksize; i++) 
-	{
-		QString queryString = "SELECT key,x,y,z FROM t3  WHERE key = ?";
-
-		for(int j = 1; j < blocksize; j++)
-			queryString.append(" OR key = ?");
-
-		QSqlQuery query;
+	QString queryString = "SELECT key,x,y,z FROM t3  WHERE key = ?";
+	for(int j = 1; j < blocksize; j++)
+		queryString.append(" OR key = ?");
+	
+	QSqlQuery query;
 		query.prepare(queryString);
 
+    for (int i = 0; i < numelements/blocksize; i++) 
+	{
 		for(int j = 0; j < blocksize; j++)
 			query.addBindValue( i*blocksize+j );
 
@@ -929,13 +928,12 @@ void combined_select(int numelements, int blocksize)
 			return;
 		}
 
-        double v[3];
-
         while (query.next()) 
 		{
-			v[0] = query.value(0).toDouble();
-			v[1] = query.value(1).toDouble();
-			v[2] = query.value(2).toDouble();
+			int key = query.value(0).toInt();
+			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
             counter++;
         }
     }
@@ -975,9 +973,8 @@ TEST_F(TestSystem,selectTest) {
 			return;
 		}
 
-
         insert(numelements);
-
+		
 		iterative_select(numelements);
 		range_select(numelements, 1);
 		combined_select(numelements, 1);
