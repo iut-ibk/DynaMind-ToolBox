@@ -314,7 +314,7 @@ void Node::_PreCache(const QList<Node*>& keys, QList<Vector3*>& values)
 {
 	QList<QUuid*> uuids;
 	long k = 0;
-	while(k<uuids.size())
+	while(k<keys.size())
 	{
 		foreach(Node* n, keys)
 		{
