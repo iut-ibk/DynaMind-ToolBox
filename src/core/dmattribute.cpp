@@ -591,7 +591,6 @@ Component* Attribute::GetOwner()
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
-	std::string struuid = _uuid.toString().toStdString();
     DBConnector::getInstance()->Select("attributes", _uuid,
                                        "type",     &t,
                                        "value",     &v);
