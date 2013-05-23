@@ -831,7 +831,7 @@ void insert(int numelements) {
 		}
     }
     query.exec("COMMIT");
-	std::cout << "inserted " << numelements << "elements in " << timer.elapsed() << " ms" << std::endl;
+	std::cout << "inserted " << numelements << " elements in " << timer.elapsed() << " ms" << std::endl;
 }
 
 void iterative_select(int numelements) 
@@ -839,7 +839,7 @@ void iterative_select(int numelements)
     int counter = 0;
     QElapsedTimer timer;
     timer.start();
-    for (int i = 0; i < 1000; i++) 
+    for (int i = 0; i < numelements; i++) 
 	{
 		QSqlQuery query;
 		query.prepare("SELECT x,y,z FROM t3 WHERE key = 1");
