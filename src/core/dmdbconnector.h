@@ -210,7 +210,7 @@ public:
 //#define SELECT_TRUE 1
 #define SELECT_FALSE -1
 	QAtomicInt selectStatus;
-	QList<QList<QVariant>>	selectRows;
+    QList< QList<QVariant> >	selectRows;
 	
 	//QMutex selectWaiterMutex;
 	//QWaitCondition selectWaiterCondition;
@@ -370,7 +370,7 @@ public:
 	//!< executes a select query, the value can be accessed via QSqlQuery::value(#)
     bool ExecuteSelectQuery(QSqlQuery *q);
 
-	QList<QList<QVariant>>* getResults();
+    QList<QList<QVariant> >* getResults();
 
 	//!< synchronizes ALL classes with inherited asynchron class
     void Synchronize();

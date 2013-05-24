@@ -482,7 +482,7 @@ bool DBConnector::ExecuteSelectQuery(QSqlQuery *q)
 	return worker->ExecuteSelect(q);
 }
 
-QList<QList<QVariant>>* DBConnector::getResults()
+QList<QList<QVariant> >* DBConnector::getResults()
 {
 	return &worker->selectRows;
 }
@@ -726,7 +726,7 @@ bool DBConnector::Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>
 		return false;
 	}
 	
-	QList<QList<QVariant>>* results = getResults();
+    QList<QList<QVariant> >* results = getResults();
 
 	foreach(QList<QVariant> row, *results)
 	{
