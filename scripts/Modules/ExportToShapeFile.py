@@ -89,8 +89,10 @@ class ExportToShapeFile(Module):
                 views = []
                 views.append(self.vec)
                 self.addData("City", views)
+                self.counter = 0
 
             def run(self):
+                self.counter += 1
                 city = self.getData("City")
                 views = city.getViews()
                 for view in views:
@@ -113,8 +115,8 @@ class ExportToShapeFile(Module):
                 spatialReference.ImportFromEPSG(self.CoordinateSystemEPSG)
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
-                if os.path.exists(str(self.FileName+'_faces.shp')): os.remove(self.FileName+'_faces.shp')
-                shapeData = driver.CreateDataSource(self.FileName+'_faces.shp')
+                if os.path.exists(self.FileName+'_faces_' + str(self.counter) + '.shp'): os.remove(self.FileName+'_faces_' + str(self.counter) + '.shp')
+                shapeData = driver.CreateDataSource(self.FileName+'_faces_' + str(self.counter) + '.shp')
                 
                 layer = shapeData.CreateLayer('layer1', spatialReference, osgeo.ogr.wkbPolygon)
                               
@@ -147,8 +149,8 @@ class ExportToShapeFile(Module):
                 spatialReference.ImportFromEPSG(self.CoordinateSystemEPSG)
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
-                if os.path.exists(str(self.FileName+'_lines.shp')): os.remove(self.FileName+'_lines.shp')
-                shapeData = driver.CreateDataSource(self.FileName+'_lines.shp')
+                if os.path.exists(self.FileName+'_edges_' + str(self.counter) + '.shp'): os.remove(self.FileName+'_edges_' + str(self.counter) + '.shp')
+                shapeData = driver.CreateDataSource(self.FileName+'_edges_' + str(self.counter) + '.shp')
                 layer = shapeData.CreateLayer('layer1', spatialReference, osgeo.ogr.wkbLineString)
                 
                 v = View(self.Name, READ, EDGE)
@@ -180,8 +182,8 @@ class ExportToShapeFile(Module):
                 
                 #Init Shape Files
                 driver = osgeo.ogr.GetDriverByName('ESRI Shapefile')
-                if os.path.exists(str(self.FileName+'_points.shp')): os.remove(self.FileName+'_points.shp')
-                shapeData = driver.CreateDataSource(self.FileName+'_points.shp')
+                if os.path.exists(self.FileName+'_nodes_' + str(self.counter) + '.shp'): os.remove(self.FileName+'_nodes_' + str(self.counter) + '.shp')
+                shapeData = driver.CreateDataSource(self.FileName+'_nodes_' + str(self.counter) + '.shp')
                 
                 layer = shapeData.CreateLayer('layer1', spatialReference, osgeo.ogr.wkbPoint)
                 v = View(self.Name, READ, NODE)
@@ -204,5 +206,7 @@ class ExportToShapeFile(Module):
                     feature.SetFID(featureIndex) 
                     attriutewriter.addAttriubte(feature,city, names[i])   
                     layer.CreateFeature(feature)    
-                shapeData.Destroy()            
-               
+                shapeData.Destroy()
+
+            def getHelpUrl(self):
+                return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/ExportToShapeFile"             
