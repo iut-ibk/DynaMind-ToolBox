@@ -141,9 +141,6 @@ public:
     void addParameter(std::string name, int type, void * ref, std::string description);
     virtual void setParameterValue(std::string name, std::string value);
 
-    virtual std::string getHelpUrl();
-
-
     virtual const char *getClassName();
 
     virtual const char *getFileName();
