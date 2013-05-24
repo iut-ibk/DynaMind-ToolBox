@@ -41,8 +41,8 @@
 //#define BIGDATATEST
 
 #ifdef _OPENMP
-#define OMPUNITTESTS
-#define OMPPROFILINGTESTS
+//#define OMPUNITTESTS
+//#define OMPPROFILINGTESTS
 #endif
 
 namespace DM {
@@ -255,6 +255,7 @@ TEST_F(TestSystem, SqlNodeTest)
  * you now use the pointer of the end node of the edge as start node for the start node map.
  * The method is tested with 3 points and two edges. n1->n2->n3.
  */
+
 TEST_F(TestSystem, EdgeTestTreeSearch)
 {
 	DM::System * sys = new DM::System();
@@ -635,7 +636,7 @@ TEST_F(TestSystem, System)
 
 
 #ifdef SQLPROFILING
-
+/*
 TEST_F(TestSystem,sqlprofiling) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -747,7 +748,7 @@ TEST_F(TestSystem,sqlprofiling) {
 	//DM::RasterData::PrintCacheStatistics();
 }
 /**/
-
+/*
 TEST_F(TestSystem,sqlRasterDataProfiling) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -805,14 +806,201 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
+*/
 
+//#define SELECT_TEST
+#ifdef SELECT_TEST
+
+void insert(int numelements) 
+{
+    QSqlQuery query;
+    QElapsedTimer timer;
+    timer.start();
+    query.exec("BEGIN");
+    query.prepare("INSERT INTO t3 (key, x, y, z) "
+                  "VALUES (?, ?, ?, ?)");
+    for (int i = 0; i < numelements; i++) 
+	{
+        query.addBindValue(i);
+        query.addBindValue((double)i*2);
+        query.addBindValue((double)i*3);
+        query.addBindValue((double)i*5);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+    }
+    query.exec("COMMIT");
+	std::cout << "inserted " << numelements << " elements in " << timer.elapsed() << " ms" << std::endl;
+}
+
+void iterative_select(int numelements) 
+{
+    QElapsedTimer timer;
+    timer.start();
+    
+    int counter = 0;
+	QSqlQuery query;
+	query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+	
+	for (int i = 0; i < numelements; i++) 
+	{
+		query.addBindValue(i);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+		if(!query.next())
+            std::cout << "no entry found" << std::endl;
+
+		int key = query.value(0).toInt();
+		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+		counter++;
+	}
+	
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+
+    long t = timer.elapsed();
+	std::cout << "iterative select of " << numelements << " elements took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+void range_select(int numelements, int blocksize) 
+{
+    QElapsedTimer timer;
+    timer.start();
+
+    int counter = 0;
+	QSqlQuery query;
+	query.prepare("SELECT key,x,y,z FROM t3 WHERE key >= ? AND key < ?");
+
+    for (int i = 0; i < numelements/blocksize; i++) 
+	{
+        query.addBindValue( i*blocksize );
+        query.addBindValue( (i+1)*blocksize );
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+        while (query.next()) 
+		{
+			int key = query.value(0).toInt();
+			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+            counter++;
+        }
+    }
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+	
+    long t = timer.elapsed();
+	std::cout << "range select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+void combined_select(int numelements, int blocksize) 
+{
+    QElapsedTimer timer;
+    timer.start();
+
+    int counter = 0;
+	QString queryString = "SELECT key,x,y,z FROM t3  WHERE key = ?";
+	for(int j = 1; j < blocksize; j++)
+		queryString.append(" OR key = ?");
+	
+	QSqlQuery query;
+		query.prepare(queryString);
+
+    for (int i = 0; i < numelements/blocksize; i++) 
+	{
+		for(int j = 0; j < blocksize; j++)
+			query.addBindValue( i*blocksize+j );
+
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+        while (query.next()) 
+		{
+			int key = query.value(0).toInt();
+			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+            counter++;
+        }
+    }
+
+	if(counter != numelements)
+		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
+	
+    long t = timer.elapsed();
+	std::cout << "combined select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
+}
+
+#include <QSqlError>
+
+TEST_F(TestSystem,selectTest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Profiling sql select";
+
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.db");
+    if(!db.open())
+	{
+        std::cout << "error opening db" << std::endl<< std::endl;
+		return;
+	}
+
+    int N = 1e5;
+    for(long numelements = 100; numelements <= N; numelements *= 10)
+	{	
+		QSqlQuery query;
+        std::cout << "START N " << numelements << std::endl;
+		query.exec("DROP TABLE IF EXISTS t3");
+        if (!query.exec("create table t3 (key INTEGER, x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION)"))
+		{
+			PrintSqlError(&query);
+			return;
+		}
+
+        insert(numelements);
+		
+		iterative_select(numelements);
+		range_select(numelements, 1);
+		combined_select(numelements, 1);
+		range_select(numelements, 10);
+		combined_select(numelements, 10);
+		range_select(numelements, 100);
+		combined_select(numelements, 100);
+
+        if (!query.exec("DROP TABLE t3"))
+            std::cout << "Error in droping" << std::endl;
+
+        std::cout << "END" << std::endl<< std::endl;
+    }
+
+    std::cout << "End test" << std::endl;
+    db.close(); // for close connection
+}
+
+#endif // SELECT_TEST
 
 TEST_F(TestSystem,getComponentsInViewProfiling) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Profiling getAllComponentsInView";
 
-	long n = 1e3;
+	long n = 1e4;
 	DM::View v("testview", DM::NODE, DM::MODIFY);
 	DM::View va("testview2", DM::COMPONENT, DM::MODIFY);
 	va.addAttribute("test_dbl");
@@ -826,7 +1014,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 		sys.addComponent(new DM::Node, v);
 	DM::Node::ClearCache();
 
-    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	QElapsedTimer timer;
 	timer.start();
 	std::map<std::string, Component*> cmps = sys.getAllComponentsInView(v);
@@ -837,12 +1025,12 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	System* suc = sys.createSuccessor();
 	DM::Node::ClearCache();
 	
-    DM::Logger(DM::Standard) << "retrieving " << n << " components from view";
+    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	timer.restart();
 	cmps = suc->getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
-
+	/*
     DM::Logger(DM::Standard) << "initializing attribute test system";
 	for(long i=0;i<n;i++)
 	{
@@ -866,7 +1054,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	timer.restart();
 	cmps = suca->getAllComponentsInView(va);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
-	ASSERT_TRUE(cmps.size() == n);
+	ASSERT_TRUE(cmps.size() == n);*/
 }
 
 #endif
