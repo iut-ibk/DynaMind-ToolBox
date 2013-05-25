@@ -24,6 +24,7 @@
  *
  */
 #include <math.h>
+#include <cmath>
 #include <algorithm>
 
 
@@ -76,15 +77,6 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e
 }
 
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
-    /*std::vector<DM::Node*> result;
-    std::vector<std::string> nodelist= face->getNodes();
-    foreach (std::string eid, nodelist) {
-        DM::Node * n = sys->getNode(eid);
-        result.push_back(n);
-
-    }
-    return result;
-	*/
 	return face->getNodePointers();
 }
 
@@ -136,6 +128,30 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
 
     return DM::Node(x/A6 + offsetN.getX(),y/A6 + offsetN.getY(),nodes[0]->getZ());
 }
+
+void TBVectorData::CorrdinateSystem(std::vector<DM::Node * > const &nodes, double (&E)[3][3]) {
+    //Avoid parallel lines
+    int pos = -1;
+    for (uint i = 2; i < nodes.size(); i++) {
+        DM::Node n1 = *(nodes[0]) - *(nodes[1]);
+        DM::Node n2 = *(nodes[1]) - *(nodes[i]);
+
+        if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
+          continue;
+        }
+        if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
+            continue;
+        }
+        if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
+            continue;
+        }
+        pos=i;
+    }
+    if (pos == -1)
+        DM::Logger(DM::Warning) << "couldn't create coorindate sytem";
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[pos]), E);
+}
+
 double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 {
 
@@ -144,7 +160,7 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
+    TBVectorData::CorrdinateSystem( nodes, E_to);
 
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
@@ -175,6 +191,8 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (!startISEnd)
         A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
 
+    if (std::isnan(A))
+        DM::Logger(DM::Error) << "nan area";
     return fabs(A/2.);
 }
 
@@ -203,6 +221,9 @@ double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
         //Remove Holes
          A -= CalculateArea(nodes_H);
     }
+
+    if (std::isnan(A))
+        DM::Logger(DM::Warning) << "TBVectorData::CalculateArea nan area";
     return fabs(A);
 }
 
@@ -227,8 +248,8 @@ DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
-
+    //TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
+    TBVectorData::CorrdinateSystem( nodes, E_to);
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
 
@@ -289,11 +310,12 @@ DM::Node  TBVectorData::RotateVector(double (&R)[3][3], const DM::Node & node) {
 
 DM::Node TBVectorData::NormalVector(const DM::Node & n1, const DM::Node & n2)
 {
-
     double x = n1.getY()*n2.getZ() - n1.getZ()*n2.getY();
     double y = n1.getZ()*n2.getX() - n1.getX()*n2.getZ();
     double z = n1.getX()*n2.getY() - n1.getY()*n2.getX();
     double l = sqrt(x*x+y*y+z*z);
+    if (l == 0)
+        DM::Logger(DM::Warning) << "Normal vector l in 0";
     return DM::Node(x/l,y/l,z/l);
 }
 
@@ -302,7 +324,15 @@ void TBVectorData::CorrdinateSystem(const DM::Node &node0, const DM::Node &node1
     DM::Node n1 = node0 - node1;
     DM::Node n2 = node1 - node2;
 
-
+    if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
+    if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
+    if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
 
     DM::Node e3 = NormalVector(n1, n2);
     DM::Node e2 = NormalVector(n1, e3);
@@ -436,7 +466,7 @@ bool TBVectorData::PointWithinFace(DM::Face *f, DM::Node *n)
 
 bool TBVectorData::PointWithinAnyFace(std::map<std::string, DM::Component *> fv, DM::Node *n)
 {
-    typedef std::pair<std::string,DM::Component*> Cp;
+    //typedef std::pair<std::string,DM::Component*> Cp;
     typedef std::map<std::string,DM::Component*>::iterator CompItr;
 
     for(CompItr i = fv.begin(); i != fv.end(); i++)
@@ -463,7 +493,7 @@ bool TBVectorData::EdgeWithinFace(DM::Face *f, DM::Edge *e)
 
 bool TBVectorData::EdgeWithinAnyFace(std::map<string, DM::Component *> fv, DM::Edge *e)
 {
-    typedef std::pair<std::string,DM::Component*> Cp;
+    //typedef std::pair<std::string,DM::Component*> Cp;
     typedef std::map<std::string,DM::Component*>::iterator CompItr;
 
     for(CompItr i = fv.begin(); i != fv.end(); i++)
@@ -485,7 +515,7 @@ int TBVectorData::CalculateWindingNumber(std::vector<DM::Node *> poly, DM::Node 
     int windindnumber=0;
     DM::Node *center = n;
 
-    for(int index=0; index<poly.size(); ++index)
+    for(uint index=0; index<poly.size(); ++index)
     {
         DM::Node *point1 = poly[index];
         DM::Node *point2;
@@ -551,8 +581,8 @@ std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, d
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[ nodeList.size()-2]), E_to);
-
+    //TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[ nodeList.size()-2]), E_to);
+    TBVectorData::CorrdinateSystem( nodeList, E_to);
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
 

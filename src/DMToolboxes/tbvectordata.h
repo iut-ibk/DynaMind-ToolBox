@@ -104,6 +104,10 @@ public:
      */
     static void CorrdinateSystem(const DM::Node & n0, const DM::Node & n1,  const DM::Node & n2, double (&E)[3][3]);
 
+    /** @brief See CorrdinateSystem(const DM::Node & n0, const DM::Node & n1,  const DM::Node & n2, double (&E)[3][3])
+     */
+    static void CorrdinateSystem(std::vector<DM::Node * > const &nodes, double (&E)[3][3]) ;
+
     /** @brief Returns the cirection cosine between two vector */
     static double DirectionCosine(const DM::Node & n1, const DM::Node & n2);
 
