@@ -842,8 +842,8 @@ void iterative_select(int numelements)
     
     int counter = 0;
 	QSqlQuery query;
-	query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
-	
+        query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+
 	for (int i = 0; i < numelements; i++) 
 	{
 		query.addBindValue(i);
@@ -962,7 +962,7 @@ TEST_F(TestSystem,selectTest) {
 	}
 
     int N = 1e5;
-    for(long numelements = 100; numelements <= N; numelements *= 10)
+    for(long numelements = 64; numelements <= N; numelements *= 4)
 	{	
 		QSqlQuery query;
         std::cout << "START N " << numelements << std::endl;
@@ -973,15 +973,17 @@ TEST_F(TestSystem,selectTest) {
 			return;
 		}
 
-        insert(numelements);
+        	insert(numelements);
 		
 		iterative_select(numelements);
 		range_select(numelements, 1);
+        	range_select(numelements, 4);
+        	range_select(numelements, 16);
+        	range_select(numelements, 64);
 		combined_select(numelements, 1);
-		range_select(numelements, 10);
-		combined_select(numelements, 10);
-		range_select(numelements, 100);
-		combined_select(numelements, 100);
+		combined_select(numelements, 4);
+		combined_select(numelements, 16);
+		combined_select(numelements, 64);
 
         if (!query.exec("DROP TABLE t3"))
             std::cout << "Error in droping" << std::endl;
