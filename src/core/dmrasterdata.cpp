@@ -451,7 +451,7 @@ double RasterData::SQLGetValue(long x, long y) const
 	
 	long xBl = x/RASTERBLOCKSIZE;
 	long yBl = y/RASTERBLOCKSIZE;
-	long blWidth = width/RASTERBLOCKSIZE;
+    long blWidth = (width)/RASTERBLOCKSIZE+1;
 	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
 
 	return ((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE];
@@ -462,7 +462,7 @@ void RasterData::setBlock(long x, long y, double* data)
 {
 	if(!cache) return;
 
-	long blWidth = width/RASTERBLOCKSIZE;
+    long blWidth = width/RASTERBLOCKSIZE+1;
 	QByteArray *qba = cache->get(&blockLabels[x+y*blWidth]);
 	memcpy(qba->data(), data, sizeof(double) *RASTERBLOCKSIZE*RASTERBLOCKSIZE);
 }
@@ -473,7 +473,7 @@ void RasterData::SQLSetValue(long x, long y, double value)
 	
 	long xBl = x/RASTERBLOCKSIZE;
 	long yBl = y/RASTERBLOCKSIZE;
-	long blWidth = width/RASTERBLOCKSIZE;
+    long blWidth = width/RASTERBLOCKSIZE+1;
 	QByteArray *qba = cache->get(&blockLabels[xBl+yBl*blWidth]);
 	((double*)qba->data())[(x%RASTERBLOCKSIZE) + (y%RASTERBLOCKSIZE)*RASTERBLOCKSIZE] = value;
 }
