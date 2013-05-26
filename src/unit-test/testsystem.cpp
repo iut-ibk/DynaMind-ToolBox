@@ -75,9 +75,9 @@ TEST_F(TestSystem, RasterData_Flipped_Tset) {
         int cellsize = 20;
         plane->setSize(width, height, cellsize, cellsize, 0, 0);
 
-        for (long x = 0; x < height; x++) {
-            for (long y = 0; y < width; y++) {
-                plane->setCell(x,y,x);
+        for (long x = 0; x < width; x++) {
+            for (long y = 0; y < height; y++) {
+                plane->setCell(x, y, x + width*y);
             }
         }
 
@@ -86,9 +86,9 @@ TEST_F(TestSystem, RasterData_Flipped_Tset) {
         DM::Logger(DM::Standard) << plane->getCell(width-1,0);
         DM::Logger(DM::Standard) << plane->getCell(width-1, height-1);
 
-        for (long x = 0; x < height; x++) {
-            for (long y = 0; y < width; y++) {
-                EXPECT_DOUBLE_EQ(x,plane->getCell(x,y));
+        for (long x = 0; x < width; x++) {
+            for (long y = 0; y < height; y++) {
+                EXPECT_DOUBLE_EQ(x + width*y,plane->getCell(x,y));
             }
         }
 
