@@ -912,7 +912,7 @@ void iterative_view_select(const std::vector<long>& keys)
 
 	foreach(long i, keys)
 	{
-		query.addBindValue(i);
+		query.addBindValue((int)i);
         if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
