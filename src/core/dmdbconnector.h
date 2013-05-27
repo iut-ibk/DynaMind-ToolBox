@@ -348,13 +348,13 @@ private:
 	bool noDBSync;
 	unsigned long queryStackSize;
 	unsigned long cacheBlockwritingSize;
-
+	
+	static void initWorker();
 protected:
     virtual ~DBConnector();
 public:
 	//!< returns the pointer to the singleton generated instance of DBConnector
     static DBConnector* getInstance();
-
 	//!< get the current configuration, refer to DBConnectorConfig
 	DBConnectorConfig getConfig();
 	//!< sets a new configuration, it is applied instantly, refer to DBConnectorConfig
@@ -371,6 +371,7 @@ public:
     bool ExecuteSelectQuery(QSqlQuery *q);
 
     QList<QList<QVariant> >* getResults();
+	void killWorker();
 
 	//!< synchronizes ALL classes with inherited asynchron class
     void Synchronize();
