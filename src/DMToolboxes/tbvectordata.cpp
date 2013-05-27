@@ -192,8 +192,8 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (!startISEnd)
         A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
 
-    if (std::isnan(A))
-        DM::Logger(DM::Error) << "nan area";
+    //if (std::isnan(A))
+    //    DM::Logger(DM::Error) << "nan area";
     return fabs(A/2.);
 }
 
@@ -223,8 +223,8 @@ double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
          A -= CalculateArea(nodes_H);
     }
 
-    if (std::isnan(A))
-        DM::Logger(DM::Warning) << "TBVectorData::CalculateArea nan area";
+    //if (std::isnan(A))
+    //    DM::Logger(DM::Warning) << "TBVectorData::CalculateArea nan area";
     return fabs(A);
 }
 
