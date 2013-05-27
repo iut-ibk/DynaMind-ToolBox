@@ -809,7 +809,21 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 */
 
 //#define SELECT_TEST
-#ifdef SELECT_TEST
+
+bool init_table()
+{
+	QSqlQuery query;
+	if(query.exec("DROP TABLE IF EXISTS t3") &&
+		query.exec("create table t3 (key INTEGER, x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION)"))
+		return true;
+	return false;
+}
+
+bool delete_table()
+{
+	QSqlQuery query;
+	return query.exec("DROP TABLE t3");
+}
 
 void insert(int numelements) 
 {
@@ -835,6 +849,31 @@ void insert(int numelements)
 	std::cout << "inserted " << numelements << " elements in " << timer.elapsed() << " ms" << std::endl;
 }
 
+void iterative_view_select(const std::vector<long>& keys)
+{
+	QSqlQuery query;
+    query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+
+	foreach(long i, keys)
+	{
+		query.addBindValue(i);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+		if(!query.next())
+            std::cout << "no entry found" << std::endl;
+
+		int key = query.value(0).toInt();
+		ASSERT_TRUE(key == i);
+		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+	}
+}
+
+#ifdef SELECT_TEST
 void iterative_select(int numelements) 
 {
     QElapsedTimer timer;
@@ -945,8 +984,6 @@ void combined_select(int numelements, int blocksize)
 	std::cout << "combined select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
 }
 
-#include <QSqlError>
-
 TEST_F(TestSystem,selectTest) {
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -955,8 +992,7 @@ TEST_F(TestSystem,selectTest) {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("test.db");
-    if(!db.open())
-	{
+    if(!db.open()){
         std::cout << "error opening db" << std::endl<< std::endl;
 		return;
 	}
@@ -966,28 +1002,25 @@ TEST_F(TestSystem,selectTest) {
 	{	
 		QSqlQuery query;
         std::cout << "START N " << numelements << std::endl;
-		query.exec("DROP TABLE IF EXISTS t3");
-        if (!query.exec("create table t3 (key INTEGER, x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION)"))
+        if (!init_table())
 		{
 			PrintSqlError(&query);
 			return;
 		}
-
-        	insert(numelements);
+        insert(numelements);
 		
 		iterative_select(numelements);
 		range_select(numelements, 1);
-        	range_select(numelements, 4);
-        	range_select(numelements, 16);
-        	range_select(numelements, 64);
+        range_select(numelements, 4);
+        range_select(numelements, 16);
+        range_select(numelements, 64);
 		combined_select(numelements, 1);
 		combined_select(numelements, 4);
 		combined_select(numelements, 16);
 		combined_select(numelements, 64);
 
-        if (!query.exec("DROP TABLE t3"))
+        if (!delete_table())
             std::cout << "Error in droping" << std::endl;
-
         std::cout << "END" << std::endl<< std::endl;
     }
 
@@ -996,6 +1029,296 @@ TEST_F(TestSystem,selectTest) {
 }
 
 #endif // SELECT_TEST
+
+//#define SELECT_VIEW_TEST
+#ifdef SELECT_VIEW_TEST
+
+bool add_view(std::vector<long> keys)
+{
+	/*QString querystring = "CREATE VIEW viewa AS SELECT key,x,y,z FROM t3 WHERE";
+	foreach(long key, keys)
+		querystring += " key=" + QString::number(key) + " OR";*/
+	QString querystring = "CREATE VIEW viewa AS";
+	foreach(long key, keys)
+		querystring += " SELECT key,x,y,z FROM t3 WHERE key=" + QString::number(key) + " UNION";
+	querystring.chop(6);
+
+	QSqlQuery q;
+	q.prepare(querystring);
+	//foreach(int key, keys)
+	//	q.addBindValue(key);
+
+	bool r = q.exec();
+	if(!r)	PrintSqlError(&q);
+	return r;
+}
+
+bool drop_view()
+{
+	QSqlQuery q("DROP VIEW IF EXISTS viewa");
+
+	bool r = q.exec();
+	if(!r)	PrintSqlError(&q);
+	return r;
+}
+
+void block_view_select(std::vector<long> keys)
+{
+	long counter = 0;
+	QString querystring = "";
+	foreach(long key, keys)
+		querystring += "SELECT key,x,y,z FROM t3 WHERE key=" + QString::number(key) + " UNION ";
+	querystring.chop(6);
+
+	QSqlQuery q;
+	q.prepare(querystring);
+
+	if(!q.exec())
+	{
+		PrintSqlError(&q);
+		return;
+	}
+
+	while (q.next()) 
+	{
+		int key = q.value(0).toInt();
+		ASSERT_TRUE(q.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(q.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(q.value(3).toDouble() == key*5.0);
+		counter++;
+	}
+	ASSERT_TRUE(counter == keys.size());
+}
+
+void sql_view_select(long checksum)
+{
+	long counter = 0;
+	QSqlQuery query("SELECT key,x,y,z FROM viewa");
+	if(!query.exec())
+	{
+		PrintSqlError(&query);
+		return;
+	}
+
+	while (query.next()) 
+	{
+		int key = query.value(0).toInt();
+		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+		counter++;
+	}
+	ASSERT_TRUE(counter == checksum);
+}
+
+TEST_F(TestSystem,selectViewTest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Profiling sql view select";
+
+	DBConnector::getInstance()->killWorker();
+
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.db");
+    if(!db.open()){
+        std::cout << "error opening db" << std::endl<< std::endl;
+		return;
+	}
+	
+       if (!drop_view() || !delete_table())
+		return;
+
+    int N = 1024;
+    for(long numelements = 4; numelements <= N; numelements *= 4)
+	{	
+        std::cout << "START N " << numelements << std::endl;
+        if (!init_table())
+			return;
+		
+        insert(numelements);
+		std::vector<long> keys;
+		for(int i = numelements/4; i < (numelements/4)*3; i++)
+			keys.push_back(i);
+
+		std::cout << "num elements in view " << keys.size() << std::endl;
+		
+		QElapsedTimer timer;
+		timer.start();
+		if(!add_view(keys))
+		{
+			drop_view();
+			return;
+		}
+		
+		long t = timer.elapsed();
+		std::cout << "creating view took " 
+			<< t << "ms / " << t/(double)keys.size() << " per element" << std::endl;
+		
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			iterative_view_select(keys);
+			long t = timer.elapsed();
+			std::cout << "iterative_view_select # " << i << " took " << t << " ms / " 
+				<< t/(double)keys.size() << " per element" << std::endl;
+		}
+
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			block_view_select(keys);
+			long t = timer.elapsed();
+			std::cout << "block_view_select # " << i << " took " << t << " ms / " 
+				<< t/(double)keys.size() << " per element" << std::endl;
+		}
+
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			sql_view_select(keys.size());
+			long t = timer.elapsed();
+			std::cout << "sql_view_select # " << i << " took " << t << " ms / " 
+				<< t/(double)keys.size() << " per element" << std::endl;
+		}
+
+        if (!drop_view() || !delete_table())
+			return;
+		
+        std::cout << "END" << std::endl<< std::endl;
+    }
+
+    std::cout << "End test" << std::endl;
+    db.close(); // for close connection
+}
+
+#endif SELECT_VIEW_TEST
+
+#define SELECT_VIEW_TABLE_TEST
+#ifdef SELECT_VIEW_TABLE_TEST
+
+
+bool init_view_table()
+{
+	QSqlQuery query;
+	if(query.exec("DROP TABLE IF EXISTS views") &&
+		query.exec("CREATE TABLE views (name VARCHAR(100), key INTEGER)"))
+		return true;
+	return false;
+}
+
+bool drop_view_table()
+{
+	QSqlQuery query;
+	return query.exec("DROP TABLE views");
+}
+
+void insert_view(QString viewname, const std::vector<long>& keys) 
+{
+    QSqlQuery query;
+    QElapsedTimer timer;
+    timer.start();
+    query.exec("BEGIN");
+    query.prepare("INSERT INTO views (name, key) "
+                  "VALUES (?, ?)");
+	foreach(long key, keys)
+	{
+        query.addBindValue(viewname);
+        query.addBindValue(key);
+        if (!query.exec())
+		{
+			PrintSqlError(&query);
+			return;
+		}
+    }
+    query.exec("COMMIT");
+	std::cout << "inserted " << keys.size() << " view elements in " << timer.elapsed() << " ms" << std::endl;
+}
+
+void select_view(QString viewname, long checksum)
+{
+	QSqlQuery query;
+    query.exec("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key");
+	long counter = 0;
+	while(query.next())
+	{
+		int key = query.value(0).toInt();
+		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
+		ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
+		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
+		counter++;
+	}
+	ASSERT_TRUE(counter == checksum);
+}
+
+TEST_F(TestSystem,selectViewJoinTableTest) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Profiling sql view select join";
+
+	DBConnector::getInstance()->killWorker();
+
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.db");
+    if(!db.open()){
+        std::cout << "error opening db" << std::endl<< std::endl;
+		return;
+	}
+	
+    int N = 1e6;
+    for(long numelements = 4; numelements <= N; numelements *= 4)
+	{	
+        std::cout << "START N " << numelements << std::endl;
+        if (!init_table() || !init_view_table())
+			return;
+		
+        insert(numelements);
+		std::vector<long> keys;
+		for(int i = numelements/4; i < (numelements/4)*3; i++)
+			keys.push_back(i);
+
+		std::cout << "num elements in view " << keys.size() << std::endl;
+		
+		QElapsedTimer timer;
+		timer.start();
+		insert_view("view1", keys);
+		
+		long t = timer.elapsed();
+		std::cout << "creating view took " 
+			<< t << "ms / " << t/(double)keys.size() << " per element" << std::endl;
+		
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			iterative_view_select(keys);
+			long t = timer.elapsed();
+			std::cout << "iterative_view_select # " << i << " took " << t << " ms / " 
+				<< t/(double)keys.size() << " per element" << std::endl;
+		}
+
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			select_view("viewa", keys.size());
+			long t = timer.elapsed();
+			std::cout << "select_view # " << i << " took " << t << " ms / " 
+				<< t/(double)keys.size() << " per element" << std::endl;
+		}
+
+        if (!drop_view_table() || !delete_table())
+			return;
+		
+        std::cout << "END" << std::endl<< std::endl;
+    }
+
+    db.close(); // for close connection
+    std::cout << "End test, stopping - continue with any key" << std::endl;
+	getchar();
+}
+
+#endif
+
 
 TEST_F(TestSystem,getComponentsInViewProfiling) {
     ostream *out = &cout;
