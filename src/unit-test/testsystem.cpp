@@ -116,7 +116,7 @@ TEST_F(TestSystem,cachetest) {
 	Cache<int,float> c(3);
 	c.add(1,one);
 	c.add(2,two);
-	float f = *c.get(1);
+	c.get(1);
 	c.add(3,three);
 	c.add(4,four);
 
@@ -546,7 +546,7 @@ TEST_F(TestSystem, SQLattributes)
 	// DOUBLE
 	DM::Component *c = new DM::Component();
 	DM::Attribute attr("hint", 50);
-	bool isNew = c->addAttribute(attr);
+	c->addAttribute(attr);
 	DM::Attribute *pa = c->getAttribute("hint");
 	ASSERT_TRUE(pa->getDouble()==50);
 	delete c;
