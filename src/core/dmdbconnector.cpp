@@ -232,8 +232,7 @@ DBConnector::DBConnector()
 	}
 	Logger(Debug) << "DB created";
 
-	worker = new DBWorker();
-	worker->start();
+	initWorker();
 }
 //#define DBWORKER_COUNTERS
 #ifdef DBWORKER_COUNTERS
@@ -416,11 +415,25 @@ DBWorker::~DBWorker()
 
 DBConnector::~DBConnector()
 {
+	killWorker();
+}
+
+void DBConnector::killWorker()
+{
 	if(worker)
 	{
 		worker->Kill();
         worker->wait();
 		delete worker;
+		worker = NULL;
+	}
+}
+void DBConnector::initWorker()
+{
+	if(!worker)
+	{
+		worker = new DBWorker();
+		worker->start();
 	}
 }
 
@@ -431,6 +444,8 @@ DBConnector* DBConnector::getInstance()
 		DBConnector::instance = new DBConnector();
         _destroyer.SetSingleton(DBConnector::instance);
     }
+	if(!DBConnector::instance->worker)
+		initWorker();
 	return DBConnector::instance;
 }
 DBConnectorConfig DBConnector::getConfig()
