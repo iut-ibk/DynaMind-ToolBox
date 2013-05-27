@@ -808,7 +808,6 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 }
 */
 
-//#define SELECT_TEST
 
 bool init_table()
 {
@@ -873,6 +872,7 @@ void iterative_view_select(const std::vector<long>& keys)
 	}
 }
 
+//#define SELECT_TEST
 #ifdef SELECT_TEST
 void iterative_select(int numelements) 
 {
@@ -1194,7 +1194,7 @@ TEST_F(TestSystem,selectViewTest) {
 
 #endif SELECT_VIEW_TEST
 
-#define SELECT_VIEW_TABLE_TEST
+//#define SELECT_VIEW_TABLE_TEST
 #ifdef SELECT_VIEW_TABLE_TEST
 
 
