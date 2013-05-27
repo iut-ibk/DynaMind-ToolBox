@@ -39,7 +39,7 @@
 #define SQLUNITTESTS
 //#define SQLPROFILING
 //#define PROFILE_GETCOMPONENTSINVIEW
-//#define SELECT_TEST_VIEW_TABLE
+#define SELECT_TEST_VIEW_TABLE
 //#define SELECT_TEST_VIEW
 //#define SELECT_TEST_COMPARISON
 //#define BIGDATATEST
@@ -1279,7 +1279,7 @@ void insert_view(QString viewname, const std::vector<long>& keys)
 	foreach(long key, keys)
 	{
         query.addBindValue(viewname);
-        query.addBindValue(key);
+        query.addBindValue((int)key);
         if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
