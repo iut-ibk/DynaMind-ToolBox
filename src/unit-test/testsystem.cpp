@@ -1293,7 +1293,10 @@ void insert_view(QString viewname, const std::vector<long>& keys)
 void select_view(QString viewname, long checksum)
 {
 	QSqlQuery query;
-    query.exec("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key");
+    query.prepare("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key WHERE views.name = ?");
+	query.addBindValue(viewname);
+	query.exec();
+
 	long counter = 0;
 	while(query.next())
 	{
@@ -1304,6 +1307,24 @@ void select_view(QString viewname, long checksum)
 		counter++;
 	}
 	ASSERT_TRUE(counter == checksum);
+}
+
+template<typename T>
+void mean(std::vector<T> values, T& mean, T& stddev)
+{
+	mean = 0;
+	foreach(T value, values)
+		mean += value;
+	
+	mean /= values.size();
+	
+	stddev = 0;
+	foreach(T value, values)
+	{
+		T l = (value-mean);
+		stddev += l*l;
+	}
+	stddev = (T)sqrt((double)stddev);
 }
 
 TEST_F(TestSystem,selectViewJoinTableTest) {
@@ -1321,7 +1342,7 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 		return;
 	}
 	
-    int N = 1e6;
+    int N = 1e7;
     for(long numelements = 4; numelements <= N; numelements *= 4)
 	{	
         std::cout << "START N " << numelements << std::endl;
@@ -1329,38 +1350,76 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 			return;
 		
         insert(numelements);
-		std::vector<long> keys;
+		std::vector<long> viewkeys[3];
 		for(int i = numelements/4; i < (numelements/4)*3; i++)
-			keys.push_back(i);
+			viewkeys[0].push_back(i);
 
-		std::cout << "num elements in view " << keys.size() << std::endl;
+		std::cout << "num elements in view " << viewkeys[0].size() << std::endl;
 		
 		QElapsedTimer timer;
 		timer.start();
-		insert_view("view1", keys);
+		insert_view("viewa", viewkeys[0]);
 		
 		long t = timer.elapsed();
-		std::cout << "creating view took " 
-			<< t << "ms / " << t/(double)keys.size() << " per element" << std::endl;
+		std::cout << "creating view took \t" 
+			<< t << "ms / " << t/(double)viewkeys[0].size() << " per element" << std::endl;
 		
-		for(int i=0;i<3;i++)
-		{
-			timer.restart();
-			iterative_view_select(keys);
-			long t = timer.elapsed();
-			std::cout << "iterative_view_select # " << i << " took " << t << " ms / " 
-				<< t/(double)keys.size() << " per element" << std::endl;
-		}
+		long m,d;
+		std::vector<long> times;
 
 		for(int i=0;i<3;i++)
 		{
 			timer.restart();
-			select_view("viewa", keys.size());
-			long t = timer.elapsed();
-			std::cout << "select_view # " << i << " took " << t << " ms / " 
-				<< t/(double)keys.size() << " per element" << std::endl;
+			iterative_view_select(viewkeys[0]);
+			times.push_back(timer.elapsed());
 		}
+		mean(times, m, d);
+		std::cout << "iterative_view_select took \t" << m << "+-" << d << " ms / " 
+			<< m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
 
+		times.clear();
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			select_view("viewa", viewkeys[0].size());
+			times.push_back(timer.elapsed());
+		}
+		mean(times, m, d);
+		std::cout << "select_view took \t\t" << m << "+-" << d << " ms / " 
+			<< m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
+
+		// randomly insert into existing views: 33% in view 1, 33% in view 2, ignore 33%
+		for(int i = 0; i < numelements; i++)
+		{
+			if(rand()%2==0)	viewkeys[1].push_back(i);
+			if(rand()%2==0)	viewkeys[2].push_back(i);
+		}
+		insert_view("viewb", viewkeys[1]);
+		insert_view("viewc", viewkeys[2]);
+		
+		times.clear();
+		std::vector<double> petimes;
+		for(int i=0;i<3;i++)
+		{
+			timer.restart();
+			select_view("viewb", viewkeys[1].size());
+			t = timer.elapsed();
+			times.push_back(t);
+			petimes.push_back(t/(double)viewkeys[1].size());
+			timer.restart();
+			select_view("viewc", viewkeys[2].size());
+			t = timer.elapsed();
+			times.push_back(t);
+			petimes.push_back(t/(double)viewkeys[2].size());
+		}
+		mean(times, m, d);
+		double pem,ped;
+		mean(petimes, pem, ped);
+
+		std::cout << "select_multi_view took \t\t" << m << "+-" << d << " ms / " 
+			<< pem << "+-" << ped << " ms per element" << std::endl;
+
+		
         if (!drop_view_table() || !delete_table())
 			return;
 		
