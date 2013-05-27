@@ -1259,6 +1259,19 @@ bool init_view_table()
 	if(query.exec("DROP TABLE IF EXISTS views") &&
 		query.exec("CREATE TABLE views (name VARCHAR(100), key INTEGER)"))
 		return true;
+
+	DM::PrintSqlError(&query);
+	return false;
+}
+
+bool init_attributes_table()
+{
+	QSqlQuery query;
+	if(query.exec("DROP TABLE IF EXISTS attributes") &&
+		query.exec("CREATE TABLE attributes (owner INTEGER, value DOUBLE PRECISION)"))
+		return true;
+
+	DM::PrintSqlError(&query);
 	return false;
 }
 
@@ -1266,6 +1279,12 @@ bool drop_view_table()
 {
 	QSqlQuery query;
 	return query.exec("DROP TABLE views");
+}
+
+bool drop_attributes_table()
+{
+	QSqlQuery query;
+	return query.exec("DROP TABLE attributes");
 }
 
 void insert_view(QString viewname, const std::vector<long>& keys) 
@@ -1290,7 +1309,31 @@ void insert_view(QString viewname, const std::vector<long>& keys)
 	std::cout << "inserted " << keys.size() << " view elements in " << timer.elapsed() << " ms" << std::endl;
 }
 
-void select_view(QString viewname, long checksum)
+void insert_attributes(std::vector<int> values) 
+{
+    QSqlQuery query;
+    QElapsedTimer timer;
+    timer.start();
+    query.exec("BEGIN");
+    query.prepare("INSERT INTO attributes (owner, value) "
+                  "VALUES (?, ?)");
+
+	foreach(int i, values)
+	{
+		query.addBindValue(i);
+		query.addBindValue(i*2.0);
+        if (!query.exec())
+		{
+			DM::PrintSqlError(&query);
+			return;
+		}
+    }
+    query.exec("COMMIT");
+	std::cout << "inserted " << values.size() << " attributes in " << timer.elapsed() << " ms" << std::endl;
+}
+
+
+void select_from_view(QString viewname, long checksum)
 {
 	QSqlQuery query;
     query.prepare("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key WHERE views.name = ?");
@@ -1309,9 +1352,28 @@ void select_view(QString viewname, long checksum)
 	ASSERT_TRUE(counter == checksum);
 }
 
+void select_attributes_from_view(QString viewname, long checksum)
+{
+	QSqlQuery query;
+    query.prepare("select owner,value from attributes inner join t3 on t3.key = attributes.owner inner join views on views.key = attributes.owner where views.name = ?");
+	query.addBindValue(viewname);
+	query.exec();
+
+	long counter = 0;
+	while(query.next())
+	{
+		ASSERT_TRUE(query.value(0).toInt()*2.0 == query.value(1).toDouble());
+		counter++;
+	}
+	ASSERT_TRUE(counter == checksum);
+}
+
 template<typename T>
 void mean(std::vector<T> values, T& mean, T& stddev)
 {
+	if(values.size() == 0)
+		return;
+
 	mean = 0;
 	foreach(T value, values)
 		mean += value;
@@ -1343,10 +1405,10 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 	}
 	
     int N = 1e7;
-    for(long numelements = 4; numelements <= N; numelements *= 4)
+    for(long numelements = 256; numelements <= N; numelements *= 4)
 	{	
         std::cout << "START N " << numelements << std::endl;
-        if (!init_table() || !init_view_table())
+		if (!init_table() || !init_view_table() || !init_attributes_table())
 			return;
 		
         insert(numelements);
@@ -1361,8 +1423,7 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 		insert_view("viewa", viewkeys[0]);
 		
 		long t = timer.elapsed();
-		std::cout << "creating view took \t" 
-			<< t << "ms / " << t/(double)viewkeys[0].size() << " per element" << std::endl;
+		std::cout << "creating view took \t" << t/(double)viewkeys[0].size() << " per element" << std::endl;
 		
 		long m,d;
 		std::vector<long> times;
@@ -1374,19 +1435,17 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 			times.push_back(timer.elapsed());
 		}
 		mean(times, m, d);
-		std::cout << "iterative_view_select took \t" << m << "+-" << d << " ms / " 
-			<< m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
+		std::cout << "iterative_view_select took \t" << m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
 
 		times.clear();
 		for(int i=0;i<3;i++)
 		{
 			timer.restart();
-			select_view("viewa", viewkeys[0].size());
+			select_from_view("viewa", viewkeys[0].size());
 			times.push_back(timer.elapsed());
 		}
 		mean(times, m, d);
-		std::cout << "select_view took \t\t" << m << "+-" << d << " ms / " 
-			<< m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
+		std::cout << "select_view took \t\t" << m/(double)viewkeys[0].size() << "+-" << d/(double)viewkeys[0].size() << " ms per element" << std::endl;
 
 		// randomly insert into existing views: 33% in view 1, 33% in view 2, ignore 33%
 		for(int i = 0; i < numelements; i++)
@@ -1402,25 +1461,44 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 		for(int i=0;i<3;i++)
 		{
 			timer.restart();
-			select_view("viewb", viewkeys[1].size());
-			t = timer.elapsed();
-			times.push_back(t);
-			petimes.push_back(t/(double)viewkeys[1].size());
+			select_from_view("viewb", viewkeys[1].size());
+			petimes.push_back(timer.elapsed()/(double)viewkeys[1].size());
 			timer.restart();
-			select_view("viewc", viewkeys[2].size());
-			t = timer.elapsed();
-			times.push_back(t);
-			petimes.push_back(t/(double)viewkeys[2].size());
+			select_from_view("viewc", viewkeys[2].size());
+			petimes.push_back(timer.elapsed()/(double)viewkeys[2].size());
 		}
-		mean(times, m, d);
 		double pem,ped;
 		mean(petimes, pem, ped);
 
-		std::cout << "select_multi_view took \t\t" << m << "+-" << d << " ms / " 
-			<< pem << "+-" << ped << " ms per element" << std::endl;
+		std::cout << "select_multi_view took \t\t" << pem << "+-" << ped << " ms per element" << std::endl;
 
-		
-        if (!drop_view_table() || !delete_table())
+		// create attributes
+		int counter[3] = {0,0,0};
+		std::vector<int> atts;
+		for(int i=0;i<numelements;i+=2)
+		{
+			atts.push_back(i);
+			for(int j=0;j<3;j++)
+				if(vector_contains(&viewkeys[j], (long)i))	counter[j]++;
+		}
+
+		insert_attributes(atts);
+		// profile attribute search
+		petimes.clear();
+		for(int i=0;i<3;i++)
+		{
+			QString views[3] = {"viewa","viewb","viewc"};
+			for(int j=0;j<3;j++)
+			{
+				timer.restart();
+				select_attributes_from_view(views[j], counter[j]);
+				petimes.push_back(timer.elapsed()/(double)counter[j]);
+			}
+		}
+		mean(petimes, pem, ped);
+		std::cout << "select_attributes took \t\t" << pem << "+-" << ped << " ms per element" << std::endl;
+
+		if (!drop_view_table() || !delete_table() || !drop_attributes_table())
 			return;
 		
         std::cout << "END" << std::endl<< std::endl;
