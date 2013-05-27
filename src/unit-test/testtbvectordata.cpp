@@ -120,6 +120,47 @@ TEST_F(TestTBVectorData,calculateAreaWithHole3D){
     EXPECT_DOUBLE_EQ(3, area);
 
 }
+TEST_F(TestTBVectorData,calculateAreaR9){
+    DM::System * sys = new DM::System();
+
+
+    DM::Node * n1 = sys->addNode(DM::Node(0,1,0));
+    DM::Node * n2 = sys->addNode(DM::Node(0,2,0));
+    DM::Node * n3 = sys->addNode(DM::Node(1,2,0));
+
+    DM::Node * n4 = sys->addNode(DM::Node(2,2,0));
+    DM::Node * n5 = sys->addNode(DM::Node(2,1,0));
+    DM::Node * n6 = sys->addNode(DM::Node(2,0,0));
+    DM::Node * n7 = sys->addNode(DM::Node(1,0,0));
+    DM::Node * n8 = sys->addNode(DM::Node(0,0,0));
+
+    std::vector<DM::Node * > nodes;
+    nodes.push_back(n1);
+    nodes.push_back(n2);
+    nodes.push_back(n3);
+    nodes.push_back(n4);
+    nodes.push_back(n5);
+    nodes.push_back(n6);
+    nodes.push_back(n7);
+    nodes.push_back(n8);
+
+    for (int i = 0; i < 8; i++) {
+        std::vector<DM::Node*> nodes_test;
+        for (int j = 0; j < 8; j++) {
+            int pos = i+j;
+            if  (pos > 7) pos = pos - 8;
+            nodes_test.push_back(nodes[pos]);
+        }
+        nodes_test.push_back(nodes[i]);
+
+        DM::Face * f = sys->addFace(nodes_test);
+
+        double area = TBVectorData::CalculateArea(sys,f);
+
+        EXPECT_DOUBLE_EQ(4, area);
+    }
+}
+
 TEST_F(TestTBVectorData,calculateCentroid){
     DM::System * sys = new DM::System();
 

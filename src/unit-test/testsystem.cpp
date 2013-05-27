@@ -36,8 +36,8 @@
 #include <omp.h>
 #endif
 
-#define SQLUNITTESTS
-#define SQLPROFILING
+//#define SQLUNITTESTS
+//#define SQLPROFILING
 //#define BIGDATATEST
 
 #ifdef _OPENMP
@@ -62,7 +62,39 @@ namespace DM {
         sys1->createSuccessor();
         delete sys;
         ASSERT_TRUE(true);*/
+}
+TEST_F(TestSystem, RasterData_Flipped_Tset) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Logger(DM::Standard) << "Test RasterDat Flipped";
+    for (int i = 1; i < 20; i++) {
+        DM::Logger(DM::Standard) << i;
+        DM::RasterData * plane = new RasterData();
+        int width = 10*i;
+        int height = 20*i;
+        int cellsize = 20;
+        plane->setSize(width, height, cellsize, cellsize, 0, 0);
+
+        for (long x = 0; x < width; x++) {
+            for (long y = 0; y < height; y++) {
+                plane->setCell(x, y, x + width*y);
+            }
+        }
+
+        DM::Logger(DM::Standard) << plane->getCell(0,0);
+        DM::Logger(DM::Standard) << plane->getCell(0,height-1);
+        DM::Logger(DM::Standard) << plane->getCell(width-1,0);
+        DM::Logger(DM::Standard) << plane->getCell(width-1, height-1);
+
+        for (long x = 0; x < width; x++) {
+            for (long y = 0; y < height; y++) {
+                EXPECT_DOUBLE_EQ(x + width*y,plane->getCell(x,y));
+            }
+        }
+
+        delete plane;
     }
+}
 
 	
 #ifdef SQLUNITTESTS
