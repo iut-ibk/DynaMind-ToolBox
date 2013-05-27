@@ -65,7 +65,7 @@ namespace DM {
 }
 TEST_F(TestSystem, RasterData_Flipped_Tset) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test RasterDat Flipped";
     for (int i = 1; i < 20; i++) {
         DM::Logger(DM::Standard) << i;
@@ -1590,7 +1590,7 @@ TEST_F(TestSystem,profilingOMP)
 
 TEST_F(TestSystem,AttributesInSystem) {
     ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Attributes in System";
     DM::System * sys = new System();
     sys->addAttribute("year", 2010);
