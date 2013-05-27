@@ -945,7 +945,7 @@ void iterative_select(int numelements)
 		query.addBindValue(i);
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
 		if(!query.next())
@@ -980,7 +980,7 @@ void range_select(int numelements, int blocksize)
         query.addBindValue( (i+1)*blocksize );
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
 
@@ -1020,7 +1020,7 @@ void combined_select(int numelements, int blocksize)
 
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
 
@@ -1061,7 +1061,7 @@ TEST_F(TestSystem,selectTest) {
         std::cout << "START N " << numelements << std::endl;
         if (!init_table())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
         insert(numelements);
@@ -1105,7 +1105,7 @@ bool add_view(std::vector<long> keys)
 	//	q.addBindValue(key);
 
 	bool r = q.exec();
-	if(!r)	PrintSqlError(&q);
+	if(!r)	DM::PrintSqlError(&q);
 	return r;
 }
 
@@ -1114,7 +1114,7 @@ bool drop_view()
 	QSqlQuery q("DROP VIEW IF EXISTS viewa");
 
 	bool r = q.exec();
-	if(!r)	PrintSqlError(&q);
+	if(!r)	DM::PrintSqlError(&q);
 	return r;
 }
 
@@ -1131,7 +1131,7 @@ void block_view_select(std::vector<long> keys)
 
 	if(!q.exec())
 	{
-		PrintSqlError(&q);
+		DM::PrintSqlError(&q);
 		return;
 	}
 
@@ -1152,7 +1152,7 @@ void sql_view_select(long checksum)
 	QSqlQuery query("SELECT key,x,y,z FROM viewa");
 	if(!query.exec())
 	{
-		PrintSqlError(&query);
+		DM::PrintSqlError(&query);
 		return;
 	}
 
@@ -1172,7 +1172,7 @@ TEST_F(TestSystem,selectViewTest) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Profiling sql view select";
 
-	DBConnector::getInstance()->killWorker();
+	DM::DBConnector::getInstance()->killWorker();
 
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -1282,7 +1282,7 @@ void insert_view(QString viewname, const std::vector<long>& keys)
         query.addBindValue(key);
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
     }
@@ -1311,7 +1311,7 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
     DM::Logger(DM::Standard) << "Profiling sql view select join";
 
-	DBConnector::getInstance()->killWorker();
+	DM::DBConnector::getInstance()->killWorker();
 
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -1398,12 +1398,12 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
     DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	QElapsedTimer timer;
 	timer.start();
-	std::map<std::string, Component*> cmps = sys.getAllComponentsInView(v);
+	std::map<std::string, DM::Component*> cmps = sys.getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
 	
     DM::Logger(DM::Standard) << "initializing successor test system";
-	System* suc = sys.createSuccessor();
+	DM::System* suc = sys.createSuccessor();
 	DM::Node::ClearCache();
 	
     DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
@@ -1456,19 +1456,19 @@ TEST_F(TestSystem,standardBigDataTest) {
 	DM::Logger(DM::Standard) << "standard big data test";
 	
 	// get current config
-	DBConnectorConfig cfg = DBConnector::getInstance()->getConfig();
+	DM::DBConnectorConfig cfg = DM::DBConnector::getInstance()->getConfig();
 	// prepare a new one
-	DBConnectorConfig cfgNew = cfg;
+	DM::DBConnectorConfig cfgNew = cfg;
 	
 	QElapsedTimer timer;
 	const long N = 1e7;
 	
-	DM::Logger(Standard) << "cachesize\tnumber of elements\toperation\ttime";
+	DM::Logger(DM::Standard) << "cachesize\tnumber of elements\toperation\ttime";
 	
 	for(long cachesize = 100; cachesize <= N; cachesize *= 10)
 	{
 		cfgNew.nodeCacheSize = cachesize;
-		DBConnector::getInstance()->setConfig(cfgNew);
+		DM::DBConnector::getInstance()->setConfig(cfgNew);
 
 		for(long numelements = 100; numelements <= N; numelements *= 10)
 		{
@@ -1506,14 +1506,14 @@ TEST_F(TestSystem,standardBigDataTest) {
 				nodes[l]->setX(1.0);
 			setTime = timer.elapsed();
 			
-			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tadd\t\t" << addTime;
-			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tget\t\t" << getTime;
-			DM::Logger(Standard) << cachesize<< "\t\t" << numelements << "\t\t\tset\t\t" << setTime;
+			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tadd\t\t" << addTime;
+			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tget\t\t" << getTime;
+			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tset\t\t" << setTime;
 		}
 	}
 	
 	// reset configs
-	DBConnector::getInstance()->setConfig(cfg);
+	DM::DBConnector::getInstance()->setConfig(cfg);
 }
 
 #endif
