@@ -36,8 +36,12 @@
 #include <omp.h>
 #endif
 
-//#define SQLUNITTESTS
+#define SQLUNITTESTS
 //#define SQLPROFILING
+//#define PROFILE_GETCOMPONENTSINVIEW
+//#define SELECT_TEST_VIEW_TABLE
+//#define SELECT_TEST_VIEW
+//#define SELECT_TEST_COMPARISON
 //#define BIGDATATEST
 
 #ifdef _OPENMP
@@ -650,7 +654,7 @@ TEST_F(TestSystem, SQLattributes)
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
-TEST_F(TestSystem, System)
+TEST_F(TestSystem, SystemGetEdge)
 {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -662,6 +666,26 @@ TEST_F(TestSystem, System)
 	Node* n1 = sys.addNode(4,5,6);
 	Edge *e = sys.addEdge(n0,n1);
 	ASSERT_TRUE(e==sys.getEdge(n0->getUUID(), n1->getUUID()));
+}
+
+TEST_F(TestSystem,AttributesInSystem) {
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Attributes in System";
+    DM::System * sys = new System();
+    sys->addAttribute("year", 2010);
+    DM::System * sys_next = sys->createSuccessor();
+
+    double year = sys_next->getAttribute("year")->getDouble() + 1;
+
+    sys_next->addAttribute("year",year);
+
+    ASSERT_DOUBLE_EQ(sys->getAttribute("year")->getDouble(), 2010);
+    ASSERT_DOUBLE_EQ(sys_next->getAttribute("year")->getDouble(), 2011);
+
+    delete sys;
+}
+
 }
 
 #endif
@@ -840,6 +864,7 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 }
 */
 
+#endif // SQLPROFILING
 
 bool init_table()
 {
@@ -872,7 +897,7 @@ void insert(int numelements)
         query.addBindValue((double)i*5);
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
     }
@@ -890,7 +915,7 @@ void iterative_view_select(const std::vector<long>& keys)
 		query.addBindValue(i);
         if (!query.exec())
 		{
-			PrintSqlError(&query);
+			DM::PrintSqlError(&query);
 			return;
 		}
 		if(!query.next())
@@ -904,8 +929,8 @@ void iterative_view_select(const std::vector<long>& keys)
 	}
 }
 
-//#define SELECT_TEST
-#ifdef SELECT_TEST
+#ifdef SELECT_TEST_COMPARISON
+
 void iterative_select(int numelements) 
 {
     QElapsedTimer timer;
@@ -1060,10 +1085,9 @@ TEST_F(TestSystem,selectTest) {
     db.close(); // for close connection
 }
 
-#endif // SELECT_TEST
+#endif // SELECT_TEST_COMPARISON
 
-//#define SELECT_VIEW_TEST
-#ifdef SELECT_VIEW_TEST
+#ifdef SELECT_TEST_VIEW
 
 bool add_view(std::vector<long> keys)
 {
@@ -1224,10 +1248,9 @@ TEST_F(TestSystem,selectViewTest) {
     db.close(); // for close connection
 }
 
-#endif SELECT_VIEW_TEST
+#endif //SELECT_TEST_VIEW
 
-//#define SELECT_VIEW_TABLE_TEST
-#ifdef SELECT_VIEW_TABLE_TEST
+#ifdef SELECT_TEST_VIEW_TABLE
 
 
 bool init_view_table()
@@ -1349,8 +1372,9 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 	getchar();
 }
 
-#endif
+#endif // SELECT_TEST_VIEW_TABLE
 
+#ifdef PROFILE_GETCOMPONENTSINVIEW
 
 TEST_F(TestSystem,getComponentsInViewProfiling) {
     ostream *out = &cout;
@@ -1414,7 +1438,7 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	ASSERT_TRUE(cmps.size() == n);*/
 }
 
-#endif
+#endif // PROFILE_GETCOMPONENTSINVIEW
 
 #ifdef BIGDATATEST
 long randlong()
@@ -1587,23 +1611,3 @@ TEST_F(TestSystem,profilingOMP)
 	}
 }
 #endif
-
-TEST_F(TestSystem,AttributesInSystem) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Attributes in System";
-    DM::System * sys = new System();
-    sys->addAttribute("year", 2010);
-    DM::System * sys_next = sys->createSuccessor();
-
-    double year = sys_next->getAttribute("year")->getDouble() + 1;
-
-    sys_next->addAttribute("year",year);
-
-    ASSERT_DOUBLE_EQ(sys->getAttribute("year")->getDouble(), 2010);
-    ASSERT_DOUBLE_EQ(sys_next->getAttribute("year")->getDouble(), 2011);
-
-    delete sys;
-}
-
-}
