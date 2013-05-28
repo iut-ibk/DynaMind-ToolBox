@@ -11,31 +11,23 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	ui->setupUi(this);
 	this->m = m;
 
-	/*
-	DM::Logger(DM::Debug) << this->m->getName();
+	//DM::Logger(DM::Debug) << this->m->getName();
 
-	Views Stored in System
-	std::map<std::string, std::vector<DM::View> > views = m->getViews();
-	*/
 	this->ui->treeWidget_views->setColumnCount(3);
 	this->ui->treeWidget_views->setColumnWidth(0,200);
 	QTreeWidgetItem * headerItem = this->ui->treeWidget_views->headerItem();
 	headerItem->setText(0, "Data Stream");
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
-	foreach(std::string portName, m->getOutPortNames())
+	
+	std::map<std::string, std::vector<DM::View> > views = m->getStreamViews();
+	for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) 
 	{
-		//for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) {
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
 		this->ui->treeWidget_views->addTopLevelItem(root_port);
-		root_port->setText(0, QString::fromStdString(portName));
+		root_port->setText(0, QString::fromStdString(it->first));
 
-		DM::System* data = m->getOutPortData(portName);
-		if(!data)
-			continue;
-
-		std::vector<DM::View> vs = data->getViews();
-		foreach (DM::View v, vs) 
+		foreach (DM::View v, it->second) 
 		{
 			//if (v.getName().compare("dummy") == 0)
 			//	continue;

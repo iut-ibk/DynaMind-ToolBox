@@ -534,7 +534,7 @@ void ModelNode::viewData(int portIndex)
     //TODO hook(er) me up
     //DM::Port *p = this->getDMModel()->getOutPorts()[0];
     //DM::System *system = this->getDMModel()->getData(p->getLinkedDataName());
-	DM::System *system = module->getOutPortData(module->getOutPortNames()[portIndex]);
+	DM::System *system = module->getData(module->getOutPortNames()[portIndex]);
     DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
     viewer_window->show();
 }
