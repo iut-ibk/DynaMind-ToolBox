@@ -125,7 +125,7 @@ void GUISimulation::clearSimulation() {
 
 void GUISimulation::showHelp(string classname) 
 {
-   // emit showHelpForModule(classname);
+    //emit showHelpForModule(classname);
 }
 
 void GUISimulation::loadModulesFromDefaultLocation()

@@ -79,7 +79,7 @@ private:
     GUISimulation * simulation;
     //SimulationManagment * simmanagment;
     //GUISimulationObserver * simobserver;
-    GUIHelpViewer * helpviewer;
+    //GUIHelpViewer * helpviewer;
 
     void createModuleListView();
     //QMap<QString, ModuleDescription> modules;
@@ -112,7 +112,7 @@ public slots:
     void removeGroupWindows(QString uuid);
     void updateSimulation();
     void resetSimulation();
-    void showHelp(std::string classname);
+//    void showHelp(std::string classname);
 
 
 

@@ -160,6 +160,7 @@ public slots:
     //void setResetModule();
    signals:
     void showHelp(std::string, std::string);
+    //void showHelp(std::string);
 
 
 };

@@ -187,7 +187,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     //this->simulation->registerRootNode();
     this->simulation->loadModulesFromDefaultLocation();
     this->simulation->loadModulesFromSettings();
-    this->helpviewer = new GUIHelpViewer(this->simulation);
+    //this->helpviewer = new GUIHelpViewer(this->simulation);
 
 	// init root tab
 	SimulationTab* tab = new SimulationTab(parent, this->simulation);
@@ -635,12 +635,12 @@ void DMMainWindow::on_actionZoomReset_triggered()
 
 }
 
-void DMMainWindow::showHelp(std::string classname) 
+/*void DMMainWindow::showHelp(std::string classname) 
 {
     this->helpviewer->show();
     this->helpviewer->showHelpForModule(classname);
-}
+}*/
 
 void DMMainWindow::on_actionShow_Help_triggered() {
-    this->helpviewer->show();
+    //this->helpviewer->show();
 }

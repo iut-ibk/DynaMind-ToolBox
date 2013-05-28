@@ -439,8 +439,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
 void ModelNode::editModelNode() 
 {
-    GUIModelNode * gui  = new GUIModelNode(module ,this);
-    gui->show();
+	(new GUIModelNode(module ,this))->show();
 }
 /*
 void ModelNode::renameModelNode() {
@@ -530,10 +529,16 @@ void ModelNode::viewData(int portIndex)
     viewer_window->show();
 }
 
+#include <guihelpviewer.h>
+
 void ModelNode::showHelp() 
 {
     //emit showHelp(module->getClassName());
     //this->simulation->showHelp();
+
+	GUIHelpViewer* ghv = new GUIHelpViewer(simulation);
+	ghv->showHelpForModule(module);
+    ghv->show();
 }
 /*
 void ModelNode::setDebug() {

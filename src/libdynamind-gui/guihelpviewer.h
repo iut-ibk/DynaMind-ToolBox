@@ -51,7 +51,8 @@ private:
      GUISimulation * sim;
 
 public slots:
-    void showHelpForModule(std::string className);
+    //void showHelpForModule(std::string className);
+	void showHelpForModule(DM::Module* m);
     
     void on_commandBackToOvwerView_clicked();
 
