@@ -163,10 +163,11 @@ System* Module::getOutPortData(const std::string &name)
 		return outPorts[name];
 }
 
-void Module::addData(std::string name, std::vector<View> views)
+void Module::addData(const std::string& streamName, std::vector<View> views)
 {
-	DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
-	this->views = views;
+	//DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
+
+	this->accessedViews[streamName] = views;
 
 	bool inPort = false;
 	bool outPort = false;
@@ -181,23 +182,23 @@ void Module::addData(std::string name, std::vector<View> views)
 	}
 	
 	if(inPort)
-		this->addInPort(name);
+		this->addInPort(streamName);
 	if(outPort)
-		this->addOutPort(name);
+		this->addOutPort(streamName);
 }
 
-System* Module::getData(std::string name)
+System* Module::getData(const std::string& streamName)
 {
-	DM::Logger(Warning) << "Module::getData deprecated, " << 
-		"create a new system and apply to port via setOutPortData instead";
+	//DM::Logger(Warning) << "Module::getData deprecated, " << 
+	//	"create a new system and apply to port via setOutPortData instead";
 
-	System *sys = getInPortData(name);
+	System *sys = getInPortData(streamName);
 	if(!sys)
 		sys = new System();
 	
-	foreach(View v, views)
+	foreach(View v, accessedViews[streamName])
 		sys->addView(v);
-	this->setOutPortData(name, sys);
+	this->setOutPortData(streamName, sys);
 	return sys;
 }
 

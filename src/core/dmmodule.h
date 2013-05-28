@@ -312,10 +312,6 @@ public:
 	void reset();
 
 	
-	/** @brief get data from inport, public for viewer */
-	System* getInPortData(const std::string &name);
-	/** @brief get data from outport, public for viewer */
-	System* getOutPortData(const std::string &name);
 
 	
     /** @brief Returns URL to the help of the module */
@@ -330,6 +326,9 @@ public:
 	{
 		return inputDialog;
 	}
+	
+	std::map<std::string, std::vector<View>> getStreamViews() {return accessedViews;};
+	System* getData(const std::string& streamName);
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -341,15 +340,20 @@ protected:
 	bool hasInPort(const std::string &name);
 	bool hasOutPort(const std::string &name);
 	/** @brief */
-	void setOutPortData(const std::string &name, System* data);
-	/** @brief */
 	void setStatus(ModuleStatus status) {this->status = status;};
 
+	void addData(const std::string& streamName, std::vector<View> views);
 	// deprecated
-	void addData(std::string name, std::vector<View> views);
-	System* getData(std::string name);
 	RasterData* getRasterData(std::string name, View view);
 private:
+	/** @brief */
+	void setOutPortData(const std::string &name, System* data);
+	/** @brief get data from inport */
+	System* getInPortData(const std::string &name);
+	/** @brief get data from outport */
+	System* getOutPortData(const std::string &name);
+
+
 	QWidget* inputDialog;
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
@@ -360,7 +364,7 @@ private:
 	std::map<std::string, System*>	outPorts;
 	ModuleStatus status;
 
-	std::vector<View> views;
+	std::map<std::string, std::vector<View>> accessedViews;	// streamname | views
 };
 
 #ifdef OLD_WF
