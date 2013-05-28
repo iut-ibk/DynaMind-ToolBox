@@ -334,19 +334,21 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 
 }
 
+void ModelNode::showDialog()
+{
+    if(this->visible)
+	{
+		QWidget *w = module->getInputDialog();
+        if(w)
+			w->show();
+		else
+			editModelNode();
+	}
+}
+
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) 
 {
-	editModelNode();
-	/*
-    if(this->visible){
-        this->simulation->updateSimulation();
-        if (this->getDMModel()->createInputDialog() == false )
-        {
-
-            QWidget * gui  = new GUIModelNode(this->getDMModel(), this);
-            gui->show();
-        }
-    }*/
+    showDialog();
 }
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
     QGraphicsItem::mousePressEvent(event );
@@ -382,11 +384,17 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QAction * a_delete = menu.addAction("delete");
     QAction * a_showHelp = menu.addAction("help");
     QAction * a_showData = menu.addAction("stream");
-	
+
     connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
+
+	if(module->getInputDialog())
+	{
+		QAction * a_showDialog = menu.addAction("module GUI");
+		connect( a_showDialog, SIGNAL(triggered() ), this, SLOT( showDialog() ), Qt::DirectConnection);
+	}
 	
     menu.exec(event->screenPos());
 

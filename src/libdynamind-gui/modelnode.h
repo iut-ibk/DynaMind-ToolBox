@@ -155,6 +155,7 @@ public slots:
     void printData();
     void viewData(int portIndex);
     void showHelp();
+	void showDialog();
     //void setDebug();
     //void setRelease();
     //void setResetModule();
