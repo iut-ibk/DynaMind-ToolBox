@@ -63,157 +63,144 @@ void GUIModelNode::openFileDialog() {
 
 GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWidget(parent)
 {
-    this->module = m;
-    this->modelnode = mn;
+	this->module = m;
+	this->modelnode = mn;
 
-    QGridLayout *layout = new QGridLayout;
+	QGridLayout *layout = new QGridLayout;
 
-    layout1 = new QGridLayout;
-    QGroupBox *gbox = new QGroupBox;
-    gbox->setTitle("Parameter");
-	// TODO parameter read out
-    std::map<std::string, int> parameter;// = m->getParameterList();
-    std::vector<std::string> NameList;// = m->getParameterListAsVector();
-    foreach(std::string name, NameList){
-        int ID = parameter[name];//it->second;
-        if (ID == DM::DOUBLE || ID == DM::LONG || ID == DM::INT) {
-            QLabel * l = new QLabel;
-            QLineEdit * le = new QLineEdit;
-            //QCheckBox * cb = new QCheckBox("from Outside");
-            double val = -1;
-            QString s  = QString().fromStdString(name);
-            std::string s_tmp = name;
+	layout1 = new QGridLayout;
+	QGroupBox *gbox = new QGroupBox;
+	gbox->setTitle("Parameter");
 
-            if (ID == DM::DOUBLE)
-                val = m->getParameter<double>(s_tmp);
-            if (ID == DM::LONG)
-                val = m->getParameter<long>(s_tmp);
-            if (ID == DM::INT)
-                val = m->getParameter<int>(s_tmp);
+	foreach(DM::Module::Parameter* p, m->getParameters())
+	{
+		QString qname  = QString::fromStdString(p->name);
 
-            QString numberAsText = QString::number(val, 'g', 15);
-            l->setText(s);
-            le->setText(numberAsText);
-            elements.insert(s, le);
-            QString s1;
-            s1= "InputDouble|DoubleIn_"+ s;
-            //cb->setObjectName(s1);
-            layout1->addWidget(l, layout1->rowCount(),0);
-            layout1->addWidget(le,layout1->rowCount()-1,1);
-            //layout1->addWidget(cb,layout1->rowCount()-1,2);
+		switch(p->type)
+		{
+		case DM::DOUBLE:
+		case DM::LONG:
+		case DM::INT:
+			{
+				double dval = -1;
+				if(p->type == DM::DOUBLE)		dval = p->get<double>();
+				else if(p->type == DM::LONG)	dval = p->get<long>();
+				else if(p->type == DM::INT)		dval = p->get<int>();
 
+				QLabel * l = new QLabel;
+				QLineEdit * le = new QLineEdit;
+				//QCheckBox * cb = new QCheckBox("from Outside");
 
-        }
-        if ( ID == DM::BOOL) {
-            std::string s_tmp = name;
-            QString s  = QString::fromStdString(name);
-            bool val  =  m->getParameter<bool>(s_tmp);
-            QLabel * l = new QLabel;
-            QCheckBox * le = new QCheckBox;
-            le->setChecked(val);
-            l->setText(s);
-            elements.insert(s, le);
+				QString numberAsText = QString::number(dval, 'g', 15);
+				l->setText(qname);
+				le->setText(numberAsText);
+				elements.insert(qname, le);
+				QString s1;
+				s1= "InputDouble|DoubleIn_"+ qname;
+				//cb->setObjectName(s1);
+				layout1->addWidget(l, layout1->rowCount(),0);
+				layout1->addWidget(le,layout1->rowCount()-1,1);
+				//layout1->addWidget(cb,layout1->rowCount()-1,2);
+			}
+			break;
+		case DM::BOOL:
+			{
+				QLabel * l = new QLabel;
+				QCheckBox * le = new QCheckBox;
+				le->setChecked(p->get<bool>());
+				l->setText(qname);
+				elements.insert(qname, le);
 
-            layout1->addWidget(l, layout1->rowCount(),0);
-            layout1->addWidget(le,layout1->rowCount()-1,1);
-        }
-        if ( ID == DM::STRING) {
-            std::string s_tmp = name;
-            QString s  = QString::fromStdString(name);
-            QString val  = QString::fromStdString( m->getParameter<std::string>(s_tmp));
-            QLabel * l = new QLabel;
-            QLineEdit * le = new QLineEdit;
-            le->setText(val);
-            l->setText(s);
-            elements.insert(s, le);
+				layout1->addWidget(l, layout1->rowCount(),0);
+				layout1->addWidget(le,layout1->rowCount()-1,1);
+			}
+			break;
+		case DM::STRING:
+			{
+				QLabel * l = new QLabel;
+				QLineEdit * le = new QLineEdit;
+				le->setText(QString::fromStdString(p->get<std::string>()));
+				l->setText(qname);
+				elements.insert(qname, le);
 
-            layout1->addWidget(l, layout1->rowCount(),0);
-            layout1->addWidget(le,layout1->rowCount()-1,1);
-        }
-        if ( ID == DM::FILENAME) {
-            std::string s_tmp = name;
-            QString s  = QString().fromStdString(name);
-            QLabel * l = new QLabel;
-            QLineEdit * le = new QLineEdit;
-            QPushButton * pb = new QPushButton;
-            le->setText(QString::fromStdString(m->getParameter<std::string>(s_tmp)));
-            l->setText(s);
-            pb->setText("...");
-            elements.insert(s, le);
+				layout1->addWidget(l, layout1->rowCount(),0);
+				layout1->addWidget(le,layout1->rowCount()-1,1);
+			}
+			break;
+		case DM::FILENAME:
+			{
+				QLabel * l = new QLabel;
+				QLineEdit * le = new QLineEdit;
+				QPushButton * pb = new QPushButton;
+				le->setText(QString::fromStdString( p->get<std::string>() ));
+				l->setText(qname);
+				pb->setText("...");
+				elements.insert(qname, le);
 
-            layout1->addWidget(l, layout1->rowCount(),0);
-            layout1->addWidget(le,layout1->rowCount()-1,1);
-            layout1->addWidget(pb,layout1->rowCount()-1,2);
+				layout1->addWidget(l, layout1->rowCount(),0);
+				layout1->addWidget(le,layout1->rowCount()-1,1);
+				layout1->addWidget(pb,layout1->rowCount()-1,2);
 
-            connect(pb, SIGNAL(clicked()), this, SLOT(openFileDialog()));
-            connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
-        }
-        if (ID == DM::STRING_MAP ) {
-            QString s  = QString().fromStdString(name);
-            QGroupBox * box= new QGroupBox;
-            QGridLayout * layout_grid = new QGridLayout;
-            box->setLayout( layout_grid);
+				connect(pb, SIGNAL(clicked()), this, SLOT(openFileDialog()));
+				connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
+			}
+			break;
+		case DM::STRING_MAP:
+			{
+				QGroupBox * box= new QGroupBox;
+				QGridLayout * layout_grid = new QGridLayout;
+				box->setLayout( layout_grid);
+				box->setTitle(qname);
+				layout1->addWidget(box, layout1->rowCount(),0,1,3);
 
-            box->setTitle(s);
-            QPushButton * pb = new QPushButton;
-            pb->setText("+");
-            QString s1;
-            s1 = "UserDefindedTupleItem|" + s;
-            pb->setObjectName(s1);
-            connect(pb, SIGNAL(clicked()), this, SLOT(addUserDefinedTuple()));
-            layout_grid->addWidget(pb, 0,0,1,3);
-            layout1->addWidget(box, layout1->rowCount(),0,1,3);
-            std::string stds = s.toStdString();
-            std::map<std::string, std::string> entries;
-            entries = this->module->getParameter<std::map<std::string, std::string> >(stds);
+				QPushButton * pb = new QPushButton;
+				pb->setText("+");
+				pb->setObjectName("UserDefindedTupleItem|" + qname);
+				connect(pb, SIGNAL(clicked()), this, SLOT(addUserDefinedTuple()));
+				layout_grid->addWidget(pb, 0,0,1,3);
 
-            for (std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
-                QLabel * l1 = new QLabel;
-                QLineEdit * l = new QLineEdit;
-                l->setText(QString::fromStdString((std::string) it->second));
-                l1->setText(QString::fromStdString((std::string) it->first));
-                layout_grid->addWidget(l1, layout_grid->rowCount(),0);
-                layout_grid->addWidget(l, layout_grid->rowCount()-1,1);
-                QString n = s + "|" + QString::fromStdString((std::string) it->first);
-                this->elements.insert(n, l);
-            }
-            this->UserDefinedContainer.insert(s, layout_grid);
+				std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string>>();
+				for (std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) 
+				{
+					QLabel * l1 = new QLabel;
+					QLineEdit * l = new QLineEdit;
+					l->setText(QString::fromStdString(it->second));
+					l1->setText(QString::fromStdString(it->first));
+					layout_grid->addWidget(l1, layout_grid->rowCount(),0);
+					layout_grid->addWidget(l, layout_grid->rowCount()-1,1);
+					QString n = qname + "|" + QString::fromStdString((std::string) it->first);
+					this->elements.insert(n, l);
+				}
+				this->UserDefinedContainer.insert(qname, layout_grid);
+			}
+			break;
+		}
+	}
+	gbox->setLayout(layout1);
+	layout->addWidget(gbox);
 
+	QDialogButtonBox * bbox  = new QDialogButtonBox(QDialogButtonBox::Ok
+		| QDialogButtonBox::Cancel | QDialogButtonBox::Help);
 
+	//layout->isWidgetType();
 
+	QScrollArea *bar = new QScrollArea;
+	bar->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	bar->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	bar->setWidgetResizable(true);
 
-        }
+	QWidget *widget = new QWidget;
+	widget->setLayout(layout);
+	bar->setWidget(widget);
 
-
-    }
-
-
-    gbox->setLayout(layout1);
-    layout->addWidget(gbox);
-
-
-
-    QDialogButtonBox * bbox  = new QDialogButtonBox(QDialogButtonBox::Ok
-                                                    | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-
-    layout->isWidgetType();
-    QScrollArea *bar = new QScrollArea;
-    bar->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    bar->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    bar->setWidgetResizable(true);
-    QWidget *widget = new QWidget;
-    widget->setLayout(layout);
-    bar->setWidget(widget);
-    QVBoxLayout * l = new QVBoxLayout;
-    l->addWidget(bar);
-
-    l->addWidget(bbox);
-
-    setLayout(l);
-    //setLayout(layout);
-    connect(bbox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bbox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(bbox, SIGNAL(helpRequested ()), this, SLOT(help()));
+	QVBoxLayout * l = new QVBoxLayout;
+	l->addWidget(bar);
+	l->addWidget(bbox);
+	setLayout(l);
+	//setLayout(layout);
+	connect(bbox, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(bbox, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(bbox, SIGNAL(helpRequested ()), this, SLOT(help()));
 }
 void GUIModelNode::help() {
 
@@ -427,39 +414,72 @@ void GUIModelNode::addUserDefinedTuple() {
 
 }
 
-void GUIModelNode::accept() {
+void GUIModelNode::accept() 
+{
+    //map<std::string, int> parameter;// = this->module->getParameterList();
 
-    map<std::string, int> parameter;// = this->module->getParameterList();
-
-
-    foreach(QString s,  this->elements.keys()) {
-        int ID = parameter[s.split("|")[0].toStdString()];//it->second;
+    foreach(QString s,  this->elements.keys()) 
+	{
+        /*int ID = parameter[s.split("|")[0].toStdString()];//it->second;
         QAbstractButton * ab;
         QLineEdit * le;
-        std::map<std::string, std::string> map;
-        switch (ID)
+        std::map<std::string, std::string> map;*/
+		DM::Module::Parameter* p = module->getParameter(s.toStdString());
+		switch(p->type)
         {
         case (DM::BOOL):
-            ab = ( QAbstractButton * ) this->elements.value(s);
-            this->module->setParameterNative(s.toStdString(), ab->isChecked());
+			{
+            QAbstractButton *ab = ( QAbstractButton * ) this->elements.value(s);
+            //this->module->setParameterNative(s.toStdString(), ab->isChecked());
+			if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+				p->set(ab->isChecked());
+			}
             break;
+        case (DM::STRING_LIST):
         case (DM::STRING_MAP):
-            le = ( QLineEdit * ) this->elements.value(s);
-            map = this->module->getParameter<std::map<std::string, std::string> > (s.split("|")[0].toStdString());
+			{
+            /*QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+            std::map<std::string, std::string>map = this->module->getParameter<std::map<std::string, std::string> > (s.split("|")[0].toStdString());
             map[s.split("|")[1].toStdString()] = le->text().toStdString();
-            this->module->setParameterNative(s.split("|")[0].toStdString(), map);
+            this->module->setParameterNative(s.split("|")[0].toStdString(), map);*/
+			}
             break;
-        default:
-            le = ( QLineEdit * ) this->elements.value(s);
+        /*default:
+			{
+            QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
             this->module->setParameterValue(s.toStdString(), le->text().toStdString());
-            break;
+			}
+            break;*/
+		case DM::INT:
+			{
+				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+					p->set(le->text().toInt());
+			}
+			break;
+		case DM::LONG:
+			{
+				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+					p->set(le->text().toLong());
+			}
+			break;
+		case DM::DOUBLE:
+			{
+				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+					p->set(le->text().toDouble());
+			}
+			break;
+		case DM::STRING:
+			{
+				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+					p->set(le->text().toStdString());
+			}
+			break;
         }
-
-
-
-
     }
-
     delete(this);
 }
 void GUIModelNode::reject() {
