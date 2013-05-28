@@ -320,9 +320,17 @@ public:
 	
     /** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
+	/** @brief sets an individual input dialog for the module */
+	void setInputDialog(QWidget *w)
+	{
+		inputDialog = w;
+	}
+	/** @brief returns the module gui, if provided. else returns NULL */
+	QWidget* getInputDialog()
+	{
+		return inputDialog;
+	}
 protected:
-
-
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
 	void addOutPort(const std::string &name);
@@ -342,6 +350,7 @@ protected:
 	System* getData(std::string name);
 	RasterData* getRasterData(std::string name, View view);
 private:
+	QWidget* inputDialog;
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
 

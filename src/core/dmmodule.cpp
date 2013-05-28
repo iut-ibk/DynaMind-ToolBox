@@ -57,6 +57,7 @@ namespace DM {
 Module::Module()
 {
 	status = MOD_UNTOUCHED;
+	inputDialog = NULL;
 }
 Module::~Module()
 {
