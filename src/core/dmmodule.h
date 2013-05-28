@@ -316,6 +316,10 @@ public:
 	System* getInPortData(const std::string &name);
 	/** @brief get data from outport, public for viewer */
 	System* getOutPortData(const std::string &name);
+
+	
+    /** @brief Returns URL to the help of the module */
+	virtual std::string getHelpUrl(){return "";};
 protected:
 
 
