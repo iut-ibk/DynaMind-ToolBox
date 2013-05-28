@@ -198,6 +198,30 @@ class DM_HELPER_DLL_EXPORT Module
 {
 	friend Simulation;
 public:
+	/** @brief parameters are variable values given via gui inputm configuring a module */
+	struct Parameter
+	{
+		const std::string	name;
+		const DataTypes		type;
+		void*				data;
+		const std::string	description;
+
+		Parameter(const std::string name, const DataTypes type, const std::string description):
+			name(name), type(type), description(description)
+		{};
+		template<typename T>
+		void set(T value)
+		{
+			*(T*)data = value;
+		}
+		template<typename T>
+		T get()
+		{
+			return *(T*)data;
+		}
+		
+	};
+
 	Module();
 	virtual ~Module();
 	/** @brief an optional init function for runtime inits*/
@@ -219,16 +243,16 @@ public:
       * - DM::STRING_LIST
       * - DM::STRING_MAP
       */
-    void addParameter(const std::string &name, DataTypes type, void * ref, std::string description = "");
+    void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 
 	ModuleStatus getStatus(){return status;};
 	
-	template<typename T>
+	/*template<typename T>
 	void setParameter(std::string name, T value)
 	{
-		if(map_contains(&parameters, name))
-			*(T*)parameters[name]->data = value;
-	}
+		if(Parameter* p = searchParameter(name))
+			*(T*)p->data = value;
+	}*/
 	//void setParameter(std::string name, int value);
 
 	/*template<typename T>
@@ -237,21 +261,38 @@ public:
 		if(map_contains(&parameters, name))
 			value = *(T*)parameters[name]->data;
 	}*/
-	template<typename T>
+	/*template<typename T>
 	T getParameter(std::string name)
 	{
-		T v;
-		if(map_contains(&parameters, name))
-			v = *(T*)parameters[name]->data;
-		return v;
+		if(Parameter* p = searchParameter(name))
+			return *(T*)p->data;
+		return NULL;
 	}
-	
+	std::vector<std::string> getParameters()
+	{
+		std::vector<std::string> names;
+		foreach(Parameter* p, parameters)
+			names.push_back(p->name);
 
+		return names;
+	}*/
 
+public:
+	Parameter* getParameter(const std::string name) const
+	{
+		foreach(Parameter* p, parameters)
+			if(p->name == name)
+				return p;
+		return NULL;
+	}
+	std::vector<Parameter*> getParameters() const
+	{
+		return parameters;
+	}
 	//void getParameter(std::string name, int &value);
 	
 	// deprecated
-	std::string getParameterAsString(std::string name);
+	/*std::string getParameterAsString(std::string name);
 	void setParameterValue(std::string name, std::string value)
 	{
 		setParameter(name, value);
@@ -260,7 +301,7 @@ public:
 	void setParameterNative(std::string name, T value)
 	{
 		setParameter<T>(name, value);
-	}
+	}*/
 	std::vector<std::string> getInPortNames();
 	std::vector<std::string> getOutPortNames();
 
@@ -299,15 +340,9 @@ protected:
 private:
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
-	/** @brief parameters are variable values given via gui inputm configuring a module */
-	struct Parameter
-	{
-		std::string		name;
-		DataTypes		type;
-		void*			data;
-		std::string		description;
-	};
-	std::map<std::string, Parameter*>	parameters;
+
+	//std::map<std::string, Parameter*>	parameters;
+	std::vector<Parameter*>	parameters;
 	std::map<std::string, System*>	inPorts;
 	std::map<std::string, System*>	outPorts;
 	ModuleStatus status;

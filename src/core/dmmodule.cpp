@@ -60,7 +60,7 @@ Module::Module()
 }
 Module::~Module()
 {
-	mforeach(Parameter* p, parameters)
+	foreach(Parameter* p, parameters)
 		delete p;
 
 	parameters.clear();
@@ -78,12 +78,9 @@ Module::~Module()
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {
-    Parameter *p = new Parameter();
-	p->name = name;
-	p->type = type;
+	Parameter *p = new Parameter(name, type, description);
 	p->data = ref;
-	p->description = description;
-	parameters[name] = p;
+	parameters.push_back(p);
 }
 
 void Module::addInPort(const std::string &name)
@@ -231,13 +228,13 @@ void Module::setParameter(std::string name, T value)
 }*/
 
 
-std::string Module::getParameterAsString(std::string name)
+/*std::string Module::getParameterAsString(std::string name)
 {   
 	std::stringstream strValue;
     strValue.precision(16);
-	if(map_contains(&parameters, name))
+	
+	if(Parameter* p = searchParameter(name))
 	{
-		Parameter* p = parameters[name];
 		switch(p->type)
 		{
 		case DOUBLE:	strValue << *(double*)p->data;	break;
@@ -260,7 +257,7 @@ std::string Module::getParameterAsString(std::string name)
 		}
 	}
 	return strValue.str();
-}
+}*/
 
 std::vector<std::string> Module::getInPortNames()
 {
