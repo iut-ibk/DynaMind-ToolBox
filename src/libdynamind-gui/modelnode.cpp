@@ -334,7 +334,9 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 
 }
 
-void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
+void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) 
+{
+	editModelNode();
 	/*
     if(this->visible){
         this->simulation->updateSimulation();
