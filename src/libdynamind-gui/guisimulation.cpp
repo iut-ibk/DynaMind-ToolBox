@@ -127,7 +127,7 @@ void GUISimulation::showHelp(string classname)
 {
     //emit showHelpForModule(classname);
 }
-
+/*
 QVector<QDir> defaultModuleDirectories()
 {
 	QVector<QDir> cpv;
@@ -154,6 +154,7 @@ void GUISimulation::loadModulesFromDefaultLocation()
 	foreach (QDir cp, defaultModuleDirectories())  
 		registerModulesFromDirectory(cp);
 }
+*/
 
 bool GUISimulation::loadModulesFromSettings() 
 {

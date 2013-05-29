@@ -49,7 +49,7 @@ public:
     void clearSimulation();
 
 	/** @brief loads modules from default locations */
-    void loadModulesFromDefaultLocation();
+    //void loadModulesFromDefaultLocation();
 	/** @brief Add the modules set in the QSetting **/
     bool loadModulesFromSettings();
 
