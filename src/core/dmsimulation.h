@@ -122,6 +122,8 @@ public:
 	SimulationStatus getSimulationStatus() {return status;};
 	/** @brief accessor to module registry */
 	ModuleRegistry* getModuleRegistry(){return moduleRegistry;};
+
+	static QVector<QDir> defaultModuleDirectories();
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
