@@ -118,6 +118,8 @@ public:
 	void run();
     /** @brief Resets the whole simulation */
     void reset();
+    /** @brief Resets the whole simulation, deprecated, for backwards compatibility */
+	void resetSimulation() {reset();};
 	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
 	/** @brief accessor to module registry */
