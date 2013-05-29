@@ -224,12 +224,12 @@ void Module::setParameter(std::string name, T value)
 }*/
 
 
-/*std::string Module::getParameterAsString(std::string name)
+std::string Module::getParameterAsString(const std::string& name)
 {   
 	std::stringstream strValue;
     strValue.precision(16);
 	
-	if(Parameter* p = searchParameter(name))
+	if(Parameter* p = getParameter<Parameter*>(name))
 	{
 		switch(p->type)
 		{
@@ -253,7 +253,7 @@ void Module::setParameter(std::string name, T value)
 		}
 	}
 	return strValue.str();
-}*/
+}
 
 std::vector<std::string> Module::getInPortNames()
 {

@@ -219,7 +219,6 @@ public:
 		{
 			return *(T*)data;
 		}
-		
 	};
 
 	Module();
@@ -247,38 +246,16 @@ public:
 
 	ModuleStatus getStatus(){return status;};
 	
-	/*template<typename T>
-	void setParameter(std::string name, T value)
-	{
-		if(Parameter* p = searchParameter(name))
-			*(T*)p->data = value;
-	}*/
-	//void setParameter(std::string name, int value);
-
-	/*template<typename T>
-	void getParameter(std::string name, T &value)
-	{
-		if(map_contains(&parameters, name))
-			value = *(T*)parameters[name]->data;
-	}*/
-	/*template<typename T>
-	T getParameter(std::string name)
-	{
-		if(Parameter* p = searchParameter(name))
-			return *(T*)p->data;
-		return NULL;
-	}
-	std::vector<std::string> getParameters()
-	{
-		std::vector<std::string> names;
-		foreach(Parameter* p, parameters)
-			names.push_back(p->name);
-
-		return names;
-	}*/
-
 public:
-	Parameter* getParameter(const std::string name) const
+	template<typename T>
+	T getParameter(const std::string& name) const
+	{
+		if(Parameter* p = getParameter<Parameter*>(name))
+			return p->data<T>();
+		return T();
+	}
+	template<>
+	Parameter* getParameter<Parameter*>(const std::string& name) const
 	{
 		foreach(Parameter* p, parameters)
 			if(p->name == name)
@@ -289,19 +266,6 @@ public:
 	{
 		return parameters;
 	}
-	//void getParameter(std::string name, int &value);
-	
-	// deprecated
-	/*std::string getParameterAsString(std::string name);
-	void setParameterValue(std::string name, std::string value)
-	{
-		setParameter(name, value);
-	}
-	template<typename T>
-	void setParameterNative(std::string name, T value)
-	{
-		setParameter<T>(name, value);
-	}*/
 	std::vector<std::string> getInPortNames();
 	std::vector<std::string> getOutPortNames();
 
@@ -310,10 +274,6 @@ public:
 	/** @brief checks if all inports are set or not existing */
 	bool inPortsSet();
 	void reset();
-
-	
-
-	
     /** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 	/** @brief sets an individual input dialog for the module */
@@ -329,6 +289,28 @@ public:
 	
 	std::map<std::string, std::vector<View>> getStreamViews() {return accessedViews;};
 	System* getData(const std::string& streamName);
+
+	/*********************
+	* Backward comp.
+	**********************/
+	    /** @brief Returns the parameter as string value
+      *
+      * As seperator for STRING_LIST *|* is used and for maps also *||*
+      *
+      * 1*|*2*|*3*|4*||*
+      *
+      * 5*|*6*|*7*|*8*||*
+      *
+    */
+	std::string getParameterAsString(const std::string& name);
+	std::string getUuid()
+	{
+		return "<Module::getUuid deprecated>";
+	}
+
+
+    /** @brief set parameter as value as string*/
+    //virtual void setParameterValue(std::string name, std::string value);
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
