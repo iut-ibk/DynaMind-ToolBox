@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "dmcompilersettings.h"
 
 using namespace std;
