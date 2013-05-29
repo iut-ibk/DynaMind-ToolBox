@@ -128,7 +128,7 @@ void GUISimulation::showHelp(string classname)
     //emit showHelpForModule(classname);
 }
 
-void GUISimulation::loadModulesFromDefaultLocation()
+QVector<QDir> defaultModuleDirectories()
 {
 	QVector<QDir> cpv;
 	cpv.push_back(QDir::currentPath() + "/Modules");
@@ -146,8 +146,12 @@ void GUISimulation::loadModulesFromDefaultLocation()
 	cpv.push_back(QDir::currentPath() + "/bin/PythonModules/scripts");
 	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
 #endif
+	return cpv;
+}
 
-	foreach (QDir cp, cpv)  
+void GUISimulation::loadModulesFromDefaultLocation()
+{
+	foreach (QDir cp, defaultModuleDirectories())  
 		registerModulesFromDirectory(cp);
 }
 
