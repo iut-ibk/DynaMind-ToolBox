@@ -60,7 +60,7 @@ public:
 	//void guiUpdatePorts(ModelNode* node);
 	ModelNode* guiAddModule(QString moduleName);
 private:
-	void loadPythonModulesFromDirectory(std::string path);
+	//void loadPythonModulesFromDirectory(std::string path);
     QVector<ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 

@@ -15,5 +15,5 @@ void DynaMindMainWindow::createMainWindow() {
 }
 
 void DynaMindMainWindow::registerNativeDll(string fileName) {
-    mw->getSimulation()->registerNativeModules(fileName);
+    mw->getSimulation()->registerModule(fileName);
 }
