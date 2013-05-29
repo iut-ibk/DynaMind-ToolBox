@@ -416,71 +416,70 @@ void GUIModelNode::addUserDefinedTuple() {
 
 void GUIModelNode::accept() 
 {
-    //map<std::string, int> parameter;// = this->module->getParameterList();
+	//map<std::string, int> parameter;// = this->module->getParameterList();
 
-    foreach(QString s,  this->elements.keys()) 
+	foreach(QString s,  this->elements.keys()) 
 	{
-        /*int ID = parameter[s.split("|")[0].toStdString()];//it->second;
-        QAbstractButton * ab;
-        QLineEdit * le;
-        std::map<std::string, std::string> map;*/
-		DM::Module::Parameter* p = module->getParameter(s.toStdString());
+		/*int ID = parameter[s.split("|")[0].toStdString()];//it->second;
+		QAbstractButton * ab;
+		QLineEdit * le;
+		std::map<std::string, std::string> map;*/
+		DM::Module::Parameter* p = module->getParameter<DM::Module::Parameter*>(s.toStdString());
+		if(!p)
+			continue;
 		switch(p->type)
-        {
-        case (DM::BOOL):
+		{
+		case (DM::BOOL):
 			{
-            QAbstractButton *ab = ( QAbstractButton * ) this->elements.value(s);
-            //this->module->setParameterNative(s.toStdString(), ab->isChecked());
-			if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
+				QAbstractButton *ab = ( QAbstractButton * ) this->elements.value(s);
+				//this->module->setParameterNative(s.toStdString(), ab->isChecked());
 				p->set(ab->isChecked());
 			}
-            break;
-        case (DM::STRING_LIST):
-        case (DM::STRING_MAP):
+			break;
+		case (DM::STRING_LIST):
+		case (DM::STRING_MAP):
 			{
-            /*QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-            std::map<std::string, std::string>map = this->module->getParameter<std::map<std::string, std::string> > (s.split("|")[0].toStdString());
-            map[s.split("|")[1].toStdString()] = le->text().toStdString();
-            this->module->setParameterNative(s.split("|")[0].toStdString(), map);*/
+				/*QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+				std::map<std::string, std::string>map = this->module->getParameter<std::map<std::string, std::string> > (s.split("|")[0].toStdString());
+				map[s.split("|")[1].toStdString()] = le->text().toStdString();
+				this->module->setParameterNative(s.split("|")[0].toStdString(), map);*/
 			}
-            break;
-        /*default:
+			break;
+			/*default:
 			{
-            QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-            this->module->setParameterValue(s.toStdString(), le->text().toStdString());
+			QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
+			this->module->setParameterValue(s.toStdString(), le->text().toStdString());
 			}
-            break;*/
+			break;*/
 		case DM::INT:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
-					p->set(le->text().toInt());
+				p->set(le->text().toInt());
 			}
 			break;
 		case DM::LONG:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
-					p->set(le->text().toLong());
+				p->set(le->text().toLong());
 			}
 			break;
 		case DM::DOUBLE:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
-					p->set(le->text().toDouble());
+				p->set(le->text().toDouble());
 			}
 			break;
 		case DM::STRING:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				if(DM::Module::Parameter* p = module->getParameter(s.toStdString()))
-					p->set(le->text().toStdString());
+				p->set(le->text().toStdString());
 			}
 			break;
-        }
-    }
-    delete(this);
+		default:
+			break;
+		}
+		delete(this);
+	}
 }
 void GUIModelNode::reject() {
     delete(this);

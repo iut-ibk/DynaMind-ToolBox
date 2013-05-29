@@ -20,7 +20,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
 	
-	std::map<std::string, std::vector<DM::View> > views = m->getStreamViews();
+	std::map<std::string, std::vector<DM::View> > views = m->getAccessedViews();
 	for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) 
 	{
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
