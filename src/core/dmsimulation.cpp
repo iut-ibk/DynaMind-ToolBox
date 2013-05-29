@@ -155,6 +155,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 
 void Simulation::run()
 {
+	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
 	std::queue<Module*> worklist;
 	foreach(Module* m, modules)
@@ -168,12 +169,13 @@ void Simulation::run()
 		Module* m = worklist.front();
 		worklist.pop();
 		// execute module
+		Logger(Standard) << "running module " << m->getName();
 		m->run();
 		// check for errors
 		ModuleStatus merr = m->getStatus();
 		if(m->getStatus() == MOD_ERROR)
 		{
-			Logger(Error) << "module " << m->getName() << " failed\n";
+			Logger(Error) << "module " << m->getName() << " failed";
 			this->status = DM::SIM_FAILED;
 			return;
 		}
@@ -184,6 +186,7 @@ void Simulation::run()
 			foreach(Module* m, nextModules)
 				worklist.push(m);
 	}
+	Logger(Standard) << ">> finished simulation";
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)

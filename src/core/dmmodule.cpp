@@ -145,20 +145,14 @@ bool Module::outPortsSet()
 System* Module::getInPortData(const std::string &name)
 {
 	if(!map_contains(&inPorts, name))
-	{
-		DM::Logger(Debug) << "accessing non existent in port, canceled";
 		return NULL;
-	}
 	else
 		return inPorts[name];
 }
 System* Module::getOutPortData(const std::string &name)
 {
 	if(!map_contains(&outPorts, name))
-	{
-		DM::Logger(Debug) << "accessing non existent out port, canceled";
 		return NULL;
-	}
 	else
 		return outPorts[name];
 }
