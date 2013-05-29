@@ -248,14 +248,14 @@ public:
 	
 public:
 	template<typename T>
-	T getParameter(const std::string& name) const
+	T getParameter(const std::string& name)
 	{
 		if(Parameter* p = getParameter<Parameter*>(name))
-			return p->data<T>();
+			return p->get<T>();
 		return T();
 	}
 	template<>
-	Parameter* getParameter<Parameter*>(const std::string& name) const
+	Parameter* getParameter<Parameter*>(const std::string& name)
 	{
 		foreach(Parameter* p, parameters)
 			if(p->name == name)
@@ -287,7 +287,7 @@ public:
 		return inputDialog;
 	}
 	
-	std::map<std::string, std::vector<View>> getStreamViews() {return accessedViews;};
+	std::map<std::string, std::vector<View>> getAccessedViews() {return accessedViews;};
 	System* getData(const std::string& streamName);
 
 	/*********************
@@ -307,7 +307,45 @@ public:
 	{
 		return "<Module::getUuid deprecated>";
 	}
+	
+	template<typename T>
+	void setParameterNative(const std::string& name, T data)
+	{
+		if(Parameter* p = getParameter<Parameter*>(name))
+			p->set(data);
+	}
 
+	std::map<std::string, std::vector<DM::View> > getViews()
+	{
+		return getAccessedViews();
+	}
+
+	void removeData(const std::string& name)
+	{
+		accessedViews.erase(name);
+	}
+
+	void setParameterValue(const std::string& name, const std::string& value)
+	{
+		QString qvalue = QString::fromStdString(value);
+		Parameter* p = getParameter<Parameter*>(name);
+		if(!p)
+			return;
+		switch(p->type)
+		{
+		case DM::INT:		p->set(qvalue.toInt());	break;
+		case DM::LONG:		p->set(qvalue.toLong());	break;
+		case DM::DOUBLE:	p->set(qvalue.toDouble());	break;
+		case DM::BOOL:		p->set((bool)qvalue.toInt());	break;
+		case DM::FILENAME:	p->set(value);	break;
+		case DM::STRING:	p->set(value);	break;
+		case DM::STRING_LIST:	break;
+		case DM::STRING_MAP:	break;
+		}
+	}
+	void updateParameter()
+	{
+	}
 
     /** @brief set parameter as value as string*/
     //virtual void setParameterValue(std::string name, std::string value);
