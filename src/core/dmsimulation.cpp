@@ -148,6 +148,29 @@ void Simulation::registerModulesFromDirectory(const QDir& dir)
 	}
 }
 
+void Simulation::loadModulesFromDefaultLocation()
+{
+	QVector<QDir> cpv;
+	cpv.push_back(QDir::currentPath() + "/Modules");
+	cpv.push_back(QDir::currentPath() + "/bin/Modules");
+#if defined DEBUG || _DEBUG
+	cpv.push_back(QDir::currentPath() + "/../Modules/Debug");
+#else
+	cpv.push_back(QDir::currentPath() + "/../Modules/Release");
+	cpv.push_back(QDir::currentPath() + "/../Modules/RelWithDebInfo");
+	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Release");
+	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo");
+#endif
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+	cpv.push_back(QDir::currentPath() + "/bin/PythonModules/scripts");
+	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
+#endif
+
+	foreach (QDir cp, cpv)  
+		registerModulesFromDirectory(cp);
+}
+
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
 {
 	if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
