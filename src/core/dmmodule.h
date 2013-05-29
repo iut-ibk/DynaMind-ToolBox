@@ -290,6 +290,10 @@ public:
 	std::map<std::string, std::vector<View>> getAccessedViews() {return accessedViews;};
 	System* getData(const std::string& streamName);
 
+	/** @brief checks if port exists */
+	bool hasInPort(const std::string &name);
+	bool hasOutPort(const std::string &name);
+
 	/*********************
 	* Backward comp.
 	**********************/
@@ -345,6 +349,7 @@ public:
 	}
 	void updateParameter()
 	{
+		//init();
 	}
 
     /** @brief set parameter as value as string*/
@@ -356,9 +361,6 @@ protected:
 	/** @brief removes a port from the module, may corrupt links! */
 	void removeInPort(const std::string &name);
 	void removeOutPort(const std::string &name);
-	/** @brief checks if port exists */
-	bool hasInPort(const std::string &name);
-	bool hasOutPort(const std::string &name);
 	/** @brief */
 	void setStatus(ModuleStatus status) {this->status = status;};
 
@@ -366,6 +368,8 @@ protected:
 	// deprecated
 	RasterData* getRasterData(std::string name, View view);
 private:
+	/** @brief calls the init function if parameters have changed */
+	//void updateParameters();
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
 	/** @brief get data from inport */

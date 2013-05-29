@@ -203,6 +203,11 @@ RasterData* Module::getRasterData(std::string name, View view)
 	return getData(name)->addRasterData(new RasterData());
 }
 
+/*void Module::updateParameters()
+{
+	init();
+}*/
+
 /*template<typename T>
 void Module::setParameter(std::string name, T value)
 {
