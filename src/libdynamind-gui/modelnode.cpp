@@ -239,6 +239,40 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 
     //Color = COLOR_MODULE;
 }
+
+bool ModelNode::hasPort(std::string portName)
+{
+	foreach(PortNode* p, ports)
+		if(p->getPortName().toStdString() == portName)
+			return true;
+	return false;
+}
+
+void ModelNode::updatePorts()
+{
+	// add new ports
+	foreach(std::string portName, module->getOutPortNames())
+		if(!hasPort(portName))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::OUTPORT));
+	foreach(std::string portName, module->getInPortNames())
+		if(!hasPort(portName))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::INPORT));
+
+	// remove deprecated ports
+	QVector<int> deprecatedPorts;
+	int cnt = 0;
+
+	foreach(PortNode* n, ports)
+	{
+		if( !module->hasInPort(n->getPortName().toStdString()) || 
+			!module->hasOutPort(n->getPortName().toStdString()))
+				deprecatedPorts.push_back(cnt);
+		cnt++;
+	}
+	for(int i=0;i<deprecatedPorts.size();i++)
+		ports.remove(deprecatedPorts[deprecatedPorts.size()-i-1]);
+}
+
 /*
 ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent, scene) {
 

@@ -470,6 +470,7 @@ void GUIModelNode::accept()
 			}
 			break;
 		case DM::STRING:
+		case DM::FILENAME:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
 				p->set(le->text().toStdString());
@@ -478,8 +479,11 @@ void GUIModelNode::accept()
 		default:
 			break;
 		}
-		delete(this);
 	}
+	module->init();
+	modelnode->updatePorts();
+
+	delete(this);
 }
 void GUIModelNode::reject() {
     delete(this);

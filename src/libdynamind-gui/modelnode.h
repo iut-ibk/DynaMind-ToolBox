@@ -57,6 +57,7 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
 
 private:
 	//QString moduleName;
+	bool hasPort(std::string portName);
 public:
 	QStringList inPorts;
 	QStringList outPorts;
@@ -94,12 +95,12 @@ protected:
 	DM::Module* module;
 
 public:
-    QStringList ExistingInPorts;
-    QStringList ExistingOutPorts;
+    //QStringList ExistingInPorts;
+    //QStringList ExistingOutPorts;
     //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
     ModelNode(DM::Module* m, GUISimulation* sim);
 
-    int type() const {return Type; }
+    //int type() const {return Type; }
     virtual ~ModelNode();
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
@@ -133,8 +134,9 @@ public:
     //DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}
     //void  setSimulation(GUISimulation *s) {this->simulation = s;}
-
+	
     //virtual void updatePorts();
+    void updatePorts();
 
     virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}
 
