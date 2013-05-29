@@ -106,8 +106,10 @@ public:
     Module * addModule(const std::string ModuleName, bool callInit = true);
     /** @brief Removes and deletes a module from the simulation */
     void removeModule(Module* m);
-	/** @brief register a new native module returns if module has been loaded succcessfully*/
-    bool registerNativeModules(const std::string Filename);
+	/** @brief register a new native module returns if module has been loaded succcessfully */
+    bool registerModule(const std::string& filepath);
+	/** @brief registers all acceptable modules in the provided directory*/
+	void registerModulesFromDirectory(const QDir& dir);
 	/** @brief connects to ports via a link */
 	bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief removes a link */

@@ -98,10 +98,54 @@ void Simulation::removeModule(Module* m)
 	delete m;
 }
 
-bool Simulation::registerNativeModules(const std::string Filename) 
+bool Simulation::registerModule(const std::string& filepath) 
 {
-    Logger(Standard) << "Loading native modules from " << Filename;
-    return moduleRegistry->addNativePlugin(Filename);
+	//Logger(Standard) << "Loading native module " << filepath;
+
+	QString qfilepath = QString::fromStdString(filepath);
+	if(qfilepath.endsWith(".dll") || qfilepath.endsWith(".so") || qfilepath.endsWith(".ko"))
+	{
+		if(moduleRegistry->addNativePlugin(filepath))
+		{
+			Logger(Standard) <<  "successfully loaded native module " << filepath;
+			return true;
+		}
+		else
+		{
+			Logger(Warning) <<  "failed loading native module " << filepath;
+			return false;
+		}
+	}
+	else if(qfilepath.endsWith(".py"))
+	{
+		QFileInfo fi = qfilepath;
+		DM::PythonEnv::getInstance()->addPythonPath(fi.absolutePath().toStdString());
+		try
+		{
+			DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, fi.fileName().remove(".py").toStdString());
+			Logger(Standard) <<  "successfully loaded python module " << filepath;
+			return true;
+		}
+		catch(...) 
+		{
+			Logger(Warning) <<  "failed loading python module " << filepath;
+            return false;
+		}
+	}
+	Logger(Warning) << "not recognized filename ending " << filepath;
+	return false;
+}
+
+void Simulation::registerModulesFromDirectory(const QDir& dir)
+{
+	QStringList modulesToLoad = dir.entryList();
+	foreach (QString module, modulesToLoad) 
+	{
+		if (module == ".." || module == "." )
+			continue;
+		std::string modulepath = (dir.absolutePath() +"/" + module).toStdString();
+		registerModule(modulepath);
+	}
 }
 
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
