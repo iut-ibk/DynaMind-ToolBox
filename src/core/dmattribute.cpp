@@ -460,7 +460,7 @@ void Attribute::setLinks(std::vector<LinkAttribute> links)
 LinkAttribute Attribute::getLink()
 {
 	AttributeValue* a = getValue();
-	if(a->type == LINK)	return (*((std::vector<LinkAttribute>*)a->ptr))[0];
+    if(a->type == LINK && (*((std::vector<LinkAttribute>*)a->ptr)).size() > 0)	return (*((std::vector<LinkAttribute>*)a->ptr))[0];
 	return LinkAttribute();
 }
 
