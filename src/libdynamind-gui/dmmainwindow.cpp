@@ -483,15 +483,16 @@ void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::stri
 	*/
 }
 
-void DMMainWindow::loadSimulation(int id) {
-	/*
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open DynaMind File"), "", tr("DynaMind Files (*.dyn)"));
+void DMMainWindow::loadSimulation(int id) 
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
+													"", tr("DynaMind Files (*.dyn)"));
 
     if (!fileName.isEmpty()){
         this->clearSimulation();
         this->currentDocument = fileName;
-        std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
+		simulation->loadSimulation(fileName.toStdString());
+        /*std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         SimulationIO simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation);
         if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
@@ -500,9 +501,8 @@ void DMMainWindow::loadSimulation(int id) {
         }
         UUID_Translation[this->simulation->getRootGroup()->getUuid()] = this->simulation->getRootGroup()->getUuid();
         this->loadGUIModules((DM::Group*)this->simulation->getRootGroup(),  UUID_Translation, simio.getPositionOfLoadedModules());
-        this->loadGUILinks(UUID_Translation);
+        this->loadGUILinks(UUID_Translation);*/
     }
-	*/
 }
 void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translation) {
 	/*
