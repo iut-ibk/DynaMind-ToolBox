@@ -119,7 +119,7 @@ void CreateHouses::run()
 /*#ifdef _OPENMP
     omp_set_num_threads(4);
 #endif*/
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < nparcels; i++) {
         DM::Face * parcel = city->getFace(parcelUUIDs[i]);
 
