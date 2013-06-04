@@ -111,7 +111,7 @@ public:
 	/** @brief registers all acceptable modules in the provided directory*/
 	void registerModulesFromDirectory(const QDir& dir);
 	/** @brief connects to ports via a link */
-	bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
+	virtual bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief removes a link */
 	bool removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief starts the entire simulation */

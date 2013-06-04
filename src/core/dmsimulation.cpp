@@ -199,7 +199,7 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 }
 bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
 {
-	Link* toDelete;
+	Link* toDelete = NULL;
 	foreach(Link* l, links)
 	{
 		if(	l->src == source && 
