@@ -32,6 +32,8 @@
 #include <rootgroupnode.h>
 #include <dmlogger.h>
 
+#include <guilink.h>
+
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
 #endif
@@ -167,14 +169,52 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	lastAddedModuleNode = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
 	rootTab->addItem(lastAddedModuleNode);
+	modelNodes.append(lastAddedModuleNode);
 	
 	return m;
 }
 
-bool GUISimulation::addLink(PortNode* out, PortNode* in)
+/*bool GUISimulation::addLink(PortNode* out, PortNode* in)
 {
 	return Simulation::addLink(out->getModule(), out->getPortName().toStdString(),
 								in->getModule(), in->getPortName().toStdString());
+}*/
+
+bool GUISimulation::addLink(DM::Module* source, std::string outPort, 
+							DM::Module* dest, std::string inPort)
+{
+	if(!Simulation::addLink(source, outPort, dest, inPort))
+		return false;
+
+	PortNode* inPortNode = getPortNode(dest, inPort, INPORT);
+	PortNode* outPortNode = getPortNode(source, outPort, OUTPORT);
+
+	if( !inPortNode || !outPortNode )
+		return false;
+
+	GUILink* gl = new GUILink();
+	
+	if( !gl )
+		return false;
+
+	inPortNode->scene()->addItem(gl);
+	gl->setInPort(inPortNode);
+	gl->setOutPort(outPortNode);
+	
+	// backlink for modelNode position update
+	inPortNode->addLink(gl);
+	outPortNode->addLink(gl);
+
+	return true;
+}
+
+PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, PortType type)
+{
+	foreach(ModelNode* mn, modelNodes)
+		if(mn->getModule() == m)
+			return mn->getPort(portName, type);
+
+	return NULL;
 }
 
 bool GUISimulation::removeLink(PortNode* out, PortNode* in)

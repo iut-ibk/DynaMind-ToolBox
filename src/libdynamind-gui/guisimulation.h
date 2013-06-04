@@ -39,6 +39,8 @@ class PortNode;
 //class GUILink;
 class SimulationTab;
 
+enum PortType;
+
 class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObject
 {
     //Q_OBJECT
@@ -55,11 +57,16 @@ public:
     //bool loadModulesFromSettings();
 
 	
-	bool addLink(PortNode* out, PortNode* in);
+	bool addLink(DM::Module* source, std::string outPort, DM::Module* dest, std::string inPort);
+
+	//bool addLink(PortNode* out, PortNode* in);
 	bool removeLink(PortNode* out, PortNode* in);
 
 	//void guiUpdatePorts(ModelNode* node);
+
+	// overloaded
 	DM::Module* addModule(std::string moduleName, bool callInit = true);
+
 	ModelNode* guiAddModule(QString moduleName);
 
 
@@ -75,6 +82,8 @@ private:
 	// stores the pointer to the last module. not an optimal solution though
 	ModelNode* lastAddedModuleNode;
 	//QList<SimulationTab*> tabs;
+	
+	PortNode* getPortNode(DM::Module* m, std::string portName, PortType type);
 signals:
     void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);

@@ -49,6 +49,9 @@ class ModelNodeButton;
 class RootGroupNode;
 class PortNode;
 class GUISimulation;
+
+enum PortType;
+
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
 {
     Q_OBJECT
@@ -57,12 +60,12 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
 
 private:
 	//QString moduleName;
-	bool hasPort(std::string portName);
+	//bool hasPort(std::string portName);
 public:
 	QStringList inPorts;
 	QStringList outPorts;
-
-
+	
+	PortNode* getPort(std::string portName, PortType type);
 protected:
     GUIPortObserver guiPortObserver;
     float x1;

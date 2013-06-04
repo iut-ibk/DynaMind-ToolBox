@@ -233,30 +233,32 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     //this->updatePorts();
 
 	foreach(std::string portName, m->getOutPortNames())
-		this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::OUTPORT));
+		this->ports.append(new PortNode(QString::fromStdString(portName), this, OUTPORT));
 	foreach(std::string portName, m->getInPortNames())
-		this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::INPORT));
+		this->ports.append(new PortNode(QString::fromStdString(portName), this, INPORT));
 
     //Color = COLOR_MODULE;
 }
 
-bool ModelNode::hasPort(std::string portName)
+PortNode* ModelNode::getPort(std::string portName, PortType type)
 {
 	foreach(PortNode* p, ports)
-		if(p->getPortName().toStdString() == portName)
-			return true;
-	return false;
+		if(p->getPortName().toStdString() == portName && p->getType() == type)
+			return p;
+
+	return NULL;
 }
+
 
 void ModelNode::updatePorts()
 {
 	// add new ports
 	foreach(std::string portName, module->getOutPortNames())
-		if(!hasPort(portName))
-			this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::OUTPORT));
+		if(!getPort(portName, OUTPORT))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, OUTPORT));
 	foreach(std::string portName, module->getInPortNames())
-		if(!hasPort(portName))
-			this->ports.append(new PortNode(QString::fromStdString(portName), this, PortNode::INPORT));
+		if(!getPort(portName, INPORT))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, INPORT));
 
 	// remove deprecated ports
 	QVector<int> deprecatedPorts;

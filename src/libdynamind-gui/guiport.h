@@ -49,19 +49,23 @@ class ModelNode;
 class GUILink;
 class GUISimulation;
 
+
+enum PortType
+{
+	INPORT = 0,
+	OUTPORT,
+};
+
 class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 {
 public:
-	enum PortType
-	{
-		INPORT = 0,
-		OUTPORT,
-	};
+
 private:
+    QVector<GUILink * > linkNodes;
+
     QColor color;
     ModelNode * modelNode;
     //GUILink * tmp_link;
-    QVector<GUILink * > links;
 	
 	GUILink* unstableLink;
 
@@ -102,10 +106,12 @@ public:
     //void refreshLinks();
     //DM::Port * getVIBePort();
     void removeLink(GUILink * l);
+	void addLink(GUILink* l);
     //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	DM::Module* getModule();
+	PortType getType(){return portType;};
 };
 
 #endif // GUIPORT_H

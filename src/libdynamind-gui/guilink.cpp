@@ -77,6 +77,9 @@ GUILink::~GUILink()
         this->outPort->removeLink(this);
     if (this->inPort)
         this->inPort->removeLink(this);
+
+
+
     /*if (this->VIBelink != 0){
         //Check if Links exists
 		

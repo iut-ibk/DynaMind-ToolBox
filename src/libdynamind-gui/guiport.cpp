@@ -34,19 +34,24 @@
 #include <guisimulation.h>
 PortNode::~PortNode () {
 
-    foreach(GUILink *l, this->links) {
+    foreach(GUILink *l, this->linkNodes) {
         delete l;
         l = 0;
     }
-    this->links.clear();
+    this->linkNodes.clear();
 }
 void PortNode::removeLink(GUILink * l)
 {
-    int index = this->links.indexOf(l);
+    int index = this->linkNodes.indexOf(l);
     if (index > -1) {
-        this->links.remove(index);
-        DM::Logger(DM::Debug) << "Remove GUILink from" << this->getPortName() << this->links.size();
+        this->linkNodes.remove(index);
+        DM::Logger(DM::Debug) << "Remove GUILink from" << this->getPortName() << this->linkNodes.size();
     }
+}
+
+void PortNode::addLink(GUILink* l)
+{
+	linkNodes.append(l);
 }
 /*
 void PortNode::updatePort(DM::Port * p) {
@@ -93,7 +98,7 @@ bool PortNode::isLinked() {
 
 void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     //if (this->getVIBePort()->isFullyLinked())
-	if(links.size() || unstableLink)
+	if(linkNodes.size() || unstableLink)
 		color = Qt::yellow;
     //if (!this->getVIBePort()->isFullyLinked())
 	else
@@ -302,6 +307,25 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			// check self linking
 			if(port->modelNode == this->modelNode)
 				break;
+			
+			// check port types
+			if(port->portType == INPORT && this->portType == OUTPORT)
+			{
+				getSimulation()->addLink(this->getModule(), this->getPortName().toStdString(),
+									port->getModule(), port->getPortName().toStdString());
+			}
+			else if(port->portType == OUTPORT && this->portType == INPORT)
+			{
+				getSimulation()->addLink(port->getModule(), port->getPortName().toStdString(),
+									this->getModule(), this->getPortName().toStdString());
+			}
+			
+			break;
+			
+			//delete unstableLink;	// addLink creates a new gui link
+			//unstableLink = NULL;
+
+			/*
 			// check port types
 			if(port->portType == INPORT && this->portType == OUTPORT)
 				unstableLink->setInPort(port);
@@ -314,14 +338,18 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			// we just use the method - just laziness/good coding style
 			PortNode* in = unstableLink->getInPort();
 			PortNode* out = unstableLink->getOutPort();
+			
+			delete unstableLink;	// addLink creates a new gui link
+			unstableLink = NULL;
 
-			if(getSimulation()->addLink(out, in))
+			if(getSimulation()->addLink(out->getModule(), out->getPortName().toStdString(),
+								in->getModule(), in->getPortName().toStdString()))
 			{
-				in->links.append(unstableLink);
-				out->links.append(unstableLink);
-				unstableLink = NULL;
+				//in->links.append(unstableLink);
+				//out->links.append(unstableLink);
+				
 			}
-			break;
+			break;*/
 		}
 	}
 
@@ -359,7 +387,7 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 	
 	if(unstableLink)
 	{
-		this->scene()->removeItem(unstableLink);
+		//this->scene()->removeItem(unstableLink);	fixes a bug when creating 2 free links
 		delete unstableLink;
 		unstableLink = NULL;
 	}
@@ -396,7 +424,7 @@ void PortNode::refreshLinks()
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
 {
     if(change == QGraphicsItem::ItemScenePositionHasChanged) 
-		foreach(GUILink* link, links)
+		foreach(GUILink* link, linkNodes)
 			link->refresh();
     /*if (change == QGraphicsItem::ItemVisibleHasChanged) {
         foreach(GUILink * l, this->links)
