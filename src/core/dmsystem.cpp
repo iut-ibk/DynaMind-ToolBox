@@ -879,6 +879,9 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	lastModule = sys->lastModule;
 
 	CopyFrom(*sys, true);
+
+	// copy from overwrites current system, fixes a bug
+	currentSys = this;
 }
 
 /*
