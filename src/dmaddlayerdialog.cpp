@@ -158,12 +158,22 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
                || attr->getType() == Attribute::TIMESERIES)) {
             continue;
         }*/
+
+	std::map<std::string, Component*> comps = system->getAllComponentsInView(*view);
+	if(comps.size() == 0)
+		return;
+
 	foreach(std::string name, view->getAllAttributes())
 	{
-		Attribute::AttributeType type = view->getAttributeType(name);
-		if(	type != Attribute::DOUBLE && 
-			type != Attribute::DOUBLEVECTOR && 
-			type != Attribute::TIMESERIES)
+		Attribute* a = comps.begin()->second->getAttribute(name);
+		if(!a)
+			continue;
+
+		Attribute::AttributeType type = a->getType();
+		//Attribute::AttributeType type = view->getAttributeType(name);
+		if(	type == Attribute::DOUBLE || 
+			type == Attribute::DOUBLEVECTOR || 
+			type == Attribute::TIMESERIES)
 		{
 			QStringList strings;
 			strings << QString::fromStdString(name);
