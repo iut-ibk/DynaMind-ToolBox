@@ -336,7 +336,46 @@ bool Simulation::registerModulesFromSettings()
 
 
 
+bool Simulation::loadSimulation(std::string filename) 
+{
+    SimulationReader simreader(QString::fromStdString(filename));
+	std::map<QString, DM::Module*> modMap;
+	
+	// load modules
+	foreach(ModuleEntry me, simreader.getModules())
+	{
+		if(DM::Module* m = addModule(me.ClassName.toStdString()))
+		{
+			modMap[me.UUID] = m;
+			// load parameters
+			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
+				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
+		}
+		else
+			DM::Logger(Error) << "could not create module '" << me.ClassName.toStdString() << "'";
+	}
 
+	// load links
+	foreach(LinkEntry le, simreader.getLinks())
+	{
+		DM::Module *src = modMap[le.OutPort.UUID];
+		DM::Module *dest = modMap[le.InPort.UUID];
+		std::string outPort = le.OutPort.PortName.toStdString();
+		std::string inPort = le.InPort.PortName.toStdString();
+
+		if(!src || !dest)
+			DM::Logger(Error) << "corrupt link";
+		else
+		{
+			if(!addLink(src, outPort, dest, inPort))
+				DM::Logger(Error) << "could not establish link between "
+				<< src->getClassName() << ":" << outPort << " and "
+				<< dest->getClassName() << ":" << inPort;
+		}
+	}
+
+	return true;
+}
 
 
 
