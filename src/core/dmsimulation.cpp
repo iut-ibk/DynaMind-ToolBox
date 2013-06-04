@@ -70,6 +70,7 @@ Simulation::Simulation()
 
 Simulation::~Simulation()
 {
+	clear();
 	// TODO: cleanup lost systems
 	delete moduleRegistry;
 }
@@ -94,8 +95,27 @@ void Simulation::removeModule(Module* m)
 {
 	// TODO check if systems are lost
 	Logger(Debug) << "Removing module" << m->getName();
+	
+	std::vector<Link*> toDelete;
+
+	foreach(Link* l, links)
+		if(l->dest == m || l->src == m)
+			toDelete.push_back(l);
+
+	foreach(Link* l, toDelete)
+	{
+		links.remove(l);
+		delete l;
+	}
+
 	modules.remove(m);
 	delete m;
+}
+
+void Simulation::clear()
+{
+	foreach(Module* m, modules)
+		removeModule(m);
 }
 
 bool Simulation::registerModule(const std::string& filepath) 

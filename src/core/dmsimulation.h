@@ -131,6 +131,8 @@ public:
 	
     /** @brief adds a simulation saved in a file to the current simulation */
     bool loadSimulation(std::string FileName);
+
+	void clear();
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
