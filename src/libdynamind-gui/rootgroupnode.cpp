@@ -85,7 +85,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 		// move to cursor
 		node->setPos(event->scenePos());
 		// add module to render list
-		addItem(node);
+		//addItem(node);
 		// get ports
 		//sim->guiUpdatePorts(node);
 	}

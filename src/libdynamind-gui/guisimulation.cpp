@@ -161,10 +161,13 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 	addModule(moduleName.toStdString());
 	return lastAddedModuleNode;
 }
-DM::Module* GUISimulation::addModule(std::string moduleName)
+DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 {
-	DM::Module* m = Simulation::addModule(moduleName);
+	DM::Module* m = Simulation::addModule(moduleName, callInit);
 	lastAddedModuleNode = new ModelNode(m, this);
+	//lastAddedModuleNode->setPos(-100, -50);
+	rootTab->addItem(lastAddedModuleNode);
+	
 	return m;
 }
 
@@ -179,6 +182,28 @@ bool GUISimulation::removeLink(PortNode* out, PortNode* in)
 	return Simulation::removeLink(out->getModule(), out->getPortName().toStdString(),
 								in->getModule(), in->getPortName().toStdString());
 }
+/*
+SimulationTab* GUISimulation::addTab(QWidget *parent)
+{
+	SimulationTab* tab = new SimulationTab(parent, this);
+	tabs.append(tab);
+	return tab;
+}
+void GUISimulation::closeTab(int i)
+{
+	if(i >= tabs.size() || i < 0)
+		return;
+
+	delete tabs[i];
+	tabs.removeAt(i);
+}
+SimulationTab* GUISimulation::getTab(int i)
+{
+	if(i >= tabs.size() || i < 0)
+		return NULL;
+
+	return tabs[i];
+}*/
 
 /*void GUISimulation::guiUpdatePorts(ModelNode* node)
 {

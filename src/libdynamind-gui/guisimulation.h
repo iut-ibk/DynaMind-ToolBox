@@ -37,6 +37,7 @@ class ModelNode;
 class PortNode;
 //class GroupNode;
 //class GUILink;
+class SimulationTab;
 
 class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObject
 {
@@ -58,8 +59,14 @@ public:
 	bool removeLink(PortNode* out, PortNode* in);
 
 	//void guiUpdatePorts(ModelNode* node);
-	DM::Module* addModule(std::string moduleName);
+	DM::Module* addModule(std::string moduleName, bool callInit = true);
 	ModelNode* guiAddModule(QString moduleName);
+
+
+	SimulationTab* rootTab;
+	/*SimulationTab* addTab(QWidget *parent);
+	void closeTab(int i);
+	SimulationTab* getTab(int i);	// 0 = root*/
 private:
 	//void loadPythonModulesFromDirectory(std::string path);
     QVector<ModelNode*> modelNodes;
@@ -67,6 +74,7 @@ private:
 
 	// stores the pointer to the last module. not an optimal solution though
 	ModelNode* lastAddedModuleNode;
+	//QList<SimulationTab*> tabs;
 signals:
     void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);

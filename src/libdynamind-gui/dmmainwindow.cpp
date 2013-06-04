@@ -193,6 +193,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	SimulationTab* tab = new SimulationTab(parent, this->simulation);
 	tabs.append(tab);
 	ui->tabWidget_4->addTab(tab->getQGViewer(),"Root Tab");
+
+	this->simulation->rootTab = tab;
 	
 
     ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
