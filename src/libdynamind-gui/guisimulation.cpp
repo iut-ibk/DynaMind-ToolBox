@@ -158,10 +158,14 @@ void GUISimulation::loadModulesFromDefaultLocation()
 
 ModelNode* GUISimulation::guiAddModule(QString moduleName)
 {
-	DM::Module* m = addModule(moduleName.toStdString());
-	ModelNode* node = new ModelNode(m, this);
-	//moduleGuiMap[node] = m;
-	return node;
+	addModule(moduleName.toStdString());
+	return lastAddedModuleNode;
+}
+DM::Module* GUISimulation::addModule(std::string moduleName)
+{
+	DM::Module* m = Simulation::addModule(moduleName);
+	lastAddedModuleNode = new ModelNode(m, this);
+	return m;
 }
 
 bool GUISimulation::addLink(PortNode* out, PortNode* in)

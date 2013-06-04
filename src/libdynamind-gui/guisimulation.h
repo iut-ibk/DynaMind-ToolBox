@@ -58,12 +58,15 @@ public:
 	bool removeLink(PortNode* out, PortNode* in);
 
 	//void guiUpdatePorts(ModelNode* node);
+	DM::Module* addModule(std::string moduleName);
 	ModelNode* guiAddModule(QString moduleName);
 private:
 	//void loadPythonModulesFromDirectory(std::string path);
     QVector<ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
+	// stores the pointer to the last module. not an optimal solution though
+	ModelNode* lastAddedModuleNode;
 signals:
     void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);
