@@ -125,7 +125,9 @@ public:
 	/** @brief accessor to module registry */
 	ModuleRegistry* getModuleRegistry(){return moduleRegistry;};
 	/** @brief loads modules from default locations */
-	void loadModulesFromDefaultLocation();
+	void registerModulesFromDefaultLocation();
+	/** @brief Add the modules set in the QSetting **/
+    bool registerModulesFromSettings();
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
