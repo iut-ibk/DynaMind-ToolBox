@@ -51,7 +51,7 @@ public:
 	/** @brief loads modules from default locations */
     //void loadModulesFromDefaultLocation();
 	/** @brief Add the modules set in the QSetting **/
-    bool loadModulesFromSettings();
+    //bool loadModulesFromSettings();
 
 	
 	bool addLink(PortNode* out, PortNode* in);
