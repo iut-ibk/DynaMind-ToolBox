@@ -354,6 +354,9 @@ public:
 
     /** @brief set parameter as value as string*/
     //virtual void setParameterValue(std::string name, std::string value);
+	
+	/** @brief get data from outport; public for ModelNode::viewData */
+	System* getOutPortData(const std::string &name);
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -374,8 +377,6 @@ private:
 	void setOutPortData(const std::string &name, System* data);
 	/** @brief get data from inport */
 	System* getInPortData(const std::string &name);
-	/** @brief get data from outport */
-	System* getOutPortData(const std::string &name);
 
 
 	QWidget* inputDialog;
