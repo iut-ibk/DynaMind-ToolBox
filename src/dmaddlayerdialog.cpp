@@ -165,9 +165,19 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
 
 	foreach(std::string name, view->getAllAttributes())
 	{
-		Attribute* a = comps.begin()->second->getAttribute(name);
-		if(!a)
-			continue;
+		Component* repres = NULL;
+		mforeach(Component* c, comps)
+		{
+			if(c)
+			{
+				repres = c;
+				break;
+			}
+		}
+		if(!repres)	continue;
+
+		Attribute* a = repres->getAttribute(name);
+		if(!a)	continue;
 
 		Attribute::AttributeType type = a->getType();
 		//Attribute::AttributeType type = view->getAttributeType(name);
