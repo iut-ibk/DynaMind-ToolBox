@@ -415,11 +415,10 @@ void DMMainWindow::writeGUIInformation(QString FileName) {
 	*/
 }
 
-void DMMainWindow::clearSimulation() {
-	/*
+void DMMainWindow::clearSimulation() 
+{	
     this->simulation->clearSimulation();
     this->currentDocument = "";
-	*/
 }
 
 void DMMainWindow::importSimulation(QString fileName, QPointF offset) {

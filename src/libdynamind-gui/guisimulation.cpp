@@ -112,7 +112,16 @@ void GUISimulation::resetSimulation()
     this->updateSimulation();
 }*/
 
-void GUISimulation::clearSimulation() {
+void GUISimulation::clearSimulation() 
+{
+	Simulation::reset();
+	foreach(ModelNode* m, modelNodes)
+		m->deleteModelNode();
+
+	modelNodes.clear();
+
+	clear();
+
 	/*
     RootGroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup())->getRootGroupNode();
 
