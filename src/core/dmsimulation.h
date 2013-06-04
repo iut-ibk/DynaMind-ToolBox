@@ -103,7 +103,7 @@ public:
 	Simulation();
 	~Simulation();
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
-    Module * addModule(const std::string ModuleName, bool callInit = true);
+    virtual Module* addModule(const std::string ModuleName, bool callInit = true);
     /** @brief Removes and deletes a module from the simulation */
     void removeModule(Module* m);
 	/** @brief register a new native module returns if module has been loaded succcessfully */
