@@ -319,6 +319,56 @@ bool GUISimulation::loadSimulation(std::string filename)
 				<< dest->getClassName() << ":" << inPort;
 		}
 	}
-
 	return true;
+}
+
+
+void GUISimulation::writeSimulation(std::string fileName) 
+{
+	Simulation::writeSimulation(fileName);
+
+	//Write GUI Informations
+	DM::Logger(DM::Debug) << "adding GUI information";
+
+	QFile file(QString::fromStdString(fileName));
+	file.open(QIODevice::Append);
+	QTextStream out(&file);
+	out << "<DynaMindGUI>\n";
+	out << "\t"<<"<GUI_Nodes>\n";
+
+	//Find upper left corner;
+	float minx;
+	float miny;
+	bool first = true;
+	mforeach(ModelNode* m, this->modelNodes)
+	{
+		if (first)        
+		{
+			minx = m->pos().x();
+			miny = m->pos().y();
+			first = false;
+		}
+		else
+		{
+			minx = min(minx, (float)m->pos().x());
+			miny = max(miny, (float)m->pos().y());
+		}
+	}
+
+	mforeach(ModelNode* m, this->modelNodes)
+	{
+		QString mid = QString::fromAscii((char*)m->getModule(), sizeof(DM::Module*));
+
+		out << "\t\t<GUI_Node>\n";
+		out << "\t\t\t<GUI_UUID value=\"" << mid << "\"/>\n";
+		out << "\t\t\t<GUI_PosX value=\"" << m->scenePos().x() - minx << "\"/>\n";
+		out << "\t\t\t<GUI_PosY value=\"" << m->scenePos().y() - miny << "\"/>\n";
+		out << "\t\t\t<GUI_Minimized value=\"" << m->isMinimized() << "\"/>\n";
+		out << "\t\t</GUI_Node>\n";
+	}
+	out << "\t</GUI_Nodes>\n";
+	out << "</DynaMindGUI>\n";
+	out << "</DynaMind>\n";
+
+	file.close();
 }

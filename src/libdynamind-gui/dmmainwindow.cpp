@@ -336,7 +336,7 @@ void DMMainWindow::saveAsSimulation()
         if (!fileName.contains(".dyn"))
             fileName+=".dyn";
         this->simulation->writeSimulation(fileName.toStdString());
-        this->writeGUIInformation(fileName);
+        //this->writeGUIInformation(fileName);
         this->currentDocument = fileName;
     }
 }
@@ -345,13 +345,15 @@ void DMMainWindow::saveSimulation()
     if (!this->currentDocument.isEmpty()) 
 	{
         this->simulation->writeSimulation(this->currentDocument.toStdString());
-        this->writeGUIInformation(currentDocument);
+        //this->writeGUIInformation(currentDocument);
     } 
 	else
         this->saveAsSimulation();
 }
-void DMMainWindow::writeGUIInformation(QString FileName) {
-	/*
+/*
+void DMMainWindow::writeGUIInformation(QString FileName) 
+{
+	
     //Find upper left corner;
     float minx;
     float miny;
@@ -411,8 +413,8 @@ void DMMainWindow::writeGUIInformation(QString FileName) {
     out << "</DynaMind>"<< "\n";
 
     file.close();
-	*/
-}
+	
+}*/
 
 void DMMainWindow::clearSimulation() 
 {	
