@@ -130,7 +130,7 @@ public:
     bool registerModulesFromSettings();
 	
     /** @brief adds a simulation saved in a file to the current simulation */
-    bool loadSimulation(std::string FileName);
+    virtual bool loadSimulation(std::string FileName);
 
 	void clear();
 private:
