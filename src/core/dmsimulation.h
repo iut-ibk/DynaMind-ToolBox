@@ -154,10 +154,9 @@ public:
     bool registerModulesFromSettings();
 	
     /** @brief adds a simulation saved in a file to the current simulation */
-    virtual bool loadSimulation(std::string FileName);
-	
+    virtual bool loadSimulation(std::string fileName);
     /** @brief writes the simulation to a xml file */
-    void writeSimulation(std::string filename);
+    virtual void writeSimulation(std::string filename);
 
 	void clear();
 	
