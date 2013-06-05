@@ -328,28 +328,27 @@ void DMMainWindow::sceneChanged() {
 
 
 }
-void DMMainWindow::saveAsSimulation() {
-	/*
-   QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Save DynaMind File"));
-    if (!fileName.isEmpty()) {
+void DMMainWindow::saveAsSimulation() 
+{
+   QString fileName = QFileDialog::getSaveFileName(this, tr("Save DynaMind File"));
+    if (!fileName.isEmpty()) 
+	{
         if (!fileName.contains(".dyn"))
             fileName+=".dyn";
         this->simulation->writeSimulation(fileName.toStdString());
         this->writeGUIInformation(fileName);
         this->currentDocument = fileName;
     }
-	*/
 }
-void DMMainWindow::saveSimulation() {
-	/*
-    if (!this->currentDocument.isEmpty()) {
+void DMMainWindow::saveSimulation() 
+{
+    if (!this->currentDocument.isEmpty()) 
+	{
         this->simulation->writeSimulation(this->currentDocument.toStdString());
         this->writeGUIInformation(currentDocument);
-    } else {
+    } 
+	else
         this->saveAsSimulation();
-    }
-	*/
 }
 void DMMainWindow::writeGUIInformation(QString FileName) {
 	/*
