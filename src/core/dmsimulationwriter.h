@@ -23,26 +23,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#define DMSIMULAITONWRITER_H
+
 #ifndef DMSIMULAITONWRITER_H
 #define DMSIMULAITONWRITER_H
 
 #include "dmcompilersettings.h"
 #include <string>
 #include <dmport.h>
+
 namespace DM {
-    class Simulation;
-    class DM_HELPER_DLL_EXPORT SimulaitonWriter
-    {
-    private:
-        static std::string  writeLink(Port * p);
-    public:
-        SimulaitonWriter();
-        static void writeSimulation(std::string filename, Simulation * sim);
+
+class Simulation;
+class DM_HELPER_DLL_EXPORT SimulationWriter
+{
+private:
+	//static std::string  writeLink(Port * p);
+public:
+	SimulationWriter();
+	static void writeSimulation(std::string filename, Simulation * sim);
 
 
 
-    };
+};
+
 }
 
 #endif // SIMULAITONWRITER_H

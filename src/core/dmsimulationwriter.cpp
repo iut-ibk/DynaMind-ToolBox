@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include "dmsimulationwriter.h"
 #include <dmsimulation.h>
 #include <dmmodule.h>
@@ -37,128 +37,173 @@
 #include <sstream>
 
 namespace DM {
-	
-    SimulaitonWriter::SimulaitonWriter()
-    {
-    }
-    std::string   SimulaitonWriter::writeLink(Port * p) {
-        std::stringstream out;
-        foreach(ModuleLink *l, p->getLinks()) {
-            out << "\t\t" << "<Link>" << "\n";
-            out << "\t\t\t" << "<BackLink value = \"";
-            out << l->isBackLink();
-            out << "\"/>" << "\n";
-            out << "\t\t\t" << "<InPort>" << "\n";
-            out << "\t\t\t\t" << "<UUID value = \"";
-            out << l->getInPort()->getModule()->getUuid();
-            out << "\"/>" << "\n";
-            out << "\t\t\t\t" << "<PortName value = \"";
-            out << l->getInPort()->getLinkedDataName();
-            out << "\"/>" << "\n";
-            out << "\t\t\t\t" << "<PortType value = \"";
-            out << l->getInPort()->isPortTuple();
-            out << "\"/>" << "\n";
-            out << "\t\t\t" << "</InPort>" << "\n";
 
-            out << "\t\t\t" << "<OutPort>" << "\n";
-            out << "\t\t\t\t" << "<UUID value = \"";
-            out << l->getOutPort()->getModule()->getUuid();
-            out << "\"/>" << "\n";
-            out << "\t\t\t\t" << "<PortName value = \"";
-            out << l->getOutPort()->getLinkedDataName();
-            out << "\"/>" << "\n";
-            out << "\t\t\t\t" << "<PortType value = \"";
-            out << l->getOutPort()->isPortTuple();
-            out << "\"/>" << "\n";
-            out << "\t\t\t" << "</OutPort>" << "\n";
-            out << "\t\t" << "</Link>" << "\n";
-        }
-        return out.str();
-    }
+	SimulationWriter::SimulationWriter()
+	{
+	}
+	/*
+	std::string SimulationWriter::writeLink(Port * p) {
+		std::stringstream out;
+		foreach(ModuleLink *l, p->getLinks()) {
+			out << "\t\t<Link>\n";
+			out << "\t\t\t<BackLink value = \"0";
+			out << l->isBackLink();
+			out << "\"/>\n";
+			out << "\t\t\t<InPort>\n";
+			out << "\t\t\t\t<UUID value = \"";
+			out << l->getInPort()->getModule()->getUuid();
+			out << "\"/>\n";
+			out << "\t\t\t\t<PortName value = \"";
+			out << l->getInPort()->getLinkedDataName();
+			out << "\"/>\n";
+			out << "\t\t\t\t<PortType value = \"";
+			out << l->getInPort()->isPortTuple();
+			out << "\"/>\n";
+			out << "\t\t\t</InPort>\n";
 
-    void SimulaitonWriter::writeSimulation(std::string filename, Simulation *sim) {
-        std::vector<Module*> modules = sim->getModules();
-        Logger(Debug) << "Save File";
+			out << "\t\t\t<OutPort>\n";
+			out << "\t\t\t\t<UUID value = \"";
+			out << l->getOutPort()->getModule()->getUuid();
+			out << "\"/>\n";
+			out << "\t\t\t\t<PortName value = \"";
+			out << l->getOutPort()->getLinkedDataName();
+			out << "\"/>\n";
+			out << "\t\t\t\t<PortType value = \"";
+			out << l->getOutPort()->isPortTuple();
+			out << "\"/>\n";
+			out << "\t\t\t</OutPort>\n";
+			out << "\t\t</Link>\n";
+		}
+		return out.str();
+	}*/
 
-        QFile file(QString::fromStdString(filename));
-        file.open(QIODevice::WriteOnly);
-        QTextStream out(&file);
-        out << "<DynaMind>" << "\n";
-        out << "\t"<<"<Info Version=\"0.3/\">" << "\n";
-        out << "<DynaMindCore>" << "\n";
-        out << "\t"<<"<Nodes>" << "\n";
-        out  << "\t" << "\t"<<"<RootNode>" << "\n";
-        out << "\t" << "\t"<< "\t" << "<UUID value=\""
-                << QString::fromStdString(sim->getRootGroup()->getUuid()) << "\"/>" << "\n";
-        out  << "\t" << "\t"<<"</RootNode>" << "\n";
-         Logger(Debug) << "Number of Modules " << modules.size();
-        foreach(Module * m, modules) {
-            Logger(Debug) << m->getClassName() << m->getUuid();
-            out  << "\t" << "\t"<<"<Node>" << "\n";
+	void writeHead(QTextStream &out)
+	{
+		out << "<DynaMind>\n";
+		out << "\t<Info Version=\"0.3/\">\n";
+		out << "<DynaMindCore>\n";
+	}
 
-            out << "\t" << "\t"<< "\t" << "<ClassName value=\""
-                    << QString::fromStdString(m->getClassName()) << "\"/>" << "\n";
+	void writeModule(QTextStream &out, Module* m)
+	{
+		Logger(Debug) << m->getClassName() << m->getUuid();
 
-            out << "\t" << "\t"<< "\t" << "<UUID value=\""
-                    << QString::fromStdString(m->getUuid()) << "\"/>" << "\n";
+		out  << "\t\t<Node>\n";
+		out << "\t\t"<< "\t<ClassName value=\""
+			<< QString::fromStdString(m->getClassName()) << "\"/>\n";
+		out << "\t\t"<< "\t<UUID value=\""
+			//<< QString::fromStdString(m->getUuid()) << "\"/>\n";
+			<< QString::fromRawData((QChar*)m, sizeof(Module*)) << "\"/>\n";
+		out << "\t\t"<< "\t<Name value=\""
+			<< QString::fromStdString(m->getName()) << "\"/>\n";
+		out << "\t\t"<< "\t<GroupUUID value=\""
+			<< QString::fromStdString("") << "\"/>\n";
+		out << "\t\t"<< "\t<DebugMode value=\""
+			<< QString::number(0) << "\"/>\n";
 
-            out << "\t" << "\t"<< "\t" << "<Name value=\""
-                    << QString::fromStdString(m->getName()) << "\"/>" << "\n";
-            out << "\t" << "\t"<< "\t" << "<GroupUUID value=\""
-                    << QString::fromStdString(m->getGroup()->getUuid()) << "\"/>" << "\n";
-            out << "\t" << "\t"<< "\t" << "<DebugMode value=\""
-            << QString::number(m->isDebugMode()) << "\"/>" << "\n";
-            
+		foreach(Module::Parameter* p, m->getParameters())
+		{
+			out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(p->name) <<"\">"
+					<< "\n" "\t\t\t\t<![CDATA["
+					<<  QString::fromStdString(m->getParameterAsString(p->name))
+					<< "]]>\n"
+					<< "\t\t\t</parameter>\n";
+		}
 
-           std::map<std::string, int> parameterList = m->getParameterList();
-            for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-                Logger(Debug) << it->first;
-            }
+		/*
+		std::map<std::string, int> parameterList = m->getParameterList();
+		for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
+			Logger(Debug) << it->first;
+		}
 
-            for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-                if (it->second < DM::USER_DEFINED_INPUT) {
-                    out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(it->first) <<"\"" << ">"
-                            << "\n" "\t\t\t\t<![CDATA["
-                            <<  QString::fromStdString(m->getParameterAsString(it->first))
-                            << "]]>" << "\n"
-                            << "\t\t\t</parameter>\n";
-                }
-            }
+		for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
+			if (it->second < DM::USER_DEFINED_INPUT) {
+				out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(it->first) <<"\">"
+					<< "\n" "\t\t\t\t<![CDATA["
+					<<  QString::fromStdString(m->getParameterAsString(it->first))
+					<< "]]>\n"
+					<< "\t\t\t</parameter>\n";
+			}
+		}*/
 
-            out  << "\t" << "\t"<<"</Node>" << "\n";
-
-        }
-        out << "\t"<<"</Nodes>" << "\n";
-
-        out << "\t" << "<Links>" << "\n";
+		out  << "\t\t</Node>\n";
+	}
 
 
-        foreach(Module * m, modules) {
-            foreach(Port * p, m->getOutPorts()) {
-                out << QString::fromStdString(SimulaitonWriter::writeLink(p));
-            }
-            if (m->isGroup()) {
-                Group * g = (Group * ) m;
-                foreach(PortTuple * pt, g->getInPortTuples()) {
-                  out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
-                }
-                foreach(PortTuple * pt, g->getOutPortTuples()) {
-                  out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
-                }
-            }
-        }
+	void writeLink(QTextStream &out, Simulation::Link* l)
+	{
+		QString src = QString::fromRawData((QChar*)l->src, sizeof(Module*));
+		QString dest = QString::fromRawData((QChar*)l->dest, sizeof(Module*));
 
-        out << "\t" << "</Links>" << "\n";
+		out << "\t\t<Link>\n";
+		out << "\t\t\t<BackLink value = \"0\"/>\n";
+		out << "\t\t\t<InPort>\n";
+		out << "\t\t\t\t<UUID value = \"" << src << "\"/>\n";
+		out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->inPort) << "\"/>\n";
+		out << "\t\t\t\t<PortType value = \"0\"/>\n";
+		out << "\t\t\t</InPort>\n";
 
-        out << "</DynaMindCore>" << "\n";
-        //out << "</DynaMind>"<< "\n";
+		out << "\t\t\t<OutPort>\n";
+		out << "\t\t\t\t<UUID value = \"" << QString::fromStdString(l->outPort) << "\"/>\n";
+		out << "\t\t\t\t<PortName value = \"" << dest << "\"/>\n";
+		out << "\t\t\t\t<PortType value = \"0\"/>\n";
+		out << "\t\t\t</OutPort>\n";
+		out << "\t\t</Link>\n";
+	}
 
-        file.close();
+	void SimulationWriter::writeSimulation(std::string filename, Simulation *sim) 
+	{
+		std::list<Module*> modules = sim->getModules();
+		Logger(Debug) << "Save File";
 
+		QFile file(QString::fromStdString(filename));
+		file.open(QIODevice::WriteOnly);
+		QTextStream out(&file);
 
+		writeHead(out);
+		
+		// dump groups and modules
+		out << "\t<Nodes>\n";
+		/*
+		out  << "\t\t<RootNode>\n";
+		out << "\t\t\t<UUID value=\""
+			<< QString::fromStdString(sim->getRootGroup()->getUuid()) << "\"/>\n";
+		out  << "\t\t</RootNode>\n";
+		*/
 
+		Logger(Debug) << "Number of Modules " << modules.size();
+		foreach(Module * m, modules) 
+			writeModule(out, m);
 
-    }
-	
+		out << "\t</Nodes>\n";
+
+		// dump links
+		out << "\t<Links>\n";
+
+		foreach(Simulation::Link* l, sim->getLinks())
+			writeLink(out, l);
+
+		/*foreach(Module * m, modules) {
+			foreach(Port * p, m->getOutPorts()) {
+				out << QString::fromStdString(SimulaitonWriter::writeLink(p));
+			}
+			if (m->isGroup()) {
+				Group * g = (Group * ) m;
+				foreach(PortTuple * pt, g->getInPortTuples()) {
+					out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
+				}
+				foreach(PortTuple * pt, g->getOutPortTuples()) {
+					out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
+				}
+			}
+		}*/
+
+		out << "\t</Links>\n";
+
+		out << "</DynaMindCore>\n";
+		//out << "</DynaMind>"<< "\n";
+
+		file.close();
+	}
+
 }
-*/

@@ -48,7 +48,7 @@
 //#include <dmport.h>
 #include <dmmoduleregistry.h>
 //#include <dmgroup.h>
-//#include <dmsimulationwriter.h>
+#include <dmsimulationwriter.h>
 #include <dmlogger.h>
 //#include <dmporttuple.h>
 
@@ -397,6 +397,10 @@ bool Simulation::loadSimulation(std::string filename)
 	return true;
 }
 
+void Simulation::writeSimulation(std::string filename) 
+{
+    SimulationWriter::writeSimulation(filename, this);
+}
 
 
 

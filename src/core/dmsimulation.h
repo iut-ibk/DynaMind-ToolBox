@@ -100,6 +100,30 @@ enum SimulationStatus {
 class DM_HELPER_DLL_EXPORT Simulation
 {
 public:
+	class Link
+	{
+	public:
+		Module* src;
+		std::string outPort;
+
+		Module* dest;
+		std::string inPort;
+
+		/** @brief shortcut to src data */
+		System* getData()
+		{
+			return src->getOutPortData(outPort);
+		}
+		/** @brief shifts data from source to destination */
+		void ShiftData(Simulation* sim, bool successor = false)
+		{
+			System * data = getData();
+			// shift pointer
+			this->dest->setInPortData(this->inPort, 
+				successor ? data->createSuccessor() : data, 
+				sim);
+		}
+	};
 	Simulation();
 	~Simulation();
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
@@ -131,37 +155,18 @@ public:
 	
     /** @brief adds a simulation saved in a file to the current simulation */
     virtual bool loadSimulation(std::string FileName);
+	
+    /** @brief writes the simulation to a xml file */
+    void writeSimulation(std::string filename);
 
 	void clear();
+	
+	std::list<Module*> getModules(){return modules;};
+	std::list<Link*> getLinks(){return links;};
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
-
-	class Link
-	{
-	public:
-		Module* src;
-		std::string outPort;
-
-		Module* dest;
-		std::string inPort;
-
-		/** @brief shortcut to src data */
-		System* getData()
-		{
-			return src->getOutPortData(outPort);
-		}
-		/** @brief shifts data from source to destination */
-		void ShiftData(Simulation* sim, bool successor = false)
-		{
-			System * data = getData();
-			// shift pointer
-			this->dest->setInPortData(this->inPort, 
-				successor ? data->createSuccessor() : data, 
-				sim);
-		}
-	};
 
 	std::list<Module*>	modules;
 	std::list<Link*>	links;
