@@ -41,7 +41,7 @@
 #include "QSettings"
 #include "modulereader.h"
 #include <sstream>
-#include "simulationio.h"
+//#include "GuiSimulationReader.h"
 #include "guilink.h"
 #include <QTreeWidget>
 #include "simulationmanagment.h"
@@ -432,7 +432,7 @@ void DMMainWindow::importSimulation(QString fileName, QPointF offset) {
 
 
     std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
-    SimulationIO simio;
+    GuiSimulationReader simio;
     simio.loadSimluation(fileName, this->simulation, UUID_Translation);
     this->loadGUIModules((DM::Group *)this->simulation->getRootGroup(), UUID_Translation, simio.getPositionOfLoadedModules());
 
@@ -494,7 +494,7 @@ void DMMainWindow::loadSimulation(int id)
         this->currentDocument = fileName;
 		simulation->loadSimulation(fileName.toStdString());
         /*std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
-        SimulationIO simio;
+        GuiSimulationReader simio;
         simio.loadSimluation(fileName, this->simulation, UUID_Translation);
         if (this->simulation->getSimulationStatus() == DM::SIM_FAILED_LOAD)  {
             this->simulation->clearSimulation();

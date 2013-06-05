@@ -42,7 +42,7 @@
 #include <QVector>
 #include <moduledescription.h>
 #include <ui_dmmainwindow.h>
-#include <simulationio.h>
+//#include <GuiSimulationReader.h>
 class QTreeWidgetItem;
 
 

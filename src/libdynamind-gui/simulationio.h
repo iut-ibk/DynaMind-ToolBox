@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef SIMULATIONIO_H
-#define SIMULATIONIO_H
+#ifndef GuiSimulationReader_H
+#define GuiSimulationReader_H
 
 #include "dmcompilersettings.h"
 //#include <QMap>
@@ -55,10 +55,10 @@ struct DM_HELPER_DLL_EXPORT ModuleExEntry {
 	bool minimized;
 };
 
-class  DM_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
+class  DM_HELPER_DLL_EXPORT GuiSimulationReader  : public QXmlDefaultHandler
 {
 public:
-    SimulationIO(QString FileName);
+    GuiSimulationReader(QString FileName);
     //void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
     //QVector<LoadLink> getLinks(){return this->links;}
     //QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
@@ -90,5 +90,5 @@ private:
     //QVector<LoadModule> modules;
 };
 
-#endif // SIMULATIONIO_H
+#endif // GuiSimulationReader_H
 

@@ -38,7 +38,7 @@
 #include <groupnode.h>
 #include <guisimulation.h>
 
-SimulationIO::SimulationIO(QString FileName)
+GuiSimulationReader::GuiSimulationReader(QString FileName)
 {
 	QXmlSimpleReader r;
     if (!QFile::exists(FileName)) {
@@ -49,7 +49,7 @@ SimulationIO::SimulationIO(QString FileName)
     r.parse(QXmlInputSource(&f));
 }
 /*
-void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
+void GuiSimulationReader::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
 {
 	
     this->sim = simulation;
@@ -70,7 +70,7 @@ void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation, 
 }
 */
 
-bool SimulationIO::startElement(const QString & namespaceURI,
+bool GuiSimulationReader::startElement(const QString & namespaceURI,
                                 const QString & localName,
                                 const QString & qName,
                                 const QXmlAttributes & atts) 
@@ -96,7 +96,7 @@ bool SimulationIO::startElement(const QString & namespaceURI,
     return true;
 
 }
-bool SimulationIO::endElement(const QString & namespaceURI,
+bool GuiSimulationReader::endElement(const QString & namespaceURI,
                               const QString & localName,
                               const QString & qName) 
 {

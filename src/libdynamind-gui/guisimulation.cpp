@@ -278,7 +278,7 @@ SimulationTab* GUISimulation::getTab(int i)
 bool GUISimulation::loadSimulation(std::string filename) 
 {
     SimulationReader simreader(QString::fromStdString(filename));
-	SimulationIO simio(QString::fromStdString(filename));
+	GuiSimulationReader simio(QString::fromStdString(filename));
 
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
 
