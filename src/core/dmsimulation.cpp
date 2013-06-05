@@ -240,8 +240,81 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
+bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews, const std::list<Simulation::Link*>& links)
+{
+	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName();
+
+	std::set<std::string> viewsInStream = formerViews;
+
+	foreach(const View v, m->getAccessedViews()[streamName])
+	{
+		const int a = v.getAccessType();
+		if(a == READ || a == MODIFY)
+		{
+			// check if we can access the desired view
+			if(formerViews.find(v.getName()) == formerViews.end())
+			{
+				DM::Logger(DM::Error) << "module '" << m->getClassName() 
+					<< "'tries to read from non existing view '" << v.getName()
+					<< "'from stream '" << streamName << "'";
+
+				return false;
+			}
+		}
+		if(a == WRITE || a == MODIFY)	// add new views
+			viewsInStream.insert(v.getName());
+	}
+	
+	std::string viewNameList;
+	foreach(std::string viewName, formerViews)
+		viewNameList.append(viewName + " | ");
+
+	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;
+
+	bool success = true;
+	// check next modules
+	foreach(Simulation::Link* l, links)
+		if(l->src == m && l->outPort == streamName)
+			if(!checkModuleStream(l->dest, l->inPort, viewsInStream, links))
+				success = false;
+
+	return success;
+}
+
+bool checkModuleStream(Module* m, std::set<std::string> views, const std::list<Simulation::Link*>& links)
+{
+	bool success = true;
+	std::map<std::string, std::vector<View>> accessedViews = m->getAccessedViews();
+	// iterate through all streams
+	for(std::map<std::string, std::vector<View>>::iterator it = accessedViews.begin();
+		it != accessedViews.end(); ++it)
+	{
+		if(!checkModuleStream(m, it->first, views, links))
+			success = false;
+	}
+	return success;
+}
+
+bool Simulation::checkStream()
+{
+	foreach(Module* m, modules)
+		if(m->getInPortNames().size() == 0)
+			if(!checkModuleStream(m, std::set<std::string>(), links))
+				return false;
+
+	return true;
+
+}
+
 void Simulation::run()
 {
+	Logger(Standard) << ">> checking simulation";
+	if(!checkStream())
+	{
+		Logger(Error) << ">> checking simulation failed";
+		return;
+	}
+	Logger(Standard) << ">> checking simulation succeeded";
 	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
 	std::queue<Module*> worklist;

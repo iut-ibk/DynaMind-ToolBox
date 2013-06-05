@@ -166,6 +166,9 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
+	
+	/** @brief checks the stream for possible missing views */
+	bool checkStream();
 
 	std::list<Module*>	modules;
 	std::list<Link*>	links;
