@@ -86,14 +86,14 @@ namespace DM {
 
 	void writeModule(QTextStream &out, Module* m)
 	{
-		Logger(Debug) << m->getClassName();
+		Logger(Debug) << "saving module '" << m->getClassName() << "'";
 
 		out  << "\t\t<Node>\n";
 		out << "\t\t"<< "\t<ClassName value=\""
 			<< QString::fromStdString(m->getClassName()) << "\"/>\n";
 		out << "\t\t"<< "\t<UUID value=\""
 			//<< QString::fromStdString(m->getUuid()) << "\"/>\n";
-			<< QString::fromRawData((QChar*)m, sizeof(Module*)) << "\"/>\n";
+			<< QString::fromAscii((char*)m, sizeof(Module*)) << "\"/>\n";
 		out << "\t\t"<< "\t<Name value=\""
 			<< QString::fromStdString(m->getName()) << "\"/>\n";
 		out << "\t\t"<< "\t<GroupUUID value=\""
@@ -132,20 +132,20 @@ namespace DM {
 
 	void writeLink(QTextStream &out, Simulation::Link* l)
 	{
-		QString src = QString::fromRawData((QChar*)l->src, sizeof(Module*));
-		QString dest = QString::fromRawData((QChar*)l->dest, sizeof(Module*));
+		QString src = QString::fromAscii((char*)l->src, sizeof(Module*));
+		QString dest = QString::fromAscii((char*)l->dest, sizeof(Module*));
 
 		out << "\t\t<Link>\n";
 		out << "\t\t\t<BackLink value = \"0\"/>\n";
 		out << "\t\t\t<InPort>\n";
-		out << "\t\t\t\t<UUID value = \"" << src << "\"/>\n";
+		out << "\t\t\t\t<UUID value = \"" << dest << "\"/>\n";
 		out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->inPort) << "\"/>\n";
 		out << "\t\t\t\t<PortType value = \"0\"/>\n";
 		out << "\t\t\t</InPort>\n";
 
 		out << "\t\t\t<OutPort>\n";
-		out << "\t\t\t\t<UUID value = \"" << QString::fromStdString(l->outPort) << "\"/>\n";
-		out << "\t\t\t\t<PortName value = \"" << dest << "\"/>\n";
+		out << "\t\t\t\t<UUID value = \"" << src << "\"/>\n";
+		out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->outPort) << "\"/>\n";
 		out << "\t\t\t\t<PortType value = \"0\"/>\n";
 		out << "\t\t\t</OutPort>\n";
 		out << "\t\t</Link>\n";
@@ -154,7 +154,7 @@ namespace DM {
 	void SimulationWriter::writeSimulation(std::string filename, Simulation *sim) 
 	{
 		std::list<Module*> modules = sim->getModules();
-		Logger(Debug) << "Save File";
+		Logger(Debug) << "Saving File";
 
 		QFile file(QString::fromStdString(filename));
 		file.open(QIODevice::WriteOnly);
@@ -164,12 +164,12 @@ namespace DM {
 		
 		// dump groups and modules
 		out << "\t<Nodes>\n";
-		/*
+		
+		// for backward compatibility
 		out  << "\t\t<RootNode>\n";
-		out << "\t\t\t<UUID value=\""
-			<< QString::fromStdString(sim->getRootGroup()->getUuid()) << "\"/>\n";
+		out << "\t\t\t<UUID value=\"0\"/>\n";
 		out  << "\t\t</RootNode>\n";
-		*/
+		
 
 		Logger(Debug) << "Number of Modules " << modules.size();
 		foreach(Module * m, modules) 
@@ -204,6 +204,7 @@ namespace DM {
 		//out << "</DynaMind>"<< "\n";
 
 		file.close();
+		Logger(Debug) << "Finished saving file";
 	}
 
 }
