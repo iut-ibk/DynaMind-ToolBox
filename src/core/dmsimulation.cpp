@@ -242,7 +242,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 
 bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews, const std::list<Simulation::Link*>& links)
 {
-	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName();
+	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
 	std::set<std::string> viewsInStream = formerViews;
 
@@ -255,8 +255,8 @@ bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> 
 			if(formerViews.find(v.getName()) == formerViews.end())
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
-					<< "'tries to read from non existing view '" << v.getName()
-					<< "'from stream '" << streamName << "'";
+					<< "' tries to read from non existing view '" << v.getName()
+					<< "' from stream '" << streamName << "'";
 
 				return false;
 			}
@@ -266,8 +266,11 @@ bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> 
 	}
 	
 	std::string viewNameList;
-	foreach(std::string viewName, formerViews)
-		viewNameList.append(viewName + " | ");
+	if(formerViews.size()>0)
+		foreach(std::string viewName, formerViews)
+			viewNameList += viewName + " | ";
+	else
+		viewNameList += "<none>";
 
 	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;
 
