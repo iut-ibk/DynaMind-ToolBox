@@ -86,7 +86,7 @@ namespace DM {
 
 	void writeModule(QTextStream &out, Module* m)
 	{
-		Logger(Debug) << m->getClassName() << m->getUuid();
+		Logger(Debug) << m->getClassName();
 
 		out  << "\t\t<Node>\n";
 		out << "\t\t"<< "\t<ClassName value=\""
