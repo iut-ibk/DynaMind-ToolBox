@@ -74,9 +74,14 @@ public:
 	/*SimulationTab* addTab(QWidget *parent);
 	void closeTab(int i);
 	SimulationTab* getTab(int i);	// 0 = root*/
+
+	
+    /** @brief adds a simulation saved in a file to the current simulation 
+				for gui we load the positions of the modules too */
+    bool loadSimulation(std::string FileName);
 private:
 	//void loadPythonModulesFromDirectory(std::string path);
-    QVector<ModelNode*> modelNodes;
+	std::map<DM::Module*, ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
 	// stores the pointer to the last module. not an optimal solution though

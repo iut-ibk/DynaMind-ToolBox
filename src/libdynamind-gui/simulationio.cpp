@@ -37,13 +37,21 @@
 #include <map>
 #include <groupnode.h>
 #include <guisimulation.h>
-SimulationIO::SimulationIO()
-{
-}
 
+SimulationIO::SimulationIO(QString FileName)
+{
+	QXmlSimpleReader r;
+    if (!QFile::exists(FileName)) {
+        return;
+    }
+    QFile f(FileName);
+    r.setContentHandler(this);
+    r.parse(QXmlInputSource(&f));
+}
+/*
 void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
 {
-
+	
     this->sim = simulation;
     this->UUIDTransation = UUIDTranslation;
     QXmlSimpleReader r;
@@ -60,17 +68,17 @@ void SimulationIO::loadSimluation(QString FileName,  GUISimulation *simulation, 
 
     int i = 0;
 }
-
-
+*/
 
 bool SimulationIO::startElement(const QString & namespaceURI,
                                 const QString & localName,
                                 const QString & qName,
-                                const QXmlAttributes & atts) {
+                                const QXmlAttributes & atts) 
+{
     Q_UNUSED(namespaceURI)
     Q_UNUSED(localName)
     if (qName == "GUI_UUID") {
-        tmpUUID = atts.value("value").toStdString();
+        tmpUUID = atts.value("value");
         return true;
     }
     if (qName == "GUI_PosX") {
@@ -90,11 +98,18 @@ bool SimulationIO::startElement(const QString & namespaceURI,
 }
 bool SimulationIO::endElement(const QString & namespaceURI,
                               const QString & localName,
-                              const QString & qName) {
-    /*Q_UNUSED(namespaceURI)
+                              const QString & qName) 
+{
+    Q_UNUSED(namespaceURI)
     Q_UNUSED(localName)
-    if (qName == "GUI_Node") {
-        DM::Module * DynaMindm;
+    if (qName == "GUI_Node") 
+	{
+		ModuleExEntry *e = &entries[tmpUUID];
+		e->minimized = minimized;
+		e->posX = PosX;
+		e->posY = PosY;
+
+        /*DM::Module * DynaMindm;
         DynaMindm = sim->getModuleWithUUID(UUIDTransation[tmpUUID]);
         if (DynaMindm != 0) {
             LoadModule lm;
@@ -106,8 +121,8 @@ bool SimulationIO::endElement(const QString & namespaceURI,
 
         }
 
-        return true;
-    }*/
+        return true;*/
+    }
     return true;
 
 }

@@ -90,8 +90,8 @@ private:
     bool running;
     //QTreeWidgetItem * rootItemModelTree;
     void writeGUIInformation(QString FileName);
-    void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
-    void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
+    //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
+    //void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 
 	QList<SimulationTab*> tabs;
 public slots:

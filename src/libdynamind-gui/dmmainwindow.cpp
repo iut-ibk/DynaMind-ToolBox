@@ -440,9 +440,9 @@ void DMMainWindow::importSimulation(QString fileName, QPointF offset) {
 	*/
 
 }
-
+/*
 void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation, QVector<LoadModule> posmodules) {
-	/*
+	
     std::map<std::string, std::string> reveredUUID_Translation;
     for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
          it != UUID_Translation.end();
@@ -481,8 +481,8 @@ void DMMainWindow::loadGUIModules(DM::Group * g, std::map<std::string, std::stri
             this->loadGUIModules((DM::Group * )m,  UUID_Translation,posmodules);
 
     }
-	*/
-}
+	
+}*/
 
 void DMMainWindow::loadSimulation(int id) 
 {
@@ -505,8 +505,9 @@ void DMMainWindow::loadSimulation(int id)
         this->loadGUILinks(UUID_Translation);*/
     }
 }
+/*
 void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translation) {
-	/*
+	
     std::map<std::string, std::string> reveredUUID_Translation;
     for (std::map<std::string, std::string>::const_iterator it = UUID_Translation.begin();
          it != UUID_Translation.end();
@@ -594,8 +595,8 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
         currentView->update();
 
     }
-	*/
-}
+	
+}*/
 
 
 

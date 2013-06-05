@@ -33,7 +33,7 @@
 #include "moduledescription.h"
 #include "modelnode.h"
 #include <QXmlDefaultHandler>
-struct  DM_HELPER_DLL_EXPORT LoadLink {
+/*struct  DM_HELPER_DLL_EXPORT LoadLink {
     int FromID;
     int ToID;
     QString FromName;
@@ -48,16 +48,21 @@ struct DM_HELPER_DLL_EXPORT LoadModule {
     double PosX;
     double PosY;
     bool minimized;
+};*/
+
+struct DM_HELPER_DLL_EXPORT ModuleExEntry {
+	double posX, posY;
+	bool minimized;
 };
 
 class  DM_HELPER_DLL_EXPORT SimulationIO  : public QXmlDefaultHandler
 {
 public:
-    SimulationIO();
-    void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
-    QVector<LoadLink> getLinks(){return this->links;}
-    QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
-
+    SimulationIO(QString FileName);
+    //void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
+    //QVector<LoadLink> getLinks(){return this->links;}
+    //QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
+	std::map<QString, ModuleExEntry> getEntries(){return entries;};
 private:
     //Groups * groups;
     bool startElement(const QString & namespaceURI,
@@ -71,16 +76,18 @@ private:
 
 
 
-    QVector<LoadLink> links;
-    std::map<std::string, std::string> UUIDTransation;
-    GUISimulation * sim;
+    //QVector<LoadLink> links;
+    //std::map<std::string, std::string> UUIDTransation;
+    //GUISimulation * sim;
 
-    std::string tmpUUID;
+    QString tmpUUID;
     double PosX;
     double PosY;
     bool minimized;
 
-    QVector<LoadModule> modules;
+	std::map<QString, ModuleExEntry>	entries;
+
+    //QVector<LoadModule> modules;
 };
 
 #endif // SIMULATIONIO_H
