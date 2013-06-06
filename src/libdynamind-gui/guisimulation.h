@@ -67,7 +67,7 @@ public:
 	// overloaded
 	DM::Module* addModule(std::string moduleName, bool callInit = true);
 
-	ModelNode* guiAddModule(QString moduleName);
+	//ModelNode* guiAddModule(QString moduleName);
 
 
 	SimulationTab* rootTab;
@@ -82,18 +82,19 @@ public:
 	/** @brief writes the simulation to a xml file 
 			for gui we add the positions of the modules too */
     void writeSimulation(std::string filename);
+
+
+	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
 private:
 	//void loadPythonModulesFromDirectory(std::string path);
 	std::map<DM::Module*, ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
-	// stores the pointer to the last module. not an optimal solution though
-	ModelNode* lastAddedModuleNode;
 	//QList<SimulationTab*> tabs;
 	
 	PortNode* getPortNode(DM::Module* m, std::string portName, PortType type);
 signals:
-    void addedModule(ModelNode*);
+    //void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);
     //void GroupNameChanged(GroupNode*);
     //void showHelpForModule(std::string classname, std::string uuid);

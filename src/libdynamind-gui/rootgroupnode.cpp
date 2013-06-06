@@ -80,10 +80,13 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	QString moduleName = item->text(0);
 	if(type == "Module")
 	{
-		// get module node from simulation
-		ModelNode* node = sim->guiAddModule(moduleName);
+		DM::Module* m = sim->addModule(moduleName.toStdString());
 		// move to cursor
-		node->setPos(event->scenePos());
+		sim->getModelNode(m)->setPos(event->scenePos());
+		// get module node from simulation
+		//ModelNode* node = sim->guiAddModule(moduleName);
+		// move to cursor
+		//node->setPos(event->scenePos());
 		// add module to render list
 		//addItem(node);
 		// get ports

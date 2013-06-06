@@ -168,20 +168,18 @@ void GUISimulation::loadModulesFromDefaultLocation()
 		registerModulesFromDirectory(cp);
 }
 */
-
+/*
 ModelNode* GUISimulation::guiAddModule(QString moduleName)
 {
-	addModule(moduleName.toStdString());
-	return lastAddedModuleNode;
-}
+	return modelNodes[addModule(moduleName.toStdString())];
+}*/
 DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 {
 	DM::Module* m = Simulation::addModule(moduleName, callInit);
-	lastAddedModuleNode = new ModelNode(m, this);
+	ModelNode* node = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
-	rootTab->addItem(lastAddedModuleNode);
-	modelNodes[m] = lastAddedModuleNode;
-	
+	rootTab->addItem(node);
+	modelNodes[m] = node;
 	return m;
 }
 
