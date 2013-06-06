@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include <ostream>
 #include <testmodules.h>
 #include <dmlog.h>
@@ -53,4 +53,4 @@ TEST_F(TestModules,setParameterInModule)
     ASSERT_EQ(0.1,val);
 }
 
-*/
+
