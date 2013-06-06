@@ -47,14 +47,15 @@ void Loop::run()
 
     if(counter < steps)
 	{
+		// TODO (simenv adaption)
 		counter++;
 		DM::Logger(DM::Debug) << "condition true ( " << counter << " < " << steps << " )";
-		this->setOutPortData("true", this->getInPortData("in"));
+		//this->setOutPortData("true", this->getInPortData("in"));
 	}
 	else
 	{
 		DM::Logger(DM::Debug) << "condition false ( " << counter << " < " << steps << " )";
-		this->setOutPortData("false", this->getInPortData("in"));
+		//this->setOutPortData("false", this->getInPortData("in"));
 	}
 
     DM::Logger(DM::Debug) << "checking condition ... done";
