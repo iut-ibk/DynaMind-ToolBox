@@ -287,12 +287,13 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	QColor pencolor = COLOR_MODULEBORDER;
 
 	if(isSelected())
-        pencolor = COLOR_MODULESELECTEDBORDER;
+        pencolor = COLOR_MODULE_SELECTED_BORDER;
 
 	switch(module->getStatus())
 	{
-	case DM::MOD_OK:	fillcolor = COLOR_MODULEFINISHED;	break;
-	case DM::MOD_ERROR:	fillcolor = COLOR_MODULEERROR;		break;
+	case DM::MOD_OK:				fillcolor = COLOR_MODULE_FINISHED;	break;
+	case DM::MOD_EXECUTIONERROR:	fillcolor = COLOR_MODULE_EXE_ERROR;		break;
+	case DM::MOD_CHECKERROR:		fillcolor = COLOR_MODULE_CHECK_ERROR;		break;
 	}
 
     if(this->visible){
