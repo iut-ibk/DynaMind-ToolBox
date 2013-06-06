@@ -54,7 +54,7 @@ InOut::InOut() {
 void InOut::run() {
     int test = a;
     Logger(Debug) << "Run InOut";
-    //Logger(Debug) << this->getParameterAsString("a"); TODO: maybe replace by analogon
+    Logger(Debug) << this->getParameterAsString("a");
     sys_in = this->getData("Inport");
 
     std::map<std::string, DM::Node*> all_nodes = sys_in->getAllNodes();
