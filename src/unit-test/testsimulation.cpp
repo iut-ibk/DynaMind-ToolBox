@@ -48,7 +48,7 @@ TEST_F(TestSimulation,validationtool) {
     DM::Logger(DM::Standard) << "Test validation tool";
 
     DM::Simulation sim;
-    sim.registerNativeModules("dynamind-testmodules");
+    sim.registerModule("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
     //std::string uuid = mcreator->getUuid();
     ASSERT_TRUE(mcreator != 0);
@@ -66,7 +66,7 @@ TEST_F(TestSimulation,sqlsuccessortest) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Test Successor states (SQL)";
     DM::Simulation sim;
-    sim.registerNativeModules("dynamind-testmodules");
+    sim.registerModule("dynamind-testmodules");
     DM::Module * mcreator = sim.addModule("CreateAllComponenets");
     ASSERT_TRUE(mcreator != 0);
     DM::Module * msucc  = sim.addModule("SuccessorCheck");
@@ -84,16 +84,17 @@ TEST_F(TestSimulation,testMemory){
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Add Module";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("CreateNodes");
-	std::string m_uuid = m->getUuid();
+	//std::string m_uuid = m->getUuid();
 	ASSERT_TRUE(m != 0);
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 	for (int i = 0; i < 5; i++) {
-		sim.removeModule(m_uuid);
+		sim.removeModule(m);
 		DM::Logger(DM::Standard) << "#" << i;
-		m_uuid = sim.addModule("CreateNodes")->getUuid();
+		m = sim.addModule("CreateNodes");
+		ASSERT_TRUE(m != 0);
 		sim.run();
 	}
 }
@@ -103,7 +104,7 @@ TEST_F(TestSimulation,addModuleToSimulationTest){
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Add Module";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 }
@@ -113,7 +114,7 @@ TEST_F(TestSimulation,loadModuleNativeTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Load Native Module";
 	DM::Simulation sim;
-	ASSERT_TRUE(sim.registerNativeModules("dynamind-testmodules") == true);
+	ASSERT_TRUE(sim.registerModule("dynamind-testmodules") == true);
 }
 
 TEST_F(TestSimulation,repeatedRunTest) {
@@ -121,7 +122,7 @@ TEST_F(TestSimulation,repeatedRunTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Repeatet Run";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	for (long i = 0; i < 1000; i++) {
@@ -137,7 +138,7 @@ TEST_F(TestSimulation,openmptest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test openmp redirecting";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	int testThreadNumber = 3;
@@ -153,16 +154,18 @@ TEST_F(TestSimulation,linkedModulesTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
-
 	ASSERT_TRUE(m != 0);
+
 	DM::Module * inout  = sim.addModule("InOut");
-
 	ASSERT_TRUE(inout != 0);
-	DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
 
-	ASSERT_TRUE(l != 0);
+	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+	//ASSERT_TRUE(l != 0);
+	
+	ASSERT_TRUE(sim.addLink(m, "Sewer", inout, "Inport"));
+
 	for (long i = 0; i < 10; i++){
 		sim.run();
 		ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
@@ -174,7 +177,7 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");
@@ -199,7 +202,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");

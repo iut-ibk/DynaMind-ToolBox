@@ -35,7 +35,7 @@ void TestModules::SetUp()
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
     DM::Logger(DM::Standard) << "Load Native Module";
     sim = new DM::Simulation();
-    sim->registerNativeModules("dynamind-testmodules");
+    sim->registerModule("dynamind-testmodules");
 }
 
 void TestModules::TearDown()
