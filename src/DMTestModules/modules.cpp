@@ -25,36 +25,31 @@
  */
 #include "dmnodefactory.h"
 #include "dmmoduleregistry.h"
-
 #include "testmodule.h"
 #include "inoutmodule.h"
 #include "inout2.h"
 #include "dynamicinout.h"
-//#include "grouptest.h"
+#include "grouptest.h"
 #include "createnodes.h"
-
-#include "loop.h"
-//#include "reallocator.h"
+#include "createallcomponents.h"
+#include "reallocator.h"
 
 /**
   * @addtogroup TestModules
   */
 
 using namespace std;
-
-namespace DM{
-
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
     registry->addNodeFactory(new NodeFactory<TestModule>());
     registry->addNodeFactory(new NodeFactory<InOut>());
     registry->addNodeFactory(new NodeFactory<InOut2>());
     registry->addNodeFactory(new NodeFactory<DynamicInOut>());
-    /*registry->addNodeFactory(new NodeFactory<GroupTest>());*/
+    //registry->addNodeFactory(new NodeFactory<GroupTest>());
     registry->addNodeFactory(new NodeFactory<CreateNodes>());
-    registry->addNodeFactory(new NodeFactory<Loop>());
-    //registry->addNodeFactory(new NodeFactory<Reallocator>());
-    //registry->addNodeFactory(new NodeFactory<CheckAllComponenets>());
-    //registry->addNodeFactory(new NodeFactory<SuccessorCheck>());
-	
+    registry->addNodeFactory(new NodeFactory<CreateAllComponenets>());
+    registry->addNodeFactory(new NodeFactory<Reallocator>());
+    registry->addNodeFactory(new NodeFactory<CheckAllComponenets>());
+    registry->addNodeFactory(new NodeFactory<SuccessorCheck>());
+
 }
-}
+
