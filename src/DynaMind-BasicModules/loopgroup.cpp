@@ -130,4 +130,3 @@ bool LoopGroup::createInputDialog() {
     return true;
 }
 #endif
-
