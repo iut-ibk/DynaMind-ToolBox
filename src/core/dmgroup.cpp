@@ -23,8 +23,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
+
 #include "dmgroup.h"
+
+
+
+#ifdef SIMENV_GROUP
 #include <dmport.h>
 #include <dmmodulelink.h>
 #include <dmporttuple.h>
@@ -308,4 +313,4 @@ void Group::setExecuted(bool ex)
 }
 
 }
-*/
+#endif //  SIMENV_GROUP

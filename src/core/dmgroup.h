@@ -23,11 +23,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#define DMGROUP_H
+
 #ifndef DMGROUP_H
 #define DMGROUP_H
-#include "dmcompilersettings.h"
 #include <dmmodule.h>
+
+using namespace DM;
+
+class DM_HELPER_DLL_EXPORT Group: public Module
+{
+
+};
+
+#ifdef SIMENV_GROUP
+
 #include <vector>
 
 
@@ -177,4 +186,8 @@ namespace DM {
                                               const char *nodename::getClassName()  { return nodename::classname; } \
                                               const char *nodename::filename = #module; \
                                                                                const char *nodename::getFileName()  { return nodename::filename; }
+
+
+#endif // SIMENV_GROUP
+
 #endif // GROUP_H
