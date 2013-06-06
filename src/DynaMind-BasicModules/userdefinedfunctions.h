@@ -50,15 +50,15 @@ static double ForestsSemiNatural;
     WaterBodies = 7
 };*/
 
-inline void addCorineConstants(mu::Parser * p){
-
-    mu::ContUrbanFabric = 2;
-    mu::DisContUrbanFabric = 3;
-    mu:: RoadRailNetwork = 4;
-    mu::WaterBodies = 5;
-    mu::AgriculturalAreas = 6;
-    mu::ForestsSemiNatural = 7;
-
+inline void addCorineConstants(mu::Parser * p)
+{
+	/*
+    mu::ContUrbanFabric = DM::ContUrbanFabric;
+    mu::DisContUrbanFabric= DM::DisContUrbanFabric;
+    mu:: RoadRailNetwork= DM::RoadRailNetwork;
+    mu::WaterBodies= DM::WaterBodies;
+    mu::AgriculturalAreas= DM::AgriculturalAreas;
+    mu::ForestsSemiNatural= DM::ForestsSemiNatural;*/
 
     p->DefineVar("ContUrbanFabric", & mu::ContUrbanFabric);
     p->DefineVar("DisContUrbanFabric",& mu::DisContUrbanFabric);
