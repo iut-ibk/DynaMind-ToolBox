@@ -145,6 +145,23 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
 			}
 			break;
+		case DM::STRING_LIST:
+			{
+				QLabel * l = new QLabel;
+				l->setText(qname);
+				layout1->addWidget(l, layout1->rowCount(),0);
+
+				std::vector<std::string> text = p->get< std::vector<std::string> >();
+				std::string nlText;
+				foreach(std::string str, text)
+					nlText += str +'\n';
+
+				QTextEdit *editBox = new QTextEdit();
+				editBox->setPlainText(QString::fromStdString(nlText));
+				this->elements.insert(QString::fromStdString(p->name), editBox);
+				layout1->addWidget(editBox, layout1->rowCount()-1,1);
+			}
+			break;
 		case DM::STRING_MAP:
 			{
 				QGroupBox * box= new QGroupBox;
@@ -437,6 +454,17 @@ void GUIModelNode::accept()
 			}
 			break;
 		case (DM::STRING_LIST):
+			{
+				QTextEdit* txtEdit = (QTextEdit*) this->elements.value(s);
+				QString nlText = txtEdit->toPlainText();
+				QStringList strings = nlText.split('\n');
+				std::vector<std::string> parValue;
+				foreach(QString str, strings)
+					parValue.push_back(str.toStdString());
+
+				p->set(parValue);
+			}
+			break;
 		case (DM::STRING_MAP):
 			{
 				/*QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
