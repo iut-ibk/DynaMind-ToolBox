@@ -33,6 +33,7 @@
 #include <grouptest.h>
 #include <dmporttuple.h>
 
+//#define OMPTEST
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -132,7 +133,7 @@ TEST_F(TestSimulation,repeatedRunTest) {
 
 }
 
-#ifdef _OPENMP
+#if defined _OPENMP && defined OMPTEST
 TEST_F(TestSimulation,openmptest) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
