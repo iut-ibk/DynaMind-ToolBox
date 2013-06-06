@@ -28,7 +28,7 @@
 #include "loopgroup.h"
 
 
-DM_DECLARE_NODE_NAME(LoopGroup, Modules)
+DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
 
 #ifdef SIMENV_GROUP
