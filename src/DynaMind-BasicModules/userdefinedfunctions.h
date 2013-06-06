@@ -86,7 +86,6 @@ public:
     {
         return "round(x) - round value";
     }
-
     IToken* Clone() const
     {
         return new Round(*this);
