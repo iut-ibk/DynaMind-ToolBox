@@ -86,58 +86,54 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				if(p->type == DM::DOUBLE)		dval = p->get<double>();
 				else if(p->type == DM::LONG)	dval = p->get<long>();
 				else if(p->type == DM::INT)		dval = p->get<int>();
+				
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
-				QLabel * l = new QLabel;
 				QLineEdit * le = new QLineEdit;
 				//QCheckBox * cb = new QCheckBox("from Outside");
 
 				QString numberAsText = QString::number(dval, 'g', 15);
-				l->setText(qname);
 				le->setText(numberAsText);
 				elements.insert(qname, le);
 				QString s1;
 				s1= "InputDouble|DoubleIn_"+ qname;
 				//cb->setObjectName(s1);
-				layout1->addWidget(l, layout1->rowCount(),0);
 				layout1->addWidget(le,layout1->rowCount()-1,1);
 				//layout1->addWidget(cb,layout1->rowCount()-1,2);
 			}
 			break;
 		case DM::BOOL:
 			{
-				QLabel * l = new QLabel;
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
+
 				QCheckBox * le = new QCheckBox;
 				le->setChecked(p->get<bool>());
-				l->setText(qname);
 				elements.insert(qname, le);
 
-				layout1->addWidget(l, layout1->rowCount(),0);
 				layout1->addWidget(le,layout1->rowCount()-1,1);
 			}
 			break;
 		case DM::STRING:
 			{
-				QLabel * l = new QLabel;
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
+
 				QLineEdit * le = new QLineEdit;
 				le->setText(QString::fromStdString(p->get<std::string>()));
-				l->setText(qname);
 				elements.insert(qname, le);
 
-				layout1->addWidget(l, layout1->rowCount(),0);
 				layout1->addWidget(le,layout1->rowCount()-1,1);
 			}
 			break;
 		case DM::FILENAME:
 			{
-				QLabel * l = new QLabel;
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
+
 				QLineEdit * le = new QLineEdit;
 				QPushButton * pb = new QPushButton;
 				le->setText(QString::fromStdString( p->get<std::string>() ));
-				l->setText(qname);
 				pb->setText("...");
 				elements.insert(qname, le);
 
-				layout1->addWidget(l, layout1->rowCount(),0);
 				layout1->addWidget(le,layout1->rowCount()-1,1);
 				layout1->addWidget(pb,layout1->rowCount()-1,2);
 
@@ -147,9 +143,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 			break;
 		case DM::STRING_LIST:
 			{
-				QLabel * l = new QLabel;
-				l->setText(qname);
-				layout1->addWidget(l, layout1->rowCount(),0);
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
 				std::vector<std::string> text = p->get< std::vector<std::string> >();
 				std::string nlText;
