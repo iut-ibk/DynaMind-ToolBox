@@ -23,8 +23,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
+
 #include "loopgroup.h"
+
+
+
+#ifdef SIMENV_GROUP
+
 #include <guiloopgroup.h>
 #include <algorithm>
 #include <dmporttuple.h>
@@ -124,4 +130,5 @@ bool LoopGroup::createInputDialog() {
     w->show();
     return true;
 }
-*/
+
+#endif

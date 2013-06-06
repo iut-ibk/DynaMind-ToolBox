@@ -48,9 +48,8 @@
 
 using namespace std;
 
-
-
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
+extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
+{
     //registry->addNodeFactory(new NodeFactory<LoopGroup>());
     registry->addNodeFactory(new NodeFactory<CellularAutomata>());
     registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
