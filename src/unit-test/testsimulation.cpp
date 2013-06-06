@@ -34,6 +34,8 @@
 #include <dmporttuple.h>
 
 //#define OMPTEST
+//#define GROUPTEST
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -183,20 +185,25 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");
 	ASSERT_TRUE(inout != 0);
-	DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
-	ASSERT_TRUE(l != 0);
+	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+	//ASSERT_TRUE(l != 0);
+	ASSERT_TRUE(sim.addLink(m, "Sewer", inout, "Inport"));
 	DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
 	ASSERT_TRUE(dyinout != 0);
 	dyinout->addAttribute("D");
-	DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
-	ASSERT_TRUE(l1 != 0);
+	//DM::ModuleLink * l1 = sim.addLink(inout->getOutPort("Inport"), dyinout->getInPort("Inport"));
+	//ASSERT_TRUE(l1 != 0);
+	ASSERT_TRUE(sim.addLink(inout, "Inport", dyinout, "Inport"));
 	DM::Module * inout2  = sim.addModule("InOut2");
 	ASSERT_TRUE(inout2 != 0);
-	DM::ModuleLink * l2 = sim.addLink(dyinout->getOutPort("Inport"), inout2->getInPort("Inport"));
-	ASSERT_TRUE(l2 != 0);
+	//DM::ModuleLink * l2 = sim.addLink(dyinout->getOutPort("Inport"), inout2->getInPort("Inport"));
+	//ASSERT_TRUE(l2 != 0);
+	ASSERT_TRUE(sim.addLink(dyinout, "Inport", inout2, "Inport"));
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+
+#ifdef GROUPTEST
 
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 	ostream *out = &cout;
@@ -208,8 +215,9 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");
 	ASSERT_TRUE(inout != 0);
-	DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
-	ASSERT_TRUE(l != 0);
+	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+	//ASSERT_TRUE(l != 0);
+	ASSERT_TRUE(sim.addLink(m, "Sewer", inout, "Inport"));
 	//Here comes the group
 	GroupTest * g = (GroupTest * ) sim.addModule("GroupTest");
 	g->addInPort("In");
@@ -232,6 +240,8 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
+
+#endif GROUPTEST
 
 #endif
 /*
