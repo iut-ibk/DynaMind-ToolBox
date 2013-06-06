@@ -30,14 +30,19 @@
 
 #include "dmgroup.h"
 
-class DM_HELPER_DLL_EXPORT LoopGroup: public Group 
+class DM_HELPER_DLL_EXPORT LoopGroup: public DM::Group 
 {
 	DM_DECLARE_NODE(LoopGroup)
+public:
+	LoopGroup()
+	{
+		//addParameter("ports", DM::STRING_LIST, &loopPorts);
+	}
 
-	void init(){};
+	//void init(){};
 	void run(){};
-	//virtual const char* getClassName() {return "LoopGroup";};
-
+private:
+	std::vector<std::string> loopPorts;
 };
 
 
