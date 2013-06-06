@@ -7,7 +7,6 @@
  * This file is part of DynaMind
  *
  * Copyright (C) 2011-2012  Christian Urich and Michael Mair
-
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -30,6 +29,7 @@
 #include <vector>
 #include <QPolygonF>
 #include <math.h>
+#include <map>
 
 namespace DM {
 class System;
@@ -37,6 +37,7 @@ class Node;
 class Edge;
 class Face;
 class View;
+class Component;
 }
 
 /**
@@ -62,17 +63,8 @@ public:
       **/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Edge * e, bool OrientationMatters = true);
 
-     /** @brief Returns pointer to existing node at n or 0 if point doesn't exist */
-    static DM::Node * getNode2D(DM::System * sys, DM::View  &view, DM::Node  n, double err = 0);
-
-    /** @brief Checks if a node already exists in the system. If not a new node is created.*/
-    static DM::Node * addNodeToSystem2D(DM::System *sys,  DM::View & view, DM::Node   n1, double err=0,  bool CreateNewNode = true);
-
     /** @brief Returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
-
-    /** @todo Check if works */
-    static void splitEdge(DM::System * sys, DM::Edge * e, DM::Node * n, DM::View & view);
 
     /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
     static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
@@ -112,6 +104,10 @@ public:
      */
     static void CorrdinateSystem(const DM::Node & n0, const DM::Node & n1,  const DM::Node & n2, double (&E)[3][3]);
 
+    /** @brief See CorrdinateSystem(const DM::Node & n0, const DM::Node & n1,  const DM::Node & n2, double (&E)[3][3])
+     */
+    static void CorrdinateSystem(std::vector<DM::Node * > const &nodes, double (&E)[3][3]) ;
+
     /** @brief Returns the cirection cosine between two vector */
     static double DirectionCosine(const DM::Node & n1, const DM::Node & n2);
 
@@ -135,6 +131,27 @@ public:
     /** @brief Calculate distance of two nodes A and B */
     static double calculateDistance(DM::Node *a, DM::Node *b);
 
+    /** @brief Returns true if a point is within a Face otherwise false */
+    static bool PointWithinFace(DM::Face *f, DM::Node *n);
+
+    /** @brief Returns ture if a point is within a Face of the face vector otherwise false */
+    static bool PointWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Node *n);
+
+    /** @brief Returns true if start and end node of a edge are point within a face otherwise false */
+    static bool EdgeWithinFace(DM::Face *f, DM::Edge *e);
+
+    /** @brief Returns true if an edge is within one Face of the face vector otherwise false */
+    static bool EdgeWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Edge *e);
+
+    /** @brief Returns true if a point is within a Polygon othwerwise false */
+    static int CalculateWindingNumber(std::vector<DM::Node*> poly, DM::Node *n);
+
+    /** @brief Find nearest neighbours of root node within a node field */
+    static std::vector<DM::Node*> findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield);
+
+    /** @brief Returns the maximum distance of a center node to all other nodes within a point field*/
+    static double maxDistance(std::vector<DM::Node*> pointfield, DM::Node* centernode);
+
     /** @brief Creates a circle */
     static std::vector<DM::Node> CreateCircle(DM::Node * c, double radius, int segments);
 
@@ -146,6 +163,18 @@ public:
 
     /** @brief Return node with min x, min y and min z */
     static DM::Node MinCoordinates(std::vector<DM::Node*> & nodes);
+
+    /** @brief Caclulate the extend of a View. Returns true if everything was fine */
+    static bool GetViewExtend(DM::System * sys, DM::View & view, double & x_min, double & y_min, double & x_max, double & y_max);
+
+    /** @brief Return all nodes in Nodes View */
+    static std::vector<DM::Node * > GetNodesFromNodes(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
+
+    /** @brief Return all nodes in Edges View */
+    static std::vector<DM::Node * > GetNodesFromEdges(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
+
+    /** @brief Return all nodes in Faces View */
+    static std::vector<DM::Node * > GetNodesFromFaces(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
 
 };
 

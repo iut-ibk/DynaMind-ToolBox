@@ -24,6 +24,7 @@
  *
  */
 #include <math.h>
+#include <cmath>
 #include <algorithm>
 
 
@@ -75,92 +76,8 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e
                                  OrientationMatters);
 }
 
-
-
-DM::Node * TBVectorData::getNode2D(DM::System *sys, DM::View &view, DM::Node n, double err) {
-
-    if (view.getName().empty()) {
-        DM::NodeMap nmap = sys->getAllNodes();
-        for (DM::NodeMap::const_iterator it = nmap.begin(); it != nmap.end(); ++it) {
-            DM::Node * n_1 = it->second;
-            if (n_1->compare2d(n, err))
-                return n_1;
-        }
-    }
-
-    DM::ComponentMap cmap = sys->getAllComponentsInView(view);
-
-    for (DM::ComponentMap::const_iterator it = cmap.begin(); it != cmap.end(); ++it) {
-        DM::Node * n_1 = (DM::Node *) it->second;
-        if (n_1->compare2d(n, err))
-            return n_1;
-    }
-    return 0;
-
-}
-
-DM::Node * TBVectorData::addNodeToSystem2D(DM::System *sys,DM::View &view,DM::Node n1,   double err, bool CreateNewNode) {
-    DM::Node * new_Node = 0;
-
-
-    new_Node = TBVectorData::getNode2D(sys, view, n1, err);
-    if (new_Node != 0 || !CreateNewNode) {
-        return new_Node;
-    }
-
-
-    new_Node =  sys->addNode(n1.getX(), n1.getY(), n1.getZ(), view);
-
-    return new_Node;
-}
-
-
-
 std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Face *face) {
-    std::vector<DM::Node*> result;
-    std::vector<std::string> nodelist= face->getNodes();
-    foreach (std::string eid, nodelist) {
-        DM::Node * n = sys->getNode(eid);
-        result.push_back(n);
-
-    }
-    return result;
-}
-
-void TBVectorData::splitEdge(DM::System *sys, DM::Edge *e, DM::Node *n, DM::View &view) {
-    DM::Edge * e1 = new DM::Edge(*e);
-    //e1->createNewUUID();
-
-    DM::Node * n1 = sys->getNode(e1->getStartpointName());
-    DM::Node * n2 = sys->getNode(e1->getEndpointName());
-
-    if (n1->compare2d(n) || n2->compare2d(n)) {
-        delete e1;
-        return;
-    }
-
-    std::set<std::string> views = e1->getInViews();
-    e1 = sys->addEdge(e1);
-    foreach (std::string v, views) {
-        sys->removeComponentFromView(e1, *sys->getViewDefinition(v));
-
-    }
-    e1->setEndpointName(n->getUUID());
-    sys->addComponentToView(e1, view);
-
-    DM::Edge * e2 = new DM::Edge(*e);
-    //e2->createNewUUID();
-    e2 = sys->addEdge(e2);
-    views = e2->getInViews();
-    foreach (std::string v, views) {
-        sys->removeComponentFromView(e2, *sys->getViewDefinition(v));
-    }
-    e2->setStartpointName(n->getUUID());
-    sys->addComponentToView(e2, view);
-
-
-    sys->removeComponentFromView(e, view);
-
+	return face->getNodePointers();
 }
 
 DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
@@ -201,13 +118,8 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
 
     }
 
-
-
     DM::Node n1 = *(nodes[0]) - *(nodes[1]);
     DM::Node n2 = *(nodes[1]) - *(nodes[2]);
-
-
-
     DM::Node n = NormalVector(n1, n2);
     if (n.getZ() < 0) {
         x = x*-1;
@@ -216,6 +128,31 @@ DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
 
     return DM::Node(x/A6 + offsetN.getX(),y/A6 + offsetN.getY(),nodes[0]->getZ());
 }
+
+void TBVectorData::CorrdinateSystem(std::vector<DM::Node * > const &nodes, double (&E)[3][3]) {
+    //Avoid parallel lines
+    int pos = -1;
+    for (uint i = 2; i < nodes.size(); i++) {
+        DM::Node n1 = *(nodes[0]) - *(nodes[1]);
+        DM::Node n2 = *(nodes[1]) - *(nodes[i]);
+
+        if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
+          continue;
+        }
+        if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
+            continue;
+        }
+        if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
+            continue;
+        }
+        pos=i;
+        break;
+    }
+    if (pos == -1)
+        DM::Logger(DM::Warning) << "couldn't create coorindate sytem";
+    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[pos]), E);
+}
+
 double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 {
 
@@ -224,17 +161,10 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+    TBVectorData::CorrdinateSystem( nodes, E_to);
 
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
-
-    double alphas_t[3][3];
-    for (int i = 0; i < 3; i++){
-        for (int j = 0; j < 3; j++){
-            alphas_t[j][i] =  alphas[i][j];
-        }
-    }
 
     DM::System transformedSys;
 
@@ -245,8 +175,6 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
         DM::Node n_t = RotateVector(alphas, n);
         ns_t.push_back(transformedSys.addNode(n_t));
     }
-
-
 
     DM::Node * pend = ns_t[nodes.size()-1];
     DM::Node * pstart = ns_t[0];
@@ -264,7 +192,9 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (!startISEnd)
         A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
 
-    return A/2.;
+    //if (std::isnan(A))
+    //    DM::Logger(DM::Error) << "nan area";
+    return fabs(A/2.);
 }
 
 double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
@@ -292,7 +222,10 @@ double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
         //Remove Holes
          A -= CalculateArea(nodes_H);
     }
-    return A;
+
+    //if (std::isnan(A))
+    //    DM::Logger(DM::Warning) << "TBVectorData::CalculateArea nan area";
+    return fabs(A);
 }
 
 QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
@@ -316,8 +249,8 @@ DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
-
+    //TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
+    TBVectorData::CorrdinateSystem( nodes, E_to);
     double alphas[3][3];
     RotationMatrix(E, E_to, alphas);
 
@@ -378,11 +311,12 @@ DM::Node  TBVectorData::RotateVector(double (&R)[3][3], const DM::Node & node) {
 
 DM::Node TBVectorData::NormalVector(const DM::Node & n1, const DM::Node & n2)
 {
-
     double x = n1.getY()*n2.getZ() - n1.getZ()*n2.getY();
     double y = n1.getZ()*n2.getX() - n1.getX()*n2.getZ();
     double z = n1.getX()*n2.getY() - n1.getY()*n2.getX();
     double l = sqrt(x*x+y*y+z*z);
+    if (l == 0)
+        DM::Logger(DM::Warning) << "Normal vector l in 0";
     return DM::Node(x/l,y/l,z/l);
 }
 
@@ -391,7 +325,15 @@ void TBVectorData::CorrdinateSystem(const DM::Node &node0, const DM::Node &node1
     DM::Node n1 = node0 - node1;
     DM::Node n2 = node1 - node2;
 
-
+    if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
+    if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
+    if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
+        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+    }
 
     DM::Node e3 = NormalVector(n1, n2);
     DM::Node e2 = NormalVector(n1, e3);
@@ -493,13 +435,124 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
-
-
 }
 
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
-    return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
+	double p0[3], p1[3];
+	a->get(p0);
+	b->get(p1);
+	p0[0] -= p1[0];
+	p0[1] -= p1[1];
+	p0[2] -= p1[2];
+	return sqrt(p0[0]*p0[0] + p0[1]*p0[1] + p0[2]*p0[2]);
+    //return sqrt(pow(a->getX()-b->getX(),2)+pow(a->getY()-b->getY(),2) + pow(a->getZ()-b->getZ(),2));
+}
+
+bool TBVectorData::PointWithinFace(DM::Face *f, DM::Node *n)
+{
+    std::vector<DM::Node*> face = f->getNodePointers();
+
+    if(CalculateWindingNumber(face,n) == 0)
+        return false;
+
+    std::vector<DM::Face*> holes = f->getHolePointers();
+
+    for(uint index=0; index < holes.size(); index++)
+        if(CalculateWindingNumber(holes[index]->getNodePointers(),n) != 0)
+            return false;
+
+    return true;
+}
+
+bool TBVectorData::PointWithinAnyFace(std::map<std::string, DM::Component *> fv, DM::Node *n)
+{
+    //typedef std::pair<std::string,DM::Component*> Cp;
+    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+
+    for(CompItr i = fv.begin(); i != fv.end(); i++)
+    {
+        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+
+        if(TBVectorData::PointWithinFace(currentface,n))
+            return true;
+    }
+
+    return false;
+}
+
+bool TBVectorData::EdgeWithinFace(DM::Face *f, DM::Edge *e)
+{
+    if(!TBVectorData::PointWithinFace(f,e->getStartNode()))
+        return false;
+
+    if(!TBVectorData::PointWithinFace(f,e->getEndNode()))
+        return false;
+
+    return true;
+}
+
+bool TBVectorData::EdgeWithinAnyFace(std::map<string, DM::Component *> fv, DM::Edge *e)
+{
+    //typedef std::pair<std::string,DM::Component*> Cp;
+    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+
+    for(CompItr i = fv.begin(); i != fv.end(); i++)
+    {
+        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+
+        if(TBVectorData::EdgeWithinFace(currentface,e))
+            return true;
+    }
+
+    return false;
+}
+
+int TBVectorData::CalculateWindingNumber(std::vector<DM::Node *> poly, DM::Node *n)
+{
+    if(!poly.size())
+        return 0;
+
+    int windindnumber=0;
+    DM::Node *center = n;
+
+    for(uint index=0; index<poly.size(); ++index)
+    {
+        DM::Node *point1 = poly[index];
+        DM::Node *point2;
+
+        if(index == (poly.size()-1))
+            point2 = poly[0];
+        else
+            point2 = poly[index+1];
+
+        if(point1->getY() <= center->getY())
+        {
+            if(point2->getY() > center->getY())
+            {
+                double isleft = ((point2->getX() - point1->getX()) * (center->getY() - point1->getY()) -
+                              (center->getX() - point1->getX()) * (point2->getY() - point1->getY()));
+
+                if(isleft > 0)
+                    windindnumber++;
+
+            }
+        }
+        else
+        {
+            if(point2->getY() <= center->getY())
+            {
+                double isleft = ((point2->getX() - point1->getX()) * (center->getY() - point1->getY()) -
+                              (center->getX() - point1->getX()) * (point2->getY() - point1->getY()));
+
+                if(isleft < 0)
+                    windindnumber--;
+            }
+        }
+
+    }
+
+    return windindnumber;
 }
 
 vector<DM::Node> TBVectorData::CreateCircle(DM::Node *c, double radius, int segments)
@@ -529,8 +582,8 @@ std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, d
 
     double E_to[3][3];
 
-    TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[2]), E_to);
-
+    //TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[ nodeList.size()-2]), E_to);
+    TBVectorData::CorrdinateSystem( nodeList, E_to);
     double alphas[3][3];
     TBVectorData::RotationMatrix(E, E_to, alphas);
 
@@ -652,27 +705,119 @@ DM::Face * TBVectorData::AddFaceToSystem(DM::System *sys, std::vector<DM::Node> 
 
 DM::Node TBVectorData::MinCoordinates(std::vector<DM::Node*> & nodes)
 {
-    double minx, miny, minz;
-
-    if (nodes.size() < 1) {
+    if (!nodes.size()) {
         DM::Logger(DM::Warning) << "no nodes";
         return DM::Node();
     }
+	
+	double min[3];
+	double tmp[3];
+	nodes[0]->get(min);
 
-    minx = nodes[0]->getX();
-    miny = nodes[1]->getY();
-    minz = nodes[2]->getZ();
+	foreach(DM::Node* n, nodes)
+	{
+		n->get(tmp);
+		if(min[0] > tmp[0]) min[0] = tmp[0];
+		if(min[1] > tmp[1]) min[1] = tmp[1];
+		if(min[2] > tmp[2]) min[2] = tmp[2];
+	}
+    return DM::Node(min[0],min[1],min[2]);
+}
 
-    foreach (DM::Node * n, nodes) {
-        if (minx > n->getX())
-            minx = n->getX();
-        if (miny > n->getY())
-            miny = n->getY();
-        if (minz > n->getZ())
-            minz = n->getZ();
+bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_min, double & y_min, double & x_max, double & y_max)
+{
+    x_min = 0;
+    y_min = 0;
+    x_max = 0;
+    y_max = 0;
+
+    std::vector<DM::Node * > nodes;
+    if (view.getType() == DM::NODE) TBVectorData::GetNodesFromNodes(sys, view, nodes);
+    if (view.getType() == DM::EDGE) TBVectorData::GetNodesFromEdges(sys, view, nodes);
+    if (view.getType() == DM::FACE) TBVectorData::GetNodesFromFaces(sys, view, nodes);
+
+    if (nodes.size() < 2)  {
+        DM::Logger(DM::Warning) << "Number of Nodes < 2 no bounding box created";
+        return false;
     }
 
-    return DM::Node(minx, miny, minz);
+    x_min = nodes[0]->getX();
+    y_min = nodes[0]->getY();
+    x_max = nodes[0]->getX();
+    y_max = nodes[0]->getY();
 
+    foreach (DM::Node *n , nodes) {
+        if (x_min > n->getX()) x_min = n->getX();
+        if (x_max < n->getX()) x_max = n->getX();
+        if (y_min > n->getY()) y_min = n->getY();
+        if (y_max < n->getY()) y_max = n->getY();
+    }
+
+    return true;
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromNodes(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Node * n = sys->getNode(uuid);
+        nodes.push_back(n);
+    }
+    return nodes;
+
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromEdges(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Edge * e = sys->getEdge(uuid);
+        nodes.push_back(sys->getNode(e->getStartpointName()));
+        nodes.push_back(sys->getNode(e->getEndpointName()));
+    }
+    return nodes;
+}
+
+std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
+{
+    nodes.clear();
+    std::vector<std::string> uuids = sys->getUUIDs(view);
+    foreach (std::string uuid, uuids) {
+        DM::Face * f = sys->getFace(uuid);
+        std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
+        foreach (DM::Node * n, nl)
+            nodes.push_back(n);
+    }
+    return nodes;
+}
+
+std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
+{
+    std::vector<DM::Node*> result;
+    result.push_back(root);
+
+    for(uint i=0; i < nodefield.size(); i++)
+    {
+        double currentdistance=TBVectorData::calculateDistance(root,nodefield[i]);
+        if(currentdistance <= maxdistance)
+            result.push_back(nodefield[i]);
+    }
+    return result;
+}
+
+double TBVectorData::maxDistance(std::vector<DM::Node *> pointfield, DM::Node *centernode)
+{
+    double result = 0;
+    for(uint index=0; index < pointfield.size(); index++)
+    {
+        double distance = calculateDistance(centernode, pointfield[index]);
+
+        if(distance > result)
+            result = distance;
+    }
+
+    return result;
 }
 
