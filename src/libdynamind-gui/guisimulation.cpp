@@ -25,16 +25,18 @@
  */
 
 #include "guisimulation.h"
-#include <dmmoduleregistry.h>
+//#include <dmmoduleregistry.h>
 #include <modelnode.h>
 #include <guiport.h>
-#include <groupnode.h>
+//#include <groupnode.h>
 #include <rootgroupnode.h>
-#include <dmlogger.h>
+//#include <dmlogger.h>
 
 #include <guilink.h>
 #include <dmsimulationreader.h>
 #include <simulationio.h>
+
+#include <dmgroup.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -173,6 +175,8 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 {
 	return modelNodes[addModule(moduleName.toStdString())];
 }*/
+
+
 DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 {
 	DM::Module* m = Simulation::addModule(moduleName, callInit);
@@ -180,6 +184,13 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	//lastAddedModuleNode->setPos(-100, -50);
 	rootTab->addItem(node);
 	modelNodes[m] = node;
+
+	// group stuff
+	DM::Group* g = dynamic_cast<DM::Group*>(m);	// dont forget to check vtable!
+	if(g)
+	{
+		DM::Logger(DM::Debug) << "added group";
+	}
 	return m;
 }
 
