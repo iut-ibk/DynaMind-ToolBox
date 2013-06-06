@@ -53,11 +53,11 @@ bool ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
     QLibrary lib(QString::fromStdString(plugin_path));
     if (!lib.load()) 
 	{
-		std::cout << "Error loading module " << plugin_path << " : " << lib.errorString().toStdString() << std::endl;
+		//std::cout << "Error loading module " << plugin_path << " : " << lib.errorString().toStdString() << std::endl;
         return false;
     }
-	else
-		std::cout << "successfully loaded module " << plugin_path << std::endl;
+	//else
+		//std::cout << "successfully loaded module " << plugin_path << std::endl;
 
     regNodeFunProto regNodeFunc = (regNodeFunProto) lib.resolve("registerModules");
 
