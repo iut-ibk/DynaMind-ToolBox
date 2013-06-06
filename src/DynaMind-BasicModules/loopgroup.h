@@ -42,6 +42,10 @@ public:
 	void run(){};
 private:
 	std::vector<std::string> loopPorts;
+
+	void init(){};
+	//virtual const char* getClassName() {return "LoopGroup";};
+
 };
 
 
