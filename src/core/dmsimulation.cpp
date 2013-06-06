@@ -241,7 +241,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews, const std::list<Simulation::Link*>& links)
+bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews)
 {
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
@@ -258,7 +258,7 @@ bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> 
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to read from non existing view '" << v.getName()
 					<< "' from stream '" << streamName << "'";
-
+				m->setStatus(MOD_CHECKERROR);
 				return false;
 			}
 		}
@@ -279,13 +279,13 @@ bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> 
 	// check next modules
 	foreach(Simulation::Link* l, links)
 		if(l->src == m && l->outPort == streamName)
-			if(!checkModuleStream(l->dest, l->inPort, viewsInStream, links))
+			if(!checkModuleStream(l->dest, l->inPort, viewsInStream))
 				success = false;
 
 	return success;
 }
 
-bool checkModuleStream(Module* m, std::set<std::string> views, const std::list<Simulation::Link*>& links)
+bool Simulation::checkModuleStream(Module* m, std::set<std::string> views)
 {
 	bool success = true;
 	std::map<std::string, std::vector<View>> accessedViews = m->getAccessedViews();
@@ -293,7 +293,7 @@ bool checkModuleStream(Module* m, std::set<std::string> views, const std::list<S
 	for(std::map<std::string, std::vector<View>>::iterator it = accessedViews.begin();
 		it != accessedViews.end(); ++it)
 	{
-		if(!checkModuleStream(m, it->first, views, links))
+		if(!checkModuleStream(m, it->first, views))
 			success = false;
 	}
 	return success;
@@ -303,7 +303,7 @@ bool Simulation::checkStream()
 {
 	foreach(Module* m, modules)
 		if(m->getInPortNames().size() == 0)
-			if(!checkModuleStream(m, std::set<std::string>(), links))
+			if(!checkModuleStream(m, std::set<std::string>()))
 				return false;
 
 	return true;
@@ -337,7 +337,7 @@ void Simulation::run()
 		m->run();
 		// check for errors
 		ModuleStatus merr = m->getStatus();
-		if(m->getStatus() == MOD_ERROR)
+		if(m->getStatus() == MOD_EXECUTIONERROR)
 		{
 			Logger(Error) << "module " << m->getName() << " failed";
 			this->status = DM::SIM_FAILED;

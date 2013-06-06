@@ -175,6 +175,10 @@ private:
 
 	SimulationStatus	status;
 	ModuleRegistry*		moduleRegistry;
+
+	
+	bool checkModuleStream(Module* m, std::set<std::string> views);
+	bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews);
 };
 
 
