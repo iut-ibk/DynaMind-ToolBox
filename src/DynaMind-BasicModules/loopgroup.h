@@ -32,6 +32,12 @@
 
 class DM_HELPER_DLL_EXPORT LoopGroup: public Group 
 {
+	DM_DECLARE_NODE(LoopGroup)
+
+	void init(){};
+	void run(){};
+	//virtual const char* getClassName() {return "LoopGroup";};
+
 };
 
 
