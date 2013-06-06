@@ -49,6 +49,7 @@ class DM_HELPER_DLL_EXPORT CheckAllComponenets: public DM::Module
 public:
     CheckAllComponenets();
     void run();
+	bool success;
 };
 
 class DM_HELPER_DLL_EXPORT SuccessorCheck: public DM::Module
@@ -57,5 +58,6 @@ class DM_HELPER_DLL_EXPORT SuccessorCheck: public DM::Module
 public:
     SuccessorCheck();
     void run();
+	bool success;
 };
 #endif // CREATEALLCOMPONENTS_H

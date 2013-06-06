@@ -123,15 +123,14 @@ void CheckAllComponenets::run() {
     DM::Logger(DM::Debug) << "checking components";
 
     DM::System * sys = this->getData("sys");
-
-	if(!Validate(sys->getAllChilds(), sys))
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+	success = Validate(sys->getAllChilds(), sys);
 }
 
 
 DM_DECLARE_NODE_NAME(SuccessorCheck, Modules)
 SuccessorCheck::SuccessorCheck()
 {
+	success = true;
 	std::vector<DM::View> data;
 	DM::View comps("Components", DM::COMPONENT, DM::MODIFY);
 	DM::View nodes("Nodes", DM::NODE, DM::MODIFY);
@@ -149,6 +148,7 @@ SuccessorCheck::SuccessorCheck()
 	data.push_back(systems);
 
     this->addData("sys",data);
+	success = true;
 }
 
 typedef std::pair<std::string, DM::Node*> uuidNodePair;
@@ -170,13 +170,15 @@ void SuccessorCheck::run()
 	if(!Validate(sys->getAllChilds(), sys))
 	{
 		DM::Logger(DM::Error) << "system validation failed";
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+		success = false;
+		return;
 	}
 	
 	DM::Logger(DM::Debug) << "starting successor validation";
 	if(!Validate(sys2->getAllChilds(), sys2))
 	{
 		DM::Logger(DM::Error) << "successor validation failed";
-		this->getSimulation()->setSimulationStatus(DM::SIM_FAILED);
+		success = false;
+		return;
 	}
 }

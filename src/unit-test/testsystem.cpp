@@ -30,6 +30,7 @@
 #include <dmsimulation.h>
 #include <dmdbconnector.h>
 #include <dmcache.h>
+#include <createallcomponents.h>
 
 #include <QSqlQuery>
 #ifdef _OPENMP
@@ -190,7 +191,7 @@ TEST_F(TestSystem,simplesqltest) {
 	//ASSERT_TRUE(l2 != 0);
 	ASSERT_TRUE(sim.addLink(mallocator, "sys", mcheck, "sys"));
 	sim.run();
-	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+	ASSERT_TRUE(((CheckAllComponenets*)mcheck)->success);
 
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
