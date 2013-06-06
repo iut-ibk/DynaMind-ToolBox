@@ -128,7 +128,7 @@ TEST_F(TestSimulation,repeatedRunTest) {
 	sim.registerModule("dynamind-testmodules");
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
-	for (long i = 0; i < 1000; i++) {
+	for (long i = 0; i < 100; i++) {
 		sim.run();
 		ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 	}
