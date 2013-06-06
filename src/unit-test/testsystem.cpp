@@ -176,17 +176,19 @@ TEST_F(TestSystem,simplesqltest) {
 	DM::Logger(DM::Standard) << "Test Reallocation (SQL)";
 
 	DM::Simulation sim;
-	sim.registerNativeModules("dynamind-testmodules");
+	sim.registerModule("dynamind-testmodules");
 	DM::Module * mcreator = sim.addModule("CreateAllComponenets");
 	ASSERT_TRUE(mcreator != 0);
 	DM::Module * mallocator  = sim.addModule("Reallocator");
 	ASSERT_TRUE(mallocator != 0);
 	DM::Module * mcheck  = sim.addModule("CheckAllComponenets");
 	ASSERT_TRUE(mcheck != 0);
-	DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mallocator->getInPort("sys"));
-	ASSERT_TRUE(l1 != 0);
-	DM::ModuleLink * l2 = sim.addLink(mallocator->getOutPort("sys"), mcheck->getInPort("sys"));
-	ASSERT_TRUE(l2 != 0);
+	//DM::ModuleLink * l1 = sim.addLink(mcreator->getOutPort("sys"), mallocator->getInPort("sys"));
+	//ASSERT_TRUE(l1 != 0);
+	ASSERT_TRUE(sim.addLink(mcreator, "sys", mallocator, "sys"));
+	//DM::ModuleLink * l2 = sim.addLink(mallocator->getOutPort("sys"), mcheck->getInPort("sys"));
+	//ASSERT_TRUE(l2 != 0);
+	ASSERT_TRUE(sim.addLink(mallocator, "sys", mcheck, "sys"));
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
