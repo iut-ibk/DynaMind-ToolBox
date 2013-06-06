@@ -30,7 +30,6 @@
 
 DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
-
 #ifdef SIMENV_GROUP
 
 #include <guiloopgroup.h>

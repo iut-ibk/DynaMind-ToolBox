@@ -24,7 +24,21 @@
  *
  */
 
-#define GROUPTEST_H
+
+#ifndef LOOPGROUP_H
+#define LOOPGROUP_H
+
+#include "dmgroup.h"
+
+class DM_HELPER_DLL_EXPORT LoopGroup: public Group 
+{
+};
+
+
+#endif //LOOPGROUP_H
+
+#ifdef SIMENV_GROUP
+
 #ifndef GROUPTEST_H
 #define GROUPTEST_H
 
