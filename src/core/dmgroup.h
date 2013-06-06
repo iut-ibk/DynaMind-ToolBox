@@ -28,12 +28,26 @@
 #define DMGROUP_H
 #include <dmmodule.h>
 
-using namespace DM;
+namespace DM {
 
 class DM_HELPER_DLL_EXPORT Group: public Module
 {
+public:
+	/*Group()
+	{
+		addParameter("IN-ports", DM::STRING_LIST, &inports);
+		addParameter("OUT-ports", DM::STRING_LIST, &inports);
+	}*/
 
+	void init()
+	{
+	}
+private:
+	//std::vector<Module*> modules;
+	//std::vector<std::string> inports;
 };
+
+}
 
 #ifdef SIMENV_GROUP
 

@@ -46,7 +46,7 @@ class Port;
 class IDataBase;
 class ModuleRegistry;
 class ModuleLink;
-class Group;
+//class Group;
 
 static const  std::string CoreVersion = DYNAMIND_VERSION_CORE;
 
