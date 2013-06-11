@@ -171,6 +171,8 @@ void DMMainWindow::newLogLine(QString line)
 		ui->log_widget->setTextColor(QColor(100,255,100));
 	else if(line.startsWith("ERROR"))
 		ui->log_widget->setTextColor(QColor(255,50,50));
+	else if(line.startsWith("WARN"))
+		ui->log_widget->setTextColor(QColor(255,255,50));
 	else
 		ui->log_widget->setTextColor(QColor(255,255,255));
 
