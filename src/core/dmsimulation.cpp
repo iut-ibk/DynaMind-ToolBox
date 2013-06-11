@@ -82,10 +82,8 @@ Module* Simulation::addModule(const std::string ModuleName, bool callInit)
 {
 	Module *module = this->moduleRegistry->createModule(ModuleName);
     if(!module)
-    {
-        Logger(Error) << "Not able to add new module" << ModuleName;
-        return 0;
-    }
+        return NULL;
+
 	modules.push_back(module);
     Logger(Debug) << "Added module" << ModuleName;
     if (callInit)

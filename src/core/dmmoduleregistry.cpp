@@ -85,8 +85,9 @@ std::list<std::string> ModuleRegistry::getRegisteredModules() const {
 
 Module *ModuleRegistry::createModule(const std::string &name) const {
     Logger(Debug)  << "Try to create " << name;
-    if (registry.count(name) == 0) {
-        Logger(Error) << "Error: no such node class registered";
+    if (registry.count(name) == 0) 
+	{
+        Logger(Error) << "module '" << name << "' not found";
         return 0;
     }
 
@@ -98,7 +99,7 @@ Module *ModuleRegistry::createModule(const std::string &name) const {
     }
     catch(...)
     {
-        Logger(Error) << "Cannot create Module";
+        Logger(Error) << "error creating module '" << name << "'";
         return 0;
     }
 
