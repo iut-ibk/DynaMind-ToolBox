@@ -180,6 +180,8 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 {
 	DM::Module* m = Simulation::addModule(moduleName, callInit);
+	if(!m)
+		return NULL;
 	ModelNode* node = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
 	rootTab->addItem(node);
@@ -306,8 +308,6 @@ bool GUISimulation::loadSimulation(std::string filename)
 			ModuleExEntry* eex = &moduleExInfo[me.UUID];
 			this->modelNodes[m]->setPos(eex->posX, eex->posY);
 		}
-		else
-			DM::Logger(DM::Error) << "could not create module '" << me.ClassName.toStdString() << "'";
 	}
 
 	// load links
