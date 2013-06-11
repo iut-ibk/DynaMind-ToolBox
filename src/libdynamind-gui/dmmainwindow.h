@@ -113,7 +113,8 @@ public slots:
     void updateSimulation();
     void resetSimulation();
 //    void showHelp(std::string classname);
-
+	
+	void newLogLine(QString line);
 
 
 private slots:

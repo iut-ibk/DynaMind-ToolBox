@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>932</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSimulation">
@@ -157,7 +157,7 @@
         <widget class="QWidget" name="widget" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QPlainTextEdit" name="log_widget">
+           <widget class="QTextEdit" name="log_widget">
             <property name="palette">
              <palette>
               <active>
@@ -576,18 +576,6 @@
             <property name="acceptDrops">
              <bool>false</bool>
             </property>
-            <property name="undoRedoEnabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="backgroundVisible">
-             <bool>false</bool>
-            </property>
-            <property name="centerOnScroll">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
          </layout>
@@ -781,7 +769,7 @@
   </action>
   <action name="actionReset">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../dynamind-modelbuilder/icons.qrc">
      <normaloff>:/Icons/ressources/edit-clear.png</normaloff>:/Icons/ressources/edit-clear.png</iconset>
    </property>
    <property name="text">

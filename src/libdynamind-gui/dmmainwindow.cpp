@@ -66,7 +66,7 @@
 
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
-
+/*
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
     (void) count;
@@ -77,7 +77,7 @@ void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
         QString s = QString::fromAscii(ptr);
         p->appendPlainText( ptr );
     }
-}
+}*/
 
 void DMMainWindow::ReloadSimulation() {
 	/*
@@ -165,6 +165,19 @@ void DMMainWindow::renameGroupWindow(GroupNode * g) {
 	*/
 }
 
+void DMMainWindow::newLogLine(QString line)
+{
+	if(line.startsWith("DEBUG"))
+		ui->log_widget->setTextColor(QColor(100,255,100));
+	else if(line.startsWith("ERROR"))
+		ui->log_widget->setTextColor(QColor(255,50,50));
+	else
+		ui->log_widget->setTextColor(QColor(255,255,255));
+
+	ui->log_widget->append(line);
+	//ui->log_widget->appendPlainText(line);
+}
+
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
     Q_INIT_RESOURCE(icons);
@@ -197,7 +210,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	this->simulation->rootTab = tab;
 	
 
-    ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
+    //ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
+	connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(newLogLine(QString)), Qt::QueuedConnection);
     connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
     connect( ui->actionPreferences, SIGNAL ( triggered() ), this, SLOT(preferences() ), Qt::DirectConnection );
     connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
@@ -219,8 +233,6 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     this->rootItemModelTree->setText(0, "Groups");
     this->rootItemModelTree->setText(1, "");
     this->rootItemModelTree->setExpanded(true);*/
-	
-
 }
 
 void DMMainWindow::createModuleListView() 
