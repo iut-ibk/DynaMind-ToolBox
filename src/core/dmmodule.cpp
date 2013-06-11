@@ -76,6 +76,9 @@ Module::~Module()
 		if(indata)
 			delete indata;
 	}
+
+	if(inputDialog)
+		delete inputDialog;
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {

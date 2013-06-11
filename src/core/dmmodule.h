@@ -290,7 +290,7 @@ public:
 	{
 		return inputDialog;
 	}
-	
+
 	std::map<std::string, std::vector<View>> getAccessedViews() {return accessedViews;};
 	System* getData(const std::string& streamName);
 
