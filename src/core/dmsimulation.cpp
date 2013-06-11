@@ -396,7 +396,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			it->second = NULL;
 		}
 		else // dead path
-			Logger(Warning) << "port not connected";
+			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
 	}
 	// reset in port
 	for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
