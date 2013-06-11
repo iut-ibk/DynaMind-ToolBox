@@ -77,6 +77,8 @@ void AddDataToNewView::run()
 void AddDataToNewView::init()
 {
 	// TODO: Works fine until someone is changing something upstream -> no update downstream!
+	// NOTE: redone, upper comment may not be valid anymore
+
 	sys_in = this->getData("Data");
 	if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
 		return;
@@ -115,64 +117,6 @@ void AddDataToNewView::init()
 		data.push_back(outView);
 		this->addData("Data", data);
 	}
-	
-
-	// debug output
-    /*std::vector<std::string> views = sys_in->getNamesOfViews();
-    foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;
-
-    DM::View* inView = sys_in->getViewDefinition(NameOfExistingView);
-    if (!inView) 
-	{
-        DM::Logger(DM::Warning) << "View does not exist " << NameOfExistingView << this->getName() << this->getUuid();
-        return;
-    }
-
-    readView = DM::View(inView->getName(), inView->getType(), DM::READ);
-    bool modify = false;
-    bool changed = false;
-    if (NameOfNewView == NameOfExistingView)
-        modify = true;
-
-    if (NameOfNewView != NameOfNewView_old)
-	{
-        changed = true;
-        NameOfNewView_old = NameOfNewView;
-        writeView = DM::View(getParameterAsString("NameOfNewView"), readView.getType(), DM::WRITE);
-    }
-
-    // Get Attributes from existing View
-    if(sys_in->getComponent(inView->getIdOfDummyComponent()) == NULL)
-        return;
-
-    DM::AttributeMap attributes = sys_in->getComponent(inView->getIdOfDummyComponent())->getAllAttributes();
-
-    for (DM::AttributeMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-        writeView.addAttribute(it->first);
-
-    foreach (std::string s, getParameter<std::vector<std::string> >("newAttributes")) 
-	{
-        std::vector<std::string>  writes_already = writeView.getWriteAttributes();
-        if (std::find(writes_already.begin(), writes_already.end(), s) != writes_already.end())
-		{
-			writeView.addAttribute(s);
-			changed = true;
-		}
-    }
-
-    if (changed == true) 
-	{
-        std::vector<DM::View> data;
-        if(modify)
-            this->writeView.setAccessType(DM::MODIFY);
-        else
-            data.push_back(readView);
-
-        data.push_back(writeView);
-        this->addData("Data", data);
-    }*/
-
 }
 
 bool AddDataToNewView::createInputDialog() {
