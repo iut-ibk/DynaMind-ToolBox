@@ -410,7 +410,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 
 void Simulation::reset()
 {
-    Logger(Debug) << "Reset Simulation";
+    Logger(Standard) << ">> Reset Simulation";
 	foreach(Module* m, this->modules)
 	{
 		m->reset();
@@ -454,6 +454,7 @@ bool Simulation::registerModulesFromSettings()
 
 bool Simulation::loadSimulation(std::string filename) 
 {
+	Logger(Standard) << ">> loading simulation file '" << filename << "'";
     SimulationReader simreader(QString::fromStdString(filename));
 	std::map<QString, DM::Module*> modMap;
 	
@@ -489,7 +490,7 @@ bool Simulation::loadSimulation(std::string filename)
 				<< dest->getClassName() << ":" << inPort;
 		}
 	}
-
+	Logger(Standard) << ">> loading simulation file finished";
 	return true;
 }
 

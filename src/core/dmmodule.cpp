@@ -234,7 +234,7 @@ std::string Module::getParameterAsString(const std::string& name)
 	std::stringstream strValue;
     strValue.precision(16);
 	
-	if(Parameter* p = getParameter<Parameter*>(name))
+	if(Parameter* p = getParameter(name))
 	{
 		switch(p->type)
 		{

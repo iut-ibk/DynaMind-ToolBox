@@ -319,7 +319,7 @@ public:
 	template<typename T>
 	void setParameterNative(const std::string& name, T data)
 	{
-		if(Parameter* p = getParameter<Parameter*>(name))
+		if(Parameter* p = getParameter(name))
 			p->set(data);
 	}
 
@@ -336,7 +336,7 @@ public:
 	void setParameterValue(const std::string& name, const std::string& value)
 	{
 		QString qvalue = QString::fromStdString(value);
-		Parameter* p = getParameter<Parameter*>(name);
+		Parameter* p = getParameter(name);
 		if(!p)
 			return;
 		switch(p->type)
