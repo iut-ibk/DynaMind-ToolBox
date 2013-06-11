@@ -45,7 +45,7 @@ void PortNode::removeLink(GUILink * l)
     int index = this->linkNodes.indexOf(l);
     if (index > -1) {
         this->linkNodes.remove(index);
-        DM::Logger(DM::Debug) << "Remove GUILink from" << this->getPortName() << this->linkNodes.size();
+        DM::Logger(DM::Debug) << "Remove GUILink from port '" << this->getPortName() << "' ," << this->linkNodes.size() << " left";
     }
 }
 
