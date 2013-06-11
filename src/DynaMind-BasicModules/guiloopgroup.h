@@ -24,7 +24,6 @@
  *
  */
 
-
 #ifdef SIMENV_GROUP
 
 #ifndef GUIGROUPTEST_H
