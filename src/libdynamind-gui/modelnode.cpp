@@ -283,38 +283,34 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
+	float lineWidth = 2.0f;
 	QColor fillcolor = COLOR_MODULE;    
-	QColor pencolor = COLOR_MODULEBORDER;
-
-	if(isSelected())
-        pencolor = COLOR_MODULE_SELECTED_BORDER;
-
+	
 	switch(module->getStatus())
 	{
-	case DM::MOD_OK:				fillcolor = COLOR_MODULE_FINISHED;	break;
+	case DM::MOD_OK:				fillcolor = COLOR_MODULE_FINISHED;		break;
 	case DM::MOD_EXECUTIONERROR:	fillcolor = COLOR_MODULE_EXE_ERROR;		break;
-	case DM::MOD_CHECKERROR:		fillcolor = COLOR_MODULE_CHECK_ERROR;		break;
+	case DM::MOD_CHECKERROR:		fillcolor = COLOR_MODULE_CHECK_ERROR;	break;
 	}
 
-    if(this->visible){
-        QPen pen(pencolor, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-
-        QLinearGradient linearGrad(QPointF(0, h), QPointF(0, 0));
-        /*QColor c1 = COLOR_MODULE;
+    if(this->visible)
+	{
+		// the constructor for QColor is neccessary
+        QPen rectPen(QColor(COLOR_MODULEBORDER), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        /*QLinearGradient linearGrad(QPointF(0, h), QPointF(0, 0));
+        QColor c1 = COLOR_MODULE;
 		QColor c2 = Qt::white;
         linearGrad.setColorAt(0, c1);
         linearGrad.setColorAt(1, c2);*/
         QBrush brush(fillcolor);
 
-        painter->setBrush(Qt::white);
-        painter->setPen(pen);
-        QPainterPath path;
-        path.addRect(0, 0,l,h);
-        painter->fillPath(path, brush);
-        painter->strokePath(path, pen);
+        QPainterPath rectPath;
+        rectPath.addRect(0, 0,l,h);
+        painter->fillPath(rectPath, brush);
+        painter->strokePath(rectPath, rectPen);
 		
-        //painter->drawText(QPoint(22,35), "Name: " + QString::fromStdString(this->getDMModel()->getName()));
 		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getName()));
+
     }
 	this->update();
 }
