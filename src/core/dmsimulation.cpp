@@ -257,7 +257,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<s
 			if(formerViews.find(v.getName()) == formerViews.end())
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
-					<< "' tries to read from non existing view '" << v.getName()
+					<< "' tries to access the nonexisting view '" << v.getName()
 					<< "' from stream '" << streamName << "'";
 				m->setStatus(MOD_CHECKERROR);
 				return false;
