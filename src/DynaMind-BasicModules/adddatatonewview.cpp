@@ -37,12 +37,12 @@ AddDataToNewView::AddDataToNewView()
     this->onlySelected = false;
 
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+    this->addData("Data", data);
 
     this->addParameter("NameOfNewView", DM::STRING, &this->NameOfNewView);
     this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
     this->addParameter("newAttributes", DM::STRING_LIST, &this->newAttributes);
     this->addParameter("onlySelected", DM::BOOL, &this->onlySelected);
-    this->addData("Data", data);
 }
 
 void AddDataToNewView::run()
@@ -81,18 +81,19 @@ void AddDataToNewView::init()
     if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
         return;
 
+	// debug output
     std::vector<std::string> views = sys_in->getNamesOfViews();
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;
 
-    DM::View*  v = sys_in->getViewDefinition(NameOfExistingView);
-    if (!v) 
+    DM::View* inView = sys_in->getViewDefinition(NameOfExistingView);
+    if (!inView) 
 	{
         DM::Logger(DM::Warning) << "View does not exist " << NameOfExistingView << this->getName() << this->getUuid();
         return;
     }
 
-    readView = DM::View(v->getName(), v->getType(), DM::READ);
+    readView = DM::View(inView->getName(), inView->getType(), DM::READ);
     bool modify = false;
     bool changed = false;
     if (NameOfNewView == NameOfExistingView)
@@ -106,10 +107,10 @@ void AddDataToNewView::init()
     }
 
     // Get Attributes from existing View
-    if(sys_in->getComponent(v->getIdOfDummyComponent()) == NULL)
+    if(sys_in->getComponent(inView->getIdOfDummyComponent()) == NULL)
         return;
 
-    DM::AttributeMap attributes = sys_in->getComponent(v->getIdOfDummyComponent())->getAllAttributes();
+    DM::AttributeMap attributes = sys_in->getComponent(inView->getIdOfDummyComponent())->getAllAttributes();
 
     for (DM::AttributeMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
         writeView.addAttribute(it->first);
