@@ -58,7 +58,10 @@
 
 #include <QSettings>
 #include <QDir>
-#include <QThread>
+//#include <QThread>
+
+#include <QtConcurrentRun>
+
 
 namespace DM {
 
@@ -301,13 +304,27 @@ bool Simulation::checkModuleStream(Module* m, std::set<std::string> views)
 
 bool Simulation::checkStream()
 {
+	bool success = true;
+	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)
+	{
 		if(m->getInPortNames().size() == 0)
-			if(!checkModuleStream(m, std::set<std::string>()))
-				return false;
-
-	return true;
-
+		{
+			//if(!checkModuleStream(m, std::set<std::string>()))
+			//	return false;
+			results.append(new QFuture<bool>(
+				QtConcurrent::run(this, &Simulation::checkModuleStream, m, std::set<std::string>())
+				));
+		}
+	}
+	foreach(QFuture<bool>* r, results)
+	{
+		r->waitForFinished();
+		if(!r->result())
+			success = false;
+		delete r;
+	}
+	return success;
 }
 
 void Simulation::run()
@@ -334,7 +351,11 @@ void Simulation::run()
 		worklist.pop();
 		// execute module
 		Logger(Standard) << "running module " << m->getName();
-		m->run();
+
+		QFuture<void> r = QtConcurrent::run(m, &Module::run);
+		r.waitForFinished();
+
+		//m->run();
 		// check for errors
 		ModuleStatus merr = m->getStatus();
 		if(m->getStatus() == MOD_EXECUTIONERROR)
