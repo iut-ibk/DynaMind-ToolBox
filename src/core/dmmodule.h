@@ -251,16 +251,19 @@ public:
 	template<typename T>
 	T getParameter(const std::string& name)
 	{
-		if(Parameter* p = getParameter<Parameter*>(name))
+		if(Parameter* p = getParameter(name))
 			return p->get<T>();
 		return T();
 	}
-	template<>
-	Parameter* getParameter<Parameter*>(const std::string& name)
+	//template<>
+	//Parameter* getParameter<Parameter*>(const std::string& name)
+	Parameter* getParameter(const std::string& name)
 	{
-		foreach(Parameter* p, parameters)
-			if(p->name == name)
-				return p;
+		// foreach will cause a compile error in modules not including qt headers
+		for(std::vector<Parameter*>::iterator it = parameters.begin();
+			it != parameters.end(); ++it)
+			if((*it)->name == name)
+				return *it;
 		return NULL;
 	}
 	std::vector<Parameter*> getParameters() const
