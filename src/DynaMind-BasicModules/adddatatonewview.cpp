@@ -61,25 +61,61 @@ void AddDataToNewView::run()
 		return;
 	}
 
-	if(this->onlySelected)
+	DM::ComponentMap cmp = sys->getAllComponentsInView(*v_existing);
+	for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) 
 	{
-		DM::ComponentMap cmp = sys->getAllComponentsInView(*v_existing);
-		for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) 
-		{
-			DM::Component * c = sys->getComponent(it->first);
+		DM::Component * c = sys->getComponent(it->first);
+		if(this->onlySelected)
 			if(DM::Attribute* a = c->getAttribute("selected"))
 				if(a->getDouble() < 0.0001)
-					sys->addComponentToView(c, *v_new);
-		}
+					continue;
+
+		sys->addComponentToView(c, *v_new);
 	}
 }
 
 void AddDataToNewView::init()
 {
-    // TODO: Works fine until someone is changing something upstream -> no update downstream!
-    sys_in = this->getData("Data");
-    if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
-        return;
+	// TODO: Works fine until someone is changing something upstream -> no update downstream!
+	sys_in = this->getData("Data");
+	if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
+		return;
+	/*
+	DM::View* inViewDef = sys_in->getViewDefinition(NameOfExistingView);
+	if (!inViewDef) 
+	{
+		DM::Logger(DM::Warning) << "view '" << NameOfExistingView << "' does not exist ";
+		return;
+	}
+
+	if(NameOfExistingView == NameOfNewView)
+	{
+		// modify only
+		inViewDef->setAccessType(DM::MODIFY);
+		// add new attributes
+		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
+			inViewDef->addAttribute(s);
+	}
+	else
+	{
+		// create new views
+		DM::View inView(NameOfExistingView, inViewDef->getType(), DM::READ);
+		DM::View outView(NameOfNewView, inViewDef->getType(), DM::WRITE);
+		// get existent attributes
+		foreach(std::string s, inViewDef->getReadAttributes())
+			outView.addAttribute(s);
+		foreach(std::string s, inViewDef->getWriteAttributes())
+			outView.addAttribute(s);
+		// add new attributes
+		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
+			outView.addAttribute(s);
+
+		std::vector<DM::View> data;
+		data.push_back(inView);
+		data.push_back(outView);
+		this->addData("Data", data);
+	}
+	*/
 
 	// debug output
     std::vector<std::string> views = sys_in->getNamesOfViews();
@@ -136,6 +172,7 @@ void AddDataToNewView::init()
         data.push_back(writeView);
         this->addData("Data", data);
     }
+
 }
 
 bool AddDataToNewView::createInputDialog() {
