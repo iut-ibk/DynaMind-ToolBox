@@ -435,7 +435,7 @@ void GUIModelNode::accept()
 		QAbstractButton * ab;
 		QLineEdit * le;
 		std::map<std::string, std::string> map;*/
-		DM::Module::Parameter* p = module->getParameter<DM::Module::Parameter*>(s.toStdString());
+		DM::Module::Parameter* p = module->getParameter(s.toStdString());
 		if(!p)
 			continue;
 		switch(p->type)
