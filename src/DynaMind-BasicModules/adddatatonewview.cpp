@@ -80,7 +80,7 @@ void AddDataToNewView::init()
 	sys_in = this->getData("Data");
 	if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
 		return;
-	/*
+	
 	DM::View* inViewDef = sys_in->getViewDefinition(NameOfExistingView);
 	if (!inViewDef) 
 	{
@@ -115,10 +115,10 @@ void AddDataToNewView::init()
 		data.push_back(outView);
 		this->addData("Data", data);
 	}
-	*/
+	
 
 	// debug output
-    std::vector<std::string> views = sys_in->getNamesOfViews();
+    /*std::vector<std::string> views = sys_in->getNamesOfViews();
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;
 
@@ -171,7 +171,7 @@ void AddDataToNewView::init()
 
         data.push_back(writeView);
         this->addData("Data", data);
-    }
+    }*/
 
 }
 
