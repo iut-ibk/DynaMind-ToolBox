@@ -242,19 +242,28 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews)
+bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<View> formerViews)
 {
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
-	std::set<std::string> viewsInStream = formerViews;
+	std::set<View> viewsInStream = formerViews;
 
-	foreach(const View v, m->accessedViews[streamName])
+	foreach(const View& v, m->accessedViews[streamName])
 	{
 		const int a = v.getAccessType();
 		if(a == READ || a == MODIFY)
 		{
 			// check if we can access the desired view
-			if(formerViews.find(v.getName()) == formerViews.end())
+			bool exists = false;
+			foreach(const View& formerView, formerViews)
+			{
+				if(v.getName() == formerView.getName())
+				{
+					exists = true;
+					break;
+				}
+			}
+			if(!exists)
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to access the nonexisting view '" << v.getName()
@@ -264,13 +273,13 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<s
 			}
 		}
 		if(a == WRITE || a == MODIFY)	// add new views
-			viewsInStream.insert(v.getName());
+			viewsInStream.insert(v);
 	}
 	
 	std::string viewNameList;
 	if(formerViews.size()>0)
-		foreach(std::string viewName, formerViews)
-			viewNameList += viewName + " | ";
+		foreach(const View& v, formerViews)
+		viewNameList += v.getName() + " | ";
 	else
 		viewNameList += "<none>";
 
@@ -297,7 +306,7 @@ bool Simulation::checkModuleStream(Module* m)
 	for(std::map<std::string, std::vector<View>>::iterator it = accessedViews.begin();
 		it != accessedViews.end(); ++it)
 	{
-		if(!checkModuleStream(m, it->first, std::set<std::string>()))
+		if(!checkModuleStream(m, it->first, std::set<View>()))
 			success = false;
 	}
 	return success;

@@ -292,7 +292,7 @@ public:
 	}
 	
 	std::map<std::string, std::vector<View>> getAccessedViews() {return accessedViews;};
-	std::map<std::string, std::set<std::string>> getViewsInStream() {return streamViews;};
+	std::map<std::string, std::set<View>> getViewsInStream() {return streamViews;};
 	System* getData(const std::string& streamName);
 
 	/** @brief checks if port exists */
@@ -398,7 +398,7 @@ private:
 	std::map<std::string, std::vector<View>> accessedViews;	
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
-	std::map<std::string, std::set<std::string>> streamViews;
+	std::map<std::string, std::set<View>> streamViews;
 };
 
 #ifdef OLD_WF

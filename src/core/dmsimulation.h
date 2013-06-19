@@ -178,7 +178,7 @@ private:
 
 	
 	bool checkModuleStream(Module* m);
-	bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews);
+	bool checkModuleStream(Module* m, std::string streamName, std::set<View> formerViews);
 };
 
 
