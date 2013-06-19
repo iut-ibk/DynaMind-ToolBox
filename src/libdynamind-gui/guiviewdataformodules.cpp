@@ -16,7 +16,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	this->ui->treeWidget_views->setColumnCount(3);
 	this->ui->treeWidget_views->setColumnWidth(0,200);
 	QTreeWidgetItem * headerItem = this->ui->treeWidget_views->headerItem();
-	headerItem->setText(0, "Data Stream");
+	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
 	
@@ -70,35 +70,38 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			this->ui->treeWidget_views->expandItem(root_port);
 		}
 	}
-	/*
+	
 	this->ui->treeWidget->setColumnCount(2);
 	this->ui->treeWidget->setColumnWidth(0,200);
 	headerItem = this->ui->treeWidget->headerItem();
-	headerItem->setText(0, "Data Stream");
+	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
 
-	foreach (DM::Port * p, this->m->getOutPorts())
+	std::map<std::string, std::set<std::string>> viewsInStream = m->getViewsInStream();
+	for (std::map<std::string, std::set<std::string>>::const_iterator it = viewsInStream.begin();
+		it != viewsInStream.end(); ++it) 
+	//foreach (DM::Port * p, this->m->getOutPorts())
 	{
-		std::string dataname = p->getLinkedDataName();
-		DM::Logger(DM::Debug) << dataname;
-		DM::System * data = this->m->getData(dataname);
-		if (!sys == 0)
-			continue;
+		//std::string dataname = p->getLinkedDataName();
+		//DM::Logger(DM::Debug) << dataname;
+		//DM::System * data = this->m->getData(dataname);
+		//if (!sys == 0)
+		//	continue;
 
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
 
-		root_port->setText(0, QString::fromStdString(dataname));
+		root_port->setText(0, QString::fromStdString(it->first));
 		this->ui->treeWidget->addTopLevelItem(root_port);
 
-
-
-		foreach (std::string name, sys->getNamesOfViews()) {
-			if (name.compare("dummy") == 0)
-				continue;
-			DM::Logger(DM::Debug) << name;
-			DM::View * view = sys->getViewDefinition(name);
+		foreach (std::string name, it->second)
+		{
+			//if (name.compare("dummy") == 0)
+			//	continue;
+			//DM::Logger(DM::Debug) << name;
+			//DM::View * view = sys->getViewDefinition(name);
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
 			item_view->setText(0, QString::fromStdString(name));
+			/*
 			int type = view->getType();
 
 			if (type == DM::NODE)
@@ -124,10 +127,10 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
 				item_attribute->setText(0, QString::fromStdString(it->first));
 				item_view->addChild(item_attribute);
-			}
+			}*/
 		}
 		this->ui->treeWidget->expandItem(root_port);
-	}*/
+	}
 }
 
 GUIViewDataForModules::~GUIViewDataForModules()
