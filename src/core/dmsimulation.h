@@ -177,7 +177,7 @@ private:
 	ModuleRegistry*		moduleRegistry;
 
 	
-	bool checkModuleStream(Module* m, std::set<std::string> views);
+	bool checkModuleStream(Module* m);
 	bool checkModuleStream(Module* m, std::string streamName, std::set<std::string> formerViews);
 };
 

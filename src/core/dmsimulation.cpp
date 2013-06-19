@@ -248,7 +248,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<s
 
 	std::set<std::string> viewsInStream = formerViews;
 
-	foreach(const View v, m->getAccessedViews()[streamName])
+	foreach(const View v, m->accessedViews[streamName])
 	{
 		const int a = v.getAccessType();
 		if(a == READ || a == MODIFY)
@@ -283,10 +283,13 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<s
 			if(!checkModuleStream(l->dest, l->inPort, viewsInStream))
 				success = false;
 
+	// update stream view info in module
+	m->streamViews[streamName] = viewsInStream;
+
 	return success;
 }
 
-bool Simulation::checkModuleStream(Module* m, std::set<std::string> views)
+bool Simulation::checkModuleStream(Module* m)
 {
 	bool success = true;
 	std::map<std::string, std::vector<View>> accessedViews = m->getAccessedViews();
@@ -294,7 +297,7 @@ bool Simulation::checkModuleStream(Module* m, std::set<std::string> views)
 	for(std::map<std::string, std::vector<View>>::iterator it = accessedViews.begin();
 		it != accessedViews.end(); ++it)
 	{
-		if(!checkModuleStream(m, it->first, views))
+		if(!checkModuleStream(m, it->first, std::set<std::string>()))
 			success = false;
 	}
 	return success;
@@ -311,7 +314,7 @@ bool Simulation::checkStream()
 			//if(!checkModuleStream(m, std::set<std::string>()))
 			//	return false;
 			results.append(new QFuture<bool>(
-				QtConcurrent::run(this, &Simulation::checkModuleStream, m, std::set<std::string>())
+				QtConcurrent::run(this, &Simulation::checkModuleStream, m)
 				));
 		}
 	}
