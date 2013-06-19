@@ -126,7 +126,7 @@ Attribute::AttributeType View::getAttributeType(std::string name)
     return attributeTypes[name];
 }
 	
-std::vector<std::string> View::getAllAttributes()
+std::vector<std::string> View::getAllAttributes() const
 {
 	std::vector<std::string> names;
 	for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)

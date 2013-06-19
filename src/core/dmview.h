@@ -163,7 +163,7 @@ public:
     /** @brief Returns names of object the linked view */
     std::string getNameOfLinkedView(std::string name);
 
-	std::vector<std::string> getAllAttributes();
+	std::vector<std::string> getAllAttributes() const;
 };
 }
 
