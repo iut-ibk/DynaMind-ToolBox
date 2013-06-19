@@ -77,8 +77,8 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
 
-	std::map<std::string, std::set<std::string>> viewsInStream = m->getViewsInStream();
-	for (std::map<std::string, std::set<std::string>>::const_iterator it = viewsInStream.begin();
+	std::map<std::string, std::set<DM::View>> viewsInStream = m->getViewsInStream();
+	for (std::map<std::string, std::set<DM::View>>::const_iterator it = viewsInStream.begin();
 		it != viewsInStream.end(); ++it) 
 	//foreach (DM::Port * p, this->m->getOutPorts())
 	{
@@ -93,16 +93,16 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 		root_port->setText(0, QString::fromStdString(it->first));
 		this->ui->treeWidget->addTopLevelItem(root_port);
 
-		foreach (std::string name, it->second)
+		foreach (const DM::View& v, it->second)
 		{
 			//if (name.compare("dummy") == 0)
 			//	continue;
 			//DM::Logger(DM::Debug) << name;
 			//DM::View * view = sys->getViewDefinition(name);
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
-			item_view->setText(0, QString::fromStdString(name));
-			/*
-			int type = view->getType();
+			item_view->setText(0, QString::fromStdString(v.getName()));
+			
+			int type = v.getType();
 
 			if (type == DM::NODE)
 				item_view->setText(1, "Nodes");
@@ -114,20 +114,22 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 				item_view->setText(1, "Systems");
 			if (type == DM::RASTERDATA)
 				item_view->setText(1, "Raster Data");
-
+				
 			root_port->addChild(item_view);
 
-			DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
-			if (c == 0) {
-				continue;
-			}
-			std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
-			for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
+			//DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
+			//if (c == 0) {
+			//	continue;
+			//}
+			//std::map<std::string,std::string> attributes = v.getAllAttributes();
+			//for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
+			foreach(std::string attributeName, v.getAllAttributes())
+			{
 				DM::Logger(DM::Debug) << it->first;
 				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
-				item_attribute->setText(0, QString::fromStdString(it->first));
+				item_attribute->setText(0, QString::fromStdString(attributeName));
 				item_view->addChild(item_attribute);
-			}*/
+			}
 		}
 		this->ui->treeWidget->expandItem(root_port);
 	}
