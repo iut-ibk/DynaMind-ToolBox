@@ -79,34 +79,49 @@ void AddDataToNewView::init()
 	// TODO: Works fine until someone is changing something upstream -> no update downstream!
 	// NOTE: redone, upper comment may not be valid anymore
 
-	sys_in = this->getData("Data");
-	if (!sys_in || this->NameOfExistingView.empty() || this->NameOfNewView.empty())
+	std::map<std::string, DM::View> views = getViewsInStream()["Data"];
+	if(views.size() == 0)
+	{
+		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
+		return;
+	}
+
+	//sys_in = this->getData("Data");
+	if (this->NameOfExistingView.empty() || this->NameOfNewView.empty())
 		return;
 	
-	DM::View* inViewDef = sys_in->getViewDefinition(NameOfExistingView);
+	/*DM::View* inViewDef = sys_in->getViewDefinition(NameOfExistingView);
 	if (!inViewDef) 
 	{
 		DM::Logger(DM::Warning) << "view '" << NameOfExistingView << "' does not exist ";
+		return;
+	}*/
+
+	DM::View inViewDef;
+	if(!map_contains(&views, NameOfExistingView, inViewDef))
+	{
+		DM::Logger(DM::Warning) << "view '" << NameOfExistingView 
+			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
 		return;
 	}
 
 	if(NameOfExistingView == NameOfNewView)
 	{
 		// modify only
-		inViewDef->setAccessType(DM::MODIFY);
+		inViewDef.setAccessType(DM::MODIFY);
 		// add new attributes
 		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
-			inViewDef->addAttribute(s);
+			inViewDef.addAttribute(s);
 	}
 	else
 	{
 		// create new views
-		DM::View inView(NameOfExistingView, inViewDef->getType(), DM::READ);
-		DM::View outView(NameOfNewView, inViewDef->getType(), DM::WRITE);
+		DM::View inView(NameOfExistingView, inViewDef.getType(), DM::READ);
+		DM::View outView(NameOfNewView, inViewDef.getType(), DM::WRITE);
 		// get existent attributes
-		foreach(std::string s, inViewDef->getReadAttributes())
+		foreach(std::string s, inViewDef.getReadAttributes())
 			outView.addAttribute(s);
-		foreach(std::string s, inViewDef->getWriteAttributes())
+		foreach(std::string s, inViewDef.getWriteAttributes())
 			outView.addAttribute(s);
 		// add new attributes
 		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
