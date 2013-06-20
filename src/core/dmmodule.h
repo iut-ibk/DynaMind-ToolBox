@@ -395,7 +395,7 @@ private:
 	ModuleStatus status;
 
 	// all view inits in module::init will be stored here as: streamname | views
-	std::map<std::string, std::map<std::string,View> > accessedViews;	
+	std::map<std::string, std::map<std::string,View> > accessedViews;
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
 	std::map<std::string, std::map<std::string,View> > streamViews;

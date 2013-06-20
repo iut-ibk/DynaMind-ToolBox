@@ -180,7 +180,7 @@ private:
 
 	
 	bool checkModuleStream(Module* m);
-	bool checkModuleStream(Module* m, std::string streamName, const std::map<std::string,View>& formerViews);
+	bool checkModuleStream(Module* m, std::string streamName);
 };
 
 

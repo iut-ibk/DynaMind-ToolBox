@@ -242,14 +242,17 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-bool Simulation::checkModuleStream(Module* m, std::string streamName, const std::map<std::string,View>& formerViews)
+bool Simulation::checkModuleStream(Module* m, std::string streamName)
 {
-	std::map<std::string, DM::View>* streamViews = &m->streamViews[streamName];
+	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// update stream view info in module
-	*streamViews = formerViews;
+	std::map<std::string,View> updatedStream = *curStreamViews;
+	//*streamViews = formerViews;
 
 	bool success = true;
-
+	
+	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
+	m->init();
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
 	//std::map<std::string,View> viewsInStream = formerViews;
@@ -263,7 +266,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, const std:
 		if(a == READ || a == MODIFY)
 		{
 			// check if we can access the desired view
-			if(!map_contains(streamViews, v.getName()))
+			if(!map_contains(curStreamViews, v.getName()))
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to access the nonexisting view '" << v.getName()
@@ -273,8 +276,8 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, const std:
 				continue;
 			}
 		}
-		if(a == WRITE || a == MODIFY)	// add new views
-			(*streamViews)[v.getName()] = v;
+		if(a == WRITE)	// add new views
+			updatedStream[v.getName()] = v;
 	}
 	
 	/*// debug print
@@ -292,9 +295,14 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, const std:
 
 	// check next modules
 	foreach(Simulation::Link* l, links)
+	{
 		if(l->src == m && l->outPort == streamName)
-			if(!checkModuleStream(l->dest, l->inPort, *streamViews))
+		{
+			l->dest->streamViews[l->inPort] = updatedStream;
+			if(!checkModuleStream(l->dest, l->inPort))
 				success = false;
+		}
+	}
 
 	return success;
 }
@@ -307,7 +315,7 @@ bool Simulation::checkModuleStream(Module* m)
 	for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
 		it != accessedViews.end(); ++it)
 	{
-		if(!checkModuleStream(m, it->first, std::map<std::string,View>()))
+		if(!checkModuleStream(m, it->first))
 			success = false;
 	}
 	return success;
@@ -509,9 +517,9 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 	else
 		Logger(Error) << ">> error checking stream";
 	
-	Logger(Standard) << ">> initializing modules";
+	/*Logger(Standard) << ">> initializing modules";
 	foreach(DM::Module* m, modules)
-		m->init();
+		m->init();*/
 
 	Logger(Standard) << ">> loading simulation file finished";
 	return true;
