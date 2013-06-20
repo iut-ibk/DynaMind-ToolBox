@@ -391,6 +391,13 @@ void Simulation::run()
 				worklist.push(m);
 	}
 	Logger(Standard) << ">> finished simulation";
+	finished = true;
+}
+
+void Simulation::decoupledRun()
+{
+	finished = false;
+	QFuture<void> r = QtConcurrent::run(this, &Simulation::run);
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)

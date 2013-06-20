@@ -162,6 +162,8 @@ public:
 	
 	std::list<Module*> getModules(){return modules;};
 	std::list<Link*> getLinks(){return links;};
+
+	void decoupledRun();
 protected:
 	bool loadSimulation(std::string fileName, std::map<std::string, DM::Module*>& modMap);
 private:
@@ -181,6 +183,7 @@ private:
 	
 	bool checkModuleStream(Module* m);
 	bool checkModuleStream(Module* m, std::string streamName);
+	bool finished;	// for decoupled run
 };
 
 
