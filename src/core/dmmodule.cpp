@@ -163,8 +163,8 @@ System* Module::getOutPortData(const std::string &name)
 void Module::addData(const std::string& streamName, std::vector<View> views)
 {
 	//DM::Logger(Warning) << "Module::addData deprecated, use addPort instead";
-
-	this->accessedViews[streamName] = views;
+	foreach(const View v, views)
+		this->accessedViews[streamName][v.getName()] = v;
 
 	bool inPort = false;
 	bool outPort = false;
@@ -193,7 +193,7 @@ System* Module::getData(const std::string& streamName)
 	if(!sys)
 		sys = new System();
 	
-	foreach(View v, accessedViews[streamName])
+	mforeach(View v, accessedViews[streamName])
 		sys->addView(v);
 	this->setOutPortData(streamName, sys);
 	return sys;

@@ -242,28 +242,19 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<View> formerViews)
+bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<std::string,View> formerViews)
 {
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
-	std::set<View> viewsInStream = formerViews;
+	std::map<std::string,View> viewsInStream = formerViews;
 
-	foreach(const View& v, m->accessedViews[streamName])
+	mforeach(const View& v, m->accessedViews[streamName])
 	{
 		const int a = v.getAccessType();
 		if(a == READ || a == MODIFY)
 		{
 			// check if we can access the desired view
-			bool exists = false;
-			foreach(const View& formerView, formerViews)
-			{
-				if(v.getName() == formerView.getName())
-				{
-					exists = true;
-					break;
-				}
-			}
-			if(!exists)
+			if(!map_contains(&formerViews, v.getName()))
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to access the nonexisting view '" << v.getName()
@@ -273,12 +264,12 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<V
 			}
 		}
 		if(a == WRITE || a == MODIFY)	// add new views
-			viewsInStream.insert(v);
+			viewsInStream[v.getName()] = v;
 	}
 	
 	std::string viewNameList;
 	if(formerViews.size()>0)
-		foreach(const View& v, formerViews)
+		mforeach(const View& v, formerViews)
 		viewNameList += v.getName() + " | ";
 	else
 		viewNameList += "<none>";
@@ -301,12 +292,12 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::set<V
 bool Simulation::checkModuleStream(Module* m)
 {
 	bool success = true;
-	std::map<std::string, std::vector<View>> accessedViews = m->getAccessedViews();
+	std::map<std::string, std::map<std::string,View>> accessedViews = m->getAccessedViews();
 	// iterate through all streams
-	for(std::map<std::string, std::vector<View>>::iterator it = accessedViews.begin();
+	for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
 		it != accessedViews.end(); ++it)
 	{
-		if(!checkModuleStream(m, it->first, std::set<View>()))
+		if(!checkModuleStream(m, it->first, std::map<std::string,View>()))
 			success = false;
 	}
 	return success;
@@ -472,7 +463,8 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 	// load modules
 	foreach(ModuleEntry me, simreader.getModules())
 	{
-		if(DM::Module* m = addModule(me.ClassName.toStdString()))
+		// do not init module - we first have to set parameters and links as well as checking the stream!
+		if(DM::Module* m = addModule(me.ClassName.toStdString(), false))
 		{
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters
@@ -506,6 +498,10 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 		Logger(Standard) << ">> checking stream finished successfully";
 	else
 		Logger(Error) << ">> error checking stream";
+	
+	Logger(Standard) << ">> initializing modules";
+	foreach(DM::Module* m, modules)
+		m->init();
 
 	Logger(Standard) << ">> loading simulation file finished";
 	return true;
