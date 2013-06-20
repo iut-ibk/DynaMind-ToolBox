@@ -307,7 +307,7 @@ void DMMainWindow::createModuleListView()
 
 void DMMainWindow::runSimulation() 
 {
-	simulation->run();
+	simulation->decoupledRun();
     //simulation->start();
 }
 void DMMainWindow::updateSimulation() 
