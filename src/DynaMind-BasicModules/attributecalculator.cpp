@@ -49,8 +49,9 @@ AttributeCalculator::AttributeCalculator()
     this->addData("Data", data);
 }
 
-void AttributeCalculator::init() {
-    this->sys_in = this->getData("Data");
+void AttributeCalculator::init() 
+{
+    //this->sys_in = this->getData("Data");
 
     if (!this->sys_in)
         return;
@@ -62,13 +63,29 @@ void AttributeCalculator::init() {
         return;
 
 
-    DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
+    /*DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
     if (!baseView)
-        return;
+        return;*/
+
+	std::map<std::string, DM::View> views = getViewsInStream()["Data"];
+	if(views.size() == 0)
+	{
+		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
+		return;
+	}
+
+	DM::View baseView;
+	if(!map_contains(&views, nameOfBaseView, baseView))
+	{
+		DM::Logger(DM::Warning) << "view '" << nameOfBaseView 
+			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
+		return;
+	}
+
 
     viewsmap.clear();
     varaibleNames.clear();
-    DM::View writeView = DM::View(baseView->getName(), baseView->getType(), DM::READ);
+    DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
     writeView.addAttribute(nameOfNewAttribute);
     viewsmap[nameOfBaseView] = writeView;
     for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
@@ -80,11 +97,17 @@ void AttributeCalculator::init() {
         std::string attributename = viewNameList[viewNameList.size()-1].toStdString();
         varaibleNames.push_back(it->second);
 
-        if (viewsmap.find(viewname) == viewsmap.end()) {
-            baseView = this->sys_in->getViewDefinition(viewname);
-            if (!baseView)
-                return;
-            viewsmap[viewname] = DM::View(baseView->getName(), baseView->getType(), DM::READ);
+		if(!map_contains(&viewsmap, viewname))
+		{
+        //if (viewsmap.find(viewname) == viewsmap.end()) {
+
+			if(!map_contains(&views, viewname, baseView))
+				return;
+
+            //baseView = this->sys_in->getViewDefinition(viewname);
+            //if (!baseView)
+            //    return;
+            viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
         }
 
         DM::View toAppend =  viewsmap[viewname];

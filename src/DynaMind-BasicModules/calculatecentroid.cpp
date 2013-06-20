@@ -49,32 +49,46 @@ CalculateCentroid::CalculateCentroid()
 
 void CalculateCentroid::init()
 {
+	std::map<std::string, DM::View> views = getViewsInStream()["Data"];
+	if(views.size() == 0)
+	{
+		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
+		return;
+	}
 
-    city = this->getData("Data");
+    /*city = this->getData("Data");
     if (city == 0)
         return;
     std::vector<std::string> views = city->getNamesOfViews();
 
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;
-
+		*/
     if (this->NameOfExistingView.empty())
         return;
-    DM::View * v = city->getViewDefinition(NameOfExistingView);
+    /*DM::View * v = city->getViewDefinition(NameOfExistingView);
     if (!v)
-        return;
-    DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
+        return;*/
+	DM::View v;
+	if(!map_contains(&views, NameOfExistingView, v))
+	{
+		DM::Logger(DM::Warning) << "view '" << NameOfExistingView 
+			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
+		return;
+	}
+
+    DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
     writeView.addAttribute("centroid_x");
     writeView.addAttribute("centroid_y");
     writeView.addAttribute("area");
 
     std::stringstream ss;
-    ss << v->getName() << "_CENTROIDS";
+    ss << v.getName() << "_CENTROIDS";
 
     newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
 
     std::stringstream link;
-    link << v->getName()<< "_ID";
+    link << v.getName()<< "_ID";
     newPoints.addLinks(link.str(), writeView);
 
 
