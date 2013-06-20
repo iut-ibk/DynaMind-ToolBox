@@ -244,6 +244,8 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 
 bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<std::string,View> formerViews)
 {
+	bool success = true;
+
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
 	std::map<std::string,View> viewsInStream = formerViews;
@@ -260,13 +262,15 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<s
 					<< "' tries to access the nonexisting view '" << v.getName()
 					<< "' from stream '" << streamName << "'";
 				m->setStatus(MOD_CHECKERROR);
-				return false;
+				success = false;
+				continue;
 			}
 		}
 		if(a == WRITE || a == MODIFY)	// add new views
 			viewsInStream[v.getName()] = v;
 	}
 	
+	/*// debug print
 	std::string viewNameList;
 	if(formerViews.size()>0)
 		mforeach(const View& v, formerViews)
@@ -274,17 +278,21 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<s
 	else
 		viewNameList += "<none>";
 
-	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;
+	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;*/
 
-	bool success = true;
+	
+	// update stream view info in module
+	m->streamViews[streamName] = viewsInStream;
+
+	if(!success)
+		return success;
+
 	// check next modules
 	foreach(Simulation::Link* l, links)
 		if(l->src == m && l->outPort == streamName)
 			if(!checkModuleStream(l->dest, l->inPort, viewsInStream))
 				success = false;
 
-	// update stream view info in module
-	m->streamViews[streamName] = viewsInStream;
 
 	return success;
 }
