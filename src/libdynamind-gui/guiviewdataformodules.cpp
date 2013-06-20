@@ -3,7 +3,7 @@
 #include <dmmodule.h>
 #include <dmport.h>
 #include <dm.h>
-typedef std::map<std::string, std::vector<DM::View> > view_map;
+typedef std::map<std::string, std::map<std::string,DM::View> > view_map;
 
 GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	QDialog(parent), ui(new Ui::GUIViewDataForModules)
@@ -20,14 +20,14 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
 	
-	std::map<std::string, std::vector<DM::View> > views = m->getAccessedViews();
+	view_map views = m->getAccessedViews();
 	for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) 
 	{
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
 		this->ui->treeWidget_views->addTopLevelItem(root_port);
 		root_port->setText(0, QString::fromStdString(it->first));
 
-		foreach (DM::View v, it->second) 
+		mforeach (DM::View v, it->second) 
 		{
 			//if (v.getName().compare("dummy") == 0)
 			//	continue;
@@ -77,8 +77,8 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
 
-	std::map<std::string, std::set<DM::View>> viewsInStream = m->getViewsInStream();
-	for (std::map<std::string, std::set<DM::View>>::const_iterator it = viewsInStream.begin();
+	view_map viewsInStream = m->getViewsInStream();
+	for (view_map::const_iterator it = viewsInStream.begin();
 		it != viewsInStream.end(); ++it) 
 	//foreach (DM::Port * p, this->m->getOutPorts())
 	{
@@ -93,7 +93,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 		root_port->setText(0, QString::fromStdString(it->first));
 		this->ui->treeWidget->addTopLevelItem(root_port);
 
-		foreach (const DM::View& v, it->second)
+		mforeach (const DM::View& v, it->second)
 		{
 			//if (name.compare("dummy") == 0)
 			//	continue;
