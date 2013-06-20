@@ -188,10 +188,21 @@ System* Module::getData(const std::string& streamName)
 {
 	//DM::Logger(Warning) << "Module::getData deprecated, " << 
 	//	"create a new system and apply to port via setOutPortData instead";
-
+	
 	System *sys = getInPortData(streamName);
 	if(!sys)
+	{
+		if(this->getInPortNames().size() != 0)
+		{
+			// we didn't get a system, but we got a port - simulation not ready
+			// this can happen if module::init calles getData, which is deprecated
+			DM::Logger(Error) << "module '" << getClassName() << "' may calls getData('"
+				<< streamName << "') while initializing, "
+				<< "please use getViewsInStream to retrieve the desired views from stream";
+			return NULL;
+		}
 		sys = new System();
+	}
 	
 	mforeach(View v, accessedViews[streamName])
 		sys->addView(v);
