@@ -125,7 +125,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			//for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
 			foreach(std::string attributeName, v.getAllAttributes())
 			{
-				DM::Logger(DM::Debug) << it->first;
+				//DM::Logger(DM::Debug) << it->first;
 				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
 				item_attribute->setText(0, QString::fromStdString(attributeName));
 				item_view->addChild(item_attribute);
