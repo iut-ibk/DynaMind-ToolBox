@@ -242,21 +242,28 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<std::string,View> formerViews)
+bool Simulation::checkModuleStream(Module* m, std::string streamName, const std::map<std::string,View>& formerViews)
 {
+	std::map<std::string, DM::View>* streamViews = &m->streamViews[streamName];
+	// update stream view info in module
+	*streamViews = formerViews;
+
 	bool success = true;
 
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
-	std::map<std::string,View> viewsInStream = formerViews;
+	//std::map<std::string,View> viewsInStream = formerViews;
 
 	mforeach(const View& v, m->accessedViews[streamName])
 	{
+		if(v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
+			continue;				// but for backwards compatibility its necessary
+
 		const int a = v.getAccessType();
 		if(a == READ || a == MODIFY)
 		{
 			// check if we can access the desired view
-			if(!map_contains(&formerViews, v.getName()))
+			if(!map_contains(streamViews, v.getName()))
 			{
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to access the nonexisting view '" << v.getName()
@@ -267,7 +274,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<s
 			}
 		}
 		if(a == WRITE || a == MODIFY)	// add new views
-			viewsInStream[v.getName()] = v;
+			(*streamViews)[v.getName()] = v;
 	}
 	
 	/*// debug print
@@ -280,19 +287,14 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName, std::map<s
 
 	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;*/
 
-	
-	// update stream view info in module
-	m->streamViews[streamName] = viewsInStream;
-
 	if(!success)
 		return success;
 
 	// check next modules
 	foreach(Simulation::Link* l, links)
 		if(l->src == m && l->outPort == streamName)
-			if(!checkModuleStream(l->dest, l->inPort, viewsInStream))
+			if(!checkModuleStream(l->dest, l->inPort, *streamViews))
 				success = false;
-
 
 	return success;
 }
