@@ -288,47 +288,20 @@ SimulationTab* GUISimulation::getTab(int i)
 
 bool GUISimulation::loadSimulation(std::string filename) 
 {
-    SimulationReader simreader(QString::fromStdString(filename));
 	GuiSimulationReader simio(QString::fromStdString(filename));
-
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
-
-	std::map<QString, DM::Module*> modMap;
 	
-	// load modules
-	foreach(ModuleEntry me, simreader.getModules())
+	std::map<std::string, DM::Module*> modMap;
+	bool result = Simulation::loadSimulation(filename, modMap);
+
+	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
+		it != moduleExInfo.end(); ++it)
 	{
-		if(DM::Module* m = addModule(me.ClassName.toStdString()))
-		{
-			modMap[me.UUID] = m;
-			// load parameters
-			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
-				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
-
-			ModuleExEntry* eex = &moduleExInfo[me.UUID];
-			this->modelNodes[m]->setPos(eex->posX, eex->posY);
-		}
+		DM::Module* m;
+		if(map_contains(&modMap, it->first.toStdString(), m))
+			modelNodes[m]->setPos(it->second.posX, it->second.posY);
 	}
-
-	// load links
-	foreach(LinkEntry le, simreader.getLinks())
-	{
-		DM::Module *src = modMap[le.OutPort.UUID];
-		DM::Module *dest = modMap[le.InPort.UUID];
-		std::string outPort = le.OutPort.PortName.toStdString();
-		std::string inPort = le.InPort.PortName.toStdString();
-
-		if(!src || !dest)
-			DM::Logger(DM::Error) << "corrupt link";
-		else
-		{
-			if(!addLink(src, outPort, dest, inPort))
-				DM::Logger(DM::Error) << "could not establish link between "
-				<< src->getClassName() << ":" << outPort << " and "
-				<< dest->getClassName() << ":" << inPort;
-		}
-	}
-	return true;
+	return result;
 }
 
 
