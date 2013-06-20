@@ -464,18 +464,17 @@ bool Simulation::registerModulesFromSettings()
 
 
 
-bool Simulation::loadSimulation(std::string filename) 
+bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
 {
 	Logger(Standard) << ">> loading simulation file '" << filename << "'";
     SimulationReader simreader(QString::fromStdString(filename));
-	std::map<QString, DM::Module*> modMap;
 	
 	// load modules
 	foreach(ModuleEntry me, simreader.getModules())
 	{
 		if(DM::Module* m = addModule(me.ClassName.toStdString()))
 		{
-			modMap[me.UUID] = m;
+			modMap[me.UUID.toStdString()] = m;
 			// load parameters
 			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
 				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
@@ -487,8 +486,8 @@ bool Simulation::loadSimulation(std::string filename)
 	// load links
 	foreach(LinkEntry le, simreader.getLinks())
 	{
-		DM::Module *src = modMap[le.OutPort.UUID];
-		DM::Module *dest = modMap[le.InPort.UUID];
+		DM::Module *src = modMap[le.OutPort.UUID.toStdString()];
+		DM::Module *dest = modMap[le.InPort.UUID.toStdString()];
 		std::string outPort = le.OutPort.PortName.toStdString();
 		std::string inPort = le.InPort.PortName.toStdString();
 
@@ -502,8 +501,20 @@ bool Simulation::loadSimulation(std::string filename)
 				<< dest->getClassName() << ":" << inPort;
 		}
 	}
+	Logger(Standard) << ">> checking stream";
+	if(checkStream())
+		Logger(Standard) << ">> checking stream finished successfully";
+	else
+		Logger(Error) << ">> error checking stream";
+
 	Logger(Standard) << ">> loading simulation file finished";
 	return true;
+}
+
+bool Simulation::loadSimulation(std::string filename) 
+{
+	std::map<std::string, DM::Module*> modMap;
+	return loadSimulation(filename, modMap);
 }
 
 void Simulation::writeSimulation(std::string filename) 
