@@ -281,20 +281,9 @@ public:
     /** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 	/** @brief sets an individual input dialog for the module */
-	void setGUI(QWidget *w)
-	{
-		if(gui)
-		{
-			DM::Logger(Warning) << "overwriting existing GUI";
-			delete gui;
-		}
-		gui = w;
-	}
+	void setGUI(QWidget *w);
 	/** @brief returns the module gui, if provided. else returns NULL */
-	QWidget* getGUI()
-	{
-		return gui;
-	}
+	QWidget* getGUI();
 	
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() {return accessedViews;};
 	std::map<std::string, std::map<std::string,View> > getViewsInStream() {return streamViews;};

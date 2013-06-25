@@ -311,6 +311,22 @@ void Module::reset()
 	}
 }
 
+void Module::setGUI(QWidget *w)
+{
+	if(gui)
+	{
+		DM::Logger(Warning) << "overwriting existing GUI";
+		delete gui;
+	}
+	gui = w;
+}
+
+QWidget* Module::getGUI()
+{
+	return gui;
+}
+
+
 #ifdef OLD_WF
 struct ModulePrivate {
 
