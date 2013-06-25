@@ -24,7 +24,7 @@
  *
  */
 
-#ifdef SIMENV_GROUP
+//#ifdef SIMENV_GROUP
 
 #ifndef GUIGROUPTEST_H
 #define GUIGROUPTEST_H
@@ -53,7 +53,7 @@ private:
     Ui::GUILoopGroup *ui;
     LoopGroup * m;
 
-
+	
 protected slots:
     void on_addInPort_clicked();
     void on_addOutPort_clicked();
@@ -63,4 +63,4 @@ protected slots:
 };
 
 #endif // GUIGROUPTEST_H
-#endif // SIMENV_GROUP
+//#endif // SIMENV_GROUP

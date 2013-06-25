@@ -24,12 +24,9 @@
  *
  */
 
-<<<<<<< HEAD
-/*
-=======
-#ifdef SIMENV_GROUP
 
->>>>>>> changes to fit new simenv gui
+/*
+
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
@@ -102,8 +99,10 @@ void GUILoopGroup::on_rmOutport_clicked()
     delete this->ui->listWidget_out->currentItem();
 }
 
-void GUILoopGroup::accept() {
+void GUILoopGroup::accept() 
+{
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
 }
 */
+
