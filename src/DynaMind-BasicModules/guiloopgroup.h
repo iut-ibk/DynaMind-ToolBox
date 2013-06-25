@@ -46,7 +46,7 @@ class DM_HELPER_DLL_EXPORT GUILoopGroup: public QDialog
     Q_OBJECT
     
 public:
-    explicit GUILoopGroup(DM::Module * m, QWidget *parent = 0);
+    explicit GUILoopGroup(LoopGroup * m, QWidget *parent = 0);
     ~GUILoopGroup();
     
 private:
