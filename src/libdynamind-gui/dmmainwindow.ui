@@ -627,6 +627,7 @@
    <addaction name="actionRun"/>
    <addaction name="actionUpdate"/>
    <addaction name="actionReset"/>
+   <addaction name="actionCancel"/>
   </widget>
   <action name="actionRun">
    <property name="icon">
@@ -774,6 +775,14 @@
    </property>
    <property name="text">
     <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionCancel">
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="toolTip">
+    <string>Cancel</string>
    </property>
   </action>
  </widget>

@@ -112,6 +112,7 @@ public slots:
     void removeGroupWindows(QString uuid);
     void updateSimulation();
     void resetSimulation();
+    void cancelSimulation();
 //    void showHelp(std::string classname);
 	
 	void newLogLine(QString line);

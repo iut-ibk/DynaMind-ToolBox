@@ -225,6 +225,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
     connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
     connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
+    connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
     currentDocument = "";
 
     //this->simmanagment = new SimulationManagment();
@@ -321,6 +322,10 @@ void DMMainWindow::updateSimulation()
 void DMMainWindow::resetSimulation() 
 {
 	simulation->reset();
+}
+void DMMainWindow::cancelSimulation() 
+{
+	simulation->cancel();
 }
 
 void DMMainWindow::SimulationFinished() 
