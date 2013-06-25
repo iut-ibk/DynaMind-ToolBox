@@ -266,6 +266,16 @@ void ModelNode::updatePorts()
 		if(!getPort(portName, INPORT))
 			this->ports.append(new PortNode(QString::fromStdString(portName), this, INPORT));
 
+	std::vector<PortNode*> toRemove;
+	foreach(PortNode* n, ports)
+	{
+		std::string portName = n->getPortName().toStdString();
+		if( !module->hasInPort(portName) || !module->hasOutPort(portName))
+			toRemove.push_back(n);
+	}
+	foreach(PortNode* n, toRemove)
+		remove(ports.begin(), ports.end(), n);
+	/*
 	// remove deprecated ports
 	QVector<int> deprecatedPorts;
 	int cnt = 0;
@@ -278,7 +288,7 @@ void ModelNode::updatePorts()
 		cnt++;
 	}
 	for(int i=0;i<deprecatedPorts.size();i++)
-		ports.remove(deprecatedPorts[deprecatedPorts.size()-i-1]);
+		ports.remove(deprecatedPorts[deprecatedPorts.size()-i-1]);*/
 }
 
 /*
