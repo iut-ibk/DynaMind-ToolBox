@@ -87,7 +87,7 @@ void GUILoopGroup::on_addOutPort_clicked()
 	if (ok && !text.isEmpty()) 
 	{
 		bool isNew = true; 
-		foreach(std::string s, m->nameOfInViews)
+		foreach(std::string s, m->nameOfOutViews)
 			if(s == text.toStdString())
 				isNew = false;
 
@@ -106,7 +106,11 @@ void GUILoopGroup::on_rmInport_clicked()
 		return;
 	std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
 	m->removeInPort(toRemove);
-	remove(m->nameOfInViews.begin(), m->nameOfInViews.end(), toRemove);
+
+	std::vector<std::string>::iterator it = std::find(m->nameOfInViews.begin(), m->nameOfInViews.end(), toRemove);
+	if(it != m->nameOfInViews.end())
+		m->nameOfInViews.erase(it);
+
 	delete this->ui->listWidget_in->currentItem();
 
 }
@@ -117,7 +121,11 @@ void GUILoopGroup::on_rmOutport_clicked()
 		return;
 	std::string toRemove = ui->listWidget_out->currentItem()->text().toStdString();
 	m->removeOutPort(toRemove);
-	remove(m->nameOfOutViews.begin(), m->nameOfOutViews.end(), toRemove);
+
+	std::vector<std::string>::iterator it = std::find(m->nameOfOutViews.begin(), m->nameOfOutViews.end(), toRemove);
+	if(it != m->nameOfOutViews.end())
+		m->nameOfOutViews.erase(it);
+
 	delete this->ui->listWidget_out->currentItem();
 }
 
