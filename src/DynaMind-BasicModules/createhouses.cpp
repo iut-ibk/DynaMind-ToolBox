@@ -88,8 +88,8 @@ CreateHouses::CreateHouses()
     building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
     building_model.addAttribute("type");
 
-    parcels.addLinks("BUILDING", houses);
-    houses.addLinks("PARCEL", parcels);
+    parcels.addLinks("BUILDING", houses.getName());
+    houses.addLinks("PARCEL", parcels.getName());
 
     std::vector<DM::View> data;
     data.push_back(houses);

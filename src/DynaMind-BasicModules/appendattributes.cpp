@@ -103,10 +103,10 @@ void AppendAttributes::init()
     sys_in = this->getData("Data");
     if (sys_in == 0)
         return;
-    std::vector<std::string> views = sys_in->getNamesOfViews();
+    /*std::vector<std::string> views = sys_in->getNamesOfViews();
 
     foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;
+        DM::Logger(DM::Debug) << s;*/
 
     if (this->NameOfExistingView.empty())
         return;

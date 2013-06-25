@@ -39,7 +39,7 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
 {
     this->m = (Marker*) m;
     ui->setupUi(this);
-    DM::System * sys = this->m->getSystemIn();
+    /*DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys != 0)
         sys_in = sys->getNamesOfViews();
@@ -48,7 +48,10 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
 
     foreach (std::string s, sys_in) {
         ui->comboBox->addItem(QString::fromStdString(s));
-    }
+    }*/
+	
+	mforeach(DM::View v, m->getViewsInStream()[0])
+		ui->comboBox->addItem(QString::fromStdString(v.getName()));
 
     std::string nameofexview = this->m->getParameterAsString("Identifier");
     if (!nameofexview.empty()) {

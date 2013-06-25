@@ -81,16 +81,22 @@ void AppendViewFromSystem::run() {
 void AppendViewFromSystem::init()
 {
     //Define New System
-    if (Inports.size() > 0 ) {
+    if (Inports.size() > 0 ) 
+	{
         bool changed = false;
-        foreach (std::string s, Inports) {
+        foreach (std::string s, Inports) 
+		{
             DM::System * sys = this->getData(s);
-            if (sys != 0) {
-                foreach (std::string v, sys->getNamesOfViews()) {
-                    if (std::find(existingViews.begin(), existingViews.end(), v) == existingViews.end()) {
-                        DM::View * old = sys->getViewDefinition(v);
-                        DM::View new_v(v, old->getType(), DM::WRITE);
-                        if (old->getIdOfDummyComponent().empty())
+            if (sys != 0) 
+			{
+                //foreach (std::string v, sys->getNamesOfViews()) 
+				mforeach(DM::View v, this->getViewsInStream()[0])
+				{
+					if (std::find(existingViews.begin(), existingViews.end(), v.getName()) == existingViews.end()) 
+					{
+                        //DM::View * old = sys->getViewDefinition(v);
+						DM::View new_v(v.getName(), v.getType(), DM::WRITE);
+                        /*if (old->getIdOfDummyComponent().empty())
                             continue;
                         if (!sys->getComponent(old->getIdOfDummyComponent())) {
                             DM::Logger(DM::Error) << "Standard dummy Component 0";
@@ -98,7 +104,15 @@ void AppendViewFromSystem::init()
                             return;
                         }
                         DM::AttributeMap cmp = sys->getComponent(old->getIdOfDummyComponent())->getAllAttributes();
-
+						*/
+						foreach(std::string attName, v.getAllAttributes())
+						{
+							if(v.getAttributeType(attName) == DM::Attribute::LINK)
+								new_v.addLinks(attName, v.getNameOfLinkedView(attName));
+							else
+								new_v.addAttribute(attName);
+						}
+						/*
                         for (DM::AttributeMap::const_iterator it = cmp.begin();
                              it != cmp.end();
                              ++it) {
@@ -108,9 +122,9 @@ void AppendViewFromSystem::init()
                             } else {
                             new_v.addAttribute(it->first);
                             }
-                        }
+                        }*/
                         views.push_back(new_v);
-                        existingViews.push_back(v);
+						existingViews.push_back(v.getName());
                         changed = true;
                     }
                 }

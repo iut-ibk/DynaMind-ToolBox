@@ -56,10 +56,10 @@ void CalculateBoundingBox::init() {
     city = this->getData("Data");
     if (city == 0)
         return;
-    std::vector<std::string> views = city->getNamesOfViews();
+    /*std::vector<std::string> views = city->getNamesOfViews();
 
     foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;
+        DM::Logger(DM::Debug) << s;*/
 
     if (this->NameOfExistingView.empty())
         return;
@@ -79,8 +79,8 @@ void CalculateBoundingBox::init() {
     DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
     if (!this->overAll) {
 
-        writeView.addLinks(ss.str(), newFaces);
-        newFaces.addLinks(writeView.getName(), writeView);
+		writeView.addLinks(ss.str(), newFaces.getName());
+		newFaces.addLinks(writeView.getName(), writeView.getName());
     }
 
     std::vector<DM::View> data;

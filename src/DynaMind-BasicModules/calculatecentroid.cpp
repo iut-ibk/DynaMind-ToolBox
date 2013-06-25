@@ -89,7 +89,7 @@ void CalculateCentroid::init()
 
     std::stringstream link;
     link << v.getName()<< "_ID";
-    newPoints.addLinks(link.str(), writeView);
+    newPoints.addLinks(link.str(), writeView.getName());
 
 
     std::vector<DM::View> data;

@@ -10,27 +10,43 @@ GUIAppendAttributes::GUIAppendAttributes(DM::Module *m, QWidget *parent) :
     ui->setupUi(this);
     DM::System * sys = this->m->getSystemIn();
 
-    std::vector<std::string> sys_in;
+	mforeach(DM::View v, m->getViewsInStream()[0])
+	{
+		switch (v.getType())
+		{
+		case DM::RASTERDATA:
+			ui->comboBox_raster->addItem(QString::fromStdString(v.getName()));
+			break;
+		case DM::FACE:
+		case DM::NODE:
+            ui->comboBox_faces->addItem(QString::fromStdString(v.getName()));
+			break;
+		default:
+			break;
+		}
+	}
+
+    /*std::vector<std::string> sys_in;
     if (sys != 0)
         sys_in = sys->getNamesOfViews();
     foreach (std::string s, sys_in) {
         if (sys->getViewDefinition(s)->getType() == DM::RASTERDATA)
             ui->comboBox_raster->addItem(QString::fromStdString(s));
-    }
+    }*/
 
     std::string nameofrasterdata = this->m->getParameterAsString("NameOfRasterData");
     if (!nameofrasterdata.empty()) {
         int index = ui->comboBox_raster->findText(QString::fromStdString(nameofrasterdata));
         ui->comboBox_raster->setCurrentIndex(index);
     }
-
+	/*
     foreach (std::string s, sys_in) {
         if (sys->getViewDefinition(s)->getType() == DM::FACE)
             ui->comboBox_faces->addItem(QString::fromStdString(s));
 
         if (sys->getViewDefinition(s)->getType() == DM::NODE)
             ui->comboBox_faces->addItem(QString::fromStdString(s));
-    }
+    }*/
 
     std::string NameOfExistingView = this->m->getParameterAsString("NameOfExistingView");
     if (!NameOfExistingView.empty()) {
