@@ -220,8 +220,10 @@ public:
     System* createSuccessor();
     /** @brief Adds a new view to the system. At the moment always returns true */
     bool addView(DM::View view);
-    /** @brief return a vector of the names of the views avalible in the system */
-    std::vector<std::string> getNamesOfViews();
+    /** @brief return a vector of the names of the views avalible in the system 
+	deactivated as it is only used for checking views in stream - use getViewsInStream instead
+	*/
+    //std::vector<std::string> getNamesOfViews();
     /** @brief return a vector of views avalible in the system */
     const std::vector<DM::View> getViews();
     /** @brief Retruns View */
