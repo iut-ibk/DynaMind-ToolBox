@@ -45,6 +45,7 @@ AttributeCalculator::AttributeCalculator()
 
     sys_in = 0;
     mp_counter = 0;
+
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addData("Data", data);
@@ -54,8 +55,8 @@ void AttributeCalculator::init()
 {
     //this->sys_in = this->getData("Data");
 
-    if (!this->sys_in)
-        return;
+    //if (!this->sys_in)
+    //    return;
     if (nameOfBaseView.empty())
         return;
     if (nameOfNewAttribute.empty())
@@ -130,7 +131,8 @@ void AttributeCalculator::init()
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
+void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, DM::System* sys_in,
+											  Component *currentcmp, std::string name ) 
 {
     QStringList viewNameList = QString::fromStdString(name).split(".");
     //Remove First Element, is already what comes with currentcmp
@@ -141,15 +143,15 @@ void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaibl
     if (attr->getType() == Attribute::LINK)
     {
         std::string newSearchName = viewNameList.join(".").toStdString();
-        foreach (LinkAttribute l, attr->getLinks())
-        {
-            Component * nextcmp = this->sys_in->getComponent(l.uuid);
-            if(!nextcmp)
-            {
+        foreach (LinkAttribute l, attr->getLinks()) 
+		{
+            Component * nextcmp = sys_in->getComponent(l.uuid);
+            if(!nextcmp)  
+			{
                 Logger(Error) << "Linked Element does not exist";
                 return;
             }
-            this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
+            this->getLinkedAttribute(varaible_container, sys_in, nextcmp, newSearchName);
         }
     }
 
@@ -207,6 +209,7 @@ void AttributeCalculator::run() {
     foreach (std::string variable, varaibleNames)
     {
         mup::Value * d = new mup::Value(0.0);
+
         doubleVariables[variable] = d;
         p->DefineVar(variable, d);
 
@@ -243,6 +246,7 @@ void AttributeCalculator::run() {
             //All attributes are stored in one container that is evaluated Later.
             std::vector< mup::Value> variable_container;
             //Can be later replaced by a function
+
             getLinkedAttribute(&variable_container, cmp, it->first);
 
             double val = 0;
