@@ -348,6 +348,9 @@ bool Simulation::checkStream()
 
 void Simulation::run()
 {
+	canceled = false;
+	finished = false;
+
 	QElapsedTimer simtimer;
 	simtimer.start();
 
@@ -367,7 +370,7 @@ void Simulation::run()
 			worklist.push(m);
 	
 	// run modules
-	while(worklist.size())
+	while(worklist.size() && !canceled)
 	{
 		// get first element
 		Module* m = worklist.front();
@@ -399,14 +402,23 @@ void Simulation::run()
 			foreach(Module* m, nextModules)
 				worklist.push(m);
 	}
-	Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
+	if(canceled)
+		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
+	else
+		Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
+
 	finished = true;
 }
 
 void Simulation::decoupledRun()
 {
-	finished = false;
 	QFuture<void> r = QtConcurrent::run(this, &Simulation::run);
+}
+
+void Simulation::cancel()
+{
+	canceled = true;
+	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
