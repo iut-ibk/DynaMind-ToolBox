@@ -5,6 +5,8 @@
 #include <dm.h>
 #include <algorithm>
 
+typedef std::map<std::string, DM::View> view_map;
+
 GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIAddDatatoNewView)
@@ -12,15 +14,15 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     this->m = (AddDataToNewView*) m;
     ui->setupUi(this);
     DM::System * sys = this->m->getSystemIn();
-    std::vector<std::string> sys_in;
-    if (sys != 0)
-        sys_in = sys->getNamesOfViews();
+    //std::vector<std::string> sys_in;
+    //if (sys != 0)
+    //    sys_in = sys->getNamesOfViews();
+	view_map views = m->getViewsInStream()[0];
 
     ui->comboBox_views->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("NameOfNewView")));
-    foreach (std::string s, sys_in) {
-        ui->comboBox_views->addItem(QString::fromStdString(s));
-    }
+	for(view_map::iterator it = views.begin(); it != views.end(); ++it)
+		ui->comboBox_views->addItem(QString::fromStdString(it->first));
 
     ui->checkBox_onlySelected->setChecked(m->getParameter<bool>("onlySelected"));
 
@@ -67,15 +69,18 @@ void GUIAddDatatoNewView::accept() {
     this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
 
     DM::System * sys = this->m->getSystemIn();
-    std::vector<std::string> sys_in;
+    /*std::vector<std::string> sys_in;
     if (sys == 0) {
         QDialog::accept();
         return;
     }
     if (sys != 0)
-        sys_in = sys->getNamesOfViews();
+        sys_in = sys->getNamesOfViews();*/
 
-    if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
+	std::map<std::string, DM::View> views = m->getViewsInStream()[0];
+
+    //if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
+	if(views.find(nameofExistingView) == views.end()
             || (nameofExistingView.compare("Connect Inport") == 0 ) ) {
         QDialog::accept();
         return;

@@ -95,18 +95,22 @@ GUIAttributeCalculator::~GUIAttributeCalculator()
     delete ui;
 }
 
-void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname) {
+void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname) 
+{
 
-    std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
-    foreach (std::string vn, views) {
-        DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
-        if (v->getName().compare("dummy") == 0)
+   // std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
+    //foreach (std::string vn, views) {
+    //    DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
+
+	mforeach(DM::View v, attrcalc->getViewsInStream()[0])
+	{
+        if (v.getName().compare("dummy") == 0)
             continue;
-        if (v->getName().compare(viewname) != 0)
+        if (v.getName().compare(viewname) != 0)
             continue;
 
-        DM::Component * c = this->attrcalc->getSystemIn()->getComponent(v->getIdOfDummyComponent());
-        if (c == 0) {
+        //DM::Component * c = this->attrcalc->getSystemIn()->getComponent(v->getIdOfDummyComponent());
+        if (v.getAllAttributes().size() == 0) {
             continue;
         }
         //Check if View has already a parent with the same name
@@ -117,17 +121,18 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
                 return;
             parent  = parent->parent();
         }
-        std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
-        for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
-            DM::Logger(DM::Debug) << it->first;
-            Attribute * attr = it->second;
+		foreach(std::string s, v.getAllAttributes())
+		{
+        //std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
+        //for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
+        //    DM::Logger(DM::Debug) << it->first;
+        //    Attribute * attr = it->second;
             QTreeWidgetItem * item_attribute = new QTreeWidgetItem();            
 
-
-            item_attribute->setText(0, QString::fromStdString(it->first));
+            item_attribute->setText(0, QString::fromStdString(s));
             root_port->addChild(item_attribute);
-            if (attr->getType() == Attribute::LINK) {
-                createTreeViewEntries(item_attribute,attr->getLink().viewname);
+			if (v.getAttributeType(s) == Attribute::LINK) {
+				createTreeViewEntries(item_attribute, v.getNameOfLinkedView(s));
             }
         }
 
@@ -137,27 +142,26 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
 
 void GUIAttributeCalculator::updateAttributeView()
 {
-
-    std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
+    //std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
 
     ui->listAttributes->clear();
     if (viewName.isEmpty())
         return;
-    foreach (std::string v, views) {
-        if (v.compare("dummy") == 0)
+	mforeach(DM::View v, attrcalc->getViewsInStream()[0]) 
+	{
+		std::string strView = v.getName();
+        if (strView.compare("dummy") == 0)
             continue;
-        if (v.compare(viewName.toStdString()) != 0)
+		if (strView.compare(viewName.toStdString()) != 0)
             continue;
         QTreeWidgetItem * headerItem = this->ui->listAttributes->headerItem();
         headerItem->setText(0, "View");
         headerItem->setText(1, "Attribute");
         QTreeWidgetItem * root_port = new QTreeWidgetItem();
         this->ui->listAttributes->addTopLevelItem(root_port);
-        root_port->setText(0, QString::fromStdString(v));
-        this->createTreeViewEntries(root_port, v);
-
+        root_port->setText(0, QString::fromStdString(strView));
+        this->createTreeViewEntries(root_port, strView);
     }
-
 }
 
 void GUIAttributeCalculator::on_addButton_clicked() {

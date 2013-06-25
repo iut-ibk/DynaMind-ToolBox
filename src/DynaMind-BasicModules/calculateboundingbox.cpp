@@ -58,10 +58,10 @@ void CalculateBoundingBox::init() {
     city = this->getData("Data");
     if (city == 0)
         return;
-    std::vector<std::string> views = city->getNamesOfViews();
+    /*std::vector<std::string> views = city->getNamesOfViews();
 
     foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;
+        DM::Logger(DM::Debug) << s;*/
 
     if (this->NameOfExistingView.empty())
         return;

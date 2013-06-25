@@ -10,15 +10,15 @@ GUICalculateCentroid::GUICalculateCentroid(DM::Module *m, QWidget *parent) :
     ui->setupUi(this);
     this->m = (CalculateCentroid*) m;
 
-    DM::System * sys = this->m->getSystemIn();
+    /*DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys != 0)
         sys_in = sys->getNamesOfViews();
 
     ui->comboBox_views->clear();
-    foreach (std::string s, sys_in) {
-        ui->comboBox_views->addItem(QString::fromStdString(s));
-    }
+    foreach (std::string s, sys_in) {*/
+	mforeach(DM::View v, m->getViewsInStream()[0])
+		ui->comboBox_views->addItem(QString::fromStdString(v.getName()));
 
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
     if (!nameofexview.empty()) {

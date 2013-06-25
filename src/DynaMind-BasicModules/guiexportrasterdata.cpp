@@ -13,15 +13,17 @@ GUIExportRasterData::GUIExportRasterData(DM::Module *m, QWidget *parent) :
     ui->setupUi(this);
 
     DM::System * sys = this->m->getSystemIn();
-    std::vector<std::string> sys_in;
-    if (sys != 0)
-        sys_in = sys->getNamesOfViews();
+    //std::vector<std::string> sys_in;
+    //if (sys != 0)
+    //    sys_in = sys->getNamesOfViews();
 
     ui->comboBox->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("FileName")));
-    foreach (std::string s, sys_in) {
-        if (sys->getViewDefinition(s)->getType() == DM::RASTERDATA)
-            ui->comboBox->addItem(QString::fromStdString(s));
+    //foreach (std::string s, sys_in) {
+	mforeach(DM::View v, m->getViewsInStream()[0])
+	{
+		if (v.getType() == DM::RASTERDATA)
+			ui->comboBox->addItem(QString::fromStdString(v.getName()));
     }
 
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
@@ -48,18 +50,20 @@ void GUIExportRasterData::accept() {
         QDialog::accept();
         return;
     }
-    DM::System * sys = this->m->getSystemIn();
+    /*DM::System * sys = this->m->getSystemIn();
     std::vector<std::string> sys_in;
     if (sys == 0) {
         QDialog::accept();
         return;
-    }
+    }*/
     std::string nameofExistingView = ui->comboBox->currentText().toStdString();
+	
+	std::map<std::string, DM::View> views = m->getViewsInStream()[0];
+    //if (sys != 0)
+    //    sys_in = sys->getNamesOfViews();
 
-    if (sys != 0)
-        sys_in = sys->getNamesOfViews();
-
-    if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
+    //if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
+	if(views.find(nameofExistingView) == views.end()
             || (nameofExistingView.compare("Connect Inport") == 0 ) ) {
         QDialog::accept();
         return;
