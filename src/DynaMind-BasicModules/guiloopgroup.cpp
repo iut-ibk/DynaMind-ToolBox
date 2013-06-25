@@ -103,6 +103,7 @@ void GUILoopGroup::accept()
 {
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
+	m->update();
 }
 */
 
