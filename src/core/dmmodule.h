@@ -281,9 +281,9 @@ public:
     /** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 	/** @brief sets an individual input dialog for the module */
-	void setGUI(QWidget *w);
+	//void setGUI(QWidget *w);
 	/** @brief returns the module gui, if provided. else returns NULL */
-	QWidget* getGUI();
+	//QWidget* getGUI();
 	
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() {return accessedViews;};
 	std::map<std::string, std::map<std::string,View> > getViewsInStream() {return streamViews;};
@@ -356,6 +356,13 @@ public:
 	
 	/** @brief get data from outport; public for ModelNode::viewData */
 	System* getOutPortData(const std::string &name);
+    /** @brief Returns if the module comes with its own GUI.
+      *
+      * The default value is false. If you develop your own GUI for the module the GUI is
+      * overwrite this method in the module implementation, call the GUI within the method
+      * an return true.
+      */
+    virtual bool createInputDialog(){return false;}
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -377,7 +384,7 @@ private:
 	/** @brief get data from inport */
 	System* getInPortData(const std::string &name);
 
-	QWidget* gui;
+	//QWidget* gui;
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
 

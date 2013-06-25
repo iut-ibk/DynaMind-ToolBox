@@ -57,7 +57,7 @@ namespace DM {
 Module::Module()
 {
 	status = MOD_UNTOUCHED;
-	gui = NULL;
+	//gui = NULL;
 }
 Module::~Module()
 {
@@ -77,8 +77,8 @@ Module::~Module()
 			delete indata;
 	}
 
-	if(gui)
-		delete gui;
+	//if(gui)
+	//	delete gui;
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {
@@ -310,7 +310,7 @@ void Module::reset()
 		}
 	}
 }
-
+/*
 void Module::setGUI(QWidget *w)
 {
 	if(gui)
@@ -324,7 +324,7 @@ void Module::setGUI(QWidget *w)
 QWidget* Module::getGUI()
 {
 	return gui;
-}
+}*/
 
 
 #ifdef OLD_WF
