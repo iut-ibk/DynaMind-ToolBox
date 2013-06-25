@@ -24,7 +24,7 @@
  *
  */
 
-#ifdef SIMENV_GROUP
+//#ifdef SIMENV_GROUP
 
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
@@ -98,9 +98,10 @@ void GUILoopGroup::on_rmOutport_clicked()
     delete this->ui->listWidget_out->currentItem();
 }
 
-void GUILoopGroup::accept() {
+void GUILoopGroup::accept() 
+{
     this->m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
     QDialog::accept();
 }
 
-#endif //SIMENV_GROUP
+//#endif //SIMENV_GROUP
