@@ -20,7 +20,7 @@ GUIExportRasterData::GUIExportRasterData(DM::Module *m, QWidget *parent) :
     ui->comboBox->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("FileName")));
     //foreach (std::string s, sys_in) {
-	mforeach(DM::View v, m->getViewsInStream()[0])
+	mforeach(DM::View v, m->getViewsInStdStream())
 	{
 		if (v.getType() == DM::RASTERDATA)
 			ui->comboBox->addItem(QString::fromStdString(v.getName()));
@@ -58,7 +58,7 @@ void GUIExportRasterData::accept() {
     }*/
     std::string nameofExistingView = ui->comboBox->currentText().toStdString();
 	
-	std::map<std::string, DM::View> views = m->getViewsInStream()[0];
+	std::map<std::string, DM::View> views = m->getViewsInStdStream();
     //if (sys != 0)
     //    sys_in = sys->getNamesOfViews();
 

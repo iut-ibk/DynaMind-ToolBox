@@ -17,7 +17,7 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
     //std::vector<std::string> sys_in;
     //if (sys != 0)
     //    sys_in = sys->getNamesOfViews();
-	view_map views = m->getViewsInStream()[0];
+	view_map views = m->getViewsInStdStream();
 
     ui->comboBox_views->clear();
     ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("NameOfNewView")));
@@ -77,7 +77,7 @@ void GUIAddDatatoNewView::accept() {
     if (sys != 0)
         sys_in = sys->getNamesOfViews();*/
 
-	std::map<std::string, DM::View> views = m->getViewsInStream()[0];
+	std::map<std::string, DM::View> views = m->getViewsInStdStream();
 
     //if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
 	if(views.find(nameofExistingView) == views.end()

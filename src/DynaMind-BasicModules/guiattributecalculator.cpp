@@ -102,7 +102,7 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
     //foreach (std::string vn, views) {
     //    DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
 
-	mforeach(DM::View v, attrcalc->getViewsInStream()[0])
+	mforeach(DM::View v, attrcalc->getViewsInStdStream())
 	{
         if (v.getName().compare("dummy") == 0)
             continue;
@@ -147,7 +147,7 @@ void GUIAttributeCalculator::updateAttributeView()
     ui->listAttributes->clear();
     if (viewName.isEmpty())
         return;
-	mforeach(DM::View v, attrcalc->getViewsInStream()[0]) 
+	mforeach(DM::View v, attrcalc->getViewsInStdStream()) 
 	{
 		std::string strView = v.getName();
         if (strView.compare("dummy") == 0)

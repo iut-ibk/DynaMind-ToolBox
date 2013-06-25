@@ -19,7 +19,7 @@ GUIClearView::GUIClearView(DM::Module *m, QWidget *parent) :
     foreach (std::string s, sys_in) {
         ui->comboBox->addItem(QString::fromStdString(s));
     }*/
-	mforeach(DM::View v, m->getViewsInStream()[0])
+	mforeach(DM::View v, m->getViewsInStdStream())
 		ui->comboBox->addItem(QString::fromStdString(v.getName()));
 
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
@@ -53,7 +53,7 @@ void GUIClearView::accept()
     }*/
     std::string nameofExistingView = ui->comboBox->currentText().toStdString();
 
-	std::map<std::string, DM::View> views = m->getViewsInStream()[0];
+	std::map<std::string, DM::View> views = m->getViewsInStdStream();
     /*if (sys != 0)
         sys_in = sys->getNamesOfViews();
 

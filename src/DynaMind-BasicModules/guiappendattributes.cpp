@@ -10,7 +10,7 @@ GUIAppendAttributes::GUIAppendAttributes(DM::Module *m, QWidget *parent) :
     ui->setupUi(this);
     DM::System * sys = this->m->getSystemIn();
 
-	mforeach(DM::View v, m->getViewsInStream()[0])
+	mforeach(DM::View v, m->getViewsInStdStream())
 	{
 		switch (v.getType())
 		{
