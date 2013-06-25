@@ -140,11 +140,11 @@ void View::setAttributeType(std::string name, Attribute::AttributeType type)
     this->attributeTypes[name] = type;
 }
 
-void View::addLinks(string name, View linkto)
+void View::addLinks(string name, std::string linkedViewName)
 {
     this->addAttribute(name);
     this->setAttributeType(name, Attribute::LINK);
-    this->attributeLinks[name] = linkto.getName();
+    this->attributeLinks[name] = linkedViewName;
 }
 
 std::vector<std::string> View::getNamesOfLinks()
