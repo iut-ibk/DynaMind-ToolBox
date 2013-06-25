@@ -43,7 +43,7 @@ AttributeCalculator::AttributeCalculator()
     this->asVector = false;
     this->addParameter("asVector", DM::BOOL, & this->asVector);
 
-    sys_in = 0;
+    //sys_in = 0;
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addData("Data", data);
@@ -53,8 +53,8 @@ void AttributeCalculator::init()
 {
     //this->sys_in = this->getData("Data");
 
-    if (!this->sys_in)
-        return;
+    //if (!this->sys_in)
+    //    return;
     if (nameOfBaseView.empty())
         return;
     if (nameOfNewAttribute.empty())
@@ -129,7 +129,8 @@ void AttributeCalculator::init()
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, Component *currentcmp, std::string name ) 
+void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, DM::System* sys_in,
+											  Component *currentcmp, std::string name ) 
 {
     QStringList viewNameList = QString::fromStdString(name).split(".");
     //Remove First Element, is already what comes with currentcmp
@@ -142,13 +143,13 @@ void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_con
         std::string newSearchName = viewNameList.join(".").toStdString();
         foreach (LinkAttribute l, attr->getLinks()) 
 		{
-            Component * nextcmp = this->sys_in->getComponent(l.uuid);
+            Component * nextcmp = sys_in->getComponent(l.uuid);
             if(!nextcmp)  
 			{
                 Logger(Error) << "Linked Element does not exist";
                 return;
             }
-            this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
+            this->getLinkedAttribute(varaible_container, sys_in, nextcmp, newSearchName);
         }
     }
 
@@ -158,7 +159,7 @@ void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_con
 
 void AttributeCalculator::run() {
 
-    this->sys_in = this->getData("Data");
+    DM::System * sys_in = this->getData("Data");
     std::map<std::string, double * > doubleVariables;
     mu::Parser * p  = new mu::Parser();
     foreach (std::string variable, varaibleNames) 
@@ -198,7 +199,7 @@ void AttributeCalculator::run() {
             //All attributes are stored in one container that is evaluated Later.
 			std::vector<double> variable_container;
             //Can be later replaced by a function
-            getLinkedAttribute(&variable_container, cmp, it->first);
+            getLinkedAttribute(&variable_container, sys_in, cmp, it->first);
 			
             double val = 0;
             double nov = 0;

@@ -52,17 +52,23 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
     ui->lineEditAttribute->setText(QString::fromStdString( this->attrcalc->getParameterAsString("nameOfNewAttribute")));
 
-    if (!this->attrcalc->getSystemIn())
-        return;
-    std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
-    foreach (DM::View v, views) {
+
+	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
+
+    //if (!this->attrcalc->getSystemIn())
+    //    return;
+    //std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
+    //foreach (DM::View v, views) {
+	mforeach(DM::View v, views)
         ui->comboView->addItem(QString::fromStdString(v.getName()));
-    }
-    if (views.size() > 0) {
+
+    if (views.size() > 0) 
+	{
         std::string n = this->attrcalc->getParameterAsString("NameOfBaseView");
-        if (n.empty()) {
-            viewName =QString::fromStdString(views[0].getName());
-        } else {
+        if (n.empty())
+			viewName = QString::fromStdString(views.begin()->second.getName());
+        else 
+		{
             int index = ui->comboView->findText(QString::fromStdString(n));
             if (index != -1) {
                 ui->comboView->setCurrentIndex(index);
@@ -75,8 +81,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     //CreateVaraibles List
     std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
 
-    for (std::map<std::string, std::string>::iterator it = variables.begin(); it != variables.end(); ++it) {
-
+    for (std::map<std::string, std::string>::iterator it = variables.begin(); it != variables.end(); ++it) 
+	{
         ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
         QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(it->first));
         ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,0, item);
