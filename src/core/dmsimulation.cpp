@@ -348,13 +348,17 @@ bool Simulation::checkStream()
 
 void Simulation::run()
 {
+	QElapsedTimer simtimer;
+	simtimer.start();
+
 	Logger(Standard) << ">> checking simulation";
 	if(!checkStream())
 	{
 		Logger(Error) << ">> checking simulation failed";
 		return;
 	}
-	Logger(Standard) << ">> checking simulation succeeded";
+	Logger(Standard) << ">> checking simulation succeeded (took " << (long)simtimer.elapsed() << "ms)";
+	simtimer.restart();
 	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
 	std::queue<Module*> worklist;
@@ -369,8 +373,10 @@ void Simulation::run()
 		Module* m = worklist.front();
 		worklist.pop();
 		// execute module
-		Logger(Standard) << "running module " << m->getName();
-
+		Logger(Standard) << "running module '" << m->getName() << "'";
+		
+		QElapsedTimer modTimer;
+		modTimer.start();
 		QFuture<void> r = QtConcurrent::run(m, &Module::run);
 		r.waitForFinished();
 
@@ -379,10 +385,13 @@ void Simulation::run()
 		ModuleStatus merr = m->getStatus();
 		if(m->getStatus() == MOD_EXECUTIONERROR)
 		{
-			Logger(Error) << "module " << m->getName() << " failed";
+			Logger(Error) << "module '" << m->getName() << "' failed (took " << (long)modTimer.elapsed() << "ms)";
 			this->status = DM::SIM_FAILED;
 			return;
 		}
+		else
+			Logger(Standard) << "module '" << m->getName() << "' executed successfully (took " << (long)modTimer.elapsed() << "ms)";
+
 		m->setStatus(MOD_OK);
 		// shift data from out port to next inport
 		std::list<Module*> nextModules = shiftModuleOutput(m);
@@ -390,7 +399,7 @@ void Simulation::run()
 			foreach(Module* m, nextModules)
 				worklist.push(m);
 	}
-	Logger(Standard) << ">> finished simulation";
+	Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
 	finished = true;
 }
 
