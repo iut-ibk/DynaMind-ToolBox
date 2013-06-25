@@ -217,6 +217,22 @@ RasterData* Module::getRasterData(std::string name, View view)
 	return getData(name)->addRasterData(new RasterData());
 }
 
+std::map<std::string, std::map<std::string,View> > Module::getAccessedViews() const
+{
+	return accessedViews;
+}
+std::map<std::string, std::map<std::string,View> > Module::getViewsInStream() const
+{
+	return streamViews;
+}
+std::map<std::string,View> Module::getViewsInStdStream()
+{
+	if(streamViews.size() > 0)
+		return (streamViews.begin())->second;
+	else
+		return std::map<std::string,View>();
+}
+
 /*void Module::updateParameters()
 {
 	init();

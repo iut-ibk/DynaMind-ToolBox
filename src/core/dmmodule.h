@@ -285,8 +285,9 @@ public:
 	/** @brief returns the module gui, if provided. else returns NULL */
 	//QWidget* getGUI();
 	
-	std::map<std::string, std::map<std::string,View> > getAccessedViews() {return accessedViews;};
-	std::map<std::string, std::map<std::string,View> > getViewsInStream() {return streamViews;};
+	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
+	std::map<std::string, std::map<std::string,View> > getViewsInStream() const;
+	std::map<std::string,View> getViewsInStdStream();
 	System* getData(const std::string& streamName);
 
 	/** @brief checks if port exists */
