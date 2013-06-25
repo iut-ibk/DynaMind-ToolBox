@@ -92,9 +92,13 @@ void Module::setObserver(ModuleObserver* obs)
 {
 	observer = obs;
 }
-void Module::removeObserver()
+void Module::deleteObserver()
 {
-	observer = NULL;
+	if(observer)
+	{
+		delete observer;
+		observer = NULL;
+	}
 }
 void Module::update()
 {

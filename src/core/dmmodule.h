@@ -372,7 +372,7 @@ public:
     virtual bool createInputDialog(){return false;}
 
 	void setObserver(ModuleObserver* obs);
-	void removeObserver();
+	void deleteObserver();
 	void update();
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
