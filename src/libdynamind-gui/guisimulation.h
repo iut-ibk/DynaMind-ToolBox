@@ -57,7 +57,7 @@ public:
     //bool loadModulesFromSettings();
 
 	
-	bool addLink(DM::Module* source, std::string outPort, DM::Module* dest, std::string inPort);
+	bool addLink(DM::Module* source, std::string outPort, DM::Module* dest, std::string inPort, bool checkStream = true);
 
 	//bool addLink(PortNode* out, PortNode* in);
 	bool removeLink(PortNode* out, PortNode* in);

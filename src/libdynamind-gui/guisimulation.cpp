@@ -203,9 +203,9 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 }*/
 
 bool GUISimulation::addLink(DM::Module* source, std::string outPort, 
-							DM::Module* dest, std::string inPort)
+							DM::Module* dest, std::string inPort, bool checkStream)
 {
-	if(!Simulation::addLink(source, outPort, dest, inPort))
+	if(!Simulation::addLink(source, outPort, dest, inPort, checkStream))
 		return false;
 
 	PortNode* inPortNode = getPortNode(dest, inPort, INPORT);

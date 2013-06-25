@@ -66,7 +66,7 @@ QRectF GUILink::boundingRect() const
 
 GUILink::~GUILink() 
 {
-    DM::Logger(DM::Debug) << "Deleting GUILink";
+    //DM::Logger(DM::Debug) << "Deleting GUILink";
 
 	if(outPort && inPort)
 	{
