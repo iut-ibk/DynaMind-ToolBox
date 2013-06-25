@@ -309,6 +309,8 @@ std::vector<std::string> Module::getOutPortNames()
 
 void Module::reset()
 {
+	streamViews.clear();
+
 	for(std::map<std::string, System*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
 	{
 		if(it->second)

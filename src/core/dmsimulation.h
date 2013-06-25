@@ -135,7 +135,7 @@ public:
 	/** @brief registers all acceptable modules in the provided directory*/
 	void registerModulesFromDirectory(const QDir& dir);
 	/** @brief connects to ports via a link */
-	virtual bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort);
+	virtual bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream = true);
     /** @brief removes a link */
 	bool removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
     /** @brief starts the entire simulation */
@@ -171,6 +171,8 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
+
+	Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
 	
 	/** @brief checks the stream for possible missing views */
 	bool checkStream();

@@ -193,7 +193,7 @@ void Simulation::registerModulesFromDefaultLocation()
 		registerModulesFromDirectory(cp);
 }
 
-bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort)
+bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream)
 {
 	if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
 	{
@@ -216,7 +216,16 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	l->dest = dest;
 	l->inPort = inPort;
 	links.push_back(l);
-    Logger(Debug) << "Added link from port " << outPort << "to" << inPort;
+	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
+							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
+
+	if(checkStream)
+	{
+		if(checkModuleStream(l->dest, l->inPort))
+			Logger(Debug) << "checking stream successfull";
+		else
+			Logger(Warning) << "stream incomplete" ;
+	}
 	return true;
 }
 bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
@@ -229,6 +238,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 			l->dest == dest && 
 			l->inPort == inPort)
 		{
+			l->dest->reset();
 			toDelete = l;
 			break;
 		}
@@ -241,15 +251,44 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	}
 	return false;
 }
+Module* Simulation::getFormerModule(Module* m, std::string inPort, std::string& outPort)
+{
+	foreach(Link* l, links)
+	{
+		if(	l->dest == m && 
+			l->inPort == inPort)
+		{
+			outPort = l->outPort;
+			return l->src;
+		}
+	}
+	return NULL;
+}
 
 bool Simulation::checkModuleStream(Module* m, std::string streamName)
 {
+	bool success = true;
+
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
+	// check if we are in the middle of an unchecked stream
+	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
+	{
+		foreach(std::string inPort, m->getInPortNames())
+		{
+			std::string outPort;
+			if(Module* src = getFormerModule(m, inPort, outPort))
+				if(checkModuleStream(src, outPort))
+					continue;
+
+			success = false;
+		}
+		// this module is checked in the above recursivly called checkModuleStream
+		return success;	
+	}
 	// update stream view info in module
 	std::map<std::string,View> updatedStream = *curStreamViews;
 	//*streamViews = formerViews;
 
-	bool success = true;
 	
 	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 	m->init();
@@ -533,7 +572,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 			DM::Logger(Error) << "corrupt link";
 		else
 		{
-			if(!addLink(src, outPort, dest, inPort))
+			if(!addLink(src, outPort, dest, inPort, false))
 				DM::Logger(Error) << "could not establish link between "
 				<< src->getClassName() << ":" << outPort << " and "
 				<< dest->getClassName() << ":" << inPort;
