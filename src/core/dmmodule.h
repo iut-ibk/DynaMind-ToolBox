@@ -283,6 +283,11 @@ public:
 	/** @brief sets an individual input dialog for the module */
 	void setGUI(QWidget *w)
 	{
+		if(gui)
+		{
+			DM::Logger(Warning) << "overwriting existing GUI";
+			delete gui;
+		}
 		gui = w;
 	}
 	/** @brief returns the module gui, if provided. else returns NULL */
