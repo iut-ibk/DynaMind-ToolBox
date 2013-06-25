@@ -195,6 +195,12 @@ enum ModuleStatus
 	MOD_CHECKERROR,
 };
 
+class ModuleObserver
+{
+public:
+	virtual void update() = 0;
+};
+
 class DM_HELPER_DLL_EXPORT Module
 {
 	friend Simulation;
@@ -364,6 +370,10 @@ public:
       * an return true.
       */
     virtual bool createInputDialog(){return false;}
+
+	void setObserver(ModuleObserver* obs);
+	void removeObserver();
+	void update();
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addInPort(const std::string &name);
@@ -378,6 +388,7 @@ protected:
 	// deprecated
 	RasterData* getRasterData(std::string name, View view);
 private:
+	ModuleObserver* observer;
 	/** @brief calls the init function if parameters have changed */
 	//void updateParameters();
 	/** @brief */

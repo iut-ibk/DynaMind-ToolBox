@@ -57,6 +57,7 @@ namespace DM {
 Module::Module()
 {
 	status = MOD_UNTOUCHED;
+	observer = NULL;
 	//gui = NULL;
 }
 Module::~Module()
@@ -86,6 +87,21 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 	p->data = ref;
 	parameters.push_back(p);
 }
+
+void Module::setObserver(ModuleObserver* obs)
+{
+	observer = obs;
+}
+void Module::removeObserver()
+{
+	observer = NULL;
+}
+void Module::update()
+{
+	if(observer)
+		observer->update();
+}
+
 
 void Module::addInPort(const std::string &name)
 {
