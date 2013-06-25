@@ -52,6 +52,19 @@ class GUISimulation;
 
 enum PortType;
 
+class ModelNode;
+
+class GUIModelObserver: public DM::ModuleObserver
+{
+	ModelNode* node;
+public:
+	GUIModelObserver(ModelNode* node):
+		node(node)
+	{};
+
+	void update();
+};
+
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
 {
     Q_OBJECT

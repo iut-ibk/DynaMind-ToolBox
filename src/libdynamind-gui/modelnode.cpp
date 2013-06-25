@@ -41,6 +41,11 @@
 #include <dmsystem.h>
 #include <dmviewerwindow.h>
 
+void GUIModelObserver::update()
+{
+	node->updatePorts();
+}
+
 /*
 std::string ModelNode::getParameterAsString(std::string name) {
 	
@@ -199,6 +204,7 @@ DM::Module * ModelNode::getDMModel() {
 
 ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 {
+	m->setObserver(new GUIModelObserver(this));
 	/*
     //this->guiPortObserver.setModelNode(this);
     this->minimized = false;
@@ -329,6 +335,7 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 ModelNode::~ModelNode() 
 {
+	module->deleteObserver();
 	this->simulation->removeModule(module);
     /*DM::Module * m = this->getDMModel();
 
