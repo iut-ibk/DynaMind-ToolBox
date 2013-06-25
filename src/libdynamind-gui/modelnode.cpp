@@ -371,7 +371,7 @@ void ModelNode::showDialog()
 {
     if(this->visible)
 	{
-		QWidget *w = module->getInputDialog();
+		QWidget *w = module->getGUI();
         if(w)
 			w->show();
 		else
@@ -423,7 +423,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
 
-	if(module->getInputDialog())
+	if(module->getGUI())
 	{
 		QAction * a_showDialog = menu.addAction("module GUI");
 		connect( a_showDialog, SIGNAL(triggered() ), this, SLOT( showDialog() ), Qt::DirectConnection);
