@@ -480,11 +480,11 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
 void ModelNode::editModelNode() 
 {
-	 if(this->visible)
+	if(this->visible)
 	{
 		if(!module->createInputDialog())
 			(new GUIModelNode(module ,this))->show();
-	 }
+	}
 }
 /*
 void ModelNode::renameModelNode() {
