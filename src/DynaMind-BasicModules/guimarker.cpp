@@ -50,7 +50,7 @@ GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
         ui->comboBox->addItem(QString::fromStdString(s));
     }*/
 	
-	mforeach(DM::View v, m->getViewsInStream()[0])
+	mforeach(DM::View v, m->getViewsInStdStream())
 		ui->comboBox->addItem(QString::fromStdString(v.getName()));
 
     std::string nameofexview = this->m->getParameterAsString("Identifier");

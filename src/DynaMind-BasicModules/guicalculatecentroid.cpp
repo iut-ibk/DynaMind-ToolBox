@@ -17,7 +17,7 @@ GUICalculateCentroid::GUICalculateCentroid(DM::Module *m, QWidget *parent) :
 
     ui->comboBox_views->clear();
     foreach (std::string s, sys_in) {*/
-	mforeach(DM::View v, m->getViewsInStream()[0])
+	mforeach(DM::View v, m->getViewsInStdStream())
 		ui->comboBox_views->addItem(QString::fromStdString(v.getName()));
 
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
