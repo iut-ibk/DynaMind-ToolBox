@@ -57,7 +57,7 @@ namespace DM {
 Module::Module()
 {
 	status = MOD_UNTOUCHED;
-	inputDialog = NULL;
+	gui = NULL;
 }
 Module::~Module()
 {
@@ -77,8 +77,8 @@ Module::~Module()
 			delete indata;
 	}
 
-	if(inputDialog)
-		delete inputDialog;
+	if(gui)
+		delete gui;
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {

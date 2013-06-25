@@ -281,14 +281,14 @@ public:
     /** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 	/** @brief sets an individual input dialog for the module */
-	void setInputDialog(QWidget *w)
+	void setGUI(QWidget *w)
 	{
-		inputDialog = w;
+		gui = w;
 	}
 	/** @brief returns the module gui, if provided. else returns NULL */
-	QWidget* getInputDialog()
+	QWidget* getGUI()
 	{
-		return inputDialog;
+		return gui;
 	}
 	
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() {return accessedViews;};
@@ -383,8 +383,7 @@ private:
 	/** @brief get data from inport */
 	System* getInPortData(const std::string &name);
 
-
-	QWidget* inputDialog;
+	QWidget* gui;
 	/** @brief sets inport data - may only by used by DM::Simulation */
 	void setInPortData(const std::string &name, System* data, const Simulation *sim);
 
