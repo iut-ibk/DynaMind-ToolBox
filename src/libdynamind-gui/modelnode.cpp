@@ -362,11 +362,8 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
     }
 	*/
     QGraphicsItem::mouseMoveEvent(event);
-
-
-
 }
-
+/*
 void ModelNode::showDialog()
 {
     if(this->visible)
@@ -377,11 +374,12 @@ void ModelNode::showDialog()
 		else
 			editModelNode();
 	}
-}
+}*/
 
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) 
 {
-    showDialog();
+    //showDialog();
+	editModelNode();
 }
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
     QGraphicsItem::mousePressEvent(event );
@@ -423,11 +421,11 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
 
-	if(module->getGUI())
+	/*if(module->getGUI())
 	{
 		QAction * a_showDialog = menu.addAction("module GUI");
 		connect( a_showDialog, SIGNAL(triggered() ), this, SLOT( showDialog() ), Qt::DirectConnection);
-	}
+	}*/
 	
     menu.exec(event->screenPos());
 
@@ -482,7 +480,11 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
 void ModelNode::editModelNode() 
 {
-	(new GUIModelNode(module ,this))->show();
+	 if(this->visible)
+	{
+		if(!module->createInputDialog())
+			(new GUIModelNode(module ,this))->show();
+	 }
 }
 /*
 void ModelNode::renameModelNode() {

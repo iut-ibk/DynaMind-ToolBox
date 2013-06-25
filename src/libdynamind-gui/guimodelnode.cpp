@@ -230,8 +230,8 @@ void GUIModelNode::help() {
     helpWindow->show();
 }
 
-GUIModelNode::~GUIModelNode() {
-
+GUIModelNode::~GUIModelNode() 
+{
 }
 
 void GUIModelNode::addTuplePort() {
