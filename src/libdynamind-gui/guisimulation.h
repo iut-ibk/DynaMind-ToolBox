@@ -38,6 +38,7 @@ class PortNode;
 //class GroupNode;
 //class GUILink;
 class SimulationTab;
+class QTabWidget;
 
 enum PortType;
 
@@ -45,8 +46,9 @@ class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObj
 {
     //Q_OBJECT
 public:
-    GUISimulation();
-    void registerRootNode();
+    GUISimulation(QWidget * parent, QTabWidget* tabWidget);
+
+    //void registerRootNode();
     //GroupNode * getGroupNode(DM::Group * g);
     //void changeGroupName(GroupNode*);
     void clearSimulation();
@@ -70,11 +72,12 @@ public:
 	//ModelNode* guiAddModule(QString moduleName);
 
 
-	SimulationTab* rootTab;
-	/*SimulationTab* addTab(QWidget *parent);
-	void closeTab(int i);
-	SimulationTab* getTab(int i);	// 0 = root*/
-
+	//SimulationTab* rootTab;
+	SimulationTab* addTab(QString name);
+	void closeTab(int index);
+	SimulationTab* getTab(int index);	// 0 = root*/
+	SimulationTab* getSelectedTab();
+	void SelectTab(int index);
 	
     /** @brief adds a simulation saved in a file to the current simulation 
 				for gui we load the positions of the modules too */
@@ -90,9 +93,12 @@ private:
 	std::map<DM::Module*, ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
-	//QList<SimulationTab*> tabs;
-	
+	SimulationTab* selectedTab;
+	QList<SimulationTab*> tabs;
+	QTabWidget* tabWidget;
+
 	PortNode* getPortNode(DM::Module* m, std::string portName, PortType type);
+	QWidget * parent;
 signals:
     //void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);

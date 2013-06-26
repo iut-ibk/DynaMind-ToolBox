@@ -37,15 +37,20 @@
 #include <simulationio.h>
 
 #include <dmgroup.h>
+#include <qtablewidget.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
 #endif
 
-GUISimulation::GUISimulation() : Simulation()
+GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulation()
 {
+	this->parent = parent;
+	this->tabWidget = tabWidget;
 
+	selectedTab = addTab("ROOT");
 }
+
 /*
 void GUISimulation::changeGroupName(GroupNode * g) {
     emit GroupNameChanged(g);
@@ -83,10 +88,11 @@ void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
     this->updateSimulation();
 	
 }*/
-
+/*
 void GUISimulation::registerRootNode() {
-    //this->GUIaddModule(this->getRootGroup(), QPointF(0,0));
+    this->GUIaddModule(this->getRootGroup(), QPointF(0,0));
 }
+*/
 /*
 void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
 {
@@ -121,8 +127,10 @@ void GUISimulation::clearSimulation()
 	Simulation::reset();
 	mforeach(ModelNode* m, modelNodes)
 		m->deleteModelNode();
-
 	modelNodes.clear();
+
+	for(int i = tabs.size()-1; i>=0;i--)
+		closeTab(i);
 
 	clear();
 
@@ -184,7 +192,7 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
-	rootTab->addItem(node);
+	getSelectedTab()->addItem(node);
 	modelNodes[m] = node;
 
 	// group stuff
@@ -192,8 +200,44 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	if(g)
 	{
 		DM::Logger(DM::Debug) << "added group";
+
 	}
 	return m;
+}
+
+SimulationTab* GUISimulation::addTab(QString name)
+{
+	SimulationTab* tab = new SimulationTab(parent, this);
+	tabs.append(tab);
+	tabWidget->addTab((QWidget*)tab->getQGViewer(), name);
+	return tab;
+}
+
+void GUISimulation::closeTab(int index)
+{
+	if(tabs.size() > index)
+	{
+		delete tabs[index];
+		tabs.removeAt(index);
+		tabWidget->removeTab(index);
+	}
+}
+SimulationTab* GUISimulation::getTab(int index)
+{
+	if(tabs.size() > index)
+		return tabs[index];
+	return NULL;
+}
+SimulationTab* GUISimulation::getSelectedTab()
+{
+	return selectedTab;
+}
+
+void GUISimulation::SelectTab(int index)
+{
+	selectedTab = getTab(index);
+	if(!selectedTab)	// safty net, select root
+		selectedTab = getTab(0);
 }
 
 /*bool GUISimulation::addLink(PortNode* out, PortNode* in)

@@ -196,20 +196,20 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     env->addPythonPath(QApplication::applicationDirPath().toStdString());
     env->addOverWriteStdCout();
 
-    this->simulation = new GUISimulation();
+    this->simulation = new GUISimulation(parent, ui->tabWidget_4);
 	
     //connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     //this->simulation->registerRootNode();
     this->simulation->registerModulesFromDefaultLocation();
     this->simulation->registerModulesFromSettings();
     //this->helpviewer = new GUIHelpViewer(this->simulation);
-
+	
 	// init root tab
-	SimulationTab* tab = new SimulationTab(parent, this->simulation);
+	/*SimulationTab* tab = new SimulationTab(parent, this->simulation);
 	tabs.append(tab);
 	ui->tabWidget_4->addTab(tab->getQGViewer(),"Root Tab");
 
-	this->simulation->rootTab = tab;
+	this->simulation->rootTab = tab;*/
 	
 
     //ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
@@ -622,8 +622,8 @@ void DMMainWindow::loadGUILinks(std::map<std::string, std::string> UUID_Translat
 
 DMMainWindow::~DMMainWindow() {
     //delete this->simulation;
-	foreach(SimulationTab *w, tabs)
-		delete w;
+	//foreach(SimulationTab *w, tabs)
+	//	delete w;
 }
 
 void DMMainWindow::on_actionZoomIn_triggered(){

@@ -93,7 +93,7 @@ private:
     //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     //void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 
-	QList<SimulationTab*> tabs;
+	//QList<SimulationTab*> tabs;
 public slots:
     void runSimulation();
     void sceneChanged();
