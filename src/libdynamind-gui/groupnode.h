@@ -23,12 +23,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #ifndef GROUPNODE_H
 #define GROUPNODE_H
 
 #include <modelnode.h>
-#include <moduledescription.h>
+/*#include <moduledescription.h>
 #include "dmcompilersettings.h"
 #include <rootgroupnode.h>
 namespace DM {
@@ -43,13 +43,14 @@ struct LinkNodeTuple;
 struct GUIPortTuple {
     PortNode * inPort;
     PortNode * outPort;
-};
+};*/
 
 class DM_HELPER_DLL_EXPORT  GroupNode : public ModelNode
 {
     Q_OBJECT
 
 private:
+	/*
     QVector<GUIPortTuple * > OutputTuplePorts;
     QVector<GUIPortTuple * > InPortTuplePorts;
 
@@ -59,21 +60,23 @@ private:
     QVector<ModelNode * > childnodes;
     std::string UUID;
     RootGroupNode * rg;
+	*/
 
-
-
+	int w,h;
 public:
-    GroupNode();
+    GroupNode(DM::Module* parent, GUISimulation* sim);
+	/*
     virtual ~GroupNode();
     void addTuplePort(DM::PortTuple * p);
     void removeTuplePort(int Type, QString s);
     GroupNode( DM::Module *module, GUISimulation * s);
      virtual PortNode * getGUIPort(DM::Port * p);
 
-
+	 */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	
     QRectF boundingRect() const;
-    void setSelected ( bool selected );
+    /*void setSelected ( bool selected );
     void RePosTuplePorts();
 
     bool isGroup(){return true;}
@@ -91,8 +94,7 @@ public slots:
     void maximize();
 
 signals:
-  void removeGroupNode(QString UUID);
+  void removeGroupNode(QString UUID);*/
 };
 
 #endif // GROUPNODE_H
-*/

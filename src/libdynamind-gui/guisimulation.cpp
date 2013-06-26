@@ -28,7 +28,7 @@
 //#include <dmmoduleregistry.h>
 #include <modelnode.h>
 #include <guiport.h>
-//#include <groupnode.h>
+#include <groupnode.h>
 #include <rootgroupnode.h>
 //#include <dmlogger.h>
 
@@ -199,8 +199,10 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	DM::Group* g = dynamic_cast<DM::Group*>(m);	// dont forget to check vtable!
 	if(g)
 	{
-		DM::Logger(DM::Debug) << "added group";
-		
+		DM::Logger(DM::Debug) << "added group '" << moduleName << "'";
+		SimulationTab* groupTab = addTab(QString::fromStdString(moduleName));
+		GroupNode* gnode = new GroupNode(m, this);
+		groupTab->addItem(gnode);
 	}
 	return m;
 }

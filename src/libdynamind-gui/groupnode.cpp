@@ -23,11 +23,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include "groupnode.h"
-#include <linknode.h>
-#include <moduledescription.h>
 #include <QGraphicsDropShadowEffect>
+/*#include <linknode.h>
+#include <moduledescription.h>
 #include <modelnodebutton.h>
 #include <ColorPalette.h>
 
@@ -170,10 +170,10 @@ PortNode *  GroupNode::getGUIPort(DM::Port * p) {
 void GroupNode::removeTuplePort(int Type, QString s) {
 
 }
-
+*/
 GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module, s)
 {
-
+	/*
     this->childnodes = QVector<ModelNode*>();
     this->minimized = false;
     this->visible = true;
@@ -190,10 +190,10 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
 
     this->outputCounter = 1;
     this->inputCounter = 1;
-    this->setZValue(-1);
-    this->setGraphicsEffect(new  QGraphicsDropShadowEffect(this));
+    this->setZValue(-1);*/
+    this->setGraphicsEffect(new QGraphicsDropShadowEffect(this));
     //this->setVisible(false);
-
+	/*
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
@@ -209,9 +209,13 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
     Color = COLOR_MODULE;
 
     this->updatePorts();
+	*/
+    this->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
+	w = h = 200;
 }
-
+/*
 void GroupNode::RePosTuplePorts() {
     foreach(PortNode * gui_p, this->ports) {
         if (gui_p->getPortType()  < DM::OUTPORTS) {
@@ -233,10 +237,15 @@ void GroupNode::setSelected(  bool selected ) {
 
 
 }
-
+*/
 void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
-    if (this->visible) {
+    if (this->visible) 
+	{
+		painter->setBrush(Qt::white);
+		painter->drawRect(0, 0, w, h);
+
+		/*
         recalculateLandH();
         if(this->isSelected()== true) {
             painter->setBrush(Qt::gray);
@@ -262,15 +271,17 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             RePosTuplePorts();
             RePosFlag = false;
         }
-
+		*/
+		this->update();
     }
-
+	
 }
+
 QRectF GroupNode::boundingRect() const {
-    return QRect(0, 0, l, h);
+    return QRect(0, 0, w, h);
 
 }
-*/
+
 
 
 
