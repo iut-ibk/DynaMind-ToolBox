@@ -43,6 +43,9 @@ public:
 	{
 	}
 private:
+protected:
+	std::vector<std::string> nameOfInPorts;
+	std::vector<std::string> nameOfOutPorts;
 	//std::vector<Module*> modules;
 	//std::vector<std::string> inports;
 };
