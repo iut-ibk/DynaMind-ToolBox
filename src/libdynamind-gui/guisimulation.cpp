@@ -129,8 +129,8 @@ void GUISimulation::clearSimulation()
 		m->deleteModelNode();
 	modelNodes.clear();
 
-	for(int i = tabs.size()-1; i>=0;i--)
-		closeTab(i);
+	//for(int i = tabs.size()-1; i>=0;i--)
+	//	closeTab(i);
 
 	clear();
 
