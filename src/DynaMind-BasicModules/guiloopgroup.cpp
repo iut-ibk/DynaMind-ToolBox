@@ -42,10 +42,10 @@ GUILoopGroup::GUILoopGroup(LoopGroup * m, QWidget *parent):
 
 	ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("Runs")));
 
-	foreach (std::string s, /*this->m->getParameter<std::vector<std::string > >("nameOfInViews")*/ m->nameOfInViews)
+	foreach (std::string s, m->nameOfInPorts)
 		this->ui->listWidget_in->addItem(QString::fromStdString(s));
 
-	foreach (std::string s, /*this->m->getParameter<std::vector<std::string > >("nameOfOutViews")*/ m->nameOfOutViews)
+	foreach (std::string s, m->nameOfOutPorts)
 		this->ui->listWidget_out->addItem(QString::fromStdString(s));
 }
 
@@ -64,7 +64,7 @@ void GUILoopGroup::on_addInPort_clicked()
 	if (ok && !text.isEmpty())
 	{
 		bool isNew = true; 
-		foreach(std::string s, m->nameOfInViews)
+		foreach(std::string s, m->nameOfInPorts)
 			if(s == text.toStdString())
 				isNew = false;
 
@@ -72,7 +72,7 @@ void GUILoopGroup::on_addInPort_clicked()
 		{
 			this->m->addInPort(text.toStdString());
 			this->ui->listWidget_in->addItem(text);
-			this->m->nameOfInViews.push_back(text.toStdString());
+			this->m->nameOfInPorts.push_back(text.toStdString());
 		}
 	}
 
@@ -88,7 +88,7 @@ void GUILoopGroup::on_addOutPort_clicked()
 	if (ok && !text.isEmpty()) 
 	{
 		bool isNew = true; 
-		foreach(std::string s, m->nameOfOutViews)
+		foreach(std::string s, m->nameOfOutPorts)
 			if(s == text.toStdString())
 				isNew = false;
 
@@ -96,7 +96,7 @@ void GUILoopGroup::on_addOutPort_clicked()
 		{
 			this->ui->listWidget_out->addItem(text);
 			this->m->addOutPort(text.toStdString());
-			this->m->nameOfOutViews.push_back(text.toStdString());
+			this->m->nameOfOutPorts.push_back(text.toStdString());
 		}
 	}
 
@@ -108,9 +108,9 @@ void GUILoopGroup::on_rmInport_clicked()
 	std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
 	m->removeInPort(toRemove);
 
-	std::vector<std::string>::iterator it = std::find(m->nameOfInViews.begin(), m->nameOfInViews.end(), toRemove);
-	if(it != m->nameOfInViews.end())
-		m->nameOfInViews.erase(it);
+	std::vector<std::string>::iterator it = std::find(m->nameOfInPorts.begin(), m->nameOfInPorts.end(), toRemove);
+	if(it != m->nameOfInPorts.end())
+		m->nameOfInPorts.erase(it);
 
 	delete this->ui->listWidget_in->currentItem();
 
@@ -123,9 +123,9 @@ void GUILoopGroup::on_rmOutport_clicked()
 	std::string toRemove = ui->listWidget_out->currentItem()->text().toStdString();
 	m->removeOutPort(toRemove);
 
-	std::vector<std::string>::iterator it = std::find(m->nameOfOutViews.begin(), m->nameOfOutViews.end(), toRemove);
-	if(it != m->nameOfOutViews.end())
-		m->nameOfOutViews.erase(it);
+	std::vector<std::string>::iterator it = std::find(m->nameOfOutPorts.begin(), m->nameOfOutPorts.end(), toRemove);
+	if(it != m->nameOfOutPorts.end())
+		m->nameOfOutPorts.erase(it);
 
 	delete this->ui->listWidget_out->currentItem();
 }

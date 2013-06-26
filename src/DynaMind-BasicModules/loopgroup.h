@@ -55,8 +55,6 @@ public:
 	//std::vector<DM::View> OutViews;
 	int runs;
 	//int i;
-	std::vector<std::string> nameOfInViews;
-	std::vector<std::string> nameOfOutViews;
 
 	/*void addInPort (std::string in);
 	void addOutPort (std::string in);
