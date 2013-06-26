@@ -594,9 +594,9 @@ bool ImportwithGDAL::importRasterData()
     r->setSize(nXSize, nYSize, xsize,ysize,xoff,yoff);
 
 	double* blockData = (double*)CPLMalloc(sizeof(double)*RASTERBLOCKSIZE*RASTERBLOCKSIZE);
-	for(int x = 0; x < nXSize/RASTERBLOCKSIZE; x++)
+	for(int x = 0; x < nXSize/RASTERBLOCKSIZE+1; x++)
 	{	
-		for(int y = 0; y < nXSize/RASTERBLOCKSIZE; y++)
+		for(int y = 0; y < nXSize/RASTERBLOCKSIZE+1; y++)
 		{
 			poBand->RasterIO(GF_Read, x, y, RASTERBLOCKSIZE, RASTERBLOCKSIZE, 
 				blockData, RASTERBLOCKSIZE, RASTERBLOCKSIZE, GDT_Float64, 0, 0);
