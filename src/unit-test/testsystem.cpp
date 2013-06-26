@@ -100,6 +100,62 @@ TEST_F(TestSystem, RasterData_Flipped_Tset) {
     }
 }
 
+TEST_F(TestSystem, RasterData_ValueTest) 
+{
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+    DM::Logger(DM::Standard) << "Test RasterData values";
+
+	DM::RasterData plane;
+	int width = 256;
+	int height = 256;
+	double cellsize = 2;
+	plane.setSize(width, height, cellsize, cellsize, 0, 0);
+
+	for (long x = 0; x < width; x++)
+		for (long y = 0; y < height; y++)
+			plane.setValue(x*2,y*2, x +width*y);
+
+	for (long x = 0; x < width; x++) {
+		for (long y = 0; y < height; y++) {
+			EXPECT_DOUBLE_EQ(x + width*y,plane.getCell(x,y));
+			EXPECT_DOUBLE_EQ(x + width*y,plane.getValue(x*2,y*2));
+		}
+	}
+    DM::Logger(DM::Standard) << "Testing blockfill";
+	
+	double block0[64*64];
+	double block1[64*64];
+	double block2[64*64];
+	double block3[64*64];
+
+	for (long x = 0; x < 128; x++)
+	{
+		for (long y = 0; y < 128; y++)
+		{
+			if( x >= 64 && y >= 64 )
+				block3[(x%64)+(y%64)*64] = x + width*y;
+			else if( x < 64 && y >= 64 )
+				block2[(x%64)+(y%64)*64] = x + width*y;
+			else if( x < 64 && y < 64 )
+				block0[(x%64)+(y%64)*64] = x + width*y;
+			if( x >= 64 && y < 64 )
+				block1[(x%64)+(y%64)*64] = x + width*y;
+		}
+	}
+	
+	plane.setBlock(0,0,block0);
+	plane.setBlock(1,0,block1);
+	plane.setBlock(0,1,block2);
+	plane.setBlock(1,1,block3);
+	
+	for (long x = 0; x < 128; x++) {
+		for (long y = 0; y < 64; y++) {
+			EXPECT_DOUBLE_EQ(x + width*y,plane.getCell(x,y));
+			EXPECT_DOUBLE_EQ(x + width*y,plane.getValue(x*2,y*2));
+		}
+	}
+}
 	
 #ifdef SQLUNITTESTS
 
