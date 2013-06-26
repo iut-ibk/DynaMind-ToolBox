@@ -255,6 +255,15 @@ PortNode* ModelNode::getPort(std::string portName, PortType type)
 	return NULL;
 }
 
+QVector<PortNode*> ModelNode::getPorts(PortType type)
+{
+	QVector<PortNode*> ps;
+	foreach(PortNode* p, ports)
+		if(p->getType() == type)
+			ps.push_back(p);
+
+	return ps;
+}
 
 void ModelNode::updatePorts()
 {

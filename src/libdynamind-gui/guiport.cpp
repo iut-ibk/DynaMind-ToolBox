@@ -72,13 +72,13 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*
     this->LinkMode = false;
     this->modelNode = parentModelNode;
     this->portType = type;
+
+	int yoffset = 15*parentModelNode->getPorts(type).size();
+
 	if(type == INPORT)
-		this->setPos(-7,7);
+		this->setPos(-7, 7 + yoffset);
 	else
-		this->setPos(-7+parentModelNode->boundingRect().width(),7);
-
-	
-
+		this->setPos(-7+parentModelNode->boundingRect().width(), 7 + yoffset);
 
     this->simulation = parentModelNode->getSimulation();
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));

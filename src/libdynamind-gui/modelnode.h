@@ -75,10 +75,11 @@ private:
 	//QString moduleName;
 	//bool hasPort(std::string portName);
 public:
-	QStringList inPorts;
-	QStringList outPorts;
+	//QStringList inPorts;
+	//QStringList outPorts;
 	
 	PortNode* getPort(std::string portName, PortType type);
+	QVector<PortNode*>	getPorts(PortType type);
 protected:
     GUIPortObserver guiPortObserver;
     float x1;
