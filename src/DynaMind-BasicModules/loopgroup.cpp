@@ -41,8 +41,8 @@ DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 	runs = 1;
 
 	this->addParameter("Runs", DM::INT, &runs);
-	this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInViews);
-	this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutViews);
+	this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInPorts);
+	this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutPorts);
 }
 
 void LoopGroup::run() 
