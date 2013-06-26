@@ -93,7 +93,7 @@ private:
 	std::map<DM::Module*, ModelNode*> modelNodes;
     //QVector<GroupNode*> groupNodes;
 
-	SimulationTab* selectedTab;
+	//SimulationTab* selectedTab;
 	QList<SimulationTab*> tabs;
 	QTabWidget* tabWidget;
 

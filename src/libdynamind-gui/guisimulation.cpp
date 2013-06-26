@@ -48,7 +48,7 @@ GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulati
 	this->parent = parent;
 	this->tabWidget = tabWidget;
 
-	selectedTab = addTab("ROOT");
+	addTab("ROOT");
 }
 
 /*
@@ -200,7 +200,7 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	if(g)
 	{
 		DM::Logger(DM::Debug) << "added group";
-
+		
 	}
 	return m;
 }
@@ -230,14 +230,12 @@ SimulationTab* GUISimulation::getTab(int index)
 }
 SimulationTab* GUISimulation::getSelectedTab()
 {
-	return selectedTab;
+	return getTab(tabWidget->currentIndex());
 }
 
 void GUISimulation::SelectTab(int index)
 {
-	selectedTab = getTab(index);
-	if(!selectedTab)	// safty net, select root
-		selectedTab = getTab(0);
+	tabWidget->setCurrentIndex(index);
 }
 
 /*bool GUISimulation::addLink(PortNode* out, PortNode* in)
