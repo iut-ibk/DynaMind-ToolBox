@@ -25,6 +25,7 @@
  */
 
 #include "groupnode.h"
+#include "guiport.h"
 #include <QGraphicsDropShadowEffect>
 /*#include <linknode.h>
 #include <moduledescription.h>
@@ -103,9 +104,10 @@ void GroupNode::maximize() {
 
 
 }
-
-void GroupNode::updatePorts () {
-    DM::Group * g = (DM::Group*)this->getDMModel();
+*/
+void GroupNode::updatePorts() 
+ {
+    /*DM::Group * g = (DM::Group*)this->getDMModel();
 
     foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
@@ -114,10 +116,23 @@ void GroupNode::updatePorts () {
     foreach (DM::PortTuple * p,g->getOutPortTuples()){
         this->addTuplePort(p);
 
-    }
-    ModelNode::updatePorts();
-}
+    }*/
+    //ModelNode::updatePorts();
 
+	/*foreach(PortNode* p, ports)
+	{
+		bool isNew = true;
+		foreach(PortNode* gp, groupPorts)
+			if(p->getPortName() == gp->getPortName())
+				isNew = false;
+
+		if(isNew)
+		{
+			groupPorts.push_back(new PortNode(p->getPortName(), this, p->getType()));
+		}
+	}*/
+}
+/*
 void GroupNode::addTuplePort(DM::PortTuple * p) {
 
     //Inport
@@ -171,7 +186,7 @@ void GroupNode::removeTuplePort(int Type, QString s) {
 
 }
 */
-GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module, s)
+GroupNode::GroupNode(  DM::Module *module, GUISimulation * s)//: ModelNode( module, s)
 {
 	/*
     this->childnodes = QVector<ModelNode*>();
@@ -215,6 +230,7 @@ GroupNode::GroupNode(  DM::Module *module, GUISimulation * s): ModelNode( module
 
 	w = h = 200;
 }
+
 /*
 void GroupNode::RePosTuplePorts() {
     foreach(PortNode * gui_p, this->ports) {
@@ -238,9 +254,9 @@ void GroupNode::setSelected(  bool selected ) {
 
 }
 */
-void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
-    if (this->visible) 
+void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    //if (this->visible) 
 	{
 		painter->setBrush(Qt::white);
 		painter->drawRect(0, 0, w, h);

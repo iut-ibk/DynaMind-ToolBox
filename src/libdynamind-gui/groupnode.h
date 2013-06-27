@@ -45,9 +45,10 @@ struct GUIPortTuple {
     PortNode * outPort;
 };*/
 
-class DM_HELPER_DLL_EXPORT  GroupNode : public ModelNode
+class DM_HELPER_DLL_EXPORT  GroupNode : public  QObject, public QGraphicsItem// : public ModelNode
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 private:
 	/*
@@ -62,6 +63,10 @@ private:
     RootGroupNode * rg;
 	*/
 
+	// these ports are inside the group, providing data 
+	// flow from outside to inside and vice versa
+	QVector<PortNode*>	groupPorts;
+	// the sice of the outer group border
 	int w,h;
 public:
     GroupNode(DM::Module* parent, GUISimulation* sim);
@@ -95,6 +100,7 @@ public slots:
 
 signals:
   void removeGroupNode(QString UUID);*/
+	void updatePorts();
 };
 
 #endif // GROUPNODE_H
