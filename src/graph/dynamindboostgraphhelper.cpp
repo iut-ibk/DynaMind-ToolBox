@@ -26,6 +26,7 @@
 
 #include <dynamindboostgraphhelper.h>
 #include <graphviewdef.h>
+#include <tbvectordata.h>
 
 bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g,std::map<DM::Node*,int> &nodesindex,std::map<std::pair < int, int >, DM::Edge*> &nodes2edge)
 {
@@ -81,6 +82,7 @@ bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
                                    std::vector<int> &predecessors,
                                    DM::Node* root, DM::Node* target)
 {
+    distance=0;
     DM::Node *targetjunction = target;
     DM::Node *rootjunction = root;
     int tindex = nodesindex[targetjunction];
@@ -129,11 +131,11 @@ bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
             targetjunction = newpipe->getStartNode();
         }
 
+        distance += TBVectorData::calculateDistance(sourcejunction,targetjunction);
         pathnodes.push_back(sourcejunction);
         pathnodes.push_back(targetjunction);
         pathedges.push_back(newpipe);
     }
 
-    distance = distancevector[path[0]];
     return true;
 }

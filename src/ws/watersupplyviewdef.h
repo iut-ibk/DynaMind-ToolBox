@@ -45,7 +45,9 @@ namespace DM
         #define PIPE_ATTR\
         A(Diameter) \
         A(Length) \
-        A(Roughness)
+        A(Roughness) \
+        A(Minorloss) \
+        A(STATUS)
 
         #define RESERVOIR_LINK
 

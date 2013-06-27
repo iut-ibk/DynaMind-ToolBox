@@ -79,7 +79,14 @@ bool EpanetDynamindConverter::createEpanetModel(System *sys, string inpfilepath)
     cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::READ));
 
     for(itr = pipes.begin(); itr != pipes.end(); ++itr)
-        if(!addPipe(static_cast<DM::Edge*>((*itr).second)))return false;
+    {
+        bool cv = false;
+        DM::Edge *pipe = static_cast<DM::Edge*>((*itr).second);
+        if(reservoir.find(pipe->getStartNode()->getUUID()) != reservoir.end() || reservoir.find(pipe->getEndNode()->getUUID()) != reservoir.end())
+            cv = true;
+
+        if(!addPipe(pipe,cv))return false;
+    }
 
 
     if(!creator.save(inpfilepath))return false;
@@ -115,6 +122,7 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
     {
         DM::Edge *currentedge = static_cast<DM::Edge*>((*itr).second);
         float currentdiameter;
+        float status;
         char name[256];
         strcpy(name, QString::number(components[currentedge]).toStdString().c_str());
         int index;
@@ -125,6 +133,21 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
             return false;
 
         currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),currentdiameter);
+
+        if(!checkENRet(EPANET::ENgetlinkvalue(index,EN_STATUS,&status)))
+            return false;
+
+        bool error;
+        std::string stringstatus = EPANETModelCreator::convertPipeStatusToString(EPANETModelCreator::PIPESTATUS(status),error);
+
+        int linktype;
+        if(!checkENRet(EPANET::ENgetlinktype(index,&linktype)))
+            return false;
+
+        if(linktype==EN_CVPIPE)
+            stringstatus = EPANETModelCreator::convertPipeStatusToString(EPANETModelCreator::CV,error);
+
+        currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::STATUS),stringstatus);
     }
 
     return true;
@@ -247,7 +270,7 @@ bool EpanetDynamindConverter::addTank(DM::Node *tank)
     return true;
 }
 
-bool EpanetDynamindConverter::addPipe(DM::Edge *pipe)
+bool EpanetDynamindConverter::addPipe(DM::Edge *pipe, bool cv)
 {
     int startnode = components[pipe->getStartNode()];
     int endnode = components[pipe->getEndNode()];
@@ -255,9 +278,15 @@ bool EpanetDynamindConverter::addPipe(DM::Edge *pipe)
     double length = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Length))->getDouble();
     double diameter = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter))->getDouble();
     double roughness = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Roughness))->getDouble();
-    double minorloss = 0;
+    double minorloss = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Minorloss))->getDouble();
+    std::string string_status = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::STATUS))->getString();
+    bool statuserror = false;
+    EPANETModelCreator::PIPESTATUS status = creator.convertStringToPipeStatus(string_status,statuserror);
 
-    uint index = creator.addPipe(startnode, endnode,length,diameter,roughness,minorloss,EPANETModelCreator::OPEN);
+    if(cv)
+        status = EPANETModelCreator::CV;
+
+    uint index = creator.addPipe(startnode, endnode,length,diameter,roughness,minorloss,status);
 
     if(!index)
         return false;

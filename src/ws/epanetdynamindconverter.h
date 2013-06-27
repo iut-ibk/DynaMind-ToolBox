@@ -57,7 +57,7 @@ public:
     bool addTank(DM::Node *tank);
 
     //LINK COMPONENTS OF EPANET
-    bool addPipe(DM::Edge *pipe);
+    bool addPipe(DM::Edge *pipe, bool cv);
 };
 
 #endif // EpanetDynamindConverter_H

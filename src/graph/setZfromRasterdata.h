@@ -29,6 +29,9 @@
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Delaunay_triangulation_2.h>
+#include <CGAL/Triangle_2.h>
 
 class SetZfromRasterdata : public DM::Module
 {
@@ -36,11 +39,18 @@ class SetZfromRasterdata : public DM::Module
 
 private:
     typedef std::map<std::string,DM::View> viewmap;
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+    typedef CGAL::Delaunay_triangulation_2<K> Delaunay;
+    typedef Delaunay::Face_handle Face_handle;
+    typedef Delaunay::Vertex_handle Vertex_handle;
+    typedef Delaunay::Locate_type Locate_type;
+    typedef K::Point_2 Vertex;
 
     DM::System *sys;
     DM::RasterData * r;
     viewmap viewdef;
     double offset;
+    bool interpolate;
 
 
 public:
@@ -48,6 +58,9 @@ public:
 
     void run();
     void initmodel(){}
+    bool setZWithRaster(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset);
+    bool setZWithDelaunay(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset);
+    double interpolateTriangle(DM::Node *point, Delaunay &dt, std::map<Vertex, K::FT, K::Less_xy_2> &function_values);
 };
 
 #endif // SetZfromRasterdata_H

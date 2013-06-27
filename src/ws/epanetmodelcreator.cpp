@@ -132,6 +132,7 @@ uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, do
 {
     cindex++;
     QString id = QString::number(cindex);
+    bool error;
 
     QString result = "";
     result += id + "\t";
@@ -141,7 +142,8 @@ uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, do
     result += QString::number(diameter) + "\t";
     result += QString::number(roughness,'f',3) + "\t";
     result += QString::number(minorloss,'f',2) + "\t";
-    result += PipeStatusString[status] + "\t";
+    //result += PipeStatusString[status] + "\t";
+    result += QString::fromStdString(EPANETModelCreator::convertPipeStatusToString(status,error)) + "\t";
 
     (*model[EPANETModelCreator::PIPES])[id]=result;
 
@@ -170,6 +172,42 @@ bool EPANETModelCreator::addVertex(double x1, double y1, double x2, double y2, Q
     (*model[EPANETModelCreator::VERTICES])[id]=result;
 
     return true;
+}
+
+EPANETModelCreator::PIPESTATUS EPANETModelCreator::convertStringToPipeStatus(string status, bool &error)
+{
+    error = false;
+
+    if(status == "OPEN")
+        return OPEN;
+
+    if(status == "CLOSED")
+        return CLOSED;
+
+    if(status == "CV")
+        return CV;
+
+    error = true;
+    return OPEN;
+}
+
+string EPANETModelCreator::convertPipeStatusToString(EPANETModelCreator::PIPESTATUS status, bool &error)
+{
+    error = false;
+    switch(status)
+    {
+        case OPEN:
+            return "OPEN";
+
+        case CLOSED:
+            return "CLOSED";
+
+        case CV:
+            return "CV";
+    }
+
+    error=true;
+    return "OPEN";
 }
 
 bool EPANETModelCreator::save(string filepath)

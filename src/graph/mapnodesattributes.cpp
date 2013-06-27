@@ -54,6 +54,7 @@ MapNodes2Graph::MapNodes2Graph()
 
     //Define Parameter street network
     view = DM::View("NODES", DM::NODE, DM::MODIFY);
+    view.addAttribute("Weight");
     views.push_back(view);
     viewdef["NODES"]=view;
 
@@ -63,6 +64,8 @@ MapNodes2Graph::MapNodes2Graph()
     viewdef["CONNECTINGNODES"]=view;
 
     this->addData("Layout", views);
+    this->sum=true;
+    this->addParameter("Sum attributes", DM::BOOL, &this->sum);
 }
 
 void MapNodes2Graph::run()
@@ -123,8 +126,12 @@ void MapNodes2Graph::run()
         DM::Node* nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
         newconnecting.push_back(nearest);
 
-        //calculate new attributes attributes
-        double newvalue = connectingnode->getAttribute("Weight")->getDouble() + nearest->getAttribute("Weight")->getDouble();
+        //calculate new attributes
+        double newvalue =0;
+        if(this->sum)
+            newvalue = connectingnode->getAttribute("Weight")->getDouble() + nearest->getAttribute("Weight")->getDouble();
+        else
+            newvalue = connectingnode->getAttribute("Weight")->getDouble();
         nearest->changeAttribute("Weight",newvalue);
     }
 

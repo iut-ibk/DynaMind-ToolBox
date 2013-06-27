@@ -40,12 +40,14 @@ private:
 
     DM::System *sys;
     viewmap viewdef;
+    bool skeletonize;
 
 public:
     ExtractNodesFromEdges();
 
     void run();
     void initmodel(){}
+    bool checkNode(DM::Node* node, std::map<std::string,DM::Component*> &edges,bool skeletonize);
 };
 
 #endif // ExtractNodesFromEdges_H

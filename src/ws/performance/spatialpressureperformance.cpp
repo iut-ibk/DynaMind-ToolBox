@@ -38,6 +38,9 @@
 #include <CGAL/natural_neighbor_coordinates_2.h>
 #include <CGAL/interpolation_functions.h>
 
+#include <QFile>
+#include <QTextStream>
+
 using namespace DM;
 
 DM_DECLARE_NODE_NAME(SpatialPressurePerformance,Watersupply-Performance)
@@ -52,11 +55,8 @@ SpatialPressurePerformance::SpatialPressurePerformance()
     views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::READ));
     this->addData("Watersupply-2", views);
 
-    this->addParameter("Cellsize x", DM::DOUBLE, &this->sizex);
-    this->addParameter("Cellsize y", DM::DOUBLE, &this->sizey);
-
-    this->sizex = 10;
-    this->sizey = 10;
+    this->resultfilepath="";
+    this->addParameter("Result file path", DM::FILENAME, &this->resultfilepath);
 }
 
 void SpatialPressurePerformance::run()
@@ -64,9 +64,20 @@ void SpatialPressurePerformance::run()
     typedef std::map<std::string, DM::Component*> cmap;
     cmap::iterator itr;
     std::vector<DM::Node*> j1, j2;
+    QString result = "";
     double errors=0;
     double abserrors=0;
+    double sumabsminerrors=0;
+    double sumabsmaxerrors=0;
+    double sumerrors=0;
+    double maxposerror=0;
+    double maxnegerror=10000000000;
+    double minposerror=10000000000;
+    double minnegerror=0;
+
     uint samples = 0;
+    uint minabssamples=0;
+    uint maxabssamples=0;
     uint outside = 0;
 
     this->sys1 = this->getData("Watersupply-1");
@@ -93,11 +104,11 @@ void SpatialPressurePerformance::run()
         return;
     }
 
-    for(int index=0; index<j2.size(); index++)
+    for(uint index=0; index<j2.size(); index++)
     {
         DM::Node* currentjunction = j2[index];
 
-        if(currentjunction->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Demand))->getDouble()<=0)
+        if(currentjunction->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Demand))->getDouble()<0)
             continue;
 
         int li;
@@ -106,7 +117,7 @@ void SpatialPressurePerformance::run()
         Vertex v(currentjunction->getX(), currentjunction->getY());
 
         Face_handle c = triangulation.locate(v,lt,li);
-        CGAL::Triangle_2<K> t =  triangulation.triangle(c);
+        triangulation.triangle(c);
 
         switch(lt)
         {
@@ -129,17 +140,71 @@ void SpatialPressurePerformance::run()
 
                 if(pressure > 0 && pressureProjection > 0)
                 {
-                    abserrors += std::pow(pressureProjection - pressure,2);
+                    double pressurediff = pressureProjection - pressure;
+                    double absdiff = std::pow(pressurediff,2);
+                    abserrors += absdiff;
+
+                    if(pressurediff < 0.0)
+                    {
+                        sumabsminerrors += absdiff;
+                        minabssamples++;
+
+                        if(maxnegerror > pressurediff)
+                            maxnegerror=pressurediff;
+
+                        if(minnegerror < pressurediff)
+                            minnegerror=pressurediff;
+                    }
+                    else
+                    {
+                        sumabsmaxerrors += absdiff;
+                        maxabssamples++;
+
+                        if(maxposerror < pressurediff)
+                            maxposerror = pressurediff;
+
+                        if(minposerror > pressurediff)
+                            minposerror = pressurediff;
+                    }
+
                     errors += pressureProjection/pressure;
+                    sumerrors += pressurediff;
                     samples++;
+
+                    result  += QString::number(currentjunction->getX()) + " "
+                            + QString::number(currentjunction->getY()) + " "
+                            + QString::number(pressurediff) + " "
+                            + QString::number(pressureProjection/pressure) + "\n";
                 }
                 break;
             }
         }
     }
 
-    DM::Logger(DM::Standard) << "Mean relative error: " << errors/samples;
-    DM::Logger(DM::Standard) << "Mean absulute error: " << std::sqrt(abserrors/samples);
+    if(!minabssamples)
+        minabssamples=1;
+
+    if(!maxabssamples)
+        maxabssamples=1;
+
+    if(this->resultfilepath != "")
+    {
+        QFile file(QString::fromStdString(this->resultfilepath));
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << result;
+        file.close();
+    }
+
+    DM::Logger(DM::Standard) << "Mean relative error: " << errors/samples << " Samples: " << int(samples);
+    DM::Logger(DM::Standard) << "Mean absulute error: " << std::sqrt(abserrors/samples) << " Samples: " << int(samples);
+    DM::Logger(DM::Standard) << "Mean error: " << (sumerrors/samples) << " Samples: " << int(samples);
+    DM::Logger(DM::Standard) << "Mean negative error: " << -std::sqrt(sumabsminerrors/minabssamples) << " Samples: " << int(minabssamples);
+    DM::Logger(DM::Standard) << "Mean positive error: " << std::sqrt(sumabsmaxerrors/maxabssamples) << " Samples: " << int(maxabssamples);
+    DM::Logger(DM::Standard) << "Max negative error: " << maxnegerror;
+    DM::Logger(DM::Standard) << "Max positive error: " << maxposerror;
+    DM::Logger(DM::Standard) << "Min negative error: " << minnegerror;
+    DM::Logger(DM::Standard) << "Min positive error: " << minposerror;
     DM::Logger(DM::Warning) << double(outside) << " points outside of convex hull";
 }
 
@@ -175,7 +240,7 @@ bool SpatialPressurePerformance::createDelaunay(std::vector<Node *> &nodes, Spat
     if(!nodes.size())
         return false;
 
-    for(int index=0; index<nodes.size(); index++)
+    for(uint index=0; index<nodes.size(); index++)
     {
         double pressure = nodes[index]->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
         double demand = nodes[index]->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Demand))->getDouble();

@@ -51,7 +51,7 @@ class SpatialPressurePerformance : public DM::Module
     DM::WS::ViewDefinitionHelper wsd;
     DM::System * sys1;
     DM::System * sys2;
-    double sizex,sizey;
+    std::string resultfilepath;
 
 public:
     SpatialPressurePerformance();

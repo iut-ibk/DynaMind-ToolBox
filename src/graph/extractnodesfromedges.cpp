@@ -37,6 +37,7 @@ ExtractNodesFromEdges::ExtractNodesFromEdges()
     std::vector<DM::View> views;
     DM::View view;
     DM::GRAPH::ViewDefinitionHelper defhelper;
+    this->skeletonize = false;
 
     //Define Parameter street network
     view = defhelper.getView(DM::GRAPH::EDGES,DM::READ);
@@ -49,6 +50,8 @@ ExtractNodesFromEdges::ExtractNodesFromEdges()
     viewdef[DM::GRAPH::NODES]=view;
 
     this->addData("Layout", views);
+
+    this->addParameter("Skeletonize", DM::BOOL, &this->skeletonize);
 }
 
 void ExtractNodesFromEdges::run()
@@ -69,14 +72,14 @@ void ExtractNodesFromEdges::run()
         DM::Node* tname = edge->getEndNode();
 
         //SOURCE
-        if(std::find(nodesadded.begin(),nodesadded.end(),sname)==nodesadded.end())
+        if(std::find(nodesadded.begin(),nodesadded.end(),sname)==nodesadded.end() && checkNode(sname,edges,this->skeletonize))
         {
             this->sys->addComponentToView(sname,viewdef[DM::GRAPH::NODES]);
             nodesadded.push_back(sname);
         }
 
         //TARGET
-        if(std::find(nodesadded.begin(),nodesadded.end(), tname)==nodesadded.end())
+        if(std::find(nodesadded.begin(),nodesadded.end(), tname)==nodesadded.end() && checkNode(tname,edges,this->skeletonize))
         {
             this->sys->addComponentToView(tname,viewdef[DM::GRAPH::NODES]);
             nodesadded.push_back(tname);
@@ -84,4 +87,22 @@ void ExtractNodesFromEdges::run()
     }
 
     DM::Logger(DM::Standard) << "Number of extracted nodes: " << nodesadded.size();
+}
+
+bool ExtractNodesFromEdges::checkNode(DM::Node* node, std::map<std::string,DM::Component*> &edges, bool skeletonize)
+{
+    if(!skeletonize)
+        return true;
+
+    std::vector<DM::Edge*> e = node->getEdges();
+    std::vector<DM::Edge*> possible_edges;
+
+    for(uint index=0; index < e.size(); index++)
+        if(edges.find(e[index]->getUUID())!=edges.end())
+            possible_edges.push_back(e[index]);
+
+    if(possible_edges.size() == 2)
+        return false;
+
+    return true;
 }

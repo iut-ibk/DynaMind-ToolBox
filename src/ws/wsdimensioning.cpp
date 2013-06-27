@@ -62,7 +62,11 @@ Dimensioning::Dimensioning()
     this->addData("Watersupply", views);
 
     this->fixeddiameters=false;
+    this->pipestatus=true;
+    this->maxdiameter=1000;
     this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
+    this->addParameter("Maximum diameter [mm]", DM::DOUBLE, &this->maxdiameter);
+    this->addParameter("Automatic set pipe status", DM::BOOL, &this->pipestatus);
 }
 
 void Dimensioning::run()
@@ -110,9 +114,22 @@ bool Dimensioning::SitzenfreiDimensioning()
         if(!converter->checkENRet(EPANET::ENgetlinkvalue(index+1,EN_DIAMETER,&currentdiameter)))return false;
 
         if(currentdiameter > 15 )
-            fixedpipes.push_back(index);
+        {
+            if(this->fixeddiameters)
+                fixedpipes.push_back(index);
+        }
         else
             if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[0])))return false;
+
+        if(pipestatus)
+        {
+            int type;
+            if(!converter->checkENRet(EPANET::ENgetlinktype(index+1,&type)))return false;
+            if(type!=EN_CVPIPE)
+            {
+                if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_INITSTATUS,1.0)))return false;
+            }
+        }
     }
 
     //Simulate model the first time
@@ -123,20 +140,22 @@ bool Dimensioning::SitzenfreiDimensioning()
     //initialize design criteria for velocities for the first iteration
     std::vector<double> resV(nlinks,2*designvelocity[0]);
 
-    //auto-design process according to designevelocity
-    DM::Logger(DM::Standard) << "Start auto design";
+    //auto-dimensioning process according to designevelocity
+    DM::Logger(DM::Standard) << "Start auto dimensioning";
     int i = 0;
-    while( (boost::accumulate(resV, 0)>=1) && (i < (sizeof(diameter)/sizeof(int))))
+    while( (boost::accumulate(resV, 0)>=1) && (i < (sizeof(diameter)/sizeof(int)-1)))
     {
         i++;
+        DM::Logger(DM::Standard) << "Current diameter: " << diameter[i];
         if(!converter->checkENRet(EPANET::ENopenH()))return false;
         if(!converter->checkENRet(EPANET::ENinitH(1)))return false;
 
         //set new diameters
         for(int index=0; index<nlinks; index++)
-            if(resV[index]>=designvelocity[i])
-                if(!this->fixeddiameters || std::find(fixedpipes.begin(),fixedpipes.end(),index)==fixedpipes.end())  //If the diameter is forced it often results in an model with negativ pressure
-                    if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
+            if(resV[index] >= designvelocity[i])
+                if(std::find(fixedpipes.begin(),fixedpipes.end(),index)==fixedpipes.end())  //If the diameter is forced it often results in an model with negativ pressure
+                    if(diameter[i] <= this->maxdiameter)
+                        if(!converter->checkENRet(EPANET::ENsetlinkvalue(index+1,EN_DIAMETER,diameter[i])))return false;
 
         //simulate
         long int t=0;
@@ -144,8 +163,8 @@ bool Dimensioning::SitzenfreiDimensioning()
 
         while(tstep)
         {
-            if(!converter->checkENRet(EPANET::ENrunH(&t)))return false;
-            if(!converter->checkENRet(EPANET::ENnextH(&tstep)))return false;
+            EPANET::ENrunH(&t);
+            EPANET::ENnextH(&tstep);
         }
 
         //extract results of simulation
@@ -159,7 +178,7 @@ bool Dimensioning::SitzenfreiDimensioning()
         if(!converter->checkENRet(EPANET::ENcloseH()))return false;
     }
 
-    //auto-design process according to headloss
+    //auto-dimensioning process according to headloss
     while( (boost::accumulate(resV, 0)>=1) && (i-(sizeof(diameter)/sizeof(int)) < (sizeof(diameter)/sizeof(int))))
     {
         i++;
@@ -206,7 +225,7 @@ bool Dimensioning::SitzenfreiDimensioning()
         if(!converter->checkENRet(EPANET::ENcloseH()))return false;
     }
 
-    DM::Logger(DM::Standard) << "Auto designer needed " << i+1 << " iterations.";
+    DM::Logger(DM::Standard) << "Auto dimensioning needed " << i+1 << " iterations.";
 
     return true;
 }

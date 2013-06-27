@@ -115,8 +115,8 @@ void LoopCreator::run()
     DM::Logger(DM::Standard) << "Remove all edges which are crossing two pressure zones from graph";
     removeCrossingZoneEdges(em,zonesize,meanelevation);
 
-    DM::Logger(DM::Standard) << "Remove all edges which are already pipes from graph";
-    DynamindBoostGraph::subtractGraphs(em,pm);
+    //DM::Logger(DM::Standard) << "Remove all edges which are already pipes from graph";
+    //DynamindBoostGraph::subtractGraphs(em,pm);
 
     //Create boost graph object of original network
     DynamindBoostGraph::Graph org_g;
@@ -171,9 +171,20 @@ void LoopCreator::run()
             DM::Node *currentsource = junctions->at(source);
             std::vector<DM::Edge*>  e = currentsource->getEdges();
             bool possiblejunction=false;
+            uint leafcounter = 0;
             for(int i = 0; i < e.size(); i++)
-                if(pm.find(e[i]->getUUID())==pm.end() && em.find(e[i]->getUUID())!=em.end())
-                    possiblejunction=true;
+                if(pm.find(e[i]->getUUID())==pm.end())
+                {
+                    if(em.find(e[i]->getUUID())!=em.end())
+                        possiblejunction=true;
+                }
+                else
+                {
+                    leafcounter++;
+                }
+
+            if(leafcounter > 1)
+                continue;
 
             if(!possiblejunction)
                 continue;
@@ -211,6 +222,29 @@ void LoopCreator::run()
                 DM::Node *targetjunction = nearest[n];
                 DM::Node *rootjunction = junctions->at(source);
 
+                std::vector<DM::Edge*>  e = targetjunction->getEdges();
+                bool possiblejunction=false;
+                uint leafcounter = 0;
+
+                for(uint i = 0; i < e.size(); i++)
+                    //check if rootjunction is a leaf
+                    if(pm.find(e[i]->getUUID())==pm.end())
+                    {
+                        //check if at least one outedges exists which could be a alternative path
+                        if(em.find(e[i]->getUUID())!=em.end())
+                            possiblejunction=true;
+                    }
+                    else
+                    {
+                        leafcounter++;
+                    }
+
+                if(leafcounter>=4)
+                    continue;
+
+                if(!possiblejunction)
+                    continue;
+
                 if(std::find(checked_path.begin(),checked_path.end(),std::pair<DM::Node*,DM::Node*>(rootjunction,targetjunction)) != checked_path.end())
                     continue;
 
@@ -235,22 +269,29 @@ void LoopCreator::run()
                 double maxdistance = TBVectorData::maxDistance(pathnodes,pathnodes[pathnodes.size()-1]);
                 double org_maxdistance = TBVectorData::maxDistance(org_pathnodes,org_pathnodes[org_pathnodes.size()-1]);
 
-                if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
-                    continue;
+                //if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
+                //    continue;
+
+                //check if paths are parallel
+                if(distance/org_distance > 0.5)
+                        continue;
+
+                //check if
 
                 for(uint check=1; check<pathnodes.size()-1; check++)
                     if(std::find(junctions->begin(),junctions->end(),pathnodes[check])!=junctions->end())
                         continue;
 
-                //TODO THIS IS AN IMPORTANT PARAMETER -> INPUT PARAMETER FOR MODULE
-                if(calcPathLength(pathnodes) < 150)
-                    continue;
+                //TODO THIS CAN BE AN IMPORTANT PARAMETER -> INPUT PARAMETER FOR THE MODULE
+                //if(distance < 150)
+                //    continue;
 
                 #pragma omp critical
                 {
                     vectorpathnodes.push_back(pathnodes);
                     vectorpathedges.push_back(pathedges);
                 }
+                break;
             }
         }
 

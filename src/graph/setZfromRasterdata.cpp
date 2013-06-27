@@ -33,6 +33,9 @@
 #include <tbvectordata.h>
 
 //CGAL
+#include <CGAL/Interpolation_traits_2.h>
+#include <CGAL/natural_neighbor_coordinates_2.h>
+#include <CGAL/interpolation_functions.h>
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/point_generators_2.h>
 #include <CGAL/Orthogonal_k_neighbor_search.h>
@@ -58,14 +61,18 @@ SetZfromRasterdata::SetZfromRasterdata()
 
     this->addData("Layout", views);
 
+    this->offset = -1.5;
     this->addParameter("Offset [m]", DM::DOUBLE, &this->offset);
+
+    this->interpolate = false;
+    this->addParameter("Interpolate with delaunay triangulation:", DM::BOOL, &this->interpolate);
 }
 
 void SetZfromRasterdata::run()
 {
     sys = this->getData("Layout");
     r = this->getRasterData("Layout", viewdef["ELEVATION"]);
-    std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
+    std::map<std::string,DM::Component*> nodes = sys->getAllComponentsInView(viewdef["NODES"]);
 
     if(!r || !nodes.size())
     {
@@ -73,10 +80,104 @@ void SetZfromRasterdata::run()
         return;
     }
 
-    for(int index=0; index < nodes.size(); index++)
-    {
-        DM::Node *currentnode = sys->getNode(nodes[index]);
-        currentnode->setZ(r->getValue(currentnode->getX(),currentnode->getY())+offset);
-    }
+    if(this->interpolate)
+        setZWithDelaunay(r,nodes,this->offset);
+    else
+        setZWithRaster(r,nodes,this->offset);
+
     return;
+}
+
+bool SetZfromRasterdata::setZWithRaster(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset)
+{
+    typedef std::map<std::string, DM::Component*>::iterator Iter;
+
+    for(Iter it = nodes.begin(); it != nodes.end(); it++)
+    {
+        DM::Node *currentnode = static_cast<DM::Node*>((*it).second);
+        currentnode->setZ(r->getValue(currentnode->getX(),currentnode->getY())+this->offset);
+    }
+    return true;
+}
+
+bool SetZfromRasterdata::setZWithDelaunay(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset)
+{
+    SetZfromRasterdata::Delaunay dt;
+    std::map<Vertex, K::FT, K::Less_xy_2> function_values;
+    typedef std::map<std::string, DM::Component*>::iterator Iter;
+
+    if(!nodes.size())
+        return false;
+
+    //triangulate rester data
+    double xsellsize = r->getCellSizeX();
+    double ysellsize = r->getCellSizeY();
+
+    double yinit = r->getYOffset()+ysellsize/2;
+    double xinit = r->getXOffset()+xsellsize/2;
+    int errorcount = 0;
+
+    std::vector<Vertex> vvec;
+
+    for(uint index = 0; index < r->getHeight()*r->getWidth(); index++)
+    {
+        uint xindex = index/r->getWidth();
+        uint yindex = index%r->getWidth();
+        Vertex v(xinit+xindex*xsellsize,yinit+yindex*ysellsize);
+        vvec.push_back(v);
+        function_values.insert(std::make_pair(v,r->getCell(xindex,yindex)));
+        if(index%1000000==0)
+            DM::Logger(DM::Standard) << int(index) << " of " << r->getHeight()*r->getWidth();
+    }
+
+    dt.insert(vvec.begin(),vvec.end());
+
+    for(Iter it = nodes.begin(); it != nodes.end(); it++)
+    {
+        DM::Node *currentnode = static_cast<DM::Node*>((*it).second);
+
+        int li;
+        typedef Delaunay::Locate_type Locate_type;
+        Locate_type lt;
+        Vertex v(currentnode->getX(), currentnode->getY());
+
+        dt.locate(v,lt,li);
+
+        switch(lt)
+        {
+            case Delaunay::OUTSIDE_AFFINE_HULL:
+            {
+                errorcount++;
+                break;
+            }
+
+            case Delaunay::OUTSIDE_CONVEX_HULL:
+            {
+                errorcount++;
+                break;
+            }
+
+            default :
+            {
+                double elevation = interpolateTriangle(currentnode,dt,function_values);
+                currentnode->setZ(elevation+offset);
+            }
+        }
+    }
+
+    if(errorcount > 0)
+        DM::Logger(DM::Error) << "Could not find elevation for " << errorcount << " nodes";
+    return true;
+}
+
+double SetZfromRasterdata::interpolateTriangle(DM::Node *point, SetZfromRasterdata::Delaunay &dt, std::map<Vertex, K::FT, K::Less_xy_2> &function_values)
+{
+    typedef CGAL::Data_access< std::map<Vertex, K::FT, K::Less_xy_2 > > Value_access;
+    double v[3];
+    point->get(v);
+    Vertex p(v[0],v[1]);
+    std::vector< std::pair< Vertex, K::FT > > coords;
+    K::FT norm = CGAL::natural_neighbor_coordinates_2(dt, p,std::back_inserter(coords)).second;
+    K::FT res =  CGAL::linear_interpolation(coords.begin(), coords.end(),norm,Value_access(function_values));
+    return res;
 }

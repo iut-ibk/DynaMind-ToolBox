@@ -53,9 +53,8 @@ RemoveNodesOnZ::RemoveNodesOnZ()
 
     this->addData("Layout", views);
 
-    this->addParameter("Max height [m]", DM::DOUBLE, &this->max);
-
     this->max=0;
+    this->addParameter("Max height [m]", DM::DOUBLE, &this->max);  
 }
 
 void RemoveNodesOnZ::run()

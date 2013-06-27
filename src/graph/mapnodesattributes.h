@@ -41,6 +41,7 @@ private:
 
     DM::System *sys;
     viewmap viewdef;
+    bool sum;
 
 
 public:

@@ -74,7 +74,7 @@ public:
     enum HEADLOSS {HW,DW,CM};
     enum UNBALANCED {STOP, CONTINUE};
     enum HYDRAULICS {USE, SAVE};
-    enum PIPESTATUS {OPEN, CLOSED, CV};
+    enum PIPESTATUS {CLOSED,OPEN, CV};
 
     EPANETModelCreator(bool vertex=true);
 
@@ -109,6 +109,10 @@ public:
     //Coordinates
     bool addCoordinate(double x, double y, QString id);
     bool addVertex(double x1, double y1, double x2, double y2, QString id);
+
+    //Helper methodes
+    static PIPESTATUS convertStringToPipeStatus(std::string status, bool &error);
+    static std::string convertPipeStatusToString(PIPESTATUS status, bool &error);
 
 
 private:
