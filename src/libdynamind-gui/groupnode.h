@@ -64,9 +64,6 @@ private:
     RootGroupNode * rg;
 	*/
 
-	// these ports are inside the group, providing data 
-	// flow from outside to inside and vice versa
-	QVector<PortNode*>	groupPorts;
 	// the sice of the outer group border
 	int w,h;
 public:
