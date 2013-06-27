@@ -275,7 +275,7 @@ QVector<PortNode*> ModelNode::getPorts(DM::PortType type)
 
 void ModelNode::addPort(const std::string &name, const DM::PortType type)
 {
-	this->ports.append(new PortNode(QString::fromStdString(name), this, type));
+	this->ports.append(new PortNode(QString::fromStdString(name), module, type, this, this->simulation));
 }
 void ModelNode::removePort(const std::string &name, const DM::PortType type)
 {

@@ -57,9 +57,13 @@ void PortNode::addLink(GUILink* l)
 void PortNode::updatePort(DM::Port * p) {
     this->p = p;
 }*/
-PortNode::PortNode(QString portName, ModelNode *parentModelNode, DM::PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
+//PortNode::PortNode(QString portName, ModelNode *parentModelNode, DM::PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
+
+PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type, 
+				   QGraphicsItem* parent, GUISimulation* simulation)
+	:QGraphicsItem(parent)
 {
-    this->setParentItem(parentModelNode);
+    //this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
     this->setAcceptHoverEvents(true);
     this->setAcceptsHoverEvents(true);
@@ -70,17 +74,18 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode, DM::PortType ty
     this->x1 = 0;
     this->isHover = false;
     this->LinkMode = false;
-    this->modelNode = parentModelNode;
+	this->module = m;
+    //this->modelNode = parentModelNode;
     this->portType = type;
 
-	int yoffset = 15*parentModelNode->getPorts(type).size();
+	int yoffset = 15*m->getPortNames(type).size();
 
 	if(type == DM::INPORT)
 		this->setPos(-7, 7 + yoffset);
 	else
-		this->setPos(-7+parentModelNode->boundingRect().width(), 7 + yoffset);
+		this->setPos(-7+parent->boundingRect().width(), 7 + yoffset);
 
-    this->simulation = parentModelNode->getSimulation();
+    this->simulation = simulation;
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     //if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
@@ -205,7 +210,7 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
     foreach (QGraphicsItem  * item, items)
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
 			if(		port->portType + this->portType == 1 
-				&&	port->modelNode != this->modelNode)
+				&&	port->module != this->module)
 				port->setHover(true);
 
 
@@ -305,19 +310,19 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
 		{
 			// check self linking
-			if(port->modelNode == this->modelNode)
+			if(port->module == this->module)
 				break;
 			
 			// check port types
 			if(port->portType == DM::INPORT && this->portType == DM::OUTPORT)
 			{
-				getSimulation()->addLink(this->getModule(), this->getPortName().toStdString(),
-									port->getModule(), port->getPortName().toStdString());
+				simulation->addLink(this->module, this->getPortName().toStdString(),
+									port->module, port->getPortName().toStdString());
 			}
 			else if(port->portType == DM::OUTPORT && this->portType == DM::INPORT)
 			{
-				getSimulation()->addLink(port->getModule(), port->getPortName().toStdString(),
-									this->getModule(), this->getPortName().toStdString());
+				simulation->addLink(port->module, port->getPortName().toStdString(),
+									this->module, this->getPortName().toStdString());
 			}
 			
 			break;
@@ -432,10 +437,10 @@ QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value)
     }*/
     return QGraphicsItem::itemChange(change, value);
 }
-
+/*
 DM::Module* PortNode::getModule()
 {
 	return modelNode->getModule();
-}
+}*/
 
 

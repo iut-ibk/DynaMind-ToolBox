@@ -59,7 +59,7 @@ private:
     QVector<GUILink * > linkNodes;
 
     QColor color;
-    ModelNode * modelNode;
+    //ModelNode * modelNode;
     //GUILink * tmp_link;
 	
 	GUILink* unstableLink;
@@ -76,9 +76,12 @@ private:
     QGraphicsSimpleTextItem portname_graphics;
     GUISimulation * simulation;
 	 
-	DM::PortType portType;
+	DM::PortType	portType;
+	DM::Module*		module;
 public:
-    PortNode(QString portName, ModelNode * parentModelNode, DM::PortType type/*, DM::Port * p*/);
+    //PortNode(QString portName, ModelNode * parentModelNode, DM::PortType type/*, DM::Port * p*/);
+    PortNode(QString portName, DM::Module * m, DM::PortType type, 
+		QGraphicsItem* parent, GUISimulation* simulation);
     ~PortNode();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
@@ -104,8 +107,8 @@ public:
 	void addLink(GUILink* l);
     //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
-    void  setSimulation(GUISimulation *s) {this->simulation = s;}
-	DM::Module* getModule();
+    //void  setSimulation(GUISimulation *s) {this->simulation = s;}
+	DM::Module* getModule(){return module;};
 	DM::PortType getType(){return portType;};
 };
 
