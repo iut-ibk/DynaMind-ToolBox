@@ -203,7 +203,8 @@ enum ModuleStatus
 class ModuleObserver
 {
 public:
-	virtual void update() = 0;
+	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
+	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
 };
 
 class DM_HELPER_DLL_EXPORT Module
@@ -378,7 +379,7 @@ public:
 
 	void setObserver(ModuleObserver* obs);
 	void deleteObserver();
-	void update();
+//	void update();
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);

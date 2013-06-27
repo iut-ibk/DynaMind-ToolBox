@@ -100,11 +100,12 @@ void Module::deleteObserver()
 		observer = NULL;
 	}
 }
+/*
 void Module::update()
 {
 	if(observer)
 		observer->update();
-}
+}*/
 
 
 void Module::addPort(const std::string &name, const PortType type)
@@ -113,6 +114,9 @@ void Module::addPort(const std::string &name, const PortType type)
 		inPorts[name] = NULL;
 	else if(type == OUTPORT)
 		outPorts[name] = NULL;
+
+	if(observer)
+		observer->notifyAddPort(name, type);
 }
 
 void Module::removePort(const std::string &name, const PortType type)
@@ -121,6 +125,9 @@ void Module::removePort(const std::string &name, const PortType type)
 		inPorts.erase(name);
 	else if(type == OUTPORT)
 		outPorts.erase(name);
+	
+	if(observer)
+		observer->notifyRemovePort(name, type);
 }
 bool Module::hasInPort(const std::string &name)
 {
