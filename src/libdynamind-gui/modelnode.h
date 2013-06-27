@@ -152,8 +152,7 @@ public:
     GUISimulation * getSimulation() {return this->simulation;}
     //void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	
-    //virtual void updatePorts();
-    void updatePorts();
+    virtual void updatePorts();
 
     virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}
 
