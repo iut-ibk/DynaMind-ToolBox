@@ -35,11 +35,13 @@
 #include "ColorPalette.h"
 #include <guimodelnode.h>
 #include <guiviewdataformodules.h>
+#include <dmmodule.h>
 #include <guiport.h>
 #include <rootgroupnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmviewerwindow.h>
+
 
 void GUIModelObserver::update()
 {
@@ -246,7 +248,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     //Color = COLOR_MODULE;
 }
 
-PortNode* ModelNode::getPort(std::string portName, PortType type)
+PortNode* ModelNode::getPort(std::string portName, DM::PortType type)
 {
 	foreach(PortNode* p, ports)
 		if(p->getPortName().toStdString() == portName && p->getType() == type)
@@ -255,7 +257,7 @@ PortNode* ModelNode::getPort(std::string portName, PortType type)
 	return NULL;
 }
 
-QVector<PortNode*> ModelNode::getPorts(PortType type)
+QVector<PortNode*> ModelNode::getPorts(DM::PortType type)
 {
 	QVector<PortNode*> ps;
 	foreach(PortNode* p, ports)
@@ -269,19 +271,19 @@ void ModelNode::updatePorts()
 {
 	// add new ports
 	foreach(std::string portName, module->getOutPortNames())
-		if(!getPort(portName, OUTPORT))
-			this->ports.append(new PortNode(QString::fromStdString(portName), this, OUTPORT));
+		if(!getPort(portName, DM::OUTPORT))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, DM::OUTPORT));
 	foreach(std::string portName, module->getInPortNames())
-		if(!getPort(portName, INPORT))
-			this->ports.append(new PortNode(QString::fromStdString(portName), this, INPORT));
+		if(!getPort(portName, DM::INPORT))
+			this->ports.append(new PortNode(QString::fromStdString(portName), this, DM::INPORT));
 
 	std::vector<PortNode*> toRemove;
 	foreach(PortNode* n, ports)
 	{
 		std::string portName = n->getPortName().toStdString();
-		PortType type = n->getType();
-		if( (!module->hasInPort(portName) && type == INPORT) ||
-			(!module->hasOutPort(portName) && type == OUTPORT))
+		DM::PortType type = n->getType();
+		if( (!module->hasInPort(portName) && type == DM::INPORT) ||
+			(!module->hasOutPort(portName) && type == DM::OUTPORT))
 			toRemove.push_back(n);
 	}
 	foreach(PortNode* n, toRemove)

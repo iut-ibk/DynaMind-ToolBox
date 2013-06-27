@@ -26,6 +26,7 @@
 
 #include "guisimulation.h"
 //#include <dmmoduleregistry.h>
+#include <dmmodule.h>
 #include <modelnode.h>
 #include <guiport.h>
 #include <groupnode.h>
@@ -38,6 +39,7 @@
 
 #include <dmgroup.h>
 #include <qtablewidget.h>
+
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -252,8 +254,8 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 	if(!Simulation::addLink(source, outPort, dest, inPort, checkStream))
 		return false;
 
-	PortNode* inPortNode = getPortNode(dest, inPort, INPORT);
-	PortNode* outPortNode = getPortNode(source, outPort, OUTPORT);
+	PortNode* inPortNode = getPortNode(dest, inPort, DM::INPORT);
+	PortNode* outPortNode = getPortNode(source, outPort, DM::OUTPORT);
 
 	if( !inPortNode || !outPortNode )
 		return false;
@@ -274,7 +276,7 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 	return true;
 }
 
-PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, PortType type)
+PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, DM::PortType type)
 {
 	ModelNode* mn;
 	if(map_contains(&modelNodes, m, mn))

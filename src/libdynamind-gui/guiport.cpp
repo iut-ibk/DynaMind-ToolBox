@@ -57,7 +57,7 @@ void PortNode::addLink(GUILink* l)
 void PortNode::updatePort(DM::Port * p) {
     this->p = p;
 }*/
-PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
+PortNode::PortNode(QString portName, ModelNode *parentModelNode, DM::PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
 {
     this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
@@ -75,7 +75,7 @@ PortNode::PortNode(QString portName, ModelNode *parentModelNode, PortType type/*
 
 	int yoffset = 15*parentModelNode->getPorts(type).size();
 
-	if(type == INPORT)
+	if(type == DM::INPORT)
 		this->setPos(-7, 7 + yoffset);
 	else
 		this->setPos(-7+parentModelNode->boundingRect().width(), 7 + yoffset);
@@ -120,7 +120,7 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     portname_graphics.setText(this->getPortName());
 
     //if (this->getPortType() > DM::OUTPORTS)
-	if(portType == INPORT)
+	if(portType == DM::INPORT)
         painter->drawText(QPoint(10,portname_graphics.boundingRect().height()/2+10), this->getPortName());
 	else
     //if (this->getPortType() < DM::OUTPORTS)
@@ -189,7 +189,7 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 	//DM::Logger(DM::Debug) << "PortNode::mouseMoveEvent";
 	if(unstableLink)
 	{
-		if(portType == INPORT)
+		if(portType == DM::INPORT)
 			unstableLink->setOutPort(event->scenePos());
 		else
 			unstableLink->setInPort(event->scenePos());
@@ -250,7 +250,7 @@ void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 
 	unstableLink = new GUILink();
 
-	if(portType == INPORT)
+	if(portType == DM::INPORT)
 		unstableLink->setInPort(this);
 	else
 		unstableLink->setOutPort(this);
@@ -309,12 +309,12 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 				break;
 			
 			// check port types
-			if(port->portType == INPORT && this->portType == OUTPORT)
+			if(port->portType == DM::INPORT && this->portType == DM::OUTPORT)
 			{
 				getSimulation()->addLink(this->getModule(), this->getPortName().toStdString(),
 									port->getModule(), port->getPortName().toStdString());
 			}
-			else if(port->portType == OUTPORT && this->portType == INPORT)
+			else if(port->portType == DM::OUTPORT && this->portType == DM::INPORT)
 			{
 				getSimulation()->addLink(port->getModule(), port->getPortName().toStdString(),
 									this->getModule(), this->getPortName().toStdString());

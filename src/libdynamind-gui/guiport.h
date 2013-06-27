@@ -39,6 +39,7 @@
 namespace DM {
 //class Port;
 class Module;
+enum PortType;
 }
 
 
@@ -49,12 +50,6 @@ class ModelNode;
 class GUILink;
 class GUISimulation;
 
-
-enum PortType
-{
-	INPORT = 0,
-	OUTPORT,
-};
 
 class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 {
@@ -81,9 +76,9 @@ private:
     QGraphicsSimpleTextItem portname_graphics;
     GUISimulation * simulation;
 	 
-	PortType portType;
+	DM::PortType portType;
 public:
-    PortNode(QString portName, ModelNode * parentModelNode, PortType type/*, DM::Port * p*/);
+    PortNode(QString portName, ModelNode * parentModelNode, DM::PortType type/*, DM::Port * p*/);
     ~PortNode();
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
@@ -111,7 +106,7 @@ public:
     GUISimulation * getSimulation() {return this->simulation;}
     void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	DM::Module* getModule();
-	PortType getType(){return portType;};
+	DM::PortType getType(){return portType;};
 };
 
 #endif // GUIPORT_H

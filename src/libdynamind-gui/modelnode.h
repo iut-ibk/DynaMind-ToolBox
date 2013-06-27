@@ -78,8 +78,8 @@ public:
 	//QStringList inPorts;
 	//QStringList outPorts;
 	
-	PortNode* getPort(std::string portName, PortType type);
-	QVector<PortNode*>	getPorts(PortType type);
+	PortNode* getPort(std::string portName, DM::PortType type);
+	QVector<PortNode*>	getPorts(DM::PortType type);
 protected:
     GUIPortObserver guiPortObserver;
     float x1;

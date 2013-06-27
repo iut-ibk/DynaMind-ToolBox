@@ -29,9 +29,11 @@
 #include <QMenu>
 #include <QAction>
 #include <QGraphicsSceneContextMenuEvent>
+#include <dmmodule.h>
 #include <guiport.h>
 #include <guisimulation.h>
 #include <dmport.h>
+
 GUILink::GUILink()
 {
     inPort = 0;
