@@ -467,7 +467,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
 		it != m->outPorts.end();	++it)
 	{
-		// first get alle links starting at the given module
+		// first get all links starting at the given module
 		std::list<Link*> branches;
 		foreach(Link* l, links)
 			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
