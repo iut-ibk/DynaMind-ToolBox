@@ -127,7 +127,7 @@ bool SetZfromRasterdata::setZWithDelaunay(DM::RasterData * r, std::map<std::stri
         vvec.push_back(v);
         function_values.insert(std::make_pair(v,r->getCell(xindex,yindex)));
         if(index%1000000==0)
-            DM::Logger(DM::Standard) << int(index) << " of " << r->getHeight()*r->getWidth();
+            DM::Logger(DM::Standard) << QString::number(int(index)).toStdString() << " of " << QString::number(r->getHeight()*r->getWidth()).toStdString();
     }
 
     dt.insert(vvec.begin(),vvec.end());

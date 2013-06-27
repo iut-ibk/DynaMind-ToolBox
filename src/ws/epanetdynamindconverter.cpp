@@ -138,7 +138,7 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
             return false;
 
         bool error;
-        std::string stringstatus = EPANETModelCreator::convertPipeStatusToString(EPANETModelCreator::PIPESTATUS(status),error);
+        std::string stringstatus = EPANETModelCreator::convertPipeStatusToString(EPANETModelCreator::PIPESTATUS(int(status)),error);
 
         int linktype;
         if(!checkENRet(EPANET::ENgetlinktype(index,&linktype)))
