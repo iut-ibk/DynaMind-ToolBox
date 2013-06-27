@@ -795,16 +795,78 @@ std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::Vie
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
 {
+    typedef std::map<DM::Node*,double>::iterator It;
+    std::map<DM::Node*,double> distances;
     std::vector<DM::Node*> result;
-    result.push_back(root);
 
+    //find nearest nodes
     for(uint i=0; i < nodefield.size(); i++)
     {
         double currentdistance=TBVectorData::calculateDistance(root,nodefield[i]);
         if(currentdistance <= maxdistance)
-            result.push_back(nodefield[i]);
+            distances[nodefield[i]]=currentdistance;
     }
+
+    //sort
+    while(result.size() < distances.size())
+    {
+        It i = distances.begin();
+        DM::Node* minnode = (*i).first;
+        double mindistance = (*i).second;
+
+        for(It i = distances.begin(); i != distances.end(); ++i)
+        {
+            if((*i).second < mindistance)
+            {
+                minnode = (*i).first;
+                mindistance = (*i).second;
+            }
+        }
+        result.push_back(minnode);
+        distances.erase(minnode);
+    }
+
     return result;
+}
+
+bool TBVectorData::getBoundingBox(std::vector<DM::Node *> nodes, double &x, double &y, double &h, double &width, bool init=true)
+{
+    double boundaries[4] = {x,x+h,y,x+width}; //(xmin,xmax,ymin,ymax)
+    bool initboundaries=init;
+
+    for(uint index=0; index < nodes.size(); index++)
+    {
+        DM::Node* currentnode = nodes[index];
+
+        if(initboundaries)
+        {
+            initboundaries=false;
+            boundaries[0] = currentnode->getX();
+            boundaries[1] = boundaries[0];
+            boundaries[2] = currentnode->getY();
+            boundaries[3] = boundaries[2];
+        }
+        else
+        {
+            if(boundaries[0] > currentnode->getX())
+                boundaries[0] = currentnode->getX();
+
+            if(boundaries[1] < currentnode->getX())
+                boundaries[1] = currentnode->getX();
+
+            if(boundaries[2] > currentnode->getY())
+                boundaries[2] = currentnode->getY();
+
+            if(boundaries[3] < currentnode->getY())
+                boundaries[3] = currentnode->getY();
+        }
+    }
+
+    x=boundaries[0];
+    width=boundaries[1]-boundaries[0];
+    y=boundaries[2];
+    h=boundaries[3]-boundaries[2];
+    return true;
 }
 
 double TBVectorData::maxDistance(std::vector<DM::Node *> pointfield, DM::Node *centernode)
