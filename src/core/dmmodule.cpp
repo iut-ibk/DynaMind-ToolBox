@@ -79,7 +79,7 @@ Module::~Module()
 
 	foreach(ModuleObserver* observer, observers)
 		delete observer;
-
+	observers.clear();
 	//if(gui)
 	//	delete gui;
 }
