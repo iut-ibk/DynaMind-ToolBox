@@ -191,6 +191,7 @@ enum PortType
 class System;
 //class View;
 class RasterData;
+class ModuleObserver;
 
 enum ModuleStatus
 {
@@ -198,13 +199,6 @@ enum ModuleStatus
 	MOD_OK,
 	MOD_EXECUTIONERROR,
 	MOD_CHECKERROR,
-};
-
-class ModuleObserver
-{
-public:
-	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
-	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
 };
 
 class DM_HELPER_DLL_EXPORT Module
@@ -415,6 +409,20 @@ private:
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
 	std::map<std::string, std::map<std::string,View> > streamViews;
+};
+
+class ModuleObserver
+{
+protected:
+	DM::Module* module;
+public:
+	ModuleObserver(Module* m)
+	{
+		module = m;
+		m->setObserver(this);
+	}
+	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
+	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
 };
 
 #ifdef OLD_WF
