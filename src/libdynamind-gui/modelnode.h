@@ -57,12 +57,19 @@ class ModelNode;
 class GUIModelObserver: public DM::ModuleObserver
 {
 	ModelNode* node;
+	DM::Module* module;
 public:
-	GUIModelObserver(ModelNode* node):
-		node(node)
-	{};
-
-	void update();
+	GUIModelObserver(ModelNode* node, DM::Module* module):
+		node(node), module(module)
+	{
+		foreach(std::string portName, module->getInPortNames())
+			notifyAddPort(portName, DM::INPORT);
+		foreach(std::string portName, module->getOutPortNames())
+			notifyAddPort(portName, DM::OUTPORT);
+	};
+	
+	void notifyAddPort(const std::string &name, const DM::PortType type);
+	void notifyRemovePort(const std::string &name, const DM::PortType type);
 };
 
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
@@ -78,7 +85,7 @@ public:
 	//QStringList inPorts;
 	//QStringList outPorts;
 	
-	PortNode* getPort(std::string portName, DM::PortType type);
+	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
 protected:
     GUIPortObserver guiPortObserver;
@@ -152,7 +159,9 @@ public:
     GUISimulation * getSimulation() {return this->simulation;}
     //void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	
-    virtual void updatePorts();
+    //virtual void updatePorts();
+	void addPort(const std::string &name, const DM::PortType type);
+	void removePort(const std::string &name, const DM::PortType type);
 
     virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}
 

@@ -42,10 +42,13 @@
 #include <dmsystem.h>
 #include <dmviewerwindow.h>
 
-
-void GUIModelObserver::update()
+void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
-	node->updatePorts();
+	node->addPort(name, type);
+}
+void GUIModelObserver::notifyRemovePort(const std::string &name, const DM::PortType type)
+{
+	node->removePort(name, type);
 }
 
 /*
@@ -206,7 +209,6 @@ DM::Module * ModelNode::getDMModel() {
 
 ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 {
-	m->setObserver(new GUIModelObserver(this));
 	/*
     //this->guiPortObserver.setModelNode(this);
     this->minimized = false;
@@ -238,7 +240,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     l = w+4;
     h =  35;
     //VIBeModule->addPortObserver( & this->guiPortObserver);
-    this->updatePorts();
+    //this->updatePorts();
 	/*
 	foreach(std::string portName, m->getOutPortNames())
 		this->ports.append(new PortNode(QString::fromStdString(portName), this, OUTPORT));
@@ -246,9 +248,12 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 		this->ports.append(new PortNode(QString::fromStdString(portName), this, INPORT));
 	*/
     //Color = COLOR_MODULE;
+
+	// be shure to add observer last, as module dimensions are not set before
+	m->setObserver(new GUIModelObserver(this, m));
 }
 
-PortNode* ModelNode::getPort(std::string portName, DM::PortType type)
+PortNode* ModelNode::getPort(std::string portName, const DM::PortType type)
 {
 	foreach(PortNode* p, ports)
 		if(p->getPortName().toStdString() == portName && p->getType() == type)
@@ -267,6 +272,18 @@ QVector<PortNode*> ModelNode::getPorts(DM::PortType type)
 	return ps;
 }
 
+
+void ModelNode::addPort(const std::string &name, const DM::PortType type)
+{
+	this->ports.append(new PortNode(QString::fromStdString(name), this, type));
+}
+void ModelNode::removePort(const std::string &name, const DM::PortType type)
+{
+	PortNode* p = getPort(name, type);
+	if(p)
+		ports.erase(find(ports.begin(), ports.end(), p));
+}
+/*
 void ModelNode::updatePorts()
 {
 	// add new ports
@@ -291,7 +308,7 @@ void ModelNode::updatePorts()
 		ports.erase(find(ports.begin(), ports.end(), n));
 		delete n;
 	}
-	/*
+	
 	// remove deprecated ports
 	QVector<int> deprecatedPorts;
 	int cnt = 0;
@@ -304,8 +321,8 @@ void ModelNode::updatePorts()
 		cnt++;
 	}
 	for(int i=0;i<deprecatedPorts.size();i++)
-		ports.remove(deprecatedPorts[deprecatedPorts.size()-i-1]);*/
-}
+		ports.remove(deprecatedPorts[deprecatedPorts.size()-i-1]);
+}*/
 
 /*
 ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent, scene) {

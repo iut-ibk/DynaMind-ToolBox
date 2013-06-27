@@ -503,7 +503,7 @@ void GUIModelNode::accept()
 		}
 	}
 	module->init();
-	module->update();	// calls update ports
+	//module->update();	// calls update ports
 
 	delete(this);
 }
