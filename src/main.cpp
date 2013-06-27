@@ -76,6 +76,46 @@ void copyfiles(string &cpfile, int iteration)
 	}
 }
 
+string replacestrings(string &replace, string projectfilepath)
+{
+    QStringList replacelist = QString::fromStdString(replace).split(";");
+    QString tmpfile = QString::fromStdString(projectfilepath)+"_tmp.dyn";
+
+    if(replace=="")
+        return projectfilepath;
+
+    QFile file(QString::fromStdString(projectfilepath));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return projectfilepath;
+
+    QTextStream in(&file);
+
+    QString content = in.readAll();
+    file.close();
+
+    foreach(QString re, replacelist)
+    {
+        QStringList r = re.split(",");
+        if(r.size() == 2)
+        {
+            QString target = r.at(1);
+            QString source = r.at(0);
+            content  = content.replace(source,target);
+            std::cout << "Replace in inputfile: " << source.toStdString() << " to " << target.toStdString();
+        }
+    }
+
+    QFile ofile(tmpfile);
+    if (!ofile.open(QIODevice::WriteOnly | QIODevice::Text))
+        return projectfilepath;
+
+    QTextStream out(&ofile);
+    out << content;
+    ofile.close();
+
+    return tmpfile.toStdString();
+}
+
 void setSettings(std::string s) {
 	QStringList avalible_settings;
 	avalible_settings << "SWMM";
@@ -130,6 +170,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	desc.add_options()
 		("help", "produce help message")
 		("input-file", po::value<string>(), "set simulation file")
+        ("replace", po::value<string>(), "replace string in input file: ([STRING],[STRING];)*")
 		("repeat", po::value<int>(), "repeat simulation")
 		("cpfile", po::value<string>(), "Copy generated files: ([SOURCEFILE],[TARGETPATH]DMITERATION[FILENAME];)* ")
 		("verbose", "verbose output")
@@ -145,11 +186,12 @@ int main(int argc, char *argv[], char *envp[]) {
 		;
 
 
-	std::string simulationfile;
+    std::string simulationfile, realsimulationfile;
 	std::vector<std::string> pythonModules;
 	int repeat = 1;
 	bool verbose = false;
 	string cpfile = "";
+    string replace = "";
 	int numThreads = 1;
 
 	DM::LogLevel ll = DM::Standard;
@@ -193,6 +235,8 @@ int main(int argc, char *argv[], char *envp[]) {
 		if (vm.count("repeat"))		repeat = vm["repeat"].as<int>();
 
 		if (vm.count("cpfile"))     cpfile = vm["cpfile"].as<string>();
+
+        if (vm.count("replace"))     replace = vm["replace"].as<string>();
 
 		if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
@@ -258,7 +302,8 @@ int main(int argc, char *argv[], char *envp[]) {
 	DM::Simulation s;
 	s.loadModulesFromDefaultLocation();
 	s.addModulesFromSettings();
-	s.loadSimulation(simulationfile);
+    realsimulationfile = replacestrings(replace, simulationfile);
+    s.loadSimulation(realsimulationfile);
 
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
@@ -288,6 +333,10 @@ int main(int argc, char *argv[], char *envp[]) {
 	sigma = sqrt((float)sigma);
 
 	DM::Logger(DM::Standard) << ">>>> finished simulation at an average of " << (long)avg << "+-"<< (long)sigma << "ms";
+
+    if(simulationfile!=realsimulationfile)
+        QFile::remove(QString::fromStdString(realsimulationfile));
+
 	QThreadPool::globalInstance()->waitForDone();
 
 }
