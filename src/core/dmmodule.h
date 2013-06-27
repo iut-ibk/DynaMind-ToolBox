@@ -164,6 +164,11 @@ class RasterData;*/
 // deprecated parameter type
 typedef std::map<std::string, std::string> parameter_type;
 
+enum PortType
+{
+	INPORT = 0,
+	OUTPORT,
+};
 
 
 enum  DataTypes {    
