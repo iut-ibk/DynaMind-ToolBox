@@ -230,15 +230,15 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
 	this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getName()));
-    double w = this->simpleTextItem->boundingRect().width()+40;
+    int w = this->simpleTextItem->boundingRect().width()+40;
 
     QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
     w = w < 140 ? 140 : w;
-    l = w+4;
-    h =  35;
+    width = w + 4;
+    height =  35;
     //VIBeModule->addPortObserver( & this->guiPortObserver);
     //this->updatePorts();
 	/*
@@ -354,7 +354,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QBrush brush(fillcolor);
 
         QPainterPath rectPath;
-        rectPath.addRect(0, 0,l,h);
+		rectPath.addRect(boundingRect());
         painter->fillPath(rectPath, brush);
         painter->strokePath(rectPath, rectPen);
 		
@@ -367,7 +367,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 QRectF ModelNode::boundingRect() const {
     QRect r (0, 0,
-             l, h);
+             width, height);
     return r;
 
 }

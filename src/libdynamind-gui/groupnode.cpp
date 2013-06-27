@@ -241,7 +241,7 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation * s)//: DM::ModuleObserve
     this->setFlag(QGraphicsItem::ItemIsSelectable, false);
     this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
-	w = h = 200;
+	width = height = 200;
 }
 
 /*
@@ -272,7 +272,7 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     //if (this->visible) 
 	{
 		painter->setBrush(Qt::white);
-		painter->drawRect(0, 0, w, h);
+		painter->drawRect(boundingRect());
 
 		/*
         recalculateLandH();
@@ -305,11 +305,11 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
 	
 }
-
+/*
 QRectF GroupNode::boundingRect() const {
     return QRect(0, 0, w, h);
 
-}
+}*/
 
 
 

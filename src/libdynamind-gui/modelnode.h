@@ -87,7 +87,7 @@ public:
 	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
 protected:
-    GUIPortObserver guiPortObserver;
+    /*GUIPortObserver guiPortObserver;
     float x1;
     float y1;
     float x2;
@@ -95,7 +95,10 @@ protected:
     float l;
     float h;
     int inputCounter;
-    int outputCounter;
+    int outputCounter;*/
+
+	int width, height;
+
     QVector<PortNode*> ports;
     //QVector<ModelNode * > * nodes;
     RootGroupNode * parentGroup;

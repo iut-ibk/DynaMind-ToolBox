@@ -65,7 +65,7 @@ private:
 	*/
 
 	// the sice of the outer group border
-	int w,h;
+	//int w,h;
 public:
 	// observer methods
 	//void notifyAddPort(const std::string &name, const DM::PortType type);
@@ -82,7 +82,7 @@ public:
 	 */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 	
-    QRectF boundingRect() const;
+    //QRectF boundingRect() const;
     /*void setSelected ( bool selected );
     void RePosTuplePorts();
 
