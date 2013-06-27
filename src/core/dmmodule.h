@@ -276,8 +276,17 @@ public:
 	{
 		return parameters;
 	}
-	std::vector<std::string> getInPortNames();
-	std::vector<std::string> getOutPortNames();
+	std::vector<std::string> getInPortNames() const;
+	std::vector<std::string> getOutPortNames() const;
+	std::vector<std::string> getPortNames(PortType type) const
+	{
+		if(type == INPORT)
+			return getInPortNames();
+		else if(type == OUTPORT)
+			return getInPortNames();
+
+		return std::vector<std::string>();
+	};
 
 	/** @brief checks if all outports are set or not existing */
 	bool outPortsSet();

@@ -314,18 +314,18 @@ std::string Module::getParameterAsString(const std::string& name)
 	return strValue.str();
 }
 
-std::vector<std::string> Module::getInPortNames()
+std::vector<std::string> Module::getInPortNames() const
 {
 	std::vector<std::string> list;
-	std::map<std::string, System*>::iterator it = inPorts.begin();
+	std::map<std::string, System*>::const_iterator it = inPorts.begin();
 	for(;it != inPorts.end(); ++it)
 		list.push_back(it->first);
 	return list;
 }
-std::vector<std::string> Module::getOutPortNames()
+std::vector<std::string> Module::getOutPortNames() const
 {
 	std::vector<std::string> list;
-	std::map<std::string, System*>::iterator it = outPorts.begin();
+	std::map<std::string, System*>::const_iterator it = outPorts.begin();
 	for(;it != outPorts.end(); ++it)
 		list.push_back(it->first);
 	return list;
