@@ -45,7 +45,8 @@ struct GUIPortTuple {
     PortNode * outPort;
 };*/
 
-class DM_HELPER_DLL_EXPORT  GroupNode : public  QObject, public QGraphicsItem//, public DM::ModuleObserver
+class DM_HELPER_DLL_EXPORT  GroupNode : /*public  QObject, public QGraphicsItem*///, public DM::ModuleObserver
+	public ModelNode
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)

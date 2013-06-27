@@ -199,6 +199,7 @@ void GroupNode::notifyRemovePort(const std::string &name, const DM::PortType typ
 }*/
 
 GroupNode::GroupNode(DM::Module *module, GUISimulation * s)//: DM::ModuleObserver(m)
+:ModelNode(module, s)
 {
 	/*
     this->childnodes = QVector<ModelNode*>();

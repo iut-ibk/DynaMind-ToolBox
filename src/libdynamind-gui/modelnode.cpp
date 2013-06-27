@@ -378,7 +378,6 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 ModelNode::~ModelNode() 
 {
-	module->deleteObserver();
 	this->simulation->removeModule(module);
     /*DM::Module * m = this->getDMModel();
 
