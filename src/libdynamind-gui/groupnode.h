@@ -104,7 +104,7 @@ public slots:
 
 signals:
   void removeGroupNode(QString UUID);*/
-	void updatePorts();
+	//void updatePorts();
 };
 
 #endif // GROUPNODE_H

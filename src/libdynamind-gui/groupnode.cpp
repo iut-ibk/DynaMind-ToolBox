@@ -105,9 +105,10 @@ void GroupNode::maximize() {
 
 }
 */
+/*
 void GroupNode::updatePorts() 
  {
-    /*DM::Group * g = (DM::Group*)this->getDMModel();
+    DM::Group * g = (DM::Group*)this->getDMModel();
 
     foreach (DM::PortTuple * p,g->getInPortTuples()){
         this->addTuplePort(p);
@@ -130,8 +131,8 @@ void GroupNode::updatePorts()
 		{
 			groupPorts.push_back(new PortNode(p->getPortName(), this, p->getType()));
 		}
-	}*/
-}
+	}
+}*/
 /*
 void GroupNode::addTuplePort(DM::PortTuple * p) {
 
