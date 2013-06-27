@@ -107,24 +107,21 @@ void Module::update()
 }
 
 
-void Module::addInPort(const std::string &name)
+void Module::addPort(const std::string &name, const PortType type)
 {
-	inPorts[name] = NULL;
-}
-void Module::addOutPort(const std::string &name)
-{
-	outPorts[name] = NULL;
-}
-
-void Module::removeInPort(const std::string &name)
-{
-	inPorts.erase(name);
-}
-void Module::removeOutPort(const std::string &name)
-{
-	outPorts.erase(name);
+	if(type == INPORT)
+		inPorts[name] = NULL;
+	else if(type == OUTPORT)
+		outPorts[name] = NULL;
 }
 
+void Module::removePort(const std::string &name, const PortType type)
+{
+	if(type == INPORT)
+		inPorts.erase(name);
+	else if(type == OUTPORT)
+		outPorts.erase(name);
+}
 bool Module::hasInPort(const std::string &name)
 {
 	return map_contains(&inPorts, name);
@@ -199,9 +196,9 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 	}
 	
 	if(inPort)
-		this->addInPort(streamName);
+		this->addPort(streamName, INPORT);
 	if(outPort)
-		this->addOutPort(streamName);
+		this->addPort(streamName, OUTPORT);
 }
 
 System* Module::getData(const std::string& streamName)

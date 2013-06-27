@@ -381,11 +381,9 @@ public:
 	void update();
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
-	void addInPort(const std::string &name);
-	void addOutPort(const std::string &name);
+	void addPort(const std::string &name, const PortType type);
 	/** @brief removes a port from the module, may corrupt links! */
-	void removeInPort(const std::string &name);
-	void removeOutPort(const std::string &name);
+	void removePort(const std::string &name, const PortType type);
 	/** @brief */
 	void setStatus(ModuleStatus status) {this->status = status;};
 
