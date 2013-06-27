@@ -69,7 +69,7 @@ void GUILoopGroup::on_addInPort_clicked()
 
 		if(isNew)
 		{
-			this->m->addInPort(text.toStdString());
+			this->m->addPort(text.toStdString(), DM::INPORT);
 			this->ui->listWidget_in->addItem(text);
 			this->m->nameOfInPorts.push_back(text.toStdString());
 		}
@@ -94,7 +94,7 @@ void GUILoopGroup::on_addOutPort_clicked()
 		if(isNew)
 		{
 			this->ui->listWidget_out->addItem(text);
-			this->m->addOutPort(text.toStdString());
+			this->m->addPort(text.toStdString(), DM::OUTPORT);
 			this->m->nameOfOutPorts.push_back(text.toStdString());
 		}
 	}
@@ -105,7 +105,7 @@ void GUILoopGroup::on_rmInport_clicked()
 	if (!ui->listWidget_in->currentItem())
 		return;
 	std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
-	m->removeInPort(toRemove);
+	m->removePort(toRemove, DM::INPORT);
 
 	std::vector<std::string>::iterator it = std::find(m->nameOfInPorts.begin(), m->nameOfInPorts.end(), toRemove);
 	if(it != m->nameOfInPorts.end())
@@ -120,7 +120,7 @@ void GUILoopGroup::on_rmOutport_clicked()
 	if (!ui->listWidget_out->currentItem())
 		return;
 	std::string toRemove = ui->listWidget_out->currentItem()->text().toStdString();
-	m->removeOutPort(toRemove);
+	m->removePort(toRemove, DM::OUTPORT);
 
 	std::vector<std::string>::iterator it = std::find(m->nameOfOutPorts.begin(), m->nameOfOutPorts.end(), toRemove);
 	if(it != m->nameOfOutPorts.end())
@@ -133,7 +133,7 @@ void GUILoopGroup::accept()
 {
 	m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
 	QDialog::accept();
-	m->update();
+	//m->update();
 }
 
 //#endif //SIMENV_GROUP
