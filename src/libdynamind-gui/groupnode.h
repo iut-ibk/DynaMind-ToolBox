@@ -45,7 +45,7 @@ struct GUIPortTuple {
     PortNode * outPort;
 };*/
 
-class DM_HELPER_DLL_EXPORT  GroupNode : public  QObject, public QGraphicsItem// : public ModelNode
+class DM_HELPER_DLL_EXPORT  GroupNode : public  QObject, public QGraphicsItem//, public DM::ModuleObserver
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -69,6 +69,10 @@ private:
 	// the sice of the outer group border
 	int w,h;
 public:
+	// observer methods
+	//void notifyAddPort(const std::string &name, const DM::PortType type);
+	//void notifyRemovePort(const std::string &name, const DM::PortType type);
+
     GroupNode(DM::Module* parent, GUISimulation* sim);
 	/*
     virtual ~GroupNode();

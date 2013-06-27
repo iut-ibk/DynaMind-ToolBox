@@ -250,7 +250,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     //Color = COLOR_MODULE;
 
 	// be shure to add observer last, as module dimensions are not set before
-	m->setObserver(new GUIModelObserver(this, m));
+	new GUIModelObserver(this, m);
 }
 
 PortNode* ModelNode::getPort(std::string portName, const DM::PortType type)

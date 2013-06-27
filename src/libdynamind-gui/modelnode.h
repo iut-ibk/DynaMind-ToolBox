@@ -57,10 +57,9 @@ class ModelNode;
 class GUIModelObserver: public DM::ModuleObserver
 {
 	ModelNode* node;
-	DM::Module* module;
 public:
 	GUIModelObserver(ModelNode* node, DM::Module* module):
-		node(node), module(module)
+		node(node), ModuleObserver(module)
 	{
 		foreach(std::string portName, module->getInPortNames())
 			notifyAddPort(portName, DM::INPORT);
@@ -72,7 +71,7 @@ public:
 	void notifyRemovePort(const std::string &name, const DM::PortType type);
 };
 
-class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem
+class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//, public DM::ModuleObserver
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -84,7 +83,7 @@ private:
 public:
 	//QStringList inPorts;
 	//QStringList outPorts;
-	
+
 	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
 protected:

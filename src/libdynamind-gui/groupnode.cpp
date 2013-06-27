@@ -186,7 +186,18 @@ void GroupNode::removeTuplePort(int Type, QString s) {
 
 }
 */
-GroupNode::GroupNode(  DM::Module *module, GUISimulation * s)//: ModelNode( module, s)
+/*
+void GroupNode::notifyAddPort(const std::string &name, const DM::PortType type)
+{
+	groupPorts.append(new PortNode(name, 
+	addPort(name, type);
+}
+void GroupNode::notifyRemovePort(const std::string &name, const DM::PortType type)
+{
+	removePort(name, type);
+}*/
+
+GroupNode::GroupNode(DM::Module *module, GUISimulation * s)//: DM::ModuleObserver(m)
 {
 	/*
     this->childnodes = QVector<ModelNode*>();
