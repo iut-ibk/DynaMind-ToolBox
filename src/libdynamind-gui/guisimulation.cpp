@@ -203,7 +203,8 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	{
 		DM::Logger(DM::Debug) << "added group '" << moduleName << "'";
 		SimulationTab* groupTab = addTab(QString::fromStdString(moduleName));
-		GroupNode* gnode = new GroupNode(m, this);
+		GroupNode* gnode = new GroupNode(m, this, groupTab);
+		node->setChild(gnode);
 		groupTab->addItem(gnode);
 	}
 	return m;
@@ -217,15 +218,21 @@ SimulationTab* GUISimulation::addTab(QString name)
 	return tab;
 }
 
+void GUISimulation::closeTab(SimulationTab* tab)
+{
+	int index = tabs.indexOf(tab);
+	closeTab(index);
+}
 void GUISimulation::closeTab(int index)
 {
 	if(tabs.size() > index)
 	{
-		delete tabs[index];
-		tabs.removeAt(index);
+		//delete tabs[index]; will cause a crash
 		tabWidget->removeTab(index);
+		tabs.removeAt(index);
 	}
 }
+
 SimulationTab* GUISimulation::getTab(int index)
 {
 	if(tabs.size() > index)

@@ -209,6 +209,7 @@ DM::Module * ModelNode::getDMModel() {
 
 ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 {
+	child = NULL;
 	/*
     //this->guiPortObserver.setModelNode(this);
     this->minimized = false;
@@ -283,6 +284,7 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 	if(p)
 		ports.erase(find(ports.begin(), ports.end(), p));
 }
+
 /*
 void ModelNode::updatePorts()
 {
@@ -378,7 +380,11 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 ModelNode::~ModelNode() 
 {
-	this->simulation->removeModule(module);
+	if(module)
+	{
+		this->simulation->removeModule(module);
+		module = NULL;
+	}
     /*DM::Module * m = this->getDMModel();
 
 
@@ -399,6 +405,11 @@ ModelNode::~ModelNode()
     ports.clear();*/
     delete this->simpleTextItem;
 
+	if(child)
+	{
+		child->module = NULL;
+		delete child;
+	}
 }
 
 

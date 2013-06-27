@@ -80,12 +80,14 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//,
 private:
 	//QString moduleName;
 	//bool hasPort(std::string portName);
+	ModelNode* child;
 public:
 	//QStringList inPorts;
 	//QStringList outPorts;
 
 	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
+	void setChild(ModelNode* child){this->child = child;}
 protected:
     /*GUIPortObserver guiPortObserver;
     float x1;
@@ -101,7 +103,7 @@ protected:
 
     QVector<PortNode*> ports;
     //QVector<ModelNode * > * nodes;
-    RootGroupNode * parentGroup;
+    //RootGroupNode * parentGroup;
 
     //std::string  VIBeModuleUUID ;
     QGraphicsSimpleTextItem * simpleTextItem;
@@ -130,7 +132,7 @@ public:
     virtual ~ModelNode();
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
-    void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
+    //void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
 
     int getID(){return this->id;}
     //QString getName(){return QString::fromStdString(this->getDMModel()->getName());}

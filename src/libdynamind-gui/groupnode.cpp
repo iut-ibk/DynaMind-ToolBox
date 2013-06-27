@@ -27,6 +27,9 @@
 #include "groupnode.h"
 #include "guiport.h"
 #include <QGraphicsDropShadowEffect>
+
+#include <guisimulation.h>
+
 /*#include <linknode.h>
 #include <moduledescription.h>
 #include <modelnodebutton.h>
@@ -198,8 +201,8 @@ void GroupNode::notifyRemovePort(const std::string &name, const DM::PortType typ
 	removePort(name, type);
 }*/
 
-GroupNode::GroupNode(DM::Module *module, GUISimulation * s)//: DM::ModuleObserver(m)
-:ModelNode(module, s)
+GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab)//: DM::ModuleObserver(m)
+:ModelNode(module, s), owningTab(tab)
 {
 	/*
     this->childnodes = QVector<ModelNode*>();
@@ -242,6 +245,10 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation * s)//: DM::ModuleObserve
     this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
 	width = height = 200;
+}
+GroupNode::~GroupNode()
+{
+	simulation->closeTab(owningTab);
 }
 
 /*
@@ -310,10 +317,6 @@ QRectF GroupNode::boundingRect() const {
     return QRect(0, 0, w, h);
 
 }*/
-
-
-
-
 
 
 

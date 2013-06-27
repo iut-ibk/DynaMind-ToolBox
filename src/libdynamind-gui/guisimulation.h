@@ -75,6 +75,7 @@ public:
 	//SimulationTab* rootTab;
 	SimulationTab* addTab(QString name);
 	void closeTab(int index);
+	void closeTab(SimulationTab* tab);
 	SimulationTab* getTab(int index);	// 0 = root*/
 	SimulationTab* getSelectedTab();
 	void SelectTab(int index);
