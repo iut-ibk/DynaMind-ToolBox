@@ -57,7 +57,6 @@ namespace DM {
 Module::Module()
 {
 	status = MOD_UNTOUCHED;
-	observer = NULL;
 	//gui = NULL;
 }
 Module::~Module()
@@ -78,6 +77,9 @@ Module::~Module()
 			delete indata;
 	}
 
+	foreach(ModuleObserver* observer, observers)
+		delete observer;
+
 	//if(gui)
 	//	delete gui;
 }
@@ -88,17 +90,13 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 	parameters.push_back(p);
 }
 
-void Module::setObserver(ModuleObserver* obs)
+void Module::addObserver(ModuleObserver* obs)
 {
-	observer = obs;
+	observers.push_back(obs);
 }
-void Module::deleteObserver()
+void Module::removeObserver(ModuleObserver* obs)
 {
-	if(observer)
-	{
-		delete observer;
-		observer = NULL;
-	}
+	remove(observers.begin(), observers.end(), obs);
 }
 /*
 void Module::update()
@@ -115,7 +113,7 @@ void Module::addPort(const std::string &name, const PortType type)
 	else if(type == OUTPORT)
 		outPorts[name] = NULL;
 
-	if(observer)
+	foreach(ModuleObserver* observer, observers)
 		observer->notifyAddPort(name, type);
 }
 
@@ -126,7 +124,7 @@ void Module::removePort(const std::string &name, const PortType type)
 	else if(type == OUTPORT)
 		outPorts.erase(name);
 	
-	if(observer)
+	foreach(ModuleObserver* observer, observers)
 		observer->notifyRemovePort(name, type);
 }
 bool Module::hasInPort(const std::string &name)

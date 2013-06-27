@@ -380,8 +380,8 @@ public:
       */
     virtual bool createInputDialog(){return false;}
 
-	void setObserver(ModuleObserver* obs);
-	void deleteObserver();
+	void addObserver(ModuleObserver* obs);
+	void removeObserver(ModuleObserver* obs);
 //	void update();
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
@@ -395,7 +395,7 @@ protected:
 	// deprecated
 	RasterData* getRasterData(std::string name, View view);
 private:
-	ModuleObserver* observer;
+	std::vector<ModuleObserver*> observers;
 	/** @brief calls the init function if parameters have changed */
 	//void updateParameters();
 	/** @brief */
@@ -428,7 +428,7 @@ public:
 	ModuleObserver(Module* m)
 	{
 		module = m;
-		m->setObserver(this);
+		module->addObserver(this);
 	}
 	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
 	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
