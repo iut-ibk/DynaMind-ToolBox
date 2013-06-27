@@ -78,8 +78,8 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
     //this->modelNode = parentModelNode;
     this->portType = type;
 
-	int xoffset = -3;
-	int yoffset = 7 + 15*m->getPortNames(type).size();
+	int xoffset = -7;
+	int yoffset = 3 + 15*m->getPortNames(type).size();
 
 	if(type == DM::INPORT)
 		this->setPos(xoffset, yoffset);
