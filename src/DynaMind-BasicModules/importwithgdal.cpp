@@ -573,7 +573,6 @@ bool ImportwithGDAL::importRasterData()
     poDataset = (GDALDataset *) GDALOpenShared( FileName.c_str(), GA_ReadOnly );
     poBand = poDataset->GetRasterBand( 1 );
 
-    //float *pafScanline;
     int nXSize = poBand->GetXSize();
     int nYSize = poBand->GetYSize();
     double xoff=0;
@@ -592,21 +591,39 @@ bool ImportwithGDAL::importRasterData()
     }
 
     r->setSize(nXSize, nYSize, xsize,ysize,xoff,yoff);
-
-	double* blockData = (double*)CPLMalloc(sizeof(double)*RASTERBLOCKSIZE*RASTERBLOCKSIZE);
-	for(int x = 0; x < nXSize/RASTERBLOCKSIZE; x++)
+	/*
+	float* blockData = (float*)CPLMalloc(sizeof(float)*RASTERBLOCKSIZE*RASTERBLOCKSIZE);
+	for(int x = 0; x < nXSize/RASTERBLOCKSIZE+1; x++)
 	{	
-		for(int y = 0; y < nXSize/RASTERBLOCKSIZE; y++)
+		for(int y = 0; y < nYSize/RASTERBLOCKSIZE+1; y++)
 		{
-			poBand->RasterIO(GF_Read, x, y, RASTERBLOCKSIZE, RASTERBLOCKSIZE, 
-				blockData, RASTERBLOCKSIZE, RASTERBLOCKSIZE, GDT_Float64, 0, 0);
-			r->setBlock(x,y,blockData);
+			long maxBlockSizeX = min(nXSize-x*RASTERBLOCKSIZE, RASTERBLOCKSIZE);
+			long maxBlockSizeY = min(nYSize-y*RASTERBLOCKSIZE, RASTERBLOCKSIZE);
+
+			poBand->RasterIO(GF_Read, x*RASTERBLOCKSIZE, y*RASTERBLOCKSIZE, maxBlockSizeX, maxBlockSizeY, 
+				blockData, RASTERBLOCKSIZE, RASTERBLOCKSIZE, GDT_Float32, 0, 0);
+
+			if(maxBlockSizeX == RASTERBLOCKSIZE && maxBlockSizeY == RASTERBLOCKSIZE)
+				r->setBlock(x, y, (double*)blockData);	// straight forward copying
+			else
+			{
+				// remap the read block to a zeroed native block field
+				double nativeBlock[RASTERBLOCKSIZE*RASTERBLOCKSIZE];
+				memset(nativeBlock, 0, sizeof(nativeBlock));
+
+				for(int yy=0;yy<maxBlockSizeY;yy++)
+					memcpy(	&nativeBlock[yy*RASTERBLOCKSIZE], 
+							&blockData[yy*maxBlockSizeX], 
+							sizeof(double)*maxBlockSizeX);
+
+				r->setBlock(x,y,nativeBlock);
+			}
 		}
 	}
-
-	CPLFree(blockData);
-
-    /*pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
+	
+	CPLFree(blockData);*/
+	/*
+    float *pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
 
     for(int index = 0; index < nYSize; index++)
     {
@@ -616,6 +633,37 @@ bool ImportwithGDAL::importRasterData()
     }
 
     CPLFree(pafScanline);*/
+
+	
+	const int blocksInLine = (nXSize/RASTERBLOCKSIZE+1);
+	// we make scanline big enough to copy from overlapping space
+	double *pafScanline = (double *) CPLMalloc(sizeof(double)*blocksInLine*RASTERBLOCKSIZE);
+
+	double* blockLine = new double[RASTERBLOCKSIZE*RASTERBLOCKSIZE*blocksInLine];
+
+    for(int index = 0; index < nYSize; index++)
+    {
+        poBand->RasterIO( GF_Read, 0, nYSize-index-1, nXSize, 1, pafScanline, nXSize, 1, GDT_Float64, 0, 0 );
+
+		int y = index % RASTERBLOCKSIZE;	// height in block line
+
+		if(y == 0)
+			memset(blockLine, 0, sizeof(double)*RASTERBLOCKSIZE*RASTERBLOCKSIZE*blocksInLine);
+
+		for(int x=0;x<blocksInLine;x++)		// go over length in block line
+			memcpy(	&blockLine[RASTERBLOCKSIZE*RASTERBLOCKSIZE*x + RASTERBLOCKSIZE*y],
+					&pafScanline[RASTERBLOCKSIZE*x], sizeof(double)*RASTERBLOCKSIZE);
+
+		if(y == RASTERBLOCKSIZE-1 || index == nYSize-1)
+		{
+			for(int x=0;x<blocksInLine;x++)
+				r->setBlock(x, index/RASTERBLOCKSIZE, &blockLine[RASTERBLOCKSIZE*RASTERBLOCKSIZE*x]);
+		}
+    }
+
+	delete blockLine;
+    CPLFree(pafScanline);
+
     return true;
 }
 
