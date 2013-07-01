@@ -37,18 +37,21 @@ ImportRasterData::ImportRasterData()
     FileName = "";
     dataname = "";
     dataname_old = "";
+    appendToStream = false;
+    appendToStream_old = false;
 
     this->addParameter("Filename", DM::FILENAME, &FileName);
     this->addParameter("DataName", DM::STRING, &dataname);
     this->addParameter("Multiplier", DM::DOUBLE, &multiplier);
     this->addParameter("Flip",DM::BOOL, &flip);
+    this->addParameter("appendToStream", DM::BOOL, &this->appendToStream);
 }
 
 void ImportRasterData::init()
 {
     if (dataname.empty())
         return;
-    if (dataname.compare(dataname_old) == 0)
+    if (dataname.compare(dataname_old) == 0 && appendToStream == appendToStream_old )
         return;
     DM::View data(dataname, DM::RASTERDATA, DM::WRITE);
     std::vector<DM::View> vdata;
@@ -59,6 +62,8 @@ void ImportRasterData::init()
     Coords.addAttribute("Xoffset");
     Coords.addAttribute("Yoffset");
     vdata.push_back(Coords);
+    if (this->appendToStream)
+        vdata.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::READ));
 
     this->addData("Data", vdata);
 
@@ -78,8 +83,8 @@ void ImportRasterData::run()
 
     QTextStream stream(&file);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         DM::Logger(DM::Error) << "warning, read input file ";
-         return;
+        DM::Logger(DM::Error) << "warning, read input file ";
+        return;
     }
 
     QString line("NULL");

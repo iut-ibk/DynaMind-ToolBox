@@ -36,9 +36,11 @@ class DM_HELPER_DLL_EXPORT ImportRasterData : public DM::Module
 private:
     double multiplier;
     double flip;
+    bool appendToStream;
     std::string FileName;
     std::string dataname;
     std::string dataname_old;
+    bool appendToStream_old;
     DM::View Coords;
 public:
     ImportRasterData();
