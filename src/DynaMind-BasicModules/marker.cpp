@@ -308,9 +308,9 @@ void Marker::run() {
             ulong X = (ulong) ( n->getX() - offsetX  ) / param.CellSize;
             ulong Y = (ulong) ( n->getY() - offsetY  ) / param.CellSize;
 
-            if ( X >= param.Width)
+            if ( X >= Width)
                 continue;
-            if ( Y >= param.Height)
+            if ( Y >= Height)
                 continue;
 
             points.push_back(Node(X,Y ,n->getZ()));
@@ -343,7 +343,7 @@ void Marker::run() {
                 long X = (long) ( x0 + i* (dx /  steps) );
                 long Y = (long) ( y0 + i* (dy /  steps) );
 
-                if ( X >= param.Width)
+                if ( X >= Width)
                     continue;
                 if ( Y >= param.Height)
                     continue;
@@ -382,10 +382,10 @@ void Marker::run() {
             minI = 0;
         if (minJ < 0)
             minJ = 0;
-        if (maxI > param.Width)
-            maxI = param.Width;
-        if (maxJ > param.Height)
-            maxJ = param.Height;
+        if (maxI > Width)
+            maxI = Width;
+        if (maxJ > Height)
+            maxJ = Height;
         Node currentPoint;
 
         for ( unsigned long  i = minI; i < maxI; i++ ) {

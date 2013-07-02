@@ -210,8 +210,8 @@ void CellularAutomata::run()  {
     }
 
     //Eval Expressions
-    for (int x = 0; x < this->param.Width; x++) {
-        for (int y = 0; y < this->param.Height; y++) {
+    for (int x = 0; x < Width; x++) {
+        for (int y = 0; y < Height; y++) {
             //Update RasterData
 
             foreach(std::string s, this->NeighboorhoodList) {
