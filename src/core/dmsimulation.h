@@ -109,6 +109,9 @@ public:
 		Module* dest;
 		std::string inPort;
 
+		bool isIntoGroupLink;
+		bool isOutOfGroupLink;
+
 		/** @brief shortcut to src data */
 		System* getData()
 		{
@@ -188,6 +191,9 @@ private:
 	bool checkModuleStream(Module* m, std::string streamName);
 	bool finished;	// for decoupled run
 	bool canceled;
+	
+	Link* getIngoingLink(Module* dest, std::string inPort);
+	Link* getOutgoingLink(Module* src, std::string outPort);
 };
 
 

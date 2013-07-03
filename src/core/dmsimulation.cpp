@@ -47,7 +47,7 @@
 //#include <dmmodulelink.h>
 //#include <dmport.h>
 #include <dmmoduleregistry.h>
-//#include <dmgroup.h>
+#include <dmgroup.h>
 #include <dmsimulationwriter.h>
 #include <dmlogger.h>
 //#include <dmporttuple.h>
@@ -195,7 +195,14 @@ void Simulation::registerModulesFromDefaultLocation()
 
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream)
 {
-	if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
+	bool isIntoGroupLink = false;
+	bool isOutOfGroupLink = false;
+	// group stuff
+	if(Group* g = dynamic_cast<Group*>(source))	// dont forget to check vtable!
+		isIntoGroupLink = true;		// inner into-group link
+	else if(Group* g = dynamic_cast<Group*>(dest))
+		isOutOfGroupLink = true;	// inner out-of-group link
+	else if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
 	{
 		Logger(Warning) << "Cannot connect modules";
 		return false;
@@ -215,7 +222,10 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	l->outPort = outPort;
 	l->dest = dest;
 	l->inPort = inPort;
+	l->isIntoGroupLink = isIntoGroupLink;
+	l->isOutOfGroupLink = isOutOfGroupLink;
 	links.push_back(l);
+	//<<<<<<<<<<<<<<< stream check
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
 							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
@@ -251,16 +261,40 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	}
 	return false;
 }
-Module* Simulation::getFormerModule(Module* m, std::string inPort, std::string& outPort)
+
+Simulation::Link* Simulation::getIngoingLink(Module* dest, std::string inPort)
 {
 	foreach(Link* l, links)
+		if(	l->dest == dest && l->inPort == inPort)
+			return l;
+	
+	return NULL;
+}
+Simulation::Link* Simulation::getOutgoingLink(Module* src, std::string outPort)
+{
+	foreach(Link* l, links)
+		if(	l->src == src && l->outPort == outPort)
+			return l;
+
+	return NULL;
+}
+
+Module* Simulation::getFormerModule(Module* m, std::string inPort, std::string& outPort)
+{
+	Link* l = getIngoingLink(m, inPort);
+	if(l)
 	{
-		if(	l->dest == m && 
-			l->inPort == inPort)
+		//if(dynamic_cast<Group*>(l->src))
 		{
-			outPort = l->outPort;
-			return l->src;
+			// so the former module is a group, step into it
+			if(l->isIntoGroupLink)
+				l = getIngoingLink(l->src, l->outPort);
+			if(l->isOutOfGroupLink)
+				l = getOutgoingLink(l->src, l->outPort);
 		}
+		
+		outPort = l->outPort;
+		return l->src;
 	}
 	return NULL;
 }
