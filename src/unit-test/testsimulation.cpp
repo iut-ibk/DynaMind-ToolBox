@@ -203,6 +203,57 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 }
 
+TEST_F(TestSimulation,LoopGroupTest) 
+{
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test loop group";
+	DM::Simulation sim;
+	sim.registerModule("dynamind-testmodules");
+
+	DM::Module* m = sim.addModule("TestModule");
+	ASSERT_TRUE(m != 0);
+	
+	GroupTest* g = (GroupTest* ) sim.addModule("GroupTest");
+	ASSERT_TRUE(g != 0);
+	g->addInPort("In");
+	g->addOutPort("Out");
+	
+	DM::Module* inout  = sim.addModule("InOut");
+	ASSERT_TRUE(inout != 0);
+
+	DM::Module* inout2  = sim.addModule("InOut");
+	ASSERT_TRUE(inout2 != 0);
+	
+	ASSERT_TRUE(sim.addLink(m, "Sewer", g, "In"));
+	ASSERT_TRUE(sim.addLink(g, "In", inout, "Inport"));
+	ASSERT_TRUE(sim.addLink(inout, "Inport", g, "Out"));
+	ASSERT_TRUE(sim.addLink(g, "Out", inout2, "Inport"));
+
+
+	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
+	//ASSERT_TRUE(l != 0);
+	//Here comes the group
+	/*
+	ASSERT_TRUE(sim.addLink(inout, "Inport", g, "In"));
+	DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
+	ASSERT_TRUE(dyinout != 0);
+	dyinout->setGroup(g);
+	ASSERT_TRUE(dyinout != 0);
+	dyinout->addAttribute("D");
+	DM::ModuleLink * l1 = sim.addLink(g->getInPortTuple("In")->getOutPort(), dyinout->getInPort("Inport"));
+	ASSERT_TRUE(l1 != 0);
+	DM::ModuleLink * l_out = sim.addLink(dyinout->getOutPort("Inport"), g->getOutPortTuple("Out")->getInPort());
+	ASSERT_TRUE(l_out != 0);
+	DM::Module * inout2  = sim.addModule("InOut2");
+	ASSERT_TRUE(inout2 != 0);
+	DM::ModuleLink * l2 = sim.addLink(g->getOutPortTuple("Out")->getOutPort(), inout2->getInPort("Inport"));
+	ASSERT_TRUE(l2 != 0);
+	*/
+	sim.run();
+	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+}
+
 #ifdef GROUPTEST
 
 TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
