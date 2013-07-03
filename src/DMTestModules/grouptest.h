@@ -24,7 +24,7 @@
  *
  */
 
-#define GROUPTEST_H
+//#define GROUPTEST_H
 #ifndef GROUPTEST_H
 #define GROUPTEST_H
 
@@ -42,8 +42,9 @@ using namespace DM;
  *
  */
 class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
-DM_DECLARE_GROUP(GroupTest)
+DM_DECLARE_NODE(GroupTest)
 private:
+	/*
     int Runs;
     int i;
     std::vector<DM::View> InViews;
@@ -51,7 +52,7 @@ private:
 
     std::vector<std::string> nameOfInViews;
     std::vector<std::string> nameOfOutViews;
-
+	*/
     public:
         GroupTest();
         virtual ~GroupTest(){}

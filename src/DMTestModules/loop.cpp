@@ -34,9 +34,10 @@ Loop::Loop()
 {
 	steps = 0;
 	counter = 0;
+	/*
 	this->addInPort("in");
 	this->addOutPort("true");
-	this->addOutPort("false");
+	this->addOutPort("false");*/
 	this->addParameter("steps", DM::INT, &steps);
 	this->addParameter("counter", DM::INT, &counter);
 }
