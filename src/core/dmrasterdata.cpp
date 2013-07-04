@@ -163,7 +163,7 @@ bool RasterData::setCell(long x, long y, double value)
 
 double RasterData::getCellSize() const
 {
-    Logger(Warning) << "getCellSize is depricated use getCellSizeX and getCellSizeY";
+    Logger(Warning) << "getCellSize is deprecated use getCellSizeX and getCellSizeY";
     return cellSizeX;
 }
 
