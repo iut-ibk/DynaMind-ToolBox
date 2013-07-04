@@ -650,21 +650,44 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 	Logger(Standard) << ">> loading simulation file '" << filename << "'";
     SimulationReader simreader(QString::fromStdString(filename));
 	
+	QVector<ModuleEntry> moduleEntries = simreader.getModules();
+
+	int waitingForGroup = 0;
 	// load modules
-	foreach(ModuleEntry me, simreader.getModules())
+	while(moduleEntries.size() > 0 && moduleEntries.size() > waitingForGroup)
+	//foreach(ModuleEntry me, simreader.getModules())
 	{
+		ModuleEntry me = moduleEntries.first();
+		moduleEntries.pop_front();
+
+		DM::Module* owner = modMap[me.GroupUUID.toStdString()];
+		if(me.GroupUUID.size())
+		{
+			if(!owner)
+			{
+				moduleEntries.push_back(me);
+				waitingForGroup++;
+				continue;
+			}
+			else
+				waitingForGroup--;
+		}
 		// do not init module - we first have to set parameters and links as well as checking the stream!
-		if(DM::Module* m = addModule(me.ClassName.toStdString(), NULL, false))
+		if(DM::Module* m = addModule(me.ClassName.toStdString(), owner, false))
 		{
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters
 			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
 				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
+			// we init now (probably two times) to init e.g. ports
 			m->init();
 		}
 		else
-			DM::Logger(Error) << "could not create module '" << me.ClassName.toStdString() << "'";
+			DM::Logger(Error) << "creating module '" << me.ClassName.toStdString() << "' failed";
 	}
+	if(waitingForGroup>0)
+		foreach(ModuleEntry me, moduleEntries)
+			DM::Logger(Error) << "could not find the group for module '" << me.ClassName.toStdString() << "'";
 
 	// load links
 	foreach(LinkEntry le, simreader.getLinks())
