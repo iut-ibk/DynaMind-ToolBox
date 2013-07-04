@@ -39,6 +39,10 @@ class PortNode;
 //class GUILink;
 class SimulationTab;
 class QTabWidget;
+namespace DM
+{
+class Group;
+}
 
 enum PortType;
 
@@ -67,13 +71,13 @@ public:
 	//void guiUpdatePorts(ModelNode* node);
 
 	// overloaded
-	DM::Module* addModule(std::string moduleName, bool callInit = true);
+	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true);
 
 	//ModelNode* guiAddModule(QString moduleName);
 
 
 	//SimulationTab* rootTab;
-	SimulationTab* addTab(QString name);
+	SimulationTab* addTab(DM::Group* parentGroup);	// parent = NULL for root tab
 	void closeTab(int index);
 	void closeTab(SimulationTab* tab);
 	SimulationTab* getTab(int index);	// 0 = root*/

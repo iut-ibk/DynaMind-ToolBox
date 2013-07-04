@@ -36,6 +36,10 @@
 #include <QWidget>
 
 class GUISimulation;
+namespace DM
+{
+class Group;
+}
 
 class DM_HELPER_DLL_EXPORT SimulationTab: public QGraphicsScene
 {
@@ -49,8 +53,9 @@ private:
 
 	// a pointer to the simulation object, which will be manipulated and drawn in this tab
 	GUISimulation* sim;
+	DM::Group* parentGroup;
 public:
-	SimulationTab(QWidget* parent, GUISimulation* sim);
+	SimulationTab(QWidget* parent, GUISimulation* sim, DM::Group* parentGroup);
 	~SimulationTab();
 
 	QGraphicsView* getQGViewer() {return viewer;};

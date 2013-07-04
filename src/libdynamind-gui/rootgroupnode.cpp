@@ -32,8 +32,10 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <qtreewidget.h>
 #include <guisimulation.h>
+#include <dmgroup.h>
 
-SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim): QGraphicsScene(parent)
+SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
+	QGraphicsScene(parent), parentGroup(parentGroup)
 {
 	//scene = new QGraphicsScene(parent);
 	
@@ -75,12 +77,12 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 		return;
 
 	QTreeWidgetItem* item = moduleTree->currentItem();
-	
 	QString type = item->text(1);
 	QString moduleName = item->text(0);
+
 	if(type == "Module")
 	{
-		if(DM::Module* m = sim->addModule(moduleName.toStdString()))
+		if(DM::Module* m = sim->addModule(moduleName.toStdString(), this->parentGroup))
 			sim->getModelNode(m)->setPos(event->scenePos());	// move to cursor
 		// get module node from simulation
 		//ModelNode* node = sim->guiAddModule(moduleName);

@@ -50,7 +50,7 @@ GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulati
 	this->parent = parent;
 	this->tabWidget = tabWidget;
 
-	addTab("ROOT");
+	addTab(NULL);
 }
 
 /*
@@ -187,9 +187,9 @@ ModelNode* GUISimulation::guiAddModule(QString moduleName)
 }*/
 
 
-DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
+DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent, bool callInit)
 {
-	DM::Module* m = Simulation::addModule(moduleName, callInit);
+	DM::Module* m = Simulation::addModule(moduleName, parent, callInit);
 	if(!m)
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
@@ -202,7 +202,7 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	if(g)
 	{
 		DM::Logger(DM::Debug) << "added group '" << moduleName << "'";
-		SimulationTab* groupTab = addTab(QString::fromStdString(moduleName));
+		SimulationTab* groupTab = addTab(g);
 		GroupNode* gnode = new GroupNode(m, this, groupTab);
 		node->setChild(gnode);
 		groupTab->addItem(gnode);
@@ -210,11 +210,11 @@ DM::Module* GUISimulation::addModule(std::string moduleName, bool callInit)
 	return m;
 }
 
-SimulationTab* GUISimulation::addTab(QString name)
+SimulationTab* GUISimulation::addTab(DM::Group* parentGroup)
 {
-	SimulationTab* tab = new SimulationTab(parent, this);
+	SimulationTab* tab = new SimulationTab(parent, this, parentGroup);
 	tabs.append(tab);
-	tabWidget->addTab((QWidget*)tab->getQGViewer(), name);
+	tabWidget->addTab((QWidget*)tab->getQGViewer(), parentGroup?parentGroup->getClassName():"ROOT");
 	return tab;
 }
 
