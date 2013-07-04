@@ -405,7 +405,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 		else if(a == WRITE)	// add new views
 			updatedStream[v.getName()] = v;
 	}
-	
+
 	/*// debug print
 	std::string viewNameList;
 	if(formerViews.size()>0)
@@ -418,6 +418,8 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 
 	if(!success)
 		return success;
+	else
+		m->setStatus(MOD_UNTOUCHED);
 
 	// check next modules
 	/*std::string inPort;
