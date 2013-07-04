@@ -78,11 +78,13 @@ Simulation::~Simulation()
 	delete moduleRegistry;
 }
 
-Module* Simulation::addModule(const std::string ModuleName, bool callInit)
+Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
 {
 	Module *module = this->moduleRegistry->createModule(ModuleName);
     if(!module)
         return NULL;
+
+	module->setOwner(parent);
 
 	modules.push_back(module);
     Logger(Debug) << "Added module" << ModuleName;
@@ -195,19 +197,51 @@ void Simulation::registerModulesFromDefaultLocation()
 
 bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream)
 {
-	bool isIntoGroupLink = false;
-	bool isOutOfGroupLink = false;
-	// group stuff
-	if(Group* g = dynamic_cast<Group*>(source))	// dont forget to check vtable!
-		isIntoGroupLink = true;		// inner into-group link
-	else if(Group* g = dynamic_cast<Group*>(dest))
-		isOutOfGroupLink = true;	// inner out-of-group link
-	else if(!source || !dest || !source->hasOutPort(outPort) || ! dest->hasInPort(inPort))
+	if(!source || !dest)
 	{
-		Logger(Warning) << "Cannot connect modules";
+		Logger(Error) << "invalid module (NULL pointer)";
+		return false;
+	}
+	if(source == dest)
+	{
+		Logger(Error) << "cannot link module itself";
 		return false;
 	}
 
+	bool isIntoGroupLink = false;
+	bool isOutOfGroupLink = false;
+	// group stuff
+	if(dest->owner == source)	// into group link
+	{
+		isIntoGroupLink = true;
+		if(!source->hasInPort(outPort))
+		{
+			Logger(Error) << "accessing not existing inner group in-port";
+			return false;
+		}
+	}
+	else if(!source->hasOutPort(outPort))
+	{
+		Logger(Error) << "accessing not existing out-port";
+		return false;
+	}
+
+	if(source->owner == dest)	// out of group link
+	{
+		isOutOfGroupLink = true;
+		if(!dest->hasOutPort(inPort))
+		{
+			Logger(Error) << "accessing not existing inner group out-port";
+			return false;
+		}
+	}
+	else if(!dest->hasInPort(inPort))
+	{
+		Logger(Error) << "accessing not existing in-port";
+		return false;
+	}
+
+	// check if the same link exists already
 	foreach(Link* l, links)
 	{
 		if(l->src == source && l->outPort == outPort && l->dest == dest && l->inPort == inPort)
@@ -225,7 +259,7 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	l->isIntoGroupLink = isIntoGroupLink;
 	l->isOutOfGroupLink = isOutOfGroupLink;
 	links.push_back(l);
-	//<<<<<<<<<<<<<<< stream check
+	// stream check
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
 							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
@@ -279,22 +313,35 @@ Simulation::Link* Simulation::getOutgoingLink(Module* src, std::string outPort)
 	return NULL;
 }
 
-Module* Simulation::getFormerModule(Module* m, std::string inPort, std::string& outPort)
+Module* Simulation::getFormerModule(Module* dest, std::string inPort, std::string& outPort)
 {
-	Link* l = getIngoingLink(m, inPort);
+	Link* l = getIngoingLink(dest, inPort);
 	if(l)
 	{
-		//if(dynamic_cast<Group*>(l->src))
-		{
-			// so the former module is a group, step into it
-			if(l->isIntoGroupLink)
-				l = getIngoingLink(l->src, l->outPort);
-			if(l->isOutOfGroupLink)
-				l = getOutgoingLink(l->src, l->outPort);
-		}
+		//if(l->isIntoGroupLink)
+		//	return getFormerModule(l->src, l->outPort, outPort);
+		//	l = getIngoingLink(l->src, l->outPort);
+		//if(l->isOutOfGroupLink)
+		//	l = getOutgoingLink(l->src, l->outPort);
 		
 		outPort = l->outPort;
 		return l->src;
+	}
+	return NULL;
+}
+
+Module* Simulation::getNextModule(Module* src, std::string outPort, std::string& inPort)
+{
+	Link* l = getOutgoingLink(src, outPort);
+	if(l)
+	{
+		//if(l->isIntoGroupLink)
+		//	l = getIngoingLink(l->src, l->outPort);
+		//if(l->isOutOfGroupLink)
+		//	l = getOutgoingLink(l->dest, l->inPort);
+
+		inPort = l->inPort;
+		return l->dest;
 	}
 	return NULL;
 }
@@ -307,7 +354,9 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 	// check if we are in the middle of an unchecked stream
 	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
 	{
-		foreach(std::string inPort, m->getInPortNames())
+		Link* l = getIngoingLink(m, streamName);
+		return checkModuleStream(l->src, l->outPort);
+		/*foreach(std::string inPort, m->getInPortNames())
 		{
 			std::string outPort;
 			if(Module* src = getFormerModule(m, inPort, outPort))
@@ -315,9 +364,9 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 					continue;
 
 			success = false;
-		}
+		}*/
 		// this module is checked in the above recursivly called checkModuleStream
-		return success;	
+		//return success;	
 	}
 	// update stream view info in module
 	std::map<std::string,View> updatedStream = *curStreamViews;
@@ -349,7 +398,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 				continue;
 			}
 		}
-		if(a == WRITE)	// add new views
+		else if(a == WRITE)	// add new views
 			updatedStream[v.getName()] = v;
 	}
 	
@@ -367,9 +416,19 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 		return success;
 
 	// check next modules
-	foreach(Simulation::Link* l, links)
+	/*std::string inPort;
+	Module* next = getNextModule(m, streamName, inPort);
+	if(next)
 	{
-		if(l->src == m && l->outPort == streamName)
+		next->streamViews[inPort] = updatedStream;
+		if(!checkModuleStream(next, inPort))
+			success = false;
+	}*/
+	//foreach(Simulation::Link* l, links)
+	//{
+	//	if(l->src == m && l->outPort == streamName)
+	if(Link* l = getOutgoingLink(m, streamName))
+	{
 		{
 			l->dest->streamViews[l->inPort] = updatedStream;
 			if(!checkModuleStream(l->dest, l->inPort))
@@ -583,7 +642,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 	foreach(ModuleEntry me, simreader.getModules())
 	{
 		// do not init module - we first have to set parameters and links as well as checking the stream!
-		if(DM::Module* m = addModule(me.ClassName.toStdString(), false))
+		if(DM::Module* m = addModule(me.ClassName.toStdString(), NULL, false))
 		{
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters

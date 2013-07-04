@@ -219,16 +219,16 @@ TEST_F(TestSimulation,LoopGroupTest)
 	g->addInPort("In");
 	g->addOutPort("Out");
 	
-	DM::Module* inout  = sim.addModule("InOut");
-	ASSERT_TRUE(inout != 0);
+	DM::Module* inoutInGroup  = sim.addModule("InOut", g);
+	ASSERT_TRUE(inoutInGroup != 0);
 
-	DM::Module* inout2  = sim.addModule("InOut");
-	ASSERT_TRUE(inout2 != 0);
+	DM::Module* inoutAfterGroup  = sim.addModule("InOut");
+	ASSERT_TRUE(inoutAfterGroup != 0);
 	
 	ASSERT_TRUE(sim.addLink(m, "Sewer", g, "In"));
-	ASSERT_TRUE(sim.addLink(g, "In", inout, "Inport"));
-	ASSERT_TRUE(sim.addLink(inout, "Inport", g, "Out"));
-	ASSERT_TRUE(sim.addLink(g, "Out", inout2, "Inport"));
+	ASSERT_TRUE(sim.addLink(g, "In", inoutInGroup, "Inport"));
+	ASSERT_TRUE(sim.addLink(inoutInGroup, "Inport", g, "Out"));
+	ASSERT_TRUE(sim.addLink(g, "Out", inoutAfterGroup, "Inport"));
 
 
 	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
@@ -252,6 +252,13 @@ TEST_F(TestSimulation,LoopGroupTest)
 	*/
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+
+	sim.removeModule(inoutInGroup);
+	
+	/*ASSERT_TRUE(sim.addLink(g, "In", g, "Out"));
+	sim.run();
+	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);*/
+
 }
 
 #ifdef GROUPTEST

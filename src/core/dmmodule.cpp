@@ -58,6 +58,7 @@ Module::Module()
 {
 	status = MOD_UNTOUCHED;
 	//gui = NULL;
+	owner = NULL;
 }
 Module::~Module()
 {
@@ -255,6 +256,13 @@ std::map<std::string,View> Module::getViewsInStdStream()
 		return std::map<std::string,View>();
 }
 
+void Module::setOwner(Module* owner)
+{
+	if(!this->owner)
+		this->owner = owner;
+	else
+		Logger(Error) << "reassigning a new parent to a module is not allowed";
+}
 /*void Module::updateParameters()
 {
 	init();

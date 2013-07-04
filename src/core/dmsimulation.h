@@ -130,7 +130,7 @@ public:
 	Simulation();
 	~Simulation();
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
-    virtual Module* addModule(const std::string ModuleName, bool callInit = true);
+    virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true);
     /** @brief Removes and deletes a module from the simulation */
     void removeModule(Module* m);
 	/** @brief register a new native module returns if module has been loaded succcessfully */
@@ -174,8 +174,9 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
-
+	
 	Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
+	Module* getNextModule(Module* src, std::string outPort, std::string& inPort);
 	
 	/** @brief checks the stream for possible missing views */
 	bool checkStream();
