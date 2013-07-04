@@ -132,7 +132,7 @@ public:
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
     virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true);
     /** @brief Removes and deletes a module from the simulation */
-    void removeModule(Module* m);
+    virtual void removeModule(Module* m);
 	/** @brief register a new native module returns if module has been loaded succcessfully */
     bool registerModule(const std::string& filepath);
 	/** @brief registers all acceptable modules in the provided directory*/
