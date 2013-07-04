@@ -660,6 +660,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 			// load parameters
 			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
 				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
+			m->init();
 		}
 		else
 			DM::Logger(Error) << "could not create module '" << me.ClassName.toStdString() << "'";
