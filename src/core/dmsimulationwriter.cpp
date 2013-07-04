@@ -97,7 +97,7 @@ void writeModule(QTextStream &out, Module* m)
 	out << "\t\t"<< "\t<Name value=\""
 		<< QString::fromStdString(m->getName()) << "\"/>\n";
 	out << "\t\t"<< "\t<GroupUUID value=\""
-		<< QString::fromStdString("") << "\"/>\n";
+		<< QString::fromAscii((char*)m->getOwner(), sizeof(Module*)) << "\"/>\n";
 	out << "\t\t"<< "\t<DebugMode value=\""
 		<< QString::number(0) << "\"/>\n";
 
