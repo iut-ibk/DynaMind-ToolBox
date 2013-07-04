@@ -88,6 +88,7 @@ public:
 	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
 	void setChild(ModelNode* child){this->child = child;}
+	ModelNode* getChild(){return child;}
 protected:
     /*GUIPortObserver guiPortObserver;
     float x1;

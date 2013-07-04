@@ -287,8 +287,12 @@ PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, DM::Po
 {
 	ModelNode* mn;
 	if(map_contains(&modelNodes, m, mn))
-			return mn->getPort(portName, type);
-
+	{
+		if(PortNode* pn = mn->getPort(portName, type))
+			return pn;
+		else if(mn->getChild())
+			return mn->getChild()->getPort(portName, type==DM::INPORT?DM::OUTPORT:DM::INPORT);
+	}
 	return NULL;
 }
 

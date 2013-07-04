@@ -210,10 +210,7 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 	items = this->scene()->items(event->scenePos());
     foreach (QGraphicsItem  * item, items)
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
-			if(		port->portType + this->portType == 1 
-				&&	port->module != this->module)
-				port->setHover(true);
-
+			port->setHover(true);
 
 	/*
     if (LinkMode) {
@@ -311,11 +308,26 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
 		{
 			// check self linking
-			if(port->module == this->module)
-				break;
+			//if(port->module == this->module)
+			//	break;
 			
 			// check port types
-			if(port->portType == DM::INPORT && this->portType == DM::OUTPORT)
+			if(simulation->isLinkingValid(this->module, this->getPortName().toStdString(),
+									port->module, port->getPortName().toStdString(), false))
+			{
+				simulation->addLink(this->module, this->getPortName().toStdString(),
+									port->module, port->getPortName().toStdString());
+			}
+			else 
+				simulation->addLink(port->module, port->getPortName().toStdString(),
+									this->module, this->getPortName().toStdString());
+
+
+			/*
+			if((port->portType == DM::INPORT && this->portType == DM::OUTPORT)
+				|| (port->portType == DM::INPORT && this->portType == DM::INPORT)
+				
+				)
 			{
 				simulation->addLink(this->module, this->getPortName().toStdString(),
 									port->module, port->getPortName().toStdString());
@@ -324,7 +336,7 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			{
 				simulation->addLink(port->module, port->getPortName().toStdString(),
 									this->module, this->getPortName().toStdString());
-			}
+			}*/
 			
 			break;
 			
