@@ -61,6 +61,7 @@ public:
 	QGraphicsView* getQGViewer() {return viewer;};
 	void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
 	void dropEvent(QGraphicsSceneDragDropEvent *event);
+	DM::Group* getParentGroup(){return parentGroup;};
 };
 
 #endif

@@ -83,7 +83,7 @@ public:
 	void closeTab(SimulationTab* tab);
 	SimulationTab* getTab(int index);	// 0 = root*/
 	SimulationTab* getSelectedTab();
-	void SelectTab(int index);
+	void selectTab(int index);
 	
     /** @brief adds a simulation saved in a file to the current simulation 
 				for gui we load the positions of the modules too */

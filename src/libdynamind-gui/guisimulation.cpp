@@ -194,6 +194,14 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
+
+	if(!parent)
+		selectTab(0);
+	else
+		for(int i=1;i<tabs.size();i++)
+			if(tabs.at(i)->getParentGroup() == parent)
+				selectTab(i);		
+
 	getSelectedTab()->addItem(node);
 	modelNodes[m] = node;
 
@@ -250,7 +258,7 @@ SimulationTab* GUISimulation::getSelectedTab()
 	return getTab(tabWidget->currentIndex());
 }
 
-void GUISimulation::SelectTab(int index)
+void GUISimulation::selectTab(int index)
 {
 	tabWidget->setCurrentIndex(index);
 }
