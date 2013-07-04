@@ -449,13 +449,18 @@ bool Simulation::checkModuleStream(Module* m)
 {
 	bool success = true;
 	std::map<std::string, std::map<std::string,View>> accessedViews = m->getAccessedViews();
-	// iterate through all streams
-	for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
-		it != accessedViews.end(); ++it)
+	if(accessedViews.size() != 0)
 	{
-		if(!checkModuleStream(m, it->first))
-			success = false;
+		// iterate through all streams
+		for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
+			it != accessedViews.end(); ++it)
+		{
+			if(!checkModuleStream(m, it->first))
+				success = false;
+		}
 	}
+	else
+		m->init();
 	return success;
 }
 
@@ -467,11 +472,12 @@ bool Simulation::checkStream()
 	{
 		if(m->getInPortNames().size() == 0)
 		{
-			//if(!checkModuleStream(m, std::set<std::string>()))
-			//	return false;
-			results.append(new QFuture<bool>(
+			if(!checkModuleStream(m))
+				return false;
+			/*results.append(new QFuture<bool>(
 				QtConcurrent::run(this, &Simulation::checkModuleStream, m)
-				));
+				));*/
+			//addingPorts not possible if triggerd by different thread
 		}
 	}
 	foreach(QFuture<bool>* r, results)

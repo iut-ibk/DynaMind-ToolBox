@@ -358,7 +358,15 @@ public:
 		case DM::BOOL:		p->set((bool)qvalue.toInt());	break;
 		case DM::FILENAME:	p->set(value);	break;
 		case DM::STRING:	p->set(value);	break;
-		case DM::STRING_LIST:	break;
+		case DM::STRING_LIST:	
+		{
+			std::vector<std::string> v;
+			foreach(QString s, qvalue.split("*|*"))
+				if(s.size())
+					v.push_back(s.toStdString());
+			p->set(v);
+		}
+		break;
 		case DM::STRING_MAP:	break;
 		}
 	}
