@@ -72,6 +72,7 @@ public:
 
 	// overloaded
 	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true);
+    void removeModule(DM::Module* m);
 
 	//ModelNode* guiAddModule(QString moduleName);
 

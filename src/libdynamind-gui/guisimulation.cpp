@@ -210,6 +210,12 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 	return m;
 }
 
+void GUISimulation::removeModule(DM::Module* m)
+{
+	Simulation::removeModule(m);
+	modelNodes.erase(m);
+}
+
 SimulationTab* GUISimulation::addTab(DM::Group* parentGroup)
 {
 	SimulationTab* tab = new SimulationTab(parent, this, parentGroup);
