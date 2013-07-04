@@ -53,7 +53,13 @@ void LoopGroup::run()
 
 void LoopGroup::init() 
 {
+	foreach(std::string portName, nameOfInPorts)
+		if(!hasInPort(portName))
+			addPort(portName, INPORT);
 
+	foreach(std::string portName, nameOfOutPorts)
+		if(!hasOutPort(portName))
+			addPort(portName, OUTPORT);
 
 	/*foreach (std::string s, nameOfInViews) {
 		this->addTuplePort(s, DM::INTUPLESYSTEM);
