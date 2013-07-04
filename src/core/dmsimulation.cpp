@@ -358,9 +358,14 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 	// check if we are in the middle of an unchecked stream
 	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
 	{
-		Link* l = getIngoingLink(m, streamName);
-		return checkModuleStream(l->src, l->outPort);
-		/*foreach(std::string inPort, m->getInPortNames())
+		if(Link* l = getIngoingLink(m, streamName))
+			return checkModuleStream(l->src, l->outPort);
+		else
+		{
+			m->setStatus(MOD_CHECKERROR);
+			return false;
+		}
+			/*foreach(std::string inPort, m->getInPortNames())
 		{
 			std::string outPort;
 			if(Module* src = getFormerModule(m, inPort, outPort))
