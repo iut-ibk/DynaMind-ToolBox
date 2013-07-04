@@ -195,49 +195,46 @@ void Simulation::registerModulesFromDefaultLocation()
 		registerModulesFromDirectory(cp);
 }
 
-bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream)
+bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, 
+								bool logOutput)
 {
 	if(!source || !dest)
 	{
-		Logger(Error) << "invalid module (NULL pointer)";
+		if(logOutput)	Logger(Error) << "invalid module (NULL pointer)";
 		return false;
 	}
 	if(source == dest)
 	{
-		Logger(Error) << "cannot link module itself";
+		if(logOutput)	Logger(Error) << "cannot link module itself";
 		return false;
 	}
 
-	bool isIntoGroupLink = false;
-	bool isOutOfGroupLink = false;
 	// group stuff
 	if(dest->owner == source)	// into group link
 	{
-		isIntoGroupLink = true;
 		if(!source->hasInPort(outPort))
 		{
-			Logger(Error) << "accessing not existing inner group in-port";
+			if(logOutput)	Logger(Error) << "accessing not existing inner group in-port";
 			return false;
 		}
 	}
 	else if(!source->hasOutPort(outPort))
 	{
-		Logger(Error) << "accessing not existing out-port";
+		if(logOutput)	Logger(Error) << "accessing not existing out-port";
 		return false;
 	}
 
 	if(source->owner == dest)	// out of group link
 	{
-		isOutOfGroupLink = true;
 		if(!dest->hasOutPort(inPort))
 		{
-			Logger(Error) << "accessing not existing inner group out-port";
+			if(logOutput)	Logger(Error) << "accessing not existing inner group out-port";
 			return false;
 		}
 	}
 	else if(!dest->hasInPort(inPort))
 	{
-		Logger(Error) << "accessing not existing in-port";
+		if(logOutput)	Logger(Error) << "accessing not existing in-port";
 		return false;
 	}
 
@@ -246,18 +243,25 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	{
 		if(l->src == source && l->outPort == outPort && l->dest == dest && l->inPort == inPort)
 		{
-			Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
+			if(logOutput)	Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
 			return false;
 		}
 	}
+	return true;
+}
+
+bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream)
+{
+	if(!isLinkingValid(source, outPort, dest, inPort, true))
+		return false;
 
 	Link* l = new Link();
 	l->src = source;
 	l->outPort = outPort;
 	l->dest = dest;
 	l->inPort = inPort;
-	l->isIntoGroupLink = isIntoGroupLink;
-	l->isOutOfGroupLink = isOutOfGroupLink;
+	l->isIntoGroupLink = (dest->owner == source);
+	l->isOutOfGroupLink = (source->owner == dest);
 	links.push_back(l);
 	// stream check
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 

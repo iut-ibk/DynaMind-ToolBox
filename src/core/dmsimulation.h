@@ -168,8 +168,10 @@ public:
 
 	void decoupledRun();
 	void cancel();
+	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
 protected:
 	bool loadSimulation(std::string fileName, std::map<std::string, DM::Module*>& modMap);
+	
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
