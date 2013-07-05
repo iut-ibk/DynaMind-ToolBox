@@ -394,6 +394,7 @@ public:
 	void removeObserver(ModuleObserver* obs);
 //	void update();
 	Module* getOwner(){return owner;}
+	virtual bool isGroup(){return false;};
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);
