@@ -616,7 +616,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 		{
 			foreach(Link* l, branches)
 			{
-				l->ShiftData(this, branches.size() > 1);
+				l->ShiftData(branches.size() > 1);
 				nextModules.push_back(l->dest);
 			}
 			// reset out port
@@ -644,7 +644,7 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 		if(g->getInPortData(inPort))
 		{
 			Link* l = getOutgoingLink(g, inPort);
-			l->ShiftData(this, inPorts.size() > 1);
+			l->ShiftData(inPorts.size() > 1);
 			nextModules.push_back(l->dest);
 		}
 	}

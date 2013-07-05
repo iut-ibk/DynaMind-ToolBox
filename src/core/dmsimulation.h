@@ -122,7 +122,7 @@ public:
 				return src->getOutPortData(outPort);
 		}
 		/** @brief shifts data from source to destination */
-		void ShiftData(Simulation* sim, bool successor = false)
+		void ShiftData(bool successor = false)
 		{
 			System * data = getData();
 			// shift pointer
@@ -131,8 +131,7 @@ public:
 				dest->setOutPortData(inPort, data);
 			else
 				dest->setInPortData(inPort, 
-					successor ? data->createSuccessor() : data, 
-					sim);
+					successor ? data->createSuccessor() : data);
 		}
 	};
 	Simulation();

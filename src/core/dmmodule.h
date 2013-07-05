@@ -417,7 +417,7 @@ private:
 
 	//QWidget* gui;
 	/** @brief sets inport data - may only by used by DM::Simulation */
-	void setInPortData(const std::string &name, System* data, const Simulation *sim);
+	void setInPortData(const std::string &name, System* data);
 
 	//std::map<std::string, Parameter*>	parameters;
 	std::vector<Parameter*>	parameters;

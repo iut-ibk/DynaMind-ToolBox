@@ -137,7 +137,7 @@ bool Module::hasOutPort(const std::string &name)
 	return map_contains(&outPorts, name);
 }
 
-void Module::setInPortData(const std::string &name, System* data, const Simulation *sim)
+void Module::setInPortData(const std::string &name, System* data)
 {
 	if(!map_contains(&inPorts, name))
 		DM::Logger(Error) << "accessing non existent in port '" << name << "', canceled";
