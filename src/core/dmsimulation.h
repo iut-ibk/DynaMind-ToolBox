@@ -191,8 +191,8 @@ private:
 
 	
 	
-	Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
-	Module* getNextModule(Module* src, std::string outPort, std::string& inPort);
+	//Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
+	//Module* getNextModule(Module* src, std::string outPort, std::string& inPort);
 	
 	/** @brief checks the stream for possible missing views */
 	bool checkStream();
@@ -209,8 +209,8 @@ private:
 	bool finished;	// for decoupled run
 	bool canceled;
 	
-	Link* getIngoingLink(Module* dest, std::string inPort);
-	Link* getOutgoingLink(Module* src, std::string outPort);
+	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
+	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
 };
 
 

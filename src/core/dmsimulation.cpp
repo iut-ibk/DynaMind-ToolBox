@@ -300,23 +300,25 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-Simulation::Link* Simulation::getIngoingLink(Module* dest, std::string inPort)
+std::vector<Simulation::Link*> Simulation::getIngoingLinks(const Module* dest, const std::string& inPort) const
 {
+	std::vector<Simulation::Link*> ls;
 	foreach(Link* l, links)
 		if(	l->dest == dest && l->inPort == inPort)
-			return l;
+			ls.push_back(l);
 	
-	return NULL;
+	return ls;
 }
-Simulation::Link* Simulation::getOutgoingLink(Module* src, std::string outPort)
+std::vector<Simulation::Link*> Simulation::getOutgoingLinks(const Module* src, const std::string& outPort) const
 {
+	std::vector<Simulation::Link*> ls;
 	foreach(Link* l, links)
 		if(	l->src == src && l->outPort == outPort)
-			return l;
+			ls.push_back(l);
 
-	return NULL;
+	return ls;
 }
-
+/*
 Module* Simulation::getFormerModule(Module* dest, std::string inPort, std::string& outPort)
 {
 	Link* l = getIngoingLink(dest, inPort);
@@ -349,7 +351,7 @@ Module* Simulation::getNextModule(Module* src, std::string outPort, std::string&
 	}
 	return NULL;
 }
-
+*/
 bool Simulation::checkModuleStream(Module* m, std::string streamName)
 {
 	bool success = true;
@@ -358,13 +360,27 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 	// check if we are in the middle of an unchecked stream
 	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
 	{
-		if(Link* l = getIngoingLink(m, streamName))
+		std::vector<Link*> inLinks = getIngoingLinks(m, streamName);
+		if(links.size() == 0)
+		{
+			m->setStatus(MOD_CHECK_ERROR);
+			success = false;
+		}
+		else
+			foreach(Link* l, inLinks)
+				if(!checkModuleStream(l->src, l->outPort))
+					success = false;
+
+		return success;
+		/*if(Link* l = getIngoingLink(m, streamName))
 			return checkModuleStream(l->src, l->outPort);
 		else
 		{
 			m->setStatus(MOD_CHECK_ERROR);
 			return false;
-		}
+		}*/
+
+
 			/*foreach(std::string inPort, m->getInPortNames())
 		{
 			std::string outPort;
@@ -435,11 +451,12 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 		if(!checkModuleStream(next, inPort))
 			success = false;
 	}*/
-	//foreach(Simulation::Link* l, links)
-	//{
-	//	if(l->src == m && l->outPort == streamName)
-	if(Link* l = getOutgoingLink(m, streamName))
+	std::vector<Link*> outLinks = getOutgoingLinks(m, streamName);
+	foreach(Link* l, outLinks)
 	{
+	//	if(l->src == m && l->outPort == streamName)
+	//if(Link* l = getOutgoingLink(m, streamName))
+	//{
 		{
 			l->dest->streamViews[l->inPort] = updatedStream;
 			if(!checkModuleStream(l->dest, l->inPort))
@@ -603,10 +620,10 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 	{
 		// first get all links starting at the given module
 		std::list<Link*> branches;
-		Link* l = getOutgoingLink(m, it->first);
-		if(l && l->getData())
-			branches.push_back(l);
-
+		std::vector<Link*> outLinks = getOutgoingLinks(m, it->first);
+		foreach(Link* l, outLinks)
+			if(l->getData())
+				branches.push_back(l);
 
 		/*foreach(Link* l, links)
 			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
@@ -643,9 +660,11 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 	{
 		if(g->getInPortData(inPort))
 		{
-			Link* l = getOutgoingLink(g, inPort);
-			l->ShiftData(inPorts.size() > 1);
-			nextModules.push_back(l->dest);
+			foreach(Link* l, getOutgoingLinks(g, inPort))
+			{
+				l->ShiftData(inPorts.size() > 1);
+				nextModules.push_back(l->dest);
+			}
 		}
 	}
 	return nextModules;
