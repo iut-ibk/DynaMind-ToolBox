@@ -283,6 +283,7 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 	PortNode* p = getPort(name, type);
 	if(p)
 		ports.erase(find(ports.begin(), ports.end(), p));
+	delete p;
 }
 
 /*
