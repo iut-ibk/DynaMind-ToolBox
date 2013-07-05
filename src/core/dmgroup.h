@@ -42,6 +42,7 @@ public:
 	void init()
 	{
 	}
+	bool isGroup(){return true;};
 private:
 protected:
 	std::vector<std::string> nameOfInPorts;
