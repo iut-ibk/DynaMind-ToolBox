@@ -524,33 +524,56 @@ void Simulation::run()
 		// get first element
 		Module* m = worklist.front();
 		worklist.pop();
-		// execute module
-		Logger(Standard) << "running module '" << m->getName() << "'";
-		
-		QElapsedTimer modTimer;
-		modTimer.start();
-		m->setStatus(MOD_EXECUTING);
-		QFuture<void> r = QtConcurrent::run(m, &Module::run);
-		r.waitForFinished();
 
-		//m->run();
-		// check for errors
-		ModuleStatus merr = m->getStatus();
-		if(m->getStatus() == MOD_EXECUTION_ERROR)
+		if(!m->isGroup())
 		{
-			Logger(Error) << "module '" << m->getName() << "' failed (took " << (long)modTimer.elapsed() << "ms)";
-			this->status = DM::SIM_FAILED;
-			return;
+			// execute module
+			Logger(Standard) << "running module '" << m->getName() << "'";
+			QElapsedTimer modTimer;
+			modTimer.start();
+			m->setStatus(MOD_EXECUTING);
+			QFuture<void> r = QtConcurrent::run(m, &Module::run);
+			r.waitForFinished();
+
+			// check for errors
+			ModuleStatus merr = m->getStatus();
+			if(m->getStatus() == MOD_EXECUTION_ERROR)
+			{
+				if(Module* owner = m->getOwner())
+					owner->setStatus(MOD_EXECUTION_ERROR);
+
+				Logger(Error) << "module '" << m->getName() << "' failed after " << (long)modTimer.elapsed() << "ms";
+				this->status = DM::SIM_FAILED;
+				return;
+			}
+			else
+			{
+				Logger(Standard)	<< "module '" << m->getName() << "' executed successfully (took " 
+									<< (long)modTimer.elapsed() << "ms)";
+				m->setStatus(MOD_EXECUTION_OK);
+			}
+			// shift data from out port to next inport
+			foreach(Module* nextModule, shiftModuleOutput(m))
+				worklist.push(nextModule);
+		}
+		else if(m->getStatus() == MOD_EXECUTING)
+		{
+			Group* g = (Group*)m;
+			// we reached the end of the group, finish and shift data
+			g->setStatus(MOD_EXECUTION_OK);
+			foreach(Module* nextModule, shiftModuleOutput(g))
+				worklist.push(nextModule);
 		}
 		else
-			Logger(Standard) << "module '" << m->getName() << "' executed successfully (took " << (long)modTimer.elapsed() << "ms)";
-
-		m->setStatus(MOD_EXECUTION_OK);
-		// shift data from out port to next inport
-		std::list<Module*> nextModules = shiftModuleOutput(m);
-		if(nextModules.size()>0)
-			foreach(Module* m, nextModules)
-				worklist.push(m);
+		{
+			Group* g = (Group*)m;
+			// execute group
+			Logger(Standard) << "running group '" << g->getName() << "'";
+			g->setStatus(MOD_EXECUTING);
+			// instead of m::run() we simply shift the data to the first internal module
+			foreach(Module* nextModule, shiftGroupInput(g))
+				worklist.push(nextModule);
+		}
 	}
 	if(canceled)
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
@@ -580,15 +603,20 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 	{
 		// first get all links starting at the given module
 		std::list<Link*> branches;
-		foreach(Link* l, links)
+		Link* l = getOutgoingLink(m, it->first);
+		if(l && l->getData())
+			branches.push_back(l);
+
+
+		/*foreach(Link* l, links)
 			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
-				branches.push_back(l);
+				branches.push_back(l);*/
 
 		if(branches.size() > 0)
 		{
 			foreach(Link* l, branches)
 			{
-				l->ShiftData(this, branches.size()>1);
+				l->ShiftData(this, branches.size() > 1);
 				nextModules.push_back(l->dest);
 			}
 			// reset out port
@@ -604,6 +632,22 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 		it->second = NULL;
 	}
 
+	return nextModules;
+}
+
+std::list<Module*> Simulation::shiftGroupInput(Group* g)
+{
+	std::list<Module*> nextModules;
+	std::vector<std::string> inPorts = g->getInPortNames();
+	foreach(std::string inPort, inPorts)
+	{
+		if(g->getInPortData(inPort))
+		{
+			Link* l = getOutgoingLink(g, inPort);
+			l->ShiftData(this, inPorts.size() > 1);
+			nextModules.push_back(l->dest);
+		}
+	}
 	return nextModules;
 }
 

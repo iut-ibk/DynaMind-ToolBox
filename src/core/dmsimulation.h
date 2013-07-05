@@ -46,7 +46,7 @@ class Port;
 class IDataBase;
 class ModuleRegistry;
 class ModuleLink;
-//class Group;
+class Group;
 
 static const  std::string CoreVersion = DYNAMIND_VERSION_CORE;
 
@@ -115,16 +115,24 @@ public:
 		/** @brief shortcut to src data */
 		System* getData()
 		{
-			return src->getOutPortData(outPort);
+			if(src->isGroup() && dest->getOwner() == src)
+				// into group link
+				return src->getInPortData(outPort);
+			else
+				return src->getOutPortData(outPort);
 		}
 		/** @brief shifts data from source to destination */
 		void ShiftData(Simulation* sim, bool successor = false)
 		{
 			System * data = getData();
 			// shift pointer
-			this->dest->setInPortData(this->inPort, 
-				successor ? data->createSuccessor() : data, 
-				sim);
+			if(dest->isGroup() && src->getOwner() == dest)
+				// out of group link
+				dest->setOutPortData(inPort, data);
+			else
+				dest->setInPortData(inPort, 
+					successor ? data->createSuccessor() : data, 
+					sim);
 		}
 	};
 	Simulation();
@@ -176,6 +184,10 @@ private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
 	std::list<Module*> shiftModuleOutput(Module* m);
+
+	std::list<Module*> shiftGroupInput(Group* m);
+
+	
 	
 	Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
 	Module* getNextModule(Module* src, std::string outPort, std::string& inPort);
