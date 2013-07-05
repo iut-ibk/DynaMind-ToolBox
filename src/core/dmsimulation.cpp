@@ -502,6 +502,7 @@ bool Simulation::checkStream()
 			//addingPorts not possible if triggerd by different thread
 		}
 	}
+	/*
 	foreach(QFuture<bool>* r, results)
 	{
 		r->waitForFinished();
@@ -509,13 +510,14 @@ bool Simulation::checkStream()
 			success = false;
 		delete r;
 	}
-	return success;
+	return success;*/
+	return true;
 }
 
 void Simulation::run()
 {
-	canceled = false;
-	finished = false;
+	//canceled = false;
+	//finished = false;
 
 	QElapsedTimer simtimer;
 	simtimer.start();
@@ -536,7 +538,7 @@ void Simulation::run()
 			worklist.push(m);
 	
 	// run modules
-	while(worklist.size() && !canceled)
+	while(worklist.size() && !decoupledRunResult.isCanceled())
 	{
 		// get first element
 		Module* m = worklist.front();
@@ -592,23 +594,25 @@ void Simulation::run()
 				worklist.push(nextModule);
 		}
 	}
-	if(canceled)
+	if(decoupledRunResult.isCanceled())
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
 	else
 		Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
 
-	finished = true;
+	//finished = true;
 }
 
 void Simulation::decoupledRun()
 {
-	QFuture<void> r = QtConcurrent::run(this, &Simulation::run);
+	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
 }
 
 void Simulation::cancel()
 {
-	canceled = true;
+	decoupledRunResult.cancel();
 	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
+	decoupledRunResult.waitForFinished();
+	//canceled = true;
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
@@ -672,6 +676,8 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 
 void Simulation::reset()
 {
+	if(decoupledRunResult.isRunning())
+		cancel();
     Logger(Standard) << ">> Reset Simulation";
 	foreach(Module* m, this->modules)
 	{

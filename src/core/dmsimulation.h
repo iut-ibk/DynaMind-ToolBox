@@ -206,8 +206,9 @@ private:
 	
 	bool checkModuleStream(Module* m);
 	bool checkModuleStream(Module* m, std::string streamName);
-	bool finished;	// for decoupled run
-	bool canceled;
+	//bool finished;	// for decoupled run
+	//bool canceled;
+	QFuture<void> decoupledRunResult;
 	
 	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
 	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
