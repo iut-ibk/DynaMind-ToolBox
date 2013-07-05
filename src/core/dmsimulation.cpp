@@ -362,7 +362,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 			return checkModuleStream(l->src, l->outPort);
 		else
 		{
-			m->setStatus(MOD_CHECKERROR);
+			m->setStatus(MOD_CHECK_ERROR);
 			return false;
 		}
 			/*foreach(std::string inPort, m->getInPortNames())
@@ -402,7 +402,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 				DM::Logger(DM::Error) << "module '" << m->getClassName() 
 					<< "' tries to access the nonexisting view '" << v.getName()
 					<< "' from stream '" << streamName << "'";
-				m->setStatus(MOD_CHECKERROR);
+				m->setStatus(MOD_CHECK_ERROR);
 				success = false;
 				continue;
 			}
@@ -424,7 +424,7 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 	if(!success)
 		return success;
 	else
-		m->setStatus(MOD_UNTOUCHED);
+		m->setStatus(MOD_CHECK_OK);
 
 	// check next modules
 	/*std::string inPort;
@@ -529,13 +529,14 @@ void Simulation::run()
 		
 		QElapsedTimer modTimer;
 		modTimer.start();
+		m->setStatus(MOD_EXECUTING);
 		QFuture<void> r = QtConcurrent::run(m, &Module::run);
 		r.waitForFinished();
 
 		//m->run();
 		// check for errors
 		ModuleStatus merr = m->getStatus();
-		if(m->getStatus() == MOD_EXECUTIONERROR)
+		if(m->getStatus() == MOD_EXECUTION_ERROR)
 		{
 			Logger(Error) << "module '" << m->getName() << "' failed (took " << (long)modTimer.elapsed() << "ms)";
 			this->status = DM::SIM_FAILED;
@@ -544,7 +545,7 @@ void Simulation::run()
 		else
 			Logger(Standard) << "module '" << m->getName() << "' executed successfully (took " << (long)modTimer.elapsed() << "ms)";
 
-		m->setStatus(MOD_OK);
+		m->setStatus(MOD_EXECUTION_OK);
 		// shift data from out port to next inport
 		std::list<Module*> nextModules = shiftModuleOutput(m);
 		if(nextModules.size()>0)
