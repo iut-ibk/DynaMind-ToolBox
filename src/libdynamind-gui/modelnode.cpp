@@ -335,13 +335,22 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
 	float lineWidth = 2.0f;
-	QColor fillcolor = COLOR_MODULE;    
+	QColor fillcolor;    
 	
 	switch(module->getStatus())
 	{
-	case DM::MOD_OK:				fillcolor = COLOR_MODULE_FINISHED;		break;
-	case DM::MOD_EXECUTIONERROR:	fillcolor = COLOR_MODULE_EXE_ERROR;		break;
-	case DM::MOD_CHECKERROR:		fillcolor = COLOR_MODULE_CHECK_ERROR;	break;
+	//case DM::MOD_OK:				fillcolor = COLOR_MODULE_FINISHED;		break;
+	//case DM::MOD_EXECUTIONERROR:	fillcolor = COLOR_MODULE_EXE_ERROR;		break;
+	//case DM::MOD_CHECKERROR:		fillcolor = COLOR_MODULE_CHECK_ERROR;	break;
+
+	case DM::MOD_UNTOUCHED:			fillcolor = QColor(200,200,200);	break;
+
+	case DM::MOD_EXECUTING:			fillcolor = QColor(255,255,0);		break;
+	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(0,255,0);		break;
+	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(255,0,0);		break;
+
+	case DM::MOD_CHECK_OK:			fillcolor = QColor(150,255,150);	break;
+	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(255,100,100);	break;
 	}
 
     if(this->visible)
