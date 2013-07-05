@@ -125,13 +125,16 @@ public:
 		void ShiftData(bool successor = false)
 		{
 			System * data = getData();
+			if(!data)
+				return;
+			if(successor)
+				data = data->createSuccessor();
 			// shift pointer
 			if(dest->isGroup() && src->getOwner() == dest)
 				// out of group link
 				dest->setOutPortData(inPort, data);
 			else
-				dest->setInPortData(inPort, 
-					successor ? data->createSuccessor() : data);
+				dest->setInPortData(inPort, data);
 		}
 	};
 	Simulation();
