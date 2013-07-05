@@ -285,7 +285,7 @@ public:
 		if(type == INPORT)
 			return getInPortNames();
 		else if(type == OUTPORT)
-			return getInPortNames();
+			return getOutPortNames();
 
 		return std::vector<std::string>();
 	};
