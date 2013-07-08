@@ -374,19 +374,29 @@ Module* Simulation::getNextModule(Module* src, std::string outPort, std::string&
 */
 
 
-bool Simulation::checkGroupStreamForward(Module* m, std::string streamName, bool into)
+bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
+	if(!g)
+	{
+		DM::Logger(DM::Error) << "critical error: group == NULL at checkGroupStreamForward";
+		return false;
+	}
+
 	bool success = true;
 
 	std::vector<Link*> nextLinks;
+	std::map<std::string, DM::View>* curStreamViews;
+
 	if(into)
-		nextLinks = getIntoGroupLinks(m, streamName);
+	{
+		nextLinks = getIntoGroupLinks(g, streamName);
+		curStreamViews = &g->streamViews[streamName];
+	}
 	else
-		nextLinks = getOutgoingLinks(m, streamName);
-
-
-	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
-
+	{
+		nextLinks = getOutgoingLinks(g, streamName);
+		curStreamViews = &g->outStreamViews[streamName];
+	}
 
 	foreach(Link* l, nextLinks)
 	{
@@ -492,7 +502,11 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 	foreach(Link* l, outLinks)
 	{
-		l->dest->streamViews[l->inPort] = updatedStream;
+		if(!l->isOutOfGroupLink)
+			l->dest->streamViews[l->inPort] = updatedStream;
+		else
+			((Group*)l->dest)->outStreamViews[l->inPort] = updatedStream;
+
 		if(!l->dest->isGroup())
 		{
 			if(!checkModuleStreamForward(l->dest, l->inPort))
@@ -500,7 +514,7 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 		}
 		else
 		{
-			if(!checkGroupStreamForward(l->dest, l->inPort, !l->isOutOfGroupLink))
+			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
 		}
 	}
@@ -510,7 +524,7 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 bool Simulation::checkModuleStream(Link* link)
 {
 	if(link->src->isGroup())
-		return checkGroupStreamForward(link->src, link->outPort, link->isIntoGroupLink);
+		return checkGroupStreamForward((Group*)link->src, link->outPort, link->isIntoGroupLink);
 	else
 		return checkModuleStreamForward(link->src, link->outPort);
 	/*std::map<std::string, DM::View>* curStreamViews = &l->src->streamViews[streamName];
@@ -547,7 +561,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 		else
 		{
 			foreach(std::string inPortName, m->getInPortNames())
-				if(!checkGroupStreamForward(m, inPortName, true))
+				if(!checkGroupStreamForward((Group*)m, inPortName, true))
 					success = false;
 		}
 		

@@ -32,6 +32,7 @@ namespace DM {
 
 class DM_HELPER_DLL_EXPORT Group: public Module
 {
+	friend Simulation;
 public:
 	/*Group()
 	{
@@ -44,6 +45,9 @@ public:
 	}
 	bool isGroup(){return true;};
 private:
+	// a temporary storage for all streams and viewnames in the stream up to this module
+	// it is updated by simulation::checkModuleStream
+	std::map<std::string, std::map<std::string,View> > outStreamViews;
 protected:
 	std::vector<std::string> nameOfInPorts;
 	std::vector<std::string> nameOfOutPorts;

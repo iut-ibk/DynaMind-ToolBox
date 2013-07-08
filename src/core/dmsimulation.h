@@ -209,7 +209,7 @@ private:
 
 	bool checkModuleStream(Link* link);
 	
-	bool checkGroupStreamForward(Module* m, std::string streamName, bool into);
+	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
 	//bool finished;	// for decoupled run
 	//bool canceled;
 	QFuture<void> decoupledRunResult;
