@@ -46,7 +46,7 @@ GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
 void GUIHelpViewer::showHelpForModule(std::string classname, string uuid) {
     this->currentUrl = this->url_view_not_avaiable;
     DM::Module * m = this->sim->getModuleWithUUID(uuid);
-    this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
+    this->currentUrl = QString::fromStdString("https://github.com/iut-ibk/DynaMind-ToolBox/wiki");
     
     if (!m){
         ui->webView->load(this->currentUrl);
