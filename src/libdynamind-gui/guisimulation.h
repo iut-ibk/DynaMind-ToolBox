@@ -103,7 +103,8 @@ private:
 	QList<SimulationTab*> tabs;
 	QTabWidget* tabWidget;
 
-	PortNode* getPortNode(DM::Module* m, std::string portName, DM::PortType type);
+	PortNode* getPortNode(DM::Module* m, std::string portName, 
+		DM::PortType type, bool fromInnerGroup);
 	QWidget * parent;
 signals:
     //void addedModule(ModelNode*);

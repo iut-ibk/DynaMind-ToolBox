@@ -275,8 +275,8 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 	if(!Simulation::addLink(source, outPort, dest, inPort, checkStream))
 		return false;
 
-	PortNode* inPortNode = getPortNode(dest, inPort, DM::INPORT);
-	PortNode* outPortNode = getPortNode(source, outPort, DM::OUTPORT);
+	PortNode* inPortNode = getPortNode(dest, inPort, DM::INPORT, dest == source->getOwner());
+	PortNode* outPortNode = getPortNode(source, outPort, DM::OUTPORT, source == dest->getOwner());
 
 	if( !inPortNode || !outPortNode )
 		return false;
@@ -297,13 +297,16 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 	return true;
 }
 
-PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, DM::PortType type)
+PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName, 
+									 DM::PortType type, bool fromInnerGroup)
 {
 	ModelNode* mn;
 	if(map_contains(&modelNodes, m, mn))
 	{
-		if(PortNode* pn = mn->getPort(portName, type))
-			return pn;
+		if(!fromInnerGroup)
+		return mn->getPort(portName, type);
+		//if(PortNode* pn = mn->getPort(portName, type))
+		//	return pn;
 		else if(mn->getChild())
 			return mn->getChild()->getPort(portName, type==DM::INPORT?DM::OUTPORT:DM::INPORT);
 	}
