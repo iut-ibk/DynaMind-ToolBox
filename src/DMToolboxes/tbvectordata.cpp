@@ -30,6 +30,9 @@
 
 #include "tbvectordata.h"
 #include "dm.h"
+#include <dmrasterdata.h>
+#include <dmstdutilities.h>
+
 #include <QtGlobal>
 
 
@@ -730,6 +733,23 @@ bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_m
     y_min = 0;
     x_max = 0;
     y_max = 0;
+
+    if (view.getType() == DM::RASTERDATA) {
+        std::map<std::string, DM::Component*> components = sys->getAllComponentsInView(view);
+        mforeach(DM::Component* c, components) {
+            if(c->getType() == DM::RASTERDATA) {
+                DM::RasterData * r = (DM::RasterData*)c;
+                x_min = r->getXOffset();
+                y_min = r->getYOffset();
+                x_max = r->getWidth()*r->getCellSizeX() + r->getXOffset();
+                y_max = r->getHeight()*r->getCellSizeY() + r->getYOffset();
+                return true;
+            }
+        }
+        return false;
+
+
+    }
 
     std::vector<DM::Node * > nodes;
     if (view.getType() == DM::NODE) TBVectorData::GetNodesFromNodes(sys, view, nodes);
