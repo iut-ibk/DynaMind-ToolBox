@@ -24,6 +24,8 @@
  *
  */
 
+#ifdef WF_OLD
+
 #include "loop.h"
 #include <sstream>
 #include <dmsimulation.h>
@@ -67,3 +69,5 @@ void Loop::Init()
 	// just resets the counter
 	counter = 0;
 }
+
+#endif

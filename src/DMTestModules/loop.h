@@ -24,6 +24,7 @@
  *
  */
 
+#define LOOP_H
 #ifndef LOOP_H
 #define LOOP_H
 
