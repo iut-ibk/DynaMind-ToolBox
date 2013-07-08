@@ -267,13 +267,13 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
 							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
-	/*(checkStream)
+	if(checkStream)
 	{
-		if(checkModuleStream(l->src, l->outPort, false))
+		if(checkModuleStream(l))
 			Logger(Debug) << "checking stream successfull";
 		else
 			Logger(Warning) << "stream incomplete" ;
-	}*/
+	}
 	return true;
 }
 bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
@@ -295,6 +295,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	{
 		links.remove(toDelete);
 		Logger(Debug) << "Deleted link from port " << outPort << "to" << inPort;
+		checkModuleStreamForward(dest);
 		return true;
 	}
 	return false;
@@ -506,6 +507,20 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 	return success;
 }
 
+bool Simulation::checkModuleStream(Link* link)
+{
+	if(link->src->isGroup())
+		return checkGroupStreamForward(link->src, link->outPort, link->isIntoGroupLink);
+	else
+		return checkModuleStreamForward(link->src, link->outPort);
+	/*std::map<std::string, DM::View>* curStreamViews = &l->src->streamViews[streamName];
+	// check if we are in the middle of an unchecked stream
+	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
+	{
+
+	}*/
+}
+
 bool Simulation::checkModuleStreamForward(Module* m)
 {
 	bool success = true;
@@ -522,6 +537,21 @@ bool Simulation::checkModuleStreamForward(Module* m)
 	}
 	else
 	{
+		
+		if(!m->isGroup())
+		{
+			foreach(std::string inPortName, m->getInPortNames())
+				if(!checkModuleStreamForward(m, inPortName))
+					success = false;
+		}
+		else
+		{
+			foreach(std::string inPortName, m->getInPortNames())
+				if(!checkGroupStreamForward(m, inPortName, true))
+					success = false;
+		}
+		
+
 		DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 		m->init();
 	}
@@ -727,6 +757,7 @@ void Simulation::reset()
 		m->reset();
 		m->setStatus(MOD_UNTOUCHED);
 	}
+	checkStream();
 }
 
 

@@ -206,6 +206,8 @@ private:
 	
 	bool checkModuleStreamForward(Module* m);
 	bool checkModuleStreamForward(Module* m, std::string streamName);
+
+	bool checkModuleStream(Link* link);
 	
 	bool checkGroupStreamForward(Module* m, std::string streamName, bool into);
 	//bool finished;	// for decoupled run

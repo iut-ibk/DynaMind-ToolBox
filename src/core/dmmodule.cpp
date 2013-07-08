@@ -357,6 +357,7 @@ void Module::reset()
 			it->second = NULL;
 		}
 	}
+	this->setStatus(MOD_UNTOUCHED);
 }
 /*
 void Module::setGUI(QWidget *w)
