@@ -35,6 +35,7 @@ class DM_HELPER_DLL_EXPORT CalculateBoundingBox : public Module
     DM_DECLARE_NODE(CalculateBoundingBox)
     private:
         std::string NameOfExistingView;
+        std::string NameOfNewView;
         DM::System * city;
         bool changed;
         DM::View vData;

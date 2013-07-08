@@ -38,10 +38,12 @@ CalculateBoundingBox::CalculateBoundingBox()
 {
     this->city = 0;
     this->NameOfExistingView = "";
+    this->NameOfNewView = "";
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addParameter("NameOfExistingView", DM::STRING, & this->NameOfExistingView);
     this->addParameter("MinBounding", DM::BOOL, & this->MinBounding);
+    this->addParameter("NameOfNewView", DM::STRING, & this->NameOfNewView);
     this->overAll = false;
     this->addParameter("overAll", DM::BOOL, &this->overAll);
 
@@ -64,10 +66,15 @@ void CalculateBoundingBox::init() {
     if (this->NameOfExistingView.empty())
         return;
 
-    std::stringstream ss;
-    ss << NameOfExistingView << "_BOUNDING_BOX";
-
-    newFaces = DM::View(ss.str(), DM::FACE, DM::WRITE);
+    if (NameOfNewView.empty()) {
+        std::stringstream ss;
+        ss << NameOfExistingView << "_BOUNDING_BOX";
+        newFaces = DM::View(ss.str(), DM::FACE, DM::WRITE);
+    }
+    else
+    {
+         newFaces = DM::View(NameOfNewView, DM::FACE, DM::WRITE);
+    }
     newFaces.addAttribute("l");
     newFaces.addAttribute("b");
     newFaces.addAttribute("x_min");
@@ -78,8 +85,7 @@ void CalculateBoundingBox::init() {
     DM::View * v = city->getViewDefinition(NameOfExistingView);
     DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
     if (!this->overAll) {
-
-        writeView.addLinks(ss.str(), newFaces);
+        writeView.addLinks(newFaces.getName(), newFaces);
         newFaces.addLinks(writeView.getName(), writeView);
     }
 
@@ -95,6 +101,40 @@ void CalculateBoundingBox::init() {
 void CalculateBoundingBox::caculateBoundingBox()
 {
 
+    if (this->vData.getType() == DM::RASTERDATA) {
+        double x1 = 0;
+        double y1 = 0;
+        double x2 = 0;
+        double y2 = 0;
+
+        TBVectorData::GetViewExtend(this->city, this->vData, x1, y1, x2, y2);
+
+        DM::Node * n1 = this->city->addNode(x1, y1, 0);
+        DM::Node * n2 = this->city->addNode(x1, y2, 0);
+        DM::Node * n3 = this->city->addNode(x2, y2, 0);
+        DM::Node * n4 = this->city->addNode(x2, y1, 0);
+
+
+        std::vector<DM::Node *> vF;
+        vF.push_back(n1);
+        vF.push_back(n2);
+        vF.push_back(n3);
+        vF.push_back(n4);
+        vF.push_back(n1);
+
+        DM::Face * bF = city->addFace(vF, newFaces);
+
+        bF->addAttribute("l", x2-x1);
+        bF->addAttribute("b", y2-y1);
+
+        bF->addAttribute("x_min", x1);
+        bF->addAttribute("x_max", x2);
+        bF->addAttribute("y_min", y1);
+        bF->addAttribute("y_max", y2);
+
+
+
+    }
 
     if (this->overAll) {
         std::vector<DM::Node * > nodes;
