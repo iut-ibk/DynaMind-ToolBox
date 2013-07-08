@@ -254,9 +254,15 @@ void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 	unstableLink = new GUILink();
 
 	if(portType == DM::INPORT)
+	{
 		unstableLink->setInPort(this);
+		unstableLink->setOutPort(event->scenePos());
+	}
 	else
+	{
 		unstableLink->setOutPort(this);
+		unstableLink->setInPort(event->scenePos());
+	}
 
 	this->scene()->addItem(unstableLink);
 	
