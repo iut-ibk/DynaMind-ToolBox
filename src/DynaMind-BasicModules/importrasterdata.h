@@ -46,6 +46,7 @@ public:
     ImportRasterData();
     void run();
     void init();
+    std::string getHelpUrl();
 };
 
 #endif // IMPORTRASTERDATA_H
