@@ -305,8 +305,8 @@ void Marker::run() {
                 if (n->getAttribute("selected")->getDouble() < 0.001) continue;
             }
 
-            ulong X = (ulong) ( n->getX() - offsetX  ) / param.CellSize;
-            ulong Y = (ulong) ( n->getY() - offsetY  ) / param.CellSize;
+            ulong X = (ulong) ( n->getX() - offsetX  ) / CellSizeX;
+            ulong Y = (ulong) ( n->getY() - offsetY  ) / CellSizeY;
 
             if ( X >= Width)
                 continue;
@@ -332,13 +332,13 @@ void Marker::run() {
             }
             Node * p1 = sys_in->getNode(e->getStartpointName());
             Node * p2 = sys_in->getNode(e->getEndpointName());
-            double dx = p2->getX()/param.CellSize - p1->getX()/param.CellSize;
-            double dy = p2->getY()/param.CellSize - p1->getY()/param.CellSize;
+            double dx = p2->getX()/CellSizeX - p1->getX()/CellSizeX;
+            double dy = p2->getY()/CellSizeY- p1->getY()/CellSizeY;
 
             long steps = (long) sqrt(dx*dx+dy*dy);
 
-            long x0 = (long) (p1->getX() - offsetX ) / param.CellSize;
-            long y0 = (long) (p1->getY() - offsetY ) / param.CellSize;
+            long x0 = (long) (p1->getX() - offsetX ) / CellSizeX;
+            long y0 = (long) (p1->getY() - offsetY ) /CellSizeY;
             for ( int i = 0; i < steps; i++ ) {
                 long X = (long) ( x0 + i* (dx /  steps) );
                 long Y = (long) ( y0 + i* (dy /  steps) );
@@ -357,6 +357,7 @@ void Marker::run() {
     }
 
     //Create Mark for every point
+    Logger(Standard) << "Points to mark " <<points.size();
     foreach(Node p, points) {
         //Set Values
 
