@@ -24,6 +24,7 @@
  *
  */
 
+
 #include "grouptest.h"
 //#include <algorithm>
 
@@ -87,4 +88,3 @@ void GroupTest::addOutPort(std::string n)
     nameOfOutViews.push_back(n);
     this->init();*/
 }
-
