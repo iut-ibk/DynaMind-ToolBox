@@ -35,7 +35,7 @@ using namespace DM;
 
 DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
-	LoopGroup::LoopGroup() 
+LoopGroup::LoopGroup() 
 {
 	//i = 0;
 	runs = 1;
