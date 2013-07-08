@@ -204,14 +204,18 @@ private:
 	ModuleRegistry*		moduleRegistry;
 
 	
-	bool checkModuleStream(Module* m);
-	bool checkModuleStream(Module* m, std::string streamName);
+	bool checkModuleStreamForward(Module* m);
+	bool checkModuleStreamForward(Module* m, std::string streamName);
+	
+	bool checkGroupStreamForward(Module* m, std::string streamName, bool into);
 	//bool finished;	// for decoupled run
 	//bool canceled;
 	QFuture<void> decoupledRunResult;
 	
 	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
 	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
+	std::vector<Link*> getIntoGroupLinks(const Module* src, const std::string& inPort) const;
+	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
 };
 
 

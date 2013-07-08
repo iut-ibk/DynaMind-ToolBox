@@ -267,13 +267,13 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
 							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
-	if(checkStream)
+	/*(checkStream)
 	{
-		if(checkModuleStream(l->dest, l->inPort))
+		if(checkModuleStream(l->src, l->outPort, false))
 			Logger(Debug) << "checking stream successfull";
 		else
 			Logger(Warning) << "stream incomplete" ;
-	}
+	}*/
 	return true;
 }
 bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
@@ -304,7 +304,7 @@ std::vector<Simulation::Link*> Simulation::getIngoingLinks(const Module* dest, c
 {
 	std::vector<Simulation::Link*> ls;
 	foreach(Link* l, links)
-		if(	l->dest == dest && l->inPort == inPort)
+		if(	l->dest == dest && l->inPort == inPort && !l->isOutOfGroupLink)
 			ls.push_back(l);
 	
 	return ls;
@@ -313,9 +313,28 @@ std::vector<Simulation::Link*> Simulation::getOutgoingLinks(const Module* src, c
 {
 	std::vector<Simulation::Link*> ls;
 	foreach(Link* l, links)
-		if(	l->src == src && l->outPort == outPort)
+		if(	l->src == src && l->outPort == outPort && !l->isIntoGroupLink)
 			ls.push_back(l);
 
+	return ls;
+}
+std::vector<Simulation::Link*> Simulation::getIntoGroupLinks(const Module* src, const std::string& inPort) const
+{
+	std::vector<Simulation::Link*> ls;
+	foreach(Link* l, links)
+		if(	l->src == src && l->outPort == inPort && l->isIntoGroupLink)
+			ls.push_back(l);
+	
+	return ls;
+}
+std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest, const std::string& outPort) const
+{
+	std::vector<Simulation::Link*> ls;
+	foreach(Link* l, links)
+		if(	l->dest == dest && l->inPort == outPort && l->isOutOfGroupLink)
+			ls.push_back(l);
+
+	
 	return ls;
 }
 /*
@@ -352,46 +371,84 @@ Module* Simulation::getNextModule(Module* src, std::string outPort, std::string&
 	return NULL;
 }
 */
-bool Simulation::checkModuleStream(Module* m, std::string streamName)
+
+
+bool Simulation::checkGroupStreamForward(Module* m, std::string streamName, bool into)
 {
 	bool success = true;
+
+	std::vector<Link*> nextLinks;
+	if(into)
+		nextLinks = getIntoGroupLinks(m, streamName);
+	else
+		nextLinks = getOutgoingLinks(m, streamName);
+
+
+	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
+
+
+	foreach(Link* l, nextLinks)
+	{
+		l->dest->streamViews[l->inPort] = *curStreamViews;
+		if(!checkModuleStreamForward(l->dest, l->inPort))
+			success = false;
+	}
+
+	return success;
+}
+
+bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
+{
+	bool success = true;
+	/*if(m->isGroup())
+	{
+		return checkGroupStream(m, streamName, backwards?OUTPORT:INPORT);
+		if(back)
+		{
+			foreach(Link* l, getOutgoingLinks(m, streamName))
+				if(!checkModuleStream(l->src, l->outPort, true, false))
+					success = false;
+			return success;
+		}
+		if(forward)
+		{
+			foreach(Link* l, getIngoingLinks(m, streamName))
+				if(!checkModuleStream(l->src, l->outPort, true, false))
+					success = false;
+			return success;
+		}
+		else
+		{
+			DM::Logger(DM::Error) << "group check not allowed";
+			return false;
+		}
+	}*/
+
 
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// check if we are in the middle of an unchecked stream
 	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
 	{
-		std::vector<Link*> inLinks = getIngoingLinks(m, streamName);
-		if(links.size() == 0)
-		{
+		/*
+		// go back to origin
+		std::vector<Link*> inLinks;
+		//if(!outOfGroup)
+			inLinks = getIngoingLinks(m, streamName);
+		//else
+		//	inLinks = getOutOfGroupLinks(m, streamName);
+
+		if(inLinks.size() == 0)
+		{*/
 			m->setStatus(MOD_CHECK_ERROR);
+			DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
 			success = false;
-		}
+		/*}
 		else
 			foreach(Link* l, inLinks)
-				if(!checkModuleStream(l->src, l->outPort))
+				if(!checkModuleStream(l->src, l->outPort, true))
 					success = false;
-
+	*/
 		return success;
-		/*if(Link* l = getIngoingLink(m, streamName))
-			return checkModuleStream(l->src, l->outPort);
-		else
-		{
-			m->setStatus(MOD_CHECK_ERROR);
-			return false;
-		}*/
-
-
-			/*foreach(std::string inPort, m->getInPortNames())
-		{
-			std::string outPort;
-			if(Module* src = getFormerModule(m, inPort, outPort))
-				if(checkModuleStream(src, outPort))
-					continue;
-
-			success = false;
-		}*/
-		// this module is checked in the above recursivly called checkModuleStream
-		//return success;	
 	}
 	// update stream view info in module
 	std::map<std::string,View> updatedStream = *curStreamViews;
@@ -401,8 +458,6 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 	m->init();
 	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
-
-	//std::map<std::string,View> viewsInStream = formerViews;
 
 	mforeach(const View& v, m->accessedViews[streamName])
 	{
@@ -427,47 +482,31 @@ bool Simulation::checkModuleStream(Module* m, std::string streamName)
 			updatedStream[v.getName()] = v;
 	}
 
-	/*// debug print
-	std::string viewNameList;
-	if(formerViews.size()>0)
-		mforeach(const View& v, formerViews)
-		viewNameList += v.getName() + " | ";
-	else
-		viewNameList += "<none>";
-
-	DM::Logger(DM::Debug) << "views in stream: " << viewNameList;*/
-
 	if(!success)
 		return success;
 	else
 		m->setStatus(MOD_CHECK_OK);
 
-	// check next modules
-	/*std::string inPort;
-	Module* next = getNextModule(m, streamName, inPort);
-	if(next)
-	{
-		next->streamViews[inPort] = updatedStream;
-		if(!checkModuleStream(next, inPort))
-			success = false;
-	}*/
 	std::vector<Link*> outLinks = getOutgoingLinks(m, streamName);
+
 	foreach(Link* l, outLinks)
 	{
-	//	if(l->src == m && l->outPort == streamName)
-	//if(Link* l = getOutgoingLink(m, streamName))
-	//{
+		l->dest->streamViews[l->inPort] = updatedStream;
+		if(!l->dest->isGroup())
 		{
-			l->dest->streamViews[l->inPort] = updatedStream;
-			if(!checkModuleStream(l->dest, l->inPort))
+			if(!checkModuleStreamForward(l->dest, l->inPort))
+				success = false;
+		}
+		else
+		{
+			if(!checkGroupStreamForward(l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
 		}
 	}
-
 	return success;
 }
 
-bool Simulation::checkModuleStream(Module* m)
+bool Simulation::checkModuleStreamForward(Module* m)
 {
 	bool success = true;
 	std::map<std::string, std::map<std::string,View>> accessedViews = m->getAccessedViews();
@@ -477,12 +516,16 @@ bool Simulation::checkModuleStream(Module* m)
 		for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
 			it != accessedViews.end(); ++it)
 		{
-			if(!checkModuleStream(m, it->first))
+			if(!checkModuleStreamForward(m, it->first))
 				success = false;
 		}
 	}
 	else
+	{
+		DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 		m->init();
+	}
+
 	return success;
 }
 
@@ -494,7 +537,7 @@ bool Simulation::checkStream()
 	{
 		if(m->getInPortNames().size() == 0)
 		{
-			if(!checkModuleStream(m))
+			if(!checkModuleStreamForward(m))
 				return false;
 			/*results.append(new QFuture<bool>(
 				QtConcurrent::run(this, &Simulation::checkModuleStream, m)
@@ -664,7 +707,7 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 	{
 		if(g->getInPortData(inPort))
 		{
-			foreach(Link* l, getOutgoingLinks(g, inPort))
+			foreach(Link* l, getIntoGroupLinks(g, inPort))
 			{
 				l->ShiftData(inPorts.size() > 1);
 				nextModules.push_back(l->dest);
