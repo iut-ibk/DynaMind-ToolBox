@@ -398,7 +398,7 @@ void GUISimulation::writeSimulation(std::string fileName)
 	bool first = true;
 	mforeach(ModelNode* m, this->modelNodes)
 	{
-		if (first)        
+		if(first)
 		{
 			minx = m->pos().x();
 			miny = m->pos().y();
