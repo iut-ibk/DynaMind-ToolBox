@@ -126,14 +126,18 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     portname_graphics.setText(this->getPortName());
 
 	QRectF textSize = portname_graphics.boundingRect();
-    
+
+    QFont font = painter->font();
+	font.setItalic(true);
+	painter->setFont(font);
+
 	if(portType == DM::INPORT)
         painter->drawText(QPoint(	17,
-									textSize.height()/2 + 5), 
+									textSize.height()/2 + 8), 
 									this->getPortName());
 	else
         painter->drawText(QPoint(	-5-textSize.width(),
-									textSize.height()/2 + 5), 
+									textSize.height()/2 + 8), 
 									this->getPortName());
     painter->setBrush(Qt::NoBrush);
 

@@ -107,7 +107,7 @@ protected:
     //RootGroupNode * parentGroup;
 
     //std::string  VIBeModuleUUID ;
-    QGraphicsSimpleTextItem * simpleTextItem;
+    //QGraphicsSimpleTextItem * simpleTextItem;
 
     int id;
     bool minimized;

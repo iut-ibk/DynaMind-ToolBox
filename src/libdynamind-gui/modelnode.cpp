@@ -230,16 +230,25 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 
-	this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getName()));
-    int w = this->simpleTextItem->boundingRect().width()+40;
+	//this->simpleTextItem = new QGraphicsSimpleTextItem ("Module: " + QString::fromStdString(module->getName()));
+   // int w = this->simpleTextItem->boundingRect().width()+40;
 
-    QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getName()));
+   /* QGraphicsSimpleTextItem tn ("Name: " + QString::fromStdString(module->getName()));
     w = w < tn.boundingRect().width() ? tn.boundingRect().width() : w;
 
 
     w = w < 140 ? 140 : w;
-    width = w + 4;
-    height =  35;
+    width = w + 4;*/
+
+	QString text = "Name: " + QString::fromStdString(module->getName());
+	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
+	width = min(150, (int)textSize.width() + 50);
+
+	if(!m->isGroup())
+		height =  45;
+	else
+		height =  65;
+
     //VIBeModule->addPortObserver( & this->guiPortObserver);
     //this->updatePorts();
 	/*
@@ -370,8 +379,11 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->fillPath(rectPath, brush);
         painter->strokePath(rectPath, rectPen);
 		
-		painter->drawText(QPoint(22,15), "Module: " + QString::fromStdString(module->getName()));
-
+		QString text =  "Module: " + QString::fromStdString(module->getName());
+		QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
+		painter->drawText(	(boundingRect().width() - textSize.width())/2,
+							textSize.height() + 0,
+							text);
     }
 	this->update();
 }
@@ -413,7 +425,7 @@ ModelNode::~ModelNode()
 
 
     ports.clear();*/
-    delete this->simpleTextItem;
+    //delete this->simpleTextItem;
 
 	if(child)
 	{
