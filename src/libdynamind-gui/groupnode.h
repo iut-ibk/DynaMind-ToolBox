@@ -70,7 +70,9 @@ private:
 	//int w,h;
 	ModelNode* parent;
 	SimulationTab* owningTab;
+	//virtual QRectF boundingRect() const;
 public:
+	void resize();
 	// observer methods
 	//void notifyAddPort(const std::string &name, const DM::PortType type);
 	//void notifyRemovePort(const std::string &name, const DM::PortType type);

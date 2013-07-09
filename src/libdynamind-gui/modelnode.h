@@ -101,6 +101,7 @@ protected:
     int outputCounter;*/
 
 	int width, height;
+	//QRect size;
 
     QVector<PortNode*> ports;
     //QVector<ModelNode * > * nodes;
@@ -158,7 +159,7 @@ public:
     //View
     virtual void recalculateLandH(){}
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    QRectF boundingRect() const;
+    virtual QRectF boundingRect() const;
 
     //DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}

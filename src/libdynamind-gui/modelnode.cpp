@@ -41,6 +41,7 @@
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmviewerwindow.h>
+#include <groupnode.h>
 
 void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
@@ -443,6 +444,14 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
         this->parentGroup->update();
     }
 	*/
+	if(DM::Module* m = module->getOwner())
+	{
+		if(GroupNode* gn = (GroupNode*)getSimulation()->getModelNode(m)->getChild())
+		{
+			gn->resize();
+			this->scene()->update();
+		}
+	}
     QGraphicsItem::mouseMoveEvent(event);
 }
 /*

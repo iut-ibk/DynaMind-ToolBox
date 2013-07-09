@@ -110,6 +110,7 @@ public:
     //void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	DM::Module* getModule(){return module;};
 	DM::PortType getType(){return portType;};
+	void updatePos();
 };
 
 #endif // GUIPORT_H

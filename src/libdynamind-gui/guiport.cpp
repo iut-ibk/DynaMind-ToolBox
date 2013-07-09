@@ -78,13 +78,7 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
     //this->modelNode = parentModelNode;
     this->portType = type;
 
-	int xoffset = -7;
-	int yoffset = -5 + 15*m->getPortNames(type).size();
-
-	if(type == DM::INPORT)
-		this->setPos(xoffset, yoffset);
-	else
-		this->setPos(xoffset+parent->boundingRect().width(), yoffset);
+	updatePos();
 
     this->simulation = simulation;
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
@@ -96,6 +90,22 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
 
 
 }
+
+void PortNode::updatePos()
+{
+	std::vector<std::string> ports = module->getPortNames(portType);
+	std::vector<std::string>::iterator it = std::find(ports.begin(), ports.end(), portName.toStdString());
+
+	int portIndex = it - ports.begin();
+	int xoffset = -7;
+	int yoffset = 10 + 15*portIndex;
+
+	if(portType == DM::INPORT)
+		this->setPos(xoffset, yoffset);
+	else
+		this->setPos(xoffset + this->parentItem()->boundingRect().width(), yoffset);
+}
+
 bool PortNode::isLinked() {
     //if (this->getVIBePort()->getLinks().size() > 0)
         return true;

@@ -244,8 +244,39 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab)//
     this->setFlag(QGraphicsItem::ItemIsSelectable, false);
     this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
-	width = height = 200;
+	resize();
 }
+
+void GroupNode::resize()
+{
+	const int border = 30;
+	int minx = 0;
+	int maxx = 200;
+	int miny = 0;
+	int maxy = 200;
+
+	foreach(DM::Module* m, this->getSimulation()->getModules())
+	{
+		if(m->getOwner() == this->module)
+		{
+			ModelNode* mn = getSimulation()->getModelNode(m);
+			QPoint pos = mn->scenePos().toPoint();
+			minx = min(minx, pos.x());
+			miny = min(miny, pos.y());
+			maxx = max(maxx, pos.x()+(int)mn->boundingRect().width());
+			maxy = max(maxy, pos.y()+(int)mn->boundingRect().height());
+		}
+	}
+	width = maxx-minx + 2*border;
+	height = maxy-miny + 2*border;
+	setPos(minx - border, miny - border);
+
+	this->update();
+
+	foreach(PortNode* pn, this->ports)
+		pn->updatePos();
+}
+
 GroupNode::~GroupNode()
 {
 	simulation->closeTab(owningTab);
@@ -314,7 +345,7 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 }
 /*
 QRectF GroupNode::boundingRect() const {
-    return QRect(0, 0, w, h);
+    return QRect(-10, -10, width+10, height+10);
 
 }*/
 
