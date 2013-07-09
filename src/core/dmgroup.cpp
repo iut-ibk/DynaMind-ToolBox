@@ -27,7 +27,21 @@
 
 #include "dmgroup.h"
 
+using namespace DM;
 
+void Group::resetCondition()
+{
+	singleRunCondition = true;
+}
+bool Group::condition()
+{
+	if(singleRunCondition)
+	{
+		singleRunCondition = false;
+		return true;
+	}
+	return false;
+}
 
 #ifdef SIMENV_GROUP
 #include <dmport.h>

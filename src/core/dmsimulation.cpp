@@ -662,13 +662,52 @@ void Simulation::run()
 			foreach(Module* nextModule, shiftModuleOutput(m))
 				worklist.push(nextModule);
 		}
+		else
+		{
+			Group* g = (Group*)m;
+			Logger(Standard) << "running group '" << g->getName() << "'";
+			
+			// first run, reset condition
+			if(g->getStatus() != MOD_EXECUTING)
+				g->resetCondition();
+
+			if(g->condition())
+			{
+				Logger(Standard) << "condition fulfilled for group '" << g->getName() << "'";
+				// execute group
+				g->setStatus(MOD_EXECUTING);
+				// instead of m::run() we simply shift the data to the first internal module
+				foreach(Module* nextModule, shiftGroupInput(g))
+					worklist.push(nextModule);
+			}
+			else
+			{
+				Logger(Standard) << "finishing group '" << g->getName() << "'";
+				// finish and shift data
+				g->setStatus(MOD_EXECUTION_OK);
+				foreach(Module* nextModule, shiftModuleOutput(g))
+					worklist.push(nextModule);
+			}
+		}
+		/*
 		else if(m->getStatus() == MOD_EXECUTING)
 		{
 			Group* g = (Group*)m;
-			// we reached the end of the group, finish and shift data
-			g->setStatus(MOD_EXECUTION_OK);
-			foreach(Module* nextModule, shiftModuleOutput(g))
-				worklist.push(nextModule);
+			// we reached the end of the group
+			std::vector<std::string> backLinks = g->loopBack();
+			if(backLinks.size()>0)
+			{
+				Logger(Standard) << "rewinding group '" << g->getName() << "'";
+				foreach(Module* nextModule, shiftGroupLoopData(g, backLinks))
+					worklist.push(nextModule);
+			}
+			else
+			{
+				// finish and shift data
+				g->setStatus(MOD_EXECUTION_OK);
+				foreach(Module* nextModule, shiftModuleOutput(g))
+					worklist.push(nextModule);
+			}
 		}
 		else
 		{
@@ -679,7 +718,7 @@ void Simulation::run()
 			// instead of m::run() we simply shift the data to the first internal module
 			foreach(Module* nextModule, shiftGroupInput(g))
 				worklist.push(nextModule);
-		}
+		}*/
 	}
 	if(decoupledRunResult.isCanceled())
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
@@ -691,6 +730,9 @@ void Simulation::run()
 
 void Simulation::decoupledRun()
 {
+	if(decoupledRunResult.isRunning())
+		cancel();
+
 	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
 }
 
@@ -760,6 +802,16 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 	}
 	return nextModules;
 }
+/*
+std::list<Module*> Simulation::shiftGroupLoopData(Group* g, const std::vector<std::string>& backLinks)
+{
+	foreach(std::string portName, backLinks)
+	{
+		g->setInPortData(portName, g->getOutPortData(portName));
+		g->setOutPortData(portName, NULL);
+	}
+	return shiftGroupInput(g);
+}*/
 
 void Simulation::reset()
 {
