@@ -58,16 +58,8 @@ public:
 	bool addStream(std::string name, bool write);
 	bool removeStream(std::string name);
 
-
-	//std::vector<DM::View> InViews;
-	//std::vector<DM::View> OutViews;
 	int runs;
 	//int i;
-
-	/*void addInPort (std::string in);
-	void addOutPort (std::string in);
-	void removeInPort(std::string port);
-	void removeOutPort(std::string port);*/
 };
 
 
