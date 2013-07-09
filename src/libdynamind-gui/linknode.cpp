@@ -74,6 +74,7 @@ QString LinkNode::getPortName(bool flag) {
             //return this->ltuple->Port1->links[0]->getStartNode()->getPortName();
         //else return "";
     //}
+	return "";
 }
 
 void LinkNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
