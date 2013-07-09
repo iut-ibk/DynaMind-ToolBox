@@ -65,7 +65,7 @@ private:
 	GUILink* unstableLink;
 
 
-    QString PortName;
+    QString portName;
    // int PortType;
     bool isHover;
     bool LinkMode;
@@ -94,7 +94,7 @@ public:
     QRectF boundingRect() const;
     QPointF getCenterPos();
     //int getPortType();
-    QString getPortName(){return this->PortName;}
+    QString getPortName(){return this->portName;}
     bool isLinked();
     void setHover(bool b)
 	{
