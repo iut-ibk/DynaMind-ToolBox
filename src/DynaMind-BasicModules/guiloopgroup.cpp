@@ -30,6 +30,7 @@
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
 #include <QInputDialog>
+#include <QMessageBox>
 
 GUILoopGroup::GUILoopGroup(LoopGroup * m, QWidget *parent):
 	QDialog(parent),
@@ -38,14 +39,15 @@ GUILoopGroup::GUILoopGroup(LoopGroup * m, QWidget *parent):
 	ui->setupUi(this);
 
 	this->m = m;
+	
+	ui->repeats->setValue(m->getParameter("Runs")->get<int>());
+	ui->repeats->setMinimum(1);
 
-	ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("Runs")));
+	foreach (std::string s, m->readStreams)
+		insertStreamEntry(s, false);
 
-	foreach (std::string s, m->nameOfInPorts)
-		this->ui->listWidget_in->addItem(QString::fromStdString(s));
-
-	foreach (std::string s, m->nameOfOutPorts)
-		this->ui->listWidget_out->addItem(QString::fromStdString(s));
+	foreach (std::string s, m->writeStreams)
+		insertStreamEntry(s, true);
 }
 
 GUILoopGroup::~GUILoopGroup()
@@ -53,6 +55,69 @@ GUILoopGroup::~GUILoopGroup()
 	delete ui;
 }
 
+void GUILoopGroup::insertStreamEntry(std::string name, bool write)
+{
+	if(write)
+		ui->streamList->addItem(QString::fromStdString(name) + "\twrite");
+	else
+		ui->streamList->addItem(QString::fromStdString(name) + "\tread");
+}
+
+void GUILoopGroup::on_addReadStream_clicked()
+{
+	QString name = QInputDialog::getText(this, "set name", "specify name of read stream");
+	if(!name.isEmpty())
+	{
+		if(m->addStream(name.toStdString(), false))
+			insertStreamEntry(name.toStdString(), false);
+		else
+		{
+			QMessageBox box;
+			box.setText("Name already taken");
+			box.exec();
+		}	
+	}
+}
+void GUILoopGroup::on_addWriteStream_clicked()
+{
+	QString name = QInputDialog::getText(this, "set name", "specify name of write stream");
+	if(!name.isEmpty())
+	{
+		if(m->addStream(name.toStdString(), true))
+			insertStreamEntry(name.toStdString(), true);
+		else	
+		{
+			QMessageBox box;
+			box.setText("Name already taken");
+			box.exec();
+		}	
+	}
+}
+void GUILoopGroup::on_removeStream_clicked()
+{
+	QListWidgetItem* item = ui->streamList->currentItem();
+	if(!item)
+		return;
+	
+	QString qname = item->text();
+	if(qname.endsWith("\tread"))
+		qname.chop(5);
+	else if(qname.endsWith("\twrite"))
+		qname.chop(6);
+
+	std::string name = qname.toStdString(); 
+
+	if(m->removeStream(name))
+		delete ui->streamList->currentItem();
+	else
+	{
+		QMessageBox box;
+		box.setText("stream '" + item->text() + "' not found");
+		box.exec();
+	}
+}
+
+/*
 void GUILoopGroup::on_addInPort_clicked() 
 {
 	bool ok;
@@ -127,11 +192,11 @@ void GUILoopGroup::on_rmOutport_clicked()
 		m->nameOfOutPorts.erase(it);
 
 	delete this->ui->listWidget_out->currentItem();
-}
+}*/
 
 void GUILoopGroup::accept() 
 {
-	m->setParameterValue("Runs", ui->lineEdit->text().toStdString());
+	m->getParameter("Runs")->set(ui->repeats->value());
 	QDialog::accept();
 	//m->update();
 }

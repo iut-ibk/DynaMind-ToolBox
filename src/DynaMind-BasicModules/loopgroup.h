@@ -51,6 +51,14 @@ public:
 	void run();
 	void init();
 	bool createInputDialog();
+	
+	std::vector<std::string> readStreams;
+	std::vector<std::string> writeStreams;
+	
+	bool addStream(std::string name, bool write);
+	bool removeStream(std::string name);
+
+
 	//std::vector<DM::View> InViews;
 	//std::vector<DM::View> OutViews;
 	int runs;
