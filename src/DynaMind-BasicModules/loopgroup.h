@@ -59,6 +59,7 @@ public:
 	bool removeStream(std::string name);
 
 	int runs;
+	int currentRun;	// [0,runs-1]
 	//int i;
 };
 

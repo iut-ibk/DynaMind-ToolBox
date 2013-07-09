@@ -39,6 +39,7 @@ LoopGroup::LoopGroup()
 {
 	//i = 0;
 	runs = 1;
+	currentRun = 0;
 
 	this->addParameter("Runs", DM::INT, &runs);
 	//this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInPorts);
@@ -55,14 +56,12 @@ void LoopGroup::run()
 
 void LoopGroup::init() 
 {
-	/*foreach(std::string portName, nameOfInPorts)
-		if(!hasInPort(portName))
-			addPort(portName, INPORT);
+	foreach(std::string streamName, writeStreams)
+		addStream(streamName, true);
 
-	foreach(std::string portName, nameOfOutPorts)
-		if(!hasOutPort(portName))
-			addPort(portName, OUTPORT);
-	*/
+	foreach(std::string streamName, readStreams)
+		addStream(streamName, false);
+	
 	/*foreach (std::string s, nameOfInViews) {
 		this->addTuplePort(s, DM::INTUPLESYSTEM);
 	}
