@@ -39,10 +39,10 @@ public:
 		addParameter("IN-ports", DM::STRING_LIST, &inports);
 		addParameter("OUT-ports", DM::STRING_LIST, &inports);
 	}*/
-
+	/*
 	void init()
 	{
-	}
+	}*/
 	bool isGroup(){return true;};
 private:
 	// a temporary storage for all streams and viewnames in the stream up to this module
