@@ -206,9 +206,9 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 	modelNodes[m] = node;
 
 	// group stuff
-	DM::Group* g = dynamic_cast<DM::Group*>(m);	// dont forget to check vtable!
-	if(g)
+	if(m->isGroup())
 	{
+		DM::Group* g = dynamic_cast<DM::Group*>(m);
 		DM::Logger(DM::Debug) << "added group '" << moduleName << "'";
 		SimulationTab* groupTab = addTab(g);
 		GroupNode* gnode = new GroupNode(m, this, groupTab);
