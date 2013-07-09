@@ -60,6 +60,9 @@ public:
 
 	int runs;
 	int currentRun;	// [0,runs-1]
+
+	bool condition();
+	void resetCondition();
 	//int i;
 };
 
