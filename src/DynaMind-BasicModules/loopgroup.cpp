@@ -137,6 +137,17 @@ bool LoopGroup::removeStream(std::string name)
 	return false;
 }
 
+
+bool LoopGroup::condition()
+{
+	return (currentRun++ < runs);
+};
+
+void LoopGroup::resetCondition()
+{
+	currentRun = 0;
+}
+
 /*
 void LoopGroup::addInPort(std::string n) 
 {
