@@ -52,13 +52,18 @@ public:
 private:
     Ui::GUILoopGroup *ui;
     LoopGroup * m;
+	
+	void insertStreamEntry(std::string name, bool write);
 
 	
 protected slots:
-    void on_addInPort_clicked();
+	void on_addReadStream_clicked();
+	void on_addWriteStream_clicked();
+	void on_removeStream_clicked();
+    /*void on_addInPort_clicked();
     void on_addOutPort_clicked();
     void on_rmInport_clicked();
-    void on_rmOutport_clicked();
+    void on_rmOutport_clicked();*/
     void accept();
 };
 
