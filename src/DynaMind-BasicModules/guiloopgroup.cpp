@@ -117,88 +117,10 @@ void GUILoopGroup::on_removeStream_clicked()
 	}
 }
 
-/*
-void GUILoopGroup::on_addInPort_clicked() 
-{
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-		tr("Name"), QLineEdit::Normal,
-		"", &ok);
-
-	if (ok && !text.isEmpty())
-	{
-		bool isNew = true; 
-		foreach(std::string s, m->nameOfInPorts)
-			if(s == text.toStdString())
-				isNew = false;
-
-		if(isNew)
-		{
-			this->m->addPort(text.toStdString(), DM::INPORT);
-			this->ui->listWidget_in->addItem(text);
-			this->m->nameOfInPorts.push_back(text.toStdString());
-		}
-	}
-
-}
-
-void GUILoopGroup::on_addOutPort_clicked() 
-{
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-		tr("Name"), QLineEdit::Normal,
-		"", &ok);
-
-	if (ok && !text.isEmpty()) 
-	{
-		bool isNew = true; 
-		foreach(std::string s, m->nameOfOutPorts)
-			if(s == text.toStdString())
-				isNew = false;
-
-		if(isNew)
-		{
-			this->ui->listWidget_out->addItem(text);
-			this->m->addPort(text.toStdString(), DM::OUTPORT);
-			this->m->nameOfOutPorts.push_back(text.toStdString());
-		}
-	}
-
-}
-void GUILoopGroup::on_rmInport_clicked() 
-{
-	if (!ui->listWidget_in->currentItem())
-		return;
-	std::string toRemove = ui->listWidget_in->currentItem()->text().toStdString();
-	m->removePort(toRemove, DM::INPORT);
-
-	std::vector<std::string>::iterator it = std::find(m->nameOfInPorts.begin(), m->nameOfInPorts.end(), toRemove);
-	if(it != m->nameOfInPorts.end())
-		m->nameOfInPorts.erase(it);
-
-	delete this->ui->listWidget_in->currentItem();
-
-}
-
-void GUILoopGroup::on_rmOutport_clicked()
-{
-	if (!ui->listWidget_out->currentItem())
-		return;
-	std::string toRemove = ui->listWidget_out->currentItem()->text().toStdString();
-	m->removePort(toRemove, DM::OUTPORT);
-
-	std::vector<std::string>::iterator it = std::find(m->nameOfOutPorts.begin(), m->nameOfOutPorts.end(), toRemove);
-	if(it != m->nameOfOutPorts.end())
-		m->nameOfOutPorts.erase(it);
-
-	delete this->ui->listWidget_out->currentItem();
-}*/
-
 void GUILoopGroup::accept() 
 {
 	m->getParameter("Runs")->set(ui->repeats->value());
 	QDialog::accept();
-	//m->update();
 }
 
 //#endif //SIMENV_GROUP
