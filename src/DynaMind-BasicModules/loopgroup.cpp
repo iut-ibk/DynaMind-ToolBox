@@ -57,10 +57,10 @@ void LoopGroup::run()
 void LoopGroup::init() 
 {
 	foreach(std::string streamName, writeStreams)
-		addStream(streamName, true);
+		initStream(streamName, true);
 
 	foreach(std::string streamName, readStreams)
-		addStream(streamName, false);
+		initStream(streamName, false);
 	
 	/*foreach (std::string s, nameOfInViews) {
 		this->addTuplePort(s, DM::INTUPLESYSTEM);
@@ -99,6 +99,20 @@ void LoopGroup::init()
 
 bool LoopGroup::addStream(std::string name, bool write)
 {
+	if(initStream(name, write))
+	{
+		if(write)
+			writeStreams.push_back(name);
+		else
+			readStreams.push_back(name);
+		return true;
+	}
+	else
+		return false;
+}
+
+bool LoopGroup::initStream(std::string name, bool write)
+{
 	if(hasInPort(name) || hasOutPort(name))
 	{
 		DM::Logger(Error) << "port already existent";
@@ -107,15 +121,11 @@ bool LoopGroup::addStream(std::string name, bool write)
 
 	addPort(name, INPORT);
 	if(write)
-	{
 		addPort(name, OUTPORT);
-		writeStreams.push_back(name);
-	}
-	else
-		readStreams.push_back(name);
 
 	return true;
 }
+
 bool LoopGroup::removeStream(std::string name)
 {
 	std::vector<std::string>::iterator it = find(writeStreams.begin(), writeStreams.end(), name);
