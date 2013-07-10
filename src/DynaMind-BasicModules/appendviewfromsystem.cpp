@@ -86,8 +86,8 @@ void AppendViewFromSystem::init()
         bool changed = false;
         foreach (std::string s, Inports) 
 		{
-            DM::System * sys = this->getData(s);
-            if (sys != 0) 
+            //DM::System * sys = this->getData(s);
+            //if (sys != 0) 
 			{
                 //foreach (std::string v, sys->getNamesOfViews()) 
 				mforeach(DM::View v, this->getViewsInStdStream())
