@@ -40,33 +40,25 @@ using namespace DM;
  * @brief Creates a group. To get data in the group add a dynamic inport, same for out
  *
  */
-class DM_HELPER_DLL_EXPORT GroupTest : public  Group {
-DM_DECLARE_NODE(GroupTest)
+class DM_HELPER_DLL_EXPORT GroupTest : public  Group 
+{
+	DM_DECLARE_NODE(GroupTest)
 private:
 	/*
-    int Runs;
-    int i;
-    std::vector<DM::View> InViews;
-    std::vector<DM::View> OutViews;
+	int Runs;
+	int i;
+	std::vector<DM::View> InViews;
+	std::vector<DM::View> OutViews;
 
-    std::vector<std::string> nameOfInViews;
-    std::vector<std::string> nameOfOutViews;
+	std::vector<std::string> nameOfInViews;
+	std::vector<std::string> nameOfOutViews;
 	*/
-    public:
-        GroupTest();
-        virtual ~GroupTest(){}
-
-        /** @brief The group is executed as long as step < Steps. Steps is set to Runs */
-        void run();
-
-        /** @brief if init is called for every entry in nameOfInViews a Inport tuple is added, same for nameOfOutViews */
-        void init();
-
-        /** @brief add new Inport tuple to the module The function calls the init function to add the port to the module*/
-        void addInPort (std::string in);
-
-        /** @brief add new Outport tuple to the module. The function calls the init function to add the port to the module*/
-        void addOutPort (std::string in);
+public:
+	GroupTest();
+	virtual ~GroupTest(){}
+	void run(){}
+	void addReadStream(const std::string& name);
+	void addWriteStream(const std::string& name);
 };
 
 

@@ -26,7 +26,6 @@
 
 
 #include "grouptest.h"
-//#include <algorithm>
 
 DM_DECLARE_NODE_NAME(GroupTest, Loops)
 GroupTest::GroupTest() 
@@ -34,57 +33,17 @@ GroupTest::GroupTest()
 	/*
     i = 0;
     Runs = 1;
+*/
+}
 
-    this->addParameter("Runs", DM::INT, &Runs);*/
-
-    this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInPorts);
-    this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutPorts);
+void GroupTest::addReadStream(const std::string& name) 
+{
+	addPort(name, INPORT);
 }
 
 
-void GroupTest::run() 
+void GroupTest::addWriteStream(const std::string& name) 
 {
-    //this->Steps = Runs;
-    //Group::run();
-}
-
-
-void GroupTest::init() 
-{
-	/*
-    foreach (std::string s, nameOfInViews)
-        this->addTuplePort(s, DM::INTUPLESYSTEM);
-
-    foreach (std::string s, nameOfOutViews)
-        this->addTuplePort(s, DM::OUTTUPLESYSTEM);
-	*/
-}
-
-
-void GroupTest::addInPort(std::string n) 
-{
-	addPort(n, INPORT);
-/*
-    if (n.empty())
-        return;
-    //CheckIfPortAlreadyExists
-	if(vector_contains(&nameOfInViews, n))
-    //if (std::find(nameOfInViews.begin(), nameOfInViews.end(), n) != nameOfInViews.end())
-        return;
-    nameOfInViews.push_back(n);
-    this->init();*/
-}
-
-
-void GroupTest::addOutPort(std::string n) 
-{
-	addPort(n, OUTPORT);
-    /*if (n.empty())
-        return;
-    //CheckIfPortAlreadyExists
-	if(vector_contains(&nameOfOutViews, n))
-    //if (std::find(nameOfOutViews.begin(), nameOfOutViews.end(), n) != nameOfOutViews.end())
-        return;
-    nameOfOutViews.push_back(n);
-    this->init();*/
+	addPort(name, INPORT);
+	addPort(name, OUTPORT);
 }

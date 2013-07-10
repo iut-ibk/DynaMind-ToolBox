@@ -216,8 +216,7 @@ TEST_F(TestSimulation,LoopGroupTest)
 	
 	GroupTest* g = (GroupTest* ) sim.addModule("GroupTest");
 	ASSERT_TRUE(g != 0);
-	g->addInPort("In");
-	g->addOutPort("Out");
+	g->addWriteStream("port");
 	
 	DM::Module* inoutInGroup  = sim.addModule("InOut", g);
 	ASSERT_TRUE(inoutInGroup != 0);
@@ -225,10 +224,10 @@ TEST_F(TestSimulation,LoopGroupTest)
 	DM::Module* inoutAfterGroup  = sim.addModule("InOut");
 	ASSERT_TRUE(inoutAfterGroup != 0);
 	
-	ASSERT_TRUE(sim.addLink(m, "Sewer", g, "In"));
-	ASSERT_TRUE(sim.addLink(g, "In", inoutInGroup, "Inport"));
-	ASSERT_TRUE(sim.addLink(inoutInGroup, "Inport", g, "Out"));
-	ASSERT_TRUE(sim.addLink(g, "Out", inoutAfterGroup, "Inport"));
+	ASSERT_TRUE(sim.addLink(m, "Sewer", g, "port"));
+	ASSERT_TRUE(sim.addLink(g, "port", inoutInGroup, "Inport"));
+	ASSERT_TRUE(sim.addLink(inoutInGroup, "Inport", g, "port"));
+	ASSERT_TRUE(sim.addLink(g, "port", inoutAfterGroup, "Inport"));
 
 
 	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
