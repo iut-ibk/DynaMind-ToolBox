@@ -859,6 +859,115 @@ bool Simulation::registerModulesFromSettings()
 }
 
 
+// for old versions
+void LoopGroupAdaptor(	QVector<LinkEntry>& links, 
+						QVector<ModuleEntry>& modules, 
+						ModuleEntry& loopGroup)
+{
+	// check if it is an old version
+	QMap<QString, QString>::iterator itInView = loopGroup.parameters.find("nameOfInViews");
+	QMap<QString, QString>::iterator itOutView = loopGroup.parameters.find("nameOfOutViews");
+
+	if(itInView == loopGroup.parameters.end() || itOutView == loopGroup.parameters.end())
+		return;
+
+	// get modules in group for searching backlinks
+	QMap<QString, ModuleEntry> inGroupModules;
+	foreach(const ModuleEntry& m, modules)
+		if(m.GroupUUID == loopGroup.UUID)
+			inGroupModules[m.UUID] = m;
+
+	// get backlinks
+	QList<LinkEntry> backLinks;
+	foreach(const LinkEntry& l, links)
+		if(l.backlink && inGroupModules.find(l.InPort.UUID) != inGroupModules.end())
+			backLinks.push_back(l);
+
+	// remove backlinks
+	
+
+	foreach(const LinkEntry& bl, backLinks)
+	{
+		int index = -1;
+		int i = 0;
+		foreach(const LinkEntry& l, links)
+		{
+			if(		l.InPort.PortName == bl.InPort.PortName 
+				&&	l.InPort.UUID == bl.InPort.UUID
+				&&	l.OutPort.PortName == bl.OutPort.PortName
+				&&	l.OutPort.UUID == bl.OutPort.UUID)
+				index = i;
+			i++;
+		}
+		links.remove(index); // TODO check
+	}
+
+	QList<QString> nameOfInPorts = itInView.value().split("*|*");
+	QList<QString> nameOfOutPorts = itOutView.value().split("*|*");
+
+	// remove old params
+	loopGroup.parameters.remove("nameOfInViews");
+	loopGroup.parameters.remove("nameOfOutViews");
+
+	// add write streams
+	QString writeStreams;
+	foreach(const LinkEntry& backLink, backLinks)
+	{
+		// get link into group, connecting loop entry with backlink end
+		QString portName;
+		foreach(const LinkEntry& refl, links)
+		{
+			if(refl.InPort.PortName == backLink.InPort.PortName
+				&& refl.InPort.UUID == backLink.InPort.UUID
+				&& refl.OutPort.UUID == loopGroup.UUID)
+					portName = refl.OutPort.PortName;
+		}
+		if(portName.size() == 0)	// cant resolve link
+		{
+			DM::Logger(Error) << "Backlink could not be converted from old loopgroup format";
+			return;
+		}
+		// add new write stream
+		writeStreams += portName + "*|*";
+		// remove from in ports, as the port is added with the write stream parameter
+		int i = nameOfInPorts.removeAll(portName);
+		// reconnect links, as the outport from the loopgroup has been renamed
+		// from 'backLink.OutPort.PortName' to 'portName'
+		for(QVector<LinkEntry>::iterator innerLink = links.begin(); innerLink != links.end(); ++innerLink)
+		{
+			if(innerLink->OutPort.PortName == backLink.OutPort.PortName
+				&& innerLink->OutPort.UUID == backLink.OutPort.UUID
+				&& innerLink->InPort.UUID == loopGroup.UUID)
+			{
+				// this link goes to an outport
+				// change all outgoing links on the outside
+				for(QVector<LinkEntry>::iterator outerLink = links.begin(); outerLink != links.end(); ++outerLink)
+				{
+					if(outerLink->OutPort.UUID == innerLink->InPort.UUID
+						&& outerLink->OutPort.PortName == innerLink->InPort.PortName)
+					{
+						outerLink->OutPort.PortName = portName;
+					}
+				}
+				innerLink->InPort.PortName = portName;
+			}
+		}
+	}
+	// add read streams
+	QString readStreams;
+	foreach(QString portName, nameOfInPorts)
+		readStreams += portName + "*|*";
+	
+	loopGroup.parameters["writeStreams"] = writeStreams;
+	loopGroup.parameters["readStreams"] = readStreams;
+}
+
+void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
+{
+	for(QVector<ModuleEntry>::iterator it = modules.begin(); it != modules.end(); ++it)
+		if(it->ClassName == "LoopGroup")
+			LoopGroupAdaptor(links, modules, *it);
+}
 
 bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
 {
@@ -866,6 +975,8 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
     SimulationReader simreader(QString::fromStdString(filename));
 	
 	QVector<ModuleEntry> moduleEntries = simreader.getModules();
+	QVector<LinkEntry> linkEntries = simreader.getLinks();
+	UpdateVersion(linkEntries, moduleEntries);
 
 	int waitingForGroup = 0;
 	// load modules
@@ -905,7 +1016,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 			DM::Logger(Error) << "could not find the group for module '" << me.ClassName.toStdString() << "'";
 
 	// load links
-	foreach(LinkEntry le, simreader.getLinks())
+	foreach(LinkEntry le, linkEntries)
 	{
 		DM::Module *src = modMap[le.OutPort.UUID.toStdString()];
 		DM::Module *dest = modMap[le.InPort.UUID.toStdString()];
