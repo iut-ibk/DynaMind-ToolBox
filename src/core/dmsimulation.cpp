@@ -498,7 +498,11 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 	else
 		m->setStatus(MOD_CHECK_OK);
 
-	std::vector<Link*> outLinks = getOutgoingLinks(m, streamName);
+	// get all out ports, all assigned links and push forward
+	std::vector<Link*> outLinks;
+	foreach(std::string outPortName, m->getOutPortNames())
+		foreach(Link* outLink, getOutgoingLinks(m, outPortName))
+			outLinks.push_back(outLink);
 
 	foreach(Link* l, outLinks)
 	{
