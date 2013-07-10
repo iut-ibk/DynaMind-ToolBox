@@ -363,9 +363,11 @@ public:
 		case DM::STRING_LIST:	
 		{
 			std::vector<std::string> v;
-			foreach(QString s, qvalue.split("*|*"))
-				if(s.size())
-					v.push_back(s.toStdString());
+			// foreach will cause a compile error in modules not including qt headers
+			QVector<QString> qvalues = qvalue.split("*|*").toVector();
+			for(QVector<QString>::iterator it = qvalues.begin(); it != qvalues.end(); ++it)
+				if(it->size())
+					v.push_back(it->toStdString());
 			p->set(v);
 		}
 		break;
