@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
     DM::Logger(DM::Debug) << "Add Module";
     DM::Simulation * sim = new DM::Simulation();
-    sim->registerNativeModules("dynamind-testmodules");
+    sim->registerModule("dynamind-testmodules");
     DM::Module * m = sim->addModule("CreateNodes");
     std::string m_uuid = m->getUuid();
     sim->run();
