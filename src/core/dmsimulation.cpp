@@ -1021,7 +1021,7 @@ bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM:
 
 	int waitingForGroup = 0;
 	// load modules
-	while(moduleEntries.size() > 0 && moduleEntries.size() > waitingForGroup)
+	while(moduleEntries.size() > 0 && moduleEntries.size() >= waitingForGroup)
 	//foreach(ModuleEntry me, simreader.getModules())
 	{
 		ModuleEntry me = moduleEntries.first();
