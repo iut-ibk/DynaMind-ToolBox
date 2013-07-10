@@ -53,6 +53,7 @@ DistributeWeightOnNodes::DistributeWeightOnNodes()
 
     this->addData("Layout", views);
 
+    this->nodesum = 0;
     this->addParameter("Node weight sum", DM::DOUBLE, &this->nodesum);
 }
 

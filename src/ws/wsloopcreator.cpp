@@ -64,14 +64,12 @@ DM_DECLARE_NODE_NAME(LoopCreator,Watersupply)
 LoopCreator::LoopCreator()
 {    
     this->searchdistance=200;
-    this->minloopdiameter=250;
-    this->maxnumberelements=3;
     this->zonesize = 60;
+    this->relalternativepath=0.5;
     //Define input parameter
     this->addParameter("Search distance for alternative paths [m]", DM::DOUBLE, &this->searchdistance);
-    this->addParameter("Minimum diameter of loop [m]", DM::DOUBLE, &this->minloopdiameter);
-    this->addParameter("Maximum number of additional elements to create one loop [-]", DM::DOUBLE, &this->maxnumberelements);
     this->addParameter("Pressure within one zone [m]", DM::DOUBLE, &this->zonesize);
+    this->addParameter("Relative path length of alternative path [-]", DM::DOUBLE, &this->relalternativepath);
 
     //Define model input
     DM::ER::ViewDefinitionHelper defhelper_er;
@@ -263,28 +261,13 @@ void LoopCreator::run()
                 if(!DynamindBoostGraph::findShortestPath(org_pathnodes,org_pathedges,org_distance,org_nodesindex,org_nodes2edge,org_d,org_p,rootjunction,targetjunction))
                     continue;
 
-                if(pathedges.size()>maxnumberelements)
-                    continue;
-
-                double maxdistance = TBVectorData::maxDistance(pathnodes,pathnodes[pathnodes.size()-1]);
-                double org_maxdistance = TBVectorData::maxDistance(org_pathnodes,org_pathnodes[org_pathnodes.size()-1]);
-
-                //if(maxdistance < minloopdiameter/2 && org_maxdistance < minloopdiameter/2)
-                //    continue;
-
                 //check if paths are parallel
-                if(distance/org_distance > 0.5)
+                if(distance/org_distance > this->relalternativepath)
                         continue;
-
-                //check if
 
                 for(uint check=1; check<pathnodes.size()-1; check++)
                     if(std::find(junctions->begin(),junctions->end(),pathnodes[check])!=junctions->end())
                         continue;
-
-                //TODO THIS CAN BE AN IMPORTANT PARAMETER -> INPUT PARAMETER FOR THE MODULE
-                //if(distance < 150)
-                //    continue;
 
                 #pragma omp critical
                 {

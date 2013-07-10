@@ -47,7 +47,7 @@ private:
     DM::GRAPH::ViewDefinitionHelper defhelper_graph;
     DM::WS::ViewDefinitionHelper defhelper_ws;
 
-    double maxnumberelements,minloopdiameter, searchdistance, zonesize;
+    double searchdistance, zonesize, relalternativepath;
 
 public:
     LoopCreator();
