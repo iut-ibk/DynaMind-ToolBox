@@ -70,6 +70,7 @@ void copyfiles(string &cpfile, int iteration)
 			QString targetfile = transfer.at(1);
 			targetfile = targetfile.replace("DMITERATION",QString::number(iteration));
 			QString sourcefile = transfer.at(0);
+            QFile::remove(targetfile);
 			QFile::copy(sourcefile,targetfile);
 			DM::Logger(DM::Standard) << "Copy: " << sourcefile.toStdString() << " -> " << targetfile.toStdString();
 		}
