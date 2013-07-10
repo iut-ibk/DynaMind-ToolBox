@@ -69,10 +69,11 @@ double RasterDataHelper::meanOverAreaWithBlocker (DM::RasterData * rdata, std::v
                 if ( area.containsPoint(QPointF(x,y), Qt::WindingFill) == true ) {
                     if ( blocker != 0 ) {
                         if ( blocker->getCell((int) x/cellSizeX , (int)  y/cellSizeY) <  1 ) {
-                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                            if ( rdata->getNoValue() != rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY)) {
+                                sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                                counter++;
+                            }
                             blocker->setCell((int) x/cellSizeX, (int) y/cellSizeY, 2);
-                            counter++;
-
                         }
                     } else {
 
@@ -141,12 +142,16 @@ double RasterDataHelper::sumOverArea (DM::RasterData * rdata, std::vector<DM::No
                 if ( area.containsPoint(QPointF(x,y), Qt::WindingFill) == true ) {
                     if ( blocker != 0 ) {
                         if ( blocker->getCell((int) x/cellSizeX , (int)  y/cellSizeY) <  1 ) {
-                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                            if ( rdata->getNoValue() != rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY)) {
+                                sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                            }
                             blocker->setCell((int) x/cellSizeX, (int) y/cellSizeY, 2);
 
                         }
                     } else {
-                        sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                        if ( rdata->getNoValue() != rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY)) {
+                            sum = sum + rdata->getCell((int) x/cellSizeX, (int)  y/cellSizeY);
+                        }
                     }
                 }
             }
