@@ -30,6 +30,9 @@
 
 #include "tbvectordata.h"
 #include "dm.h"
+#include <dmrasterdata.h>
+#include <dmstdutilities.h>
+
 #include <QtGlobal>
 
 
@@ -731,6 +734,23 @@ bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_m
     x_max = 0;
     y_max = 0;
 
+    if (view.getType() == DM::RASTERDATA) {
+        std::map<std::string, DM::Component*> components = sys->getAllComponentsInView(view);
+        mforeach(DM::Component* c, components) {
+            if(c->getType() == DM::RASTERDATA) {
+                DM::RasterData * r = (DM::RasterData*)c;
+                x_min = r->getXOffset();
+                y_min = r->getYOffset();
+                x_max = r->getWidth()*r->getCellSizeX() + r->getXOffset();
+                y_max = r->getHeight()*r->getCellSizeY() + r->getYOffset();
+                return true;
+            }
+        }
+        return false;
+
+
+    }
+
     std::vector<DM::Node * > nodes;
     if (view.getType() == DM::NODE) TBVectorData::GetNodesFromNodes(sys, view, nodes);
     if (view.getType() == DM::EDGE) TBVectorData::GetNodesFromEdges(sys, view, nodes);
@@ -795,16 +815,78 @@ std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::Vie
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
 {
+    typedef std::map<DM::Node*,double>::iterator It;
+    std::map<DM::Node*,double> distances;
     std::vector<DM::Node*> result;
-    result.push_back(root);
 
+    //find nearest nodes
     for(uint i=0; i < nodefield.size(); i++)
     {
         double currentdistance=TBVectorData::calculateDistance(root,nodefield[i]);
         if(currentdistance <= maxdistance)
-            result.push_back(nodefield[i]);
+            distances[nodefield[i]]=currentdistance;
     }
+
+    //sort
+    while(result.size() < distances.size())
+    {
+        It i = distances.begin();
+        DM::Node* minnode = (*i).first;
+        double mindistance = (*i).second;
+
+        for(It i = distances.begin(); i != distances.end(); ++i)
+        {
+            if((*i).second < mindistance)
+            {
+                minnode = (*i).first;
+                mindistance = (*i).second;
+            }
+        }
+        result.push_back(minnode);
+        distances.erase(minnode);
+    }
+
     return result;
+}
+
+bool TBVectorData::getBoundingBox(std::vector<DM::Node *> nodes, double &x, double &y, double &h, double &width, bool init=true)
+{
+    double boundaries[4] = {x,x+h,y,x+width}; //(xmin,xmax,ymin,ymax)
+    bool initboundaries=init;
+
+    for(uint index=0; index < nodes.size(); index++)
+    {
+        DM::Node* currentnode = nodes[index];
+
+        if(initboundaries)
+        {
+            initboundaries=false;
+            boundaries[0] = currentnode->getX();
+            boundaries[1] = boundaries[0];
+            boundaries[2] = currentnode->getY();
+            boundaries[3] = boundaries[2];
+        }
+        else
+        {
+            if(boundaries[0] > currentnode->getX())
+                boundaries[0] = currentnode->getX();
+
+            if(boundaries[1] < currentnode->getX())
+                boundaries[1] = currentnode->getX();
+
+            if(boundaries[2] > currentnode->getY())
+                boundaries[2] = currentnode->getY();
+
+            if(boundaries[3] < currentnode->getY())
+                boundaries[3] = currentnode->getY();
+        }
+    }
+
+    x=boundaries[0];
+    width=boundaries[1]-boundaries[0];
+    y=boundaries[2];
+    h=boundaries[3]-boundaries[2];
+    return true;
 }
 
 double TBVectorData::maxDistance(std::vector<DM::Node *> pointfield, DM::Node *centernode)

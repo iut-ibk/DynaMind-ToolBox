@@ -68,6 +68,8 @@ public:
     unsigned long getHeight() const {return height;}
 	/** @brief returns the width of the cell */
     double getCellSizeX() const {return cellSizeX;}
+    /** @brief returns the cell size. This method is deprecated instead getCellSizeX and getCellSizeY should be used */
+    double getCellSize() const;
 	/** @brief returns the height of the cell */
     double getCellSizeY() const {return cellSizeY;}
 	/** @brief returns the default value of the field */

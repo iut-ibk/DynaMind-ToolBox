@@ -149,6 +149,9 @@ public:
     /** @brief Find nearest neighbours of root node within a node field */
     static std::vector<DM::Node*> findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield);
 
+    /** @brief Calculate a bounding box of a node cloud [If init is set to false x,y,h,width are the minimum boundingbox] */
+    static bool getBoundingBox(std::vector<DM::Node*> nodes, double &x, double &y, double &h, double &width, bool init);
+
     /** @brief Returns the maximum distance of a center node to all other nodes within a point field*/
     static double maxDistance(std::vector<DM::Node*> pointfield, DM::Node* centernode);
 
