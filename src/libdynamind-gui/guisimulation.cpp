@@ -366,7 +366,7 @@ bool GUISimulation::loadSimulation(std::string filename)
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
 	
 	std::map<std::string, DM::Module*> modMap;
-	bool result = Simulation::loadSimulation(filename, modMap);
+	bool result = Simulation::_loadSimulation(filename, modMap);
 
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)
