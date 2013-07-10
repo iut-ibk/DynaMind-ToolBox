@@ -31,22 +31,23 @@
 #include <dynamicinout.h>
 #include <grouptest.h>
 #include <dmporttuple.h>
+
 int main(int argc, char **argv) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
-    DM::Logger(DM::Debug) << "Add Module";
-    DM::Simulation * sim = new DM::Simulation();
-    sim->registerModule("dynamind-testmodules");
-    DM::Module * m = sim->addModule("CreateNodes");
-    std::string m_uuid = m->getUuid();
-    sim->run();
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Logger(DM::Debug) << "Add Module";
+	DM::Simulation * sim = new DM::Simulation();
+	sim->registerModule("dynamind-testmodules");
+	DM::Module * m = sim->addModule("CreateNodes");
+	sim->run();
 
-    for (int i = 0; i < 100; i++) {
-        Logger(Debug)<< "Run " << i;
-        sim->removeModule(m_uuid);
-        m_uuid = sim->addModule("CreateNodes")->getUuid();
-        sim->run();
-    }
+	for (int i = 0; i < 100; i++) 
+	{
+		Logger(Debug)<< "Run " << i;
+		sim->removeModule(m);
+		m = sim->addModule("CreateNodes");
+		sim->run();
+	}
 
-    delete sim;
+	delete sim;
 }
