@@ -987,7 +987,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 		moduleEntries.pop_front();
 
 		DM::Module* owner = modMap[me.GroupUUID.toStdString()];
-		if(me.GroupUUID.size())
+		if(me.GroupUUID.size() && me.GroupUUID != simreader.getRootGroupUUID())
 		{
 			if(!owner)
 			{
