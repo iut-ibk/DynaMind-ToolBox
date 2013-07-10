@@ -159,7 +159,7 @@ bool SimulationReader::endElement(const QString & namespaceURI,
     }
     if (qName == "parameter") {
         tmpValue = tmpValue.trimmed();
-        this->tmpNode.ParemterList[tmpParameterName] = tmpValue;
+        this->tmpNode.parameters[tmpParameterName] = tmpValue;
         tmpValue.clear();
     }
     if (qName == "Link") {

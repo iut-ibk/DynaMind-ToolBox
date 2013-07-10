@@ -892,7 +892,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 		{
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters
-			for(QMap<QString, QString>::iterator it = me.ParemterList.begin(); it != me.ParemterList.end(); ++it)
+			for(QMap<QString, QString>::iterator it = me.parameters.begin(); it != me.parameters.end(); ++it)
 				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
 			// we init now (probably two times) to init e.g. ports
 			m->init();
