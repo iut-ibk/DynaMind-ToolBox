@@ -140,7 +140,7 @@ void View::setAttributeType(std::string name, Attribute::AttributeType type)
     this->attributeTypes[name] = type;
 }
 
-void View::addLinks(string name, const View& linkedView)
+void View::addLinks(string name, View linkedView)
 {
 	addLinks(name, linkedView.getName());
 }
