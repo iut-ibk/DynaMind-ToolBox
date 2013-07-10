@@ -906,8 +906,8 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 		links.remove(index); // TODO check
 	}
 
-	QList<QString> nameOfInPorts = itInView.value().split("*|*");
-	QList<QString> nameOfOutPorts = itOutView.value().split("*|*");
+	QList<QString> nameOfInPorts = itInView.value().split("*|*", QString::SkipEmptyParts);
+	QList<QString> nameOfOutPorts = itOutView.value().split("*|*", QString::SkipEmptyParts);
 
 	// remove old params
 	loopGroup.parameters.remove("nameOfInViews");
@@ -918,23 +918,36 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 	foreach(const LinkEntry& backLink, backLinks)
 	{
 		// get link into group, connecting loop entry with backlink end
-		QString portName;
+		QString inPortName;
+		QString outPortName;
 		foreach(const LinkEntry& refl, links)
 		{
 			if(refl.InPort.PortName == backLink.InPort.PortName
 				&& refl.InPort.UUID == backLink.InPort.UUID
 				&& refl.OutPort.UUID == loopGroup.UUID)
-					portName = refl.OutPort.PortName;
+			{
+					inPortName = refl.OutPort.PortName;
+			}
 		}
-		if(portName.size() == 0)	// cant resolve link
+		foreach(const LinkEntry& refl, links)
+		{
+			if(refl.OutPort.PortName == backLink.OutPort.PortName
+				&& refl.OutPort.UUID == backLink.OutPort.UUID
+				&& refl.InPort.UUID == loopGroup.UUID)
+			{
+					outPortName = refl.InPort.PortName;
+			}
+		}
+		if(inPortName.size() == 0)	// cant resolve link
 		{
 			DM::Logger(Error) << "Backlink could not be converted from old loopgroup format";
 			return;
 		}
 		// add new write stream
-		writeStreams += portName + "*|*";
+		writeStreams += inPortName + "*|*";
 		// remove from in ports, as the port is added with the write stream parameter
-		int i = nameOfInPorts.removeAll(portName);
+		nameOfInPorts.removeAll(inPortName);
+		nameOfOutPorts.removeAll(outPortName);
 		// reconnect links, as the outport from the loopgroup has been renamed
 		// from 'backLink.OutPort.PortName' to 'portName'
 		for(QVector<LinkEntry>::iterator innerLink = links.begin(); innerLink != links.end(); ++innerLink)
@@ -950,10 +963,10 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 					if(outerLink->OutPort.UUID == innerLink->InPort.UUID
 						&& outerLink->OutPort.PortName == innerLink->InPort.PortName)
 					{
-						outerLink->OutPort.PortName = portName;
+						outerLink->OutPort.PortName = inPortName;
 					}
 				}
-				innerLink->InPort.PortName = portName;
+				innerLink->InPort.PortName = inPortName;
 			}
 		}
 	}
@@ -961,6 +974,30 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 	QString readStreams;
 	foreach(QString portName, nameOfInPorts)
 		readStreams += portName + "*|*";
+
+
+	// TRICKY: we assume that if out ports are left, one read stream is meant to be a write stream
+	// that must fulfill following conditions:
+	// just a single out and a single in port, no write streams so far
+	if(nameOfOutPorts.size() == 1 && writeStreams.size() == 0 && nameOfInPorts.size() == 1)
+	{
+		// get names
+		QString oldOutPortName = nameOfOutPorts.front();
+		QString newOutPortName = nameOfInPorts.at(0);
+		// exchange
+		writeStreams = readStreams;
+		readStreams.clear();
+		// relink
+		for(QVector<LinkEntry>::iterator it = links.begin(); it != links.end(); ++it)
+		{
+			if(it->OutPort.UUID == loopGroup.UUID && it->OutPort.PortName == oldOutPortName)
+				it->OutPort.PortName = newOutPortName;
+			else if(it->InPort.UUID == loopGroup.UUID && it->InPort.PortName == oldOutPortName)
+				it->InPort.PortName = newOutPortName;
+		}
+		DM::Logger(DM::Debug) << "exchanged port '" << oldOutPortName << "' of module '" 
+			<< loopGroup.ClassName << "' with port '" << newOutPortName << "'";
+	}
 	
 	loopGroup.parameters["writeStreams"] = writeStreams;
 	loopGroup.parameters["readStreams"] = readStreams;
