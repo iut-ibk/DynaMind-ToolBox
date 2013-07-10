@@ -155,6 +155,7 @@ public:
     void setAttributeType(std::string name, Attribute::AttributeType type);
 
     /** @brief Adds link attribute */
+    void addLinks(std::string name, const View& linkedView);	// backwards comp.
     void addLinks(std::string name, std::string linkedViewName);
 
     /** @brief Returns names of object that link to other views */
