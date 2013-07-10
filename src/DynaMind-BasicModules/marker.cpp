@@ -86,7 +86,7 @@ Marker::Marker()
 }
 
 void Marker::init() {
-    sys_in = this->getData("Data");
+    //sys_in = this->getData("Data");
     DM::View outputview = DM::View (param.resultName, DM::RASTERDATA, DM::WRITE);
     std::vector<DM::View> rData;
     rData.push_back(outputview);
