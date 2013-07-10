@@ -77,34 +77,21 @@ namespace std {
 
 
     enum  DATATYPES {
-        INT,
-        LONG,
-        DOUBLE,
-        STRING,
-        FILENAME,
-        STRING_MAP,
-        BOOL,
-        LASTPRIMITIVETYPE,
-        //Port Types
-
-        USER_DEFINED_INPUT,
-
-        SYSTEM_OUT,
-        SYSTEM_IN,
-        SYSTEM
+		INT,
+		LONG,
+		DOUBLE,
+		STRING,
+		FILENAME,
+		STRING_LIST,
+		STRING_MAP,
+		BOOL,
     };
 
     enum PORTTYPES {
-        OUTSYSTEM,
-        OUTTUPLESYSTEM,
-        OUTPORTS,
-
-        INSYSTEM,
-        INTUPLESYSTEM,
-
-        INPORTS
+	INPORT,
+	OUTPORT,
     };
-
+	/*
     enum CORINE {
         ContUrbanFabric = 2,
         DisContUrbanFabric = 3,
@@ -113,7 +100,7 @@ namespace std {
         ForestsSemiNatural = 6,
         WaterBodies = 7
     };
-
+	*/
 
 
 class Module {
@@ -126,27 +113,24 @@ public:
     virtual void init();
     virtual std::string getHelpUrl();
 
-    void addData(std::string name, std::vector<DM::View> view);
-    std::map<std::string, std::vector<DM::View> >  getViews();
+    std::map<std::string, std::map<std::string, DM::View> >  getViews();
     DM::System * getData(std::string dataname);
-    DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 
 
-
-    std::vector<std::string> getParameterListAsVector();    
     virtual std::string getParameterAsString(std::string Name);
     virtual void updateParameter();
 
 
-    void addParameter(std::string name, int type, void * ref, std::string description);
+    void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
     virtual std::string getHelpUrl();
 
 
-    virtual const char *getClassName();
-
-    virtual const char *getFileName();
+    virtual const char* getClassName() = 0;
+protected:
+    void addData(std::string name, std::vector<DM::View> view);
+    DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 };
 
 %extend Module {
