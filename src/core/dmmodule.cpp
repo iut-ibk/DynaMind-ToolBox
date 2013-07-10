@@ -140,7 +140,8 @@ bool Module::hasOutPort(const std::string &name)
 void Module::setInPortData(const std::string &name, System* data)
 {
 	if(!map_contains(&inPorts, name))
-		DM::Logger(Error) << "accessing non existent in port '" << name << "', canceled";
+		DM::Logger(Error) << "accessing non existent in port '" << name << "' in module '" 
+		<< this->getClassName() << "', canceled";
 	else
 		inPorts[name] = data;
 }
@@ -148,7 +149,8 @@ void Module::setInPortData(const std::string &name, System* data)
 void Module::setOutPortData(const std::string &name, System* data)
 {
 	if(!map_contains(&outPorts, name))
-		DM::Logger(Error) << "accessing non existent out port '" << name << "', canceled";
+		DM::Logger(Error) << "accessing non existent out port '" << name << "' in module '" 
+		<< this->getClassName() << "', canceled";
 	else
 		outPorts[name] = data;
 }
