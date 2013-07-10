@@ -207,7 +207,7 @@ TEST_F(TestSimulation,LoopGroupTest)
 {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-	DM::Logger(DM::Standard) << "Test loop group";
+	DM::Logger(DM::Standard) << "Test group";
 	DM::Simulation sim;
 	sim.registerModule("dynamind-testmodules");
 
