@@ -969,7 +969,7 @@ void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
 			LoopGroupAdaptor(links, modules, *it);
 }
 
-bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
+bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
 {
 	Logger(Standard) << ">> loading simulation file '" << filename << "'";
     SimulationReader simreader(QString::fromStdString(filename));
@@ -1050,7 +1050,7 @@ bool Simulation::loadSimulation(std::string filename, std::map<std::string, DM::
 bool Simulation::loadSimulation(std::string filename) 
 {
 	std::map<std::string, DM::Module*> modMap;
-	return loadSimulation(filename, modMap);
+	return _loadSimulation(filename, modMap);
 }
 
 void Simulation::writeSimulation(std::string filename) 
