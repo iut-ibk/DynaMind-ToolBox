@@ -1,3 +1,29 @@
+/**
+ * @file
+ * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @version 1.0
+ * @section LICENSE
+ *
+ * This file is part of DynaMind
+ *
+ * Copyright (C) 2012-2013  Christian Urich
+
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include "removecomponent.h"
 
 DM_DECLARE_NODE_NAME(RemoveComponent,Modules)
@@ -25,6 +51,7 @@ void RemoveComponent::run() {
     DM::System * city = this->getData("city");
 
     std::vector<std::string> uuids = city->getUUIDs(this->view_remove);
+    DM::Logger(DM::Debug)  << "Elements in View before" << uuids.size();
     foreach (std::string uuid, uuids) {
         DM::Component * cmp = city->getComponent(uuid);
         if (cmp->getAttribute("selected")->getDouble() < 0.01)
@@ -36,7 +63,6 @@ void RemoveComponent::run() {
         for (std::map<std::string, DM::Attribute*>::const_iterator it = attr_map.begin(); it != attr_map.end(); ++it) {
             DM::Attribute * attr = it->second;
             if (attr->getType() == DM::Attribute::LINK) {
-
                 std::vector<DM::LinkAttribute> links = attr->getLinks();
                 foreach (DM::LinkAttribute link, links) {
                     DM::Component * l_cmp = city->getComponent(link.uuid);
@@ -48,15 +74,26 @@ void RemoveComponent::run() {
                     foreach (DM::LinkAttribute l, cmp_links) {
                         if (l.uuid != cmp->getUUID() || l.viewname != this->view_remove.getName()) cmp_links_new.push_back(l);
                     }
+                    DM::Logger(DM::Debug) << "Remove links " << attr->getName() << "\t" << cmp_links.size() << "/" << cmp_links_new.size();
                     attr->setLinks(cmp_links_new);
-
+                    DM::Logger(DM::Debug) <<  attr->getLinks().size();
+                    //Workaround until bug in core is fixed
+                    l_cmp->getAttribute(this->view_remove.getName())->setLinks(cmp_links_new);
                 }
 
                 attr->setLinks(std::vector<DM::LinkAttribute>());
+
             }
         }
     }
 
+    DM::Logger(DM::Debug)  << "Elements in View after" << city->getUUIDs(this->view_remove).size();
+
+}
+
+string RemoveComponent::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Removecomponent";
 }
 
 
