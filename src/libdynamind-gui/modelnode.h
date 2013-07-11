@@ -150,7 +150,7 @@ public:
     bool isMinimized(){return this->minimized;}
 
     virtual bool isGroup(){return false;}
-
+	void resize();
     //virtual void setMinimized(bool b);
 
 

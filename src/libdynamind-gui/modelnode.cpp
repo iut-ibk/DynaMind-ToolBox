@@ -241,14 +241,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
     w = w < 140 ? 140 : w;
     width = w + 4;*/
 
-	QString text = "Name: " + QString::fromStdString(module->getName());
-	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
-	width = min(150, (int)textSize.width() + 50);
-
-	if(!m->isGroup())
-		height =  45;
-	else
-		height =  65;
+	resize();
 
     //VIBeModule->addPortObserver( & this->guiPortObserver);
     //this->updatePorts();
@@ -263,6 +256,37 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 	// be shure to add observer last, as module dimensions are not set before
 	new GUIModelObserver(this, m);
 }
+
+void ModelNode::resize()
+{
+	// module name has to fit in node
+	QString text = "Name: " + QString::fromStdString(module->getName());
+	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
+	width = max(150, (int)textSize.width() + 50);
+	
+	// make groups a bit bigger
+	if(!module->isGroup())
+		height =  45;
+	else
+		height =  65;
+
+	// ports names have to fit
+	int maxPortSize = 0;
+	foreach(PortNode* p, ports)
+		maxPortSize = max(maxPortSize, (int)QGraphicsSimpleTextItem(p->getPortName()).boundingRect().width());
+
+	maxPortSize += 20;
+	width = max(width, 2*maxPortSize);
+	
+	// port number has to fit
+	int maxPortCount = max(module->getInPortNames().size(), module->getOutPortNames().size());
+	height = max(height, 20 + 15 * maxPortCount);
+
+	// update port pos
+	foreach(PortNode* p, ports)
+		p->updatePos();
+}
+
 
 PortNode* ModelNode::getPort(std::string portName, const DM::PortType type)
 {
@@ -287,6 +311,7 @@ QVector<PortNode*> ModelNode::getPorts(DM::PortType type)
 void ModelNode::addPort(const std::string &name, const DM::PortType type)
 {
 	this->ports.append(new PortNode(QString::fromStdString(name), module, type, this, this->simulation));
+	resize();
 }
 void ModelNode::removePort(const std::string &name, const DM::PortType type)
 {
@@ -294,6 +319,7 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 	if(p)
 		ports.erase(find(ports.begin(), ports.end(), p));
 	delete p;
+	resize();
 }
 
 /*
