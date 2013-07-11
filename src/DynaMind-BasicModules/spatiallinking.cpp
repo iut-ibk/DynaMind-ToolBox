@@ -104,24 +104,6 @@ void SpatialLinking::run() {
     int counterID = -1;
     foreach (std::string baseUUID, baseUUIDs) {
         counterID++;
-        /*Node c(0,0,0);
-        if (vbase.getType() == DM::FACE) {
-            Face * f = city->getFace(baseUUID);
-            DM::Node d (DM::CGALGeometry::CalculateCentroid(city, f));
-            c.setX(d.getX());
-            c.setY(d.getY());
-            c.setZ(d.getZ());
-        }
-        if (vbase.getType() == DM::NODE) {
-            DM::Node * n1 = city->getNode(baseUUID);
-            c.setX(n1->getX());
-            c.setY(n1->getY());
-            c.setZ(n1->getZ());
-        }
-        centerPoints.push_back(QPointF(c.getX(), c.getY()));
-
-        int x = c.getX() / spatialL;
-        int y = c.getY() / spatialL;*/
 
 		double v[3];
 
@@ -153,16 +135,26 @@ void SpatialLinking::run() {
 
     int CounterElementLinked = 0;
     int NumberOfLinks = linkUUIDs.size();
-//#pragma omp parallel for
+
     for (int i = 0; i < NumberOfLinks; i++) {
         std::string linkUUID = linkUUIDs[i];
         QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
 
         //Search Space
-        int xmin = (int) (qf.boundingRect().left()) / spatialL-1;
+        double xb;
+        double yb;
+        double hb;
+        double wb;
+        TBVectorData::getBoundingBox(city->getFace(linkUUID)->getNodePointers(), xb, yb, hb, wb,true);
+        /*int xmin = (int) (qf.boundingRect().left()) / spatialL-1;
         int ymin = (int) (qf.boundingRect().bottom()) /spatialL-1;
         int xmax = (int) (qf.boundingRect().right())/spatialL+1;
-        int ymax = (int) (qf.boundingRect().top())/spatialL+1;
+        int ymax = (int) (qf.boundingRect().top())/spatialL+1;*/
+
+        int xmin = (int) (xb) / spatialL-1;
+        int ymin = (int) (yb) /spatialL-1;
+        int xmax = (int) (xb+wb)/spatialL+1;
+        int ymax = (int) (yb+hb)/spatialL+1;
         Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|"<< ymax;
 
         if (xmin > xmax) {
