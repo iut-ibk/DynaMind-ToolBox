@@ -219,26 +219,38 @@ System* Module::getData(const std::string& streamName)
 	{
 		if(this->getInPortNames().size() != 0)
 		{
-			// we didn't get a system, but we got a port - simulation not ready
-			// this can happen if module::init calles getData, which is deprecated
-			DM::Logger(Error) << "module '" << getClassName() << "' may calls getData('"
-				<< streamName << "') while initializing, "
-				<< "please use getViewsInStream to retrieve the desired views from stream";
-			return NULL;
+			bool empty = true;
+			mforeach(System* s, inPorts)
+				if(s)
+					empty = false;
+			if(empty)
+			{
+				// we didn't get a system, but we all ports are empty -> simulation not ready
+				// this can happen if module::init calles getData, which is deprecated
+				DM::Logger(Error) << "module '" << getClassName() << "' may calls getData('"
+					<< streamName << "') while initializing, "
+					<< "please use getViewsInStream to retrieve the desired views from stream";
+				return NULL;
+			}
 		}
 		sys = new System();
 	}
-	
+
+	bool readOnly = true;
 	mforeach(View v, accessedViews[streamName])
+	{
 		sys->addView(v);
-	this->setOutPortData(streamName, sys);
+		if(v.getAccessType() != READ)
+			readOnly = false;
+	}
+	if(!readOnly)
+		this->setOutPortData(streamName, sys);
+
 	return sys;
 }
 
 RasterData* Module::getRasterData(std::string name, View view)
 {
-	DM::Logger(Warning) << "Module::getData deprecated, " << 
-		"create a new system, add rasterdata and apply system to port via setOutPortData instead";
 	return getData(name)->addRasterData(new RasterData());
 }
 
