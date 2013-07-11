@@ -194,13 +194,15 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
 	//lastAddedModuleNode->setPos(-100, -50);
-
+	
 	if(!parent)
 		selectTab(0);
 	else
+	{
 		for(int i=1;i<tabs.size();i++)
 			if(tabs.at(i)->getParentGroup() == parent)
-				selectTab(i);		
+				selectTab(i);	
+	}
 
 	getSelectedTab()->addItem(node);
 	modelNodes[m] = node;
@@ -373,7 +375,7 @@ bool GUISimulation::loadSimulation(std::string filename)
 	{
 		DM::Module* m;
 		if(map_contains(&modMap, it->first.toStdString(), m))
-			modelNodes[m]->setPos(it->second.posX, it->second.posY);
+			modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
 	}
 	return result;
 }

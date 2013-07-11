@@ -129,7 +129,7 @@ public:
     //QStringList ExistingOutPorts;
     //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
     ModelNode(DM::Module* m, GUISimulation* sim);
-
+	void setPos(const QPointF &pos);
     //int type() const {return Type; }
     virtual ~ModelNode();
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);

@@ -83,7 +83,10 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	if(type == "Module")
 	{
 		if(DM::Module* m = sim->addModule(moduleName.toStdString(), this->parentGroup))
+		{
 			sim->getModelNode(m)->setPos(event->scenePos());	// move to cursor
+		}
+
 		// get module node from simulation
 		//ModelNode* node = sim->guiAddModule(moduleName);
 		// move to cursor

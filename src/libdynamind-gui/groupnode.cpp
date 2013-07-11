@@ -259,17 +259,19 @@ void GroupNode::resize()
 	{
 		if(m->getOwner() == this->module)
 		{
-			ModelNode* mn = getSimulation()->getModelNode(m);
-			QPoint pos = mn->scenePos().toPoint();
-			minx = min(minx, pos.x());
-			miny = min(miny, pos.y());
-			maxx = max(maxx, pos.x()+(int)mn->boundingRect().width());
-			maxy = max(maxy, pos.y()+(int)mn->boundingRect().height());
+			if(ModelNode* mn = getSimulation()->getModelNode(m))
+			{
+				QPoint pos = mn->scenePos().toPoint();
+				minx = min(minx, pos.x());
+				miny = min(miny, pos.y());
+				maxx = max(maxx, pos.x()+(int)mn->boundingRect().width());
+				maxy = max(maxy, pos.y()+(int)mn->boundingRect().height());
+			}
 		}
 	}
 	width = maxx-minx + 2*border;
 	height = maxy-miny + 2*border;
-	setPos(minx - border, miny - border);
+	setPos(QPointF(minx - border, miny - border));
 
 	this->update();
 

@@ -286,7 +286,18 @@ void ModelNode::resize()
 	foreach(PortNode* p, ports)
 		p->updatePos();
 }
-
+void ModelNode::setPos(const QPointF &pos)
+{
+	QGraphicsItem::setPos(pos);
+	
+	if(DM::Module* m = module->getOwner())
+	{
+		if(GroupNode* gn = (GroupNode*)getSimulation()->getModelNode(m)->getChild())
+		{
+			gn->resize();
+		}
+	}
+}
 
 PortNode* ModelNode::getPort(std::string portName, const DM::PortType type)
 {
