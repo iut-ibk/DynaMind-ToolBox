@@ -408,6 +408,14 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 	return success;
 }
 
+bool IsWriteOnly(const std::map<std::string, View>& stream)
+{
+	mforeach(const View& v, stream)
+		if(v.getAccessType() != DM::WRITE)
+			return false;
+	return true;
+}
+
 bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 {
 	bool success = true;
@@ -434,7 +442,8 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 			return false;
 		}
 	}*/
-
+	if(strcmp(m->getClassName(), "Marker") == 0)
+		int i=0;
 
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// check if we are in the middle of an unchecked stream
@@ -506,13 +515,23 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 	foreach(Link* l, outLinks)
 	{
+		std::map<std::string,View> outStream = updatedStream;
 		if(l->outPort != streamName)
+		{
+			const std::map<std::string,View>& streamAccess = m->accessedViews[l->outPort];
+			if(IsWriteOnly(streamAccess))
+				outStream = m->accessedViews[l->outPort];
+			else
+				continue;
+		}
+
+		if(outStream.size() == 0)
 			continue;
 
 		if(!l->isOutOfGroupLink)
-			l->dest->streamViews[l->inPort] = updatedStream;
+			l->dest->streamViews[l->inPort] = outStream;
 		else
-			((Group*)l->dest)->outStreamViews[l->inPort] = updatedStream;
+			((Group*)l->dest)->outStreamViews[l->inPort] = outStream;
 
 		if(!l->dest->isGroup())
 		{
@@ -587,16 +606,11 @@ bool Simulation::checkStream()
 	foreach(Module* m, modules)
 	{
 		//std::vector<std::string> inPorts = m->getInPortNames();
-		std::vector<std::string> outPorts = m->getOutPortNames();
-		foreach(std::string outPort, outPorts)
-		{
-			if(!m->hasInPort(outPort))
-			{
-				// its a pure write only stream
+		if(m->getInPortNames().size() == 0)
+			foreach(std::string outPort, m->getOutPortNames())
 				if(!checkModuleStreamForward(m, outPort))
 					success = false;
-			}
-		}
+
 		/*if(m->getInPortNames().size() == 0)
 		{
 			if(!checkModuleStreamForward(m))
