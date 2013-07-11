@@ -234,15 +234,21 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 
     Polygon_2 poly_s;
     std::vector<Node> ret_points;
-    int vector_size = points.size();
+    unsigned int vector_size = points.size();
     if (points[0] == points[vector_size-1] )
         vector_size--;
-		
+    if (offset == 0) {
+        for (unsigned int i = 0; i < vector_size; i++ ) {
+            ret_points.push_back(Node(points[i]->getX(), points[i]->getY(), 0));
+        }
+        return ret_points;
+    }
 	double v[3];
-    for (int i = 0; i <  vector_size; i++) {
+    for (unsigned int i = 0; i <  vector_size; i++) {
 		points[i]->get(v);
         poly_s.push_back(Point_2(v[0], v[1]));
     }
+
     if(!poly_s.is_simple()) {
         Logger(Warning) << "Can't perform offset polygon is not simple";
         return ret_points;
