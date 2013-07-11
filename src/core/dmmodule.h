@@ -304,6 +304,8 @@ public:
 	
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
 	std::map<std::string, std::map<std::string,View> > getViewsInStream() const;
+	std::vector<View> getViewsInStream(const std::string& streamName) const;
+	View getViewInStream(const std::string& streamName, const std::string& viewName) const;
 	std::map<std::string,View> getViewsInStdStream();
 	System* getData(const std::string& streamName);
 

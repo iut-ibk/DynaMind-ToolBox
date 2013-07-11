@@ -250,6 +250,30 @@ std::map<std::string, std::map<std::string,View> > Module::getViewsInStream() co
 {
 	return streamViews;
 }
+
+std::vector<View> Module::getViewsInStream(const std::string& streamName) const
+{
+	std::vector<View> views;
+	std::map<std::string, View> r;
+	if(map_contains(&streamViews, streamName, r))
+		mforeach(const View& v, r)
+			views.push_back(v);
+		
+	return views;
+}
+
+
+View Module::getViewInStream(const std::string& streamName, const std::string& viewName) const
+{
+	std::map<std::string,View> views;
+	View view;
+	if(map_contains(&streamViews, streamName, views))
+		if(map_contains(&views, viewName, view))
+			return view;
+	view.setType(-1);
+	return view;
+}
+
 std::map<std::string,View> Module::getViewsInStdStream()
 {
 	if(streamViews.size() > 0)
