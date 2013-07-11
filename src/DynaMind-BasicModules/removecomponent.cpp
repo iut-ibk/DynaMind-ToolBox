@@ -75,9 +75,7 @@ void RemoveComponent::run() {
                         if (l.uuid != cmp->getUUID() || l.viewname != this->view_remove.getName()) cmp_links_new.push_back(l);
                     }
                     DM::Logger(DM::Debug) << "Remove links " << attr->getName() << "\t" << cmp_links.size() << "/" << cmp_links_new.size();
-                    attr->setLinks(cmp_links_new);
-                    DM::Logger(DM::Debug) <<  attr->getLinks().size();
-                    //Workaround until bug in core is fixed
+
                     l_cmp->getAttribute(this->view_remove.getName())->setLinks(cmp_links_new);
                 }
 
