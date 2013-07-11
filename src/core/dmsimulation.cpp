@@ -586,15 +586,22 @@ bool Simulation::checkStream()
 	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)
 	{
-		if(m->getInPortNames().size() == 0)
+		//std::vector<std::string> inPorts = m->getInPortNames();
+		std::vector<std::string> outPorts = m->getOutPortNames();
+		foreach(std::string outPort, outPorts)
+		{
+			if(!m->hasInPort(outPort))
+			{
+				// its a pure write only stream
+				if(!checkModuleStreamForward(m, outPort))
+					success = false;
+			}
+		}
+		/*if(m->getInPortNames().size() == 0)
 		{
 			if(!checkModuleStreamForward(m))
 				return false;
-			/*results.append(new QFuture<bool>(
-				QtConcurrent::run(this, &Simulation::checkModuleStream, m)
-				));*/
-			//addingPorts not possible if triggerd by different thread
-		}
+		}*/
 	}
 	/*
 	foreach(QFuture<bool>* r, results)
@@ -605,7 +612,7 @@ bool Simulation::checkStream()
 		delete r;
 	}
 	return success;*/
-	return true;
+	return success;
 }
 
 void Simulation::run()
