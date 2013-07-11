@@ -179,7 +179,7 @@ void AddLayerDialog::getAttributesFromComponent(DM::View & view, QMap<string, DM
         DM::View * v= system->getViewDefinition(view.getNameOfLinkedView(link));
         if (!v)
             continue;
-        getAttributesFromComponent(*v, attributes, link);
+        //getAttributesFromComponent(*v, attributes, link);
     }
 
     std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(view);
