@@ -295,7 +295,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	{
 		links.remove(toDelete);
 		Logger(Debug) << "Deleted link from port " << outPort << "to" << inPort;
-		checkModuleStreamForward(dest);
+		checkModuleStreamForward(dest, inPort);
 		return true;
 	}
 	return false;
