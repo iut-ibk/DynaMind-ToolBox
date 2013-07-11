@@ -203,9 +203,9 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 			outPort = true;
 	}
 	
-	if(inPort)
+	if(inPort && !hasInPort(streamName))
 		this->addPort(streamName, INPORT);
-	if(outPort)
+	if(outPort && !hasOutPort(streamName))
 		this->addPort(streamName, OUTPORT);
 }
 
