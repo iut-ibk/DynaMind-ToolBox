@@ -438,7 +438,7 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// check if we are in the middle of an unchecked stream
-	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
+	if(curStreamViews->size() == 0 && m->hasInPort(streamName))
 	{
 		/*
 		// go back to origin
@@ -506,6 +506,9 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 	foreach(Link* l, outLinks)
 	{
+		if(l->outPort != streamName)
+			continue;
+
 		if(!l->isOutOfGroupLink)
 			l->dest->streamViews[l->inPort] = updatedStream;
 		else
