@@ -281,7 +281,7 @@ void GroupNode::resize()
 
 GroupNode::~GroupNode()
 {
-	simulation->closeTab(owningTab);
+	//simulation->closeTab(owningTab);
 }
 
 /*

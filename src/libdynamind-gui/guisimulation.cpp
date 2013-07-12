@@ -35,6 +35,7 @@
 
 #include <guilink.h>
 #include <dmsimulationreader.h>
+#include <dmsimulationwriter.h>
 #include <simulationio.h>
 
 #include <dmgroup.h>
@@ -375,7 +376,8 @@ bool GUISimulation::loadSimulation(std::string filename)
 	{
 		DM::Module* m;
 		if(map_contains(&modMap, it->first.toStdString(), m))
-			modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
+			if(m)
+				modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
 	}
 	return result;
 }
@@ -415,10 +417,10 @@ void GUISimulation::writeSimulation(std::string fileName)
 
 	mforeach(ModelNode* m, this->modelNodes)
 	{
-		QString mid = QString::fromAscii((char*)m->getModule(), sizeof(DM::Module*));
+		DM::Module* mod = m->getModule();
 
 		out << "\t\t<GUI_Node>\n";
-		out << "\t\t\t<GUI_UUID value=\"" << mid << "\"/>\n";
+		out << "\t\t\t<GUI_UUID value=\"" << ADDRESS_TO_INT(mod) << "\"/>\n";
 		out << "\t\t\t<GUI_PosX value=\"" << m->scenePos().x() - minx << "\"/>\n";
 		out << "\t\t\t<GUI_PosY value=\"" << m->scenePos().y() - miny << "\"/>\n";
 		out << "\t\t\t<GUI_Minimized value=\"" << m->isMinimized() << "\"/>\n";
@@ -429,4 +431,5 @@ void GUISimulation::writeSimulation(std::string fileName)
 	out << "</DynaMind>\n";
 
 	file.close();
+	DM::Logger(DM::Debug) << "finished GUI information";
 }
