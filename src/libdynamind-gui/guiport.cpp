@@ -113,9 +113,11 @@ bool PortNode::isLinked() {
 }
 
 void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    //if (this->getVIBePort()->isFullyLinked())
-	if(linkNodes.size() || unstableLink)
+    //if (this->getVIBePort()->isFullyLinked())#
+	if(module && (portType == DM::OUTPORT && module->getOutPortData(portName.toStdString())))
 		color = Qt::yellow;
+	else if(linkNodes.size() || unstableLink)
+		color = Qt::green;
     //if (!this->getVIBePort()->isFullyLinked())
 	else
         color = Qt::red;
