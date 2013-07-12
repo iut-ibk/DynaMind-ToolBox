@@ -102,10 +102,13 @@ void CellularAutomata::removeRule(string rule)
 std::vector<string> CellularAutomata::getLandscapesInStream()
 {
     std::vector<std::string> landscapes;
-    DM::System * sys = this->getData("RasterDataIn");
+    /*DM::System * sys = this->getData("RasterDataIn");
     if (!sys)
         return landscapes;
     std::vector<DM::View> views = sys->getViews();
+	*/
+	std::vector<DM::View> views = getViewsInStream("RasterDataIn");
+
 
     foreach (DM::View v, views) {
         if (v.getType() == DM::RASTERDATA)
