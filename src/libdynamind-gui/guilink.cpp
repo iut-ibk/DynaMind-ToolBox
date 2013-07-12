@@ -167,9 +167,8 @@ void GUILink::backLink() {
 void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu menu;
 
-    QAction  * a_back = menu.addAction("back");
+    //QAction  * a_back = menu.addAction("back");
     QAction  * a_delete = menu.addAction("delete");
-
 
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
     //connect( a_back, SIGNAL( triggered() ), this, SLOT( backLink() ), Qt::DirectConnection );
