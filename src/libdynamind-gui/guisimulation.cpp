@@ -214,7 +214,7 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 		DM::Group* g = dynamic_cast<DM::Group*>(m);
 		DM::Logger(DM::Debug) << "added group '" << moduleName << "'";
 		SimulationTab* groupTab = addTab(g);
-		GroupNode* gnode = new GroupNode(m, this, groupTab);
+		GroupNode* gnode = new GroupNode(m, this, groupTab, node);
 		node->setChild(gnode);
 		groupTab->addItem(gnode);
 	}

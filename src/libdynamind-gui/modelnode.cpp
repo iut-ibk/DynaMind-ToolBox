@@ -467,8 +467,11 @@ ModelNode::~ModelNode()
 
 	if(child)
 	{
-		child->module = NULL;
+		// remove the parent to avoid a destruction loop
+		if(GroupNode* g = (GroupNode*)child)
+			g->setParent(NULL);
 		delete child;
+		child = NULL;
 	}
 }
 

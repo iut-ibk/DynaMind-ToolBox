@@ -72,12 +72,13 @@ private:
 	SimulationTab* owningTab;
 	//virtual QRectF boundingRect() const;
 public:
+	void setParent(ModelNode* parent){this->parent = parent;};
 	void resize();
 	// observer methods
 	//void notifyAddPort(const std::string &name, const DM::PortType type);
 	//void notifyRemovePort(const std::string &name, const DM::PortType type);
 
-    GroupNode(DM::Module* module, GUISimulation* sim, SimulationTab* tab);
+    GroupNode(DM::Module* module, GUISimulation* sim, SimulationTab* tab, ModelNode* parent);
 	~GroupNode();
 	/*
     virtual ~GroupNode();

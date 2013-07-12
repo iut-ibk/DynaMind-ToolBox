@@ -131,7 +131,7 @@ public:
     ModelNode(DM::Module* m, GUISimulation* sim);
 	void setPos(const QPointF &pos);
     //int type() const {return Type; }
-    virtual ~ModelNode();
+    ~ModelNode();
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     //void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}

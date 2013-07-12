@@ -201,8 +201,8 @@ void GroupNode::notifyRemovePort(const std::string &name, const DM::PortType typ
 	removePort(name, type);
 }*/
 
-GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab)//: DM::ModuleObserver(m)
-:ModelNode(module, s), owningTab(tab)
+GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, ModelNode* parent)//: DM::ModuleObserver(m)
+:ModelNode(module, s), owningTab(tab), parent(parent)
 {
 	/*
     this->childnodes = QVector<ModelNode*>();
@@ -281,7 +281,16 @@ void GroupNode::resize()
 
 GroupNode::~GroupNode()
 {
-	//simulation->closeTab(owningTab);
+	if(parent)
+	{
+		// remove the child to avoid a destruction loop
+		parent->setChild(NULL);
+		delete parent;
+		parent = NULL;
+	}
+	// delete module, as it will be deleted in the child
+	this->module = NULL;
+	simulation->closeTab(owningTab);
 }
 
 /*
