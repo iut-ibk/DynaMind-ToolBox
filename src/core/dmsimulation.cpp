@@ -1036,6 +1036,7 @@ void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
 
 bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
 {
+	QDir simFileDir = QFileInfo(QString::fromStdString(filename)).absoluteDir();	// for param corr.
 	Logger(Standard) << ">> loading simulation file '" << filename << "'";
     SimulationReader simreader(QString::fromStdString(filename));
 	
@@ -1069,7 +1070,22 @@ bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM:
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters
 			for(QMap<QString, QString>::iterator it = me.parameters.begin(); it != me.parameters.end(); ++it)
-				m->setParameterValue(it.key().toStdString(), it.value().toStdString());
+			{
+				std::string value = it.value().toStdString();
+				if(DM::Module::Parameter* p = m->getParameter(it.key().toStdString()))
+				{
+					if(p->type == DM::FILENAME)
+					{
+						QDir path(simFileDir.absoluteFilePath(it.value()));
+						DM::Logger(DM::Debug) << "converted relative path '" << value << "'";
+						value = path.canonicalPath().toStdString();
+						DM::Logger(DM::Debug) << "to absolute path '" << value << "'";
+					}
+				}
+
+
+				m->setParameterValue(it.key().toStdString(), value);
+			}
 			// we init now (probably two times) to init e.g. ports
 			m->init();
 		}
