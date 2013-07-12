@@ -55,28 +55,30 @@ SpatialLinking::SpatialLinking()
 }
 
 void SpatialLinking::init() {
-    city = this->getData("Data");
+    /*city = this->getData("Data");
     if (city == 0)
-        return;
+        return;*/
     if (base.empty())
         return;
     if (linkto.empty())
         return;
+	
+    //DM::View * v1 = this->city->getViewDefinition(base);
+    //DM::View * v2 = this->city->getViewDefinition(linkto);
+	DM::View v1 = getViewInStream("Data", base);
+    DM::View v2 = getViewInStream("Data", linkto);
 
-    DM::View * v1 = this->city->getViewDefinition(base);
-    DM::View * v2 = this->city->getViewDefinition(linkto);
-
-    if (!v1) {
+	if (v1.getName().empty()) {
         Logger(Error) << "View " << base << "doesn't exist";
         return;
     }
 
-    if (!v2) {
+    if (v2.getName().empty()) {
         Logger(Error) << "View " << linkto << "doesn't exist";
         return;
     }
-    this->vbase = DM::View(v1->getName(), v1->getType(), READ);
-    this->vlinkto = DM::View(v2->getName(), v2->getType(), READ);
+    this->vbase = DM::View(v1.getName(), v1.getType(), READ);
+    this->vlinkto = DM::View(v2.getName(), v2.getType(), READ);
 
 	this->vbase.addLinks(linkto, vlinkto.getName());
     this->vlinkto.addLinks(base, vbase.getName());

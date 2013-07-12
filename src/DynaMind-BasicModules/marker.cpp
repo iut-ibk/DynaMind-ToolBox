@@ -452,15 +452,15 @@ DM::System * Marker::getSystemIn() {
 std::vector<string> Marker::getLandscapesInStream()
 {
     std::vector<std::string> landscapes;
-    DM::System * sys = this->getData("Data");
+    /*DM::System * sys = this->getData("Data");
     if (!sys)
-        return landscapes;
-    std::vector<DM::View> views = sys->getViews();
+        return landscapes;*/
+	std::vector<DM::View> views = getViewsInStream("Data");
 
-    foreach (DM::View v, views) {
+    foreach (DM::View v, views)
         if (v.getType() == DM::RASTERDATA)
             landscapes.push_back(v.getName());
-    }
+
     return landscapes;
 
 }
