@@ -87,17 +87,18 @@ void writeHead(QTextStream &out)
 void writeModule(QTextStream &out, Module* m)
 {
 	Logger(Debug) << "saving module '" << m->getClassName() << "'";
+	Module* owner = m->getOwner();
 
 	out  << "\t\t<Node>\n";
 	out << "\t\t"<< "\t<ClassName value=\""
 		<< QString::fromStdString(m->getClassName()) << "\"/>\n";
 	out << "\t\t"<< "\t<UUID value=\""
 		//<< QString::fromStdString(m->getUuid()) << "\"/>\n";
-		<< QString::fromAscii((char*)m, sizeof(Module*)) << "\"/>\n";
+		<< ADDRESS_TO_INT(m) << "\"/>\n";
 	out << "\t\t"<< "\t<Name value=\""
 		<< QString::fromStdString(m->getName()) << "\"/>\n";
 	out << "\t\t"<< "\t<GroupUUID value=\""
-		<< QString::fromAscii((char*)m->getOwner(), sizeof(Module*)) << "\"/>\n";
+		<< ADDRESS_TO_INT(owner) << "\"/>\n";
 	out << "\t\t"<< "\t<DebugMode value=\""
 		<< QString::number(0) << "\"/>\n";
 
@@ -132,19 +133,16 @@ void writeModule(QTextStream &out, Module* m)
 
 void writeLink(QTextStream &out, Simulation::Link* l)
 {
-	QString src = QString::fromAscii((char*)l->src, sizeof(Module*));
-	QString dest = QString::fromAscii((char*)l->dest, sizeof(Module*));
-
 	out << "\t\t<Link>\n";
 	out << "\t\t\t<BackLink value = \"0\"/>\n";
 	out << "\t\t\t<InPort>\n";
-	out << "\t\t\t\t<UUID value = \"" << dest << "\"/>\n";
+	out << "\t\t\t\t<UUID value = \"" << ADDRESS_TO_INT(l->dest) << "\"/>\n";
 	out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->inPort) << "\"/>\n";
 	out << "\t\t\t\t<PortType value = \"0\"/>\n";
 	out << "\t\t\t</InPort>\n";
 
 	out << "\t\t\t<OutPort>\n";
-	out << "\t\t\t\t<UUID value = \"" << src << "\"/>\n";
+	out << "\t\t\t\t<UUID value = \"" << ADDRESS_TO_INT(l->src) << "\"/>\n";
 	out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->outPort) << "\"/>\n";
 	out << "\t\t\t\t<PortType value = \"0\"/>\n";
 	out << "\t\t\t</OutPort>\n";

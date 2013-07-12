@@ -31,6 +31,9 @@
 #include <string>
 #include <dmport.h>
 
+
+#define ADDRESS_TO_INT(x) *(int*)(&x)
+
 namespace DM {
 
 class Simulation;
