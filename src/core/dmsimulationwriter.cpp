@@ -84,7 +84,7 @@ void writeHead(QTextStream &out)
 	out << "<DynaMindCore>\n";
 }
 
-void writeModule(QTextStream &out, Module* m)
+void writeModule(QTextStream &out, Module* m, QDir filePath)
 {
 	Logger(Debug) << "saving module '" << m->getClassName() << "'";
 	Module* owner = m->getOwner();
@@ -105,9 +105,20 @@ void writeModule(QTextStream &out, Module* m)
 	foreach(Module::Parameter* p, m->getParameters())
 	{
 		out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(p->name) <<"\">"
-			<< "\n" "\t\t\t\t<![CDATA["
-			<<  QString::fromStdString(m->getParameterAsString(p->name))
-			<< "]]>\n"
+			<< "\n" "\t\t\t\t<![CDATA[";
+
+		if(p->type != DM::FILENAME)
+			out <<  QString::fromStdString(m->getParameterAsString(p->name));
+		else
+		{
+			QString path = QString::fromStdString(m->getParameterAsString(p->name));
+			QString relPath = filePath.relativeFilePath(path);
+			DM::Logger(Debug) << "reducing file path '" << path << "'";
+			DM::Logger(Debug) << "to '" << relPath << "'";
+			out << relPath;
+		}
+
+		out << "]]>\n"
 			<< "\t\t\t</parameter>\n";
 	}
 
@@ -166,11 +177,11 @@ void SimulationWriter::writeSimulation(std::string filename, Simulation *sim)
 	out << "\t\t<RootNode>\n";
 	out << "\t\t\t<UUID value=\"0\"/>\n";
 	out << "\t\t</RootNode>\n";
-
-
+	 
+	QDir filedir = QFileInfo(QString::fromStdString(filename)).absoluteDir();
 	Logger(Debug) << "Number of Modules " << modules.size();
 	foreach(Module * m, modules) 
-		writeModule(out, m);
+		writeModule(out, m, filedir);
 
 	out << "\t</Nodes>\n";
 
