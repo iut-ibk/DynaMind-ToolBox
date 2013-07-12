@@ -90,7 +90,7 @@ void AppendViewFromSystem::init()
             //if (sys != 0) 
 			{
                 //foreach (std::string v, sys->getNamesOfViews()) 
-				mforeach(DM::View v, this->getViewsInStdStream())
+				foreach(DM::View v, this->getViewsInStream(s))
 				{
 					if (std::find(existingViews.begin(), existingViews.end(), v.getName()) == existingViews.end()) 
 					{
