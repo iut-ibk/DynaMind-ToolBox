@@ -792,13 +792,15 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 
 		if(branches.size() > 0)
 		{
+			bool createSuccessor = branches.size() > 1;
 			foreach(Link* l, branches)
 			{
-				l->ShiftData(branches.size() > 1);
+				l->ShiftData(createSuccessor);
 				nextModules.push_back(l->dest);
 			}
 			// reset out port
-			it->second = NULL;
+			if(!createSuccessor)
+				it->second = NULL;
 		}
 		else // dead path
 			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
