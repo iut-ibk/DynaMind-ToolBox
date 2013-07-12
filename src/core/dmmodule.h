@@ -437,6 +437,11 @@ private:
 
 	void setOwner(Module* owner);
 	Module* owner;
+
+	bool successorMode;
+public:
+	void setSuccessorMode(bool value);
+	bool isSuccessorMode();
 };
 
 class ModuleObserver

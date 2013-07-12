@@ -59,6 +59,7 @@ Module::Module()
 	status = MOD_UNTOUCHED;
 	//gui = NULL;
 	owner = NULL;
+	successorMode = false;
 }
 Module::~Module()
 {
@@ -301,6 +302,19 @@ void Module::setOwner(Module* owner)
 	else
 		Logger(Error) << "reassigning a new parent to a module is not allowed";
 }
+
+void Module::setSuccessorMode(bool value)
+{
+	Logger(Debug) << "changed successor mode state of module '" 
+		<< getClassName() << "' to " << (value?"ON":"OFF");
+	this->successorMode = value;
+}
+bool Module::isSuccessorMode() 
+{
+	return successorMode;
+}
+
+
 /*void Module::updateParameters()
 {
 	init();

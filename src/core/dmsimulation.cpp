@@ -792,7 +792,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 
 		if(branches.size() > 0)
 		{
-			bool createSuccessor = branches.size() > 1;
+			bool createSuccessor = branches.size() > 1 || m->isSuccessorMode();
 			foreach(Link* l, branches)
 			{
 				l->ShiftData(createSuccessor);
