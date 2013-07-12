@@ -42,7 +42,7 @@ void GUIImportWithGDAL::accept()
     m->setParameterNative<bool>("flip_wfs", this->ui->checkBox_flip->isChecked());
     m->setParameterNative<bool>("linkWithExistingView", this->ui->checkBox_linkWithExistingView->isChecked());
     m->setParameterNative<int>("Transform to EPSG:", this->ui->lineEdit_epsgCode->text().toInt());
-
+	m->init();
     QDialog::accept();
 }
 

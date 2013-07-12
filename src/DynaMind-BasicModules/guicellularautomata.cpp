@@ -229,7 +229,7 @@ void GUICellularAutomata::accept() {
     this->m->setParameterNative<bool>("appendToStream",ischecked);
     this->m->setParameterNative<std::string>("DimensionOfExisting",ui->comboBox_nameOfExisting->currentText().toStdString());
     this->m->setParameterNative<std::string>("Desicion", ui->lineEdit_descision->text().toStdString());
-
+	m->init();
     QDialog::accept();
 }
 
