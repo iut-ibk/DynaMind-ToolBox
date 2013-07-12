@@ -192,10 +192,10 @@ public slots:
     //void setDebug();
     //void setRelease();
     //void setResetModule();
+	void changeSuccessorMode();
    signals:
     void showHelp(std::string, std::string);
     //void showHelp(std::string);
-
 
 };
 

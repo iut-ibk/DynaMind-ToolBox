@@ -417,6 +417,16 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->fillPath(rectPath, brush);
         painter->strokePath(rectPath, rectPen);
 		
+		if(module->isSuccessorMode())
+		{
+			QPainterPath rectGlowPath;
+			QRectF r = boundingRect();
+			rectGlowPath.addRect(r.x() + lineWidth,		r.y() + lineWidth, 
+								r.width() - 2*lineWidth,	r.height() - 2*lineWidth );
+			painter->strokePath(rectGlowPath, 
+								QPen(QColor(150,150,255), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+		}
+		
 		QString text =  "Module: " + QString::fromStdString(module->getName());
 		QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
 		painter->drawText(	(boundingRect().width() - textSize.width())/2,
@@ -544,13 +554,16 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 	
     QAction  * a_edit = menu.addAction("edit");
     QAction * a_delete = menu.addAction("delete");
-    QAction * a_showHelp = menu.addAction("help");
-    QAction * a_showData = menu.addAction("stream");
+    QAction * a_showHelp = menu.addAction("show help");
+    QAction * a_showData = menu.addAction("show data stream");
+    QAction * a_successorMode = menu.addAction("change successor mode");
 
     connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
+
+	connect( a_successorMode, SIGNAL(triggered() ), this, SLOT( changeSuccessorMode() ), Qt::DirectConnection);
 
 	/*if(module->getGUI())
 	{
@@ -693,6 +706,12 @@ void ModelNode::printData()
 {
     GUIViewDataForModules * gv = new GUIViewDataForModules(module);
     gv->show();
+}
+
+
+void ModelNode::changeSuccessorMode()
+{
+	module->setSuccessorMode(!module->isSuccessorMode());
 }
 
 void ModelNode::viewData(int portIndex) 
