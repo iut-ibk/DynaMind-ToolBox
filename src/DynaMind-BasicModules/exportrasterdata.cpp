@@ -69,10 +69,9 @@ void ExportRasterData::run () {
 
 void ExportRasterData::init()
 {
-    sys_in = this->getData("Data");
-    if (sys_in == 0)
-        return;
-
+    //sys_in = this->getData("Data");
+    //if (sys_in == 0)
+    //    return;
 }
 
 string ExportRasterData::getHelpUrl()
