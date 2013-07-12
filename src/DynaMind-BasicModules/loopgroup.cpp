@@ -195,3 +195,4 @@ bool LoopGroup::createInputDialog()
 	w->show();
 	return true;
 }
+
