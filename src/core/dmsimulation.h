@@ -122,7 +122,7 @@ public:
 				return src->getOutPortData(outPort);
 		}
 		/** @brief shifts data from source to destination */
-		void ShiftData(bool successor = false)
+		void shiftData(bool successor = false)
 		{
 			System * data = getData();
 			if(!data)
@@ -134,7 +134,13 @@ public:
 				// out of group link
 				dest->setOutPortData(inPort, data);
 			else
+			{
 				dest->setInPortData(inPort, data);
+				// FIX: modules which won't call getData(...)  
+				// won't get data on the out port
+				if(dest->hasOutPort(inPort))
+					dest->setOutPortData(inPort, data);
+			}
 		}
 	};
 	Simulation();
