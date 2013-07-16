@@ -287,6 +287,7 @@ GroupNode::~GroupNode()
 	simulation->closeTab(owningTab);	
 }
 
+
 /*
 void GroupNode::RePosTuplePorts() {
     foreach(PortNode * gui_p, this->ports) {

@@ -230,15 +230,19 @@ void GUISimulation::removeModule(DM::Module* m)
 			toDelete.push_back(child->getModule());
 
 	// delete graphical representations
-	ModelNode* node = modelNodes[m];
-	if(node->getChild())
-		delete node->getChild();	// this may be a group node
-	delete node;
+	ModelNode* node = NULL;//modelNodes[m];
+	if(map_contains(&modelNodes, m, node))
+	{
+		// delete entry
+		modelNodes.erase(m);
+		if(node->getChild())
+			delete node->getChild();	// this may be a group node
+		delete node;
 
-	// remove from simulation itself
-	Simulation::removeModule(m);
-	// delete entry
-	modelNodes.erase(m);
+		// remove from simulation itself
+		Simulation::removeModule(m);
+	}
+
 	// delete childs
 	foreach(DM::Module* child, toDelete)
 		removeModule(child);
