@@ -241,7 +241,7 @@ System* Module::getData(const std::string& streamName)
 	mforeach(View v, accessedViews[streamName])
 	{
 		sys->addView(v);
-		if(v.getAccessType() != READ)
+		if(v.getAccessType() != READ || v.getWriteAttributes().size() > 0)
 			readOnly = false;
 	}
 	if(!readOnly)
