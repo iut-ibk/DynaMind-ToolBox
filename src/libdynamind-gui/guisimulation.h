@@ -44,7 +44,7 @@ namespace DM
 class Group;
 }
 
-enum PortType;
+enum PortType : unsigned int;
 
 class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObject
 {

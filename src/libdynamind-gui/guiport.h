@@ -39,7 +39,7 @@
 namespace DM {
 //class Port;
 class Module;
-enum PortType;
+enum PortType : unsigned int;
 }
 
 
