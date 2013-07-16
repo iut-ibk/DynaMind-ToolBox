@@ -50,7 +50,7 @@ class RootGroupNode;
 class PortNode;
 class GUISimulation;
 
-enum PortType;
+enum PortType : unsigned int;
 
 class ModelNode;
 
