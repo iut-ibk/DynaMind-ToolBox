@@ -129,8 +129,17 @@ void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaibl
         }
     }
 
-    if (attr->getType() == Attribute::DOUBLE || attr->getType() == Attribute::NOTYPE || attr->getType() == Attribute::STRING )
-        varaible_container->push_back(attr->getDouble());
+    switch (attr->getType()) {
+    case Attribute::DOUBLE:
+        varaible_container->push_back( mup::Value(attr->getDouble()));
+        break;
+    case Attribute::STRING:
+        varaible_container->push_back(mup::Value(attr->getString()));
+        break;
+    default:
+        varaible_container->push_back(mup::Value(0));
+        break;
+    }
 }
 
 
@@ -212,15 +221,31 @@ void AttributeCalculator::run() {
             //Can be later replaced by a function
             getLinkedAttribute(&variable_container, cmp, it->first);
 
-            mup::Value val= 0;
+            double val = 0;
+            QStringList string_vals;
             double nov = 0;
             foreach (mup::Value v, variable_container)
             {
-                val += v ;
+                switch (v.GetType()) {
+                case 's':
+                    string_vals.append(QString::fromStdString(v.GetString()));
+                    break;
+                case 'i':
+                    val += v.GetInteger();
+                    break;
+                case 'f':
+                    val += v.GetFloat();
+                    break;
+                default:
+                    Logger(Warning) << "Unknown type";
+                }
                 nov ++;
             }
+            if (string_vals.size() == 0)
+                *doubleVariables[varvalue] = val;
+            else
+                *doubleVariables[varvalue] = string_vals.join(",").toStdString();
 
-            *doubleVariables[varvalue] = val;
             *doubleVariables["nov_" + varvalue] = nov;
             if (variable_container.size() > 0) *doubleVariables["first_" + varvalue] = variable_container[0];
             else *doubleVariables["first_" + varvalue] =  0;
@@ -229,6 +254,7 @@ void AttributeCalculator::run() {
         try
         {
             mup::Value val = p->Eval();
+            //Logger(Debug) << val.ToString();
             if (!this->asVector) {
                 switch (val.GetType()) {
                 case 's':
