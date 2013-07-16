@@ -641,6 +641,7 @@ void Simulation::run()
 	if(!checkStream())
 	{
 		Logger(Error) << ">> checking simulation failed";
+		this->status = SIM_FAILED;
 		return;
 	}
 	Logger(Standard) << ">> checking simulation succeeded (took " << (long)simtimer.elapsed() << "ms)";
@@ -653,7 +654,8 @@ void Simulation::run()
 			worklist.push(m);
 	
 	// run modules
-	while(worklist.size() && !decoupledRunResult.isCanceled())
+	// if not started decoupled, the state of the future is canceled, started and finished
+	while(worklist.size() && (decoupledRunResult.isFinished() || !decoupledRunResult.isCanceled()))
 	{
 		// get first element
 		Module* m = worklist.front();
@@ -666,8 +668,8 @@ void Simulation::run()
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
-			QFuture<void> r = QtConcurrent::run(m, &Module::run);
-			r.waitForFinished();
+			runningModuleResult = QtConcurrent::run(m, &Module::run);
+			runningModuleResult.waitForFinished();
 
 			// check for errors
 			ModuleStatus merr = m->getStatus();
@@ -748,7 +750,7 @@ void Simulation::run()
 				worklist.push(nextModule);
 		}*/
 	}
-	if(decoupledRunResult.isCanceled())
+	if(!decoupledRunResult.isFinished() && decoupledRunResult.isCanceled())
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
 	else
 		Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
@@ -758,7 +760,10 @@ void Simulation::run()
 
 void Simulation::decoupledRun()
 {
-	if(decoupledRunResult.isRunning())
+	//if(QThreadPool::globalInstance()->maxThreadCount() < 1)
+	//	QThreadPool::globalInstance()->setMaxThreadCount(1);
+
+	if(decoupledRunResult.isRunning() || runningModuleResult.isRunning())
 		cancel();
 
 	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
@@ -766,8 +771,10 @@ void Simulation::decoupledRun()
 
 void Simulation::cancel()
 {
+	runningModuleResult.cancel();
 	decoupledRunResult.cancel();
 	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
+	runningModuleResult.waitForFinished();
 	decoupledRunResult.waitForFinished();
 	Logger(Standard) << ">> canceling simulation - finished";
 	//canceled = true;
@@ -796,7 +803,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			bool createSuccessor = branches.size() > 1 || m->isSuccessorMode();
 			foreach(Link* l, branches)
 			{
-				l->ShiftData(createSuccessor);
+				l->shiftData(createSuccessor);
 				if(l->dest->inPortsSet())
 					nextModules.push_back(l->dest);
 			}
@@ -830,7 +837,7 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 		{
 			foreach(Link* l, getIntoGroupLinks(g, inPort))
 			{
-				l->ShiftData(inPorts.size() > 1);
+				l->shiftData(inPorts.size() > 1);
 				nextModules.push_back(l->dest);
 			}
 		}
