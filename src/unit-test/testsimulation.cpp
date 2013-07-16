@@ -132,7 +132,7 @@ TEST_F(TestSimulation,repeatedRunTest) {
 		sim.run();
 		ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 	}
-
+	ASSERT_TRUE(m->getStatus() == MOD_EXECUTION_OK);
 }
 
 #if defined _OPENMP && defined OMPTEST
@@ -173,6 +173,8 @@ TEST_F(TestSimulation,linkedModulesTest) {
 		sim.run();
 		ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 	}
+	ASSERT_TRUE(m->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inout->getStatus() == MOD_EXECUTION_OK);
 }
 
 TEST_F(TestSimulation,linkedDynamicModules) {
@@ -201,6 +203,11 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 	ASSERT_TRUE(sim.addLink(dyinout, "Inport", inout2, "Inport"));
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+
+	ASSERT_TRUE(m->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inout->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(dyinout->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inout2->getStatus() == MOD_EXECUTION_OK);
 }
 
 TEST_F(TestSimulation,LoopGroupTest) 
@@ -252,6 +259,10 @@ TEST_F(TestSimulation,LoopGroupTest)
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
 
+	ASSERT_TRUE(m->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inoutInGroup->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inoutAfterGroup->getStatus() == MOD_EXECUTION_OK);
+
 	sim.removeModule(inoutInGroup);
 	
 	/*ASSERT_TRUE(sim.addLink(g, "In", g, "Out"));
@@ -259,10 +270,11 @@ TEST_F(TestSimulation,LoopGroupTest)
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);*/
 
 }
-
+#define GROUPTEST
 #ifdef GROUPTEST
 
-TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
+TEST_F(TestSimulation,linkedDynamicModulesOverGroups) 
+{
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
@@ -273,29 +285,30 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups) {
 	DM::Module * inout  = sim.addModule("InOut");
 	ASSERT_TRUE(inout != 0);
 	//DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
-	//ASSERT_TRUE(l != 0);
 	ASSERT_TRUE(sim.addLink(m, "Sewer", inout, "Inport"));
 	//Here comes the group
 	GroupTest * g = (GroupTest * ) sim.addModule("GroupTest");
-	g->addInPort("In");
-	DM::ModuleLink * l_in = sim.addLink(inout->getOutPort("Inport"),g->getInPortTuple("In")->getInPort());
-	ASSERT_TRUE(l_in != 0);
-	g->addOutPort("Out");
-	DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut");
+	g->addWriteStream("port");
+	//g->addInPort("In");
+	ASSERT_TRUE(sim.addLink(inout,"Inport",g,"port"));
+	//g->addOutPort("Out");
+	DynamicInOut * dyinout  = (DynamicInOut *)sim.addModule("DynamicInOut", g);
 	ASSERT_TRUE(dyinout != 0);
-	dyinout->setGroup(g);
+	//dyinout->setGroup(g);
 	ASSERT_TRUE(dyinout != 0);
 	dyinout->addAttribute("D");
-	DM::ModuleLink * l1 = sim.addLink(g->getInPortTuple("In")->getOutPort(), dyinout->getInPort("Inport"));
-	ASSERT_TRUE(l1 != 0);
-	DM::ModuleLink * l_out = sim.addLink(dyinout->getOutPort("Inport"), g->getOutPortTuple("Out")->getInPort());
-	ASSERT_TRUE(l_out != 0);
+	ASSERT_TRUE(sim.addLink(g,"port", dyinout,"Inport"));
+	ASSERT_TRUE(sim.addLink(dyinout,"Inport", g,"port"));
 	DM::Module * inout2  = sim.addModule("InOut2");
 	ASSERT_TRUE(inout2 != 0);
-	DM::ModuleLink * l2 = sim.addLink(g->getOutPortTuple("Out")->getOutPort(), inout2->getInPort("Inport"));
-	ASSERT_TRUE(l2 != 0);
+	ASSERT_TRUE(sim.addLink(g,"port", inout2,"Inport"));
 	sim.run();
 	ASSERT_TRUE(sim.getSimulationStatus() == DM::SIM_OK);
+	
+	ASSERT_TRUE(m->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inout->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(dyinout->getStatus() == MOD_EXECUTION_OK);
+	ASSERT_TRUE(inout2->getStatus() == MOD_EXECUTION_OK);
 }
 
 #endif GROUPTEST
