@@ -221,13 +221,13 @@ void CellularAutomata::run()  {
             }
             for (unsigned int counter = 0; counter < this->Rules.size(); counter++) {
 
-                Parser * p=this->Rules.at(counter);
+                mu::Parser * p=this->Rules.at(counter);
                 try
                 {
                     double val =  p->Eval();
                     //Logger(Debug) << val;
                     *(this->RulesResults.at(counter)) = val;
-                } catch (Parser::exception_type &e)
+                } catch (mu::Parser::exception_type &e)
                 {
                     Logger(Error) << p->GetExpr()  ;
                     Logger(Error) << e.GetMsg()  ;
@@ -279,7 +279,7 @@ void CellularAutomata::deinit() {
     foreach (double * rs, RulesResults)
         delete rs;
     RulesResults.clear();
-    foreach (Parser * p, Rules )
+    foreach (mu::Parser * p, Rules )
         delete p;
     Rules.clear();
     foreach (double * d, pRessults) {
@@ -360,10 +360,10 @@ void CellularAutomata::initRuntime() {
     for(std::map<std::string, std::string>::iterator it = param.rules.begin(); it != param.rules.end(); ++it) {
         std::string Name = it->first;
         QString rule = QString::fromStdString(it->second);
-        Parser * p = new Parser();
-        mu::addCorineConstants(p);
-        p->DefineFun("nov", numberOfValues);
-        p->DefineFun("rand", random, false);
+        mu::Parser * p = new mu::Parser();
+        addCorineConstants(p);
+        p->DefineFun("nov", dm::numberOfValues);
+        p->DefineFun("rand", dm::random, false);
         //Replace Names
         foreach(std::string neigh, NeighboorhoodList) {
             int elements = NeighboohoodDimensions[neigh].elements;
@@ -386,11 +386,11 @@ void CellularAutomata::initRuntime() {
 
     }
     //Define Descision
-    Desicion = new Parser();
-    Desicion->DefineFun("nov", numberOfValues);
-    Desicion->DefineFun("rand", random, false);
+    Desicion = new mu::Parser();
+    Desicion->DefineFun("nov", dm::numberOfValues);
+    Desicion->DefineFun("rand", dm::random, false);
     int i = 0;
-    mu::addCorineConstants(Desicion);
+    addCorineConstants(Desicion);
     for(std::map<std::string, std::string>::iterator it = param.rules.begin(); it != param.rules.end(); ++it) {
         std::string Name = it->first;
         Desicion->DefineVar(Name, RulesResults.at(i));

@@ -31,7 +31,7 @@
 #include "muParser.h"
 #include <dm.h>
 
-using namespace mu;
+//using namespace mu;
 
 using namespace DM;
 class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
@@ -95,14 +95,14 @@ private:
 
     std::vector<std::string> NeighboorhoodList;
     std::vector<double*> RulesResults;
-    std::vector<Parser*> Rules;
-    Parser * Desicion;
+    std::vector<mu::Parser*> Rules;
+    mu::Parser * Desicion;
 
     std::string NameOfOutput;
     std::string NameOfOutput_old;
 
     std::vector<double *> pRessults;
-    std::vector<Parser> vParser;
+    std::vector<mu::Parser> vParser;
 
     std::vector<std::string> vExistingData;
 
