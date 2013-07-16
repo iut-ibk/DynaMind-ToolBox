@@ -4,7 +4,7 @@
 DM_DECLARE_NODE_NAME(ClearView, Modules)
 ClearView::ClearView()
 {
-    sys_in = 0;
+    //sys_in = 0;
     this->NameOfExistingView = "";
     this->NameOfExistingView_old = "";
     std::vector<DM::View> data;
@@ -15,7 +15,7 @@ ClearView::ClearView()
 
 void ClearView::run() {
     DM::System * data = this->getData("Data");
-    DM::View v = DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView)->getType(), DM::MODIFY);
+    DM::View v = DM::View (NameOfExistingView, getViewInStream("Data", NameOfExistingView).getType(), DM::MODIFY);
     DM::ComponentMap cmp = data->getAllComponentsInView(v);
     for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
         data->removeComponentFromView(it->second, v);
@@ -45,7 +45,7 @@ bool ClearView::createInputDialog() {
     w->show();
     return true;
 }
-
+/*
 DM::System * ClearView::getSystemIn() {
     return this->sys_in;
-}
+}*/
