@@ -92,6 +92,46 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 	parameters.push_back(p);
 }
 
+void Module::setParameterValue(const std::string& name, const std::string& value)
+{
+	QString qvalue = QString::fromStdString(value);
+	Parameter* p = getParameter(name);
+	if(!p)
+		return;
+	switch(p->type)
+	{
+	case DM::INT:		p->set(qvalue.toInt());	break;
+	case DM::LONG:		p->set(qvalue.toLong());	break;
+	case DM::DOUBLE:	p->set(qvalue.toDouble());	break;
+	case DM::BOOL:		p->set((bool)qvalue.toInt());	break;
+	case DM::FILENAME:	p->set(value);	break;
+	case DM::STRING:	p->set(value);	break;
+	case DM::STRING_LIST:	
+		{
+			std::vector<std::string> v;
+			// foreach will cause a compile error in modules not including qt headers
+			QVector<QString> qvalues = qvalue.split("*|*", QString::SkipEmptyParts).toVector();
+			for(QVector<QString>::iterator it = qvalues.begin(); it != qvalues.end(); ++it)
+				if(it->size())
+					v.push_back(it->toStdString());
+			p->set(v);
+		}
+		break;
+	case DM::STRING_MAP:	
+		{
+			std::map<std::string,std::string> map;
+			QVector<QString> rows = qvalue.split("*||*", QString::SkipEmptyParts).toVector();
+			foreach(QString rowString, rows)
+			{
+				QVector<QString> keyValuePair =  rowString.split("*|*", QString::SkipEmptyParts).toVector();
+				map[keyValuePair.first().toStdString()] = keyValuePair.last().toStdString();
+			}
+			p->set(map);
+		}
+		break;
+	}
+}
+
 void Module::addObserver(ModuleObserver* obs)
 {
 	observers.push_back(obs);
