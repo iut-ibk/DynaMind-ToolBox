@@ -769,6 +769,7 @@ void Simulation::cancel()
 	decoupledRunResult.cancel();
 	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
 	decoupledRunResult.waitForFinished();
+	Logger(Standard) << ">> canceling simulation - finished";
 	//canceled = true;
 }
 
