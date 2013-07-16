@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2012  Christian Urich
+ * Copyright (C) 2012-2013  Christian Urich
  
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,8 +26,8 @@
 
 #include "attributecalculator.h"
 #include "guiattributecalculator.h"
-#include "muParser.h"
 #include "userdefinedfunctions.h"
+
 DM_DECLARE_NODE_NAME(AttributeCalculator, Modules)
 
 AttributeCalculator::AttributeCalculator()
@@ -106,7 +106,7 @@ void AttributeCalculator::init() {
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, Component *currentcmp, std::string name ) 
+void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
 {
     QStringList viewNameList = QString::fromStdString(name).split(".");
     //Remove First Element, is already what comes with currentcmp
@@ -114,14 +114,14 @@ void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_con
 
     Attribute * attr = currentcmp->getAttribute(viewNameList.front().toStdString());
 
-    if (attr->getType() == Attribute::LINK) 
-	{
+    if (attr->getType() == Attribute::LINK)
+    {
         std::string newSearchName = viewNameList.join(".").toStdString();
-        foreach (LinkAttribute l, attr->getLinks()) 
-		{
+        foreach (LinkAttribute l, attr->getLinks())
+        {
             Component * nextcmp = this->sys_in->getComponent(l.uuid);
-            if(!nextcmp)  
-			{
+            if(!nextcmp)
+            {
                 Logger(Error) << "Linked Element does not exist";
                 return;
             }
@@ -129,82 +129,130 @@ void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_con
         }
     }
 
-    if (attr->getType() == Attribute::DOUBLE ||attr->getType() == Attribute::NOTYPE  )
+    if (attr->getType() == Attribute::DOUBLE || attr->getType() == Attribute::NOTYPE || attr->getType() == Attribute::STRING )
         varaible_container->push_back(attr->getDouble());
 }
 
-void AttributeCalculator::run() {
 
+QString AttributeCalculator::IfElseConverter(QString expression)
+{
+
+    if (!expression.contains("if")) return expression;
+    int firstif = expression.indexOf("if");
+    expression = expression.remove(firstif,2);
+    int first_semicolon = expression.indexOf(",");
+    int else_semicolon = expression.indexOf(",",first_semicolon+1);
+    int second_if = expression.indexOf("if");
+
+    expression = expression.replace(first_semicolon, 1,"?");
+
+    if (second_if < else_semicolon && second_if != -1) {
+        expression = IfElseConverter(expression);
+    }
+
+    second_if = expression.indexOf(",");
+    expression = expression.replace(second_if, 1,":");
+
+    if (expression.contains("if")){
+        second_if = expression.indexOf(",");
+        expression = expression.replace(second_if, 1,":");
+        expression = IfElseConverter(expression);
+
+    }
+
+    return expression;
+
+
+
+
+}
+
+void AttributeCalculator::run() {
     this->sys_in = this->getData("Data");
-    std::map<std::string, double * > doubleVariables;
-    mu::Parser * p  = new mu::Parser();
-    foreach (std::string variable, varaibleNames) 
-	{
-        double * d = new double(0);
+    std::map<std::string, mup::Value * > doubleVariables;
+    mup::ParserX * p  = new mup::ParserX();
+    foreach (std::string variable, varaibleNames)
+    {
+        mup::Value * d = new mup::Value(0.0);
         doubleVariables[variable] = d;
         p->DefineVar(variable, d);
 
-		std::string nov_variable = "nov_" + variable;
+        std::string nov_variable = "nov_" + variable;
 
-        d = new double(0);
+        d = new mup::Value(0.0);
         doubleVariables[nov_variable] = d;
         p->DefineVar(nov_variable, d);
-		
-		std::string first_variable = "first_" + variable;
 
-        d = new double(0);
+        std::string first_variable = "first_" + variable;
+
+        d = new mup::Value(0.0);
         doubleVariables[first_variable] = d;
         p->DefineVar(first_variable, d);
     }
-    p->DefineFun("rand", mu::random , false);
-    p->DefineFun("round", mu::round);
+    p->DefineFun(new dm::Random);
+    p->DefineFun(new dm::Round);
 
-    double counter = 0;
+    mup::Value counter = 0;
 
     p->DefineVar("counter", &counter);
-    p->SetExpr(equation);
 
-	mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
-	{
-        counter++;
+    Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
+    p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
+
+    mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
+    {
+        counter=counter.GetInteger()+1;
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
              it != variablesMap.end();
-             ++it) 
-		{
-			std::string varvalue = it->second;
+             ++it)
+        {
+            std::string varvalue = it->second;
             //All attributes are stored in one container that is evaluated Later.
-			std::vector<double> variable_container;
+            std::vector< mup::Value> variable_container;
             //Can be later replaced by a function
             getLinkedAttribute(&variable_container, cmp, it->first);
-			
-            double val = 0;
+
+            mup::Value val= 0;
             double nov = 0;
-            foreach (double v, variable_container) 
-			{
-                val += v;
+            foreach (mup::Value v, variable_container)
+            {
+                val += v ;
                 nov ++;
             }
 
-			*doubleVariables[varvalue] = val;
-			*doubleVariables["nov_" + varvalue] = nov;
-			*doubleVariables["first_" + varvalue] = (variable_container.size() > 0) ? 
-														variable_container[0] : 0;            
+            *doubleVariables[varvalue] = val;
+            *doubleVariables["nov_" + varvalue] = nov;
+            if (variable_container.size() > 0) *doubleVariables["first_" + varvalue] = variable_container[0];
+            else *doubleVariables["first_" + varvalue] =  0;
         }
-        try 
-		{
-            double d = p->Eval();
-            if (!this->asVector)
-                cmp->addAttribute(nameOfNewAttribute, d);
-            else 
-			{
+
+        try
+        {
+            mup::Value val = p->Eval();
+            if (!this->asVector) {
+                switch (val.GetType()) {
+                case 's':
+                    cmp->addAttribute(nameOfNewAttribute, val.GetString());
+                    break;
+                case 'i':
+                    cmp->addAttribute(nameOfNewAttribute, val.GetInteger());
+                    break;
+                case 'f':
+                    cmp->addAttribute(nameOfNewAttribute, val.GetFloat());
+                    break;
+                default:
+                    Logger(Warning) << "Unknown type";
+                }
+            } else
+            {
                 DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
                 std::vector<double> vD = attri->getDoubleVector();
-                vD.push_back(d);
+                vD.push_back(val.GetFloat());
                 attri->setDoubleVector(vD);
             }
         }
-        catch (mu::Parser::exception_type &e) 
-		{
+        catch (mup::ParserError &e)
+        {
             Logger(Error) << e.GetMsg();
         }
     }

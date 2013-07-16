@@ -28,15 +28,11 @@
 #include <cmath>
 #include <cstdlib> 
 #include <ctime> 
-#include <cmath>
 #include "dmmodule.h"
 
 using namespace std;
 
-
-
-
-double mu::numberOfValues(const double* values, int index)
+double dm::numberOfValues(const double* values, int index)
 {
 
 	
@@ -47,18 +43,18 @@ double mu::numberOfValues(const double* values, int index)
     }
     return counter;
 }
-double mu::round(double value) {
+double dm::round(double value) {
      return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
 }
 
-double mu::random(double value)
+double dm::random(double value)
 {
 
     double val = rand() % (int) value;
     return  val;
 }
 
-double mu::printValue(double value)
+double dm::printValue(double value)
 {
 
     std::cout << value << std::endl;
