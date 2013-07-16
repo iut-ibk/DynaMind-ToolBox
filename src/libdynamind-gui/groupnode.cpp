@@ -281,16 +281,7 @@ void GroupNode::resize()
 
 GroupNode::~GroupNode()
 {
-	if(parent)
-	{
-		// remove the child to avoid a destruction loop
-		parent->setChild(NULL);
-		delete parent;
-		parent = NULL;
-	}
-	// delete module, as it will be deleted in the child
-	this->module = NULL;
-	simulation->closeTab(owningTab);
+	simulation->closeTab(owningTab);	
 }
 
 /*

@@ -223,8 +223,25 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 
 void GUISimulation::removeModule(DM::Module* m)
 {
+	// get childs
+	std::vector<DM::Module*> toDelete;
+	mforeach(ModelNode* child, modelNodes)
+		if(child->getModule()->getOwner() == m)
+			toDelete.push_back(child->getModule());
+
+	// delete graphical representations
+	ModelNode* node = modelNodes[m];
+	if(node->getChild())
+		delete node->getChild();	// this may be a group node
+	delete node;
+
+	// remove from simulation itself
 	Simulation::removeModule(m);
+	// delete entry
 	modelNodes.erase(m);
+	// delete childs
+	foreach(DM::Module* child, toDelete)
+		removeModule(child);
 }
 
 SimulationTab* GUISimulation::addTab(DM::Group* parentGroup)

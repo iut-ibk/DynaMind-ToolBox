@@ -450,41 +450,7 @@ QVariant ModelNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
 ModelNode::~ModelNode() 
 {
-	if(module)
-	{
-		this->simulation->removeModule(module);
-		module = NULL;
-	}
-    /*DM::Module * m = this->getDMModel();
-
-
-    if (m!=0) {
-        foreach (PortNode * p, ports) {
-            delete p;
-            p = 0;
-        }
-    }
-    if (this->getDMModel()!= 0)
-        this->simulation->removeModule(this->VIBeModuleUUID);
-
-    if (this->parentGroup != 0) {
-        this->parentGroup->removeModelNode(this);
-    }
-
-
-    ports.clear();*/
-    //delete this->simpleTextItem;
-
-	if(child)
-	{
-		// remove the parent to avoid a destruction loop
-		if(GroupNode* g = (GroupNode*)child)
-			g->setParent(NULL);
-		delete child;
-		child = NULL;
-	}
 }
-
 
 
 void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
@@ -644,7 +610,7 @@ void ModelNode::renameModelNode() {
 
 void ModelNode::deleteModelNode() 
 {
-    delete this;
+	getSimulation()->removeModule(getModule());
 }
 /*
 void ModelNode::removeGroup() {
