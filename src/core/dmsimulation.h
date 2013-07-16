@@ -190,8 +190,6 @@ private:
 	std::list<Module*> shiftGroupInput(Group* m);
 
 	//std::list<Module*> shiftGroupLoopData(Group* g, const std::vector<std::string>& backLinks);
-
-	
 	
 	//Module* getFormerModule(Module* dest, std::string inPort, std::string& outPort);
 	//Module* getNextModule(Module* src, std::string outPort, std::string& inPort);

@@ -797,7 +797,8 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			foreach(Link* l, branches)
 			{
 				l->ShiftData(createSuccessor);
-				nextModules.push_back(l->dest);
+				if(l->dest->inPortsSet())
+					nextModules.push_back(l->dest);
 			}
 			// reset out port
 			if(!createSuccessor)
@@ -836,6 +837,7 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 	}
 	return nextModules;
 }
+
 /*
 std::list<Module*> Simulation::shiftGroupLoopData(Group* g, const std::vector<std::string>& backLinks)
 {
