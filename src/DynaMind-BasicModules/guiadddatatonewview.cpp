@@ -89,6 +89,8 @@ void GUIAddDatatoNewView::accept() {
     this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
 
 
-    this->m->addView();
+    //this->m->addView();
+	m->init();
+
     QDialog::accept();
 }
