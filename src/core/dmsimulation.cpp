@@ -802,7 +802,10 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			if(!createSuccessor)
 				it->second = NULL;
 		}
-		else // dead path
+		else if(outLinks.size())
+			Logger(Warning) << "module '" << m->getClassName() << "' does not write data to outport '" << it->first << "'";
+		else
+			// dead path
 			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
 	}
 	// reset in port
