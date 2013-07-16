@@ -222,7 +222,10 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, M
     this->outputCounter = 1;
     this->inputCounter = 1;
     this->setZValue(-1);*/
-    this->setGraphicsEffect(new QGraphicsDropShadowEffect(this));
+
+	// while the effect is nice, the performance is bad
+    //this->setGraphicsEffect(new QGraphicsDropShadowEffect(this));
+
     //this->setVisible(false);
 	/*
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -307,13 +310,56 @@ void GroupNode::setSelected(  bool selected ) {
 
 }
 */
+
+void CheapShadowEffect(QPainter *painter, const QRectF boundingRect)
+{
+	float x = boundingRect.x();
+	float y = boundingRect.y();
+	float w = boundingRect.width();
+	float h = boundingRect.height();
+	float b = 20;
+
+	// setup the bottom shadow poly
+	QPolygon poly_bottom;
+	poly_bottom.append(QPoint(x,		y+h));
+	poly_bottom.append(QPoint(x+w,	y+h));
+	poly_bottom.append(QPoint(x+w+b,	y+h+b));
+	poly_bottom.append(QPoint(x+b,		y+h+b));
+
+	QLinearGradient grad_bottom(0, y+w+b, 0, y+w);
+	grad_bottom.setColorAt(0, Qt::white);
+	grad_bottom.setColorAt(1, Qt::gray);
+	painter->setBrush(grad_bottom);
+	painter->setPen(QPen(Qt::white, 0.0));
+
+	painter->drawPolygon(poly_bottom);
+
+	// setup the right shadow poly
+	QPolygon poly_right;
+	poly_right.append(QPoint(x+w,	y));
+	poly_right.append(QPoint(x+w+b,	y+b));
+	poly_right.append(QPoint(x+w+b,	y+h+b));
+	poly_right.append(QPoint(x+w,	y+h));
+
+	QLinearGradient grad_right(x+w+b,0,x+w,0);
+	grad_right.setColorAt(0, Qt::white);
+	grad_right.setColorAt(1, Qt::gray);
+	painter->setBrush(grad_right);
+	painter->setPen(QPen(Qt::white, 0.0));
+
+	painter->drawPolygon(poly_right);
+}
+
 void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     //if (this->visible) 
 	{
-		painter->setBrush(Qt::white);
-		painter->drawRect(boundingRect());
+		// shortcuts
+		CheapShadowEffect(painter, boundingRect());
 
+		painter->setBrush(Qt::gray);
+		painter->setPen(QPen(Qt::black, 3.0));
+		painter->drawRect(boundingRect());
 		/*
         recalculateLandH();
         if(this->isSelected()== true) {
