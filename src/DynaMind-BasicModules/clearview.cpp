@@ -24,17 +24,18 @@ void ClearView::run() {
 
 }
 
-void ClearView::init() {
-    sys_in = this->getData("Data");
-    if (sys_in == 0)
-        return;
+void ClearView::init() 
+{
+    //sys_in = this->getData("Data");
+    //if (sys_in == 0)
+    //    return;
     if (NameOfExistingView.empty())
         return;
     if (NameOfExistingView.compare(NameOfExistingView_old) == 0)
         return;
 
     std::vector<DM::View> data;
-    data.push_back(  DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView)->getType(), DM::MODIFY) );
+    data.push_back(  DM::View (NameOfExistingView, getViewInStream("Data", NameOfExistingView).getType(), DM::MODIFY) );
     this->addData("Data", data);
     NameOfExistingView_old = NameOfExistingView;
 
