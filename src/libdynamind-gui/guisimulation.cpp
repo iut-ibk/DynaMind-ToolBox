@@ -128,9 +128,9 @@ void GUISimulation::resetSimulation()
 void GUISimulation::clearSimulation() 
 {
 	Simulation::reset();
-	mforeach(ModelNode* m, modelNodes)
-		m->deleteModelNode();
-	modelNodes.clear();
+	//mforeach(ModelNode* m, modelNodes)
+	//	m->deleteModelNode();
+	//modelNodes.clear();
 
 	//for(int i = tabs.size()-1; i>=0;i--)
 	//	closeTab(i);
