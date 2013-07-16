@@ -666,8 +666,8 @@ void Simulation::run()
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
-			QFuture<void> r = QtConcurrent::run(m, &Module::run);
-			r.waitForFinished();
+			runningModuleResult = QtConcurrent::run(m, &Module::run);
+			runningModuleResult.waitForFinished();
 
 			// check for errors
 			ModuleStatus merr = m->getStatus();
@@ -758,7 +758,10 @@ void Simulation::run()
 
 void Simulation::decoupledRun()
 {
-	if(decoupledRunResult.isRunning())
+	//if(QThreadPool::globalInstance()->maxThreadCount() < 1)
+	//	QThreadPool::globalInstance()->setMaxThreadCount(1);
+
+	if(decoupledRunResult.isRunning() || runningModuleResult.isRunning())
 		cancel();
 
 	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
@@ -766,8 +769,10 @@ void Simulation::decoupledRun()
 
 void Simulation::cancel()
 {
+	runningModuleResult.cancel();
 	decoupledRunResult.cancel();
 	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
+	runningModuleResult.waitForFinished();
 	decoupledRunResult.waitForFinished();
 	Logger(Standard) << ">> canceling simulation - finished";
 	//canceled = true;
