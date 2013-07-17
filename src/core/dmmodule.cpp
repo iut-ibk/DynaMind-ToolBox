@@ -454,6 +454,10 @@ void Module::reset()
 	{
 		if(it->second)
 		{
+			// a system may be spread over in-out port 
+			// see FIX dmsimulation.h (140)
+			if(getOutPortData(it->first) == it->second)
+				setOutPortData(it->first, NULL);
 			delete it->second;
 			it->second = NULL;
 		}
@@ -462,10 +466,7 @@ void Module::reset()
 	{
 		if(it->second)
 		{
-			// a system may be spread over in-out port 
-			// see FIX dmsimulation.h (140)
-			if(!getInPortData(it->first))
-				delete it->second;
+			delete it->second;
 			it->second = NULL;
 		}
 	}
