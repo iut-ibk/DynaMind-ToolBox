@@ -941,7 +941,10 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 				&&	l.OutPort.PortName == bl.OutPort.PortName
 				&&	l.OutPort.UUID == bl.OutPort.UUID)
 				index = i;
-			i++;
+			{
+				break;
+				i++;
+			}
 		}
 		links.remove(index); // TODO check
 	}
