@@ -227,7 +227,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
     connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
     currentDocument = "";
-
+	
+	connect(&simulationWatcher, SIGNAL(finished()), this, SLOT(simulationFinished()), Qt::DirectConnection);
     //this->simmanagment = new SimulationManagment();
 
     createModuleListView();
@@ -308,7 +309,18 @@ void DMMainWindow::createModuleListView()
 
 void DMMainWindow::runSimulation() 
 {
-	simulation->decoupledRun();
+	ui->actionNew->setEnabled(false);
+	ui->actionOpen->setEnabled(false);
+	ui->actionReload_Modules->setEnabled(false);
+	ui->actionReset->setEnabled(false);
+	ui->actionRun->setEnabled(false);
+	ui->actionReset->setEnabled(false);
+	ui->actionUpdate->setEnabled(false);
+	ui->actionSave->setEnabled(false);
+	ui->actionSaveAs->setEnabled(false);
+
+	simulationWatcher.setFuture(simulation->decoupledRun());
+
     //simulation->start();
 }
 void DMMainWindow::updateSimulation() 
@@ -328,9 +340,17 @@ void DMMainWindow::cancelSimulation()
 	simulation->cancel();
 }
 
-void DMMainWindow::SimulationFinished() 
+void DMMainWindow::simulationFinished() 
 {
-
+	ui->actionNew->setEnabled(true);
+	ui->actionOpen->setEnabled(true);
+	ui->actionReload_Modules->setEnabled(true);
+	ui->actionReset->setEnabled(true);
+	ui->actionRun->setEnabled(true);
+	ui->actionReset->setEnabled(true);
+	ui->actionUpdate->setEnabled(true);
+	ui->actionSave->setEnabled(true);
+	ui->actionSaveAs->setEnabled(true);
 }
 
 void DMMainWindow::preferences() 

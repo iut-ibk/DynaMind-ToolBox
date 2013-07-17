@@ -34,6 +34,7 @@
 
 #include "dmcompilersettings.h"
 #include <QMainWindow>
+#include <qfuturewatcher.h>
 
 //#include "plot.h"
 
@@ -54,6 +55,8 @@ class GuiLogSink;
 class GUISimulationObserver;
 class GUISimulation;
 class GUIHelpViewer;
+
+
 namespace DM {
     class Group;
 }
@@ -92,7 +95,8 @@ private:
     //void appendGUIInformation(QString FileName);
     //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     //void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
-
+	
+	QFutureWatcher<void> simulationWatcher;
 	//QList<SimulationTab*> tabs;
 public slots:
     void runSimulation();
@@ -104,7 +108,7 @@ public slots:
     void setRunning();
     void saveAsSimulation();
     void importSimulation(QString fileName = "", QPointF = QPointF(0,0));
-    void SimulationFinished();
+    void simulationFinished();
     void startEditor();
     void ReloadSimulation();
     void addNewGroupWindows(GroupNode *);
