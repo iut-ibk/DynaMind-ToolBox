@@ -331,7 +331,7 @@ void CheapShadowEffect(QPainter *painter, const QRectF boundingRect)
 	grad_bottom.setColorAt(0, Qt::white);
 	grad_bottom.setColorAt(1, Qt::gray);
 	painter->setBrush(grad_bottom);
-	painter->setPen(QPen(Qt::white, 0.0));
+	painter->setPen(QPen(Qt::white, 0.0, Qt::NoPen));
 
 	painter->drawPolygon(poly_bottom);
 
