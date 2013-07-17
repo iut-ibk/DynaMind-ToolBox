@@ -182,9 +182,11 @@ public:
 	std::list<Module*> getModules(){return modules;};
 	std::list<Link*> getLinks(){return links;};
 
-	QFuture<void> decoupledRun();
+	//QFuture<void> decoupledRun();
 	void cancel();
 	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
+	void addObserver(SimulationObserver *obs);
+	void removeObserver(SimulationObserver *obs);
 protected:
 	bool _loadSimulation(std::string fileName, std::map<std::string, DM::Module*>& modMap);
 	
@@ -217,14 +219,16 @@ private:
 	
 	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
 	//bool finished;	// for decoupled run
-	//bool canceled;
-	QFuture<void> decoupledRunResult;
-	QFuture<void> runningModuleResult;
+	bool canceled;
+	//QFuture<void> decoupledRunResult;
+	//QFuture<void> runningModuleResult;
 	
 	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
 	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
 	std::vector<Link*> getIntoGroupLinks(const Module* src, const std::string& inPort) const;
 	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
+
+	std::vector<SimulationObserver*>	observers;
 };
 
 

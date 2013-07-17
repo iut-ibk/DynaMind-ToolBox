@@ -29,13 +29,12 @@
 #include "dmcompilersettings.h"
 
 namespace DM {
-class DM_HELPER_DLL_EXPORT SimulationObserver
+
+class SimulationObserver
 {
 public:
-    SimulationObserver();
-    virtual void SimulationCounter() = 0;
-    virtual void VirtualRunDone() = 0;
-
+	virtual void update(float progress) = 0;
 };
+
 }
 #endif // SIMULATIONOBSERVER_H

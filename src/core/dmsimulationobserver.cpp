@@ -24,7 +24,9 @@
  *
  */
 #include "dmsimulationobserver.h"
+/*
 using namespace DM;
 SimulationObserver::SimulationObserver()
 {
 }
+*/

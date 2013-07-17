@@ -42,7 +42,7 @@
 #include "dmmoduleregistry.h"
 #include "dmmoduleparameterreader.h"
 #include "dmmoduleregistry.h"
-//#include "dmsimulationobserver.h"
+#include "dmsimulationobserver.h"
 #include <dmmodule.h>
 //#include <dmmodulelink.h>
 //#include <dmport.h>
@@ -76,6 +76,9 @@ Simulation::~Simulation()
 	clear();
 	// TODO: cleanup lost systems
 	delete moduleRegistry;
+
+	foreach(SimulationObserver* obs, observers)
+		delete obs;
 }
 
 Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
@@ -631,8 +634,10 @@ bool Simulation::checkStream()
 
 void Simulation::run()
 {
-	//canceled = false;
-	//finished = false;
+	canceled = false;
+	// notify progress
+	foreach(SimulationObserver* obs, observers)
+		obs->update(0);
 
 	QElapsedTimer simtimer;
 	simtimer.start();
@@ -653,9 +658,11 @@ void Simulation::run()
 		if(m->inPortsSet())
 			worklist.push(m);
 	
+	int cntModulesFinished = 0;
+
 	// run modules
 	// if not started decoupled, the state of the future is canceled, started and finished
-	while(worklist.size() && (decoupledRunResult.isFinished() || !decoupledRunResult.isCanceled()))
+	while(worklist.size() && !canceled)
 	{
 		// get first element
 		Module* m = worklist.front();
@@ -668,8 +675,7 @@ void Simulation::run()
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
-			runningModuleResult = QtConcurrent::run(m, &Module::run);
-			runningModuleResult.waitForFinished();
+			QtConcurrent::run(m, &Module::run).waitForFinished();
 
 			// check for errors
 			ModuleStatus merr = m->getStatus();
@@ -687,6 +693,12 @@ void Simulation::run()
 				Logger(Standard)	<< "module '" << m->getName() << "' executed successfully (took " 
 									<< (long)modTimer.elapsed() << "ms)";
 				m->setStatus(MOD_EXECUTION_OK);
+
+				// notify progress
+				cntModulesFinished++;
+				float progress = (float)cntModulesFinished/modules.size();
+				foreach(SimulationObserver* obs, observers)
+					obs->update(progress);
 			}
 			// shift data from out port to next inport
 			foreach(Module* nextModule, shiftModuleOutput(m))
@@ -750,16 +762,35 @@ void Simulation::run()
 				worklist.push(nextModule);
 		}*/
 	}
-	if(!decoupledRunResult.isFinished() && decoupledRunResult.isCanceled())
+	if(canceled)
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
 	else
+	{
 		Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
+		// notify progress
+		foreach(SimulationObserver* obs, observers)
+			obs->update(1);
+	}
 
 	//finished = true;
 }
+/*
+class ThreadWrapper: public QThread
+{
+	Simulation* sim;
+public:
+	ThreadWrapper(Simulation* sim): sim(sim){}
+	void run()
+	{
+		sim->run();
+	}
+};*/
 
+/*
 QFuture<void> Simulation::decoupledRun()
 {
+
+
 	//if(QThreadPool::globalInstance()->maxThreadCount() < 1)
 	//	QThreadPool::globalInstance()->setMaxThreadCount(1);
 
@@ -768,17 +799,18 @@ QFuture<void> Simulation::decoupledRun()
 
 	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
 	return decoupledRunResult;
-}
+}*/
 
 void Simulation::cancel()
 {
-	runningModuleResult.cancel();
+	Logger(Standard) << ">> canceling simulation";
+	/*runningModuleResult.cancel();
 	decoupledRunResult.cancel();
 	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
 	runningModuleResult.waitForFinished();
 	decoupledRunResult.waitForFinished();
-	Logger(Standard) << ">> canceling simulation - finished";
-	//canceled = true;
+	Logger(Standard) << ">> canceling simulation - finished";*/
+	canceled = true;
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
@@ -859,8 +891,6 @@ std::list<Module*> Simulation::shiftGroupLoopData(Group* g, const std::vector<st
 
 void Simulation::reset()
 {
-	if(decoupledRunResult.isRunning())
-		cancel();
     Logger(Standard) << ">> Reset Simulation";
 	foreach(Module* m, this->modules)
 	{
@@ -1156,6 +1186,17 @@ bool Simulation::loadSimulation(std::string filename)
 void Simulation::writeSimulation(std::string filename) 
 {
     SimulationWriter::writeSimulation(filename, this);
+}
+
+void Simulation::addObserver(SimulationObserver *obs)
+{
+	observers.push_back(obs);
+}
+void Simulation::removeObserver(SimulationObserver *obs)
+{
+	std::vector<SimulationObserver*>::iterator it = find(observers.begin(), observers.end(), obs);
+	if(it != observers.end())
+		observers.erase(it);
 }
 
 
