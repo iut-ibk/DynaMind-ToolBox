@@ -27,7 +27,7 @@
 
 #include "grouptest.h"
 
-DM_DECLARE_NODE_NAME(GroupTest, Loops)
+DM_DECLARE_NODE_NAME(GroupTest, Groups)
 GroupTest::GroupTest() 
 {
 	/*
