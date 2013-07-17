@@ -442,8 +442,8 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 			return false;
 		}
 	}*/
-	if(strcmp(m->getClassName(), "Marker") == 0)
-		int i=0;
+	//if(strcmp(m->getClassName(), "Marker") == 0)
+	//	int i=0;
 
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// check if we are in the middle of an unchecked stream
