@@ -486,5 +486,3 @@ DM::Module* PortNode::getModule()
 {
 	return modelNode->getModule();
 }*/
-
-

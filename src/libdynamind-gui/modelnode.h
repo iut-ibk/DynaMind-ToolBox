@@ -50,7 +50,11 @@ class RootGroupNode;
 class PortNode;
 class GUISimulation;
 
+#if defined _MSC_VER && defined _WIN32
+enum PortType;
+#else
 enum PortType : unsigned int;
+#endif
 
 class ModelNode;
 
