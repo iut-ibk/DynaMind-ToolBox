@@ -28,6 +28,7 @@
 #include <cmath>
 #include <QMenu>
 #include <QAction>
+#include <qobject.h>
 #include <QGraphicsSceneContextMenuEvent>
 #include <dmmodule.h>
 #include <guiport.h>
