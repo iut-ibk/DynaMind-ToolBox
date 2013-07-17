@@ -228,11 +228,16 @@ System* Module::getOutPortData(const std::string &name)
 
 void Module::addData(const std::string& streamName, std::vector<View> views)
 {
-	std::map<std::string,View> viewMap;
-	foreach(const View v, views)
-		viewMap[v.getName()] = v;
+	if(views.size())
+	{
+		std::map<std::string,View> viewMap;
+		foreach(const View v, views)
+			viewMap[v.getName()] = v;
 
-	this->accessedViews[streamName] = viewMap;
+		this->accessedViews[streamName] = viewMap;
+	}
+	else
+		this->accessedViews.erase(streamName);
 
 	bool inPort = false;
 	bool outPort = false;
@@ -250,6 +255,16 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 		this->addPort(streamName, INPORT);
 	if(outPort && !hasOutPort(streamName))
 		this->addPort(streamName, OUTPORT);
+}
+
+void Module::removeData(const std::string& name)
+{
+	accessedViews.erase(name);
+
+	if(hasInPort(name))
+		this->removePort(name, INPORT);
+	if(hasOutPort(name))
+		this->removePort(name, OUTPORT);
 }
 
 System* Module::getData(const std::string& streamName)

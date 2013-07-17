@@ -347,11 +347,7 @@ public:
 		return getAccessedViews();
 	}
 
-	void removeData(const std::string& name)
-	{
-		accessedViews.erase(name);
-	}
-
+	void removeData(const std::string& name);
 	void setParameterValue(const std::string& name, const std::string& value);
 	void updateParameter()
 	{
