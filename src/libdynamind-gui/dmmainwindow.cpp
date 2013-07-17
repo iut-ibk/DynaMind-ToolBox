@@ -669,10 +669,11 @@ DMMainWindow::~DMMainWindow() {
 }
 
 void DMMainWindow::on_actionZoomIn_triggered(){
-    int i= ui->tabWidget_4->currentIndex();
+    //int i= ui->tabWidget_4->currentIndex();
     /*QGraphicsView * view = groupscenes[i]->views()[0];
 
     view->scale(1.2, 1.2);*/
+	simulation->getSelectedTab()->getQGViewer()->scale(1.2, 1.2);
 }
 
 void DMMainWindow::on_actionAbout_triggered()
@@ -684,6 +685,7 @@ void DMMainWindow::on_actionAbout_triggered()
 
 void DMMainWindow::on_actionZoomOut_triggered()
 {
+	simulation->getSelectedTab()->getQGViewer()->scale(0.8,0.8);
     /*int i= ui->tabWidget_4->currentIndex();
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->scale(0.8, 0.8);*/
@@ -695,8 +697,8 @@ void DMMainWindow::on_actionZoomReset_triggered()
     QGraphicsView * view = groupscenes[i]->views()[0];
     view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
 	*/
-
-
+	QGraphicsView* view = simulation->getSelectedTab()->getQGViewer();
+    view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
 }
 
 /*void DMMainWindow::showHelp(std::string classname) 
