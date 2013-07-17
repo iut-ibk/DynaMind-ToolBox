@@ -758,7 +758,7 @@ void Simulation::run()
 	//finished = true;
 }
 
-void Simulation::decoupledRun()
+QFuture<void> Simulation::decoupledRun()
 {
 	//if(QThreadPool::globalInstance()->maxThreadCount() < 1)
 	//	QThreadPool::globalInstance()->setMaxThreadCount(1);
@@ -767,6 +767,7 @@ void Simulation::decoupledRun()
 		cancel();
 
 	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
+	return decoupledRunResult;
 }
 
 void Simulation::cancel()

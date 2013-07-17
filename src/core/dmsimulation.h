@@ -182,7 +182,7 @@ public:
 	std::list<Module*> getModules(){return modules;};
 	std::list<Link*> getLinks(){return links;};
 
-	void decoupledRun();
+	QFuture<void> decoupledRun();
 	void cancel();
 	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
 protected:
