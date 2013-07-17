@@ -116,7 +116,7 @@ protected:
 
     int id;
     bool minimized;
-    bool visible;
+    //bool visible;
 
     //QColor Color;
 
@@ -158,7 +158,7 @@ public:
     //virtual void setMinimized(bool b);
 
 
-    bool GroupVisible(){return this->visible;}
+    //bool GroupVisible(){return this->visible;}
 
     //View
     virtual void recalculateLandH(){}

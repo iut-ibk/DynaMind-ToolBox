@@ -401,7 +401,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(255,100,100);	break;
 	}
 
-    if(this->visible)
+    //if(this->visible)
 	{
 		// the constructor for QColor is neccessary
         QPen rectPen(QColor(COLOR_MODULEBORDER), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -590,7 +590,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
 
 void ModelNode::editModelNode() 
 {
-	if(this->visible)
+	//if(this->visible)
 	{
 		if(!module->createInputDialog())
 			(new GUIModelNode(module ,this))->show();
