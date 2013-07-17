@@ -358,7 +358,6 @@ void DMMainWindow::resetSimulation()
 }
 void DMMainWindow::cancelSimulation() 
 {
-	updateProgress(0);
 	simulation->cancel();
 }
 
