@@ -23,15 +23,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-/*
+
 #include "guisimulationobserver.h"
+#include <dmsimulation.h>
 
-GUISimulationObserver::GUISimulationObserver(ProjectViewer * pv)
+void GuiSimulationObserver::run()
 {
-    this->pv = pv;
+	sim->addObserver(this);
+	sim->run();
+	sim->removeObserver(this);
+	emit finished();
 }
-
-void GUISimulationObserver::VirtualRunDone() {
-    pv->update();
+void GuiSimulationObserver::update(float progress)
+{
+	emit signalUpdateProgress(progress);
 }
-*/

@@ -24,25 +24,31 @@
  *
  */
 
-#define GUISIMULATIONOBSERVER_H
 #ifndef GUISIMULATIONOBSERVER_H
 #define GUISIMULATIONOBSERVER_H
 #include <dmcompilersettings.h>
 #include <dmsimulationobserver.h>
-#include <projectviewer.h>
+#include <qobject.h>
 
-class DM_HELPER_DLL_EXPORT GUISimulationObserver : public DM::SimulationObserver
+namespace DM
 {
-private:
-    ProjectViewer * pv;
+	class Simulation;
+}
+
+class GuiSimulationObserver: public QObject, public DM::SimulationObserver
+{
+	Q_OBJECT
+
+	DM::Simulation* sim;
 public:
-    GUISimulationObserver(ProjectViewer * pv);
-
-    virtual void SimulationCounter(){}
-    virtual void VirtualRunDone();
-
-
-
+	GuiSimulationObserver(DM::Simulation* sim): sim(sim){}
+	~GuiSimulationObserver(){}
+public slots:
+	void run();
+	void update(float progress);
+signals:
+	void signalUpdateProgress(float);
+	void finished();
 };
 
 #endif // GUISIMULATIONOBSERVER_H
