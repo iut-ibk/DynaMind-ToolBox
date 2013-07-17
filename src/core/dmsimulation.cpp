@@ -763,7 +763,14 @@ void Simulation::run()
 		}*/
 	}
 	if(canceled)
+	{
 		Logger(Standard) << ">> canceled simulation (time elapsed " << (long)simtimer.elapsed() << "ms)";
+		Logger(Debug) << ">> cleaning up";
+		reset();
+		// notify progress
+		foreach(SimulationObserver* obs, observers)
+			obs->update(0);
+	}
 	else
 	{
 		Logger(Standard) << ">> finished simulation (took " << (long)simtimer.elapsed() << "ms)";
