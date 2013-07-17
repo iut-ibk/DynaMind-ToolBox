@@ -29,9 +29,11 @@
 #define GUISIMULATION_H
 #include <dmcompilersettings.h>
 #include <dmsimulation.h>
+#include <dmsimulationobserver.h>
 #include <QVector>
 #include <QString>
 #include <QPointF>
+#include <qobject.h>
 
 class ModelNode;
 class PortNode;
@@ -50,9 +52,8 @@ enum PortType;
 enum PortType : unsigned int;
 #endif
 
-class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation//, public QObject
+class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
 {
-    //Q_OBJECT
 public:
     GUISimulation(QWidget * parent, QTabWidget* tabWidget);
 
@@ -110,19 +111,18 @@ private:
 	PortNode* getPortNode(DM::Module* m, std::string portName, 
 		DM::PortType type, bool fromInnerGroup);
 	QWidget * parent;
-signals:
+//signals:
     //void addedModule(ModelNode*);
     //void addedGroup(GroupNode*);
     //void GroupNameChanged(GroupNode*);
     //void showHelpForModule(std::string classname, std::string uuid);
 
-
-public slots:
+//public slots:
     //void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
     //void GUIaddModule(DM::Module *, QPointF pos);
     //void updateSimulation();
     //void resetSimulation();
-    void showHelp(std::string classname);
+    //void showHelp(std::string classname);
 
 	//std::map<ModelNode*,DM::Module*> moduleGuiMap;
 };

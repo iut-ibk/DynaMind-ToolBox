@@ -38,12 +38,14 @@
 
 //#include "plot.h"
 
+#include <dmsimulationobserver.h>
 
 #include <QMap>
 #include <QVector>
 #include <moduledescription.h>
 #include <ui_dmmainwindow.h>
 //#include <GuiSimulationReader.h>
+
 class QTreeWidgetItem;
 
 
@@ -52,9 +54,10 @@ class ModelNode;
 class SimulationManagment;
 class GroupNode;
 class GuiLogSink;
-class GUISimulationObserver;
 class GUISimulation;
 class GUIHelpViewer;
+class QThread;
+class GuiSimulationObserver;
 
 
 namespace DM {
@@ -66,7 +69,14 @@ namespace DM {
 
 
 class SimulationTab;
-
+/*
+class GuiSimulationObserver: public DM::SimulationObserver
+{
+	QProgressBar* progressBar;
+public:
+	GuiSimulationObserver(QProgressBar* progressBar):progressBar(progressBar){}
+	void update(float progress);
+};*/
 
 class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
@@ -96,8 +106,11 @@ private:
     //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
     //void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
 	
-	QFutureWatcher<void> simulationWatcher;
+	//QFutureWatcher<void> simulationWatcher;
 	//QList<SimulationTab*> tabs;
+
+	QThread *simulationThread;
+	GuiSimulationObserver* simulationThreadWrapper;
 public slots:
     void runSimulation();
     void sceneChanged();
@@ -128,7 +141,8 @@ private slots:
     void on_actionZoomIn_triggered();
     void on_actionAbout_triggered();
     void on_actionShow_Help_triggered();
-
+	
+	void updateProgress(float progress);
 };
 
 #endif // MAINWINDOW_H

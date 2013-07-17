@@ -56,6 +56,7 @@
 #include <dmlog.h>
 #include <guilogsink.h>
 #include <dmpythonenv.h>
+#include <dmsimulationobserver.h>
 #include <guisimulationobserver.h>
 #include <guisimulation.h>
 #include <rootgroupnode.h>
@@ -180,6 +181,11 @@ void DMMainWindow::newLogLine(QString line)
 	//ui->log_widget->appendPlainText(line);
 }
 
+void DMMainWindow::updateProgress(float progress)
+{
+	ui->progressBar->setValue((int)(progress*100));
+}
+
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
     Q_INIT_RESOURCE(icons);
@@ -197,6 +203,12 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     env->addOverWriteStdCout();
 
     this->simulation = new GUISimulation(parent, ui->tabWidget_4);
+
+	simulationThread = NULL;
+	
+	//connect(this, SIGNAL(updateProgress(float)), this, SLOT(updateProgress(float)));
+
+	//this->simulation->addObserver(new GuiSimulationObserver(ui->progressBar));
 	
     //connect(this->simulation, SIGNAL(addedGroup(GroupNode*)), this, SLOT(addNewGroupWindows(GroupNode*)));
     //this->simulation->registerRootNode();
@@ -228,7 +240,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
     currentDocument = "";
 	
-	connect(&simulationWatcher, SIGNAL(finished()), this, SLOT(simulationFinished()), Qt::DirectConnection);
+	//connect(simulationWatcher, SIGNAL(finished()), this, SLOT(simulationFinished()), Qt::DirectConnection);
     //this->simmanagment = new SimulationManagment();
 
     createModuleListView();
@@ -318,8 +330,17 @@ void DMMainWindow::runSimulation()
 	ui->actionUpdate->setEnabled(false);
 	ui->actionSave->setEnabled(false);
 	ui->actionSaveAs->setEnabled(false);
+	
+	simulationThread = new QThread;
+	simulationThreadWrapper = new GuiSimulationObserver(simulation);
+	connect(simulationThreadWrapper, SIGNAL(signalUpdateProgress(float)), this, SLOT(updateProgress(float)));
+	connect(simulationThread, SIGNAL(started()), simulationThreadWrapper, SLOT(run()));
+	connect(simulationThreadWrapper, SIGNAL(finished()), this, SLOT(simulationFinished()));
+	connect(simulationThreadWrapper, SIGNAL(finished()), simulationThread, SLOT(deleteLater()));
+	simulationThreadWrapper->moveToThread(simulationThread);
 
-	simulationWatcher.setFuture(simulation->decoupledRun());
+	simulationThread->start();
+	//simulationWatcher.setFuture(simulation->decoupledRun());
 
     //simulation->start();
 }
@@ -337,6 +358,7 @@ void DMMainWindow::resetSimulation()
 }
 void DMMainWindow::cancelSimulation() 
 {
+	updateProgress(0);
 	simulation->cancel();
 }
 
@@ -359,13 +381,13 @@ void DMMainWindow::preferences()
     p->exec();
 }
 
-void DMMainWindow::setRunning() {
+void DMMainWindow::setRunning() 
+{
     //this->running = false;
 }
 
-void DMMainWindow::sceneChanged() {
-
-
+void DMMainWindow::sceneChanged() 
+{
 }
 void DMMainWindow::saveAsSimulation() 
 {
@@ -644,6 +666,7 @@ DMMainWindow::~DMMainWindow() {
     //delete this->simulation;
 	//foreach(SimulationTab *w, tabs)
 	//	delete w;
+	delete simulationThreadWrapper;
 }
 
 void DMMainWindow::on_actionZoomIn_triggered(){

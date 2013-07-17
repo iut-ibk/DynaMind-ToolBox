@@ -148,11 +148,11 @@ void GUISimulation::clearSimulation()
     this->setSimulationStatus(DM::SIM_OK);
 	*/
 }
-
+/*
 void GUISimulation::showHelp(string classname) 
 {
     //emit showHelpForModule(classname);
-}
+}*/
 /*
 QVector<QDir> defaultModuleDirectories()
 {
