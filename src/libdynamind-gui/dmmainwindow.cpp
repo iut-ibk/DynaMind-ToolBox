@@ -253,30 +253,54 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 
 void DMMainWindow::createModuleListView() 
 {
-    ui->treeWidget->clear();
-    //std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
+	ui->treeWidget->clear();
+	//std::list<std::string> mlist = (this->simulation->getModuleRegistry()->getRegisteredModules());
 	// load the module tree: first map element represents the group name as string
 	// second the names of the modules as string
-    std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
-    ui->treeWidget->setColumnCount(1);
+	std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
+	ui->treeWidget->setColumnCount(1);
 	// iterate through groups
-    for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) 
+	for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) 
 	{
 		// create tree group
-        QTreeWidgetItem * items = new QTreeWidgetItem(ui->treeWidget);
-        items->setText(0, QString::fromStdString(it->first));
+		QTreeWidgetItem * items = new QTreeWidgetItem(ui->treeWidget);
+		items->setText(0, QString::fromStdString(it->first));
 		// get modules, sort alphabetically
-        std::vector<std::string> moduleNames = it->second;
-        std::sort(moduleNames.begin(), moduleNames.end());
+		std::vector<std::string> moduleNames = it->second;
+		std::sort(moduleNames.begin(), moduleNames.end());
 		// iterate through modules
-        foreach(std::string name, moduleNames) 
+		foreach(std::string name, moduleNames) 
 		{
-            QTreeWidgetItem * item;
-            item = new QTreeWidgetItem(items);
-            item->setText(0,QString::fromStdString(name));
-            item->setText(1,"Module");
-        }
-    }
+			QTreeWidgetItem * item;
+			item = new QTreeWidgetItem(items);
+			item->setText(0,QString::fromStdString(name));
+			item->setText(1,"Module");
+		}
+	}
+
+	QSettings settings;
+	QStringList simPaths = settings.value("VIBeModules",QStringList()).toString().replace("\\","/").split(",");
+	if(simPaths.size() == 0)
+		return;
+
+	QTreeWidgetItem * itSimDirs = new QTreeWidgetItem(ui->treeWidget);
+	itSimDirs->setText(0, "Simulation directories");
+	foreach(QString simDir, simPaths)
+	{
+		QTreeWidgetItem * itSimDir;
+		itSimDir = new QTreeWidgetItem(itSimDirs);
+		itSimDir->setText(0,simDir);
+		itSimDir->setText(1,"Simulations");
+
+		QStringList simPaths = QDir(simDir).entryList(QStringList("*.dyn"));
+		foreach(QString simPath, simPaths)
+		{
+			QTreeWidgetItem * itSim;
+			itSim = new QTreeWidgetItem(itSimDir);
+			itSim->setText(0,simPath);
+			itSim->setText(1,"Simulation");
+		}
+	}
 	/*
     //Add VIBe Modules
     QStringList filters;
