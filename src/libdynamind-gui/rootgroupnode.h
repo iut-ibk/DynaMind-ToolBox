@@ -64,6 +64,8 @@ public:
 	DM::Group* getParentGroup(){return parentGroup;};
 
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif
