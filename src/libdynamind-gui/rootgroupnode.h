@@ -50,7 +50,7 @@ private:
 
 	// the scene, owning all elements to be rendered
 	//QGraphicsScene *scene;
-
+	QPointF cursorPos;
 	// a pointer to the simulation object, which will be manipulated and drawn in this tab
 	GUISimulation* sim;
 	DM::Group* parentGroup;
@@ -66,6 +66,7 @@ public:
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void keyPressEvent (QKeyEvent * keyEvent );
 };
 

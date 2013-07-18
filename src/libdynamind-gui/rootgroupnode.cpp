@@ -34,6 +34,8 @@
 #include <guisimulation.h>
 #include <dmgroup.h>
 #include <QKeyEvent>
+#include <qapplication.h>
+#include <qclipboard.h>
 
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
 	QGraphicsScene(parent), parentGroup(parentGroup)
@@ -74,8 +76,63 @@ void SimulationTab::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 {
 	if(keyEvent->key() == Qt::Key_Delete)
+	{
 		foreach(QGraphicsItem* item, selectedItems())
 			delete item;
+	}
+	else if (keyEvent->matches(QKeySequence::Copy))
+	{
+		QString copyString;
+		foreach(QGraphicsItem* item, selectedItems())
+			if(ModelNode* node = (ModelNode*)item)
+			{
+				copyString += node->getModule()->getClassName();
+				copyString += "\t";
+				copyString += QString::number(node->x());
+				copyString += "\t";
+				copyString += QString::number(node->y());
+				copyString += "\n";
+			}
+
+		 QClipboard *clipboard = QApplication::clipboard();
+		 clipboard->setText(copyString);
+	}
+	else if (keyEvent->matches(QKeySequence::Paste))
+	{
+		clearSelection();
+
+		float minx = 0;
+		float miny = 0;
+		
+		QClipboard *clipboard = QApplication::clipboard();
+		QString copyString = clipboard->text();
+
+		foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
+		{
+			QStringList mod = str.split("\t", QString::SkipEmptyParts);
+			minx = min(minx, mod[1].toFloat());
+			miny = min(miny, mod[2].toFloat());
+		}
+		
+		minx -= cursorPos.x();
+		miny -= cursorPos.y();
+
+		foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
+		{
+			QStringList mod = str.split("\t", QString::SkipEmptyParts);
+			DM::Module* m = sim->addModule(mod[0].toStdString(), parentGroup, false);
+			ModelNode* node = sim->getModelNode(m);
+			node->setPos(QPointF(	mod[1].toFloat() - minx, 
+									mod[2].toFloat() - miny));
+			node->setSelected(true);
+		}
+	}
+}
+
+void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	cursorPos = event->scenePos();
+	QGraphicsScene::mouseMoveEvent(event);
 }
 
 SimulationTab::~SimulationTab()
