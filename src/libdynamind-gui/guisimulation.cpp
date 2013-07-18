@@ -388,20 +388,19 @@ SimulationTab* GUISimulation::getTab(int i)
 bool GUISimulation::loadSimulation(std::string filePath) 
 {
 	QString qFilePath = QString::fromStdString(filePath);
-	GuiSimulationReader simio(qFilePath);
-	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
 	
 	std::map<std::string, DM::Module*> modMap;
 	QFile file(qFilePath);
-	bool result = Simulation::_loadSimulation(&file, qFilePath, modMap);
+	GuiSimulationReader simio(&file);
+	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
+	bool result = Simulation::loadSimulation(&file, qFilePath, modMap);
 
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)
 	{
 		DM::Module* m;
-		if(map_contains(&modMap, it->first.toStdString(), m))
-			if(m)
-				modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
+		if(map_contains(&modMap, it->first.toStdString(), m) && m)
+			modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
 	}
 	return result;
 }
@@ -409,14 +408,18 @@ bool GUISimulation::loadSimulation(std::string filePath)
 
 void GUISimulation::writeSimulation(std::string fileName) 
 {
-	Simulation::writeSimulation(fileName);
+	QFile file(QString::fromStdString(fileName));
+	Simulation::writeSimulation(&file, QString::fromStdString(fileName));
+	appendGuiInformation(&file, getModules());
+}
 
+void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*> modules)
+{
 	//Write GUI Informations
 	DM::Logger(DM::Debug) << "adding GUI information";
 
-	QFile file(QString::fromStdString(fileName));
-	file.open(QIODevice::Append);
-	QTextStream out(&file);
+	dest->open(QIODevice::Append);
+	QTextStream out(dest);
 	out << "<DynaMindGUI>\n";
 	out << "\t"<<"<GUI_Nodes>\n";
 
@@ -424,8 +427,10 @@ void GUISimulation::writeSimulation(std::string fileName)
 	float minx;
 	float miny;
 	bool first = true;
-	mforeach(ModelNode* m, this->modelNodes)
+
+	foreach(DM::Module* mod, modules)
 	{
+		ModelNode* m = this->getModelNode(mod);
 		if(first)
 		{
 			minx = m->pos().x();
@@ -438,10 +443,10 @@ void GUISimulation::writeSimulation(std::string fileName)
 			miny = max(miny, (float)m->pos().y());
 		}
 	}
-
-	mforeach(ModelNode* m, this->modelNodes)
+	
+	foreach(DM::Module* mod, modules)
 	{
-		DM::Module* mod = m->getModule();
+		ModelNode* m = this->getModelNode(mod);
 
 		out << "\t\t<GUI_Node>\n";
 		out << "\t\t\t<GUI_UUID value=\"" << ADDRESS_TO_INT(mod) << "\"/>\n";
@@ -454,6 +459,6 @@ void GUISimulation::writeSimulation(std::string fileName)
 	out << "</DynaMindGUI>\n";
 	out << "</DynaMind>\n";
 
-	file.close();
+	dest->close();
 	DM::Logger(DM::Debug) << "finished GUI information";
 }

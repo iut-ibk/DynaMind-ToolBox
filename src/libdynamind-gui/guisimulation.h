@@ -97,6 +97,7 @@ public:
 			for gui we add the positions of the modules too */
     void writeSimulation(std::string filename);
 
+	void appendGuiInformation(QIODevice* dest, std::list<DM::Module*> modules);
 
 	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
     QString currentDocument;
