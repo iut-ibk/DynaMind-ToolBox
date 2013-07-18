@@ -983,7 +983,8 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 				i++;
 			}
 		}
-		links.remove(index); // TODO check
+		if(index>0)
+			links.remove(index); // TODO check
 	}
 
 	QList<QString> nameOfInPorts = itInView.value().split("*|*", QString::SkipEmptyParts);
