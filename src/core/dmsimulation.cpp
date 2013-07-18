@@ -1091,11 +1091,12 @@ void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
 			LoopGroupAdaptor(links, modules, *it);
 }
 
-bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM::Module*>& modMap) 
+bool Simulation::_loadSimulation(QIODevice* source, QString filepath, ::map<std::string, DM::Module*>& modMap) 
 {
-	QDir simFileDir = QFileInfo(QString::fromStdString(filename)).absoluteDir();	// for param corr.
-	Logger(Standard) << ">> loading simulation file '" << filename << "'";
-    SimulationReader simreader(QString::fromStdString(filename));
+	QDir simFileDir = QFileInfo(filepath).absoluteDir();	// for param corr.
+	Logger(Standard) << ">> loading simulation file '" << filepath << "'";
+
+    SimulationReader simreader(source);
 	
 	QVector<ModuleEntry> moduleEntries = simreader.getModules();
 	QVector<LinkEntry> linkEntries = simreader.getLinks();
@@ -1185,10 +1186,13 @@ bool Simulation::_loadSimulation(std::string filename, std::map<std::string, DM:
 	return true;
 }
 
-bool Simulation::loadSimulation(std::string filename) 
+bool Simulation::loadSimulation(std::string filePath) 
 {
+	Q_ASSERT(QFile::exists(QString::fromStdString(filePath)));
+	QFile file(QString::fromStdString(filePath));
+
 	std::map<std::string, DM::Module*> modMap;
-	return _loadSimulation(filename, modMap);
+	return _loadSimulation(&file, QString::fromStdString(filePath), modMap);
 }
 
 void Simulation::writeSimulation(std::string filename) 

@@ -173,7 +173,7 @@ public:
     bool registerModulesFromSettings();
 	
     /** @brief adds a simulation saved in a file to the current simulation */
-    virtual bool loadSimulation(std::string fileName);
+    virtual bool loadSimulation(std::string filePath);
     /** @brief writes the simulation to a xml file */
     virtual void writeSimulation(std::string filename);
 
@@ -188,7 +188,7 @@ public:
 	void addObserver(SimulationObserver *obs);
 	void removeObserver(SimulationObserver *obs);
 protected:
-	bool _loadSimulation(std::string fileName, std::map<std::string, DM::Module*>& modMap);
+	bool _loadSimulation(QIODevice* source, QString filepath, std::map<std::string, DM::Module*>& modMap);
 	
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module

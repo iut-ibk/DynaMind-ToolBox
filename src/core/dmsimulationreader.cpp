@@ -29,15 +29,17 @@
 
 using namespace std;
 
-SimulationReader::SimulationReader(const QString &fileName) {
-    id = 0;
-    Q_ASSERT(QFile::exists(fileName));
-    QXmlSimpleReader r;
-    QFile file(fileName);
-    r.setContentHandler(this);
-    r.setErrorHandler(this);
-    r.parse(QXmlInputSource(&file));
-    tmpNode.DebugMode = false;
+SimulationReader::SimulationReader(QIODevice* source) 
+{
+	id = 0;
+	//Q_ASSERT(QFile::exists(fileName));
+	QXmlSimpleReader r;
+	//QFile file(fileName);
+	r.setContentHandler(this);
+	r.setErrorHandler(this);
+	// r.parse(QXmlInputSource(&file));
+	r.parse(QXmlInputSource(source));
+	tmpNode.DebugMode = false;
 }
 
 bool SimulationReader::fatalError(const QXmlParseException & exception) {
