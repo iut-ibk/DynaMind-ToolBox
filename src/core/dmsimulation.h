@@ -187,8 +187,9 @@ public:
 	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
 	void addObserver(SimulationObserver *obs);
 	void removeObserver(SimulationObserver *obs);
-protected:
-	bool _loadSimulation(QIODevice* source, QString filepath, std::map<std::string, DM::Module*>& modMap);
+
+	bool loadSimulation(QIODevice* source, QString filepath, std::map<std::string, DM::Module*>& modMap);
+	void writeSimulation(QIODevice* dest, QString filePath);
 	
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
