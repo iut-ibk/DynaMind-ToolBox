@@ -58,7 +58,7 @@ struct DM_HELPER_DLL_EXPORT ModuleExEntry {
 class  DM_HELPER_DLL_EXPORT GuiSimulationReader  : public QXmlDefaultHandler
 {
 public:
-    GuiSimulationReader(QString FileName);
+    GuiSimulationReader(QIODevice* source);
     //void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
     //QVector<LoadLink> getLinks(){return this->links;}
     //QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}

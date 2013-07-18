@@ -38,15 +38,13 @@
 #include <groupnode.h>
 #include <guisimulation.h>
 
-GuiSimulationReader::GuiSimulationReader(QString FileName)
+GuiSimulationReader::GuiSimulationReader(QIODevice* source)
 {
+	source->open(QIODevice::ReadOnly);
 	QXmlSimpleReader r;
-    if (!QFile::exists(FileName)) {
-        return;
-    }
-    QFile f(FileName);
     r.setContentHandler(this);
-    r.parse(QXmlInputSource(&f));
+    r.parse(QXmlInputSource(source));
+	source->close();
 }
 /*
 void GuiSimulationReader::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
