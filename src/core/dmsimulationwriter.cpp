@@ -37,11 +37,11 @@
 #include <sstream>
 
 using namespace DM;
-
+/*
 SimulationWriter::SimulationWriter()
 {
 }
-/*
+
 std::string SimulationWriter::writeLink(Port * p) {
 std::stringstream out;
 foreach(ModuleLink *l, p->getLinks()) {
@@ -160,14 +160,17 @@ void writeLink(QTextStream &out, Simulation::Link* l)
 	out << "\t\t</Link>\n";
 }
 
-void SimulationWriter::writeSimulation(std::string filename, Simulation *sim) 
+void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath, 
+									   const std::list<Module*>& modules, 
+									   const std::list<Simulation::Link*>& links) 
 {
-	std::list<Module*> modules = sim->getModules();
+	dest->open(QIODevice::WriteOnly);
 	Logger(Debug) << "Saving File";
 
-	QFile file(QString::fromStdString(filename));
+	/*QFile file(QString::fromStdString(filename));
 	file.open(QIODevice::WriteOnly);
-	QTextStream out(&file);
+	QTextStream out(&file);*/
+	QTextStream out(dest);
 
 	writeHead(out);
 
@@ -178,7 +181,7 @@ void SimulationWriter::writeSimulation(std::string filename, Simulation *sim)
 	out << "\t\t\t<UUID value=\"0\"/>\n";
 	out << "\t\t</RootNode>\n";
 	 
-	QDir filedir = QFileInfo(QString::fromStdString(filename)).absoluteDir();
+	QDir filedir = QFileInfo(filePath).absoluteDir();
 	Logger(Debug) << "Number of Modules " << modules.size();
 	foreach(Module * m, modules) 
 		writeModule(out, m, filedir);
@@ -188,7 +191,7 @@ void SimulationWriter::writeSimulation(std::string filename, Simulation *sim)
 	// dump links
 	out << "\t<Links>\n";
 
-	foreach(Simulation::Link* l, sim->getLinks())
+	foreach(Simulation::Link* l, links)
 		writeLink(out, l);
 
 	/*foreach(Module * m, modules) {
@@ -211,7 +214,8 @@ void SimulationWriter::writeSimulation(std::string filename, Simulation *sim)
 	out << "</DynaMindCore>\n";
 	//out << "</DynaMind>"<< "\n";
 
-	file.close();
+	//file.close();
+	dest->close();
 	Logger(Debug) << "Finished saving file";
 }
 

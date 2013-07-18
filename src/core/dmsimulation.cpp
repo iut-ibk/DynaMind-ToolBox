@@ -1190,14 +1190,15 @@ bool Simulation::loadSimulation(std::string filePath)
 {
 	Q_ASSERT(QFile::exists(QString::fromStdString(filePath)));
 	QFile file(QString::fromStdString(filePath));
-
 	std::map<std::string, DM::Module*> modMap;
 	return _loadSimulation(&file, QString::fromStdString(filePath), modMap);
 }
 
 void Simulation::writeSimulation(std::string filename) 
 {
-    SimulationWriter::writeSimulation(filename, this);
+	QFile file(QString::fromStdString(filename));
+	SimulationWriter::writeSimulation(	&file, QString::fromStdString(filename), 
+										getModules(), getLinks());
 }
 
 void Simulation::addObserver(SimulationObserver *obs)
