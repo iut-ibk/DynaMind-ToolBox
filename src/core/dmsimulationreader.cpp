@@ -31,6 +31,7 @@ using namespace std;
 
 SimulationReader::SimulationReader(QIODevice* source) 
 {
+	source->open(QIODevice::ReadOnly);
 	id = 0;
 	//Q_ASSERT(QFile::exists(fileName));
 	QXmlSimpleReader r;
@@ -40,6 +41,7 @@ SimulationReader::SimulationReader(QIODevice* source)
 	// r.parse(QXmlInputSource(&file));
 	r.parse(QXmlInputSource(source));
 	tmpNode.DebugMode = false;
+	source->close();
 }
 
 bool SimulationReader::fatalError(const QXmlParseException & exception) {
