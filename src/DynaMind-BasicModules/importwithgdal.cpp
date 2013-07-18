@@ -235,7 +235,19 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
         if (nlist.size() < 3)
             return 0;
         nlist.push_back(nlist[0]);
-        return sys->addFace(nlist, this->view);
+
+        DM::Face * f = sys->addFace(nlist, this->view);
+
+        //AddHoles
+        for (int i = 0; i < poPolygon->getNumInteriorRings(); i++) {
+            std::vector<Node*> nl_hole = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
+            if (nl_hole.size() < 3)
+                continue;
+            nl_hole.push_back(nl_hole[0]);
+            f->addHole(nl_hole);
+        }
+
+        return f;
     }
     if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
     {
@@ -495,7 +507,7 @@ void ImportwithGDAL::run()
 bool ImportwithGDAL::importVectorData()
 {
     DM::System * sys = this->getData("Data");
-
+    int features_before = sys->getUUIDs(this->view).size();
     if (this->linkWithExistingView)
         this->initPointList(sys);
 
@@ -560,6 +572,8 @@ bool ImportwithGDAL::importVectorData()
         //OGRFeature::DestroyFeature( poFeature );
     }
     OGRDataSource::DestroyDataSource(poDS);
+    int features_after =  sys->getUUIDs(this->view).size();
+    Logger(Debug) << "Loaded featuers "<< features_after - features_before;
     return true;
 }
 
