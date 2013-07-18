@@ -384,13 +384,15 @@ SimulationTab* GUISimulation::getTab(int i)
 
 
 
-bool GUISimulation::loadSimulation(std::string filename) 
+bool GUISimulation::loadSimulation(std::string filePath) 
 {
-	GuiSimulationReader simio(QString::fromStdString(filename));
+	QString qFilePath = QString::fromStdString(filePath);
+	GuiSimulationReader simio(qFilePath);
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
 	
 	std::map<std::string, DM::Module*> modMap;
-	bool result = Simulation::_loadSimulation(filename, modMap);
+	QFile file(qFilePath);
+	bool result = Simulation::_loadSimulation(&file, qFilePath, modMap);
 
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)

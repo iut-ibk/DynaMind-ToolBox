@@ -92,7 +92,7 @@ public:
 	
     /** @brief adds a simulation saved in a file to the current simulation 
 				for gui we load the positions of the modules too */
-    bool loadSimulation(std::string fileName);
+    bool loadSimulation(std::string filePath);
 	/** @brief writes the simulation to a xml file 
 			for gui we add the positions of the modules too */
     void writeSimulation(std::string filename);
