@@ -42,6 +42,7 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 	viewer = new QGraphicsView(this, parent);
     viewer->setRenderHints(QPainter::Antialiasing);
     viewer->setAcceptDrops(true);
+	viewer->setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
 
 	this->sim = sim;
 	
@@ -117,10 +118,6 @@ void SimulationTab::wheelEvent(QGraphicsSceneWheelEvent *event)
 	viewer->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 	viewer->scale(1+s,1+s);
 }
-/*void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    event->accept();
-}*/
 
 #define GROUPNODE_H
 #ifndef GROUPNODE_H

@@ -488,7 +488,9 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
     //showDialog();
 	editModelNode();
 }
-void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
+void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) 
+{
+	event->accept();
     QGraphicsItem::mousePressEvent(event );
 }
 
