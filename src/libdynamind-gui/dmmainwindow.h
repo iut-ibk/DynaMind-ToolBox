@@ -98,7 +98,6 @@ private:
     //QMap<QString, ModuleDescription> modules;
     //QMap<ProjectViewer *, QWidget *> tabmap;
     //QMap<int, ProjectViewer * >  groupscenes;
-    QString currentDocument;
     //int counter;
     bool running;
     //QTreeWidgetItem * rootItemModelTree;

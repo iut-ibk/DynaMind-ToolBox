@@ -36,6 +36,7 @@
 #include <QKeyEvent>
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <dmsimulationwriter.h>
 
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
 	QGraphicsScene(parent), parentGroup(parentGroup)

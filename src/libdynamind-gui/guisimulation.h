@@ -99,6 +99,7 @@ public:
 
 
 	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
+    QString currentDocument;
 private:
 	//void loadPythonModulesFromDirectory(std::string path);
 	std::map<DM::Module*, ModelNode*> modelNodes;

@@ -238,7 +238,6 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
     connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
     connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
-    currentDocument = "";
 	
 	//connect(simulationWatcher, SIGNAL(finished()), this, SLOT(simulationFinished()), Qt::DirectConnection);
     //this->simmanagment = new SimulationManagment();
@@ -421,14 +420,14 @@ void DMMainWindow::saveAsSimulation()
             fileName+=".dyn";
         this->simulation->writeSimulation(fileName.toStdString());
         //this->writeGUIInformation(fileName);
-        this->currentDocument = fileName;
+        this->getSimulation()->currentDocument = fileName;
     }
 }
 void DMMainWindow::saveSimulation() 
 {
-    if (!this->currentDocument.isEmpty()) 
+	if (!this->getSimulation()->currentDocument.isEmpty()) 
 	{
-        this->simulation->writeSimulation(this->currentDocument.toStdString());
+        this->simulation->writeSimulation(this->getSimulation()->currentDocument.toStdString());
         //this->writeGUIInformation(currentDocument);
     } 
 	else
@@ -503,7 +502,6 @@ void DMMainWindow::writeGUIInformation(QString FileName)
 void DMMainWindow::clearSimulation() 
 {	
     this->simulation->clearSimulation();
-    this->currentDocument = "";
 }
 
 void DMMainWindow::importSimulation(QString fileName, QPointF offset) {
@@ -576,7 +574,7 @@ void DMMainWindow::loadSimulation(int id)
 
     if (!fileName.isEmpty()){
         this->clearSimulation();
-        this->currentDocument = fileName;
+        this->getSimulation()->currentDocument = fileName;
 		simulation->loadSimulation(fileName.toStdString());
         /*std::map<std::string, std::string> UUID_Translation = this->simulation->loadSimulation(fileName.toStdString());
         GuiSimulationReader simio;

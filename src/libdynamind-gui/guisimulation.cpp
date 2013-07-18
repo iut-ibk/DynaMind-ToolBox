@@ -50,6 +50,7 @@ GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulati
 {
 	this->parent = parent;
 	this->tabWidget = tabWidget;
+	currentDocument = "";
 
 	addTab(NULL);
 }
