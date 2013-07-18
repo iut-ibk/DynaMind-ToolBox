@@ -32,11 +32,13 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <qtreewidget.h>
 #include <guisimulation.h>
+#include <dmsimulation.h>
 #include <dmgroup.h>
 #include <QKeyEvent>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <dmsimulationwriter.h>
+#include <simulationio.h>
 
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
 	QGraphicsScene(parent), parentGroup(parentGroup)
@@ -118,7 +120,7 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		QByteArray data;
 		QBuffer buffer(&data);
 		DM::SimulationWriter::writeSimulation(&buffer, sim->currentDocument, modules, links);
-
+		sim->appendGuiInformation(&buffer, modules);
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setText(QString(data));
 	}
@@ -132,7 +134,7 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		QClipboard *clipboard = QApplication::clipboard();
 		QString copyString = clipboard->text();
 
-		foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
+		/*foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
 		{
 			QStringList mod = str.split("\t", QString::SkipEmptyParts);
 			minx = min(minx, mod[1].toFloat());
@@ -150,6 +152,37 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 			node->setPos(QPointF(	mod[1].toFloat() - minx, 
 									mod[2].toFloat() - miny));
 			node->setSelected(true);
+		}*/
+
+		std::map<std::string, DM::Module*> modMap;
+		QByteArray data = copyString.toUtf8();
+		QBuffer buffer(&data);
+		bool success = ((DM::Simulation*)sim)->loadSimulation(&buffer,  sim->currentDocument, modMap);
+		
+		GuiSimulationReader simio(&buffer);
+		std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
+
+		
+		for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
+			it != moduleExInfo.end(); ++it)
+		{
+			minx = min(minx, (float)it->second.posX);
+			miny = min(miny, (float)it->second.posY);
+		}
+		
+		minx -= cursorPos.x();
+		miny -= cursorPos.y();
+
+		for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
+			it != moduleExInfo.end(); ++it)
+		{
+			DM::Module* m = NULL;
+			if(map_contains(&modMap, it->first.toStdString(), m) && m)
+			{
+				ModelNode* node = sim->getModelNode(m);
+				node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
+				node->setSelected(true);
+			}
 		}
 	}
 }
