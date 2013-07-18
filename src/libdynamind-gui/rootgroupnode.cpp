@@ -173,6 +173,10 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 		// get ports
 		//sim->guiUpdatePorts(node);
 	}
+	else if(type == "Simulation")
+	{
+
+	}
 
     /*std::stringstream ss;
     QTreeWidget * lw = (QTreeWidget*) event->source();
