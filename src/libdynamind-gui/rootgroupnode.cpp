@@ -84,19 +84,43 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 	else if (keyEvent->matches(QKeySequence::Copy))
 	{
 		QString copyString;
+		/*foreach(QGraphicsItem* item, selectedItems())
+		if(ModelNode* node = (ModelNode*)item)
+		{
+			copyString += node->getModule()->getClassName();
+			copyString += "\t";
+			copyString += QString::number(node->x());
+			copyString += "\t";
+			copyString += QString::number(node->y());
+			copyString += "\n";
+		}
+
+		QClipboard *clipboard = QApplication::clipboard();
+		clipboard->setText(copyString);*/
+		std::list<DM::Module*> modules;
+		std::set<DM::Module*> moduleSet;
+		std::list<DM::Simulation::Link*> links;
+		
 		foreach(QGraphicsItem* item, selectedItems())
 			if(ModelNode* node = (ModelNode*)item)
 			{
-				copyString += node->getModule()->getClassName();
-				copyString += "\t";
-				copyString += QString::number(node->x());
-				copyString += "\t";
-				copyString += QString::number(node->y());
-				copyString += "\n";
+				modules.push_back(node->getModule());
+				moduleSet.insert(node->getModule());
 			}
 
-		 QClipboard *clipboard = QApplication::clipboard();
-		 clipboard->setText(copyString);
+		foreach(DM::Simulation::Link* l, sim->getLinks())
+		{
+			if(moduleSet.find(l->src) != moduleSet.end() &&
+				moduleSet.find(l->dest) != moduleSet.end())
+				links.push_back(l);
+		}
+
+		QByteArray data;
+		QBuffer buffer(&data);
+		DM::SimulationWriter::writeSimulation(&buffer, sim->currentDocument, modules, links);
+
+		QClipboard *clipboard = QApplication::clipboard();
+		clipboard->setText(QString(data));
 	}
 	else if (keyEvent->matches(QKeySequence::Paste))
 	{
