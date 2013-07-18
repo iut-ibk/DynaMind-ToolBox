@@ -7,6 +7,63 @@
 #include "cgalskeletonisation.h"
 #include <dmlog.h>
 namespace {
+
+TEST_F(TestCGAL, intersectionTest_with_holes){
+    ostream *out = &cout;
+    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+    DM::System * sys = new DM::System();
+
+    DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
+    DM::Node * n2 = sys->addNode(DM::Node(2,1,0));
+    DM::Node * n3 = sys->addNode(DM::Node(2,2,0));
+    DM::Node * n4 = sys->addNode(DM::Node(1,2,0));
+
+    std::vector<DM::Node * > nodes;
+    nodes.push_back(n1);
+    nodes.push_back(n2);
+    nodes.push_back(n3);
+    nodes.push_back(n4);
+    nodes.push_back(n1);
+
+
+    DM::Node * n1_h = sys->addNode(DM::Node(1.25,1.25,0));
+    DM::Node * n2_h = sys->addNode(DM::Node(1.75,1.25,0));
+    DM::Node * n3_h = sys->addNode(DM::Node(1.75,1.75,0));
+    DM::Node * n4_h = sys->addNode(DM::Node(1.25,1.75,0));
+
+    std::vector<DM::Node * > nodes_h;
+    nodes_h.push_back(n1_h);
+    nodes_h.push_back(n2_h);
+    nodes_h.push_back(n3_h);
+    nodes_h.push_back(n4_h);
+    nodes_h.push_back(n1_h);
+
+
+    DM::Node * n1_1 = sys->addNode(DM::Node(1.5,1.5,0));
+    DM::Node * n2_1 = sys->addNode(DM::Node(2.5,1.5,0));
+    DM::Node * n3_1 = sys->addNode(DM::Node(2.5,2.5,0));
+    DM::Node * n4_1 = sys->addNode(DM::Node(1.5,2.5,0));
+
+    std::vector<DM::Node * > nodes1;
+    nodes1.push_back(n1_1);
+    nodes1.push_back(n2_1);
+    nodes1.push_back(n3_1);
+    nodes1.push_back(n4_1);
+    nodes1.push_back(n1_1);
+
+    DM::Face * f1 = sys->addFace(nodes);
+    f1->addHole(nodes_h);
+    DM::Face * f2 = sys->addFace(nodes1);
+
+
+    std::vector<DM::Face *> interested;
+    interested    = DM::CGALGeometry::IntersectFace(sys, f1, f2);
+
+    double area_i = TBVectorData::CalculateArea(interested[0]->getNodePointers());
+    DM::Logger(DM::Standard) << area_i;
+    EXPECT_DOUBLE_EQ(0.1875, area_i);
+}
+
 TEST_F(TestCGAL, triangulation){
     ostream *out = &cout;
     DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -225,19 +282,10 @@ TEST_F(TestCGAL, intersectionTest){
     DM::Face * f2 = sys->addFace(nodes1);
 
 
-    std::vector<DM::Node> interested;
+    std::vector<DM::Face *> interested;
     interested    = DM::CGALGeometry::IntersectFace(sys, f1, f2);
 
-    std::vector<DM::Node*> nodes_i;
-    if (interested.size() < 3)
-        return;
-    foreach (DM::Node n, interested) {
-        nodes_i.push_back(sys->addNode(n.getX(), n.getY(), n.getZ()));
-    }
-
-    nodes_i.push_back(nodes_i[0]);
-
-    double area_i = TBVectorData::CalculateArea(nodes_i);
+    double area_i = TBVectorData::CalculateArea(interested[0]->getNodePointers());
     EXPECT_DOUBLE_EQ(0.25, area_i);
 }
 
