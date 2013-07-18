@@ -57,10 +57,10 @@ void LoopGroup::run()
 void LoopGroup::init() 
 {
 	foreach(std::string streamName, writeStreams)
-		initStream(streamName, true);
+		initStream(streamName, true, true);
 
 	foreach(std::string streamName, readStreams)
-		initStream(streamName, false);
+		initStream(streamName, false, true);
 	
 	/*foreach (std::string s, nameOfInViews) {
 		this->addTuplePort(s, DM::INTUPLESYSTEM);
@@ -111,11 +111,12 @@ bool LoopGroup::addStream(std::string name, bool write)
 		return false;
 }
 
-bool LoopGroup::initStream(std::string name, bool write)
+bool LoopGroup::initStream(std::string name, bool write, bool silent)
 {
 	if(hasInPort(name) || hasOutPort(name))
 	{
-		DM::Logger(Error) << "port already existent";
+		if(!silent)
+			DM::Logger(Error) << "port already existent";
 		return false;
 	}
 
@@ -146,7 +147,6 @@ bool LoopGroup::removeStream(std::string name)
 	}
 	return false;
 }
-
 
 bool LoopGroup::condition()
 {
