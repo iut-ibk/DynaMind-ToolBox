@@ -55,7 +55,7 @@ namespace DM {
         static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, std::vector<int> & ids, double meshsize);
 
         /** @brief Intersect Faces */
-        static std::vector<DM::Node> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
+        static std::vector<DM::Face *> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
 
         static bool DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM::Node*> nodes2);
 

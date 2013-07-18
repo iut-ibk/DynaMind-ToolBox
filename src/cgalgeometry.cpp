@@ -350,12 +350,11 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
     return CGAL::do_intersect (poly1, poly2);
 }
 
-std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
+std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
 
-    std::vector<DM::Node> resultVector;
+   std::vector<DM::Face *> resultFaces;
 
-    //std::cout << "start intersection" << std::endl;
     typedef CGAL::Exact_predicates_exact_constructions_kernel K;
     typedef K::Point_2                                          Point;
     typedef CGAL::Polygon_2<K>                                  Polygon_2;
@@ -365,6 +364,7 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
     Polygon_2::Vertex_iterator vit;
     Polygon_with_holes_2::Hole_iterator hit;
+
 
     std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
 
@@ -383,24 +383,20 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
 
     Polygon_2 poly2;
 
-
-
     for (int i = 0; i < size_n2-1; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
     }
 
-    //print_polygon(poly1);
-    //print_polygon(poly2);
 
     if (!poly1.is_simple()) {
         Logger(Debug) << "Polygon1 is not simple cant perform intersection";
-        return resultVector;
+        return resultFaces;
     }
     if (!poly2.is_simple()) {
         Logger(Debug) << "Polygon2 is not simple cant perform intersection";
 
-        return resultVector;
+        return resultFaces;
     }
 
     CGAL::Orientation orient = poly1.orientation();
@@ -414,38 +410,107 @@ std::vector<DM::Node> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f
     }
 
 
-    /*if ((CGAL::do_intersect (poly1, poly2)))
-        DM::Logger(DM::Debug) << "The two polygons intersect in their interior.";
-    else
-        DM::Logger(DM::Debug) << "The two polygons do not intersect.";*/
+    Polygon_with_holes_2 p_holes1(poly1);
+
+    foreach (DM::Face * h, f1->getHolePointers()) {
+        Polygon_2 poly_h;
+        std::vector<DM::Node*> nodes_h = TBVectorData::getNodeListFromFace(sys, h);
+        int s = nodes_h.size();
+        for (int i = 0; i < s-1; i++) {
+            DM::Node * n = nodes_h[i];
+            poly_h.push_back(Point(n->getX(), n->getY()));
+        }
+
+        orient = poly_h.orientation();
+        if (orient == CGAL::COUNTERCLOCKWISE) {
+            poly_h.reverse_orientation();
+        }
+
+        p_holes1.add_hole(poly_h);
+    }
+
+    Polygon_with_holes_2 p_holes2(poly2);
+    foreach (DM::Face * h, f2->getHolePointers()) {
+        Polygon_2 poly_h;
+        std::vector<DM::Node*> nodes_h = TBVectorData::getNodeListFromFace(sys, h);
+        int s = nodes_h.size();
+        for (int i = 0; i < s-1; i++) {
+            DM::Node * n = nodes_h[i];
+            poly_h.push_back(Point(n->getX(), n->getY()));
+        }
+
+        orient = poly_h.orientation();
+        if (orient == CGAL::COUNTERCLOCKWISE) {
+            poly_h.reverse_orientation();
+        }
+
+        p_holes2.add_hole(poly_h);
+    }
 
     Pwh_list_2                  intR;
     Pwh_list_2::const_iterator  it;
 
-    CGAL::intersection (poly1, poly2, std::back_inserter(intR));
+
+    CGAL::intersection (p_holes1, p_holes2, std::back_inserter(intR));
+
+    int counter = 0;
+
 
     for (it = intR.begin(); it != intR.end(); ++it) {
 
-        //print_polygon_with_holes (*it);
         Polygon_with_holes_2 P = (*it);
-
+        std::vector<DM::Node *> currentNodes;
         Polygon_2 P_out = P.outer_boundary();
         for (vit = P_out.vertices_begin(); vit !=P_out.vertices_end(); ++vit) {
             DM::Node tmp(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0);
             bool exists = false;
-            foreach (DM::Node n, resultVector) {
-                if (n.compare2d(tmp,0.00001))
+            foreach (DM::Node * n, currentNodes) {
+                if (n->compare2d(tmp,0.00001))
                     exists = true;
-
             }
             if (!exists)
-                resultVector.push_back(DM::Node(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
+                currentNodes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
         }
+        int n_holes = P.number_of_holes();
+        Logger(DM::Debug) << "Holes" << n_holes;
+
+
+        if (currentNodes.size() < 3) {
+            DM::Logger(DM::Error) << "Something went wrong";
+            continue;
+        }
+        counter++;
+        currentNodes.push_back(currentNodes[0]);
+        DM::Face * f = sys->addFace(currentNodes);
+
+        //Add Holes
+        for (hit = P.holes_begin(); hit != P.holes_end(); ++hit)
+        {
+            std::vector<DM::Node *> currentNodes_holes;
+            Polygon_2 hole = *hit;
+            for (vit = hole.vertices_begin(); vit !=hole.vertices_end(); ++vit) {
+                DM::Node tmp(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0);
+                bool exists = false;
+                foreach (DM::Node * n, currentNodes_holes) {
+                    if (n->compare2d(tmp,0.00001))
+                        exists = true;
+                }
+                if (!exists)
+                    currentNodes_holes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
+            }
+            if (currentNodes_holes.size() < 3) {
+                DM::Logger(DM::Error) << "Something went wrong with a hole";
+                continue;
+            }
+            currentNodes_holes.push_back(currentNodes_holes[0]);
+            f->addHole(currentNodes_holes);
+        }
+        resultFaces.push_back(f);
+
     }
-    //std::cout << "end intersection" << std::endl;
-    if (resultVector.size() < 3)
-        DM::Logger(DM::Error) << "Something went wrong";
-    return resultVector;
+    DM::Logger(DM::Debug) << "NumberOfFaces " << counter;
+
+    return resultFaces;
 }
 
 std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, double alpha)
