@@ -38,7 +38,6 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 	QGraphicsScene(parent), parentGroup(parentGroup)
 {
 	//scene = new QGraphicsScene(parent);
-	
 	viewer = new QGraphicsView(this, parent);
     viewer->setRenderHints(QPainter::Antialiasing);
     viewer->setAcceptDrops(true);
@@ -58,7 +57,11 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 }
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 
 {
-	viewer->setDragMode(QGraphicsView::ScrollHandDrag);
+	if(event->buttons() == Qt::LeftButton)
+		viewer->setDragMode(QGraphicsView::ScrollHandDrag);
+	else if(event->buttons() == Qt::RightButton)
+		viewer->setDragMode(QGraphicsView::RubberBandDrag);
+
 	QGraphicsScene::mousePressEvent(event);
 }
 void SimulationTab::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) 
@@ -71,7 +74,6 @@ SimulationTab::~SimulationTab()
 {
 
 }
-
 void SimulationTab::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
     event->accept();

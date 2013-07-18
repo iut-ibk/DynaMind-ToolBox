@@ -413,18 +413,27 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QBrush brush(fillcolor);
 
         QPainterPath rectPath;
-		rectPath.addRect(boundingRect());
+		rectPath.addRect(boundingRect().adjusted(lineWidth,lineWidth,-lineWidth,-lineWidth));
         painter->fillPath(rectPath, brush);
         painter->strokePath(rectPath, rectPen);
 		
 		if(module->isSuccessorMode())
 		{
 			QPainterPath rectGlowPath;
-			QRectF r = boundingRect();
-			rectGlowPath.addRect(r.x() + lineWidth,		r.y() + lineWidth, 
-								r.width() - 2*lineWidth,	r.height() - 2*lineWidth );
+			float l = lineWidth*2;
+			QRectF r = boundingRect().adjusted(l,l,-l,-l);
+			rectGlowPath.addRect(r);
 			painter->strokePath(rectGlowPath, 
 								QPen(QColor(150,150,255), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+		}
+
+		if(isSelected())
+		{
+			QPainterPath rectGlowPath;
+			QRectF r = boundingRect();
+			rectGlowPath.addRect(r);
+			painter->strokePath(rectGlowPath, 
+								QPen(QColor(255,150,0), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 		}
 		
 		QString text =  "Module: " + QString::fromStdString(module->getName());
