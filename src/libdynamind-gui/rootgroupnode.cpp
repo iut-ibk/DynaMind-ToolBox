@@ -33,6 +33,7 @@
 #include <qtreewidget.h>
 #include <guisimulation.h>
 #include <dmgroup.h>
+#include <QKeyEvent>
 
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
 	QGraphicsScene(parent), parentGroup(parentGroup)
@@ -57,9 +58,9 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 }
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 
 {
-	if(event->buttons() == Qt::LeftButton)
+	if(event->buttons() == Qt::RightButton)
 		viewer->setDragMode(QGraphicsView::ScrollHandDrag);
-	else if(event->buttons() == Qt::RightButton)
+	else if(event->buttons() == Qt::LeftButton)
 		viewer->setDragMode(QGraphicsView::RubberBandDrag);
 
 	QGraphicsScene::mousePressEvent(event);
@@ -68,6 +69,13 @@ void SimulationTab::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	viewer->setDragMode(QGraphicsView::NoDrag);
 	QGraphicsScene::mouseReleaseEvent(event);
+}
+
+void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
+{
+	if(keyEvent->key() == Qt::Key_Delete)
+		foreach(QGraphicsItem* item, selectedItems())
+			delete item;
 }
 
 SimulationTab::~SimulationTab()

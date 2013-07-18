@@ -66,6 +66,7 @@ public:
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+	void keyPressEvent (QKeyEvent * keyEvent );
 };
 
 #endif
