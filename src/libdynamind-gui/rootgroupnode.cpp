@@ -109,6 +109,19 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 }
 
+void SimulationTab::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    event->accept();
+
+	float s = (event->delta()>0?1:-1) * 0.1f;
+	viewer->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	viewer->scale(1+s,1+s);
+}
+/*void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->accept();
+}*/
+
 #define GROUPNODE_H
 #ifndef GROUPNODE_H
 #define GROUPNODE_H

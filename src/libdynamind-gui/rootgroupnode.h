@@ -43,7 +43,7 @@ class Group;
 
 class DM_HELPER_DLL_EXPORT SimulationTab: public QGraphicsScene
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
 	// the drawing object
 	QGraphicsView *viewer;
@@ -62,6 +62,9 @@ public:
 	void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
 	void dropEvent(QGraphicsSceneDragDropEvent *event);
 	DM::Group* getParentGroup(){return parentGroup;};
+
+	void wheelEvent(QGraphicsSceneWheelEvent *event);
+	//void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif
