@@ -278,6 +278,10 @@ SimulationTab* GUISimulation::getTab(int index)
 		return tabs[index];
 	return NULL;
 }
+QList<SimulationTab*> GUISimulation::getTabs()
+{
+	return tabs;
+}
 SimulationTab* GUISimulation::getSelectedTab()
 {
 	return getTab(tabWidget->currentIndex());

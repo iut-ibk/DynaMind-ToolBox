@@ -60,9 +60,20 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
     this->setFlag(QGraphicsItem::ItemIsSelectable, false);
     this->setFlag(QGraphicsItem::ItemIsMovable, false);
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);*/
+
+	//connect(this, SIGNAL(selectionChanged()), this, SLOT(clearSelection()));
+
+	connect(sim->getTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(clearSelection()));
 }
+
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 
 {
+	if(!itemAt(event->scenePos()))
+	{
+		foreach(SimulationTab* t, sim->getTabs())
+			t->clearSelection();
+	}
+
 	if(event->buttons() == Qt::RightButton)
 		viewer->setDragMode(QGraphicsView::ScrollHandDrag);
 	else if(event->buttons() == Qt::LeftButton)
@@ -89,12 +100,13 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		std::set<DM::Module*> moduleSet;
 		std::list<DM::Simulation::Link*> links;
 		
-		foreach(QGraphicsItem* item, selectedItems())
-			if(ModelNode* node = (ModelNode*)item)
-			{
-				modules.push_back(node->getModule());
-				moduleSet.insert(node->getModule());
-			}
+		foreach(SimulationTab* t, sim->getTabs())
+			foreach(QGraphicsItem* item, t->selectedItems())
+				if(ModelNode* node = (ModelNode*)item)
+				{
+					modules.push_back(node->getModule());
+					moduleSet.insert(node->getModule());
+				}
 
 		foreach(DM::Simulation::Link* l, sim->getLinks())
 		{

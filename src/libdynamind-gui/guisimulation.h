@@ -87,8 +87,11 @@ public:
 	void closeTab(int index);
 	void closeTab(SimulationTab* tab);
 	SimulationTab* getTab(int index);	// 0 = root*/
+	QList<SimulationTab*> getTabs();	// 0 = root*/
 	SimulationTab* getSelectedTab();
 	void selectTab(int index);
+
+	QTabWidget* getTabWidget(){return tabWidget;};
 	
     /** @brief adds a simulation saved in a file to the current simulation 
 				for gui we load the positions of the modules too */
