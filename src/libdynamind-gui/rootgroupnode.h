@@ -63,6 +63,9 @@ public:
 	void dropEvent(QGraphicsSceneDragDropEvent *event);
 	DM::Group* getParentGroup(){return parentGroup;};
 
+	// for str+v & sim-drop
+	void importSimulation(QIODevice* source, QPointF target);
+
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

@@ -85,20 +85,6 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 	}
 	else if (keyEvent->matches(QKeySequence::Copy))
 	{
-		QString copyString;
-		/*foreach(QGraphicsItem* item, selectedItems())
-		if(ModelNode* node = (ModelNode*)item)
-		{
-			copyString += node->getModule()->getClassName();
-			copyString += "\t";
-			copyString += QString::number(node->x());
-			copyString += "\t";
-			copyString += QString::number(node->y());
-			copyString += "\n";
-		}
-
-		QClipboard *clipboard = QApplication::clipboard();
-		clipboard->setText(copyString);*/
 		std::list<DM::Module*> modules;
 		std::set<DM::Module*> moduleSet;
 		std::list<DM::Simulation::Link*> links;
@@ -121,68 +107,49 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		QBuffer buffer(&data);
 		DM::SimulationWriter::writeSimulation(&buffer, sim->currentDocument, modules, links);
 		sim->appendGuiInformation(&buffer, modules);
-		QClipboard *clipboard = QApplication::clipboard();
-		clipboard->setText(QString(data));
+		QApplication::clipboard()->setText(QString(data));
 	}
 	else if (keyEvent->matches(QKeySequence::Paste))
-	{
-		clearSelection();
-
-		float minx = 0;
-		float miny = 0;
-		
-		QClipboard *clipboard = QApplication::clipboard();
-		QString copyString = clipboard->text();
-
-		/*foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
-		{
-			QStringList mod = str.split("\t", QString::SkipEmptyParts);
-			minx = min(minx, mod[1].toFloat());
-			miny = min(miny, mod[2].toFloat());
-		}
-		
-		minx -= cursorPos.x();
-		miny -= cursorPos.y();
-
-		foreach(QString str, copyString.split("\n", QString::SkipEmptyParts))
-		{
-			QStringList mod = str.split("\t", QString::SkipEmptyParts);
-			DM::Module* m = sim->addModule(mod[0].toStdString(), parentGroup, false);
-			ModelNode* node = sim->getModelNode(m);
-			node->setPos(QPointF(	mod[1].toFloat() - minx, 
-									mod[2].toFloat() - miny));
-			node->setSelected(true);
-		}*/
-
-		std::map<std::string, DM::Module*> modMap;
-		QByteArray data = copyString.toUtf8();
+	{	
+		QByteArray data = QApplication::clipboard()->text().toUtf8();
 		QBuffer buffer(&data);
-		bool success = ((DM::Simulation*)sim)->loadSimulation(&buffer,  sim->currentDocument, modMap);
-		
-		GuiSimulationReader simio(&buffer);
-		std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
+		importSimulation(&buffer, cursorPos);
+	}
+}
 
-		
-		for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
-			it != moduleExInfo.end(); ++it)
-		{
-			minx = min(minx, (float)it->second.posX);
-			miny = min(miny, (float)it->second.posY);
-		}
-		
-		minx -= cursorPos.x();
-		miny -= cursorPos.y();
+void SimulationTab::importSimulation(QIODevice* source, QPointF target)
+{
+	clearSelection();
 
-		for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
-			it != moduleExInfo.end(); ++it)
+	float minx = 0;
+	float miny = 0;
+
+	std::map<std::string, DM::Module*> modMap;
+	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  sim->currentDocument, modMap);
+
+	GuiSimulationReader simio(source);
+	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
+
+
+	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
+		it != moduleExInfo.end(); ++it)
+	{
+		minx = min(minx, (float)it->second.posX);
+		miny = min(miny, (float)it->second.posY);
+	}
+
+	minx -= target.x();
+	miny -= target.y();
+
+	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
+		it != moduleExInfo.end(); ++it)
+	{
+		DM::Module* m = NULL;
+		if(map_contains(&modMap, it->first.toStdString(), m) && m)
 		{
-			DM::Module* m = NULL;
-			if(map_contains(&modMap, it->first.toStdString(), m) && m)
-			{
-				ModelNode* node = sim->getModelNode(m);
-				node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
-				node->setSelected(true);
-			}
+			ModelNode* node = sim->getModelNode(m);
+			node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
+			node->setSelected(true);
 		}
 	}
 }
