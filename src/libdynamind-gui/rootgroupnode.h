@@ -71,6 +71,8 @@ public:
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void keyPressEvent(QKeyEvent * keyEvent );
+	public slots:
+	void enhanceSelection();
 };
 
 #endif

@@ -64,6 +64,21 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 	//connect(this, SIGNAL(selectionChanged()), this, SLOT(clearSelection()));
 
 	connect(sim->getTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(clearSelection()));
+
+	connect(this, SIGNAL(selectionChanged()), this, SLOT(enhanceSelection()));
+}
+
+void SimulationTab::enhanceSelection()
+{
+	foreach(QGraphicsItem* item, selectedItems())
+		if(ModelNode* n = (ModelNode*)item)
+		{
+			DM::Module* group = n->getModule();
+			if(group->isGroup())
+				foreach(DM::Module* m, sim->getModules())
+					if(m->getOwner() == group)
+						sim->getModelNode(m)->setSelected(true);
+		}
 }
 
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 

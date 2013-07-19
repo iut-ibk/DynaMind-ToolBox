@@ -501,11 +501,6 @@ void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
 	event->accept();
     QGraphicsItem::mousePressEvent(event );
-
-	if(this->module->isGroup())
-		foreach(DM::Module* m, getSimulation()->getModules())
-			if(m->getOwner() == this->module)
-				getSimulation()->getModelNode(m)->setSelected(true);
 }
 
 /*
