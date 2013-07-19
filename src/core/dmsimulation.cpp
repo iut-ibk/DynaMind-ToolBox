@@ -1091,7 +1091,9 @@ void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
 			LoopGroupAdaptor(links, modules, *it);
 }
 
-bool Simulation::loadSimulation(QIODevice* source, QString filepath, ::map<std::string, DM::Module*>& modMap) 
+bool Simulation::loadSimulation(QIODevice* source, QString filepath, 
+								std::map<std::string, DM::Module*>& modMap, 
+								DM::Module* overwrittenOwner, bool overwriteGroupOwner) 
 {
 	QDir simFileDir = QFileInfo(filepath).absoluteDir();	// for param corr.
 	Logger(Standard) << ">> loading simulation file '" << filepath << "'";
@@ -1122,6 +1124,9 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath, ::map<std::
 			else
 				waitingForGroup--;
 		}
+		else if(overwriteGroupOwner)	// its a root member, should we overwrite it?
+			owner = overwrittenOwner;
+
 		// do not init module - we first have to set parameters and links as well as checking the stream!
 		if(DM::Module* m = addModule(me.ClassName.toStdString(), owner, false))
 		{

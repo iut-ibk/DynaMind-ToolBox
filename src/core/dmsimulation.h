@@ -188,7 +188,9 @@ public:
 	void addObserver(SimulationObserver *obs);
 	void removeObserver(SimulationObserver *obs);
 
-	bool loadSimulation(QIODevice* source, QString filepath, std::map<std::string, DM::Module*>& modMap);
+	bool loadSimulation(QIODevice* source, QString filepath, 
+		std::map<std::string, DM::Module*>& modMap, 
+		DM::Module* overwrittenOwner = NULL, bool overwriteGroupOwner = false);
 	void writeSimulation(QIODevice* dest, QString filePath);
 	
 private:
