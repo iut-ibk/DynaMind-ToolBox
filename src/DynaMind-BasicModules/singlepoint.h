@@ -17,6 +17,7 @@ public:
     SinglePoint();
     void run();
     void init();
+    std::string getHelpUrl();
 };
 
 #endif // SINGLEPOINT_H

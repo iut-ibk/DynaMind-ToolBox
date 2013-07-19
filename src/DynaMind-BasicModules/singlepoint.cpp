@@ -31,6 +31,11 @@ void SinglePoint::init() {
 
 }
 
+string SinglePoint::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Singlepoint";
+}
+
 void SinglePoint::run() {
     DM::System * sys = this->getData("sys");
     sys->addNode(x,y,z, DM::View(viewname, DM::READ, DM::WRITE));
