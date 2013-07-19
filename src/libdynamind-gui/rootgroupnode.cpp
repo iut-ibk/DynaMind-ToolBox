@@ -125,7 +125,7 @@ void SimulationTab::importSimulation(QIODevice* source, QPointF target)
 	float miny = 0;
 
 	std::map<std::string, DM::Module*> modMap;
-	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  sim->currentDocument, modMap);
+	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  sim->currentDocument, modMap, parentGroup, true);
 
 	GuiSimulationReader simio(source);
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
