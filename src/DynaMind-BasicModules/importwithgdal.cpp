@@ -375,6 +375,11 @@ bool ImportwithGDAL::createInputDialog()
     return true;
 }
 
+string ImportwithGDAL::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Importwithgdal";
+}
+
 void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 {
     isvectordata = true;

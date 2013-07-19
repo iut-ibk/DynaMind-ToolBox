@@ -109,6 +109,7 @@ public:
     void run();
     void init();
     virtual bool  createInputDialog();
+    string getHelpUrl();
     ImportwithGDAL();
     ~ImportwithGDAL();
 };
