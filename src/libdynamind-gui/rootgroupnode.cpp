@@ -146,8 +146,11 @@ void SimulationTab::importSimulation(QIODevice* source, QPointF target)
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)
 	{
-		minx = min(minx, (float)it->second.posX);
-		miny = min(miny, (float)it->second.posY);
+		if(modMap[it->first.toStdString()]->getOwner() == NULL)
+		{
+			minx = min(minx, (float)it->second.posX);
+			miny = min(miny, (float)it->second.posY);
+		}
 	}
 
 	minx -= target.x();
@@ -160,10 +163,16 @@ void SimulationTab::importSimulation(QIODevice* source, QPointF target)
 		if(map_contains(&modMap, it->first.toStdString(), m) && m)
 		{
 			ModelNode* node = sim->getModelNode(m);
-			node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
+			if(m->getOwner() == NULL)
+				node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
+			else
+				node->setPos(QPointF(it->second.posX, it->second.posY));
+
 			node->setSelected(true);
 		}
 	}
+
+	sim->getTabWidget()->setCurrentWidget(this->getQGViewer());
 }
 
 void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
