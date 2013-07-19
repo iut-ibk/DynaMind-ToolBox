@@ -237,7 +237,8 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	}
 	else if(type == "Simulation")
 	{
-
+		QFile file(moduleName);
+		importSimulation(&file, event->scenePos());
 	}
 
     /*std::stringstream ss;
