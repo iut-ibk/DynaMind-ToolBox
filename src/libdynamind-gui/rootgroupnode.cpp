@@ -92,7 +92,8 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 	if(keyEvent->key() == Qt::Key_Delete)
 	{
 		foreach(QGraphicsItem* item, selectedItems())
-			delete item;
+			if(ModelNode* node = (ModelNode*)item)
+				node->deleteModelNode();
 	}
 	else if (keyEvent->matches(QKeySequence::Copy))
 	{
