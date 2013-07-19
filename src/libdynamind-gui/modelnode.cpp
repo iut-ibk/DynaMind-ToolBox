@@ -255,6 +255,10 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 
 	// be shure to add observer last, as module dimensions are not set before
 	new GUIModelObserver(this, m);
+
+	hovered = false;
+	setAcceptHoverEvents(true);
+	//setAcceptsHoverEvents(true);
 }
 
 void ModelNode::resize()
@@ -427,13 +431,14 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 								QPen(QColor(150,150,255), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 		}
 
-		if(isSelected())
+		if(isSelected() || hovered)
 		{
 			QPainterPath rectGlowPath;
 			QRectF r = boundingRect();
 			rectGlowPath.addRect(r);
 			painter->strokePath(rectGlowPath, 
-								QPen(QColor(255,150,0), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+								QPen(isSelected()?QColor(255,150,0):QColor(255,255,0), 
+								lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 		}
 		
 		QString text =  "Module: " + QString::fromStdString(module->getName());
@@ -501,6 +506,18 @@ void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
 	event->accept();
     QGraphicsItem::mousePressEvent(event );
+}
+void ModelNode::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
+{
+	hovered = true;
+	this->update();
+    QGraphicsItem::hoverEnterEvent(event );
+}
+void ModelNode::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
+{
+	hovered = false;
+	this->update();
+    QGraphicsItem::hoverLeaveEvent(event );
 }
 
 /*

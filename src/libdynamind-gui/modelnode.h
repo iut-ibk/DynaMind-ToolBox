@@ -119,11 +119,16 @@ protected:
     //bool visible;
 
     //QColor Color;
+	bool hovered;
 
     virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
     virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
     virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+
+	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
+	virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
+
     GUISimulation * simulation;
 
 	DM::Module* module;

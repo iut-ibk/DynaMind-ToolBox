@@ -170,6 +170,7 @@ QRectF PortNode::boundingRect() const
 void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) 
 {
 	setHover(true);
+	QGraphicsItem::hoverEnterEvent(event);
     //this->isHover = true;
 	/*
     //if (this->PortType  == DM::INSYSTEM||this->PortType  == DM::OUTSYSTEM)
@@ -188,6 +189,7 @@ void PortNode::hoverEnterEvent ( QGraphicsSceneHoverEvent * event )
 void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) 
 {
 	setHover(false);
+	QGraphicsItem::hoverLeaveEvent(event);
     //this->isHover = false;
     /*if (!LinkMode) {
 

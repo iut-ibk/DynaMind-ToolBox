@@ -194,11 +194,13 @@ void GUILink::updatePaths() {
 void GUILink::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     hovered = true;
     update();
+	QGraphicsItem::hoverEnterEvent(event);
 }
 
 void GUILink::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     hovered = false;
     update();
+	QGraphicsItem::hoverLeaveEvent(event);
 }
 
 
