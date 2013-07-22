@@ -23,6 +23,7 @@ public:
     ExportRasterData();
     void run();
     void init();
+    std::string getHelpUrl();
 
     bool createInputDialog();
     DM::System * getSystemIn();

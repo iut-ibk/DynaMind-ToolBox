@@ -74,6 +74,11 @@ void ExportRasterData::init()
         return;
 
 }
+
+string ExportRasterData::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Exportrasterdata";
+}
 bool ExportRasterData::createInputDialog() {
     QWidget * w = new GUIExportRasterData(this);
     w->show();
