@@ -14,6 +14,7 @@ ClearView::ClearView()
 }
 
 void ClearView::run() {
+    DM::Logger(DM::Warning) << "ClearView is depricated please use RemoveComponent";
     DM::System * data = this->getData("Data");
     DM::View v = DM::View (NameOfExistingView, sys_in->getViewDefinition(NameOfExistingView)->getType(), DM::MODIFY);
     DM::ComponentMap cmp = data->getAllComponentsInView(v);
@@ -47,4 +48,9 @@ bool ClearView::createInputDialog() {
 
 DM::System * ClearView::getSystemIn() {
     return this->sys_in;
+}
+
+string ClearView::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Clearview";
 }
