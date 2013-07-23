@@ -16,6 +16,7 @@ public:
     FaceToEdge();
     void init();
     void run();
+    std::string getHelpUrl(),
 };
 
 #endif // FACETOEDGE_H

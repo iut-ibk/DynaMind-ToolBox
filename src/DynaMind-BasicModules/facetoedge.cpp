@@ -48,3 +48,8 @@ void FaceToEdge::run()
             sys->addEdge(nodes[j-1], nodes[j], view_edge);
     }
 }
+
+string FaceToEdge::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Facetoedge";
+}
