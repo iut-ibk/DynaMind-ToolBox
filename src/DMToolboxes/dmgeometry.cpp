@@ -50,16 +50,32 @@ QString SpatialNodeHashMap::spatialHashNode(const double & x, const double  & y)
 
 Node *SpatialNodeHashMap::findNode(const double &x, const double &y, const double &tol)
 {
+    // Node is most likely in 0,0, if at the edge the node can also be in on of the abjacent quadrants.
+    // This is checked in the second step
     DM::Node n_tmp(x,y,0);
     QString key = this->spatialHashNode(x,y);
     std::vector<DM::Node* > * nodes = (*this)[key];
-    if (!nodes) {
-        return 0;
+    if (nodes) {
+        foreach (DM::Node * n, *nodes) {
+            if (n->compare2d(&n_tmp, tol))
+                return n;
+        }
     }
-
-    foreach (DM::Node * n, *nodes) {
-        if (n->compare2d(&n_tmp, tol))
-            return n;
+    for (int i = -1; i < 2; i++) { //Check if node is on one of the adjacent quadrants
+        for (int j = -1; j < 2; j++){
+            if (i == 0 && j == 0)
+                continue;
+            QString key = this->spatialHashNode(x + (i*this->devider),y + (j*this->devider));
+            std::vector<DM::Node* > * nodes = (*this)[key];
+            if (!nodes)
+                continue;
+            foreach (DM::Node * n, *nodes) {
+                if (n->compare2d(&n_tmp, tol)) {
+                    Logger(Debug) << "Found in second round";
+                    return n;
+                }
+            }
+        }
     }
     return 0;
 }
