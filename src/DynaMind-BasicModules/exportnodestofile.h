@@ -14,6 +14,7 @@ public:
 
     ExportNodesToFile();
     void run();
+    std::string getHelpUrl();
 };
 
 #endif // EXPORTNODESTOFILE_H

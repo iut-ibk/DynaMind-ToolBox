@@ -49,3 +49,8 @@ void ExportNodesToFile::run() {
     out.close();
 
 }
+
+string ExportNodesToFile::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Exportnodestofile";
+}
