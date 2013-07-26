@@ -397,7 +397,7 @@ DM::RasterData* Module::getRasterData(string dataname, const  DM::View & v) {
             if(c->getType() == DM::RASTERDATA)
             return (RasterData*)c;
 
-    Logger(Error) << "RasterData don't exists";
+    Logger(Error) << "RasterData " << dataname << " doesn't exists";
     this->getSimulation()->setSimulationStatus(DM::SIM_ERROR_SYSTEM_NOT_SET);
     return 0;
 }
