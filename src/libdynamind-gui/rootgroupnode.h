@@ -57,7 +57,7 @@ private:
 	GUISimulation* sim;
 	DM::Group* parentGroup;
 
-	ModelNode* hoveredNode;
+	ModelNode* hoveredGroupNode;
 public:
 	SimulationTab(QWidget* parent, GUISimulation* sim, DM::Group* parentGroup);
 	~SimulationTab();
