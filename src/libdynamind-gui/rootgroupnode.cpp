@@ -219,23 +219,17 @@ void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 	if(event->buttons() == Qt::LeftButton)
-	{
 		if(ModelNode* movingNode = dynamic_cast<ModelNode*>(itemAt(cursorPos)))
-		{
 			foreach(QGraphicsItem* it, items(cursorPos))
 			{
-				if(ModelNode* node = dynamic_cast<ModelNode*>(it))
+				ModelNode* node = dynamic_cast<ModelNode*>(it);
+				if(node && node != movingNode && node->getModule()->isGroup())
 				{
-					if(node->getModule()->isGroup())
-					{
-						node->setHovered(true);
-						hoveredNode = node;
-						break;
-					}
+					node->setHovered(true);
+					hoveredNode = node;
+					break;
 				}
 			}
-		}
-	}
 
 	QGraphicsScene::mouseMoveEvent(event);
 }
