@@ -221,6 +221,18 @@ void SimulationTab::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 
 void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
+	DM::Group* parent = this->parentGroup;
+	ModelNode* node = dynamic_cast<ModelNode*>(this->itemAt(event->scenePos()));
+	if(node)
+	{
+		if(node->getModule()->isGroup())
+			parent = (DM::Group*)node->getModule();
+		else
+			return;
+	}
+
+	DM::Logger(DM::Debug) << "tab drop";
+
     event->accept();
 
 	QTreeWidget *moduleTree = dynamic_cast<QTreeWidget*>(event->source());
@@ -234,7 +246,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 	if(type == "Module")
 	{
-		if(DM::Module* m = sim->addModule(moduleName.toStdString(), this->parentGroup))
+		if(DM::Module* m = sim->addModule(moduleName.toStdString(), parent))
 		{
 			sim->getModelNode(m)->setPos(event->scenePos());	// move to cursor
 		}
