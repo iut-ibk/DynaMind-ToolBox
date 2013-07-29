@@ -123,18 +123,18 @@ protected:
 
     virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
     virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-    virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-//    virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+    //virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+   // virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
 	virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
-
     GUISimulation * simulation;
 
 	DM::Module* module;
 
 public:
+	bool setHovered(bool on){return hovered = on;};
     //QStringList ExistingInPorts;
     //QStringList ExistingOutPorts;
     //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);

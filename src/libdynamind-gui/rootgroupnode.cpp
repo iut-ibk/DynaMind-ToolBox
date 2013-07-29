@@ -49,7 +49,7 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
     viewer->setAcceptDrops(true);
 
 	this->sim = sim;
-	
+	hoveredNode = NULL;
 	//ModelNode* node = new ModelNode(0, sim);
 	//scene->addItem(node);
 
@@ -212,6 +212,31 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target)
 void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	cursorPos = event->scenePos();
+	if(hoveredNode)
+	{
+		hoveredNode->setHovered(false);
+		hoveredNode = NULL;
+	}
+
+	if(event->buttons() == Qt::LeftButton)
+	{
+		if(ModelNode* movingNode = dynamic_cast<ModelNode*>(itemAt(cursorPos)))
+		{
+			foreach(QGraphicsItem* it, items(cursorPos))
+			{
+				if(ModelNode* node = dynamic_cast<ModelNode*>(it))
+				{
+					if(node->getModule()->isGroup())
+					{
+						node->setHovered(true);
+						hoveredNode = node;
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	QGraphicsScene::mouseMoveEvent(event);
 }
 

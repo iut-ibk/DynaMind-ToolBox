@@ -36,6 +36,7 @@
 #include <QWidget>
 
 class GUISimulation;
+class ModelNode;
 namespace DM
 {
 class Group;
@@ -55,6 +56,8 @@ private:
 	// a pointer to the simulation object, which will be manipulated and drawn in this tab
 	GUISimulation* sim;
 	DM::Group* parentGroup;
+
+	ModelNode* hoveredNode;
 public:
 	SimulationTab(QWidget* parent, GUISimulation* sim, DM::Group* parentGroup);
 	~SimulationTab();

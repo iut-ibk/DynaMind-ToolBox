@@ -227,6 +227,8 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 	//this->moduleName = moduleName;
 	module = m;
 
+	setAcceptDrops(true);
+
 	simulation = sim;
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -488,6 +490,17 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  {
 			this->scene()->update();
 		}
 	}
+	/*
+	foreach(QGraphicsItem* item, collidingItems())
+	{
+		if(ModelNode* node = dynamic_cast<ModelNode*>(item))
+		{
+			if(node->getModule()->isGroup())
+			{
+				node->setHovered(true);
+			}
+		}
+	}*/
     QGraphicsItem::mouseMoveEvent(event);
 }
 /*
@@ -508,15 +521,18 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
     //showDialog();
 	editModelNode();
 }
+/*
 void ModelNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
 {
+	moving = false;
     //showDialog();
 	QGraphicsItem::mouseReleaseEvent(event);
 }
-/*
+
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) 
 {
-	event->accept();
+	moving = true;
+	//event->accept();
     QGraphicsItem::mousePressEvent(event );
 }*/
 void ModelNode::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
