@@ -105,24 +105,30 @@ void SimulationTab::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 {
 	if(keyEvent->key() == Qt::Key_Delete)
-	{
-		foreach(QGraphicsItem* item, selectedItems())
-			if(ModelNode* node = (ModelNode*)item)
-				node->deleteModelNode();
-	}
+		deleteSelection();
 	else if (keyEvent->matches(QKeySequence::Copy))
-	{
-		std::list<DM::Module*> modules;
-		std::set<DM::Module*> moduleSet;
-		std::list<DM::Simulation::Link*> links;
-		
-		foreach(SimulationTab* t, sim->getTabs())
-			foreach(QGraphicsItem* item, t->selectedItems())
-				if(ModelNode* node = (ModelNode*)item)
-				{
-					modules.push_back(node->getModule());
-					moduleSet.insert(node->getModule());
-				}
+		copySelection();
+	else if (keyEvent->matches(QKeySequence::Paste))
+	{	
+		QByteArray data = QApplication::clipboard()->text().toUtf8();
+		QBuffer buffer(&data);
+		importSimulation(&buffer, cursorPos);
+	}
+}
+
+void SimulationTab::copySelection()
+{
+	std::list<DM::Module*> modules;
+	std::set<DM::Module*> moduleSet;
+	std::list<DM::Simulation::Link*> links;
+
+	foreach(SimulationTab* t, sim->getTabs())
+		foreach(QGraphicsItem* item, t->selectedItems())
+		if(ModelNode* node = (ModelNode*)item)
+		{
+			modules.push_back(node->getModule());
+			moduleSet.insert(node->getModule());
+		}
 
 		foreach(DM::Simulation::Link* l, sim->getLinks())
 		{
@@ -136,16 +142,23 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		DM::SimulationWriter::writeSimulation(&buffer, sim->currentDocument, modules, links);
 		sim->appendGuiInformation(&buffer, modules);
 		QApplication::clipboard()->setText(QString(data));
-	}
-	else if (keyEvent->matches(QKeySequence::Paste))
-	{	
-		QByteArray data = QApplication::clipboard()->text().toUtf8();
-		QBuffer buffer(&data);
-		importSimulation(&buffer, cursorPos);
-	}
 }
 
-void SimulationTab::importSimulation(QIODevice* source, QPointF target)
+void SimulationTab::pasteSelection(const QPointF& pos)
+{
+	QByteArray data = QApplication::clipboard()->text().toUtf8();
+	QBuffer buffer(&data);
+	importSimulation(&buffer, cursorPos);
+}
+
+void SimulationTab::deleteSelection()
+{
+	foreach(QGraphicsItem* item, selectedItems())
+		if(ModelNode* n = (ModelNode*)item)
+			n->deleteModelNode();
+}
+
+void SimulationTab::importSimulation(QIODevice* source, const QPointF& target)
 {
 	clearSelection();
 

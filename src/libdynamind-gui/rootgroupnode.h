@@ -51,6 +51,7 @@ private:
 	// the scene, owning all elements to be rendered
 	//QGraphicsScene *scene;
 	QPointF cursorPos;
+	
 	// a pointer to the simulation object, which will be manipulated and drawn in this tab
 	GUISimulation* sim;
 	DM::Group* parentGroup;
@@ -64,7 +65,7 @@ public:
 	DM::Group* getParentGroup(){return parentGroup;};
 
 	// for str+v & sim-drop
-	void importSimulation(QIODevice* source, QPointF target);
+	void importSimulation(QIODevice* source, const QPointF& target);
 
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -73,6 +74,9 @@ public:
 	void keyPressEvent(QKeyEvent * keyEvent );
 	public slots:
 	void enhanceSelection();
+	void copySelection();
+	void deleteSelection();
+	void pasteSelection(const QPointF& pos);
 };
 
 #endif
