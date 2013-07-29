@@ -413,7 +413,8 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
 	}
-
+	if(success) 
+		g->setStatus(MOD_CHECK_OK);
 	return success;
 }
 
