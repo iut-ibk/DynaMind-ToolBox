@@ -385,7 +385,6 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 		return false;
 	}
 
-	bool success = true;
 
 	std::vector<Link*> nextLinks;
 	std::map<std::string, DM::View>* curStreamViews;
@@ -400,7 +399,8 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 		nextLinks = getOutgoingLinks(g, streamName);
 		curStreamViews = &g->outStreamViews[streamName];
 	}
-
+	
+	bool success = true;
 	foreach(Link* l, nextLinks)
 	{
 		l->dest->streamViews[l->inPort] = *curStreamViews;
