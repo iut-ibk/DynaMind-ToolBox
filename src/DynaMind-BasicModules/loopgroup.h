@@ -63,7 +63,7 @@ public:
 	int currentRun;	// [0,runs-1]
 
 	bool condition();
-	void resetCondition();
+	//void resetCondition();
 	//int i;
 };
 

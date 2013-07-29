@@ -56,6 +56,8 @@ void LoopGroup::run()
 
 void LoopGroup::init() 
 {
+	currentRun = 0;
+
 	foreach(std::string streamName, writeStreams)
 		initStream(streamName, true, true);
 
@@ -152,11 +154,11 @@ bool LoopGroup::condition()
 {
 	return (currentRun++ < runs);
 };
-
+/*
 void LoopGroup::resetCondition()
 {
 	currentRun = 0;
-}
+}*/
 
 /*
 void LoopGroup::addInPort(std::string n) 
