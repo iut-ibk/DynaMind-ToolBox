@@ -162,7 +162,8 @@ void writeLink(QTextStream &out, Simulation::Link* l)
 
 void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath, 
 									   const std::list<Module*>& modules, 
-									   const std::list<Simulation::Link*>& links) 
+									   const std::list<Simulation::Link*>& links,
+									   Module* root) 
 {
 	dest->open(QIODevice::WriteOnly);
 	Logger(Debug) << "Saving File";
@@ -178,7 +179,7 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	out << "\t<Nodes>\n";
 
 	out << "\t\t<RootNode>\n";
-	out << "\t\t\t<UUID value=\"0\"/>\n";
+	out << "\t\t\t<UUID value=\"" << ADDRESS_TO_INT(root) << "\"/>\n";
 	out << "\t\t</RootNode>\n";
 	 
 	QDir filedir = QFileInfo(filePath).absoluteDir();

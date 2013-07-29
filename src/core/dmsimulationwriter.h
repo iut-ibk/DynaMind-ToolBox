@@ -48,7 +48,8 @@ namespace DM
 		//SimulationWriter();
 		static void writeSimulation(QIODevice* dest, QString filePath, 
 									const std::list<Module*>& modules, 
-									const std::list<Simulation::Link*>& links);
+									const std::list<Simulation::Link*>& links,
+									Module* root = NULL);
 	};
 
 }
