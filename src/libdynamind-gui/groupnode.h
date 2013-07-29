@@ -93,9 +93,9 @@ public:
     //QRectF boundingRect() const;
     /*void setSelected ( bool selected );
     void RePosTuplePorts();
-
+	*/
     bool isGroup(){return true;}
-
+	/*
     void changeGroupID(QString Name);
 
     void removeModelNode(ModelNode *m);

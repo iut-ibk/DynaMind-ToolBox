@@ -243,7 +243,7 @@ void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 			foreach(QGraphicsItem* it, items(cursorPos))
 			{
 				ModelNode* node = dynamic_cast<ModelNode*>(it);
-				if(node && node != movingNode && node->getModule()->isGroup())
+				if(node && !node->isGroup() && node != movingNode && node->getModule()->isGroup())
 				{
 					node->setHovered(true);
 					hoveredGroupNode = node;
