@@ -716,6 +716,13 @@ void Simulation::run()
 			if(g->condition())
 			{
 				Logger(Standard) << "condition fulfilled for group '" << g->getName() << "'";
+				// to ensure loop in loops are working properly, we init all modules of a 
+				// group before starting it - resetting all internal counters
+				Logger(Debug) << "resetting modules in group";
+				foreach(Module* m, modules)
+					if(m->getOwner() == g)
+						m->init();
+
 				// execute group
 				g->setStatus(MOD_EXECUTING);
 				// instead of m::run() we simply shift the data to the first internal module
