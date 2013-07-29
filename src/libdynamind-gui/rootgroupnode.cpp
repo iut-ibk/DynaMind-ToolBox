@@ -114,6 +114,11 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 		QBuffer buffer(&data);
 		importSimulation(&buffer, cursorPos);
 	}
+	else if (keyEvent->matches(QKeySequence::Cut))
+	{
+		copySelection();
+		deleteSelection();
+	}
 }
 
 void SimulationTab::copySelection()
