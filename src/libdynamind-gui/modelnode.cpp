@@ -502,11 +502,12 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
     //showDialog();
 	editModelNode();
 }
+/*
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) 
 {
 	event->accept();
     QGraphicsItem::mousePressEvent(event );
-}
+}*/
 void ModelNode::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
 {
 	hovered = true;
