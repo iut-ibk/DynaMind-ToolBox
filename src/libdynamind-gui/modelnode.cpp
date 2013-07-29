@@ -226,6 +226,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 	*/
 	//this->moduleName = moduleName;
 	module = m;
+
 	simulation = sim;
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -386,6 +387,11 @@ ModelNode::ModelNode(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsI
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
+	if(isSelected())
+		setZValue(1.0);
+	else
+		setZValue(0.0);
+
 	float lineWidth = 2.0f;
 	QColor fillcolor;    
 	
@@ -501,6 +507,11 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
 {
     //showDialog();
 	editModelNode();
+}
+void ModelNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) 
+{
+    //showDialog();
+	QGraphicsItem::mouseReleaseEvent(event);
 }
 /*
 void ModelNode::mousePressEvent ( QGraphicsSceneMouseEvent * event ) 
