@@ -97,7 +97,27 @@ void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	QGraphicsScene::mousePressEvent(event);
 }
 void SimulationTab::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) 
-{
+{	
+	if(hoveredGroupNode && selectedItems().size() > 0)
+	{
+		int i = 0;
+		foreach(SimulationTab* tab, sim->getTabs())
+		{
+			if(tab->getParentGroup() == hoveredGroupNode->getModule())
+			{
+				copySelection();
+				deleteSelection();
+				sim->selectTab(i);
+				tab->pasteSelection(QPointF(0,0));
+
+				hoveredGroupNode->setHovered(false);
+				hoveredGroupNode = NULL;
+				break;
+			}
+			i++;
+		}
+	}
+
 	viewer->setDragMode(QGraphicsView::NoDrag);
 	QGraphicsScene::mouseReleaseEvent(event);
 }
