@@ -24,9 +24,6 @@
 *
 */
 
-
-/*
-
 #include "guiloopgroup.h"
 #include "ui_guiloopgroup.h"
 #include <loopgroup.h>
@@ -123,5 +120,5 @@ void GUILoopGroup::accept()
 	m->getParameter("Runs")->set(ui->repeats->value());
 	QDialog::accept();
 }
-*/
+
 
