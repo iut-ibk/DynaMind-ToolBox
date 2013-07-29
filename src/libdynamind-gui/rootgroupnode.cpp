@@ -84,14 +84,12 @@ void SimulationTab::enhanceSelection()
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 
 {
 	if(!itemAt(event->scenePos()))
-	{
 		foreach(SimulationTab* t, sim->getTabs())
 			t->clearSelection();
-	}
 
-	if(event->buttons() == Qt::RightButton)
+	if(event->buttons() == Qt::LeftButton)
 		viewer->setDragMode(QGraphicsView::ScrollHandDrag);
-	else if(event->buttons() == Qt::LeftButton)
+	else if(event->buttons() == Qt::RightButton)
 		viewer->setDragMode(QGraphicsView::RubberBandDrag);
 
 	QGraphicsScene::mousePressEvent(event);
