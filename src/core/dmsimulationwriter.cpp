@@ -80,7 +80,7 @@ return out.str();
 void writeHead(QTextStream &out)
 {
 	out << "<DynaMind>\n";
-	out << "\t<Info Version=\"0.3/\">\n";
+	out << "\t<Info Version=\"0.3\"/>\n";
 	out << "<DynaMindCore>\n";
 }
 
