@@ -44,6 +44,7 @@ AttributeCalculator::AttributeCalculator()
     this->addParameter("asVector", DM::BOOL, & this->asVector);
 
     sys_in = 0;
+    mp_counter = 0;
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addData("Data", data);
@@ -201,16 +202,16 @@ void AttributeCalculator::run() {
     p->DefineFun(new dm::Random);
     p->DefineFun(new dm::Round);
 
-    mup::Value counter = 0;
 
-    p->DefineVar("counter", &counter);
+
+    p->DefineVar("counter", &mp_counter);
 
     Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
     p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
     mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
     {
-        counter=counter.GetInteger()+1;
+        mp_counter= (int) this->getInternalCounter()+1;
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
              it != variablesMap.end();
              ++it)

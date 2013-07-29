@@ -48,6 +48,7 @@ private:
     void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
     bool asVector;
     QString IfElseConverter(QString exp);
+    mup::Value mp_counter;
 
 public:
     AttributeCalculator();
