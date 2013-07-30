@@ -94,14 +94,14 @@ public:
 
 }
 inline void addCorineConstants(mu::Parser * p){
-
+	/*
     dm::ContUrbanFabric = DM::ContUrbanFabric;
     dm::DisContUrbanFabric= DM::DisContUrbanFabric;
     dm:: RoadRailNetwork= DM::RoadRailNetwork;
     dm::WaterBodies= DM::WaterBodies;
     dm::AgriculturalAreas= DM::AgriculturalAreas;
     dm::ForestsSemiNatural= DM::ForestsSemiNatural;
-
+	*/
 
     p->DefineVar("ContUrbanFabric", & dm::ContUrbanFabric);
     p->DefineVar("DisContUrbanFabric",& dm::DisContUrbanFabric);
