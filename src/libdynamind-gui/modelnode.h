@@ -81,49 +81,24 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//,
     enum { Type = UserType + 1 };
 
 private:
-	//QString moduleName;
-	//bool hasPort(std::string portName);
 	ModelNode* child;
 public:
-	//QStringList inPorts;
-	//QStringList outPorts;
 
 	PortNode* getPort(std::string portName, const DM::PortType type);
 	QVector<PortNode*>	getPorts(DM::PortType type);
 	void setChild(ModelNode* child){this->child = child;}
 	ModelNode* getChild(){return child;}
 protected:
-    /*GUIPortObserver guiPortObserver;
-    float x1;
-    float y1;
-    float x2;
-    float y2;
-    float l;
-    float h;
-    int inputCounter;
-    int outputCounter;*/
-
 	int width, height;
-	//QRect size;
 
     QVector<PortNode*> ports;
-    //QVector<ModelNode * > * nodes;
-    //RootGroupNode * parentGroup;
-
-    //std::string  VIBeModuleUUID ;
-    //QGraphicsSimpleTextItem * simpleTextItem;
 
     int id;
     bool minimized;
-    //bool visible;
-
-    //QColor Color;
 	bool hovered;
 
     virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
     virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-    //virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-   // virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
@@ -134,55 +109,29 @@ protected:
 
 public:
 	bool setHovered(bool on){return hovered = on;};
-    //QStringList ExistingInPorts;
-    //QStringList ExistingOutPorts;
-    //ModelNode(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
     ModelNode(DM::Module* m, GUISimulation* sim);
 	void setPos(const QPointF &pos);
-    //int type() const {return Type; }
     ~ModelNode();
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
-    //void setParentGroup(RootGroupNode * parentGroup){this->parentGroup = parentGroup;}
-
     int getID(){return this->id;}
-    //QString getName(){return QString::fromStdString(this->getDMModel()->getName());}
-    //void setID(int id){this->getDMModel()->setID(id); this->id = id;}
 
-    //void addPort(DM::Port * p);
-    //virtual PortNode * getGUIPort(DM::Port * p);
-    //std::map<std::string, int> getParameters(){return this->getDMModel()->getParameterList();}
-
-    //std::string getParameterAsString(std::string name);
-
-    //void removePort(int Type, QString s);
     bool isMinimized(){return this->minimized;}
 
     virtual bool isGroup(){return false;}
 	void resize();
-    //virtual void setMinimized(bool b);
-
-
-    //bool GroupVisible(){return this->visible;}
 
     //View
     virtual void recalculateLandH(){}
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     virtual QRectF boundingRect() const;
 
-    //DM::Module * getDMModel();
     GUISimulation * getSimulation() {return this->simulation;}
-    //void  setSimulation(GUISimulation *s) {this->simulation = s;}
 	
-    //virtual void updatePorts();
 	void addPort(const std::string &name, const DM::PortType type);
 	void removePort(const std::string &name, const DM::PortType type);
 
     virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}
 
-    //virtual void resetModel();
-
-    //std::string getGroupUUID();
 	DM::Module* getModule() const
 	{
 		return module;
