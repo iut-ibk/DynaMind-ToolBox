@@ -147,7 +147,7 @@ void SpatialLinking::run() {
         double yb;
         double hb;
         double wb;
-        TBVectorData::getBoundingBox(city->getFace(linkUUID)->getNodePointers(), xb, yb, hb, wb,true);
+        //TBVectorData::getBoundingBox(city->getFace(linkUUID)->getNodePointers(), xb, yb, hb, wb,true); TODODODODO
         /*int xmin = (int) (qf.boundingRect().left()) / spatialL-1;
         int ymin = (int) (qf.boundingRect().bottom()) /spatialL-1;
         int xmax = (int) (qf.boundingRect().right())/spatialL+1;
