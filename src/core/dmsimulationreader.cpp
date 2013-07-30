@@ -23,9 +23,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include "dmsimulationreader.h"
-#include <QXmlSimpleReader>
-#include <iostream>
+#include "dmlogger.h"
 
 using namespace std;
 
@@ -33,19 +33,16 @@ SimulationReader::SimulationReader(QIODevice* source)
 {
 	source->open(QIODevice::ReadOnly);
 	id = 0;
-	//Q_ASSERT(QFile::exists(fileName));
 	QXmlSimpleReader r;
-	//QFile file(fileName);
 	r.setContentHandler(this);
 	r.setErrorHandler(this);
-	// r.parse(QXmlInputSource(&file));
 	r.parse(QXmlInputSource(source));
 	tmpNode.DebugMode = false;
 	source->close();
 }
 
 bool SimulationReader::fatalError(const QXmlParseException & exception) {
-    cerr << "fatal error while parsing xml " << exception.message().toStdString() << endl;
+	DM::Logger(DM::Error) << "fatal error while parsing xml " << exception.message().toStdString();
 
     return true;
 }

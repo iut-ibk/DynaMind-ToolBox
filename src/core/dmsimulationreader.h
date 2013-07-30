@@ -28,7 +28,6 @@
 
 #include "dmcompilersettings.h"
 #include <QXmlDefaultHandler>
-#include <QMap>
 #include <QVector>
 
 struct DM_HELPER_DLL_EXPORT ModuleEntry {
