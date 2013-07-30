@@ -309,7 +309,22 @@ System* Module::getData(const std::string& streamName)
 
 RasterData* Module::getRasterData(std::string name, View view)
 {
-	return getData(name)->addRasterData(new RasterData());
+	System* data = getData(name);
+	if(!data)
+	{
+		DM::Logger(Error) << "getRasterData: data stream '" << name << "' not found";
+		return NULL;
+	}
+	if(view.getAccessType() == WRITE)
+		return data->addRasterData(new RasterData());
+	else
+	{
+		mforeach(Component* c, getData(name)->getAllComponentsInView(view))
+			if(c->getType() == RASTERDATA)
+				return (RasterData*)c;
+		DM::Logger(Error) << "getRasterData: rasterdata in view '" << view.getName() << "' not found";
+		return NULL;
+	}
 }
 
 std::map<std::string, std::map<std::string,View> > Module::getAccessedViews() const
