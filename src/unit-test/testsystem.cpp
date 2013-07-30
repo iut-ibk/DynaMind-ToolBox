@@ -31,6 +31,7 @@
 #include <dmdbconnector.h>
 #include <dmcache.h>
 #include <createallcomponents.h>
+#include <dmlogsink.h>
 
 #include <QSqlQuery>
 #ifdef _OPENMP

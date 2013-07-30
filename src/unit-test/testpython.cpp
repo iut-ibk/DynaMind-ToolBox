@@ -29,6 +29,7 @@
     #include <testpython.h>
     #include <dmlog.h>
     #include <dmlogger.h>
+#include <dmlogsink.h>
 
     void TestPython::SetUp()
     {

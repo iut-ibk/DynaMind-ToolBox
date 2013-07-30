@@ -29,9 +29,9 @@
 #include <dmmodule.h>
 #include <dmsimulation.h>
 #include <dmlog.h>
+#include <dmlogsink.h>
 #include <dynamicinout.h>
 #include <grouptest.h>
-#include <dmporttuple.h>
 
 //#define OMPTEST
 //#define GROUPTEST

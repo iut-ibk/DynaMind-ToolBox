@@ -27,6 +27,7 @@
 #include <ostream>
 #include <testmodules.h>
 #include <dmlog.h>
+#include <dmlogsink.h>
 #include <dmlogger.h>
 
 void TestModules::SetUp()

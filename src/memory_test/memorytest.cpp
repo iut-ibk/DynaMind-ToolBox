@@ -28,9 +28,9 @@
 #include <dmmodule.h>
 #include <dmsimulation.h>
 #include <dmlog.h>
+#include <dmlogsink.h>
 #include <dynamicinout.h>
 #include <grouptest.h>
-#include <dmporttuple.h>
 
 int main(int argc, char **argv) {
 	ostream *out = &cout;
