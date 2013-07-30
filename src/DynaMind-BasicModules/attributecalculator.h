@@ -39,16 +39,13 @@ class DM_HELPER_DLL_EXPORT AttributeCalculator : public Module
 
 private:
     std::map<std::string, std::string> variablesMap;
-    //DM::System * sys_in;
+    DM::System * sys_in;
     std::string nameOfBaseView;
     std::string nameOfNewAttribute;
     std::string equation;
     std::map<std::string, DM::View> viewsmap;
     std::vector<std::string> varaibleNames;
-
-	void getLinkedAttribute(std::vector<double> * varaible_container, DM::System* sys_in,
-		DM::Component *currentcmp, std::string name);
-
+    void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
     bool asVector;
     QString IfElseConverter(QString exp);
     mup::Value mp_counter;
@@ -58,7 +55,7 @@ public:
     void run();
     void init();
     bool createInputDialog();
-    //DM::System * getSystemIn() {return this->sys_in;}
+    DM::System * getSystemIn() {return this->sys_in;}
     std::string getHelpUrl();
 
 };

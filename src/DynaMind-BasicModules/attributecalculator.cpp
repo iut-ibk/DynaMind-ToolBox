@@ -45,18 +45,16 @@ AttributeCalculator::AttributeCalculator()
 
     sys_in = 0;
     mp_counter = 0;
-
     std::vector<DM::View> data;
     data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
     this->addData("Data", data);
 }
 
-void AttributeCalculator::init() 
-{
-    //this->sys_in = this->getData("Data");
+void AttributeCalculator::init() {
+    this->sys_in = this->getData("Data");
 
-    //if (!this->sys_in)
-    //    return;
+    if (!this->sys_in)
+        return;
     if (nameOfBaseView.empty())
         return;
     if (nameOfNewAttribute.empty())
@@ -65,29 +63,13 @@ void AttributeCalculator::init()
         return;
 
 
-    /*DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
+    DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
     if (!baseView)
-        return;*/
-
-	std::map<std::string, DM::View> views = getViewsInStream()["Data"];
-	if(views.size() == 0)
-	{
-		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
-		return;
-	}
-
-	DM::View baseView;
-	if(!map_contains(&views, nameOfBaseView, baseView))
-	{
-		DM::Logger(DM::Warning) << "view '" << nameOfBaseView 
-			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
-		return;
-	}
-
+        return;
 
     viewsmap.clear();
     varaibleNames.clear();
-    DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
+    DM::View writeView = DM::View(baseView->getName(), baseView->getType(), DM::READ);
     writeView.addAttribute(nameOfNewAttribute);
     viewsmap[nameOfBaseView] = writeView;
     for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
@@ -99,17 +81,11 @@ void AttributeCalculator::init()
         std::string attributename = viewNameList[viewNameList.size()-1].toStdString();
         varaibleNames.push_back(it->second);
 
-		if(!map_contains(&viewsmap, viewname))
-		{
-        //if (viewsmap.find(viewname) == viewsmap.end()) {
-
-			if(!map_contains(&views, viewname, baseView))
-				return;
-
-            //baseView = this->sys_in->getViewDefinition(viewname);
-            //if (!baseView)
-            //    return;
-            viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
+        if (viewsmap.find(viewname) == viewsmap.end()) {
+            baseView = this->sys_in->getViewDefinition(viewname);
+            if (!baseView)
+                return;
+            viewsmap[viewname] = DM::View(baseView->getName(), baseView->getType(), DM::READ);
         }
 
         DM::View toAppend =  viewsmap[viewname];
@@ -131,8 +107,7 @@ void AttributeCalculator::init()
     i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_container, DM::System* sys_in,
-											  Component *currentcmp, std::string name ) 
+void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
 {
     QStringList viewNameList = QString::fromStdString(name).split(".");
     //Remove First Element, is already what comes with currentcmp
@@ -143,15 +118,15 @@ void  AttributeCalculator::getLinkedAttribute(std::vector<double> * varaible_con
     if (attr->getType() == Attribute::LINK)
     {
         std::string newSearchName = viewNameList.join(".").toStdString();
-        foreach (LinkAttribute l, attr->getLinks()) 
-		{
-            Component * nextcmp = sys_in->getComponent(l.uuid);
-            if(!nextcmp)  
-			{
+        foreach (LinkAttribute l, attr->getLinks())
+        {
+            Component * nextcmp = this->sys_in->getComponent(l.uuid);
+            if(!nextcmp)
+            {
                 Logger(Error) << "Linked Element does not exist";
                 return;
             }
-            this->getLinkedAttribute(varaible_container, sys_in, nextcmp, newSearchName);
+            this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
         }
     }
 
@@ -209,7 +184,6 @@ void AttributeCalculator::run() {
     foreach (std::string variable, varaibleNames)
     {
         mup::Value * d = new mup::Value(0.0);
-
         doubleVariables[variable] = d;
         p->DefineVar(variable, d);
 
@@ -246,7 +220,6 @@ void AttributeCalculator::run() {
             //All attributes are stored in one container that is evaluated Later.
             std::vector< mup::Value> variable_container;
             //Can be later replaced by a function
-
             getLinkedAttribute(&variable_container, cmp, it->first);
 
             double val = 0;
