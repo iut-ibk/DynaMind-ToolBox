@@ -30,8 +30,8 @@
 #include "dmcompilersettings.h"
 #include <dmsimulation.h>
 
-
 #define ADDRESS_TO_INT(x) *(int*)(&x)
+
 class QIODevice;
 class QString;
 
@@ -39,10 +39,7 @@ namespace DM
 {
 	class DM_HELPER_DLL_EXPORT SimulationWriter
 	{
-	private:
-		//static std::string  writeLink(Port * p);
 	public:
-		//SimulationWriter();
 		static void writeSimulation(QIODevice* dest, QString filePath, 
 									const std::list<Module*>& modules, 
 									const std::list<Simulation::Link*>& links,
