@@ -33,7 +33,6 @@
 #include <dmmodule.h>
 #include <guiport.h>
 #include <guisimulation.h>
-#include <dmport.h>
 
 GUILink::GUILink()
 {

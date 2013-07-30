@@ -40,7 +40,6 @@
 #include <QVariant>
 #include <QVector>
 #include <dmmodule.h>
-#include <dmport.h>
 #include <dmsimulation.h>
 #include <guiportobserver.h>
 #include <QWidget>

@@ -25,12 +25,10 @@
  */
 #include "guiport.h"
 #include <modelnode.h>
-#include <dmport.h>
 #include "ColorPalette.h"
 #include <guilink.h>
 #include <QGraphicsSceneMouseEvent>
 #include <dmsimulation.h>
-#include <dmmodulelink.h>
 #include <guisimulation.h>
 PortNode::~PortNode () {
 

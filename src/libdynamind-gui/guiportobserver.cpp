@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+/*
 #include "guiportobserver.h"
 #include "iostream"
 
@@ -38,3 +39,4 @@ void GUIPortObserver::setModelNode(ModelNode * mn) {
     this->mn = mn;
 
 }
+*/

@@ -30,7 +30,6 @@
 #include <QGraphicsItem>
 #include <QLineF>
 #include <QPainterPath>
-#include <dmmodulelink.h>
 #include <dmsimulation.h>
 #include <algorithm>
 

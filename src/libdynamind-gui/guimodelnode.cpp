@@ -49,7 +49,6 @@
 #include <dmmodule.h>
 #include <dmgroup.h>
 #include <groupnode.h>
-#include <dmporttuple.h>
 #include <QTextEdit>
 
 

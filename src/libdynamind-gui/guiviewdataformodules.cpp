@@ -1,7 +1,6 @@
 #include "guiviewdataformodules.h"
 #include "ui_guiviewdataformodules.h"
 #include <dmmodule.h>
-#include <dmport.h>
 #include <dm.h>
 typedef std::map<std::string, std::map<std::string,DM::View> > view_map;
 
