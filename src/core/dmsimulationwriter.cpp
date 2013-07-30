@@ -30,9 +30,7 @@
 #include <vector>
 #include <QFile>
 #include <QTextStream>
-#include <dmport.h>
 #include <dmgroup.h>
-#include <dmporttuple.h>
 #include <sstream>
 
 using namespace DM;

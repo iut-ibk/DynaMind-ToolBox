@@ -30,7 +30,6 @@
 #include "dmcompilersettings.h"
 #include <string>
 #include <list>
-#include <dmport.h>
 #include <dmsimulation.h>
 
 
