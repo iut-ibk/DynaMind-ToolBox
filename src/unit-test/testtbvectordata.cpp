@@ -22,8 +22,10 @@ TEST_F(TestTBVectorData,calculateArea){
     DM::Face * f = sys->addFace(nodes);
 
     double area = TBVectorData::CalculateArea(sys,f);
+
     EXPECT_DOUBLE_EQ(1, area);
 
+	delete sys;
 }
 TEST_F(TestTBVectorData,calculateAreaWithHole){
     DM::System * sys = new DM::System();
@@ -60,7 +62,8 @@ TEST_F(TestTBVectorData,calculateAreaWithHole){
     double area = TBVectorData::CalculateArea(sys,f);
 
     EXPECT_DOUBLE_EQ(3, area);
-
+	
+	delete sys;
 }
 TEST_F(TestTBVectorData,calculateArea3d){
     DM::System * sys = new DM::System();
@@ -82,6 +85,7 @@ TEST_F(TestTBVectorData,calculateArea3d){
     double area = TBVectorData::CalculateArea(sys,f);
     EXPECT_DOUBLE_EQ(1, area);
 
+	delete sys;
 }
 TEST_F(TestTBVectorData,calculateAreaWithHole3D){
     DM::System * sys = new DM::System();
@@ -118,7 +122,8 @@ TEST_F(TestTBVectorData,calculateAreaWithHole3D){
     double area = TBVectorData::CalculateArea(sys,f);
 
     EXPECT_DOUBLE_EQ(3, area);
-
+	
+	delete sys;
 }
 TEST_F(TestTBVectorData,calculateAreaR9){
     DM::System * sys = new DM::System();
@@ -159,6 +164,7 @@ TEST_F(TestTBVectorData,calculateAreaR9){
 
         EXPECT_DOUBLE_EQ(4, area);
     }
+	delete sys;
 }
 
 TEST_F(TestTBVectorData,calculateCentroid){
@@ -190,7 +196,7 @@ TEST_F(TestTBVectorData,calculateCentroid){
     EXPECT_DOUBLE_EQ(2.0, c.getX());
     EXPECT_DOUBLE_EQ(2.0, c.getY());
 
-
+	delete sys;
 }
 TEST_F(TestTBVectorData,minNode){
     DM::System * sys = new DM::System();
@@ -211,6 +217,7 @@ TEST_F(TestTBVectorData,minNode){
     EXPECT_DOUBLE_EQ(1.0, c.getX());
     EXPECT_DOUBLE_EQ(1.0, c.getY());
     EXPECT_DOUBLE_EQ(0.0, c.getZ());
-
+	
+	delete sys;
 }
 }
