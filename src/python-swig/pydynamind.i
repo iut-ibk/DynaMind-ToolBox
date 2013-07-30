@@ -105,15 +105,6 @@ namespace std {
         INPORTS
     };
 
-    enum CORINE {
-        ContUrbanFabric = 2,
-        DisContUrbanFabric = 3,
-        RoadRailNetwork = 4,
-        AgriculturalAreas = 5,
-        ForestsSemiNatural = 6,
-        WaterBodies = 7
-    };
-
 
 
 class Module {
