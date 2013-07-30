@@ -667,8 +667,9 @@ void Simulation::run()
 		if(m->inPortsSet())
 			worklist.push(m);
 	
+	// progress stuff
 	int cntModulesFinished = 0;
-
+	int numModulesToFinish = modules.size();
 	// run modules
 	// if not started decoupled, the state of the future is canceled, started and finished
 	while(worklist.size() && !canceled)
@@ -679,6 +680,9 @@ void Simulation::run()
 
 		if(!m->isGroup())
 		{
+			// if we execute a module more than once, our total module count increases
+			if(m->getStatus() == MOD_EXECUTION_OK)
+				numModulesToFinish++;
 			// execute module
 			Logger(Standard) << "running module '" << m->getName() << "'";
 			QElapsedTimer modTimer;
@@ -705,7 +709,7 @@ void Simulation::run()
 
 				// notify progress
 				cntModulesFinished++;
-				float progress = (float)cntModulesFinished/modules.size();
+				float progress = (float)cntModulesFinished/numModulesToFinish;
 				foreach(SimulationObserver* obs, observers)
 					obs->update(progress);
 			}
