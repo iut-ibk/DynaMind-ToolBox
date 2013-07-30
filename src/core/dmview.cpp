@@ -47,7 +47,6 @@ View::View() {
     this->type = -1;
     this->dummy = NULL;
 }
-
 std::string View::getIdOfDummyComponent()
 {
     return dummy->getUUID();
@@ -159,7 +158,17 @@ std::vector<std::string> View::getNamesOfLinks()
         namesOfView.push_back(it->first);
     }
     return namesOfView;
+
 }
+/*
+std::string View::getNameOfLinkedView(string name)
+{
+    std::vector<std::string> namesOfView;
+    for (stringmap::const_iterator it = attributeLinks.begin(); it != attributeLinks.end(); ++it) {
+        namesOfView.push_back(it->first);
+    }
+    return namesOfView;
+}*/
 
 std::string View::getNameOfLinkedView(string name)
 {

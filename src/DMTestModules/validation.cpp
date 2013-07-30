@@ -47,7 +47,10 @@ std::map<ComponentID, ComponentContent> mapValidation;
 void AddValidation(DM::Component* c, DM::Component* owner)
 {
 	if(c==NULL)
+	{
 		DM::Logger(DM::Error) << "Add Validation: NULL pointer parameter";
+		return;
+	}
 
 	DM::Logger(DM::Debug) << "Adding to validation list: " << c->getUUID();
 

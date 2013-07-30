@@ -106,6 +106,7 @@ public:
     std::map<std::string, std::map<std::string, DM::View> >  getViews();
     DM::System * getData(std::string dataname);
 
+	virtual const char* getClassName() = 0;
 
     virtual std::string getParameterAsString(std::string Name);
     virtual void updateParameter();
@@ -114,13 +115,10 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
-    virtual std::string getHelpUrl();
-
-
-    virtual const char* getClassName() = 0;
-protected:
+	protected:
     void addData(std::string name, std::vector<DM::View> view);
     DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
+
 };
 
 %extend Module {
@@ -202,10 +200,14 @@ public:
 
 %pythoncode %{
 def my_del(self):
-    print "Force no delete of python garbage collector"
+    #print "Force no delete of python garbage collector"
     self.__disown__()
 
 Component.__del__ = my_del
+Node.__del__ = my_del
+Edge.__del__ = my_del
+Face.__del__ = my_del
+
 
 class NodeFactory(INodeFactory):
     def __init__(self, klass):

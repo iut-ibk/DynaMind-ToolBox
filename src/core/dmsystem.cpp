@@ -187,15 +187,6 @@ void System::updateViews(Component * c)
     foreach (std::string view, c->getInViews())
         this->views[view][c->getUUID()] = c;
 }
-/*
-std::vector<std::string> System::getNamesOfViews() 
-{
-    std::vector<std::string> names;
-    for ( std::map<std::string, View*>::const_iterator it = this->viewdefinitions.begin(); it != this->viewdefinitions.end(); ++it  )
-        names.push_back(it->first);
-
-    return names;
-}*/
 
 DM::View * System::getViewDefinition(string name) 
 {

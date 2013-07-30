@@ -26,7 +26,7 @@
 
 #ifndef DM_H
 #define DM_H
-
+#include <dmstdutilities.h>
 #include <dmcomponent.h>
 #include <dmsystem.h>
 #include <dmattribute.h>

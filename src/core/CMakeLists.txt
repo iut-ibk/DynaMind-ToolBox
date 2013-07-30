@@ -41,3 +41,12 @@ ENDIF()
 INSTALL(FILES ${DYNAMIND_HEADER}
         DESTINATION "include/dynamindcore"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+
+find_package(OpenMP)
+if(OPENMP_FOUND)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        message(STATUS "OpenMP is enabled")
+else()
+        add_definitions(-DOPENMP_DISABLED)
+        message(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
+endif()

@@ -88,7 +88,7 @@ namespace DM {
         dirty = true;
         return *this;
     }
-
+	
     Logger &Logger::operator<< (const long i) {
         QMutexLocker locker(&mutex);
         if (level < max) {

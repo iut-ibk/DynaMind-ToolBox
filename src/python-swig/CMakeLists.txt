@@ -35,6 +35,5 @@ SWIG_LINK_LIBRARIES(pydynamind dynamindcore ${PYTHON_LIBRARIES})
 SWIG_ADD_MODULE(pydmtoolbox python pydmtoolbox.i)
 SWIG_LINK_LIBRARIES(pydmtoolbox dynamindtoolbox dynamindcore)
 
-
 #ADD_DEPENDENCIES(pydynamind.i dynamindcore dynamindtoolbox )
 #ADD_DEPENDENCIES(pydmtoolbox.i dynamindcore )

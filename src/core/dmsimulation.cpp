@@ -58,11 +58,14 @@
 
 #include <QSettings>
 #include <QDir>
-//#include <QThread>
 
 #include <QtConcurrentRun>
 
-
+/*
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+*/
 namespace DM {
 
 Simulation::Simulation()
@@ -1336,25 +1339,30 @@ void Simulation::loadModulesFromDefaultLocation()
     QVector<QDir> cpv;
     cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
     cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
+
 #ifdef _DEBUG
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
 #else
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../Modules"));
     cpv.push_back(QDir(QDir::currentPath() + "/../Modules/RelWithDebInfo"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/Release"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin/output/Modules/Release"));
+    cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin//output/Modules/RelWithDebInfo"));
 #endif
     
     foreach (QDir cp, cpv)  
 	{
-        QStringList modulesToLoad = cp.entryList();
-        std::cout <<  cp.absolutePath().toStdString() << std::endl;
+		QStringList filters;
+		filters << "*.dll";
+		filters << "*.so";
+		filters << "*.dylib";
+        QStringList modulesToLoad = cp.entryList(filters);
+		
+        DM::Logger(DM::Standard) <<  cp.absolutePath().toStdString();
         foreach (QString module, modulesToLoad) 
 		{
-            if (module == ".." || module == ".")
-                continue;
             DM::Logger(DM::Debug) << module.toStdString();
-            std::cout <<  module.toStdString() << std::endl;
+            DM::Logger(DM::Standard) <<  module.toStdString();
             QString ml = cp.absolutePath() +"/" + module;
             if (this->moduleRegistry->addNativePlugin(ml.toStdString()))
                 loadedModuleFiles.push_back(ml.toStdString());
@@ -1368,6 +1376,9 @@ void Simulation::loadModulesFromDefaultLocation()
 
     cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
     loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
+
+    cp = QDir(QDir::currentPath() + "/../PythonModules/scripts");
+    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
 #endif
 }
 void Simulation::loadPythonModulesFromDirectory(std::string path) {
@@ -1377,6 +1388,7 @@ void Simulation::loadPythonModulesFromDirectory(std::string path) {
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
     DM::PythonEnv::getInstance()->addPythonPath((path));
+
     foreach(QString file, files) 
 	{
         try{
@@ -1404,21 +1416,19 @@ bool Simulation::addModulesFromSettings() {
     QDir pythonDir;
     text = settings.value("pythonModules").toString();
     list = text.replace("\\","/").split(",");
-    foreach (QString s, list){
+    foreach (QString s, list)
         loadPythonModulesFromDirectory(s.toStdString());
-    }
 #endif
-
     // Native Modules
     text = settings.value("nativeModules").toString();
     list = text.replace("\\","/").split(",");
-    foreach (QString s, list) {
+    foreach (QString s, list) 
+	{
         if (s.isEmpty())
             continue;
         Logger(Standard) << "Loading Native Modules " <<s.toStdString();
-        if (moduleRegistry->addNativePlugin(s.toStdString())) {
+        if (moduleRegistry->addNativePlugin(s.toStdString()))
             loadedModuleFiles.push_back(s.toStdString());
-        }
     }
 
     return true;
@@ -1436,7 +1446,7 @@ Simulation::Simulation()
     this->rootGroup->setSimulation(this);
     //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
     this->moduleRegistry = new ModuleRegistry();
-
+	numOMPThreads = 0;
 }
 
 bool Simulation::registerNativeModules(string Filename) 
@@ -1453,6 +1463,7 @@ void Simulation::registerPythonModules(std::string path)
     QStringList filters;
     filters << "*.py";
     QStringList files = pythonDir.entryList(filters);
+
     foreach(QString file, files) 
 	{
         Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
@@ -1511,7 +1522,9 @@ void Simulation::resetModules()
 
 void Simulation::resetSimulation()
 {
+    Logger(Debug) << "Reset Simulation";
     std::vector<DM::Module *> mv= this->getModules();
+
     foreach (Module * m, mv) 
 	{
         m->resetParameter();
@@ -1520,6 +1533,10 @@ void Simulation::resetSimulation()
 }
 void Simulation::run() 
 {
+#ifdef _OPENMP
+	Logger(Debug) << "OPENMP enabled";
+	this->numOMPThreads = omp_get_max_threads();
+#endif
     this->resetModules();
     this->startSimulation(false);
 }
@@ -1533,7 +1550,7 @@ bool Simulation::startSimulation(bool virtualRun)
     Logger(Standard) << "Run Simulation";
     Logger(Debug) << "Reset Steps";
     this->rootGroup->resetSteps();
-    Logger(Debug) << "Start Simulations";
+    Logger(Debug) << "Start Simulation";
     if (this->rootGroup->getModules().size() > 0)
         this->rootGroup->run();
 
@@ -1551,7 +1568,10 @@ bool Simulation::startSimulation(bool virtualRun)
 
 void Simulation::removeModule(std::string UUid) 
 {
-	delete_element(&Modules, UUid);
+	//delete_element(&Modules, UUid);
+	Module* m;
+	if(map_contains(&Modules, UUid, m))
+		delete m;
 }
 void Simulation::deregisterModule(std::string UUID) {
 
@@ -1596,100 +1616,120 @@ std::vector<Module * > Simulation::getModulesFromType(std::string name) {
 std::map<std::string, std::string>  Simulation::loadSimulation(std::string filename) 
 {
     std::map<std::string, std::string> UUIDTranslator;
-    SimulationReader simreader(QString::fromStdString(filename));
 
-    foreach (ModuleEntry me, simreader.getModules()) 
-	{
+    SimulationReader simreader(QString::fromStdString(filename));
+    foreach (ModuleEntry me, simreader.getModules()) {
         Module * m = this->addModule(me.ClassName.toStdString(), false);
-        if (!m) 
-		{
-            this->setSimulationStatus(SIM_FAILED_LOAD);
-            return std::map<std::string, std::string>();
+        if (!m) {
+            Logger(DM::Warning) << "Missing Module " << me.ClassName.toStdString();
+            continue;
         }
 
         m->setName(me.Name.toStdString());
         m->setDebugMode(me.DebugMode);
         UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
-        foreach(QString s, me.ParemterList.keys())
-            m->setParameterValue(s.toStdString(), me.ParemterList[s].toStdString());
+        foreach(QString s, me.ParemterList.keys()) {
+            std::string parameterVal = me.ParemterList[s].toStdString();
+            if (m->getParameterType(s.toStdString()) == DM::FILENAME) {
+                QDir filedir(me.ParemterList[s]);
+                Logger(Debug) << me.ParemterList[s].toStdString();
+                Logger(Debug) << filedir.path().toStdString();
+                if (filedir.isRelative()) {
+                    Logger(Debug) << "load from relative";
+                    QDir simulation_file_dir  = QFileInfo(QString::fromStdString(filename)).absoluteDir();
+                    Logger(Debug) << simulation_file_dir.absolutePath().toStdString();
+                    Logger(Debug) <<  simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
+                    parameterVal = simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
+                }
+
+            }
+            m->setParameterValue(s.toStdString(),parameterVal);
+        }
     }
     //Reconstruct Groups;
-    foreach (ModuleEntry me, simreader.getModules()) 
-	{
-        if (me.GroupUUID != simreader.getRootGroupUUID()) 
-		{
+    foreach (ModuleEntry me, simreader.getModules()) {
+        if (me.GroupUUID != simreader.getRootGroupUUID()) {
             Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
             Group * g = (Group *)this->getModuleWithUUID(UUIDTranslator[me.GroupUUID.toStdString()]);
             m->setGroup(g);
         }
     }
-    //Call init Functions of the modules
-	mforeach(Module* m, this->Modules)
-		m->init();
-    /*foreach (ModuleEntry me, simreader.getModules()) {
-        Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
-        m->init();
-    }*/
 
-    foreach (LinkEntry le, simreader.getLinks()) 
-	{
+    //Call init Functions of the modules
+    foreach (ModuleEntry me, simreader.getModules()) {
+        Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
+        if (!m) continue;
+        m->init();
+    }
+
+    foreach (LinkEntry le, simreader.getLinks()) {
         std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];
         std::string inPortUUID = UUIDTranslator[le.InPort.UUID.toStdString()];
         DM::Port * p_out = 0;
         DM::Port * p_in = 0;
-		std::string outPortName = le.OutPort.PortName.toStdString();
-		std::string inPortName = le.InPort.PortName.toStdString();
+        if (!inPortUUID.empty() && !outPortUUID.empty() ) {
 
-        if (!inPortUUID.empty() && !outPortUUID.empty() ) 
-		{
-            if (le.OutPort.isTuplePort == 1)
-			{
+            if (le.OutPort.isTuplePort == 1) {
                 Group * g = (Group*) this->getModuleWithUUID(outPortUUID);
-				PortTuple *pt = NULL;
-
-                if (g->getUuid() != this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid())
-                    pt = g->getOutPortTuple(outPortName);
-				else 
-                    pt = g->getInPortTuple(outPortName);
-
-				if (pt == 0) 
-				{
-                    Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<" doesn't exist";
-                    continue;
+                bool isWithinThisGroup = false;
+                if (g->getUuid().compare(this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid() ) == 0) {
+                    isWithinThisGroup = true;
                 }
-                p_out = pt->getOutPort();
+                if (!isWithinThisGroup)     {
+                    PortTuple *pt =  g->getOutPortTuple(le.OutPort.PortName.toStdString());
+                    if (pt == 0) {
+                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
+                        continue;
+                    }
+                    p_out = pt->getOutPort();
+                } else {
+                    PortTuple *pt =  g->getInPortTuple(le.OutPort.PortName.toStdString());
+                    if (pt == 0) {
+                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
+                        continue;
+                    }
+                    p_out = pt->getOutPort();
+
+                }
+
+            }else {
+
+                p_out = this->getModuleWithUUID(outPortUUID)->getOutPort(le.OutPort.PortName.toStdString());
             }
-			else 
-                p_out = this->getModuleWithUUID(outPortUUID)->getOutPort(outPortName);
-            
-            if (le.InPort.isTuplePort == 1)
-			{
+            if (le.InPort.isTuplePort == 1) {
                 //Check if Connected Module is within this group
                 Group * g = (Group*) this->getModuleWithUUID(inPortUUID);
-                PortTuple *pt = NULL;
-
-                if (g->getUuid() != this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid())
-					pt = g->getInPortTuple(inPortName);
-				else
-					pt = g->getOutPortTuple(inPortName);
-                
-				if (pt == 0) 
-				{
-					Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<" doesn't exist";
-					continue;
-				}
-				p_in = pt->getInPort();
-            } 
-			else
-                p_in = this->getModuleWithUUID(inPortUUID)->getInPort(inPortName);
-
+                bool isWithinThisGroup = false;
+                if (g->getUuid().compare(this->getModuleWithUUID(outPortUUID)->getGroup()->getUuid() ) == 0) {
+                    isWithinThisGroup = true;
+                }
+                if (!isWithinThisGroup){
+                    PortTuple *pt =  g->getInPortTuple(le.InPort.PortName.toStdString());
+                    if (pt == 0) {
+                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
+                        continue;
+                    }
+                    p_in = pt->getInPort();
+                } else {
+                    PortTuple *pt =  g->getOutPortTuple(le.InPort.PortName.toStdString());
+                    if (pt == 0) {
+                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
+                        continue;
+                    }
+                    p_in = pt->getInPort();
+                }
+            } else {
+                p_in = this->getModuleWithUUID(inPortUUID)->getInPort(le.InPort.PortName.toStdString());
+            }
             ModuleLink * l = this->addLink(p_out, p_in);
 
             if (l != 0)
                 l->setBackLink(le.backlink);
         }
     }
+
     return UUIDTranslator;
+
 }
 
 Module * Simulation::resetModule(std::string UUID) 
@@ -1821,11 +1861,11 @@ std::vector<std::string> Simulation::getLoadModuleFiles()
 std::vector<Module*> Simulation::getModules() const{
     std::vector<Module*> ms;
 
-    /*for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
-        ms.push_back(it->second);*/
-
-	mforeach(Module* m, Modules)
-		ms.push_back(m);
+    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
+        ms.push_back(it->second);
+	// mforeach causes a crash for unknown reason
+	//mforeach(Module* m, Modules)
+	//	ms.push_back(m);
     return ms;
 }
 #endif

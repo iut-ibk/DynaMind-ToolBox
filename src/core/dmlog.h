@@ -89,9 +89,9 @@ public:
     static Log *getInstance();
     friend class Logger;
     virtual ~Log();
+
 private:
     Log();
-
 
     static Log *instance;
 
