@@ -28,8 +28,6 @@
 #define DMSIMULAITONWRITER_H
 
 #include "dmcompilersettings.h"
-#include <string>
-#include <list>
 #include <dmsimulation.h>
 
 

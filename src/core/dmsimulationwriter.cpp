@@ -25,54 +25,8 @@
 */
 
 #include "dmsimulationwriter.h"
-#include <dmsimulation.h>
-#include <dmmodule.h>
-#include <vector>
-#include <QFile>
-#include <QTextStream>
-#include <dmgroup.h>
-#include <sstream>
 
 using namespace DM;
-/*
-SimulationWriter::SimulationWriter()
-{
-}
-
-std::string SimulationWriter::writeLink(Port * p) {
-std::stringstream out;
-foreach(ModuleLink *l, p->getLinks()) {
-out << "\t\t<Link>\n";
-out << "\t\t\t<BackLink value = \"0";
-out << l->isBackLink();
-out << "\"/>\n";
-out << "\t\t\t<InPort>\n";
-out << "\t\t\t\t<UUID value = \"";
-out << l->getInPort()->getModule()->getUuid();
-out << "\"/>\n";
-out << "\t\t\t\t<PortName value = \"";
-out << l->getInPort()->getLinkedDataName();
-out << "\"/>\n";
-out << "\t\t\t\t<PortType value = \"";
-out << l->getInPort()->isPortTuple();
-out << "\"/>\n";
-out << "\t\t\t</InPort>\n";
-
-out << "\t\t\t<OutPort>\n";
-out << "\t\t\t\t<UUID value = \"";
-out << l->getOutPort()->getModule()->getUuid();
-out << "\"/>\n";
-out << "\t\t\t\t<PortName value = \"";
-out << l->getOutPort()->getLinkedDataName();
-out << "\"/>\n";
-out << "\t\t\t\t<PortType value = \"";
-out << l->getOutPort()->isPortTuple();
-out << "\"/>\n";
-out << "\t\t\t</OutPort>\n";
-out << "\t\t</Link>\n";
-}
-return out.str();
-}*/
 
 void writeHead(QTextStream &out)
 {
@@ -119,22 +73,6 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 			<< "\t\t\t</parameter>\n";
 	}
 
-	/*
-	std::map<std::string, int> parameterList = m->getParameterList();
-	for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-	Logger(Debug) << it->first;
-	}
-
-	for (std::map<std::string, int>::iterator it = parameterList.begin(); it != parameterList.end(); ++it) {
-	if (it->second < DM::USER_DEFINED_INPUT) {
-	out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(it->first) <<"\">"
-	<< "\n" "\t\t\t\t<![CDATA["
-	<<  QString::fromStdString(m->getParameterAsString(it->first))
-	<< "]]>\n"
-	<< "\t\t\t</parameter>\n";
-	}
-	}*/
-
 	out  << "\t\t</Node>\n";
 }
 
@@ -165,9 +103,6 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	dest->open(QIODevice::WriteOnly);
 	Logger(Debug) << "Saving File";
 
-	/*QFile file(QString::fromStdString(filename));
-	file.open(QIODevice::WriteOnly);
-	QTextStream out(&file);*/
 	QTextStream out(dest);
 
 	writeHead(out);
@@ -192,27 +127,11 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	foreach(Simulation::Link* l, links)
 		writeLink(out, l);
 
-	/*foreach(Module * m, modules) {
-	foreach(Port * p, m->getOutPorts()) {
-	out << QString::fromStdString(SimulaitonWriter::writeLink(p));
-	}
-	if (m->isGroup()) {
-	Group * g = (Group * ) m;
-	foreach(PortTuple * pt, g->getInPortTuples()) {
-	out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
-	}
-	foreach(PortTuple * pt, g->getOutPortTuples()) {
-	out << QString::fromStdString(SimulaitonWriter::writeLink(pt->getOutPort()));
-	}
-	}
-	}*/
-
 	out << "\t</Links>\n";
 
 	out << "</DynaMindCore>\n";
 	//out << "</DynaMind>"<< "\n";
 
-	//file.close();
 	dest->close();
 	Logger(Debug) << "Finished saving file";
 }
