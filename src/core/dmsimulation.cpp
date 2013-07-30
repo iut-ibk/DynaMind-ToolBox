@@ -44,13 +44,10 @@
 #include "dmmoduleregistry.h"
 #include "dmsimulationobserver.h"
 #include <dmmodule.h>
-//#include <dmmodulelink.h>
-//#include <dmport.h>
 #include <dmmoduleregistry.h>
 #include <dmgroup.h>
 #include <dmsimulationwriter.h>
 #include <dmlogger.h>
-//#include <dmporttuple.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -132,7 +129,7 @@ bool Simulation::registerModule(const std::string& filepath)
 	//Logger(Standard) << "Loading native module " << filepath;
 
 	QString qfilepath = QString::fromStdString(filepath);
-	
+
 	if(qfilepath.endsWith(".py"))
 	{
 		QFileInfo fi = qfilepath;
@@ -344,41 +341,6 @@ std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest
 	
 	return ls;
 }
-/*
-Module* Simulation::getFormerModule(Module* dest, std::string inPort, std::string& outPort)
-{
-	Link* l = getIngoingLink(dest, inPort);
-	if(l)
-	{
-		//if(l->isIntoGroupLink)
-		//	return getFormerModule(l->src, l->outPort, outPort);
-		//	l = getIngoingLink(l->src, l->outPort);
-		//if(l->isOutOfGroupLink)
-		//	l = getOutgoingLink(l->src, l->outPort);
-		
-		outPort = l->outPort;
-		return l->src;
-	}
-	return NULL;
-}
-
-Module* Simulation::getNextModule(Module* src, std::string outPort, std::string& inPort)
-{
-	Link* l = getOutgoingLink(src, outPort);
-	if(l)
-	{
-		//if(l->isIntoGroupLink)
-		//	l = getIngoingLink(l->src, l->outPort);
-		//if(l->isOutOfGroupLink)
-		//	l = getOutgoingLink(l->dest, l->inPort);
-
-		inPort = l->inPort;
-		return l->dest;
-	}
-	return NULL;
-}
-*/
-
 
 bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
@@ -434,61 +396,17 @@ bool IsWriteOnly(const std::map<std::string, View>& stream)
 bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 {
 	bool success = true;
-	/*if(m->isGroup())
-	{
-		return checkGroupStream(m, streamName, backwards?OUTPORT:INPORT);
-		if(back)
-		{
-			foreach(Link* l, getOutgoingLinks(m, streamName))
-				if(!checkModuleStream(l->src, l->outPort, true, false))
-					success = false;
-			return success;
-		}
-		if(forward)
-		{
-			foreach(Link* l, getIngoingLinks(m, streamName))
-				if(!checkModuleStream(l->src, l->outPort, true, false))
-					success = false;
-			return success;
-		}
-		else
-		{
-			DM::Logger(DM::Error) << "group check not allowed";
-			return false;
-		}
-	}*/
-	//if(strcmp(m->getClassName(), "Marker") == 0)
-	//	int i=0;
-
 	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
 	// check if we are in the middle of an unchecked stream
 	if(curStreamViews->size() == 0 && m->hasInPort(streamName))
 	{
-		/*
-		// go back to origin
-		std::vector<Link*> inLinks;
-		//if(!outOfGroup)
-			inLinks = getIngoingLinks(m, streamName);
-		//else
-		//	inLinks = getOutOfGroupLinks(m, streamName);
+		m->setStatus(MOD_CHECK_ERROR);
+		DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
 
-		if(inLinks.size() == 0)
-		{*/
-			m->setStatus(MOD_CHECK_ERROR);
-			DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
-			success = false;
-		/*}
-		else
-			foreach(Link* l, inLinks)
-				if(!checkModuleStream(l->src, l->outPort, true))
-					success = false;
-	*/
-		return success;
+		return false;
 	}
 	// update stream view info in module
 	std::map<std::string,View> updatedStream = *curStreamViews;
-	//*streamViews = formerViews;
-
 	
 	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 	m->init();
@@ -554,11 +472,10 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 				success = false;
 		}
 		else
-		{
 			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
-		}
 	}
+
 	return success;
 }
 
@@ -568,12 +485,6 @@ bool Simulation::checkModuleStream(Link* link)
 		return checkGroupStreamForward((Group*)link->src, link->outPort, link->isIntoGroupLink);
 	else
 		return checkModuleStreamForward(link->src, link->outPort);
-	/*std::map<std::string, DM::View>* curStreamViews = &l->src->streamViews[streamName];
-	// check if we are in the middle of an unchecked stream
-	if(curStreamViews->size() == 0 && m->getInPortNames().size() != 0)
-	{
-
-	}*/
 }
 
 bool Simulation::checkModuleStreamForward(Module* m)
@@ -592,7 +503,6 @@ bool Simulation::checkModuleStreamForward(Module* m)
 	}
 	else
 	{
-		
 		if(!m->isGroup())
 		{
 			foreach(std::string inPortName, m->getInPortNames())
@@ -606,7 +516,6 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					success = false;
 		}
 		
-
 		DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 		m->init();
 	}
@@ -619,28 +528,11 @@ bool Simulation::checkStream()
 	bool success = true;
 	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)
-	{
-		//std::vector<std::string> inPorts = m->getInPortNames();
 		if(m->getInPortNames().size() == 0)
 			foreach(std::string outPort, m->getOutPortNames())
 				if(!checkModuleStreamForward(m, outPort))
 					success = false;
 
-		/*if(m->getInPortNames().size() == 0)
-		{
-			if(!checkModuleStreamForward(m))
-				return false;
-		}*/
-	}
-	/*
-	foreach(QFuture<bool>* r, results)
-	{
-		r->waitForFinished();
-		if(!r->result())
-			success = false;
-		delete r;
-	}
-	return success;*/
 	return success;
 }
 
@@ -754,36 +646,6 @@ void Simulation::run()
 					worklist.push(nextModule);
 			}
 		}
-		/*
-		else if(m->getStatus() == MOD_EXECUTING)
-		{
-			Group* g = (Group*)m;
-			// we reached the end of the group
-			std::vector<std::string> backLinks = g->loopBack();
-			if(backLinks.size()>0)
-			{
-				Logger(Standard) << "rewinding group '" << g->getName() << "'";
-				foreach(Module* nextModule, shiftGroupLoopData(g, backLinks))
-					worklist.push(nextModule);
-			}
-			else
-			{
-				// finish and shift data
-				g->setStatus(MOD_EXECUTION_OK);
-				foreach(Module* nextModule, shiftModuleOutput(g))
-					worklist.push(nextModule);
-			}
-		}
-		else
-		{
-			Group* g = (Group*)m;
-			// execute group
-			Logger(Standard) << "running group '" << g->getName() << "'";
-			g->setStatus(MOD_EXECUTING);
-			// instead of m::run() we simply shift the data to the first internal module
-			foreach(Module* nextModule, shiftGroupInput(g))
-				worklist.push(nextModule);
-		}*/
 	}
 	if(canceled)
 	{
@@ -801,52 +663,17 @@ void Simulation::run()
 		foreach(SimulationObserver* obs, observers)
 			obs->update(1);
 	}
-
-	//finished = true;
 }
-/*
-class ThreadWrapper: public QThread
-{
-	Simulation* sim;
-public:
-	ThreadWrapper(Simulation* sim): sim(sim){}
-	void run()
-	{
-		sim->run();
-	}
-};*/
-
-/*
-QFuture<void> Simulation::decoupledRun()
-{
-
-
-	//if(QThreadPool::globalInstance()->maxThreadCount() < 1)
-	//	QThreadPool::globalInstance()->setMaxThreadCount(1);
-
-	if(decoupledRunResult.isRunning() || runningModuleResult.isRunning())
-		cancel();
-
-	decoupledRunResult = QtConcurrent::run(this, &Simulation::run);
-	return decoupledRunResult;
-}*/
 
 void Simulation::cancel()
 {
 	Logger(Standard) << ">> canceling simulation";
-	/*runningModuleResult.cancel();
-	decoupledRunResult.cancel();
-	Logger(Standard) << ">> canceling simulation - waiting currently running modules to finish";
-	runningModuleResult.waitForFinished();
-	decoupledRunResult.waitForFinished();
-	Logger(Standard) << ">> canceling simulation - finished";*/
 	canceled = true;
 }
 
 std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 {
 	std::list<Module*> nextModules;
-	//mforeach(System* sys, m->outPorts)
 	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
 		it != m->outPorts.end();	++it)
 	{
@@ -856,10 +683,6 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 		foreach(Link* l, outLinks)
 			if(l->getData())
 				branches.push_back(l);
-
-		/*foreach(Link* l, links)
-			if(l->src == m && l->outPort == it->first && l->getData())	// check for assigned and existing data
-				branches.push_back(l);*/
 
 		if(branches.size() > 0)
 		{
@@ -908,17 +731,6 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 	return nextModules;
 }
 
-/*
-std::list<Module*> Simulation::shiftGroupLoopData(Group* g, const std::vector<std::string>& backLinks)
-{
-	foreach(std::string portName, backLinks)
-	{
-		g->setInPortData(portName, g->getOutPortData(portName));
-		g->setOutPortData(portName, NULL);
-	}
-	return shiftGroupInput(g);
-}*/
-
 void Simulation::reset()
 {
     Logger(Standard) << ">> Reset Simulation";
@@ -929,7 +741,6 @@ void Simulation::reset()
 	}
 	checkStream();
 }
-
 
 bool Simulation::registerModulesFromSettings() 
 {
@@ -962,7 +773,6 @@ bool Simulation::registerModulesFromSettings()
 	return true;
 }
 
-
 // for old versions
 void LoopGroupAdaptor(	QVector<LinkEntry>& links, 
 						QVector<ModuleEntry>& modules, 
@@ -988,8 +798,6 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 			backLinks.push_back(l);
 
 	// remove backlinks
-	
-
 	foreach(const LinkEntry& bl, backLinks)
 	{
 		int index = -1;
@@ -1079,7 +887,6 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 	foreach(QString portName, nameOfInPorts)
 		readStreams += portName + "*|*";
 
-
 	// TRICKY: we assume that if out ports are left, one read stream is meant to be a write stream
 	// that must fulfill following conditions:
 	// just a single out and a single in port, no write streams so far
@@ -1102,7 +909,7 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 		DM::Logger(DM::Debug) << "exchanged port '" << oldOutPortName << "' of module '" 
 			<< loopGroup.ClassName << "' with port '" << newOutPortName << "'";
 	}
-	
+
 	loopGroup.parameters["writeStreams"] = writeStreams;
 	loopGroup.parameters["readStreams"] = readStreams;
 }
@@ -1130,12 +937,11 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	int waitingForGroup = 0;
 	// load modules
 	while(moduleEntries.size() > 0 && moduleEntries.size() >= waitingForGroup)
-	//foreach(ModuleEntry me, simreader.getModules())
 	{
 		ModuleEntry me = moduleEntries.first();
 		moduleEntries.pop_front();
-
 		DM::Module* owner = modMap[me.GroupUUID.toStdString()];
+
 		if(me.GroupUUID.size() && me.GroupUUID != simreader.getRootGroupUUID())
 		{
 			if(!owner)
@@ -1168,8 +974,6 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 						DM::Logger(DM::Debug) << "to absolute path '" << value << "'";
 					}
 				}
-
-
 				m->setParameterValue(it.key().toStdString(), value);
 			}
 			// we init now (probably two times) to init e.g. ports
@@ -1206,10 +1010,6 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	else
 		Logger(Error) << ">> error checking stream";
 	
-	/*Logger(Standard) << ">> initializing modules";
-	foreach(DM::Module* m, modules)
-		m->init();*/
-
 	Logger(Standard) << ">> loading simulation file finished";
 	return true;
 }
@@ -1244,633 +1044,6 @@ void Simulation::removeObserver(SimulationObserver *obs)
 	if(it != observers.end())
 		observers.erase(it);
 }
-
-
-
-
-#ifdef OLD_WF
-struct SimulationPrivate {
-    ModuleRegistry registry;
-
-    long simulationCounter;
-    std::map<long,Module * > ModuleMap;
-    std::string workingDirectory;
-    std::vector<std::string> pythonModules;
-    std::string filename;
-    DataObserver * observer;
-    std::vector<SimulationObserver *>  simObserver;
-    int counter;
-
-    /** Is used to indicate if simulation run was successful. Parameter is set to ture before a Simulation
-      * starts. If the parameter is false at the end of the simulation something happend in between
-      */
-    int simulationStatus;
-};
-
-
-
-
-Module * Simulation::addModule(std::string ModuleName, bool callInit) {
-
-    Module *module = this->moduleRegistry->createModule(ModuleName);
-
-    if(!module)
-    {
-        Logger(Error) << "Not able to add new module" << ModuleName;
-        return 0;
-    }
-
-    Logger(Debug) << "Add Module" << ModuleName << " " << module->getUuid();
-    module->setSimulation(this);
-    if (module->getGroup() == 0)
-        module->setGroup(this->rootGroup);
-    this->Modules[module->getUuid()] = module;
-    module->setSimulation(this);
-    if (callInit)
-        module->init();
-    return module;
-
-
-}
-
-Simulation::~Simulation() {
-    Logger(Debug)  << "Remove Modules";
-    delete this->rootGroup;
-    delete data;
-    delete moduleRegistry;
-}
-
-void Simulation::reloadModules() {
-#ifndef PYTHON_EMBEDDING_DISABLED
-    //Init Python
-    QSettings settings;
-    Logger(Standard) << "Reload Modules";
-
-    QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-    for (int index = 0; index < pythonhome.size(); index++)
-        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
-
-    QDir pythonDir;
-    QString text = settings.value("pythonModules").toString();
-    QStringList list = text.replace("\\","/").split(",");
-
-    foreach (QString s, list){
-        DM::PythonEnv::getInstance()->addPythonPath(s.toStdString());
-        pythonDir = QDir(s);
-        QStringList filters;
-        filters << "*.py";
-        QStringList files = pythonDir.entryList(filters);
-        foreach(QString file, files) {
-            try{
-                std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-                Logger(Debug) << n;
-
-            } catch(...) {
-                Logger(Warning)  << "Can't load Module " << file.toStdString();
-                std::cout << file.toStdString() << std::endl;
-            }
-        }
-
-    }
-#endif
-}
-void Simulation::loadModulesFromDefaultLocation()
-{
-    QVector<QDir> cpv;
-    cpv.push_back(QDir(QDir::currentPath() + "/Modules"));
-    cpv.push_back(QDir(QDir::currentPath() + "/bin/Modules"));
-
-#ifdef _DEBUG
-    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Debug"));
-#else
-    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/Release"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../Modules"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../Modules/RelWithDebInfo"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin/output/Modules/Release"));
-    cpv.push_back(QDir(QDir::currentPath() + "/../../BuildWin//output/Modules/RelWithDebInfo"));
-#endif
-    
-    foreach (QDir cp, cpv)  
-	{
-		QStringList filters;
-		filters << "*.dll";
-		filters << "*.so";
-		filters << "*.dylib";
-        QStringList modulesToLoad = cp.entryList(filters);
-		
-        DM::Logger(DM::Standard) <<  cp.absolutePath().toStdString();
-        foreach (QString module, modulesToLoad) 
-		{
-            DM::Logger(DM::Debug) << module.toStdString();
-            DM::Logger(DM::Standard) <<  module.toStdString();
-            QString ml = cp.absolutePath() +"/" + module;
-            if (this->moduleRegistry->addNativePlugin(ml.toStdString()))
-                loadedModuleFiles.push_back(ml.toStdString());
-        }
-    }
-
-#ifndef PYTHON_EMBEDDING_DISABLED
-    QDir cp;
-    cp = QDir(QDir::currentPath() + "/bin/PythonModules/scripts");
-    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
-
-    cp = QDir(QDir::currentPath() + "/PythonModules/scripts");
-    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
-
-    cp = QDir(QDir::currentPath() + "/../PythonModules/scripts");
-    loadPythonModulesFromDirectory(cp.absolutePath().toStdString());
-#endif
-}
-void Simulation::loadPythonModulesFromDirectory(std::string path) {
-#ifndef PYTHON_EMBEDDING_DISABLED
-    QDir pythonDir = QDir(QString::fromStdString(path));
-    QStringList filters;
-    filters << "*.py";
-    QStringList files = pythonDir.entryList(filters);
-    DM::PythonEnv::getInstance()->addPythonPath((path));
-
-    foreach(QString file, files) 
-	{
-        try{
-            std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-            loadedModuleFiles.push_back(file.toStdString());
-        } catch(...) {
-            Logger(Warning)  << "Can't load Module " << file.toStdString();
-
-        }
-    }
-#endif
-}
-
-bool Simulation::addModulesFromSettings() {
-    QSettings settings;
-    QString text;
-    QStringList list;
-
-#ifndef PYTHON_EMBEDDING_DISABLED
-    //Init Python
-    QStringList pythonhome = settings.value("pythonhome",QStringList()).toString().replace("\\","/").split(",");
-    for (int index = 0; index < pythonhome.size(); index++)
-        DM::PythonEnv::getInstance()->addPythonPath(pythonhome.at(index).toStdString());
-
-    QDir pythonDir;
-    text = settings.value("pythonModules").toString();
-    list = text.replace("\\","/").split(",");
-    foreach (QString s, list)
-        loadPythonModulesFromDirectory(s.toStdString());
-#endif
-    // Native Modules
-    text = settings.value("nativeModules").toString();
-    list = text.replace("\\","/").split(",");
-    foreach (QString s, list) 
-	{
-        if (s.isEmpty())
-            continue;
-        Logger(Standard) << "Loading Native Modules " <<s.toStdString();
-        if (moduleRegistry->addNativePlugin(s.toStdString()))
-            loadedModuleFiles.push_back(s.toStdString());
-    }
-
-    return true;
-}
-
-Simulation::Simulation() 
-{
-    srand((unsigned)time(NULL));
-    this->setTerminationEnabled(true);
-    data = new SimulationPrivate();
-    //data->simObserver;
-    data->observer = 0;
-    data->counter = 0;
-    this->rootGroup = new DMRootGroup();
-    this->rootGroup->setSimulation(this);
-    //this->Modules[rootGroup.getUuid()] = &this->rootGroup;
-    this->moduleRegistry = new ModuleRegistry();
-	numOMPThreads = 0;
-}
-
-bool Simulation::registerNativeModules(string Filename) 
-{
-    Logger(Standard) << "Loading Native Modules " << Filename ;
-    return moduleRegistry->addNativePlugin(Filename);
-}
-
-void Simulation::registerPythonModules(std::string path) 
-{
-#ifndef PYTHON_EMBEDDING_DISABLED
-    DM::PythonEnv::getInstance()->addPythonPath(path);
-    QDir pythonDir = QDir(QString::fromStdString(path));
-    QStringList filters;
-    filters << "*.py";
-    QStringList files = pythonDir.entryList(filters);
-
-    foreach(QString file, files) 
-	{
-        Logger(Debug) << "Loading Python module: " << file.remove(".py").toStdString();
-        std::string n = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, file.remove(".py").toStdString());
-    }
-#endif
-}
-
-ModuleRegistry * Simulation::getModuleRegistry() {
-    return this->moduleRegistry;
-}
-
-void Simulation::addSimulationObserver(SimulationObserver * simulationObserver) {
-    data->simObserver.push_back(simulationObserver);
-}
-
-void Simulation::addDataObserver(DataObserver * observer) {
-    data->observer = observer;
-}
-ModuleLink * Simulation::addLink( Port *OutPort, Port *InPort) {
-    if (OutPort == 0 || InPort == 0)
-        return 0;
-    Logger(Debug) << "Add Link" << OutPort->getLinkedDataName() << "-"<< InPort->getLinkedDataName();
-    ModuleLink*  ml = new ModuleLink(InPort, OutPort);
-    return ml;
-}
-void Simulation::removeLink(ModuleLink * l) {
-    Logger(Debug) << "Remove Link";
-    delete l;
-}
-
-std::vector<Group*> Simulation::getGroups() {
-
-    std::vector<Group*> groups;
-
-    foreach(Module * m, this->getModules())
-        if (m->isGroup())
-            groups.push_back((Group*)m);
-
-    return groups;
-}
-
-void Simulation::resetModules() 
-{
-    std::vector<DM::Module *> mv = this->getModules();
-    foreach (Module * m, mv) 
-	{
-        if (!m->isExecuted()) 
-		{
-            //Make sure all data are deleted
-            m->resetParameter();
-            this->resetModule(m->getUuid());
-        }
-    }
-}
-
-void Simulation::resetSimulation()
-{
-    Logger(Debug) << "Reset Simulation";
-    std::vector<DM::Module *> mv= this->getModules();
-
-    foreach (Module * m, mv) 
-	{
-        m->resetParameter();
-        this->resetModule(m->getUuid());
-    }
-}
-void Simulation::run() 
-{
-#ifdef _OPENMP
-	Logger(Debug) << "OPENMP enabled";
-	this->numOMPThreads = omp_get_max_threads();
-#endif
-    this->resetModules();
-    this->startSimulation(false);
-}
-
-bool Simulation::startSimulation(bool virtualRun) 
-{
-    if (!virtualRun)
-        this->startSimulation(true);
-    this->data->simulationStatus = SIM_OK;
-    this->virtualRun = virtualRun;
-    Logger(Standard) << "Run Simulation";
-    Logger(Debug) << "Reset Steps";
-    this->rootGroup->resetSteps();
-    Logger(Debug) << "Start Simulation";
-    if (this->rootGroup->getModules().size() > 0)
-        this->rootGroup->run();
-
-    if (!virtualRun) 
-	{
-        Logger(Standard) << "End Simulation";
-        return true;
-    }
-    //Execute Simulation Observer
-    foreach (SimulationObserver * so, data->simObserver)
-        so->VirtualRunDone();
-
-    return true;
-}
-
-void Simulation::removeModule(std::string UUid) 
-{
-	//delete_element(&Modules, UUid);
-	Module* m;
-	if(map_contains(&Modules, UUid, m))
-		delete m;
-}
-void Simulation::deregisterModule(std::string UUID) {
-
-    //if(!this)
-    //    return;
-	remove_element(&Modules, UUID);
-}
-
-void Simulation::writeSimulation(std::string filename) {
-    SimulaitonWriter::writeSimulation(filename, this);
-}
-Module * Simulation::getModuleByName(std::string name) {
-    foreach(Module * m, this->getModules()) {
-        if (name.compare(m->getName()) == 0)
-            return m;
-    }
-    return 0;
-}
-
-Module * Simulation::getModuleWithUUID(std::string UUID) {
-    foreach(Module * m, this->getModules()){
-        if (UUID.compare(m->getUuid()) == 0)
-            return m;
-    }
-
-    if (this->getRootGroup()->getUuid().compare(UUID) == 0) {
-        return this->getRootGroup();
-    }
-    return 0;
-}
-std::vector<Module * > Simulation::getModulesFromType(std::string name) {
-    std::vector<Module * > ress;
-    foreach(Module * m, this->getModules()) {
-        std::string n(m->getClassName());
-        if (n.compare(name) == 0)
-            ress.push_back(m);
-    }
-
-    return ress;
-}
-
-std::map<std::string, std::string>  Simulation::loadSimulation(std::string filename) 
-{
-    std::map<std::string, std::string> UUIDTranslator;
-
-    SimulationReader simreader(QString::fromStdString(filename));
-    foreach (ModuleEntry me, simreader.getModules()) {
-        Module * m = this->addModule(me.ClassName.toStdString(), false);
-        if (!m) {
-            Logger(DM::Warning) << "Missing Module " << me.ClassName.toStdString();
-            continue;
-        }
-
-        m->setName(me.Name.toStdString());
-        m->setDebugMode(me.DebugMode);
-        UUIDTranslator[me.UUID.toStdString()] = m->getUuid();
-        foreach(QString s, me.ParemterList.keys()) {
-            std::string parameterVal = me.ParemterList[s].toStdString();
-            if (m->getParameterType(s.toStdString()) == DM::FILENAME) {
-                QDir filedir(me.ParemterList[s]);
-                Logger(Debug) << me.ParemterList[s].toStdString();
-                Logger(Debug) << filedir.path().toStdString();
-                if (filedir.isRelative()) {
-                    Logger(Debug) << "load from relative";
-                    QDir simulation_file_dir  = QFileInfo(QString::fromStdString(filename)).absoluteDir();
-                    Logger(Debug) << simulation_file_dir.absolutePath().toStdString();
-                    Logger(Debug) <<  simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
-                    parameterVal = simulation_file_dir.absoluteFilePath(me.ParemterList[s]).toStdString();
-                }
-
-            }
-            m->setParameterValue(s.toStdString(),parameterVal);
-        }
-    }
-    //Reconstruct Groups;
-    foreach (ModuleEntry me, simreader.getModules()) {
-        if (me.GroupUUID != simreader.getRootGroupUUID()) {
-            Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
-            Group * g = (Group *)this->getModuleWithUUID(UUIDTranslator[me.GroupUUID.toStdString()]);
-            m->setGroup(g);
-        }
-    }
-
-    //Call init Functions of the modules
-    foreach (ModuleEntry me, simreader.getModules()) {
-        Module * m = this->getModuleWithUUID(UUIDTranslator[me.UUID.toStdString()]);
-        if (!m) continue;
-        m->init();
-    }
-
-    foreach (LinkEntry le, simreader.getLinks()) {
-        std::string outPortUUID = UUIDTranslator[le.OutPort.UUID.toStdString()];
-        std::string inPortUUID = UUIDTranslator[le.InPort.UUID.toStdString()];
-        DM::Port * p_out = 0;
-        DM::Port * p_in = 0;
-        if (!inPortUUID.empty() && !outPortUUID.empty() ) {
-
-            if (le.OutPort.isTuplePort == 1) {
-                Group * g = (Group*) this->getModuleWithUUID(outPortUUID);
-                bool isWithinThisGroup = false;
-                if (g->getUuid().compare(this->getModuleWithUUID(inPortUUID)->getGroup()->getUuid() ) == 0) {
-                    isWithinThisGroup = true;
-                }
-                if (!isWithinThisGroup)     {
-                    PortTuple *pt =  g->getOutPortTuple(le.OutPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_out = pt->getOutPort();
-                } else {
-                    PortTuple *pt =  g->getInPortTuple(le.OutPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "OutPorttuple " << le.OutPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_out = pt->getOutPort();
-
-                }
-
-            }else {
-
-                p_out = this->getModuleWithUUID(outPortUUID)->getOutPort(le.OutPort.PortName.toStdString());
-            }
-            if (le.InPort.isTuplePort == 1) {
-                //Check if Connected Module is within this group
-                Group * g = (Group*) this->getModuleWithUUID(inPortUUID);
-                bool isWithinThisGroup = false;
-                if (g->getUuid().compare(this->getModuleWithUUID(outPortUUID)->getGroup()->getUuid() ) == 0) {
-                    isWithinThisGroup = true;
-                }
-                if (!isWithinThisGroup){
-                    PortTuple *pt =  g->getInPortTuple(le.InPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_in = pt->getInPort();
-                } else {
-                    PortTuple *pt =  g->getOutPortTuple(le.InPort.PortName.toStdString());
-                    if (pt == 0) {
-                        Logger(Error) << "InPorttuple " << le.InPort.PortName.toStdString() <<"doesn't exist";
-                        continue;
-                    }
-                    p_in = pt->getInPort();
-                }
-            } else {
-                p_in = this->getModuleWithUUID(inPortUUID)->getInPort(le.InPort.PortName.toStdString());
-            }
-            ModuleLink * l = this->addLink(p_out, p_in);
-
-            if (l != 0)
-                l->setBackLink(le.backlink);
-        }
-    }
-
-    return UUIDTranslator;
-
-}
-
-Module * Simulation::resetModule(std::string UUID) 
-{
-    Logger(Debug) << "Reset Module " << UUID;
-    Module * m = this->getModuleWithUUID(UUID);
-    if(!m)
-        return 0;
-
-    Module * new_m =  this->moduleRegistry->createModule(m->getClassName());
-    new_m->setSimulation(this);
-    if(!new_m)
-        return m;
-
-    new_m->copyParameterFromOtherModule(m);
-    //Need to call the init function from the module after the parameters are copied to create the ports
-    new_m->init();
-
-    foreach(Port * p, m->getInPorts()) {
-        foreach(ModuleLink * l, p->getLinks()) {
-            std::string name = l->getInPort()->getLinkedDataName();
-			Port *pIn = new_m->getInPort(name);
-			if(!pIn){
-				Logger(Error) << "Cant find port " << name << " in module " << new_m->getClassName();
-				continue;
-			}
-            l->setInPort(pIn);
-            p->removeLink(l);
-        }
-
-    }
-    foreach(Port * p, m->getOutPorts()) {
-        foreach(ModuleLink * l, p->getLinks()) {
-            std::string name = l->getOutPort()->getLinkedDataName();
-			Port* pOut = new_m->getOutPort(name);
-			if(!pOut){
-				Logger(Error) << "Cant find port " << name << " in module " << new_m->getClassName();
-				continue;
-			}
-            l->setOutPort(pOut);
-            p->removeLink(l);
-        }
-    }
-
-    if (m->isGroup()) {
-        Group * g = (Group *) m;
-        Group * new_g= (Group *) new_m;
-
-        foreach (PortTuple *  pt, g->getInPortTuples()) {
-            std::string name = pt->getName();
-            PortTuple * pt_new = new_g->getInPortTuple(name);
-            Port * p = pt->getInPort();
-            foreach(ModuleLink * l, p->getLinks()) {
-                l->setInPort(pt_new->getInPort());
-                p->removeLink(l);
-            }
-            p = pt->getOutPort();
-            foreach(ModuleLink * l, p->getLinks()) {
-                l->setOutPort(pt_new->getOutPort());
-                p->removeLink(l);
-            }
-        }
-
-        foreach (PortTuple *  pt, g->getOutPortTuples()) {
-            std::string name = pt->getName();
-            PortTuple * pt_new = new_g->getOutPortTuple(name);
-            Port * p = pt->getInPort();
-            foreach(ModuleLink * l, p->getLinks()) {
-                l->setInPort(pt_new->getInPort());
-                p->removeLink(l);
-            }
-            p = pt->getOutPort();
-            foreach(ModuleLink * l, p->getLinks()) {
-                l->setOutPort(pt_new->getOutPort());
-                p->removeLink(l);
-            }
-        }
-        foreach (Module * m, g->getModules())
-            m->setGroup(new_g);
-
-        g->clearModules();
-    }
-    delete m;
-    Modules[new_m->getUuid()] = new_m;
-    return new_m;
-}
-std::vector<ModuleLink*> Simulation::getLinks() 
-{
-    std::vector<ModuleLink*> links;
-    foreach (Module * m, this->getModules()) 
-	{
-        foreach(Port * p, m->getInPorts())
-            foreach(ModuleLink * l, p->getLinks())
-                links.push_back(l);
-
-        if (m->isGroup()) 
-		{
-            Group * g = (Group *) m;
-            foreach (PortTuple *  pt, g->getInPortTuples()) 
-			{
-                Port * p = pt->getInPort();
-                foreach(ModuleLink * l, p->getLinks())
-                    links.push_back(l);
-            }
-            foreach (PortTuple *  pt, g->getOutPortTuples()) 
-			{
-                Port * p = pt->getInPort();
-                foreach(ModuleLink * l, p->getLinks())
-                    links.push_back(l);
-            }
-        }
-    }
-    return links;
-}
-
-int Simulation::getSimulationStatus() {
-    return this->data->simulationStatus;
-}
-
-void Simulation::setSimulationStatus(int Status) {
-    this->data->simulationStatus = Status;
-}
-
-std::vector<std::string> Simulation::getLoadModuleFiles()
-{
-    return this->loadedModuleFiles;
-}
-
-std::vector<Module*> Simulation::getModules() const{
-    std::vector<Module*> ms;
-
-    for (std::map<std::string, Module*>::const_iterator it = this->Modules.begin(); it != this->Modules.end(); ++it)
-        ms.push_back(it->second);
-	// mforeach causes a crash for unknown reason
-	//mforeach(Module* m, Modules)
-	//	ms.push_back(m);
-    return ms;
-}
-#endif
-
-
 
 }
 
