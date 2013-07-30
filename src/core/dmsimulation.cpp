@@ -385,12 +385,14 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 		return false;
 	}
 
-
 	std::vector<Link*> nextLinks;
 	std::map<std::string, DM::View>* curStreamViews;
 
 	if(into)
-	{
+	{		
+		DM::Logger(DM::Debug) << "initializing group '" << g->getClassName() << "'";
+		g->init();
+
 		nextLinks = getIntoGroupLinks(g, streamName);
 		curStreamViews = &g->streamViews[streamName];
 	}
