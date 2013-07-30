@@ -55,13 +55,17 @@ CalculateBoundingBox::CalculateBoundingBox()
 }
 
 void CalculateBoundingBox::init() {
-    city = this->getData("Data");
+   /* city = this->getData("Data");
     if (city == 0)
-        return;
+        return;*/
+
     /*std::vector<std::string> views = city->getNamesOfViews();
 
     foreach (std::string s, views)
         DM::Logger(DM::Debug) << s;*/
+	DM::View v = getViewInStream("Data", NameOfExistingView);
+	if(v.getName().length() == 0)
+		return;
 
     if (this->NameOfExistingView.empty())
         return;
@@ -82,9 +86,9 @@ void CalculateBoundingBox::init() {
     newFaces.addAttribute("y_min");
     newFaces.addAttribute("y_max");
 
-    DM::View * v = city->getViewDefinition(NameOfExistingView);
-    DM::View writeView = DM::View(v->getName(), v->getType(), DM::READ);
+    DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
     if (!this->overAll) {
+
         writeView.addLinks(newFaces.getName(), newFaces);
         newFaces.addLinks(writeView.getName(), writeView);
     }

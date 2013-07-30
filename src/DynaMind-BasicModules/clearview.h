@@ -17,7 +17,6 @@ public:
 
     bool createInputDialog();
    // DM::System * getSystemIn();
-
     std::string getHelpUrl();
 
 };

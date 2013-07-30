@@ -51,9 +51,9 @@ DM::System * ClearView::getSystemIn() {
     return this->sys_in;
 }
 */
+
 string ClearView::getHelpUrl()
 {
     return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Clearview";
 }
-
 

@@ -120,5 +120,3 @@ void GUILoopGroup::accept()
 	m->getParameter("Runs")->set(ui->repeats->value());
 	QDialog::accept();
 }
-
-
