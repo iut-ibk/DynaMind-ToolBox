@@ -36,12 +36,13 @@ GUICellularAutomata_Neighbourhood::GUICellularAutomata_Neighbourhood(GUICellular
     gui = GUICellular;
     ui->setupUi(this);
     this->m = GUICellular->getModule();
-    /* TODO
-	
-	std::map<std::string, std::vector<DM::View> > views =  m->getViews();
-    std::vector<View> data = views["RasterDataIn"];
-    foreach (View v, data)
-        ui->comboBox_landscapes->addItem(QString::fromStdString(v.getName()));*/
+   
+	//std::map<std::string, std::vector<DM::View> > views =  m->getViews();
+    //std::vector<View> data = views["RasterDataIn"];
+    //foreach (View v, data)
+	foreach(View v, m->getViewsInStream("RasterDataIn"))
+        ui->comboBox_landscapes->addItem(QString::fromStdString(v.getName()));
+
     ui->comboBox_neigh->addItem("Moore");
     ui->comboBox_neigh->addItem("Neumann");
     ui->comboBox_neigh->addItem("CurrentValue");
