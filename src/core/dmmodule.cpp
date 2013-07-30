@@ -316,7 +316,7 @@ RasterData* Module::getRasterData(std::string name, View view)
 		return NULL;
 	}
 	if(view.getAccessType() == WRITE)
-		return data->addRasterData(new RasterData());
+		return data->addRasterData(new RasterData(), view);
 	else
 	{
 		mforeach(Component* c, getData(name)->getAllComponentsInView(view))
