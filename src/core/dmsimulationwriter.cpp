@@ -31,7 +31,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <dmport.h>
-#include <dmmodulelink.h>
 #include <dmgroup.h>
 #include <dmporttuple.h>
 #include <sstream>

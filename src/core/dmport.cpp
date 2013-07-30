@@ -24,7 +24,6 @@
  *
  */
 #include "dmport.h"
-#include <dmmodulelink.h>
 #include <dmmodule.h>
 #include <stdio.h>
 #include <stdlib.h>
