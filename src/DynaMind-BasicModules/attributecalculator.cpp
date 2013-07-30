@@ -27,6 +27,7 @@
 #include "attributecalculator.h"
 #include "guiattributecalculator.h"
 #include "userdefinedfunctions.h"
+#include "loopgroup.h"
 
 DM_DECLARE_NODE_NAME(AttributeCalculator, Modules)
 
@@ -51,10 +52,10 @@ AttributeCalculator::AttributeCalculator()
 }
 
 void AttributeCalculator::init() {
-    this->sys_in = this->getData("Data");
+    //this->sys_in = this->getData("Data");
 
-    if (!this->sys_in)
-        return;
+    //if (!this->sys_in)
+    //    return;
     if (nameOfBaseView.empty())
         return;
     if (nameOfNewAttribute.empty())
@@ -62,14 +63,14 @@ void AttributeCalculator::init() {
     if (equation.empty())
         return;
 
-
-    DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
-    if (!baseView)
+    //DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
+	DM::View baseView  = getViewInStream("Data", nameOfBaseView);
+	if (baseView.getName().length() == 0)
         return;
 
     viewsmap.clear();
     varaibleNames.clear();
-    DM::View writeView = DM::View(baseView->getName(), baseView->getType(), DM::READ);
+    DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
     writeView.addAttribute(nameOfNewAttribute);
     viewsmap[nameOfBaseView] = writeView;
     for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
@@ -82,10 +83,11 @@ void AttributeCalculator::init() {
         varaibleNames.push_back(it->second);
 
         if (viewsmap.find(viewname) == viewsmap.end()) {
-            baseView = this->sys_in->getViewDefinition(viewname);
-            if (!baseView)
-                return;
-            viewsmap[viewname] = DM::View(baseView->getName(), baseView->getType(), DM::READ);
+            //baseView = this->sys_in->getViewDefinition(viewname);
+			baseView  = getViewInStream("Data", viewname);
+			if (baseView.getName().length() == 0)
+				return;
+            viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
         }
 
         DM::View toAppend =  viewsmap[viewname];
@@ -211,7 +213,15 @@ void AttributeCalculator::run() {
 
     mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
     {
-        mp_counter= (int) this->getInternalCounter()+1;
+        //mp_counter= (int) this->getInternalCounter()+1;
+		LoopGroup* lg = dynamic_cast<LoopGroup*>(getOwner());
+		if(lg)
+			mp_counter = lg->currentRun+1;
+		else
+		{
+			DM::Logger(DM::Warning) << "attribute calc: counter not found";
+			mp_counter = 0;
+		}
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
              it != variablesMap.end();
              ++it)
