@@ -94,14 +94,13 @@ public:
 
 }
 inline void addCorineConstants(mu::Parser * p){
-	/*
-    dm::ContUrbanFabric = DM::ContUrbanFabric;
-    dm::DisContUrbanFabric= DM::DisContUrbanFabric;
-    dm:: RoadRailNetwork= DM::RoadRailNetwork;
-    dm::WaterBodies= DM::WaterBodies;
-    dm::AgriculturalAreas= DM::AgriculturalAreas;
-    dm::ForestsSemiNatural= DM::ForestsSemiNatural;
-	*/
+
+    dm::ContUrbanFabric		= 2;
+    dm::DisContUrbanFabric	= 3;
+    dm::RoadRailNetwork		= 4;
+    dm::WaterBodies			= 5;
+    dm::AgriculturalAreas	= 6;
+    dm::ForestsSemiNatural	= 7;
 
     p->DefineVar("ContUrbanFabric", & dm::ContUrbanFabric);
     p->DefineVar("DisContUrbanFabric",& dm::DisContUrbanFabric);
@@ -109,7 +108,6 @@ inline void addCorineConstants(mu::Parser * p){
     p->DefineVar("AgriculturalAreas",& dm::AgriculturalAreas);
     p->DefineVar("ForestsSemiNatural", & dm::ForestsSemiNatural);
     p->DefineVar("WaterBodies",& dm::WaterBodies);
-
 }
 
 
