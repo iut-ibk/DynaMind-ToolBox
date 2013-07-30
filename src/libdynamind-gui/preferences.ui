@@ -280,6 +280,67 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Servers</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>WFS Server</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_remove_wfs">
+              <property name="minimumSize">
+               <size>
+                <width>10</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QPushButton" name="pushButton_add_wfs">
+              <property name="minimumSize">
+               <size>
+                <width>10</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>+</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QTreeWidget" name="treeWidget_wfs_server">
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>

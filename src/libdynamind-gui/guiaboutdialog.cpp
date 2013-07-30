@@ -1,6 +1,7 @@
 #include "guiaboutdialog.h"
 #include "ui_guiaboutdialog.h"
 #include "guisimulation.h"
+#include <QDir>
 GUIAboutDialog::GUIAboutDialog(GUISimulation * sim, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GUIAboutDialog)
@@ -14,6 +15,8 @@ GUIAboutDialog::GUIAboutDialog(GUISimulation * sim, QWidget *parent) :
     foreach(std::string m, modules) {
         ui->listModules->addItem(QString::fromStdString(m));
     }*/
+
+    ui->label_tmp->setText(QDir::tempPath());
 
 
 

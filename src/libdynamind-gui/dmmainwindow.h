@@ -44,7 +44,7 @@
 #include <QVector>
 #include <moduledescription.h>
 #include <ui_dmmainwindow.h>
-//#include <GuiSimulationReader.h>
+#include <fstream>
 
 class QTreeWidgetItem;
 
@@ -110,6 +110,7 @@ private:
 
 	QThread *simulationThread;
 	GuiSimulationObserver* simulationThreadWrapper;
+	std::ofstream* outputFile;
 public slots:
     void runSimulation();
     void sceneChanged();

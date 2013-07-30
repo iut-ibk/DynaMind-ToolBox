@@ -67,6 +67,8 @@
 
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
+
+
 /*
 void outcallback( const char* ptr, std::streamsize count, void* pTextBox )
 {
@@ -191,11 +193,24 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     Q_INIT_RESOURCE(icons);
     ui->setupUi(this);
     log_updater = new GuiLogSink();
+
+	QDateTime time = QDateTime::currentDateTime();
+    QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
+
+    if(QFile::exists(logfilepath))
+        QFile::remove(logfilepath);
+
+    outputFile = new ofstream();
+    outputFile->open(logfilepath.toStdString().c_str());
+    DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
+	
 #if defined DEBUG || _DEBUG
     DM::Log::init(log_updater,DM::Debug);
 #else
     DM::Log::init(log_updater,DM::Standard);
 #endif
+
+    DM::Log::addLogSink(file_log_updater);
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
@@ -226,6 +241,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 
     //ui->log_widget->connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(appendPlainText(QString)), Qt::QueuedConnection);
 	connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(newLogLine(QString)), Qt::QueuedConnection);
+
     connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
     connect( ui->actionPreferences, SIGNAL ( triggered() ), this, SLOT(preferences() ), Qt::DirectConnection );
     connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
@@ -687,6 +703,7 @@ DMMainWindow::~DMMainWindow() {
     //delete this->simulation;
 	//foreach(SimulationTab *w, tabs)
 	//	delete w;
+	outputFile->close();
 	delete simulationThreadWrapper;
 }
 

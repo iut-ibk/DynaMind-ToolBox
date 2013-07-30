@@ -40,6 +40,7 @@ public slots:
     void openFileDialog();
     void add();
     void remove();
+    void on_pushButton_add_wfs_clicked();
 };
 
 #endif // PREFERENCES_H
