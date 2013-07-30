@@ -35,44 +35,35 @@
 #include "dmcompilersettings.h"
 class ModuleDescription;
 
-
-
 class DM_HELPER_DLL_EXPORT  GUIModelNode : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QMap<QString, QWidget *> elements;
-    QGridLayout *layout1 ;
-    ModuleDescription * moduleDescription;
-    DM::Module * module;
-    QMap<QString, QGridLayout * > UserDefinedContainer;
-    QString GroupID;
-    ModelNode * modelnode;
-
-
-
+	QMap<QString, QWidget *> elements;
+	QGridLayout *layout1 ;
+	ModuleDescription * moduleDescription;
+	DM::Module * module;
+	QMap<QString, QGridLayout * > UserDefinedContainer;
+	QString GroupID;
+	ModelNode * modelnode;
 
 public:
-    GUIModelNode(DM::Module * m, ModelNode * mn = 0, QWidget * parent = 0);
-
-    ~GUIModelNode();
-
+	GUIModelNode(DM::Module * m, ModelNode * mn = 0, QWidget * parent = 0);
+	~GUIModelNode();
 
 public slots:
-    void accept();
-    void reject();
-    void help();
-    void addUserDefinedItem();
-    void addUserDefinedDoubleItem();
-    void addUserDefinedTuple();
-    void addTuplePort();
-    void openFileDialog();
-    void removeUserDefinedItem();
-    void removeUserDefinedTuple();
+	void accept();
+	void reject();
+	void help();
+	void addUserDefinedItem();
+	void addUserDefinedDoubleItem();
+	void addUserDefinedTuple();
+	void openFileDialog();
+	void removeUserDefinedItem();
+	void removeUserDefinedTuple();
 
 signals:
-    void selectFiles(QString s);
-
+		void selectFiles(QString s);
 };
 
 #endif // GUIMODELNODE_H

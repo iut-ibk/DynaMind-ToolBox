@@ -233,34 +233,6 @@ GUIModelNode::~GUIModelNode()
 {
 }
 
-void GUIModelNode::addTuplePort() {
-    /*
-	QString text = QInputDialog::getText(this, "Input", "");
-    QStringList ls;
-    if (!text.isEmpty()){
-        QString s = QObject::sender()->objectName();
-        QStringList ls1 = s.split("|");
-        QString TypeInfo = ls1[0];
-        if (TypeInfo.compare("InputTupleRaster") == 0 || TypeInfo.compare("InputTupleVector") == 0 || TypeInfo.compare("InputTupleDouble") == 0) {
-            DM::Group * g = (DM::Group *) this->module;
-            QString s =text;
-            QLabel * l = new QLabel;
-            QPushButton * delp = new QPushButton ;
-
-            delp->setObjectName(ls1[0] + "|"  + s);
-            delp->setText("-");
-            l->setText(s);
-            connect(delp, SIGNAL(clicked()), this, SLOT(removeUserDefinedItem()));
-            this->UserDefinedContainer[ ls1[1]]->addWidget(l, this->UserDefinedContainer[ ls1[1]]->rowCount(),1);
-            this->UserDefinedContainer[ ls1[1]]->addWidget(delp, this->UserDefinedContainer[ ls1[1]]->rowCount()-1,0);
-            GroupNode * gn = (GroupNode * )this->module;
-
-            DM::PortTuple * pt;
-
-            gn->addTuplePort(pt);
-        }
-    }*/
-}
 void GUIModelNode::addUserDefinedItem() {
     QString text = QInputDialog::getText(this, "Input", "");
     QStringList ls;
