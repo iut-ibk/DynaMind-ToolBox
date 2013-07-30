@@ -163,18 +163,6 @@ System::~System()
     Component::SQLDelete();
 }
 
-void System::setAccessedByModule(Module * m) 
-{
-	QMutexLocker ml(mutex);
-
-    this->lastModule = m;
-}
-
-Module * System::getLastModule() const 
-{
-    return this->lastModule;
-}
-
 void System::updateViews(Component * c) 
 {
 	QMutexLocker ml(mutex);

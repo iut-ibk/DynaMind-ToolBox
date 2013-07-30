@@ -238,11 +238,6 @@ public:
     std::vector<std::string> getUUIDs(const DM::View &view);
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-
-    void setAccessedByModule(Module * m);
-    Module * getLastModule() const;
-
-	
 	// for faster searching - maybe find a better solution for access
 	std::map<std::string, Component*>	componentNameMap;
 };
