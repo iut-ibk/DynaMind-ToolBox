@@ -56,6 +56,11 @@ ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
     timer.setInterval(40);
     timer.setSingleShot(false);
     QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(timerShot()));
+
+	// buttons
+	QObject::connect(ui->addLayer, SIGNAL(pressed()), ui->actionAdd_Layer, SLOT(trigger()));
+	// as it has no function yet, we disable rm layer
+	ui->removeLayer->setDisabled(true);
 }
 
 ViewerWindow::~ViewerWindow() {
@@ -148,9 +153,22 @@ void ViewerWindow::on_layer_listWidget_itemChanged(QListWidgetItem *item) {
 void ViewerWindow::on_layer_listWidget_currentRowChanged(int row) {
     if (row < 0) return;
     Layer *layer = ui->viewer->getLayer(row);
-    ui->color_bar_widget->setTexture(layer->getColorInterpretation());
-    ui->min->setText(QString("%1").arg(layer->getViewMetaData().attr_min));
-    ui->max->setText(QString("%1").arg(layer->getViewMetaData().attr_max));
+	GLuint tex = layer->getColorInterpretation();
+	ui->color_bar_widget->setTexture(tex);
+	if(tex || layer->getHeightInterpretation() > 0)
+	{
+		ui->min->setText(QString("%1").arg(layer->getViewMetaData().attr_min));
+		ui->max->setText(QString("%1").arg(layer->getViewMetaData().attr_max));
+		ui->min->setEnabled(true);
+		ui->max->setEnabled(true);
+	}
+	else
+	{
+		ui->min->setText("");
+		ui->max->setText("");
+		ui->min->setEnabled(false);
+		ui->max->setEnabled(false);
+	}
 }
 
 void ViewerWindow::timerShot() {

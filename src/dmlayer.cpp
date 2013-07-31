@@ -233,8 +233,9 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
       attribute_vector_name(0),
       scale_height(-1),
       as3DObject(D3Ojbect),
-      asMesh(asMesh){
-
+      asMesh(asMesh)
+{
+	texture = 0;
     QString attr = QString::fromStdString(a);
     QStringList view_attr = attr.split(":");
 

@@ -39,6 +39,27 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
+        <widget class="QListWidget" name="layer_listWidget"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,0">
+         <item>
+          <widget class="QPushButton" name="addLayer">
+           <property name="text">
+            <string>add layer</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="removeLayer">
+           <property name="text">
+            <string>remove layer</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QLabel" name="label">
          <property name="text">
           <string>Layer Offset:</string>
@@ -226,12 +247,9 @@
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="layer_listWidget"/>
-       </item>
-       <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Layer:</string>
+          <string>Legend</string>
          </property>
         </widget>
        </item>
