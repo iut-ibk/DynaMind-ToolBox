@@ -6,4 +6,4 @@ The following figure shows the input dialog and an example input. Here component
 
 ![DialogBox][]
 
-[DialogBox]:images/AddDataToNewView.png width=100mm
+[DialogBox]:images/AddDataToNewView.png
