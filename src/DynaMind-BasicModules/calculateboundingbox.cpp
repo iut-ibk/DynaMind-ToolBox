@@ -324,5 +324,5 @@ void CalculateBoundingBox::run() {
 
 std::string CalculateBoundingBox::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/CalculateBoundingBox";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/CalculateBoundingBox.md";
 }

@@ -51,5 +51,5 @@ void FaceToEdge::run()
 
 string FaceToEdge::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Facetoedge";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/FaceToEdge.md";
 }

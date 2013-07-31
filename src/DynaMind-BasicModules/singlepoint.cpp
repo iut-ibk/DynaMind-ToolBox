@@ -33,7 +33,7 @@ void SinglePoint::init() {
 
 string SinglePoint::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Singlepoint";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/SinglePoint.md";
 }
 
 void SinglePoint::run() {

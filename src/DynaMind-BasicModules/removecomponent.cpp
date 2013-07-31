@@ -91,7 +91,7 @@ void RemoveComponent::run() {
 
 string RemoveComponent::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Removecomponent";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/RemoveComponent.md";
 }
 
 
