@@ -4,7 +4,7 @@ The page gives an overview of the available modules. Not all modules that are in
 ## Basic Modules
 |Name|Short description|
 |----|-----------------|
-|[ImportwithGDAL](Importwithgdal)|loads shapefiles, geoTIFFs, or load data from a WFS server
+|[ImportwithGDAL](Importwithgdal.md)|loads shapefiles, geoTIFFs, or load data from a WFS server
 |[AddDataToNewView](AddDataToNewView)|adds components to another view
 |[AppendAttributes](AppendAttributes)|intersects faces with rasterdata and add sum or median as attribute to face
 |[AppendViewFromSystem](AppendViewFromSystem)|copies several userdefined datastreams in a new one (try to use [JoinDatastreams](JoinDatastreams) instead)
