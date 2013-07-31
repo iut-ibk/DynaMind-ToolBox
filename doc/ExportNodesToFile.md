@@ -1,5 +1,5 @@
 [List of Bacis Modules](List_of_Basic_Modules.md)
-#ExportnodesToFile
+#ExportNodesToFile
 
 The module exports nodes and their attributes into a text file
 
