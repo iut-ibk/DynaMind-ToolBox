@@ -155,7 +155,7 @@ void JoinDatastreams::addSystem(std::string sys) {
 
 string JoinDatastreams::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/JoinDatastreams";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/JoinDatastreams.md";
 }
 
 bool JoinDatastreams::createInputDialog() {

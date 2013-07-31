@@ -94,7 +94,7 @@ bool AppendAttributes::createInputDialog() {
 
 string AppendAttributes::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/AppendAttributes";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/AppendAttributes.md";
 }
 
 void AppendAttributes::init()

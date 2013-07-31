@@ -154,5 +154,5 @@ void AddDataToNewView::addAttribute(string s) {
 
 string AddDataToNewView::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/AddDataToNewView";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/AddDataToNewView.md";
 }

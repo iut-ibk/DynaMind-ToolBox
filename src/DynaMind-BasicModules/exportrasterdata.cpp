@@ -76,7 +76,7 @@ void ExportRasterData::init()
 
 string ExportRasterData::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Exportrasterdata";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/ExportRasterData.md";
 }
 
 bool ExportRasterData::createInputDialog() {

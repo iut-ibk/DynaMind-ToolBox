@@ -309,5 +309,5 @@ bool AttributeCalculator::createInputDialog() {
 
 string AttributeCalculator::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/AttributeCalculator";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/AttributeCalculator.md";
 }

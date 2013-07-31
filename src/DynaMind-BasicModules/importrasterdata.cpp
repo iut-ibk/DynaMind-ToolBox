@@ -72,7 +72,7 @@ void ImportRasterData::init()
 
 string ImportRasterData::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Importrasterdata";
+    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/ImportRasterData.md";
 }
 
 void ImportRasterData::run()
