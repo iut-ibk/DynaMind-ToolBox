@@ -4,5 +4,6 @@ The module adds components from an existing view to an new user defined view, in
 
 The following figure shows the input dialog and an example input. Here components assigned to SuperBlock are assigned to the new created View Catchment. Also an new Attribute is Impervious is appended to the component.
 
-[[images/AddDataToNewView.png]]
+![DialogBox][]
 
+[DialogBox]:images/AddDataToNewView.png width=100mm
