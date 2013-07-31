@@ -1,6 +1,6 @@
 DynaMind-BasicModules provides a set of basic module for DynaMind:
 
-## Overview Basic Modules
+## List of Basic Modules
 |Name|Short description|
 |----|-----------------|
 |[ImportwithGDAL](ImportwithGDAL.md)|loads shapefiles, geoTIFFs, or load data from a WFS server
