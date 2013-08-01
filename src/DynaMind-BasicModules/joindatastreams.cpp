@@ -38,16 +38,16 @@ void JoinDatastreams::init()
                         }
                         DM::AttributeMap cmp = sys->getComponent(old->getIdOfDummyComponent())->getAllAttributes();
 
-                        /*for (DM::AttributeMap::const_iterator it = cmp.begin();
+                        for (DM::AttributeMap::const_iterator it = cmp.begin();
                              it != cmp.end();
                              ++it) {
                             if (sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getType() == DM::Attribute::LINK)  {
                                 DM::LinkAttribute l_attr = sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getLink();
-                                v.addLinks(it->first, DM::View(l_attr.viewname, DM::READ, DM::COMPONENT));
+                                new_v.addLinks(it->first, DM::View(l_attr.viewname, DM::READ, DM::COMPONENT));
                             } else {
-                                v.addAttribute(it->first);
+                                new_v.addAttribute(it->first);
                             }
-                        }*/
+                        }
                         combined_datastream.push_back(new_v);
                         //existingViews.push_back(v);
                     }
