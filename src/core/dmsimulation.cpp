@@ -409,7 +409,8 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 	}
 
 	// check if all streams are set
-	// =all pre-modules have been initialized and transmitted view data
+	// = all pre-modules have been initialized and transmitted view data
+	// this can exclusivly be the case on modules with multiple in-ports
 	foreach(std::string portName, m->getInPortNames())
 	{
 		if(m->streamViews.find(portName) == m->streamViews.end())
