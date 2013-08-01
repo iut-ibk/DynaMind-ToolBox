@@ -40,6 +40,7 @@
 #include <QStringList>
 
 #include <dmlog.h>
+#include <dmlogsink.h>
 #include <dmdbconnector.h>
 #include <dmpythonenv.h>
 
@@ -256,8 +257,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
 
 	DM::Simulation s;
-	s.loadModulesFromDefaultLocation();
-	s.addModulesFromSettings();
+	s.registerModulesFromDefaultLocation();
+	s.registerModulesFromSettings();
 	s.loadSimulation(simulationfile);
 
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
