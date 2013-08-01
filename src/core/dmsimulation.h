@@ -208,7 +208,7 @@ private:
 	/** @brief checks the stream for possible missing views */
 	bool checkStream();
 	bool checkModuleStreamForward(Module* m);
-	bool checkModuleStreamForward(Module* m, std::string streamName);
+	//bool checkModuleStreamForward(Module* m, std::string streamName);
 	bool checkModuleStream(Link* link);
 	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
 	bool canceled;

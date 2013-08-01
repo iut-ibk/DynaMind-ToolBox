@@ -298,7 +298,7 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	{
 		links.remove(toDelete);
 		Logger(Debug) << "Deleted link from port " << outPort << "to" << inPort;
-		checkModuleStreamForward(dest, inPort);
+		checkModuleStreamForward(dest);
 		return true;
 	}
 	return false;
@@ -373,7 +373,7 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 		l->dest->streamViews[l->inPort] = *curStreamViews;
 		if(!l->dest->isGroup())
 		{
-			if(!checkModuleStreamForward(l->dest, l->inPort))
+			if(!checkModuleStreamForward(l->dest))
 				success = false;
 		}
 		else
@@ -392,7 +392,7 @@ bool IsWriteOnly(const std::map<std::string, View>& stream)
 			return false;
 	return true;
 }
-
+/*
 typedef std::map<std::string,View> viewmap;
 
 bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
@@ -493,48 +493,129 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 	return success;
 }
+*/
 
 bool Simulation::checkModuleStream(Link* link)
 {
 	if(link->src->isGroup())
 		return checkGroupStreamForward((Group*)link->src, link->outPort, link->isIntoGroupLink);
 	else
-		return checkModuleStreamForward(link->src, link->outPort);
+		return checkModuleStreamForward(link->src);
 }
 
 bool Simulation::checkModuleStreamForward(Module* m)
 {
 	bool success = true;
-	std::map<std::string, std::map<std::string,View>> accessedViews = m->getAccessedViews();
-	if(accessedViews.size() != 0)
-	{
-		// iterate through all streams
-		for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
-			it != accessedViews.end(); ++it)
-		{
-			if(!checkModuleStreamForward(m, it->first))
-				success = false;
-		}
-	}
-	else
-	{
-		if(!m->isGroup())
-		{
-			foreach(std::string inPortName, m->getInPortNames())
-				if(!checkModuleStreamForward(m, inPortName))
-					success = false;
-		}
-		else
-		{
-			foreach(std::string inPortName, m->getInPortNames())
-				if(!checkGroupStreamForward((Group*)m, inPortName, true))
-					success = false;
-		}
-		
-		DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
-		m->init();
-	}
 
+	// check if all streams are set
+	// = all pre-modules have been initialized and transmitted view data
+	// this can exclusivly be the case on modules with multiple in-ports
+	foreach(std::string portName, m->getInPortNames())
+	{
+		if(m->streamViews.find(portName) == m->streamViews.end())
+		{
+			DM::Logger(DM::Debug) << "module '" << m->getClassName() << "' waiting for other streams";
+			m->setStatus(MOD_UNTOUCHED);
+			return true;
+		}
+	}
+	/*
+	// check if we are in the middle of an unchecked stream
+	foreach(std::string inPortName, m->getInPortNames())
+	if(m->streamViews[inPortName].size() == 0)
+	{
+		m->setStatus(MOD_CHECK_ERROR);
+		DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
+
+		return false;
+	}
+	*/
+	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
+	m->init();
+
+	// updated stream consist of input stream + written streams in this module
+	std::map<std::string, std::map<std::string,View> > updatedStreams = m->streamViews;
+
+	//for(std::map<std::string, std::map<std::string,View> >::iterator it = m->streamViews.begin(); 
+	//	it != m->streamViews.end(); ++it)
+	for(std::map<std::string, std::map<std::string,View> >::iterator it = m->accessedViews.begin(); 
+		it != m->accessedViews.end(); ++it)
+	{
+		const std::string& streamName = it->first;
+		DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
+		
+		//mforeach(const View& v, m->accessedViews[streamName])
+		mforeach(const View& v, it->second)
+		{
+			if(v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
+				continue;				// but for backwards compatibility its necessary
+
+			const int a = v.getAccessType();
+			if(a == READ || a == MODIFY)
+			{
+				// check if we can access the desired view
+				if(!map_contains(&m->streamViews[streamName], v.getName()))
+				{
+					DM::Logger(DM::Error) << "module '" << m->getClassName() 
+						<< "' tries to access the nonexisting view '" << v.getName()
+						<< "' from stream '" << streamName << "'";
+					m->setStatus(MOD_CHECK_ERROR);
+					success = false;
+					continue;
+				}
+			}
+			else if(a == WRITE)	// add new views
+				updatedStreams[streamName][v.getName()] = v;
+		}
+	}
+	if(!success)
+		return success;
+	
+	m->setStatus(MOD_CHECK_OK);
+	
+	// shift views to next module
+	// loop thought all out ports
+	//for(std::map<std::string, std::map<std::string,View> >::iterator it = updatedStreams.begin(); 
+	//	it != updatedStreams.end(); ++it)
+	foreach(std::string outPortName, m->getOutPortNames())
+	{
+		//const std::string& streamName = it->first;
+		// get all out ports, all assigned links and push forward
+		std::vector<Link*> outLinks;
+		//foreach(std::string outPortName, m->getOutPortNames())
+			foreach(Link* outLink, getOutgoingLinks(m, outPortName))
+				outLinks.push_back(outLink);
+
+		foreach(Link* l, outLinks)
+		{
+			std::map<std::string,View> outStream = updatedStreams[outPortName];
+			if(l->outPort != outPortName)
+			{
+				const std::map<std::string,View>& streamAccess = m->accessedViews[l->outPort];
+				if(IsWriteOnly(streamAccess))
+					outStream = m->accessedViews[l->outPort];
+				else
+					continue;
+			}
+
+			if(outStream.size() == 0)
+				continue;
+
+			if(!l->isOutOfGroupLink)
+				l->dest->streamViews[l->inPort] = outStream;
+			else
+				((Group*)l->dest)->outStreamViews[l->inPort] = outStream;
+
+			if(!l->dest->isGroup())
+			{
+				if(!checkModuleStreamForward(l->dest))
+					success = false;
+			}
+			else
+				if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
+					success = false;
+		}
+	}
 	return success;
 }
 
@@ -544,9 +625,10 @@ bool Simulation::checkStream()
 	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)
 		if(m->getInPortNames().size() == 0)
-			foreach(std::string outPort, m->getOutPortNames())
-				if(!checkModuleStreamForward(m, outPort))
-					success = false;
+			checkModuleStreamForward(m);
+			//foreach(std::string outPort, m->getOutPortNames())
+			//	if(!checkModuleStreamForward(m, outPort))
+			//		success = false;
 
 	return success;
 }
