@@ -393,6 +393,8 @@ bool IsWriteOnly(const std::map<std::string, View>& stream)
 	return true;
 }
 
+typedef std::map<std::string,View> viewmap;
+
 bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 {
 	bool success = true;
@@ -405,6 +407,18 @@ bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
 
 		return false;
 	}
+
+	// check if all streams are set
+	// =all pre-modules have been initialized and transmitted view data
+	foreach(std::string portName, m->getInPortNames())
+	{
+		if(m->streamViews.find(portName) == m->streamViews.end())
+		{
+			DM::Logger(DM::Debug) << "module '" << m->getClassName() << "' waiting for other streams";
+			return true;
+		}
+	}
+
 	// update stream view info in module
 	std::map<std::string,View> updatedStream = *curStreamViews;
 	
