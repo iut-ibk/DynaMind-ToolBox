@@ -977,8 +977,6 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 				}
 				m->setParameterValue(it.key().toStdString(), value);
 			}
-			// we init now (probably two times) to init e.g. ports
-			m->init();
 		}
 		else
 			DM::Logger(Error) << "creating module '" << me.ClassName.toStdString() << "' failed";
@@ -999,6 +997,12 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 			DM::Logger(Error) << "corrupt link";
 		else
 		{
+			// we may want to init for initializing ports
+			if(!src->hasOutPort(outPort))
+				src->init();
+			if(!dest->hasInPort(inPort))
+				dest->init();
+
 			if(!addLink(src, outPort, dest, inPort, false))
 				DM::Logger(Error) << "could not establish link between "
 				<< src->getClassName() << ":" << outPort << " and "
