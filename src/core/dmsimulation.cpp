@@ -561,7 +561,6 @@ bool Simulation::checkModuleStreamForward(Module* m)
 						<< "' from stream '" << streamName << "'";
 					m->setStatus(MOD_CHECK_ERROR);
 					success = false;
-					continue;
 				}
 			}
 			else if(a == WRITE)	// add new views
