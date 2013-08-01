@@ -808,11 +808,12 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 				&&	l.InPort.UUID == bl.InPort.UUID
 				&&	l.OutPort.PortName == bl.OutPort.PortName
 				&&	l.OutPort.UUID == bl.OutPort.UUID)
-				index = i;
 			{
+				index = i;
 				break;
-				i++;
 			}
+			else
+				i++;
 		}
 		if(index>0)
 			links.remove(index); // TODO check
