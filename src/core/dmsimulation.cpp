@@ -289,7 +289,13 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 			l->dest == dest && 
 			l->inPort == inPort)
 		{
+			// reset resets all stream views 
+			// lets keep the ones not affected by this link
+			std::map<std::string, std::map<std::string,View> > streamViews = l->dest->streamViews;
+			streamViews.erase(l->inPort);
 			l->dest->reset();
+			l->dest->streamViews = streamViews;
+
 			toDelete = l;
 			break;
 		}
