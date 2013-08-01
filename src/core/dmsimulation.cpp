@@ -554,13 +554,40 @@ bool Simulation::checkModuleStreamForward(Module* m)
 			if(a == READ || a == MODIFY)
 			{
 				// check if we can access the desired view
-				if(!map_contains(&m->streamViews[streamName], v.getName()))
+				View existingView;
+				if(!map_contains(&m->streamViews[streamName], v.getName(), existingView))
 				{
 					DM::Logger(DM::Error) << "module '" << m->getClassName() 
 						<< "' tries to access the nonexisting view '" << v.getName()
 						<< "' from stream '" << streamName << "'";
 					m->setStatus(MOD_CHECK_ERROR);
 					success = false;
+				}
+				else
+				{
+					// check if all attributes are ready existing
+					std::vector<std::string> existingAttributes = existingView.getAllAttributes();
+					foreach(std::string attributeName, v.getReadAttributes())
+					{
+						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
+							== existingAttributes.end())
+						{
+							DM::Logger(DM::Error) << "module '" << m->getClassName()
+								<< "' tries to access the nonexisting attribute '" << attributeName
+								<< "' in view '" << v.getName()
+								<< "' from stream '" << streamName << "'";
+							m->setStatus(MOD_CHECK_ERROR);
+							success = false;
+						}
+					}
+					foreach(std::string attributeName, v.getWriteAttributes())
+					{
+						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
+							== existingAttributes.end())
+						{
+							updatedStreams[streamName][v.getName()].addAttribute(attributeName);
+						}
+					}
 				}
 			}
 			else if(a == WRITE)	// add new views
