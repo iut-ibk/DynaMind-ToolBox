@@ -27,40 +27,20 @@
  *
  * @section DESCRIPTION
  *
- * The class contains the main windows for the DAnCE4Water GUI
+ * The class contains the main windows for the Dynamind GUI
  */
 
 #include "dmmainwindow.h"
 //#include <boost/python.hpp>
 
-
-#include "QDir"
-#include "QThread"
-#include "QTreeWidgetItem"
 #include "QFileDialog"
-#include "QSettings"
-#include "modulereader.h"
-#include <sstream>
-#include "guilink.h"
-#include <QTreeWidget>
-#include "simulationmanagment.h"
-#include <projectviewer.h>
-#include <modelnode.h>
-#include <dmmodule.h>
-#include <dmgroup.h>
-#include <dmsimulation.h>
-#include <groupnode.h>
-#include <QWidget>
-#include <QThreadPool>
 #include <dmlog.h>
 #include <guilogsink.h>
 #include <dmpythonenv.h>
-#include <dmsimulationobserver.h>
 #include <guisimulationobserver.h>
 #include <guisimulation.h>
 #include <rootgroupnode.h>
 #include "preferences.h"
-#include "projectviewer.h"
 #include "guihelpviewer.h"
 #include "guiaboutdialog.h"
 

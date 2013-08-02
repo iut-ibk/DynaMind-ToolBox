@@ -26,7 +26,7 @@
  *
  * @section DESCRIPTION
  *
- * The class contains the main window for the DynaMind Framework
+ * The class contains the main window for the DynaMind GUI
  */
 
 #ifndef MAINWINDOW_H
@@ -34,39 +34,13 @@
 
 #include "dmcompilersettings.h"
 #include <QMainWindow>
-#include <qfuturewatcher.h>
-
-//#include "plot.h"
-
 #include <dmsimulationobserver.h>
-
-#include <QMap>
-#include <QVector>
-#include <moduledescription.h>
 #include <ui_dmmainwindow.h>
 #include <fstream>
 
-class QTreeWidgetItem;
-
-
-class ProjectViewer;
-class ModelNode;
-class SimulationManagment;
-class GroupNode;
 class GuiLogSink;
 class GUISimulation;
-class GUIHelpViewer;
-class QThread;
 class GuiSimulationObserver;
-
-
-namespace DM {
-    class Group;
-}
- namespace Ui {
-    class MainWindow;
-}
-
 
 class SimulationTab;
 
