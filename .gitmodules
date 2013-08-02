@@ -1,6 +1,5 @@
 [submodule "DynaMind"]
 	path = DynaMind
-	 git://github.com/iut-ibk/DynaMind.git
 	url =  git://github.com/iut-ibk/DynaMind.git
 [submodule "DynaMind-BasicModules"]
 	path = DynaMind-BasicModules
