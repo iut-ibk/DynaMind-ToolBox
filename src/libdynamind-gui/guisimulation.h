@@ -29,16 +29,12 @@
 #define GUISIMULATION_H
 #include <dmcompilersettings.h>
 #include <dmsimulation.h>
-#include <dmsimulationobserver.h>
-#include <QVector>
-#include <QString>
-#include <QPointF>
-#include <qobject.h>
 
 class ModelNode;
 class PortNode;
 class SimulationTab;
 class QTabWidget;
+
 namespace DM
 {
 class Group;

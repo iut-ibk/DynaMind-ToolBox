@@ -25,22 +25,15 @@
  */
 
 #include "guisimulation.h"
-//#include <dmmoduleregistry.h>
-#include <dmmodule.h>
-#include <modelnode.h>
 #include <guiport.h>
 #include <groupnode.h>
 #include <rootgroupnode.h>
-//#include <dmlogger.h>
-
 #include <guilink.h>
 #include <dmsimulationreader.h>
 #include <dmsimulationwriter.h>
 #include <simulationio.h>
-
 #include <dmgroup.h>
 #include <qtablewidget.h>
-
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
