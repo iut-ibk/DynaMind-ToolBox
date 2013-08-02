@@ -44,14 +44,13 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 	out << "\t\t"<< "\t<ClassName value=\""
 		<< QString::fromStdString(m->getClassName()) << "\"/>\n";
 	out << "\t\t"<< "\t<UUID value=\""
-		//<< QString::fromStdString(m->getUuid()) << "\"/>\n";
 		<< ADDRESS_TO_INT(m) << "\"/>\n";
 	out << "\t\t"<< "\t<Name value=\""
 		<< QString::fromStdString(m->getName()) << "\"/>\n";
 	out << "\t\t"<< "\t<GroupUUID value=\""
 		<< ADDRESS_TO_INT(owner) << "\"/>\n";
 	out << "\t\t"<< "\t<DebugMode value=\""
-		<< QString::number(0) << "\"/>\n";
+		<< QString::number(m->isSuccessorMode()?1:0) << "\"/>\n";
 
 	foreach(Module::Parameter* p, m->getParameters())
 	{
