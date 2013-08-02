@@ -40,11 +40,11 @@ namespace DM
 class Group;
 }
 
-#if defined _MSC_VER && defined _WIN32
-enum PortType;
-#else
-enum PortType : unsigned int;
-#endif
+//#if defined _MSC_VER && defined _WIN32
+//enum PortType;
+//#else
+//enum PortType : unsigned int;
+//#endif
 
 class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
 {
