@@ -396,6 +396,9 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 	}
 	if(success) 
 		g->setStatus(MOD_CHECK_OK);
+	else
+		g->setStatus(MOD_CHECK_ERROR);
+
 	return success;
 }
 
