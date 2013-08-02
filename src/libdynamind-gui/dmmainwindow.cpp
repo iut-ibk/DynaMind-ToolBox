@@ -211,6 +211,9 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 #endif
 
     DM::Log::addLogSink(file_log_updater);
+
+	DM::Logger() << "logfile: " << logfilepath;
+
     running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
