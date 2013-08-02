@@ -127,6 +127,10 @@ struct TesselatedFaceDrawer {
 		{
             render();
             polygon.clear();
+			
+            glEnd();
+			glPopName();
+
             name_start++;
             current_height = 0.0;
             current_tex = 0.0;
@@ -156,9 +160,13 @@ struct TesselatedFaceDrawer {
 			}
             else
                 current_tex = 0.0;
+
+			glPushName(name_start);
+			glBegin(GL_POLYGON);
         }
 		else
 			polygon.push_back(Point_2(point->x, point->y));
+
     }
 
     void render() {
@@ -189,11 +197,9 @@ struct TesselatedFaceDrawer {
         CGAL::approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
                                                 std::back_inserter(tesselated), validity_traits);
 
-        glPushName(name_start);
         foreach(Polygon_2 poly, tesselated) 
 		{
 
-            glBegin(GL_POLYGON);
 			if(withTexture)
                     glColor4f(1.0, 1.0, 1.0, 0.75);
 			else
@@ -217,9 +223,7 @@ struct TesselatedFaceDrawer {
             glVertex3d(first.x(), first.y(), 0);*/
 //#endif
 
-            glEnd();
         }
-        glPopName();
         if (withTexture) 
 			glDisable(GL_TEXTURE_1D);
     }
