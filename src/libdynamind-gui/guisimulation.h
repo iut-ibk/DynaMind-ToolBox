@@ -37,8 +37,6 @@
 
 class ModelNode;
 class PortNode;
-//class GroupNode;
-//class GUILink;
 class SimulationTab;
 class QTabWidget;
 namespace DM
@@ -56,33 +54,16 @@ class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
 {
 public:
     GUISimulation(QWidget * parent, QTabWidget* tabWidget);
-
-    //void registerRootNode();
-    //GroupNode * getGroupNode(DM::Group * g);
-    //void changeGroupName(GroupNode*);
     void clearSimulation();
 
-	/** @brief loads modules from default locations */
-    //void loadModulesFromDefaultLocation();
-	/** @brief Add the modules set in the QSetting **/
-    //bool loadModulesFromSettings();
-
-	
 	bool addLink(DM::Module* source, std::string outPort, DM::Module* dest, std::string inPort, bool checkStream = true);
 
-	//bool addLink(PortNode* out, PortNode* in);
 	bool removeLink(PortNode* out, PortNode* in);
-
-	//void guiUpdatePorts(ModelNode* node);
 
 	// overloaded
 	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true);
     void removeModule(DM::Module* m);
 
-	//ModelNode* guiAddModule(QString moduleName);
-
-
-	//SimulationTab* rootTab;
 	SimulationTab* addTab(DM::Group* parentGroup);	// parent = NULL for root tab
 	void closeTab(int index);
 	void closeTab(SimulationTab* tab);
@@ -105,31 +86,13 @@ public:
 	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
     QString currentDocument;
 private:
-	//void loadPythonModulesFromDirectory(std::string path);
 	std::map<DM::Module*, ModelNode*> modelNodes;
-    //QVector<GroupNode*> groupNodes;
-
-	//SimulationTab* selectedTab;
 	QList<SimulationTab*> tabs;
 	QTabWidget* tabWidget;
 
 	PortNode* getPortNode(DM::Module* m, std::string portName, 
 		DM::PortType type, bool fromInnerGroup);
 	QWidget * parent;
-//signals:
-    //void addedModule(ModelNode*);
-    //void addedGroup(GroupNode*);
-    //void GroupNameChanged(GroupNode*);
-    //void showHelpForModule(std::string classname, std::string uuid);
-
-//public slots:
-    //void GUIaddModule( QString  name, QPointF pos, DM::Module *group);
-    //void GUIaddModule(DM::Module *, QPointF pos);
-    //void updateSimulation();
-    //void resetSimulation();
-    //void showHelp(std::string classname);
-
-	//std::map<ModelNode*,DM::Module*> moduleGuiMap;
 };
 
 #endif // GUISIMULATION_H

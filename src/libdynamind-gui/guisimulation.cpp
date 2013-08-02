@@ -55,139 +55,11 @@ GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulati
 	addTab(NULL);
 }
 
-/*
-void GUISimulation::changeGroupName(GroupNode * g) {
-    emit GroupNameChanged(g);
-}
-
-GroupNode * GUISimulation::getGroupNode(DM::Group * g) {
-
-    foreach (GroupNode * gn, this->groupNodes) {
-        if (gn->getDMModel() == g)
-            return gn;
-    }
-
-    return 0;
-}*/
-/*
-void GUISimulation::GUIaddModule( DM::Module * m, QPointF pos)
-{
-	
-    //Create Visual Representation of the Module
-    if (!m->isGroup()) {
-        ModelNode * node = new ModelNode(m, this);
-        this->modelNodes.append(node);
-        node->setPos(pos);
-        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
-        emit addedModule(node);
-    }
-    if (m->isGroup()) {
-        GroupNode * node = new GroupNode(m, this);
-        this->groupNodes.append(node);
-        node->setPos(pos);
-        connect(node, SIGNAL(showHelp(std::string, std::string)), this, SLOT(showHelp(std::string, std::string)));
-        emit addedGroup(node);
-    }
-
-    this->updateSimulation();
-	
-}*/
-/*
-void GUISimulation::registerRootNode() {
-    this->GUIaddModule(this->getRootGroup(), QPointF(0,0));
-}
-*/
-/*
-void GUISimulation::GUIaddModule(QString name, QPointF pos, DM::Module *group)
-{
-    //Create Module in DynaMind
-	
-    DM::Module * m = this->addModule(name.toStdString());
-    if (!m) {
-        DM::Logger(DM::Error) << "Couldn't Create Module " << name.toStdString();
-        return;
-    }
-    m->setGroup((DM::Group*)group);
-    this->GUIaddModule(m, pos);
-	
-}
-*/
-
-/*
-void GUISimulation::updateSimulation()
-{    
-    //this->startSimulation(true);
-}
-
-void GUISimulation::resetSimulation()
-{
-	this->resetSimulation();
-    this->reloadModules();
-    this->updateSimulation();
-}*/
-
 void GUISimulation::clearSimulation() 
 {
 	Simulation::reset();
-	//mforeach(ModelNode* m, modelNodes)
-	//	m->deleteModelNode();
-	//modelNodes.clear();
-
-	//for(int i = tabs.size()-1; i>=0;i--)
-	//	closeTab(i);
-
 	clear();
-
-	/*
-    RootGroupNode * rg = this->getGroupNode((DM::Group*)this->getRootGroup())->getRootGroupNode();
-
-    foreach (ModelNode * m, rg->getChildNodes()) {
-        rg->removeModelNode(m);
-        m->deleteModelNode();
-    }
-
-    this->setSimulationStatus(DM::SIM_OK);
-	*/
 }
-/*
-void GUISimulation::showHelp(string classname) 
-{
-    //emit showHelpForModule(classname);
-}*/
-/*
-QVector<QDir> defaultModuleDirectories()
-{
-	QVector<QDir> cpv;
-	cpv.push_back(QDir::currentPath() + "/Modules");
-	cpv.push_back(QDir::currentPath() + "/bin/Modules");
-#if defined DEBUG || _DEBUG
-	cpv.push_back(QDir::currentPath() + "/../Modules/Debug");
-#else
-	cpv.push_back(QDir::currentPath() + "/../Modules/Release");
-	cpv.push_back(QDir::currentPath() + "/../Modules/RelWithDebInfo");
-	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Release");
-	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo");
-#endif
-
-#ifndef PYTHON_EMBEDDING_DISABLED
-	cpv.push_back(QDir::currentPath() + "/bin/PythonModules/scripts");
-	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
-#endif
-	return cpv;
-}
-
-void GUISimulation::loadModulesFromDefaultLocation()
-{
-	foreach (QDir cp, defaultModuleDirectories())  
-		registerModulesFromDirectory(cp);
-}
-*/
-/*
-ModelNode* GUISimulation::guiAddModule(QString moduleName)
-{
-	return modelNodes[addModule(moduleName.toStdString())];
-}*/
-
 
 DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent, bool callInit)
 {
@@ -195,7 +67,6 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 	if(!m)
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
-	//lastAddedModuleNode->setPos(-100, -50);
 	
 	if(!parent)
 		selectTab(0);
@@ -292,12 +163,6 @@ void GUISimulation::selectTab(int index)
 	tabWidget->setCurrentIndex(index);
 }
 
-/*bool GUISimulation::addLink(PortNode* out, PortNode* in)
-{
-	return Simulation::addLink(out->getModule(), out->getPortName().toStdString(),
-								in->getModule(), in->getPortName().toStdString());
-}*/
-
 bool GUISimulation::addLink(DM::Module* source, std::string outPort, 
 							DM::Module* dest, std::string inPort, bool checkStream)
 {
@@ -347,47 +212,6 @@ bool GUISimulation::removeLink(PortNode* out, PortNode* in)
 	return Simulation::removeLink(out->getModule(), out->getPortName().toStdString(),
 								in->getModule(), in->getPortName().toStdString());
 }
-/*
-SimulationTab* GUISimulation::addTab(QWidget *parent)
-{
-	SimulationTab* tab = new SimulationTab(parent, this);
-	tabs.append(tab);
-	return tab;
-}
-void GUISimulation::closeTab(int i)
-{
-	if(i >= tabs.size() || i < 0)
-		return;
-
-	delete tabs[i];
-	tabs.removeAt(i);
-}
-SimulationTab* GUISimulation::getTab(int i)
-{
-	if(i >= tabs.size() || i < 0)
-		return NULL;
-
-	return tabs[i];
-}*/
-
-/*void GUISimulation::guiUpdatePorts(ModelNode* node)
-{
-	DM::Module* m;
-	if(map_contains(&moduleGuiMap, node, m))
-	{
-		// reset ports
-		node->inPorts.clear();
-		node->outPorts.clear();
-		// get names from DM::Module
-		foreach(std::string portName, m->getInPortNames())
-			node->inPorts.push_back(QString::fromStdString(portName));
-
-		foreach(std::string portName, m->getOutPortNames())
-			node->outPorts.push_back(QString::fromStdString(portName));
-	}
-}*/
-
-
 
 bool GUISimulation::loadSimulation(std::string filePath) 
 {
