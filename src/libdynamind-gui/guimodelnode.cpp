@@ -169,7 +169,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				connect(pb, SIGNAL(clicked()), this, SLOT(addUserDefinedTuple()));
 				layout_grid->addWidget(pb, 0,0,1,3);
 
-				std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string>>();
+                std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string> >();
 				for (std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) 
 				{
 					QLabel * l1 = new QLabel;

@@ -34,16 +34,16 @@
 #include <QPainter>
 #include <QColor>
 #include <QObject>
-#include "dmcompilersettings.h"
+#include <dmmodule.h>
 
 namespace DM {
-//class Port;
-class Module;
-#if defined _MSC_VER && defined _WIN32
-enum PortType;
-#else
-enum PortType : unsigned int;
-#endif
+////class Port;
+//class Module;
+//#if defined _MSC_VER && defined _WIN32
+//enum PortType;
+//#else
+//enum PortType : unsigned int;
+//#endif
 }
 
 
