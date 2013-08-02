@@ -33,7 +33,8 @@
 #include <QThreadPool>
 #include <dynamindmainwindow.h>
 #include <QGLFormat>
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     QApplication app(argc, argv);
     Q_INIT_RESOURCE(icons);
     Q_INIT_RESOURCE(splash);
@@ -47,20 +48,15 @@ int main(int argc, char *argv[]) {
     glf.setSamples(4);
     QGLFormat::setDefaultFormat(glf);
 
-
     QPixmap pixmap(":/Splash/ressources/logo.png");
-    QSplashScreen *splash1 = new QSplashScreen(pixmap);
-
-    splash1->show();
+    QSplashScreen splash1;
+    splash1.show();
     app.processEvents();
-
     QThreadPool::globalInstance()->setMaxThreadCount(0);
 
-    DMMainWindow * mw = new DMMainWindow();
+	DMMainWindow mw;
+	mw.show();
+	splash1.finish(&mw);
 
-    mw->show();
-
-    splash1->finish(mw);
     return app.exec();
-
 }
