@@ -800,9 +800,9 @@ void Simulation::cancel()
 	canceled = true;
 }
 
-std::list<Module*> Simulation::shiftModuleOutput(Module* m)
+std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 {
-	std::list<Module*> nextModules;
+	std::set<Module*> nextModules;
 	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
 		it != m->outPorts.end();	++it)
 	{
@@ -820,7 +820,7 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 			{
 				l->shiftData(createSuccessor);
 				if(l->dest->inPortsSet())
-					nextModules.push_back(l->dest);
+					nextModules.insert(l->dest);
 			}
 			// reset out port
 			if(!createSuccessor)
@@ -842,9 +842,9 @@ std::list<Module*> Simulation::shiftModuleOutput(Module* m)
 	return nextModules;
 }
 
-std::list<Module*> Simulation::shiftGroupInput(Group* g)
+std::set<Module*> Simulation::shiftGroupInput(Group* g)
 {
-	std::list<Module*> nextModules;
+	std::set<Module*> nextModules;
 	std::vector<std::string> inPorts = g->getInPortNames();
 	foreach(std::string inPort, inPorts)
 	{
@@ -853,7 +853,7 @@ std::list<Module*> Simulation::shiftGroupInput(Group* g)
 			foreach(Link* l, getIntoGroupLinks(g, inPort))
 			{
 				l->shiftData(inPorts.size() > 1);
-				nextModules.push_back(l->dest);
+				nextModules.insert(l->dest);
 			}
 		}
 	}

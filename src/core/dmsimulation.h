@@ -196,8 +196,8 @@ public:
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
 		returns destination module */
-	std::list<Module*> shiftModuleOutput(Module* m);
-	std::list<Module*> shiftGroupInput(Group* m);
+	std::set<Module*> shiftModuleOutput(Module* m);
+	std::set<Module*> shiftGroupInput(Group* m);
 
 	std::list<Module*>	modules;
 	std::list<Link*>	links;
