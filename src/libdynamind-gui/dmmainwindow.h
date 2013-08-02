@@ -99,7 +99,7 @@ private:
     //QMap<ProjectViewer *, QWidget *> tabmap;
     //QMap<int, ProjectViewer * >  groupscenes;
     //int counter;
-    bool running;
+    //bool running;
     //QTreeWidgetItem * rootItemModelTree;
     //void appendGUIInformation(QString FileName);
     //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);

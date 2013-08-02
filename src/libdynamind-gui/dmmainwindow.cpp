@@ -214,7 +214,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 
 	DM::Logger() << "logfile: " << logfilepath;
 
-    running =  false;
+    //running =  false;
     this->setParent(parent);
     DM::PythonEnv *env = DM::PythonEnv::getInstance();
     env->addPythonPath(QApplication::applicationDirPath().toStdString());
