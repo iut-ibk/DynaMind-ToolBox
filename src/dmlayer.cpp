@@ -125,15 +125,13 @@ struct TesselatedFaceDrawer {
     void operator()(DM::System *s, const DM::View& v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
         if (pos == after) 
 		{
+            current_height = 0.0;
+            current_tex = 0.0;
+
             render();
             polygon.clear();
 			
-            glEnd();
-			glPopName();
-
             name_start++;
-            current_height = 0.0;
-            current_tex = 0.0;
             dialog->setValue(dialog->value()+1);
         }
         else if (pos == before) 
@@ -161,8 +159,6 @@ struct TesselatedFaceDrawer {
             else
                 current_tex = 0.0;
 
-			glPushName(name_start);
-			glBegin(GL_POLYGON);
         }
 		else
 			polygon.push_back(Point_2(point->x, point->y));
@@ -196,34 +192,26 @@ struct TesselatedFaceDrawer {
 
         CGAL::approx_convex_partition_2(polygon.vertices_begin(), polygon.vertices_end(),
                                                 std::back_inserter(tesselated), validity_traits);
+		
+
+		glPushName(name_start);
+		glBegin(GL_POLYGON);
 
         foreach(Polygon_2 poly, tesselated) 
 		{
-
+			
 			if(withTexture)
                     glColor4f(1.0, 1.0, 1.0, 0.75);
 			else
                     glColor3f(0.0, 0.0, 0.0);
 
-            foreach(Point_2 p, poly.container()) 
-			{
-                if (withTexture) 
-                    glTexCoord1d(current_tex);
-
+			
+			foreach(Point_2 p, poly.container())
                 glVertex3d(CGAL::to_double(p.x()), CGAL::to_double(p.y()), current_height);
-			}
-//#else
-			/*
-            glBegin(GL_LINE_STRIP);
-            glColor3f(.0f, .0f, .0f);
-            foreach(Point_2 p, poly.container())
-                glVertex3d(p.x(), p.y(), 0);
+		}
+		glEnd();
+		glPopName();
 
-            Point_2 first = poly.container().front();
-            glVertex3d(first.x(), first.y(), 0);*/
-//#endif
-
-        }
         if (withTexture) 
 			glDisable(GL_TEXTURE_1D);
     }
