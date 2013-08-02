@@ -873,7 +873,7 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 
 void Simulation::reset()
 {
-    Logger(Standard) << ">> Reset Simulation";
+	Logger(Standard) << ">> Reset Simulation";
 	foreach(Module* m, this->modules)
 	{
 		m->reset();
