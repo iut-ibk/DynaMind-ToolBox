@@ -259,8 +259,8 @@ void ModelNode::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
     QGraphicsItem::hoverLeaveEvent(event );
 }
 
-void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
-	
+void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
+{
     QMenu menu;
 	QSignalMapper* signalMapper = new QSignalMapper(this);
 	int i=0;

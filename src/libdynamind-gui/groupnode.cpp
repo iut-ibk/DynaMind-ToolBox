@@ -250,6 +250,10 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, M
 	resize();
 }
 
+void GroupNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
+{
+}
+
 void GroupNode::resize()
 {
 	const int border = 30;

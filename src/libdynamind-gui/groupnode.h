@@ -89,6 +89,7 @@ public:
 
 	 */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 	
     //QRectF boundingRect() const;
     /*void setSelected ( bool selected );

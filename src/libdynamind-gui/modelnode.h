@@ -99,7 +99,7 @@ protected:
 
     virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
     virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
 	virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
