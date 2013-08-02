@@ -69,14 +69,6 @@ namespace DM {
 
 
 class SimulationTab;
-/*
-class GuiSimulationObserver: public DM::SimulationObserver
-{
-	QProgressBar* progressBar;
-public:
-	GuiSimulationObserver(QProgressBar* progressBar):progressBar(progressBar){}
-	void update(float progress);
-};*/
 
 class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
@@ -84,64 +76,36 @@ class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 public:
     DMMainWindow(QWidget *parent = 0);
     ~DMMainWindow();
-    //QTreeWidgetItem * getRootItemModelTree(){return this->rootItemModelTree;}
     GuiLogSink *log_updater;
     GUISimulation * getSimulation() {return this->simulation;}
 private:
     Ui::DMMainWindow *ui;
     GUISimulation * simulation;
-    //SimulationManagment * simmanagment;
-    //GUISimulationObserver * simobserver;
-    //GUIHelpViewer * helpviewer;
-
-    void createModuleListView();
-    //QMap<QString, ModuleDescription> modules;
-    //QMap<ProjectViewer *, QWidget *> tabmap;
-    //QMap<int, ProjectViewer * >  groupscenes;
-    //int counter;
-    //bool running;
-    //QTreeWidgetItem * rootItemModelTree;
-    //void appendGUIInformation(QString FileName);
-    //void loadGUIModules(DM::Group * g, std::map<std::string, std::string> UUID_Translation,  QVector<LoadModule> posmodules);
-    //void loadGUILinks(std::map<std::string, std::string> UUID_Translation);
-	
-	//QFutureWatcher<void> simulationWatcher;
-	//QList<SimulationTab*> tabs;
-
 	QThread *simulationThread;
 	GuiSimulationObserver* simulationThreadWrapper;
 	std::ofstream* outputFile;
+
+    void createModuleListView();
 public slots:
     void runSimulation();
-    void sceneChanged();
     void preferences();
     void saveSimulation();
     void loadSimulation(int id=0);
     void clearSimulation();
-    void setRunning();
     void saveAsSimulation();
-    void importSimulation(QString fileName = "", QPointF = QPointF(0,0));
     void simulationFinished();
     void startEditor();
     void ReloadSimulation();
-    void addNewGroupWindows(GroupNode *);
-    void renameGroupWindow(GroupNode *);
-    void removeGroupWindows(QString uuid);
     void updateSimulation();
     void resetSimulation();
     void cancelSimulation();
-//    void showHelp(std::string classname);
-	
 	void newLogLine(QString line);
-
-
 private slots:
     void on_actionZoomReset_triggered();
     void on_actionZoomOut_triggered();
     void on_actionZoomIn_triggered();
     void on_actionAbout_triggered();
     void on_actionShow_Help_triggered();
-	
 	void updateProgress(float progress);
 };
 
