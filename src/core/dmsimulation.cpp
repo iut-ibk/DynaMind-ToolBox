@@ -505,11 +505,11 @@ bool Simulation::checkModuleStream(Link* link)
 bool Simulation::checkModuleStreamForward(Module* m)
 {
 	bool success = true;
-	std::map<std::string, std::map<std::string,View>> accessedViews = m->getAccessedViews();
+    std::map<std::string, std::map<std::string,View> > accessedViews = m->getAccessedViews();
 	if(accessedViews.size() != 0)
 	{
 		// iterate through all streams
-		for(std::map<std::string, std::map<std::string,View>>::iterator it = accessedViews.begin();
+        for(std::map<std::string, std::map<std::string,View> >::iterator it = accessedViews.begin();
 			it != accessedViews.end(); ++it)
 		{
 			if(!checkModuleStreamForward(m, it->first))
