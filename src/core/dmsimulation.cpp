@@ -251,8 +251,11 @@ bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* des
 				if(logOutput)	Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
 				return false;
 			}
-			if(logOutput)	Logger(Warning) << "Double linking an in-Port is not possible by now: " << outPort << "to" << inPort;
+			if(!l->dest->isGroup())
+			{
+				if(logOutput)	Logger(Warning) << "Double linking an in-Port is not possible by now: " << outPort << "to" << inPort;
 				return false;
+			}
 		}
 	}
 	return true;
