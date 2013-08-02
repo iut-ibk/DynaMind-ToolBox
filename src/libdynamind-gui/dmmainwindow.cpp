@@ -39,7 +39,7 @@
 #include <dmpythonenv.h>
 #include <guisimulationobserver.h>
 #include <guisimulation.h>
-#include <rootgroupnode.h>
+#include <simulationtab.h>
 #include "preferences.h"
 #include "guihelpviewer.h"
 #include "guiaboutdialog.h"

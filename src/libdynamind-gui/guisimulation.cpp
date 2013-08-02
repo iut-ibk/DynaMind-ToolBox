@@ -27,7 +27,7 @@
 #include "guisimulation.h"
 #include <guiport.h>
 #include <groupnode.h>
-#include <rootgroupnode.h>
+#include <simulationtab.h>
 #include <guilink.h>
 #include <dmsimulationreader.h>
 #include <dmsimulationwriter.h>

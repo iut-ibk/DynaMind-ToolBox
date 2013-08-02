@@ -37,7 +37,6 @@
 #include <guiviewdataformodules.h>
 #include <dmmodule.h>
 #include <guiport.h>
-#include <rootgroupnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmviewerwindow.h>

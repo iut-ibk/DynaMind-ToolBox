@@ -24,7 +24,7 @@
  *
  */
 
-#include <rootgroupnode.h>
+#include <simulationtab.h>
 #include <QGraphicsDropShadowEffect>
 #include <qgraphicsview.h>
 #include <modelnode.h>
