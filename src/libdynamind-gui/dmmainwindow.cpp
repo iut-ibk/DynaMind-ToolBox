@@ -299,9 +299,8 @@ void DMMainWindow::loadSimulation(int id)
 
 DMMainWindow::~DMMainWindow() 
 {
-    //delete this->simulation;
-	//foreach(SimulationTab *w, tabs)
-	//	delete w;
+	if(this->simulation)
+		delete this->simulation;
 	outputFile->close();
 	if(simulationThreadWrapper)
 		delete simulationThreadWrapper;
