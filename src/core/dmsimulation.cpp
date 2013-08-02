@@ -244,10 +244,15 @@ bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* des
 	// check if the same link exists already
 	foreach(Link* l, links)
 	{
-		if(l->src == source && l->outPort == outPort && l->dest == dest && l->inPort == inPort)
+		if(l->dest == dest && l->inPort == inPort)
 		{
-			if(logOutput)	Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
-			return false;
+			if(l->src == source && l->outPort == outPort)
+			{
+				if(logOutput)	Logger(Warning) << "Link already exists: " << outPort << "to" << inPort;
+				return false;
+			}
+			if(logOutput)	Logger(Warning) << "Double linking an in-Port is not possible by now: " << outPort << "to" << inPort;
+				return false;
 		}
 	}
 	return true;
