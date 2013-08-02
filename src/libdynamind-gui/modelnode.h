@@ -138,23 +138,14 @@ public:
 	}
 
 public slots:
-    //void addGroup();
-    //void removeGroup();
     void deleteModelNode();
     void editModelNode();
-    //void renameModelNode();
     void printData();
     void viewData(int portIndex);
     void showHelp();
-	//void showDialog();
-    //void setDebug();
-    //void setRelease();
-    //void setResetModule();
 	void changeSuccessorMode();
    signals:
     void showHelp(std::string, std::string);
-    //void showHelp(std::string);
-
 };
 
 #endif // MODELNODE_H

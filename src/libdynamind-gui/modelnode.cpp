@@ -42,6 +42,8 @@
 #include <dmviewerwindow.h>
 #include <groupnode.h>
 
+#include <guihelpviewer.h>
+
 void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
 	node->addPort(name, type);
@@ -317,30 +319,9 @@ void ModelNode::viewData(int portIndex)
     viewer_window->show();
 }
 
-#include <guihelpviewer.h>
-
 void ModelNode::showHelp() 
 {
-    //emit showHelp(module->getClassName());
-    //this->simulation->showHelp();
-
 	GUIHelpViewer* ghv = new GUIHelpViewer(simulation);
 	ghv->showHelpForModule(module);
     ghv->show();
 }
-/*
-void ModelNode::setDebug() {
-    this->getDMModel()->setDebugMode(true);
-}
-
-void ModelNode::setRelease() {
-    this->getDMModel()->setDebugMode(false);
-}
-
-void ModelNode::setResetModule()
-{
-    this->getDMModel()->setExecuted(false);
-    this->simulation->reloadModules();
-    this->simulation->updateSimulation();
-}
-*/
