@@ -130,6 +130,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	// init simulation, we only use one instance
     this->simulation = new GUISimulation(parent, ui->tabWidget_4);
 	simulationThread = NULL;
+	simulationThreadWrapper = NULL;
 
     this->simulation->registerModulesFromDefaultLocation();
     this->simulation->registerModulesFromSettings();
@@ -302,7 +303,8 @@ DMMainWindow::~DMMainWindow()
 	//foreach(SimulationTab *w, tabs)
 	//	delete w;
 	outputFile->close();
-	delete simulationThreadWrapper;
+	if(simulationThreadWrapper)
+		delete simulationThreadWrapper;
 }
 
 void DMMainWindow::on_actionZoomIn_triggered()
