@@ -238,16 +238,22 @@ void Module::removeData(const std::string& name)
 
 System* Module::getData(const std::string& streamName)
 {
+	if(!hasInPort(streamName) && !hasOutPort(streamName))
+	{
+		Logger(Error) << "stream '" << streamName << "' does not exist in module '" << this->getClassName();
+		return NULL;
+	}
+
 	System *sys = getInPortData(streamName);
 	if(!sys)
 	{
 		if(this->getInPortNames().size() != 0)
 		{
-			bool empty = true;
+			bool emptyInPorts = true;
 			mforeach(System* s, inPorts)
 				if(s)
-					empty = false;
-			if(empty)
+					emptyInPorts = false;
+			if(emptyInPorts)
 			{
 				// we didn't get a system, but we all ports are empty -> simulation not ready
 				// this can happen if module::init calles getData, which is deprecated
@@ -257,17 +263,23 @@ System* Module::getData(const std::string& streamName)
 				return NULL;
 			}
 		}
-		sys = new System();
-	}
 
+		if(hasOutPort(streamName))	// maybe the system is already created frlom scratch
+			sys = getOutPortData(streamName);
+		
+		if(!sys)
+			sys = new System();
+	}
+	/*
 	bool readOnly = true;
 	mforeach(View v, accessedViews[streamName])
 	{
 		sys->addView(v);
 		if(v.getAccessType() != READ || v.getWriteAttributes().size() > 0)
 			readOnly = false;
-	}
-	if(!readOnly)
+	}*/
+
+	if(hasOutPort(streamName))
 		this->setOutPortData(streamName, sys);
 
 	return sys;
