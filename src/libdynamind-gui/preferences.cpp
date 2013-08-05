@@ -126,11 +126,19 @@ void Preferences::openFileDialog()
     QString sender = QObject::sender()->objectName();
     if (sender == "pushButton_NativeModule") 
 	{
+#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+        QString s = QFileDialog::getOpenFileName(this, tr("File to"), "", "",0,QFileDialog::DontUseNativeDialog);
+#else
 		QString s = QFileDialog::getOpenFileName(this, tr("File to"), "");
+#endif
 		this->lineEdit_NativeModule->setText(s);
         return;
     }
+#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+    QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "", QFileDialog::DontUseNativeDialog);
+#else
     QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "");
+#endif
     if(!s.isEmpty()) 
 	{
         if (sender == "pushButton_urbansim")		this->lineEdit_urbansim->setText(s);
