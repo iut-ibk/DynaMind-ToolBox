@@ -28,11 +28,17 @@
 #include "dmgroup.h"
 
 using namespace DM;
-
+/*
 void Group::resetCondition()
 {
 	singleRunCondition = true;
+}*/
+
+void Group::init()
+{
+	singleRunCondition = true;
 }
+
 bool Group::condition()
 {
 	if(singleRunCondition)

@@ -43,13 +43,14 @@ public:
 	void init()
 	{
 	}*/
-	bool isGroup(){return true;};
+	virtual void init();
+	bool isGroup(){return true;}
 private:
 	// as a standard we implement a single-run condition
 	bool singleRunCondition;
 
 	virtual bool condition();
-	virtual void resetCondition();
+	//virtual void resetCondition();
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
 	std::map<std::string, std::map<std::string,View> > outStreamViews;

@@ -758,8 +758,8 @@ void Simulation::run()
 			Logger(Standard) << "running group '" << g->getName() << "'";
 			
 			// first run, reset condition
-			if(g->getStatus() != MOD_EXECUTING)
-				g->resetCondition();
+			//if(g->getStatus() != MOD_EXECUTING)
+			//	g->resetCondition();
 
 			if(g->condition())
 			{

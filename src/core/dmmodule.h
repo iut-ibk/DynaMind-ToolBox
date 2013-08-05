@@ -248,16 +248,16 @@ protected:
 	void addData(const std::string& streamName, std::vector<View> views);
 	// deprecated
 	RasterData* getRasterData(std::string name, View view);
+	/** @brief sets inport data - may only by used by DM::Simulation and loopgroup */
+	void setInPortData(const std::string &name, System* data);
+	/** @brief */
+	void setOutPortData(const std::string &name, System* data);
 private:
 	std::vector<ModuleObserver*> observers;
 	/** @brief calls the init function if parameters have changed */
 	//void updateParameters();
-	/** @brief */
-	void setOutPortData(const std::string &name, System* data);
 	/** @brief get data from inport */
 	System* getInPortData(const std::string &name);
-	/** @brief sets inport data - may only by used by DM::Simulation */
-	void setInPortData(const std::string &name, System* data);
 
 	std::vector<Parameter*>	parameters;
 	std::map<std::string, System*>	inPorts;

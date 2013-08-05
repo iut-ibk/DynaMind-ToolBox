@@ -138,7 +138,7 @@ public:
 				dest->setInPortData(inPort, data);
 				// FIX: modules which won't call getData(...)  
 				// won't get data on the out port
-				if(dest->hasOutPort(inPort))
+				if(dest->hasOutPort(inPort) && !dest->isGroup())
 					dest->setOutPortData(inPort, data);
 			}
 		}
