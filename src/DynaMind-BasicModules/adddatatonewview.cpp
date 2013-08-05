@@ -48,20 +48,16 @@ AddDataToNewView::AddDataToNewView()
 void AddDataToNewView::run()
 {
 	DM::System * sys = this->getData("Data");
-	DM::View * v_existing= sys->getViewDefinition(NameOfExistingView);
-	if (!v_existing) 
+    DM::View  v_existing = this->getViewInStream("Data", NameOfExistingView);
+    if (v_existing.getType() ==  -1)
 	{
 		DM::Logger(DM::Error) << "input view '" << NameOfExistingView << "' does not exist";
 		return;
 	}
-	DM::View * v_new= sys->getViewDefinition(NameOfNewView);
-	if(!v_new)
-	{
-		DM::Logger(DM::Error) << "output view '" << NameOfNewView << "' does not exist (AddDataToNewView::init went wrong)";
-		return;
-	}
+    DM::View  v_new = DM::View( this->NameOfNewView, v_existing.getType(), DM::WRITE );
 
-	DM::ComponentMap cmp = sys->getAllComponentsInView(*v_existing);
+
+    DM::ComponentMap cmp = sys->getAllComponentsInView(v_existing);
 	for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) 
 	{
 		DM::Component * c = sys->getComponent(it->first);
@@ -70,7 +66,7 @@ void AddDataToNewView::run()
 				if(a->getDouble() < 0.0001)
 					continue;
 
-		sys->addComponentToView(c, *v_new);
+        sys->addComponentToView(c, v_new);
 	}
 }
 
