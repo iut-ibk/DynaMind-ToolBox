@@ -98,7 +98,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     if(QFile::exists(logfilepath))
         QFile::remove(logfilepath);
 
-    outputFile = new ofstream(logfilepath.toStdString());
+    outputFile = new ofstream(logfilepath.toStdString().c_str());
     DM::Log::addLogSink(new DM::OStreamLogSink(*outputFile));
 	DM::Logger() << "logfile: " << logfilepath;
 	
@@ -240,7 +240,12 @@ void DMMainWindow::preferences()
 
 void DMMainWindow::saveAsSimulation() 
 {
+#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+   QString fileName = QFileDialog::getSaveFileName(this,
+                                          tr("Save DynaMind File"), "", tr("Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog) ;
+#else
    QString fileName = QFileDialog::getSaveFileName(this, tr("Save DynaMind File"));
+#endif
     if (!fileName.isEmpty()) 
 	{
         if (!fileName.contains(".dyn"))
@@ -267,8 +272,13 @@ void DMMainWindow::clearSimulation()
 
 void DMMainWindow::loadSimulation(int id) 
 {
+#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
+                                                    "", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
+#else
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
 													"", tr("DynaMind Files (*.dyn)"));
+#endif
 
     if (!fileName.isEmpty()){
         this->clearSimulation();
