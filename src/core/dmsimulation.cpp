@@ -697,10 +697,10 @@ void Simulation::run()
 	simtimer.restart();
 	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
-	std::queue<Module*> worklist;
+	std::set<Module*> worklist;
 	foreach(Module* m, modules)
 		if(m->inPortsSet())
-			worklist.push(m);
+			worklist.insert(m);
 	
 	// progress stuff
 	int cntModulesFinished = 0;
@@ -710,8 +710,9 @@ void Simulation::run()
 	while(worklist.size() && !canceled)
 	{
 		// get first element
-		Module* m = worklist.front();
-		worklist.pop();
+		std::set<Module*>::iterator it = worklist.begin();
+		Module* m = *it;
+		worklist.erase(m);
 
 		if(!m->isGroup())
 		{
@@ -750,7 +751,7 @@ void Simulation::run()
 			}
 			// shift data from out port to next inport
 			foreach(Module* nextModule, shiftModuleOutput(m))
-				worklist.push(nextModule);
+				worklist.insert(nextModule);
 		}
 		else
 		{
@@ -775,7 +776,7 @@ void Simulation::run()
 				g->setStatus(MOD_EXECUTING);
 				// instead of m::run() we simply shift the data to the first internal module
 				foreach(Module* nextModule, shiftGroupInput(g))
-					worklist.push(nextModule);
+					worklist.insert(nextModule);
 			}
 			else
 			{
@@ -783,7 +784,7 @@ void Simulation::run()
 				// finish and shift data
 				g->setStatus(MOD_EXECUTION_OK);
 				foreach(Module* nextModule, shiftModuleOutput(g))
-					worklist.push(nextModule);
+					worklist.insert(nextModule);
 			}
 		}
 	}
