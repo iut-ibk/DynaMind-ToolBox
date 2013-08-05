@@ -226,7 +226,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
 
     bool exists = false;
     if (std::find(this->loadedModules.begin(), this->loadedModules.end(), module) !=  this->loadedModules.end()) {
-        Logger(Debug) << "Moduel Already Loaded";
+        Logger(Debug) << "Module Already Loaded";
         exists = true;
     }
 
