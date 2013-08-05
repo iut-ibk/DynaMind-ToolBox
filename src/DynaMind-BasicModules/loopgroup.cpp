@@ -59,7 +59,8 @@ void LoopGroup::init()
 	currentRun = 0;
 
 	foreach(std::string streamName, writeStreams)
-		initStream(streamName, true, true);
+		if(!initStream(streamName, true, true))
+			setOutPortData(streamName, NULL);
 
 	foreach(std::string streamName, readStreams)
 		initStream(streamName, false, true);
@@ -152,6 +153,14 @@ bool LoopGroup::removeStream(std::string name)
 
 bool LoopGroup::condition()
 {
+	// loop data
+	foreach(std::string streamName, writeStreams)
+		if(System* sys = getOutPortData(streamName))
+		{
+			setInPortData(streamName, sys);
+			setOutPortData(streamName, NULL);
+		}
+
 	return (currentRun++ < runs);
 };
 /*
