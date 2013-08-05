@@ -154,14 +154,17 @@ bool LoopGroup::removeStream(std::string name)
 bool LoopGroup::condition()
 {
 	// loop data
-	foreach(std::string streamName, writeStreams)
-		if(System* sys = getOutPortData(streamName))
-		{
-			setInPortData(streamName, sys);
-			setOutPortData(streamName, NULL);
-		}
+	bool bContinue = (currentRun++ < runs);
 
-	return (currentRun++ < runs);
+	if(bContinue)
+		foreach(std::string streamName, writeStreams)
+			if(System* sys = getOutPortData(streamName))
+			{
+				setInPortData(streamName, sys);
+				setOutPortData(streamName, NULL);
+			}
+
+	return bContinue;
 };
 /*
 void LoopGroup::resetCondition()
