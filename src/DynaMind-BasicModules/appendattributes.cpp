@@ -43,7 +43,6 @@ AppendAttributes::AppendAttributes() {
     this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
     this->addParameter("newAttribute", DM::STRING, &this->newAttribute);
 
-    sys_in = 0;
     this->NameOfRasterData = "";
     this->NameOfExistingView = "";
     this->newAttribute = "";
@@ -56,15 +55,20 @@ AppendAttributes::AppendAttributes() {
 
 void AppendAttributes::run() {
 
-    DM::System * sys = this->getData("Data");
-    DM::View * v_existing= sys->getViewDefinition(NameOfExistingView);
-    DM::RasterData * r = this->getRasterData("Data", DM::View(NameOfRasterData, DM::READ, DM::RASTERDATA));
+
+    DM::RasterData * r = this->getRasterData("Data",vRasterData);
+
+    if (!r) {
+        DM::Logger(DM::Error) << "Raster Data " << vRasterData.getName() << " not found";
+        return;
+    }
 
     DM::Logger(DM::Debug) << "VIEWNAME: " << NameOfExistingView;
 
-    foreach (std::string s, sys->getUUIDsOfComponentsInView(*v_existing))
+    DM::System * sys = this->getData("Data");
+    foreach (std::string s, sys->getUUIDs(vExistingView))
     {
-        if(v_existing->getType()==DM::FACE)
+        if(vExistingView.getType()==DM::FACE)
         {
             DM::Face * f = sys->getFace(s);
             std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
@@ -77,7 +81,7 @@ void AppendAttributes::run() {
             f->changeAttribute(newAttribute, dattr);
         }
 
-        if(v_existing->getType()==DM::NODE)
+        if(vExistingView.getType()==DM::NODE)
         {
             DM::Node * f = sys->getNode(s);
             double dattr = r->getCell(f->getX(),f->getY());
@@ -100,31 +104,27 @@ string AppendAttributes::getHelpUrl()
 void AppendAttributes::init()
 {
 
-    sys_in = this->getData("Data");
-    if (sys_in == 0)
-        return;
-    /*std::vector<std::string> views = sys_in->getNamesOfViews();
-
-    foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;*/
-
     if (this->NameOfExistingView.empty())
         return;
 
     if (this->newAttribute.empty())
         return;
-    if (newAttribute_old.compare(newAttribute) == 0)
+
+    this->vExistingView = this->getViewInStream("Data", NameOfExistingView);
+
+    if (vExistingView.getType() == -1)
         return;
 
+    vExistingView = DM::View(vExistingView.getName(), vExistingView.getType(), DM::READ);
+    vExistingView.addAttribute(newAttribute);
 
-    DM::View * v = sys_in->getViewDefinition(NameOfExistingView);
-    readView = DM::View(v->getName(), v->getType(), DM::READ);
-    readView.addAttribute(newAttribute);
+    this->vRasterData = DM::View(DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ));
 
-    data.push_back(readView);
+    data.push_back(vExistingView);
+    data.push_back(vRasterData);
+
     this->addData("Data", data);
 
-    newAttribute_old = newAttribute;
 
 
 }

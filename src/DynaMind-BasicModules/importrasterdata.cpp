@@ -36,9 +36,7 @@ ImportRasterData::ImportRasterData()
     flip = true;
     FileName = "";
     dataname = "";
-    dataname_old = "";
     appendToStream = false;
-    appendToStream_old = false;
 
     this->addParameter("Filename", DM::FILENAME, &FileName);
     this->addParameter("DataName", DM::STRING, &dataname);
@@ -51,12 +49,10 @@ void ImportRasterData::init()
 {
     if (dataname.empty())
         return;
-    if (dataname.compare(dataname_old) == 0 && appendToStream == appendToStream_old )
-        return;
+
     DM::View data(dataname, DM::RASTERDATA, DM::WRITE);
     std::vector<DM::View> vdata;
     vdata.push_back(data);
-    dataname_old = dataname;
 
     Coords = DM::View("CoordOffset",DM::COMPONENT, DM::WRITE);
     Coords.addAttribute("Xoffset");
@@ -77,11 +73,12 @@ string ImportRasterData::getHelpUrl()
 
 void ImportRasterData::run()
 {
+    DM::System * sys = this->getData("Data");
     DM::View data(dataname, DM::RASTERDATA, DM::WRITE);
     DM::RasterData * r = this->getRasterData("Data", data);
     QFile file(QString::fromStdString(FileName));
 
-    DM::System * sys = this->getData("Data");
+
 
     DM::Component * cmp = new DM::Component();
     sys->addComponent(cmp,Coords);

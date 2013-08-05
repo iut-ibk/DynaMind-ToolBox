@@ -39,8 +39,6 @@ private:
     bool appendToStream;
     std::string FileName;
     std::string dataname;
-    std::string dataname_old;
-    bool appendToStream_old;
     DM::View Coords;
 public:
     ImportRasterData();
