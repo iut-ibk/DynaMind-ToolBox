@@ -28,7 +28,6 @@
 #include <QTextStream>
 #include <QFile>
 #include <iostream>
-#include "linknode.h"
 #include "guilink.h"
 #include <QStringList>
 #include <QVariant>

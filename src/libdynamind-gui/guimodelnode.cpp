@@ -37,7 +37,6 @@
 #include "moduledescription.h"
 #include <QGroupBox>
 #include <QStringList>
-#include "linknode.h"
 #include <QScrollArea>
 #include <QComboBox>
 #include <QMap>
