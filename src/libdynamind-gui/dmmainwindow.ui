@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>932</width>
-    <height>756</height>
+    <width>913</width>
+    <height>539</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -55,9 +55,6 @@
     <item>
      <widget class="QWidget" name="widget_2" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <property name="spacing">
-        <number>6</number>
-       </property>
        <property name="margin">
         <number>0</number>
        </property>
@@ -117,31 +114,43 @@
      </widget>
     </item>
     <item>
-     <widget class="QProgressBar" name="progressBar">
-      <property name="enabled">
-       <bool>false</bool>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string/>
       </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>10</height>
-       </size>
-      </property>
-      <property name="value">
-       <number>0</number>
-      </property>
-      <property name="textVisible">
-       <bool>true</bool>
-      </property>
-      <property name="invertedAppearance">
-       <bool>false</bool>
-      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="textVisible">
+          <bool>true</bool>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -151,8 +160,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>932</width>
-     <height>21</height>
+     <width>913</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSimulation">
@@ -692,9 +701,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionRun"/>
+   <addaction name="actionCancel"/>
    <addaction name="actionUpdate"/>
    <addaction name="actionReset"/>
-   <addaction name="actionCancel"/>
    <addaction name="separator"/>
   </widget>
   <action name="actionRun">
@@ -846,6 +855,10 @@
    </property>
   </action>
   <action name="actionCancel">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/Icons/ressources/process-stop.png</normaloff>:/Icons/ressources/process-stop.png</iconset>
+   </property>
    <property name="text">
     <string>Cancel</string>
    </property>

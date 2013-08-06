@@ -13,5 +13,6 @@
         <file>ressources/dynamind-icon.png</file>
         <file>ressources/reload.png</file>
         <file>ressources/edit-clear.png</file>
+        <file>ressources/process-stop.png</file>
     </qresource>
 </RCC>
