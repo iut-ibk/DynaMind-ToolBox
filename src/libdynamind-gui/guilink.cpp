@@ -41,7 +41,7 @@ GUILink::GUILink()
     hovered = false;
     VIBelink = 0;
     setAcceptHoverEvents(true);
-    this->setZValue(100);
+    this->setZValue(4);
 }
 
 void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -51,12 +51,23 @@ void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 	else					c = Qt::white;
 
     QBrush brush(c);
-    QPen pen(Qt::black);
+
     /*
 	if (this->inPort != 0) {
         if (this->isBack())
             pen = QPen(Qt::red);
     }*/
+
+
+    QPen pen(Qt::white);
+    pen.setWidth(3);
+    painter->strokePath(connection_path, pen);
+    painter->fillPath(handle_path, brush);
+    painter->strokePath(handle_path, pen);
+
+
+    pen.setColor(Qt::black);
+    pen.setWidth(1.5);
     painter->strokePath(connection_path, pen);
     painter->fillPath(handle_path, brush);
     painter->strokePath(handle_path, pen);
@@ -145,8 +156,8 @@ void GUILink::setInPort(QPointF p)
 
 void GUILink::refresh() 
 {
-	if(outPort)	source = outPort->getCenterPos();
-	if(inPort)	sink = inPort->getCenterPos();
+    if(outPort)	source = outPort->getCenterPos() + QPointF(9,0);
+    if(inPort)	sink = inPort->getCenterPos()  - QPointF(9,0);
 
     updatePaths();
 

@@ -49,7 +49,7 @@ void PortNode::removeLink(GUILink * l)
 
 void PortNode::addLink(GUILink* l)
 {
-	linkNodes.append(l);
+    linkNodes.append(l);
 }
 /*
 void PortNode::updatePort(DM::Port * p) {
@@ -58,8 +58,8 @@ void PortNode::updatePort(DM::Port * p) {
 //PortNode::PortNode(QString portName, ModelNode *parentModelNode, DM::PortType type/*, DM::Port *p*/) : QGraphicsItem(parentModelNode)
 
 PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type, 
-				   QGraphicsItem* parent, GUISimulation* simulation)
-	:QGraphicsItem(parent)
+                   QGraphicsItem* parent, GUISimulation* simulation)
+    :QGraphicsItem(parent)
 {
     //this->setParentItem(parentModelNode);
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
@@ -72,17 +72,18 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
     this->x1 = 0;
     this->isHover = false;
     this->LinkMode = false;
-	this->module = m;
+    this->module = m;
     //this->modelNode = parentModelNode;
     this->portType = type;
+    this->
 
-	updatePos();
+    updatePos();
 
     this->simulation = simulation;
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     //if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
-        color = COLOR_VECTORPORT;
+    color = COLOR_VECTORPORT;
 
     hoverElement = 0;
 
@@ -125,33 +126,40 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     if(!isHover)
         path.addEllipse(0, 0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
-	else 
-	{
-		pen.setWidth(1);
-        path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
+        painter->fillPath(path, color);
+        painter->strokePath(path, pen);
     }
-	painter->fillPath(path, color);
-	painter->strokePath(path, pen);
+    else
+    {
+        pen.setWidth(1);
+        path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
 
-    portname_graphics.setText(this->getPortName());
+        painter->fillPath(path, color);
+        painter->strokePath(path, pen);
 
-	QRectF textSize = portname_graphics.boundingRect();
+        portname_graphics.setText(this->getPortName());
 
-    QFont font = painter->font();
-	font.setItalic(true);
-	painter->setFont(font);
+        QRectF textSize = portname_graphics.boundingRect();
 
-	if(portType == DM::INPORT)
-        painter->drawText(QPoint(	17,
-									textSize.height()/2 + 8), 
-									this->getPortName());
-	else
-        painter->drawText(QPoint(	-5-textSize.width(),
-									textSize.height()/2 + 8), 
-									this->getPortName());
-    painter->setBrush(Qt::NoBrush);
+        QFont font = painter->font();
+        //font.setItalic(true);
+        painter->setFont(font);
 
-	this->update();
+        if(portType == DM::INPORT)
+            painter->drawText(QPoint(	17,
+                                        textSize.height()/2 + 8),
+                              this->getPortName());
+        else
+            painter->drawText(QPoint(	-5-textSize.width(),
+                                        textSize.height()/2 + 8),
+                              this->getPortName());
+        painter->setBrush(Qt::NoBrush);
+    }
+
+
+
+
+    this->update();
 }
 
 QRectF PortNode::boundingRect() const

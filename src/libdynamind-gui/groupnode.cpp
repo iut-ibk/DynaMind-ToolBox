@@ -360,10 +360,10 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     //if (this->visible) 
 	{
 		// shortcuts
-		CheapShadowEffect(painter, boundingRect());
+        //CheapShadowEffect(painter, boundingRect());
 
-		painter->setBrush(Qt::gray);
-		painter->setPen(QPen(Qt::black, 3.0));
+        painter->setBrush(QColor(239,235,226));
+        painter->setPen(QPen(Qt::black, 4.0));
 		painter->drawRect(boundingRect());
 		/*
         recalculateLandH();

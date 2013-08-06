@@ -77,9 +77,9 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 void ModelNode::resize()
 {
 	// module name has to fit in node
-	QString text = "Name: " + QString::fromStdString(module->getName());
+    QString text = QString::fromStdString(module->getName());
 	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
-	width = max(150, (int)textSize.width() + 50);
+    width = max(50, (int)textSize.width() + 30);
 	
 	// make groups a bit bigger
 	if(!module->isGroup())
@@ -88,12 +88,12 @@ void ModelNode::resize()
 		height =  65;
 
 	// ports names have to fit
-	int maxPortSize = 0;
+    /*int maxPortSize = 0;
 	foreach(PortNode* p, ports)
 		maxPortSize = max(maxPortSize, (int)QGraphicsSimpleTextItem(p->getPortName()).boundingRect().width());
 
 	maxPortSize += 20;
-	width = max(width, 2*maxPortSize);
+    width = max(width, 2*maxPortSize);*/
 	
 	// port number has to fit
 	int maxPortCount = max(module->getInPortNames().size(), module->getOutPortNames().size());
@@ -152,24 +152,25 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
-	if(isSelected())
-		setZValue(1.0);
+
+    if(isSelected() || hovered)
+        setZValue(5.0); //Above Link
 	else
-		setZValue(0.0);
+        setZValue(2.0);
 
 	float lineWidth = 2.0f;
 	QColor fillcolor;    
 
 	switch(module->getStatus())
 	{
-	case DM::MOD_UNTOUCHED:			fillcolor = QColor(200,200,200);	break;
+    case DM::MOD_UNTOUCHED:			fillcolor = QColor(200,198,187);	break;
 
-	case DM::MOD_EXECUTING:			fillcolor = QColor(255,255,0);		break;
-	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(0,255,0);		break;
-	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(255,0,0);		break;
+    case DM::MOD_EXECUTING:			fillcolor = QColor(254,225,104);		break;
+    case DM::MOD_EXECUTION_OK:		fillcolor = QColor(153,204,255);		break;
+    case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(255,153,51);		break;
 
-	case DM::MOD_CHECK_OK:			fillcolor = QColor(150,255,150);	break;
-	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(255,100,100);	break;
+    case DM::MOD_CHECK_OK:			fillcolor = QColor(255,255,255);	break;
+    case DM::MOD_CHECK_ERROR:		fillcolor = QColor(255,153,51);	break;
 	}
 
 	// the constructor for QColor is neccessary
@@ -179,16 +180,22 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	QPainterPath rectPath;
 	rectPath.addRect(boundingRect().adjusted(lineWidth,lineWidth,-lineWidth,-lineWidth));
 	painter->fillPath(rectPath, brush);
-	painter->strokePath(rectPath, rectPen);
+    painter->strokePath(rectPath, rectPen);
+
+    QPainterPath rectGlowPath_def;
+    rectGlowPath_def.addRect(boundingRect());
+    painter->strokePath(rectGlowPath_def,
+        QPen(QColor(255,255,255),
+        lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
 	if(module->isSuccessorMode())
 	{
-		QPainterPath rectGlowPath;
-		float l = lineWidth*2;
-		QRectF r = boundingRect().adjusted(l,l,-l,-l);
-		rectGlowPath.addRect(r);
-		painter->strokePath(rectGlowPath, 
-			QPen(QColor(150,150,255), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        QPainterPath rectGlowPath;
+        float l = lineWidth*2;
+        QRectF r = boundingRect().adjusted(l,l,-l,-l);
+        rectGlowPath.addRect(r);
+        painter->strokePath(rectGlowPath,
+            QPen(QColor(200,198,187), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 	}
 
 	if(isSelected() || hovered)
@@ -197,15 +204,19 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		QRectF r = boundingRect();
 		rectGlowPath.addRect(r);
 		painter->strokePath(rectGlowPath, 
-			QPen(isSelected()?QColor(255,150,0):QColor(255,255,0), 
+            QPen(isSelected()?QColor(0,0,0):QColor(200,198,187),
 			lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 	}
 
-	QString text =  "Module: " + QString::fromStdString(module->getName());
+    QString text =  QString::fromStdString(module->getName());
 	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
+    QFont font = painter->font();
+    painter->setFont(font);
+    painter->setPen(QColor(0,0,0));
 	painter->drawText(	(boundingRect().width() - textSize.width())/2,
 		textSize.height() + 0,
 		text);
+
 
 	this->update();
 }
