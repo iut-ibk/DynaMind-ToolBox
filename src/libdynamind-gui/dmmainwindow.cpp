@@ -47,7 +47,9 @@
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
 
-void DMMainWindow::ReloadSimulation() {
+void DMMainWindow::ReloadModules() 
+{
+	simulation->registerModulesFromDefaultLocation();
 	/*
     this->simulation->reloadModules();
     createModuleListView();
@@ -123,7 +125,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
     connect(ui->actionOpen, SIGNAL(triggered()), this , SLOT(loadSimulation()), Qt::DirectConnection);
     connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(clearSimulation()), Qt::DirectConnection);
     connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
-    connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadSimulation()), Qt::DirectConnection);
+    connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadModules()), Qt::DirectConnection);
     connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
     connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
     connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
