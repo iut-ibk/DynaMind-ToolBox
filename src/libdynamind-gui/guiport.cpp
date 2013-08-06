@@ -124,7 +124,7 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	
     QPainterPath path;
 	QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    if(!isHover)
+    if(!isHover){
         path.addEllipse(0, 0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
         painter->fillPath(path, color);
         painter->strokePath(path, pen);
