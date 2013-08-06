@@ -40,6 +40,8 @@
 #include <dmsimulationwriter.h>
 #include <simulationio.h>
 
+#include "ColorPalette.h"
+
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 
 	QGraphicsScene(parent), parentGroup(parentGroup)
 {
@@ -48,7 +50,7 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
     viewer->setRenderHints(QPainter::Antialiasing);
     viewer->setAcceptDrops(true);
     if (!this->parentGroup)
-        viewer->setBackgroundBrush(QBrush(QColor(239,235,226)));
+		viewer->setBackgroundBrush(QBrush(ColorSettings::getInstance()->tabBg));
 
 	this->sim = sim;
 	hoveredGroupNode = NULL;
