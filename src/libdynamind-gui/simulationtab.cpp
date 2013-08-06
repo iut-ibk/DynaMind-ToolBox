@@ -50,7 +50,7 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
     viewer->setRenderHints(QPainter::Antialiasing);
     viewer->setAcceptDrops(true);
     if (!this->parentGroup)
-		viewer->setBackgroundBrush(QBrush(ColorSettings::getInstance()->tabBg));
+		viewer->setBackgroundBrush(QBrush(QColor(239,235,226)));
 
 	this->sim = sim;
 	hoveredGroupNode = NULL;
