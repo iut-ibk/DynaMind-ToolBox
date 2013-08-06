@@ -9,16 +9,28 @@
 #define COLOR_MODULESELECTED  QColor(168,219,168);
 #define COLOR_MODULE  QColor(207,240,158);*/
 
-
+/*
 #define COLOR_RASTERPORT  QColor(105,210,231)
 #define COLOR_VECTORPORT  QColor(243,134,48)
 #define COLOR_DOUBLEPORT  Qt::gray
+*/
+
 /*#define COLOR_MODULE_SELECTED_BORDER Qt::yellow
 #define COLOR_MODULE_FINISHED Qt::green
 #define COLOR_MODULE_EXE_ERROR Qt::red
 #define COLOR_MODULE_CHECK_ERROR QColor(255,150,0)
-#define COLOR_MODULE  Qt::cyan*/
-#define COLOR_MODULEBORDER  Qt::black
-#define COLOR_DEBUG Qt::gray
+#define COLOR_MODULE  Qt::cyan
+#define COLOR_DEBUG Qt::gray*/
 //#define COLOR_DOUBLEPORT  QColor(250,105,0);
+
+
+
+
+
+
+
+
+
+#define COLOR_MODULEBORDER  Qt::black
+
 #endif // COLORPALETTE_H

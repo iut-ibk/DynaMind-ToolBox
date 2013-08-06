@@ -62,7 +62,7 @@ public:
 private:
     QVector<GUILink * > linkNodes;
 
-    QColor color;
+    //QColor color;
     //ModelNode * modelNode;
     //GUILink * tmp_link;
 	

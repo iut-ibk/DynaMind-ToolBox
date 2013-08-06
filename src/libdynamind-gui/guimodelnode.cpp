@@ -282,8 +282,8 @@ void GUIModelNode::addUserDefinedDoubleItem() {
     QCheckBox * b = (QCheckBox *)QObject::sender();
     QString s =b->objectName();
     QStringList ls1 = s.split("|");
-    if (ls1[0].compare("InputDouble") == 0)
-        Type = INDOUBLE;
+    //if (ls1[0].compare("InputDouble") == 0)
+    //    Type = INDOUBLE;
     if (b->checkState ()) {
         if (Type != 0) {
             /*this->module->appendToUserDefinedParameter(ls1[0].toStdString(),ls1[1].toStdString());

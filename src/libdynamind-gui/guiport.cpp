@@ -83,7 +83,7 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
     //this->simpleTextItem = new QGraphicsSimpleTextItem (QString::fromStdString(p->getLinkedDataName()));
 
     //if (p->getPortType() == DM::INSYSTEM || p->getPortType() == DM::OUTSYSTEM)
-    color = COLOR_VECTORPORT;
+    //color = COLOR_VECTORPORT;
 
     hoverElement = 0;
 
@@ -113,6 +113,7 @@ bool PortNode::isLinked() {
 
 void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     //if (this->getVIBePort()->isFullyLinked())#
+	QColor color;
 	if(module && (portType == DM::OUTPORT && module->getOutPortData(portName.toStdString())))
 		color = Qt::yellow;
 	else if(linkNodes.size() || unstableLink)
