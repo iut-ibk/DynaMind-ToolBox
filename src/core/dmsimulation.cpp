@@ -384,7 +384,11 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 	bool success = true;
 	foreach(Link* l, nextLinks)
 	{
-		l->dest->streamViews[l->inPort] = *curStreamViews;
+		if(!l->isOutOfGroupLink)
+			l->dest->streamViews[l->inPort] = *curStreamViews;
+		else
+			((Group*)l->dest)->outStreamViews[l->inPort] = *curStreamViews;
+
 		if(!l->dest->isGroup())
 		{
 			if(!checkModuleStreamForward(l->dest))
