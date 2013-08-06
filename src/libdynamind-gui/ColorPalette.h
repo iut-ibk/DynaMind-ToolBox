@@ -69,9 +69,7 @@ class ColorSettings
 	static QColor ColorFromSettings(const char* name, const QColor& default)
 	{
 		QSettings settings;
-		QColor c;
-		settings.value(name, default).setValue(c);
-		return c;
+		return settings.value(name, default).value<QColor>();
 	}
 	static void SaveSetting(const char* name, const QColor& color)
 	{
