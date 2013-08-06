@@ -612,7 +612,15 @@ bool Simulation::checkModuleStreamForward(Module* m)
 				}
 			}
 			else if(a == WRITE)	// add new views
-				updatedStreams[streamName][v.getName()] = v;
+			{
+				// it may be, that a view already exists
+				View newView = v;
+				View& existingView = updatedStreams[streamName][v.getName()];
+				foreach(std::string attName, existingView.getAllAttributes())
+					newView.addAttribute(attName);
+
+				existingView = newView;
+			}
 		}
 	}
 	if(!success)
