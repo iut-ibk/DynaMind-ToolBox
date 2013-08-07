@@ -76,7 +76,7 @@ namespace std {
 }
 
 
-    enum  DATATYPES {
+    enum  DataTypes {
 		INT,
 		LONG,
 		DOUBLE,
@@ -87,7 +87,7 @@ namespace std {
 		BOOL,
     };
 
-    enum PORTTYPES {
+    enum PortType {
 	INPORT,
 	OUTPORT,
     };
