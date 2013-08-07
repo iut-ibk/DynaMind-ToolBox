@@ -140,6 +140,7 @@ public:
 public slots:
     void deleteModelNode();
     void editModelNode();
+	void editName();
     void printData();
     void viewData(int portIndex);
     void showHelp();

@@ -43,6 +43,7 @@
 #include <groupnode.h>
 
 #include <guihelpviewer.h>
+#include <qdialog.h>
 
 void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
@@ -284,14 +285,20 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 		signalMapper->setMapping(action, i++);
 	}
 	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(viewData(int)));
-	
-    QAction  * a_edit = menu.addAction("edit");
-    QAction * a_delete = menu.addAction("delete");
-    QAction * a_showHelp = menu.addAction("show help");
-    QAction * a_showData = menu.addAction("show data stream");
-    QAction * a_successorMode = menu.addAction("change successor mode");
 
+	if(module->getOutPortNames().size())
+		menu.addSeparator();
+	
+    QAction* a_edit = menu.addAction("configurate");
+    QAction* a_editName = menu.addAction("edit name");
+    QAction* a_delete = menu.addAction("delete");
+    QAction* a_successorMode = menu.addAction("force successor mode");
+	menu.addSeparator();
+    QAction* a_showHelp = menu.addAction("show help");
+    QAction* a_showData = menu.addAction("show data stream");
+	
     connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
+    connect( a_editName, SIGNAL( triggered() ), this, SLOT( editName() ), Qt::DirectConnection );
     connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
     connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
     connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
@@ -305,6 +312,12 @@ void ModelNode::editModelNode()
 {
 	if(!module->createInputDialog())
 		(new GUIModelNode(module ,this))->show();
+}
+
+void ModelNode::editName() 
+{
+	module->setName(QInputDialog::getText(0, "set name", "specify name of this module", 
+		QLineEdit::Normal, QString::fromStdString(module->getName())).toStdString());
 }
 
 void ModelNode::deleteModelNode() 
