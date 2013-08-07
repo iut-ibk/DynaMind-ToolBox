@@ -28,90 +28,30 @@
 #define GROUPNODE_H
 
 #include <modelnode.h>
-/*#include <moduledescription.h>
-#include "dmcompilersettings.h"
-#include <rootgroupnode.h>
-namespace DM {
-    class Module;
-    class PortTuple;
-}
-
-class LinkNode;
-struct LinkNodeTuple;
-
-
-struct GUIPortTuple {
-    PortNode * inPort;
-    PortNode * outPort;
-};*/
 
 class SimulationTab;
 
-class DM_HELPER_DLL_EXPORT  GroupNode : /*public  QObject, public QGraphicsItem*///, public DM::ModuleObserver
-	public ModelNode
+class DM_HELPER_DLL_EXPORT  GroupNode: public ModelNode
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 
 private:
-	/*
-    QVector<GUIPortTuple * > OutputTuplePorts;
-    QVector<GUIPortTuple * > InPortTuplePorts;
-
-    ModuleDescription module;
-    bool RePosFlag;
-    std::string name;
-    QVector<ModelNode * > childnodes;
-    std::string UUID;
-    RootGroupNode * rg;
-	*/
-
-	// the sice of the outer group border
-	//int w,h;
 	ModelNode* parent;
 	SimulationTab* owningTab;
-	//virtual QRectF boundingRect() const;
 public:
 	void setParent(ModelNode* parent){this->parent = parent;};
 	void resize();
-	// observer methods
-	//void notifyAddPort(const std::string &name, const DM::PortType type);
-	//void notifyRemovePort(const std::string &name, const DM::PortType type);
 
     GroupNode(DM::Module* module, GUISimulation* sim, SimulationTab* tab, ModelNode* parent);
 	~GroupNode();
-	/*
-    virtual ~GroupNode();
-    void addTuplePort(DM::PortTuple * p);
-    void removeTuplePort(int Type, QString s);
-    GroupNode( DM::Module *module, GUISimulation * s);
-     virtual PortNode * getGUIPort(DM::Port * p);
 
-	 */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 	
     //QRectF boundingRect() const;
-    /*void setSelected ( bool selected );
-    void RePosTuplePorts();
-	*/
+
     bool isGroup(){return true;}
-	/*
-    void changeGroupID(QString Name);
-
-    void removeModelNode(ModelNode *m);
-    QVector<ModelNode * > getChildNodes() {return this->childnodes;}
-    virtual void updatePorts();
-    void setRootGroupNode(RootGroupNode * rg) {this->rg = rg;}
-    RootGroupNode * getRootGroupNode() {return this->rg;}
-
-public slots:
-    void minimize();
-    void maximize();
-
-signals:
-  void removeGroupNode(QString UUID);*/
-	//void updatePorts();
 };
 
 #endif // GROUPNODE_H
