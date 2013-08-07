@@ -1132,6 +1132,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 			}
 			// set successor mode
 			m->setSuccessorMode(me.DebugMode);
+			m->setName(me.Name.toStdString());
 		}
 		else
 			DM::Logger(Error) << "creating module '" << me.ClassName.toStdString() << "' failed";
