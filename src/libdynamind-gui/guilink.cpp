@@ -39,7 +39,6 @@ GUILink::GUILink()
     inPort = 0;
     outPort = 0;
     hovered = false;
-    VIBelink = 0;
     setAcceptHoverEvents(true);
     this->setZValue(4);
 }
@@ -90,67 +89,32 @@ GUILink::~GUILink()
         this->outPort->removeLink(this);
     if (this->inPort)
         this->inPort->removeLink(this);
-
-
-
-    /*if (this->VIBelink != 0){
-        //Check if Links exists
-		
-        std::vector<DM::ModuleLink*> linkVector = this->sim->getLinks();
-        if (find(linkVector.begin(), linkVector.end(), VIBelink) == linkVector.end())
-            this->VIBelink = 0;
-        if (VIBelink != 0)
-            delete this->VIBelink;
-    }*/
 	
-    this->VIBelink = 0;
     this->inPort = 0;
     this->outPort = 0;
 }
 
 void GUILink::setOutPort(PortNode * outPort)
 {
-    //if (!outPort)
-    //    return;
     this->outPort = outPort;
 	refresh();
-    //outPort->setLink(this);
-    /*source = outPort->getCenterPos();
-    sink = outPort->getCenterPos();
-    prepareGeometryChange();
-    updatePaths();
-    this->update(this->boundingRect());*/
 }
 void GUILink::setOutPort(QPointF p) 
 {
     source = p;
 	refresh();
-    /*prepareGeometryChange();
-    updatePaths();
-    this->update(this->boundingRect());*/
 }
 
 void GUILink::setInPort(PortNode * inPort) 
 {
-    //if (!inPort)
-    //    return;
     this->inPort = inPort;
 	refresh();
-
-    //inPort->setLink(this);
-    /*sink = inPort->getCenterPos();
-    prepareGeometryChange ();
-    updatePaths();    
-    this->update(this->boundingRect());*/
 
 }
 void GUILink::setInPort(QPointF p) 
 {
     sink = p;
 	refresh();
-    /*prepareGeometryChange();
-    updatePaths();
-    this->update(this->boundingRect());*/
 }
 
 
@@ -165,28 +129,20 @@ void GUILink::refresh()
     this->update(this->boundingRect());
 }
 
-void GUILink::deleteLink() {
-
+void GUILink::deleteLink() 
+{
     delete this;
-
-
-}/*
-void GUILink::backLink() {
-    //this->VIBelink->setBackLink(true);
-}*/
-
-void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
-    QMenu menu;
-
-    //QAction  * a_back = menu.addAction("back");
-    QAction  * a_delete = menu.addAction("delete");
-
-    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
-    //connect( a_back, SIGNAL( triggered() ), this, SLOT( backLink() ), Qt::DirectConnection );
-    menu.exec(event->screenPos());
-
 }
-qreal mid(qreal start, qreal stop) {
+
+void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
+{
+    QMenu menu;
+    QAction  * a_delete = menu.addAction("delete");
+    connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteLink() ), Qt::DirectConnection );
+    menu.exec(event->screenPos());
+}
+qreal mid(qreal start, qreal stop) 
+{
     return qMin(start, stop) + (qAbs(start - stop) / 2.0);
 }
 void GUILink::updatePaths() {
@@ -201,13 +157,15 @@ void GUILink::updatePaths() {
     united = handle_path.united(connection_path);
     update();
 }
-void GUILink::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+void GUILink::hoverEnterEvent(QGraphicsSceneHoverEvent *event) 
+{
     hovered = true;
     update();
 	QGraphicsItem::hoverEnterEvent(event);
 }
 
-void GUILink::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+void GUILink::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) 
+{
     hovered = false;
     update();
 	QGraphicsItem::hoverLeaveEvent(event);

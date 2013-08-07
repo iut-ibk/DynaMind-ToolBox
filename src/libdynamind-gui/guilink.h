@@ -41,7 +41,7 @@ class  DM_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
-    enum { Type = UserType + 3 };
+    //enum { Type = UserType + 3 };
 private:
     QLineF line;
     PortNode * inPort;
@@ -50,10 +50,7 @@ private:
     QPainterPath connection_path, handle_path, united;
     QPointF source, sink;
     bool hovered;
-    DM::ModuleLink * VIBelink;
     GUISimulation * sim;
-
-
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -70,19 +67,10 @@ public:
     void refresh();
     PortNode * getOutPort(){return outPort;}
     PortNode * getInPort(){return inPort;}
-    //bool isBack(){return this->VIBelink->isBackLink();}
-    //void setBack(bool b){this->VIBelink->setBackLink(b);}
     void setSimulation(GUISimulation * sim) {this->sim = sim;}
-    void setVIBeLink(DM::ModuleLink * link){this->VIBelink = link;}
     ~GUILink();
-
-    QPainterPath shape() const 
-	{
-            return connection_path.united(handle_path);
-    }
 public slots:
     void deleteLink();
-    //void backLink();
 
 };
 
