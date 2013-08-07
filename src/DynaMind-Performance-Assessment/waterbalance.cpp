@@ -477,7 +477,7 @@ void WaterBalance::clear()
 
 void WaterBalance::initmodel()
 {
-    sink = new DynaMindStreamLogSink(DM::Logger().sink);
+    sink = new DynaMindStreamLogSink();
     Log::init(sink, Debug);
 
     simreg = new SimulationRegistry();

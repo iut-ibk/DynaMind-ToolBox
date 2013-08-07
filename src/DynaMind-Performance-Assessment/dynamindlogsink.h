@@ -23,22 +23,19 @@
 #include <string>
 #include <ostream>
 #include <logsink.h>
-#include <dmlogsink.h>
+#include <dmlogger.h>
 
 #include <cd3globals.h>
 
 class CD3_PUBLIC DynaMindStreamLogSink : public LogSink {
 public:
-    DynaMindStreamLogSink(DM::LogSink &ostream);
+    DynaMindStreamLogSink();
 
 	void close() {}
     LogSink &operator<<(const std::string &string);
     LogSink &operator<<(const char *string);
     LogSink &operator<<(int i);
     LogSink &operator<<(LSEndl e);
-
-private:
-    DM::LogSink &out;
 };
 
 #endif // DYNAMINDLOGSINK_H

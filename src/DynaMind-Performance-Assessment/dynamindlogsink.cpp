@@ -19,27 +19,28 @@
 
 #include "dynamindlogsink.h"
 
-DynaMindStreamLogSink::DynaMindStreamLogSink(DM::LogSink &ostream) : out(ostream) {
+DynaMindStreamLogSink::DynaMindStreamLogSink()
+{
 
 }
 
 LogSink &DynaMindStreamLogSink::operator<<(const std::string &s) {
-	out << s;
+    DM::Logger() << s;
 	return *this;
 }
 
 LogSink &DynaMindStreamLogSink::operator<<(const char *s) {
-	out << s;
+    DM::Logger() << s;
 	return *this;
 }
 
 LogSink &DynaMindStreamLogSink::operator<<(int i) {
-	out << i;
+    DM::Logger() << i;
 	return *this;
 }
 
 LogSink &DynaMindStreamLogSink::operator<<(LSEndl e) {
-    out << "\n";
+    DM::Logger() << "\n";
 	return *this;
 }
 
