@@ -261,14 +261,22 @@ void GroupNode::resize()
 	int maxx = 200;
 	int miny = 0;
 	int maxy = 200;
-
+    bool first = true;
 	foreach(DM::Module* m, this->getSimulation()->getModules())
 	{
 		if(m->getOwner() == this->module)
 		{
 			if(ModelNode* mn = getSimulation()->getModelNode(m))
 			{
-				QPoint pos = mn->scenePos().toPoint();
+                QPoint pos = mn->scenePos().toPoint();
+                if (first) {
+                     minx = pos.x();
+                     miny = pos.y();
+                     maxx = pos.x()+(int)mn->boundingRect().width();
+                     maxy = pos.y()+(int)mn->boundingRect().height();
+                     first = false;
+                     continue;
+                }
 				minx = min(minx, pos.x());
 				miny = min(miny, pos.y());
 				maxx = max(maxx, pos.x()+(int)mn->boundingRect().width());
