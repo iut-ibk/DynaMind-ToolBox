@@ -182,12 +182,6 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	painter->fillPath(rectPath, brush);
     painter->strokePath(rectPath, rectPen);
 
-    QPainterPath rectGlowPath_def;
-    rectGlowPath_def.addRect(boundingRect());
-    painter->strokePath(rectGlowPath_def,
-        QPen(QColor(255,255,255),
-        lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-
 	if(module->isSuccessorMode())
 	{
         QPainterPath rectGlowPath;
