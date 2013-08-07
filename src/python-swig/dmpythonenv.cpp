@@ -156,7 +156,7 @@ bool PythonEnv::addOverWriteStdCout() {
     script << "        sys.stdout=Logger(sys.stdout,False)\n";
     script << "        sys.stderr=Logger(sys.stderr,True)\n";
     script << "print \"Redirect python stdout and stderr\"\n";
-	script << "print sys.path\n";
+    //script << "print sys.path\n";
 	script << "import PyQt4\n";
 	script << "import reimport\n";
 	script << "import netCDF4\n";
