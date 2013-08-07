@@ -117,6 +117,16 @@ void Module::removeObserver(ModuleObserver* obs)
 	remove(observers.begin(), observers.end(), obs);
 }
 
+std::string Module::getName()
+{
+	return name.length()>0 ? name : std::string("<class: ") + getClassName() + ">";
+}
+
+void Module::setName(std::string name)
+{
+	this->name = name;
+}
+
 void Module::addPort(const std::string &name, const PortType type)
 {
 	if(type == INPORT)

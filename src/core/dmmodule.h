@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011-2012  Christian Urich
+ * Copyright (C) 2011-2012  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -117,7 +117,6 @@ public:
 		inports (those are set by the simulation) */
 	virtual void run() = 0;
 	/** @brief returns the name of the class - for e.g. logging purposes */
-	virtual const char* getName() {return getClassName();};
 	virtual const char* getClassName() = 0;
 	/** @brief adds a Parameter to the module.
       * availiable types:
@@ -237,6 +236,9 @@ public:
 //	void update();
 	Module* getOwner(){return owner;}
 	virtual bool isGroup(){return false;};
+
+	std::string getName();
+	void setName(std::string name);
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);
@@ -274,6 +276,8 @@ private:
 	Module* owner;
 
 	bool successorMode;
+
+	std::string name;
 public:
 	void setSuccessorMode(bool value);
 	bool isSuccessorMode();
