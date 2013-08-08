@@ -40,13 +40,18 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 	Logger(Debug) << "saving module '" << m->getClassName() << "'";
 	Module* owner = m->getOwner();
 
+	QString name = QString::fromStdString(m->getName());
+	// for xml-conform strings, we replace &,< and >
+	name = name.replace('&',"&amp;");	// first to replace, otherwhise replacements get replaced too
+	name = name.replace('<',"&lt;").replace('>',"&gt;");
+
 	out  << "\t\t<Node>\n";
 	out << "\t\t"<< "\t<ClassName value=\""
 		<< QString::fromStdString(m->getClassName()) << "\"/>\n";
 	out << "\t\t"<< "\t<UUID value=\""
 		<< ADDRESS_TO_INT(m) << "\"/>\n";
 	out << "\t\t"<< "\t<Name value=\""
-		<< QString::fromStdString(m->getName()) << "\"/>\n";
+		<< name << "\"/>\n";
 	out << "\t\t"<< "\t<GroupUUID value=\""
 		<< ADDRESS_TO_INT(owner) << "\"/>\n";
 	out << "\t\t"<< "\t<DebugMode value=\""
