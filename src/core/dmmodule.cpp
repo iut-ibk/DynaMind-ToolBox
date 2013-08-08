@@ -31,7 +31,7 @@
 #include <dmrasterdata.h>
 
 using namespace std;
-namespace DM {
+using namespace DM;
 
 Module::Module()
 {
@@ -125,7 +125,7 @@ std::string Module::getName()
 void Module::setName(std::string name)
 {
 	this->name = name;
-	
+
 	foreach(ModuleObserver* observer, observers)
 		observer->notifyChangeName(name);
 }
@@ -147,7 +147,7 @@ void Module::removePort(const std::string &name, const PortType type)
 		inPorts.erase(name);
 	else if(type == OUTPORT)
 		outPorts.erase(name);
-	
+
 	foreach(ModuleObserver* observer, observers)
 		observer->notifyRemovePort(name, type);
 }
@@ -232,7 +232,7 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 		if(a == WRITE || a == MODIFY || v.getWriteAttributes().size())
 			outPort = true;
 	}
-	
+
 	if(inPort && !hasInPort(streamName))
 		this->addPort(streamName, INPORT);
 	if(outPort && !hasOutPort(streamName))
@@ -279,11 +279,11 @@ System* Module::getData(const std::string& streamName)
 
 		if(hasOutPort(streamName))	// maybe the system is already created frlom scratch
 			sys = getOutPortData(streamName);
-		
+
 		if(!sys)
 			sys = new System();
 	}
-	
+
 	//bool readOnly = true;
 	mforeach(View v, accessedViews[streamName])
 	{
@@ -334,7 +334,7 @@ std::vector<View> Module::getViewsInStream(const std::string& streamName) const
 	if(map_contains(&streamViews, streamName, r))
 		mforeach(const View& v, r)
 			views.push_back(v);
-		
+
 	return views;
 }
 
@@ -380,8 +380,8 @@ bool Module::isSuccessorMode()
 std::string Module::getParameterAsString(const std::string& name)
 {   
 	std::stringstream strValue;
-    strValue.precision(16);
-	
+	strValue.precision(16);
+
 	if(Parameter* p = getParameter(name))
 	{
 		switch(p->type)
@@ -450,5 +450,4 @@ void Module::reset()
 		}
 	}
 	this->setStatus(MOD_UNTOUCHED);
-}
 }
