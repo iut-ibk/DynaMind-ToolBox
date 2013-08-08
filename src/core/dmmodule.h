@@ -295,6 +295,7 @@ public:
 	}
 	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
 	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
+	virtual void notifyChangeName(const std::string &name) = 0;
 };
 }
 

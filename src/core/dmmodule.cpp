@@ -125,6 +125,9 @@ std::string Module::getName()
 void Module::setName(std::string name)
 {
 	this->name = name;
+	
+	foreach(ModuleObserver* observer, observers)
+		observer->notifyChangeName(name);
 }
 
 void Module::addPort(const std::string &name, const PortType type)
