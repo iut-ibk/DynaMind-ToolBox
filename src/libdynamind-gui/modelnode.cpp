@@ -44,6 +44,8 @@
 
 #include <guihelpviewer.h>
 #include <qdialog.h>
+#include <qtabwidget.h>
+#include <simulationtab.h>
 
 void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
@@ -52,6 +54,23 @@ void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType
 void GUIModelObserver::notifyRemovePort(const std::string &name, const DM::PortType type)
 {
 	node->removePort(name, type);
+}
+void GUIModelObserver::notifyChangeName(const std::string &name)
+{
+	if(node->isGroup())
+	{
+		int i = 0;
+		QList<SimulationTab*> tabs = node->getSimulation()->getTabs();
+		foreach(SimulationTab* tab, tabs)
+		{
+			if(((DM::Module*)tab->getParentGroup()) == node->getModule())
+				break;
+			else
+				i++;
+		}
+		if(i < tabs.size())
+			node->getSimulation()->getTabWidget()->setTabText(i, QString::fromStdString(name));
+	}
 }
 
 ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)

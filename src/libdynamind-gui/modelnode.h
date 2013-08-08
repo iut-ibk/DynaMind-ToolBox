@@ -72,6 +72,7 @@ public:
 	
 	void notifyAddPort(const std::string &name, const DM::PortType type);
 	void notifyRemovePort(const std::string &name, const DM::PortType type);
+	void notifyChangeName(const std::string &name);
 };
 
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//, public DM::ModuleObserver
