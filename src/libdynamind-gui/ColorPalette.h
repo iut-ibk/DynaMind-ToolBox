@@ -66,10 +66,10 @@ class ColorSettings
 		tabBg = ColorFromSettings("tab_bg_color", COLOR_TAB_BG);
 	}
 
-    static QColor ColorFromSettings(const char* name, const QColor& default_color)
+	static QColor ColorFromSettings(const char* name, const QColor& default_color)
 	{
 		QSettings settings;
-        return settings.value(name, default_color).value<QColor>();
+		return settings.value(name, default_color).value<QColor>();
 	}
 	static void SaveSetting(const char* name, const QColor& color)
 	{
