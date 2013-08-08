@@ -63,6 +63,7 @@ public:
 	int currentRun;	// [0,runs-1]
 
 	bool condition();
+	int getGroupCounter();
 	//void resetCondition();
 	//int i;
 };
