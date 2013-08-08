@@ -317,7 +317,7 @@ void DMMainWindow::on_actionZoomOut_triggered()
 void DMMainWindow::on_actionZoomReset_triggered()
 {
 	QGraphicsView* view = simulation->getSelectedTab()->getQGViewer();
-    view->fitInView(view->sceneRect(), Qt::KeepAspectRatio);
+    view->fitInView(view->scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 /*void DMMainWindow::showHelp(std::string classname) 
