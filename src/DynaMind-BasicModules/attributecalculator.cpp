@@ -52,10 +52,6 @@ AttributeCalculator::AttributeCalculator()
 }
 
 void AttributeCalculator::init() {
-    //this->sys_in = this->getData("Data");
-
-    //if (!this->sys_in)
-    //    return;
     if (nameOfBaseView.empty())
         return;
     if (nameOfNewAttribute.empty())
@@ -63,7 +59,6 @@ void AttributeCalculator::init() {
     if (equation.empty())
         return;
 
-    //DM::View * baseView = this->sys_in->getViewDefinition(nameOfBaseView);
 	DM::View baseView  = getViewInStream("Data", nameOfBaseView);
 	if (baseView.getName().length() == 0)
         return;
@@ -83,7 +78,6 @@ void AttributeCalculator::init() {
         varaibleNames.push_back(it->second);
 
         if (viewsmap.find(viewname) == viewsmap.end()) {
-            //baseView = this->sys_in->getViewDefinition(viewname);
 			baseView  = getViewInStream("Data", viewname);
 			if (baseView.getName().length() == 0)
 				return;
@@ -171,12 +165,7 @@ QString AttributeCalculator::IfElseConverter(QString expression)
         expression = IfElseConverter(expression);
 
     }
-
     return expression;
-
-
-
-
 }
 
 void AttributeCalculator::run() {
@@ -203,23 +192,22 @@ void AttributeCalculator::run() {
     }
     p->DefineFun(new dm::Random);
     p->DefineFun(new dm::Round);
-
-
-
     p->DefineVar("counter", &mp_counter);
 
-    Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
+    //Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
     p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
     mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
     {
         //mp_counter= (int) this->getInternalCounter()+1;
-		LoopGroup* lg = dynamic_cast<LoopGroup*>(getOwner());
-		if(lg)
-			mp_counter = lg->currentRun+1;
+        Group* lg = dynamic_cast<Group*>(getOwner());
+        if(lg) {
+            mp_counter = lg->getGroupCounter();
+            DM::Logger(DM::Debug) << "counter " << lg->getGroupCounter();
+        }
 		else
 		{
-			DM::Logger(DM::Warning) << "attribute calc: counter not found";
+            DM::Logger(DM::Debug) << "attribute calc: counter not found";
 			mp_counter = 0;
 		}
         for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
