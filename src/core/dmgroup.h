@@ -45,6 +45,8 @@ public:
 	}*/
 	virtual void init();
 	bool isGroup(){return true;}
+	/*backwards compatible returns counter of group until groups have more power. Returns -1 if not set*/
+	virtual int getGroupCounter() {return -1;}
 private:
 	// as a standard we implement a single-run condition
 	bool singleRunCondition;
