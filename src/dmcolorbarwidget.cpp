@@ -11,23 +11,29 @@
 namespace DM {
 
 ColorBarWidget::ColorBarWidget(QWidget *parent) :
-    QGLWidget(parent) {
+    QGLWidget(parent) 
+{
+	texture = 0;
 }
 
 ColorBarWidget::ColorBarWidget(QWidget *parent, QGLWidget *shared) :
-    QGLWidget(parent, shared)  {
+    QGLWidget(parent, shared)  
+{
+	texture = 0;
 }
 
-void ColorBarWidget::initializeGL() {
+void ColorBarWidget::initializeGL() 
+{
     glClearColor(0, 0.0, 0, 1.0);
 }
 
-void ColorBarWidget::paintGL() {
+void ColorBarWidget::paintGL() 
+{
     //glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_TEXTURE_1D);
-    if (!glIsTexture(texture)) {
+    if (!glIsTexture(texture))
         return;
-    }
+
+    glEnable(GL_TEXTURE_1D);
     glBindTexture(GL_TEXTURE_1D, texture);
     
     glBegin(GL_QUADS);
