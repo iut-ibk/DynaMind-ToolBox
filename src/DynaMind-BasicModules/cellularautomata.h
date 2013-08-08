@@ -30,6 +30,7 @@
 #include "dmmodule.h"
 #include "muParser.h"
 #include <dm.h>
+#include <QMap>
 
 //using namespace mu;
 
@@ -87,11 +88,11 @@ private:
     std::map<std::string, RasterData * > landscapes;
 
 
-    std::map<std::string, double**> NeighboorhoodMaps;
-    std::map<std::string, int**> NeighboorhoodStamps;
-    std::map<std::string, double** > NeighboorhoodPointerMap;
-    std::map<std::string, Dimension> NeighboohoodDimensions;
-    std::map<std::string, std::string> NeighboorhoodMapName;
+    QMap<std::string, double**> NeighboorhoodMaps;
+    QMap<std::string, int**> NeighboorhoodStamps;
+    QMap<std::string, double** > NeighboorhoodPointerMap;
+    QMap<std::string, Dimension> NeighboohoodDimensions;
+    QMap<std::string, std::string> NeighboorhoodMapName;
 
     std::vector<std::string> NeighboorhoodList;
     std::vector<double*> RulesResults;
