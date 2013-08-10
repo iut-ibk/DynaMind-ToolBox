@@ -12,7 +12,7 @@ The DyanMind-Toolbox provides a collection of modules and a graphical user inter
 - [DynaMind-BasicModules](https://github.com/iut-ibk/DynaMind-BasicModules )
 - [DynaMind-Sewer](https://github.com/iut-ibk/DynaMind-Sewer)
 - [DynaMind-DAnCE4Water](https://github.com/christianurich/DynaMind-DAnCE4Water)
-- 
+
 ## Compile DynaMind
 - [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
 - [Compiling-DynaMind-Toolbox-on-Linux](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Linux)
