@@ -54,6 +54,11 @@ void LoopGroup::run()
 	//Group::run();
 }
 
+int LoopGroup::getGroupCounter()
+{
+	return currentRun;
+}
+
 void LoopGroup::init() 
 {
 	currentRun = 0;
