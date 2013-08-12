@@ -183,6 +183,11 @@ void GUIAttributeCalculator::on_addButton_clicked() {
     if (ui->listAttributes->size().isNull())
         return;
 
+	if(!ui->listAttributes->currentItem())
+	{
+		DM::Logger(Error) << "please select an attribute";
+		return;
+	}
     //elementName << ui->comboView->currentText().toStdString();
 
     std::vector<std::string> elements;
