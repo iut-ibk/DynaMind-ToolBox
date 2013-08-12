@@ -38,7 +38,7 @@ GUILoopGroup::GUILoopGroup(LoopGroup * m, QWidget *parent):
 
 	this->m = m;
 	
-	ui->repeats->setValue(m->getParameter("Runs")->get<int>());
+	ui->repeats->setValue(m->runs);
 	ui->repeats->setMinimum(1);
 
 	foreach (std::string s, m->readStreams)
@@ -117,6 +117,6 @@ void GUILoopGroup::on_removeStream_clicked()
 
 void GUILoopGroup::accept() 
 {
-	m->getParameter("Runs")->set(ui->repeats->value());
+	m->runs = ui->repeats->value();
 	QDialog::accept();
 }

@@ -50,10 +50,11 @@ class DM_HELPER_DLL_EXPORT AppendAttributes : public  DM::Module {
     std::map<std::string, DM::RasterData*> attribueMaps;
 
 
-    bool median;
-    double multiplier;
 
 public:
+    double multiplier;
+    bool median;
+
     AppendAttributes();
     void run();
     void init();

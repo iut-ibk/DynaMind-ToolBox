@@ -106,7 +106,7 @@ void AddDataToNewView::init()
 		// modify only
 		inViewDef.setAccessType(DM::MODIFY);
 		// add new attributes
-		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
+		foreach(std::string s, this->newAttributes)
 			inViewDef.addAttribute(s);
 	}
 	else
@@ -120,7 +120,7 @@ void AddDataToNewView::init()
 		foreach(std::string s, inViewDef.getWriteAttributes())
 			outView.addAttribute(s);
 		// add new attributes
-		foreach(std::string s, getParameter<std::vector<std::string> >("newAttributes"))
+		foreach(std::string s, this->newAttributes)
 			outView.addAttribute(s);
 
 		std::vector<DM::View> data;

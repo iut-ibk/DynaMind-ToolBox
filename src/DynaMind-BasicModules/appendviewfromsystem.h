@@ -11,19 +11,17 @@
 
 class DM_HELPER_DLL_EXPORT AppendViewFromSystem : public DM::Module
 {
-    DM_DECLARE_NODE(AppendViewFromSystem)
-    private:
+	DM_DECLARE_NODE(AppendViewFromSystem)
 
-        std::vector<std::string> Inports;
+public:
+	std::vector<std::string> Inports;
 
-    std::vector<DM::System*> Systems_Inport;
-    std::vector<std::string> existingViews;
-    std::vector<DM::View> views;
-    std::string mainView;
-    unsigned int sizeold;
-
-
-
+private:
+	std::vector<DM::System*> Systems_Inport;
+	std::vector<std::string> existingViews;
+	std::vector<DM::View> views;
+	std::string mainView;
+	unsigned int sizeold;
 
 public:
     AppendViewFromSystem();

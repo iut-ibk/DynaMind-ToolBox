@@ -109,11 +109,11 @@ private:
     int nbnumber;
     double * repeater;
 
-    Parameter param;
     std::map<std::string, std::string> paramRaw;
 
     void deinit();
-
+public:
+    Parameter param;
 };
 
 

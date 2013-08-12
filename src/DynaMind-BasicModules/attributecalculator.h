@@ -36,9 +36,10 @@ class DM_HELPER_DLL_EXPORT AttributeCalculator : public Module
 {
 
     DM_DECLARE_NODE(AttributeCalculator)
-
+public:
+	std::map<std::string, std::string> variablesMap;
+	bool asVector;
 private:
-    std::map<std::string, std::string> variablesMap;
     DM::System * sys_in;
     std::string nameOfBaseView;
     std::string nameOfNewAttribute;
@@ -46,7 +47,6 @@ private:
     std::map<std::string, DM::View> viewsmap;
     std::vector<std::string> varaibleNames;
     void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
-    bool asVector;
     QString IfElseConverter(QString exp);
     mup::Value mp_counter;
 

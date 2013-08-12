@@ -25,6 +25,8 @@
  */
 #include "guicellularautomata_neighbourhood.h"
 #include "ui_guicellularautomata_neighbourhood.h"
+#include "guicellularautomata.h"
+#include "cellularautomata.h"
 #include <dmmodule.h>
 #include <sstream>
 #include <dm.h>
@@ -56,8 +58,7 @@ GUICellularAutomata_Neighbourhood::~GUICellularAutomata_Neighbourhood()
 
 void GUICellularAutomata_Neighbourhood::accept() {
 
-
-    std::map<std::string, std::string> neighs = m->getParameter< std::map<std::string, std::string> >("Neighs");
+    //std::map<std::string, std::string> neighs = m->getParameter("Neighs")->get<std::map<std::string,std::string> >();
     std::string name = ui->lineEdit_name->text().toStdString();
     std::stringstream ss;
     ss << ui->comboBox_landscapes->currentText().toStdString();
@@ -65,8 +66,9 @@ void GUICellularAutomata_Neighbourhood::accept() {
     ss << ui->comboBox_neigh->currentText().toStdString();
     ss << "+|+";
     ss << this->getNeighbourhood( ui->comboBox_neigh->currentText().toStdString());
-    neighs[name] =ss.str();
-    m->setParameterNative< std::map<std::string, std::string> >("Neighs", neighs);
+    //neighs[name] =ss.str();
+    //m->setParameterNative< std::map<std::string, std::string> >("Neighs", neighs);
+	gui->m->param.neighs[name] == ss.str();
     emit valuesChanged();
     QDialog::accept();
 

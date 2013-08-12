@@ -74,6 +74,8 @@ class DM_HELPER_DLL_EXPORT Marker : public  Module {
 
 
     };
+public:
+    Parameter param;
 private:
     std::map<std::string, RasterData * > inputRasterData;
     DM::System * vectorData;
@@ -81,7 +83,6 @@ private:
 
 
     parameter_type paramRaw;
-    Parameter param;
     double evaluateExpresion_R(int index, DM::Node & p);
     double evaluateExpresion_r(int index, DM::Node & p);
     double calculater(const DM::Node &sp, const DM::Node &cp);

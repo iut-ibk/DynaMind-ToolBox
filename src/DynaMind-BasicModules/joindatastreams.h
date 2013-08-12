@@ -8,13 +8,13 @@ class DM_HELPER_DLL_EXPORT JoinDatastreams : public DM::Module
 {
     DM_DECLARE_NODE(JoinDatastreams)
 
-    private:
-
-        std::vector<std::string> Inports;
-        std::vector<DM::System*> Systems_Inport;
-        std::vector<std::string> existingViews;
-        std::vector<DM::View> views;
-    unsigned int sizeold;
+public:
+	std::vector<std::string> Inports;
+private:
+	std::vector<DM::System*> Systems_Inport;
+	std::vector<std::string> existingViews;
+	std::vector<DM::View> views;
+	unsigned int sizeold;
 
 public:
     JoinDatastreams();

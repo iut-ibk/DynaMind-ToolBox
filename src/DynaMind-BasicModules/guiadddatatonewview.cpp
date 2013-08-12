@@ -24,7 +24,7 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
 	for(view_map::iterator it = views.begin(); it != views.end(); ++it)
 		ui->comboBox_views->addItem(QString::fromStdString(it->first));
 
-    ui->checkBox_onlySelected->setChecked(m->getParameter<bool>("onlySelected"));
+    ui->checkBox_onlySelected->setChecked(this->m->onlySelected);
 
     std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
     if (!nameofexview.empty()) {
@@ -36,7 +36,7 @@ GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
         ui->comboBox_views->addItem("Connect Inport");
     }
 
-    foreach (std::string s, this->m->getParameter<std::vector<std::string> >("newAttributes")) {
+	foreach (std::string s, this->m->newAttributes) {
         ui->listWidget->addItem(QString::fromStdString(s));
     }
 
@@ -64,9 +64,12 @@ void GUIAddDatatoNewView::accept() {
         return;
     }
     std::string nameofExistingView = ui->comboBox_views->currentText().toStdString();
-    this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
-    this->m->setParameterValue("NameOfExistingView", nameofExistingView);
-    this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
+    //this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
+    //this->m->setParameterValue("NameOfExistingView", nameofExistingView);
+    //this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
+	m->NameOfNewView = ui->lineEdit->text().toStdString();
+	m->NameOfExistingView = nameofExistingView;
+	m->onlySelected = ui->checkBox_onlySelected->isChecked();
 
     DM::System * sys = this->m->getSystemIn();
     /*std::vector<std::string> sys_in;

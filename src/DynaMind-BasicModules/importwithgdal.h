@@ -43,6 +43,7 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     private:
         bool fileok;
 
+public:
     std::string FileName;
     std::string ViewName;
 
@@ -51,12 +52,14 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     std::string WFSUsername;
     std::string WFSPassword;
 
-    bool isvectordata;
+    bool append;
     int epsgcode;
+    bool linkWithExistingView;
+    bool flip_wfs;
+private:
+    bool isvectordata;
     bool transformok;
     double tol;
-    bool append;
-    bool linkWithExistingView;
 
     std::string FileName_old;
     std::string ViewName_old;
@@ -64,7 +67,6 @@ class DM_HELPER_DLL_EXPORT ImportwithGDAL : public Module
     std::string WFSServer_old;
     std::string WFSUsername_old;
     std::string WFSPassword_old;
-    bool flip_wfs;
 
     bool append_old;
 

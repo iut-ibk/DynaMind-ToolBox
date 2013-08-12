@@ -36,8 +36,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
     ui->setupUi(this);
     this->attrcalc = (AttributeCalculator*) m;
 
-    bool asVector = this->attrcalc->getParameter<bool>("asVector");
-    this->ui->asVector->setChecked(asVector);
+    //bool asVector = this->attrcalc->getParameter<bool>("asVector");
+	this->ui->asVector->setChecked(attrcalc->asVector);
 
 
 
@@ -79,9 +79,9 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 
 
     //CreateVaraibles List
-    std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
-
-    for (std::map<std::string, std::string>::iterator it = variables.begin(); it != variables.end(); ++it) 
+    //std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
+	
+    for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it) 
 	{
         ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
         QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(it->first));
@@ -220,12 +220,13 @@ void GUIAttributeCalculator::accept() {
 
     int rows = ui->varaibleTable->rowCount();
 
-    std::map<std::string, std::string> variables;
+    //std::map<std::string, std::string> variables;
     for (int i = 0; i < rows; i++) {
-        variables[ui->varaibleTable->item(i, 0)->text().toStdString()] = ui->varaibleTable->item(i, 1)->text().toStdString();
+		this->attrcalc->variablesMap[ui->varaibleTable->item(i, 0)->text().toStdString()] = ui->varaibleTable->item(i, 1)->text().toStdString();
 
     }
-    this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
-    this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
+    //this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
+    //this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
+	this->attrcalc->asVector = this->ui->asVector->isChecked();
     QDialog::accept();
 }

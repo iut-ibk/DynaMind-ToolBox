@@ -37,7 +37,7 @@
 using namespace DM;
 bool GUICellularAutomata::checkIfFromOutSide(QString name) {
     QString s2 = "DoubleIn_" + name;
-    std::map<std::string, double> doublemap = m->getParameter<std::map<std::string, double> >("InputDouble");
+    std::map<std::string, double> doublemap = m->getParameter("InputDouble")->get<std::map<std::string, double> >();
     for (std::map<std::string, double>::iterator it = doublemap.begin(); it != doublemap.end(); ++it) {
         if (s2.toStdString().compare(it->first) == 0)
             return true;
@@ -68,12 +68,11 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
     foreach(std::string l, landscapes)
         ui->comboBox_nameOfExisting->addItem(QString::fromStdString(l));
     //Choose Box
-    std::string n_dim = m->getParameter<std::string>("DimensionOfExisting");
-    int index = ui->comboBox_nameOfExisting->findText(QString::fromStdString(n_dim));
+	int index = ui->comboBox_nameOfExisting->findText(QString::fromStdString(this->m->param.DimensionOfExisting));
     if (index > -1) ui->comboBox_nameOfExisting->setCurrentIndex(index);
     else ui->comboBox_nameOfExisting->setCurrentIndex(0);
-
-    ui->checkBox_dimesionFromOutside->setChecked(m->getParameter<bool>("appendToStream"));
+	
+    ui->checkBox_dimesionFromOutside->setChecked(this->m->param.appendToStream);
 
     foreach (std::string s, this->m->getLandscapes())
         ui->listWidget_landscapes->addItem(QString::fromStdString(s));
@@ -106,9 +105,9 @@ GUICellularAutomata::GUICellularAutomata( DM::Module * m, QWidget *parent) :
 }
 
 void GUICellularAutomata::updateEntries() {
-
-    std::map<std::string, std::string> neighs = m->getParameter< std::map<std::string, std::string> >("Neighs");
-    for (std::map<std::string, std::string>::iterator it = neighs.begin(); it != neighs.end(); ++it) {
+    for (std::map<std::string, std::string>::iterator it = this->m->param.neighs.begin(); 
+		it != this->m->param.neighs.end(); ++it) 
+	{
         QString name = QString::fromStdString(it->first);
         QString value = QString::fromStdString(it->second);
         QStringList valuelist = value.split("+|+");
@@ -130,11 +129,10 @@ void GUICellularAutomata::updateEntries() {
         }
     }
 
-    std::map<std::string, std::string> r = m->getParameter< std::map<std::string, std::string> >("Rules");
     ui->tableWidget_rules->clearContents();
     ui->tableWidget_rules->setRowCount(0);
     rules.clear();
-    for (std::map<std::string, std::string>::iterator it = r.begin(); it != r.end(); ++it) {
+    for (std::map<std::string, std::string>::iterator it = this->m->param.rules.begin(); it != this->m->param.rules.end(); ++it) {
         QString name = QString::fromStdString(it->first);
         QString value = QString::fromStdString(it->second);
         if (rules.indexOf(name) < 0) {
@@ -209,11 +207,9 @@ void GUICellularAutomata::addExpressiontoVIBe(QStringList list) {
     ui->lineEdit_descision->setText(list[1]);
 }
 void GUICellularAutomata::addRule(QStringList list) {
-    std::map<std::string, std::string> neighs = m->getParameter< std::map<std::string, std::string> >("Rules");
 
     std::string name = list[0].toStdString();
-    neighs[name] =list[1].toStdString();
-    m->setParameterNative< std::map<std::string, std::string> >("Rules", neighs);
+	this->m->param.rules[name] = list[1].toStdString();
 
     this->updateEntries();
 }
@@ -226,9 +222,11 @@ void GUICellularAutomata::accept() {
     this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
     this->m->setParameterValue("NameOfOutput", ui->lineEdit_resultName->text().toStdString());
     bool ischecked = ui->checkBox_dimesionFromOutside->isChecked();
-    this->m->setParameterNative<bool>("appendToStream",ischecked);
-    this->m->setParameterNative<std::string>("DimensionOfExisting",ui->comboBox_nameOfExisting->currentText().toStdString());
-    this->m->setParameterNative<std::string>("Desicion", ui->lineEdit_descision->text().toStdString());
+
+	m->param.appendToStream = ischecked;
+	m->param.DimensionOfExisting = ui->comboBox_nameOfExisting->currentText().toStdString();
+	m->param.Desicion = ui->lineEdit_descision->text().toStdString();
+
 	m->init();
     QDialog::accept();
 }

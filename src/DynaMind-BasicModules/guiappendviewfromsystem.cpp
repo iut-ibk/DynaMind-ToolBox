@@ -11,8 +11,8 @@ GUIAppendViewFromSystem::GUIAppendViewFromSystem(DM::Module *m, QWidget *parent)
     this->m = (AppendViewFromSystem *) m;
 
     ui->listWidget->clear();
-    std::vector<std::string> systemlist = m->getParameter<std::vector<std::string> >("Inports");
-    foreach (std::string in, systemlist)
+
+    foreach (std::string in, this->m->Inports)
         ui->listWidget->addItem(QString::fromStdString(in));
 
 

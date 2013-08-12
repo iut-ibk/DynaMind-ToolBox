@@ -57,16 +57,16 @@ GUIAppendAttributes::GUIAppendAttributes(DM::Module *m, QWidget *parent) :
     std::string newAttribute = this->m->getParameterAsString("newAttribute");
     ui->lineEdit->setText(QString::fromStdString(newAttribute));
 
-    double multiplier = this->m->getParameter<double>("Multiplier");
-    ui->lineEdit_multi->setText(QString::number(multiplier));
+    //double multiplier = this->m->getParameter<double>("Multiplier");
+    ui->lineEdit_multi->setText(QString::number(this->m->multiplier));
 
-    bool median = this->m->getParameter<bool>("Median");
+    /*bool median = this->m->getParameter<bool>("Median");
     bool sum = true;
     if (median)
         sum = false;
-
-    ui->radioButton_median->setChecked(median);
-    ui->radioButton_sum->setChecked(sum);
+	*/
+    ui->radioButton_median->setChecked(this->m->median);
+    ui->radioButton_sum->setChecked(!this->m->median);
 
 }
 

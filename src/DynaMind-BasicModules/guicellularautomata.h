@@ -48,10 +48,10 @@ public:
     DM::Module * getModule() {return (DM::Module * )this->m;}
     ~GUICellularAutomata();
 
-
+	
+    CellularAutomata * m;
 private:
     Ui::GUICellularAutomata *ui;
-    CellularAutomata * m;
     QStringList variables;
     QStringList values;
     QStringList vectors;
