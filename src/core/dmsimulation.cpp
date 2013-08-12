@@ -725,7 +725,7 @@ void Simulation::run()
 		if(m->inPortsSet())
 			worklist.unique_insert(m);
 	
-
+	// the domain in which we are currently executing, starting with root = NULL
 	Group* currentGroupDomain = NULL;
 	// progress stuff
 	int cntModulesFinished = 0;
@@ -803,29 +803,10 @@ void Simulation::run()
 		else
 		{
 			Group* g = (Group*)m;
-			// a loop might re-run even if not all modules have been executed
-			// to avoid this, we wait until all modules in this group have finished
-			// by checking all worklist elements
-			/*
-			bool groupFinished = true;
-			foreach(Module* n, worklist)
-				if(n->getOwner() == g)
-					groupFinished = false;
-
-			if(!groupFinished)
-			{
-				// reinsert
-				worklist.unique_insert(m);
-				continue;
-			}*/
 			// we are now operating in domain g
 			currentGroupDomain = g;
 
 			Logger(Standard) << "running group '" << g->getName() << "'";
-
-			// first run, reset condition
-			//if(g->getStatus() != MOD_EXECUTING)
-			//	g->resetCondition();
 
 			if(g->condition())
 			{
