@@ -725,6 +725,8 @@ void Simulation::run()
 		if(m->inPortsSet())
 			worklist.unique_insert(m);
 	
+
+	Group* currentGroupDomain = NULL;
 	// progress stuff
 	int cntModulesFinished = 0;
 	int numModulesToFinish = modules.size();
@@ -736,6 +738,28 @@ void Simulation::run()
 		Worlist::iterator it = worklist.begin();
 		Module* m = *it;
 		worklist.remove(m);
+
+		// check if we stay in our domain
+		if(m->getOwner() != currentGroupDomain)
+		{
+			// we are going into or out of the group
+			// - check if we have already finished the current one
+			bool groupFinished = true;
+			foreach(Module* n, worklist)
+			{
+				if(n->getOwner() == currentGroupDomain)
+				{
+					groupFinished = false;
+					break;
+				}
+			}
+			if(!groupFinished)
+			{
+				// still modules left in this group
+				worklist.unique_insert(m);
+				continue;
+			}
+		}
 
 		if(!m->isGroup())
 		{
@@ -782,6 +806,7 @@ void Simulation::run()
 			// a loop might re-run even if not all modules have been executed
 			// to avoid this, we wait until all modules in this group have finished
 			// by checking all worklist elements
+			/*
 			bool groupFinished = true;
 			foreach(Module* n, worklist)
 				if(n->getOwner() == g)
@@ -792,7 +817,9 @@ void Simulation::run()
 				// reinsert
 				worklist.unique_insert(m);
 				continue;
-			}
+			}*/
+			// we are now operating in domain g
+			currentGroupDomain = g;
 
 			Logger(Standard) << "running group '" << g->getName() << "'";
 
@@ -823,6 +850,9 @@ void Simulation::run()
 				g->setStatus(MOD_EXECUTION_OK);
 				foreach(Module* nextModule, shiftModuleOutput(g))
 					worklist.unique_insert(nextModule);
+
+				// reset domain
+				currentGroupDomain = (Group*)g->getOwner();
 			}
 		}
 	}
@@ -900,10 +930,21 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 	{
 		if(g->getInPortData(inPort))
 		{
-			foreach(Link* l, getIntoGroupLinks(g, inPort))
+
+			std::vector<Simulation::Link*> intoGroupLinks = getIntoGroupLinks(g, inPort);
+			if(intoGroupLinks.size() != 0)
 			{
-				l->shiftData(inPorts.size() > 1);
-				nextModules.insert(l->dest);
+				foreach(Link* l, intoGroupLinks)
+				{
+					l->shiftData(inPorts.size() > 1);
+					nextModules.insert(l->dest);
+				}
+			}
+			else
+			{
+				Logger(Warning) << "no link into group found, system lost (destructed)";
+				delete g->getInPortData(inPort);
+				g->setInPortData(inPort, NULL);
 			}
 		}
 	}
