@@ -63,9 +63,7 @@ Module::~Module()
 }
 void Module::addParameter(const std::string &name, DataTypes type, void * ref, std::string description) 
 {
-	Parameter *p = new Parameter(name, type, description);
-	p->data = ref;
-	parameters.push_back(p);
+	parameters.push_back(new Parameter(name, type, ref, description));
 }
 
 void Module::setParameterValue(const std::string& name, const std::string& value)
@@ -151,11 +149,11 @@ void Module::removePort(const std::string &name, const PortType type)
 	foreach(ModuleObserver* observer, observers)
 		observer->notifyRemovePort(name, type);
 }
-bool Module::hasInPort(const std::string &name)
+bool Module::hasInPort(const std::string &name) const
 {
 	return map_contains(&inPorts, name);
 }
-bool Module::hasOutPort(const std::string &name)
+bool Module::hasOutPort(const std::string &name) const
 {
 	return map_contains(&outPorts, name);
 }

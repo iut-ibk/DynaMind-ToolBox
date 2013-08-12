@@ -102,11 +102,18 @@ class DM_HELPER_DLL_EXPORT Module
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
 	std::map<std::string, std::map<std::string,View> > streamViews;
-
+private:
 	/** @brief get data from inport */
 	System* getInPortData(const std::string &name);
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
+	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
+	void reset();
+protected:
+	/** @brief checks if in-port does exist */
+	bool hasInPort(const std::string &name) const;
+	/** @brief checks if out-port does exist */
+	bool hasOutPort(const std::string &name) const;
 public:
 	/** @brief constructor */
 	Module();
@@ -129,8 +136,6 @@ public:
 
 	/** @brief returns the current status of the module */
 	ModuleStatus getStatus(){return status;};
-	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
-	void reset();
 	/** @brief returns the data from the desired stream */
 	System* getData(const std::string& streamName);
 
@@ -138,10 +143,6 @@ public:
 	std::vector<std::string> getInPortNames() const;
 	/** @brief returns a vector of port names on the output side */
 	std::vector<std::string> getOutPortNames() const;
-	/** @brief checks if in-port does exist */
-	bool hasInPort(const std::string &name);
-	/** @brief checks if out-port does exist */
-	bool hasOutPort(const std::string &name);
 	/** @brief checks if all outports are set or not existing */
 	bool outPortsSet();
 	/** @brief checks if all inports are set or not existing */
@@ -205,8 +206,8 @@ public:
 		void*				data;
 		const std::string	description;
 
-		Parameter(const std::string name, const DataTypes type, const std::string description):
-			name(name), type(type), description(description)
+		Parameter(const std::string name, const DataTypes type, void* data, const std::string description):
+			name(name), type(type), data(data), description(description)
 		{};
 		template<typename T>
 		void set(T value)
@@ -214,7 +215,7 @@ public:
 			*(T*)data = value;
 		}
 		template<typename T>
-		T get()
+		T& get()
 		{
 			return *(T*)data;
 		}
@@ -231,48 +232,34 @@ public:
 	* - DM::STRING_MAP
 	*/
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
-	template<typename T>
-	T getParameter(const std::string& name)
-	{
-		if(Parameter* p = getParameter(name))
-			return p->get<T>();
-		return T();
-	}
-	Parameter* getParameter(const std::string& name)
+	/** @brief returns a parameter as structure */
+	Parameter* getParameter(const std::string& name) const
 	{
 		// foreach will cause a compile error in modules not including qt headers
-		for(std::vector<Parameter*>::iterator it = parameters.begin();
-			it != parameters.end(); ++it)
+		for(std::vector<Parameter*>::const_iterator it = parameters.cbegin();
+			it != parameters.cend(); ++it)
 			if((*it)->name == name)
 				return *it;
 		return NULL;
 	}
+public:
+	/** @brief returns a vector of all parameters */
 	std::vector<Parameter*> getParameters() const
 	{
 		return parameters;
 	}
-
-	/*********************
-	* Backward comp.
-	**********************/
 	/** @brief Returns the parameter as string value
-	*
 	* As seperator for STRING_LIST *|* is used and for maps also *||*
-	*
 	* 1*|*2*|*3*|4*||*
-	*
 	* 5*|*6*|*7*|*8*||*
-	*
 	*/
 	std::string getParameterAsString(const std::string& name);
-	template<typename T>
-	void setParameterNative(const std::string& name, T data)
-	{
-		if(Parameter* p = getParameter(name))
-			p->set(data);
-	}
+	/** @brief sets the parameter via string value
+	* As seperator for STRING_LIST *|* is used and for maps also *||*
+	* 1*|*2*|*3*|4*||*
+	* 5*|*6*|*7*|*8*||*
+	*/
 	void setParameterValue(const std::string& name, const std::string& value);
-
 protected:
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);

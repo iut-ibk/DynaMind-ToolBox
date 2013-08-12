@@ -50,7 +50,7 @@ TEST_F(TestModules,setParameterInModule)
     DM::Module * m = sim->addModule("TestModule");
     ASSERT_TRUE(m!=0);
     m->setParameterValue("DoubleValue", "0.1");
-    double val = m->getParameter<double>("DoubleValue");
+    double val = *(double*)m->getParameter("DoubleValue")->data;
     ASSERT_EQ(0.1,val);
 }
 
