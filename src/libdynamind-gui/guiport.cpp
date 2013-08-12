@@ -91,8 +91,13 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
 }
 
 void PortNode::updatePos()
-{
-	std::vector<std::string> ports = module->getPortNames(portType);
+{	
+	std::vector<std::string> ports;
+	if(DM::INPORT == portType)
+		ports = module->getInPortNames();
+	else if(DM::OUTPORT == portType)
+		ports = module->getOutPortNames();
+
 	std::vector<std::string>::iterator it = std::find(ports.begin(), ports.end(), portName.toStdString());
 
 	int portIndex = it - ports.begin();
