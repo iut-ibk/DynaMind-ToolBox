@@ -47,6 +47,8 @@ private:
 	QString GroupID;
 	ModelNode * modelnode;
 
+
+
 public:
 	GUIModelNode(DM::Module * m, ModelNode * mn = 0, QWidget * parent = 0);
 	~GUIModelNode();
@@ -61,7 +63,7 @@ public slots:
 	void openFileDialog();
 	void removeUserDefinedItem();
 	void removeUserDefinedTuple();
-
+	void addMapRow();
 signals:
 		void selectFiles(QString s);
 };

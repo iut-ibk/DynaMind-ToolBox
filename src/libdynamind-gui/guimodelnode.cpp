@@ -49,7 +49,8 @@
 #include <dmgroup.h>
 #include <groupnode.h>
 #include <QTextEdit>
-
+#include <QTableWidget>
+#include <QHeaderView>
 
 void GUIModelNode::openFileDialog() {
 #ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
@@ -161,18 +162,19 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 			break;
 		case DM::STRING_MAP:
 			{
+				/*
 				QGroupBox * box= new QGroupBox;
 				QGridLayout * layout_grid = new QGridLayout;
 				box->setLayout( layout_grid);
 				box->setTitle(qname);
 				layout1->addWidget(box, layout1->rowCount(),0,1,3);
-
+				
 				QPushButton * pb = new QPushButton;
 				pb->setText("+");
 				pb->setObjectName("UserDefindedTupleItem|" + qname);
 				connect(pb, SIGNAL(clicked()), this, SLOT(addUserDefinedTuple()));
 				layout_grid->addWidget(pb, 0,0,1,3);
-
+				
                 std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string> >();
 				for (std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) 
 				{
@@ -185,7 +187,43 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 					QString n = qname + "|" + QString::fromStdString((std::string) it->first);
 					this->elements.insert(n, l);
 				}
-				this->UserDefinedContainer.insert(qname, layout_grid);
+				this->UserDefinedContainer.insert(qname, layout_grid);*/
+				
+				QGroupBox* group = new QGroupBox(qname, parent);
+				layout1->addWidget(group);
+
+				QVBoxLayout* verticalLayout = new QVBoxLayout(parent);
+				group->setLayout(verticalLayout);
+
+				QTableWidget* table = new QTableWidget(group);
+				verticalLayout->addWidget(table);
+
+				table->setColumnCount(2);
+				QStringList header;
+				header << "key";
+				header << "value";
+				table->setHorizontalHeaderLabels(header);
+				table->horizontalHeader()->setFixedHeight(20);
+				std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string> >();
+
+				table->setRowCount(entries.size());
+				int i=0;
+				for(std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) 
+				{
+					table->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(it->first)));
+					table->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(it->second)));
+					table->setRowHeight(i, 20);
+					i++;
+				}
+
+				QPushButton* qb = new QPushButton("+", parent);
+				qb->setObjectName(qname);
+				connect(qb, SIGNAL(clicked()), this, SLOT(addMapRow()));
+				verticalLayout->addWidget(qb);
+
+				//table->setRowCount(2);
+				this->elements.insert(qname, table);
+				
 			}
 			break;
 		}
@@ -216,6 +254,15 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 	connect(bbox, SIGNAL(rejected()), this, SLOT(reject()));
 	connect(bbox, SIGNAL(helpRequested ()), this, SLOT(help()));
 }
+
+void GUIModelNode::addMapRow()
+{
+	QTableWidget* table = (QTableWidget*)elements[sender()->objectName()];
+	int rows = table->rowCount();
+	table->setRowCount(rows+1);
+	table->setRowHeight(rows, 20);
+}
+
 void GUIModelNode::help() {
 
 
@@ -436,10 +483,28 @@ void GUIModelNode::accept()
 			break;
 		case (DM::STRING_MAP):
 			{
+				std::map<std::string, std::string> map;
+
+				QTableWidget* table = (QTableWidget*) this->elements.value(s);
+				for(int i=0;i<table->rowCount();i++)
+				{
+					QTableWidgetItem* itKey = table->item(i,0);
+					QTableWidgetItem* itValue = table->item(i,1);
+					if(itKey && itValue)
+					{
+						QString key = itKey->text();
+						QString value = table->item(i,1)->text();
+
+						if(key.length() > 0 && value.length() > 0)
+							map[table->item(i,0)->text().toStdString()] = table->item(i,1)->text().toStdString();
+					}
+				}
+
 				/*QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
 				std::map<std::string, std::string>map = this->module->getParameter<std::map<std::string, std::string> > (s.split("|")[0].toStdString());
 				map[s.split("|")[1].toStdString()] = le->text().toStdString();
 				this->module->setParameterNative(s.split("|")[0].toStdString(), map);*/
+				p->set(map);
 			}
 			break;
 			/*default:
