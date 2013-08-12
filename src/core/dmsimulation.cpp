@@ -688,6 +688,17 @@ bool Simulation::checkStream()
 	return success;
 }
 
+
+class Worlist: public std::list<Module*>
+{
+public:
+	void unique_insert(Module* m)
+	{
+		if(find(begin(), end(), m) == end())
+			push_back(m);
+	}
+};
+
 void Simulation::run()
 {
 	canceled = false;
@@ -709,10 +720,10 @@ void Simulation::run()
 	simtimer.restart();
 	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
-	std::set<Module*> worklist;
+	Worlist worklist;
 	foreach(Module* m, modules)
 		if(m->inPortsSet())
-			worklist.insert(m);
+			worklist.unique_insert(m);
 	
 	// progress stuff
 	int cntModulesFinished = 0;
@@ -722,9 +733,9 @@ void Simulation::run()
 	while(worklist.size() && !canceled)
 	{
 		// get first element
-		std::set<Module*>::iterator it = worklist.begin();
+		Worlist::iterator it = worklist.begin();
 		Module* m = *it;
-		worklist.erase(m);
+		worklist.remove(m);
 
 		if(!m->isGroup())
 		{
@@ -763,13 +774,28 @@ void Simulation::run()
 			}
 			// shift data from out port to next inport
 			foreach(Module* nextModule, shiftModuleOutput(m))
-				worklist.insert(nextModule);
+				worklist.unique_insert(nextModule);
 		}
 		else
 		{
 			Group* g = (Group*)m;
+			// a loop might re-run even if not all modules have been executed
+			// to avoid this, we wait until all modules in this group have finished
+			// by checking all worklist elements
+			bool groupFinished = true;
+			foreach(Module* n, worklist)
+				if(n->getOwner() == g)
+					groupFinished = false;
+
+			if(!groupFinished)
+			{
+				// reinsert
+				worklist.unique_insert(m);
+				continue;
+			}
+
 			Logger(Standard) << "running group '" << g->getName() << "'";
-			
+
 			// first run, reset condition
 			//if(g->getStatus() != MOD_EXECUTING)
 			//	g->resetCondition();
@@ -788,7 +814,7 @@ void Simulation::run()
 				g->setStatus(MOD_EXECUTING);
 				// instead of m::run() we simply shift the data to the first internal module
 				foreach(Module* nextModule, shiftGroupInput(g))
-					worklist.insert(nextModule);
+					worklist.unique_insert(nextModule);
 			}
 			else
 			{
@@ -796,7 +822,7 @@ void Simulation::run()
 				// finish and shift data
 				g->setStatus(MOD_EXECUTION_OK);
 				foreach(Module* nextModule, shiftModuleOutput(g))
-					worklist.insert(nextModule);
+					worklist.unique_insert(nextModule);
 			}
 		}
 	}
