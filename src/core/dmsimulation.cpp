@@ -146,7 +146,7 @@ bool Simulation::registerModule(const std::string& filepath)
             return false;
 		}
 	}
-	else//(qfilepath.endsWith(".dll") || qfilepath.endsWith(".so") || qfilepath.endsWith(".ko"))
+	else if(qfilepath.endsWith(".dll") || qfilepath.endsWith(".so") || qfilepath.endsWith(".dylib"))
 	{
 		if(moduleRegistry->addNativePlugin(filepath))
 		{
@@ -159,8 +159,11 @@ bool Simulation::registerModule(const std::string& filepath)
 			return false;
 		}
 	}
-	//Logger(Warning) << "not recognized filename ending " << filepath;
-	//return false;
+	else
+	{
+		//Logger(Warning) << "not recognized filename ending " << filepath;
+		return false;
+	}
 }
 
 void Simulation::registerModulesFromDirectory(const QDir& dir)
