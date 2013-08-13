@@ -132,6 +132,7 @@ bool Simulation::registerModule(const std::string& filepath)
 
 	if(qfilepath.endsWith(".py"))
 	{
+#ifndef PYTHON_EMBEDDING_DISABLED
 		QFileInfo fi = qfilepath;
 		DM::PythonEnv::getInstance()->addPythonPath(fi.absolutePath().toStdString());
 		try
@@ -145,6 +146,7 @@ bool Simulation::registerModule(const std::string& filepath)
 			Logger(Warning) <<  "failed loading python module " << filepath;
             return false;
 		}
+#endif
 	}
 	else if(qfilepath.endsWith(".dll") || qfilepath.endsWith(".so") || qfilepath.endsWith(".dylib"))
 	{
@@ -159,11 +161,9 @@ bool Simulation::registerModule(const std::string& filepath)
 			return false;
 		}
 	}
-	else
-	{
-		//Logger(Warning) << "not recognized filename ending " << filepath;
-		return false;
-	}
+	
+	//Logger(Warning) << "not recognized filename ending " << filepath;
+	return false;
 }
 
 void Simulation::registerModulesFromDirectory(const QDir& dir)
