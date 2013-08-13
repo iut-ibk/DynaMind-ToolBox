@@ -55,14 +55,21 @@ void ColorBarWidget::initializeGL()
 
 void ColorBarWidget::paintGL() 
 {
-	if (!glIsTexture(texture))
-		return;
+    if (glIsTexture(texture))
+    {
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, texture);
+        glColor3f(1.0, 1.0, 1.0);
 
-	glEnable(GL_TEXTURE_1D);
-	glBindTexture(GL_TEXTURE_1D, texture);
+    }
+    else
+    {
+        glDisable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, 0);
+        glColor3f(0,0,0);
+    }
 
-	glBegin(GL_QUADS);
-	glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_QUADS);
 
 	glTexCoord1f(0.0);
 	glVertex2f(0, height());
