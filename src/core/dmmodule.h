@@ -251,19 +251,6 @@ private:
 	std::string		name;
 };
 
-class ModuleObserver
-{
-protected:
-	DM::Module* module;
-public:
-	ModuleObserver(Module* m): module(m)
-	{
-		module->addObserver(this);
-	}
-	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
-	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
-	virtual void notifyChangeName(const std::string &name) = 0;
-};
 }
 
 #define DM_DECLARE_NODE(node)  \

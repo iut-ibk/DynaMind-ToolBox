@@ -26,6 +26,7 @@
  */
 
 #include "dmmodule.h"
+#include "dmmoduleobserver.h"
 #include <sstream>
 #include <dmsystem.h>
 #include <dmrasterdata.h>
