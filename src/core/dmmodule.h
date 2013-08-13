@@ -87,7 +87,9 @@ class DM_HELPER_DLL_EXPORT Module
 {
 	friend Simulation;
 
+public:
 	struct Parameter;
+private:
 	ModuleStatus status;
 
 	std::vector<ModuleObserver*>	observers;
