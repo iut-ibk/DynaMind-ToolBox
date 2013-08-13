@@ -116,7 +116,7 @@ public:
 	inports (those are set by the simulation) */
 	virtual void run() = 0;
 	/** @brief returns the name of the class - for e.g. logging purposes */
-	virtual const char* getClassName() = 0;
+	virtual const char* getClassName() const = 0;
 	/** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 	/** @brief Returns if the module comes with its own GUI.
@@ -133,9 +133,9 @@ public:
 	/** @brief returns a vector of port names on the output side */
 	std::vector<std::string> getOutPortNames() const;
 	/** @brief checks if all outports are set or not existing */
-	bool outPortsSet();
+	bool outPortsSet() const;
 	/** @brief checks if all inports are set or not existing */
-	bool inPortsSet();
+	bool inPortsSet() const;
 	/** @brief returns all views accessed by this module */
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
 	/** @brief returns all streams with their views */
@@ -145,31 +145,31 @@ public:
 	/** @brief shortcut to getViewsInStream to return a specific view from a specific stream */
 	View getViewInStream(const std::string& streamName, const std::string& viewName) const;
 	/** @brief shortcut to getViewsInStream to return all views from the stream view index 0 */
-	std::map<std::string,View> getViewsInStdStream();
+	std::map<std::string,View> getViewsInStdStream() const;
 	/** @brief @deprecated */
-	std::string getUuid();
+	std::string getUuid() const;
 	/** @brief @deprecated returns all view definitions added via addData */
-	std::map<std::string, std::map<std::string, DM::View> > getViews();
+	std::map<std::string, std::map<std::string, DM::View> > getViews() const;
 	/** @brief just nulls out the inport, may get deprecated */
 	void removeData(const std::string& name);
 	/** @brief get data from outport; public for ModelNode::viewData */
-	System* getOutPortData(const std::string &name);
+	System* getOutPortData(const std::string &name) const;
 	/** @brief adds an observer to this module */
 	void addObserver(ModuleObserver* obs);
 	/** @brief removes an observer from this module */
 	void removeObserver(ModuleObserver* obs);
 	/** @brief returns the current owner */
-	Module* getOwner(){return owner;}
+	Module* getOwner() const {return owner;}
 	/** @brief returns the name of the module. if no was provided via 
 	setName(string), it returns the class name in brakets */
-	std::string getName();
+	std::string getName() const;
 	/** @brief sets the name of this module */
 	void setName(std::string name);
 	/** @brief activates the successor mode, forcing the module
 	to create a successor of all incoming data streams */
 	void setSuccessorMode(bool value);
 	/** @brief returns the current status of the successor mode, see setSuccessorMode(bool) */
-	bool isSuccessorMode();
+	bool isSuccessorMode() const;
 	/** @brief adds a Parameter to the module.
 	* availiable types:
 	* - DM::DOUBLE
@@ -191,7 +191,7 @@ public:
 	* 1*|*2*|*3*|4*||*
 	* 5*|*6*|*7*|*8*||*
 	*/
-	std::string getParameterAsString(const std::string& name);
+	std::string getParameterAsString(const std::string& name) const;
 	/** @brief sets the parameter via string value
 	* As seperator for STRING_LIST *|* is used and for maps also *||*
 	* 1*|*2*|*3*|4*||*
@@ -228,7 +228,7 @@ private:
 	/** @brief sets the current status of the module */
 	void setStatus(ModuleStatus status) {this->status = status;};
 	/** @brief get data from inport */
-	 System* getInPortData(const std::string &name);
+	 System* getInPortData(const std::string &name) const;
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
@@ -270,14 +270,14 @@ public:
 	public: \
 	static const char *classname; \
 	static const char *filename; \
-	virtual const char *getClassName() ; \
-	virtual const char *getFileName() ; \
+	virtual const char *getClassName() const; \
+	virtual const char *getFileName() const; \
 	private:
 
 #define  DM_DECLARE_NODE_NAME(nodename, module) \
 	const char *nodename::classname = #nodename; \
-	const char *nodename::getClassName()  { return nodename::classname; } \
+	const char *nodename::getClassName() const { return nodename::classname; } \
 	const char *nodename::filename = #module; \
-	const char *nodename::getFileName()  { return nodename::filename; }
+	const char *nodename::getFileName() const { return nodename::filename; }
 
 #endif // MODULE_H

@@ -103,9 +103,9 @@ public:
     virtual void init();
     virtual std::string getHelpUrl();
 
-    std::map<std::string, std::map<std::string, DM::View> >  getViews();
+    std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
 
-	virtual const char* getClassName() = 0;
+	virtual const char* getClassName() const = 0;
 
     virtual std::string getParameterAsString(std::string Name);
 
@@ -181,8 +181,8 @@ class INodeFactory
     public:
         virtual ~INodeFactory(){}
         virtual Module *createNode() const = 0;
-        virtual std::string getNodeName() = 0;
-        virtual std::string getFileName() = 0;
+        virtual std::string getNodeName() const = 0;
+        virtual std::string getFileName() const = 0;
 };
 
 class ModuleRegistry

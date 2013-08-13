@@ -38,8 +38,8 @@ namespace DM {
     public:
         virtual ~INodeFactory(){}
         virtual Module *createNode() const = 0;
-        virtual std::string getNodeName() = 0;
-        virtual std::string getFileName() = 0;
+        virtual std::string getNodeName() const = 0;
+        virtual std::string getFileName() const = 0;
     };
 
     template <typename T>
@@ -48,8 +48,8 @@ namespace DM {
                 public:
         NodeFactory();
         virtual Module *createNode() const;
-        virtual std::string getNodeName();
-        virtual std::string getFileName();
+        virtual std::string getNodeName() const;
+        virtual std::string getFileName() const;
     };
 
     template <typename T>
@@ -62,11 +62,11 @@ namespace DM {
     }
 
     template <typename T>
-            std::string NodeFactory<T>::getNodeName() {
+            std::string NodeFactory<T>::getNodeName() const {
         return T::classname;
     }
     template <typename T>
-            std::string NodeFactory<T>::getFileName() {
+            std::string NodeFactory<T>::getFileName() const {
         return T::filename;
     }
 }

@@ -129,7 +129,7 @@ void Module::removeObserver(ModuleObserver* obs)
 	remove(observers.begin(), observers.end(), obs);
 }
 
-std::string Module::getName()
+std::string Module::getName() const
 {
 	return name.length()>0 ? name : std::string("<class: ") + getClassName() + ">";
 }
@@ -190,14 +190,14 @@ void Module::setOutPortData(const std::string &name, System* data)
 		outPorts[name] = data;
 }
 
-bool Module::inPortsSet()
+bool Module::inPortsSet() const
 {
 	mforeach(System* data, inPorts)
 		if(!data)
 			return false;
 	return true;
 }
-bool Module::outPortsSet()
+bool Module::outPortsSet() const
 {
 	mforeach(System* data, outPorts)
 		if(!data)
@@ -205,19 +205,17 @@ bool Module::outPortsSet()
 	return true;
 }
 
-System* Module::getInPortData(const std::string &name)
+System* Module::getInPortData(const std::string &name) const
 {
-	if(!map_contains(&inPorts, name))
-		return NULL;
-	else
-		return inPorts[name];
+	System* sys = NULL;
+	map_contains(&inPorts, name, sys);
+	return sys;
 }
-System* Module::getOutPortData(const std::string &name)
+System* Module::getOutPortData(const std::string &name) const
 {
-	if(!map_contains(&outPorts, name))
-		return NULL;
-	else
-		return outPorts[name];
+	System* sys = NULL;
+	map_contains(&outPorts, name, sys);
+	return sys;
 }
 
 void Module::addData(const std::string& streamName, std::vector<View> views)
@@ -362,7 +360,7 @@ View Module::getViewInStream(const std::string& streamName, const std::string& v
 	return view;
 }
 
-std::map<std::string,View> Module::getViewsInStdStream()
+std::map<std::string,View> Module::getViewsInStdStream() const
 {
 	if(streamViews.size() > 0)
 		return (streamViews.begin())->second;
@@ -370,13 +368,13 @@ std::map<std::string,View> Module::getViewsInStdStream()
 		return std::map<std::string,View>();
 }
 
-std::string Module::getUuid()
+std::string Module::getUuid() const
 {
 	Logger(Warning) << "module::getUuid() deprecated";
 	return "<Module::getUuid deprecated>";
 }
 
-std::map<std::string, std::map<std::string, DM::View> > Module::getViews()
+std::map<std::string, std::map<std::string, DM::View> > Module::getViews() const
 {
 	return getAccessedViews();
 }
@@ -395,12 +393,12 @@ void Module::setSuccessorMode(bool value)
 		<< getClassName() << "' to " << (value?"ON":"OFF");
 	this->successorMode = value;
 }
-bool Module::isSuccessorMode() 
+bool Module::isSuccessorMode() const
 {
 	return successorMode;
 }
 
-std::string Module::getParameterAsString(const std::string& name)
+std::string Module::getParameterAsString(const std::string& name) const
 {   
 	std::stringstream strValue;
 	strValue.precision(16);
