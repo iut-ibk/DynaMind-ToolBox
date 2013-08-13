@@ -381,11 +381,6 @@ std::map<std::string, std::map<std::string, DM::View> > Module::getViews()
 	return getAccessedViews();
 }
 
-void Module::updateParameter()
-{
-	Logger(Warning) << "module::updateParameter() deprecated";
-}
-
 void Module::setOwner(Module* owner)
 {
 	if(!this->owner)

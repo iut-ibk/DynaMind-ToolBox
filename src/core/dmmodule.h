@@ -124,6 +124,8 @@ public:
 	* overwrite this method in the module implementation, call the GUI within the method
 	* an return true. */
 	virtual bool createInputDialog(){return false;}
+	/** @brief overloaded method to determine safly if this module is a group */
+	virtual bool isGroup(){return false;};
 	/** @brief returns the current status of the module */
 	ModuleStatus getStatus(){return status;};
 	/** @brief returns a vector of port names on the input side */
@@ -150,8 +152,6 @@ public:
 	std::map<std::string, std::map<std::string, DM::View> > getViews();
 	/** @brief just nulls out the inport, may get deprecated */
 	void removeData(const std::string& name);
-	/** @brief calls the init function if parameters have changed */
-	void updateParameter();
 	/** @brief get data from outport; public for ModelNode::viewData */
 	System* getOutPortData(const std::string &name);
 	/** @brief adds an observer to this module */
@@ -160,8 +160,6 @@ public:
 	void removeObserver(ModuleObserver* obs);
 	/** @brief returns the current owner */
 	Module* getOwner(){return owner;}
-	/** @brief overloaded method to determine safly if this module is a group */
-	virtual bool isGroup(){return false;};
 	/** @brief returns the name of the module. if no was provided via 
 	setName(string), it returns the class name in brakets */
 	std::string getName();
