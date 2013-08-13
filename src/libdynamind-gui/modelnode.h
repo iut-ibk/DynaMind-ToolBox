@@ -57,24 +57,6 @@ class GUISimulation;
 
 class ModelNode;
 
-class GUIModelObserver: public DM::ModuleObserver
-{
-	ModelNode* node;
-public:
-	GUIModelObserver(ModelNode* node, DM::Module* module):
-		node(node), ModuleObserver(module)
-	{
-		foreach(std::string portName, module->getInPortNames())
-			notifyAddPort(portName, DM::INPORT);
-		foreach(std::string portName, module->getOutPortNames())
-			notifyAddPort(portName, DM::OUTPORT);
-	};
-	
-	void notifyAddPort(const std::string &name, const DM::PortType type);
-	void notifyRemovePort(const std::string &name, const DM::PortType type);
-	void notifyChangeName(const std::string &name);
-};
-
 class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//, public DM::ModuleObserver
 {
     Q_OBJECT
