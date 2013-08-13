@@ -146,7 +146,7 @@ public:
 	std::map<std::string,View> getViewsInStdStream();
 	/** @brief @deprecated */
 	std::string getUuid();
-	/** @brief returns all view definitions added via addData */
+	/** @brief @deprecated returns all view definitions added via addData */
 	std::map<std::string, std::map<std::string, DM::View> > getViews();
 	/** @brief just nulls out the inport, may get deprecated */
 	void removeData(const std::string& name);
