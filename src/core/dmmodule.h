@@ -94,11 +94,6 @@ public:
 		Parameter(const std::string name, const DataTypes type, void* data, const std::string description):
 			name(name), type(type), data(data), description(description)
 		{};
-		template<typename T>
-		void set(T value)
-		{
-			*(T*)data = value;
-		}
 	};
 
 	/** @brief constructor */

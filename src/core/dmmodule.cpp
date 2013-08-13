@@ -89,12 +89,12 @@ void Module::setParameterValue(const std::string& name, const std::string& value
 		return;
 	switch(p->type)
 	{
-	case DM::INT:		p->set(qvalue.toInt());	break;
-	case DM::LONG:		p->set(qvalue.toLong());	break;
-	case DM::DOUBLE:	p->set(qvalue.toDouble());	break;
-	case DM::BOOL:		p->set((bool)qvalue.toInt());	break;
-	case DM::FILENAME:	p->set(value);	break;
-	case DM::STRING:	p->set(value);	break;
+	case DM::INT:		*(int*)		p->data = qvalue.toInt();	break;
+	case DM::LONG:		*(long*)	p->data = qvalue.toLong();	break;
+	case DM::DOUBLE:	*(double*)	p->data = qvalue.toDouble();break;
+	case DM::BOOL:		*(bool*)	p->data = qvalue.toInt();	break;
+	case DM::FILENAME:	
+	case DM::STRING:	*(std::string*)	p->data = value;	break;
 	case DM::STRING_LIST:	
 		{
 			std::vector<std::string> v;
@@ -103,7 +103,7 @@ void Module::setParameterValue(const std::string& name, const std::string& value
 			for(QVector<QString>::iterator it = qvalues.begin(); it != qvalues.end(); ++it)
 				if(it->size())
 					v.push_back(it->toStdString());
-			p->set(v);
+			*(std::vector<std::string>*)p->data = v;
 		}
 		break;
 	case DM::STRING_MAP:	
@@ -115,7 +115,7 @@ void Module::setParameterValue(const std::string& name, const std::string& value
 				QVector<QString> keyValuePair =  rowString.split("*|*", QString::SkipEmptyParts).toVector();
 				map[keyValuePair.first().toStdString()] = keyValuePair.last().toStdString();
 			}
-			p->set(map);
+			*(std::map<std::string,std::string>*)p->data = map;
 		}
 		break;
 	}
