@@ -26,6 +26,7 @@
 
 #include "loopgroup.h"
 #include "guiloopgroup.h"
+#include <dmlogger.h>
 
 using namespace DM;
 
