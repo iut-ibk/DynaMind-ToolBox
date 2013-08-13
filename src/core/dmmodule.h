@@ -236,8 +236,8 @@ public:
 	Parameter* getParameter(const std::string& name) const
 	{
 		// foreach will cause a compile error in modules not including qt headers
-		for(std::vector<Parameter*>::const_iterator it = parameters.cbegin();
-			it != parameters.cend(); ++it)
+		for(std::vector<Parameter*>::const_iterator it = parameters.begin();
+			it != parameters.end(); ++it)
 			if((*it)->name == name)
 				return *it;
 		return NULL;
