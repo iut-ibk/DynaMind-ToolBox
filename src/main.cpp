@@ -39,6 +39,7 @@
 #include <QSettings>
 #include <QStringList>
 
+#include <dmlogger.h>
 #include <dmlog.h>
 #include <dmlogsink.h>
 #include <dmdbconnector.h>
