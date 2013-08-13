@@ -34,6 +34,7 @@
 #include <simulationio.h>
 #include <dmgroup.h>
 #include <qtablewidget.h>
+#include <dmlogger.h>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>

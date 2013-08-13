@@ -40,6 +40,7 @@
 #include <dmsimulationwriter.h>
 #include <simulationio.h>
 
+#include <dmlogger.h>
 #include "ColorPalette.h"
 
 SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* parentGroup): 

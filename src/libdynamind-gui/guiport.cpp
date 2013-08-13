@@ -30,6 +30,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <dmsimulation.h>
 #include <guisimulation.h>
+#include <dmlogger.h>
+
 PortNode::~PortNode () {
 
     foreach(GUILink *l, this->linkNodes) {

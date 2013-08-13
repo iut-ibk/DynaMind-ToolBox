@@ -34,6 +34,7 @@
 //#include <boost/python.hpp>
 
 #include "QFileDialog"
+#include <dmlogger.h>
 #include <dmlog.h>
 #include <guilogsink.h>
 #include <dmpythonenv.h>
