@@ -99,11 +99,6 @@ public:
 		{
 			*(T*)data = value;
 		}
-		template<typename T>
-		T& get()
-		{
-			return *(T*)data;
-		}
 	};
 
 	/** @brief constructor */
