@@ -176,7 +176,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				header << "key";
 				header << "value";
 				table->setHorizontalHeaderLabels(header);
-				table->horizontalHeader()->setFixedHeight(20);
+				//table->horizontalHeader()->setFixedHeight(20);
 				std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string> >();
 
 				table->setRowCount(entries.size());
@@ -185,7 +185,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				{
 					table->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(it->first)));
 					table->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(it->second)));
-					table->setRowHeight(i, 20);
+					//table->setRowHeight(i, 20);
 					i++;
 				}
 
@@ -229,7 +229,7 @@ void GUIModelNode::addMapRow()
 	QTableWidget* table = (QTableWidget*)elements[sender()->objectName()];
 	int rows = table->rowCount();
 	table->setRowCount(rows+1);
-	table->setRowHeight(rows, 20);
+	//table->setRowHeight(rows, 20);
 }
 
 void GUIModelNode::help() 
