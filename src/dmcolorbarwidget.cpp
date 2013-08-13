@@ -37,39 +37,40 @@
 using namespace DM;
 
 ColorBarWidget::ColorBarWidget(QWidget *parent) :
-	QGLWidget(parent) 
+QGLWidget(parent)
 {
 	texture = 0;
 }
 
 ColorBarWidget::ColorBarWidget(QWidget *parent, QGLWidget *shared) :
-	QGLWidget(parent, shared)  
+	QGLWidget(parent, shared)
 {
 	texture = 0;
 }
 
-void ColorBarWidget::initializeGL() 
+void ColorBarWidget::initializeGL()
 {
 	glClearColor(0, 0.0, 0, 1.0);
 }
 
-void ColorBarWidget::paintGL() 
+void ColorBarWidget::paintGL()
 {
-    if (glIsTexture(texture))
-    {
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, texture);
-        glColor3f(1.0, 1.0, 1.0);
 
-    }
-    else
-    {
-        glDisable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, 0);
-        glColor3f(0,0,0);
-    }
+	if (glIsTexture(texture))
+	{
+		glEnable(GL_TEXTURE_1D);
+		glBindTexture(GL_TEXTURE_1D, texture);
+		glColor3f(1.0, 1.0, 1.0);
 
-    glBegin(GL_QUADS);
+	}
+	else
+	{
+		glDisable(GL_TEXTURE_1D);
+		glBindTexture(GL_TEXTURE_1D, 0);
+		glColor3f(0,0,0);
+	}
+
+	glBegin(GL_QUADS);
 
 	glTexCoord1f(0.0);
 	glVertex2f(0, height());
