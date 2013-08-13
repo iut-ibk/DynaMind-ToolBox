@@ -34,18 +34,9 @@
 #include "dmcompilersettings.h"
 #include <list>
 #include <map>
-//#include <dmlog.h>
-//#include <dmlogger.h>
 #include <dmview.h>
-//#include <dmstdutilities.h>
-
-//class QThreadPool;
-class PortObserver;
 
 namespace DM {
-
-// deprecated parameter type
-typedef std::map<std::string, std::string> parameter_type;
 
 #if defined _MSC_VER && defined _WIN32
 enum PortType
@@ -56,7 +47,6 @@ enum PortType : unsigned int
 	INPORT = 0,
 	OUTPORT,
 };
-
 
 enum  DataTypes {    
 	INT,
