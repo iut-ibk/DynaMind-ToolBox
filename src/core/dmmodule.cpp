@@ -67,6 +67,19 @@ void Module::addParameter(const std::string &name, DataTypes type, void * ref, s
 	parameters.push_back(new Parameter(name, type, ref, description));
 }
 
+Module::Parameter* Module::getParameter(const std::string& name) const
+{
+	foreach(Parameter* p, parameters)
+		if(p->name == name)
+			return p;
+	return NULL;
+}
+
+std::vector<Module::Parameter*> Module::getParameters() const
+{
+	return parameters;
+}
+
 void Module::setParameterValue(const std::string& name, const std::string& value)
 {
 	QString qvalue = QString::fromStdString(value);
@@ -361,6 +374,11 @@ std::string Module::getUuid()
 {
 	Logger(Warning) << "module::getUuid() deprecated";
 	return "<Module::getUuid deprecated>";
+}
+
+std::map<std::string, std::map<std::string, DM::View> > Module::getViews()
+{
+	return getAccessedViews();
 }
 
 void Module::updateParameter()

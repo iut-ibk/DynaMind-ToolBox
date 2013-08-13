@@ -37,7 +37,14 @@
 #include <dmview.h>
 
 namespace DM {
+	
+// Prototypes
+class System;
+class RasterData;
+class ModuleObserver;
+class Simulation;
 
+// enums
 #if defined _MSC_VER && defined _WIN32
 enum PortType
 #else
@@ -48,7 +55,8 @@ enum PortType : unsigned int
 	OUTPORT,
 };
 
-enum  DataTypes {    
+enum  DataTypes 
+{
 	INT,
 	LONG,
 	DOUBLE,
@@ -58,11 +66,6 @@ enum  DataTypes {
 	STRING_MAP,
 	BOOL,
 };
-
-class System;
-class RasterData;
-class ModuleObserver;
-class Simulation;
 
 enum ModuleStatus
 {
@@ -79,35 +82,29 @@ class DM_HELPER_DLL_EXPORT Module
 	friend Simulation;
 
 public:
-	struct Parameter;
-private:
-	ModuleStatus status;
+	/** @brief parameters are variable values given via gui input, configuring a module */
+	struct Parameter
+	{
+		const std::string	name;
+		const DataTypes		type;
+		void*				data;
+		const std::string	description;
 
-	std::vector<ModuleObserver*>	observers;
-	std::vector<Parameter*>			parameters;
-	std::map<std::string, System*>	inPorts;
-	std::map<std::string, System*>	outPorts;
-	Module*		owner;
-	bool		successorMode;
-	std::string name;
-	// all view inits in module::init will be stored here as: streamname | views
-	std::map<std::string, std::map<std::string,View> > accessedViews;
-	// a temporary storage for all streams and viewnames in the stream up to this module
-	// it is updated by simulation::checkModuleStream
-	std::map<std::string, std::map<std::string,View> > streamViews;
-private:
-	/** @brief get data from inport */
-	System* getInPortData(const std::string &name);
-	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
-	void setOwner(Module* owner);
-	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
-	void reset();
-protected:
-	/** @brief checks if in-port does exist */
-	bool hasInPort(const std::string &name) const;
-	/** @brief checks if out-port does exist */
-	bool hasOutPort(const std::string &name) const;
-public:
+		Parameter(const std::string name, const DataTypes type, void* data, const std::string description):
+			name(name), type(type), data(data), description(description)
+		{};
+		template<typename T>
+		void set(T value)
+		{
+			*(T*)data = value;
+		}
+		template<typename T>
+		T& get()
+		{
+			return *(T*)data;
+		}
+	};
+
 	/** @brief constructor */
 	Module();
 	/** @brief destructor */
@@ -126,12 +123,10 @@ public:
 	* overwrite this method in the module implementation, call the GUI within the method
 	* an return true. */
 	virtual bool createInputDialog(){return false;}
-
 	/** @brief returns the current status of the module */
 	ModuleStatus getStatus(){return status;};
 	/** @brief returns the data from the desired stream */
 	System* getData(const std::string& streamName);
-
 	/** @brief returns a vector of port names on the input side */
 	std::vector<std::string> getInPortNames() const;
 	/** @brief returns a vector of port names on the output side */
@@ -140,7 +135,6 @@ public:
 	bool outPortsSet();
 	/** @brief checks if all inports are set or not existing */
 	bool inPortsSet();
-
 	/** @brief returns all views accessed by this module */
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
 	/** @brief returns all streams with their views */
@@ -151,14 +145,10 @@ public:
 	View getViewInStream(const std::string& streamName, const std::string& viewName) const;
 	/** @brief shortcut to getViewsInStream to return all views from the stream view index 0 */
 	std::map<std::string,View> getViewsInStdStream();
-
 	/** @brief @deprecated */
 	std::string getUuid();
 	/** @brief returns all view definitions added via addData */
-	std::map<std::string, std::map<std::string, DM::View> > getViews()
-	{
-		return getAccessedViews();
-	}
+	std::map<std::string, std::map<std::string, DM::View> > getViews();
 	/** @brief just nulls out the inport, may get deprecated */
 	void removeData(const std::string& name);
 	/** @brief calls the init function if parameters have changed */
@@ -183,29 +173,6 @@ public:
 	void setSuccessorMode(bool value);
 	/** @brief returns the current status of the successor mode, see setSuccessorMode(bool) */
 	bool isSuccessorMode();
-
-	/** @brief parameters are variable values given via gui input, configuring a module */
-	struct Parameter
-	{
-		const std::string	name;
-		const DataTypes		type;
-		void*				data;
-		const std::string	description;
-
-		Parameter(const std::string name, const DataTypes type, void* data, const std::string description):
-			name(name), type(type), data(data), description(description)
-		{};
-		template<typename T>
-		void set(T value)
-		{
-			*(T*)data = value;
-		}
-		template<typename T>
-		T& get()
-		{
-			return *(T*)data;
-		}
-	};
 	/** @brief adds a Parameter to the module.
 	* availiable types:
 	* - DM::DOUBLE
@@ -219,21 +186,9 @@ public:
 	*/
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 	/** @brief returns a parameter as structure */
-	Parameter* getParameter(const std::string& name) const
-	{
-		// foreach will cause a compile error in modules not including qt headers
-		for(std::vector<Parameter*>::const_iterator it = parameters.begin();
-			it != parameters.end(); ++it)
-			if((*it)->name == name)
-				return *it;
-		return NULL;
-	}
-public:
+	Parameter* getParameter(const std::string& name) const;
 	/** @brief returns a vector of all parameters */
-	std::vector<Parameter*> getParameters() const
-	{
-		return parameters;
-	}
+	std::vector<Parameter*> getParameters() const;
 	/** @brief Returns the parameter as string value
 	* As seperator for STRING_LIST *|* is used and for maps also *||*
 	* 1*|*2*|*3*|4*||*
@@ -247,6 +202,16 @@ public:
 	*/
 	void setParameterValue(const std::string& name, const std::string& value);
 protected:
+	/** @brief checks if in-port does exist */
+	bool hasInPort(const std::string &name) const;
+	/** @brief checks if out-port does exist */
+	bool hasOutPort(const std::string &name) const;
+
+	// all view inits in module::init will be stored here as: streamname | views
+	std::map<std::string, std::map<std::string,View> > accessedViews;
+	// a temporary storage for all streams and viewnames in the stream up to this module
+	// it is updated by simulation::checkModuleStream
+	std::map<std::string, std::map<std::string,View> > streamViews;
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);
 	/** @brief removes a port from the module, may corrupt links! */
@@ -268,6 +233,22 @@ protected:
 	void setInPortData(const std::string &name, System* data);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
+
+	std::vector<ModuleObserver*>	observers;
+	std::vector<Parameter*>			parameters;
+	std::map<std::string, System*>	inPorts;
+	std::map<std::string, System*>	outPorts;
+	ModuleStatus	status;
+	Module*			owner;
+	bool			successorMode;
+	std::string		name;
+private:
+	/** @brief get data from inport */
+	System* getInPortData(const std::string &name);
+	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
+	void setOwner(Module* owner);
+	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
+	void reset();
 };
 
 class ModuleObserver
