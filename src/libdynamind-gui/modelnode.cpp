@@ -64,7 +64,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 	resize();
 
 	// be shure to add observer last, as module dimensions are not set before
-	new GUIModelObserver(this, m);
+	new ModelObserver(this, m);
 
 	hovered = false;
 	setAcceptHoverEvents(true);

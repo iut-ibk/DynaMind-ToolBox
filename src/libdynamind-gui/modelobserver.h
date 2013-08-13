@@ -33,11 +33,11 @@
 
 class ModelNode;
 
-class GUIModelObserver: public DM::ModuleObserver
+class ModelObserver: public DM::ModuleObserver
 {
 	ModelNode* node;
 public:
-	GUIModelObserver(ModelNode* node, DM::Module* module):
+	ModelObserver(ModelNode* node, DM::Module* module):
 		node(node), ModuleObserver(module)
 	{
 		foreach(std::string portName, module->getInPortNames())

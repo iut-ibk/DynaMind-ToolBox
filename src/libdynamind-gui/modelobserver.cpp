@@ -30,15 +30,15 @@
 #include "guisimulation.h"
 #include <QTableWidget>
 
-void GUIModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
+void ModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
 	node->addPort(name, type);
 }
-void GUIModelObserver::notifyRemovePort(const std::string &name, const DM::PortType type)
+void ModelObserver::notifyRemovePort(const std::string &name, const DM::PortType type)
 {
 	node->removePort(name, type);
 }
-void GUIModelObserver::notifyChangeName(const std::string &name)
+void ModelObserver::notifyChangeName(const std::string &name)
 {
 	if(node->isGroup())
 	{
