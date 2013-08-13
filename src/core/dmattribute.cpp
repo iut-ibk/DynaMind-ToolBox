@@ -29,6 +29,7 @@
 #include <dmattribute.h>
 #include <QVariant>
 #include "dmdbconnector.h"
+#include "dmlogger.h"
 
 using namespace DM;
 

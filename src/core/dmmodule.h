@@ -34,12 +34,12 @@
 #include "dmcompilersettings.h"
 #include <list>
 #include <map>
-#include <dmlog.h>
-#include <dmlogger.h>
+//#include <dmlog.h>
+//#include <dmlogger.h>
 #include <dmview.h>
-#include <dmstdutilities.h>
+//#include <dmstdutilities.h>
 
-class QThreadPool;
+//class QThreadPool;
 class PortObserver;
 
 namespace DM {
@@ -72,6 +72,7 @@ enum  DataTypes {
 class System;
 class RasterData;
 class ModuleObserver;
+class Simulation;
 
 enum ModuleStatus
 {
@@ -162,11 +163,7 @@ public:
 	std::map<std::string,View> getViewsInStdStream();
 
 	/** @brief @deprecated */
-	std::string getUuid()
-	{
-		DM::Logger(DM::Warning) << "module::getUuid() deprecated";
-		return "<Module::getUuid deprecated>";
-	}
+	std::string getUuid();
 	/** @brief returns all view definitions added via addData */
 	std::map<std::string, std::map<std::string, DM::View> > getViews()
 	{
@@ -175,10 +172,7 @@ public:
 	/** @brief just nulls out the inport, may get deprecated */
 	void removeData(const std::string& name);
 	/** @brief calls the init function if parameters have changed */
-	void updateParameter()
-	{
-		DM::Logger(DM::Warning) << "module::updateParameter() deprecated";
-	}
+	void updateParameter();
 	/** @brief get data from outport; public for ModelNode::viewData */
 	System* getOutPortData(const std::string &name);
 	/** @brief adds an observer to this module */

@@ -29,6 +29,7 @@
 #include <sstream>
 #include <dmsystem.h>
 #include <dmrasterdata.h>
+#include "dmlogger.h"
 
 using namespace std;
 using namespace DM;
@@ -354,6 +355,17 @@ std::map<std::string,View> Module::getViewsInStdStream()
 		return (streamViews.begin())->second;
 	else
 		return std::map<std::string,View>();
+}
+
+std::string Module::getUuid()
+{
+	Logger(Warning) << "module::getUuid() deprecated";
+	return "<Module::getUuid deprecated>";
+}
+
+void Module::updateParameter()
+{
+	Logger(Warning) << "module::updateParameter() deprecated";
 }
 
 void Module::setOwner(Module* owner)

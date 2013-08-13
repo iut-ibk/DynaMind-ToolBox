@@ -30,6 +30,7 @@
 #include "dmnodefactory.h"
 #include <QLibrary>
 #include <dmmodule.h>
+#include "dmlogger.h"
 
 using namespace std;
 namespace DM {

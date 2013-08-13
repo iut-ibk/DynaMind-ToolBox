@@ -25,6 +25,7 @@
 */
 
 #include "dmsimulationwriter.h"
+#include "dmlogger.h"
 
 using namespace DM;
 

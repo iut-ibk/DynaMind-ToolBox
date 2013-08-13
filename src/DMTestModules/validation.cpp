@@ -7,6 +7,7 @@
 #include <dmnode.h>
 #include <dmface.h>
 #include <dmrasterdata.h>
+#include <dmlogger.h>
 
 ComponentID::ComponentID(std::string _uuid, std::string _stateUuid, std::string _owner)
 {
