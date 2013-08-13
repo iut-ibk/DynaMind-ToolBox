@@ -234,6 +234,14 @@ protected:
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
 
+private:
+	/** @brief get data from inport */
+	System* getInPortData(const std::string &name);
+	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
+	void setOwner(Module* owner);
+	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
+	void reset();
+	
 	std::vector<ModuleObserver*>	observers;
 	std::vector<Parameter*>			parameters;
 	std::map<std::string, System*>	inPorts;
@@ -242,13 +250,6 @@ protected:
 	Module*			owner;
 	bool			successorMode;
 	std::string		name;
-private:
-	/** @brief get data from inport */
-	System* getInPortData(const std::string &name);
-	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
-	void setOwner(Module* owner);
-	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
-	void reset();
 };
 
 class ModuleObserver
