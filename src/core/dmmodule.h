@@ -79,6 +79,7 @@ enum ModuleStatus
 
 class DM_HELPER_DLL_EXPORT Module
 {
+	// this ensures that the simulation has full access without opening all methods to public
 	friend Simulation;
 
 public:
@@ -125,8 +126,6 @@ public:
 	virtual bool createInputDialog(){return false;}
 	/** @brief returns the current status of the module */
 	ModuleStatus getStatus(){return status;};
-	/** @brief returns the data from the desired stream */
-	System* getData(const std::string& streamName);
 	/** @brief returns a vector of port names on the input side */
 	std::vector<std::string> getInPortNames() const;
 	/** @brief returns a vector of port names on the output side */
@@ -202,22 +201,16 @@ public:
 	*/
 	void setParameterValue(const std::string& name, const std::string& value);
 protected:
+	/** @brief returns the data from the desired stream */
+	System* getData(const std::string& streamName);
 	/** @brief checks if in-port does exist */
 	bool hasInPort(const std::string &name) const;
 	/** @brief checks if out-port does exist */
 	bool hasOutPort(const std::string &name) const;
-
-	// all view inits in module::init will be stored here as: streamname | views
-	std::map<std::string, std::map<std::string,View> > accessedViews;
-	// a temporary storage for all streams and viewnames in the stream up to this module
-	// it is updated by simulation::checkModuleStream
-	std::map<std::string, std::map<std::string,View> > streamViews;
 	/** @brief adds a new port, which can be connected to a single other node*/
 	void addPort(const std::string &name, const PortType type);
 	/** @brief removes a port from the module, may corrupt links! */
 	void removePort(const std::string &name, const PortType type);
-	/** @brief */
-	void setStatus(ModuleStatus status) {this->status = status;};
 	/** @brief Used to define the data that are used in the module.
 	*
 	* The data is defined as a vetor of views. The stream name represents the name of the ports created.
@@ -233,19 +226,27 @@ protected:
 	void setInPortData(const std::string &name, System* data);
 	/** @brief */
 	void setOutPortData(const std::string &name, System* data);
-
 private:
+	/** @brief sets the current status of the module */
+	void setStatus(ModuleStatus status) {this->status = status;};
 	/** @brief get data from inport */
-	System* getInPortData(const std::string &name);
+	 System* getInPortData(const std::string &name);
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
 	void reset();
 	
+	// all view inits in module::init will be stored here as: streamname | views
+	std::map<std::string, std::map<std::string,View> > accessedViews;
+	// a temporary storage for all streams and viewnames in the stream up to this module
+	// it is updated by simulation::checkModuleStream
+	std::map<std::string, std::map<std::string,View> > streamViews;
+
 	std::vector<ModuleObserver*>	observers;
 	std::vector<Parameter*>			parameters;
 	std::map<std::string, System*>	inPorts;
 	std::map<std::string, System*>	outPorts;
+
 	ModuleStatus	status;
 	Module*			owner;
 	bool			successorMode;

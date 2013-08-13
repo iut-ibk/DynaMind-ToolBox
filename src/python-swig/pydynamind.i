@@ -104,7 +104,6 @@ public:
     virtual std::string getHelpUrl();
 
     std::map<std::string, std::map<std::string, DM::View> >  getViews();
-    DM::System * getData(std::string dataname);
 
 	virtual const char* getClassName() = 0;
 
@@ -115,8 +114,9 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
-	protected:
+protected:
     void addData(std::string name, std::vector<DM::View> view);
+    DM::System * getData(std::string dataname);
     DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
 
 };
