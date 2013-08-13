@@ -82,7 +82,7 @@ private:
     RasterData * OutputMap;
 
 
-    parameter_type paramRaw;
+    std::map<std::string, std::string> paramRaw;
     double evaluateExpresion_R(int index, DM::Node & p);
     double evaluateExpresion_r(int index, DM::Node & p);
     double calculater(const DM::Node &sp, const DM::Node &cp);
