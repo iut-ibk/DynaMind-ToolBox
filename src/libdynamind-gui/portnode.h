@@ -59,6 +59,7 @@ public:
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 	void updatePos();
     void setHover(bool b);
     void removeLink(LinkNode * l);

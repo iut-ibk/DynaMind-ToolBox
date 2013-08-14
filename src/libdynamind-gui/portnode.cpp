@@ -154,6 +154,14 @@ QPointF PortNode::getCenterPos() const
 	return QPointF( this->scenePos() + QPointF(PORT_DRAW_SIZE,PORT_DRAW_SIZE)/2);
 }
 
+QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
+{
+	if(change == QGraphicsItem::ItemScenePositionHasChanged) 
+		foreach(LinkNode* link, linkNodes)
+			link->refresh();
+	return QGraphicsItem::itemChange(change, value);
+}
+
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
 	if(unstableLink)
