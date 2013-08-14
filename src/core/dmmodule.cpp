@@ -380,6 +380,13 @@ std::map<std::string, std::map<std::string, DM::View> > Module::getViews() const
 	return getAccessedViews();
 }
 
+void Module::setStatus(ModuleStatus status)
+{
+	this->status = status;
+	foreach(ModuleObserver* obs, observers)
+		obs->notifyStateChange();
+}
+
 void Module::setOwner(Module* owner)
 {
 	if(!this->owner)

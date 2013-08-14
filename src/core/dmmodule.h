@@ -216,7 +216,7 @@ protected:
 	void setOutPortData(const std::string &name, System* data);
 private:
 	/** @brief sets the current status of the module */
-	void setStatus(ModuleStatus status) {this->status = status;};
+	void setStatus(ModuleStatus status);
 	/** @brief get data from inport */
 	 System* getInPortData(const std::string &name) const;
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
