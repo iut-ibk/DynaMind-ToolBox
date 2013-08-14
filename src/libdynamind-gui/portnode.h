@@ -51,7 +51,7 @@ namespace DM {
 #define PORT_DRAW_SELECTED_SIZE 16
 
 class ModelNode;
-class GUILink;
+class LinkNode;
 class GUISimulation;
 
 
@@ -60,13 +60,13 @@ class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 public:
 
 private:
-    QVector<GUILink * > linkNodes;
+    QVector<LinkNode * > linkNodes;
 
     //QColor color;
     //ModelNode * modelNode;
-    //GUILink * tmp_link;
+    //LinkNode * tmp_link;
 	
-	GUILink* unstableLink;
+	LinkNode* unstableLink;
 
 
     QString portName;
@@ -93,7 +93,7 @@ public:
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    //void setLink(GUILink * l);
+    //void setLink(LinkNode * l);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     QPointF getCenterPos();
@@ -107,8 +107,8 @@ public:
 	}
     //void refreshLinks();
     //DM::Port * getVIBePort();
-    void removeLink(GUILink * l);
-	void addLink(GUILink* l);
+    void removeLink(LinkNode * l);
+	void addLink(LinkNode* l);
     //void updatePort(DM::Port * p);
     GUISimulation * getSimulation() {return this->simulation;}
     //void  setSimulation(GUISimulation *s) {this->simulation = s;}

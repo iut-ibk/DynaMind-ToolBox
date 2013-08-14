@@ -36,7 +36,7 @@
 #include <guimodelnode.h>
 #include <guiviewdataformodules.h>
 #include <dmmodule.h>
-#include <guiport.h>
+#include <portnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmviewerwindow.h>

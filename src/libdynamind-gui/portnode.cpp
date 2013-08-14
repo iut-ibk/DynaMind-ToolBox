@@ -26,7 +26,7 @@
 #include "portnode.h"
 #include <modelnode.h>
 #include "ColorPalette.h"
-#include <guilink.h>
+#include <linknode.h>
 #include <QGraphicsSceneMouseEvent>
 #include <dmsimulation.h>
 #include <guisimulation.h>
@@ -34,22 +34,22 @@
 
 PortNode::~PortNode () {
 
-    foreach(GUILink *l, this->linkNodes) {
+    foreach(LinkNode *l, this->linkNodes) {
         delete l;
         l = 0;
     }
     this->linkNodes.clear();
 }
-void PortNode::removeLink(GUILink * l)
+void PortNode::removeLink(LinkNode * l)
 {
     int index = this->linkNodes.indexOf(l);
     if (index > -1) {
         this->linkNodes.remove(index);
-        DM::Logger(DM::Debug) << "Remove GUILink from port '" << this->getPortName() << "' ," << this->linkNodes.size() << " left";
+        DM::Logger(DM::Debug) << "Remove LinkNode from port '" << this->getPortName() << "' ," << this->linkNodes.size() << " left";
     }
 }
 
-void PortNode::addLink(GUILink* l)
+void PortNode::addLink(LinkNode* l)
 {
     linkNodes.append(l);
 }
@@ -224,7 +224,7 @@ QPointF PortNode::getCenterPos()
     return this->PortType;
 }*/
 
-//static GUILink* unstableLink = NULL;
+//static LinkNode* unstableLink = NULL;
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
@@ -287,7 +287,7 @@ void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 		delete unstableLink;
 	}
 
-	unstableLink = new GUILink();
+	unstableLink = new LinkNode();
 
 	if(portType == DM::INPORT)
 	{
@@ -321,7 +321,7 @@ void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 
     //if (getPortType() < DM::OUTPORTS) {
         LinkMode = true;
-        this->tmp_link = new GUILink();
+        this->tmp_link = new LinkNode();
         this->tmp_link->setOutPort(this);
         this->scene()->addItem(this->tmp_link);
     //}
@@ -470,13 +470,13 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 void PortNode::refreshLinks() 
 {
 	
-	foreach(GUILink * l, this->links) {
+	foreach(LinkNode * l, this->links) {
         if ( l != 0) {
             l->refresh();
         }
     }
 }*/
-/*void PortNode::setLink(GUILink * l) 
+/*void PortNode::setLink(LinkNode * l) 
 {
 
     int index = this->links.indexOf(l);
@@ -489,10 +489,10 @@ void PortNode::refreshLinks()
 QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
 {
     if(change == QGraphicsItem::ItemScenePositionHasChanged) 
-		foreach(GUILink* link, linkNodes)
+		foreach(LinkNode* link, linkNodes)
 			link->refresh();
     /*if (change == QGraphicsItem::ItemVisibleHasChanged) {
-        foreach(GUILink * l, this->links)
+        foreach(LinkNode * l, this->links)
             l->setVisible(this->isVisible());
     }*/
     return QGraphicsItem::itemChange(change, value);

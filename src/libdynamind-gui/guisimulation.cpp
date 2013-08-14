@@ -28,7 +28,7 @@
 #include <portnode.h>
 #include <groupnode.h>
 #include <simulationtab.h>
-#include <guilink.h>
+#include <linknode.h>
 #include <dmsimulationreader.h>
 #include <dmsimulationwriter.h>
 #include <simulationio.h>
@@ -169,7 +169,7 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 	if( !inPortNode || !outPortNode )
 		return false;
 
-	GUILink* gl = new GUILink();
+	LinkNode* gl = new LinkNode();
 	
 	if( !gl )
 		return false;

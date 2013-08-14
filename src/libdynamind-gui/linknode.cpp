@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#include "guilink.h"
+#include "linknode.h"
 #include <iostream>
 #include <cmath>
 #include <QMenu>
@@ -34,7 +34,7 @@
 #include <portnode.h>
 #include <guisimulation.h>
 
-GUILink::GUILink()
+LinkNode::LinkNode()
 {
     inPort = 0;
     outPort = 0;
@@ -43,7 +43,7 @@ GUILink::GUILink()
     this->setZValue(4);
 }
 
-void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void LinkNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QColor c;
 	if(hovered)				c = Qt::green;
 	else if(isSelected())	c = Qt::gray;
@@ -71,14 +71,14 @@ void GUILink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->fillPath(handle_path, brush);
     painter->strokePath(handle_path, pen);
 }
-QRectF GUILink::boundingRect() const 
+QRectF LinkNode::boundingRect() const 
 {
     return united.boundingRect();
 }
 
-GUILink::~GUILink() 
+LinkNode::~LinkNode() 
 {
-    //DM::Logger(DM::Debug) << "Deleting GUILink";
+    //DM::Logger(DM::Debug) << "Deleting LinkNode";
 
 	if(outPort && inPort)
 	{
@@ -94,31 +94,31 @@ GUILink::~GUILink()
     this->outPort = 0;
 }
 
-void GUILink::setOutPort(PortNode * outPort)
+void LinkNode::setOutPort(PortNode * outPort)
 {
     this->outPort = outPort;
 	refresh();
 }
-void GUILink::setOutPort(QPointF p) 
+void LinkNode::setOutPort(QPointF p) 
 {
     source = p;
 	refresh();
 }
 
-void GUILink::setInPort(PortNode * inPort) 
+void LinkNode::setInPort(PortNode * inPort) 
 {
     this->inPort = inPort;
 	refresh();
 
 }
-void GUILink::setInPort(QPointF p) 
+void LinkNode::setInPort(QPointF p) 
 {
     sink = p;
 	refresh();
 }
 
 
-void GUILink::refresh() 
+void LinkNode::refresh() 
 {
     if(outPort)	source = outPort->getCenterPos() + QPointF(9,0);
     if(inPort)	sink = inPort->getCenterPos()  - QPointF(9,0);
@@ -129,12 +129,12 @@ void GUILink::refresh()
     this->update(this->boundingRect());
 }
 
-void GUILink::deleteLink() 
+void LinkNode::deleteLink() 
 {
     delete this;
 }
 
-void GUILink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
+void LinkNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
 {
     QMenu menu;
     QAction  * a_delete = menu.addAction("delete");
@@ -145,7 +145,7 @@ qreal mid(qreal start, qreal stop)
 {
     return qMin(start, stop) + (qAbs(start - stop) / 2.0);
 }
-void GUILink::updatePaths() {
+void LinkNode::updatePaths() {
     connection_path = QPainterPath();
     qreal x = (source - sink).x();
     QPointF c1(source.x() - x / 2.0, source.y());
@@ -157,14 +157,14 @@ void GUILink::updatePaths() {
     united = handle_path.united(connection_path);
     update();
 }
-void GUILink::hoverEnterEvent(QGraphicsSceneHoverEvent *event) 
+void LinkNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event) 
 {
     hovered = true;
     update();
 	QGraphicsItem::hoverEnterEvent(event);
 }
 
-void GUILink::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) 
+void LinkNode::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) 
 {
     hovered = false;
     update();

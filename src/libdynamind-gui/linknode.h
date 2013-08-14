@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-#ifndef GUILINK_H
-#define GUILINK_H
+#ifndef LinkNode_H
+#define LinkNode_H
 
 #include "dmcompilersettings.h"
 #include <QGraphicsItem>
@@ -37,7 +37,7 @@
 class PortNode;
 class GUISimulation;
 
-class  DM_HELPER_DLL_EXPORT GUILink : public QObject, public QGraphicsItem
+class  DM_HELPER_DLL_EXPORT LinkNode : public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -56,7 +56,7 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 public:
-    GUILink();
+    LinkNode();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
     QRectF boundingRect() const;
     void setOutPort(PortNode * outPort);
@@ -68,10 +68,10 @@ public:
     PortNode * getOutPort(){return outPort;}
     PortNode * getInPort(){return inPort;}
     void setSimulation(GUISimulation * sim) {this->sim = sim;}
-    ~GUILink();
+    ~LinkNode();
 public slots:
     void deleteLink();
 
 };
 
-#endif // GUILINK_H
+#endif // LinkNode_H
