@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #ifndef GUIPORT_H
 #define GUIPORT_H
 
@@ -57,34 +58,25 @@ public:
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    QRectF boundingRect() const;
-    QPointF getCenterPos();
-    QString getPortName(){return this->portName;}
-    bool isLinked();
-    void setHover(bool b)
-	{
-		this->isHover = b;
-		this->prepareGeometryChange();
-	}
+	void updatePos();
+    void setHover(bool b);
     void removeLink(LinkNode * l);
 	void addLink(LinkNode* l);
-    GUISimulation * getSimulation() {return this->simulation;}
-	DM::Module* getModule(){return module;};
-	DM::PortType getType(){return portType;};
-	void updatePos();
+
+    GUISimulation*	getSimulation() const {return this->simulation;}
+	DM::Module*		getModule()		const {return module;};
+	DM::PortType	getType()		const {return portType;};
+    QString			getPortName()	const {return this->portName;}
+	
+    QRectF	boundingRect()	const;
+    QPointF getCenterPos()	const;
 private:
     QVector<LinkNode * > linkNodes;
 	LinkNode* unstableLink;
 
     QString portName;
     bool isHover;
-    bool LinkMode;
-    PortNode * hoverElement;
-    float l;
-    float h;
-    float x1;
     QGraphicsSimpleTextItem portLabel;
     GUISimulation * simulation;
 	 

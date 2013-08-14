@@ -23,6 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include "portnode.h"
 #include <modelnode.h>
 #include "ColorPalette.h"
@@ -32,51 +33,23 @@
 #include <guisimulation.h>
 #include <dmlogger.h>
 
-PortNode::~PortNode () {
-
-    foreach(LinkNode *l, this->linkNodes) {
-        delete l;
-        l = 0;
-    }
-    this->linkNodes.clear();
-}
-void PortNode::removeLink(LinkNode * l)
-{
-    int index = this->linkNodes.indexOf(l);
-    if (index > -1) {
-        this->linkNodes.remove(index);
-        DM::Logger(DM::Debug) << "Remove LinkNode from port '" << this->getPortName() << "' ," << this->linkNodes.size() << " left";
-    }
-}
-
-void PortNode::addLink(LinkNode* l)
-{
-    linkNodes.append(l);
-}
-
 PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type, 
-                   QGraphicsItem* parent, GUISimulation* simulation)
-    :QGraphicsItem(parent)
+				   QGraphicsItem* parent, GUISimulation* simulation)
+				   :QGraphicsItem(parent), portLabel(parent)
 {
-    this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
-    this->setAcceptHoverEvents(true);
-    this->setAcceptsHoverEvents(true);
-    this->portName = portName;
+	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
+	this->setAcceptHoverEvents(true);
+	this->setAcceptsHoverEvents(true);
+	this->portName = portName;
 
-    unstableLink = NULL;
-    this->x1 = 0;
-    this->isHover = false;
-    this->LinkMode = false;
-    this->module = m;
-    this->portType = type;
-    this->
+	unstableLink = NULL;
+	this->isHover = false;
+	this->module = m;
+	this->portType = type;
+	this->updatePos();
 
-    updatePos();
+	this->simulation = simulation;
 
-    this->simulation = simulation;
-    hoverElement = 0;
-
-	portLabel.setParentItem(parent);
 	portLabel.setText(portName);
 	portLabel.setVisible(false);
 	portLabel.setPos(this->pos());
@@ -84,6 +57,35 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
 	if(portType == DM::INPORT)	portLabel.moveBy( boundingRect().width() + 3 , 0);
 	else						portLabel.moveBy( -portLabel.boundingRect().width() - 3, 0);
 
+}
+
+PortNode::~PortNode () {
+
+	foreach(LinkNode *l, this->linkNodes) {
+		delete l;
+		l = 0;
+	}
+	this->linkNodes.clear();
+}
+
+void PortNode::removeLink(LinkNode * l)
+{
+	int index = this->linkNodes.indexOf(l);
+	if (index > -1) {
+		this->linkNodes.remove(index);
+		DM::Logger(DM::Debug) << "Remove LinkNode from port '" << this->getPortName() << "' ," << this->linkNodes.size() << " left";
+	}
+}
+
+void PortNode::addLink(LinkNode* l)
+{
+	linkNodes.append(l);
+}
+
+void PortNode::setHover(bool b)
+{
+	this->isHover = b;
+	this->prepareGeometryChange();
 }
 
 void PortNode::updatePos()
@@ -106,12 +108,6 @@ void PortNode::updatePos()
 		this->setPos(xoffset + this->parentItem()->boundingRect().width(), yoffset);
 }
 
-bool PortNode::isLinked() {
-    //if (this->getVIBePort()->getLinks().size() > 0)
-        return true;
-    return false;
-}
-
 void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
 	QColor color;
@@ -121,29 +117,19 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 		color = Qt::green;
 	else
 		color = Qt::red;
-	painter->setBrush(color);
 
 	QPainterPath path;
 	QPen pen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	if(!isHover)
-	{
 		path.addEllipse(0, 0,PORT_DRAW_SIZE,PORT_DRAW_SIZE);
-		painter->fillPath(path, color);
-		painter->strokePath(path, pen);
-
-		portLabel.setVisible(false);
-	}
 	else
-	{
-		pen.setWidth(1);
 		path.addEllipse(-1, -1,PORT_DRAW_SELECTED_SIZE,PORT_DRAW_SELECTED_SIZE);
 
-		painter->fillPath(path, color);
-		painter->strokePath(path, pen);
-		painter->setBrush(Qt::NoBrush);
+	painter->setBrush(color);
+	painter->fillPath(path, color);
+	painter->strokePath(path, pen);
 
-		portLabel.setVisible(true);
-	}
+	portLabel.setVisible(isHover);
 }
 
 QRectF PortNode::boundingRect() const
@@ -163,9 +149,9 @@ void PortNode::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
 	QGraphicsItem::hoverLeaveEvent(event);
 }
 
-QPointF PortNode::getCenterPos() 
+QPointF PortNode::getCenterPos() const
 {
-    return  QPointF( this->scenePos() + QPointF(PORT_DRAW_SIZE,PORT_DRAW_SIZE)/2);
+	return QPointF( this->scenePos() + QPointF(PORT_DRAW_SIZE,PORT_DRAW_SIZE)/2);
 }
 
 void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
@@ -185,11 +171,10 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 
 	// Check Hover Event
 	items = this->scene()->items(event->scenePos());
-    foreach (QGraphicsItem  * item, items)
+	foreach (QGraphicsItem  * item, items)
 		if(PortNode* port = dynamic_cast<PortNode*>(item))
 			port->setHover(true);
 }
-
 
 void PortNode::mousePressEvent ( QGraphicsSceneMouseEvent * event )  
 {
@@ -228,15 +213,15 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 			if((this->getType() == DM::OUTPORT && port->getType() == DM::INPORT)
 				|| (this->getType() == DM::INPORT && port->getType() == DM::INPORT && this->getModule()->isGroup())
 				|| (this->getType() == DM::OUTPORT && port->getType() == DM::OUTPORT && port->getModule()->isGroup()))
-				simulation->addLink(this->module, this->getPortName().toStdString(),
-									port->module, port->getPortName().toStdString());
-			
+				simulation->addLink(this->module,	this->getPortName().toStdString(),
+													port->module, port->getPortName().toStdString());
+
 			else if((this->getType() == DM::INPORT && port->getType() == DM::OUTPORT)
 				|| (this->getType() == DM::INPORT && port->getType() == DM::INPORT && port->getModule()->isGroup())
 				|| (this->getType() == DM::OUTPORT && port->getType() == DM::OUTPORT && this->getModule()->isGroup()))
 				// swapped
-				simulation->addLink(port->module, port->getPortName().toStdString(),
-									this->module, this->getPortName().toStdString());
+				simulation->addLink(port->module,	port->getPortName().toStdString(),
+													this->module, this->getPortName().toStdString());
 
 			break;
 		}
@@ -247,15 +232,4 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 		delete unstableLink;
 		unstableLink = NULL;
 	}
-}
-QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value) 
-{
-    if(change == QGraphicsItem::ItemScenePositionHasChanged) 
-		foreach(LinkNode* link, linkNodes)
-			link->refresh();
-    /*if (change == QGraphicsItem::ItemVisibleHasChanged) {
-        foreach(LinkNode * l, this->links)
-            l->setVisible(this->isVisible());
-    }*/
-    return QGraphicsItem::itemChange(change, value);
 }
