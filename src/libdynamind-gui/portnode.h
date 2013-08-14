@@ -77,7 +77,7 @@ private:
     float l;
     float h;
     float x1;
-    QGraphicsSimpleTextItem portname_graphics;
+    QGraphicsSimpleTextItem portLabel;
     GUISimulation * simulation;
 	 
 	DM::PortType	portType;
