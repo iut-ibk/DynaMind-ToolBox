@@ -41,7 +41,6 @@
 #include <QVector>
 #include <dmmodule.h>
 #include <dmsimulation.h>
-#include <guiportobserver.h>
 #include <QWidget>
 
 class ModelNodeButton;
