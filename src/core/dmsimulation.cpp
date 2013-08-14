@@ -41,7 +41,6 @@
 #include "dmsimulationreader.h"
 #include "dmmodule.h"
 #include "dmmoduleregistry.h"
-#include "dmmoduleparameterreader.h"
 #include "dmmoduleregistry.h"
 #include "dmsimulationobserver.h"
 #include <dmmodule.h>
