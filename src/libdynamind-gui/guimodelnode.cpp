@@ -87,9 +87,9 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 		case DM::INT:
 			{
 				double dval = -1;
-				if(p->type == DM::DOUBLE)		dval = p->get<double>();
-				else if(p->type == DM::LONG)	dval = p->get<long>();
-				else if(p->type == DM::INT)		dval = p->get<int>();
+				if(p->type == DM::DOUBLE)		dval = *(double*)p->data;
+				else if(p->type == DM::LONG)	dval = *(long*)p->data;
+				else if(p->type == DM::INT)		dval = *(int*)p->data;
 
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
@@ -111,7 +111,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
 				QCheckBox * le = new QCheckBox;
-				le->setChecked(p->get<bool>());
+				le->setChecked(*(bool*)p->data);
 				elements.insert(qname, le);
 
 				layout1->addWidget(le,layout1->rowCount()-1,1);
@@ -122,7 +122,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
 				QLineEdit * le = new QLineEdit;
-				le->setText(QString::fromStdString(p->get<std::string>()));
+				le->setText(QString::fromStdString(*(std::string*)p->data));
 				elements.insert(qname, le);
 
 				layout1->addWidget(le,layout1->rowCount()-1,1);
@@ -134,7 +134,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
 				QLineEdit * le = new QLineEdit;
 				QPushButton * pb = new QPushButton;
-				le->setText(QString::fromStdString( p->get<std::string>() ));
+				le->setText(QString::fromStdString(*(std::string*)p->data));
 				pb->setText("...");
 				elements.insert(qname, le);
 
@@ -149,7 +149,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 			{
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
-				std::vector<std::string> text = p->get< std::vector<std::string> >();
+				std::vector<std::string> text = *(std::vector<std::string>*)p->data;
 				std::string nlText;
 				foreach(std::string str, text)
 					nlText += str +'\n';
@@ -177,11 +177,11 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				header << "value";
 				table->setHorizontalHeaderLabels(header);
 				//table->horizontalHeader()->setFixedHeight(20);
-				std::map<std::string, std::string> entries = p->get<std::map<std::string, std::string> >();
+				std::map<std::string, std::string>* entries = (std::map<std::string, std::string>*)p->data;
 
-				table->setRowCount(entries.size());
+				table->setRowCount(entries->size());
 				int i=0;
-				for(std::map<std::string, std::string>::const_iterator it = entries.begin(); it != entries.end(); ++it) 
+				for(std::map<std::string, std::string>::const_iterator it = entries->begin(); it != entries->end(); ++it) 
 				{
 					table->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(it->first)));
 					table->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(it->second)));
@@ -259,7 +259,7 @@ void GUIModelNode::accept()
 		case (DM::BOOL):
 			{
 				QAbstractButton *ab = ( QAbstractButton * ) this->elements.value(s);
-				p->set(ab->isChecked());
+				*(bool*)p->data = ab->isChecked();
 			}
 			break;
 		case (DM::STRING_LIST):
@@ -267,16 +267,16 @@ void GUIModelNode::accept()
 				QTextEdit* txtEdit = (QTextEdit*) this->elements.value(s);
 				QString nlText = txtEdit->toPlainText();
 				QStringList strings = nlText.split('\n');
-				std::vector<std::string> parValue;
+				std::vector<std::string>* parValue = (std::vector<std::string>*)p->data;
+				parValue->clear();
 				foreach(QString str, strings)
-					parValue.push_back(str.toStdString());
-
-				p->set(parValue);
+					parValue->push_back(str.toStdString());
 			}
 			break;
 		case (DM::STRING_MAP):
 			{
-				std::map<std::string, std::string> map;
+				std::map<std::string, std::string>* map = (std::map<std::string, std::string>*)p->data;
+				map->clear();
 
 				QTableWidget* table = (QTableWidget*) this->elements.value(s);
 				for(int i=0;i<table->rowCount();i++)
@@ -289,35 +289,34 @@ void GUIModelNode::accept()
 						QString value = table->item(i,1)->text();
 
 						if(key.length() > 0 && value.length() > 0)
-							map[table->item(i,0)->text().toStdString()] = table->item(i,1)->text().toStdString();
+							(*map)[table->item(i,0)->text().toStdString()] = table->item(i,1)->text().toStdString();
 					}
 				}
-				p->set(map);
 			}
 			break;
 		case DM::INT:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				p->set(le->text().toInt());
+				*(int*)p->data = le->text().toInt();
 			}
 			break;
 		case DM::LONG:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				p->set(le->text().toLong());
+				*(long*)p->data = le->text().toLong();
 			}
 			break;
 		case DM::DOUBLE:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				p->set(le->text().toDouble());
+				*(double*)p->data = le->text().toDouble();
 			}
 			break;
 		case DM::STRING:
 		case DM::FILENAME:
 			{
 				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				p->set(le->text().toStdString());
+				*(std::string*)p->data = le->text().toStdString();
 			}
 			break;
 		default:
