@@ -163,7 +163,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 		case DM::STRING_MAP:
 			{
 				QGroupBox* group = new QGroupBox(qname, parent);
-				layout1->addWidget(group);
+				layout1->addWidget(group,layout1->rowCount(),0,1,2);
 
 				QVBoxLayout* verticalLayout = new QVBoxLayout(parent);
 				group->setLayout(verticalLayout);
