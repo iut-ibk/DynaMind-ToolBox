@@ -25,7 +25,7 @@
  */
 
 #include "groupnode.h"
-#include "guiport.h"
+#include "portnode.h"
 #include <QGraphicsDropShadowEffect>
 
 #include <guisimulation.h>

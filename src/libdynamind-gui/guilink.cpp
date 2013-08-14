@@ -31,7 +31,7 @@
 #include <qobject.h>
 #include <QGraphicsSceneContextMenuEvent>
 #include <dmmodule.h>
-#include <guiport.h>
+#include <portnode.h>
 #include <guisimulation.h>
 
 GUILink::GUILink()

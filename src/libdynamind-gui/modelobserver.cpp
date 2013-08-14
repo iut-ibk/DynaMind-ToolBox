@@ -29,7 +29,7 @@
 #include "modelnode.h"
 #include "guisimulation.h"
 #include <QTableWidget>
-#include "guiport.h"
+#include "portnode.h"
 
 void ModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {

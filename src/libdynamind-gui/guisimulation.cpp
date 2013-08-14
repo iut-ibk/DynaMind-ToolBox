@@ -25,7 +25,7 @@
  */
 
 #include "guisimulation.h"
-#include <guiport.h>
+#include <portnode.h>
 #include <groupnode.h>
 #include <simulationtab.h>
 #include <guilink.h>
