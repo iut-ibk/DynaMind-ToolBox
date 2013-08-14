@@ -37,8 +37,8 @@
 using namespace DM;
 bool GUICellularAutomata::checkIfFromOutSide(QString name) {
     QString s2 = "DoubleIn_" + name;
-    std::map<std::string, double> doublemap = m->getParameter("InputDouble")->get<std::map<std::string, double> >();
-    for (std::map<std::string, double>::iterator it = doublemap.begin(); it != doublemap.end(); ++it) {
+    std::map<std::string, double>* doublemap = (std::map<std::string, double>*)m->getParameter("InputDouble")->data;
+    for (std::map<std::string, double>::iterator it = doublemap->begin(); it != doublemap->end(); ++it) {
         if (s2.toStdString().compare(it->first) == 0)
             return true;
     }
