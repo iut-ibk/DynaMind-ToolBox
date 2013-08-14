@@ -45,19 +45,6 @@ class Group;
 class DM_HELPER_DLL_EXPORT SimulationTab: public QGraphicsScene
 {
 	Q_OBJECT
-private:
-	// the drawing object
-	QGraphicsView *viewer;
-
-	// the scene, owning all elements to be rendered
-	//QGraphicsScene *scene;
-	QPointF cursorPos;
-	
-	// a pointer to the simulation object, which will be manipulated and drawn in this tab
-	GUISimulation* sim;
-	DM::Group* parentGroup;
-
-	ModelNode* hoveredGroupNode;
 public:
 	SimulationTab(QWidget* parent, GUISimulation* sim, DM::Group* parentGroup);
 	~SimulationTab();
@@ -69,76 +56,25 @@ public:
 
 	// for str+v & sim-drop
 	void importSimulation(QIODevice* source, const QPointF& target);
-
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void keyPressEvent(QKeyEvent * keyEvent );
-	public slots:
+public slots:
 	void enhanceSelection();
 	void copySelection();
 	void deleteSelection();
 	void pasteSelection(const QPointF& pos);
-};
-
-#endif
-
-
-#define ROOTGROUPNODE_H
-#ifndef ROOTGROUPNODE_H
-#define ROOTGROUPNODE_H
-
-#include <modelnode.h>
-#include <moduledescription.h>
-#include "dmcompilersettings.h"
-namespace DM {
-    class Module;
-//    class PortTuple;
-}
-
-class LinkNode;
-//struct LinkNodeTuple;
-//struct GUIPortTuple;
-
-class DM_HELPER_DLL_EXPORT  RootGroupNode : public ModelNode
-{
-    Q_OBJECT
-
+	
 private:
-    //QVector<GUIPortTuple * > OutputTuplePorts;
-    //QVector<GUIPortTuple * > InPortTuplePorts;
-
-    bool RePosFlag;
-    std::string name;
-    QVector<ModelNode * > childnodes;
-
-protected:
-    virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
-public:
-    RootGroupNode();
-    virtual ~RootGroupNode();
-    //void addTuplePort(DM::PortTuple * p);
-    //void removeTuplePort(int Type, QString s);
-    RootGroupNode( /*DM::Module *module, */GUISimulation * s);
-    //virtual PortNode * getGUIPort(DM::Port * p);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    QRectF boundingRect() const;
-    QVector<ModelNode * > getChildNodes(){return this->childnodes;}
-    //void RePosTuplePorts();
-    void recalculateLandH() ;
-    bool isGroup(){return true;}
-
-    void addModelNode(ModelNode * m) ;
-
-    void changeGroupID(QString Name);
-    void setGroupZValue();
-    void removeModelNode(ModelNode *m);
-    void setSelected ( bool selected );
-    //virtual void updatePorts();
-
+	// the drawing object
+	QGraphicsView	*viewer;
+	QPointF			cursorPos;
+	// a pointer to the simulation object, which will be manipulated and drawn in this tab
+	GUISimulation*	sim;
+	DM::Group*		parentGroup;
+	ModelNode*		hoveredGroupNode;
 };
 
-#endif // ROOTGROUPNODE_H
+#endif // SIMTAB
