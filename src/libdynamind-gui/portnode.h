@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef GUIPORT_H
-#define GUIPORT_H
+#ifndef PORTNODE_H
+#define PORTNODE_H
 
 #include "dmcompilersettings.h"
 #include <QGraphicsItem>
@@ -84,4 +84,4 @@ private:
 	DM::Module*		module;
 };
 
-#endif // GUIPORT_H
+#endif // PORTNODE_H
