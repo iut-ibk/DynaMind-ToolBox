@@ -459,24 +459,11 @@ void Module::reset()
 	streamViews.clear();
 
 	for(std::map<std::string, System*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
-	{
 		if(it->second)
-		{
-			// a system may be spread over in-out port 
-			// see FIX dmsimulation.h (140)
-			if(getOutPortData(it->first) == it->second)
-				setOutPortData(it->first, NULL);
-			delete it->second;
 			it->second = NULL;
-		}
-	}
+
 	for(std::map<std::string, System*>::iterator it = outPorts.begin(); it != outPorts.end(); ++it)
-	{
-		if(it->second)
-		{
-			delete it->second;
-			it->second = NULL;
-		}
-	}
+		it->second = NULL;
+
 	this->setStatus(MOD_UNTOUCHED);
 }

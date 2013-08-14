@@ -852,6 +852,25 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 void Simulation::reset()
 {
 	Logger(Standard) << ">> Reset Simulation";
+	// gather all root systems, then delete them
+	// if done at once, deleting the root will cause corrupt predecessor methods
+	std::set<System*> systems;
+	foreach(Module* m, this->modules)
+	{
+		foreach(std::string portName, m->getInPortNames())
+			if(System* sys = m->getInPortData(portName))
+				if(sys->getPredecessors().size() == 0)
+					systems.insert(sys);
+		foreach(std::string portName, m->getOutPortNames())
+			if(System* sys = m->getOutPortData(portName))
+				if(sys->getPredecessors().size() == 0)
+					systems.insert(sys);
+	}
+	// delete them
+	foreach(System* sys, systems)
+		delete sys;
+
+	// reset modules
 	foreach(Module* m, this->modules)
 	{
 		m->reset();
