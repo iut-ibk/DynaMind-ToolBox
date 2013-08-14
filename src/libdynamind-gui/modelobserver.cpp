@@ -29,6 +29,7 @@
 #include "modelnode.h"
 #include "guisimulation.h"
 #include <QTableWidget>
+#include "guiport.h"
 
 void ModelObserver::notifyAddPort(const std::string &name, const DM::PortType type)
 {
@@ -54,4 +55,13 @@ void ModelObserver::notifyChangeName(const std::string &name)
 		if(i < tabs.size())
 			node->getSimulation()->getTabWidget()->setTabText(i, QString::fromStdString(name));
 	}
+}
+
+void ModelObserver::notifyStateChange()
+{
+	node->update();
+	foreach(PortNode* port, node->getPorts(DM::INPORT))
+		port->update();
+	foreach(PortNode* port, node->getPorts(DM::OUTPORT))
+		port->update();
 }

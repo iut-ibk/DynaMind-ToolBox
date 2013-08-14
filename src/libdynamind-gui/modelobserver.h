@@ -49,6 +49,7 @@ public:
 	void notifyAddPort(const std::string &name, const DM::PortType type);
 	void notifyRemovePort(const std::string &name, const DM::PortType type);
 	void notifyChangeName(const std::string &name);
+	void notifyStateChange();
 };
 
 #endif // MODUELOBSERVER_H
