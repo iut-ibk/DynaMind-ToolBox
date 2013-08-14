@@ -81,7 +81,6 @@ class DM_HELPER_DLL_EXPORT Module
 {
 	// this ensures that the simulation has full access without opening all methods to public
 	friend Simulation;
-
 public:
 	/** @brief parameters are variable values given via gui input, configuring a module */
 	struct Parameter
@@ -91,8 +90,10 @@ public:
 		void*				data;
 		const std::string	description;
 
-		Parameter(const std::string name, const DataTypes type, void* data, const std::string description):
-			name(name), type(type), data(data), description(description)
+		Parameter(	const std::string name, const DataTypes type, 
+					void* data, const std::string description):
+			name(name), type(type),
+			data(data), description(description)
 		{};
 	};
 
