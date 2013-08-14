@@ -32,6 +32,7 @@
 namespace DM
 {
 
+/** brief provides an interface for observers */
 class ModuleObserver
 {
 protected:
@@ -41,9 +42,13 @@ public:
 	{
 		module->addObserver(this);
 	}
+	/** @brief gets called if a port is added */
 	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
+	/** @brief gets called if a port is removed */
 	virtual void notifyRemovePort(const std::string &name, const PortType type) = 0;
+	/** @brief gets called if the module name changed */
 	virtual void notifyChangeName(const std::string &name) = 0;
+	/** @brief gets called if the module state changed*/
 	virtual void notifyStateChange() = 0;
 };
 
