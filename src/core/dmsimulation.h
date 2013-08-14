@@ -31,13 +31,11 @@
 #include "dmcompilersettings.h"
 #include <string>
 #include <vector>
-//#include <QThread>
-//#include <dmrootgroup.h>
 #include <dmmodule.h>
 #include <dmsystem.h>
 
-
 namespace DM {
+
 struct SimulationPrivate;
 class DataObserver;
 class SimulationObserver;
@@ -51,11 +49,10 @@ class Group;
 static const  std::string CoreVersion = DYNAMIND_VERSION_CORE;
 
 enum SimulationStatus {
-    SIM_OK,
-    SIM_FAILED_LOAD,
-    SIM_ERROR_SYSTEM_NOT_SET,
+	SIM_OK,
+	SIM_FAILED_LOAD,
+	SIM_ERROR_SYSTEM_NOT_SET,
 	SIM_FAILED,
-
 };
 
 /**
@@ -100,69 +97,40 @@ enum SimulationStatus {
 class DM_HELPER_DLL_EXPORT Simulation
 {
 public:
-	class Link
+	struct Link
 	{
-	public:
-		Module* src;
+		Module*		src;
 		std::string outPort;
-
-		Module* dest;
+		Module*		dest;
 		std::string inPort;
 
 		bool isIntoGroupLink;
 		bool isOutOfGroupLink;
-
-		/** @brief shortcut to src data */
-		System* getData()
-		{
-			if(src->isGroup() && dest->getOwner() == src)
-				// into group link
-				return src->getInPortData(outPort);
-			else
-				return src->getOutPortData(outPort);
-		}
-		/** @brief shifts data from source to destination */
-		void shiftData(bool successor = false)
-		{
-			System * data = getData();
-			if(!data)
-				return;
-			if(successor)
-				data = data->createSuccessor();
-			// shift pointer
-			if(dest->isGroup() && src->getOwner() == dest)
-				// out of group link
-				dest->setOutPortData(inPort, data);
-			else
-			{
-				dest->setInPortData(inPort, data);
-				// FIX: modules which won't call getData(...)  
-				// won't get data on the out port
-				if(dest->hasOutPort(inPort) && !dest->isGroup())
-					dest->setOutPortData(inPort, data);
-			}
-		}
 	};
+
 	Simulation();
 	~Simulation();
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
-    virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true);
-    /** @brief Removes and deletes a module from the simulation */
-    virtual void removeModule(Module* m);
+	virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true);
+	/** @brief Removes and deletes a module from the simulation */
+	virtual void removeModule(Module* m);
 	/** @brief register a new native module returns if module has been loaded succcessfully */
-    bool registerModule(const std::string& filepath);
+	bool registerModule(const std::string& filepath);
 	/** @brief registers all acceptable modules in the provided directory*/
 	void registerModulesFromDirectory(const QDir& dir);
 	/** @brief connects to ports via a link */
 	virtual bool addLink(Module* source, std::string outPort, Module* dest, std::string inPort, bool checkStream = true);
-    /** @brief removes a link */
+	/** @brief removes a link */
 	bool removeLink(Module* source, std::string outPort, Module* dest, std::string inPort);
-    /** @brief starts the entire simulation */
+	/** @brief starts the entire simulation */
 	void run();
-    /** @brief Resets the whole simulation */
-    void reset();
-    /** @brief Resets the whole simulation, deprecated, for backwards compatibility */
+	/** @brief Resets the whole simulation */
+	void reset();
+	/** @brief Resets the whole simulation, deprecated, for backwards compatibility */
 	void resetSimulation() {reset();};
+	/** @brief Cancels thin simulation, waits till the currently running module finishes.
+				All successing modules get skipped */
+	void cancel();
 	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
 	/** @brief accessor to module registry */
@@ -170,54 +138,71 @@ public:
 	/** @brief loads modules from default locations */
 	void registerModulesFromDefaultLocation();
 	/** @brief Add the modules set in the QSetting **/
-    bool registerModulesFromSettings();
-	
-    /** @brief adds a simulation saved in a file to the current simulation */
-    virtual bool loadSimulation(std::string filePath);
-    /** @brief writes the simulation to a xml file */
-    virtual void writeSimulation(std::string filename);
-
+	bool registerModulesFromSettings();
+	/** @brief adds a simulation saved in a file to the current simulation */
+	virtual bool loadSimulation(std::string filePath);
+	/** @brief writes the simulation to a xml file */
+	virtual void writeSimulation(std::string filename);
+	/** @brief removes all modules */
 	void clear();
-	
+	/** @brief returns a list of all modules in this simulation */
 	std::list<Module*> getModules(){return modules;};
+	/** @brief returns a list of all links in this simulation */
 	std::list<Link*> getLinks(){return links;};
-
-	//QFuture<void> decoupledRun();
-	void cancel();
+	/** @brief Tests if the given link would be valid regarding in- and out-port. 
+				With logoutbut one can surpress logger warnings. */
 	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
+	/** @brief adds an observer, providing state change information of the module */
 	void addObserver(SimulationObserver *obs);
+	/** @brief removes an observer */
 	void removeObserver(SimulationObserver *obs);
-
+	/** @brief import a simulation from a device-source 
+	@param[in]	source				the source-device
+	@param[in]	filepath			is used for resolving relative paths
+	@param[out] modemap				provides a identification map for further file-processing
+	@param[in]	overwrittenOwner	the anchor group, causes undefined behaviour if of type group
+									NULL will overwrite the parent-group with to root-group
+	@param[in]	overwriteGroupOwner	indicates if overwirttenOwner should be used */
 	bool loadSimulation(QIODevice* source, QString filepath, 
 		std::map<std::string, DM::Module*>& modMap, 
 		DM::Module* overwrittenOwner = NULL, bool overwriteGroupOwner = false);
+	/** @brief exports a simulation to a device in xml-like format */
 	void writeSimulation(QIODevice* dest, QString filePath);
-	
+protected:
+	/** @brief returns the inport data of the link, taking group ports into account */
+	System* getData(Link* l);
+	/** @brief shifts the data from one link side to another, taking groups into account */
+	void	shiftData(Link* l, bool successor = false);
 private:
 	/** @brief shifts data from the outgoing port of a module to the inport of the successor module
-		returns destination module */
+	returns destination module */
 	std::set<Module*> shiftModuleOutput(Module* m);
+	/** @brief shifts data from the outgoing port of a group to the inport of the successor module
+	returns destination module */
 	std::set<Module*> shiftGroupInput(Group* m);
+	/** @brief checks the whole simulation stream for possible missing views */
+	bool checkStream();
+	/** @brief checks the stream beginning with this module for possible missing views */
+	bool checkModuleStreamForward(Module* m);
+	/** @brief checks the stream beginning with this link for possible missing views */
+	bool checkModuleStreamForward(Link* link);
+	/** @brief checks the stream beginning with this group for possible missing views */
+	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
+	/** @brief returns all links connected to this port */
+	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
+	/** @brief returns all links connected to this port */
+	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
+	/** @brief returns all links connected to this port */
+	std::vector<Link*> getIntoGroupLinks(const Module* src, const std::string& inPort) const;
+	/** @brief returns all links connected to this port */
+	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
+	
 
+	bool canceled;
 	std::list<Module*>	modules;
 	std::list<Link*>	links;
-
 	SimulationStatus	status;
 	ModuleRegistry*		moduleRegistry;
-	
-	/** @brief checks the stream for possible missing views */
-	bool checkStream();
-	bool checkModuleStreamForward(Module* m);
-	//bool checkModuleStreamForward(Module* m, std::string streamName);
-	bool checkModuleStream(Link* link);
-	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
-	bool canceled;
-	
-	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
-	std::vector<Link*> getOutgoingLinks(const Module* src, const std::string& outPort) const;
-	std::vector<Link*> getIntoGroupLinks(const Module* src, const std::string& inPort) const;
-	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
-
 	std::vector<SimulationObserver*>	observers;
 };
 

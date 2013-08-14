@@ -24,6 +24,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include <QString>
 #include <QFileInfo>
 
@@ -63,7 +64,8 @@
 #include <omp.h>
 #endif
 */
-namespace DM {
+
+using namespace DM;
 
 Simulation::Simulation()
 {
@@ -84,15 +86,15 @@ Simulation::~Simulation()
 Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
 {
 	Module *module = this->moduleRegistry->createModule(ModuleName);
-    if(!module)
-        return NULL;
+	if(!module)
+		return NULL;
 
 	module->setOwner(parent);
 
 	modules.push_back(module);
-    Logger(Debug) << "Added module" << ModuleName;
-    if (callInit)
-        module->init();
+	Logger(Debug) << "Added module" << ModuleName;
+	if (callInit)
+		module->init();
 
 	return module;
 }
@@ -101,7 +103,7 @@ void Simulation::removeModule(Module* m)
 {
 	// TODO check if systems are lost
 	Logger(Debug) << "Removing module" << m->getName();
-	
+
 	std::vector<Link*> toDelete;
 
 	foreach(Link* l, links)
@@ -144,7 +146,7 @@ bool Simulation::registerModule(const std::string& filepath)
 		catch(...) 
 		{
 			Logger(Warning) <<  "failed loading python module " << filepath;
-            return false;
+			return false;
 		}
 #endif
 	}
@@ -161,7 +163,6 @@ bool Simulation::registerModule(const std::string& filepath)
 			return false;
 		}
 	}
-	
 	//Logger(Warning) << "not recognized filename ending " << filepath;
 	return false;
 }
@@ -279,11 +280,11 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	links.push_back(l);
 	// stream check
 	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
-							<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
+		<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
 	if(checkStream)
 	{
-		if(checkModuleStream(l))
+		if(checkModuleStreamForward(l))
 			Logger(Debug) << "checking stream successfull";
 		else
 			Logger(Warning) << "stream incomplete" ;
@@ -327,7 +328,7 @@ std::vector<Simulation::Link*> Simulation::getIngoingLinks(const Module* dest, c
 	foreach(Link* l, links)
 		if(	l->dest == dest && l->inPort == inPort && !l->isOutOfGroupLink)
 			ls.push_back(l);
-	
+
 	return ls;
 }
 std::vector<Simulation::Link*> Simulation::getOutgoingLinks(const Module* src, const std::string& outPort) const
@@ -345,7 +346,7 @@ std::vector<Simulation::Link*> Simulation::getIntoGroupLinks(const Module* src, 
 	foreach(Link* l, links)
 		if(	l->src == src && l->outPort == inPort && l->isIntoGroupLink)
 			ls.push_back(l);
-	
+
 	return ls;
 }
 std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest, const std::string& outPort) const
@@ -355,7 +356,7 @@ std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest
 		if(	l->dest == dest && l->inPort == outPort && l->isOutOfGroupLink)
 			ls.push_back(l);
 
-	
+
 	return ls;
 }
 
@@ -383,7 +384,7 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 		nextLinks = getOutgoingLinks(g, streamName);
 		curStreamViews = &g->outStreamViews[streamName];
 	}
-	
+
 	bool success = true;
 	foreach(Link* l, nextLinks)
 	{
@@ -416,110 +417,8 @@ bool IsWriteOnly(const std::map<std::string, View>& stream)
 			return false;
 	return true;
 }
-/*
-typedef std::map<std::string,View> viewmap;
 
-bool Simulation::checkModuleStreamForward(Module* m, std::string streamName)
-{
-	bool success = true;
-	std::map<std::string, DM::View>* curStreamViews = &m->streamViews[streamName];
-	// check if we are in the middle of an unchecked stream
-	if(curStreamViews->size() == 0 && m->hasInPort(streamName))
-	{
-		m->setStatus(MOD_CHECK_ERROR);
-		DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
-
-		return false;
-	}
-
-	// check if all streams are set
-	// = all pre-modules have been initialized and transmitted view data
-	// this can exclusivly be the case on modules with multiple in-ports
-	foreach(std::string portName, m->getInPortNames())
-	{
-		if(m->streamViews.find(portName) == m->streamViews.end())
-		{
-			DM::Logger(DM::Debug) << "module '" << m->getClassName() << "' waiting for other streams";
-			return true;
-		}
-	}
-
-	// update stream view info in module
-	std::map<std::string,View> updatedStream = *curStreamViews;
-	
-	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
-	m->init();
-	DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
-
-	mforeach(const View& v, m->accessedViews[streamName])
-	{
-		if(v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
-			continue;				// but for backwards compatibility its necessary
-
-		const int a = v.getAccessType();
-		if(a == READ || a == MODIFY)
-		{
-			// check if we can access the desired view
-			if(!map_contains(curStreamViews, v.getName()))
-			{
-				DM::Logger(DM::Error) << "module '" << m->getClassName() 
-					<< "' tries to access the nonexisting view '" << v.getName()
-					<< "' from stream '" << streamName << "'";
-				m->setStatus(MOD_CHECK_ERROR);
-				success = false;
-				continue;
-			}
-		}
-		else if(a == WRITE)	// add new views
-			updatedStream[v.getName()] = v;
-	}
-
-	if(!success)
-		return success;
-	else
-		m->setStatus(MOD_CHECK_OK);
-
-	// get all out ports, all assigned links and push forward
-	std::vector<Link*> outLinks;
-	foreach(std::string outPortName, m->getOutPortNames())
-		foreach(Link* outLink, getOutgoingLinks(m, outPortName))
-			outLinks.push_back(outLink);
-
-	foreach(Link* l, outLinks)
-	{
-		std::map<std::string,View> outStream = updatedStream;
-		if(l->outPort != streamName)
-		{
-			const std::map<std::string,View>& streamAccess = m->accessedViews[l->outPort];
-			if(IsWriteOnly(streamAccess))
-				outStream = m->accessedViews[l->outPort];
-			else
-				continue;
-		}
-
-		if(outStream.size() == 0)
-			continue;
-
-		if(!l->isOutOfGroupLink)
-			l->dest->streamViews[l->inPort] = outStream;
-		else
-			((Group*)l->dest)->outStreamViews[l->inPort] = outStream;
-
-		if(!l->dest->isGroup())
-		{
-			if(!checkModuleStreamForward(l->dest, l->inPort))
-				success = false;
-		}
-		else
-			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
-				success = false;
-	}
-
-	return success;
-}
-*/
-
-bool Simulation::checkModuleStream(Link* link)
+bool Simulation::checkModuleStreamForward(Link* link)
 {
 	if(link->src->isGroup())
 		return checkGroupStreamForward((Group*)link->src, link->outPort, link->isIntoGroupLink);
@@ -543,32 +442,18 @@ bool Simulation::checkModuleStreamForward(Module* m)
 			return true;
 		}
 	}
-	/*
-	// check if we are in the middle of an unchecked stream
-	foreach(std::string inPortName, m->getInPortNames())
-	if(m->streamViews[inPortName].size() == 0)
-	{
-		m->setStatus(MOD_CHECK_ERROR);
-		DM::Logger(DM::Warning) << "missing link to module '" << m->getClassName() << "' port '"<< streamName <<"'";
-
-		return false;
-	}
-	*/
 	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
 	m->init();
 
 	// updated stream consist of input stream + written streams in this module
 	std::map<std::string, std::map<std::string,View> > updatedStreams = m->streamViews;
 
-	//for(std::map<std::string, std::map<std::string,View> >::iterator it = m->streamViews.begin(); 
-	//	it != m->streamViews.end(); ++it)
 	for(std::map<std::string, std::map<std::string,View> >::iterator it = m->accessedViews.begin(); 
 		it != m->accessedViews.end(); ++it)
 	{
 		const std::string& streamName = it->first;
 		DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
-		
-		//mforeach(const View& v, m->accessedViews[streamName])
+
 		mforeach(const View& v, it->second)
 		{
 			if(v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
@@ -628,9 +513,9 @@ bool Simulation::checkModuleStreamForward(Module* m)
 	}
 	if(!success)
 		return success;
-	
+
 	m->setStatus(MOD_CHECK_OK);
-	
+
 	// shift views to next module
 	// loop thought all out ports
 	//for(std::map<std::string, std::map<std::string,View> >::iterator it = updatedStreams.begin(); 
@@ -641,8 +526,8 @@ bool Simulation::checkModuleStreamForward(Module* m)
 		// get all out ports, all assigned links and push forward
 		std::vector<Link*> outLinks;
 		//foreach(std::string outPortName, m->getOutPortNames())
-			foreach(Link* outLink, getOutgoingLinks(m, outPortName))
-				outLinks.push_back(outLink);
+		foreach(Link* outLink, getOutgoingLinks(m, outPortName))
+			outLinks.push_back(outLink);
 
 		foreach(Link* l, outLinks)
 		{
@@ -684,9 +569,9 @@ bool Simulation::checkStream()
 	foreach(Module* m, modules)
 		if(m->getInPortNames().size() == 0)
 			checkModuleStreamForward(m);
-			//foreach(std::string outPort, m->getOutPortNames())
-			//	if(!checkModuleStreamForward(m, outPort))
-			//		success = false;
+	//foreach(std::string outPort, m->getOutPortNames())
+	//	if(!checkModuleStreamForward(m, outPort))
+	//		success = false;
 
 	return success;
 }
@@ -727,7 +612,7 @@ void Simulation::run()
 	foreach(Module* m, modules)
 		if(m->inPortsSet())
 			worklist.unique_insert(m);
-	
+
 	// the domain in which we are currently executing, starting with root = NULL
 	Group* currentGroupDomain = NULL;
 	// progress stuff
@@ -790,7 +675,7 @@ void Simulation::run()
 			else
 			{
 				Logger(Standard)	<< "module '" << m->getName() << "' executed successfully (took " 
-									<< (long)modTimer.elapsed() << "ms)";
+					<< (long)modTimer.elapsed() << "ms)";
 				m->setStatus(MOD_EXECUTION_OK);
 
 				// notify progress
@@ -864,6 +749,36 @@ void Simulation::cancel()
 	canceled = true;
 }
 
+System* Simulation::getData(Link* l)
+{
+	if(l->src->isGroup() && l->dest->getOwner() == l->src)
+		// into group link
+			return l->src->getInPortData(l->outPort);
+	else
+		return l->src->getOutPortData(l->outPort);
+}
+
+void Simulation::shiftData(Link* l, bool successor)
+{
+	System * data = getData(l);
+	if(!data)
+		return;
+	if(successor)
+		data = data->createSuccessor();
+	// shift pointer
+	if(l->dest->isGroup() && l->src->getOwner() == l->dest)
+		// out of group link
+			l->dest->setOutPortData(l->inPort, data);
+	else
+	{
+		l->dest->setInPortData(l->inPort, data);
+		// FIX: modules which won't call getData(...)  
+		// won't get data on the out port
+		if(l->dest->hasOutPort(l->inPort) && !l->dest->isGroup())
+			l->dest->setOutPortData(l->inPort, data);
+	}
+}
+
 std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 {
 	std::set<Module*> nextModules;
@@ -874,7 +789,7 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 		std::list<Link*> branches;
 		std::vector<Link*> outLinks = getOutgoingLinks(m, it->first);
 		foreach(Link* l, outLinks)
-			if(l->getData())
+			if(getData(l))
 				branches.push_back(l);
 
 		if(branches.size() > 0)
@@ -882,7 +797,7 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 			bool createSuccessor = branches.size() > 1 || m->isSuccessorMode();
 			foreach(Link* l, branches)
 			{
-				l->shiftData(createSuccessor);
+				shiftData(l, createSuccessor);
 				if(l->dest->inPortsSet())
 					nextModules.insert(l->dest);
 			}
@@ -920,7 +835,7 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 			{
 				foreach(Link* l, intoGroupLinks)
 				{
-					l->shiftData(inPorts.size() > 1);
+					shiftData(l, inPorts.size() > 1);
 					nextModules.insert(l->dest);
 				}
 			}
@@ -979,8 +894,8 @@ bool Simulation::registerModulesFromSettings()
 
 // for old versions
 void LoopGroupAdaptor(	QVector<LinkEntry>& links, 
-						QVector<ModuleEntry>& modules, 
-						ModuleEntry& loopGroup)
+					  QVector<ModuleEntry>& modules, 
+					  ModuleEntry& loopGroup)
 {
 	// check if it is an old version
 	QMap<QString, QString>::iterator itInView = loopGroup.parameters.find("nameOfInViews");
@@ -1043,7 +958,7 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 				&& refl.InPort.UUID == backLink.InPort.UUID
 				&& refl.OutPort.UUID == loopGroup.UUID)
 			{
-					inPortName = refl.OutPort.PortName;
+				inPortName = refl.OutPort.PortName;
 			}
 		}
 		foreach(const LinkEntry& refl, links)
@@ -1052,7 +967,7 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 				&& refl.OutPort.UUID == backLink.OutPort.UUID
 				&& refl.InPort.UUID == loopGroup.UUID)
 			{
-					outPortName = refl.InPort.PortName;
+				outPortName = refl.InPort.PortName;
 			}
 		}
 		if(inPortName.size() == 0)	// cant resolve link
@@ -1133,8 +1048,8 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	QDir simFileDir = QFileInfo(filepath).absoluteDir();	// for param corr.
 	Logger(Standard) << ">> loading simulation file '" << filepath << "'";
 
-    SimulationReader simreader(source);
-	
+	SimulationReader simreader(source);
+
 	QVector<ModuleEntry> moduleEntries = simreader.getModules();
 	QVector<LinkEntry> linkEntries = simreader.getLinks();
 	UpdateVersion(linkEntries, moduleEntries);
@@ -1190,7 +1105,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	}
 	if(waitingForGroup>0)
 		foreach(ModuleEntry me, moduleEntries)
-			DM::Logger(Error) << "could not find the group for module '" << me.ClassName.toStdString() << "'";
+		DM::Logger(Error) << "could not find the group for module '" << me.ClassName.toStdString() << "'";
 
 	// load links
 	foreach(LinkEntry le, linkEntries)
@@ -1221,7 +1136,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 		Logger(Standard) << ">> checking stream finished successfully";
 	else
 		Logger(Error) << ">> error checking stream";
-	
+
 	Logger(Standard) << ">> loading simulation file finished";
 	return true;
 }
@@ -1237,7 +1152,7 @@ bool Simulation::loadSimulation(std::string filePath)
 void Simulation::writeSimulation(QIODevice* dest, QString filePath)
 {
 	SimulationWriter::writeSimulation(	dest, filePath, 
-										getModules(), getLinks());
+		getModules(), getLinks());
 }
 void Simulation::writeSimulation(std::string filePath) 
 {
@@ -1256,7 +1171,4 @@ void Simulation::removeObserver(SimulationObserver *obs)
 	if(it != observers.end())
 		observers.erase(it);
 }
-
-}
-
 
