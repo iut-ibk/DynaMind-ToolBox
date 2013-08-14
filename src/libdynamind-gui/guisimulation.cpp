@@ -274,7 +274,7 @@ void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*>
 		out << "\t\t\t<GUI_UUID value=\"" << ADDRESS_TO_INT(mod) << "\"/>\n";
 		out << "\t\t\t<GUI_PosX value=\"" << m->scenePos().x() - minx << "\"/>\n";
 		out << "\t\t\t<GUI_PosY value=\"" << m->scenePos().y() - miny << "\"/>\n";
-		out << "\t\t\t<GUI_Minimized value=\"" << m->isMinimized() << "\"/>\n";
+		out << "\t\t\t<GUI_Minimized value=\"" << false/*m->isMinimized()*/ << "\"/>\n";
 		out << "\t\t</GUI_Node>\n";
 	}
 	out << "\t</GUI_Nodes>\n";
