@@ -148,7 +148,7 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 
 void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
 {
-
+	
     if(isSelected() || hovered)
         setZValue(5.0); //Above Link
 	else
@@ -208,7 +208,7 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		text);
 
 
-	this->update();
+	//this->update();
 }
 
 

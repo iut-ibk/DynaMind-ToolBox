@@ -163,11 +163,11 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                               this->getPortName());
         painter->setBrush(Qt::NoBrush);
     }
+	
 
 
 
-
-    this->update();
+    //this->update();
 }
 
 QRectF PortNode::boundingRect() const
