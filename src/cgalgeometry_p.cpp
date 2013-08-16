@@ -39,7 +39,7 @@ Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & vie
     Segment_list_2 seg_list;
     Polyline_list_2 output_list;
 
-    seg_list = CGALGeometry_P::VecToSegment2D(sys, view);
+	seg_list = CGALGeometry_P::EdgeToSegment2D(sys, view);
 
     // Generate an iterated snap-rounding
     CGAL::snap_rounding_2<Traits,Segment_list_2::const_iterator,Polyline_list_2>
@@ -53,20 +53,56 @@ Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & vie
     return ret_list;
 }
 
-Segment_list_2 CGALGeometry_P::VecToSegment2D(DM::System * sys,  DM::View & view) {
+Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & view) {
     Segment_list_2 seg_list;
-    std::vector<std::string> uuids = sys->getUUIDs(view);
 
-    foreach (std::string id, uuids) {
-        DM::Edge * edge = sys->getEdge(id);
-        DM::Node * n1 = sys->getNode(edge->getStartpointName());
-        DM::Node * n2 = sys->getNode(edge->getEndpointName());
-        Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
-        if (!seg.is_degenerate () ) {
-            seg_list.push_back(seg);
-        }
-    }
+	if (view.getType() == DM::NODE) {
+		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
+			DM::Edge * edge = static_cast<DM::Edge*>(c);
+			DM::Node * n1 = edge->getEndNode();
+			DM::Node * n2 = edge->getStartNode();
+			Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+			if (!seg.is_degenerate () ) {
+				seg_list.push_back(seg);
+			}
+		}
     return seg_list;
+	}
+
+	if (view.getType() == DM::FACE) {
+		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
+			DM::Face * f = static_cast<DM::Face*>(c);
+			std::vector<DM::Node * > nodes = f->getNodePointers();
+			if (nodes[0] != nodes[nodes.size()-1])
+				nodes.push_back(nodes[0]);
+			for (int i = 1; i < nodes.size(); i++) {
+				DM::Node * n1 = nodes[i-1];
+				DM::Node * n2 = nodes[i];
+				Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+				if (!seg.is_degenerate () ) {
+					seg_list.push_back(seg);
+				}
+			}
+			foreach (DM::Face * h, f->getHolePointers() ) {
+				std::vector<DM::Node * > nodes_h = h->getNodePointers();
+				if (nodes_h[0] != nodes_h[nodes_h.size()-1])
+					nodes_h.push_back(nodes_h[0]);
+				for (int i = 1; i < nodes_h.size(); i++) {
+					DM::Node * n1 = nodes_h[i-1];
+					DM::Node * n2 = nodes_h[i];
+					Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+					if (!seg.is_degenerate () ) {
+						seg_list.push_back(seg);
+					}
+				}
+			}
+		}
+		return seg_list;
+	}
+
+	DM::Logger(DM::Warning) << "Data type not supported by EdegeToSegment2D";
+	return seg_list;
+
 }
 
 Segment_list_2 CGALGeometry_P::PolyLineToSegments(const Polyline_list_2 & poly_list) {
@@ -85,7 +121,7 @@ Segment_list_2 CGALGeometry_P::PolyLineToSegments(const Polyline_list_2 & poly_l
     return seg_list;
 }
 
-DM::System CGALGeometry_P::Segment2DToVec(Segment_list_2 seg_list, DM::View & view) {
+DM::System CGALGeometry_P::Segment2DToEdge(Segment_list_2 seg_list, DM::View & view) {
     DM::System  sys;
     for ( Segment_list_2::const_iterator seg = seg_list.begin(); seg != seg_list.end(); ++seg) {
         float x1 = CGAL::to_double(seg->source().x());

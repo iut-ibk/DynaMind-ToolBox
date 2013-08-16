@@ -92,9 +92,9 @@ public:
    
     static int CountNeighboringVertices (Arrangement_2::Vertex_const_handle v);
 
-    static Segment_list_2 VecToSegment2D(DM::System * sys,  DM::View &view);
+	static Segment_list_2 EdgeToSegment2D(DM::System * sys,  DM::View &view);
 
-    static DM::System Segment2DToVec(Segment_list_2 seg_list, DM::View &view);
+    static DM::System Segment2DToEdge(Segment_list_2 seg_list, DM::View &view);
 
     static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
 
