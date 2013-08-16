@@ -1,55 +1,95 @@
 #include "facetoedge.h"
 #include "tbvectordata.h"
-
+#include <QMap>
 DM_DECLARE_NODE_NAME(FaceToEdge, Modules)
 FaceToEdge::FaceToEdge()
 {
-    this->edge_name = "";
-    this->face_name = "";
+	this->edge_name = "";
+	this->face_name = "";
+	this->linkToFaces = false;
+	this->sharedEdges = false;
 
-    this->addParameter("Face", DM::STRING, &face_name);
-    this->addParameter("Edge", DM::STRING, &edge_name);
+
+	this->addParameter("Face", DM::STRING, &face_name);
+	this->addParameter("Edge", DM::STRING, &edge_name);
+	this->addParameter("LinkToFaces", DM::BOOL, &linkToFaces);
+	this->addParameter("SharedEdges", DM::BOOL, &sharedEdges);
 }
 
 void FaceToEdge::init()
 {
-    if (edge_name.empty())
-        return;
-    if (face_name.empty())
-        return;
-    this->view_edge = DM::View(edge_name, DM::EDGE, DM::WRITE);
-    this->view_face = DM::View(face_name, DM::FACE, DM::READ);
+	if (edge_name.empty())
+		return;
+	if (face_name.empty())
+		return;
+	this->view_edge = DM::View(edge_name, DM::EDGE, DM::WRITE);
+	if (linkToFaces)  this->view_edge.addLinks(face_name, face_name);
+	this->view_face = DM::View(face_name, DM::FACE, DM::READ);
 
-    std::vector<DM::View> datastream;
+	std::vector<DM::View> datastream;
 
-    datastream.push_back(view_edge);
-    datastream.push_back(view_face);
+	datastream.push_back(view_edge);
+	datastream.push_back(view_face);
 
-    this->addData("sys", datastream);
+	this->addData("sys", datastream);
 
 }
 
 void FaceToEdge::run()
 {
-    DM::System * sys = this->getData("sys");
+	typedef std::pair<DM::Node*, DM::Node*>  nodepair;
+	std::map<nodepair,  DM::Edge*> StartNodeEdgeList;
+	std::set<DM::Node*> node_tot;
+	DM::System * sys = this->getData("sys");
 
-    std::vector<std::string> face_uuids = sys->getUUIDs(view_face);
+	std::vector<std::string> face_uuids = sys->getUUIDs(view_face);
 
-    int number_of_faces = face_uuids.size();
+	int number_of_faces = face_uuids.size();
 
-    for (int i = 0; i < number_of_faces; i++) {
-        DM::Face * f = sys->getFace(face_uuids[i]);
+	int edgeCounter = 0;
+	for (int i = 0; i < number_of_faces; i++) {
+		DM::Face * f = sys->getFace(face_uuids[i]);
 
-        std::vector<DM::Node*> nodes = TBVectorData::getNodeListFromFace(sys, f);
+		std::vector<DM::Node*> nodes = f->getNodePointers();
 
-        int number_of_nodes = nodes.size();
+		int number_of_nodes = nodes.size();
 
-        for (int j = 1; j < number_of_nodes; j++)
-            sys->addEdge(nodes[j-1], nodes[j], view_edge);
-    }
+		for (int j = 1; j < number_of_nodes; j++){
+			if (!sharedEdges) {
+				DM::Edge * e = sys->addEdge(nodes[j-1], nodes[j], view_edge);
+				if (linkToFaces) e->getAttribute(face_name)->setLink(face_name, e->getUUID());
+				continue;
+			}
+
+			DM::Edge * e = NULL;
+			if (StartNodeEdgeList.find(nodepair(nodes[j-1], nodes[j])) != StartNodeEdgeList.end()) {
+				e =  StartNodeEdgeList[nodepair(nodes[j-1], nodes[j])];
+			}
+			if (StartNodeEdgeList.find(nodepair(nodes[j], nodes[j-1])) != StartNodeEdgeList.end()) {
+				e =  StartNodeEdgeList[nodepair(nodes[j], nodes[j-1])];
+			}
+			if (!e) {
+				e = sys->addEdge(nodes[j-1], nodes[j], view_edge);
+				StartNodeEdgeList[nodepair(nodes[j-1], nodes[j])] = e;
+				node_tot.insert(nodes[j]);
+				node_tot.insert(nodes[j-1]);
+
+				edgeCounter++;
+			}
+			if (linkToFaces) {
+				e->getAttribute(face_name)->setLink(face_name, f->getUUID());
+				e->addAttribute("shared_by", e->getAttribute("shared_by")->getDouble() +1);
+
+			}
+
+		}
+
+	}
+	DM::Logger(DM::Standard) << "Created Edges " << edgeCounter;
+	DM::Logger(DM::Standard) << "Nodes used " << node_tot.size();
 }
 
 string FaceToEdge::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/FaceToEdge.md";
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/FaceToEdge.md";
 }

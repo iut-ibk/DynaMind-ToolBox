@@ -11,6 +11,8 @@ private:
         std::string edge_name;
         DM::View view_face;
         DM::View view_edge;
+		bool linkToFaces;
+		bool sharedEdges;
 
 public:
     FaceToEdge();
