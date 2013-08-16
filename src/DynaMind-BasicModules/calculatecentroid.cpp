@@ -55,20 +55,9 @@ void CalculateCentroid::init()
 		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
 		return;
 	}
-
-    /*city = this->getData("Data");
-    if (city == 0)
-        return;
-    std::vector<std::string> views = city->getNamesOfViews();
-
-    foreach (std::string s, views)
-        DM::Logger(DM::Debug) << s;
-		*/
     if (this->NameOfExistingView.empty())
         return;
-    /*DM::View * v = city->getViewDefinition(NameOfExistingView);
-    if (!v)
-        return;*/
+
 	DM::View v;
 	if(!map_contains(&views, NameOfExistingView, v))
 	{
@@ -76,14 +65,14 @@ void CalculateCentroid::init()
 			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
 		return;
 	}
+	std::stringstream ss;
+	ss << v.getName() << "_CENTROIDS";
 
     DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
     writeView.addAttribute("centroid_x");
     writeView.addAttribute("centroid_y");
     writeView.addAttribute("area");
-
-    std::stringstream ss;
-    ss << v.getName() << "_CENTROIDS";
+	writeView.addLinks(ss.str(), ss.str());
 
     newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
 
@@ -98,7 +87,6 @@ void CalculateCentroid::init()
     this->addData("Data", data);
     vData = writeView;
 
-    //this->updateParameter();
 }
 
 
@@ -123,10 +111,14 @@ void CalculateCentroid::run() {
         f->addAttribute("centroid_y", p.getY());
         f->addAttribute("area", area);
 
+
         Node * cn = city->addNode(p, newPoints);
         Attribute attr(link.str());
         attr.setLink(vData.getName(), f->getUUID());
         cn->addAttribute(attr);
+
+		f->getAttribute(newPoints.getName())->setLink(newPoints.getName(), cn->getUUID());
+
     }
 }
 bool CalculateCentroid::createInputDialog() {
