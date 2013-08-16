@@ -151,8 +151,10 @@ void TBVectorData::CorrdinateSystem(std::vector<DM::Node * > const &nodes, doubl
         pos=i;
         break;
     }
-    if (pos == -1)
+	if (pos == -1) {
         DM::Logger(DM::Warning) << "couldn't create coorindate sytem";
+		return;
+	}
     TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[pos]), E);
 }
 
