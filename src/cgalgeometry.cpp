@@ -72,7 +72,7 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
     if (withSnap_Rounding == true) {
         segments = CGALGeometry_P::Snap_Rounding_2D(sys, id, Tolerance);
     } else {
-        segments = CGALGeometry_P::VecToSegment2D(sys, id);
+        segments = CGALGeometry_P::EdgeToSegment2D(sys, id);
     }
     insert (arr, segments.begin(), segments.end());
     if (RemoveLines == true){
