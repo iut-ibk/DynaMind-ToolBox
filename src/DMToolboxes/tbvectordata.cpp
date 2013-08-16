@@ -813,6 +813,24 @@ std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::Vie
     return nodes;
 }
 
+DM::Face *TBVectorData::CopyFaceGeometryToNewSystem(DM::Face *f, DM::System *to_sys)
+{
+	std::vector<DM::Node*> newNodes;
+	foreach (DM::Node * n , f->getNodePointers()) {
+		newNodes.push_back(to_sys->addNode(*n));
+	}
+	DM::Face * new_face = to_sys->addFace(newNodes);
+
+	foreach (DM::Face * hole, f->getHolePointers()) {
+		std::vector<DM::Node*> hole_nodes;
+		foreach (DM::Node * n , hole->getNodePointers()) {
+			hole_nodes.push_back(to_sys->addNode(*n));
+		}
+		new_face->addHole(hole_nodes);
+	}
+	return new_face;
+}
+
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
 {
     typedef std::map<DM::Node*,double>::iterator It;

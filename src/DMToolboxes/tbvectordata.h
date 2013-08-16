@@ -179,6 +179,10 @@ public:
     /** @brief Return all nodes in Faces View */
     static std::vector<DM::Node * > GetNodesFromFaces(DM::System * sys, DM::View & view, std::vector<DM::Node *> &nodes);
 
+	/** @brief Copy Face into new System, note views and attributes are not copied */
+	static DM::Face * CopyFaceGeometryToNewSystem( DM::Face * f, DM::System * to_sys);
+
+
 };
 
 #endif // TBVECTORDATA_H
