@@ -60,5 +60,6 @@ ELSE()
 ENDIF()
 
 ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(unit-tests)
 ADD_SUBDIRECTORY(python-swig)
 
