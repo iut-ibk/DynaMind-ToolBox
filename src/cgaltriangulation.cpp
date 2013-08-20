@@ -129,7 +129,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
     Polygon_2 polygon1;
     std::vector<std::string> nodes;
     nodes = f_t->getNodes();
-    for (unsigned int  i = 0; i <nodes.size()-1; i++ ) {
+	for (unsigned int  i = 0; i <nodes.size(); i++ ) {
         DM::Node * n = transformedSys.getNode(nodes[i]);
         polygon1.push_back(Point(n->getX(),n->getY()));
     }
@@ -147,7 +147,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
             nodes_h.push_back(transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
         }
         Polygon_2 hole_p;
-        for (unsigned int  i = 0; i <nodes_h.size()-1; i++ ) {
+		for (unsigned int  i = 0; i <nodes_h.size(); i++ ) {
             DM::Node * n = nodes_h[i];
             hole_p.push_back(Point(n->getX(),n->getY()));
         }
