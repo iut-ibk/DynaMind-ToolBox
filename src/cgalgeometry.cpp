@@ -39,8 +39,8 @@
 #include <CGAL/intersections.h>
 #include <CGAL/Polygon_set_2.h>
 #include <print_utils.h>
-
-
+#include <CGAL/Polygon_2_algorithms.h>
+#include <CGAL/Projection_traits_xy_3.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
@@ -179,14 +179,12 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
     Polygon_2 pls;
     std::vector<Point_2> lpoints;
     unsigned int s_nodes = nodes.size();
-    if (nodes[0] == nodes[s_nodes-1])
+	if (nodes[0] == nodes[s_nodes])
         s_nodes--;
     for (unsigned int i = 0; i < s_nodes; i++) {
         DM::Node * n = nodes[i];
         lpoints.push_back(Point_2(n->getX(), n->getY()));
     }
-
-
 
     CGAL::convex_hull_2( lpoints.begin(), lpoints.end(), std::back_inserter(pls) );
     if (!pls.is_simple()) {
@@ -235,7 +233,7 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
     Polygon_2 poly_s;
     std::vector<Node> ret_points;
     unsigned int vector_size = points.size();
-    if (points[0] == points[vector_size-1] )
+	if (points[0] == points[vector_size] )
         vector_size--;
     if (offset == 0) {
         for (unsigned int i = 0; i < vector_size; i++ ) {
@@ -299,26 +297,18 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
     typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
     typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
 
-
-
     int size_n1 = nodes1.size();
-
     Polygon_2 poly1;
 
-    for (int i = 0; i < size_n1-1; i++) {
+	for (int i = 0; i < size_n1; i++) {
         DM::Node * n = nodes1[i];
         poly1.push_back(Point(n->getX(), n->getY()));
     }
 
-
-
-
     int size_n2 = nodes2.size();
 
     Polygon_2 poly2;
-
-
-    for (int i = 0; i < size_n2-1; i++) {
+	for (int i = 0; i < size_n2; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
     }
@@ -330,7 +320,6 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
 
     if (!poly2.is_simple()) {
         Logger(Debug) << "Polygon2 is not simple cant perform intersection";
-
         return true;
     }
 
@@ -343,9 +332,6 @@ bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM
     if (orient == CGAL::CLOCKWISE) {
         poly2.reverse_orientation();
     }
-
-
-
 
     return CGAL::do_intersect (poly1, poly2);
 }
@@ -366,13 +352,13 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
     Polygon_with_holes_2::Hole_iterator hit;
 
 
-    std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
+	std::vector<DM::Node*> nodes1 = TBVectorData::getNodeListFromFace(sys, f1);
 
-    int size_n1 = nodes1.size();
+	int size_n1 = nodes1.size();
 
     Polygon_2 poly1;
 
-    for (int i = 0; i < size_n1-1; i++) {
+	for (int i = 0; i < size_n1; i++) {
         DM::Node * n = nodes1[i];
         poly1.push_back(Point(n->getX(), n->getY()));
     }
@@ -383,7 +369,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
 
     Polygon_2 poly2;
 
-    for (int i = 0; i < size_n2-1; i++) {
+	for (int i = 0; i < size_n2; i++) {
         DM::Node * n = nodes2[i];
         poly2.push_back(Point(n->getX(), n->getY()));
     }
@@ -416,7 +402,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
         Polygon_2 poly_h;
         std::vector<DM::Node*> nodes_h = TBVectorData::getNodeListFromFace(sys, h);
         int s = nodes_h.size();
-        for (int i = 0; i < s-1; i++) {
+		for (int i = 0; i < s; i++) {
             DM::Node * n = nodes_h[i];
             poly_h.push_back(Point(n->getX(), n->getY()));
         }
@@ -434,7 +420,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
         Polygon_2 poly_h;
         std::vector<DM::Node*> nodes_h = TBVectorData::getNodeListFromFace(sys, h);
         int s = nodes_h.size();
-        for (int i = 0; i < s-1; i++) {
+		for (int i = 0; i < s; i++) {
             DM::Node * n = nodes_h[i];
             poly_h.push_back(Point(n->getX(), n->getY()));
         }
@@ -475,7 +461,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
         Logger(DM::Debug) << "Holes" << n_holes;
 
 
-        if (currentNodes.size() < 3) {
+		if (currentNodes.size() < 2) {
             DM::Logger(DM::Error) << "Something went wrong";
             continue;
         }
@@ -498,7 +484,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
                 if (!exists)
                     currentNodes_holes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
             }
-            if (currentNodes_holes.size() < 3) {
+			if (currentNodes_holes.size() < 2) {
                 DM::Logger(DM::Error) << "Something went wrong with a hole";
                 continue;
             }
@@ -554,7 +540,7 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
 
     Polygon_2 poly1;
 	double v[3];
-    for (int i = 0; i < size_n1-1; i++) {
+	for (int i = 0; i < size_n1; i++) {
         //DM::Node * n = nodes[i];
         //poly1.push_back(Point(n->getX(), n->getY()));
 		nodes[i]->get(v);
@@ -573,54 +559,83 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
 
 Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
 {
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
-    typedef K::Point_2                                          Point_2;
-    typedef CGAL::Polygon_2<K>                                  Polygon_2;
-    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
-    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
-    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+	typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
+	typedef K::Point_3                                          Point_3;
 
-    std::vector<DM::Node *> nodes = TBVectorData::getNodeListFromFace(sys, f);
-    int size_n1 = nodes.size();
+	std::vector<DM::Node *> nodes = f->getNodePointers();
 
-    std::list<Point_2>  poly1;
+	if (nodes.size() == 0) {
+		Logger(Warning) << "No nodes given";
+		return Node(0,0,0);
+	}
 
+	std::list<Point_3>  poly1;
 	double v[3];
-    for (int i = 0; i < size_n1-1; i++) {
-        //DM::Node * n = nodes[i];
-        //poly1.push_back(Point_2(n->getX(), n->getY()));
+
+	for (int i = 0; i < nodes.size(); i++) {
 		nodes[i]->get(v);
-        poly1.push_back(Point_2(v[0], v[1]));
-    }
-    Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
-    //std::cout << c2 << std::endl;
-    return DM::Node(c2.x(), c2.y(), 0.);
+		poly1.push_back(Point_3(v[0], v[1], v[2]));
+	}
+	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
+	foreach (Point_3 p , poly1) {
+		DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
+	}
+
+	DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
+	return DM::Node(c2.x(), c2.y(), c2.z());
 }
 
 
-void CGALGeometry::CalculateCentroid(System *sys, Face *f, double &x, double &y)
+void CGALGeometry::CalculateCentroid(System *sys, Face *f, double &x, double &y, double &z)
 {
     typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
-    typedef K::Point_2                                          Point_2;
-    typedef CGAL::Polygon_2<K>                                  Polygon_2;
-    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
-    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
-    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+	typedef K::Point_3                                          Point_3;
 
-    std::vector<DM::Node *> nodes = TBVectorData::getNodeListFromFace(sys, f);
-    int size_n1 = nodes.size();
 
-    std::list<Point_2>  poly1;
+	std::vector<DM::Node *> nodes = f->getNodePointers();
+
+	if (nodes.size() == 0) {
+		Logger(Warning) << "No nodes given";
+		return;
+	}
+
+	std::list<Point_3>  poly1;
 
 	double v[3];
-    for (int i = 0; i < size_n1-1; i++) {
+	for (int i = 0; i < nodes.size(); i++) {
 		nodes[i]->get(v);
-        poly1.push_back(Point_2(v[0], v[1]));
-    }
-    Point_2 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
+		poly1.push_back(Point_3(v[0], v[1], v[2]));
+	}
+	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
 
 	x = c2.x();
 	y = c2.y();
+	z = c2.z();
+}
+
+double CGALGeometry::CalculateArea2D(Face *f)
+{
+	typedef CGAL::Exact_predicates_inexact_constructions_kernel   K;
+	typedef K::Point_2                                        Point;
+
+	std::vector<Point> poly1;
+
+	foreach (DM::Node * n, f->getNodePointers()) {
+		poly1.push_back(Point(n->getX(), n->getY()));
+	}
+	double area = 0;
+	double tmp_area = 0;
+	CGAL::area_2(poly1.begin(), poly1.end(),tmp_area);
+	area+=fabs(tmp_area);
+	foreach (DM::Face * h, f->getHolePointers()) {
+		std::vector<Point> poly_h;
+		foreach (DM::Node * n, h->getNodePointers()) {
+			poly_h.push_back(Point(n->getX(), n->getY()));
+		}
+		CGAL::area_2(poly_h.begin(), poly_h.end(),tmp_area);
+		area-=fabs(tmp_area);
+	}
+	return area;
 }
 
 }

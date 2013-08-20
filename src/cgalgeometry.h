@@ -69,7 +69,10 @@ namespace DM {
         static DM::Node CalculateCentroid(DM::System * sys, DM::Face * f);
 
         /** @brief Caclulate Centroid */
-        static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y);
+		static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y, double &z);
+
+		/** @brief Caclulate Area */
+		static double CalculateArea2D( DM::Face * f);
 
     };
 }
