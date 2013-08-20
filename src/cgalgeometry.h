@@ -33,9 +33,15 @@
 namespace DM {
 
 
+
     class DM_HELPER_DLL_EXPORT CGALGeometry
     {
     public:
+
+		enum BoolOperation {
+			INTERSECT,
+			DIFFERENCE
+		};
 
         static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
 
@@ -57,7 +63,12 @@ namespace DM {
         /** @brief Intersect Faces */
         static std::vector<DM::Face *> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
 
+		/** @brief Boolean Operations on Faces */
+		static std::vector<DM::Face *> BoolOperationFace(DM::System * sys, DM::Face * f1, DM::Face * f2, BoolOperation ob);
+
 		static bool DoFacesInterect(Face *f1, Face *f2);
+
+		static std::vector<DM::Face *>  CleanFace(System *sys, Face *f1);
 
         /** @brief Rotate Nodes */
         static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
