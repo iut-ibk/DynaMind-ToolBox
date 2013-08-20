@@ -165,7 +165,7 @@ void CreateHouses::run()
         foot_print->addAttribute("year", buildyear);
         foot_print->addAttribute("built_year", buildyear);
         foot_print->addAttribute("height", stories*3);
-        Node  n = TBVectorData::CaclulateCentroid(city, foot_print);
+		Node  n = DM::CGALGeometry::CalculateCentroid(city, foot_print);
         building->addAttribute("type", "single_family_house");
         building->addAttribute("built_year", buildyear);
         building->addAttribute("stories", stories);

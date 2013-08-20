@@ -111,7 +111,7 @@ void SpatialLinking::run() {
 
         if (vbase.getType() == DM::FACE) {
             Face * f = city->getFace(baseUUID);
-            DM::CGALGeometry::CalculateCentroid(city, f, v[0], v[1]);
+			DM::CGALGeometry::CalculateCentroid(city, f, v[0], v[1], v[2]);
         }
         else if (vbase.getType() == DM::NODE) {
             city->getNode(baseUUID)->get(v);
