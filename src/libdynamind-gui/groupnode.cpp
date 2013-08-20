@@ -31,10 +31,10 @@
 #include <guisimulation.h>
 
 GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, ModelNode* parent)
-:ModelNode(module, s), owningTab(tab), parent(parent)
+	:ModelNode(module, s), owningTab(tab), parent(parent)
 {
-    this->setFlag(QGraphicsItem::ItemIsSelectable, false);
-    this->setFlag(QGraphicsItem::ItemIsMovable, false);
+	this->setFlag(QGraphicsItem::ItemIsSelectable, false);
+	this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
 	resize();
 }
@@ -132,50 +132,9 @@ void CheapShadowEffect(QPainter *painter, const QRectF boundingRect)
 
 void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //if (this->visible) 
-	{
-		// shortcuts
-        //CheapShadowEffect(painter, boundingRect());
-
-        painter->setBrush(QColor(239,235,226));
-        painter->setPen(QPen(Qt::black, 4.0));
-		painter->drawRect(boundingRect());
-		/*
-        recalculateLandH();
-        if(this->isSelected()== true) {
-            painter->setBrush(Qt::gray);
-
-        } else {
-            painter->setBrush(Qt::white);
-        }
-        if (h< 65)
-            h = 65;
-        this->simpleTextItem->setText("Name:"+ QString::fromStdString(this->getDMModel()->getName())+" " +QString::number(this->zValue()));
-        float lold = l;
-        if (simpleTextItem->boundingRect().width()+40 > l)
-            l = simpleTextItem->boundingRect().width()+40;
-        painter->drawRect(0, 0, l,h);
-        if (this->childnodes.size() > 0)
-            this->setPos(x1-40, y1-20);
-
-        painter->drawText(QPoint(5,15), "Name:"+ QString::fromStdString(this->getDMModel()->getName())+" " +QString::number(this->zValue()));
-
-        if (lold != l)
-            RePosFlag = true;
-        if(RePosFlag) {
-            RePosTuplePorts();
-            RePosFlag = false;
-        }
-		*/
-		//this->update();
-    }
-	
+	painter->setBrush(QColor(239,235,226));
+	painter->setPen(QPen(Qt::black, 4.0));
+	painter->drawRect(boundingRect());
 }
-/*
-QRectF GroupNode::boundingRect() const {
-    return QRect(-10, -10, width+10, height+10);
-
-}*/
-
 
 
