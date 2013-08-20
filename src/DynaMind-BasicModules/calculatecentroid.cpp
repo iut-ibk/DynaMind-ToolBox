@@ -106,7 +106,7 @@ void CalculateCentroid::run() {
         }
 
         Node p = DM::CGALGeometry::CalculateCentroid(this->city, f);
-        double area = TBVectorData::CalculateArea(this->city, f);
+		double area = CGALGeometry::CalculateArea2D(f);
         f->addAttribute("centroid_x", p.getX());
         f->addAttribute("centroid_y", p.getY());
         f->addAttribute("area", area);
