@@ -50,6 +50,97 @@ void addRectangleWithHole(DM::System* sys, DM::View v)
 	f1->addHole(nodes_h);
 }
 
+TEST_F(UnitTestsDMExtensions,cleanFace){
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(0,0,0));
+	DM::Node * n2 = sys->addNode(DM::Node(1,0,0));
+	DM::Node * n3 = sys->addNode(DM::Node(1,1,0));
+	DM::Node * n4 = sys->addNode(DM::Node(0,1,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+	DM::Face * f = sys->addFace(nodes);
+
+	DM::Node * n_h1 = sys->addNode(DM::Node(0.0,0.25,0));
+	DM::Node * n_h2 = sys->addNode(DM::Node(0.5,0.25,0));
+	DM::Node * n_h3 = sys->addNode(DM::Node(0.5,0.75,0));
+	DM::Node * n_h4 = sys->addNode(DM::Node(0.0,0.75,0));
+
+	std::vector<DM::Node * > nodes_h;
+	nodes_h.push_back(n_h1);
+	nodes_h.push_back(n_h2);
+	nodes_h.push_back(n_h3);
+	nodes_h.push_back(n_h4);
+
+	DM::Face * f_h = sys->addFace(nodes_h);
+
+	f->addHole(nodes_h);
+
+
+	std::vector<DM::Face *> f_in_v = DM::CGALGeometry::CleanFace(sys, f);
+
+
+
+	EXPECT_EQ(f_in_v.size(),1);
+
+	double area_new = 0;
+	foreach (DM::Face * f_new, f_in_v) {
+		area_new+=DM::CGALGeometry::CalculateArea2D(f_new);
+	}
+	double area_hold = DM::CGALGeometry::CalculateArea2D(sys->addFace(nodes));
+	area_hold -= DM::CGALGeometry::CalculateArea2D(sys->addFace(f_h));
+	EXPECT_DOUBLE_EQ(area_new, area_hold);
+
+	delete sys;
+}
+
+TEST_F(UnitTestsDMExtensions,difference){
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(0,0,0));
+	DM::Node * n2 = sys->addNode(DM::Node(1,0,0));
+	DM::Node * n3 = sys->addNode(DM::Node(1,1,0));
+	DM::Node * n4 = sys->addNode(DM::Node(0,1,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+	DM::Face * f = sys->addFace(nodes);
+
+	DM::Node * n_h1 = sys->addNode(DM::Node(0.0,0.25,0));
+	DM::Node * n_h2 = sys->addNode(DM::Node(0.5,0.25,0));
+	DM::Node * n_h3 = sys->addNode(DM::Node(0.5,0.75,0));
+	DM::Node * n_h4 = sys->addNode(DM::Node(0.0,0.75,0));
+
+	std::vector<DM::Node * > nodes_h;
+	nodes_h.push_back(n_h1);
+	nodes_h.push_back(n_h2);
+	nodes_h.push_back(n_h3);
+	nodes_h.push_back(n_h4);
+	DM::Face * fh = sys->addFace(nodes_h);
+
+	std::vector<DM::Face *> f_in_v = DM::CGALGeometry::BoolOperationFace(sys, f,fh, DM::CGALGeometry::DIFFERENCE);
+	EXPECT_EQ(f_in_v.size(),1);
+
+	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D( f) - DM::CGALGeometry::CalculateArea2D(fh), DM::CGALGeometry::CalculateArea2D(f_in_v[0]));
+
+	delete sys;
+}
+
+
+
 TEST_F(UnitTestsDMExtensions,intersect_hole_at_boundary){
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -79,13 +170,27 @@ TEST_F(UnitTestsDMExtensions,intersect_hole_at_boundary){
 	nodes_h.push_back(n_h3);
 	nodes_h.push_back(n_h4);
 
-	f->addHole(nodes);
-
 	DM::Face * fh = sys->addFace(nodes_h);
-	std::vector<DM::Face *> f_in_v = DM::CGALGeometry::IntersectFace(sys, f, fh);
-	EXPECT_EQ(f_in_v.size(),1);
-	DM::Logger(DM::Debug) << DM::CGALGeometry::CalculateArea2D(f_in_v[0]);
-	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(fh), DM::CGALGeometry::CalculateArea2D(f_in_v[0]));
+
+	f->addHole(nodes_h);
+
+	std::vector<DM::Face *> clean_face = DM::CGALGeometry::CleanFace(sys, f);
+	std::vector<DM::Face *> ress_faces;
+	double area_faces = 0;
+	foreach(DM::Face * clean, clean_face) {
+		DM::Logger(DM::Standard) << DM::CGALGeometry::CalculateArea2D(clean);
+		std::vector<DM::Face *> vf_tmp = DM::CGALGeometry::IntersectFace(sys, clean, sys->addFace(nodes));
+		foreach (DM::Face * f_tmp, vf_tmp) {
+			ress_faces.push_back(f_tmp);
+			area_faces+=DM::CGALGeometry::CalculateArea2D(f_tmp);
+		}
+	}
+
+
+
+	EXPECT_EQ(ress_faces.size(),2);
+	DM::Logger(DM::Debug) << area_faces;
+	EXPECT_DOUBLE_EQ(area_faces, 0.5);
 
 	delete sys;
 }
