@@ -66,8 +66,8 @@ public:
     /** @brief Returns pointers of the face */
     static std::vector<DM::Node *> getNodeListFromFace(DM::System * sys, DM::Face * face);
 
-    /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
-    static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
+//    /** @brief Calculates 2D centroid of a face.  As z value the value of the first node is returned*/
+//    static DM::Node CaclulateCentroid(DM::System * sys, DM::Face * f);
 
     /** @brief calculate area of a planar face */
     static double CalculateArea(DM::System * sys, DM::Face * f);
@@ -80,16 +80,6 @@ public:
      *  If the option with lid is true the last entry in the return vector points to the lid
      */
     static std::vector<DM::Face*> ExtrudeFace(DM::System * sys, const DM::View & view, const std::vector<DM::Node*> &vp,  double height, double offset = 0, bool withLid = true);
-
-    /** @brief Calculates centroid of a 3D plane.
-     *
-     * Therefore the plane is rotated so that z = const. Next the method uses CalculateCentroid to calulcate the centroid of the plane.
-     * After rotating the centroid back it is returned.
-     */
-    static DM::Node CentroidPlane3D(DM::System * sys, DM::Face * f);
-
-    /** @brief Calculates cnetroid of a plane, see CentroidPlane3D */
-    static DM::Node CentroidPlane(const std::vector<DM::Node*> & nodes);
 
     /** @brief Calulates v' = alphas v and returns  v' as new node */
     static DM::Node RotateVector(double (&R)[3][3], const DM::Node & n1);

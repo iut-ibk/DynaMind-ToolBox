@@ -83,55 +83,6 @@ std::vector<DM::Node*> TBVectorData::getNodeListFromFace(DM::System *sys, DM::Fa
 	return face->getNodePointers();
 }
 
-DM::Node TBVectorData::CaclulateCentroid(DM::System * sys, DM::Face * f) {
-    //Check if first is last
-    if (f->getNodes().size() < 3)
-        return DM::Node(0,0,0);
-
-
-    std::vector<std::string> NodeUUIDs = f->getNodes();
-    std::vector<DM::Node *> nodes;
-    foreach (std::string uuid, NodeUUIDs) {
-        nodes.push_back(sys->getNode(uuid));
-    }
-
-    //Offset Points to fix problem with big number
-    DM::Node offsetN = MinCoordinates(nodes);
-
-    DM::Node * pend = nodes[nodes.size()-1];
-    DM::Node * pstart = nodes[0];
-    bool startISEnd = true;
-    if (pend != pstart)
-        startISEnd = false;
-    double A6 = TBVectorData::CalculateArea(sys, f)*6.;
-    double x = 0;
-    double y = 0;
-    for (unsigned int i = 0; i< nodes.size()-1;i++) {
-        DM::Node p_i = *nodes[i] - offsetN;
-        DM::Node p_i1 = *nodes[i+1] - offsetN;
-
-        x+= (p_i.getX() + p_i1.getX())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
-        y+= (p_i.getY() + p_i1.getY())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
-
-
-    }
-    if (!startISEnd) {
-        x+= (pend->getX() - offsetN.getX() + pstart->getX() - offsetN.getX())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
-        y+= (pend->getY()-  offsetN.getY() + pstart->getY()-  offsetN.getY())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
-
-    }
-
-    DM::Node n1 = *(nodes[0]) - *(nodes[1]);
-    DM::Node n2 = *(nodes[1]) - *(nodes[2]);
-    DM::Node n = NormalVector(n1, n2);
-    if (n.getZ() < 0) {
-        x = x*-1;
-        y = y*-1;
-    }
-
-    return DM::Node(x/A6 + offsetN.getX(),y/A6 + offsetN.getY(),nodes[0]->getZ());
-}
-
 void TBVectorData::CorrdinateSystem(std::vector<DM::Node * > const &nodes, double (&E)[3][3]) {
     //Avoid parallel lines
     int pos = -1;
@@ -197,39 +148,23 @@ double TBVectorData::CalculateArea(std::vector<DM::Node * > const &nodes)
     if (!startISEnd)
         A+= pend->getX()*pstart->getY() - pstart->getX()*pend->getY();
 
-    //if (std::isnan(A))
-    //    DM::Logger(DM::Error) << "nan area";
     return fabs(A/2.);
 }
 
 double TBVectorData::CalculateArea(DM::System * sys, DM::Face * f)
 {
     //Check if first is last
-    if (f->getNodes().size() < 3)
+	if (f->getNodePointers().size() < 2)
         return 0;
-    std::vector<std::string> NodeUUIDs = f->getNodes();
-    std::vector<DM::Node *> nodes;
-    foreach (std::string uuid, NodeUUIDs) {
-        nodes.push_back(sys->getNode(uuid));
-    }
-
 
     //Caclulate Area Total
-    double A = CalculateArea(nodes);
+	double A = CalculateArea(f->getNodePointers());
 
-    std::vector<std::vector<std::string > > holes = f->getHoles();
-
-    foreach (std::vector<std::string> hole, holes) {
-        std::vector<DM::Node *> nodes_H;
-        foreach (std::string uuid, hole) {
-            nodes_H.push_back(sys->getNode(uuid));
-        }
+	foreach (DM::Face * h, f->getHolePointers()) {
+		std::vector<DM::Node *> nodes_H = h->getNodePointers();
         //Remove Holes
          A -= CalculateArea(nodes_H);
     }
-
-    //if (std::isnan(A))
-    //    DM::Logger(DM::Warning) << "TBVectorData::CalculateArea nan area";
     return fabs(A);
 }
 
@@ -245,52 +180,6 @@ QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
     }
 
     return poly;
-}
-
-
-DM::Node TBVectorData::CentroidPlane(const std::vector<DM::Node*> & nodes) {
-    double E[3][3];
-    TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
-
-    double E_to[3][3];
-
-    //TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[ nodes.size()-2]), E_to);
-    TBVectorData::CorrdinateSystem( nodes, E_to);
-    double alphas[3][3];
-    RotationMatrix(E, E_to, alphas);
-
-    double alphas_t[3][3];
-    for (int i = 0; i < 3; i++){
-        for (int j = 0; j < 3; j++){
-            alphas_t[j][i] =  alphas[i][j];
-        }
-    }
-
-    DM::System transformedSys;
-
-    std::vector<DM::Node*> ns_t;
-
-    for (unsigned int i = 0; i < nodes.size(); i++) {
-        DM::Node n = *(nodes[i]);
-        DM::Node n_t = RotateVector(alphas, n);
-        ns_t.push_back(transformedSys.addNode(n_t));
-    }
-
-    DM::Face * f_t = transformedSys.addFace(ns_t);
-    DM::Node centroid_t = TBVectorData::CaclulateCentroid(&transformedSys, f_t);
-
-    DM::Node centroid = RotateVector(alphas_t, centroid_t);
-    return centroid;
-
-}
-
-DM::Node TBVectorData::CentroidPlane3D(DM::System *sys, DM::Face *f)
-{
-
-    //Make Place Plane
-    std::vector<DM::Node*> nodeList = TBVectorData::getNodeListFromFace(sys, f);
-    return TBVectorData::CentroidPlane(nodeList);
-
 }
 
 DM::Node  TBVectorData::RotateVector(double (&R)[3][3], const DM::Node & node) {
