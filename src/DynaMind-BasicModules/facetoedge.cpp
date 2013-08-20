@@ -51,7 +51,7 @@ void FaceToEdge::run()
 		DM::Face * f = sys->getFace(face_uuids[i]);
 
 		std::vector<DM::Node*> nodes = f->getNodePointers();
-
+		nodes.push_back(nodes[0]);
 		int number_of_nodes = nodes.size();
 
 		for (int j = 1; j < number_of_nodes; j++){
@@ -81,9 +81,7 @@ void FaceToEdge::run()
 				e->addAttribute("shared_by", e->getAttribute("shared_by")->getDouble() +1);
 
 			}
-
 		}
-
 	}
 	DM::Logger(DM::Standard) << "Created Edges " << edgeCounter;
 	DM::Logger(DM::Standard) << "Nodes used " << node_tot.size();
