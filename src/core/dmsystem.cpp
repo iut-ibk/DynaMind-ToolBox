@@ -759,9 +759,16 @@ bool System::removeChild(Component* c)
     case RASTERDATA: rasterdata.erase(id);   break;
     case SUBSYSTEM:    subsystems.erase(id);   break;
     }
-
+		
 	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
-		componentNameMap.erase(c->getUUID());
+	{
+		typedef std::map<std::string, std::map<std::string, Component*> > viewmap;
+		std::string uuid = c->getUUID();
+		for(viewmap::iterator it = views.begin(); it != views.end(); ++it)
+			it->second.erase(uuid);
+
+		componentNameMap.erase(uuid);
+	}
 
     delete c;
     return true;
