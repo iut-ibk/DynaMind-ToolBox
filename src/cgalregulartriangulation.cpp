@@ -27,6 +27,7 @@
 #include "cgalregulartriangulation.h"
 #include <tbvectordata.h>
 #include <dmgeometry.h>
+#include <cgalgeometry.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
@@ -103,7 +104,7 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
     Polygon_2 polygon1;
     std::vector<std::string> nodes;
     nodes = f_t->getNodes();
-    for (unsigned int  i = 0; i <nodes.size()-1; i++ ) {
+	for (unsigned int  i = 0; i <nodes.size(); i++ ) {
         DM::Node * n = transformedSys.getNode(nodes[i]);
         polygon1.push_back(Point(n->getX(),n->getY()));
     }
@@ -121,10 +122,10 @@ void CGALRegularTriangulation::Triangulation(DM::System * sys, DM::Face * f, std
             nodes_h.push_back(transformedSys.addNode(n_t));
         }
         DM::Face * f_h = transformedSys.addFace(nodes_h);
-        DM::Node center_h = TBVectorData::CaclulateCentroid(&transformedSys, f_h);
+		DM::Node center_h = DM::CGALGeometry::CalculateCentroid(&transformedSys, f_h);
         list_of_seeds.push_back(Point(center_h.getX(), center_h.getY()));
         Polygon_2 hole_p;
-        for (unsigned int  i = 0; i <nodes_h.size()-1; i++ ) {
+		for (unsigned int  i = 0; i <nodes_h.size(); i++ ) {
             DM::Node * n = nodes_h[i];
             hole_p.push_back(Point(n->getX(),n->getY()));
         }
