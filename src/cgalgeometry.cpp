@@ -315,7 +315,7 @@ std::vector<DM::Face*> CGALGeometry::CleanFace(System *sys, Face *f1) {
 	foreach (DM::Face * f_h,  f1->getHolePointers()) {
 		std::vector<DM::Face*> result_faces_next;
 		foreach (DM::Face * f_in, result_faces) {
-			std::vector<DM::Face*> result_faces_tmp = CGALGeometry::BoolOperationFace(sys, f_in, f_h, DM::CGALGeometry::DIFFERENCE);
+			std::vector<DM::Face*> result_faces_tmp = CGALGeometry::BoolOperationFace(sys, f_in, f_h, DM::CGALGeometry::OP_DIFFERENCE);
 			foreach (DM::Face * f_new, result_faces_tmp) {
 				result_faces_next.push_back(f_new);
 				Logger(Debug) << f_new->getNodePointers().size();
@@ -329,7 +329,7 @@ std::vector<DM::Face*> CGALGeometry::CleanFace(System *sys, Face *f1) {
 
 std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
-	return CGALGeometry::BoolOperationFace(sys, f1, f2, INTERSECT);
+	return CGALGeometry::BoolOperationFace(sys, f1, f2, OP_INTERSECT);
 }
 
 std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face *f2, BoolOperation ob)
@@ -440,10 +440,10 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 	Pwh_list_2::const_iterator  it;
 
 	switch (ob) {
-	case INTERSECT:
+	case OP_INTERSECT:
 		CGAL::intersection (p_holes1, p_holes2, std::back_inserter(intR));
 		break;
-	case DIFFERENCE:
+	case OP_DIFFERENCE:
 		CGAL::difference (p_holes1, p_holes2, std::back_inserter(intR));
 		break;
 	}
