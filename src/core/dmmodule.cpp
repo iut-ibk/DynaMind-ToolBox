@@ -129,6 +129,12 @@ void Module::removeObserver(ModuleObserver* obs)
 {
 	remove(observers.begin(), observers.end(), obs);
 }
+void Module::removeAllObservers()
+{
+	foreach(ModuleObserver* obs, observers)
+		delete obs;
+	observers.clear();
+}
 
 std::string Module::getName() const
 {

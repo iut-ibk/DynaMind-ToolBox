@@ -149,6 +149,8 @@ public:
 	void addObserver(ModuleObserver* obs);
 	/** @brief removes an observer from this module */
 	void removeObserver(ModuleObserver* obs);
+	/** @brief clears the observerlist */
+	void removeAllObservers();
 	/** @brief returns the current owner */
 	Module* getOwner() const {return owner;}
 	/** @brief returns the name of the module. if no was provided via 
