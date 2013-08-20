@@ -289,52 +289,21 @@ std::vector<DM::Node> CGALGeometry::RegularFaceTriangulation(System *sys, Face *
     return triangles;
 }
 
-bool CGALGeometry::DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM::Node*> nodes2) {
-    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-    typedef K::Point_2                                          Point;
-    typedef CGAL::Polygon_2<K>                                  Polygon_2;
-    typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
-    typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
-    typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+bool CGALGeometry::DoFacesInterect(DM::Face * f1, DM::Face * f2) {
+	//uses the intersection routine and checks if the return vector empty (no intersection is found)
+	//CGAL dointersection would be performanter but failed the test when checking if a the filling of a hole
+	//intersects with the hole (see unit test dointersectionTest_with_hole)
+	DM::System workingsys;
+	DM::Face * f_1 = TBVectorData::CopyFaceGeometryToNewSystem(f1, &workingsys);
+	DM::Face * f_2 = TBVectorData::CopyFaceGeometryToNewSystem(f2, &workingsys);
 
-    int size_n1 = nodes1.size();
-    Polygon_2 poly1;
-
-	for (int i = 0; i < size_n1; i++) {
-        DM::Node * n = nodes1[i];
-        poly1.push_back(Point(n->getX(), n->getY()));
-    }
-
-    int size_n2 = nodes2.size();
-
-    Polygon_2 poly2;
-	for (int i = 0; i < size_n2; i++) {
-        DM::Node * n = nodes2[i];
-        poly2.push_back(Point(n->getX(), n->getY()));
-    }
-
-    if (!poly1.is_simple()) {
-        Logger(Debug) << "Polygon1 is not simple cant perform intersection";
-        return true;
-    }
-
-    if (!poly2.is_simple()) {
-        Logger(Debug) << "Polygon2 is not simple cant perform intersection";
-        return true;
-    }
-
-    CGAL::Orientation orient = poly1.orientation();
-    if (orient == CGAL::CLOCKWISE) {
-        poly1.reverse_orientation();
-    }
-
-    orient = poly2.orientation();
-    if (orient == CGAL::CLOCKWISE) {
-        poly2.reverse_orientation();
-    }
-
-    return CGAL::do_intersect (poly1, poly2);
+	std::vector<DM::Face*> r_faces = CGALGeometry::IntersectFace(&workingsys, f_1, f_2);
+	if (r_faces.size() == 0){
+		return false;
+	}
+	return true;
 }
+
 
 std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *f2)
 {
@@ -457,8 +426,8 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
             if (!exists)
                 currentNodes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
         }
-        int n_holes = P.number_of_holes();
-        Logger(DM::Debug) << "Holes" << n_holes;
+		//int n_holes = P.number_of_holes();
+		//Logger(DM::Debug) << "Holes" << n_holes;
 
 
 		if (currentNodes.size() < 2) {
@@ -494,7 +463,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
         resultFaces.push_back(f);
 
     }
-    DM::Logger(DM::Debug) << "NumberOfFaces " << counter;
+	//DM::Logger(DM::Debug) << "NumberOfFaces " << counter;
 
     return resultFaces;
 }
@@ -521,9 +490,6 @@ std::vector<DM::Node> CGALGeometry::RotateNodes(std::vector<DM::Node>  nodes, do
 
     }
     return ressVec;
-
-
-
 }
 
 bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
@@ -577,11 +543,11 @@ Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
 		poly1.push_back(Point_3(v[0], v[1], v[2]));
 	}
 	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
-	foreach (Point_3 p , poly1) {
-		DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
-	}
+//	foreach (Point_3 p , poly1) {
+//		DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
+//	}
 
-	DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
+//	DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
 	return DM::Node(c2.x(), c2.y(), c2.z());
 }
 

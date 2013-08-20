@@ -57,7 +57,7 @@ namespace DM {
         /** @brief Intersect Faces */
         static std::vector<DM::Face *> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
 
-        static bool DoFacesInterect(std::vector<DM::Node*> nodes1, std::vector<DM::Node*> nodes2);
+		static bool DoFacesInterect(Face *f1, Face *f2);
 
         /** @brief Rotate Nodes */
         static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
