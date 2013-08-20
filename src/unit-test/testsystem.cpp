@@ -52,6 +52,25 @@
 #endif
 
 namespace DM {
+
+TEST_F(TestSystem, DeleteComponentFromView) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test Delete Component from View";
+	DM::System sys;
+	DM::View v("TEST", DM::NODE, DM::WRITE);
+
+	DM::Node * n = sys.addNode(0,0,0,v);
+	sys.removeChild(n);
+
+	int node_counter = 0;
+	mforeach (DM::Component * c, sys.getAllComponentsInView(v)) {
+		DM::Logger(DM::Error) << "Should be empty";
+		node_counter++;
+	}
+	EXPECT_EQ(0, node_counter);
+}
+
     TEST_F(TestSystem,memoryTest){
         /* TODO
         DM::System * sys = new DM::System();
