@@ -40,9 +40,8 @@ class Node;
   *
   * A Face is defined by a vector of Nodes. The order in the vector describes the face.
   * Faces are derived from the Component class. Therefore faces are identified by an UUID and can hold an
-  * unlimeted number of Attributes. Faces only contain references to nodes stored in the system. As reference the uuid
-  * of the Node is used.
-  * @TODO if endnod == startnode or if this doesn't matter
+  * unlimeted number of Attributes. Faces only contain references to nodes stored in the system. Faces are always closed
+  * therefore the start node != end node
   * @TODO orientation
   */
 class DM_HELPER_DLL_EXPORT Face :  public Component, Asynchron

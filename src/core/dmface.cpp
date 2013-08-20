@@ -68,7 +68,17 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
 
 Face::Face(std::vector<Node*> nodes) : Component(true)
 {
-    this->_nodes = nodes;
+
+	if (nodes.size() == 0) {
+		Logger(Error) << "No Nodes given";
+		return;
+	}
+	//Check is start != end to garantee that endpoint is not the start point
+	if (nodes.back() == nodes[0])
+		nodes.pop_back();
+
+	this->_nodes = nodes;
+
 	isInserted = false;
 }
 
@@ -207,6 +217,13 @@ void Face::Synchronize()
 void Face::setNodes(std::vector<Node*> nodes)
 {
 	QMutexLocker ml(mutex);
+	//Check is start != end to garantee that endpoint is not the start point
+	if (nodes.size() > 0) {
+		Logger(Error) << "No Nodes given";
+		return;
+	}
+	if (nodes.back() == nodes[0])
+		nodes.pop_back();
 
 	this->_nodes = nodes;
 }
@@ -216,4 +233,4 @@ void Face::clearHoles()
 	QMutexLocker ml(mutex);
 
 	this->_holes.clear();
-}
+}
