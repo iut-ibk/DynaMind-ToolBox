@@ -32,6 +32,7 @@
 #include <QPointF>
 #include <QPolygonF>
 #include <QTransform>
+#include <cgalgeometry.h>
 
 std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height, double parapet)
 {
@@ -224,7 +225,7 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 
     double angle = DM::CGALGeometry::CalculateMinBoundingBox(footprint, b_box, dimension);
     DM::Face * foot = city->addFace(footprint);
-    DM::Node center = TBVectorData::CaclulateCentroid(city, foot);
+	DM::Node center = DM::CGALGeometry::CalculateCentroid(city, foot);
 
     QTransform t;
     t.rotate(angle);
