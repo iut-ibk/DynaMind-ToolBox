@@ -131,7 +131,7 @@ TEST_F(UnitTestsDMExtensions,difference){
 	nodes_h.push_back(n_h4);
 	DM::Face * fh = sys->addFace(nodes_h);
 
-	std::vector<DM::Face *> f_in_v = DM::CGALGeometry::BoolOperationFace(sys, f,fh, DM::CGALGeometry::DIFFERENCE);
+	std::vector<DM::Face *> f_in_v = DM::CGALGeometry::BoolOperationFace(sys, f,fh, DM::CGALGeometry::OP_DIFFERENCE);
 	EXPECT_EQ(f_in_v.size(),1);
 
 	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D( f) - DM::CGALGeometry::CalculateArea2D(fh), DM::CGALGeometry::CalculateArea2D(f_in_v[0]));
