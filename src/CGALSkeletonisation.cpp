@@ -101,11 +101,11 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
     {
         Point_2 p = i->opposite()->vertex()->point();
 
-        std::cout << "(" << p.x() << "," << p.y() << ")" ;
-        std::cout << "->" ;
+		Logger(Debug) << "(" << p.x() << "," << p.y() << ")" ;
+		Logger(Debug) << "->" ;
         Point_2 p1 = i->vertex()->point();
-        std::cout << "(" << p1.x() << "," << p1.y() << ")" ;
-        std::cout << " " << ( i->is_bisector() ? "bisector" : "contour" ) << std::endl;
+		Logger(Debug) << "(" << p1.x() << "," << p1.y() << ")" ;
+		Logger(Debug) << " " << ( i->is_bisector() ? "bisector" : "contour" );
         double dx = p1.x() -  p.x();
         double dy = p1.y() -  p.y();
         double l = sqrt(dx * dx + dy * dy);
