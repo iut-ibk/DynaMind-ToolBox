@@ -54,7 +54,7 @@ Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & vie
 }
 
 Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & view) {
-    Segment_list_2 seg_list;
+	Segment_list_2 seg_list;
 
 	if (view.getType() == DM::NODE) {
 		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
@@ -66,11 +66,13 @@ Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & vie
 				seg_list.push_back(seg);
 			}
 		}
-    return seg_list;
+		return seg_list;
 	}
-
+	int face_counter = 0;
+	int hole_counter = 0;
 	if (view.getType() == DM::FACE) {
 		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
+			face_counter++;
 			DM::Face * f = static_cast<DM::Face*>(c);
 			std::vector<DM::Node * > nodes = f->getNodePointers();
 			if (nodes[0] != nodes[nodes.size()-1])
@@ -84,6 +86,7 @@ Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & vie
 				}
 			}
 			foreach (DM::Face * h, f->getHolePointers() ) {
+				hole_counter++;
 				std::vector<DM::Node * > nodes_h = h->getNodePointers();
 				if (nodes_h[0] != nodes_h[nodes_h.size()-1])
 					nodes_h.push_back(nodes_h[0]);
@@ -97,6 +100,8 @@ Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & vie
 				}
 			}
 		}
+		Logger(Debug) << "Number of Faces" << face_counter;
+		Logger(Debug) << "Number of Holes" << hole_counter;
 		return seg_list;
 	}
 
@@ -143,6 +148,42 @@ float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
     float denf =  QString::fromStdString(den.str()).toFloat();
 
     return numf/denf;
+
+void CGALGeometry_P::AddFaceToArrangement(Arrangement_2 &arr, Face *f)
+{
+	Segment_list_2 seg_list;
+	std::vector<DM::Node * > nodes = f->getNodePointers();
+	if (nodes[0] != nodes[nodes.size()-1])
+		nodes.push_back(nodes[0]);
+	for (int i = 1; i < nodes.size(); i++) {
+		DM::Node * n1 = nodes[i-1];
+		DM::Node * n2 = nodes[i];
+		Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+		if (!seg.is_degenerate () ) {
+			seg_list.push_back(seg);
+		}
+	}
+	insert(arr, seg_list.begin(), seg_list.end());
+
+	foreach (DM::Face * h, f->getHolePointers() ) {
+		Segment_list_2 seg_holes;
+		std::vector<DM::Node * > nodes_h = h->getNodePointers();
+		if (nodes_h[0] != nodes_h[nodes_h.size()-1])
+			nodes_h.push_back(nodes_h[0]);
+		Arrangement_2 hole;
+		for (int i = 1; i < nodes_h.size(); i++) {
+
+
+			DM::Node * n1 = nodes_h[i-1];
+			DM::Node * n2 = nodes_h[i];
+			Segment_2 seg(Point_2(n1->getX(), n1->getY()), Point_2(n2->getX(), n2->getY()));
+			if (!seg.is_degenerate () ) {
+				seg_holes.push_back(seg);
+			}
+		}
+		insert(arr, seg_holes.begin(), seg_holes.end());
+	}
+
 
 }
 

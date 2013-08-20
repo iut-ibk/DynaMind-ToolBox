@@ -100,6 +100,7 @@ public:
 
     static float NumberTypetoFloat(Number_type n);
 
+	static void AddFaceToArrangement(Arrangement_2 & arr, DM::Face * f);
 
 
 
