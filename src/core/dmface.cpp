@@ -218,7 +218,7 @@ void Face::setNodes(std::vector<Node*> nodes)
 {
 	QMutexLocker ml(mutex);
 	//Check is start != end to garantee that endpoint is not the start point
-	if (nodes.size() > 0) {
+	if (nodes.size() == 0) {
 		Logger(Error) << "No Nodes given";
 		return;
 	}
