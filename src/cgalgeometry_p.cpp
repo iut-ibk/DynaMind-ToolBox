@@ -148,6 +148,7 @@ float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
     float denf =  QString::fromStdString(den.str()).toFloat();
 
     return numf/denf;
+}
 
 void CGALGeometry_P::AddFaceToArrangement(Arrangement_2 &arr, Face *f)
 {
