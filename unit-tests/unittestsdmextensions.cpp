@@ -519,6 +519,51 @@ TEST_F(UnitTestsDMExtensions, intersectionTest){
 	EXPECT_DOUBLE_EQ(0.25, area_i);
 }
 
+TEST_F(UnitTestsDMExtensions, dointersectionTest_with_hole){
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(1,1,0));
+	DM::Node * n2 = sys->addNode(DM::Node(2,1,0));
+	DM::Node * n3 = sys->addNode(DM::Node(2,2,0));
+	DM::Node * n4 = sys->addNode(DM::Node(1,2,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+
+
+	DM::Node * n1_h = sys->addNode(DM::Node(1.25,1.25,0));
+	DM::Node * n2_h = sys->addNode(DM::Node(1.75,1.25,0));
+	DM::Node * n3_h = sys->addNode(DM::Node(1.75,1.75,0));
+	DM::Node * n4_h = sys->addNode(DM::Node(1.25,1.75,0));
+
+	std::vector<DM::Node * > nodes_h;
+	nodes_h.push_back(n1_h);
+	nodes_h.push_back(n2_h);
+	nodes_h.push_back(n3_h);
+	nodes_h.push_back(n4_h);
+
+	DM::Face * f1 = sys->addFace(nodes);
+	DM::Face * fh = sys->addFace(nodes_h);
+	DM::Face * f_with_hole = sys->addFace(nodes);
+	f_with_hole->addHole(fh);
+
+	ASSERT_TRUE(DM::CGALGeometry::DoFacesInterect(f1, fh));
+
+	std::vector<DM::Face *> interested;
+	interested    = DM::CGALGeometry::IntersectFace(sys, f_with_hole, fh);
+
+	DM::Logger(DM::Standard) << interested.size();
+
+	ASSERT_FALSE(DM::CGALGeometry::DoFacesInterect( fh, f_with_hole));
+
+}
+
 TEST_F(UnitTestsDMExtensions, dointersectionTest){
 
 	ostream *out = &cout;
@@ -561,8 +606,8 @@ TEST_F(UnitTestsDMExtensions, dointersectionTest){
 	nodes2.push_back(n4_2);
 
 
-	ASSERT_TRUE(DM::CGALGeometry::DoFacesInterect(nodes, nodes1));
-	ASSERT_FALSE(DM::CGALGeometry::DoFacesInterect(nodes, nodes2));
+	ASSERT_TRUE(DM::CGALGeometry::DoFacesInterect(sys->addFace(nodes), sys->addFace(nodes1)));
+	ASSERT_FALSE(DM::CGALGeometry::DoFacesInterect(sys->addFace(nodes),sys->addFace(nodes2)));
 
 }
 
