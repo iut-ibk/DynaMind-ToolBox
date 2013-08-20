@@ -62,7 +62,7 @@ public:
     /** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes
         @deprecated*/
     Face(std::vector<std::string> nodes);
-    Face(std::vector<Node*> nodes);
+    Face(const std::vector<Node*>& nodes);
     /** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
     Face(const Face& e);
 	/** @brief return Type */
@@ -86,7 +86,7 @@ public:
     void addHole(Face* hole);
 
 	/** @brief this function is neccessary to make the copy constructor a usefull */
-	void setNodes(std::vector<Node*> nodes);
+	void setNodes(const std::vector<Node*>& nodes);
 	void clearHoles();
 };
 typedef std::map<std::string, DM::Face*> FaceMap;

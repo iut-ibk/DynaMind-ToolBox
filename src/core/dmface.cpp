@@ -66,19 +66,9 @@ Face::Face(std::vector<std::string> nodes) : Component(true)
                          doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
 }
 
-Face::Face(std::vector<Node*> nodes) : Component(true)
+Face::Face(const std::vector<Node*>& nodes) : Component(true)
 {
-
-	if (nodes.size() == 0) {
-		Logger(Error) << "No Nodes given";
-		return;
-	}
-	//Check is start != end to garantee that endpoint is not the start point
-	if (nodes.back() == nodes[0])
-		nodes.pop_back();
-
-	this->_nodes = nodes;
-
+	setNodes(nodes);
 	isInserted = false;
 }
 
@@ -214,18 +204,19 @@ void Face::Synchronize()
 		it->second->SetOwner(this);
 }*/
 
-void Face::setNodes(std::vector<Node*> nodes)
+void Face::setNodes(const std::vector<Node*>& nodes)
 {
 	QMutexLocker ml(mutex);
-	//Check is start != end to garantee that endpoint is not the start point
-	if (nodes.size() == 0) {
+	// Check is start != end to garantee that endpoint is not the start point
+	if (nodes.size() == 0) 
 		Logger(Error) << "No Nodes given";
-		return;
-	}
-	if (nodes.back() == nodes[0])
-		nodes.pop_back();
+	else
+	{
+		this->_nodes = nodes;
 
-	this->_nodes = nodes;
+		if (nodes.back() == nodes.front())
+			this->_nodes.pop_back();
+	}
 }
 
 void Face::clearHoles()
