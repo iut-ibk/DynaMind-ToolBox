@@ -103,6 +103,8 @@ void GUISimulation::removeModule(DM::Module* m)
 		modelNodes.erase(m);
 		if(node->getChild())
 			delete node->getChild();	// this may be a group node
+
+		m->removeAllObservers();
 		delete node;
 
 		// remove from simulation itself
