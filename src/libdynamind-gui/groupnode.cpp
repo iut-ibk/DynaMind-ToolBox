@@ -167,7 +167,7 @@ void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             RePosFlag = false;
         }
 		*/
-		this->update();
+		//this->update();
     }
 	
 }
