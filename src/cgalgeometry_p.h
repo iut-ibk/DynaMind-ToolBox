@@ -98,7 +98,7 @@ public:
 
     static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
 
-    static float NumberTypetoFloat(Number_type n);
+	static double NumberTypetoFloat(Number_type n);
 
 	static void AddFaceToArrangement(Arrangement_2 & arr, DM::Face * f);
 

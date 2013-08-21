@@ -129,23 +129,23 @@ Segment_list_2 CGALGeometry_P::PolyLineToSegments(const Polyline_list_2 & poly_l
 DM::System CGALGeometry_P::Segment2DToEdge(Segment_list_2 seg_list, DM::View & view) {
     DM::System  sys;
     for ( Segment_list_2::const_iterator seg = seg_list.begin(); seg != seg_list.end(); ++seg) {
-        float x1 = CGAL::to_double(seg->source().x());
-        float y1 = CGAL::to_double(seg->source().y());
-        float x2 = CGAL::to_double(seg->target().x());
-        float y2 = CGAL::to_double(seg->target().y());
+		double x1 = CGAL::to_double(seg->source().x());
+		double y1 = CGAL::to_double(seg->source().y());
+		double x2 = CGAL::to_double(seg->target().x());
+		double y2 = CGAL::to_double(seg->target().y());
         DM::Node * n1 = sys.addNode(x1, y1, 0);
         DM::Node * n2 = sys.addNode(x2, y2, 0);
         sys.addEdge(n1, n2, view);
     }
     return sys;
 }
-float CGALGeometry_P::NumberTypetoFloat(Number_type n) {
+double CGALGeometry_P::NumberTypetoFloat(Number_type n) {
     std::stringstream num;
     std::stringstream den;
     num << n.numerator();
     den << n.denominator();
-    float numf =  QString::fromStdString(num.str()).toFloat();
-    float denf =  QString::fromStdString(den.str()).toFloat();
+	double numf =  QString::fromStdString(num.str()).toDouble();
+	double denf =  QString::fromStdString(den.str()).toDouble();
 
     return numf/denf;
 }
