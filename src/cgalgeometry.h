@@ -66,6 +66,7 @@ namespace DM {
 		/** @brief Boolean Operations on Faces */
 		static std::vector<DM::Face *> BoolOperationFace(DM::System * sys, DM::Face * f1, DM::Face * f2, BoolOperation ob);
 
+		/** @brief Returns true if faces intersect */
 		static bool DoFacesInterect(Face *f1, Face *f2);
 
 		static std::vector<DM::Face *>  CleanFace(System *sys, Face *f1);
@@ -85,7 +86,13 @@ namespace DM {
 		/** @brief Caclulate Area */
 		static double CalculateArea2D( DM::Face * f);
 
-    };
+		/** @brief Retruns true if node within face, boundary is inside */
+		static bool NodeWithinFace(DM::Face * f, const DM::Node & n);
+
+		/** @brief Calculate Centroid in 2D */
+		static DM::Node CaclulateCentroid2D( DM::Face * f);
+
+	};
 }
 
 

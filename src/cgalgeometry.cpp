@@ -298,6 +298,8 @@ bool CGALGeometry::DoFacesInterect(DM::Face * f1, DM::Face * f2) {
 	DM::Face * f_2 = TBVectorData::CopyFaceGeometryToNewSystem(f2, &workingsys);
 
 	std::vector<DM::Face*> r_faces = CGALGeometry::IntersectFace(&workingsys, f_1, f_2);
+	Logger(Debug) << r_faces.size();
+
 	if (r_faces.size() == 0){
 		return false;
 	}
@@ -471,7 +473,7 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 		//Logger(DM::Debug) << "Holes" << n_holes;
 
 
-		if (currentNodes.size() < 2) {
+		if (currentNodes.size() < 3) {
 			DM::Logger(DM::Error) << "Something went wrong";
 			continue;
 		}
@@ -494,7 +496,7 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 				if (!exists)
 					currentNodes_holes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
 			}
-			if (currentNodes_holes.size() < 2) {
+			if (currentNodes_holes.size() < 3) {
 				DM::Logger(DM::Error) << "Something went wrong with a hole";
 				continue;
 			}
@@ -548,8 +550,6 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
 	Polygon_2 poly1;
 	double v[3];
 	for (int i = 0; i < size_n1; i++) {
-		//DM::Node * n = nodes[i];
-		//poly1.push_back(Point(n->getX(), n->getY()));
 		nodes[i]->get(v);
 		poly1.push_back(Point(v[0], v[1]));
 	}
@@ -559,9 +559,7 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
 	if (orient == CGAL::CLOCKWISE) {
 		return false;
 	}
-
 	return true;
-
 }
 
 Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
@@ -583,13 +581,55 @@ Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
 		nodes[i]->get(v);
 		poly1.push_back(Point_3(v[0], v[1], v[2]));
 	}
-	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
-	//	foreach (Point_3 p , poly1) {
-	//		DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
-	//	}
-
-	//	DM::Logger(DM::Debug) << c2.x()<< " " << c2.y() << " " << c2.z();
+	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end());
 	return DM::Node(c2.x(), c2.y(), c2.z());
+}
+
+DM::Node CGALGeometry::CaclulateCentroid2D( DM::Face * f) {
+
+	typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+	typedef K::Point_2                                          Point;
+	typedef CGAL::Polygon_2<K>                                  Polygon_2;
+
+	//Check if first is last
+	if (f->getNodePointers().size() < 3)
+		return DM::Node(0,0,0);
+
+	std::vector<DM::Node *> nodes = f->getNodePointers();
+
+	if (!DM::CGALGeometry::CheckOrientation(nodes))
+		std::reverse(nodes.begin(), nodes.end());
+	nodes.push_back(nodes[0]);
+
+	//Offset Points to fix problem with big number
+	DM::Node offsetN = TBVectorData::MinCoordinates(nodes);
+
+	DM::Node * pend = nodes[nodes.size()-1];
+	DM::Node * pstart = nodes[0];
+	bool startISEnd = true;
+	if (pend != pstart)
+		startISEnd = false;
+	double A6 = DM::CGALGeometry::CalculateArea2D(f)*6.;
+	double x = 0;
+	double y = 0;
+	for (unsigned int i = 0; i< nodes.size()-1;i++) {
+		DM::Node p_i = *nodes[i] - offsetN;
+		DM::Node p_i1 = *nodes[i+1] - offsetN;
+
+		x+= (p_i.getX() + p_i1.getX())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
+		y+= (p_i.getY() + p_i1.getY())*(p_i.getX() * p_i1.getY() - p_i1.getX() * p_i.getY());
+
+	}
+	if (!startISEnd) {
+		x+= (pend->getX() - offsetN.getX() + pstart->getX() - offsetN.getX())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
+		y+= (pend->getY()-  offsetN.getY() + pstart->getY()-  offsetN.getY())*( (pend->getX() - offsetN.getX()) * (pstart->getY() -  offsetN.getY()) - (pstart->getX() - offsetN.getX()) * (pend->getY() -  offsetN.getY()));
+
+	}
+
+	DM::Node n1 = *(nodes[0]) - *(nodes[1]);
+	DM::Node n2 = *(nodes[1]) - *(nodes[2]);
+
+	return DM::Node(x/A6 + offsetN.getX(),y/A6 + offsetN.getY(),nodes[0]->getZ());
 }
 
 
@@ -613,7 +653,7 @@ void CGALGeometry::CalculateCentroid(System *sys, Face *f, double &x, double &y,
 		nodes[i]->get(v);
 		poly1.push_back(Point_3(v[0], v[1], v[2]));
 	}
-	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end(),CGAL::Dimension_tag<0>());
+	Point_3 c2 = CGAL::centroid(poly1.begin(), poly1.end());
 
 	x = c2.x();
 	y = c2.y();
@@ -643,6 +683,57 @@ double CGALGeometry::CalculateArea2D(Face *f)
 		area-=fabs(tmp_area);
 	}
 	return area;
+}
+
+bool CGALGeometry::NodeWithinFace(Face *f, const Node &n)
+{
+	typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+	typedef K::Point_2                                          Point;
+	typedef CGAL::Polygon_2<K>                                  Polygon_2;
+
+	std::vector<DM::Node*> nodes1 = f->getNodePointers();
+
+	int size_n1 = nodes1.size();
+
+	Polygon_2 poly1;
+
+	for (int i = 0; i < size_n1; i++) {
+		DM::Node * n = nodes1[i];
+		poly1.push_back(Point(n->getX(), n->getY()));
+	}
+
+	if (!poly1.is_simple()) {
+		Logger(Warning) << "Poygon is not simple cant perform NodeWithinFace";
+		return true;
+	}
+
+	CGAL::Orientation orient = poly1.orientation();
+	if (orient == CGAL::CLOCKWISE) {
+		poly1.reverse_orientation();
+	}
+
+
+	Point pt (n.getX(), n.getY());
+
+	switch(CGAL::bounded_side_2(poly1.vertices_begin(), poly1.vertices_end(),pt)) {
+	  case CGAL::ON_BOUNDED_SIDE :
+		//Logger(Debug) << " is inside the polygon.\n";
+		break;
+	  case CGAL::ON_BOUNDARY:
+		//Logger(Debug) << " is on the polygon boundary.\n";
+		break;
+	  case CGAL::ON_UNBOUNDED_SIDE:
+		//Logger(Debug) << " is outside the polygon.\n";
+		return false;
+		break;
+	}
+
+	foreach (DM::Face * h, f->getHolePointers()) {
+		if ( CGALGeometry::NodeWithinFace(h, n))
+			return false;
+	}
+
+	return true;
 }
 
 }
