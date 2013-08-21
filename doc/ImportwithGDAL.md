@@ -31,4 +31,4 @@ The module loads data from following sources into DynaMind
  | second attribute in data set  | double or string | write |  |
  | n attribute in data set  | double or string | write |  |
  
- https://gist.github.com/christianurich/0f6f71e7f89d6a286862
+<script src="https://gist.github.com/christianurich/0f6f71e7f89d6a286862.js"></script>
