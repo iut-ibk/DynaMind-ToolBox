@@ -30,6 +30,7 @@
 #include <QPolygonF>
 #include <math.h>
 #include <map>
+#include <dmlogger.h>
 
 namespace DM {
 class System;
@@ -38,6 +39,7 @@ class Edge;
 class Face;
 class View;
 class Component;
+
 }
 
 /**
@@ -171,6 +173,9 @@ public:
 
 	/** @brief Copy Face into new System, note views and attributes are not copied */
 	static DM::Face * CopyFaceGeometryToNewSystem( DM::Face * f, DM::System * to_sys);
+
+	/** @brief Simple helper to print faces in the log window */
+	static void PrintFace(DM::Face * f, DM::LogLevel loglevel);
 
 
 };

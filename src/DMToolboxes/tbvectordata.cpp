@@ -722,6 +722,20 @@ DM::Face *TBVectorData::CopyFaceGeometryToNewSystem(DM::Face *f, DM::System *to_
 	return new_face;
 }
 
+void TBVectorData::PrintFace(DM::Face *f, DM::LogLevel loglevel)
+{
+	DM::Logger(loglevel) << "face ";
+	foreach (DM::Node * n, f->getNodePointers()) {
+		DM::Logger(loglevel) << n->getX() << "\t"<< n->getY()<< "\t"<< n->getZ();
+	}
+	foreach (DM::Face * h, f->getHolePointers()) {
+		DM::Logger(loglevel) << "hole ";
+		foreach (DM::Node * n, h->getNodePointers()) {
+			DM::Logger(loglevel) << n->getX() << "\t"<< n->getY()<< "\t"<< n->getZ();
+		}
+	}
+}
+
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
 {
     typedef std::map<DM::Node*,double>::iterator It;
