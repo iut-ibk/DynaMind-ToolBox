@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef DMDBCONNECTOR_H
 #define DMDBCONNECTOR_H
 
@@ -45,13 +44,13 @@ void DM_HELPER_DLL_EXPORT PrintSqlError(QSqlQuery *q);
 class DMSqlParameter
 {
 public:
-    QString name;
-    QVariant value;
-    DMSqlParameter(QString name, QVariant value)
-    {
-        this->name = name;
-        this->value = value;
-    }
+	QString name;
+	QVariant value;
+	DMSqlParameter(QString name, QVariant value)
+	{
+		this->name = name;
+		this->value = value;
+	}
 };
 
 template<typename T>
@@ -181,14 +180,6 @@ private:
 	// an inconsistent database on small cache sizes or improper
 	// data updates
 	void run();
-
-	// blocking idle method
-	/*void WaitIfNothingToDo()
-	{
-		waiterMutex.lock();
-		waiterCondition.wait(&waiterMutex);
-		waiterMutex.unlock();
-	}*/
 public:
 	DBWorker(): QThread()
 	{
@@ -197,25 +188,12 @@ public:
 		selectStatus = 0;
 	}
 	~DBWorker();
-	
-	// exchange value between worker <-> receiver
-	/*enum SelectStatus
-	{
-		SS_NOTDONE,
-		SS_TRUE,
-		SS_FALSE,
-	}selectStatus;*/
 
 #define SELECT_NOTDONE 0
 //#define SELECT_TRUE 1
 #define SELECT_FALSE -1
 	QAtomicInt selectStatus;
     QList< QList<QVariant> >	selectRows;
-	
-	//QMutex selectWaiterMutex;
-	//QWaitCondition selectWaiterCondition;
-
-	//QAtomicInt 
 
 	//!< add a new query to the write list (asynchron)
 	void addQuery(QSqlQuery *q);
@@ -226,15 +204,6 @@ public:
 	{
 		kill = true;
 	}
-	//!< forces the worker to leave idle status
-	/*void SignalWork()
-	{
-		todoCount = todoCount +1;
-		//waiterMutex.unlock();
-		waiterMutex.lock();
-		waiterCondition.wakeOne();
-		waiterMutex.unlock();
-	}*/
 	//!< receive a prepared query for execution
 	QSqlQuery *getQuery(QString cmd);
 };
@@ -331,30 +300,30 @@ class DM_HELPER_DLL_EXPORT DBConnector
 private:
 	// singleton stuff
 	static DBConnector* instance;
-    DBConnector();
+	DBConnector();
 
 	// destructor stuff
-    friend class SingletonDestroyer;
-    static SingletonDestroyer _destroyer;
+	friend class SingletonDestroyer;
+	static SingletonDestroyer _destroyer;
 
 	// worker thread
 	static DBWorker* worker;
 
 	// internal init functions
-    bool CreateTables();
-    bool DropTables();
+	bool CreateTables();
+	bool DropTables();
 
 	// settings
 	bool noDBSync;
 	unsigned long queryStackSize;
 	unsigned long cacheBlockwritingSize;
-	
+
 	static void initWorker();
 protected:
-    virtual ~DBConnector();
+	virtual ~DBConnector();
 public:
 	//!< returns the pointer to the singleton generated instance of DBConnector
-    static DBConnector* getInstance();
+	static DBConnector* getInstance();
 	//!< get the current configuration, refer to DBConnectorConfig
 	DBConnectorConfig getConfig();
 	//!< sets a new configuration, it is applied instantly, refer to DBConnectorConfig
@@ -364,57 +333,57 @@ public:
 	//!< accessor to cache block writing size, refer to DBConnectorConfig
 	unsigned long  GetCacheBlockwritingSize()	{return cacheBlockwritingSize;}
 	//!< get a already prepared query. prepare parameters and send back via Execute(Select)Query
-    QSqlQuery *getQuery(QString cmd);
+	QSqlQuery *getQuery(QString cmd);
 	//!< enqueues a WRITE query (asynchron)
-    void ExecuteQuery(QSqlQuery *q);
+	void ExecuteQuery(QSqlQuery *q);
 	//!< executes a select query, the value can be accessed via QSqlQuery::value(#)
-    bool ExecuteSelectQuery(QSqlQuery *q);
+	bool ExecuteSelectQuery(QSqlQuery *q);
 
-    QList<QList<QVariant> >* getResults();
+	QList<QList<QVariant> >* getResults();
 	void killWorker();
 
 	//!< synchronizes ALL classes with inherited asynchron class
-    void Synchronize();
-    //!< various insert methods to insert a NEW row in the database
-    void Insert(QString table,  QUuid uuid);
-    void Insert(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0);
-    void Insert(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0,
-                                QString parName1, QVariant parValue1);
-    void Insert(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0,
-                                QString parName1, QVariant parValue1,
-                                QString parName2, QVariant parValue2);
-    
-    //!< various update methods to update an EXISTING row in the database
-    void Update(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0);
-    void Update(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0,
-                                QString parName1, QVariant parValue1);
-    void Update(QString table,  QUuid uuid,
-                                QString parName0, QVariant parValue0,
-                                QString parName1, QVariant parValue1,
-                                QString parName2, QVariant parValue2);
-    
-    //!< delete a database row, existence is not neccessary
-    void Delete(QString table,  QUuid uuid);
-    //!< various select methods to retrieve row data from database
-    bool Select(QString table, QUuid uuid,
-                QString valName, QVariant *value);
-    bool Select(QString table, QUuid uuid,
-                QString valName0, QVariant *value0,
-                QString valName1, QVariant *value1);
-    bool Select(QString table, QUuid uuid,
-                QString valName0, QVariant *value0,
-                QString valName1, QVariant *value1,
-                QString valName2, QVariant *value2);
-	
-    bool Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
-                QString valName0, QList<QVariant> *value0,
-                QString valName1, QList<QVariant> *value1,
-                QString valName2, QList<QVariant> *value2);
+	void Synchronize();
+	//!< various insert methods to insert a NEW row in the database
+	void Insert(QString table,  QUuid uuid);
+	void Insert(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0);
+	void Insert(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0,
+		QString parName1, QVariant parValue1);
+	void Insert(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0,
+		QString parName1, QVariant parValue1,
+		QString parName2, QVariant parValue2);
+
+	//!< various update methods to update an EXISTING row in the database
+	void Update(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0);
+	void Update(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0,
+		QString parName1, QVariant parValue1);
+	void Update(QString table,  QUuid uuid,
+		QString parName0, QVariant parValue0,
+		QString parName1, QVariant parValue1,
+		QString parName2, QVariant parValue2);
+
+	//!< delete a database row, existence is not neccessary
+	void Delete(QString table,  QUuid uuid);
+	//!< various select methods to retrieve row data from database
+	bool Select(QString table, QUuid uuid,
+		QString valName, QVariant *value);
+	bool Select(QString table, QUuid uuid,
+		QString valName0, QVariant *value0,
+		QString valName1, QVariant *value1);
+	bool Select(QString table, QUuid uuid,
+		QString valName0, QVariant *value0,
+		QString valName1, QVariant *value1,
+		QString valName2, QVariant *value2);
+
+	bool Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
+		QString valName0, QList<QVariant> *value0,
+		QString valName1, QList<QVariant> *value1,
+		QString valName2, QList<QVariant> *value2);
 };
 
 /**************************************************************//**
@@ -428,13 +397,13 @@ http://libassa.sourceforge.net/libassa-manual/C/x2988.html
 ******************************************************************/
 class SingletonDestroyer
 {
-    public:
-        SingletonDestroyer(DBConnector* = NULL);
-        ~SingletonDestroyer();
+public:
+	SingletonDestroyer(DBConnector* = NULL);
+	~SingletonDestroyer();
 
-        void SetSingleton(DBConnector* s);
-    private:
-        DBConnector* _singleton;
+	void SetSingleton(DBConnector* s);
+private:
+	DBConnector* _singleton;
 };
 
 /**************************************************************//**
@@ -452,12 +421,12 @@ synchronized, like Edge (only 2 pointers).
 class Asynchron
 {
 public:
-    Asynchron();
+	Asynchron();
 	~Asynchron();
 private:
-    virtual void Synchronize() = 0;
+	virtual void Synchronize() = 0;
 
-friend void DBConnector::Synchronize();
+	friend void DBConnector::Synchronize();
 };
 
 }   // namespace DM

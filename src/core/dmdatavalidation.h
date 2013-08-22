@@ -27,26 +27,23 @@
 
 #include <vector>
 namespace DM {
-    class View;
-    class Component;
-}
+	class View;
+	class Component;
 
-
-namespace DM {
 /** @ingroup DynaMind-Core
   * @brief Helper class for data validation of views
   */
 class  DataValidation
 {
 public:
-    /** @brief Returns true if one of the AccessType of the component or one of the Attributes is Read or Modify*/
-    static bool isVectorOfViewRead(std::vector<DM::View>);
+	/** @brief Returns true if one of the AccessType of the component or one of the Attributes is Read or Modify*/
+	static bool isVectorOfViewRead(std::vector<DM::View>);
 
-     /** @brief Returns true if one of the AccessType of the component or one of the Attributes is Write or Modify*/
-    static bool isVectorOfViewWrite(std::vector<DM::View>);
+	/** @brief Returns true if one of the AccessType of the component or one of the Attributes is Write or Modify*/
+	static bool isVectorOfViewWrite(std::vector<DM::View>);
 
-    /** @brief Returns if all data from a view are avalible in a component */
-    //static bool isAvalibleInComponent(const DM::View &,  const DM::Component * );
+	/** @brief Returns if all data from a view are avalible in a component */
+	//static bool isAvalibleInComponent(const DM::View &,  const DM::Component * );
 };
 }
 #endif // DMDATABVALIDATION_H

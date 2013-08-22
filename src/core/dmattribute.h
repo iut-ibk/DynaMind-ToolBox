@@ -43,14 +43,14 @@ namespace DM {
 class LinkAttribute 
 {
 public:
-    LinkAttribute() {}
-    LinkAttribute(std::string viewname, std::string uuid) : viewname(viewname) , uuid(uuid){}
-    std::string viewname;
-    std::string uuid;
+	LinkAttribute() {}
+	LinkAttribute(std::string viewname, std::string uuid) : viewname(viewname) , uuid(uuid){}
+	std::string viewname;
+	std::string uuid;
 
-    bool operator==(const LinkAttribute & other) const {
-        return this->uuid == other.uuid && this->viewname == other.viewname;
-    }
+	bool operator==(const LinkAttribute & other) const {
+		return this->uuid == other.uuid && this->viewname == other.viewname;
+	}
 };
 class TimeSeriesAttribute
 {
@@ -68,23 +68,23 @@ public:
 class Component;
 
 /** @ingroup DynaMind-Core
-  * An Attribute is used to add informations to an object.
-  *
-  * As attributes Double, Striunb DoubleVector and StringVectors can be used.
-  */
+* An Attribute is used to add informations to an object.
+*
+* As attributes Double, Striunb DoubleVector and StringVectors can be used.
+*/
 class DM_HELPER_DLL_EXPORT Attribute
 {
 public:
-    enum AttributeType {
-        NOTYPE,
-        DOUBLE,
-        STRING,
-        TIMESERIES,
-        LINK,
-        DOUBLEVECTOR,
-        STRINGVECTOR
-    };
-    class AttributeValue
+	enum AttributeType {
+		NOTYPE,
+		DOUBLE,
+		STRING,
+		TIMESERIES,
+		LINK,
+		DOUBLEVECTOR,
+		STRINGVECTOR
+	};
+	class AttributeValue
 	{
 	public:
 		Attribute::AttributeType type;
@@ -107,9 +107,9 @@ public:
 		QVariant toQVariant();
 	};
 private:
-    QUuid _uuid;
-    std::string name;
-    std::set<std::string> inViews;
+	QUuid _uuid;
+	std::string name;
+	std::set<std::string> inViews;
 	Component* owner;
 	AttributeValue	*value;
 	bool	isInserted;
@@ -119,92 +119,92 @@ protected:
 public:
 	/** @brief =operator */
 	Attribute& operator=(Attribute const& other);
-    /** @brief copies type and value to this attribute**/
-    void Change(const Attribute &attribute);
-    /** @brief changes the owner **/
+	/** @brief copies type and value to this attribute**/
+	void Change(const Attribute &attribute);
+	/** @brief changes the owner **/
 	void setOwner(Component* owner);
-    /** @brief returns the current owner, be aware on successor state generated attributes:
-		their owner is the component owning the element, not just the pointer **/
+	/** @brief returns the current owner, be aware on successor state generated attributes:
+	their owner is the component owning the element, not just the pointer **/
 	Component* GetOwner();
-    /** @brief Returns true if a double value is set **/
-    bool hasDouble();
-    /** @brief Returns true if a string value is set **/
-    bool hasString();
-    /** @brief Returns true if a double vector is set **/
-    bool hasDoubleVector();
-    /** @brief Returns true if a string vector is set **/
-    bool hasStringVector();
-    /** @brief creates a new attribute with the values from an existing attribute **/
-    Attribute(const Attribute &newattribute);
-    /** @brief creates a new named attribute**/
-    Attribute(std::string name);
-    /** @brief creates a new double attribute**/
-    Attribute(std::string name, double val);
-    /** @brief creates a new string attribute**/
-    Attribute(std::string name, std::string val);
-    /** @brief creates a new attribute**/
-    Attribute();
-    /** @brief set double value**/
-    void setDouble(double v);
-    /** @brief get double value**/
-    double getDouble();
-    /** @brief set string value**/
-    void setString(std::string s);
-    /** @brief get string value**/
-    std::string getString();
-    /** @brief set double vector**/
-    void setDoubleVector(std::vector<double> v);
-    /** @brief get double vector**/
-    std::vector<double> getDoubleVector();
-    /** @brief set string vector**/
-    void setStringVector(std::vector<std::string> s);
-    /** @brief get string vector**/
-    std::vector<std::string> getStringVector();
-    /** @brief set attribute name */
-    void setName(std::string name);
-    /** @brief get name */
-    std::string getName() const;
-    /** @brief destructor */
-    ~Attribute();
-    /** @brief return datatype*/
-    AttributeType getType() const;
-    /** @brief add link object **/
-    void setLink(std::string viewname, std::string uuid);
-    /** @brief Sets attribute links the existing vector is cleared! **/
-    void setLinks(std::vector<LinkAttribute> links);
-    /** @brief Returns the first element in the link attribute vector. If no link exists it retruns an empty LinkAttribute */
-    LinkAttribute getLink();
-    /** @brief Returns Vector of Links */
-    std::vector<LinkAttribute> getLinks();
-    /** @brief add TimeSeries **/
-    void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
-    /** @brief add TimeSeries **/
-    void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
-    /** @brief Sets attribute type */
-    void setType(AttributeType type);
-    /**
-     * @brief get a printable name of the type, e.g. for gui displaying
-     * @return the name of the type as string
-     */
-    const char *getTypeName() const;
-    
-    /**
-     * @brief convert @AttributeType to a printabel character e.g. for gui displaying
-     * @param type the requested type
-     * @return the name of the @arg type
-     */
-    static const char*getTypeName(AttributeType type);
+	/** @brief Returns true if a double value is set **/
+	bool hasDouble();
+	/** @brief Returns true if a string value is set **/
+	bool hasString();
+	/** @brief Returns true if a double vector is set **/
+	bool hasDoubleVector();
+	/** @brief Returns true if a string vector is set **/
+	bool hasStringVector();
+	/** @brief creates a new attribute with the values from an existing attribute **/
+	Attribute(const Attribute &newattribute);
+	/** @brief creates a new named attribute**/
+	Attribute(std::string name);
+	/** @brief creates a new double attribute**/
+	Attribute(std::string name, double val);
+	/** @brief creates a new string attribute**/
+	Attribute(std::string name, std::string val);
+	/** @brief creates a new attribute**/
+	Attribute();
+	/** @brief set double value**/
+	void setDouble(double v);
+	/** @brief get double value**/
+	double getDouble();
+	/** @brief set string value**/
+	void setString(std::string s);
+	/** @brief get string value**/
+	std::string getString();
+	/** @brief set double vector**/
+	void setDoubleVector(std::vector<double> v);
+	/** @brief get double vector**/
+	std::vector<double> getDoubleVector();
+	/** @brief set string vector**/
+	void setStringVector(std::vector<std::string> s);
+	/** @brief get string vector**/
+	std::vector<std::string> getStringVector();
+	/** @brief set attribute name */
+	void setName(std::string name);
+	/** @brief get name */
+	std::string getName() const;
+	/** @brief destructor */
+	~Attribute();
+	/** @brief return datatype*/
+	AttributeType getType() const;
+	/** @brief add link object **/
+	void setLink(std::string viewname, std::string uuid);
+	/** @brief Sets attribute links the existing vector is cleared! **/
+	void setLinks(std::vector<LinkAttribute> links);
+	/** @brief Returns the first element in the link attribute vector. If no link exists it retruns an empty LinkAttribute */
+	LinkAttribute getLink();
+	/** @brief Returns Vector of Links */
+	std::vector<LinkAttribute> getLinks();
+	/** @brief add TimeSeries **/
+	void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
+	/** @brief add TimeSeries **/
+	void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
+	/** @brief Sets attribute type */
+	void setType(AttributeType type);
+	/**
+	* @brief get a printable name of the type, e.g. for gui displaying
+	* @return the name of the type as string
+	*/
+	const char *getTypeName() const;
+
+	/**
+	* @brief convert @AttributeType to a printabel character e.g. for gui displaying
+	* @param type the requested type
+	* @return the name of the @arg type
+	*/
+	static const char*getTypeName(AttributeType type);
 	/** @brief loads the sql database 
-		@internal*/
+	@internal*/
 	AttributeValue* LoadFromDb();
 	/** @brief saves the sql database 
-		@internal*/
+	@internal*/
 	void SaveToDb(AttributeValue *val);
 
 	static void ResizeCache(unsigned long size);
 	static unsigned long GetCacheSize();
 
-    static void PrintCacheStatistics();
+	static void PrintCacheStatistics();
 	static void ClearCache();
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
