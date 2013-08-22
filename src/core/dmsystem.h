@@ -4,7 +4,7 @@
  * @author  Michael Mair <abroxos@gmail.com>
  * @version 1.0
  * @section LICENSE
- * This file is part of DynaMite
+ * This file is part of DynaMind
  *
  * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
@@ -237,47 +237,6 @@ private:
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
-
-
-// This system class holds a pointer to a predecessor system - for read only purpose
-
-class DM_HELPER_DLL_EXPORT DerivedSystem: public System
-{
-private:
-	System* predecessorSys;
-
-	bool allComponentsLoaded;
-	bool allEdgesLoaded;
-	bool allFacesLoaded;
-	bool allNodesLoaded;
-	bool allSubSystemsLoaded;
-
-	const Component* getComponentReadOnly(std::string uuid) const;
-	const Edge* getEdgeReadOnly(Node* start, Node* end);
-
-	Component* SuccessorCopy(const Component *src);
-	Node* SuccessorCopy(const Node *src);
-	Edge* SuccessorCopy(const Edge *src);
-	Face* SuccessorCopy(const Face *src);
-public:
-	DerivedSystem(System* sys);
-
-	//Node* getNode(QUuid uuid);
-	Component* getComponent(std::string uuid);
-	Node* getNode(std::string uuid);
-	Edge* getEdge(std::string uuid);
-	Edge* getEdge(Node* start, Node* end);
-	Face * getFace(std::string uuid);
-	Component* getChild(std::string name);
-	std::map<std::string, Component*> getAllComponents();
-	std::map<std::string, Node*> getAllNodes();
-	std::map<std::string, Edge*> getAllEdges();
-	std::map<std::string, Face*> getAllFaces();
-	std::map<std::string, System*> getAllSubSystems();
-	std::map<std::string, RasterData*> getAllRasterData();
-	std::map<std::string, Component*> getAllComponentsInView(const DM::View & view);
-};
-
 }
 
 #endif // SYSTEM_H
