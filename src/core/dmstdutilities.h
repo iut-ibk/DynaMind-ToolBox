@@ -91,6 +91,7 @@ inline bool vector_contains(std::vector<T> *v, const T &element, T &result)
 }
 
 // mforeach
+// similar to Qts foreach, but provides direct access to the value element
 
 struct ForeachBaseBase {};
 
