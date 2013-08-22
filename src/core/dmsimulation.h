@@ -77,18 +77,18 @@ enum SimulationStatus {
 * void main()
 * {
 *      ostream *out = &cout;
-*      //Define LogLevel (DM::Debug, DM::Standard, DM::Warning, DM::Error)
+*      // Define LogLevel = {DM::Debug, DM::Standard, DM::Warning, DM::Error}
 *      DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 *      DM::Simulation sim;
-*      //Register the modules (load them from the shared library dynamind-testmodules)
+*      // Register the modules (load them from the shared library dynamind-testmodules)
 *      sim.registerNativeModules("dynamind-testmodules");
-*      //Add new module
+*      // Add new module
 *      DM::Module * m = sim.addModule("TestModule");
-*      //Add another module
+*      // Add another module
 *      DM::Module * inout  = sim.addModule("InOut");
-*      //link the two module together
-*      DM::ModuleLink * l = sim.addLink(m->getOutPort("Sewer"), inout->getInPort("Inport"));
-*      //execute the simulation
+*      // link the two module together
+*      sim.addLink(m, "Sewer", inout, "Inport");
+*      // execute the simulation
 *      sim.run();
 * }
 * @endcode
