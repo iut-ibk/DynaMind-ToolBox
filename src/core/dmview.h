@@ -114,13 +114,6 @@ public:
 	bool reads() const;
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
 	bool writes() const;
-
-	void setDummyComponent(Component *c);
-	Component* getDummyComponent();
-
-	/** @brief returns uuid of the dummy object
-	@deprecated*/
-	std::string getIdOfDummyComponent();
 	bool operator<(const View & other) const;
 	/** @brief Returns Attribute Type */
 	Attribute::AttributeType getAttributeType(std::string name);
@@ -138,7 +131,6 @@ public:
 private:
 	int type;
 	std::string name;
-	Component *dummy;
 	int accesstypeGeometry;
 
 	std::map<std::string, int> ownedAttributes;

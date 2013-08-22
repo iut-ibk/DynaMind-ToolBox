@@ -123,8 +123,6 @@ System::System(const System& s) : Component(s, true)
 	{
 		View *newv = new View(*v);
 		viewdefinitions[v->getName()] = newv;
-		Component* dummy = v->getDummyComponent();
-		if(dummy)	newv->setDummyComponent(childReplaceMap[dummy]);
 	}
 	// copy component views
 	for ( std::map<Component*, Component*>::const_iterator it = childReplaceMap.begin(); it != childReplaceMap.end(); ++it  )
@@ -626,45 +624,6 @@ bool System::addView(View view)
 	if (!view.writes())
 		return true;
 
-	DM::Component * dummy  = existingView->getDummyComponent();
-	if (existingView->getDummyComponent() == NULL)
-	{
-		switch(view.getType())
-		{
-		case DM::COMPONENT:
-			dummy = this->addComponent(new Component());
-			break;
-		case DM::NODE:
-			dummy = this->addNode(0,0,0);
-			break;
-		case DM::EDGE:{
-			DM::Node * n1 = this->addNode(0,0,0);
-			DM::Node * n2 = this->addNode(0,0,0);
-			dummy = this->addEdge(n1,n2);}
-					  break;
-		case DM::FACE:{
-			DM::Node * n1 =this->addNode(0,0,0);
-			std::vector<Node*> ve;
-			ve.push_back(n1);
-			dummy = this->addFace(ve);}
-					  break;
-		case DM::SUBSYSTEM:
-			dummy = new DM::System();
-			this->addSubSystem((DM::System*) dummy);
-			break;
-		case DM::RASTERDATA:
-			dummy = new DM::RasterData();
-			this->addRasterData((DM::RasterData*) dummy);
-			break;
-		default:
-			break;
-		}
-	}
-	if(dummy==NULL)
-		Logger(Error) << "Error: dummy object could not be initialized";
-
-	existingView->setDummyComponent(dummy);
-
 	//extend Dummy Attribute
 	foreach (std::string a , view.getWriteAttributes()) 
 	{
@@ -672,8 +631,6 @@ bool System::addView(View view)
 		attr.setType(view.getAttributeType(a));
 		if (view.getAttributeType(a) == Attribute::LINK)
 			attr.setLink(view.getNameOfLinkedView(a), "");
-
-		dummy->addAttribute(attr);
 	}
 
 	return true;
@@ -692,7 +649,7 @@ System* System::createSuccessor()
 {
 	QMutexLocker ml(mutex);
 
-	Logger(Debug) << "Create Sucessor ";// << this->getUUID();
+	Logger(Debug) << "Create Sucessor ";
 	System* result = new DerivedSystem(this);
 	this->sucessors.push_back(result);
 	this->SQLUpdateStates();
