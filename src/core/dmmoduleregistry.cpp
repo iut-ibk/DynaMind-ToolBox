@@ -33,81 +33,82 @@
 #include "dmlogger.h"
 
 using namespace std;
-namespace DM {
-ModuleRegistry::ModuleRegistry() {
+using namespace DM;
+
+ModuleRegistry::ModuleRegistry() 
+{
 }
 
 bool ModuleRegistry::addNodeFactory(INodeFactory *factory)
 {
-    if(!contains(factory->getNodeName()))
-    {
-        std::vector<std::string> m = moduleMap[factory->getFileName()];
-        m.push_back(factory->getNodeName());
-        moduleMap[factory->getFileName()] = m;
-    }
-    registry[factory->getNodeName()] = factory;
-    return true;
+	if(!contains(factory->getNodeName()))
+	{
+		std::vector<std::string> m = moduleMap[factory->getFileName()];
+		m.push_back(factory->getNodeName());
+		moduleMap[factory->getFileName()] = m;
+	}
+	registry[factory->getNodeName()] = factory;
+	return true;
 }
 
 bool ModuleRegistry::addNativePlugin(const std::string &plugin_path) {
 
-    QLibrary lib(QString::fromStdString(plugin_path));
-    if (!lib.load()) 
+	QLibrary lib(QString::fromStdString(plugin_path));
+	if (!lib.load()) 
 	{
 		//std::cout << "Error loading module " << plugin_path << " : " << lib.errorString().toStdString() << std::endl;
-        return false;
-    }
+		return false;
+	}
 	//else
-		//std::cout << "successfully loaded module " << plugin_path << std::endl;
+	//std::cout << "successfully loaded module " << plugin_path << std::endl;
 
-    regNodeFunProto regNodeFunc = (regNodeFunProto) lib.resolve("registerModules");
+	regNodeFunProto regNodeFunc = (regNodeFunProto) lib.resolve("registerModules");
 
-    if (regNodeFunc)
-        regNodeFunc(this);
-    else 
+	if (regNodeFunc)
+		regNodeFunc(this);
+	else 
 	{
-        Logger(Debug) << plugin_path << " has no node register hook";
-        return false;
-    }
+		Logger(Debug) << plugin_path << " has no node register hook";
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 typedef std::pair<std::string, INodeFactory *> snf;
 std::list<std::string> ModuleRegistry::getRegisteredModules() const {
-    std::list<std::string> names;
+	std::list<std::string> names;
 
-    foreach(snf item, registry) {
-        names.push_back(item.first);
-    }
+	foreach(snf item, registry) {
+		names.push_back(item.first);
+	}
 
-    return names;
+	return names;
 }
 
 Module *ModuleRegistry::createModule(const std::string &name) const {
-    Logger(Debug)  << "Try to create " << name;
-    if (registry.count(name) == 0) 
+	Logger(Debug)  << "Try to create " << name;
+	if (registry.count(name) == 0) 
 	{
-        Logger(Error) << "module '" << name << "' not found";
-        return 0;
-    }
+		Logger(Error) << "module '" << name << "' not found";
+		return 0;
+	}
 
-    Module *newmod = 0;
+	Module *newmod = 0;
 
-    try
-    {
-        newmod = registry.find(name)->second->createNode();
-    }
-    catch(...)
-    {
-        Logger(Error) << "error creating module '" << name << "'";
-        return 0;
-    }
+	try
+	{
+		newmod = registry.find(name)->second->createNode();
+	}
+	catch(...)
+	{
+		Logger(Error) << "error creating module '" << name << "'";
+		return 0;
+	}
 
-    return newmod;
+	return newmod;
 }
 
 bool ModuleRegistry::contains(const std::string &name) const {
-    return registry.find(name) != registry.end();
-}
+	return registry.find(name) != registry.end();
 }

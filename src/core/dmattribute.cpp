@@ -51,10 +51,10 @@ unsigned long Attribute::GetCacheSize()
 void Attribute::PrintCacheStatistics()
 {
 #ifdef CACHE_PROFILING
-    Logger(Standard) << "Attribute cache statistics:\t"
-                     << "misses: " << (long)attributeCache.misses
-                     << "\thits: " << (long)attributeCache.hits;
-    attributeCache.ResetProfilingCounters();
+	Logger(Standard) << "Attribute cache statistics:\t"
+		<< "misses: " << (long)attributeCache.misses
+		<< "\thits: " << (long)attributeCache.hits;
+	attributeCache.ResetProfilingCounters();
 #endif
 }
 
@@ -277,7 +277,7 @@ QVariant Attribute::AttributeValue::toQVariant()
 Attribute::Attribute()
 {
 	_uuid = QUuid::createUuid();
-    name="";
+	name="";
 	value = new AttributeValue();
 	owner = NULL;
 	isInserted = false;
@@ -286,7 +286,7 @@ Attribute::Attribute()
 Attribute::Attribute(const Attribute &newattribute)
 {
 	_uuid = QUuid::createUuid();
-    name=newattribute.name;
+	name=newattribute.name;
 	value = new AttributeValue(*newattribute.getValue());
 	owner = NULL;
 	isInserted = false;
@@ -295,7 +295,7 @@ Attribute::Attribute(const Attribute &newattribute)
 Attribute::Attribute(std::string name)
 {
 	_uuid = QUuid::createUuid();
-    this->name=name;
+	this->name=name;
 	owner = NULL;
 	value = new AttributeValue();
 	isInserted = false;
@@ -305,7 +305,7 @@ Attribute::Attribute(std::string name)
 Attribute::Attribute(std::string name, double val)
 {
 	_uuid = QUuid::createUuid();
-    this->name=name;
+	this->name=name;
 	owner = NULL;
 	isInserted = false;
 	value = new AttributeValue(val);
@@ -313,7 +313,7 @@ Attribute::Attribute(std::string name, double val)
 Attribute::Attribute(std::string name, std::string val)
 {
 	_uuid = QUuid::createUuid();
-    this->name=name;
+	this->name=name;
 	owner = NULL;
 	isInserted = false;
 	value = new AttributeValue(val);
@@ -346,12 +346,12 @@ Attribute::AttributeType Attribute::getType() const
 
 void Attribute::setName(std::string name)
 {
-    this->name=name;
+	this->name=name;
 }
 
 std::string Attribute::getName() const
 {
-    return name;
+	return name;
 }
 
 void Attribute::setDouble(double v)
@@ -367,7 +367,7 @@ double Attribute::getDouble()
 {
 	AttributeValue* a = getValue();
 	if(a->type == DOUBLE)	return *((double*)a->ptr);
-    return 0;
+	return 0;
 }
 
 void Attribute::setString(std::string s)
@@ -382,7 +382,7 @@ std::string Attribute::getString()
 {	
 	AttributeValue* a = getValue();
 	if(a->type == STRING)	return *((std::string*)a->ptr);
-    return "";
+	return "";
 }
 
 void Attribute::setDoubleVector(std::vector<double> v)
@@ -417,27 +417,27 @@ std::vector<std::string> Attribute::getStringVector()
 
 bool Attribute::hasDouble()
 {
-    if (getType() == Attribute::DOUBLE)
-        return true;
-    return false;
+	if (getType() == Attribute::DOUBLE)
+		return true;
+	return false;
 }
 bool Attribute::hasDoubleVector()
 {
-    if (getType() == Attribute::DOUBLEVECTOR)
-        return true;
-    return false;
+	if (getType() == Attribute::DOUBLEVECTOR)
+		return true;
+	return false;
 }
 bool Attribute::hasString()
 {
-    if (getType() == Attribute::STRING)
-        return true;
-    return false;
+	if (getType() == Attribute::STRING)
+		return true;
+	return false;
 }
 bool Attribute::hasStringVector()
 {
-    if (getType() == Attribute::STRINGVECTOR)
-        return true;
-    return false;
+	if (getType() == Attribute::STRINGVECTOR)
+		return true;
+	return false;
 }
 
 void Attribute::setLink(string viewname, string uuid)
@@ -446,7 +446,7 @@ void Attribute::setLink(string viewname, string uuid)
 	LinkAttribute att;
 	att.uuid = uuid;
 	att.viewname = viewname;
-    links.push_back(att);
+	links.push_back(att);
 	setLinks(links);
 }
 
@@ -461,7 +461,7 @@ void Attribute::setLinks(std::vector<LinkAttribute> links)
 LinkAttribute Attribute::getLink()
 {
 	AttributeValue* a = getValue();
-    if(a->type == LINK && (*((std::vector<LinkAttribute>*)a->ptr)).size() > 0)	return (*((std::vector<LinkAttribute>*)a->ptr))[0];
+	if(a->type == LINK && (*((std::vector<LinkAttribute>*)a->ptr)).size() > 0)	return (*((std::vector<LinkAttribute>*)a->ptr))[0];
 	return LinkAttribute();
 }
 
@@ -474,11 +474,11 @@ std::vector<LinkAttribute> Attribute::getLinks()
 
 void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
 {
-    if(timestamp.size()!=value.size())
-    {
-        DM::Logger(DM::Error) << "Length of time and value vector are not equal";
-        return;
-    }
+	if(timestamp.size()!=value.size())
+	{
+		DM::Logger(DM::Error) << "Length of time and value vector are not equal";
+		return;
+	}
 	AttributeValue* a = getValue();
 	a->Free();
 	a->type = TIMESERIES;
@@ -530,7 +530,7 @@ void Attribute::setType(AttributeType type)
 }
 void Attribute::Change(const Attribute &attribute)
 {
-    //name = attribute.name; name should never be changed!
+	//name = attribute.name; name should never be changed!
 	AttributeValue* newValue = new AttributeValue(*attribute.value);
 	if(value)
 	{
@@ -551,16 +551,16 @@ const char *Attribute::getTypeName() const
 
 const char *Attribute::getTypeName(Attribute::AttributeType type)
 {
-    const char *arr[] = {
-        "NOTYPE",
-        "DOUBLE",
-        "STRING",
-        "TIMESERIES",
-        "LINK",
-        "DOUBLEVECTOR",
-        "STRINGVECTOR"
-    };
-    return arr[type];
+	const char *arr[] = {
+		"NOTYPE",
+		"DOUBLE",
+		"STRING",
+		"TIMESERIES",
+		"LINK",
+		"DOUBLEVECTOR",
+		"STRINGVECTOR"
+	};
+	return arr[type];
 }
 
 Attribute::AttributeValue* Attribute::getValue() const
@@ -592,25 +592,27 @@ Component* Attribute::GetOwner()
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
-    DBConnector::getInstance()->Select("attributes", _uuid,
-                                       "type",     &t,
-                                       "value",     &v);
-    return new AttributeValue(v,(AttributeType)t.toInt());
+	DBConnector::getInstance()->Select("attributes", _uuid,
+		"type",     &t,
+		"value",     &v);
+	return new AttributeValue(v,(AttributeType)t.toInt());
 }
 
 void Attribute::SaveToDb(Attribute::AttributeValue *val)
 {
 	if(isInserted)
-    {
-        DBConnector::getInstance()->Update("attributes", _uuid,
-											"type",     QVariant::fromValue((int)val->type),
-											"value",     val->toQVariant());
-    }
-    else
-    {
-        DBConnector::getInstance()->Insert("attributes", _uuid,
-											"type",     QVariant::fromValue((int)val->type),
-											"value",     val->toQVariant());
-        isInserted = true;
-    }
+	{
+		DBConnector::getInstance()->Update(
+			"attributes",	_uuid,
+			"type",			QVariant::fromValue((int)val->type),
+			"value",		val->toQVariant());
+	}
+	else
+	{
+		DBConnector::getInstance()->Insert(
+			"attributes",	_uuid,
+			"type",			QVariant::fromValue((int)val->type),
+			"value",		val->toQVariant());
+		isInserted = true;
+	}
 }

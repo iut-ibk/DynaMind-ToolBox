@@ -28,134 +28,133 @@
 #include <QString>
 #include <dmlogsink.h>
 
-namespace DM {
-    Logger::Logger(LogLevel level)
-        : level(level) {
-        this->sinks = *(Log::getInstance()->sinks);
-        dirty = false;
-        this->max = Log::getInstance()->max;
-        logstring="";
-        if (level >= max) {
-            logstring += logLevel() + " " + date() + "|";
-            dirty = true;
-        }
-    }
+using namespace DM;
 
-    Logger::~Logger() {
-        for(uint index=0; index < sinks.size(); index++)
-        {
-            (*sinks[index]) << logstring;
-            if (dirty)
-                (*sinks[index]) << LSEndl();
-        }
-    }
+Logger::Logger(LogLevel level)
+	: level(level) {
+		this->sinks = *(Log::getInstance()->sinks);
+		dirty = false;
+		this->max = Log::getInstance()->max;
+		logstring="";
+		if (level >= max) {
+			logstring += logLevel() + " " + date() + "|";
+			dirty = true;
+		}
+}
 
-    Logger &Logger::operator <<(LogLevel new_level) {
-        level = new_level;
-        logstring += "\n" + logLevel() + " " + date() + "|";
-        dirty = true;
-        return *this;
-    }
+Logger::~Logger() {
+	for(uint index=0; index < sinks.size(); index++)
+	{
+		(*sinks[index]) << logstring;
+		if (dirty)
+			(*sinks[index]) << LSEndl();
+	}
+}
 
-
-
-    Logger &Logger::operator<< (const char* s) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString(s).toStdString();
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const int i) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString::number(i).toStdString();
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const size_t i) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString::number(i).toStdString();
-        dirty = true;
-        return *this;
-    }
-	
-    Logger &Logger::operator<< (const long i) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString::number(i).toStdString();
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const double f) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString::number(f).toStdString();
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const float f) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + QString::number(f).toStdString();
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const string &s) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + s;
-        dirty = true;
-        return *this;
-    }
-
-    Logger &Logger::operator<< (const QString &s) {
-        QMutexLocker locker(&mutex);
-        if (level < max) {
-            return *this;
-        }
-        logstring +=  " " + s.toStdString();
-        dirty = true;
-        return *this;
-    }
+Logger &Logger::operator <<(LogLevel new_level) {
+	level = new_level;
+	logstring += "\n" + logLevel() + " " + date() + "|";
+	dirty = true;
+	return *this;
+}
 
 
-    string Logger::logLevel() const {
-        switch (level) {
-        case Debug:
-            return "DEBUG\t";
-        case Warning:
-            return "WARN\t";
-        case Standard:
-            return "INFO\t";
-        case Error:
-            return "ERROR\t";
-        }
-        return "UNKNOWN\t";
-    }
 
-    string Logger::date() const {
-        return QDateTime::currentDateTime().toString().toStdString();
-    }
+Logger &Logger::operator<< (const char* s) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString(s).toStdString();
+	dirty = true;
+	return *this;
+}
 
+Logger &Logger::operator<< (const int i) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString::number(i).toStdString();
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const size_t i) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString::number(i).toStdString();
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const long i) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString::number(i).toStdString();
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const double f) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString::number(f).toStdString();
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const float f) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + QString::number(f).toStdString();
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const string &s) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + s;
+	dirty = true;
+	return *this;
+}
+
+Logger &Logger::operator<< (const QString &s) {
+	QMutexLocker locker(&mutex);
+	if (level < max) {
+		return *this;
+	}
+	logstring +=  " " + s.toStdString();
+	dirty = true;
+	return *this;
+}
+
+
+string Logger::logLevel() const {
+	switch (level) {
+	case Debug:
+		return "DEBUG\t";
+	case Warning:
+		return "WARN\t";
+	case Standard:
+		return "INFO\t";
+	case Error:
+		return "ERROR\t";
+	}
+	return "UNKNOWN\t";
+}
+
+string Logger::date() const {
+	return QDateTime::currentDateTime().toString().toStdString();
 }

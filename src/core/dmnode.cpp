@@ -55,69 +55,69 @@ void Node::ClearCache()
 void Node::PrintCacheStatistics()
 {
 #ifdef CACHE_PROFILING
-    Logger(Standard) << "Node cache statistics:\t"
-                     << "misses: " << (long)nodeCache.misses
-                     << "\thits: " << (long)nodeCache.hits;
-    nodeCache.ResetProfilingCounters();
+	Logger(Standard) << "Node cache statistics:\t"
+		<< "misses: " << (long)nodeCache.misses
+		<< "\thits: " << (long)nodeCache.hits;
+	nodeCache.ResetProfilingCounters();
 #endif
 }
 
 Node::Node( double x, double y, double z) : Component(true)
 {
-    vector = new Vector3();
-    vector->x = x;
-    vector->y = y;
-    vector->z = z;
-    isInserted = false;
+	vector = new Vector3();
+	vector->x = x;
+	vector->y = y;
+	vector->z = z;
+	isInserted = false;
 	connectedEdges = 0;
 }
 
 Node::Node() : Component(true)
 {
-    vector = new Vector3();
-    vector->x = 0;
-    vector->y = 0;
-    vector->z = 0;
-    isInserted = false;
+	vector = new Vector3();
+	vector->x = 0;
+	vector->y = 0;
+	vector->z = 0;
+	isInserted = false;
 	connectedEdges = 0;
 }
 
 Node::Node(const Node& n) : Component(n, true)
 {
-    vector = new Vector3();
-    Vector3 refv;
-    n.get(&refv.x);
-    vector->x = refv.x;
-    vector->y = refv.y;
-    vector->z = refv.z;
-    isInserted = false;
+	vector = new Vector3();
+	Vector3 refv;
+	n.get(&refv.x);
+	vector->x = refv.x;
+	vector->y = refv.y;
+	vector->z = refv.z;
+	isInserted = false;
 	connectedEdges = 0;
 	if(n.connectedEdges)
 		foreach(Edge* e, *n.connectedEdges)
-			this->addEdge(e);
+		this->addEdge(e);
 }
 Node::~Node()
 {
-    nodeCache.remove(this);
-    if(vector)			delete vector;
-    //if(isInserted)		Component::SQLDelete();
+	nodeCache.remove(this);
+	if(vector)			delete vector;
+	//if(isInserted)		Component::SQLDelete();
 	if(connectedEdges)	delete connectedEdges;
 }
 void Node::SetOwner(Component *owner)
 {
 	QMutexLocker ml(mutex);
 
-    currentSys = owner->getCurrentSystem();
-    if(currentSys)
-    {
-        nodeCache.add(this,new Vector3(*vector));
-        delete vector;
-        vector = NULL;
-    }
+	currentSys = owner->getCurrentSystem();
+	if(currentSys)
+	{
+		nodeCache.add(this,new Vector3(*vector));
+		delete vector;
+		vector = NULL;
+	}
 	mforeach(Attribute* a, ownedattributes)
 		a->setOwner(this);
-    //for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-    //    it->second->SetOwner(this);
+	//for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
+	//    it->second->SetOwner(this);
 }
 
 DM::Components Node::getType() const
@@ -126,32 +126,32 @@ DM::Components Node::getType() const
 }
 QString Node::getTableName()
 {
-    return "nodes";	// also give in precache
+	return "nodes";	// also give in precache
 }
 double Node::getX() const
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-    return v->x;
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	return v->x;
 }
 
 double Node::getY() const
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-    return v->y;
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	return v->y;
 }
 
 double Node::getZ() const
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-    return v->z;
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	return v->z;
 }
 
 const void Node::get(double *vector) const
 {
-    Vector3* v = this->vector ? this->vector:nodeCache.get((Node*)this);
-    vector[0] = v->x;
-    vector[1] = v->y;
-    vector[2] = v->z;
+	Vector3* v = this->vector ? this->vector:nodeCache.get((Node*)this);
+	vector[0] = v->x;
+	vector[1] = v->y;
+	vector[2] = v->z;
 }
 
 const double Node::get(unsigned int i) const {
@@ -169,14 +169,14 @@ std::vector<Edge*> Node::getEdges() const
 	std::vector<Edge*> edges;
 	foreach(Edge* e,*connectedEdges)
 		edges.push_back(e);
-    return edges;
+	return edges;
 }
 
 void Node::set(double x, double y, double z)
 {
 	QMutexLocker ml(mutex);
 
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	v->x = x;
 	v->y = y;
 	v->z = z;
@@ -184,28 +184,28 @@ void Node::set(double x, double y, double z)
 
 void Node::setX(double x)
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-    v->x = x;
+	v->x = x;
 }
 
 void Node::setY(double y)
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-    v->y = y;
+	v->y = y;
 }
 
 void Node::setZ(double z)
 {
-    Vector3* v = vector ? vector:nodeCache.get((Node*)this);
+	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-    v->z = z;
+	v->z = z;
 }
 
 Component* Node::clone()
 {
-    return new Node(*this);
+	return new Node(*this);
 }
 
 Node& Node::operator=(const Node& other)
@@ -218,96 +218,96 @@ Node& Node::operator=(const Node& other)
 		double v[3];
 		other.get(v);
 		this->set(v[0],v[1],v[2]);
-		
+
 		if(!connectedEdges && other.connectedEdges)
 			foreach(Edge* e, *other.connectedEdges)
-				this->addEdge(e);
+			this->addEdge(e);
 	}
 	return *this;
 }
 
 bool Node::operator ==(const Node & other) const 
 {
-    double v0[3];
-    double v1[3];
-    this->get(v0);
-    other.get(v1);
-    return v0[0] == v1[0] &&
-           v0[1] == v1[1] &&
-           v0[2] == v1[2];
+	double v0[3];
+	double v1[3];
+	this->get(v0);
+	other.get(v1);
+	return v0[0] == v1[0] &&
+		v0[1] == v1[1] &&
+		v0[2] == v1[2];
 }
 Node Node::operator -(const Node & other) const 
 {
-    double v0[3];
-    double v1[3];
-    this->get(v0);
-    other.get(v1);
-    return Node(v0[0]-v1[0],
-                v0[1]-v1[1],
-                v0[2]-v1[2]);
+	double v0[3];
+	double v1[3];
+	this->get(v0);
+	other.get(v1);
+	return Node(v0[0]-v1[0],
+		v0[1]-v1[1],
+		v0[2]-v1[2]);
 }
 
 Node Node::operator +(const Node & other) const 
 {
-    double v0[3];
-    double v1[3];
-    other.get(v0);
-    this->get(v1);
-    return Node(v0[0]+v1[0],
-                v0[1]+v1[1],
-                v0[2]+v1[2]);
+	double v0[3];
+	double v1[3];
+	other.get(v0);
+	this->get(v1);
+	return Node(v0[0]+v1[0],
+		v0[1]+v1[1],
+		v0[2]+v1[2]);
 }
 Node Node::operator *(const double &val) const
 {
-    double v0[3];
-    this->get(v0);
-    return Node(v0[0]*val,  v0[1]*val,  v0[2]*val);
+	double v0[3];
+	this->get(v0);
+	return Node(v0[0]*val,  v0[1]*val,  v0[2]*val);
 }
 
 Node Node::operator /(const double &val) const
 {
-    double v0[3];
-    this->get(v0);
-    return Node(v0[0]/val,  v0[1]/val,  v0[2]/val);
+	double v0[3];
+	this->get(v0);
+	return Node(v0[0]/val,  v0[1]/val,  v0[2]/val);
 }
 
 bool Node::compare2d(const Node &other, double round ) const 
 {
-    double v0[3];
-    double v1[3];
-    other.get(v0);
-    this->get(v1);
-    return fabs(v0[0]-v1[0]) <= round && fabs(v0[1]-v1[1]) <= round;
+	double v0[3];
+	double v1[3];
+	other.get(v0);
+	this->get(v1);
+	return fabs(v0[0]-v1[0]) <= round && fabs(v0[1]-v1[1]) <= round;
 }
 bool Node::compare2d(const Node * other , double round ) const 
 {
-    return compare2d(*other, round);
+	return compare2d(*other, round);
 }
 
 Vector3* Node::LoadFromDb()
 {
-    QVariant v[3];
-    DBConnector::getInstance()->Select(getTableName(), uuid,
-                                       "x",     &v[0],
-                                       "y",     &v[1],
-                                       "z",     &v[2]);
-    return new Vector3(v[0].toDouble(),v[1].toDouble(),v[2].toDouble());
+	QVariant v[3];
+	DBConnector::getInstance()->Select(getTableName(), uuid,
+		"x",     &v[0],
+		"y",     &v[1],
+		"z",     &v[2]);
+	return new Vector3(v[0].toDouble(),v[1].toDouble(),v[2].toDouble());
 }
 void Node::SaveToDb(Vector3 *v)
 {
-    if(isInserted)
-    {
-        DBConnector::getInstance()->Update("nodes", uuid,
-                                           "x",     QVariant::fromValue(v->x),
-                                           "y",     QVariant::fromValue(v->y),
-                                           "z",     QVariant::fromValue(v->z));
-    }
-    else
-    {
-        DBConnector::getInstance()->Insert("nodes", uuid,
-                                           "x",v->x,"y",v->y,"z",v->z);
-        isInserted = true;
-    }
+	if(isInserted)
+	{
+		DBConnector::getInstance()->Update("nodes", uuid,
+			"x",     QVariant::fromValue(v->x),
+			"y",     QVariant::fromValue(v->y),
+			"z",     QVariant::fromValue(v->z));
+	}
+	else
+	{
+		DBConnector::getInstance()->Insert("nodes", uuid,
+			"x",v->x,"y",v->y,"z",v->z);
+		isInserted = true;
+	}
 }
 
 void Node::_PreCache(const QList<Node*>& keys, QList<Vector3*>& values)
@@ -326,9 +326,9 @@ void Node::_PreCache(const QList<Node*>& keys, QList<Vector3*>& values)
 		QList<QVariant> x,y,z;
 		QList<QUuid>	resultUuids;
 		if(!DBConnector::getInstance()->Select("nodes", uuids, &resultUuids,
-										   "x",     &x,
-										   "y",     &y,
-										   "z",     &z))
+			"x",     &x,
+			"y",     &y,
+			"z",     &z))
 			return;	// no elements retrieved
 
 		for(int i=0;i<resultUuids.size();i++)

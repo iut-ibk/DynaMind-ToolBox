@@ -56,8 +56,8 @@ Edge::Edge(const Edge& e) : Component(e, true)
 
 Edge::~Edge()
 {
-    if(isInserted)
-        Component::SQLDelete();
+	if(isInserted)
+		Component::SQLDelete();
 }
 DM::Components Edge::getType() const
 {
@@ -65,7 +65,7 @@ DM::Components Edge::getType() const
 }
 QString Edge::getTableName()
 {
-    return "edges";
+	return "edges";
 }
 
 Node* Edge::getStartNode() const
@@ -139,22 +139,22 @@ void Edge::setEndpointName(std::string name)
 
 Component* Edge::clone()
 {
-    return new Edge(*this);
+	return new Edge(*this);
 }
 
 void Edge::Synchronize()
 {
-    if(isInserted)
-    {
-        DBConnector::getInstance()->Update("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                       "endnode",  end->getQUUID().toByteArray());
-    }
-    else
-    {
-        DBConnector::getInstance()->Insert("edges", uuid,
-                                       "startnode",  start->getQUUID().toByteArray(),
-                                       "endnode",  end->getQUUID().toByteArray());
-        isInserted = true;
-    }
+	if(isInserted)
+	{
+		DBConnector::getInstance()->Update("edges", uuid,
+			"startnode",  start->getQUUID().toByteArray(),
+			"endnode",  end->getQUUID().toByteArray());
+	}
+	else
+	{
+		DBConnector::getInstance()->Insert("edges", uuid,
+			"startnode",  start->getQUUID().toByteArray(),
+			"endnode",  end->getQUUID().toByteArray());
+		isInserted = true;
+	}
 }

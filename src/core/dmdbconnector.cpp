@@ -42,26 +42,26 @@ using namespace DM;
 
 void PrintSqlErrorE(QSqlError e)
 {
-    Logger(Error) << "sql error: " << e.text();
+	Logger(Error) << "sql error: " << e.text();
 }
 
 void DM::PrintSqlError(QSqlQuery *q)
 {
-    Logger(Error) << "last cmd: " << q->lastQuery();
-    PrintSqlErrorE(q->lastError());
+	Logger(Error) << "last cmd: " << q->lastQuery();
+	PrintSqlErrorE(q->lastError());
 }
 
 
 SingletonDestroyer::SingletonDestroyer (DBConnector *s) {
-    _singleton = s;
+	_singleton = s;
 }
 
 SingletonDestroyer::~SingletonDestroyer () {
-    delete _singleton;
+	delete _singleton;
 }
 
 void SingletonDestroyer::SetSingleton (DBConnector* s) {
-    _singleton = s;
+	_singleton = s;
 }
 
 static std::set<Asynchron*>* syncList = NULL;
@@ -73,7 +73,7 @@ Asynchron::Asynchron()
 	syncMutex->lockInline();
 	if(!syncList)	syncList = new std::set<Asynchron*>();
 
-    syncList->insert(this);
+	syncList->insert(this);
 	syncMutex->unlockInline();
 }
 Asynchron::~Asynchron()
@@ -92,74 +92,74 @@ QSqlDatabase getDatabase() { return QSqlDatabase::database(); }
 
 bool DBConnector::CreateTables()
 {
-    QSqlQuery query;
+	QSqlQuery query;
 
-    if(        query.exec("PRAGMA synchronous=OFF")
-               && query.exec("PRAGMA count_changes=OFF")
-              // && query.exec("PRAGMA page_size=5120")
-            && query.exec("PRAGMA journal_mode=OFF")
-            && query.exec("PRAGMA temp_store=OFF")
-           // && query.exec("PRAGMA cache_size=50000")
-    && query.exec("CREATE TABLE systems(	uuid BINARY(16) NOT NULL, \
-                                            owner BINARY16, \
-                                            predecessors TEXT, \
-                                            sucessors TEXT, \
-                                            PRIMARY KEY (uuid))")
-    && query.exec("CREATE TABLE components(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            PRIMARY KEY (uuid))")
-    && query.exec("CREATE TABLE nodes(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
-                                            PRIMARY KEY (uuid))")
-    && query.exec("CREATE TABLE edges(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            startnode BINARY(16), \
-                                            endnode BINARY(16), \
-                                            PRIMARY KEY (uuid))")
-    && query.exec("CREATE TABLE faces(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            nodes TEXT, \
-                                            holes TEXT, \
-                                            PRIMARY KEY (uuid))")
-    && query.exec("CREATE TABLE rasterdatas(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            datalink INT,\
-                                            PRIMARY KEY (uuid))")
-               && query.exec("CREATE TABLE rasterfields(owner BINARY(16) NOT NULL, \
-                                            x BIGINT, \
-                                            y BIGINT, \
-											data BYTEA, \
-                                            PRIMARY KEY (owner,x,y))")
-    && query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
-                                            owner BINARY(16), \
-                                            name VARCHAR(128), \
-                                            type SMALLINT, \
-                                            value BYTEA, \
-                                            PRIMARY KEY (uuid))")
-    )
-        return true;
+	if(        query.exec("PRAGMA synchronous=OFF")
+		&& query.exec("PRAGMA count_changes=OFF")
+		// && query.exec("PRAGMA page_size=5120")
+		&& query.exec("PRAGMA journal_mode=OFF")
+		&& query.exec("PRAGMA temp_store=OFF")
+		// && query.exec("PRAGMA cache_size=50000")
+		&& query.exec("CREATE TABLE systems(	uuid BINARY(16) NOT NULL, \
+					  owner BINARY16, \
+					  predecessors TEXT, \
+					  sucessors TEXT, \
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE components(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE nodes(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  x DOUBLE PRECISION, y DOUBLE PRECISION, z DOUBLE PRECISION, \
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE edges(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  startnode BINARY(16), \
+					  endnode BINARY(16), \
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE faces(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  nodes TEXT, \
+					  holes TEXT, \
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE rasterdatas(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  datalink INT,\
+					  PRIMARY KEY (uuid))")
+		&& query.exec("CREATE TABLE rasterfields(owner BINARY(16) NOT NULL, \
+					  x BIGINT, \
+					  y BIGINT, \
+					  data BYTEA, \
+					  PRIMARY KEY (owner,x,y))")
+		&& query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
+					  owner BINARY(16), \
+					  name VARCHAR(128), \
+					  type SMALLINT, \
+					  value BYTEA, \
+					  PRIMARY KEY (uuid))")
+					  )
+			return true;
 
-    PrintSqlError(&query);
-    return false;
+	PrintSqlError(&query);
+	return false;
 }
 
 bool DBConnector::DropTables()
 {
-    QSqlQuery query;
-    if(	query.exec("DROP TABLE IF EXISTS systems")
-    &&	query.exec("DROP TABLE IF EXISTS components")
-    &&	query.exec("DROP TABLE IF EXISTS nodes")
-    &&	query.exec("DROP TABLE IF EXISTS edges")
-    &&	query.exec("DROP TABLE IF EXISTS faces")
-    &&	query.exec("DROP TABLE IF EXISTS rasterdatas")
-    &&	query.exec("DROP TABLE IF EXISTS rasterfields")
-    &&	query.exec("DROP TABLE IF EXISTS attributes")
-            )
-        return true;
+	QSqlQuery query;
+	if(	query.exec("DROP TABLE IF EXISTS systems")
+		&&	query.exec("DROP TABLE IF EXISTS components")
+		&&	query.exec("DROP TABLE IF EXISTS nodes")
+		&&	query.exec("DROP TABLE IF EXISTS edges")
+		&&	query.exec("DROP TABLE IF EXISTS faces")
+		&&	query.exec("DROP TABLE IF EXISTS rasterdatas")
+		&&	query.exec("DROP TABLE IF EXISTS rasterfields")
+		&&	query.exec("DROP TABLE IF EXISTS attributes")
+		)
+		return true;
 
-    PrintSqlError(&query);
-    return false;
+	PrintSqlError(&query);
+	return false;
 }
 
 
@@ -174,60 +174,60 @@ DBConnector::DBConnector()
 
 	worker = NULL;
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
 	QDateTime time = QDateTime::currentDateTime();
 	QString dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
 	std::string str = dbpath.toStdString();
 
-    if(QFile::exists(dbpath))
-        QFile::remove(dbpath);
+	if(QFile::exists(dbpath))
+		QFile::remove(dbpath);
 	//_db = new QSqlDatabase();
-    QSqlDatabase _db = QSqlDatabase::addDatabase("QSQLITE");
-    //_db.setDatabaseName(":memory:");
-    _db.setDatabaseName(dbpath);
-/*
+	QSqlDatabase _db = QSqlDatabase::addDatabase("QSQLITE");
+	//_db.setDatabaseName(":memory:");
+	_db.setDatabaseName(dbpath);
+	/*
 	QString connectionString = "DRIVER={MySQL ODBC 5.2w Driver};SERVER=localhost;DATABASE=dynamind;";
 	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName(connectionString);
-    db.setUserName("root");
-    db.setPassword("");
-*/
-/*
-    QString connectionString = "DRIVER={PostgreSQL Unicode(x64)};SERVER=localhost;DATABASE=dynamind;";
-    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName(connectionString);
-    db.setUserName("postgres");
-    db.setPassword("");
-*/
-    /*
-    //QString connectionString = "SERVER=localhost;DATABASE=dynamind;";
-    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-    db.setDatabaseName("dynamind");
-    db.setUserName("postgres");
-    db.setPassword("");
-*/
-    if(!_db.open())
+	db.setDatabaseName(connectionString);
+	db.setUserName("root");
+	db.setPassword("");
+	*/
+	/*
+	QString connectionString = "DRIVER={PostgreSQL Unicode(x64)};SERVER=localhost;DATABASE=dynamind;";
+	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+	db.setDatabaseName(connectionString);
+	db.setUserName("postgres");
+	db.setPassword("");
+	*/
+	/*
+	//QString connectionString = "SERVER=localhost;DATABASE=dynamind;";
+	QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+	db.setDatabaseName("dynamind");
+	db.setUserName("postgres");
+	db.setPassword("");
+	*/
+	if(!_db.open())
 	{
 		Logger(Error) << "Failed to open db connection";
-		
-        QSqlError e = _db.lastError();
+
+		QSqlError e = _db.lastError();
 		Logger(Error) << "driver error: " << e.driverText();
 		Logger(Error) << "database error: " << e.databaseText();
-        return;
+		return;
 	}
 	else
 		Logger(Debug) << "Db connection opened";
 
-    // init table structure
-    if(!DropTables() || !CreateTables())
+	// init table structure
+	if(!DropTables() || !CreateTables())
 	{
-        Logger(Error) << "Cannot initialize db tables";
-        DropTables();
-        //db.removeDatabase("QODBC");
-        _db.removeDatabase("QSQLITE");
-        _db.close();
+		Logger(Error) << "Cannot initialize db tables";
+		DropTables();
+		//db.removeDatabase("QODBC");
+		_db.removeDatabase("QSQLITE");
+		_db.close();
 		return;
 	}
 	Logger(Debug) << "DB created";
@@ -269,7 +269,7 @@ void DBWorker::run()
 
 		// wait loop
 		bool wait = true;
-        while(wait && !kill)
+		while(wait && !kill)
 		{
 			if(!queryStack.IsEmpty() || qSelect)
 			{
@@ -322,7 +322,7 @@ void DBWorker::run()
 				do
 				{
 					int j=0;
-					
+
 					QList<QVariant> row;
 					QVariant value = qSelect->value(j++);
 					while(value.isValid())
@@ -330,7 +330,7 @@ void DBWorker::run()
 						row.append(value);
 						value = qSelect->value(j++);
 					}
-					
+
 					selectRows.append(row);
 					i++;
 				}
@@ -351,7 +351,7 @@ void DBWorker::run()
 			//selectWaiterCondition.wakeOne();
 		}
 	}
-    //exec();
+	//exec();
 }
 
 void DBWorker::addQuery(QSqlQuery *q)
@@ -423,7 +423,7 @@ void DBConnector::killWorker()
 	if(worker)
 	{
 		worker->Kill();
-        worker->wait();
+		worker->wait();
 		delete worker;
 		worker = NULL;
 	}
@@ -440,10 +440,10 @@ void DBConnector::initWorker()
 DBConnector* DBConnector::getInstance()
 {
 	if(!DBConnector::instance)
-    {
+	{
 		DBConnector::instance = new DBConnector();
-        _destroyer.SetSingleton(DBConnector::instance);
-    }
+		_destroyer.SetSingleton(DBConnector::instance);
+	}
 	if(!DBConnector::instance->worker)
 		initWorker();
 	return DBConnector::instance;
@@ -482,7 +482,7 @@ void DBConnector::setConfig(DBConnectorConfig cfg)
 QSqlQuery* DBConnector::getQuery(QString cmd)
 {
 #ifdef NO_DB_SYNC
-		return NULL;
+	return NULL;
 #endif
 	return worker->getQuery(cmd);
 }
@@ -505,213 +505,195 @@ QList<QList<QVariant> >* DBConnector::getResults()
 void DBConnector::Synchronize()
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    foreach(Asynchron *a, *syncList)
-        a->Synchronize();
+	foreach(Asynchron *a, *syncList)
+		a->Synchronize();
 }
 
 /*
- *  INSERT with uuid
- */
+*  INSERT with uuid
+*/
 void DBConnector::Insert(QString table, QUuid uuid)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
-    q->addBindValue(uuid.toByteArray());
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid) VALUES (?)");
+	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0)
+						 QString parName0, QVariant parValue0)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
-                            parName0+") VALUES (?,?)");
-    q->addBindValue(uuid.toByteArray());
-    q->addBindValue(parValue0);
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
+		parName0+") VALUES (?,?)");
+	q->addBindValue(uuid.toByteArray());
+	q->addBindValue(parValue0);
+	this->ExecuteQuery(q);
 }
 void DBConnector::Insert(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0,
-                         QString parName1, QVariant parValue1)
- {
+						 QString parName0, QVariant parValue0,
+						 QString parName1, QVariant parValue1)
+{
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
-                             parName0+","+
-                             parName1+") VALUES (?,?,?)");
-     q->addBindValue(uuid.toByteArray());
-     q->addBindValue(parValue0);
-     q->addBindValue(parValue1);
-     this->ExecuteQuery(q);
- }
+	QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
+		parName0+","+
+		parName1+") VALUES (?,?,?)");
+	q->addBindValue(uuid.toByteArray());
+	q->addBindValue(parValue0);
+	q->addBindValue(parValue1);
+	this->ExecuteQuery(q);
+}
 void DBConnector::Insert(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0,
-                         QString parName1, QVariant parValue1,
-                         QString parName2, QVariant parValue2)
- {
+						 QString parName0, QVariant parValue0,
+						 QString parName1, QVariant parValue1,
+						 QString parName2, QVariant parValue2)
+{
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-     QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
-                             parName0+","+
-                             parName1+","+
-                             parName2+") VALUES (?,?,?,?)");
-     q->addBindValue(uuid.toByteArray());
-     q->addBindValue(parValue0);
-     q->addBindValue(parValue1);
-     q->addBindValue(parValue2);
-     this->ExecuteQuery(q);
- }
+	QSqlQuery *q = getQuery("INSERT INTO "+table+" (uuid,"+
+		parName0+","+
+		parName1+","+
+		parName2+") VALUES (?,?,?,?)");
+	q->addBindValue(uuid.toByteArray());
+	q->addBindValue(parValue0);
+	q->addBindValue(parValue1);
+	q->addBindValue(parValue2);
+	this->ExecuteQuery(q);
+}
 /*
- *  DELETE with uuid
- */
+*  DELETE with uuid
+*/
 void DBConnector::Delete(QString table,  QUuid uuid)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
-    q->addBindValue(uuid.toByteArray());
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
+	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
 }
 /*
- *  UPDATE with uuid
- */
+*  UPDATE with uuid
+*/
 void DBConnector::Update(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0)
+						 QString parName0, QVariant parValue0)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
-    q->addBindValue(parValue0);
-    q->addBindValue(uuid.toByteArray());
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("UPDATE "+table+" SET "+parName0+"=? WHERE uuid LIKE ?");
+	q->addBindValue(parValue0);
+	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
 }
 
 void DBConnector::Update(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0,
-                         QString parName1, QVariant parValue1)
+						 QString parName0, QVariant parValue0,
+						 QString parName1, QVariant parValue1)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("UPDATE "+table+" SET "
-                            +parName0+"=?,"
-                            +parName1+"=? WHERE uuid LIKE ?");
-    q->addBindValue(parValue0);
-    q->addBindValue(parValue1);
-    q->addBindValue(uuid.toByteArray());
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("UPDATE "+table+" SET "
+		+parName0+"=?,"
+		+parName1+"=? WHERE uuid LIKE ?");
+	q->addBindValue(parValue0);
+	q->addBindValue(parValue1);
+	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
 }
 void DBConnector::Update(QString table,  QUuid uuid,
-                         QString parName0, QVariant parValue0,
-                         QString parName1, QVariant parValue1,
-                         QString parName2, QVariant parValue2)
+						 QString parName0, QVariant parValue0,
+						 QString parName1, QVariant parValue1,
+						 QString parName2, QVariant parValue2)
 {
 #ifdef NO_DB_SYNC
-		return;
+	return;
 #endif
 
-    QSqlQuery *q = getQuery("UPDATE "+table+" SET "
-                            +parName0+"=?,"
-                            +parName1+"=?,"
-                            +parName2+"=? WHERE uuid LIKE ?");
-    q->addBindValue(parValue0);
-    q->addBindValue(parValue1);
-    q->addBindValue(parValue2);
-    q->addBindValue(uuid.toByteArray());
-    this->ExecuteQuery(q);
+	QSqlQuery *q = getQuery("UPDATE "+table+" SET "
+		+parName0+"=?,"
+		+parName1+"=?,"
+		+parName2+"=? WHERE uuid LIKE ?");
+	q->addBindValue(parValue0);
+	q->addBindValue(parValue1);
+	q->addBindValue(parValue2);
+	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
 }
 /*
- *  SELECT single entry with uuid
- */
+*  SELECT single entry with uuid
+*/
 bool DBConnector::Select(QString table, QUuid uuid,
-                         QString valName, QVariant *value)
+						 QString valName, QVariant *value)
 {
 #ifdef NO_DB_SYNC
-		return false;
+	return false;
 #endif
 
-    QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
-    q->addBindValue(uuid.toByteArray());
+	QSqlQuery *q = getQuery("SELECT "+valName+" FROM "+table+" WHERE uuid LIKE ?");
+	q->addBindValue(uuid.toByteArray());
 
-    if(!ExecuteSelectQuery(q))
-	{
-		//delete q;
-        return false;
-	}
-    /**value = q->value(0);
-	delete q;*/
+	if(!ExecuteSelectQuery(q))
+		return false;
 
 	*value = getResults()->at(0).at(0);
 
-    return true;
+	return true;
 }
 bool DBConnector::Select(QString table, QUuid uuid,
-                         QString valName0, QVariant *value0,
-                         QString valName1, QVariant *value1)
- {
+						 QString valName0, QVariant *value0,
+						 QString valName1, QVariant *value1)
+{
 #ifdef NO_DB_SYNC
-	 return false;
+	return false;
 #endif
 
-	 QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
-	 q->addBindValue(uuid.toByteArray());
-	 if(!ExecuteSelectQuery(q))
-	 {
-		 //delete q;
-		 return false;
-	 }
+	QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+" FROM "+table+" WHERE uuid LIKE ?");
+	q->addBindValue(uuid.toByteArray());
+	if(!ExecuteSelectQuery(q))
+		return false;
 
-	 /**value0 = q->value(0);
-	 *value1 = q->value(1);
-	 delete q;*/
 	*value0 = getResults()->at(0).at(0);
 	*value1 = getResults()->at(0).at(1);
 
-     return true;
- }
+	return true;
+}
 bool DBConnector::Select(QString table, QUuid uuid,
-                         QString valName0, QVariant *value0,
-                         QString valName1, QVariant *value1,
-                         QString valName2, QVariant *value2)
- {
+						 QString valName0, QVariant *value0,
+						 QString valName1, QVariant *value1,
+						 QString valName2, QVariant *value2)
+{
 #ifdef NO_DB_SYNC
-	 return false;
+	return false;
 #endif
 
-	 QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
-	 q->addBindValue(uuid.toByteArray());
-	 if(!ExecuteSelectQuery(q))
-	 {
-		 //delete q;
-		 return false;
-	 }
+	QSqlQuery *q = getQuery("SELECT "+valName0+","+valName1+","+valName2+" FROM "+table+" WHERE uuid LIKE ?");
+	q->addBindValue(uuid.toByteArray());
+	if(!ExecuteSelectQuery(q))
+		return false;
 
-	 /**value0 = q->value(0);
-	 *value1 = q->value(1);
-	 *value2 = q->value(2);
-	 delete q;*/
 	*value0 = getResults()->at(0).at(0);
 	*value1 = getResults()->at(0).at(1);
 	*value2 = getResults()->at(0).at(2);
-	 return true;
- }
+	return true;
+}
 
 bool DBConnector::Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
 						 QString valName0, QList<QVariant> *value0,
@@ -730,38 +712,23 @@ bool DBConnector::Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>
 		queryString.append(" OR uuid LIKE ?");
 
 	QSqlQuery *q = getQuery(queryString);
-	//q->prepare(queryString);
 
 	foreach(QUuid* uuid, uuids)
 		q->addBindValue(uuid->toByteArray());
 
 	if(!ExecuteSelectQuery(q))
-	{
-		//delete q;
 		return false;
-	}
-	
-    QList<QList<QVariant> >* results = getResults();
+
+	QList<QList<QVariant> >* results = getResults();
 
 	foreach(QList<QVariant> row, *results)
 	{
 		resultUuids->append(row.at(0).toByteArray());
-		
+
 		value0->append(row.at(1));
 		value1->append(row.at(2));
 		value2->append(row.at(3));
 	}
 
-	/*do
-	{
-	resultUuids->append(q->value(0).toByteArray());
-
-	value0->append(q->value(1));
-	value1->append(q->value(2));
-	value2->append(q->value(3));
-	}
-	while(q->next());
-
-	delete q;*/
 	return true;
 }

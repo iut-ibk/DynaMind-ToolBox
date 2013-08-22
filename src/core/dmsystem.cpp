@@ -870,21 +870,6 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	currentSys = this;
 }
 
-/*
-Node* DerivedSystem::getNode(QUuid uuid)
-{
-Node* n = System::getNode(uuid);
-if(!n)
-{
-QMutexLocker ml(mutex);
-
-n = predecessorSys->getNode(uuid);
-if(n)
-n = addNode(new Node(*n));
-}
-return n;
-}*/
-
 Component* DerivedSystem::getChild(std::string name)
 {
 	return getComponent(name);

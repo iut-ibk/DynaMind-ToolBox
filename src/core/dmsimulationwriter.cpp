@@ -118,7 +118,7 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	out << "\t\t<RootNode>\n";
 	out << "\t\t\t<UUID value=\"" << ADDRESS_TO_INT(root) << "\"/>\n";
 	out << "\t\t</RootNode>\n";
-	 
+
 	QDir filedir = QFileInfo(filePath).absoluteDir();
 	Logger(Debug) << "Number of Modules " << modules.size();
 	foreach(Module * m, modules) 

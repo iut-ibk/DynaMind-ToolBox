@@ -41,130 +41,131 @@ SimulationReader::SimulationReader(QIODevice* source)
 	source->close();
 }
 
-bool SimulationReader::fatalError(const QXmlParseException & exception) {
+bool SimulationReader::fatalError(const QXmlParseException & exception) 
+{
 	DM::Logger(DM::Error) << "fatal error while parsing xml " << exception.message().toStdString();
 
     return true;
 }
-bool SimulationReader::characters(const QString & ch) {
+
+bool SimulationReader::characters(const QString & ch) 
+{
     tmpValue = tmpValue + ch;
     return true;
 }
+
 bool SimulationReader::startElement(const QString & namespaceURI,
-                                    const QString & localName,
-                                    const QString & qName,
-                                    const QXmlAttributes & atts) {
+									const QString & localName,
+									const QString & qName,
+									const QXmlAttributes & atts) 
+{
+	Q_UNUSED(namespaceURI)
+		Q_UNUSED(localName)
+		if (qName == "DynaMind")
+			return true;
+	if (qName == "DynaMindCore")
+		return true;
+	if (qName == "Nodes") {
+		ParentName = "Nodes";
+		return true;
+	}
+	if (qName == "RootNode") {
+		tmpNode = ModuleEntry();
+		ParentName = "RootNode";
+		return true;
+	}
+	if (qName == "Node") {
+		tmpNode = ModuleEntry();
+		ParentName = "Node";
+		return true;
+	}
+	if (qName == "Links") {
+		ParentName = "Links";
+		return true;
+	}
+	if (qName == "InPort") {
+		ParentName = "InPort";
+		return true;
+	}
+	if (qName == "OutPort") {
+		ParentName = "OutPort";
+		return true;
+	}
 
-    Q_UNUSED(namespaceURI)
-    Q_UNUSED(localName)
-    if (qName == "DynaMind")
-        return true;
-    if (qName == "DynaMindCore")
-        return true;
-    if (qName == "Nodes") {
-        ParentName = "Nodes";
-        return true;
-    }
-    if (qName == "RootNode") {
-        tmpNode = ModuleEntry();
-        ParentName = "RootNode";
-        return true;
-    }
-    if (qName == "Node") {
-        tmpNode = ModuleEntry();
-        ParentName = "Node";
-        return true;
-    }
-    if (qName == "Links") {
-        ParentName = "Links";
-        return true;
-    }
-    if (qName == "InPort") {
-        ParentName = "InPort";
-        return true;
-    }
-    if (qName == "OutPort") {
-        ParentName = "OutPort";
-        return true;
-    }
-
-    if (qName == "Link") {
-        tmpLink = LinkEntry();
-        return true;
-    }
-    if (qName == "ClassName") {
-        tmpNode.ClassName = atts.value("value");
-        return true;
-    }
-    if (qName == "UUID") {
-        if (ParentName == "Node")
-            tmpNode.UUID = atts.value("value");
-        if (ParentName == "InPort")
-            tmpLink.InPort.UUID = atts.value("value");
-        if (ParentName == "OutPort")
-            tmpLink.OutPort.UUID = atts.value("value");
-        if (ParentName == "RootNode")
-            RootUUID = atts.value("value");
-        return true;
-    }
-    if (qName == "DebugMode") {
-        if (ParentName == "Node")
-            tmpNode.DebugMode = (bool) atts.value("value").toInt();
-        return true;
-    }
-    if (qName == "PortName") {
-        if (ParentName == "InPort")
-            tmpLink.InPort.PortName = atts.value("value");
-            //tmpLink.InPort.isTuplePort = -1;
-        if (ParentName == "OutPort")
-            tmpLink.OutPort.PortName = atts.value("value");
-            //tmpLink.OutPort.isTuplePort = -1;
-        return true;
-    }
-    if (qName == "PortType") {
-        if (ParentName == "InPort")
-            tmpLink.InPort.isTuplePort = atts.value("value").toInt();
-        if (ParentName == "OutPort")
-            tmpLink.OutPort.isTuplePort = atts.value("value").toInt();
-        return true;
-    }
-    if (qName == "BackLink") {
-        tmpLink.backlink =  atts.value("value").toInt();
-        return true;
-    }
-    if (qName == "GroupUUID") {
-        tmpNode.GroupUUID = atts.value("value");
-        return true;
-    }
-    if (qName == "Name") {
-        tmpNode.Name = atts.value("value");
-        return true;
-    }
-    if (qName == "parameter") {
-        tmpParameterName = atts.value("name");
-        tmpValue.clear();
-        return true;
-    }
-    return true;
-
-
-
-
+	if (qName == "Link") {
+		tmpLink = LinkEntry();
+		return true;
+	}
+	if (qName == "ClassName") {
+		tmpNode.ClassName = atts.value("value");
+		return true;
+	}
+	if (qName == "UUID") {
+		if (ParentName == "Node")
+			tmpNode.UUID = atts.value("value");
+		if (ParentName == "InPort")
+			tmpLink.InPort.UUID = atts.value("value");
+		if (ParentName == "OutPort")
+			tmpLink.OutPort.UUID = atts.value("value");
+		if (ParentName == "RootNode")
+			RootUUID = atts.value("value");
+		return true;
+	}
+	if (qName == "DebugMode") {
+		if (ParentName == "Node")
+			tmpNode.DebugMode = (bool) atts.value("value").toInt();
+		return true;
+	}
+	if (qName == "PortName") {
+		if (ParentName == "InPort")
+			tmpLink.InPort.PortName = atts.value("value");
+		//tmpLink.InPort.isTuplePort = -1;
+		if (ParentName == "OutPort")
+			tmpLink.OutPort.PortName = atts.value("value");
+		//tmpLink.OutPort.isTuplePort = -1;
+		return true;
+	}
+	if (qName == "PortType") {
+		if (ParentName == "InPort")
+			tmpLink.InPort.isTuplePort = atts.value("value").toInt();
+		if (ParentName == "OutPort")
+			tmpLink.OutPort.isTuplePort = atts.value("value").toInt();
+		return true;
+	}
+	if (qName == "BackLink") {
+		tmpLink.backlink =  atts.value("value").toInt();
+		return true;
+	}
+	if (qName == "GroupUUID") {
+		tmpNode.GroupUUID = atts.value("value");
+		return true;
+	}
+	if (qName == "Name") {
+		tmpNode.Name = atts.value("value");
+		return true;
+	}
+	if (qName == "parameter") {
+		tmpParameterName = atts.value("name");
+		tmpValue.clear();
+		return true;
+	}
+	return true;
 }
-bool SimulationReader::endElement(const QString & namespaceURI,
-                                  const QString & localName,
-                                  const QString & qName) {
 
-    if (qName == "Node") {
-        this->moduleEntries.append(tmpNode);
-    }
-    if (qName == "parameter") {
-        tmpValue = tmpValue.trimmed();
-        this->tmpNode.parameters[tmpParameterName] = tmpValue;
-        tmpValue.clear();
-    }
-    if (qName == "Link") {
-        this->linkEntries.append(tmpLink);
-    }
-    return true;
+bool SimulationReader::endElement(const QString & namespaceURI,
+								  const QString & localName,
+								  const QString & qName) 
+{
+	if (qName == "Node") {
+		this->moduleEntries.append(tmpNode);
+	}
+	if (qName == "parameter") {
+		tmpValue = tmpValue.trimmed();
+		this->tmpNode.parameters[tmpParameterName] = tmpValue;
+		tmpValue.clear();
+	}
+	if (qName == "Link") {
+		this->linkEntries.append(tmpLink);
+	}
+	return true;
 }

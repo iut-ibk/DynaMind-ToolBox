@@ -37,33 +37,33 @@ using namespace DM;
 
 QByteArray GetBytes(std::vector<Node*> nodevector)
 {
-    QByteArray qba;
-    QDataStream stream(&qba, QIODevice::WriteOnly);
+	QByteArray qba;
+	QDataStream stream(&qba, QIODevice::WriteOnly);
 
-    stream << (int)nodevector.size();
-    for(unsigned int i=0;i<nodevector.size();i++)
-        stream << nodevector[i]->getQUUID();
+	stream << (int)nodevector.size();
+	for(unsigned int i=0;i<nodevector.size();i++)
+		stream << nodevector[i]->getQUUID();
 
-    return qba;
+	return qba;
 }
 
 QByteArray GetBytes(std::vector<Face*> facevector)
 {
-    QByteArray qba;
-    QDataStream stream(&qba, QIODevice::WriteOnly);
+	QByteArray qba;
+	QDataStream stream(&qba, QIODevice::WriteOnly);
 
-    stream << (int)facevector.size();
-    for(unsigned int i=0;i<facevector.size();i++)
-    {
-        stream << GetBytes(facevector[i]->getNodePointers());
-    }
-    return qba;
+	stream << (int)facevector.size();
+	for(unsigned int i=0;i<facevector.size();i++)
+	{
+		stream << GetBytes(facevector[i]->getNodePointers());
+	}
+	return qba;
 }
 
 Face::Face(std::vector<std::string> nodes) : Component(true)
 {
-    Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
-                         doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
+	Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
+					 doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
 }
 
 Face::Face(const std::vector<Node*>& nodes) : Component(true)
@@ -74,13 +74,13 @@ Face::Face(const std::vector<Node*>& nodes) : Component(true)
 
 Face::Face(const Face& e) : Component(e, true)
 {
-    this->_nodes = e._nodes;
-    this->_holes = e._holes;
+	this->_nodes = e._nodes;
+	this->_holes = e._holes;
 	isInserted = false;
 }
 Face::~Face()
 {
-    Component::SQLDelete();
+	Component::SQLDelete();
 }
 
 std::vector<std::string> GetVector(QByteArray qba)
@@ -101,21 +101,21 @@ std::vector<std::string> GetVector(QByteArray qba)
 
 std::vector<std::string> Face::getNodes() const
 {
-    std::vector<std::string> nodes;
-    foreach(Node* n, _nodes)
-    {
-        nodes.push_back(n->getUUID());
-    }
-    return nodes;
+	std::vector<std::string> nodes;
+	foreach(Node* n, _nodes)
+	{
+		nodes.push_back(n->getUUID());
+	}
+	return nodes;
 }
 std::vector<Node*> Face::getNodePointers() const
 {
-    return _nodes;
+	return _nodes;
 }
 
 Component* Face::clone()
 {
-    return new Face(*this);
+	return new Face(*this);
 }
 
 DM::Components Face::getType() const
@@ -124,54 +124,54 @@ DM::Components Face::getType() const
 }
 QString Face::getTableName()
 {
-    return "faces";
+	return "faces";
 }
 
 const std::vector<std::vector<std::string> > Face::getHoles() const
 {
-    std::vector<std::vector<std::string> > holes;
-    foreach(Face* f, _holes)
-    {
-        std::vector<std::string> hole;
-        foreach(Node* n, f->getNodePointers())
-        {
-            hole.push_back(n->getUUID());
-        }
-        holes.push_back(hole);
-    }
-    return holes;
+	std::vector<std::vector<std::string> > holes;
+	foreach(Face* f, _holes)
+	{
+		std::vector<std::string> hole;
+		foreach(Node* n, f->getNodePointers())
+		{
+			hole.push_back(n->getUUID());
+		}
+		holes.push_back(hole);
+	}
+	return holes;
 }
 
 const std::vector<Face*> Face::getHolePointers() const
 {
-    return _holes;
+	return _holes;
 }
 
 void Face::addHole(std::vector<std::string> hole)
 {
-    System *curSys = this->getCurrentSystem();
-    std::vector<Node*> holeNodes;
-    foreach(std::string uuidNodes, hole)
-        holeNodes.push_back(curSys->getNode(uuidNodes));
-	
-    addHole(holeNodes);
+	System *curSys = this->getCurrentSystem();
+	std::vector<Node*> holeNodes;
+	foreach(std::string uuidNodes, hole)
+		holeNodes.push_back(curSys->getNode(uuidNodes));
+
+	addHole(holeNodes);
 }
 
 void Face::addHole(std::vector<Node*> hole)
 {
 	QMutexLocker ml(mutex);
-    _holes.push_back(getCurrentSystem()->addFace(hole));
+	_holes.push_back(getCurrentSystem()->addFace(hole));
 }
 
 void Face::addHole(Face* hole)
 {
-    if(hole==this)
-    {
-        Logger(Error) << "addHole: self reference not possible";
-        return;
-    }
+	if(hole==this)
+	{
+		Logger(Error) << "addHole: self reference not possible";
+		return;
+	}
 	QMutexLocker ml(mutex);
-    _holes.push_back(hole);
+	_holes.push_back(hole);
 }
 void Face::Synchronize()
 {
@@ -180,29 +180,19 @@ void Face::Synchronize()
 	if(isInserted)
 	{
 		DBConnector::getInstance()->Update("faces", uuid,
-										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
-		                                  "nodes", GetBytes(_nodes),
-		                                  "holes", GetBytes(_holes));
+			"owner", getCurrentSystem()->getQUUID().toByteArray(),
+			"nodes", GetBytes(_nodes),
+			"holes", GetBytes(_holes));
 	}
 	else
 	{
 		isInserted = true;
 		DBConnector::getInstance()->Insert("faces", uuid,
-										   "owner", getCurrentSystem()->getQUUID().toByteArray(),
-		                                  "nodes", GetBytes(_nodes),
-		                                  "holes", GetBytes(_holes));
+			"owner", getCurrentSystem()->getQUUID().toByteArray(),
+			"nodes", GetBytes(_nodes),
+			"holes", GetBytes(_holes));
 	}
 }
-
-/*void Face::SetOwner(Component *owner)
-{
-	QMutexLocker ml(mutex);
-
-    currentSys = owner->getCurrentSystem();
-
-    for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-		it->second->SetOwner(this);
-}*/
 
 void Face::setNodes(const std::vector<Node*>& nodes)
 {
