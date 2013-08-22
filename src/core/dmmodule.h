@@ -91,8 +91,8 @@ public:
 		const std::string	description;
 
 		Parameter(	const std::string name, const DataTypes type, 
-					void* data, const std::string description):
-			name(name), type(type),
+			void* data, const std::string description):
+		name(name), type(type),
 			data(data), description(description)
 		{};
 	};
@@ -221,12 +221,12 @@ private:
 	/** @brief sets the current status of the module */
 	void setStatus(ModuleStatus status);
 	/** @brief get data from inport */
-	 System* getInPortData(const std::string &name) const;
+	System* getInPortData(const std::string &name) const;
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
 	void reset();
-	
+
 	// all view inits in module::init will be stored here as: streamname | views
 	std::map<std::string, std::map<std::string,View> > accessedViews;
 	// a temporary storage for all streams and viewnames in the stream up to this module

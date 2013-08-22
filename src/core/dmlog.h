@@ -34,21 +34,23 @@
 using namespace std;
 
 namespace DM {
+
 //class Node;
 class Simulation;
 class Logger;
 class LogSink;
 
-enum LogLevel {
-    Debug = 0,
-    Standard = 1,
-    Warning = 2,
-    Error = 3
+enum LogLevel 
+{
+	Debug = 0,
+	Standard = 1,
+	Warning = 2,
+	Error = 3
 };
 
 #define LOG_HEAD \
-    if (level <= max) return *this;\
-    out << logLevel() << ": " << "\n"
+	if (level <= max) return *this;\
+	out << logLevel() << ": " << "\n"
 /**
  * @ingroup DynaMind-Core
  * @brief DynaMind Log
@@ -76,27 +78,27 @@ enum LogLevel {
 class DM_HELPER_DLL_EXPORT Log
 {
 public:
-    /** @brief Initialise Logger
-     *
-     * If no instance of the logger exists. A new instance is created.
-     * Log takes ownership of the instance
-     */
-    static void init(LogSink *sink, LogLevel max = Debug);
-    static void addLogSink(LogSink *sink);
-    /** @brief Delets sink and instance*/
-    static void shutDown();
-    /** @brief Returns the current Instance */
-    static Log *getInstance();
-    friend class Logger;
-    virtual ~Log();
+	/** @brief Initialise Logger
+	*
+	* If no instance of the logger exists. A new instance is created.
+	* Log takes ownership of the instance
+	*/
+	static void init(LogSink *sink, LogLevel max = Debug);
+	static void addLogSink(LogSink *sink);
+	/** @brief Delets sink and instance*/
+	static void shutDown();
+	/** @brief Returns the current Instance */
+	static Log *getInstance();
+	friend class Logger;
+	virtual ~Log();
 
 private:
-    Log();
+	Log();
 
-    static Log *instance;
+	static Log *instance;
 
-    std::vector<LogSink*> *sinks;
-    LogLevel max;
+	std::vector<LogSink*> *sinks;
+	LogLevel max;
 };
 }
 #endif // LOG_H

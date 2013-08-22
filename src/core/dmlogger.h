@@ -42,46 +42,47 @@ namespace DM {
  *
  * The Logger sends the messages to the sink defined in Log.
  **/
-    class DM_HELPER_DLL_EXPORT Logger {
-    public:
-        /** @brief Creates a new Log entry.
-         *
-         * As default LogLevel the Logger uses Standard. (LogeLevels see Log)
-         * Creates the log string with LogLevel and data
-         */
-        Logger(LogLevel level = Standard);
-        /** @brief sends log string to the registed sind */
-        virtual ~Logger();
-        /** @brief Sends LogLevel */
-        Logger &operator<< (LogLevel level);
-        /** @brief Sends a char* to the sink*/
-        Logger &operator<< (const char* s);
-        /** @brief Sends an int to the sink*/
-        Logger &operator<< (const int i);
-        /** @brief Sends a size_t to the sink*/
-        Logger &operator<< (const size_t i)
-        /** @brief Sends a long to the sink*/;
-        Logger &operator<< (const long i);
-        /** @brief Sends a double to the sink*/
-        Logger &operator<< (const double f);
-        /** @brief Sends a float to the sink*/
-        Logger &operator<< (const float f);
-        /** @brief Sends a string to the sink*/
-        Logger &operator<< (const string &i);
-        /** @brief Sends a QString to the sink*/
-        Logger &operator<< (const QString &s);
-    private:
-        string logLevel() const;
-        string date() const;
+class DM_HELPER_DLL_EXPORT Logger 
+{
+public:
+	/** @brief Creates a new Log entry.
+	*
+	* As default LogLevel the Logger uses Standard. (LogeLevels see Log)
+	* Creates the log string with LogLevel and data
+	*/
+	Logger(LogLevel level = Standard);
+	/** @brief sends log string to the registed sind */
+	virtual ~Logger();
+	/** @brief Sends LogLevel */
+	Logger &operator<< (LogLevel level);
+	/** @brief Sends a char* to the sink*/
+	Logger &operator<< (const char* s);
+	/** @brief Sends an int to the sink*/
+	Logger &operator<< (const int i);
+	/** @brief Sends a size_t to the sink*/
+	Logger &operator<< (const size_t i)
+		/** @brief Sends a long to the sink*/;
+	Logger &operator<< (const long i);
+	/** @brief Sends a double to the sink*/
+	Logger &operator<< (const double f);
+	/** @brief Sends a float to the sink*/
+	Logger &operator<< (const float f);
+	/** @brief Sends a string to the sink*/
+	Logger &operator<< (const string &i);
+	/** @brief Sends a QString to the sink*/
+	Logger &operator<< (const QString &s);
+private:
+	string logLevel() const;
+	string date() const;
 
-        LogLevel level, max;
-        QMutex mutex;
-        string logstring;
-        bool dirty;
-    public:
-        std::vector <LogSink*> sinks;
-        //LogSink &sink;
-    };
+	LogLevel level, max;
+	QMutex mutex;
+	string logstring;
+	bool dirty;
+public:
+	std::vector <LogSink*> sinks;
+	//LogSink &sink;
+};
 }
 
 #endif // LOGGER_H

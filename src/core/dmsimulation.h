@@ -129,7 +129,7 @@ public:
 	/** @brief Resets the whole simulation, deprecated, for backwards compatibility */
 	void resetSimulation() {reset();};
 	/** @brief Cancels thin simulation, waits till the currently running module finishes.
-				All successing modules get skipped */
+	All successing modules get skipped */
 	void cancel();
 	/** @brief after a Simulation is executed this parameter returns if something happend in between the simulation */
 	SimulationStatus getSimulationStatus() {return status;};
@@ -150,7 +150,7 @@ public:
 	/** @brief returns a list of all links in this simulation */
 	std::list<Link*> getLinks(){return links;};
 	/** @brief Tests if the given link would be valid regarding in- and out-port. 
-				With logoutbut one can surpress logger warnings. */
+	With logoutbut one can surpress logger warnings. */
 	bool isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, bool logOutput);
 	/** @brief adds an observer, providing state change information of the module */
 	void addObserver(SimulationObserver *obs);
@@ -161,7 +161,7 @@ public:
 	@param[in]	filepath			is used for resolving relative paths
 	@param[out] modemap				provides a identification map for further file-processing
 	@param[in]	overwrittenOwner	the anchor group, causes undefined behaviour if of type group
-									NULL will overwrite the parent-group with to root-group
+	NULL will overwrite the parent-group with to root-group
 	@param[in]	overwriteGroupOwner	indicates if overwirttenOwner should be used */
 	bool loadSimulation(QIODevice* source, QString filepath, 
 		std::map<std::string, DM::Module*>& modMap, 
@@ -196,7 +196,7 @@ private:
 	std::vector<Link*> getIntoGroupLinks(const Module* src, const std::string& inPort) const;
 	/** @brief returns all links connected to this port */
 	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
-	
+
 
 	bool canceled;
 	std::list<Module*>	modules;

@@ -34,33 +34,31 @@
 #include <vector>
 
 namespace DM {
-    class INodeFactory;
-    class Module;
-}
 
-namespace DM {
+class INodeFactory;
+class Module;
+
 class DM_HELPER_DLL_EXPORT ModuleRegistry
 {
 public:
-    ModuleRegistry();
+	ModuleRegistry();
 
-    bool addNodeFactory(INodeFactory *factory);
+	bool addNodeFactory(INodeFactory *factory);
 
-    /** @brief add Native Plugin */
-    bool addNativePlugin(const std::string &plugin_path);
-    Module * createModule(const std::string & name) const;
-    std::list<std::string> getRegisteredModules() const;
-    bool contains(const std::string &name) const;
-    std::map<std::string, std::vector<std::string> >  getModuleMap() const {return this->moduleMap;}
-    void print();
+	/** @brief add Native Plugin */
+	bool addNativePlugin(const std::string &plugin_path);
+	Module * createModule(const std::string & name) const;
+	std::list<std::string> getRegisteredModules() const;
+	bool contains(const std::string &name) const;
+	std::map<std::string, std::vector<std::string> >  getModuleMap() const {return this->moduleMap;}
+	void print();
 private:
-        std::map<std::string, std::vector<std::string> > moduleMap;
-        std::map<std::string, INodeFactory * > registry;
+	std::map<std::string, std::vector<std::string> > moduleMap;
+	std::map<std::string, INodeFactory * > registry;
 
 };
 
 // type definition of callback use registerModules
-
 typedef void (*regNodeFunProto)(ModuleRegistry *reg);
 }
 #endif // MODULEREGISTRY_H
