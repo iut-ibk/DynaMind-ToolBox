@@ -1,12 +1,12 @@
 /**
  * @file
- * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of VIBe2
+ * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2013 Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,17 +31,7 @@
 #include <map>
 #include <vector>
 
-
-template <typename T1, typename T2>
-inline bool map_contains(const std::map<T1,T2> *m, const T1 &key, T2 &to)
-{
-	typename std::map<T1,T2>::const_iterator i = m->find(key);
-	if(i==m->end())	return false;
-
-	to = i->second;
-	return true;
-}
-
+/** @brief checks if a map contains the given key */
 template <typename T1, typename T2>
 inline bool map_contains(const std::map<T1,T2> *m, const T1 &key)
 {
@@ -49,6 +39,18 @@ inline bool map_contains(const std::map<T1,T2> *m, const T1 &key)
 	return true;
 }
 
+/** @brief checks if a map contains the given key and copies it into parameter 'result'*/
+template <typename T1, typename T2>
+inline bool map_contains(const std::map<T1,T2> *m, const T1 &key, T2 &result)
+{
+	typename std::map<T1,T2>::const_iterator i = m->find(key);
+	if(i==m->end())	return false;
+
+	result = i->second;
+	return true;
+}
+
+/** @brief removes an element from a map */
 template <typename T1, typename T2>
 inline bool remove_element(std::map<T1,T2> *m, const T1 &key)
 {
@@ -58,6 +60,7 @@ inline bool remove_element(std::map<T1,T2> *m, const T1 &key)
 	return true;
 }
 
+/** @brief removes an element from a map and deletes the entry */
 template <typename T1, typename T2>
 inline bool delete_element(std::map<T1,T2*> *m, const T1 &key)
 {
@@ -68,42 +71,23 @@ inline bool delete_element(std::map<T1,T2*> *m, const T1 &key)
 	return true;
 }
 
-
-
+/** @brief checks if a vector contains the given element */
 template <typename T>
-inline bool vector_contains(std::vector<T> *v, const T &key)
+inline bool vector_contains(std::vector<T> *v, const T &element)
 {
-	return (find(v->begin(), v->end(), key) != v->end());
+	return (find(v->begin(), v->end(), element) != v->end());
 }
+
+/** @brief checks if a map contains the given element and copies it into the parameter result */
 template <typename T>
-inline bool vector_contains(std::vector<T> *v, const T &key, T &to)
+inline bool vector_contains(std::vector<T> *v, const T &element, T &result)
 {
-	typename std::vector<T>::iterator i = v->find(key);
+	typename std::vector<T>::iterator i = v->find(element);
 	if(i == v->end())
 		return false;
 
-	to = *i;
+	result = *i;
 	return true;
-}
-
-template <typename T>
-void deep_delete(std::vector<T*>* v)
-{
-	while(v->size())
-	{
-		delete *v->begin();
-		v->erase(v->begin());
-	}
-	v->clear();
-}
-
-template <typename T1, typename T2>
-void deep_delete(std::map<T1,T2*>* m)
-{
-	typename std::map<T1,T2*>::iterator it = m->begin();
-	for(;it != m->end(); ++it)
-		delete it->second;
-	m->clear();
 }
 
 // mforeach
