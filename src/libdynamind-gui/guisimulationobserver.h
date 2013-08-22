@@ -32,7 +32,7 @@
 
 namespace DM
 {
-	class Simulation;
+class Simulation;
 }
 
 class GuiSimulationObserver: public QObject, public DM::SimulationObserver

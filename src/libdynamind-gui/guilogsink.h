@@ -34,24 +34,24 @@
 #include <dmcompilersettings.h>
 
 class DM_HELPER_DLL_EXPORT GuiLogSink : public QObject, public DM::LogSink {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    QMutex *mutex;
-    GuiLogSink();
-    virtual ~GuiLogSink();
+	QMutex *mutex;
+	GuiLogSink();
+	virtual ~GuiLogSink();
 
-    void close() {}
+	void close() {}
 
-    DM::LogSink &operator<<(const std::string &string);
-    DM::LogSink &operator<<(const char *string);
-    DM::LogSink &operator<<(int i);
-    DM::LogSink &operator<<(double f);
-    DM::LogSink &operator<<(DM::LSEndl i);
+	DM::LogSink &operator<<(const std::string &string);
+	DM::LogSink &operator<<(const char *string);
+	DM::LogSink &operator<<(int i);
+	DM::LogSink &operator<<(double f);
+	DM::LogSink &operator<<(DM::LSEndl i);
 
 Q_SIGNALS:
-    void newLogLine(const QString &line);
+	void newLogLine(const QString &line);
 private:
-    QString buf;
+	QString buf;
 };
 
 #endif // GUILOGSINK_H

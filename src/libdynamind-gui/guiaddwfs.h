@@ -9,17 +9,17 @@ class GUIAddWFS;
 
 class GUIAddWFS : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIAddWFS(QWidget *parent = 0);
-    ~GUIAddWFS();
-    
+	explicit GUIAddWFS(QWidget *parent = 0);
+	~GUIAddWFS();
+
 private:
-    Ui::GUIAddWFS *ui;
+	Ui::GUIAddWFS *ui;
 
 public slots:
-    void accept();
+	void accept();
 };
 
 #endif // GUIADDWFS_H

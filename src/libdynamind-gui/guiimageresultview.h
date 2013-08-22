@@ -32,9 +32,11 @@
 #include <QGraphicsView>
 #include <QContextMenuEvent>
 #include <dmcompilersettings.h>
+
 namespace Ui {
-    class GUIImageResultView;
+class GUIImageResultView;
 }
+
 class QGraphicsPixmapItem;
 class QGraphicsSvgItem;
 class DM_HELPER_DLL_EXPORT GUIImageResultView : public QWidget
@@ -42,28 +44,27 @@ class DM_HELPER_DLL_EXPORT GUIImageResultView : public QWidget
     Q_OBJECT
 
 public:
-    explicit GUIImageResultView(QWidget *parent = 0);
-    QGraphicsView * getView() {return view;}
-    ~GUIImageResultView();
+	explicit GUIImageResultView(QWidget *parent = 0);
+	QGraphicsView * getView() {return view;}
+	~GUIImageResultView();
 protected:
-     void contextMenuEvent(QContextMenuEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
 
 private:
-    Ui::GUIImageResultView *ui;
-    QGraphicsScene scene;
-    QGraphicsView * view;
-    int currentTime;
-    int zvalues;
-   // QVector<QGraphicsSvgItem * > images;
-    QVector<QGraphicsSvgItem * > images;
+	Ui::GUIImageResultView *ui;
+	QGraphicsScene scene;
+	QGraphicsView * view;
+	int currentTime;
+	int zvalues;
+	QVector<QGraphicsSvgItem * > images;
 
 public slots:
-    void updateImage(QString);
-    void setLastImage();
-    void setFirstImage();
-    void setImageUp();
-    void setImageDown();
-    void saveFigure();
+	void updateImage(QString);
+	void setLastImage();
+	void setFirstImage();
+	void setImageUp();
+	void setImageDown();
+	void saveFigure();
 };
 
 #endif // GUIIMAGERESULTVIEW_H

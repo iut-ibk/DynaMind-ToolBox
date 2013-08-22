@@ -46,40 +46,40 @@ class SimulationTab;
 
 class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    DMMainWindow(QWidget *parent = 0);
-    ~DMMainWindow();
-    GuiLogSink *log_updater;
-    GUISimulation * getSimulation() {return this->simulation;}
+	DMMainWindow(QWidget *parent = 0);
+	~DMMainWindow();
+	GuiLogSink *log_updater;
+	GUISimulation * getSimulation() {return this->simulation;}
 private:
-    Ui::DMMainWindow *ui;
-    GUISimulation * simulation;
+	Ui::DMMainWindow *ui;
+	GUISimulation * simulation;
 	QThread *simulationThread;
 	GuiSimulationObserver* simulationThreadWrapper;
 	std::ofstream* outputFile;
 
-    void createModuleListView();
+	void createModuleListView();
 public slots:
-    void runSimulation();
-    void preferences();
-    void saveSimulation();
-    void loadSimulation(int id=0);
-    void clearSimulation();
-    void saveAsSimulation();
-    void simulationFinished();
-    void startEditor();
-    void ReloadModules();
-    void updateSimulation();
-    void resetSimulation();
-    void cancelSimulation();
+	void runSimulation();
+	void preferences();
+	void saveSimulation();
+	void loadSimulation(int id=0);
+	void clearSimulation();
+	void saveAsSimulation();
+	void simulationFinished();
+	void startEditor();
+	void ReloadModules();
+	void updateSimulation();
+	void resetSimulation();
+	void cancelSimulation();
 	void newLogLine(QString line);
 private slots:
-    void on_actionZoomReset_triggered();
-    void on_actionZoomOut_triggered();
-    void on_actionZoomIn_triggered();
-    void on_actionAbout_triggered();
-    void on_actionShow_Help_triggered();
+	void on_actionZoomReset_triggered();
+	void on_actionZoomOut_triggered();
+	void on_actionZoomIn_triggered();
+	void on_actionAbout_triggered();
+	void on_actionShow_Help_triggered();
 	void updateProgress(float progress);
 };
 

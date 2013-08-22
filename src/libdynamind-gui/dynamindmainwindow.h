@@ -8,11 +8,11 @@ class DMMainWindow;
 class DM_HELPER_DLL_EXPORT DynaMindMainWindow
 {
 private:
-    DMMainWindow * mw;
+	DMMainWindow * mw;
 public:
-    DynaMindMainWindow();
-    void createMainWindow();
-    void registerNativeDll(std::string fileName);
+	DynaMindMainWindow();
+	void createMainWindow();
+	void registerNativeDll(std::string fileName);
 };
 
 #endif // DYNAMINDMAINWINDOW_H

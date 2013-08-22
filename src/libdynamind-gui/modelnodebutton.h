@@ -32,23 +32,22 @@
 
 class DM_HELPER_DLL_EXPORT ModelNodeButton : public  QObject, public QGraphicsItem
 {
-    Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
+	Q_OBJECT
+	Q_INTERFACES(QGraphicsItem)
 protected:
-             virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+	virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
 public:
-    ModelNodeButton(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
+	ModelNodeButton(QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-    QRectF boundingRect() const;
-    QImage img;
-    bool minimized;
+	QRectF boundingRect() const;
+	QImage img;
+	bool minimized;
 
- signals:
-    void Minimize(void);
-    void Maximize(void);
-
+signals:
+	void Minimize(void);
+	void Maximize(void);
 };
 
 #endif // MODELNODEBUTTON_H

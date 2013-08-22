@@ -33,24 +33,21 @@
 
 class  DM_HELPER_DLL_EXPORT ModuleReader : public QXmlDefaultHandler
 {
-    
 public:
-    ModuleReader(QString FileName);
-    virtual ~ModuleReader(){}
+	ModuleReader(QString FileName);
+	virtual ~ModuleReader(){}
 
-    bool startElement(const QString & namespaceURI,
-                      const QString & localName,
-                      const QString & qName,
-                      const QXmlAttributes & atts);
+	bool startElement(const QString & namespaceURI,
+		const QString & localName,
+		const QString & qName,
+		const QXmlAttributes & atts);
 
-
-    ModuleDescription getModule() {return m;}
+	ModuleDescription getModule() {return m;}
 
 private:
-    ModuleDescription m;
-    std::string value;
-    std::string name;
-
+	ModuleDescription m;
+	std::string value;
+	std::string name;
 };
 
 #endif // MODULEREADER_H

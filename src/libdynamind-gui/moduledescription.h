@@ -37,50 +37,48 @@
 class DM_HELPER_DLL_EXPORT Points {
 public:
 
-    Points(){}
-    Points(const Points & other) {
-        VectorDataName = other.VectorDataName;
-        PointsName = other.PointsName;
-    }
+	Points(){}
+	Points(const Points & other) {
+		VectorDataName = other.VectorDataName;
+		PointsName = other.PointsName;
+	}
 
-    QString VectorDataName;
-    QString PointsName;
+	QString VectorDataName;
+	QString PointsName;
 
 };
 Q_DECLARE_METATYPE(Points);
 struct  DM_HELPER_DLL_EXPORT VectorDataDescription {
-    QString Name;
-    QStringList Points;
-    QStringList Edges;
-    QStringList Faces;
-    QStringList Links;
-    QStringList Attributes;
+	QString Name;
+	QStringList Points;
+	QStringList Edges;
+	QStringList Faces;
+	QStringList Links;
+	QStringList Attributes;
 };
 
 class  DM_HELPER_DLL_EXPORT ModuleDescription {
 public:
-    QString name;
-    QString filename;
-    QVector<QString> outputRasterData;
-    QVector<QString> inputRasterData;
-    QVector<QString> outputDouble;
-    QVector<QString> inputDouble;
-    QVector<VectorDataDescription> inputVectorData;
-    QVector<VectorDataDescription> outputVectorData;
-    bool used;
-    QString Type;
-    QMap<QString, int> parameter;
-    QMap<QString, QVariant> paramterValues;
-    QMap<QString, QStringList> parameterOptions;
-    QVector<QString> unsortedKeys;
-    QString HelpUrl;
-    bool isGroupNode;
+	QString name;
+	QString filename;
+	QVector<QString> outputRasterData;
+	QVector<QString> inputRasterData;
+	QVector<QString> outputDouble;
+	QVector<QString> inputDouble;
+	QVector<VectorDataDescription> inputVectorData;
+	QVector<VectorDataDescription> outputVectorData;
+	bool used;
+	QString Type;
+	QMap<QString, int> parameter;
+	QMap<QString, QVariant> paramterValues;
+	QMap<QString, QStringList> parameterOptions;
+	QVector<QString> unsortedKeys;
+	QString HelpUrl;
+	bool isGroupNode;
 
-    ModuleDescription() {
-        isGroupNode = false;
-    }
-
+	ModuleDescription() {
+		isGroupNode = false;
+	}
 };
-
 
 #endif // MODULE_H

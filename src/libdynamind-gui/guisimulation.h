@@ -40,17 +40,11 @@ namespace DM
 class Group;
 }
 
-//#if defined _MSC_VER && defined _WIN32
-//enum PortType;
-//#else
-//enum PortType : unsigned int;
-//#endif
-
 class DM_HELPER_DLL_EXPORT GUISimulation :  public DM::Simulation
 {
 public:
-    GUISimulation(QWidget * parent, QTabWidget* tabWidget);
-    void clearSimulation();
+	GUISimulation(QWidget * parent, QTabWidget* tabWidget);
+	void clearSimulation();
 
 	bool addLink(DM::Module* source, std::string outPort, DM::Module* dest, std::string inPort, bool checkStream = true);
 
@@ -58,7 +52,7 @@ public:
 
 	// overloaded
 	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true);
-    void removeModule(DM::Module* m);
+	void removeModule(DM::Module* m);
 
 	SimulationTab* addTab(DM::Group* parentGroup);	// parent = NULL for root tab
 	void closeTab(int index);
@@ -69,18 +63,18 @@ public:
 	void selectTab(int index);
 
 	QTabWidget* getTabWidget(){return tabWidget;};
-	
-    /** @brief adds a simulation saved in a file to the current simulation 
-				for gui we load the positions of the modules too */
-    bool loadSimulation(std::string filePath);
+
+	/** @brief adds a simulation saved in a file to the current simulation 
+	for gui we load the positions of the modules too */
+	bool loadSimulation(std::string filePath);
 	/** @brief writes the simulation to a xml file 
-			for gui we add the positions of the modules too */
-    void writeSimulation(std::string filename);
+	for gui we add the positions of the modules too */
+	void writeSimulation(std::string filename);
 
 	void appendGuiInformation(QIODevice* dest, std::list<DM::Module*> modules);
 
 	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
-    QString currentDocument;
+	QString currentDocument;
 private:
 	std::map<DM::Module*, ModelNode*> modelNodes;
 	QList<SimulationTab*> tabs;

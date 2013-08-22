@@ -27,28 +27,10 @@
 #define GuiSimulationReader_H
 
 #include "dmcompilersettings.h"
-//#include <QMap>
-//#include <QString>
 #include <QVector>
 #include "moduledescription.h"
 #include "modelnode.h"
 #include <QXmlDefaultHandler>
-/*struct  DM_HELPER_DLL_EXPORT LoadLink {
-    int FromID;
-    int ToID;
-    QString FromName;
-    QString ToName;
-    int Type;
-    int Back;
-    bool Visibile;
-};
-
-struct DM_HELPER_DLL_EXPORT LoadModule {
-    std::string tmpUUID;
-    double PosX;
-    double PosY;
-    bool minimized;
-};*/
 
 struct DM_HELPER_DLL_EXPORT ModuleExEntry {
 	double posX, posY;
@@ -58,36 +40,24 @@ struct DM_HELPER_DLL_EXPORT ModuleExEntry {
 class  DM_HELPER_DLL_EXPORT GuiSimulationReader  : public QXmlDefaultHandler
 {
 public:
-    GuiSimulationReader(QIODevice* source);
-    //void loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation);
-    //QVector<LoadLink> getLinks(){return this->links;}
-    //QVector<LoadModule> getPositionOfLoadedModules(){return this->modules;}
+	GuiSimulationReader(QIODevice* source);
 	std::map<QString, ModuleExEntry> getEntries(){return entries;};
 private:
-    //Groups * groups;
-    bool startElement(const QString & namespaceURI,
-                      const QString & localName,
-                      const QString & qName,
-                      const QXmlAttributes & atts);
+	bool startElement(const QString & namespaceURI,
+		const QString & localName,
+		const QString & qName,
+		const QXmlAttributes & atts);
 
-    bool endElement(const QString & namespaceURI,
-                      const QString & localName,
-                      const QString & qName);
+	bool endElement(const QString & namespaceURI,
+		const QString & localName,
+		const QString & qName);
 
-
-
-    //QVector<LoadLink> links;
-    //std::map<std::string, std::string> UUIDTransation;
-    //GUISimulation * sim;
-
-    QString tmpUUID;
-    double PosX;
-    double PosY;
-    bool minimized;
+	QString tmpUUID;
+	double PosX;
+	double PosY;
+	bool minimized;
 
 	std::map<QString, ModuleExEntry>	entries;
-
-    //QVector<LoadModule> modules;
 };
 
 #endif // GuiSimulationReader_H

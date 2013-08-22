@@ -33,19 +33,19 @@
 
 class DM_HELPER_DLL_EXPORT SimulationManagment :public QObject, public DM::SimulationObserver
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    SimulationManagment();
-    void SimulationCounter();
-    void resetSimcounter(){this->simcounter = 0;}
-    void VirtualRunDone(){}
+	SimulationManagment();
+	void SimulationCounter();
+	void resetSimcounter(){this->simcounter = 0;}
+	void VirtualRunDone(){}
 
 private:
-    int simcounter;
+	int simcounter;
 
 
 signals:
-        void valueChanged(int newValue);
+	void valueChanged(int newValue);
 };
 
 #endif // SIMULATIONMANAGMENT_H

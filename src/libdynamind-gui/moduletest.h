@@ -30,11 +30,11 @@
 
 
 class ModuleTest
-    {
-    public:
-        ModuleTest();
-        void run();
-        //DM::Module * m;
-    };
+{
+public:
+	ModuleTest();
+	void run();
+	//DM::Module * m;
+};
 
 #endif // MODULETEST_H

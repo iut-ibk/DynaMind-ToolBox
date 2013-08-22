@@ -45,7 +45,7 @@ public:
 		foreach(std::string portName, module->getOutPortNames())
 			notifyAddPort(portName, DM::OUTPORT);
 	};
-	
+
 	void notifyAddPort(const std::string &name, const DM::PortType type);
 	void notifyRemovePort(const std::string &name, const DM::PortType type);
 	void notifyChangeName(const std::string &name);

@@ -48,39 +48,39 @@ class GUISimulation;
 class DM_HELPER_DLL_EXPORT PortNode : public QGraphicsItem
 {
 public:
-    PortNode(QString portName, DM::Module * m, DM::PortType type, 
+	PortNode(QString portName, DM::Module * m, DM::PortType type, 
 		QGraphicsItem* parent, GUISimulation* simulation);
-    ~PortNode();
+	~PortNode();
 
-    void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-    void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-    void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-    void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+	void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+	void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+	void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+	void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+	void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 	void updatePos();
-    void setHover(bool b);
-    void removeLink(LinkNode * l);
+	void setHover(bool b);
+	void removeLink(LinkNode * l);
 	void addLink(LinkNode* l);
 
-    GUISimulation*	getSimulation() const {return this->simulation;}
+	GUISimulation*	getSimulation() const {return this->simulation;}
 	DM::Module*		getModule()		const {return module;};
 	DM::PortType	getType()		const {return portType;};
-    QString			getPortName()	const {return this->portName;}
-	
-    QRectF	boundingRect()	const;
-    QPointF getCenterPos()	const;
+	QString			getPortName()	const {return this->portName;}
+
+	QRectF	boundingRect()	const;
+	QPointF getCenterPos()	const;
 private:
-    QVector<LinkNode * > linkNodes;
+	QVector<LinkNode * > linkNodes;
 	LinkNode* unstableLink;
 
-    QString portName;
-    bool isHover;
-    QGraphicsSimpleTextItem portLabel;
-    GUISimulation * simulation;
-	 
+	QString portName;
+	bool isHover;
+	QGraphicsSimpleTextItem portLabel;
+	GUISimulation * simulation;
+
 	DM::PortType	portType;
 	DM::Module*		module;
 };

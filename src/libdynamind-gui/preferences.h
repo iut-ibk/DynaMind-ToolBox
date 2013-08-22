@@ -31,16 +31,16 @@
 
 class DM_HELPER_DLL_EXPORT Preferences :public QDialog, public Ui::Preferences
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    Preferences(QWidget *parent = 0);
+	Preferences(QWidget *parent = 0);
 
 public slots:
-    void writePreference();
-    void openFileDialog();
-    void add();
-    void remove();
-    void on_pushButton_add_wfs_clicked();
+	void writePreference();
+	void openFileDialog();
+	void add();
+	void remove();
+	void on_pushButton_add_wfs_clicked();
 };
 
 #endif // PREFERENCES_H

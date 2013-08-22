@@ -33,25 +33,23 @@ class SimulationTab;
 
 class DM_HELPER_DLL_EXPORT  GroupNode: public ModelNode
 {
-    Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
+	Q_OBJECT
+	Q_INTERFACES(QGraphicsItem)
 
-private:
-	ModelNode* parent;
-	SimulationTab* owningTab;
 public:
 	void setParent(ModelNode* parent){this->parent = parent;};
 	void resize();
 
-    GroupNode(DM::Module* module, GUISimulation* sim, SimulationTab* tab, ModelNode* parent);
+	GroupNode(DM::Module* module, GUISimulation* sim, SimulationTab* tab, ModelNode* parent);
 	~GroupNode();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-	
-    //QRectF boundingRect() const;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
-    bool isGroup(){return true;}
+	bool isGroup(){return true;}
+private:
+	ModelNode* parent;
+	SimulationTab* owningTab;
 };
 
 #endif // GROUPNODE_H

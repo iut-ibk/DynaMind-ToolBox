@@ -37,73 +37,69 @@ class  DM_HELPER_DLL_EXPORT Q_DebugStream : public QObject, public std::basic_st
     Q_OBJECT
 public:
 
-    Q_DebugStream(std::ostream &stream, QPlainTextEdit* text_edit) : m_stream(stream)
-    {
-        log_window = text_edit;
-        m_old_buf = stream.rdbuf();
-        stream.rdbuf(this);
-        connect(this , SIGNAL(updateLog(QString)),text_edit, SLOT(appendPlainText(QString)));
+	Q_DebugStream(std::ostream &stream, QPlainTextEdit* text_edit) : m_stream(stream)
+	{
+		log_window = text_edit;
+		m_old_buf = stream.rdbuf();
+		stream.rdbuf(this);
+		connect(this , SIGNAL(updateLog(QString)),text_edit, SLOT(appendPlainText(QString)));
 
-    }
+	}
 
-    ~Q_DebugStream()
-    {
-        // output anything that is left
-        if (!m_string.empty()) {
-            //log_window->appendPlainText(m_string.c_str());
-            emit updateLog(m_string.c_str());
-        }
+	~Q_DebugStream()
+	{
+		// output anything that is left
+		if (!m_string.empty()) {
+			//log_window->appendPlainText(m_string.c_str());
+			emit updateLog(m_string.c_str());
+		}
 
-        m_stream.rdbuf(m_old_buf);
-    }
+		m_stream.rdbuf(m_old_buf);
+	}
 
 protected:
-    virtual int_type overflow(int_type v)
-    {
-        if (v == '\n')
-        {
-            //log_window->appendPlainText(m_string.c_str());
-            updateLog(m_string.c_str());
-            m_string.erase(m_string.begin(), m_string.end());
-        }
-        else
-            m_string += v;
+	virtual int_type overflow(int_type v)
+	{
+		if (v == '\n')
+		{
+			//log_window->appendPlainText(m_string.c_str());
+			updateLog(m_string.c_str());
+			m_string.erase(m_string.begin(), m_string.end());
+		}
+		else
+			m_string += v;
 
-        return v;
-    }
+		return v;
+	}
 
-    virtual std::streamsize xsputn(const char *p, std::streamsize n)
-    {
-        m_string.append(p, p + n);
+	virtual std::streamsize xsputn(const char *p, std::streamsize n)
+	{
+		m_string.append(p, p + n);
 
-        uint pos = 0;
-        while (pos != std::string::npos)
-        {
-            pos = m_string.find('\n');
-            if (pos != std::string::npos)
-            {
-                std::string tmp(m_string.begin(), m_string.begin() + pos);
-                //log_window->appendPlainText(tmp.c_str());
-                updateLog(m_string.c_str());
-                m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
-            }
-        }
+		uint pos = 0;
+		while (pos != std::string::npos)
+		{
+			pos = m_string.find('\n');
+			if (pos != std::string::npos)
+			{
+				std::string tmp(m_string.begin(), m_string.begin() + pos);
+				//log_window->appendPlainText(tmp.c_str());
+				updateLog(m_string.c_str());
+				m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
+			}
+		}
 
-        return n;
-    }
+		return n;
+	}
 
 public:
-    std::ostream &m_stream;
-    std::streambuf *m_old_buf;
-    std::string m_string;
-    QPlainTextEdit* log_window;
+	std::ostream &m_stream;
+	std::streambuf *m_old_buf;
+	std::string m_string;
+	QPlainTextEdit* log_window;
 
 signals:
-    void updateLog(QString s) ;
-
-
-
-
+	void updateLog(QString s) ;
 };
 
 

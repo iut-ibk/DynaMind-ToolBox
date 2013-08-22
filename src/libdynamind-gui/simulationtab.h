@@ -66,7 +66,7 @@ public slots:
 	void copySelection();
 	void deleteSelection();
 	void pasteSelection(const QPointF& pos);
-	
+
 private:
 	// the drawing object
 	QGraphicsView	*viewer;

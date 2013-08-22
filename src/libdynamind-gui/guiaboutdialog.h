@@ -10,17 +10,14 @@ class GUIAboutDialog;
 
 class DM_HELPER_DLL_EXPORT GUIAboutDialog : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIAboutDialog(GUISimulation *, QWidget *parent = 0);
-    ~GUIAboutDialog();
-    
+	explicit GUIAboutDialog(GUISimulation *, QWidget *parent = 0);
+	~GUIAboutDialog();
+
 private:
-    Ui::GUIAboutDialog *ui;
-
-
-
+	Ui::GUIAboutDialog *ui;
 };
 
 #endif // GUIABOUTDIALOG_H

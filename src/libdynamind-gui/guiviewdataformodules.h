@@ -8,19 +8,20 @@ class GUIViewDataForModules;
 }
 
 namespace DM {
-    class Module;
+class Module;
 }
+
 class DM_HELPER_DLL_EXPORT GUIViewDataForModules : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIViewDataForModules( DM::Module * m, QWidget *parent = 0);
-    ~GUIViewDataForModules();
-    
+	explicit GUIViewDataForModules( DM::Module * m, QWidget *parent = 0);
+	~GUIViewDataForModules();
+
 private:
-    Ui::GUIViewDataForModules *ui;
-    DM::Module * m;
+	Ui::GUIViewDataForModules *ui;
+	DM::Module * m;
 };
 
 #endif // GUIVIEWDATAFORMODULES_H

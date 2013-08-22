@@ -30,6 +30,7 @@
 #include <guisimulation.h>
 #include <QWidget>
 #include <QUrl>
+
 namespace Ui {
 class GUIHelpViewer;
 }
@@ -37,25 +38,21 @@ class GUIHelpViewer;
 class DM_HELPER_DLL_EXPORT GUIHelpViewer : public QWidget
 {
     Q_OBJECT
-    
+
 public:
-    explicit GUIHelpViewer( GUISimulation * sim, QWidget *parent = 0);
-    ~GUIHelpViewer();
+	explicit GUIHelpViewer( GUISimulation * sim, QWidget *parent = 0);
+	~GUIHelpViewer();
 
-
-    
 private:
-    Ui::GUIHelpViewer *ui;
-    QUrl currentUrl;
-    QUrl url_view_not_avaiable;
-     GUISimulation * sim;
+	Ui::GUIHelpViewer *ui;
+	QUrl currentUrl;
+	QUrl url_view_not_avaiable;
+	GUISimulation * sim;
 
 public slots:
-    //void showHelpForModule(std::string className);
+	//void showHelpForModule(std::string className);
 	void showHelpForModule(DM::Module* m);
-    
-    void on_commandBackToOvwerView_clicked();
-
+	void on_commandBackToOvwerView_clicked();
 };
 
 #endif // GUIHELPVIEWER_H
