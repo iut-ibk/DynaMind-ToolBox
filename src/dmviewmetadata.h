@@ -36,23 +36,23 @@ class View;
 class Component;
 
 struct DM_HELPER_DLL_EXPORT ViewMetaData {
-    ViewMetaData(std::string attribute);
-    bool fromNode;
-    
-    void max_vec(const double *other);
-    void min_vec(const double *other);
-    
-    void operator()(System *, const View& , Component *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos);
-    
-    double radius() const;
-    
-    double min[3];
-    double max[3];
-    
-    std::string attr;
-    double attr_min, attr_max;
-    
-    int number_of_primitives;
+	ViewMetaData(std::string attribute);
+	bool fromNode;
+
+	void max_vec(const double *other);
+	void min_vec(const double *other);
+
+	void operator()(System *, const View& , Component *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos);
+
+	double radius() const;
+
+	double min[3];
+	double max[3];
+
+	std::string attr;
+	double attr_min, attr_max;
+
+	int number_of_primitives;
 };
 
 } // namespace DM

@@ -40,18 +40,18 @@ class ComponentEditor;
 }
 
 class DM_HELPER_DLL_EXPORT ComponentEditor : public QDialog {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit ComponentEditor(Component *c, QWidget *parent = 0);
-    ~ComponentEditor();
-    
+	explicit ComponentEditor(Component *c, QWidget *parent = 0);
+	~ComponentEditor();
+
 private slots:
-    void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    
+	void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
 private:
-    Ui::ComponentEditor *ui;
-    Component *c;
+	Ui::ComponentEditor *ui;
+	Component *c;
 };
 
 

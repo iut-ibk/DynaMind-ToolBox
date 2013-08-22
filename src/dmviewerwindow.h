@@ -42,10 +42,10 @@ namespace DM {
 
 
 struct LayerSpec {
-    std::string view;
-    std::string attribute;
-    ColorRamp ramp;
-    double height;
+	std::string view;
+	std::string attribute;
+	ColorRamp ramp;
+	double height;
 };
 
 class System;
@@ -53,38 +53,38 @@ class Layer;
 
 class DM_HELPER_DLL_EXPORT ViewerWindow : public QWidget
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit ViewerWindow(System *system, QWidget *parent = 0);
-    ~ViewerWindow();
-    
-    void addLayers(std::list<LayerSpec> specs);
-    
+	explicit ViewerWindow(System *system, QWidget *parent = 0);
+	~ViewerWindow();
+
+	void addLayers(std::list<LayerSpec> specs);
+
 private slots:
-    void addLayerFromSpec(LayerSpec spec);
-    void addLayer(Layer *layer, bool overdraw = false);
-    void on_actionAdd_Layer_triggered();
-    void offsetChanged();
-    
-    void on_x_layerOffset_valueChanged(double arg1);
-    void on_y_layerOffset_valueChanged(double arg1);
-    void on_z_layerOffset_valueChanged(double arg1);
-    
-    void on_actionReset_View_triggered();
-    
-    void on_names_currentIndexChanged(int);
-    void on_playButton_clicked();
-    
-    void on_layer_listWidget_itemChanged(QListWidgetItem *);
-    void on_layer_listWidget_currentRowChanged(int row);
-    
-    void timerShot();
-    
+	void addLayerFromSpec(LayerSpec spec);
+	void addLayer(Layer *layer, bool overdraw = false);
+	void on_actionAdd_Layer_triggered();
+	void offsetChanged();
+
+	void on_x_layerOffset_valueChanged(double arg1);
+	void on_y_layerOffset_valueChanged(double arg1);
+	void on_z_layerOffset_valueChanged(double arg1);
+
+	void on_actionReset_View_triggered();
+
+	void on_names_currentIndexChanged(int);
+	void on_playButton_clicked();
+
+	void on_layer_listWidget_itemChanged(QListWidgetItem *);
+	void on_layer_listWidget_currentRowChanged(int row);
+
+	void timerShot();
+
 private:
-    ::Ui::ViewerWindow *ui;
-    DM::System *system;
-    QTimer timer;
+	::Ui::ViewerWindow *ui;
+	DM::System *system;
+	QTimer timer;
 };
 
 }

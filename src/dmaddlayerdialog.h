@@ -35,38 +35,39 @@ class AddLayerDialog;
 
 class QTreeWidgetItem;
 
-namespace DM {
-    class System;
-    class Layer;
-    class View;
-    class Viewer;
-    class Attribute;
+namespace DM 
+{
 
+class System;
+class Layer;
+class View;
+class Viewer;
+class Attribute;
 
+class DM_HELPER_DLL_EXPORT AddLayerDialog : public QDialog 
+{
+	Q_OBJECT
 
-class DM_HELPER_DLL_EXPORT AddLayerDialog : public QDialog {
-    Q_OBJECT
-    
 public:
-    explicit AddLayerDialog(DM::System *system, QWidget *parent = 0);
-    ~AddLayerDialog();
-    DM::Layer *getLayer(DM::Viewer *v);
-    
-    QStringList getAttributeVectorNames() const;
-    bool isOverdrawLayer() const;
-    
+	explicit AddLayerDialog(DM::System *system, QWidget *parent = 0);
+	~AddLayerDialog();
+	DM::Layer *getLayer(DM::Viewer *v);
+
+	QStringList getAttributeVectorNames() const;
+	bool isOverdrawLayer() const;
+
 private slots:
-    void on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    
+	void on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+	void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
 private:
-    DM::System *system;
-    Ui::AddLayerDialog *ui;
-    QColor start, stop;
-    
-    DM::View *view;
-    std::string attribute;
-    std::string newAttributeName(std::string viewName, std::string name);
+	DM::System *system;
+	Ui::AddLayerDialog *ui;
+	QColor start, stop;
+
+	DM::View *view;
+	std::string attribute;
+	std::string newAttributeName(std::string viewName, std::string name);
 };
 
 }

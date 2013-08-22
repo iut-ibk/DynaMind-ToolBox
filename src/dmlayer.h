@@ -51,124 +51,123 @@ class Attribute;
 class Face;
 class Node;
 enum  RENDERTYPE {
-    GEOMETRYDRAWER,
-    MESHDRAWER,
-    TESSELATEDFACEDRAWER,
-    FACELINEDRAWER,
-    SIMPLEDRAWERNODES,
-    SIMPLEDRAWEREDGES,
-    RASTERDRAWER
-
+	GEOMETRYDRAWER,
+	MESHDRAWER,
+	TESSELATEDFACEDRAWER,
+	FACELINEDRAWER,
+	SIMPLEDRAWERNODES,
+	SIMPLEDRAWEREDGES,
+	RASTERDRAWER
 };
 
 class DM_HELPER_DLL_EXPORT Layer {
 public:
-    Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false, bool AsLine = false);
-    ~Layer();
-    
-    void setColorInterpretation(GLuint texture) {
-        this->texture = texture;
-    }
+	Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false, bool AsLine = false);
+	~Layer();
 
-    GLuint getColorInterpretation() const {
-        return texture;
-    }
-    
-    void setHeightInterpretation(float percent) {
-        this->scale_height = percent;
-    }
-    
-    float getHeightInterpretation() const {
-        return scale_height;
-    }
-    
-    void systemChanged();
-    
-    const ViewMetaData &getViewMetaData() const {
-        return vmd;
-    }
-    
-    void draw(QWidget *parent);
-    void drawWithNames(QWidget *parent);
-    
-    void setOffset(double x, double y, double z) {
-        x_off = x;
-        y_off = y;
-        z_off = z;
-    }
-    
-    double getXOff() const {
-        return x_off;
-    }
-    
-    double getYOff() const {
-        return y_off;
-    }
-    
-    double getZOff() const {
-        return z_off;
-    }
-    
-    void setNameStart(GLuint start) {
-        name_start = start;
-    }
-    
-    GLuint getNameStart() const {
-        return name_start;
-    }
-    
-    bool isNameFromLayer(GLuint name) const {
-        name -= name_start;
-        return name >= 0 && name < (GLuint) vmd.number_of_primitives;
-    }
-    
-    View getView() const {
-        return view;
-    }
-    
-    void setAttributeVectorName(int name) {
-        attribute_vector_name = name;
-    }
-    
-    int getAttributeVectorName() const {
-        return attribute_vector_name;
-    }
-    
-    std::string getAttribute() const {
-        return attribute;
-    }
-    
-    void setEnabled(bool enabled) {
-        this->enabled = enabled;
-    }
-    
-    bool isEnabled() const {
-        return enabled;
-    }
+	void setColorInterpretation(GLuint texture) {
+		this->texture = texture;
+	}
 
-    int LayerColor[256][4];
-    
+	GLuint getColorInterpretation() const {
+		return texture;
+	}
+
+	void setHeightInterpretation(float percent) {
+		this->scale_height = percent;
+	}
+
+	float getHeightInterpretation() const {
+		return scale_height;
+	}
+
+	void systemChanged();
+
+	const ViewMetaData &getViewMetaData() const {
+		return vmd;
+	}
+
+	void draw(QWidget *parent);
+	void drawWithNames(QWidget *parent);
+
+	void setOffset(double x, double y, double z) {
+		x_off = x;
+		y_off = y;
+		z_off = z;
+	}
+
+	double getXOff() const {
+		return x_off;
+	}
+
+	double getYOff() const {
+		return y_off;
+	}
+
+	double getZOff() const {
+		return z_off;
+	}
+
+	void setNameStart(GLuint start) {
+		name_start = start;
+	}
+
+	GLuint getNameStart() const {
+		return name_start;
+	}
+
+	bool isNameFromLayer(GLuint name) const {
+		name -= name_start;
+		return name >= 0 && name < (GLuint) vmd.number_of_primitives;
+	}
+
+	View getView() const {
+		return view;
+	}
+
+	void setAttributeVectorName(int name) {
+		attribute_vector_name = name;
+	}
+
+	int getAttributeVectorName() const {
+		return attribute_vector_name;
+	}
+
+	std::string getAttribute() const {
+		return attribute;
+	}
+
+	void setEnabled(bool enabled) {
+		this->enabled = enabled;
+	}
+
+	bool isEnabled() const {
+		return enabled;
+	}
+
+	int LayerColor[256][4];
+
 private:
-    System *system;
-    View view;
-    ViewMetaData vmd;
-    View attributeView; //use of maped attributes
-    RENDERTYPE rtype;
-    
-    std::string attribute;
-    double scale_height;
-    
-    std::vector<GLuint> lists;
-    GLuint texture;
-    GLuint name_start;
-    
-    double x_off, y_off, z_off;
-    
-    
-    int attribute_vector_name;
-    bool enabled;
-    bool as3DObject;
-    bool asMesh;
+	System *system;
+	View view;
+	ViewMetaData vmd;
+	View attributeView; //use of maped attributes
+	RENDERTYPE rtype;
+
+	std::string attribute;
+	double scale_height;
+
+	std::vector<GLuint> lists;
+	GLuint texture;
+	GLuint name_start;
+
+	double x_off, y_off, z_off;
+
+
+	int attribute_vector_name;
+	bool enabled;
+	bool as3DObject;
+	bool asMesh;
 };
 
 } // namespace DM

@@ -44,59 +44,59 @@
 #include <QtGlobal>
 
 enum iterator_pos {
-    before,
-    after,
-    in_between
+	before,
+	after,
+	in_between
 };
 
 template<typename CB>
 void iterate_components(DM::System *system, DM::View v, CB &callback = CB()) 
 {
-    foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) 
+	foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
-        DM::Component *cmp = system->getComponent(cmp_uuid);
-        std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
-        std::vector<std::string> uuids;
+		DM::Component *cmp = system->getComponent(cmp_uuid);
+		std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
+		std::vector<std::string> uuids;
 
-        foreach (DM::LinkAttribute link, links)
-            uuids.push_back(link.uuid);
+		foreach (DM::LinkAttribute link, links)
+			uuids.push_back(link.uuid);
 
-        if (v.getType() == DM::FACE)
-            uuids.push_back(cmp_uuid);
+		if (v.getType() == DM::FACE)
+			uuids.push_back(cmp_uuid);
 
-        callback(system, v, cmp, 0, 0, before);
-        foreach (std::string uuid, uuids) 
+		callback(system, v, cmp, 0, 0, before);
+		foreach (std::string uuid, uuids) 
 		{
-            DM::Face * f = system->getFace(uuid);
-            std::vector<double> c = f->getAttribute("color")->getDoubleVector();
+			DM::Face * f = system->getFace(uuid);
+			std::vector<double> c = f->getAttribute("color")->getDoubleVector();
 
-            DM::Vector3 color;
-            if (c.size() > 2)
+			DM::Vector3 color;
+			if (c.size() > 2)
 				color = DM::Vector3(c[0],c[1],c[2]);
-			
-           // std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
-            std::vector<DM::Node> nodes;
+
+			// std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
+			std::vector<DM::Node> nodes;
 			DM::CGALGeometry::FaceTriangulation(system, f, nodes);
-            
+
 			DM::Vector3 vec;
 			foreach (const DM::Node &n, nodes) 
 			{
 				n.get(&vec.x);
-                callback(system, v, cmp, &vec, &color, in_between);
-            }
-        }
-        callback(system, v, cmp, 0, 0, after);
-    }
+				callback(system, v, cmp, &vec, &color, in_between);
+			}
+		}
+		callback(system, v, cmp, 0, 0, after);
+	}
 }
 
 template<typename CB>
 void iterate_mesh(DM::System *system, DM::View v, CB &callback = CB()) {
 
-    foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) 
+	foreach(std::string cmp_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
-        DM::Face *f = system->getFace(cmp_uuid);
+		DM::Face *f = system->getFace(cmp_uuid);
 
-        callback(system, v, f, 0, 0, before);
+		callback(system, v, f, 0, 0, before);
 
 		DM::Vector3 vec;
 		foreach(DM::Node* n, f->getNodePointers())
@@ -104,8 +104,8 @@ void iterate_mesh(DM::System *system, DM::View v, CB &callback = CB()) {
 			n->get(&vec.x);
 			callback(system, v, n, &vec, 0, in_between);
 		}
-        callback(system, v, f, 0, 0, after);
-    }
+		callback(system, v, f, 0, 0, after);
+	}
 }
 
 
@@ -113,15 +113,15 @@ template<typename CB>
 void iterate_nodes(DM::System *system, DM::View v, CB &callback = CB()) 
 {
 	DM::Vector3 vec;
-    foreach(std::string node_uuid, system->getUUIDsOfComponentsInView(v)) 
+	foreach(std::string node_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
-        DM::Node *n = system->getNode(node_uuid);
+		DM::Node *n = system->getNode(node_uuid);
 		n->get(&vec.x);
 
-        callback(system, v, n, 0, 0, before);
-        callback(system, v, n, &vec, 0, in_between);
-        callback(system, v, n, 0, 0, after);
-    }
+		callback(system, v, n, 0, 0, before);
+		callback(system, v, n, &vec, 0, in_between);
+		callback(system, v, n, 0, 0, after);
+	}
 
 }
 
@@ -129,32 +129,32 @@ template<typename CB>
 void rasterdata_triangluation_callback(DM::System *system, DM::RasterData * r, DM::View v, CB &callback)
 {
 	unsigned long Y = r->getHeight();
-    unsigned long X = r->getWidth();
+	unsigned long X = r->getWidth();
 
-    unsigned long OX = r->getXOffset();
-    unsigned long OY = r->getYOffset();
+	unsigned long OX = r->getXOffset();
+	unsigned long OY = r->getYOffset();
 
-    double noData = r->getNoValue();
-    double lX = r->getCellSizeX();
-    double lY = r->getCellSizeY();
+	double noData = r->getNoValue();
+	double lX = r->getCellSizeX();
+	double lY = r->getCellSizeY();
 
 	double xp,xm,yp,ym;
 
-    for (unsigned long  y = 0; y < Y; y++) 
+	for (unsigned long  y = 0; y < Y; y++) 
 	{
-        for (unsigned long  x = 0; x < X; x++) 
+		for (unsigned long  x = 0; x < X; x++) 
 		{
-            double val = r->getCell(x,y);
-            if (val == noData)
-                continue;
-			
+			double val = r->getCell(x,y);
+			if (val == noData)
+				continue;
+
 			xp = (x+0.5) * lX + OX;
 			xm = (x-0.5) * lX + OX;
 
 			yp = (y+0.5) * lY + OY;
 			ym = (y-0.5) * lY + OY;
 
-            DM::Vector3 vec( xm , ym, val);
+			DM::Vector3 vec( xm , ym, val);
 			callback(system, v, r, &vec, 0, in_between);
 			vec.x = xp;
 			vec.y = ym;
@@ -171,23 +171,23 @@ void rasterdata_triangluation_callback(DM::System *system, DM::RasterData * r, D
 			vec.x = xp;
 			vec.y = yp;
 			callback(system, v, r, &vec, 0, in_between);
-        }
-    }
+		}
+	}
 }
 
 template<typename CB>
 void iterate_rasterdata(DM::System *system, DM::View v, CB &callback = CB()) {
-    DM::ComponentMap cmp = system->getAllComponentsInView(v);
-    DM::RasterData * r = 0;
-    for (DM::ComponentMap::const_iterator it = cmp.begin();
-         it != cmp.end();
-         ++it) {
-        r = (DM::RasterData *) it->second;
-    }
+	DM::ComponentMap cmp = system->getAllComponentsInView(v);
+	DM::RasterData * r = 0;
+	for (DM::ComponentMap::const_iterator it = cmp.begin();
+		it != cmp.end();
+		++it) {
+			r = (DM::RasterData *) it->second;
+	}
 
-    callback(system, v, r, 0, 0, before);
+	callback(system, v, r, 0, 0, before);
 	rasterdata_triangluation_callback(system, r, v, callback);
-    callback(system, v, r, 0, 0, after);
+	callback(system, v, r, 0, 0, after);
 }
 
 template<typename CB>
@@ -195,20 +195,20 @@ void iterate_edges(DM::System *system, DM::View v, CB &callback = CB())
 {
 	DM::Vector3 vecStart;
 	DM::Vector3 vecEnd;
-    foreach(std::string edge_uuid, system->getUUIDsOfComponentsInView(v)) 
+	foreach(std::string edge_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
-        DM::Edge *e = system->getEdge(edge_uuid);
+		DM::Edge *e = system->getEdge(edge_uuid);
 
 		DM::Node* n = e->getStartNode();
 		n->get(&vecStart.x);
 		n = e->getEndNode();
 		n->get(&vecEnd.x);
 
-        callback(system, v, e, 0, 0, before);
-        callback(system, v, e, &vecStart, 0, in_between);
-        callback(system, v, e, &vecEnd, 0, in_between);
-        callback(system, v, e, 0, 0, after);
-    }
+		callback(system, v, e, 0, 0, before);
+		callback(system, v, e, &vecStart, 0, in_between);
+		callback(system, v, e, &vecEnd, 0, in_between);
+		callback(system, v, e, 0, 0, after);
+	}
 }
 
 template<typename CB>
@@ -216,21 +216,21 @@ void iterate_faces(DM::System *system, DM::View v, CB &callback = CB())
 {
 	DM::Vector3 vec;
 
-    foreach(std::string face_uuid, system->getUUIDsOfComponentsInView(v)) 
+	foreach(std::string face_uuid, system->getUUIDsOfComponentsInView(v)) 
 	{
-        DM::Face *f = system->getFace(face_uuid);
+		DM::Face *f = system->getFace(face_uuid);
 
-        callback(system, v, f, 0, 0, before);
+		callback(system, v, f, 0, 0, before);
 		std::vector<DM::Node*> nodes = f->getNodePointers();
 		//nodes.pop_back();
 		foreach(DM::Node* n, nodes)
 		{
-            n->get(&vec.x);
-            callback(system, v, f, &vec, 0, in_between);
-        }
+			n->get(&vec.x);
+			callback(system, v, f, &vec, 0, in_between);
+		}
 
-        callback(system, v, f, 0, 0, after);
-    }
+		callback(system, v, f, 0, 0, after);
+	}
 }
 
 
