@@ -37,7 +37,7 @@
 using namespace DM;
 
 ColorBarWidget::ColorBarWidget(QWidget *parent) :
-QGLWidget(parent)
+	QGLWidget(parent)
 {
 	texture = 0;
 }
