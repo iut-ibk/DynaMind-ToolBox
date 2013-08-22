@@ -45,27 +45,6 @@ GuiSimulationReader::GuiSimulationReader(QIODevice* source)
     r.parse(QXmlInputSource(source));
 	source->close();
 }
-/*
-void GuiSimulationReader::loadSimluation(QString FileName,  GUISimulation *simulation,  std::map<std::string, std::string> UUIDTranslation)
-{
-	
-    this->sim = simulation;
-    this->UUIDTransation = UUIDTranslation;
-    QXmlSimpleReader r;
-    if (!QFile::exists(FileName)) {
-        return;
-    }
-    QFile f(FileName);
-    r.setContentHandler(this);
-    r.parse(QXmlInputSource(&f));
-
-    //CreateAllGroups
-
-
-
-    int i = 0;
-}
-*/
 
 bool GuiSimulationReader::startElement(const QString & namespaceURI,
                                 const QString & localName,

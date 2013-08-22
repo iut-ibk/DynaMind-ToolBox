@@ -28,10 +28,10 @@
 
 SimulationManagment::SimulationManagment()
 {
-    this->simcounter = 0;
+	this->simcounter = 0;
 }
 
 void SimulationManagment::SimulationCounter() {
-    this->simcounter++;
-    emit valueChanged( this->simcounter);
+	this->simcounter++;
+	emit valueChanged( this->simcounter);
 }

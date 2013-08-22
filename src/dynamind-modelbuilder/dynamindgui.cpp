@@ -35,28 +35,28 @@
 #include <QGLFormat>
 int main(int argc, char *argv[]) 
 {
-    QApplication app(argc, argv);
-    Q_INIT_RESOURCE(icons);
-    Q_INIT_RESOURCE(splash);
-    QApplication::setWindowIcon(QIcon(":/ressources/dynamind-icon.png"));
-    
-    QCoreApplication::setOrganizationName("IUT");
-    QCoreApplication::setApplicationName("DYNAMIND");
+	QApplication app(argc, argv);
+	Q_INIT_RESOURCE(icons);
+	Q_INIT_RESOURCE(splash);
+	QApplication::setWindowIcon(QIcon(":/ressources/dynamind-icon.png"));
 
-    QGLFormat glf = QGLFormat::defaultFormat();
-    glf.setSampleBuffers(true);
-    glf.setSamples(4);
-    QGLFormat::setDefaultFormat(glf);
+	QCoreApplication::setOrganizationName("IUT");
+	QCoreApplication::setApplicationName("DYNAMIND");
 
-    QPixmap pixmap(":/Splash/ressources/logo.png");
-    QSplashScreen splash1;
-    splash1.show();
-    app.processEvents();
-    QThreadPool::globalInstance()->setMaxThreadCount(0);
+	QGLFormat glf = QGLFormat::defaultFormat();
+	glf.setSampleBuffers(true);
+	glf.setSamples(4);
+	QGLFormat::setDefaultFormat(glf);
+
+	QPixmap pixmap(":/Splash/ressources/logo.png");
+	QSplashScreen splash1;
+	splash1.show();
+	app.processEvents();
+	QThreadPool::globalInstance()->setMaxThreadCount(0);
 
 	DMMainWindow mw;
 	mw.show();
 	splash1.finish(&mw);
 
-    return app.exec();
+	return app.exec();
 }

@@ -32,40 +32,40 @@
 #include <sstream>
 #include <dmlogger.h>
 GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::GUIHelpViewer)
+	QWidget(parent),
+	ui(new Ui::GUIHelpViewer)
 {
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
-   true);
-    ui->setupUi(this);
-    this->sim = sim;
-    stringstream filename;
-    filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
-    this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
+		true);
+	ui->setupUi(this);
+	this->sim = sim;
+	stringstream filename;
+	filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
+	this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
-    this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
-    
-    if (!m){
-        ui->webView->load(this->currentUrl);
-        return;
-    }
-    if (!m->getHelpUrl().empty()) {
-        this->currentUrl = QUrl(QString::fromStdString(m->getHelpUrl()));
-        ui->webView->load(this->currentUrl);
-        return;
-    }
+	this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
 
-    ui->webView->load(this->currentUrl);
+	if (!m){
+		ui->webView->load(this->currentUrl);
+		return;
+	}
+	if (!m->getHelpUrl().empty()) {
+		this->currentUrl = QUrl(QString::fromStdString(m->getHelpUrl()));
+		ui->webView->load(this->currentUrl);
+		return;
+	}
+
+	ui->webView->load(this->currentUrl);
 }
 
 GUIHelpViewer::~GUIHelpViewer()
 {
-    delete ui;
+	delete ui;
 }
 
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
-    this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
-    ui->webView->load(this->currentUrl);
+	this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
+	ui->webView->load(this->currentUrl);
 }

@@ -46,9 +46,9 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 	QGraphicsScene(parent), parentGroup(parentGroup)
 {
 	viewer = new QGraphicsView(this, parent);
-    viewer->setRenderHints(QPainter::Antialiasing);
-    viewer->setAcceptDrops(true);
-    if (!this->parentGroup)
+	viewer->setRenderHints(QPainter::Antialiasing);
+	viewer->setAcceptDrops(true);
+	if (!this->parentGroup)
 		viewer->setBackgroundBrush(QBrush(QColor(239,235,226)));
 
 	this->sim = sim;
@@ -71,8 +71,8 @@ void SimulationTab::enhanceSelection()
 			DM::Module* group = n->getModule();
 			if(group->isGroup())
 				foreach(DM::Module* m, sim->getModules())
-					if(m->getOwner() == group)
-						sim->getModelNode(m)->setSelected(true);
+				if(m->getOwner() == group)
+					sim->getModelNode(m)->setSelected(true);
 		}
 }
 
@@ -80,7 +80,7 @@ void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(!itemAt(event->scenePos()))
 		foreach(SimulationTab* t, sim->getTabs())
-			t->clearSelection();
+		t->clearSelection();
 
 	if(event->buttons() == Qt::LeftButton)
 		viewer->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -237,22 +237,22 @@ void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if(event->buttons() == Qt::LeftButton)
 		if(ModelNode* movingNode = dynamic_cast<ModelNode*>(itemAt(cursorPos)))
 			foreach(QGraphicsItem* it, items(cursorPos))
+		{
+			ModelNode* node = dynamic_cast<ModelNode*>(it);
+			if(node && !node->isGroup() && node != movingNode && node->getModule()->isGroup())
 			{
-				ModelNode* node = dynamic_cast<ModelNode*>(it);
-				if(node && !node->isGroup() && node != movingNode && node->getModule()->isGroup())
-				{
-					node->setHovered(true);
-					hoveredGroupNode = node;
-					break;
-				}
+				node->setHovered(true);
+				hoveredGroupNode = node;
+				break;
 			}
+		}
 
-	QGraphicsScene::mouseMoveEvent(event);
+		QGraphicsScene::mouseMoveEvent(event);
 }
 
 void SimulationTab::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
-    event->accept();
+	event->accept();
 }
 
 void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
@@ -269,7 +269,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 	DM::Logger(DM::Debug) << "tab drop";
 
-    event->accept();
+	event->accept();
 
 	QTreeWidget *moduleTree = dynamic_cast<QTreeWidget*>(event->source());
 
@@ -294,7 +294,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 void SimulationTab::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
-    event->accept();
+	event->accept();
 
 	float s = (event->delta()>0?1:-1) * 0.1f;
 	viewer->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);

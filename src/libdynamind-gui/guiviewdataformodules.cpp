@@ -1,7 +1,33 @@
+/**
+ * @file
+ * @author  Chrisitan Urich <christian.urich@gmail.com>
+ * @version 1.0
+ * @section LICENSE
+ * This file is part of DynaMind
+ *
+ * Copyright (C) 2011  Christian Urich
+
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
 #include "guiviewdataformodules.h"
 #include "ui_guiviewdataformodules.h"
 #include <dmmodule.h>
 #include <dm.h>
+
 typedef std::map<std::string, std::map<std::string,DM::View> > view_map;
 
 GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
@@ -18,7 +44,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
-	
+
 	view_map views = m->getAccessedViews();
 	for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) 
 	{
@@ -69,7 +95,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			this->ui->treeWidget_views->expandItem(root_port);
 		}
 	}
-	
+
 	this->ui->treeWidget->setColumnCount(2);
 	this->ui->treeWidget->setColumnWidth(0,200);
 	headerItem = this->ui->treeWidget->headerItem();
@@ -79,7 +105,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	view_map viewsInStream = m->getViewsInStream();
 	for (view_map::const_iterator it = viewsInStream.begin();
 		it != viewsInStream.end(); ++it) 
-	//foreach (DM::Port * p, this->m->getOutPorts())
+		//foreach (DM::Port * p, this->m->getOutPorts())
 	{
 		//std::string dataname = p->getLinkedDataName();
 		//DM::Logger(DM::Debug) << dataname;
@@ -100,7 +126,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			//DM::View * view = sys->getViewDefinition(name);
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
 			item_view->setText(0, QString::fromStdString(v.getName()));
-			
+
 			int type = v.getType();
 
 			if (type == DM::NODE)
@@ -113,7 +139,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 				item_view->setText(1, "Systems");
 			if (type == DM::RASTERDATA)
 				item_view->setText(1, "Raster Data");
-				
+
 			root_port->addChild(item_view);
 
 			//DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
@@ -136,5 +162,5 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 GUIViewDataForModules::~GUIViewDataForModules()
 {
-    delete ui;
+	delete ui;
 }

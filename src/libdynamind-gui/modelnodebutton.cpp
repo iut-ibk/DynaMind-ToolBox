@@ -29,29 +29,29 @@
 
 
 ModelNodeButton::ModelNodeButton(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent, scene) {
-    img = QImage (":/Icons/ressources/list-remove.png");
-    minimized = false;
+	img = QImage (":/Icons/ressources/list-remove.png");
+	minimized = false;
 }
 
 void ModelNodeButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
-    painter->drawImage(0,0,img);
+	painter->drawImage(0,0,img);
 }
 
 QRectF ModelNodeButton::boundingRect() const{
-    return QRectF(0, 0, 16,16);
+	return QRectF(0, 0, 16,16);
 }
 void ModelNodeButton::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
 
-    if (minimized == false) {
-        this->minimized = true;
-        img = QImage (":/Icons/ressources/list-add.png");
-        emit Minimize();
-    } else {
-        this->minimized = false;
-        img = QImage (":/Icons/ressources/list-remove.png");
-        emit Maximize();
-    }
+	if (minimized == false) {
+		this->minimized = true;
+		img = QImage (":/Icons/ressources/list-add.png");
+		emit Minimize();
+	} else {
+		this->minimized = false;
+		img = QImage (":/Icons/ressources/list-remove.png");
+		emit Maximize();
+	}
 
-    QGraphicsItem::mousePressEvent(event);
+	QGraphicsItem::mousePressEvent(event);
 }

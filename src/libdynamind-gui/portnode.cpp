@@ -158,7 +158,7 @@ QVariant PortNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
 	if(change == QGraphicsItem::ItemScenePositionHasChanged) 
 		foreach(LinkNode* link, linkNodes)
-			link->refresh();
+		link->refresh();
 	return QGraphicsItem::itemChange(change, value);
 }
 
@@ -222,14 +222,14 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 				|| (this->getType() == DM::INPORT && port->getType() == DM::INPORT && this->getModule()->isGroup())
 				|| (this->getType() == DM::OUTPORT && port->getType() == DM::OUTPORT && port->getModule()->isGroup()))
 				simulation->addLink(this->module,	this->getPortName().toStdString(),
-													port->module, port->getPortName().toStdString());
+					port->module, port->getPortName().toStdString());
 
 			else if((this->getType() == DM::INPORT && port->getType() == DM::OUTPORT)
 				|| (this->getType() == DM::INPORT && port->getType() == DM::INPORT && port->getModule()->isGroup())
 				|| (this->getType() == DM::OUTPORT && port->getType() == DM::OUTPORT && this->getModule()->isGroup()))
 				// swapped
 				simulation->addLink(port->module,	port->getPortName().toStdString(),
-													this->module, this->getPortName().toStdString());
+					this->module, this->getPortName().toStdString());
 
 			break;
 		}

@@ -52,13 +52,13 @@ void DMMainWindow::ReloadModules()
 {
 	simulation->registerModulesFromDefaultLocation();
 	/*
-    this->simulation->reloadModules();
-    createModuleListView();
+	this->simulation->reloadModules();
+	createModuleListView();
 	*/
 }
 
 void DMMainWindow::startEditor() {
-    //DM::PythonEnv::getInstance()->startEditra();
+	//DM::PythonEnv::getInstance()->startEditra();
 }
 
 void DMMainWindow::newLogLine(QString line)
@@ -83,53 +83,53 @@ void DMMainWindow::updateProgress(float progress)
 DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
 	// qt init
-    Q_INIT_RESOURCE(icons);
-    ui->setupUi(this);
-    this->setParent(parent);
+	Q_INIT_RESOURCE(icons);
+	ui->setupUi(this);
+	this->setParent(parent);
 
 	// logger init
-    log_updater = new GuiLogSink();
+	log_updater = new GuiLogSink();
 	connect(log_updater, SIGNAL(newLogLine(QString)), SLOT(newLogLine(QString)), Qt::QueuedConnection);
 #if defined DEBUG || _DEBUG
-    DM::Log::init(log_updater,DM::Debug);
+	DM::Log::init(log_updater,DM::Debug);
 #else
-    DM::Log::init(log_updater,DM::Standard);
+	DM::Log::init(log_updater,DM::Standard);
 #endif
 	// add log export to file
-    QString logfilepath = QDir::tempPath() + "/dynamind" 
+	QString logfilepath = QDir::tempPath() + "/dynamind" 
 		+ QDateTime::currentDateTime().toString("_yyMMdd_hhmmss_zzz")+".log";
-    if(QFile::exists(logfilepath))
-        QFile::remove(logfilepath);
+	if(QFile::exists(logfilepath))
+		QFile::remove(logfilepath);
 
-    outputFile = new ofstream(logfilepath.toStdString().c_str());
-    DM::Log::addLogSink(new DM::OStreamLogSink(*outputFile));
+	outputFile = new ofstream(logfilepath.toStdString().c_str());
+	DM::Log::addLogSink(new DM::OStreamLogSink(*outputFile));
 	DM::Logger() << "logfile: " << logfilepath;
-	
+
 	// init python env
-    DM::PythonEnv *env = DM::PythonEnv::getInstance();
-    env->addPythonPath(QApplication::applicationDirPath().toStdString());
-    env->addOverWriteStdCout();
+	DM::PythonEnv *env = DM::PythonEnv::getInstance();
+	env->addPythonPath(QApplication::applicationDirPath().toStdString());
+	env->addOverWriteStdCout();
 
 	// init simulation, we only use one instance
-    this->simulation = new GUISimulation(parent, ui->tabWidget_4);
+	this->simulation = new GUISimulation(parent, ui->tabWidget_4);
 	simulationThread = NULL;
 	simulationThreadWrapper = NULL;
 
-    this->simulation->registerModulesFromDefaultLocation();
-    this->simulation->registerModulesFromSettings();
-    createModuleListView();
+	this->simulation->registerModulesFromDefaultLocation();
+	this->simulation->registerModulesFromSettings();
+	createModuleListView();
 
-    connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
-    connect( ui->actionPreferences, SIGNAL ( triggered() ), this, SLOT(preferences() ), Qt::DirectConnection );
-    connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
-    connect(ui->actionSaveAs, SIGNAL(triggered()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
-    connect(ui->actionOpen, SIGNAL(triggered()), this , SLOT(loadSimulation()), Qt::DirectConnection);
-    connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(clearSimulation()), Qt::DirectConnection);
-    connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
-    connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadModules()), Qt::DirectConnection);
-    connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
-    connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
-    connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
+	connect( ui->actionRun, SIGNAL( triggered() ), this, SLOT( runSimulation() ), Qt::DirectConnection );
+	connect( ui->actionPreferences, SIGNAL ( triggered() ), this, SLOT(preferences() ), Qt::DirectConnection );
+	connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
+	connect(ui->actionSaveAs, SIGNAL(triggered()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
+	connect(ui->actionOpen, SIGNAL(triggered()), this , SLOT(loadSimulation()), Qt::DirectConnection);
+	connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(clearSimulation()), Qt::DirectConnection);
+	connect(ui->actionEditor, SIGNAL(triggered()), this , SLOT(startEditor()), Qt::DirectConnection);
+	connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadModules()), Qt::DirectConnection);
+	connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
+	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
+	connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
 }
 
 void DMMainWindow::createModuleListView() 
@@ -194,7 +194,7 @@ void DMMainWindow::runSimulation()
 	ui->actionUpdate->setEnabled(false);
 	ui->actionSave->setEnabled(false);
 	ui->actionSaveAs->setEnabled(false);
-	
+
 	simulationThread = new QThread;
 	simulationThreadWrapper = new GuiSimulationObserver(simulation);
 	connect(simulationThreadWrapper, SIGNAL(signalUpdateProgress(float)), this, SLOT(updateProgress(float)));
@@ -208,9 +208,9 @@ void DMMainWindow::runSimulation()
 void DMMainWindow::updateSimulation()
 {
 	/*
-    this->simulation->reloadModules();
-    createModuleListView();
-    this->simulation->updateSimulation();
+	this->simulation->reloadModules();
+	createModuleListView();
+	this->simulation->updateSimulation();
 	*/
 }
 void DMMainWindow::resetSimulation()
@@ -237,57 +237,57 @@ void DMMainWindow::simulationFinished()
 
 void DMMainWindow::preferences() 
 {	
-    Preferences *p =  new Preferences(this);
-    p->exec();
+	Preferences *p =  new Preferences(this);
+	p->exec();
 }
 
 void DMMainWindow::saveAsSimulation() 
 {
 #ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-   QString fileName = QFileDialog::getSaveFileName(this,
-                                          tr("Save DynaMind File"), "", tr("Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog) ;
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save DynaMind File"), "", tr("Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog) ;
 #else
-   QString fileName = QFileDialog::getSaveFileName(this, tr("Save DynaMind File"));
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save DynaMind File"));
 #endif
-    if (!fileName.isEmpty()) 
+	if (!fileName.isEmpty()) 
 	{
-        if (!fileName.contains(".dyn"))
-            fileName+=".dyn";
-        this->simulation->writeSimulation(fileName.toStdString());
-        this->getSimulation()->currentDocument = fileName;
-    }
+		if (!fileName.contains(".dyn"))
+			fileName+=".dyn";
+		this->simulation->writeSimulation(fileName.toStdString());
+		this->getSimulation()->currentDocument = fileName;
+	}
 }
 
 void DMMainWindow::saveSimulation() 
 {
 	if (!this->getSimulation()->currentDocument.isEmpty()) 
 	{
-        this->simulation->writeSimulation(this->getSimulation()->currentDocument.toStdString());
-    } 
+		this->simulation->writeSimulation(this->getSimulation()->currentDocument.toStdString());
+	} 
 	else
-        this->saveAsSimulation();
+		this->saveAsSimulation();
 }
 
 void DMMainWindow::clearSimulation() 
 {	
-    this->simulation->clearSimulation();
+	this->simulation->clearSimulation();
 }
 
 void DMMainWindow::loadSimulation(int id) 
 {
 #ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
-                                                    "", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
+		"", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
 #else
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
-													"", tr("DynaMind Files (*.dyn)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
+		"", tr("DynaMind Files (*.dyn)"));
 #endif
 
-    if (!fileName.isEmpty()){
-        this->clearSimulation();
-        this->getSimulation()->currentDocument = fileName;
+	if (!fileName.isEmpty()){
+		this->clearSimulation();
+		this->getSimulation()->currentDocument = fileName;
 		simulation->loadSimulation(fileName.toStdString());
-    }
+	}
 }
 
 DMMainWindow::~DMMainWindow() 
@@ -306,8 +306,8 @@ void DMMainWindow::on_actionZoomIn_triggered()
 
 void DMMainWindow::on_actionAbout_triggered()
 {
-    GUIAboutDialog * ab= new GUIAboutDialog(this->simulation, this);
-    ab->show();
+	GUIAboutDialog * ab= new GUIAboutDialog(this->simulation, this);
+	ab->show();
 }
 
 void DMMainWindow::on_actionZoomOut_triggered()
@@ -318,16 +318,16 @@ void DMMainWindow::on_actionZoomOut_triggered()
 void DMMainWindow::on_actionZoomReset_triggered()
 {
 	QGraphicsView* view = simulation->getSelectedTab()->getQGViewer();
-    view->fitInView(view->scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+	view->fitInView(view->scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 /*void DMMainWindow::showHelp(std::string classname) 
 {
-    this->helpviewer->show();
-    this->helpviewer->showHelpForModule(classname);
+this->helpviewer->show();
+this->helpviewer->showHelpForModule(classname);
 }*/
 
 void DMMainWindow::on_actionShow_Help_triggered() 
 {
-    //this->helpviewer->show();
+	//this->helpviewer->show();
 }

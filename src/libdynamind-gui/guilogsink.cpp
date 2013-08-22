@@ -29,37 +29,37 @@
 #include <dmlog.h>
 
 GuiLogSink::GuiLogSink() {
-    mutex = new QMutex(QMutex::Recursive);
+	mutex = new QMutex(QMutex::Recursive);
 }
 
 GuiLogSink::~GuiLogSink() {
-    delete mutex;
+	delete mutex;
 }
 
 DM::LogSink &GuiLogSink::operator<<(const std::string &string) {
-        QMutexLocker locker(mutex);
+	QMutexLocker locker(mutex);
 	buf += QString::fromStdString(string);
 	return *this;
 }
 
 DM::LogSink &GuiLogSink::operator<<(const char *string) {
-        QMutexLocker locker(mutex);
+	QMutexLocker locker(mutex);
 	buf += QString(string);
 	return *this;
 }
 
 DM::LogSink &GuiLogSink::operator<<(int i) {
-        QMutexLocker locker(mutex);
+	QMutexLocker locker(mutex);
 	buf += QString("%0").arg(i);
 	return *this;
 }
 DM::LogSink &GuiLogSink::operator<<(double f) {
-        QMutexLocker locker(mutex);
-        buf += QString("%2").arg(f);
-        return *this;
+	QMutexLocker locker(mutex);
+	buf += QString("%2").arg(f);
+	return *this;
 }
 DM::LogSink &GuiLogSink::operator<<(DM::LSEndl i) {
-        QMutexLocker locker(mutex);
+	QMutexLocker locker(mutex);
 	Q_EMIT newLogLine(buf);
 	buf.clear();
 	return *this;

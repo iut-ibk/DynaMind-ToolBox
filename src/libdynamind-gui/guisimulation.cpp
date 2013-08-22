@@ -61,7 +61,7 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 	if(!m)
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
-	
+
 	if(!parent)
 		selectTab(0);
 	else
@@ -172,14 +172,14 @@ bool GUISimulation::addLink(DM::Module* source, std::string outPort,
 		return false;
 
 	LinkNode* gl = new LinkNode();
-	
+
 	if( !gl )
 		return false;
 
 	inPortNode->scene()->addItem(gl);
 	gl->setInPort(inPortNode);
 	gl->setOutPort(outPortNode);
-	
+
 	// backlink for modelNode position update
 	inPortNode->addLink(gl);
 	outPortNode->addLink(gl);
@@ -194,7 +194,7 @@ PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName,
 	if(map_contains(&modelNodes, m, mn))
 	{
 		if(!fromInnerGroup)
-		return mn->getPort(portName, type);
+			return mn->getPort(portName, type);
 		//if(PortNode* pn = mn->getPort(portName, type))
 		//	return pn;
 		else if(mn->getChild())
@@ -206,13 +206,13 @@ PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName,
 bool GUISimulation::removeLink(PortNode* out, PortNode* in)
 {
 	return Simulation::removeLink(out->getModule(), out->getPortName().toStdString(),
-								in->getModule(), in->getPortName().toStdString());
+		in->getModule(), in->getPortName().toStdString());
 }
 
 bool GUISimulation::loadSimulation(std::string filePath) 
 {
 	QString qFilePath = QString::fromStdString(filePath);
-	
+
 	std::map<std::string, DM::Module*> modMap;
 	QFile file(qFilePath);
 	GuiSimulationReader simio(&file);
@@ -267,7 +267,7 @@ void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*>
 			miny = max(miny, (float)m->pos().y());
 		}
 	}
-	
+
 	foreach(DM::Module* mod, modules)
 	{
 		ModelNode* m = this->getModelNode(mod);
