@@ -168,6 +168,17 @@ TimeSeriesAttribute ToTimeSeriesAttribute(QVariant q)
 	return ts;
 }
 
+Attribute::AttributeValue::AttributeValue()
+{
+	ptr = NULL;
+	type = NOTYPE;
+}
+
+Attribute::AttributeValue::~AttributeValue()
+{
+	Free();
+}
+
 Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 {
 	this->type = ref.type;

@@ -75,7 +75,8 @@ class Component;
 class DM_HELPER_DLL_EXPORT Attribute
 {
 public:
-	enum AttributeType {
+	enum AttributeType 
+	{
 		NOTYPE,
 		DOUBLE,
 		STRING,
@@ -87,36 +88,19 @@ public:
 	class AttributeValue
 	{
 	public:
-		Attribute::AttributeType type;
-		void*	ptr;
-
-		AttributeValue()
-		{
-			ptr = NULL;
-			type = NOTYPE;
-		}
+		AttributeValue();
 		AttributeValue(const AttributeValue& ref);
 		AttributeValue(double d);
 		AttributeValue(std::string string);
-		~AttributeValue()
-		{
-			Free();
-		}
+		~AttributeValue();
 		void Free();
 		AttributeValue(QVariant var, AttributeType type);
 		QVariant toQVariant();
+		
+		Attribute::AttributeType type;
+		void*	ptr;
 	};
-private:
-	QUuid _uuid;
-	std::string name;
-	std::set<std::string> inViews;
-	Component* owner;
-	AttributeValue	*value;
-	bool	isInserted;
-	AttributeValue*	getValue() const;
-	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
-protected:
-public:
+
 	/** @brief =operator */
 	Attribute& operator=(Attribute const& other);
 	/** @brief copies type and value to this attribute**/
@@ -206,6 +190,16 @@ public:
 
 	static void PrintCacheStatistics();
 	static void ClearCache();
+
+private:
+	QUuid		_uuid;
+	std::string name;
+	Component*		owner;
+	AttributeValue	*value;
+	bool			isInserted;
+	AttributeValue*	getValue() const;
+	std::set<std::string> inViews;
+	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }
