@@ -61,9 +61,12 @@ void logwithlevel(std::string msg, DM::LogLevel logl) {
 	DM::Logger(logl) << msg;
 }
 
+namespace DM
+{
 struct PythonEnvPriv {
 	PyObject *main_module, *main_namespace;
 };
+}
 
 PythonEnv *PythonEnv::instance = 0;
 
