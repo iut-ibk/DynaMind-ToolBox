@@ -102,12 +102,6 @@ bool View::writes() const
 	return false;
 }
 
-bool View::operator<(const View & other) const {
-	if (this->getName().compare(other.getName()) < 0)
-		return true;
-	return false;
-}
-
 Attribute::AttributeType View::getAttributeType(std::string name)
 {
 	return attributeTypes[name];

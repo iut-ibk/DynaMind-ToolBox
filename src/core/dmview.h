@@ -114,7 +114,6 @@ public:
 	bool reads() const;
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
 	bool writes() const;
-	bool operator<(const View & other) const;
 	/** @brief Returns Attribute Type */
 	Attribute::AttributeType getAttributeType(std::string name);
 	/** @brief Sets Attribute Type */
