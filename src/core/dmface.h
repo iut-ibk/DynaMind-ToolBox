@@ -46,15 +46,6 @@ class Node;
   */
 class DM_HELPER_DLL_EXPORT Face :  public Component, Asynchron
 {
-private:
-	std::vector<Node*> _nodes;
-	std::vector<Face*> _holes;
-
-	//void SQLUpdateValues();
-	/** @brief return table name */
-	QString getTableName();
-	//void SetOwner(Component *owner);
-	//bool isInserted;
 public:
 	void Synchronize();
 	/** @brief destructor */
@@ -88,6 +79,12 @@ public:
 	/** @brief this function is neccessary to make the copy constructor a usefull */
 	void setNodes(const std::vector<Node*>& nodes);
 	void clearHoles();
+private:
+	/** @brief return table name */
+	QString getTableName();
+
+	std::vector<Node*> _nodes;
+	std::vector<Face*> _holes;
 };
 typedef std::map<std::string, DM::Face*> FaceMap;
 }

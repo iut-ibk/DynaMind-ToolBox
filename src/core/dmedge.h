@@ -44,12 +44,6 @@ class Component;
 */
 class DM_HELPER_DLL_EXPORT Edge : public Component, Asynchron
 {
-private:
-	//void SQLSetValues(QUuid start, QUuid end);
-	/** @brief return table name */
-	QString getTableName();
-	Node* start;
-	Node* end;
 public:
 	/** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
 	//Edge(QUuid startpoint, QUuid endpoint);
@@ -86,11 +80,14 @@ public:
 	void setEndpointName(std::string name);
 	/** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
 	Component* clone();
-	/** @brief returns both points*/
-	//const void getPoints(Node *points) const;
-	//bool* LoadFromDb();
-	//void SaveToDb(bool* b);
+
 	void Synchronize();
+private:
+	/** @brief return table name */
+	QString getTableName();
+
+	Node* start;
+	Node* end;
 };
 typedef std::map<std::string, DM::Edge*> EdgeMap;
 }

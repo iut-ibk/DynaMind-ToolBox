@@ -131,6 +131,27 @@ public:
 	void setBlock(long x, long y, double* data);
 
 private:
+	class RasterBlockLabel
+	{
+	public:
+		long x; 
+		long y;
+		const RasterData *backRef;
+		bool isInserted;
+		QByteArray* LoadFromDb();
+		void SaveToDb(QByteArray *qba);
+	};
+
+	/** @brief return table name */
+	QString getTableName();
+	void Synchronize();
+	void SQLInsert();
+	void SQLDeleteField();
+	void SQLInsertField(long width, long height);
+	double SQLGetValue(long x, long y) const;
+	void SQLSetValue(long x, long y, double value);
+	void SQLCopyField(const RasterData *ref);
+
 	long width;
 	long height;
 	double cellSizeX;
@@ -142,27 +163,6 @@ private:
 	double maxValue;
 	int debugValue;
 
-	void SQLInsert();
-	void SQLDeleteField();
-	void SQLInsertField(long width, long height);
-	double SQLGetValue(long x, long y) const;
-	void SQLSetValue(long x, long y, double value);
-	void SQLCopyField(const RasterData *ref);
-
-	/** @brief return table name */
-	QString getTableName();
-	void Synchronize();
-
-	class RasterBlockLabel
-	{
-	public:
-		long x; 
-		long y;
-		const RasterData *backRef;
-		bool isInserted;
-		QByteArray* LoadFromDb();
-		void SaveToDb(QByteArray *qba);
-	};
 	RasterBlockLabel *blockLabels;
 	DbCache<RasterBlockLabel*, QByteArray> *cache;
 };

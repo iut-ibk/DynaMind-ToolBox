@@ -284,6 +284,18 @@ bool Node::compare2d(const Node * other , double round ) const
 	return compare2d(*other, round);
 }
 
+void Node::addEdge(Edge* e)
+{
+	if(!connectedEdges)
+		connectedEdges = new std::list<Edge*>();
+	connectedEdges->push_back(e);
+}
+void Node::removeEdge(Edge* e)
+{
+	if(connectedEdges)
+		connectedEdges->remove(e);
+}
+
 Vector3* Node::LoadFromDb()
 {
 	QVariant v[3];

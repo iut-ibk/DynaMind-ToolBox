@@ -197,7 +197,6 @@ private:
 	/** @brief returns all links connected to this port */
 	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
 
-
 	bool canceled;
 	std::list<Module*>	modules;
 	std::list<Link*>	links;

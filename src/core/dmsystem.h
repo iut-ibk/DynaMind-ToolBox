@@ -70,51 +70,6 @@ class DerivedSystem;
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
 	friend class DerivedSystem;
-private:
-	//QMutex * mutex;
-	std::map<QUuid, Node* > nodes;
-	std::map<QUuid, Edge* > edges;
-	std::map<QUuid, Face* > faces;
-	std::map<QUuid, RasterData *> rasterdata;
-	std::map<QUuid, System*> subsystems;
-	std::map<QUuid, Component* > components;
-
-	std::map<QUuid, Component*> ownedchilds;
-
-	std::map<std::string, View*> viewdefinitions;
-	std::map<std::string, std::map<std::string, Component*> > views;   
-
-	std::vector<DM::System*> predecessors;
-	std::vector<DM::System*> sucessors;
-
-	void updateViews (Component * c);
-
-	DM::Module * lastModule;
-
-	void SQLInsert();
-	void SQLUpdateStates();
-
-	bool addChild(Component *newcomponent);
-	/*@deprecated*/
-	bool removeChild(std::string name);
-	bool removeChild(QUuid uuid);
-	/*@deprecated*/
-	virtual Component* getChild(std::string name) const;
-	Component* getChild(QUuid uuid) const;
-	Component* findChild(QUuid uuid) const;
-	/** @brief return table name */
-	QString getTableName();
-	Component* getComponent(QUuid uuid);
-	Edge* getEdge(QUuid uuid);
-	System* getSubSystem(QUuid uuid);
-
-	/** @brief add Predecessor **/
-	void addPredecessors(DM::System * s);
-protected:    
-	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
-	@deprecated*/
-	virtual const Component* getComponentReadOnly(std::string uuid) const;
-	const Edge* getEdgeReadOnly(Node* start, Node* end);
 public:
 	bool removeChild(Component* c);
 	/*@deprecated*/
@@ -236,8 +191,49 @@ public:
 	std::vector<std::string> getUUIDs(const DM::View &view);
 	/** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
 	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-	// for faster searching - maybe find a better solution for access
+
+	// TODO for faster searching - maybe find a better solution for access
 	std::map<std::string, Component*>	componentNameMap;
+protected:    
+	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
+	@deprecated*/
+	virtual const Component* getComponentReadOnly(std::string uuid) const;
+	const Edge* getEdgeReadOnly(Node* start, Node* end);
+private:
+	void updateViews (Component * c);
+	
+	void SQLInsert();
+	void SQLUpdateStates();
+	bool addChild(Component *newcomponent);
+	/*@deprecated*/
+	bool removeChild(std::string name);
+	bool removeChild(QUuid uuid);
+	/*@deprecated*/
+	virtual Component* getChild(std::string name) const;
+	Component* getChild(QUuid uuid) const;
+	Component* findChild(QUuid uuid) const;
+	/** @brief return table name */
+	QString getTableName();
+	Component* getComponent(QUuid uuid);
+	Edge* getEdge(QUuid uuid);
+	System* getSubSystem(QUuid uuid);
+	/** @brief add Predecessor **/
+	void addPredecessors(DM::System * s);
+	
+	DM::Module* lastModule;
+	std::map<QUuid, Node* >			nodes;
+	std::map<QUuid, Edge* >			edges;
+	std::map<QUuid, Face* >			faces;
+	std::map<QUuid, RasterData *>	rasterdata;
+	std::map<QUuid, System*>		subsystems;
+	std::map<QUuid, Component* >	components;
+	
+	std::vector<DM::System*> predecessors;
+	std::vector<DM::System*> sucessors;
+
+	std::map<QUuid, Component*>		ownedchilds;
+	std::map<std::string, View*>	viewdefinitions;
+	std::map<std::string, std::map<std::string, Component*> > views;   
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

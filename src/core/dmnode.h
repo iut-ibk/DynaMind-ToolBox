@@ -52,30 +52,7 @@ class Edge;
 */
 class DM_HELPER_DLL_EXPORT Node : public Component
 {
-private:
-	Vector3* vector;
-	//bool    isInserted;
-	/** @brief return table name */
-	QString getTableName();
-
-	std::list<Edge*> *connectedEdges;	// not cached, for now
-	void addEdge(Edge* e)
-	{
-		if(!connectedEdges)
-			connectedEdges = new std::list<Edge*>();
-		connectedEdges->push_back(e);
-	}
-	void removeEdge(Edge* e)
-	{
-		if(connectedEdges)
-			connectedEdges->remove(e);
-	}
 	friend class Edge;
-
-
-	static DbCache<Node*,Vector3> nodeCache; // defined in dmdbconnector.h
-protected:
-	virtual void SetOwner(Component *owner);
 public:
 	/** @brief create new Node object defined by x, y and z */
 	Node( double x, double y, double z );
@@ -136,6 +113,18 @@ public:
 	void SaveToDb(Vector3* v);
 	static void _PreCache(const QList<Node*>& keys, QList<Vector3*>& values);
 	static void PreCache(const QList<Node*>& keys);
+	
+protected:
+	virtual void SetOwner(Component *owner);
+private:
+	/** @brief return table name */
+	QString getTableName();
+	void addEdge(Edge* e);
+	void removeEdge(Edge* e);
+	
+	Vector3* vector;
+	std::list<Edge*> *connectedEdges;	// not cached, for now
+	static DbCache<Node*,Vector3> nodeCache; // defined in dmdbconnector.h
 };
 
 class Vector3

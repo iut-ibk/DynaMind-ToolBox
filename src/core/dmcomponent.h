@@ -70,38 +70,6 @@ class DM_HELPER_DLL_EXPORT Component
 {
 	friend class System;
 	friend class DerivedSystem;
-private:
-
-	bool HasAttribute(std::string name) const;
-	void LoadAttribute(std::string name);
-	bool addAttribute(Attribute *pAttribute);
-
-	void CopyFrom(const Component &c, bool successor = false);
-	bool isCached;
-
-	void CloneAllAttributes();
-
-protected:
-	QMutex* mutex;
-
-	/* @brief Sets stateUuid and ownership in sql db*/
-	virtual void SetOwner(Component *owner);
-	void SQLDelete();
-
-	QUuid uuid;
-	std::map<std::string,Attribute*> ownedattributes;
-	//std::unordered_map<std::string,Attribute*> ownedattributes;
-	std::set<std::string> inViews;
-	System * currentSys;
-	bool isInserted;
-
-	void removeView(const DM::View & view);
-	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
-	Component(bool b);
-	/** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
-	Component(const Component& s, bool bInherited);
-	/** @brief return table name */
-	virtual QString getTableName();
 public:
 	/** @brief =operator */
 	Component& operator=(Component const& other);
@@ -162,6 +130,33 @@ public:
 	System * getCurrentSystem();
 	void setCurrentSystem(System * sys);
 	void SaveToDb();
+protected:
+	/* @brief Sets stateUuid and ownership in sql db*/
+	virtual void SetOwner(Component *owner);
+	void SQLDelete();
+
+	void removeView(const DM::View & view);
+	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
+	Component(bool b);
+	/** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
+	Component(const Component& s, bool bInherited);
+	/** @brief return table name */
+	virtual QString getTableName();
+	
+	QMutex* mutex;
+	QUuid	uuid;
+	System* currentSys;
+	bool	isInserted;
+	std::set<std::string> inViews;
+	std::map<std::string,Attribute*> ownedattributes;
+private:
+	bool HasAttribute(std::string name) const;
+	void LoadAttribute(std::string name);
+	bool addAttribute(Attribute *pAttribute);
+	void CopyFrom(const Component &c, bool successor = false);
+
+	bool isCached;
+	void CloneAllAttributes();
 };
 typedef std::map<std::string, DM::Component*> ComponentMap;
 }
