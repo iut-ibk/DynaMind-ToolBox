@@ -24,7 +24,6 @@
  *
  */
 #include <iostream>
-#include "application.h"
 #include "dmmainwindow.h"
 #include <sstream>
 #include <cstdio>
