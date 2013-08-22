@@ -199,64 +199,6 @@ void AddLayerDialog::on_attributeList_currentItemChanged(QTreeWidgetItem *curren
     ui->interpreteGroup->setEnabled(current);
 }
 
-void AddLayerDialog::getAttributesFromComponent(DM::View & view, QMap<string, DM::Attribute *> & attributes, std::string leadingName)
-{
-    QMap<std::string, DM::Attribute::AttributeType> attrTypes;
-    std::string uuid =  view.getIdOfDummyComponent();
-
-    //check fo links
-    std::vector<std::string> links = view.getNamesOfLinks();
-
-    foreach (std::string link, links) {
-        DM::View * v= system->getViewDefinition(view.getNameOfLinkedView(link));
-        if (!v)
-            continue;
-        //getAttributesFromComponent(*v, attributes, link);
-    }
-
-    std::vector<std::string> uuids = system->getUUIDsOfComponentsInView(view);
-	
-    QMap<std::string, DM::Attribute*> attributes_tmp;
-	Component* c = system->getComponent(uuid);
-	if(c)
-		attributes_tmp = QMap<std::string, DM::Attribute*>(c->getAllAttributes());
-
-    foreach (std::string k, attributes_tmp.keys()) {
-        if (attributes_tmp[k]) {
-            attributes[newAttributeName(leadingName, k)] = attributes_tmp[k];
-        }
-    }
-    foreach (std::string k, attributes.keys()) {
-        attrTypes[k] = attributes[k]->getType();
-    }
-
-    foreach (std::string uuid,uuids) {
-        QMap<std::string, DM::Attribute*> attrs(system->getComponent(uuid)->getAllAttributes());
-        foreach(std::string k, attrs.keys()) {
-            attrTypes[newAttributeName(leadingName, k)] = attrs[k]->getType();
-        }
-        bool exists = true;
-        foreach(std::string k, attrTypes.keys()) {
-            if (attrTypes[k] == DM::Attribute::NOTYPE) {
-                exists = false;
-                continue;
-            }
-        }
-        if (exists)
-            break;
-    }
-
-
-    foreach (std::string k, attrTypes.keys()) {
-        if (attributes.find(k) == attributes.end())
-            continue;
-        attributes[k]->setType(attrTypes[k]);
-    }
-
-    return;
-
-}
-
 string AddLayerDialog::newAttributeName(string viewName, string name)
 {
     if (viewName.empty())

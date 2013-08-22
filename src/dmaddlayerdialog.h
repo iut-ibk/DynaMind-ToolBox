@@ -66,7 +66,6 @@ private:
     
     DM::View *view;
     std::string attribute;
-    void getAttributesFromComponent(View &view, QMap<std::string, DM::Attribute *> & attributes, std::string leadingName="");
     std::string newAttributeName(std::string viewName, std::string name);
 };
 
