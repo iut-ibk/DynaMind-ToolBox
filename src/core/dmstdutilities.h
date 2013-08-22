@@ -35,7 +35,7 @@
 template <typename T1, typename T2>
 inline bool map_contains(const std::map<T1,T2> *m, const T1 &key, T2 &to)
 {
-    typename std::map<T1,T2>::const_iterator i = m->find(key);
+	typename std::map<T1,T2>::const_iterator i = m->find(key);
 	if(i==m->end())	return false;
 
 	to = i->second;
@@ -78,10 +78,10 @@ inline bool vector_contains(std::vector<T> *v, const T &key)
 template <typename T>
 inline bool vector_contains(std::vector<T> *v, const T &key, T &to)
 {
-    typename std::vector<T>::iterator i = v->find(key);
+	typename std::vector<T>::iterator i = v->find(key);
 	if(i == v->end())
 		return false;
-	
+
 	to = *i;
 	return true;
 }
@@ -89,11 +89,6 @@ inline bool vector_contains(std::vector<T> *v, const T &key, T &to)
 template <typename T>
 void deep_delete(std::vector<T*>* v)
 {
-	/*
-	std::vector<T*>::iterator it = v->begin();
-	for(;it != v->end(); ++it)
-		delete *it;*/
-
 	while(v->size())
 	{
 		delete *v->begin();
@@ -105,7 +100,7 @@ void deep_delete(std::vector<T*>* v)
 template <typename T1, typename T2>
 void deep_delete(std::map<T1,T2*>* m)
 {
-    typename std::map<T1,T2*>::iterator it = m->begin();
+	typename std::map<T1,T2*>::iterator it = m->begin();
 	for(;it != m->end(); ++it)
 		delete it->second;
 	m->clear();
@@ -119,21 +114,25 @@ template <typename T1, typename T2>
 class ForeachBase: public ForeachBaseBase
 {
 public:
-    inline ForeachBase(const std::map<T1,T2>& t): c(t), brk(0), i(c.begin()), e(c.end()){}
-    const std::map<T1,T2> c;
-    mutable int brk;
-    mutable typename std::map<T1,T2>::const_iterator i, e;
-    inline bool condition() const { return (!brk++ && i != e);}
+	inline ForeachBase(const std::map<T1,T2>& t): c(t), brk(0), i(c.begin()), e(c.end()){}
+	const std::map<T1,T2> c;
+	mutable int brk;
+	mutable typename std::map<T1,T2>::const_iterator i, e;
+	inline bool condition() const { return (!brk++ && i != e);}
 };
 
 template <typename T1, typename T2> inline std::map<T1,T2> *pMForeachPointer(const std::map<T1,T2> &) { return 0; }
 
 template <typename T1, typename T2> inline ForeachBase<T1,T2> pMForeachBaseNew(const std::map<T1,T2>& t)
-{ return ForeachBase<T1,T2>(t); }
+{ 
+	return ForeachBase<T1,T2>(t); 
+}
 
 template <typename T1, typename T2>
 inline const ForeachBase<T1,T2> *pMForeachBase(const ForeachBaseBase *base, const std::map<T1,T2> *)
-{ return static_cast<const ForeachBase<T1,T2> *>(base); }
+{ 
+	return static_cast<const ForeachBase<T1,T2> *>(base); 
+}
 
 
 #if defined(Q_CC_MIPS)
