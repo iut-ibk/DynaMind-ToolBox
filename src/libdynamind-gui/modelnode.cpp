@@ -72,6 +72,11 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 
 ModelNode::~ModelNode() 
 {
+	QVector<PortNode*>	portCopy = ports;
+	ports.clear();
+
+	foreach(PortNode* p, portCopy)
+		delete p;
 }
 
 void ModelNode::resize()
