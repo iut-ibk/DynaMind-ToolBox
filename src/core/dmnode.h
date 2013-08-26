@@ -56,50 +56,73 @@ class DM_HELPER_DLL_EXPORT Node : public Component
 public:
 	/** @brief create new Node object defined by x, y and z */
 	Node( double x, double y, double z );
+
 	/** @brief create empty Node object. x, y and z are 0 */
 	Node();
+
 	/** @brief destructor*/
 	~Node();
+
 	/** @brief creates a copy of the node including its components (UUID, Attributes,...)*/
 	Node(const Node& n);
+
 	/** @brief return Type */
 	Components getType() const;
+
 	/** @brief return x */
 	double getX() const;
+
 	/** @brief return y*/
 	double getY() const;
+
 	/** @brief return z*/
 	double getZ() const;
+
 	/** @brief return coordinates */
 	const double get(unsigned int i) const;
+
 	/** @brief writes a xyz-double[3] into the given vector */
 	const void get(double *vector) const;
+
 	/** @brief returns all edges connecting this node */
 	std::vector<Edge*> getEdges() const;
+
 	/** @brief set x*/
 	void setX(double x);
+
 	/** @brief set y*/
 	void setY(double y);
+
 	/** @brief set z*/
 	void setZ(double z);
+
 	/** @brief set xyz*/
 	void set(double x, double y, double z);
+
 	/** @brief =operator */
 	Node& operator=(Node const& other);
+
 	/** @brief return true if x, y and z are the same*/
 	bool operator==(const Node & other) const;
+
 	/** @brief x1-x2, y1-y2, z1-z2*/
 	Node operator-(const Node & other) const;
+
 	/** @brief x1+x2, y1+y2, z1+z2*/
 	Node operator+(const Node & other) const;
+
 	/** @brief x1*val, y1*val, z1*val*/
 	Node operator*(const double & val) const;
+
 	/** @brief x1/val, y1/val, z1/val*/
 	Node operator/(const double & val) const;
+
 	/** @brief return if x and y are +- round the same*/
 	bool compare2d(const Node &other, double round = 0) const;
+
 	/** @brief return if x and y are +- round the same*/
 	bool compare2d(const Node * other, double round = 0) const;
+
 	/** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
 	Component* clone();
 

@@ -48,36 +48,50 @@ public:
 	/** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
 	//Edge(QUuid startpoint, QUuid endpoint);
 	Edge(Node* start, Node* end);
+
 	/** @brief coyp Edge, also the Component is copied (Attributes and UUID!) */
 	Edge(const Edge& e);
+
 	/** @brief destructor */
 	~Edge();
+
 	/** @brief return Type */
 	Components getType() const;
+
 	/** @brief return uuid to the startpoint 
 	@deprecated*/
 	const QUuid getStartpoint() const;
+
 	/** @brief return uuid to the startpoint */
 	Node*	getStartNode() const;
+
 	/** @brief return uuid to the endpoint 
 	@deprecated*/
 	const QUuid getEndpoint() const;
+
 	/** @brief return uuid to the endpoint */
 	Node*	getEndNode() const;
+
 	/** @brief return uuid to the startpoint */
 	const std::string getStartpointName() const;
+
 	/** @brief return uuid to the endpoint */
 	const std::string getEndpointName() const;
+
 	/** @brief set uuid to that points to the start node */
 	void setStartpoint(Node* start);
+
 	/** @brief set uuid to that points to the start node
 	@deprecated*/
 	void setStartpointName(std::string name);
+
 	/** @brief set uuid that points to the end node */
 	void setEndpoint(Node* end);
+
 	/** @brief set uuid that points to the end node
 	@deprecated*/
 	void setEndpointName(std::string name);
+
 	/** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
 	Component* clone();
 
