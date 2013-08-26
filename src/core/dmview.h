@@ -88,43 +88,62 @@ public:
 	/** @brief Default constructor to create a new view */
 	View(std::string name, int type, int accesstypeGeometry = READ);
 	View();
+
 	/** @brief add attributes that to write by added by the module*/
 	void addAttribute(std::string name);
+
 	/** @brief add attributes that to write by read by the module*/
 	void getAttribute(std::string name);
+
 	/** @brief add attributes that to write by modified by the module*/
 	void modifyAttribute(std::string name);
+
 	/** @brief Get name of the View*/
 	std::string const & getName() const {return this->name;}
+
 	/** @brief Set name of the view */
 	void setName(std::string name){this->name = name;}
+
 	/** @brief Return a list of attributes that are added to the component */
 	std::vector<std::string>  getWriteAttributes  () const;
+
 	/** @brief Return a list of attributes that are read */
 	std::vector<std::string>  getReadAttributes  () const;
+
 	/** @brief Set Type */
 	void setType(int type) {this->type=type;}
+
 	/** @brief Return Type */
 	int const & getType() const {return type;}
+
 	/** @brief Return AccessType of the Geometry */
 	int const & getAccessType() const{return accesstypeGeometry;}
+
 	/** @brief set AccessType of the Geometry */
 	void setAccessType(int Type) {this->accesstypeGeometry = Type;}
+
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
 	bool reads() const;
+
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
 	bool writes() const;
+
 	/** @brief Returns Attribute Type */
 	Attribute::AttributeType getAttributeType(std::string name);
+
 	/** @brief Sets Attribute Type */
 	void setAttributeType(std::string name, Attribute::AttributeType type);
+
 	/** @brief Adds link attribute */
 	void addLinks(std::string name, View linkedView);	// backwards comp.
 	void addLinks(std::string name, std::string linkedViewName);
+
 	/** @brief Returns names of object that link to other views */
 	std::vector<std::string> getNamesOfLinks();
+
 	/** @brief Returns names of object the linked view */
 	std::string getNameOfLinkedView(std::string name);
+
 	std::vector<std::string> getAllAttributes() const;
 
 private:
