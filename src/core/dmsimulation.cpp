@@ -493,7 +493,16 @@ bool Simulation::checkModuleStreamForward(Module* m)
 						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
 							== existingAttributes.end())
 						{
-							updatedStreams[streamName][v.getName()].addAttribute(attributeName);
+							View& existingView = updatedStreams[streamName][v.getName()];
+							Attribute::AttributeType type = v.getAttributeType(attributeName);
+
+							if(type == Attribute::LINK)
+								existingView.addLinks(attributeName, attributeName);
+							else
+							{
+								existingView.addAttribute(attributeName);
+								existingView.setAttributeType(attributeName, type);
+							}
 						}
 					}
 				}
