@@ -129,7 +129,7 @@ public:
 	bool writes() const;
 
 	/** @brief Returns Attribute Type */
-	Attribute::AttributeType getAttributeType(std::string name);
+	Attribute::AttributeType getAttributeType(std::string name) const;
 
 	/** @brief Sets Attribute Type */
 	void setAttributeType(std::string name, Attribute::AttributeType type);

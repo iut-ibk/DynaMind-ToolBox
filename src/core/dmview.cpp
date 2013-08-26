@@ -102,9 +102,12 @@ bool View::writes() const
 	return false;
 }
 
-Attribute::AttributeType View::getAttributeType(std::string name)
+Attribute::AttributeType View::getAttributeType(std::string name) const
 {
-	return attributeTypes[name];
+	std::map<std::string, Attribute::AttributeType>::const_iterator it = attributeTypes.find(name);
+	if(it != attributeTypes.cend())
+		return it->second;
+	return Attribute::NOTYPE;
 }
 
 std::vector<std::string> View::getAllAttributes() const
