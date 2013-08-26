@@ -179,7 +179,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 	Polygon_2 pls;
 	std::vector<Point_2> lpoints;
 	unsigned int s_nodes = nodes.size();
-	if (nodes[0] == nodes[s_nodes])
+	if (nodes[0] == nodes[s_nodes-1])
 		s_nodes--;
 	for (unsigned int i = 0; i < s_nodes; i++) {
 		DM::Node * n = nodes[i];
@@ -233,8 +233,9 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 	Polygon_2 poly_s;
 	std::vector<Node> ret_points;
 	unsigned int vector_size = points.size();
-	if (points[0] == points[vector_size] )
+	if (points[0] == points[vector_size-1] ) {
 		vector_size--;
+	}
 	if (offset == 0) {
 		for (unsigned int i = 0; i < vector_size; i++ ) {
 			ret_points.push_back(Node(points[i]->getX(), points[i]->getY(), 0));
