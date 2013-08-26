@@ -810,11 +810,24 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 			// dead path
 			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
 	}
-	// reset in port
-	for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
-		it != m->inPorts.end();	++it)
+	
+	// check if this module is read only
+	bool readOnly = true;
+	typedef std::map<std::string, View> viewmap;
+	mforeach(viewmap views, m->getAccessedViews())
+		mforeach(const View& view, views)
+			if(view.getAccessType() != READ || view.getWriteAttributes().size() > 0)
+				readOnly = false;
+
+	// do not reset inport if there is no outport and the module is read only
+	if(!(m->outPorts.size() == 0 && readOnly))
 	{
-		it->second = NULL;
+		// reset in ports
+		for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
+			it != m->inPorts.end();	++it)
+		{
+			it->second = NULL;
+		}
 	}
 
 	return nextModules;
