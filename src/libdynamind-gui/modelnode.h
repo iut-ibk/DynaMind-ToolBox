@@ -88,6 +88,7 @@ public slots:
 	void editName();
 	void printData();
 	void viewOutportData(QString portName);
+	void viewInportData(QString portName);
 	void showHelp();
 	void changeSuccessorMode();
 signals:
