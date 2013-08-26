@@ -166,6 +166,9 @@ public:
 
 	/** @brief get data from outport; public for ModelNode::viewData */
 	System* getOutPortData(const std::string &name) const;
+	
+	/** @brief get data from inport */
+	System* getInPortData(const std::string &name) const;
 
 	/** @brief adds an observer to this module */
 	void addObserver(ModuleObserver* obs);
@@ -265,9 +268,6 @@ protected:
 private:
 	/** @brief sets the current status of the module */
 	void setStatus(ModuleStatus status);
-
-	/** @brief get data from inport */
-	System* getInPortData(const std::string &name) const;
 
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
