@@ -158,49 +158,42 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	else
 		setZValue(2.0);
 
-	float lineWidth = 2.0f;
+	float lineWidth = 1.0f;
 	QColor fillcolor;    
+	QColor border_color = QColor(0,0,0); //COLOR_MODULEBORDER;
 
 	switch(module->getStatus())
 	{
-	case DM::MOD_UNTOUCHED:			fillcolor = QColor(200,198,187);	break;
+	case DM::MOD_UNTOUCHED:			fillcolor = QColor(247,140,31);	break;
 
-	case DM::MOD_EXECUTING:			fillcolor = QColor(254,225,104);		break;
-	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(153,204,255);		break;
-	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(255,153,51);		break;
+	case DM::MOD_EXECUTING:			fillcolor = QColor(142,174,255);	break;
+	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(191,213,154);		break;
+	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(247,140,31);		break;
 
 	case DM::MOD_CHECK_OK:			fillcolor = QColor(255,255,255);	break;
-	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(255,153,51);	break;
+	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(247,140,31);	break;
+	}
+
+	if(module->isSuccessorMode() && (module->getStatus() == DM::MOD_EXECUTION_OK || module->getStatus() == DM::MOD_CHECK_OK) )
+	{
+		fillcolor = QColor(254,221,86);
+	}
+
+	if(isSelected() || hovered)
+	{
+		border_color = QColor(0,0,255);
+		lineWidth = 2.0f;
 	}
 
 	// the constructor for QColor is neccessary
-	QPen rectPen(QColor(COLOR_MODULEBORDER), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+	QPen rectPen(QColor(border_color), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
 	QBrush brush(fillcolor);
 
 	QPainterPath rectPath;
 	rectPath.addRect(boundingRect().adjusted(lineWidth,lineWidth,-lineWidth,-lineWidth));
 	painter->fillPath(rectPath, brush);
 	painter->strokePath(rectPath, rectPen);
-
-	if(module->isSuccessorMode())
-	{
-		QPainterPath rectGlowPath;
-		float l = lineWidth*2;
-		QRectF r = boundingRect().adjusted(l,l,-l,-l);
-		rectGlowPath.addRect(r);
-		painter->strokePath(rectGlowPath,
-			QPen(QColor(200,198,187), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-	}
-
-	if(isSelected() || hovered)
-	{
-		QPainterPath rectGlowPath;
-		QRectF r = boundingRect();
-		rectGlowPath.addRect(r);
-		painter->strokePath(rectGlowPath, 
-			QPen(isSelected()?QColor(0,0,0):QColor(200,198,187),
-			lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-	}
 
 	QString text =  QString::fromStdString(module->getName());
 	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
