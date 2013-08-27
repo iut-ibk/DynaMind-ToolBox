@@ -28,6 +28,33 @@
 #include <dmmodule.h>
 #include <dm.h>
 
+QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, const DM::View& v)
+{
+	QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
+	item_attribute->setText(0, QString::fromStdString(name));
+	switch(v.getAttributeType(name))
+	{
+	case DM::Attribute::DOUBLE:
+		item_attribute->setText(1, "double"); break;
+	case DM::Attribute::DOUBLEVECTOR:
+		item_attribute->setText(1, "doublevector"); break;
+	case DM::Attribute::LINK:
+		item_attribute->setText(1, "link"); break;
+	case DM::Attribute::NOTYPE:
+		item_attribute->setText(1, "no type"); break;
+	case DM::Attribute::STRING:
+		item_attribute->setText(1, "string"); break;
+	case DM::Attribute::STRINGVECTOR:
+		item_attribute->setText(1, "stringvector"); break;
+	case DM::Attribute::TIMESERIES:
+		item_attribute->setText(1, "time series"); break;
+	}
+	item_attribute->setText(2, access);
+	return item_attribute;
+}
+
+
+
 typedef std::map<std::string, std::map<std::string,DM::View> > view_map;
 
 GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
@@ -52,7 +79,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 		this->ui->treeWidget_views->addTopLevelItem(root_port);
 		root_port->setText(0, QString::fromStdString(it->first));
 
-		mforeach (DM::View v, it->second) 
+		mforeach (const DM::View& v, it->second) 
 		{
 			//if (v.getName().compare("dummy") == 0)
 			//	continue;
@@ -78,20 +105,13 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 			root_port->addChild(item_view);
 
+
 			foreach (std::string s, v.getReadAttributes()) 
-			{
-				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
-				item_attribute->setText(0, QString::fromStdString(s));
-				item_attribute->setText(2, "read");
-				item_view->addChild(item_attribute);
-			}
+				item_view->addChild(CreateAttributeItem("read",s, v));
+
 			foreach (std::string s, v.getWriteAttributes()) 
-			{
-				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
-				item_attribute->setText(0, QString::fromStdString(s));
-				item_attribute->setText(2, "write");
-				item_view->addChild(item_attribute);
-			}
+				item_view->addChild(CreateAttributeItem("write",s, v));
+
 			this->ui->treeWidget_views->expandItem(root_port);
 		}
 	}
@@ -151,9 +171,10 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			foreach(std::string attributeName, v.getAllAttributes())
 			{
 				//DM::Logger(DM::Debug) << it->first;
-				QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
+				/*QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
 				item_attribute->setText(0, QString::fromStdString(attributeName));
-				item_view->addChild(item_attribute);
+				item_view->addChild(item_attribute);*/
+				item_view->addChild(CreateAttributeItem("write",attributeName, v));
 			}
 		}
 		this->ui->treeWidget->expandItem(root_port);

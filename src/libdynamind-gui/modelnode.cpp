@@ -72,6 +72,11 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 
 ModelNode::~ModelNode() 
 {
+	QVector<PortNode*>	portCopy = ports;
+	ports.clear();
+
+	foreach(PortNode* p, portCopy)
+		delete p;
 }
 
 void ModelNode::resize()
@@ -244,18 +249,28 @@ void ModelNode::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
 void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
 {
 	QMenu menu;
+	
+	// out port viewer
 	QSignalMapper* signalMapper = new QSignalMapper(this);
-	int i=0;
 	foreach(string s, module->getOutPortNames())
 	{
-		QAction* action = menu.addAction(QString::fromStdString("view data at port '"+s+"'"));
+		QAction* action = menu.addAction(QString::fromStdString("view data at out port '"+s+"'"));
 		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
-
-		signalMapper->setMapping(action, i++);
+		signalMapper->setMapping(action, QString::fromStdString(s));
 	}
-	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(viewData(int)));
-
-	if(module->getOutPortNames().size())
+	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewOutportData(QString)));
+	
+	// in port viewer
+	signalMapper = new QSignalMapper(this);
+	foreach(string s, module->getInPortNames())
+	{
+		QAction* action = menu.addAction(QString::fromStdString("view data at in port '"+s+"'"));
+		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
+		signalMapper->setMapping(action, QString::fromStdString(s));
+	}
+	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewInportData(QString)));
+	
+	if(module->getOutPortNames().size()+module->getInPortNames().size() > 0)
 		menu.addSeparator();
 
 	QAction* a_edit = menu.addAction("configurate");
@@ -305,9 +320,16 @@ void ModelNode::changeSuccessorMode()
 	module->setSuccessorMode(!module->isSuccessorMode());
 }
 
-void ModelNode::viewData(int portIndex) 
+void ModelNode::viewOutportData(QString portName) 
 {
-	DM::System *system = module->getOutPortData(module->getOutPortNames()[portIndex]);
+	DM::System *system = module->getOutPortData(portName.toStdString());
+	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
+	viewer_window->show();
+}
+
+void ModelNode::viewInportData(QString portName) 
+{
+	DM::System *system = module->getInPortData(portName.toStdString());
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
 	viewer_window->show();
 }
