@@ -164,14 +164,14 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 	switch(module->getStatus())
 	{
-	case DM::MOD_UNTOUCHED:			fillcolor = QColor(247,140,31);	break;
+	case DM::MOD_UNTOUCHED:			fillcolor = QColor(244,141,2);	break;
 
 	case DM::MOD_EXECUTING:			fillcolor = QColor(142,174,255);	break;
 	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(191,213,154);		break;
-	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(247,140,31);		break;
+	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(244,141,2);		break;
 
 	case DM::MOD_CHECK_OK:			fillcolor = QColor(255,255,255);	break;
-	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(247,140,31);	break;
+	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(244,141,2);	break;
 	}
 
 	if(module->isSuccessorMode() && (module->getStatus() == DM::MOD_EXECUTION_OK || module->getStatus() == DM::MOD_CHECK_OK) )
