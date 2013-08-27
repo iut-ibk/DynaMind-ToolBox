@@ -45,7 +45,7 @@ class ModuleObserver;
 class Simulation;
 
 // enums
-#if defined _MSC_VER && defined _WIN32
+#if defined _MSC_VER && defined _WIN32 || __cplusplus <= 199711L
 enum PortType
 #else
 enum PortType : unsigned int
