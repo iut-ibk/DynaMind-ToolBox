@@ -311,7 +311,7 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups)
 	ASSERT_TRUE(inout2->getStatus() == MOD_EXECUTION_OK);
 }
 
-#endif GROUPTEST
+#endif //GROUPTEST
 
 #endif
 /*
