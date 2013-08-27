@@ -1,35 +1,35 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-basicmodules)
 IF(NOT APPLE)
-	set(CMAKE_MODULE_PATH 
-  	"${dynamind-basicmodules_SOURCE_DIR}/cmake"
-  	"${dynamind-basicmodules_SOURCE_DIR}/cmake/Utils" 
-  	"${dynamind-basicmodules_SOURCE_DIR}/cmake/Packages"
+	set(CMAKE_MODULE_PATH
+	"${dynamind-basicmodules_SOURCE_DIR}/cmake"
+	"${dynamind-basicmodules_SOURCE_DIR}/cmake/Utils"
+	"${dynamind-basicmodules_SOURCE_DIR}/cmake/Packages"
 )
 ENDIF()
 
 FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
-            PATHS   $ENV{DYNAMIND_DIR}/include
-            PATH_SUFFIXES dynamindcore/CMake)
+	PATHS   $ENV{DYNAMIND_DIR}/include
+	PATH_SUFFIXES dynamindcore/CMake)
 
 IF(DYNAMIND_INCLUDE_DIR)
-        MESSAGE(STATUS "Compiled from toolbox")
-        MESSAGE(STATUS "DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")
-        SET (DYNAMIND_CORE_LIBRARY dynamindcore)
-        SET (DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox)
-        SET (DYNAMIND_EXTENSIONS_LIBRARY dynamind-extensions)
-        MESSAGE(STATUS "${DYNAMIND_CORE_LIBRARY}")
+	MESSAGE(STATUS "Compiled from toolbox")
+	MESSAGE(STATUS "DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")
+	SET (DYNAMIND_CORE_LIBRARY dynamindcore)
+	SET (DYNAMIND_TOOLBOX_LIBRARY dynamindtoolbox)
+	SET (DYNAMIND_EXTENSIONS_LIBRARY dynamind-extensions)
+	MESSAGE(STATUS "${DYNAMIND_CORE_LIBRARY}")
 ELSE()
-        MESSAGE(STATUS "Compiled from stand alone")
-        FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
-        PATHS $ENV{DYNAMIND_DIR}/include
-        PATH_SUFFIXES dynamindcore/CMake)
+	MESSAGE(STATUS "Compiled from stand alone")
+	FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
+	PATHS $ENV{DYNAMIND_DIR}/include
+	PATH_SUFFIXES dynamindcore/CMake)
 
-        IF(DYNAMINDDEV)
-                INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
-        ELSE()
-                MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
-        ENDIF()
+	IF(DYNAMINDDEV)
+		INCLUDE(${DYNAMINDDEV}/DynaMindDevCmake.txt)
+	ELSE()
+		MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
+	ENDIF()
 
 ENDIF()
 
@@ -39,30 +39,30 @@ INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR})
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        message(STATUS "OpenMP is enabled")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	message(STATUS "OpenMP is enabled")
 else()
-        add_definitions(-DOPENMP_DISABLED)
-        message(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
+	add_definitions(-DOPENMP_DISABLED)
+	message(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
 endif()
 
 INCLUDE(${QT_USE_FILE})
 INCLUDE_DIRECTORIES( ${DYNAMIND_INCLUDE_DIR})
 
 IF(CMAKE_BUILD_TYPE STREQUAL Debug)
-        MESSAGE(STATUS "Build Type = Debug")
-        ADD_DEFINITIONS(-DDEBUG)
+	MESSAGE(STATUS "Build Type = Debug")
+	ADD_DEFINITIONS(-DDEBUG)
 ELSE()
-        MESSAGE(STATUS "Build Type = Release")
+	MESSAGE(STATUS "Build Type = Release")
 ENDIF()
 IF(DYNAMIND_TOOLBOX_BUILD_DIR)
-    SET(LIBRARY_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/Modules)
-    SET(EXECUTABLE_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/Modules)
-    SET(SCRIPT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/PythonModules )
+	SET(LIBRARY_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/Modules)
+	SET(EXECUTABLE_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/Modules)
+	SET(SCRIPT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR}/PythonModules )
 ELSE()
-    SET(LIBRARY_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
-    SET(EXECUTABLE_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
-    SET(SCRIPT_PATH ${dynamind-basicmodules_BINARY_DIR}/PythonModules )
+	SET(LIBRARY_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
+	SET(EXECUTABLE_OUTPUT_PATH ${dynamind-basicmodules_BINARY_DIR})
+	SET(SCRIPT_PATH ${dynamind-basicmodules_BINARY_DIR}/PythonModules )
 ENDIF()
 
 ADD_SUBDIRECTORY(scripts)

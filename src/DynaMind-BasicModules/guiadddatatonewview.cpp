@@ -8,92 +8,92 @@
 typedef std::map<std::string, DM::View> view_map;
 
 GUIAddDatatoNewView::GUIAddDatatoNewView(DM::Module *m, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GUIAddDatatoNewView)
+	QDialog(parent),
+	ui(new Ui::GUIAddDatatoNewView)
 {
-    this->m = (AddDataToNewView*) m;
-    ui->setupUi(this);
-    DM::System * sys = this->m->getSystemIn();
-    //std::vector<std::string> sys_in;
-    //if (sys != 0)
-    //    sys_in = sys->getNamesOfViews();
+	this->m = (AddDataToNewView*) m;
+	ui->setupUi(this);
+	DM::System * sys = this->m->getSystemIn();
+	//std::vector<std::string> sys_in;
+	//if (sys != 0)
+	//    sys_in = sys->getNamesOfViews();
 	view_map views = m->getViewsInStdStream();
 
-    ui->comboBox_views->clear();
-    ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("NameOfNewView")));
+	ui->comboBox_views->clear();
+	ui->lineEdit->setText(QString::fromStdString(m->getParameterAsString("NameOfNewView")));
 	for(view_map::iterator it = views.begin(); it != views.end(); ++it)
 		ui->comboBox_views->addItem(QString::fromStdString(it->first));
 
-    ui->checkBox_onlySelected->setChecked(this->m->onlySelected);
+	ui->checkBox_onlySelected->setChecked(this->m->onlySelected);
 
-    std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
-    if (!nameofexview.empty()) {
-        int index = ui->comboBox_views->findText(QString::fromStdString(nameofexview));
-        ui->comboBox_views->setCurrentIndex(index);
-    }
+	std::string nameofexview = this->m->getParameterAsString("NameOfExistingView");
+	if (!nameofexview.empty()) {
+		int index = ui->comboBox_views->findText(QString::fromStdString(nameofexview));
+		ui->comboBox_views->setCurrentIndex(index);
+	}
 
-    if (ui->comboBox_views->count() == 0) {
-        ui->comboBox_views->addItem("Connect Inport");
-    }
+	if (ui->comboBox_views->count() == 0) {
+		ui->comboBox_views->addItem("Connect Inport");
+	}
 
 	foreach (std::string s, this->m->newAttributes) {
-        ui->listWidget->addItem(QString::fromStdString(s));
-    }
+		ui->listWidget->addItem(QString::fromStdString(s));
+	}
 
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addAttribute()));
+	connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addAttribute()));
 }
 
 GUIAddDatatoNewView::~GUIAddDatatoNewView()
 {
-    delete ui;
+	delete ui;
 }
 void GUIAddDatatoNewView::addAttribute() {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Name"), QLineEdit::Normal,
-                                         "", &ok);
-    if (ok && !text.isEmpty())
-        this->m->addAttribute(text.toStdString());
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+										 tr("Name"), QLineEdit::Normal,
+										 "", &ok);
+	if (ok && !text.isEmpty())
+		this->m->addAttribute(text.toStdString());
 
-    ui->listWidget->addItem(text);
+	ui->listWidget->addItem(text);
 }
 
 void GUIAddDatatoNewView::accept() {
-    if (ui->lineEdit->text().isEmpty()) {
-        QDialog::accept();
-        return;
-    }
-    std::string nameofExistingView = ui->comboBox_views->currentText().toStdString();
-    //this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
-    //this->m->setParameterValue("NameOfExistingView", nameofExistingView);
-    //this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
+	if (ui->lineEdit->text().isEmpty()) {
+		QDialog::accept();
+		return;
+	}
+	std::string nameofExistingView = ui->comboBox_views->currentText().toStdString();
+	//this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
+	//this->m->setParameterValue("NameOfExistingView", nameofExistingView);
+	//this->m->setParameterNative("onlySelected", ui->checkBox_onlySelected->isChecked());
 	m->NameOfNewView = ui->lineEdit->text().toStdString();
 	m->NameOfExistingView = nameofExistingView;
 	m->onlySelected = ui->checkBox_onlySelected->isChecked();
 
-    DM::System * sys = this->m->getSystemIn();
-    /*std::vector<std::string> sys_in;
-    if (sys == 0) {
-        QDialog::accept();
-        return;
-    }
-    if (sys != 0)
-        sys_in = sys->getNamesOfViews();*/
+	DM::System * sys = this->m->getSystemIn();
+	/*std::vector<std::string> sys_in;
+	if (sys == 0) {
+		QDialog::accept();
+		return;
+	}
+	if (sys != 0)
+		sys_in = sys->getNamesOfViews();*/
 
 	std::map<std::string, DM::View> views = m->getViewsInStdStream();
 
-    //if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
+	//if (std::find(sys_in.begin(), sys_in.end(), nameofExistingView) == sys_in.end()
 	if(views.find(nameofExistingView) == views.end()
-            || (nameofExistingView.compare("Connect Inport") == 0 ) ) {
-        QDialog::accept();
-        return;
-    }
+			|| (nameofExistingView.compare("Connect Inport") == 0 ) ) {
+		QDialog::accept();
+		return;
+	}
 
-    this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
+	this->m->setParameterValue("NameOfNewView", ui->lineEdit->text().toStdString());
 
 
-    //this->m->addView();
+	//this->m->addView();
 	m->init();
 
-    QDialog::accept();
+	QDialog::accept();
 }

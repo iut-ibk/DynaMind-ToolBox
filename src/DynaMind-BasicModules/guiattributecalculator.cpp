@@ -7,17 +7,17 @@
  * This file is part of DynaMind
  *
  * Copyright (C) 2012  Christian Urich
- 
+
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- 
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -30,65 +30,65 @@
 #include <sstream>
 
 GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GUIAttributeCalculator)
+	QDialog(parent),
+	ui(new Ui::GUIAttributeCalculator)
 {
-    ui->setupUi(this);
-    this->attrcalc = (AttributeCalculator*) m;
+	ui->setupUi(this);
+	this->attrcalc = (AttributeCalculator*) m;
 
-    //bool asVector = this->attrcalc->getParameter<bool>("asVector");
+	//bool asVector = this->attrcalc->getParameter<bool>("asVector");
 	this->ui->asVector->setChecked(attrcalc->asVector);
 
 
 
-    QStringList headers;
-    headers << "Name" << "Landscape";
-    ui->varaibleTable->setHorizontalHeaderLabels(headers);
-    ui->varaibleTable->setColumnWidth (0,320);
-    ui->varaibleTable->setColumnWidth (1,320);
-    ui->comboView->clear();
+	QStringList headers;
+	headers << "Name" << "Landscape";
+	ui->varaibleTable->setHorizontalHeaderLabels(headers);
+	ui->varaibleTable->setColumnWidth (0,320);
+	ui->varaibleTable->setColumnWidth (1,320);
+	ui->comboView->clear();
 
 
-    ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
-    ui->lineEditAttribute->setText(QString::fromStdString( this->attrcalc->getParameterAsString("nameOfNewAttribute")));
+	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
+	ui->lineEditAttribute->setText(QString::fromStdString( this->attrcalc->getParameterAsString("nameOfNewAttribute")));
 
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
 
-    //if (!this->attrcalc->getSystemIn())
-    //    return;
-    //std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
-    //foreach (DM::View v, views) {
+	//if (!this->attrcalc->getSystemIn())
+	//    return;
+	//std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
+	//foreach (DM::View v, views) {
 	mforeach(DM::View v, views)
-        ui->comboView->addItem(QString::fromStdString(v.getName()));
+		ui->comboView->addItem(QString::fromStdString(v.getName()));
 
-    if (views.size() > 0) 
+	if (views.size() > 0)
 	{
-        std::string n = this->attrcalc->getParameterAsString("NameOfBaseView");
-        if (n.empty())
+		std::string n = this->attrcalc->getParameterAsString("NameOfBaseView");
+		if (n.empty())
 			viewName = QString::fromStdString(views.begin()->second.getName());
-        else 
+		else
 		{
-            int index = ui->comboView->findText(QString::fromStdString(n));
-            if (index != -1) {
-                ui->comboView->setCurrentIndex(index);
-            }
-        }
-        this->updateAttributeView();
-    }
+			int index = ui->comboView->findText(QString::fromStdString(n));
+			if (index != -1) {
+				ui->comboView->setCurrentIndex(index);
+			}
+		}
+		this->updateAttributeView();
+	}
 
 
-    //CreateVaraibles List
-    //std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
-	
-    for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it) 
+	//CreateVaraibles List
+	//std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
+
+	for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it)
 	{
-        ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
-        QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(it->first));
-        ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,0, item);
-        item = new QTableWidgetItem(QString::fromStdString(it->second));
-        ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
-    }
+		ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
+		QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(it->first));
+		ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,0, item);
+		item = new QTableWidgetItem(QString::fromStdString(it->second));
+		ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
+	}
 
 
 
@@ -98,140 +98,140 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 
 GUIAttributeCalculator::~GUIAttributeCalculator()
 {
-    delete ui;
+	delete ui;
 }
 
-void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname) 
+void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname)
 {
 
    // std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
-    //foreach (std::string vn, views) {
-    //    DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
+	//foreach (std::string vn, views) {
+	//    DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
 
 	mforeach(DM::View v, attrcalc->getViewsInStdStream())
 	{
-        if (v.getName().compare("dummy") == 0)
-            continue;
-        if (v.getName().compare(viewname) != 0)
-            continue;
+		if (v.getName().compare("dummy") == 0)
+			continue;
+		if (v.getName().compare(viewname) != 0)
+			continue;
 
-        //DM::Component * c = this->attrcalc->getSystemIn()->getComponent(v->getIdOfDummyComponent());
-        if (v.getAllAttributes().size() == 0) {
-            continue;
-        }
-        //Check if View has already a parent with the same name
-        QTreeWidgetItem * parent = root_port->parent();
-        while (parent) {
-            std::string sparent = parent->text(0).toStdString();
-            if (sparent.compare(viewname) == 0)
-                return;
-            parent  = parent->parent();
-        }
+		//DM::Component * c = this->attrcalc->getSystemIn()->getComponent(v->getIdOfDummyComponent());
+		if (v.getAllAttributes().size() == 0) {
+			continue;
+		}
+		//Check if View has already a parent with the same name
+		QTreeWidgetItem * parent = root_port->parent();
+		while (parent) {
+			std::string sparent = parent->text(0).toStdString();
+			if (sparent.compare(viewname) == 0)
+				return;
+			parent  = parent->parent();
+		}
 		foreach(std::string s, v.getAllAttributes())
 		{
-        //std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
-        //for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
-        //    DM::Logger(DM::Debug) << it->first;
-        //    Attribute * attr = it->second;
-            QTreeWidgetItem * item_attribute = new QTreeWidgetItem();            
+		//std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
+		//for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
+		//    DM::Logger(DM::Debug) << it->first;
+		//    Attribute * attr = it->second;
+			QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
 
-            item_attribute->setText(0, QString::fromStdString(s));
-            root_port->addChild(item_attribute);
+			item_attribute->setText(0, QString::fromStdString(s));
+			root_port->addChild(item_attribute);
 			if (v.getAttributeType(s) == Attribute::LINK) {
 				createTreeViewEntries(item_attribute, v.getNameOfLinkedView(s));
-            }
-        }
+			}
+		}
 
 
-    }
+	}
 }
 
 void GUIAttributeCalculator::updateAttributeView()
 {
-    //std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
+	//std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
 
-    ui->listAttributes->clear();
-    if (viewName.isEmpty())
-        return;
-	mforeach(DM::View v, attrcalc->getViewsInStdStream()) 
+	ui->listAttributes->clear();
+	if (viewName.isEmpty())
+		return;
+	mforeach(DM::View v, attrcalc->getViewsInStdStream())
 	{
 		std::string strView = v.getName();
-        if (strView.compare("dummy") == 0)
-            continue;
+		if (strView.compare("dummy") == 0)
+			continue;
 		if (strView.compare(viewName.toStdString()) != 0)
-            continue;
-        QTreeWidgetItem * headerItem = this->ui->listAttributes->headerItem();
-        headerItem->setText(0, "View");
-        headerItem->setText(1, "Attribute");
-        QTreeWidgetItem * root_port = new QTreeWidgetItem();
-        this->ui->listAttributes->addTopLevelItem(root_port);
-        root_port->setText(0, QString::fromStdString(strView));
-        this->createTreeViewEntries(root_port, strView);
-    }
+			continue;
+		QTreeWidgetItem * headerItem = this->ui->listAttributes->headerItem();
+		headerItem->setText(0, "View");
+		headerItem->setText(1, "Attribute");
+		QTreeWidgetItem * root_port = new QTreeWidgetItem();
+		this->ui->listAttributes->addTopLevelItem(root_port);
+		root_port->setText(0, QString::fromStdString(strView));
+		this->createTreeViewEntries(root_port, strView);
+	}
 }
 
 void GUIAttributeCalculator::on_addButton_clicked() {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Varaible Name"), QLineEdit::Normal,
-                                         "", &ok);
-    if (!ok || text.isEmpty())
-        return;
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+										 tr("Varaible Name"), QLineEdit::Normal,
+										 "", &ok);
+	if (!ok || text.isEmpty())
+		return;
 
-    std::stringstream elementName;
+	std::stringstream elementName;
 
-    if (ui->listAttributes->size().isNull())
-        return;
+	if (ui->listAttributes->size().isNull())
+		return;
 
 	if(!ui->listAttributes->currentItem())
 	{
 		DM::Logger(Error) << "please select an attribute";
 		return;
 	}
-    //elementName << ui->comboView->currentText().toStdString();
+	//elementName << ui->comboView->currentText().toStdString();
 
-    std::vector<std::string> elements;
-    elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
-    QTreeWidgetItem * p = ui->listAttributes->currentItem()->parent();
+	std::vector<std::string> elements;
+	elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
+	QTreeWidgetItem * p = ui->listAttributes->currentItem()->parent();
 
-    do {
-        elements.push_back(p->text(0).toStdString());
-        p = p->parent();
-    } while (p);
+	do {
+		elements.push_back(p->text(0).toStdString());
+		p = p->parent();
+	} while (p);
 
-    elementName << elements[elements.size()-1];
-    for (int i = elements.size()-2; i > -1; --i)
-        elementName << "." <<elements[i];
+	elementName << elements[elements.size()-1];
+	for (int i = elements.size()-2; i > -1; --i)
+		elementName << "." <<elements[i];
 
-    ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
-    QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(elementName.str()));
-    ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,0, item);
-    item = new QTableWidgetItem(text);
-    ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
+	ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
+	QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(elementName.str()));
+	ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,0, item);
+	item = new QTableWidgetItem(text);
+	ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
 }
 
 void GUIAttributeCalculator::on_comboView_currentIndexChanged (int val)
 {
-    viewName = ui->comboView->currentText();
-    this->updateAttributeView();
+	viewName = ui->comboView->currentText();
+	this->updateAttributeView();
 
 }
 
 void GUIAttributeCalculator::accept() {
-    this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
-    this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
-    this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
+	this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
+	this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
+	this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
 
 
-    int rows = ui->varaibleTable->rowCount();
+	int rows = ui->varaibleTable->rowCount();
 
-    //std::map<std::string, std::string> variables;
-    for (int i = 0; i < rows; i++) {
+	//std::map<std::string, std::string> variables;
+	for (int i = 0; i < rows; i++) {
 		this->attrcalc->variablesMap[ui->varaibleTable->item(i, 0)->text().toStdString()] = ui->varaibleTable->item(i, 1)->text().toStdString();
 
-    }
-    //this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
-    //this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
+	}
+	//this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
+	//this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
 	this->attrcalc->asVector = this->ui->asVector->isChecked();
-    QDialog::accept();
+	QDialog::accept();
 }

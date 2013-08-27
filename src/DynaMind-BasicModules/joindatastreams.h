@@ -6,7 +6,7 @@
 
 class DM_HELPER_DLL_EXPORT JoinDatastreams : public DM::Module
 {
-    DM_DECLARE_NODE(JoinDatastreams)
+	DM_DECLARE_NODE(JoinDatastreams)
 
 public:
 	std::vector<std::string> Inports;
@@ -17,12 +17,12 @@ private:
 	unsigned int sizeold;
 
 public:
-    JoinDatastreams();
-    void init();
-    void run();
-    bool createInputDialog();
-    void addSystem(std::string sys);
-    std::string getHelpUrl();
+	JoinDatastreams();
+	void init();
+	void run();
+	bool createInputDialog();
+	void addSystem(std::string sys);
+	std::string getHelpUrl();
 };
 
 #endif // JOINDATASTREAMS_H

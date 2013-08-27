@@ -6,7 +6,7 @@
 #include <QDialog>
 
 namespace DM{
-    class Module;
+	class Module;
 }
 
 namespace Ui {
@@ -17,18 +17,18 @@ class ExportRasterData;
 
 class DM_HELPER_DLL_EXPORT GUIExportRasterData : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIExportRasterData(DM::Module * m, QWidget *parent = 0);
-    ~GUIExportRasterData();
-    
+	explicit GUIExportRasterData(DM::Module * m, QWidget *parent = 0);
+	~GUIExportRasterData();
+
 private:
-    Ui::GUIExportRasterData *ui;
-    ExportRasterData * m;
+	Ui::GUIExportRasterData *ui;
+	ExportRasterData * m;
 
 public slots:
-    void accept();
+	void accept();
 };
 
 #endif // GUIEXPORTRASTERDATA_H

@@ -5,19 +5,19 @@
 #include <dm.h>
 class DM_HELPER_DLL_EXPORT ClearView : public DM::Module
 {
-    DM_DECLARE_NODE(ClearView)
-    private:
-        //DM::System * sys_in;
-    std::string NameOfExistingView;
-    std::string NameOfExistingView_old;
+	DM_DECLARE_NODE(ClearView)
+	private:
+		//DM::System * sys_in;
+	std::string NameOfExistingView;
+	std::string NameOfExistingView_old;
 public:
-    ClearView();
-    void run();
-    void init();
+	ClearView();
+	void run();
+	void init();
 
-    bool createInputDialog();
+	bool createInputDialog();
    // DM::System * getSystemIn();
-    std::string getHelpUrl();
+	std::string getHelpUrl();
 
 };
 

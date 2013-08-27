@@ -37,13 +37,13 @@ DM_DECLARE_NODE_NAME(CalculateCentroid, Modules)
 
 CalculateCentroid::CalculateCentroid()
 {
-    this->city = 0;
-    this->NameOfExistingView = "";
-    std::vector<DM::View> data;
-    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
-    this->addParameter("NameOfExistingView", DM::STRING, & this->NameOfExistingView);
-    this->addData("Data", data);
-    changed = true;
+	this->city = 0;
+	this->NameOfExistingView = "";
+	std::vector<DM::View> data;
+	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	this->addParameter("NameOfExistingView", DM::STRING, & this->NameOfExistingView);
+	this->addData("Data", data);
+	changed = true;
 }
 
 
@@ -55,89 +55,89 @@ void CalculateCentroid::init()
 		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
 		return;
 	}
-    if (this->NameOfExistingView.empty())
-        return;
+	if (this->NameOfExistingView.empty())
+		return;
 
 	DM::View v;
 	if(!map_contains(&views, NameOfExistingView, v))
 	{
-		DM::Logger(DM::Warning) << "view '" << NameOfExistingView 
+		DM::Logger(DM::Warning) << "view '" << NameOfExistingView
 			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
 		return;
 	}
 	std::stringstream ss;
 	ss << v.getName() << "_CENTROIDS";
 
-    DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
-    writeView.addAttribute("centroid_x");
-    writeView.addAttribute("centroid_y");
-    writeView.addAttribute("area");
+	DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
+	writeView.addAttribute("centroid_x");
+	writeView.addAttribute("centroid_y");
+	writeView.addAttribute("area");
 	writeView.addLinks(ss.str(), ss.str());
 
-    newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
+	newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
 
-    std::stringstream link;
-    link << v.getName()<< "_ID";
-    newPoints.addLinks(link.str(), writeView.getName());
+	std::stringstream link;
+	link << v.getName()<< "_ID";
+	newPoints.addLinks(link.str(), writeView.getName());
 
 
-    std::vector<DM::View> data;
-    data.push_back(writeView);
-    data.push_back(newPoints);
-    this->addData("Data", data);
-    vData = writeView;
+	std::vector<DM::View> data;
+	data.push_back(writeView);
+	data.push_back(newPoints);
+	this->addData("Data", data);
+	vData = writeView;
 
 }
 
 
 void CalculateCentroid::run() {
-    city = this->getData("Data");
-    std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
-    std::stringstream link;
-    link << vData.getName();
-    int elements = names.size();
-    for (int i = 0; i < elements; i++){
-        Face * f = city->getFace(names[i]);
+	city = this->getData("Data");
+	std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
+	std::stringstream link;
+	link << vData.getName();
+	int elements = names.size();
+	for (int i = 0; i < elements; i++){
+		Face * f = city->getFace(names[i]);
 
-        if(!f)
-        {
-            DM::Logger(DM::Error) << "Face does not exist";
-            return;
-        }
+		if(!f)
+		{
+			DM::Logger(DM::Error) << "Face does not exist";
+			return;
+		}
 
 		Node p = DM::CGALGeometry::CaclulateCentroid2D(f);
 		double area = CGALGeometry::CalculateArea2D(f);
-        f->addAttribute("centroid_x", p.getX());
-        f->addAttribute("centroid_y", p.getY());
-        f->addAttribute("area", area);
+		f->addAttribute("centroid_x", p.getX());
+		f->addAttribute("centroid_y", p.getY());
+		f->addAttribute("area", area);
 
 
-        Node * cn = city->addNode(p, newPoints);
-        Attribute attr(link.str());
-        attr.setLink(vData.getName(), f->getUUID());
-        cn->addAttribute(attr);
+		Node * cn = city->addNode(p, newPoints);
+		Attribute attr(link.str());
+		attr.setLink(vData.getName(), f->getUUID());
+		cn->addAttribute(attr);
 
 		f->getAttribute(newPoints.getName())->setLink(newPoints.getName(), cn->getUUID());
 
-    }
+	}
 }
 bool CalculateCentroid::createInputDialog() {
-    QWidget * w = new GUICalculateCentroid(this);
-    w->show();
-    return true;
+	QWidget * w = new GUICalculateCentroid(this);
+	w->show();
+	return true;
 }
 
 void CalculateCentroid::setNameOfView(string name) {
-    changed = true;
-    this->NameOfExistingView = name;
+	changed = true;
+	this->NameOfExistingView = name;
 
 }
 DM::System * CalculateCentroid::getSystemIn() {
-    return this->city;
+	return this->city;
 }
 
 string CalculateCentroid::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/CalculateCentroid.md";
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/CalculateCentroid.md";
 }
 

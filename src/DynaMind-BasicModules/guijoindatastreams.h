@@ -10,18 +10,18 @@ class GUIJoinDatastreams;
 
 class GUIJoinDatastreams : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIJoinDatastreams(DM::Module *m, QWidget *parent = 0);
-    ~GUIJoinDatastreams();
-    
+	explicit GUIJoinDatastreams(DM::Module *m, QWidget *parent = 0);
+	~GUIJoinDatastreams();
+
 private:
-    Ui::GUIJoinDatastreams *ui;
-    JoinDatastreams * m;
+	Ui::GUIJoinDatastreams *ui;
+	JoinDatastreams * m;
 
 public slots:
-    void addSystem();
+	void addSystem();
 
 };
 

@@ -38,32 +38,32 @@ class GUIMarker;
 class Marker;
 class DM_HELPER_DLL_EXPORT GUIMarker : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GUIMarker(DM::Module * m, QWidget *parent = 0);
-    DM::Module * getModule() {return (DM::Module *)  this->m;}
-    ~GUIMarker();
+	explicit GUIMarker(DM::Module * m, QWidget *parent = 0);
+	DM::Module * getModule() {return (DM::Module *)  this->m;}
+	~GUIMarker();
 
 private:
-    Ui::GUIMarker *ui;
-    Marker * m;
+	Ui::GUIMarker *ui;
+	Marker * m;
 
 
-    QStringList FormulaR;
-    QStringList Formular;
-    QStringList FormulaMax;
-    bool checkIfFromOutSide(QString name);
+	QStringList FormulaR;
+	QStringList Formular;
+	QStringList FormulaMax;
+	bool checkIfFromOutSide(QString name);
 
 public slots:
-    void addRasterData();
-    void addR();
-    void addRtoVIBe(QStringList list);
-    void addr();
-    void addrtoVIBe(QStringList list);
-    void addMax();
-    void addMaxtoVIBe(QStringList list);
-    void accept();
+	void addRasterData();
+	void addR();
+	void addRtoVIBe(QStringList list);
+	void addr();
+	void addrtoVIBe(QStringList list);
+	void addMax();
+	void addMaxtoVIBe(QStringList list);
+	void accept();
 
 };
 

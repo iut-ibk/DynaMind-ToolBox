@@ -34,96 +34,96 @@ DM_DECLARE_NODE_NAME( AppendAttributes ,Modules )
 
 
 AppendAttributes::AppendAttributes() {
-    this->median = false;
-    this->multiplier = 1;
+	this->median = false;
+	this->multiplier = 1;
 
-    this->addParameter("Multiplier", DM::DOUBLE, &this->multiplier);
-    this->addParameter("Median", DM::BOOL, &this->median);
-    this->addParameter("NameOfRasterData", DM::STRING, &this->NameOfRasterData);
-    this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
-    this->addParameter("newAttribute", DM::STRING, &this->newAttribute);
+	this->addParameter("Multiplier", DM::DOUBLE, &this->multiplier);
+	this->addParameter("Median", DM::BOOL, &this->median);
+	this->addParameter("NameOfRasterData", DM::STRING, &this->NameOfRasterData);
+	this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
+	this->addParameter("newAttribute", DM::STRING, &this->newAttribute);
 
-    this->NameOfRasterData = "";
-    this->NameOfExistingView = "";
-    this->newAttribute = "";
+	this->NameOfRasterData = "";
+	this->NameOfExistingView = "";
+	this->newAttribute = "";
 
-    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 
 
-    this->addData("Data", data);
+	this->addData("Data", data);
 }
 
 void AppendAttributes::run() {
 
 
-    DM::RasterData * r = this->getRasterData("Data",vRasterData);
+	DM::RasterData * r = this->getRasterData("Data",vRasterData);
 
-    if (!r) {
-        DM::Logger(DM::Error) << "Raster Data " << vRasterData.getName() << " not found";
-        return;
-    }
+	if (!r) {
+		DM::Logger(DM::Error) << "Raster Data " << vRasterData.getName() << " not found";
+		return;
+	}
 
-    DM::Logger(DM::Debug) << "VIEWNAME: " << NameOfExistingView;
+	DM::Logger(DM::Debug) << "VIEWNAME: " << NameOfExistingView;
 
-    DM::System * sys = this->getData("Data");
-    foreach (std::string s, sys->getUUIDs(vExistingView))
-    {
-        if(vExistingView.getType()==DM::FACE)
-        {
-            DM::Face * f = sys->getFace(s);
-            std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
-            double dattr = 0;
-            if (median) {
-                dattr = RasterDataHelper::meanOverArea(r,nl) * multiplier;
-            } else {
-                dattr = RasterDataHelper::sumOverArea(r,nl,0) * multiplier;
-            }
-            f->changeAttribute(newAttribute, dattr);
-        }
+	DM::System * sys = this->getData("Data");
+	foreach (std::string s, sys->getUUIDs(vExistingView))
+	{
+		if(vExistingView.getType()==DM::FACE)
+		{
+			DM::Face * f = sys->getFace(s);
+			std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
+			double dattr = 0;
+			if (median) {
+				dattr = RasterDataHelper::meanOverArea(r,nl) * multiplier;
+			} else {
+				dattr = RasterDataHelper::sumOverArea(r,nl,0) * multiplier;
+			}
+			f->changeAttribute(newAttribute, dattr);
+		}
 
-        if(vExistingView.getType()==DM::NODE)
-        {
-            DM::Node * f = sys->getNode(s);
-            double dattr = r->getCell(f->getX(),f->getY());
-            f->changeAttribute(newAttribute, dattr);
-        }
-    }
+		if(vExistingView.getType()==DM::NODE)
+		{
+			DM::Node * f = sys->getNode(s);
+			double dattr = r->getCell(f->getX(),f->getY());
+			f->changeAttribute(newAttribute, dattr);
+		}
+	}
 }
 
 bool AppendAttributes::createInputDialog() {
-    QWidget * w = new GUIAppendAttributes(this);
-    w->show();
-    return true;
+	QWidget * w = new GUIAppendAttributes(this);
+	w->show();
+	return true;
 }
 
 string AppendAttributes::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/AppendAttributes.md";
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/AppendAttributes.md";
 }
 
 void AppendAttributes::init()
 {
 
-    if (this->NameOfExistingView.empty())
-        return;
+	if (this->NameOfExistingView.empty())
+		return;
 
-    if (this->newAttribute.empty())
-        return;
+	if (this->newAttribute.empty())
+		return;
 
-    this->vExistingView = this->getViewInStream("Data", NameOfExistingView);
+	this->vExistingView = this->getViewInStream("Data", NameOfExistingView);
 
-    if (vExistingView.getType() == -1)
-        return;
+	if (vExistingView.getType() == -1)
+		return;
 
-    vExistingView = DM::View(vExistingView.getName(), vExistingView.getType(), DM::READ);
-    vExistingView.addAttribute(newAttribute);
+	vExistingView = DM::View(vExistingView.getName(), vExistingView.getType(), DM::READ);
+	vExistingView.addAttribute(newAttribute);
 
-    this->vRasterData = DM::View(DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ));
+	this->vRasterData = DM::View(DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ));
 
-    data.push_back(vExistingView);
-    data.push_back(vRasterData);
+	data.push_back(vExistingView);
+	data.push_back(vRasterData);
 
-    this->addData("Data", data);
+	this->addData("Data", data);
 
 
 

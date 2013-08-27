@@ -32,20 +32,20 @@
 using namespace DM;
 class DM_HELPER_DLL_EXPORT SpatialLinking : public Module
 {
-    DM_DECLARE_NODE(SpatialLinking)
+	DM_DECLARE_NODE(SpatialLinking)
 private:
 
-        std::string base;
-        std::string linkto;
-        DM::System * city;
-        DM::View vbase;
-        DM::View vlinkto;
-        double spatialL;
+		std::string base;
+		std::string linkto;
+		DM::System * city;
+		DM::View vbase;
+		DM::View vlinkto;
+		double spatialL;
 public:
-    SpatialLinking();
-    void run();
-    void init();
-    std::string getHelpUrl();
+	SpatialLinking();
+	void run();
+	void init();
+	std::string getHelpUrl();
 };
 
 #endif // SPATIALLINKING_H

@@ -32,62 +32,62 @@
 #include <dm.h>
 using namespace DM;
 GUICellularAutomata_Neighbourhood::GUICellularAutomata_Neighbourhood(GUICellularAutomata * GUICellular, QWidget *parent) :
-        QDialog(parent),
-        ui(new Ui::GUICellularAutomata_Neighbourhood)
+		QDialog(parent),
+		ui(new Ui::GUICellularAutomata_Neighbourhood)
 {
-    gui = GUICellular;
-    ui->setupUi(this);
-    this->m = GUICellular->getModule();
-   
-	//std::map<std::string, std::vector<DM::View> > views =  m->getViews();
-    //std::vector<View> data = views["RasterDataIn"];
-    //foreach (View v, data)
-	foreach(View v, m->getViewsInStream("RasterDataIn"))
-        ui->comboBox_landscapes->addItem(QString::fromStdString(v.getName()));
+	gui = GUICellular;
+	ui->setupUi(this);
+	this->m = GUICellular->getModule();
 
-    ui->comboBox_neigh->addItem("Moore");
-    ui->comboBox_neigh->addItem("Neumann");
-    ui->comboBox_neigh->addItem("CurrentValue");
+	//std::map<std::string, std::vector<DM::View> > views =  m->getViews();
+	//std::vector<View> data = views["RasterDataIn"];
+	//foreach (View v, data)
+	foreach(View v, m->getViewsInStream("RasterDataIn"))
+		ui->comboBox_landscapes->addItem(QString::fromStdString(v.getName()));
+
+	ui->comboBox_neigh->addItem("Moore");
+	ui->comboBox_neigh->addItem("Neumann");
+	ui->comboBox_neigh->addItem("CurrentValue");
 
 }
 
 GUICellularAutomata_Neighbourhood::~GUICellularAutomata_Neighbourhood()
 {
-    delete ui;
+	delete ui;
 }
 
 void GUICellularAutomata_Neighbourhood::accept() {
 
-    //std::map<std::string, std::string> neighs = m->getParameter("Neighs")->get<std::map<std::string,std::string> >();
-    std::string name = ui->lineEdit_name->text().toStdString();
-    std::stringstream ss;
-    ss << ui->comboBox_landscapes->currentText().toStdString();
-    ss << "+|+";
-    ss << ui->comboBox_neigh->currentText().toStdString();
-    ss << "+|+";
-    ss << this->getNeighbourhood( ui->comboBox_neigh->currentText().toStdString());
-    //neighs[name] =ss.str();
-    //m->setParameterNative< std::map<std::string, std::string> >("Neighs", neighs);
+	//std::map<std::string, std::string> neighs = m->getParameter("Neighs")->get<std::map<std::string,std::string> >();
+	std::string name = ui->lineEdit_name->text().toStdString();
+	std::stringstream ss;
+	ss << ui->comboBox_landscapes->currentText().toStdString();
+	ss << "+|+";
+	ss << ui->comboBox_neigh->currentText().toStdString();
+	ss << "+|+";
+	ss << this->getNeighbourhood( ui->comboBox_neigh->currentText().toStdString());
+	//neighs[name] =ss.str();
+	//m->setParameterNative< std::map<std::string, std::string> >("Neighs", neighs);
 	gui->m->param.neighs[name] == ss.str();
-    emit valuesChanged();
-    QDialog::accept();
+	emit valuesChanged();
+	QDialog::accept();
 
 }
 
 std::string GUICellularAutomata_Neighbourhood::getNeighbourhood(std::string name) {
-    std::stringstream ss;
-    if (name.compare("Moore") == 0) {
-        ss << "|1,1,1;";
-        ss << "1,0,1;";
-        ss << "1,1,1|";
-    }
-    if (name.compare("Neumann") == 0) {
-        ss << "|0,1,0;";
-        ss << "1,0,1;";
-        ss << "0,1,0|";
-    }
-    if (name.compare("CurrentValue") == 0) {
-        ss << "|1|";
-    }
-    return ss.str();
+	std::stringstream ss;
+	if (name.compare("Moore") == 0) {
+		ss << "|1,1,1;";
+		ss << "1,0,1;";
+		ss << "1,1,1|";
+	}
+	if (name.compare("Neumann") == 0) {
+		ss << "|0,1,0;";
+		ss << "1,0,1;";
+		ss << "0,1,0|";
+	}
+	if (name.compare("CurrentValue") == 0) {
+		ss << "|1|";
+	}
+	return ss.str();
 }

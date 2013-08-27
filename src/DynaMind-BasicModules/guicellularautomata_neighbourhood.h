@@ -29,30 +29,30 @@
 #include <QDialog>
 #include <guicellularautomata.h>
 namespace DM {
-    class Module;
+	class Module;
 }
 namespace Ui {
-    class GUICellularAutomata_Neighbourhood;
+	class GUICellularAutomata_Neighbourhood;
 }
 
 class GUICellularAutomata_Neighbourhood : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GUICellularAutomata_Neighbourhood(GUICellularAutomata * GUICellular, QWidget *parent = 0);
-    std::string getNeighbourhood(std::string name);
-    ~GUICellularAutomata_Neighbourhood();
+	explicit GUICellularAutomata_Neighbourhood(GUICellularAutomata * GUICellular, QWidget *parent = 0);
+	std::string getNeighbourhood(std::string name);
+	~GUICellularAutomata_Neighbourhood();
 
 private:
-    Ui::GUICellularAutomata_Neighbourhood *ui;
-    DM::Module * m;
-    GUICellularAutomata * gui;
+	Ui::GUICellularAutomata_Neighbourhood *ui;
+	DM::Module * m;
+	GUICellularAutomata * gui;
 public slots:
-    void accept();
+	void accept();
 
 signals:
-    void valuesChanged();
+	void valuesChanged();
 
 };
 

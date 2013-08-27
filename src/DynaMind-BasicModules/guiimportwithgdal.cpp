@@ -5,21 +5,21 @@
 #include <QFileDialog>
 
 GUIImportWithGDAL::GUIImportWithGDAL(DM::Module *m, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GUIImportWithGDAL)
+	QDialog(parent),
+	ui(new Ui::GUIImportWithGDAL)
 {
-    this->m = (ImportwithGDAL*) m;
-    ui->setupUi(this);
+	this->m = (ImportwithGDAL*) m;
+	ui->setupUi(this);
 
-    this->ui->lineEdit_Filename->setText(QString::fromStdString(m->getParameterAsString("Filename")));
-    this->ui->lineEdit_viewName->setText(QString::fromStdString(m->getParameterAsString("ViewName")));
-    this->ui->checkBox_append_existing->setChecked(this->m->append);
+	this->ui->lineEdit_Filename->setText(QString::fromStdString(m->getParameterAsString("Filename")));
+	this->ui->lineEdit_viewName->setText(QString::fromStdString(m->getParameterAsString("ViewName")));
+	this->ui->checkBox_append_existing->setChecked(this->m->append);
 
-    this->ui->lineEdit_wfs_server->setText(QString::fromStdString(m->getParameterAsString("WFSServer")));
-    this->ui->lineEdit_wfs_username->setText(QString::fromStdString(m->getParameterAsString("WFSUsername")));
-    this->ui->lineEdit_wfs_password->setText(QString::fromStdString(m->getParameterAsString("WFSPassword")));
-    this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(m->getParameterAsString("WFSDataName")));
-    this->ui->lineEdit_epsgCode->setText(QString::fromStdString(m->getParameterAsString("Transform to EPSG:")));
+	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(m->getParameterAsString("WFSServer")));
+	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(m->getParameterAsString("WFSUsername")));
+	this->ui->lineEdit_wfs_password->setText(QString::fromStdString(m->getParameterAsString("WFSPassword")));
+	this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(m->getParameterAsString("WFSDataName")));
+	this->ui->lineEdit_epsgCode->setText(QString::fromStdString(m->getParameterAsString("Transform to EPSG:")));
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
 	this->ui->checkBox_linkWithExistingView->setChecked(this->m->linkWithExistingView);
 
@@ -27,7 +27,7 @@ GUIImportWithGDAL::GUIImportWithGDAL(DM::Module *m, QWidget *parent) :
 
 GUIImportWithGDAL::~GUIImportWithGDAL()
 {
-    delete ui;
+	delete ui;
 }
 
 void GUIImportWithGDAL::accept()
@@ -44,25 +44,25 @@ void GUIImportWithGDAL::accept()
 	m->epsgcode = this->ui->lineEdit_epsgCode->text().toInt();
 
 	m->init();
-    QDialog::accept();
+	QDialog::accept();
 }
 
 void GUIImportWithGDAL::on_pushButton_wfs_pick_clicked()
 {
-    GUIPickWFSDataset * guipicker = new GUIPickWFSDataset(this);
+	GUIPickWFSDataset * guipicker = new GUIPickWFSDataset(this);
 
-    connect(guipicker, SIGNAL(WFSServerChanged(QString)), this->ui->lineEdit_wfs_server, SLOT(setText(QString)));
-    connect(guipicker, SIGNAL(WFSUsernameChanged(QString)), this->ui->lineEdit_wfs_username, SLOT(setText(QString)));
-    connect(guipicker, SIGNAL(WFSPasswordChanged(QString)), this->ui->lineEdit_wfs_password, SLOT(setText(QString)));
-    connect(guipicker, SIGNAL(WFSDatasetChanged(QString)), this->ui->lineEdit_wfs_dataset, SLOT(setText(QString)));
+	connect(guipicker, SIGNAL(WFSServerChanged(QString)), this->ui->lineEdit_wfs_server, SLOT(setText(QString)));
+	connect(guipicker, SIGNAL(WFSUsernameChanged(QString)), this->ui->lineEdit_wfs_username, SLOT(setText(QString)));
+	connect(guipicker, SIGNAL(WFSPasswordChanged(QString)), this->ui->lineEdit_wfs_password, SLOT(setText(QString)));
+	connect(guipicker, SIGNAL(WFSDatasetChanged(QString)), this->ui->lineEdit_wfs_dataset, SLOT(setText(QString)));
 
-    guipicker->show();
+	guipicker->show();
 }
 
 void GUIImportWithGDAL::on_pushButton_Filename_clicked()
 {
-    QString s = QFileDialog::getOpenFileName(this,
-                                             tr("Open file"), "", tr("Files (*.*)")) ;
-    if (!s.isEmpty())
-        this->ui->lineEdit_Filename->setText(s);
+	QString s = QFileDialog::getOpenFileName(this,
+											 tr("Open file"), "", tr("Files (*.*)")) ;
+	if (!s.isEmpty())
+		this->ui->lineEdit_Filename->setText(s);
 }

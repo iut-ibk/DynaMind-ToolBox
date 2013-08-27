@@ -48,27 +48,27 @@
 
 using namespace std;
 
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
+extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 {
-    registry->addNodeFactory(new NodeFactory<LoopGroup>());
-    registry->addNodeFactory(new NodeFactory<CellularAutomata>());
-    registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
-    registry->addNodeFactory(new NodeFactory<ExportRasterData>());
-    registry->addNodeFactory(new NodeFactory<AppendViewFromSystem>());
-    registry->addNodeFactory(new NodeFactory<Marker>());
-    registry->addNodeFactory(new NodeFactory<AppendAttributes>());
-    registry->addNodeFactory(new NodeFactory<ClearView>());
-    registry->addNodeFactory(new NodeFactory<ExportNodesToFile>());
-    registry->addNodeFactory(new NodeFactory<ImportRasterData>());
-    registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
-    registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
-    registry->addNodeFactory(new NodeFactory<SpatialLinking>());
-    registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
-    registry->addNodeFactory(new NodeFactory<CalculateBoundingBox>());
-    registry->addNodeFactory(new NodeFactory<SinglePoint>());
-    registry->addNodeFactory(new NodeFactory<FaceToEdge>());
-    registry->addNodeFactory(new NodeFactory<CreateHouses>());
-    registry->addNodeFactory(new NodeFactory<RemoveComponent>());
-    registry->addNodeFactory(new NodeFactory<JoinDatastreams>());
+	registry->addNodeFactory(new NodeFactory<LoopGroup>());
+	registry->addNodeFactory(new NodeFactory<CellularAutomata>());
+	registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
+	registry->addNodeFactory(new NodeFactory<ExportRasterData>());
+	registry->addNodeFactory(new NodeFactory<AppendViewFromSystem>());
+	registry->addNodeFactory(new NodeFactory<Marker>());
+	registry->addNodeFactory(new NodeFactory<AppendAttributes>());
+	registry->addNodeFactory(new NodeFactory<ClearView>());
+	registry->addNodeFactory(new NodeFactory<ExportNodesToFile>());
+	registry->addNodeFactory(new NodeFactory<ImportRasterData>());
+	registry->addNodeFactory(new NodeFactory<CalculateCentroid>());
+	registry->addNodeFactory(new NodeFactory<AttributeCalculator>());
+	registry->addNodeFactory(new NodeFactory<SpatialLinking>());
+	registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
+	registry->addNodeFactory(new NodeFactory<CalculateBoundingBox>());
+	registry->addNodeFactory(new NodeFactory<SinglePoint>());
+	registry->addNodeFactory(new NodeFactory<FaceToEdge>());
+	registry->addNodeFactory(new NodeFactory<CreateHouses>());
+	registry->addNodeFactory(new NodeFactory<RemoveComponent>());
+	registry->addNodeFactory(new NodeFactory<JoinDatastreams>());
 }
 

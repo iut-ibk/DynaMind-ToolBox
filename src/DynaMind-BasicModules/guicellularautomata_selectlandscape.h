@@ -9,20 +9,20 @@ class GUICellularAutomata_SelectLandscape;
 
 class GUICellularAutomata_SelectLandscape : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUICellularAutomata_SelectLandscape(QStringList landscapes, QWidget *parent = 0);
-    ~GUICellularAutomata_SelectLandscape();
-    
+	explicit GUICellularAutomata_SelectLandscape(QStringList landscapes, QWidget *parent = 0);
+	~GUICellularAutomata_SelectLandscape();
+
 private:
-    Ui::GUICellularAutomata_SelectLandscape *ui;
+	Ui::GUICellularAutomata_SelectLandscape *ui;
 
 signals:
-    void selected(QString s);
+	void selected(QString s);
 
 public slots:
-    void accept();
+	void accept();
 
 };
 

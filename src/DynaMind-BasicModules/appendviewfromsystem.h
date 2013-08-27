@@ -24,12 +24,12 @@ private:
 	unsigned int sizeold;
 
 public:
-    AppendViewFromSystem();
-    void init();
-    void run();
-    bool createInputDialog();
-    void addSystem(std::string sys);
-    std::string getHelpUrl();
+	AppendViewFromSystem();
+	void init();
+	void run();
+	bool createInputDialog();
+	void addSystem(std::string sys);
+	std::string getHelpUrl();
 
 };
 

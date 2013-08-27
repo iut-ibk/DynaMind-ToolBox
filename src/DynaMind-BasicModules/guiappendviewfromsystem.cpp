@@ -4,35 +4,34 @@
 #include <QInputDialog>
 
 GUIAppendViewFromSystem::GUIAppendViewFromSystem(DM::Module *m, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GUIAppendViewFromSystem)
+	QDialog(parent),
+	ui(new Ui::GUIAppendViewFromSystem)
 {
-    ui->setupUi(this);
-    this->m = (AppendViewFromSystem *) m;
+	ui->setupUi(this);
+	this->m = (AppendViewFromSystem *) m;
 
-    ui->listWidget->clear();
+	ui->listWidget->clear();
 
-    foreach (std::string in, this->m->Inports)
-        ui->listWidget->addItem(QString::fromStdString(in));
+	foreach (std::string in, this->m->Inports)
+		ui->listWidget->addItem(QString::fromStdString(in));
 
 
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addSystem()));
+	connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(addSystem()));
 }
 
 GUIAppendViewFromSystem::~GUIAppendViewFromSystem()
 {
-    delete ui;
+	delete ui;
 }
 
 void GUIAppendViewFromSystem::addSystem()
 {    bool ok;
-     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                          tr("Name"), QLineEdit::Normal,
-                                          "", &ok);
-      if (ok && !text.isEmpty()) {
-          this->m->addSystem(text.toStdString());
-          ui->listWidget->addItem(text);
-      }
-
+	 QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+										  tr("Name"), QLineEdit::Normal,
+										  "", &ok);
+	  if (ok && !text.isEmpty()) {
+		  this->m->addSystem(text.toStdString());
+		  ui->listWidget->addItem(text);
+	  }
 
 }

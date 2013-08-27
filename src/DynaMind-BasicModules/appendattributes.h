@@ -35,31 +35,31 @@
   * @author Christian Urich
   */
 class DM_HELPER_DLL_EXPORT AppendAttributes : public  DM::Module {
-    DM_DECLARE_NODE(AppendAttributes)
+	DM_DECLARE_NODE(AppendAttributes)
 
-    private:
-    std::string NameOfExistingView;
-    std::string newAttribute;
-    std::string NameOfRasterData;
+	private:
+	std::string NameOfExistingView;
+	std::string newAttribute;
+	std::string NameOfRasterData;
 
-    DM::View vRasterData;
-    DM::View vExistingView;
+	DM::View vRasterData;
+	DM::View vExistingView;
 
-    std::vector<DM::View> data;
+	std::vector<DM::View> data;
 
-    std::map<std::string, DM::RasterData*> attribueMaps;
+	std::map<std::string, DM::RasterData*> attribueMaps;
 
 
 
 public:
-    double multiplier;
-    bool median;
+	double multiplier;
+	bool median;
 
-    AppendAttributes();
-    void run();
-    void init();
-    bool createInputDialog();
-    virtual std::string getHelpUrl();
+	AppendAttributes();
+	void run();
+	void init();
+	bool createInputDialog();
+	virtual std::string getHelpUrl();
 };
 
 #endif // APPENDATTRIBUTES_H

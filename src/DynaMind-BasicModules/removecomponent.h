@@ -32,17 +32,17 @@
 
 class  DM_HELPER_DLL_EXPORT RemoveComponent : public DM::Module
 {
-    DM_DECLARE_NODE(RemoveComponent)
-    private:
-        DM::View view_remove;
-        std::string remove_name;
+	DM_DECLARE_NODE(RemoveComponent)
+	private:
+		DM::View view_remove;
+		std::string remove_name;
 
 
 public:
-    RemoveComponent();
-    void init();
-    void run();
-    std::string getHelpUrl();
+	RemoveComponent();
+	void init();
+	void run();
+	std::string getHelpUrl();
 };
 
 #endif // RETROFITCITYBLOCK_H

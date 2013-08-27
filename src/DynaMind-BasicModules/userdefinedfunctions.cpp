@@ -26,8 +26,8 @@
 #include "userdefinedfunctions.h"
 #include <iostream>
 #include <cmath>
-#include <cstdlib> 
-#include <ctime> 
+#include <cstdlib>
+#include <ctime>
 #include "dmmodule.h"
 
 using namespace std;
@@ -35,28 +35,28 @@ using namespace std;
 double dm::numberOfValues(const double* values, int index)
 {
 
-	
-    int counter = 0;
-    for ( int i = 0; i < index-1; i++ ) {
-        if ( std::abs(values[i] -values[index-1]) < 0.000001 )
-            counter++;
-    }
-    return counter;
+
+	int counter = 0;
+	for ( int i = 0; i < index-1; i++ ) {
+		if ( std::abs(values[i] -values[index-1]) < 0.000001 )
+			counter++;
+	}
+	return counter;
 }
 double dm::round(double value) {
-     return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
+	 return (value > 0.0) ? floor(value + 0.5) : ceil(value - 0.5);
 }
 
 double dm::random(double value)
 {
 
-    double val = rand() % (int) value;
-    return  val;
+	double val = rand() % (int) value;
+	return  val;
 }
 
 double dm::printValue(double value)
 {
 
-    std::cout << value << std::endl;
-    return  0;
+	std::cout << value << std::endl;
+	return  0;
 }
