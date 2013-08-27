@@ -243,12 +243,12 @@ void DMMainWindow::preferences()
 
 void DMMainWindow::saveAsSimulation() 
 {
-#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save DynaMind File"), "", tr("Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog) ;
-#else
+//#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+//	QString fileName = QFileDialog::getSaveFileName(this,
+//		tr("Save DynaMind File"), "", tr("Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog) ;
+//#else
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save DynaMind File"));
-#endif
+//#endif
 	if (!fileName.isEmpty()) 
 	{
 		if (!fileName.contains(".dyn"))
@@ -275,13 +275,13 @@ void DMMainWindow::clearSimulation()
 
 void DMMainWindow::loadSimulation(int id) 
 {
-#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
-		"", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
-#else
+//#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
+//	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
+//		"", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
+//#else
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
 		"", tr("DynaMind Files (*.dyn)"));
-#endif
+//#endif
 
 	if (!fileName.isEmpty()){
 		this->clearSimulation();

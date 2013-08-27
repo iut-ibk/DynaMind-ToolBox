@@ -55,12 +55,12 @@
 
 void GUIModelNode::openFileDialog() 
 {
-#ifdef __APPLE__ // Fix for bug in Qt 4.8.5 that the file dialog freezes
-	QString s = QFileDialog::getOpenFileName(this,
-		tr("Open file"), "", tr("Files (*.*)"), 0, QFileDialog::DontUseNativeDialog);
-#else
+//#ifdef __APPLE__ // Fix for bug in Qt 4.8.5 that the file dialog freezes
+//	QString s = QFileDialog::getOpenFileName(this,
+//		tr("Open file"), "", tr("Files (*.*)"), 0, QFileDialog::DontUseNativeDialog);
+//#else
 	QString s = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Files (*.*)"));
-#endif
+//#endif
 	if (!s.isEmpty())
 		emit selectFiles (s);
 }
