@@ -50,25 +50,25 @@
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<SpanningTree>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
-    registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
-    registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
-    registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
-    registry->addNodeFactory(new DM::NodeFactory<SetZfromRasterdata>());
-    registry->addNodeFactory(new DM::NodeFactory<CalculateEdgeLength>());
-    registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
-    registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
-    registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
-    registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
-    registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
-    registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
-    registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
-    registry->addNodeFactory(new DM::NodeFactory<MapNodes2Graph>());
-    registry->addNodeFactory(new DM::NodeFactory<DistributeNodes>());
-    registry->addNodeFactory(new DM::NodeFactory<RemoveNodesOnZ>());
-    registry->addNodeFactory(new DM::NodeFactory<DistributeWeightOnNodes>());
+	registry->addNodeFactory(new DM::NodeFactory<SpanningTree>());
+	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
+	registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
+	registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
+	registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
+	registry->addNodeFactory(new DM::NodeFactory<SetZfromRasterdata>());
+	registry->addNodeFactory(new DM::NodeFactory<CalculateEdgeLength>());
+	registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
+	registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
+	registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
+	registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
+	registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
+	registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
+	registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
+	registry->addNodeFactory(new DM::NodeFactory<MapNodes2Graph>());
+	registry->addNodeFactory(new DM::NodeFactory<DistributeNodes>());
+	registry->addNodeFactory(new DM::NodeFactory<RemoveNodesOnZ>());
+	registry->addNodeFactory(new DM::NodeFactory<DistributeWeightOnNodes>());
 
-    registry->addNodeFactory(new DM::NodeFactory<SpatialPressurePerformance>());
-    registry->addNodeFactory(new DM::NodeFactory<TotalDemandPerformance>());
+	registry->addNodeFactory(new DM::NodeFactory<SpatialPressurePerformance>());
+	registry->addNodeFactory(new DM::NodeFactory<TotalDemandPerformance>());
 }

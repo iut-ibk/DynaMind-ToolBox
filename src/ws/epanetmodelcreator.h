@@ -41,83 +41,83 @@
 class EPANETModelCreator
 {
 private:
-    #define TYPES \
-    X(OPTIONS) \
-    X(TIMES) \
-    X(REPORT) \
-    X(JUNCTIONS) \
-    X(TANKS) \
-    X(RESERVOIRS) \
-    X(PIPES) \
-    X(COORDINATES) \
-    X(VERTICES)
+	#define TYPES \
+	X(OPTIONS) \
+	X(TIMES) \
+	X(REPORT) \
+	X(JUNCTIONS) \
+	X(TANKS) \
+	X(RESERVOIRS) \
+	X(PIPES) \
+	X(COORDINATES) \
+	X(VERTICES)
 
-    #define X(a) a,
-        enum ComponentTypes {TYPES};
-    #undef X
+	#define X(a) a,
+		enum ComponentTypes {TYPES};
+	#undef X
 
-    std::vector<std::string> ComponentStrings;
-    std::vector<QString> UnitStrings;
-    std::vector<QString> HeadlossStrings;
-    std::vector<QString> UnbalancedStrings;
-    std::vector<QString> HydraulicsStrings;
-    std::vector<QString> PipeStatusString;
+	std::vector<std::string> ComponentStrings;
+	std::vector<QString> UnitStrings;
+	std::vector<QString> HeadlossStrings;
+	std::vector<QString> UnbalancedStrings;
+	std::vector<QString> HydraulicsStrings;
+	std::vector<QString> PipeStatusString;
 
-    typedef std::map<QString,QString> EpanetElements;
+	typedef std::map<QString,QString> EpanetElements;
 
-    bool vertex;
-    std::map<ComponentTypes,boost::shared_ptr<EpanetElements> > model;
-    uint cindex;
+	bool vertex;
+	std::map<ComponentTypes,boost::shared_ptr<EpanetElements> > model;
+	uint cindex;
 
 public:
-    enum UNITS {CFS, GPM, MGD, IMGD, AFD, LPS, LPM, MLD, CMH, CMD};
-    enum HEADLOSS {HW,DW,CM};
-    enum UNBALANCED {STOP, CONTINUE};
-    enum HYDRAULICS {USE, SAVE};
-    enum PIPESTATUS {CLOSED,OPEN, CV};
+	enum UNITS {CFS, GPM, MGD, IMGD, AFD, LPS, LPM, MLD, CMH, CMD};
+	enum HEADLOSS {HW,DW,CM};
+	enum UNBALANCED {STOP, CONTINUE};
+	enum HYDRAULICS {USE, SAVE};
+	enum PIPESTATUS {CLOSED,OPEN, CV};
 
-    EPANETModelCreator(bool vertex=true);
+	EPANETModelCreator(bool vertex=true);
 
-    //NODE COMPONENTS OF EPANET
-    uint addJunction(double x, double y, double elevation, double basedemand=0, std::string demandpattern="");
-    uint addReservoir(double x, double y, double head, std::string headpattern);
-    uint addTank(double x, double y, double bottomelevation, double initiallevel, double minlevel, double maxlevel, double nominaldiamter, double minvolume, std::string volumecurve);
+	//NODE COMPONENTS OF EPANET
+	uint addJunction(double x, double y, double elevation, double basedemand=0, std::string demandpattern="");
+	uint addReservoir(double x, double y, double head, std::string headpattern);
+	uint addTank(double x, double y, double bottomelevation, double initiallevel, double minlevel, double maxlevel, double nominaldiamter, double minvolume, std::string volumecurve);
 
-    //LINK COMPONENTS OF EPANET
-    uint addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status);
+	//LINK COMPONENTS OF EPANET
+	uint addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status);
 
-    //OPTIONS
-    bool setOptionUnits(UNITS unit);
-    bool setOptionHeadloss(HEADLOSS headloss);
-    bool setOptionHydraulics(HYDRAULICS hydraulics, std::string filename);
-    bool setOptionViscosity(double value);
-    bool setOptionDiffusivity(double value);
-    bool setOptionSpecificGrafity(double value);
-    bool setOptionTrails(int value);
-    bool setOptionAccuracy(double value);
-    bool setOptionUnbalanced(UNBALANCED, int value =-1);
-    bool setOptionPattern(double value);
-    bool setOptionDemandMultiplier(double value);
-    bool setOptionEmitterExponent(double value);
-    bool setOptionTolerance(double value);
-    bool setOptionMap(std::string filename);
+	//OPTIONS
+	bool setOptionUnits(UNITS unit);
+	bool setOptionHeadloss(HEADLOSS headloss);
+	bool setOptionHydraulics(HYDRAULICS hydraulics, std::string filename);
+	bool setOptionViscosity(double value);
+	bool setOptionDiffusivity(double value);
+	bool setOptionSpecificGrafity(double value);
+	bool setOptionTrails(int value);
+	bool setOptionAccuracy(double value);
+	bool setOptionUnbalanced(UNBALANCED, int value =-1);
+	bool setOptionPattern(double value);
+	bool setOptionDemandMultiplier(double value);
+	bool setOptionEmitterExponent(double value);
+	bool setOptionTolerance(double value);
+	bool setOptionMap(std::string filename);
 
 
-    bool save(std::string filepath);
-    ~EPANETModelCreator(){}
+	bool save(std::string filepath);
+	~EPANETModelCreator(){}
 
-    //Coordinates
-    bool addCoordinate(double x, double y, QString id);
-    bool addVertex(double x1, double y1, double x2, double y2, QString id);
+	//Coordinates
+	bool addCoordinate(double x, double y, QString id);
+	bool addVertex(double x1, double y1, double x2, double y2, QString id);
 
-    //Helper methodes
-    static PIPESTATUS convertStringToPipeStatus(std::string status, bool &error);
-    static std::string convertPipeStatusToString(PIPESTATUS status, bool &error);
+	//Helper methodes
+	static PIPESTATUS convertStringToPipeStatus(std::string status, bool &error);
+	static std::string convertPipeStatusToString(PIPESTATUS status, bool &error);
 
 
 private:
-    bool addEntry(ComponentTypes type, QString id, QString values);
-    void initModel();
+	bool addEntry(ComponentTypes type, QString id, QString values);
+	void initModel();
 };
 
 #endif // EpanetModelCreator_H
