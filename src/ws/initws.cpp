@@ -65,4 +65,7 @@ void InitWaterSupplySystem::init()
 	this->addData("Watersupply", data);
 }
 
-void InitWaterSupplySystem::run(){}
+void InitWaterSupplySystem::run()
+{
+	this->getData("Watersupply");
+}
