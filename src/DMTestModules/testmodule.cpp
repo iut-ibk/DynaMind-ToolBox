@@ -41,63 +41,63 @@
 DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
-    inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
-    inlets.addAttribute("A");
-    inlets.addAttribute("B");
-    conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
-    SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
-    rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
+	inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
+	inlets.addAttribute("A");
+	inlets.addAttribute("B");
+	conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
+	SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
+	rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);
 
-    std::vector<DM::View> views;
+	std::vector<DM::View> views;
 
-    views.push_back(inlets);
-    views.push_back(conduits);
-    views.push_back(SomeRandomInformation);
+	views.push_back(inlets);
+	views.push_back(conduits);
+	views.push_back(SomeRandomInformation);
 
-    std::vector<DM::View> rdataviews;
-    rdataviews.push_back(rdata);
+	std::vector<DM::View> rdataviews;
+	rdataviews.push_back(rdata);
 
-    value = 10;
-
-
+	value = 10;
 
 
-    this->addParameter("DoubleValue", DM::DOUBLE, &value);
 
 
-    this->addData("Sewer",views);
+	this->addParameter("DoubleValue", DM::DOUBLE, &value);
 
-    this->addData("RasterData",rdataviews);
+
+	this->addData("Sewer",views);
+
+	this->addData("RasterData",rdataviews);
 }
 
 
 
 void TestModule::run() {
-    outputData = this->getData("Sewer");
-    DM::Node * n1 = outputData->addNode(0,0,0, inlets);
-    DM::Node * n2 = outputData->addNode(0,0,1, inlets);
+	outputData = this->getData("Sewer");
+	DM::Node * n1 = outputData->addNode(0,0,0, inlets);
+	DM::Node * n2 = outputData->addNode(0,0,1, inlets);
 
-    outputData->addEdge(n1, n2, conduits);
+	outputData->addEdge(n1, n2, conduits);
 
-    outputData->addEdge(n1, n2, SomeRandomInformation);
+	outputData->addEdge(n1, n2, SomeRandomInformation);
 
-    outputRasterData = this->getRasterData("RasterData", rdata);
+	outputRasterData = this->getRasterData("RasterData", rdata);
 
-    outputRasterData->setSize(200, 200, 20, 20, 0, 0);
+	outputRasterData->setSize(200, 200, 20, 20, 0, 0);
 
-    for (unsigned int i = 0; i < outputRasterData->getWidth(); i++) {
-        for (unsigned int j = 0; j < outputRasterData->getHeight(); j++) {
-            outputRasterData->setCell(i,j,15);
-        }
+	for (unsigned int i = 0; i < outputRasterData->getWidth(); i++) {
+		for (unsigned int j = 0; j < outputRasterData->getHeight(); j++) {
+			outputRasterData->setCell(i,j,15);
+		}
 
-    }
-    Logger(Debug) << "Run Testmodule";
+	}
+	Logger(Debug) << "Run Testmodule";
 
 
 
 }
 
 TestModule::~TestModule() {
-    Logger(Debug) << "Destructor Testmodule";
+	Logger(Debug) << "Destructor Testmodule";
 
 }

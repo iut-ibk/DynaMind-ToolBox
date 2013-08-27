@@ -125,7 +125,7 @@ void Simulation::clear()
 		removeModule(m);
 }
 
-bool Simulation::registerModule(const std::string& filepath) 
+bool Simulation::registerModule(const std::string& filepath)
 {
 	//Logger(Standard) << "Loading native module " << filepath;
 
@@ -142,7 +142,7 @@ bool Simulation::registerModule(const std::string& filepath)
 			Logger(Debug) <<  "successfully loaded python module " << filepath;
 			return true;
 		}
-		catch(...) 
+		catch(...)
 		{
 			Logger(Warning) <<  "failed loading python module " << filepath;
 			return false;
@@ -162,14 +162,14 @@ bool Simulation::registerModule(const std::string& filepath)
 			return false;
 		}
 	}
-	//Logger(Warning) << "not recognized filename ending " << filepath;
+	Logger(Warning) << "not recognized filename ending " << filepath;
 	return false;
 }
 
 void Simulation::registerModulesFromDirectory(const QDir& dir)
 {
 	QStringList modulesToLoad = dir.entryList();
-	foreach (QString module, modulesToLoad) 
+	foreach (QString module, modulesToLoad)
 	{
 		if (module == ".." || module == "." )
 			continue;
@@ -197,11 +197,11 @@ void Simulation::registerModulesFromDefaultLocation()
 	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
 #endif
 
-	foreach (QDir cp, cpv)  
+	foreach (QDir cp, cpv)
 		registerModulesFromDirectory(cp);
 }
 
-bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort, 
+bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort,
 								bool logOutput)
 {
 	if(!source || !dest)
@@ -278,7 +278,7 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 	l->isOutOfGroupLink = (source->owner == dest);
 	links.push_back(l);
 	// stream check
-	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort 
+	Logger(Debug) << "Added link from module '" << l->src->getClassName() << "' port '" << outPort
 		<< "' to module '" << l->dest->getClassName() << "' port '" << inPort << "'";
 
 	if(checkStream)
@@ -295,12 +295,12 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	Link* toDelete = NULL;
 	foreach(Link* l, links)
 	{
-		if(	l->src == source && 
-			l->outPort == outPort && 
-			l->dest == dest && 
+		if(	l->src == source &&
+			l->outPort == outPort &&
+			l->dest == dest &&
 			l->inPort == inPort)
 		{
-			// reset resets all stream views 
+			// reset resets all stream views
 			// lets keep the ones not affected by this link
 			std::map<std::string, std::map<std::string,View> > streamViews = l->dest->streamViews;
 			streamViews.erase(l->inPort);
@@ -371,7 +371,7 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 	std::map<std::string, DM::View>* curStreamViews;
 
 	if(into)
-	{		
+	{
 		DM::Logger(DM::Debug) << "initializing group '" << g->getClassName() << "'";
 		g->init();
 
@@ -401,7 +401,7 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
 	}
-	if(success) 
+	if(success)
 		g->setStatus(MOD_CHECK_OK);
 	else
 		g->setStatus(MOD_CHECK_ERROR);
@@ -447,7 +447,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 	// updated stream consist of input stream + written streams in this module
 	std::map<std::string, std::map<std::string,View> > updatedStreams = m->streamViews;
 
-	for(std::map<std::string, std::map<std::string,View> >::iterator it = m->accessedViews.begin(); 
+	for(std::map<std::string, std::map<std::string,View> >::iterator it = m->accessedViews.begin();
 		it != m->accessedViews.end(); ++it)
 	{
 		const std::string& streamName = it->first;
@@ -465,7 +465,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 				View existingView;
 				if(!map_contains(&m->streamViews[streamName], v.getName(), existingView))
 				{
-					DM::Logger(DM::Error) << "module '" << m->getClassName() 
+					DM::Logger(DM::Error) << "module '" << m->getClassName()
 						<< "' tries to access the nonexisting view '" << v.getName()
 						<< "' from stream '" << streamName << "'";
 					m->setStatus(MOD_CHECK_ERROR);
@@ -526,7 +526,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 
 	// shift views to next module
 	// loop thought all out ports
-	//for(std::map<std::string, std::map<std::string,View> >::iterator it = updatedStreams.begin(); 
+	//for(std::map<std::string, std::map<std::string,View> >::iterator it = updatedStreams.begin();
 	//	it != updatedStreams.end(); ++it)
 	foreach(std::string outPortName, m->getOutPortNames())
 	{
@@ -682,7 +682,7 @@ void Simulation::run()
 			}
 			else
 			{
-				Logger(Standard)	<< "module '" << m->getName() << "' executed successfully (took " 
+				Logger(Standard)	<< "module '" << m->getName() << "' executed successfully (took "
 					<< (long)modTimer.elapsed() << "ms)";
 				m->setStatus(MOD_EXECUTION_OK);
 
@@ -707,7 +707,7 @@ void Simulation::run()
 			if(g->condition())
 			{
 				Logger(Standard) << "condition fulfilled for group '" << g->getName() << "'";
-				// to ensure loop in loops are working properly, we init all modules of a 
+				// to ensure loop in loops are working properly, we init all modules of a
 				// group before starting it - resetting all internal counters
 				Logger(Debug) << "resetting modules in group";
 				foreach(Module* m, modules)
@@ -780,7 +780,7 @@ void Simulation::shiftData(Link* l, bool successor)
 	else
 	{
 		l->dest->setInPortData(l->inPort, data);
-		// FIX: modules which won't call getData(...)  
+		// FIX: modules which won't call getData(...)
 		// won't get data on the out port
 		if(l->dest->hasOutPort(l->inPort) && !l->dest->isGroup())
 			l->dest->setOutPortData(l->inPort, data);
@@ -819,7 +819,7 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 			// dead path
 			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
 	}
-	
+
 	// check if this module is read only
 	bool readOnly = true;
 	typedef std::map<std::string, View> viewmap;
@@ -901,7 +901,7 @@ void Simulation::reset()
 	checkStream();
 }
 
-bool Simulation::registerModulesFromSettings() 
+bool Simulation::registerModulesFromSettings()
 {
 	QSettings settings;
 	QString text;
@@ -933,8 +933,8 @@ bool Simulation::registerModulesFromSettings()
 }
 
 // for old versions
-void LoopGroupAdaptor(	QVector<LinkEntry>& links, 
-					  QVector<ModuleEntry>& modules, 
+void LoopGroupAdaptor(	QVector<LinkEntry>& links,
+					  QVector<ModuleEntry>& modules,
 					  ModuleEntry& loopGroup)
 {
 	// check if it is an old version
@@ -963,7 +963,7 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 		int i = 0;
 		foreach(const LinkEntry& l, links)
 		{
-			if(		l.InPort.PortName == bl.InPort.PortName 
+			if(		l.InPort.PortName == bl.InPort.PortName
 				&&	l.InPort.UUID == bl.InPort.UUID
 				&&	l.OutPort.PortName == bl.OutPort.PortName
 				&&	l.OutPort.UUID == bl.OutPort.UUID)
@@ -1066,7 +1066,7 @@ void LoopGroupAdaptor(	QVector<LinkEntry>& links,
 			else if(it->InPort.UUID == loopGroup.UUID && it->InPort.PortName == oldOutPortName)
 				it->InPort.PortName = newOutPortName;
 		}
-		DM::Logger(DM::Debug) << "exchanged port '" << oldOutPortName << "' of module '" 
+		DM::Logger(DM::Debug) << "exchanged port '" << oldOutPortName << "' of module '"
 			<< loopGroup.ClassName << "' with port '" << newOutPortName << "'";
 	}
 
@@ -1081,9 +1081,9 @@ void UpdateVersion(QVector<LinkEntry>& links, QVector<ModuleEntry>& modules)
 			LoopGroupAdaptor(links, modules, *it);
 }
 
-bool Simulation::loadSimulation(QIODevice* source, QString filepath, 
-								std::map<std::string, DM::Module*>& modMap, 
-								DM::Module* overwrittenOwner, bool overwriteGroupOwner) 
+bool Simulation::loadSimulation(QIODevice* source, QString filepath,
+								std::map<std::string, DM::Module*>& modMap,
+								DM::Module* overwrittenOwner, bool overwriteGroupOwner)
 {
 	QDir simFileDir = QFileInfo(filepath).absoluteDir();	// for param corr.
 	Logger(Standard) << ">> loading simulation file '" << filepath << "'";
@@ -1181,7 +1181,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	return true;
 }
 
-bool Simulation::loadSimulation(std::string filePath) 
+bool Simulation::loadSimulation(std::string filePath)
 {
 	Q_ASSERT(QFile::exists(QString::fromStdString(filePath)));
 	QFile file(QString::fromStdString(filePath));
@@ -1191,10 +1191,10 @@ bool Simulation::loadSimulation(std::string filePath)
 
 void Simulation::writeSimulation(QIODevice* dest, QString filePath)
 {
-	SimulationWriter::writeSimulation(	dest, filePath, 
+	SimulationWriter::writeSimulation(	dest, filePath,
 		getModules(), getLinks());
 }
-void Simulation::writeSimulation(std::string filePath) 
+void Simulation::writeSimulation(std::string filePath)
 {
 	QString qFilePath = QString::fromStdString(filePath);
 	QFile file(qFilePath);

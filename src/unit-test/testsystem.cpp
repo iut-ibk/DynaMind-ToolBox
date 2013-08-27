@@ -71,61 +71,61 @@ TEST_F(TestSystem, DeleteComponentFromView) {
 	EXPECT_EQ(0, node_counter);
 }
 
-    TEST_F(TestSystem,memoryTest){
-        /* TODO
-        DM::System * sys = new DM::System();
-        DM::Node * n = sys->addNode(new DM::Node(0,0,0));
-        std::string uuid = n->getUUID();
-        n->addAttribute("Attribute1", 1);
-        DM::System * sys1 = sys->createSuccessor();
-        n = sys1->addNode(new DM::Node(0,0,0));
-        n->addAttribute("Attribute2", 2);
-        DM::Component * cmp = sys1->getComponent(uuid);
-        cmp->addAttribute("Attribute1", 3);
-        cmp->addAttribute("Attribute2", 4);
-        cmp->changeAttribute("Attribute1", 5);
-        sys1->createSuccessor();
-        delete sys;
-        ASSERT_TRUE(true);*/
+	TEST_F(TestSystem,memoryTest){
+		/* TODO
+		DM::System * sys = new DM::System();
+		DM::Node * n = sys->addNode(new DM::Node(0,0,0));
+		std::string uuid = n->getUUID();
+		n->addAttribute("Attribute1", 1);
+		DM::System * sys1 = sys->createSuccessor();
+		n = sys1->addNode(new DM::Node(0,0,0));
+		n->addAttribute("Attribute2", 2);
+		DM::Component * cmp = sys1->getComponent(uuid);
+		cmp->addAttribute("Attribute1", 3);
+		cmp->addAttribute("Attribute2", 4);
+		cmp->changeAttribute("Attribute1", 5);
+		sys1->createSuccessor();
+		delete sys;
+		ASSERT_TRUE(true);*/
 }
 TEST_F(TestSystem, RasterData_Flipped_Tset) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Test RasterDat Flipped";
-    for (int i = 1; i < 20; i++) {
-        DM::Logger(DM::Standard) << i;
-        DM::RasterData * plane = new RasterData();
-        int width = 10*i;
-        int height = 20*i;
-        int cellsize = 20;
-        plane->setSize(width, height, cellsize, cellsize, 0, 0);
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test RasterDat Flipped";
+	for (int i = 1; i < 20; i++) {
+		DM::Logger(DM::Standard) << i;
+		DM::RasterData * plane = new RasterData();
+		int width = 10*i;
+		int height = 20*i;
+		int cellsize = 20;
+		plane->setSize(width, height, cellsize, cellsize, 0, 0);
 
-        for (long x = 0; x < width; x++) {
-            for (long y = 0; y < height; y++) {
-                plane->setCell(x, y, x + width*y);
-            }
-        }
+		for (long x = 0; x < width; x++) {
+			for (long y = 0; y < height; y++) {
+				plane->setCell(x, y, x + width*y);
+			}
+		}
 
-        DM::Logger(DM::Standard) << plane->getCell(0,0);
-        DM::Logger(DM::Standard) << plane->getCell(0,height-1);
-        DM::Logger(DM::Standard) << plane->getCell(width-1,0);
-        DM::Logger(DM::Standard) << plane->getCell(width-1, height-1);
+		DM::Logger(DM::Standard) << plane->getCell(0,0);
+		DM::Logger(DM::Standard) << plane->getCell(0,height-1);
+		DM::Logger(DM::Standard) << plane->getCell(width-1,0);
+		DM::Logger(DM::Standard) << plane->getCell(width-1, height-1);
 
-        for (long x = 0; x < width; x++) {
-            for (long y = 0; y < height; y++) {
-                EXPECT_DOUBLE_EQ(x + width*y,plane->getCell(x,y));
-            }
-        }
+		for (long x = 0; x < width; x++) {
+			for (long y = 0; y < height; y++) {
+				EXPECT_DOUBLE_EQ(x + width*y,plane->getCell(x,y));
+			}
+		}
 
-        delete plane;
-    }
+		delete plane;
+	}
 }
 
-TEST_F(TestSystem, RasterData_ValueTest) 
+TEST_F(TestSystem, RasterData_ValueTest)
 {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Test RasterData values";
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test RasterData values";
 
 	DM::RasterData plane;
 	int width = 256;
@@ -143,8 +143,8 @@ TEST_F(TestSystem, RasterData_ValueTest)
 			EXPECT_DOUBLE_EQ(x + width*y,plane.getValue(x*2,y*2));
 		}
 	}
-    DM::Logger(DM::Standard) << "Testing blockfill";
-	
+	DM::Logger(DM::Standard) << "Testing blockfill";
+
 	double block0[64*64];
 	double block1[64*64];
 	double block2[64*64];
@@ -164,12 +164,12 @@ TEST_F(TestSystem, RasterData_ValueTest)
 				block1[(x%64)+(y%64)*64] = x + width*y;
 		}
 	}
-	
+
 	plane.setBlock(0,0,block0);
 	plane.setBlock(1,0,block1);
 	plane.setBlock(0,1,block2);
 	plane.setBlock(1,1,block3);
-	
+
 	for (long x = 0; x < 128; x++) {
 		for (long y = 0; y < 64; y++) {
 			EXPECT_DOUBLE_EQ(x + width*y,plane.getCell(x,y));
@@ -177,7 +177,7 @@ TEST_F(TestSystem, RasterData_ValueTest)
 		}
 	}
 }
-	
+
 #ifdef SQLUNITTESTS
 
 TEST_F(TestSystem,cachetest) {
@@ -253,7 +253,7 @@ TEST_F(TestSystem,simplesqltest) {
 	DM::Logger(DM::Standard) << "Test Reallocation (SQL)";
 
 	DM::Simulation sim;
-	sim.registerModule("dynamind-testmodules");
+	sim.registerModulesFromDirectory(QDir("./"));
 	DM::Module * mcreator = sim.addModule("CreateAllComponenets");
 	ASSERT_TRUE(mcreator != 0);
 	DM::Module * mallocator  = sim.addModule("Reallocator");
@@ -412,7 +412,7 @@ TEST_F(TestSystem, PredecessorEdgeTestTreeSearch)
 	DM::View ev("ev", DM::EDGE, DM::WRITE);
 	sys->addEdge(n1, n2, ev);
 	sys->addEdge(n2, n3, ev);
-	
+
 	DM::System * sys_succ = sys->createSuccessor();
 
 	std::vector<std::string> uuids = sys_succ->getUUIDs(ev);
@@ -429,7 +429,7 @@ TEST_F(TestSystem, PredecessorEdgeTestTreeSearch)
 	DM::Edge * se1 = startNodeMap[startNode];
 	DM::Node * nextNode = sys_succ->getNode(se1->getEndpointName());
 	DM::Edge * se2 = startNodeMap[nextNode];
-	
+
 	// view update
 	ASSERT_TRUE(uuidmap[se1->getUUID()] == se1);
 	ASSERT_TRUE(uuidmap[se2->getUUID()] == se2);
@@ -699,9 +699,9 @@ TEST_F(TestSystem, SQLattributes)
 	a = new DM::Attribute("fuzzi");
 
 	std::vector<DM::LinkAttribute> links;
-    DM::LinkAttribute link0 ("0","a");
-    DM::LinkAttribute link1 ("1","b");
-    DM::LinkAttribute link2 ("2","c");
+	DM::LinkAttribute link0 ("0","a");
+	DM::LinkAttribute link1 ("1","b");
+	DM::LinkAttribute link2 ("2","c");
 
 	links.push_back(link0);
 	links.push_back(link1);
@@ -745,21 +745,21 @@ TEST_F(TestSystem, SystemGetEdge)
 }
 
 TEST_F(TestSystem,AttributesInSystem) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
-    DM::Logger(DM::Standard) << "Attributes in System";
-    DM::System * sys = new System();
-    sys->addAttribute("year", 2010);
-    DM::System * sys_next = sys->createSuccessor();
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Attributes in System";
+	DM::System * sys = new System();
+	sys->addAttribute("year", 2010);
+	DM::System * sys_next = sys->createSuccessor();
 
-    double year = sys_next->getAttribute("year")->getDouble() + 1;
+	double year = sys_next->getAttribute("year")->getDouble() + 1;
 
-    sys_next->addAttribute("year",year);
+	sys_next->addAttribute("year",year);
 
-    ASSERT_DOUBLE_EQ(sys->getAttribute("year")->getDouble(), 2010);
-    ASSERT_DOUBLE_EQ(sys_next->getAttribute("year")->getDouble(), 2011);
+	ASSERT_DOUBLE_EQ(sys->getAttribute("year")->getDouble(), 2010);
+	ASSERT_DOUBLE_EQ(sys_next->getAttribute("year")->getDouble(), 2011);
 
-    delete sys;
+	delete sys;
 }
 
 }
@@ -853,11 +853,11 @@ TEST_F(TestSystem,sqlprofiling) {
 	}
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "attach and copy " << n << "  nodes " << (long)timer.elapsed();
-	
+
 	delete sys;
 	sys = new System();
 	baseNode->addAttribute("d_att",40);
-	
+
 	timer.restart();
 	for(int i=0;i<n;i++)
 		sys->addNode(*baseNode);
@@ -868,7 +868,7 @@ TEST_F(TestSystem,sqlprofiling) {
 
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "create and copy " << n << " attached nodes " << (long)timer.elapsed();
-	
+
 	delete baseNode;
 	delete sys;
 	DM::DBConnector::getInstance()->Synchronize();
@@ -909,9 +909,9 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "change each rasterdata entry(" << n << "x" << n << ") " << (long)timer.elapsed();
 
-	
+
 	timer.restart();
-	
+
 	for(int y=0;y<n;y++)
 	{
 		for(int x=0;x<n;x++)
@@ -921,7 +921,7 @@ TEST_F(TestSystem,sqlRasterDataProfiling) {
 			raster->getMoorNeighbourhood(neigh, x , y);
 		}
 	}
-	
+
 	DM::DBConnector::getInstance()->Synchronize();
 	DM::Logger(DM::Standard) << "get neightboorhoods(" << n << "x" << n << ") " << (long)timer.elapsed();
 
@@ -957,45 +957,45 @@ bool delete_table()
 	return query.exec("DROP TABLE t3");
 }
 
-void insert(int numelements) 
+void insert(int numelements)
 {
-    QSqlQuery query;
-    QElapsedTimer timer;
-    timer.start();
-    query.exec("BEGIN");
-    query.prepare("INSERT INTO t3 (key, x, y, z) "
-                  "VALUES (?, ?, ?, ?)");
-    for (int i = 0; i < numelements; i++) 
+	QSqlQuery query;
+	QElapsedTimer timer;
+	timer.start();
+	query.exec("BEGIN");
+	query.prepare("INSERT INTO t3 (key, x, y, z) "
+				  "VALUES (?, ?, ?, ?)");
+	for (int i = 0; i < numelements; i++)
 	{
-        query.addBindValue(i);
-        query.addBindValue((double)i*2);
-        query.addBindValue((double)i*3);
-        query.addBindValue((double)i*5);
-        if (!query.exec())
+		query.addBindValue(i);
+		query.addBindValue((double)i*2);
+		query.addBindValue((double)i*3);
+		query.addBindValue((double)i*5);
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
-    }
-    query.exec("COMMIT");
+	}
+	query.exec("COMMIT");
 	std::cout << "inserted " << numelements << " elements in " << timer.elapsed() << " ms" << std::endl;
 }
 
 void iterative_view_select(const std::vector<long>& keys)
 {
 	QSqlQuery query;
-    query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+	query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
 
 	foreach(long i, keys)
 	{
 		query.addBindValue((int)i);
-        if (!query.exec())
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
 		if(!query.next())
-            std::cout << "no entry found" << std::endl;
+			std::cout << "no entry found" << std::endl;
 
 		int key = query.value(0).toInt();
 		ASSERT_TRUE(key == i);
@@ -1007,25 +1007,25 @@ void iterative_view_select(const std::vector<long>& keys)
 
 #ifdef SELECT_TEST_COMPARISON
 
-void iterative_select(int numelements) 
+void iterative_select(int numelements)
 {
-    QElapsedTimer timer;
-    timer.start();
-    
-    int counter = 0;
-	QSqlQuery query;
-        query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+	QElapsedTimer timer;
+	timer.start();
 
-	for (int i = 0; i < numelements; i++) 
+	int counter = 0;
+	QSqlQuery query;
+		query.prepare("SELECT key,x,y,z FROM t3 WHERE key = ?");
+
+	for (int i = 0; i < numelements; i++)
 	{
 		query.addBindValue(i);
-        if (!query.exec())
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
 		if(!query.next())
-            std::cout << "no entry found" << std::endl;
+			std::cout << "no entry found" << std::endl;
 
 		int key = query.value(0).toInt();
 		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
@@ -1033,132 +1033,132 @@ void iterative_select(int numelements)
 		ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
 		counter++;
 	}
-	
+
 	if(counter != numelements)
 		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
 
-    long t = timer.elapsed();
+	long t = timer.elapsed();
 	std::cout << "iterative select of " << numelements << " elements took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
 }
 
-void range_select(int numelements, int blocksize) 
+void range_select(int numelements, int blocksize)
 {
-    QElapsedTimer timer;
-    timer.start();
+	QElapsedTimer timer;
+	timer.start();
 
-    int counter = 0;
+	int counter = 0;
 	QSqlQuery query;
 	query.prepare("SELECT key,x,y,z FROM t3 WHERE key >= ? AND key < ?");
 
-    for (int i = 0; i < numelements/blocksize; i++) 
+	for (int i = 0; i < numelements/blocksize; i++)
 	{
-        query.addBindValue( i*blocksize );
-        query.addBindValue( (i+1)*blocksize );
-        if (!query.exec())
+		query.addBindValue( i*blocksize );
+		query.addBindValue( (i+1)*blocksize );
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
 
-        while (query.next()) 
+		while (query.next())
 		{
 			int key = query.value(0).toInt();
 			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
 			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
 			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
-            counter++;
-        }
-    }
+			counter++;
+		}
+	}
 	if(counter != numelements)
 		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
-	
-    long t = timer.elapsed();
+
+	long t = timer.elapsed();
 	std::cout << "range select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
 }
 
-void combined_select(int numelements, int blocksize) 
+void combined_select(int numelements, int blocksize)
 {
-    QElapsedTimer timer;
-    timer.start();
+	QElapsedTimer timer;
+	timer.start();
 
-    int counter = 0;
+	int counter = 0;
 	QString queryString = "SELECT key,x,y,z FROM t3  WHERE key = ?";
 	for(int j = 1; j < blocksize; j++)
 		queryString.append(" OR key = ?");
-	
+
 	QSqlQuery query;
 		query.prepare(queryString);
 
-    for (int i = 0; i < numelements/blocksize; i++) 
+	for (int i = 0; i < numelements/blocksize; i++)
 	{
 		for(int j = 0; j < blocksize; j++)
 			query.addBindValue( i*blocksize+j );
 
-        if (!query.exec())
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
 
-        while (query.next()) 
+		while (query.next())
 		{
 			int key = query.value(0).toInt();
 			ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
 			ASSERT_TRUE(query.value(2).toDouble() == key*3.0);
 			ASSERT_TRUE(query.value(3).toDouble() == key*5.0);
-            counter++;
-        }
-    }
+			counter++;
+		}
+	}
 
 	if(counter != numelements)
 		std::cout << "error: could not read all elements (" << counter << "/" << numelements << ")" << std::endl;
-	
-    long t = timer.elapsed();
+
+	long t = timer.elapsed();
 	std::cout << "combined select of " << numelements << " elements with blocksize " << blocksize << " took " << t << " ms / " << t/(double)numelements << " ms per element" << std::endl;
 }
 
 TEST_F(TestSystem,selectTest) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Profiling sql select";
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Profiling sql select";
 
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db");
-    if(!db.open()){
-        std::cout << "error opening db" << std::endl<< std::endl;
+	QSqlDatabase db;
+	db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("test.db");
+	if(!db.open()){
+		std::cout << "error opening db" << std::endl<< std::endl;
 		return;
 	}
 
-    int N = 1e5;
-    for(long numelements = 64; numelements <= N; numelements *= 4)
-	{	
+	int N = 1e5;
+	for(long numelements = 64; numelements <= N; numelements *= 4)
+	{
 		QSqlQuery query;
-        std::cout << "START N " << numelements << std::endl;
-        if (!init_table())
+		std::cout << "START N " << numelements << std::endl;
+		if (!init_table())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
-        insert(numelements);
-		
+		insert(numelements);
+
 		iterative_select(numelements);
 		range_select(numelements, 1);
-        range_select(numelements, 4);
-        range_select(numelements, 16);
-        range_select(numelements, 64);
+		range_select(numelements, 4);
+		range_select(numelements, 16);
+		range_select(numelements, 64);
 		combined_select(numelements, 1);
 		combined_select(numelements, 4);
 		combined_select(numelements, 16);
 		combined_select(numelements, 64);
 
-        if (!delete_table())
-            std::cout << "Error in droping" << std::endl;
-        std::cout << "END" << std::endl<< std::endl;
-    }
+		if (!delete_table())
+			std::cout << "Error in droping" << std::endl;
+		std::cout << "END" << std::endl<< std::endl;
+	}
 
-    std::cout << "End test" << std::endl;
-    db.close(); // for close connection
+	std::cout << "End test" << std::endl;
+	db.close(); // for close connection
 }
 
 #endif // SELECT_TEST_COMPARISON
@@ -1211,7 +1211,7 @@ void block_view_select(std::vector<long> keys)
 		return;
 	}
 
-	while (q.next()) 
+	while (q.next())
 	{
 		int key = q.value(0).toInt();
 		ASSERT_TRUE(q.value(1).toDouble() == key*2.0);
@@ -1232,7 +1232,7 @@ void sql_view_select(long checksum)
 		return;
 	}
 
-	while (query.next()) 
+	while (query.next())
 	{
 		int key = query.value(0).toInt();
 		ASSERT_TRUE(query.value(1).toDouble() == key*2.0);
@@ -1244,37 +1244,37 @@ void sql_view_select(long checksum)
 }
 
 TEST_F(TestSystem,selectViewTest) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Profiling sql view select";
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Profiling sql view select";
 
 	DM::DBConnector::getInstance()->killWorker();
 
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db");
-    if(!db.open()){
-        std::cout << "error opening db" << std::endl<< std::endl;
+	QSqlDatabase db;
+	db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("test.db");
+	if(!db.open()){
+		std::cout << "error opening db" << std::endl<< std::endl;
 		return;
 	}
-	
-       if (!drop_view() || !delete_table())
+
+	   if (!drop_view() || !delete_table())
 		return;
 
-    int N = 1024;
-    for(long numelements = 4; numelements <= N; numelements *= 4)
-	{	
-        std::cout << "START N " << numelements << std::endl;
-        if (!init_table())
+	int N = 1024;
+	for(long numelements = 4; numelements <= N; numelements *= 4)
+	{
+		std::cout << "START N " << numelements << std::endl;
+		if (!init_table())
 			return;
-		
-        insert(numelements);
+
+		insert(numelements);
 		std::vector<long> keys;
 		for(int i = numelements/4; i < (numelements/4)*3; i++)
 			keys.push_back(i);
 
 		std::cout << "num elements in view " << keys.size() << std::endl;
-		
+
 		QElapsedTimer timer;
 		timer.start();
 		if(!add_view(keys))
@@ -1282,17 +1282,17 @@ TEST_F(TestSystem,selectViewTest) {
 			drop_view();
 			return;
 		}
-		
+
 		long t = timer.elapsed();
-		std::cout << "creating view took " 
+		std::cout << "creating view took "
 			<< t << "ms / " << t/(double)keys.size() << " per element" << std::endl;
-		
+
 		for(int i=0;i<3;i++)
 		{
 			timer.restart();
 			iterative_view_select(keys);
 			long t = timer.elapsed();
-			std::cout << "iterative_view_select # " << i << " took " << t << " ms / " 
+			std::cout << "iterative_view_select # " << i << " took " << t << " ms / "
 				<< t/(double)keys.size() << " per element" << std::endl;
 		}
 
@@ -1301,7 +1301,7 @@ TEST_F(TestSystem,selectViewTest) {
 			timer.restart();
 			block_view_select(keys);
 			long t = timer.elapsed();
-			std::cout << "block_view_select # " << i << " took " << t << " ms / " 
+			std::cout << "block_view_select # " << i << " took " << t << " ms / "
 				<< t/(double)keys.size() << " per element" << std::endl;
 		}
 
@@ -1310,18 +1310,18 @@ TEST_F(TestSystem,selectViewTest) {
 			timer.restart();
 			sql_view_select(keys.size());
 			long t = timer.elapsed();
-			std::cout << "sql_view_select # " << i << " took " << t << " ms / " 
+			std::cout << "sql_view_select # " << i << " took " << t << " ms / "
 				<< t/(double)keys.size() << " per element" << std::endl;
 		}
 
-        if (!drop_view() || !delete_table())
+		if (!drop_view() || !delete_table())
 			return;
-		
-        std::cout << "END" << std::endl<< std::endl;
-    }
 
-    std::cout << "End test" << std::endl;
-    db.close(); // for close connection
+		std::cout << "END" << std::endl<< std::endl;
+	}
+
+	std::cout << "End test" << std::endl;
+	db.close(); // for close connection
 }
 
 #endif //SELECT_TEST_VIEW
@@ -1363,48 +1363,48 @@ bool drop_attributes_table()
 	return query.exec("DROP TABLE attributes");
 }
 
-void insert_view(QString viewname, const std::vector<long>& keys) 
+void insert_view(QString viewname, const std::vector<long>& keys)
 {
-    QSqlQuery query;
-    QElapsedTimer timer;
-    timer.start();
-    query.exec("BEGIN");
-    query.prepare("INSERT INTO views (name, key) "
-                  "VALUES (?, ?)");
+	QSqlQuery query;
+	QElapsedTimer timer;
+	timer.start();
+	query.exec("BEGIN");
+	query.prepare("INSERT INTO views (name, key) "
+				  "VALUES (?, ?)");
 	foreach(long key, keys)
 	{
-        query.addBindValue(viewname);
-        query.addBindValue((int)key);
-        if (!query.exec())
+		query.addBindValue(viewname);
+		query.addBindValue((int)key);
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
-    }
-    query.exec("COMMIT");
+	}
+	query.exec("COMMIT");
 	std::cout << "inserted " << keys.size() << " view elements in " << timer.elapsed() << " ms" << std::endl;
 }
 
-void insert_attributes(std::vector<int> values) 
+void insert_attributes(std::vector<int> values)
 {
-    QSqlQuery query;
-    QElapsedTimer timer;
-    timer.start();
-    query.exec("BEGIN");
-    query.prepare("INSERT INTO attributes (owner, value) "
-                  "VALUES (?, ?)");
+	QSqlQuery query;
+	QElapsedTimer timer;
+	timer.start();
+	query.exec("BEGIN");
+	query.prepare("INSERT INTO attributes (owner, value) "
+				  "VALUES (?, ?)");
 
 	foreach(int i, values)
 	{
 		query.addBindValue(i);
 		query.addBindValue(i*2.0);
-        if (!query.exec())
+		if (!query.exec())
 		{
 			DM::PrintSqlError(&query);
 			return;
 		}
-    }
-    query.exec("COMMIT");
+	}
+	query.exec("COMMIT");
 	std::cout << "inserted " << values.size() << " attributes in " << timer.elapsed() << " ms" << std::endl;
 }
 
@@ -1412,7 +1412,7 @@ void insert_attributes(std::vector<int> values)
 void select_from_view(QString viewname, long checksum)
 {
 	QSqlQuery query;
-    query.prepare("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key WHERE views.name = ?");
+	query.prepare("SELECT t3.* FROM t3 INNER JOIN views ON t3.key=views.key WHERE views.name = ?");
 	query.addBindValue(viewname);
 	query.exec();
 
@@ -1431,7 +1431,7 @@ void select_from_view(QString viewname, long checksum)
 void select_attributes_from_view(QString viewname, long checksum)
 {
 	QSqlQuery query;
-    query.prepare("select owner,value from attributes inner join t3 on t3.key = attributes.owner inner join views on views.key = attributes.owner where views.name = ?");
+	query.prepare("select owner,value from attributes inner join t3 on t3.key = attributes.owner inner join views on views.key = attributes.owner where views.name = ?");
 	query.addBindValue(viewname);
 	query.exec();
 
@@ -1453,9 +1453,9 @@ void mean(std::vector<T> values, T& mean, T& stddev)
 	mean = 0;
 	foreach(T value, values)
 		mean += value;
-	
+
 	mean /= values.size();
-	
+
 	stddev = 0;
 	foreach(T value, values)
 	{
@@ -1466,41 +1466,41 @@ void mean(std::vector<T> values, T& mean, T& stddev)
 }
 
 TEST_F(TestSystem,selectViewJoinTableTest) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Profiling sql view select join";
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Profiling sql view select join";
 
 	DM::DBConnector::getInstance()->killWorker();
 
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db");
-    if(!db.open()){
-        std::cout << "error opening db" << std::endl<< std::endl;
+	QSqlDatabase db;
+	db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("test.db");
+	if(!db.open()){
+		std::cout << "error opening db" << std::endl<< std::endl;
 		return;
 	}
-	
-    int N = 1e7;
-    for(long numelements = 256; numelements <= N; numelements *= 4)
-	{	
-        std::cout << "START N " << numelements << std::endl;
+
+	int N = 1e7;
+	for(long numelements = 256; numelements <= N; numelements *= 4)
+	{
+		std::cout << "START N " << numelements << std::endl;
 		if (!init_table() || !init_view_table() || !init_attributes_table())
 			return;
-		
-        insert(numelements);
+
+		insert(numelements);
 		std::vector<long> viewkeys[3];
 		for(int i = numelements/4; i < (numelements/4)*3; i++)
 			viewkeys[0].push_back(i);
 
 		std::cout << "num elements in view " << viewkeys[0].size() << std::endl;
-		
+
 		QElapsedTimer timer;
 		timer.start();
 		insert_view("viewa", viewkeys[0]);
-		
+
 		long t = timer.elapsed();
 		std::cout << "creating view took \t" << t/(double)viewkeys[0].size() << " per element" << std::endl;
-		
+
 		long m,d;
 		std::vector<long> times;
 
@@ -1531,7 +1531,7 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 		}
 		insert_view("viewb", viewkeys[1]);
 		insert_view("viewc", viewkeys[2]);
-		
+
 		times.clear();
 		std::vector<double> petimes;
 		for(int i=0;i<3;i++)
@@ -1576,12 +1576,12 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 
 		if (!drop_view_table() || !delete_table() || !drop_attributes_table())
 			return;
-		
-        std::cout << "END" << std::endl<< std::endl;
-    }
 
-    db.close(); // for close connection
-    std::cout << "End test, stopping - continue with any key" << std::endl;
+		std::cout << "END" << std::endl<< std::endl;
+	}
+
+	db.close(); // for close connection
+	std::cout << "End test, stopping - continue with any key" << std::endl;
 	getchar();
 }
 
@@ -1590,9 +1590,9 @@ TEST_F(TestSystem,selectViewJoinTableTest) {
 #ifdef PROFILE_GETCOMPONENTSINVIEW
 
 TEST_F(TestSystem,getComponentsInViewProfiling) {
-    ostream *out = &cout;
-    DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
-    DM::Logger(DM::Standard) << "Profiling getAllComponentsInView";
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Profiling getAllComponentsInView";
 
 	long n = 1e4;
 	DM::View v("testview", DM::NODE, DM::MODIFY);
@@ -1602,30 +1602,30 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 	DM::System sys, sysa;
 	sys.addView(v);
 	sysa.addView(va);
-	
-    DM::Logger(DM::Standard) << "initializing test system";
+
+	DM::Logger(DM::Standard) << "initializing test system";
 	for(long i=0;i<n;i++)
 		sys.addComponent(new DM::Node, v);
 	DM::Node::ClearCache();
 
-    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
+	DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	QElapsedTimer timer;
 	timer.start();
 	std::map<std::string, DM::Component*> cmps = sys.getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
-	
-    DM::Logger(DM::Standard) << "initializing successor test system";
+
+	DM::Logger(DM::Standard) << "initializing successor test system";
 	DM::System* suc = sys.createSuccessor();
 	DM::Node::ClearCache();
-	
-    DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
+
+	DM::Logger(DM::Standard) << "retrieving " << n << " nodes from view";
 	timer.restart();
 	cmps = suc->getAllComponentsInView(v);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
 	/*
-    DM::Logger(DM::Standard) << "initializing attribute test system";
+	DM::Logger(DM::Standard) << "initializing attribute test system";
 	for(long i=0;i<n;i++)
 	{
 		DM::Component *c = new DM::Component();
@@ -1633,18 +1633,18 @@ TEST_F(TestSystem,getComponentsInViewProfiling) {
 		sysa.addComponent(c, va);
 	}
 	DM::Attribute::ClearCache();
-	
-    DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
+
+	DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
 	timer.restart();
 	cmps = sysa.getAllComponentsInView(va);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
 	ASSERT_TRUE(cmps.size() == n);
-	
-    DM::Logger(DM::Standard) << "initializing successor test system";
+
+	DM::Logger(DM::Standard) << "initializing successor test system";
 	System* suca = sysa.createSuccessor();
 	DM::Attribute::ClearCache();
 
-    DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
+	DM::Logger(DM::Standard) << "retrieving " << n << " components with attributes from view";
 	timer.restart();
 	cmps = suca->getAllComponentsInView(va);
 	DM::Logger(DM::Standard) << "took " << (long)timer.elapsed() << " ms";
@@ -1667,17 +1667,17 @@ TEST_F(TestSystem,standardBigDataTest) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
 	DM::Logger(DM::Standard) << "standard big data test";
-	
+
 	// get current config
 	DM::DBConnectorConfig cfg = DM::DBConnector::getInstance()->getConfig();
 	// prepare a new one
 	DM::DBConnectorConfig cfgNew = cfg;
-	
+
 	QElapsedTimer timer;
 	const long N = 1e7;
-	
+
 	DM::Logger(DM::Standard) << "cachesize\tnumber of elements\toperation\ttime";
-	
+
 	for(long cachesize = 100; cachesize <= N; cachesize *= 10)
 	{
 		cfgNew.nodeCacheSize = cachesize;
@@ -1696,35 +1696,35 @@ TEST_F(TestSystem,standardBigDataTest) {
 			for(long i = 0; i < numelements; i++)
 				nodes.push_back(sys.addNode(0,0,0));
 			addTime = timer.elapsed();
-			
+
 			// generate a new set of random numbers
 			rndNumbers.clear();
 			for(long i = 0; i < numelements; i++)
 				rndNumbers.push_back(abs(randlong()%numelements));
-			
+
 			// measure getX
 			timer.restart();
 			foreach(long l, rndNumbers)
 				nodes[l]->getX();
 			getTime = timer.elapsed();
-			
+
 			// generate a new set of random numbers
 			rndNumbers.clear();
 			for(long i = 0; i < numelements; i++)
 				rndNumbers.push_back(abs(randlong()%numelements));
-			
+
 			// measure setX
 			timer.restart();
 			foreach(long l, rndNumbers)
 				nodes[l]->setX(1.0);
 			setTime = timer.elapsed();
-			
+
 			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tadd\t\t" << addTime;
 			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tget\t\t" << getTime;
 			DM::Logger(DM::Standard) << cachesize<< "\t\t" << numelements << "\t\t\tset\t\t" << setTime;
 		}
 	}
-	
+
 	// reset configs
 	DM::DBConnector::getInstance()->setConfig(cfg);
 }
@@ -1733,7 +1733,7 @@ TEST_F(TestSystem,standardBigDataTest) {
 
 #ifdef OMPUNITTESTS
 
-TEST_F(TestSystem,OMP) 
+TEST_F(TestSystem,OMP)
 {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
@@ -1746,14 +1746,14 @@ TEST_F(TestSystem,OMP)
 #pragma omp parallel for
 	for(int i=0;i<n;i++)
 		c.addAttribute(QString::number(i).toStdString(), (double)i);
-	
+
 	for(int i=0;i<n;i++)
 	{
 		double d = c.getAttribute(QString::number(i).toStdString())->getDouble();
 		ASSERT_TRUE(d == i);
 		//DM::Logger(Debug) << "successfully added double attribute #" << i << " with value = " << d;
 	}
-	
+
 #pragma omp parallel for
 	for(int i=0;i<n;i++)
 		c.removeAttribute(QString::number(i).toStdString());
@@ -1783,14 +1783,14 @@ void InsertRemoveComponentTest(DM::Component& c,unsigned long n)
 		c.removeAttribute(QString::number(i).toStdString());
 }
 
-TEST_F(TestSystem,profilingOMP) 
+TEST_F(TestSystem,profilingOMP)
 {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "profiling omp";
-	
+
 	DM::Component c;
-	
+
 	unsigned long maxN = 1e6;
 #if !defined _DEBUG
 	maxN = 1e7;
@@ -1806,7 +1806,7 @@ TEST_F(TestSystem,profilingOMP)
 		timer.start();
 		InsertRemoveComponentTestOMP(c,n);
 		long singleThreadTime = timer.elapsed();
-	
+
 		omp_set_num_threads(2);
 		timer.restart();
 		InsertRemoveComponentTestOMP(c,n);
@@ -1816,7 +1816,7 @@ TEST_F(TestSystem,profilingOMP)
 		timer.restart();
 		InsertRemoveComponentTestOMP(c,n);
 		long quadThreadTime = timer.elapsed();
-	
+
 		DM::Logger(DM::Standard) << "results for n = "<<(long)n<<" time[ms](threadcount)<speedup>: "
 			<< noompThreadTime <<"(no omp 1)<>\t" << singleThreadTime <<"(1)<1>\t"
 			<< dualThreadTime <<"(2)<"<<singleThreadTime/(float)dualThreadTime<<">\t"
