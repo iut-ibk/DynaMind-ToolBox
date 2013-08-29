@@ -50,6 +50,62 @@ void addRectangleWithHole(DM::System* sys, DM::View v)
 	f1->addHole(nodes_h);
 }
 
+
+TEST_F(UnitTestsDMExtensions,CalculateMinBoundingBoxYDir)
+{
+
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(0,0,0));
+	DM::Node * n2 = sys->addNode(DM::Node(0,2,0));
+	DM::Node * n3 = sys->addNode(DM::Node(1,2,0));
+	DM::Node * n4 = sys->addNode(DM::Node(1,0,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+	std::vector<DM::Node> bb;
+	std::vector<double> size;
+	double alpha = DM::CGALGeometry::CalculateMinBoundingBox(nodes, bb, size);
+
+	EXPECT_DOUBLE_EQ(90,alpha);
+	EXPECT_DOUBLE_EQ(size[0], 2);
+	EXPECT_DOUBLE_EQ(size[1], 1);
+}
+
+TEST_F(UnitTestsDMExtensions,CalculateMinBoundingBoxXDir)
+{
+
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(0,0,0));
+	DM::Node * n2 = sys->addNode(DM::Node(0,1,0));
+	DM::Node * n3 = sys->addNode(DM::Node(2,1,0));
+	DM::Node * n4 = sys->addNode(DM::Node(2,0,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+	std::vector<DM::Node> bb;
+	std::vector<double> size;
+	double alpha = DM::CGALGeometry::CalculateMinBoundingBox(nodes, bb, size);
+
+	EXPECT_DOUBLE_EQ(180,alpha);
+	EXPECT_DOUBLE_EQ(size[0], 2);
+	EXPECT_DOUBLE_EQ(size[1], 1);
+}
+
+
 TEST_F(UnitTestsDMExtensions,NodeInsideFace){
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
