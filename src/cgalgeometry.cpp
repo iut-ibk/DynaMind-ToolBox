@@ -49,12 +49,6 @@
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/centroid.h>
 
-
-
-
-
-
-
 namespace DM {
 
 
@@ -87,7 +81,6 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 				int c1 = CGALGeometry_P::CountNeighboringVertices(v1);
 				int c2 = CGALGeometry_P::CountNeighboringVertices(v2);
 				if (c1 < 2 || c2 < 2) {
-					//arr.remove_edge (eit);
 					removeList.push_back(eit);
 					removecounter++;
 				}
