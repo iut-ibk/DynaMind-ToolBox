@@ -34,68 +34,68 @@ namespace DM {
 
 
 
-    class DM_HELPER_DLL_EXPORT CGALGeometry
-    {
-    public:
+class DM_HELPER_DLL_EXPORT CGALGeometry
+{
+public:
 
-		enum BoolOperation {
-			OP_INTERSECT,
-			OP_DIFFERENCE
-		};
+	enum BoolOperation {
+		OP_INTERSECT,
+		OP_DIFFERENCE
+	};
 
-        static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
+	static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
 
-		/** @brief Calculates minimal bounding box. Returns alpha in degree,
+	/** @brief Calculates minimal bounding box. Returns alpha in degree,
 		 * the 4 nodes of the bounding box and the size (l and w)
 		 * the bounding box is always oriented that l < w;
 		 */
-        static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox, std::vector<double> & size);
-        
-        static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
+	static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox, std::vector<double> & size);
 
-        /** @brief Returns node list that contains the triangulation of the face f.
-         * Every trinagle is defined by 3 nodes.
-         */
-        static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
-        static void FaceTriangulation(DM::System * sys, DM::Face * f,  std::vector<DM::Node> &triangles);
+	static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
 
-        /** @brief Regular Triangulation
-         */
-        static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, std::vector<int> & ids, double meshsize);
+	/** @brief Returns node list that contains the triangulation of the face f.
+		 * Every trinagle is defined by 3 nodes.
+		 */
+	static std::vector<DM::Node> FaceTriangulation(DM::System * sys, DM::Face * f);
+	static void FaceTriangulation(DM::System * sys, DM::Face * f,  std::vector<DM::Node> &triangles);
 
-        /** @brief Intersect Faces */
-        static std::vector<DM::Face *> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
+	/** @brief Regular Triangulation
+		 */
+	static std::vector<DM::Node> RegularFaceTriangulation(DM::System * sys, DM::Face * f, std::vector<int> & ids, double meshsize);
 
-		/** @brief Boolean Operations on Faces */
-		static std::vector<DM::Face *> BoolOperationFace(DM::System * sys, DM::Face * f1, DM::Face * f2, BoolOperation ob);
+	/** @brief Intersect Faces */
+	static std::vector<DM::Face *> IntersectFace(DM::System * sys, DM::Face * f1, DM::Face * f2);
 
-		/** @brief Returns true if faces intersect */
-		static bool DoFacesInterect(Face *f1, Face *f2);
+	/** @brief Boolean Operations on Faces */
+	static std::vector<DM::Face *> BoolOperationFace(DM::System * sys, DM::Face * f1, DM::Face * f2, BoolOperation ob);
 
-		static std::vector<DM::Face *>  CleanFace(System *sys, Face *f1);
+	/** @brief Returns true if faces intersect */
+	static bool DoFacesInterect(Face *f1, Face *f2);
 
-        /** @brief Rotate Nodes */
-        static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
+	static std::vector<DM::Face *>  CleanFace(System *sys, Face *f1);
 
-        /** @brief Check Orientation if CLOCKWISE return true */
-        static bool CheckOrientation(std::vector<DM::Node*> nodes);
-		
-        /** @brief Caclulate Centroid */
-        static DM::Node CalculateCentroid(DM::System * sys, DM::Face * f);
+	/** @brief Rotate Nodes */
+	static std::vector<DM::Node> RotateNodes(std::vector<DM::Node> nodes, double alpha);
 
-        /** @brief Caclulate Centroid */
-		static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y, double &z);
+	/** @brief Check Orientation if CLOCKWISE return true */
+	static bool CheckOrientation(std::vector<DM::Node*> nodes);
 
-		/** @brief Caclulate Area */
-		static double CalculateArea2D( DM::Face * f);
+	/** @brief Caclulate Centroid */
+	static DM::Node CalculateCentroid(DM::System * sys, DM::Face * f);
 
-		/** @brief Retruns true if node within face, boundary is inside */
-		static bool NodeWithinFace(DM::Face * f, const DM::Node & n);
+	/** @brief Caclulate Centroid */
+	static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y, double &z);
 
-		/** @brief Calculate Centroid in 2D */
-		static DM::Node CaclulateCentroid2D( DM::Face * f);
+	/** @brief Caclulate Area */
+	static double CalculateArea2D( DM::Face * f);
 
-	};
+	/** @brief Retruns true if node within face, boundary is inside */
+	static bool NodeWithinFace(DM::Face * f, const DM::Node & n);
+
+	/** @brief Calculate Centroid in 2D */
+	static DM::Node CaclulateCentroid2D( DM::Face * f);
+
+};
 }
 
 

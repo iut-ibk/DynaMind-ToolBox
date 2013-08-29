@@ -13,23 +13,23 @@
 
 class DM_HELPER_DLL_EXPORT SpatialSearchNearestNodes
 {
-    typedef CGAL::Simple_cartesian<double> K;
-    typedef K::Point_2 Point_d;
-    typedef CGAL::Search_traits_2<K> TreeTraits;
-    typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
-    typedef Neighbor_search::Tree Tree;
+	typedef CGAL::Simple_cartesian<double> K;
+	typedef K::Point_2 Point_d;
+	typedef CGAL::Search_traits_2<K> TreeTraits;
+	typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+	typedef Neighbor_search::Tree Tree;
 
 public:
-    SpatialSearchNearestNodes(DM::System * sys, std::vector<DM::Node *> nodes);
-    ~SpatialSearchNearestNodes();
+	SpatialSearchNearestNodes(DM::System * sys, std::vector<DM::Node *> nodes);
+	~SpatialSearchNearestNodes();
 
-    DM::Node * findNearestNode(DM::Node * n, double treshhold = -1);
+	DM::Node * findNearestNode(DM::Node * n, double treshhold = -1);
 
 private:
-    Tree * searchTree;
-    std::list<Point_d> points;
+	Tree * searchTree;
+	std::list<Point_d> points;
 
-    DM::SpatialNodeHashMap * sphm;
+	DM::SpatialNodeHashMap * sphm;
 };
 
 #endif // SPATIALSEARCHNEARESTNODES_H

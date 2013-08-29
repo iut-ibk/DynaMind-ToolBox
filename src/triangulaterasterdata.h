@@ -33,7 +33,7 @@
 class DM_HELPER_DLL_EXPORT TriangulateRasterData
 {
 public:
-    static void Triangulation(std::vector<DM::Vector3> & nodes, DM::RasterData * rData);
+	static void Triangulation(std::vector<DM::Vector3> & nodes, DM::RasterData * rData);
 };
 
 #endif // TRIANGULATERASTERDATA_H

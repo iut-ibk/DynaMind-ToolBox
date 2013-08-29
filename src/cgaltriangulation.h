@@ -38,12 +38,12 @@
 
 struct FaceInfo2
 {
-  FaceInfo2(){}
-  int nesting_level;
+	FaceInfo2(){}
+	int nesting_level;
 
-  bool in_domain(){
-    return nesting_level%2 == 1;
-  }
+	bool in_domain(){
+		return nesting_level%2 == 1;
+	}
 };
 
 
@@ -60,9 +60,9 @@ typedef CGAL::Polygon_2<K>                                        Polygon_2;
 class DM_HELPER_DLL_EXPORT CGALTriangulation
 {
 public:
-    static void mark_domains(CDT& ct,  CDT::Face_handle start, int index, std::list<CDT::Edge>& border );
-    static void mark_domains(CDT& cdt);
-    static void Triangulation(DM::System * sys, DM::Face * f, std::vector<DM::Node> & triangels);
+	static void mark_domains(CDT& ct,  CDT::Face_handle start, int index, std::list<CDT::Edge>& border );
+	static void mark_domains(CDT& cdt);
+	static void Triangulation(DM::System * sys, DM::Face * f, std::vector<DM::Node> & triangels);
 };
 
 #endif // CGAL_TRIANGULATION_H

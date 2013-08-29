@@ -10,14 +10,14 @@
 template<class Kernel, class Container>
 void print_polygon (const CGAL::Polygon_2<Kernel, Container>& P)
 {
-  typename CGAL::Polygon_2<Kernel, Container>::Vertex_const_iterator  vit;
+	typename CGAL::Polygon_2<Kernel, Container>::Vertex_const_iterator  vit;
 
-  std::cout << "[ " << P.size() << " vertices:";
-  for (vit = P.vertices_begin(); vit != P.vertices_end(); ++vit)
-    std::cout << " (" << *vit << ')';
-  std::cout << " ]" << std::endl;
+	std::cout << "[ " << P.size() << " vertices:";
+	for (vit = P.vertices_begin(); vit != P.vertices_end(); ++vit)
+		std::cout << " (" << *vit << ')';
+	std::cout << " ]" << std::endl;
 
-  return;
+	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -25,40 +25,40 @@ void print_polygon (const CGAL::Polygon_2<Kernel, Container>& P)
 //
 template<class Kernel, class Container>
 void print_polygon_with_holes
-    (const CGAL::Polygon_with_holes_2<Kernel, Container>& pwh)
+(const CGAL::Polygon_with_holes_2<Kernel, Container>& pwh)
 {
-  if (! pwh.is_unbounded())
-  {
-    std::cout << "{ Outer boundary = ";
-    print_polygon (pwh.outer_boundary());
-  }
-  else
-    std::cout << "{ Unbounded polygon." << std::endl;
+	if (! pwh.is_unbounded())
+	{
+		std::cout << "{ Outer boundary = ";
+		print_polygon (pwh.outer_boundary());
+	}
+	else
+		std::cout << "{ Unbounded polygon." << std::endl;
 
-  typename CGAL::Polygon_with_holes_2<Kernel,Container>::
-                                             Hole_const_iterator  hit;
-  unsigned int                                                     k = 1;
+	typename CGAL::Polygon_with_holes_2<Kernel,Container>::
+			Hole_const_iterator  hit;
+	unsigned int                                                     k = 1;
 
-  std::cout << "  " << pwh.number_of_holes() << " holes:" << std::endl;
-  for (hit = pwh.holes_begin(); hit != pwh.holes_end(); ++hit, ++k)
-  {
-    std::cout << "    Hole #" << k << " = ";
-    print_polygon (*hit);
-  }
-  std::cout << " }" << std::endl;
+	std::cout << "  " << pwh.number_of_holes() << " holes:" << std::endl;
+	for (hit = pwh.holes_begin(); hit != pwh.holes_end(); ++hit, ++k)
+	{
+		std::cout << "    Hole #" << k << " = ";
+		print_polygon (*hit);
+	}
+	std::cout << " }" << std::endl;
 
-  return;
+	return;
 }
 
 template<class K>
 void print_polygons ( std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > const& polies )
 {
-  typedef std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > PolygonVector ;
+	typedef std::vector< boost::shared_ptr< CGAL::Polygon_2<K> > > PolygonVector ;
 
-  std::cout << "Polygon list with " << polies.size() << " polygons" << std::endl ;
+	std::cout << "Polygon list with " << polies.size() << " polygons" << std::endl ;
 
-  for( typename PolygonVector::const_iterator pi = polies.begin() ; pi != polies.end() ; ++ pi )
-    print_polygon(**pi);
+	for( typename PolygonVector::const_iterator pi = polies.begin() ; pi != polies.end() ; ++ pi )
+		print_polygon(**pi);
 }
 
 

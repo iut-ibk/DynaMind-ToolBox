@@ -85,18 +85,18 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT CGALGeometry_P
 {
 public:
-    
-    static bool CheckPoints(const Point_2 & p1, const Point_2 & p2);
-    
-    static Segment_list_2 Snap_Rounding_2D(DM::System * sys, DM::View &view, float tol);
-   
-    static int CountNeighboringVertices (Arrangement_2::Vertex_const_handle v);
+
+	static bool CheckPoints(const Point_2 & p1, const Point_2 & p2);
+
+	static Segment_list_2 Snap_Rounding_2D(DM::System * sys, DM::View &view, float tol);
+
+	static int CountNeighboringVertices (Arrangement_2::Vertex_const_handle v);
 
 	static Segment_list_2 EdgeToSegment2D(DM::System * sys,  DM::View &view);
 
-    static DM::System Segment2DToEdge(Segment_list_2 seg_list, DM::View &view);
+	static DM::System Segment2DToEdge(Segment_list_2 seg_list, DM::View &view);
 
-    static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
+	static Segment_list_2 PolyLineToSegments(const Polyline_list_2 & poly_list);
 
 	static double NumberTypetoFloat(Number_type n);
 
@@ -106,13 +106,13 @@ public:
 
 
 
-    
-    /*static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);
-     static VectorData createRaster(std::vector<Point> & points, double width, double height);*/
-    
-    
-    
-    
+
+	/*static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);
+	 static VectorData createRaster(std::vector<Point> & points, double width, double height);*/
+
+
+
+
 };
 }
 

@@ -37,8 +37,8 @@ class DM_HELPER_DLL_EXPORT CGALSkeletonisation
 {
 
 public:
-    //CGALSkeletonisation();
-     static DM::System StraightSkeletonisation(System *sys, Face *f, double alpha);
+	//CGALSkeletonisation();
+	static DM::System StraightSkeletonisation(System *sys, Face *f, double alpha);
 
 };
 }

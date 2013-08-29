@@ -717,13 +717,13 @@ bool CGALGeometry::NodeWithinFace(Face *f, const Node &n)
 	Point pt (n.getX(), n.getY());
 
 	switch(CGAL::bounded_side_2(poly1.vertices_begin(), poly1.vertices_end(),pt)) {
-	  case CGAL::ON_BOUNDED_SIDE :
+	case CGAL::ON_BOUNDED_SIDE :
 		//Logger(Debug) << " is inside the polygon.\n";
 		break;
-	  case CGAL::ON_BOUNDARY:
+	case CGAL::ON_BOUNDARY:
 		//Logger(Debug) << " is on the polygon boundary.\n";
 		break;
-	  case CGAL::ON_UNBOUNDED_SIDE:
+	case CGAL::ON_UNBOUNDED_SIDE:
 		//Logger(Debug) << " is outside the polygon.\n";
 		return false;
 		break;
