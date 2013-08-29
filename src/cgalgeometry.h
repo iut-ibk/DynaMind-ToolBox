@@ -40,12 +40,15 @@ namespace DM {
 
 		enum BoolOperation {
 			OP_INTERSECT,
-			OP_DIFFERENCE,
+			OP_DIFFERENCE
 		};
 
         static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
 
-        /** @brief Calculates minimal bounding box. Returns alpha in degree, the 4 nodes of the bounding box and the size (l and w) */
+		/** @brief Calculates minimal bounding box. Returns alpha in degree,
+		 * the 4 nodes of the bounding box and the size (l and w)
+		 * the bounding box is always oriented that l < w;
+		 */
         static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox, std::vector<double> & size);
         
         static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
