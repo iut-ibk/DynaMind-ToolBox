@@ -40,7 +40,8 @@ public:
 
 	enum BoolOperation {
 		OP_INTERSECT,
-		OP_DIFFERENCE
+		OP_DIFFERENCE,
+		OP_UNION
 	};
 
 	static DM::System ShapeFinder(DM::System * sys, DM::View & id, DM::View & return_id, bool withSnap_Rounding = false,  float Tolerance=0.01, bool RemoveLines=true);
