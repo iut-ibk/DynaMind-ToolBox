@@ -100,7 +100,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 
 	double E_to[3][3];
 
-	TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[nodeList.size()-2]), E_to);
+	TBVectorData::CorrdinateSystem( *(nodeList[0]), *(nodeList[1]), *(nodeList[nodeList.size()-1]), E_to);
 
 	double alphas[3][3];
 	TBVectorData::RotationMatrix(E, E_to, alphas);
