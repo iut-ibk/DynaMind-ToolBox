@@ -210,7 +210,7 @@ DM::Node TBVectorData::NormalVector(const DM::Node & n1, const DM::Node & n2)
     double z = n1.getX()*n2.getY() - n1.getY()*n2.getX();
     double l = sqrt(x*x+y*y+z*z);
     if (l == 0)
-        DM::Logger(DM::Warning) << "Normal vector l in 0";
+		DM::Logger(DM::Debug) << "Normal vector l in 0";
     return DM::Node(x/l,y/l,z/l);
 }
 
@@ -250,12 +250,11 @@ double TBVectorData::DirectionCosine(const DM::Node &n1, const DM::Node &n2)
     double N1 = n1.getX()*n1.getX()+n1.getY()*n1.getY()+n1.getZ()*n1.getZ();
     double N2 = n2.getX()*n2.getX()+n2.getY()*n2.getY()+n2.getZ()*n2.getZ();
     if (N1 == 0 || N2 == 0) {
-        DM::Logger(DM::Warning) << "n1 or n2 is null!";
-        return -1;
+		DM::Logger(DM::Debug) << "n1 or n2 is null!";
+		return 0;
     }
 
     double cosangel = val1/(sqrt(N1)*sqrt(N2));
-
     return cosangel;
 }
 
@@ -302,30 +301,27 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     //Create Upper Points
 
     std::vector<DM::Node*> opposite_ids;
-    //Face refF = vf[0];
     foreach(DM::Node * n, basePoints) {
         DM::Node * n_new = sys->addNode(n->getX(), n->getY(), n->getZ() + height);
         opposite_ids.push_back(n_new);
     }
-
+	basePoints.push_back(basePoints[0]);
+	opposite_ids.push_back(opposite_ids[0]);
     //Create Sides
     std::vector<DM::Face*> newFaces;
-    for (unsigned int i = 0; i < basePoints.size(); i++) {
-        if (i != 0) {
+	for (unsigned int i = 1; i < basePoints.size(); i++) {
             std::vector<DM::Node *> f_side;
             f_side.push_back(basePoints[i]);
             f_side.push_back(opposite_ids[i]);
             f_side.push_back(opposite_ids[i-1]);
             f_side.push_back(basePoints[i-1]);
-            f_side.push_back(basePoints[i]);
             newFaces.push_back(sys->addFace(f_side, view));
-        }
-
     }
 
     //Create Lid
     if (!withLid)
             return newFaces;
+	opposite_ids.pop_back();
     newFaces.push_back(sys->addFace(opposite_ids, view));
 
     return newFaces;
