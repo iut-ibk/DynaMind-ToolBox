@@ -56,7 +56,7 @@ Segment_list_2 CGALGeometry_P::Snap_Rounding_2D(DM::System * sys, DM::View & vie
 Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & view) {
 	Segment_list_2 seg_list;
 
-	if (view.getType() == DM::NODE) {
+	if (view.getType() == DM::EDGE) {
 		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
 			DM::Edge * edge = static_cast<DM::Edge*>(c);
 			DM::Node * n1 = edge->getEndNode();
