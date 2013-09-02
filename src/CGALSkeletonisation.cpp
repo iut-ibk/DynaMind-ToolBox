@@ -73,7 +73,7 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 
 	std::vector<DM::Node> ressVector;
 	DM::View view_roof_lines("Roof_Edges", DM::EDGE, DM::WRITE);
-	DM::View view_roof_faces("Roof", DM::EDGE, DM::WRITE);
+	DM::View view_roof_faces("Roof", DM::FACE, DM::WRITE);
 	Polygon_2 poly_s;
 
 	int vector_size = points.size();
