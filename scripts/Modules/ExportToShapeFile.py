@@ -130,6 +130,7 @@ class ExportToShapeFile(Module):
                     line = osgeo.ogr.Geometry(osgeo.ogr.wkbPolygon)
                     ring = osgeo.ogr.Geometry(osgeo.ogr.wkbLinearRing)
                     nl =  TBVectorData.getNodeListFromFace(city, face)
+                    nl.append(nl[0]) #face is not closed in DyanMind
                     for p in nl:
                         ring.AddPoint(p.getX()+ self.offsetX,p.getY()+ self.offsetY)
                     line.AddGeometry(ring)
