@@ -282,7 +282,11 @@ System* Module::getData(const std::string& streamName)
 			bool emptyInPorts = true;
 			mforeach(System* s, inPorts)
 				if(s)
+				{
 					emptyInPorts = false;
+					break;
+				}
+
 			if(emptyInPorts)
 			{
 				// we didn't get a system, but we all ports are empty -> simulation not ready
@@ -294,7 +298,7 @@ System* Module::getData(const std::string& streamName)
 			}
 		}
 
-		if(hasOutPort(streamName))	// maybe the system is already created frlom scratch
+		if(hasOutPort(streamName))	// maybe the system is already created during the run
 			sys = getOutPortData(streamName);
 
 		if(!sys)
@@ -327,7 +331,7 @@ RasterData* Module::getRasterData(std::string name, View view)
 		return data->addRasterData(new RasterData(), view);
 	else
 	{
-		mforeach(Component* c, getData(name)->getAllComponentsInView(view))
+		mforeach(Component* c, data->getAllComponentsInView(view))
 			if(c->getType() == RASTERDATA)
 				return (RasterData*)c;
 		DM::Logger(Error) << "getRasterData: rasterdata in view '" << view.getName() << "' not found";
