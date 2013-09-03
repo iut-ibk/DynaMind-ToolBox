@@ -500,6 +500,8 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
 
 void ImportwithGDAL::run()
 {
+	nodeList.clear();
+
 	if(!fileok)
 		DM::Logger(DM::Error) << "Cannot read file";
 	else
@@ -513,6 +515,7 @@ bool ImportwithGDAL::importVectorData()
 {
 	DM::System * sys = this->getData("Data");
 	int features_before = sys->getUUIDs(this->view).size();
+
 	if (this->linkWithExistingView)
 		this->initPointList(sys);
 
