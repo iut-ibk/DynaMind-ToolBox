@@ -712,7 +712,13 @@ void Simulation::run()
 				Logger(Debug) << "resetting modules in group";
 				foreach(Module* m, modules)
 					if(m->getOwner() == g)
+					{
+						// FIX: module::getData also searches output if the system is already created
+						for(std::map<std::string, System*>::iterator it = m->outPorts.begin(); it != m->outPorts.end(); ++it)
+							it->second = NULL;
+
 						m->init();
+					}
 
 				// execute group
 				g->setStatus(MOD_EXECUTING);
