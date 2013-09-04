@@ -4,8 +4,9 @@ project(DynaMind-ToolBox)
 ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.4.0")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-        message(STATUS "Using Visual C compilers")
-        set(CMAKE_CXX_FLAGS "/EHsc")
+	message(STATUS "Using Visual C compilers")
+	set(CMAKE_CXX_FLAGS "/EHsc /bigobj")
+	ADD_DEFINITIONS(-D_VARIADIC_MAX=9 -DCGAL_CFG_NO_CPP0X_ISFINITE)
 ENDIF()
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
