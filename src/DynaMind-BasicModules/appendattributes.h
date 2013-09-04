@@ -29,36 +29,37 @@
 #ifndef APPENDATTRIBUTES_H
 #define APPENDATTRIBUTES_H
 #include <dmmodule.h>
+#include <dmview.h>
 
 /** @ingroup Modules
   * @author Christian Urich
   */
 class DM_HELPER_DLL_EXPORT AppendAttributes : public  DM::Module {
-    DM_DECLARE_NODE(AppendAttributes)
+	DM_DECLARE_NODE(AppendAttributes)
 
-    private:
-        DM::System * sys_in;
-    std::string NameOfExistingView;
-    std::string newAttribute;
-    std::string newAttribute_old;
-    std::string NameOfRasterData;
-    std::vector<DM::View> data;
+	private:
+	std::string NameOfExistingView;
+	std::string newAttribute;
+	std::string NameOfRasterData;
 
-    DM::View readView;
+	DM::View vRasterData;
+	DM::View vExistingView;
 
-    std::map<std::string, DM::RasterData*> attribueMaps;
+	std::vector<DM::View> data;
+
+	std::map<std::string, DM::RasterData*> attribueMaps;
 
 
-    bool median;
-    double multiplier;
 
 public:
-    AppendAttributes();
-    void run();
-    void init();
-    bool createInputDialog();
-    DM::System * getSystemIn(){return this->sys_in;}
-    virtual std::string getHelpUrl();
+	double multiplier;
+	bool median;
+
+	AppendAttributes();
+	void run();
+	void init();
+	bool createInputDialog();
+	virtual std::string getHelpUrl();
 };
 
 #endif // APPENDATTRIBUTES_H

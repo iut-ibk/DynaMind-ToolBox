@@ -14,18 +14,18 @@ class Module;
 class AppendAttributes;
 class DM_HELPER_DLL_EXPORT GUIAppendAttributes : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIAppendAttributes(DM::Module * m, QWidget *parent = 0);
-    ~GUIAppendAttributes();
-    
+	explicit GUIAppendAttributes(DM::Module * m, QWidget *parent = 0);
+	~GUIAppendAttributes();
+
 private:
-    Ui::GUIAppendAttributes *ui;
-    AppendAttributes * m;
+	Ui::GUIAppendAttributes *ui;
+	AppendAttributes * m;
 
 public slots:
-    void accept();
+	void accept();
 };
 
 #endif // GUIAPPENDATTRIBUTES_H

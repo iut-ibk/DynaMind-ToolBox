@@ -34,137 +34,140 @@ using namespace DM;
 
 
 GUIMarker::GUIMarker(DM::Module * m, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GUIMarker)
+	QDialog(parent),
+	ui(new Ui::GUIMarker)
 {
-    this->m = (Marker*) m;
-    ui->setupUi(this);
-    DM::System * sys = this->m->getSystemIn();
-    std::vector<std::string> sys_in;
-    if (sys != 0)
-        sys_in = sys->getNamesOfViews();
+	this->m = (Marker*) m;
+	ui->setupUi(this);
+	/*DM::System * sys = this->m->getSystemIn();
+	std::vector<std::string> sys_in;
+	if (sys != 0)
+		sys_in = sys->getNamesOfViews();
 
-    ui->comboBox->clear();
+	ui->comboBox->clear();
 
-    foreach (std::string s, sys_in) {
-        ui->comboBox->addItem(QString::fromStdString(s));
-    }
+	foreach (std::string s, sys_in) {
+		ui->comboBox->addItem(QString::fromStdString(s));
+	}*/
 
-    std::string nameofexview = this->m->getParameterAsString("Identifier");
-    if (!nameofexview.empty()) {
-        int index = ui->comboBox->findText(QString::fromStdString(nameofexview));
-        ui->comboBox->setCurrentIndex(index);
-    }
+	mforeach(DM::View v, m->getViewsInStdStream())
+		ui->comboBox->addItem(QString::fromStdString(v.getName()));
 
-    if (ui->comboBox->count() == 0) {
-        ui->comboBox->addItem("Connect Inport");
-    }
+	std::string nameofexview = this->m->getParameterAsString("Identifier");
+	if (!nameofexview.empty()) {
+		int index = ui->comboBox->findText(QString::fromStdString(nameofexview));
+		ui->comboBox->setCurrentIndex(index);
+	}
 
-    ui->comboBox_Dimension->clear();
+	if (ui->comboBox->count() == 0) {
+		ui->comboBox->addItem("Connect Inport");
+	}
 
-    ui->comboBox_Dimension->addItem("user defined");
-    std::vector<std::string> landscapes =  this->m->getLandscapesInStream();
-    foreach(std::string l, landscapes)
-        ui->comboBox_Dimension->addItem(QString::fromStdString(l));
-    //Choose Box
-    std::string n_dim = m->getParameter<std::string>("DimensionOfExisting");
-    int index = ui->comboBox_Dimension->findText(QString::fromStdString(n_dim));
-    if (index > -1) ui->comboBox_Dimension->setCurrentIndex(index);
-    else ui->comboBox_Dimension->setCurrentIndex(0);
+	ui->comboBox_Dimension->clear();
 
-
-
-    ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
-    ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
-    ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
-    ui->lineEdit_OffsetX->setText( QString::fromStdString(m->getParameterAsString("OffsetX")) );
-    ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
-
-    ui->lineEdit_RExpression->setText( QString::fromStdString(m->getParameterAsString("RExpression")) );
-    ui->lineEdit_rExpression->setText( QString::fromStdString(m->getParameterAsString("rExpression")) );
-    ui->lineEdit_maxExpression->setText( QString::fromStdString(m->getParameterAsString("maxExpression")) );
-    ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("resultName")) );
-    ui->checkBox_Points->setChecked(QString::fromStdString(m->getParameterAsString("Points")).toInt());
-    ui->checkBox_Edges->setChecked(QString::fromStdString(m->getParameterAsString("Edges")).toInt());
-    ui->checkBox_Selected->setChecked(m->getParameter<bool>("selected"));
+	ui->comboBox_Dimension->addItem("user defined");
+	std::vector<std::string> landscapes =  this->m->getLandscapesInStream();
+	foreach(std::string l, landscapes)
+		ui->comboBox_Dimension->addItem(QString::fromStdString(l));
+	//Choose Box
+	int index = ui->comboBox_Dimension->findText(QString::fromStdString(this->m->param.DimensionOfExisting));
+	if (index > -1) ui->comboBox_Dimension->setCurrentIndex(index);
+	else ui->comboBox_Dimension->setCurrentIndex(0);
 
 
-    QStringList optionList;
-    optionList << "Replace" << "KeepValue" << "KeepLowerValue" << "KeepHigherValue" << "Add";
-    foreach(QString s, optionList)
-        ui->comboBox_option->addItem(s);
+
+	ui->lineEdit_Height->setText( QString::fromStdString(m->getParameterAsString("Height")) );
+	ui->lineEdit_Width->setText( QString::fromStdString(m->getParameterAsString("Width")) );
+	ui->lineEdit_CellSize->setText( QString::fromStdString(m->getParameterAsString("CellSize")) );
+	ui->lineEdit_OffsetX->setText( QString::fromStdString(m->getParameterAsString("OffsetX")) );
+	ui->lineEdit_OffsetY->setText( QString::fromStdString(m->getParameterAsString("OffsetY")) );
+
+	ui->lineEdit_RExpression->setText( QString::fromStdString(m->getParameterAsString("RExpression")) );
+	ui->lineEdit_rExpression->setText( QString::fromStdString(m->getParameterAsString("rExpression")) );
+	ui->lineEdit_maxExpression->setText( QString::fromStdString(m->getParameterAsString("maxExpression")) );
+	ui->lineEdit_resultName->setText( QString::fromStdString(m->getParameterAsString("resultName")) );
+	ui->checkBox_Points->setChecked(QString::fromStdString(m->getParameterAsString("Points")).toInt());
+	ui->checkBox_Edges->setChecked(QString::fromStdString(m->getParameterAsString("Edges")).toInt());
+	ui->checkBox_Selected->setChecked(this->m->param.selected);
 
 
-    if (!QString::fromStdString(m->getParameterAsString("PlacementOption")).isEmpty())
-        ui->comboBox_option->setCurrentIndex(optionList.indexOf(QString::fromStdString(m->getParameterAsString("PlacementOption"))));
+	QStringList optionList;
+	optionList << "Replace" << "KeepValue" << "KeepLowerValue" << "KeepHigherValue" << "Add";
+	foreach(QString s, optionList)
+		ui->comboBox_option->addItem(s);
 
-    QObject::connect(ui->pushButton_addInputRasterData, SIGNAL(clicked()), this, SLOT(addRasterData()));
-    QObject::connect(ui->pushButton_RExpression, SIGNAL(clicked()), this, SLOT(addR()));
-    QObject::connect(ui->pushButton_rExpression, SIGNAL(clicked()), this, SLOT(addr()));
-    QObject::connect(ui->pushButton_maxExpression, SIGNAL(clicked()), this, SLOT(addMax()));
+
+	if (!QString::fromStdString(m->getParameterAsString("PlacementOption")).isEmpty())
+		ui->comboBox_option->setCurrentIndex(optionList.indexOf(QString::fromStdString(m->getParameterAsString("PlacementOption"))));
+
+	QObject::connect(ui->pushButton_addInputRasterData, SIGNAL(clicked()), this, SLOT(addRasterData()));
+	QObject::connect(ui->pushButton_RExpression, SIGNAL(clicked()), this, SLOT(addR()));
+	QObject::connect(ui->pushButton_rExpression, SIGNAL(clicked()), this, SLOT(addr()));
+	QObject::connect(ui->pushButton_maxExpression, SIGNAL(clicked()), this, SLOT(addMax()));
 
 }
 void GUIMarker::addR() {
-    GUIEquationEditor * dlg = new GUIEquationEditor(this->FormulaR, QStringList(), this);
-    QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addRtoVIBe(QStringList)));
-    dlg->addString(ui->lineEdit_RExpression->text());
-    dlg->show();
+	GUIEquationEditor * dlg = new GUIEquationEditor(this->FormulaR, QStringList(), this);
+	QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addRtoVIBe(QStringList)));
+	dlg->addString(ui->lineEdit_RExpression->text());
+	dlg->show();
 }
 void GUIMarker::addRtoVIBe(QStringList list) {
-    m->setParameterValue("RExpression", list[1].toStdString());
-    ui->lineEdit_RExpression->setText(list[1]);
+	m->setParameterValue("RExpression", list[1].toStdString());
+	ui->lineEdit_RExpression->setText(list[1]);
 }
 void GUIMarker::addr() {
-    GUIEquationEditor * dlg = new GUIEquationEditor(this->Formular, QStringList(), this);
-    QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addrtoVIBe(QStringList)));
-    dlg->addString(ui->lineEdit_rExpression->text());
-    dlg->show();
+	GUIEquationEditor * dlg = new GUIEquationEditor(this->Formular, QStringList(), this);
+	QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addrtoVIBe(QStringList)));
+	dlg->addString(ui->lineEdit_rExpression->text());
+	dlg->show();
 }
 void GUIMarker::addrtoVIBe(QStringList list) {
-    m->setParameterValue("rExpression", list[1].toStdString());
-    ui->lineEdit_rExpression->setText(list[1]);
+	m->setParameterValue("rExpression", list[1].toStdString());
+	ui->lineEdit_rExpression->setText(list[1]);
 }
 void GUIMarker::addMax() {
-    GUIEquationEditor * dlg = new GUIEquationEditor(this->FormulaMax, QStringList(), this);
-    QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addMaxtoVIBe(QStringList)));
-    dlg->show();
+	GUIEquationEditor * dlg = new GUIEquationEditor(this->FormulaMax, QStringList(), this);
+	QObject::connect(dlg, SIGNAL(values(QStringList)), this, SLOT(addMaxtoVIBe(QStringList)));
+	dlg->show();
 }
 void GUIMarker::addMaxtoVIBe(QStringList list) {
-    m->setParameterValue("maxExpression", list[1].toStdString());
-    ui->lineEdit_maxExpression->setText(list[1]);
+	m->setParameterValue("maxExpression", list[1].toStdString());
+	ui->lineEdit_maxExpression->setText(list[1]);
 }
 void GUIMarker::addRasterData() {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Name:"), QLineEdit::Normal, "" , &ok);
-    if (ok && !text.isEmpty()) {
-        //m->appendToUserDefinedParameter("InputRasterData", text.toStdString());
-        ui->listWidget_InputRasterData->addItem(text);
-    }
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+										 tr("Name:"), QLineEdit::Normal, "" , &ok);
+	if (ok && !text.isEmpty()) {
+		//m->appendToUserDefinedParameter("InputRasterData", text.toStdString());
+		ui->listWidget_InputRasterData->addItem(text);
+	}
 
 
 }
 GUIMarker::~GUIMarker()
 {
-    delete ui;
+	delete ui;
 }
 void GUIMarker::accept() {
-     this->m->setParameterNative<std::string>("DimensionOfExisting",ui->comboBox_Dimension->currentText().toStdString());
-    this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
-    this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
-    this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
-    this->m->setParameterValue("OffsetX", ui->lineEdit_OffsetX->text().toStdString());
-    this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
+	this->m->param.DimensionOfExisting = ui->comboBox_Dimension->currentText().toStdString();
+	this->m->setParameterValue("Height", ui->lineEdit_Height->text().toStdString());
+	this->m->setParameterValue("Width", ui->lineEdit_Width->text().toStdString());
+	this->m->setParameterValue("CellSize", ui->lineEdit_CellSize->text().toStdString());
+	this->m->setParameterValue("OffsetX", ui->lineEdit_OffsetX->text().toStdString());
+	this->m->setParameterValue("OffsetY", ui->lineEdit_OffsetY->text().toStdString());
 
-    this->m->setParameterValue("resultName", ui->lineEdit_resultName->text().toStdString());
-    this->m->setParameterValue("Identifier", ui->comboBox->currentText().toStdString());
-    this->m->setParameterValue("rExpression", ui->lineEdit_rExpression->text().toStdString());
-    this->m->setParameterValue("RExpression", ui->lineEdit_RExpression->text().toStdString());
-    this->m->setParameterValue("maxExpression", ui->lineEdit_maxExpression->text().toStdString());
-    this->m->setParameterValue("PlacementOption", ui->comboBox_option->currentText().toStdString());
-    this->m->setParameterValue("Edges", QString::number(ui->checkBox_Edges->isChecked()).toStdString());
-    this->m->setParameterValue("Points", QString::number(ui->checkBox_Points->isChecked()).toStdString());
-    this->m->setParameterNative<bool>("selected", this->ui->checkBox_Selected->isChecked());
+	this->m->setParameterValue("resultName", ui->lineEdit_resultName->text().toStdString());
+	this->m->setParameterValue("Identifier", ui->comboBox->currentText().toStdString());
+	this->m->setParameterValue("rExpression", ui->lineEdit_rExpression->text().toStdString());
+	this->m->setParameterValue("RExpression", ui->lineEdit_RExpression->text().toStdString());
+	this->m->setParameterValue("maxExpression", ui->lineEdit_maxExpression->text().toStdString());
+	this->m->setParameterValue("PlacementOption", ui->comboBox_option->currentText().toStdString());
+	this->m->setParameterValue("Edges", QString::number(ui->checkBox_Edges->isChecked()).toStdString());
+	this->m->setParameterValue("Points", QString::number(ui->checkBox_Points->isChecked()).toStdString());
 
-    QDialog::accept();
+	this->m->param.selected = this->ui->checkBox_Selected->isChecked();
+
+	QDialog::accept();
 }

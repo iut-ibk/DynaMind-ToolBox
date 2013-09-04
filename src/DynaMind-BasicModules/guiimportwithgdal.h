@@ -15,21 +15,21 @@ class ImportwithGDAL;
 
 class DM_HELPER_DLL_EXPORT GUIImportWithGDAL : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIImportWithGDAL(DM::Module * m, QWidget *parent = 0);
-    ~GUIImportWithGDAL();
-    
+	explicit GUIImportWithGDAL(DM::Module * m, QWidget *parent = 0);
+	~GUIImportWithGDAL();
+
 private:
-    Ui::GUIImportWithGDAL *ui;
-    ImportwithGDAL * m;
+	Ui::GUIImportWithGDAL *ui;
+	ImportwithGDAL * m;
 
 
 public slots:
-    void accept();
-    void on_pushButton_wfs_pick_clicked();
-    void on_pushButton_Filename_clicked();
+	void accept();
+	void on_pushButton_wfs_pick_clicked();
+	void on_pushButton_Filename_clicked();
 };
 
 #endif // GUIIMPORTWITHGDAL_H

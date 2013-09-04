@@ -8,23 +8,23 @@ class GUIAppendViewFromSystem;
 }
 
 namespace DM {
-    class Module;
+	class Module;
 }
 class AppendViewFromSystem;
 class GUIAppendViewFromSystem : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIAppendViewFromSystem(DM::Module * m, QWidget *parent = 0);
-    ~GUIAppendViewFromSystem();
-    
+	explicit GUIAppendViewFromSystem(DM::Module * m, QWidget *parent = 0);
+	~GUIAppendViewFromSystem();
+
 private:
-    Ui::GUIAppendViewFromSystem *ui;
-    AppendViewFromSystem * m;
+	Ui::GUIAppendViewFromSystem *ui;
+	AppendViewFromSystem * m;
 
 public slots:
-    void addSystem();
+	void addSystem();
 
 };
 

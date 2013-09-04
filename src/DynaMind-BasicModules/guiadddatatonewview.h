@@ -31,7 +31,7 @@
 
 
 namespace DM{
-    class Module;
+	class Module;
 }
 namespace Ui {
 class GUIAddDatatoNewView;
@@ -41,18 +41,18 @@ class AddDataToNewView;
 
 class DM_HELPER_DLL_EXPORT GUIAddDatatoNewView : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIAddDatatoNewView(DM::Module * m, QWidget *parent = 0);
-    ~GUIAddDatatoNewView();
-    
+	explicit GUIAddDatatoNewView(DM::Module * m, QWidget *parent = 0);
+	~GUIAddDatatoNewView();
+
 private:
-    Ui::GUIAddDatatoNewView *ui;
-    AddDataToNewView * m;
+	Ui::GUIAddDatatoNewView *ui;
+	AddDataToNewView * m;
 public slots:
-    void accept();
-    void addAttribute();
+	void accept();
+	void addAttribute();
 
 };
 

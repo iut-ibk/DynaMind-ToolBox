@@ -42,22 +42,22 @@ using namespace DM;
 
 class DM_HELPER_DLL_EXPORT CalculateCentroid : public Module
 {
-    DM_DECLARE_NODE(CalculateCentroid)
+	DM_DECLARE_NODE(CalculateCentroid)
 private:
-    std::string NameOfExistingView;
-    DM::System * city;
-    bool changed;
-    DM::View vData;
-    DM::View newPoints;
+	std::string NameOfExistingView;
+	DM::System * city;
+	bool changed;
+	DM::View vData;
+	DM::View newPoints;
 
 public:
-    CalculateCentroid();
-    void run();
-    void init();
-    bool createInputDialog();
-    void setNameOfView(std::string name);
-    DM::System * getSystemIn();
-    std::string getHelpUrl();
+	CalculateCentroid();
+	void run();
+	void init();
+	bool createInputDialog();
+	void setNameOfView(std::string name);
+	DM::System * getSystemIn();
+	std::string getHelpUrl();
 };
 
 #endif // CALCULATECENTROID_H

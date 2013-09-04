@@ -34,30 +34,32 @@
  */
 class DM_HELPER_DLL_EXPORT AddDataToNewView : public DM::Module{
 
-    DM_DECLARE_NODE(AddDataToNewView)
-    private:
-        DM::System * sys_in;
-    std::string NameOfNewView;
-    std::string NameOfExistingView;
-    std::string NameOfNewView_old;
-    std::vector<std::string> newAttributes;
-    bool onlySelected;
+	DM_DECLARE_NODE(AddDataToNewView)
+	private:
+		DM::System * sys_in;
+	std::string NameOfNewView_old;
 
-
-    std::vector<DM::View> data;
-
-    DM::View readView;
-    DM::View writeView;
 public:
-    AddDataToNewView();
-    void init();
-    void run();
-    bool createInputDialog();
-    DM::System * getSystemIn();
-    void addView();
-    void addAttribute(std::string s);
-    std::vector<std::string> getAttriutes(){return this->newAttributes;}
-    std::string getHelpUrl();
+	bool onlySelected;
+	std::string NameOfNewView;
+	std::string NameOfExistingView;
+	std::vector<std::string> newAttributes;
+private:
+
+	std::vector<DM::View> data;
+
+	DM::View readView;
+	DM::View writeView;
+public:
+	AddDataToNewView();
+	void init();
+	void run();
+	bool createInputDialog();
+	DM::System * getSystemIn();
+	void addView();
+	void addAttribute(std::string s);
+	std::vector<std::string> getAttriutes(){return this->newAttributes;}
+	std::string getHelpUrl();
 };
 
 #endif // ADDDATATONEWVIEW_H

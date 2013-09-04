@@ -21,8 +21,26 @@ void JoinDatastreams::init()
     combined_datastream.push_back(DM::View("dummy",DM::SUBSYSTEM, DM::MODIFY));
     this->existingViews.clear();
     //Define New System
-    if (Inports.size() > 0 ) {
-        foreach (std::string s, Inports) {
+    if (Inports.size() > 0 ) 
+	{
+        foreach (std::string s, Inports) 
+		{
+			mforeach(DM::View v, getViewsInStream()[s])
+			{
+				DM::View new_v(v.getName(), v.getType(), DM::WRITE);
+				
+				foreach(std::string attName, v.getAllAttributes())
+				{
+					if(v.getAttributeType(attName) == DM::Attribute::LINK)
+						new_v.addLinks(attName, v.getNameOfLinkedView(attName));
+					else
+						new_v.addAttribute(attName);
+				}
+
+				combined_datastream.push_back(new_v);
+			}
+
+			/*
             DM::System * sys = this->getData(s);
             if (sys != 0) {
                 foreach (std::string v, sys->getNamesOfViews()) {
@@ -52,7 +70,7 @@ void JoinDatastreams::init()
                         //existingViews.push_back(v);
                     }
                 }
-            }
+            }*/
         }
 
     }

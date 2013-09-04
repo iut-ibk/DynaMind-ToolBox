@@ -30,90 +30,91 @@
 #include "dmmodule.h"
 #include "muParser.h"
 #include <dm.h>
+#include <QMap>
 
 //using namespace mu;
 
 using namespace DM;
 class DM_HELPER_DLL_EXPORT CellularAutomata : public  Module {
-    DM_DECLARE_NODE( CellularAutomata)
-    struct Dimension {
-        int widht;
-        int height;
-        int elements;
-    };
-    struct Parameter {
-        long Width;
-        long Height;
-        double CellSize;
-        long offsetX;
-        long offsetY;
-        int Steps;
-        RasterData * OutputMap;
-        std::string Desicion;
-        std::map<std::string, std::string> neighs;
-        std::map<std::string, std::string> rules;
+	DM_DECLARE_NODE( CellularAutomata)
+	struct Dimension {
+		int widht;
+		int height;
+		int elements;
+	};
+	struct Parameter {
+		long Width;
+		long Height;
+		double CellSize;
+		long offsetX;
+		long offsetY;
+		int Steps;
+		RasterData * OutputMap;
+		std::string Desicion;
+		std::map<std::string, std::string> neighs;
+		std::map<std::string, std::string> rules;
 
-        std::string CellularMap;
+		std::string CellularMap;
 
-        std::vector<std::string> Neighbourhoods;
-        std::vector<std::string> Values;
+		std::vector<std::string> Neighbourhoods;
+		std::vector<std::string> Values;
 
-        std::vector<std::string> ListOfLandscapes;
-        bool appendToStream;
-        bool appendToStream_old;
-        std::string DimensionOfExisting;
-    };
+		std::vector<std::string> ListOfLandscapes;
+		bool appendToStream;
+		bool appendToStream_old;
+		std::string DimensionOfExisting;
+	};
 
 public:
-    CellularAutomata();
-    void  initRuntime();
-    void init();
-    void run();
-    std::string getHelpUrl();
+	CellularAutomata();
+	void  initRuntime();
+	void init();
+	void run();
+	std::string getHelpUrl();
 
-    virtual bool  createInputDialog();
-    void addLandscape(std::string s);
-    void removeLandscape(std::string s);
-    void removeNeighboorhood(std::string neigh);
-    void removeRule(std::string rule);
+	virtual bool  createInputDialog();
+	void addLandscape(std::string s);
+	void removeLandscape(std::string s);
+	void removeNeighboorhood(std::string neigh);
+	void removeRule(std::string rule);
 
-    std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
-    std::vector<std::string> getLandscapesInStream();
-    virtual ~CellularAutomata();
+	std::vector<std::string> getLandscapes(){return this->param.ListOfLandscapes;}
+	std::vector<std::string> getLandscapesInStream();
+	virtual ~CellularAutomata();
 
 private:
-    void updateInport();
-    bool runinit;
-    std::map<std::string, RasterData * > landscapes;
+	void updateInport();
+	bool runinit;
+	std::map<std::string, RasterData * > landscapes;
 
 
-    std::map<std::string, double**> NeighboorhoodMaps;
-    std::map<std::string, int**> NeighboorhoodStamps;
-    std::map<std::string, double** > NeighboorhoodPointerMap;
-    std::map<std::string, Dimension> NeighboohoodDimensions;
-    std::map<std::string, std::string> NeighboorhoodMapName;
+	QMap<std::string, double**> NeighboorhoodMaps;
+	QMap<std::string, int**> NeighboorhoodStamps;
+	QMap<std::string, double** > NeighboorhoodPointerMap;
+	QMap<std::string, Dimension> NeighboohoodDimensions;
+	QMap<std::string, std::string> NeighboorhoodMapName;
 
-    std::vector<std::string> NeighboorhoodList;
-    std::vector<double*> RulesResults;
-    std::vector<mu::Parser*> Rules;
-    mu::Parser * Desicion;
+	std::vector<std::string> NeighboorhoodList;
+	std::vector<double*> RulesResults;
+	std::vector<mu::Parser*> Rules;
+	mu::Parser * Desicion;
 
-    std::string NameOfOutput;
-    std::string NameOfOutput_old;
+	std::string NameOfOutput;
+	std::string NameOfOutput_old;
 
-    std::vector<double *> pRessults;
-    std::vector<mu::Parser> vParser;
+	std::vector<double *> pRessults;
+	std::vector<mu::Parser> vParser;
 
-    std::vector<std::string> vExistingData;
+	std::vector<std::string> vExistingData;
 
-    int nbnumber;
-    double * repeater;
+	int nbnumber;
+	double * repeater;
 
-    Parameter param;
-    parameter_type paramRaw;
+	std::map<std::string, std::string> paramRaw;
 
-    void deinit();
-
+	void deinit();
+public:
+	Parameter param;
 };
 
 

@@ -31,48 +31,48 @@
 #include <QStringList>
 
 namespace DM{
-    class Module;
+	class Module;
 }
 namespace Ui {
-    class GUICellularAutomata;
+	class GUICellularAutomata;
 }
 
 class CellularAutomata;
 
 class DM_HELPER_DLL_EXPORT GUICellularAutomata : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GUICellularAutomata(DM::Module * m ,QWidget *parent = 0);
-    DM::Module * getModule() {return (DM::Module * )this->m;}
-    ~GUICellularAutomata();
+	explicit GUICellularAutomata(DM::Module * m ,QWidget *parent = 0);
+	DM::Module * getModule() {return (DM::Module * )this->m;}
+	~GUICellularAutomata();
 
 
+	CellularAutomata * m;
 private:
-    Ui::GUICellularAutomata *ui;
-    CellularAutomata * m;
-    QStringList variables;
-    QStringList values;
-    QStringList vectors;
-    QStringList rules;
+	Ui::GUICellularAutomata *ui;
+	QStringList variables;
+	QStringList values;
+	QStringList vectors;
+	QStringList rules;
 
-    bool checkIfFromOutSide(QString name);
+	bool checkIfFromOutSide(QString name);
 
 public slots:
-    void addRasterData();
-    void addLandscape(QString);
-    void addVariable();
-    void addFormula();
-    void addExpression();
-    void editRule();
-    void addExpressiontoVIBe(QStringList list);
-    void updateEntries();
-    void addRule(QStringList list);
-    void accept();
-    void on_pushButton_remove_landscape_clicked();
-    void on_pushButton_remove_neigh_clicked();
-    void on_pushButton_remove_rules_clicked();
+	void addRasterData();
+	void addLandscape(QString);
+	void addVariable();
+	void addFormula();
+	void addExpression();
+	void editRule();
+	void addExpressiontoVIBe(QStringList list);
+	void updateEntries();
+	void addRule(QStringList list);
+	void accept();
+	void on_pushButton_remove_landscape_clicked();
+	void on_pushButton_remove_neigh_clicked();
+	void on_pushButton_remove_rules_clicked();
 
 };
 

@@ -32,29 +32,29 @@
 using namespace DM;
 class DM_HELPER_DLL_EXPORT CalculateBoundingBox : public Module
 {
-    DM_DECLARE_NODE(CalculateBoundingBox)
-    private:
-        std::string NameOfExistingView;
-        std::string NameOfNewView;
-        DM::System * city;
-        bool changed;
-        DM::View vData;
-        DM::View newFaces;
-        bool MinBounding;
-        bool overAll;
+	DM_DECLARE_NODE(CalculateBoundingBox)
+	private:
+		std::string NameOfExistingView;
+		std::string NameOfNewView;
+		DM::System * city;
+		bool changed;
+		DM::View vData;
+		DM::View newFaces;
+		bool MinBounding;
+		bool overAll;
 
 private:
-        void caculateBoundingBox();
-        void caculateMinBoundingBox();
-        void getNodesFromNodes(std::vector<DM::Node*> &nodes);
-        void getNodesFromEdges(std::vector<DM::Node*> &nodes);
-        void getNodesFromFaces(std::vector<DM::Node*> &nodes);
+		void caculateBoundingBox();
+		void caculateMinBoundingBox();
+		void getNodesFromNodes(std::vector<DM::Node*> &nodes);
+		void getNodesFromEdges(std::vector<DM::Node*> &nodes);
+		void getNodesFromFaces(std::vector<DM::Node*> &nodes);
 public:
-        void run();
-    void init();
-    CalculateBoundingBox();
+		void run();
+	void init();
+	CalculateBoundingBox();
 
-    std::string getHelpUrl();
+	std::string getHelpUrl();
 };
 
 #endif // CALCULATEBOUNDINGBOX_H

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>352</width>
     <height>300</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QSpinBox" name="repeats"/>
       </item>
      </layout>
     </widget>
@@ -40,38 +40,28 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">
-       <widget class="QPushButton" name="addInPort">
+       <widget class="QPushButton" name="addReadStream">
         <property name="text">
-         <string>Add Inport</string>
+         <string>Add readable stream</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QListWidget" name="listWidget_out"/>
       </item>
       <item row="1" column="1">
-       <widget class="QPushButton" name="addOutPort">
+       <widget class="QPushButton" name="addWriteStream">
         <property name="text">
-         <string>Add Outport</string>
+         <string>Add writeable stream</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QListWidget" name="listWidget_in"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="rmInport">
+      <item row="2" column="0" colspan="2">
+       <widget class="QPushButton" name="removeStream">
         <property name="text">
-         <string>Remove Inport</string>
+         <string>Remove stream</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="rmOutport">
-        <property name="text">
-         <string>Remove Outport</string>
-        </property>
-       </widget>
+      <item row="0" column="0" colspan="2">
+       <widget class="QListWidget" name="streamList"/>
       </item>
      </layout>
     </widget>

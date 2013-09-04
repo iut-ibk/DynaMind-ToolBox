@@ -30,68 +30,68 @@ DM_DECLARE_NODE_NAME(RemoveComponent,Modules)
 
 RemoveComponent::RemoveComponent()
 {
-    this->remove_name = "";
-    this->addParameter("View", DM::STRING, &this->remove_name);
+	this->remove_name = "";
+	this->addParameter("View", DM::STRING, &this->remove_name);
 
 
 }
 
 void RemoveComponent::init() {
-    if (this->remove_name.empty())
-        return;
+	if (this->remove_name.empty())
+		return;
 
-    this->view_remove = DM::View(this->remove_name, DM::COMPONENT, DM::MODIFY);
-    this->view_remove.getAttribute("selected");
-    std::vector<DM::View> datastream;
-    datastream.push_back(view_remove);
-    this->addData("city", datastream);
+	this->view_remove = DM::View(this->remove_name, DM::COMPONENT, DM::MODIFY);
+	this->view_remove.getAttribute("selected");
+	std::vector<DM::View> datastream;
+	datastream.push_back(view_remove);
+	this->addData("city", datastream);
 }
 
 void RemoveComponent::run() {
-    DM::System * city = this->getData("city");
+	DM::System * city = this->getData("city");
 
-    std::vector<std::string> uuids = city->getUUIDs(this->view_remove);
-    DM::Logger(DM::Debug)  << "Elements in View before" << uuids.size();
-    foreach (std::string uuid, uuids) {
-        DM::Component * cmp = city->getComponent(uuid);
-        if (cmp->getAttribute("selected")->getDouble() < 0.01)
-            continue;
-        city->removeComponentFromView(cmp, this->view_remove);
+	std::vector<std::string> uuids = city->getUUIDs(this->view_remove);
+	DM::Logger(DM::Debug)  << "Elements in View before" << uuids.size();
+	foreach (std::string uuid, uuids) {
+		DM::Component * cmp = city->getComponent(uuid);
+		if (cmp->getAttribute("selected")->getDouble() < 0.01)
+			continue;
+		city->removeComponentFromView(cmp, this->view_remove);
 
-        //remove
-        std::map<std::string, DM::Attribute*> attr_map = cmp->getAllAttributes();
-        for (std::map<std::string, DM::Attribute*>::const_iterator it = attr_map.begin(); it != attr_map.end(); ++it) {
-            DM::Attribute * attr = it->second;
-            if (attr->getType() == DM::Attribute::LINK) {
-                std::vector<DM::LinkAttribute> links = attr->getLinks();
-                foreach (DM::LinkAttribute link, links) {
-                    DM::Component * l_cmp = city->getComponent(link.uuid);
-                    if (!l_cmp) continue;
-                    std::vector<DM::LinkAttribute> cmp_links = l_cmp->getAttribute(this->view_remove.getName())->getLinks();
+		//remove
+		std::map<std::string, DM::Attribute*> attr_map = cmp->getAllAttributes();
+		for (std::map<std::string, DM::Attribute*>::const_iterator it = attr_map.begin(); it != attr_map.end(); ++it) {
+			DM::Attribute * attr = it->second;
+			if (attr->getType() == DM::Attribute::LINK) {
+				std::vector<DM::LinkAttribute> links = attr->getLinks();
+				foreach (DM::LinkAttribute link, links) {
+					DM::Component * l_cmp = city->getComponent(link.uuid);
+					if (!l_cmp) continue;
+					std::vector<DM::LinkAttribute> cmp_links = l_cmp->getAttribute(this->view_remove.getName())->getLinks();
 
-                    std::vector<DM::LinkAttribute> cmp_links_new;
+					std::vector<DM::LinkAttribute> cmp_links_new;
 
-                    foreach (DM::LinkAttribute l, cmp_links) {
-                        if (l.uuid != cmp->getUUID() || l.viewname != this->view_remove.getName()) cmp_links_new.push_back(l);
-                    }
-                    DM::Logger(DM::Debug) << "Remove links " << attr->getName() << "\t" << cmp_links.size() << "/" << cmp_links_new.size();
+					foreach (DM::LinkAttribute l, cmp_links) {
+						if (l.uuid != cmp->getUUID() || l.viewname != this->view_remove.getName()) cmp_links_new.push_back(l);
+					}
+					DM::Logger(DM::Debug) << "Remove links " << attr->getName() << "\t" << cmp_links.size() << "/" << cmp_links_new.size();
 
-                    l_cmp->getAttribute(this->view_remove.getName())->setLinks(cmp_links_new);
-                }
+					l_cmp->getAttribute(this->view_remove.getName())->setLinks(cmp_links_new);
+				}
 
-                attr->setLinks(std::vector<DM::LinkAttribute>());
+				attr->setLinks(std::vector<DM::LinkAttribute>());
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    DM::Logger(DM::Debug)  << "Elements in View after" << city->getUUIDs(this->view_remove).size();
+	DM::Logger(DM::Debug)  << "Elements in View after" << city->getUUIDs(this->view_remove).size();
 
 }
 
 string RemoveComponent::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/RemoveComponent.md";
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/RemoveComponent.md";
 }
 
 

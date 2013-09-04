@@ -32,98 +32,99 @@
 using namespace DM;
 class DM_HELPER_DLL_EXPORT Marker : public  Module {
 
-    DM_DECLARE_NODE( Marker)
+	DM_DECLARE_NODE( Marker)
 
-    struct Parameter {
-        unsigned long Width;
-        unsigned long Height;
-        unsigned long OffsetX;
-        unsigned long OffsetY;
+	struct Parameter {
+		unsigned long Width;
+		unsigned long Height;
+		unsigned long OffsetX;
+		unsigned long OffsetY;
 
-        double CellSize;
-        std::string MarkerMap;
+		double CellSize;
+		std::string MarkerMap;
 
-        std::string resultName;
+		std::string resultName;
 
-        std::string VectorData;
-
-
-        bool Points;
-        bool Edges;
-        std::string KeepMap;
-
-        std::vector<std::string> RData;
-
-        std::vector<std::string> RVariables;
-        std::string RExpression;
-
-        std::vector<std::string> rVariables;
-        std::string rExpression;
-
-        std::string PlacementOption;
-
-        std::string minExpression;
-        std::string maxExpression;
+		std::string VectorData;
 
 
-        std::string Identifier;
-        std::string DimensionOfExisting;
+		bool Points;
+		bool Edges;
+		std::string KeepMap;
 
-        bool selected;
+		std::vector<std::string> RData;
+
+		std::vector<std::string> RVariables;
+		std::string RExpression;
+
+		std::vector<std::string> rVariables;
+		std::string rExpression;
+
+		std::string PlacementOption;
+
+		std::string minExpression;
+		std::string maxExpression;
+
+
+		std::string Identifier;
+		std::string DimensionOfExisting;
+
+		bool selected;
 
 
 
-    };
+	};
+public:
+	Parameter param;
 private:
-    std::map<std::string, RasterData * > inputRasterData;
-    DM::System * vectorData;
-    RasterData * OutputMap;
+	std::map<std::string, RasterData * > inputRasterData;
+	DM::System * vectorData;
+	RasterData * OutputMap;
 
 
-    parameter_type paramRaw;
-    Parameter param;
-    double evaluateExpresion_R(int index, DM::Node & p);
-    double evaluateExpresion_r(int index, DM::Node & p);
-    double calculater(const DM::Node &sp, const DM::Node &cp);
-    double initVariables;
+	std::map<std::string, std::string> paramRaw;
+	double evaluateExpresion_R(int index, DM::Node & p);
+	double evaluateExpresion_r(int index, DM::Node & p);
+	double calculater(const DM::Node &sp, const DM::Node &cp);
+	double initVariables;
 
 
-    std::vector<const std::vector<double> * > RDoubleAttributes;
-    std::vector<const RasterData * > RRasterData;
-    std::vector<double * >  RVariables;
-    std::vector<double * > RRasterVariables;
-    mu::Parser *  RExpression;
+	std::vector<const std::vector<double> * > RDoubleAttributes;
+	std::vector<const RasterData * > RRasterData;
+	std::vector<double * >  RVariables;
+	std::vector<double * > RRasterVariables;
+	mu::Parser *  RExpression;
 
-    std::vector<const std::vector<double> * > rDoubleAttributes;
-    std::vector<const RasterData * > rRasterData;
-    std::vector<double * >  rVariables;
-    std::vector<double * > rRasterVariables;
-    mu::Parser *  rExpression;
+	std::vector<const std::vector<double> * > rDoubleAttributes;
+	std::vector<const RasterData * > rRasterData;
+	std::vector<double * >  rVariables;
+	std::vector<double * > rRasterVariables;
+	mu::Parser *  rExpression;
 
-    mu::Parser *  minExpression;
-    mu::Parser *  maxExpression;
-    bool maxSet;
-    bool minSet;
+	mu::Parser *  minExpression;
+	mu::Parser *  maxExpression;
+	bool maxSet;
+	bool minSet;
 
-    void initRExpression();
-    void initrExpression();
-    void initMaxMinExpression();
+	void initRExpression();
+	void initrExpression();
+	void initMaxMinExpression();
 
-    double * r;
-    double * R;
-    double * CellValue;
+	double * r;
+	double * R;
+	double * CellValue;
 
-    DM::System * sys_in;
+	DM::System * sys_in;
 
 
 public:
 
-    Marker();
-    void run();
-    void init();
-    virtual bool createInputDialog();
-    DM::System * getSystemIn();
-    std::vector<std::string> getLandscapesInStream();
+	Marker();
+	void run();
+	void init();
+	virtual bool createInputDialog();
+	DM::System * getSystemIn();
+	std::vector<std::string> getLandscapesInStream();
 
 };
 

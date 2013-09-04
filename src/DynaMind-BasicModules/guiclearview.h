@@ -6,7 +6,7 @@
 #include <QDialog>
 
 namespace DM{
-    class Module;
+	class Module;
 }
 
 class ClearView;
@@ -17,18 +17,18 @@ class GUIClearView;
 
 class DM_HELPER_DLL_EXPORT GUIClearView : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit GUIClearView(DM::Module * m, QWidget *parent = 0);
-    ~GUIClearView();
-    ClearView * m;
-    
+	explicit GUIClearView(DM::Module * m, QWidget *parent = 0);
+	~GUIClearView();
+	ClearView * m;
+
 private:
-    Ui::GUIClearView *ui;
+	Ui::GUIClearView *ui;
 
 public slots:
-    void accept();
+	void accept();
 };
 
 #endif // GUICLEARVIEW_H

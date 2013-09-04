@@ -47,68 +47,67 @@ static double ForestsSemiNatural;
 
 class Random : public mup::ICallback {
 public:
-    Random() : ICallback(mup::cmFUNC, "rand", 1)
-    {}
-    virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
-    {
-        // Get the argument from the argument input vector
-        mup::float_type a = a_pArg[0]->GetFloat();
-        double val = rand() % (int) a;
-        // The return value is passed by writing it to the reference ret
-        *ret = val;
-    }
+	Random() : ICallback(mup::cmFUNC, "rand", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		// Get the argument from the argument input vector
+		mup::float_type a = a_pArg[0]->GetFloat();
+		double val = rand() % (int) a;
+		// The return value is passed by writing it to the reference ret
+		*ret = val;
+	}
 
-    const mup::char_type* GetDesc() const
-    {
-        return "rand(x) - a random number";
-    }
+	const mup::char_type* GetDesc() const
+	{
+		return "rand(x) - a random number";
+	}
 
-    IToken* Clone() const
-    {
-        return new Random(*this);
-    }
+	IToken* Clone() const
+	{
+		return new Random(*this);
+	}
 };
 
 class Round : public mup::ICallback {
 public:
-    Round() : ICallback(mup::cmFUNC, "round", 1)
-    {}
-    virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
-    {
-        // Get the argument from the argument input vector
-        mup::float_type  a = a_pArg[0]->GetFloat();
-        double val =  (a > 0.0) ? floor(a + 0.5) : ceil(a - 0.5);
-        // The return value is passed by writing it to the reference ret
-        *ret = val;
-    }
+	Round() : ICallback(mup::cmFUNC, "round", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		// Get the argument from the argument input vector
+		mup::float_type  a = a_pArg[0]->GetFloat();
+		double val =  (a > 0.0) ? floor(a + 0.5) : ceil(a - 0.5);
+		// The return value is passed by writing it to the reference ret
+		*ret = val;
+	}
 
-    const mup::char_type* GetDesc() const
-    {
-        return "round(x) - round value";
-    }
-
-    IToken* Clone() const
-    {
-        return new Round(*this);
-    }
+	const mup::char_type* GetDesc() const
+	{
+		return "round(x) - round value";
+	}
+	IToken* Clone() const
+	{
+		return new Round(*this);
+	}
 };
 
 }
 inline void addCorineConstants(mu::Parser * p){
 
-    dm::ContUrbanFabric		= 2;
-    dm::DisContUrbanFabric	= 3;
-    dm::RoadRailNetwork		= 4;
-    dm::WaterBodies			= 5;
-    dm::AgriculturalAreas	= 6;
-    dm::ForestsSemiNatural	= 7;
+	dm::ContUrbanFabric		= 2;
+	dm::DisContUrbanFabric	= 3;
+	dm::RoadRailNetwork		= 4;
+	dm::WaterBodies			= 5;
+	dm::AgriculturalAreas	= 6;
+	dm::ForestsSemiNatural	= 7;
 
-    p->DefineVar("ContUrbanFabric", & dm::ContUrbanFabric);
-    p->DefineVar("DisContUrbanFabric",& dm::DisContUrbanFabric);
-    p->DefineVar("RoadRailNetwork", & dm::RoadRailNetwork);
-    p->DefineVar("AgriculturalAreas",& dm::AgriculturalAreas);
-    p->DefineVar("ForestsSemiNatural", & dm::ForestsSemiNatural);
-    p->DefineVar("WaterBodies",& dm::WaterBodies);
+	p->DefineVar("ContUrbanFabric", & dm::ContUrbanFabric);
+	p->DefineVar("DisContUrbanFabric",& dm::DisContUrbanFabric);
+	p->DefineVar("RoadRailNetwork", & dm::RoadRailNetwork);
+	p->DefineVar("AgriculturalAreas",& dm::AgriculturalAreas);
+	p->DefineVar("ForestsSemiNatural", & dm::ForestsSemiNatural);
+	p->DefineVar("WaterBodies",& dm::WaterBodies);
 }
 
 

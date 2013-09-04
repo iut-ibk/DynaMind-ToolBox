@@ -31,39 +31,39 @@
 #include <QDialog>
 
 namespace Ui {
-    class GUIEquationEditor;
+	class GUIEquationEditor;
 }
 
 class GUIEquationEditor : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GUIEquationEditor(QStringList SingelValues, QStringList Vectors , QWidget *parent = 0);
-    void hideName();
-    void addString(QString string);
+	explicit GUIEquationEditor(QStringList SingelValues, QStringList Vectors , QWidget *parent = 0);
+	void hideName();
+	void addString(QString string);
 
-    ~GUIEquationEditor();
+	~GUIEquationEditor();
 signals:
-    void values(QStringList values);
+	void values(QStringList values);
 public slots:
-    void addPlus() {this->addString("+");}
-    void addMinus() {this->addString("-");}
-    void addMulti() {this->addString("*");}
-    void addCos() {this->addString("cos(#Value#)");}
-    void addSin() {this->addString("sin(#Value#)");}
-    void addTan() {this->addString("tan(#Value#)");}
-    void addIf() {this->addString("if(Expression, #Value#, #Value#)");}
-    void addNov() {this->addString("nov(#Vector#)");}
-    void addRandom() {this->addString("rand(#Value#)");}
-    void addVector();
-    void addValue();
-    void accept();
-    void setName(QString);
-    void setFormula(QString);
+	void addPlus() {this->addString("+");}
+	void addMinus() {this->addString("-");}
+	void addMulti() {this->addString("*");}
+	void addCos() {this->addString("cos(#Value#)");}
+	void addSin() {this->addString("sin(#Value#)");}
+	void addTan() {this->addString("tan(#Value#)");}
+	void addIf() {this->addString("if(Expression, #Value#, #Value#)");}
+	void addNov() {this->addString("nov(#Vector#)");}
+	void addRandom() {this->addString("rand(#Value#)");}
+	void addVector();
+	void addValue();
+	void accept();
+	void setName(QString);
+	void setFormula(QString);
 
 private:
-    Ui::GUIEquationEditor *ui;
+	Ui::GUIEquationEditor *ui;
 };
 
 #endif // GUIEQUATIONEDITOR_H
