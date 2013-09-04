@@ -117,10 +117,10 @@ TEST_F(TestSimulation,loadModuleNativeTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Load Native Module";
 	DM::Simulation sim;
-#ifndef unix
-	ASSERT_TRUE(sim.registerModule("./libdynamind-testmodules.so") == true);
-#else
+#ifdef __linux__
 	ASSERT_TRUE(sim.registerModule("./libdynamind-testmodules") == true);
+#else
+	ASSERT_TRUE(sim.registerModule("./dynamind-testmodules") == true);
 #endif
 }
 
