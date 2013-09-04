@@ -30,6 +30,10 @@ FILE(GLOB UNIT_CPP *.cpp)
 
 ADD_EXECUTABLE(unit-test ${UNIT_CPP})
 
+#IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+#	set_target_properties(unit-test PROPERTIES VS_SCC_LOCALPATH ${EXECUTABLE_OUTPUT_PATH})
+#ENDIF()
+
 TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamindtoolbox dynamind-testmodules
     ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSQL_LIBRARIES})
 
