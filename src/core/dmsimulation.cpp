@@ -863,7 +863,8 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 				foreach(Link* l, intoGroupLinks)
 				{
 					shiftData(l, inPorts.size() > 1);
-					nextModules.insert(l->dest);
+					if(l->dest->inPortsSet())
+						nextModules.insert(l->dest);
 				}
 			}
 			else
