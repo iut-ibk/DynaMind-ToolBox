@@ -103,7 +103,7 @@ public:
     /** @brief Returns the cirection cosine between two vector */
     static double DirectionCosine(const DM::Node & n1, const DM::Node & n2);
 
-    /** @brief Returns angle between two vectors */
+	/** @brief Returns minimal angle between two vectors */
     static double AngelBetweenVectors(const DM::Node & n1, const DM::Node & n2);
 
     /** @brief Creates rotation matrix based on direction cosines, where E_from (e1_from; e2_from; e3_from)

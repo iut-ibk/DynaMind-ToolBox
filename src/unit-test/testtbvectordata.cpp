@@ -1,6 +1,7 @@
 #include "testtbvectordata.h"
 #include <tbvectordata.h>
 #include <dm.h>
+#include <math.h>
 
 namespace {
 
@@ -27,5 +28,13 @@ TEST_F(TestTBVectorData,minNode){
     EXPECT_DOUBLE_EQ(0.0, c.getZ());
 	
 	delete sys;
+}
+
+
+TEST_F(TestTBVectorData,AngelBetweenVectors){
+	   EXPECT_DOUBLE_EQ(0,TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), DM::Node(1,0,0)) *180./M_PI);
+	   EXPECT_DOUBLE_EQ(90,TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), DM::Node(0,1,0))*180./M_PI);
+	   EXPECT_DOUBLE_EQ(180,TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), DM::Node(-1,0,0))*180./M_PI);
+	   EXPECT_DOUBLE_EQ(90,TBVectorData::AngelBetweenVectors(DM::Node(1,0,0), DM::Node(0,-1,0))*180./M_PI);
 }
 }
