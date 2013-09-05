@@ -767,7 +767,7 @@ System* Simulation::getData(Link* l)
 {
 	if(l->src->isGroup() && l->dest->getOwner() == l->src)
 		// into group link
-			return l->src->getInPortData(l->outPort);
+		return l->src->getInPortData(l->outPort);
 	else
 		return l->src->getOutPortData(l->outPort);
 }
@@ -782,7 +782,7 @@ void Simulation::shiftData(Link* l, bool successor)
 	// shift pointer
 	if(l->dest->isGroup() && l->src->getOwner() == l->dest)
 		// out of group link
-			l->dest->setOutPortData(l->inPort, data);
+		l->dest->setOutPortData(l->inPort, data);
 	else
 	{
 		l->dest->setInPortData(l->inPort, data);
@@ -836,14 +836,10 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 
 	// do not reset inport if there is no outport and the module is read only
 	if(!(m->outPorts.size() == 0 && readOnly))
-	{
 		// reset in ports
 		for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
 			it != m->inPorts.end();	++it)
-		{
 			it->second = NULL;
-		}
-	}
 
 	return nextModules;
 }
@@ -856,7 +852,6 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 	{
 		if(g->getInPortData(inPort))
 		{
-
 			std::vector<Simulation::Link*> intoGroupLinks = getIntoGroupLinks(g, inPort);
 			if(intoGroupLinks.size() != 0)
 			{
