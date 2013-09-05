@@ -6,6 +6,8 @@
 #include <cgalsearchoperations.h>
 #include "cgalskeletonisation.h"
 #include <dmlog.h>
+#include <dmlogsink.h>
+
 namespace {
 
 TEST_F(TestCGAL, intersectionTest_with_holes){
