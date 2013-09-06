@@ -24,30 +24,38 @@
  *
  */
 #include "cgalgeometry.h"
+
+//STD
 #include <sstream>
 #include <ostream>
 #include <math.h>
-
-#include <QString>
-#include <boost/foreach.hpp>
 #include <iostream>
-#include "cgalgeometry_p.h"
-#include "tbvectordata.h"
-#include "cgaltriangulation.h"
-#include "cgalregulartriangulation.h"
+
+//BOOST
+#include <boost/foreach.hpp>
+
+//DM
+#include <cgalgeometry_p.h>
+#include <tbvectordata.h>
+#include <cgaltriangulation.h>
+#include <cgalregulartriangulation.h>
+
+//QT
+#include <QString>
+
+//CGAL
 #include <CGAL/min_quadrilateral_2.h>
 #include <CGAL/intersections.h>
 #include <CGAL/Polygon_set_2.h>
-#include <print_utils.h>
 #include <CGAL/Polygon_2_algorithms.h>
 #include <CGAL/Projection_traits_xy_3.h>
-
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Point_2.h>
 #include <CGAL/Aff_transformation_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/centroid.h>
+#include <print_utils.h>
 
 namespace DM {
 
@@ -119,7 +127,6 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 			vp.push_back(return_vec.addNode(x,y,0));
 		}
 		do{
-
 			++hec;
 			bool source = false;
 			bool target = false;
@@ -150,7 +157,6 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 		faceCounter++;
 		if (vp.size() < 3)
 			continue;
-		vp.push_back(vp[0]);
 		return_vec.addFace(vp, return_id);
 
 	}
@@ -330,6 +336,7 @@ std::vector<DM::Face*> CGALGeometry::IntersectFace(System *sys, Face *f1, Face *
 
 std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face *f2, BoolOperation ob)
 {
+
 	std::vector<DM::Face *> resultFaces;
 
 	typedef CGAL::Exact_predicates_exact_constructions_kernel K;
@@ -338,6 +345,7 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 	typedef CGAL::Polygon_set_2<K, std::vector<Point> >         Polygon_set_2;
 	typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
 	typedef std::list<Polygon_with_holes_2>                     Pwh_list_2;
+
 
 	Polygon_2::Vertex_iterator vit;
 	Polygon_with_holes_2::Hole_iterator hit;
@@ -463,16 +471,12 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 			if (!exists)
 				currentNodes.push_back(sys->addNode(CGAL::to_double(vit->x()), CGAL::to_double(vit->y()), 0));
 		}
-		//int n_holes = P.number_of_holes();
-		//Logger(DM::Debug) << "Holes" << n_holes;
-
 
 		if (currentNodes.size() < 3) {
 			DM::Logger(DM::Error) << "Something went wrong";
 			continue;
 		}
 		counter++;
-		currentNodes.push_back(currentNodes[0]);
 		DM::Face * f = sys->addFace(currentNodes);
 
 		//Add Holes
@@ -494,13 +498,11 @@ std::vector<Face *> CGALGeometry::BoolOperationFace(System *sys, Face *f1, Face 
 				DM::Logger(DM::Error) << "Something went wrong with a hole";
 				continue;
 			}
-			currentNodes_holes.push_back(currentNodes_holes[0]);
 			f->addHole(currentNodes_holes);
 		}
 		resultFaces.push_back(f);
 
 	}
-	//DM::Logger(DM::Debug) << "NumberOfFaces " << counter;
 
 	return resultFaces;
 }
