@@ -23,6 +23,9 @@ GUIImportWithGDAL::GUIImportWithGDAL(DM::Module *m, QWidget *parent) :
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
 	this->ui->checkBox_linkWithExistingView->setChecked(this->m->linkWithExistingView);
 
+	this->ui->lineEdit_offx->setText(QString::number(this->m->offsetX));
+	this->ui->lineEdit_offy->setText(QString::number(this->m->offsetY));
+
 }
 
 GUIImportWithGDAL::~GUIImportWithGDAL()
@@ -42,6 +45,9 @@ void GUIImportWithGDAL::accept()
 	m->flip_wfs = this->ui->checkBox_flip->isChecked();
 	m->linkWithExistingView = this->ui->checkBox_linkWithExistingView->isChecked();
 	m->epsgcode = this->ui->lineEdit_epsgCode->text().toInt();
+
+	m->offsetX= this->ui->lineEdit_offx->text().toDouble();
+	m->offsetY= this->ui->lineEdit_offy->text().toDouble();
 
 	m->init();
 	QDialog::accept();

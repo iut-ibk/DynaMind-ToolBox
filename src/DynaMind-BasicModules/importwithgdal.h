@@ -56,6 +56,9 @@ public:
 	int epsgcode;
 	bool linkWithExistingView;
 	bool flip_wfs;
+
+	double offsetX;
+	double offsetY;
 private:
 	bool isvectordata;
 	bool transformok;

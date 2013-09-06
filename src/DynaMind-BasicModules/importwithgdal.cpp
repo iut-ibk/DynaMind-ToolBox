@@ -55,7 +55,10 @@ ImportwithGDAL::ImportwithGDAL()
 	this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
 	this->linkWithExistingView = false;
 	this->addParameter("linkWithExistingView", DM::BOOL, &this->linkWithExistingView);
-
+	this->offsetX = 0;
+	this->addParameter("offsetX", DM::DOUBLE, &this->offsetX);
+	this->offsetY = 0;
+	this->addParameter("offsetY", DM::DOUBLE, &this->offsetY);
 
 	//WFS Input
 	this->WFSDataName = "";
@@ -136,7 +139,7 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 
 	transform(&x,&y);
 
-	DM::Node * n = this->addNode(sys, x, y, 0);
+	DM::Node * n = this->addNode(sys, x + this->offsetX, y +  this->offsetY, 0);
 	sys->addComponentToView(n, this->view);
 
 	return n;
@@ -152,7 +155,7 @@ std::vector<Node*> ImportwithGDAL::ExtractNodes(System* sys, OGRLineString *ls)
 		double x = poPoint.getX();
 		double y = poPoint.getY();
 		transform(&x,&y);
-		DM::Node * n = this->addNode(sys, x, y, 0);
+		DM::Node * n = this->addNode(sys, x + this->offsetX, y +  this->offsetY, 0);
 
 		if(!vector_contains(&nlist, n))
 			nlist.push_back(n);
@@ -170,7 +173,7 @@ std::vector<Node*> ImportwithGDAL::ExtractNodesFromFace(System* sys, OGRLinearRi
 		double x = poPoint.getX();
 		double y = poPoint.getY();
 		transform(&x,&y);
-		DM::Node * n = this->addNode(sys, x, y, 0);
+		DM::Node * n = this->addNode(sys, x + this->offsetX, y +  this->offsetY, 0);
 
 		if(!vector_contains(&nlist, n))
 			nlist.push_back(n);
@@ -608,8 +611,8 @@ bool ImportwithGDAL::importRasterData()
 	{
 		xsize = fabs(adfGeoTransform[1]);
 		ysize = fabs(adfGeoTransform[5]);
-		xoff = adfGeoTransform[0];
-		yoff = adfGeoTransform[3] - ysize * nYSize;
+		xoff = adfGeoTransform[0] + offsetX;
+		yoff = adfGeoTransform[3] - ysize * nYSize + offsetY;
 	}
 
 	r->setSize(nXSize, nYSize, xsize,ysize,xoff,yoff);
