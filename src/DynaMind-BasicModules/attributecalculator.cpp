@@ -194,7 +194,7 @@ void AttributeCalculator::run() {
 	p->DefineFun(new dm::Round);
 	p->DefineVar("counter", &mp_counter);
 
-	//Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
+	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
 	mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))

@@ -47,7 +47,7 @@ private:
 	std::map<std::string, DM::View> viewsmap;
 	std::vector<std::string> varaibleNames;
 	void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
-	QString IfElseConverter(QString exp);
+
 	mup::Value mp_counter;
 
 public:
@@ -55,6 +55,7 @@ public:
 	void run();
 	void init();
 	bool createInputDialog();
+	QString IfElseConverter(QString exp);
 	DM::System * getSystemIn() {return this->sys_in;}
 	std::string getHelpUrl();
 
