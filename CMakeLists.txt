@@ -125,10 +125,6 @@ foreach (tool ${TOOLBOX})
     add_subdirectory(${tool})
 endforeach(${tool}) 
 
-if(WITH_UNIT_TESTS)
-    add_subdirectory(DynaMind-ComplexUnitTests)
-endif(WITH_UNIT_TESTS)
-
 add_subdirectory(Data)
 
 if(WITH_INSTALLER)
