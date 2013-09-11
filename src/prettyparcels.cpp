@@ -166,16 +166,20 @@ void PrettyParcels::createSubdevision(DM::System * sys, DM::Face *f, int gen)
         intersection_p.push_back(intersection_p[0]);
         DM::Face * bb = sys->addFace(intersection_p, bbs);
         bb->addAttribute("generation", gen);
-        std::vector<DM::Node> intersected_nodes = DM::CGALGeometry::IntersectFace(sys, f, bb);
+        std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
-        if (intersected_nodes.size() < 3) {
+        if (intersected_faces.size() == 0) {
             DM::Logger(DM::Warning) << "Advanced parceling createSubdevision interseciton failed";
             continue;
         }
-        std::vector<DM::Node*> newFace;
+        //std::vector<DM::Node*> newFace;
 
-        foreach (DM::Node n, intersected_nodes)
-            newFace.push_back(sys->addNode(DM::Node(n.getX(), n.getY(), 0)));
+        foreach (DM::Face * f_new, intersected_faces) {
+            f_new->addAttribute("generation", gen);
+            this->createSubdevision(sys, f_new, gen+1);
+        }
+
+/*      newFace.push_back(sys->addNode(DM::Face(n.getX(), n.getY(), 0)));
         newFace.push_back(newFace[0]);
 
         DM::Face * f_new;
@@ -184,6 +188,7 @@ void PrettyParcels::createSubdevision(DM::System * sys, DM::Face *f, int gen)
         f_new->addAttribute("generation", gen);
 
         this->createSubdevision(sys, f_new, gen+1);
+        */
     }
 }
 
@@ -192,7 +197,7 @@ void PrettyParcels::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
     //DM::Logger(DM::Debug) << "Start Final Subdevision";
     std::vector<DM::Node> box;
     std::vector<double> size;
-    QPolygonF f_origin = TBVectorData::FaceAsQPolgonF(sys, f);
+    //QPolygonF f_origin = TBVectorData::FaceAsQPolgonF(sys, f);
 
     double alpha = DM::CGALGeometry::CalculateMinBoundingBox(TBVectorData::getNodeListFromFace(sys, f), box, size);
 
@@ -232,27 +237,29 @@ void PrettyParcels::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
         }
         intersection_p.push_back(intersection_p[0]);
 
-        std::vector<DM::Node> intersected_nodes = DM::CGALGeometry::IntersectFace(sys, f, sys->addFace(intersection_p));
+        std::vector<DM::Face *> intersected_face = DM::CGALGeometry::IntersectFace(sys, f, sys->addFace(intersection_p));
 
-        if (intersected_nodes.size() < 2) {
+        if (intersected_face.size() == 0) {
             DM::Logger(DM::Warning) << "Final Intersection Failed";
             continue;
         }
 
-        std::vector<DM::Node*> newFace;
+        //std::vector<DM::Node*> newFace;
 
 
-        foreach (DM::Node n, intersected_nodes)
-            newFace.push_back(sys->addNode(DM::Node(n.getX(), n.getY(), 0)));
-        newFace.push_back(newFace[0]);
+        foreach (DM::Face *newf, intersected_face) {
+            //newFace.push_back(sys->addNode(DM::Node(n.getX(), n.getY(), 0)));
+            //newFace.push_back(newFace[0]);
+
+            std::vector<DM::Node *> newFace = newf->getNodePointers();
 
         if (offset > 0.0001) {
-            DM::Logger(DM::Debug) << "----";
+/*            DM::Logger(DM::Debug) << "----";
             DM::Logger(DM::Debug)<< newFace.size();
             foreach (DM::Node * n, newFace) {
                 DM::Logger(DM::Debug) << n->getX() <<" " << n->getY();
             }
-            DM::Logger(DM::Debug) << "Start offset";
+            DM::Logger(DM::Debug) << "Start offset"; */
             std::vector<DM::Node> new_parcel = DM::CGALGeometry::OffsetPolygon(newFace, offset);
             if (new_parcel.size() < 3) {
                 DM::Logger(DM::Warning) << "Advaned offset interseciton failed";
@@ -275,11 +282,11 @@ void PrettyParcels::finalSubdevision(DM::System *sys, DM::Face *f, int gen)
         f_new->addAttribute("generation", gen);
         f_new->addAttribute("selected", 1);
 
-        f_new->getAttribute("SUPERBLOCK")->setLink(in.getName(), f->getUUID());
+        //f_new->getAttribute("SUPERBLOCK")->setLink(in.getName(), f->getUUID());
 
     }
     //DM::Logger(DM::Debug) << "Done Final Subdevision";
-
+}
 
 
 
