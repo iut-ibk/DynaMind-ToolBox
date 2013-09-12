@@ -38,7 +38,7 @@ string SinglePoint::getHelpUrl()
 
 void SinglePoint::run() {
 	DM::System * sys = this->getData("sys");
-	sys->addNode(x,y,z, DM::View(viewname, DM::READ, DM::WRITE));
+	sys->addNode(x,y,z, DM::View(viewname, DM::NODE, DM::WRITE));
 
 }
 
