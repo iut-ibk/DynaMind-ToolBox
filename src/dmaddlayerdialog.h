@@ -65,7 +65,7 @@ private:
 	Ui::AddLayerDialog *ui;
 	QColor start, stop;
 
-	DM::View *view;
+	const DM::View *view;
 	std::string attribute;
 	std::string newAttributeName(std::string viewName, std::string name);
 };
