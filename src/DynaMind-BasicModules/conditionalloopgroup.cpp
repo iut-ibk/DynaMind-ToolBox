@@ -91,7 +91,7 @@ bool ConditionalLoopGroup::evalConditionString()
 	{
 		if(System* sys = getInPortData(writePort))
 		{
-			mforeach(Component* c, sys->getAllComponentsInView(View(viewName)))
+			mforeach(Component* c, sys->getAllComponentsInView(View(viewName, COMPONENT)))
 			{
 				std::map<std::string, Attribute*> attributes = c->getAllAttributes();
 				if(map_contains(&attributes, std::string(attributeName), a))
