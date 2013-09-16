@@ -306,7 +306,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	s.registerModulesFromDefaultLocation();
 	s.registerModulesFromSettings();
-	s.loadSimulation(simulationfile);
+	realsimulationfile = replacestrings(replace, simulationfile);
+	s.loadSimulation(realsimulationfile);
 
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
