@@ -1,31 +1,25 @@
-#ifndef CreateBuilding_H
-#define CreateBuilding_H
+#ifndef CREATEBUILDING_H
+#define CREATEBUILDING_H
 
-#include <dm.h>
+#include <dmmodule.h>
 
-using namespace DM;
-class CreateBuilding : public Module
+class CreateBuilding: public DM::Module
 {
-    DM_DECLARE_NODE(CreateBuilding);
-
-private:
-    DM::View houses;
-    DM::View parcels;
-    DM::View building_model;
-    DM::View footprint;
-    DM::View cityView;
-
-    int stories;
-    int length;
-    double ratio;
-    int buildyear;
-    bool DatafromView;
-
-    void createWindows(DM::Face * f, double distance, double width, double height);
+    DM_DECLARE_NODE(CreateBuilding)
 public:
     CreateBuilding();
-    void run();
+    ~CreateBuilding();
 
+    void run();
+    void init();
+private:
+    int length;
+    double ratio;
+    int stories;
+    int year;
+
+    DM::View buildings;
+    DM::View parcels;
 };
 
-#endif // CreateBuilding_H
+#endif // CREATEBUILDING_H

@@ -1,119 +1,71 @@
-#include "createbuilding.h"
-#include "dmgeometry.h"
-#include "cgalgeometry.h"
-#include "tbvectordata.h"
-#include <QPolygonF>
-#include <QTransform>
-#include <dmhelper.h>
-#include <tbvectordata.h>
-#include <littlegeometryhelpers.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
+#include <createbuilding.h>
+#include <dm.h>
 
 DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
 
 CreateBuilding::CreateBuilding()
 {
-
-    length = 16;
-    ratio = 0.8;
-    stories = 3;
-    buildyear = 2000;
-
-    DatafromView = false;
-
-    // boolean: take data from View or enter values manually
-
-    this->addParameter("length", DM::INT, &length);
-    this->addParameter("aspect ratio", DM::DOUBLE, &ratio);
-    this->addParameter("stories", DM::INT, &stories);
-
-    this->addParameter("Data from View", DM::BOOL, &DatafromView);
-
-    cityView = DM::View("CITY", DM::FACE, DM::READ);
-    cityView.getAttribute("year");
-    parcels = DM::View("PARCEL", DM::FACE, DM::READ);
-
-    parcels.addAttribute("is_built");
-
-    parcels.getAttribute("released");
-    parcels.getAttribute("centroid_x");
-    parcels.getAttribute("centroid_y");
-
-    houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
-
-    houses.addAttribute("centroid_x");
-    houses.addAttribute("centroid_y");
-
-    houses.addAttribute("built_year");
-    houses.addAttribute("stories");
-    houses.addAttribute("stories_below");
-    houses.addAttribute("stories_height");
-
-    houses.addAttribute("floor_area");
-    houses.addAttribute("roof_area");
-    houses.addAttribute("gross_floor_area");
-
-    houses.addAttribute("centroid_x");
-    houses.addAttribute("centroid_y");
-
-    houses.addAttribute("l_bounding");
-    houses.addAttribute("b_bounding");
-    houses.addAttribute("h_bounding");
-    houses.addAttribute("alhpa_bounding");
-
-    houses.addAttribute("alpha_roof");
-
-    houses.addAttribute("cellar_used");
-    houses.addAttribute("roof_used");
-
-    houses.addAttribute("T_heating");
-    houses.addAttribute("T_cooling");
-
-    houses.addAttribute("Geometry");
-    houses.addAttribute("V_living");
-
-    footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
-    footprint.addAttribute("year");
-    footprint.addAttribute("h");
-    footprint.addAttribute("built_year");
-    building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
-    building_model.addAttribute("type");
-
-    parcels.addLinks("BUILDING", houses);
-    houses.addLinks("PARCEL", parcels);
-
-    std::vector<DM::View> data;
-    data.push_back(houses);
-    data.push_back(parcels);
-    data.push_back(footprint);
-    data.push_back(building_model);
-    data.push_back(cityView);
-    this->addData("City", data);
+    // declare parameters
+    this->addParameter("Length", DM::INT, &this->length);
+    this->addParameter("Ratio", DM::DOUBLE, &this->ratio);
+    this->addParameter("Stories", DM::INT, &this->stories);
+    this->addParameter("Year", DM::INT, &this->year);
 }
 
+CreateBuilding::~CreateBuilding()
+{
+}
 
+void CreateBuilding::init()
+{
+    // create a view
+    buildings = DM::View("BUILDINGS", DM::COMPONENT, DM::WRITE);
+    parcels = DM::View("PARCELS", DM::COMPONENT, DM::MODIFY);
+
+    // attach new attributes to view
+    buildings.addAttribute("width");
+    buildings.addAttribute("ratio");
+    buildings.addAttribute("stories");
+    buildings.addAttribute("year");
+
+    // push the view-access settings into the module via 'addData'
+    std::vector<DM::View> views;
+    views.push_back(buildings);
+    views.push_back(parcels);
+    this->addData("city", views);
+}
 
 void CreateBuilding::run()
 {
-
+    // get data from stream/port
     srand ( time(NULL) );
 
-    DM::System * city = this->getData("City");
-    DM::SpatialNodeHashMap spatialNodeMap(city, 100);
+    DM::System * data = this->getData("city");
+    mforeach(DM::Component * parcel, data->getAllComponentsInView(parcels))
+    {
+        DM::Attribute* parcel_empty = parcel->getAttribute("empty");
+        if (parcel_empty) {
+            if (parcel->getAttribute("maxheight")->getDouble() > 0) { stories = parcel->getAttribute("maxheight")->getDouble(); }
 
-    std::vector<std::string> city_uuid = city->getUUIDs(cityView);
-    if (city_uuid.size() != 0) {
-        buildyear = city->getComponent(city_uuid[0])->getAttribute("year")->getDouble();
+            stories = (int)(parcel->getAttribute("maxheight")->getDouble());
+            int length_rand = static_cast<int>(length/4*3 + (rand() % (length/3)));
+            int width_rand = static_cast<int>(length_rand*ratio);
+
+
+
+
+            parcel->getAttribute("centroid_x"); //should be calculated here?
+            parcel->getAttribute("centroid_y");
+            parcel->changeAttribute("empty", 0);
+
+        }
+        //g->setDouble(g->getDouble() * 2.0);
     }
 
-    std::vector<std::string> parcelUUIDs = city->getUUIDs(parcels);
+    // be sure to destruct any objects allocated with malloc or new!
+}
 
-    int nparcels = parcelUUIDs.size();
-    int numberOfHouseBuild = 0;
-    int totalareaofhouses = 0;
-
+/*
     for (int i = 0; i < nparcels; i++) {
         DM::Face * parcel = city->getFace(parcelUUIDs[i]);
 
@@ -126,7 +78,7 @@ void CreateBuilding::run()
         }
 
         std::vector<DM::Node * > nodes  = TBVectorData::getNodeListFromFace(city, parcel);
-        
+
         int length_rand = static_cast<int>(length/4*3 + (rand() % (length/3)));
         int width_rand = static_cast<int>(length_rand*ratio);
 
@@ -154,12 +106,12 @@ void CreateBuilding::run()
         QPolygonF original = QPolygonF() << f1 << f2 << f3 << f4;
         QTransform transform = QTransform().rotate(angle);
         QPolygonF rotated = transform.map(original);
-        
+
         std::vector<DM::Node * > houseNodes;
-        
+
         foreach (QPointF p, rotated) {
             houseNodes.push_back(spatialNodeMap.addNode(p.x()+centroid.getX(), p.y()+centroid.getY(), 0, 0.01, DM::View()));
-            
+
         }
         if (houseNodes.size() < 2) {
             Logger(Error) << "Can't create House";
@@ -175,7 +127,7 @@ void CreateBuilding::run()
         foot_print->addAttribute("year", buildyear);
         foot_print->addAttribute("built_year", buildyear);
         foot_print->addAttribute("height", stories_rand*3);
-        Node  n = TBVectorData::CaclulateCentroid(city, foot_print);
+        Node  n = TBVectorData::PointWithinFace(city, foot_print);
         building->addAttribute("type", "single_family_house");
         building->addAttribute("built_year", buildyear);
         building->addAttribute("stories", stories_rand);
@@ -212,7 +164,134 @@ void CreateBuilding::run()
         parcel->addAttribute("DWF", length_rand * width_rand * stories_rand / 10000);
         parcel->addAttribute("EIA", length_rand * width_rand * 1.3);
         numberOfHouseBuild++;
-        
+
     }
     Logger(Debug) << "Created Houses " << numberOfHouseBuild;
 }
+*/
+
+
+
+    /*
+    #include "createbuilding.h"
+    #include "cgalskeletonisation.h"
+    #include <tbvectordata.h>
+    #include <dmgeometry.h>
+
+    DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
+
+    CreateBuilding::CreateBuilding()
+    {
+
+        //init values
+
+        length = 30;
+        ratio = 0.8;
+        stories = 3;
+        year = 2000;
+
+        this->addParameter("length", DM::INT, &length);
+        this->addParameter("aspect ratio", DM::DOUBLE, &ratio);
+        this->addParameter("stories", DM::INT, &stories);
+        this->addParameter("build year", DM::INT, &year);
+
+        DM::View city = getViewInStream("DATA", "CITY");
+
+        if city.getAttribute("year");
+
+    }
+
+    void CreateBuilding::run()
+    {
+
+
+
+        this->addParameter("length", DM::INT, &length);
+        this->addParameter("aspect ratio", DM::DOUBLE, &ratio);
+        this->addParameter("stories", DM::INT, &stories);
+
+        this->addParameter("Data from View", DM::BOOL, &DatafromView);
+
+        cityView = DM::View("CITY", DM::FACE, DM::READ);
+        cityView.getAttribute("year");
+        parcels = DM::View("PARCEL", DM::FACE, DM::READ);
+
+        parcels.addAttribute("is_built");
+
+        parcels.getAttribute("released");
+        parcels.getAttribute("centroid_x");
+        parcels.getAttribute("centroid_y");
+
+        houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
+
+        houses.addAttribute("centroid_x");
+        houses.addAttribute("centroid_y");
+
+        houses.addAttribute("built_year");
+        houses.addAttribute("stories");
+        houses.addAttribute("stories_below");
+        houses.addAttribute("stories_height");
+
+        houses.addAttribute("floor_area");
+        houses.addAttribute("roof_area");
+        houses.addAttribute("gross_floor_area");
+
+        houses.addAttribute("centroid_x");
+        houses.addAttribute("centroid_y");
+
+        houses.addAttribute("l_bounding");
+        houses.addAttribute("b_bounding");
+        houses.addAttribute("h_bounding");
+        houses.addAttribute("alhpa_bounding");
+
+        houses.addAttribute("alpha_roof");
+
+        houses.addAttribute("cellar_used");
+        houses.addAttribute("roof_used");
+
+        houses.addAttribute("T_heating");
+        houses.addAttribute("T_cooling");
+
+        houses.addAttribute("Geometry");
+        houses.addAttribute("V_living");
+
+        footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
+        footprint.addAttribute("year");
+        footprint.addAttribute("h");
+        footprint.addAttribute("built_year");
+        building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
+        building_model.addAttribute("type");
+
+        parcels.addLinks("BUILDING", houses);
+        houses.addLinks("PARCEL", parcels);
+
+        std::vector<DM::View> data;
+        data.push_back(houses);
+        data.push_back(parcels);
+        data.push_back(footprint);
+        data.push_back(building_model);
+        data.push_back(cityView);
+        this->addData("City", data);
+    }
+
+
+    void CreateBuilding::run()
+    {
+
+        srand ( time(NULL) );
+
+        DM::System * city = this->getData("City");
+        DM::SpatialNodeHashMap spatialNodeMap(city, 100);
+
+        std::vector<std::string> city_uuid = city->getUUIDs(cityView);
+        if (city_uuid.size() != 0) {
+            buildyear = city->getComponent(city_uuid[0])->getAttribute("year")->getDouble();
+        }
+
+        std::vector<std::string> parcelUUIDs = city->getUUIDs(parcels);
+
+        int nparcels = parcelUUIDs.size();
+        int numberOfHouseBuild = 0;
+        int totalareaofhouses = 0;
+*/
+
