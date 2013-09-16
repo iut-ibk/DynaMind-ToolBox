@@ -24,8 +24,6 @@
  *
  */
 
-//#ifdef SIMENV_GROUP
-
 #ifndef GUIGROUPTEST_H
 #define GUIGROUPTEST_H
 
@@ -60,12 +58,7 @@ protected slots:
 	void on_addReadStream_clicked();
 	void on_addWriteStream_clicked();
 	void on_removeStream_clicked();
-	/*void on_addInPort_clicked();
-	void on_addOutPort_clicked();
-	void on_rmInport_clicked();
-	void on_rmOutport_clicked();*/
 	void accept();
 };
 
 #endif // GUIGROUPTEST_H
-//#endif // SIMENV_GROUP
