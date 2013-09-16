@@ -118,19 +118,25 @@ bool LoopGroup::removeStream(std::string name)
 
 bool LoopGroup::condition()
 {
-	// loop data
-	bool bContinue = (currentRun++ < runs);
+	if(currentRun++ < runs)
+	{
+		loopStreams();
+		return true;
+	}
+	return false;
+}
 
-	if(bContinue)
-		foreach(std::string streamName, writeStreams)
-			if(System* sys = getOutPortData(streamName))
-			{
-				setInPortData(streamName, sys);
-				setOutPortData(streamName, NULL);
-			}
-
-	return bContinue;
-};
+void LoopGroup::loopStreams()
+{
+	foreach(std::string streamName, writeStreams)
+	{
+		if(System* sys = getOutPortData(streamName))
+		{
+			setInPortData(streamName, sys);
+			setOutPortData(streamName, NULL);
+		}
+	}
+}
 
 bool LoopGroup::createInputDialog() 
 {

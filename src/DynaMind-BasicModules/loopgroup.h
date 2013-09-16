@@ -45,8 +45,8 @@ public:
 	LoopGroup();
 	virtual ~LoopGroup(){}
 	void run();
-	void init();
-	bool createInputDialog();
+	virtual void init();
+	virtual bool createInputDialog();
 	
 	std::vector<std::string> readStreams;
 	std::vector<std::string> writeStreams;
@@ -58,8 +58,10 @@ public:
 	int runs;
 	int currentRun;	// [0,runs-1]
 
-	bool condition();
+	virtual bool condition();
 	int getGroupCounter();
+protected:
+	void loopStreams();
 };
 
 
