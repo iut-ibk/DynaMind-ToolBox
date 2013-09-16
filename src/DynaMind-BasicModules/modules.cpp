@@ -27,6 +27,7 @@
 #include "dmmoduleregistry.h"
 #include "cellularautomata.h"
 #include "loopgroup.h"
+#include "conditionalloopgroup.h"
 #include "adddatatonewview.h"
 #include "appendattributes.h"
 #include "exportrasterdata.h"
@@ -51,6 +52,7 @@ using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 {
 	registry->addNodeFactory(new NodeFactory<LoopGroup>());
+	registry->addNodeFactory(new NodeFactory<ConditionalLoopGroup>());
 	registry->addNodeFactory(new NodeFactory<CellularAutomata>());
 	registry->addNodeFactory(new NodeFactory<AddDataToNewView>());
 	registry->addNodeFactory(new NodeFactory<ExportRasterData>());
