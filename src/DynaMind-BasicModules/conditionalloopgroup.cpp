@@ -25,7 +25,7 @@
 */
 
 #include "conditionalloopgroup.h"
-#include "guiloopgroup.h"
+#include "guiconditionalloopgroup.h"
 #include <dmlogger.h>
 #include <QInputDialog>
 #include <dmsystem.h>
@@ -106,10 +106,7 @@ bool ConditionalLoopGroup::evalConditionString()
 
 bool ConditionalLoopGroup::createInputDialog() 
 {
-	LoopGroup::createInputDialog();
-	
-	conditionString = QInputDialog::getText(NULL, "set condition string", "usage: \"view.attribute operator compare-value\ne.g. CITY.area > 500", 
-		QLineEdit::Normal, QString::fromStdString(conditionString)).toStdString();
-
+	QWidget * w = new GUIConditionalLoopGroup(this);
+	w->show();
 	return true;
 }

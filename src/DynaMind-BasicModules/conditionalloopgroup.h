@@ -34,13 +34,13 @@
 
 using namespace DM;
 
-class GUILoopGroup;
+class GUIConditionalLoopGroup;
 
 class DM_HELPER_DLL_EXPORT ConditionalLoopGroup : public  LoopGroup 
 {
 	DM_DECLARE_NODE(ConditionalLoopGroup)
 
-	friend GUILoopGroup;
+	friend GUIConditionalLoopGroup;
 
 public:
 	ConditionalLoopGroup();
