@@ -29,10 +29,6 @@
 
 #include "dmcompilersettings.h"
 #include "dmgroup.h"
-//#include "dm.h"
-//#include "dmview.h"
-//#include <iostream>
-//#include <vector>
 #include <set>
 
 using namespace DM;
@@ -64,8 +60,6 @@ public:
 
 	bool condition();
 	int getGroupCounter();
-	//void resetCondition();
-	//int i;
 };
 
 

@@ -31,28 +31,21 @@
 using namespace DM;
 
 #include <guiloopgroup.h>
-//#include <algorithm>
-//#include <dmporttuple.h>
 
 DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
 LoopGroup::LoopGroup() 
 {
-	//i = 0;
 	runs = 1;
 	currentRun = 0;
 
 	this->addParameter("Runs", DM::INT, &runs);
-	//this->addParameter("nameOfInViews", DM::STRING_LIST, &nameOfInPorts);
-	//this->addParameter("nameOfOutViews", DM::STRING_LIST, &nameOfOutPorts);
 	this->addParameter("writeStreams", DM::STRING_LIST, &writeStreams);
 	this->addParameter("readStreams", DM::STRING_LIST, &readStreams);
 }
 
 void LoopGroup::run() 
 {
-	//this->Steps = Runs;
-	//Group::run();
 }
 
 int LoopGroup::getGroupCounter()
@@ -70,40 +63,6 @@ void LoopGroup::init()
 
 	foreach(std::string streamName, readStreams)
 		initStream(streamName, false, true);
-	
-	/*foreach (std::string s, nameOfInViews) {
-		this->addTuplePort(s, DM::INTUPLESYSTEM);
-	}
-	foreach (std::string s, nameOfOutViews) {
-		this->addTuplePort(s, DM::OUTTUPLESYSTEM);
-	}
-
-	//Remove Ports
-	std::vector<PortTuple * > tuple_in_ports = this->getInPortTuples();
-	std::vector<PortTuple * > tuple_out_ports = this->getOutPortTuples();
-	std::vector<PortTuple * > tuple_remove;
-	foreach (PortTuple * pt, tuple_in_ports) {
-		bool exists = false;
-		foreach (std::string s, nameOfInViews) {
-			if (pt->getName().compare(s) == 0)
-				exists = true;
-		}
-		if (!exists)
-			tuple_remove.push_back(pt);
-	}
-	foreach (PortTuple * pt, tuple_out_ports) {
-		bool exists = false;
-		foreach (std::string s, nameOfOutViews) {
-			if (pt->getName().compare(s) == 0)
-				exists = true;
-		}
-		if (!exists)
-			tuple_remove.push_back(pt);
-	}
-	foreach (PortTuple * pt, tuple_remove) {
-		this->removeTuplePort(pt);
-	}*/
-
 }
 
 bool LoopGroup::addStream(std::string name, bool write)
@@ -172,42 +131,6 @@ bool LoopGroup::condition()
 
 	return bContinue;
 };
-/*
-void LoopGroup::resetCondition()
-{
-	currentRun = 0;
-}*/
-
-/*
-void LoopGroup::addInPort(std::string n) 
-{
-	if (n.empty())
-		return;
-
-	nameOfInViews.insert(n);
-	this->init();
-}
-
-void LoopGroup::addOutPort(std::string n) 
-{
-	if (n.empty())
-		return;
-
-	nameOfInViews.insert(n);
-	this->init();
-}
-
-void LoopGroup::removeInPort(string port) 
-{
-	nameOfInViews.erase(port);
-	this->init();
-}
-
-void LoopGroup::removeOutPort(string port) 
-{
-	nameOfOutViews.erase(port);
-	this->init();
-}*/
 
 bool LoopGroup::createInputDialog() 
 {
