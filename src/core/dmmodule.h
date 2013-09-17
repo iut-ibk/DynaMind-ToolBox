@@ -80,7 +80,7 @@ enum ModuleStatus
 class DM_HELPER_DLL_EXPORT Module
 {
 	// this ensures that the simulation has full access without opening all methods to public
-	friend Simulation;
+	friend class Simulation;
 public:
 	/** @brief parameters are variable values given via gui input, configuring a module */
 	struct Parameter
