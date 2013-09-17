@@ -379,7 +379,7 @@ void Component::SaveToDb()
 	{
 		isInserted = true;
 		DBConnector::getInstance()->Insert(	"components", uuid, 
-			"owner", currentSys->getQUUID().toByteArray());
+			"owner", (QVariant)currentSys->getQUUID().toByteArray());
 	}
 	else
 		DBConnector::getInstance()->Update(	"components", uuid, 
