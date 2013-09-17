@@ -68,27 +68,22 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 
 	DM::SpatialNodeHashMap sphn(&sys_tmp, 10.);
 
-
-	std::vector<DM::Node*> points = TBVectorData::getNodeListFromFace(sys, f);
-
 	std::vector<DM::Node> ressVector;
 	DM::View view_roof_lines("Roof_Edges", DM::EDGE, DM::WRITE);
 	DM::View view_roof_faces("Roof", DM::FACE, DM::WRITE);
 	Polygon_2 poly_s;
 
-	int vector_size = points.size();
-	if (points[0] == points[vector_size-1] )
-		vector_size--;
-	for (int i = 0; i <  vector_size; i++) {
-		Node * p = points[i];
-		poly_s.push_back(Point_2(p->getX(), p->getY()));
 
+	foreach(DM::Node * p, f->getNodePointers()) {
+		poly_s.push_back(Point_2(p->getX(), p->getY()));
 		sphn.addNode(p->getX(), p->getY(), p->getZ(),0.0001, DM::View());
 	}
+
 	if(!poly_s.is_simple()) {
 		Logger(Warning) << "Can't perform offset polygon is not simple";
 		return sys_tmp;
 	}
+
 	CGAL::Orientation orient = poly_s.orientation();
 	if (orient == CGAL::CLOCKWISE) {
 		poly_s.reverse_orientation();
@@ -96,7 +91,7 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 
 	// You can pass the polygon via an iterator pair
 	SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly_s.vertices_begin(), poly_s.vertices_end());
-	std::vector<DM::Node*> new_nodes;
+//	std::vector<DM::Node*> new_nodes;
 	for ( Halfedge_const_iterator i = iss->halfedges_begin(); i !=  iss->halfedges_end(); ++i )
 	{
 		Point_2 p = i->opposite()->vertex()->point();
@@ -112,18 +107,18 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 		double h = l*cos(30./180.*M_PI);
 		ressVector.push_back(DM::Node(p.x(), p.y(),0));
 
-		if (!sphn.findNode(p.x(), p.y(), 0.0001)) {
-			Logger(Debug) <<   "(" << p.x() << "," << p.y() << ")" ;
-			Logger(Debug) << "Height" << h;
-			new_nodes.push_back(sphn.addNode(p.x(), p.y(), h, 0.0001,  DM::View()));
-		}
-		if (!sphn.findNode(p1.x(), p1.y(), 0.0001)) {
-			Logger(Debug) <<   "(" << p1.x() << "," << p1.y() << ")" ;
-			Logger(Debug) << "Height" << h;
-			new_nodes.push_back(sphn.addNode(p1.x(), p1.y(), h, 0.0001,  DM::View()));
-		}
-		DM::Node * n1 = sphn.findNode(p.x(), p.y(), 0.0001);
-		DM::Node * n2 = sphn.findNode(p1.x(), p1.y(), 0.0001);
+//		if (!sphn.findNode(p.x(), p.y(), 0.0001)) {
+//			Logger(Debug) <<   "(" << p.x() << "," << p.y() << ")" ;
+//			Logger(Debug) << "Height" << h;
+//			new_nodes.push_back(sphn.addNode(p.x(), p.y(), h, 0.0001,  DM::View()));
+//		}
+//		if (!sphn.findNode(p1.x(), p1.y(), 0.0001)) {
+//			Logger(Debug) <<   "(" << p1.x() << "," << p1.y() << ")" ;
+//			Logger(Debug) << "Height" << h;
+//			new_nodes.push_back(sphn.addNode(p1.x(), p1.y(), h, 0.0001,  DM::View()));
+//		}
+		DM::Node * n1 = sphn.addNode(p.x(), p.y(), h, 0.0001,  DM::View());
+		DM::Node * n2 = sphn.addNode(p1.x(), p1.y(), h, 0.0001,  DM::View());
 		sys_tmp.addEdge(n1, n2, view_roof_lines);
 
 	}
@@ -139,7 +134,7 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 		DM::Face * f = shapes.getFace(uuid);
 		std::vector<DM::Node*> nodes_in_face = TBVectorData::getNodeListFromFace(&shapes, f);
 		foreach (DM::Node * n, nodes_in_face) {
-			faces.push_back(sphn.findNode(n->getX(), n->getY(), 0.0001));
+			faces.push_back(sphn.addNode(n->getX(), n->getY(), n->getZ(), 0.0001,  DM::View()));
 		}
 
 		sys_tmp.addFace(faces, view_roof_faces);
