@@ -28,12 +28,12 @@
 #ifndef DMEDGE_H
 #define DMEDGE_H
 #include <dmcompilersettings.h>
-#include <dmnode.h>
+#include "dmcomponent.h"
 
 
 namespace DM {
 
-class Component;
+class Node;
 //class Node;
 /** @ingroup DynaMind-Core
 * @brief Provides an Edge object. An Edge just contains references to a start and end node.

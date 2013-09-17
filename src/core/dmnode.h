@@ -29,6 +29,7 @@
 
 #include <dmcompilersettings.h>
 #include "dmdbconnector.h"
+#include "dmcomponent.h"
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT

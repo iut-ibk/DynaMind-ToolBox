@@ -41,7 +41,7 @@ using namespace DM;
 
 System::System() : Component(true)
 {
-	this->lastModule = 0;
+	//this->lastModule = 0;
 	//this->mutex = new QMutex(QMutex::Recursive);
 
 	currentSys = this;

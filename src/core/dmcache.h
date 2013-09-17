@@ -27,6 +27,7 @@
 #define DMCACHE_H
 
 #include <dmdbconnector.h>
+#include <QMutex>
 
 namespace DM {
 

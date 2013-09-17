@@ -28,10 +28,13 @@
 
 #include <dmcompilersettings.h>
 #include <dmstdutilities.h>
-#include <qobject.h>
 #include <queue>
 #include <qatomic.h>
 #include "dmcache.h"
+#include <qvariant.h>
+#include <QThread>
+#include <QUuid>
+#include <QString>
 
 class QSqlQuery;
 class QSqlError;
