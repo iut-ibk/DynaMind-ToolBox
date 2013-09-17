@@ -33,7 +33,7 @@ namespace DM {
 
 class DM_HELPER_DLL_EXPORT Group: public Module
 {
-	friend Simulation;
+	friend class Simulation;
 public:
 	virtual void init();
 	bool isGroup(){return true;}
