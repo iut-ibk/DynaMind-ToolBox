@@ -1,48 +1,48 @@
 [submodule "DynaMind"]
 	path = DynaMind
-	url = git@github.com:iut-ibk/DynaMind.git
+	url = git://github.com/iut-ibk/DynaMind.git
 [submodule "DynaMind-BasicModules"]
 	path = DynaMind-BasicModules
-	url = git@github.com:iut-ibk/DynaMind-BasicModules.git
+	url = git://github.com/iut-ibk/DynaMind-BasicModules.git
 [submodule "DynaMind-Gui"]
 	path = DynaMind-Gui
-	url = git@github.com:iut-ibk/DynaMind-Gui.git
+	url = git://github.com/iut-ibk/DynaMind-Gui.git
 [submodule "DynaMind-Sewer"]
 	path = DynaMind-Sewer
-	url = git@github.com:iut-ibk/DynaMind-Sewer.git
+	url = git://github.com/iut-ibk/DynaMind-Sewer.git
 [submodule "DynaMind-QGIS"]
 	path = DynaMind-QGIS
-	url = git@github.com:christianurich/DynaMind-QGIS.git
+	url = git://github.com/christianurich/DynaMind-QGIS.git
 [submodule "P8Modules"]
 	path = P8Modules
-	url = git@github.com:iut-ibk/P8Modules.git
+	url = git://github.com/iut-ibk/P8Modules.git
 [submodule "DynaMind-UrbanSim"]
 	path = DynaMind-UrbanSim
-	url = git@github.com:iut-ibk/DynaMind-UrbanSim.git
+	url = git://github.com/iut-ibk/DynaMind-UrbanSim.git
 [submodule "DynaMind-Performance-Assessment"]
 	path = DynaMind-Performance-Assessment
-	url = git@github.com:iut-ibk/DynaMind-Performance-Assessment.git
+	url = git://github.com/iut-ibk/DynaMind-Performance-Assessment.git
 [submodule "DynaMind-VIBeModules"]
 	path = DynaMind-VIBeModules
-	url = git@github.com:iut-ibk/DynaMind-VIBeModules.git
+	url = git://github.com/iut-ibk/DynaMind-VIBeModules.git
 [submodule "DynaMind-DAnCE4Water"]
 	path = DynaMind-DAnCE4Water
-	url = git@github.com:christianurich/DynaMind-DAnCE4Water.git
+	url = git://github.com/christianurich/DynaMind-DAnCE4Water.git
 [submodule "DynaVIBe"]
 	path = DynaVIBe
-	url = git@github.com:iut-ibk/DynaVIBe.git
+	url = git://github.com/iut-ibk/DynaVIBe.git
 [submodule "PowerVIBe"]
 	path = PowerVIBe
-	url = git@github.com:iut-ibk/PowerVIBe.git
+	url = git://github.com/iut-ibk/PowerVIBe.git
 [submodule "DynaMind-CityBlocks"]
 	path = DynaMind-CityBlocks
-	url = git@github.com:iut-ibk/DynaMind-CityBlocks.git
+	url = git://github.com/iut-ibk/DynaMind-CityBlocks.git
 [submodule "DynaMind-Extensions"]
 	path = DynaMind-Extensions
-	url = git@github.com:iut-ibk/DynaMind-Extensions.git
+	url = git://github.com/iut-ibk/DynaMind-Extensions.git
 [submodule "DynaMind-Executable"]
 	path = DynaMind-Executable
-	url = git@github.com:iut-ibk/DynaMind-Executable.git
+	url = git://github.com/iut-ibk/DynaMind-Executable.git
 [submodule "DynaMind-DynAlp"]
 	path = DynaMind-DynAlp
-	url = git@github.com:iut-ibk/DynaMind-DynAlp.git
+	url = git://github.com/iut-ibk/DynaMind-DynAlp.git
