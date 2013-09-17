@@ -28,11 +28,14 @@
 #define GEOMETRY_H
 
 #include "dmcompilersettings.h"
-#include "dm.h"
+//#include "dm.h"
+#include <dmview.h>
+#include <dmnode.h>
 
 namespace DM {
 
-
+class System;
+class Face;
 
 class DM_HELPER_DLL_EXPORT CGALGeometry
 {

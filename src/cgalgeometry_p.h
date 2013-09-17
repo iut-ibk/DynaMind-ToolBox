@@ -28,38 +28,18 @@
 #define __DynaMind_ToolBox__cgalgeometry_p__
 
 #include "dmcompilersettings.h"
-#include "dm.h"
+#include <dmview.h>
+#include <dmsystem.h>
 
 #include <list>
-#include <fstream>
 
 #include <CGAL/Lazy_exact_nt.h>
-#include <CGAL/basic.h>
 #include <CGAL/Cartesian.h>
 #include <CGAL/Quotient.h>
 #include <CGAL/MP_Float.h>
 #include <CGAL/Snap_rounding_traits_2.h>
-#include <CGAL/Snap_rounding_2.h>
-#include <CGAL/Timer.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Arr_segment_traits_2.h>
-#include <CGAL/Arr_Bezier_curve_traits_2.h>
 #include <CGAL/Arrangement_2.h>
-#include <CGAL/IO/Arr_iostream.h>
-//#include <CGAL/CORE_algebraic_number_traits.h>
-//#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/partition_2.h>
-#include <CGAL/Partition_traits_2.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/convex_hull_2.h>
-#include <CGAL/bounding_box.h>
-#include <CGAL/Aff_transformation_2.h>
-#include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Polygon_set_2.h>
-#include <CGAL/create_offset_polygons_2.h>
-
-//#include "alglib/src/spline1d.h"
-
 
 using namespace boost;
 
@@ -82,6 +62,9 @@ typedef CGAL::Arrangement_2<Traits_2>                   Arrangement_2;
 
 
 namespace DM {
+
+class Face;
+
 class DM_HELPER_DLL_EXPORT CGALGeometry_P
 {
 public:
@@ -102,18 +85,9 @@ public:
 
 	static void AddFaceToArrangement(Arrangement_2 & arr, DM::Face * f);
 
-
-
-
-
-
-	/*static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);
-	 static VectorData createRaster(std::vector<Point> & points, double width, double height);*/
-
-
-
-
+	//static VectorData  DrawTemperaturAnomaly(Point p, double l1, double l2, double b, double T);
+	//static VectorData createRaster(std::vector<Point> & points, double width, double height);
 };
 }
 
-#endif /* defined(__DynaMind_ToolBox__cgalgeometry_p__) */
+#endif // defined(__DynaMind_ToolBox__cgalgeometry_p__)

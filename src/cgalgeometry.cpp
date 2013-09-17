@@ -25,6 +25,8 @@
  */
 #include "cgalgeometry.h"
 
+#include "dm.h"
+
 //STD
 #include <sstream>
 #include <ostream>
@@ -57,6 +59,16 @@
 #include <CGAL/centroid.h>
 #include <print_utils.h>
 
+#include <CGAL/partition_2.h>
+#include <CGAL/Partition_traits_2.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/convex_hull_2.h>
+#include <CGAL/bounding_box.h>
+#include <CGAL/Aff_transformation_2.h>
+#include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Polygon_set_2.h>
+#include <CGAL/create_offset_polygons_2.h>
+
 namespace DM {
 
 
@@ -67,7 +79,6 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 	Arrangement_2::Ccb_halfedge_const_circulator    curr;
 	Segment_list_2 segments;
 	Arrangement_2                                   arr;
-
 
 	DM::System return_vec;
 
@@ -161,6 +172,7 @@ DM::System CGALGeometry::ShapeFinder(DM::System * sys, DM::View & id, DM::View &
 
 	}
 	DM::Logger(DM::Debug)<< "Number of extracted Faces " << faceCounter;
+
 	return return_vec;
 }
 

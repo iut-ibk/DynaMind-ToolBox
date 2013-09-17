@@ -122,6 +122,7 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 		sys_tmp.addEdge(n1, n2, view_roof_lines);
 
 	}
+
 	DM::System shapes = DM::CGALGeometry::ShapeFinder(&sys_tmp,view_roof_lines,view_roof_faces, false, 0.0001  );
 
 	Logger(Debug) << "number of faces in roof " << shapes.getUUIDs(view_roof_faces).size();

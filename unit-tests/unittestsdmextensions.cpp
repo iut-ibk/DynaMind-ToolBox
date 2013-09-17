@@ -969,7 +969,8 @@ TEST_F(UnitTestsDMExtensions, skeletonisation){
 	DM::Face * f = sys->addFace(nodes1);
 
 
-	DM::System rn = DM::CGALSkeletonisation::StraightSkeletonisation(sys, f,30);
+	DM::System rn;
+	DM::CGALSkeletonisation::StraightSkeletonisation(sys, rn, f,30);
 	/*EXPECT_GT(rn.size(), 0);
 	DM::Node n1 = rn[0];
 	EXPECT_DOUBLE_EQ(n1.getX(), 0);
