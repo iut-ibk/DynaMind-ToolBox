@@ -201,6 +201,7 @@ public:
 	static void ClearCache();*/
 
 private:
+//	QUuid			_uuid;
 	std::string		name;
 	Component*		owner;
 	AttributeValue	value;

@@ -131,12 +131,12 @@ bool DBConnector::CreateTables()
 					  y BIGINT, \
 					  data BYTEA, \
 					  PRIMARY KEY (owner,x,y))")
-		&& query.exec("CREATE TABLE attributes(uuid BINARY(16) NOT NULL, \
-					  owner BINARY(16), \
-					  name VARCHAR(128), \
+		&& query.exec("CREATE TABLE attributes(\
+					  owner BINARY(16) NOT NULL, \
+					  name VARCHAR(128) NOT NULL, \
 					  type SMALLINT, \
 					  value BYTEA, \
-					  PRIMARY KEY (uuid))")
+					  PRIMARY KEY (owner, name))")
 					  )
 			return true;
 
@@ -571,6 +571,33 @@ void DBConnector::Insert(QString table,  QUuid uuid,
 	q->addBindValue(parValue2);
 	this->ExecuteQuery(q);
 }
+void DBConnector::Insert(QString table,  QUuid owner, QString name,
+		QString parName0, QVariant* parValue0,
+		QString parName1, QVariant* parValue1,
+		QString parName2, QVariant* parValue2)
+{
+#ifdef NO_DB_SYNC
+	return;
+#endif
+	
+	QString query = "INSERT INTO " + table + "(owner,name";
+	if(parValue0) query += "," + parName0;
+	if(parValue1) query += "," + parName1;
+	if(parValue2) query += "," + parName2;
+	query += ") VALUES (?,?";
+	if(parValue0) query += ",?";
+	if(parValue1) query += ",?";
+	if(parValue2) query += ",?";
+	query += " )";
+
+	QSqlQuery *q = getQuery(query);
+	q->addBindValue(owner.toByteArray());
+	q->addBindValue(name);
+	if(parValue0) q->addBindValue(*parValue0);
+	if(parValue1) q->addBindValue(*parValue1);
+	if(parValue2) q->addBindValue(*parValue2);
+	this->ExecuteQuery(q);
+}
 /*
 *  DELETE with uuid
 */
@@ -582,6 +609,17 @@ void DBConnector::Delete(QString table,  QUuid uuid)
 
 	QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE uuid LIKE ?");
 	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
+}
+void DBConnector::Delete(QString table,  QUuid owner, QString name)
+{
+#ifdef NO_DB_SYNC
+	return;
+#endif
+
+	QSqlQuery *q = getQuery("DELETE FROM "+table+" WHERE owner LIKE ? AND name LIKE ?");
+	q->addBindValue(owner.toByteArray());
+	q->addBindValue(name);
 	this->ExecuteQuery(q);
 }
 /*
@@ -633,6 +671,29 @@ void DBConnector::Update(QString table,  QUuid uuid,
 	q->addBindValue(parValue1);
 	q->addBindValue(parValue2);
 	q->addBindValue(uuid.toByteArray());
+	this->ExecuteQuery(q);
+}
+
+void DBConnector::Update(QString table,  QUuid owner, QString name,
+						 QString parName0, QVariant *parValue0,
+						 QString parName1, QVariant *parValue1,
+						 QString parName2, QVariant *parValue2)
+{
+#ifdef NO_DB_SYNC
+	return;
+#endif
+	QString query = "UPDATE "+table+" SET ";
+	if(parValue0) query += parName0 + "=?";
+	if(parValue1) query += "," + parName1 + "=?";
+	if(parValue2) query += "," + parName2 + "=?";
+	query += " WHERE owner LIKE ? AND name LIKE ?";
+
+	QSqlQuery *q = getQuery(query);
+	if(parValue0)	q->addBindValue(*parValue0);
+	if(parValue1)	q->addBindValue(*parValue1);
+	if(parValue2)	q->addBindValue(*parValue2);
+	q->addBindValue(owner.toByteArray());
+	q->addBindValue(name);
 	this->ExecuteQuery(q);
 }
 /*
@@ -690,6 +751,33 @@ bool DBConnector::Select(QString table, QUuid uuid,
 	*value0 = getResults()->at(0).at(0);
 	*value1 = getResults()->at(0).at(1);
 	*value2 = getResults()->at(0).at(2);
+	return true;
+}
+
+bool DBConnector::Select(QString table, QUuid owner, QString name,
+						 QString valName0, QVariant *value0,
+						 QString valName1, QVariant *value1,
+						 QString valName2, QVariant *value2)
+{
+#ifdef NO_DB_SYNC
+	return false;
+#endif
+	QString query = "SELECT ";
+	if(value0) query += valName0;
+	if(value1) query += "," + valName1;
+	if(value2) query += "," + valName2;
+	query += " FROM " + table + " WHERE owner LIKE ? AND name LIKE ?";
+	
+	QSqlQuery *q = getQuery(query);
+	q->addBindValue(owner.toByteArray());
+	q->addBindValue(name);
+	if(!ExecuteSelectQuery(q))
+		return false;
+
+	int i=0;
+	if(value0 != NULL)	*value0 = getResults()->at(0).at(i++);
+	if(value1 != NULL)	*value1 = getResults()->at(0).at(i++);
+	if(value2 != NULL)	*value2 = getResults()->at(0).at(i);
 	return true;
 }
 

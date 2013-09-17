@@ -359,6 +359,11 @@ public:
 		QString parName1, QVariant parValue1,
 		QString parName2, QVariant parValue2);
 
+	void Insert(QString table,  QUuid owner, QString name,
+		QString parName0 = "", QVariant* parValue0 = NULL,
+		QString parName1 = "", QVariant* parValue1 = NULL,
+		QString parName2 = "", QVariant* parValue2 = NULL);
+
 	//!< various update methods to update an EXISTING row in the database
 	void Update(QString table,  QUuid uuid,
 		QString parName0, QVariant parValue0);
@@ -370,8 +375,14 @@ public:
 		QString parName1, QVariant parValue1,
 		QString parName2, QVariant parValue2);
 
+	void Update(QString table,  QUuid owner, QString name,
+		QString valName0, QVariant *value0,
+		QString valName1 = "", QVariant *value1 = NULL,
+		QString valName2 = "", QVariant *value2 = NULL);
+
 	//!< delete a database row, existence is not neccessary
 	void Delete(QString table,  QUuid uuid);
+	void Delete(QString table,  QUuid owner, QString name);
 	//!< various select methods to retrieve row data from database
 	bool Select(QString table, QUuid uuid,
 		QString valName, QVariant *value);
@@ -382,6 +393,11 @@ public:
 		QString valName0, QVariant *value0,
 		QString valName1, QVariant *value1,
 		QString valName2, QVariant *value2);
+
+	bool Select(QString table, QUuid owner, QString name,
+		QString valName0, QVariant *value0,
+		QString valName1 = "", QVariant *value1 = NULL,
+		QString valName2 = "", QVariant *value2 = NULL);
 
 	bool Select(QString table, const QList<QUuid*>& uuids, QList<QUuid>* resultUuids,
 		QString valName0, QList<QVariant> *value0,

@@ -289,6 +289,7 @@ QVariant Attribute::AttributeValue::toQVariant()
 
 Attribute::Attribute()
 {
+//	_uuid = QUuid::createUuid();
 	name="";
 	owner = NULL;
 	isInserted = false;
@@ -297,7 +298,7 @@ Attribute::Attribute()
 Attribute::Attribute(const Attribute &newattribute):
 	value(newattribute.value)
 {
-	_uuid = QUuid::createUuid();
+//	_uuid = QUuid::createUuid();
 	name=newattribute.name;
 //	value = AttributeValue(newattribute.value);
 	owner = NULL;
@@ -306,7 +307,7 @@ Attribute::Attribute(const Attribute &newattribute):
 
 Attribute::Attribute(std::string name)
 {
-	_uuid = QUuid::createUuid();
+//	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
 //	value = new AttributeValue();
@@ -317,7 +318,7 @@ Attribute::Attribute(std::string name)
 Attribute::Attribute(std::string name, double val):
 	value(val)
 {
-	_uuid = QUuid::createUuid();
+//	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
 	isInserted = false;
@@ -326,7 +327,7 @@ Attribute::Attribute(std::string name, double val):
 Attribute::Attribute(std::string name, std::string val):
 	value(val)
 {
-	_uuid = QUuid::createUuid();
+//	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
 	isInserted = false;
@@ -665,7 +666,7 @@ Component* Attribute::GetOwner()
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
-	DBConnector::getInstance()->Select("attributes", _uuid,
+	DBConnector::getInstance()->Select("attributes", owner->getQUUID(), QString::fromStdString(name),
 		"type",     &t,
 		"value",     &v);
 	
@@ -678,19 +679,22 @@ Attribute::AttributeValue* Attribute::LoadFromDb()
 
 void Attribute::SaveToDb(Attribute::AttributeValue *val)
 {
+	QVariant qval = val->toQVariant();
+	QVariant qtype = QVariant::fromValue((int)val->type);
+	QString qname = QString::fromStdString(name);
 	if(isInserted)
 	{
 		DBConnector::getInstance()->Update(
-			"attributes",	_uuid,
-			"type",			QVariant::fromValue((int)val->type),
-			"value",		val->toQVariant());
+			"attributes",	owner->getQUUID(), qname,
+			"type",			&qtype,
+			"value",		&qval);
 	}
 	else
 	{
 		DBConnector::getInstance()->Insert(
-			"attributes",	_uuid,
-			"type",			QVariant::fromValue((int)val->type),
-			"value",		val->toQVariant());
+			"attributes",	owner->getQUUID(), qname,
+			"type",			&qtype,
+			"value",		&qval);
 		isInserted = true;
 	}
 }
