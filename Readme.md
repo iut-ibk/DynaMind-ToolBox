@@ -10,10 +10,10 @@ use in Linux and MacOSX
 Following options are avalible
 
 |option|description|examples|
-|------|-------|--|
+|------|-------|---------|
 |help | show options| |
 |input-file | set simulation file | |
-|replace | replace string in input file: ([STRING]\|[STRING];)* |e.g. \--replace 'CLIMATECHANGE\|cf+0.01; MASTERPLAN\|sprawl.shp|
+|replace | replace string in input file: ([STRING] [STRING];)* |e.g. --replace 'CLIMATECHANGE cf+0.01; MASTERPLAN  sprawl.shp|
 |repeat | repeat simulation| |
 |cpfile | Copy generated files: ([SOURCEFILE],[TARGETPATH]DMITERATION[FILENAME];)*| |
 |verbose | verbose output| |
