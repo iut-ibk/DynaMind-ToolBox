@@ -33,6 +33,7 @@
 #include "dmedge.h"
 #include "dmface.h"
 #include "dmcomponent.h"
+#include "dmrasterdata.h"
 #include "dmattribute.h"
 #include "tbvectordata.h"
 #include "cgalgeometry.h"
