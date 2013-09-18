@@ -53,7 +53,7 @@ System::System() : Component(true)
 System::System(const System& s) : Component(s, true)
 {
 	//predecessors = s.predecessors;
-	lastModule = s.lastModule;
+	//lastModule = s.lastModule;
 	//mutex = new QMutex(QMutex::Recursive);
 	SQLInsert();
 
