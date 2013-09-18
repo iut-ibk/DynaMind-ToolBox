@@ -284,6 +284,11 @@ Attribute* Component::getAttribute(std::string name)
 		a->setOwner(this);
 		ownedattributes[name] = a;
 	}
+	else if(a == NULL)
+	{
+		// empty attribute pointer -> load from db
+		a = ownedattributes[name] = Attribute::LoadAttribute(this, name);
+	}
 	else if(a->GetOwner() != this)
 	{
 		// successor copy
@@ -400,4 +405,14 @@ void Component::SQLDelete()
 bool Component::HasAttribute(std::string name) const
 {
 	return ownedattributes.find(name)!=ownedattributes.end();
+}
+
+void Component::MoveAttributeToDb(const std::string& name)
+{
+	std::map<std::string,Attribute*>::iterator it = ownedattributes.find(name);
+	if(it->second)
+	{
+		Attribute::SaveAttribute(it->second);
+		it->second = NULL;
+	}
 }

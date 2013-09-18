@@ -150,6 +150,8 @@ public:
 	System * getCurrentSystem() const;
 	void setCurrentSystem(System * sys);
 	void SaveToDb();
+
+	void MoveAttributeToDb(const std::string& name);
 protected:
 	/* @brief Sets stateUuid and ownership in sql db*/
 	virtual void SetOwner(Component *owner);
