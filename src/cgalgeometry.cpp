@@ -23,18 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include "cgalgeometry.h"
-
-#include "dm.h"
-
-//STD
-#include <sstream>
-#include <ostream>
-#include <math.h>
-#include <iostream>
-
-//BOOST
-#include <boost/foreach.hpp>
 
 //DM
 #include <cgalgeometry_p.h>
@@ -42,32 +32,14 @@
 #include <cgaltriangulation.h>
 #include <cgalregulartriangulation.h>
 
-//QT
-#include <QString>
-
 //CGAL
 #include <CGAL/min_quadrilateral_2.h>
-#include <CGAL/intersections.h>
 #include <CGAL/Polygon_set_2.h>
-#include <CGAL/Polygon_2_algorithms.h>
-#include <CGAL/Projection_traits_xy_3.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Point_2.h>
-#include <CGAL/Aff_transformation_2.h>
-#include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/centroid.h>
-#include <print_utils.h>
-
-#include <CGAL/partition_2.h>
-#include <CGAL/Partition_traits_2.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/convex_hull_2.h>
-#include <CGAL/bounding_box.h>
-#include <CGAL/Aff_transformation_2.h>
 #include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Polygon_set_2.h>
-#include <CGAL/create_offset_polygons_2.h>
+#include<CGAL/create_straight_skeleton_2.h>
+#include<CGAL/create_offset_polygons_2.h>
+#include <CGAL/convex_hull_2.h>
 
 namespace DM {
 

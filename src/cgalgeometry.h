@@ -27,10 +27,9 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-#include "dmcompilersettings.h"
-//#include "dm.h"
 #include <dmview.h>
 #include <dmnode.h>
+#include <vector>
 
 namespace DM {
 

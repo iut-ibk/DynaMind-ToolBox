@@ -27,7 +27,6 @@
 #ifndef __DynaMind_ToolBox__cgalgeometry_p__
 #define __DynaMind_ToolBox__cgalgeometry_p__
 
-#include "dmcompilersettings.h"
 #include <dmview.h>
 #include <dmsystem.h>
 
