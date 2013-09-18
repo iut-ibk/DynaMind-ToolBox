@@ -200,7 +200,7 @@ public:
 	static void PrintCacheStatistics();
 	static void ClearCache();*/
 	
-	static Attribute* LoadAttribute(const Component* c, const std::string& attributeName);
+	static Attribute* LoadAttribute(Component* c, const std::string& attributeName);
 	static void SaveAttribute(Attribute* a);
 
 private:
