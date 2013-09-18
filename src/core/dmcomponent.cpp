@@ -279,13 +279,14 @@ Attribute* Component::getAttribute(std::string name)
 	if(!map_contains(&ownedattributes, name, a))
 	{
 		QMutexLocker ml(mutex);
-
+		// create new attribute
 		a = new Attribute(name);
 		a->setOwner(this);
 		ownedattributes[name] = a;
 	}
 	else if(a->GetOwner() != this)
 	{
+		// successor copy
 		a = ownedattributes[name] = new Attribute(*a);
 		a->setOwner(this);
 	}
