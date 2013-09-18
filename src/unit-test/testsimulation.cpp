@@ -117,11 +117,13 @@ TEST_F(TestSimulation,loadModuleNativeTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Load Native Module";
 	DM::Simulation sim;
-#ifdef _WIN32
-	ASSERT_TRUE(sim.registerModule("dynamind-testmodules.dll") == true);
-#else
-	ASSERT_TRUE(sim.registerModule("./libdynamind-testmodules") == true);
-#endif
+
+	bool canLoadTestModules = true;
+	if(!sim.registerModule("dynamind-testmodules.dll"))
+		if(!sim.registerModule("./libdynamind-testmodules.so"))
+			if(!sim.registerModule("./dynamind-testmodules.dynlib"))
+				canLoadTestModules = false;
+	ASSERT_TRUE(canLoadTestModules);
 }
 
 TEST_F(TestSimulation,repeatedRunTest) {
