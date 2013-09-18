@@ -184,28 +184,30 @@ public:
 	* @return the name of the @arg type
 	*/
 	static const char*getTypeName(AttributeType type);
+
+	
+
 	/** @brief loads the sql database 
 	@internal*/
-	AttributeValue* LoadFromDb();
+	//AttributeValue* LoadFromDb();
 	/** @brief saves the sql database 
 	@internal*/
-	void SaveToDb(AttributeValue *val);
-
-	static void ResizeCache(unsigned long size);
+	//void SaveToDb(AttributeValue *val);
+	
+	/*static void ResizeCache(unsigned long size);
 	static unsigned long GetCacheSize();
 
 	static void PrintCacheStatistics();
-	static void ClearCache();
+	static void ClearCache();*/
 
 private:
-	QUuid			_uuid;
 	std::string		name;
 	Component*		owner;
-	AttributeValue	*value;
+	AttributeValue	value;
 	bool			isInserted;
 	AttributeValue*	getValue() const;
 
-	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
+//	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
 }

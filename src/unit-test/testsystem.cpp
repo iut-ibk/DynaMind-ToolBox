@@ -221,9 +221,8 @@ TEST_F(TestSystem,cachetest) {
 	DBConnectorConfig cfgNewReturned = DBConnector::getInstance()->getConfig();
 	ASSERT_TRUE(cfgNewReturned.queryStackSize == cfgNew.queryStackSize);
 	ASSERT_TRUE(cfgNewReturned.cacheBlockwritingSize == cfgNew.cacheBlockwritingSize);
-	ASSERT_TRUE(cfgNewReturned.attributeCacheSize == cfgNew.attributeCacheSize);
+
 	ASSERT_TRUE(cfgNewReturned.nodeCacheSize == cfgNew.nodeCacheSize);
-	ASSERT_TRUE(Attribute::GetCacheSize() == cfgNew.attributeCacheSize);
 	ASSERT_TRUE(Node::GetCacheSize() == cfgNew.nodeCacheSize);
 
 	// reset config
@@ -269,7 +268,6 @@ TEST_F(TestSystem,simplesqltest) {
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
 	DM::Node::PrintCacheStatistics();
-	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
 */
@@ -315,7 +313,10 @@ TEST_F(TestSystem,sqlsuccessortest)
 
 	delete sys;
 	//delete sys2;	successor states are deleted by sys
-*/
+	*/
+	DBConnector::getInstance()->Synchronize();
+	// print cache statistics
+//	DM::Attribute::PrintCacheStatistics();
 }
 
 TEST_F(TestSystem, SqlNodeTest)
@@ -355,8 +356,6 @@ TEST_F(TestSystem, SqlNodeTest)
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
 	DM::Node::PrintCacheStatistics();
-	DM::Attribute::PrintCacheStatistics();
-	//DM::RasterData::PrintCacheStatistics();
 }
 
 /** @brief Tests deleting accessing nodes with edge pointers
@@ -472,8 +471,6 @@ TEST_F(TestSystem, SqlEdgeTest)
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
 	DM::Node::PrintCacheStatistics();
-	DM::Attribute::PrintCacheStatistics();
-	//DM::RasterData::PrintCacheStatistics();
 }
 
 TEST_F(TestSystem, SqlFaceOrder)
@@ -509,8 +506,6 @@ TEST_F(TestSystem, SqlFaceOrder)
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
 	DM::Node::PrintCacheStatistics();
-	DM::Attribute::PrintCacheStatistics();
-	//DM::RasterData::PrintCacheStatistics();
 }
 TEST_F(TestSystem, SQLRasterdata)
 {
@@ -533,38 +528,39 @@ TEST_F(TestSystem, SQLRasterdata)
 	// check values
 	DM::Logger(DM::Debug) << "checking values";
 	for(long x=0;x<size;x++)
+	{
 		for(long y=0;y<size;y++)
 		{
 			DM::Logger(DM::Debug) << "checking " << x << "/" << y;
 			ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
 		}
-		delete raster;
+	}
+	delete raster;
 
-		raster = new DM::RasterData();
-		raster->setSize(size,size,1,1,0,0);
-		// check no value
-		DM::Logger(DM::Debug) << "checking default values with seperatly initialized grid";
-		for(long x=0;x<size;x++)
-			for(long y=0;y<size;y++)
-				ASSERT_TRUE(raster->getCell(x,y) == raster->getNoValue());
-		// insert
-		DM::Logger(DM::Debug) << "inserting values with seperatly initialized grid";
-		for(long x=0;x<size;x++)
-			for(long y=0;y<size;y++)
-				raster->setCell(x,y,x*1000+y);
-		// check values
-		DM::Logger(DM::Debug) << "checking values with seperatly initialized grid";
-		for(long x=0;x<size;x++)
-			for(long y=0;y<size;y++)
-				ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
+	raster = new DM::RasterData();
+	raster->setSize(size,size,1,1,0,0);
+	// check no value
+	DM::Logger(DM::Debug) << "checking default values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
+			ASSERT_TRUE(raster->getCell(x,y) == raster->getNoValue());
+	// insert
+	DM::Logger(DM::Debug) << "inserting values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
+			raster->setCell(x,y,x*1000+y);
+	// check values
+	DM::Logger(DM::Debug) << "checking values with seperatly initialized grid";
+	for(long x=0;x<size;x++)
+		for(long y=0;y<size;y++)
+			ASSERT_TRUE(raster->getCell(x,y) == x*1000+y);
 
-		delete raster;
+	delete raster;
 
-		DBConnector::getInstance()->Synchronize();
-		// print cache statistics
-		DM::Node::PrintCacheStatistics();
-		DM::Attribute::PrintCacheStatistics();
-		//DM::RasterData::PrintCacheStatistics();
+	DBConnector::getInstance()->Synchronize();
+	// print cache statistics
+	DM::Node::PrintCacheStatistics();
+	//DM::RasterData::PrintCacheStatistics();
 }
 
 TEST_F(TestSystem, SQLattributes)
@@ -580,8 +576,8 @@ TEST_F(TestSystem, SQLattributes)
 		// generate new component, as cache wont be used if attribute is not owned
 		Component* c = new Component;
 		// resize cache, so we dont have to wait too long for reaching the limits
-		unsigned int cacheBefore = Attribute::GetCacheSize();
-		Attribute::ResizeCache(7);
+//		unsigned int cacheBefore = Attribute::GetCacheSize();
+//		Attribute::ResizeCache(7);
 		// add
 		for(int i=0;i<10;i++)
 		{
@@ -615,7 +611,7 @@ TEST_F(TestSystem, SQLattributes)
 			//Logger(Error) << name.str() << ": " << c->getAttribute(name.str())->getDouble();
 		}
 		// reset cache
-		Attribute::ResizeCache(cacheBefore);
+//		Attribute::ResizeCache(cacheBefore);
 		delete c;
 	}
 
@@ -756,8 +752,6 @@ TEST_F(TestSystem, SQLattributes)
 	DBConnector::getInstance()->Synchronize();
 	// print cache statistics
 	DM::Node::PrintCacheStatistics();
-	DM::Attribute::PrintCacheStatistics();
-	//DM::RasterData::PrintCacheStatistics();
 }
 
 /*

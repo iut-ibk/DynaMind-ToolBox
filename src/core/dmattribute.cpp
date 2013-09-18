@@ -34,6 +34,9 @@
 
 using namespace DM;
 
+typedef std::pair<std::string, std::vector<Component*> > LinkVector;
+
+/*
 DbCache<Attribute*,Attribute::AttributeValue> Attribute::attributeCache(0);
 
 typedef std::pair<std::string, std::vector<Component*> > LinkVector;
@@ -59,7 +62,7 @@ void Attribute::PrintCacheStatistics()
 		<< "\thits: " << (long)attributeCache.hits;
 	attributeCache.ResetProfilingCounters();
 #endif
-}
+}*/
 
 QByteArray GetBinaryValue(std::vector<double> v)
 {
@@ -286,18 +289,17 @@ QVariant Attribute::AttributeValue::toQVariant()
 
 Attribute::Attribute()
 {
-	_uuid = QUuid::createUuid();
 	name="";
-	value = new AttributeValue();
 	owner = NULL;
 	isInserted = false;
 }
 
-Attribute::Attribute(const Attribute &newattribute)
+Attribute::Attribute(const Attribute &newattribute):
+	value(newattribute.value)
 {
 	_uuid = QUuid::createUuid();
 	name=newattribute.name;
-	value = new AttributeValue(*newattribute.getValue());
+//	value = AttributeValue(newattribute.value);
 	owner = NULL;
 	isInserted = false;
 }
@@ -307,36 +309,34 @@ Attribute::Attribute(std::string name)
 	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
-	value = new AttributeValue();
+//	value = new AttributeValue();
 	isInserted = false;
 }
 
 
-Attribute::Attribute(std::string name, double val)
+Attribute::Attribute(std::string name, double val):
+	value(val)
 {
 	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
 	isInserted = false;
-	value = new AttributeValue(val);
+//	value = new AttributeValue(val);
 }
-Attribute::Attribute(std::string name, std::string val)
+Attribute::Attribute(std::string name, std::string val):
+	value(val)
 {
 	_uuid = QUuid::createUuid();
 	this->name=name;
 	owner = NULL;
 	isInserted = false;
-	value = new AttributeValue(val);
+//	value = new AttributeValue(val);
 }
 
 Attribute::~Attribute()
 {
 	if(isInserted)
-		DBConnector::getInstance()->Delete("attributes", _uuid);
-	if(value)
-		delete value;
-	else
-		attributeCache.remove(this);
+		DBConnector::getInstance()->Delete("attributes", owner->getQUUID(), QString::fromStdString(name));
 }
 
 Attribute& Attribute::operator=(const Attribute& other)
@@ -344,14 +344,14 @@ Attribute& Attribute::operator=(const Attribute& other)
 	if(this != &other)
 	{
 		name = other.name;
-		*this->getValue() = *other.getValue();
+		this->value = other.value;
 	}
 	return *this;
 }
 
 Attribute::AttributeType Attribute::getType() const
 {
-	return getValue()->type;
+	return value.type;
 }
 
 void Attribute::setName(std::string name)
@@ -366,62 +366,62 @@ std::string Attribute::getName() const
 
 void Attribute::setDouble(double v)
 {
-	AttributeValue* a = getValue();
-	a->Free();
+	//AttributeValue* a = getValue();
+	value.Free();
 	//delete a->ptr;
-	a->type = DOUBLE;
-	a->ptr = new double(v);
+	value.type = DOUBLE;
+	value.ptr = new double(v);
 }
 
 double Attribute::getDouble()
 {
-	AttributeValue* a = getValue();
-	if(a->type == DOUBLE)	return *((double*)a->ptr);
+//	AttributeValue* a = getValue();
+	if(value.type == DOUBLE)	return *((double*)value.ptr);
 	return 0;
 }
 
 void Attribute::setString(std::string s)
 {
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = STRING;
-	a->ptr = new std::string(s);
+//	AttributeValue* a = getValue();
+	value.Free();
+	value.type = STRING;
+	value.ptr = new std::string(s);
 }
 
 std::string Attribute::getString()
 {	
-	AttributeValue* a = getValue();
-	if(a->type == STRING)	return *((std::string*)a->ptr);
+	//AttributeValue* a = getValue();
+	if(value.type == STRING)	return *((std::string*)value.ptr);
 	return "";
 }
 
 void Attribute::setDoubleVector(std::vector<double> v)
 {
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = DOUBLEVECTOR;
-	a->ptr = new std::vector<double>(v);
+	//AttributeValue* a = getValue();
+	value.Free();
+	value.type = DOUBLEVECTOR;
+	value.ptr = new std::vector<double>(v);
 }
 
 std::vector<double> Attribute::getDoubleVector()
 {
-	AttributeValue* a = getValue();
-	if(a->type == DOUBLEVECTOR)	return *((std::vector<double>*)a->ptr);
+	//AttributeValue* a = getValue();
+	if(value.type == DOUBLEVECTOR)	return *((std::vector<double>*)value.ptr);
 	return std::vector<double>();
 }
 
 void Attribute::setStringVector(std::vector<std::string> s)
 {
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = STRINGVECTOR;
-	a->ptr = new std::vector<std::string>(s);
+	//AttributeValue* a = getValue();
+	value.Free();
+	value.type = STRINGVECTOR;
+	value.ptr = new std::vector<std::string>(s);
 }
 
 std::vector<std::string> Attribute::getStringVector()
 {
-	AttributeValue* a = getValue();
-	if(a->type == STRINGVECTOR)	return *((std::vector<std::string>*)a->ptr);
+	//AttributeValue* a = getValue();
+	if(value.type == STRINGVECTOR)	return *((std::vector<std::string>*)value.ptr);
 	return std::vector<string>();
 }
 
@@ -520,23 +520,24 @@ void Attribute::setLink(string viewname, string uuid)
 
 void Attribute::setLinks(std::vector<LinkAttribute> links)
 {
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = LINK;
-	a->ptr = new std::vector<LinkAttribute>(links);
+//	AttributeValue* a = getValue();
+	value.Free();
+	value.type = LINK;
+	value.ptr = new std::vector<LinkAttribute>(links);
 }
 
 LinkAttribute Attribute::getLink()
 {
-	AttributeValue* a = getValue();
-	if(a->type == LINK && (*((std::vector<LinkAttribute>*)a->ptr)).size() > 0)	return (*((std::vector<LinkAttribute>*)a->ptr))[0];
+	//AttributeValue* a = getValue();
+	if(value.type == LINK && (*((std::vector<LinkAttribute>*)value.ptr)).size() > 0)	
+		return (*((std::vector<LinkAttribute>*)value.ptr))[0];
 	return LinkAttribute();
 }
 
 std::vector<LinkAttribute> Attribute::getLinks()
 {
-	AttributeValue* a = getValue();
-	if(a->type == LINK)	return *((std::vector<LinkAttribute>*)a->ptr);
+	//AttributeValue* a = getValue();
+	if(value.type == LINK)	return *((std::vector<LinkAttribute>*)value.ptr);
 	return std::vector<LinkAttribute>();
 }*/
 
@@ -547,59 +548,63 @@ void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<do
 		DM::Logger(DM::Error) << "Length of time and value vector are not equal";
 		return;
 	}
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = TIMESERIES;
-	a->ptr = new TimeSeriesAttribute(&timestamp, &value);
+	//AttributeValue* a = getValue();
+	this->value.Free();
+	this->value.type = TIMESERIES;
+	this->value.ptr = new TimeSeriesAttribute(&timestamp, &value);
 }
 
 void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value)
 {
-	AttributeValue* a = getValue();
-	if(a->type == TIMESERIES)	
+	//AttributeValue* a = getValue();
+	if(this->value.type == TIMESERIES)	
 	{
-		*timestamp = ((TimeSeriesAttribute*)a->ptr)->timestamp;
-		*value = ((TimeSeriesAttribute*)a->ptr)->value;
+		*timestamp = ((TimeSeriesAttribute*)this->value.ptr)->timestamp;
+		*value = ((TimeSeriesAttribute*)this->value.ptr)->value;
 	}
 }
 
 void Attribute::setType(AttributeType type)
 {
-	AttributeValue* a = getValue();
-	a->Free();
-	a->type = type;
+	//AttributeValue* a = getValue();
+	value.Free();
+	value.type = type;
 	switch(type)
 	{
 	case NOTYPE:
-		a->ptr = NULL;
+		value.ptr = NULL;
 		break;
 	case DOUBLE:
-		a->ptr = new double(0);
+		value.ptr = new double(0);
 		break;
 	case STRING:
-		a->ptr = new std::string();
+		value.ptr = new std::string();
 		break;
 	case TIMESERIES:
-		a->ptr = new TimeSeriesAttribute();
+		value.ptr = new TimeSeriesAttribute();
 		break;
 	case LINK:
-		a->ptr = new LinkVector();
+		value.ptr = new LinkVector();
 		break;
 	case DOUBLEVECTOR:
-		a->ptr = new std::vector<double>();
+		value.ptr = new std::vector<double>();
 		break;
 	case STRINGVECTOR:
-		a->ptr = new std::vector<std::string>();
+		value.ptr = new std::vector<std::string>();
 		break;
-	default: a->ptr = NULL;
-		a->type = NOTYPE;
+	default: value.ptr = NULL;
+		value.type = NOTYPE;
 		break;
 	}
 }
 void Attribute::Change(const Attribute &attribute)
 {
 	//name = attribute.name; name should never be changed!
-	AttributeValue* newValue = new AttributeValue(*attribute.value);
+	AttributeValue* val = new AttributeValue(attribute.value);
+	value = *val;
+	val->ptr = NULL;
+
+	/*AttributeValue* newValue = new AttributeValue(*attribute.value);
 	if(value)
 	{
 		delete value;
@@ -609,7 +614,7 @@ void Attribute::Change(const Attribute &attribute)
 	{
 		if(!attributeCache.replace(this, newValue))
 			this->SaveToDb(newValue);
-	}
+	}*/
 }
 
 const char *Attribute::getTypeName() const
@@ -630,22 +635,22 @@ const char *Attribute::getTypeName(Attribute::AttributeType type)
 	};
 	return arr[type];
 }
-
+/*
 Attribute::AttributeValue* Attribute::getValue() const
 {
 	if(value)	return value;
 	else		return attributeCache.get((Attribute*)this);
-}
+}*/
 
 void Attribute::setOwner(Component* owner)
 {
-	if(!this->owner)
+	/*if(!this->owner)
 	{
 		this->owner = owner;
 		attributeCache.add(this, value);
 		value = 0;
 	}
-	else
+	else*/
 		this->owner = owner;
 
 	//value = NULL;
@@ -656,7 +661,7 @@ Component* Attribute::GetOwner()
 {
 	return owner;
 }
-
+/*
 Attribute::AttributeValue* Attribute::LoadFromDb()
 {
 	QVariant t,v;
@@ -689,3 +694,4 @@ void Attribute::SaveToDb(Attribute::AttributeValue *val)
 		isInserted = true;
 	}
 }
+*/

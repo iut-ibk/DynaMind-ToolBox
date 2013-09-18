@@ -44,9 +44,9 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n
         if (view.getName().empty()) {
             return e1;
         } else {
-            std::set<std::string> inViews = e1->getInViews();
+            /*std::set<std::string> inViews = e1->getInViews();
             if (inViews.find(view.getName()) == inViews.end())
-                return 0;
+                return 0;*/
             return e1;
         }
 
@@ -57,9 +57,9 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n
             if (view.getName().empty()) {
                 return e1;
             } else {
-                std::set<std::string> inViews = e1->getInViews();
+               /* std::set<std::string> inViews = e1->getInViews();
                 if (inViews.find(view.getName()) == inViews.end())
-                    return 0;
+                    return 0;*/
                 return e1;
             }
 
