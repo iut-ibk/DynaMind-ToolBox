@@ -602,6 +602,13 @@ TEST_F(TestSystem, SQLattributes)
 			c->getAttribute(name.str())->Change(newatt);
 		}
 		//DBConnector::getInstance()->Synchronize();
+		// move all attributes to db
+		for(int i=0;i<10;i++)
+		{
+			std::stringstream name;
+			name << "name " << i;
+			c->MoveAttributeToDb(name.str());
+		}
 		// check
 		for(int i=0;i<10;i++)
 		{
