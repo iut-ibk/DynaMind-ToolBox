@@ -108,6 +108,10 @@ void AddDataToNewView::init()
 		// add new attributes
 		foreach(std::string s, this->newAttributes)
 			inViewDef.addAttribute(s);
+
+		std::vector<DM::View> data;
+		data.push_back(inViewDef);
+		this->addData("Data", data);
 	}
 	else
 	{
