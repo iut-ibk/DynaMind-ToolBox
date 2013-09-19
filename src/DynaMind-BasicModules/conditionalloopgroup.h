@@ -40,7 +40,7 @@ class DM_HELPER_DLL_EXPORT ConditionalLoopGroup : public  LoopGroup
 {
 	DM_DECLARE_NODE(ConditionalLoopGroup)
 
-	friend GUIConditionalLoopGroup;
+	friend class GUIConditionalLoopGroup;
 
 public:
 	ConditionalLoopGroup();

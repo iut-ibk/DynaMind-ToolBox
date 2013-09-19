@@ -39,7 +39,7 @@ class DM_HELPER_DLL_EXPORT LoopGroup : public  Group
 {
 	DM_DECLARE_NODE(LoopGroup)
 
-	friend GUILoopGroup;
+	friend class GUILoopGroup;
 
 public:
 	LoopGroup();
