@@ -48,6 +48,7 @@ DistributeWeightOnNodes::DistributeWeightOnNodes()
 	DM::View view;
 
 	view = DM::View("NODES", DM::NODE, DM::MODIFY);
+    view.addAttribute("Weight");
 	views.push_back(view);
 	viewdef["NODES"]=view;
 
