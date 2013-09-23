@@ -25,7 +25,7 @@
 */
 
 #include "container.h"
-//#include "guiloopgroup.h"
+#include "guicontainergroup.h"
 #include <dmlogger.h>
 
 using namespace DM;
@@ -101,4 +101,11 @@ bool ContainerGroup::removeStream(std::string name)
 		return true;
 	}
 	return false;
+}
+
+bool ContainerGroup::createInputDialog() 
+{
+	QWidget * w = new GUIContainerGroup(this);
+	w->show();
+	return true;
 }

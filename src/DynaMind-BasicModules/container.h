@@ -33,19 +33,19 @@
 
 using namespace DM;
 
-class GUILoopGroup;
+class GUIContainerGroup;
 
 class DM_HELPER_DLL_EXPORT ContainerGroup : public  Group 
 {
 	DM_DECLARE_NODE(ContainerGroup)
 
-	friend class GUILoopGroup;
+	friend class GUIContainerGroup;
 
 public:
 	ContainerGroup();
 	void run();
 	virtual void init();
-	//virtual bool createInputDialog();
+	virtual bool createInputDialog();
 	
 	std::vector<std::string> inStreams;
 	std::vector<std::string> outStreams;
