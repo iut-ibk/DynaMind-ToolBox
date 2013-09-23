@@ -44,8 +44,8 @@
 #include <removeNodesOnZ.h>
 #include <distributeWeightOnNodes.h>
 #include <createvoronoi.h>
-//#include <initsewer.h>
-//#include <createswmmmodel.h>
+#include <initsewer.h>
+#include <createswmmmodel.h>
 
 #include <spatialpressureperformance.h>
 #include <totaldemandperformance.h>
@@ -76,6 +76,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<SpatialPressurePerformance>());
 	registry->addNodeFactory(new DM::NodeFactory<TotalDemandPerformance>());
 
-    //registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
-    //registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
+    registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
+    registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
 }
