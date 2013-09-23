@@ -46,6 +46,7 @@
 #include "createhouses.h"
 #include "removecomponent.h"
 #include "joindatastreams.h"
+#include "container.h"
 
 using namespace std;
 
@@ -72,5 +73,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 	registry->addNodeFactory(new NodeFactory<CreateHouses>());
 	registry->addNodeFactory(new NodeFactory<RemoveComponent>());
 	registry->addNodeFactory(new NodeFactory<JoinDatastreams>());
+	registry->addNodeFactory(new NodeFactory<ContainerGroup>());
 }
 
