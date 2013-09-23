@@ -30,8 +30,6 @@
 
 using namespace DM;
 
-#include <guiloopgroup.h>
-
 DM_DECLARE_NODE_NAME(LoopGroup, Groups)
 
 LoopGroup::LoopGroup() 

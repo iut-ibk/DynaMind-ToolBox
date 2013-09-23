@@ -51,7 +51,6 @@ public:
 	std::vector<std::string> readStreams;
 	std::vector<std::string> writeStreams;
 	
-	bool initStream(std::string name, bool write, bool silent = false);
 	bool addStream(std::string name, bool write);
 	bool removeStream(std::string name);
 
@@ -62,6 +61,8 @@ public:
 	int getGroupCounter();
 protected:
 	void loopStreams();
+private:
+	bool initStream(std::string name, bool write, bool silent = false);
 };
 
 
