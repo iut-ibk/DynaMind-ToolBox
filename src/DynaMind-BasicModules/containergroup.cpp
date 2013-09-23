@@ -24,7 +24,7 @@
 *
 */
 
-#include "container.h"
+#include "containergroup.h"
 #include "guicontainergroup.h"
 #include <dmlogger.h>
 

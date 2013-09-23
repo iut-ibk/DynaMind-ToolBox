@@ -26,7 +26,7 @@
 
 #include "guicontainergroup.h"
 #include "ui_guicontainergroup.h"
-#include <container.h>
+#include <containergroup.h>
 #include <QInputDialog>
 #include <QMessageBox>
 

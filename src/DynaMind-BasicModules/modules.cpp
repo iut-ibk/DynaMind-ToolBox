@@ -46,7 +46,7 @@
 #include "createhouses.h"
 #include "removecomponent.h"
 #include "joindatastreams.h"
-#include "container.h"
+#include "containergroup.h"
 
 using namespace std;
 
