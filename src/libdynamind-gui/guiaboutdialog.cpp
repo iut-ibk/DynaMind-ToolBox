@@ -35,7 +35,7 @@ GUIAboutDialog::GUIAboutDialog(GUISimulation * sim, QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->label_2->setText(QString::fromStdString(DM::CoreVersion));
-	
+
 	std::list<std::string> modules = sim->getModuleRegistry()->getRegisteredModules();
 	foreach(std::string m, modules)
 		ui->listModules->addItem(QString::fromStdString(m));
