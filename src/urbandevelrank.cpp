@@ -3,7 +3,7 @@
  * @author  Christian Mikovits <christian.mikovits@uibk.ac.at>
  * @version 0.1a
  * @section LICENSE
- * Module for setting up the urban development cycle
+ * Module for [temporal] ranking of areas for development
    Copyright (C) 2013 Christian Mikovits
 
    This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,12 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
-#include<urbandevelcycle.h>
+#include<urbandevelrank.h>
 #include<dm.h>
 
-DM_DECLARE_NODE_NAME(UrbanDevelCycle, DynAlp)
+DM_DECLARE_NODE_NAME(UrbanDevelRank, DynAlp)
 
-UrbanDevelCycle::UrbanDevelCycle()
+UrbanDevelRank::UrbanDevelRank()
 {
     // declare parameters
     yearcycle = 5;
@@ -39,11 +39,11 @@ UrbanDevelCycle::UrbanDevelCycle()
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
 }
 
-UrbanDevelCycle::~UrbanDevelCycle()
+UrbanDevelRank::~UrbanDevelRank()
 {
 }
 
-void UrbanDevelCycle::init()
+void UrbanDevelRank::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     city = DM::View("CITY", DM::NODE, DM::MODIFY);
@@ -61,7 +61,7 @@ void UrbanDevelCycle::init()
     this->addData("data", views);
 }
 
-void UrbanDevelCycle::run()
+void UrbanDevelRank::run()
 {
     // get data from stream/port
     DM::System * sys = this->getData("data");

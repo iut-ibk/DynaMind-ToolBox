@@ -3,7 +3,7 @@
  * @author  Christian Mikovits <christian.mikovits@uibk.ac.at>
  * @version 0.1a
  * @section LICENSE
- * DynAlp module registration
+ * Module for [temporal] ranking of areas for development
    Copyright (C) 2013 Christian Mikovits
 
    This program is free software; you can redistribute it and/or modify
@@ -21,19 +21,29 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
-#include "dmnodefactory.h"
-#include "dmmoduleregistry.h"
+#ifndef UrbanDevelRank_H
+#define UrbanDevelRank_H
 
-#include "prettyparcels.h"
-#include "createbuilding.h"
-#include "urbandevelcycle.h"
-#include "urbandevelrank.h"
+#include <dmmodule.h>
 
-using namespace std;
+class UrbanDevelRank: public DM::Module
+{
+    DM_DECLARE_NODE(UrbanDevelRank)
+public:
+    UrbanDevelRank();
+    ~UrbanDevelRank();
 
-extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<CreateBuilding>());
-    registry->addNodeFactory(new DM::NodeFactory<PrettyParcels>());
-    registry->addNodeFactory(new DM::NodeFactory<UrbanDevelCycle>());
-    registry->addNodeFactory(new DM::NodeFactory<UrbanDevelRank>());
-}
+    void run();
+    void init();
+private:
+    int startyear;
+    int endyear;
+    int yearcycle;
+    int wp_com;
+    int wp_ind;
+
+    DM::View city;
+    DM::View population;
+};
+
+#endif // UrbanDevelRank_H
