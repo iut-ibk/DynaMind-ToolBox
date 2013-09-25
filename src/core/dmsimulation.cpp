@@ -90,6 +90,9 @@ Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool
 
 	module->setOwner(parent);
 
+	if(module->isGroup())
+		dynamic_cast<Group*>(module)->sim = this;
+
 	modules.push_back(module);
 	Logger(Debug) << "Added module" << ModuleName;
 	if (callInit)

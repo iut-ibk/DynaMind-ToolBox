@@ -35,10 +35,15 @@ class DM_HELPER_DLL_EXPORT Group: public Module
 {
 	friend class Simulation;
 public:
+	Group()
+	{
+		sim = NULL;
+	}
 	virtual void init();
 	bool isGroup(){return true;}
 	/*backwards compatible returns counter of group until groups have more power. Returns -1 if not set*/
 	virtual int getGroupCounter() {return -1;}
+	Simulation* sim;
 private:
 	// as a standard we implement a single-run condition
 	bool singleRunCondition;
