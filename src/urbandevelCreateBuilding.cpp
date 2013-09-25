@@ -1,9 +1,9 @@
-#include <createbuilding.h>
+#include <urbandevelCreateBuilding.h>
 #include <dm.h>
 
-DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
+DM_DECLARE_NODE_NAME(urbandevelCreateBuilding, DynAlp)
 
-CreateBuilding::CreateBuilding()
+urbandevelCreateBuilding::urbandevelCreateBuilding()
 {
     // declare parameters
     this->addParameter("Length", DM::INT, &this->length);
@@ -12,11 +12,11 @@ CreateBuilding::CreateBuilding()
     this->addParameter("Year", DM::INT, &this->year);
 }
 
-CreateBuilding::~CreateBuilding()
+urbandevelCreateBuilding::~urbandevelCreateBuilding()
 {
 }
 
-void CreateBuilding::init()
+void urbandevelCreateBuilding::init()
 {
     // create a view
     buildings = DM::View("BUILDINGS", DM::COMPONENT, DM::WRITE);
@@ -35,7 +35,7 @@ void CreateBuilding::init()
     this->addData("city", views);
 }
 
-void CreateBuilding::run()
+void urbandevelCreateBuilding::run()
 {
     // get data from stream/port
     srand ( time(NULL) );
@@ -173,14 +173,14 @@ void CreateBuilding::run()
 
 
     /*
-    #include "createbuilding.h"
+    #include "urbandevelCreateBuilding.h"
     #include "cgalskeletonisation.h"
     #include <tbvectordata.h>
     #include <dmgeometry.h>
 
-    DM_DECLARE_NODE_NAME(CreateBuilding, DynAlp)
+    DM_DECLARE_NODE_NAME(urbandevelCreateBuilding, DynAlp)
 
-    CreateBuilding::CreateBuilding()
+    urbandevelCreateBuilding::urbandevelCreateBuilding()
     {
 
         //init values
@@ -201,7 +201,7 @@ void CreateBuilding::run()
 
     }
 
-    void CreateBuilding::run()
+    void urbandevelCreateBuilding::run()
     {
 
 
@@ -275,7 +275,7 @@ void CreateBuilding::run()
     }
 
 
-    void CreateBuilding::run()
+    void urbandevelCreateBuilding::run()
     {
 
         srand ( time(NULL) );

@@ -21,12 +21,12 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
-#include<urbandevelcycle.h>
+#include<urbandevelCycle.h>
 #include<dm.h>
 
-DM_DECLARE_NODE_NAME(UrbanDevelCycle, DynAlp)
+DM_DECLARE_NODE_NAME(urbandevelCycle, DynAlp)
 
-UrbanDevelCycle::UrbanDevelCycle()
+urbandevelCycle::urbandevelCycle()
 {
     // declare parameters
     startyear = 2000;
@@ -41,11 +41,11 @@ UrbanDevelCycle::UrbanDevelCycle()
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
 }
 
-UrbanDevelCycle::~UrbanDevelCycle()
+urbandevelCycle::~urbandevelCycle()
 {
 }
 
-void UrbanDevelCycle::init()
+void urbandevelCycle::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     city = DM::View("CITY", DM::NODE, DM::MODIFY);
@@ -63,7 +63,7 @@ void UrbanDevelCycle::init()
     this->addData("data", views);
 }
 
-void UrbanDevelCycle::run()
+void urbandevelCycle::run()
 {
     // get data from stream/port
     DM::System * sys = this->getData("data");

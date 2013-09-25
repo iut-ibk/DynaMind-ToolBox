@@ -24,16 +24,16 @@
 #include "dmnodefactory.h"
 #include "dmmoduleregistry.h"
 
-#include "prettyparcels.h"
-#include "createbuilding.h"
-#include "urbandevelcycle.h"
-#include "urbandevelrank.h"
+#include "urbandevelCreateParcels.h"
+#include "urbandevelCreateBuilding.h"
+#include "urbandevelCycle.h"
+#include "urbandevelRankEuclid.h"
 
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<CreateBuilding>());
-    registry->addNodeFactory(new DM::NodeFactory<PrettyParcels>());
-    registry->addNodeFactory(new DM::NodeFactory<UrbanDevelCycle>());
-    registry->addNodeFactory(new DM::NodeFactory<UrbanDevelRank>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelCreateBuilding>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelCreateParcels>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelCycle>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelRankEuclid>());
 }

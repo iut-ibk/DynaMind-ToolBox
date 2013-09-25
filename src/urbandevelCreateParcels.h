@@ -1,13 +1,13 @@
-#ifndef PRETTYPARCELS_H
-#define PRETTYPARCELS_H
+#ifndef urbandevelCreateParcels_H
+#define urbandevelCreateParcels_H
 
 #include <dm.h>
 #include <dmgeometry.h>
 #include <cgalgeometry_p.h>
 
-class DM_HELPER_DLL_EXPORT PrettyParcels : public DM::Module
+class DM_HELPER_DLL_EXPORT urbandevelCreateParcels : public DM::Module
 {
-    DM_DECLARE_NODE(PrettyParcels)
+    DM_DECLARE_NODE(urbandevelCreateParcels)
     private:
         DM::View resultView;
     DM::View face_nodes;
@@ -30,7 +30,7 @@ class DM_HELPER_DLL_EXPORT PrettyParcels : public DM::Module
 
 
 public:
-    PrettyParcels();
+    urbandevelCreateParcels();
     void run();
     void init();
     void createSubdevision(DM::System * sys,  DM::Face * f, int gen);

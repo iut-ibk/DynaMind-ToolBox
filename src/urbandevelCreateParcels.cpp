@@ -1,4 +1,4 @@
-#include "prettyparcels.h"
+#include "urbandevelCreateParcels.h"
 #include "tbvectordata.h"
 #include "cgalgeometry.h"
 #include "dmgeometry.h"
@@ -8,7 +8,7 @@
 #include <tbvectordata.h>
 #include <cgalgeometry.h>
 
-DM_DECLARE_NODE_NAME(PrettyParcels, DynAlp)
+DM_DECLARE_NODE_NAME(urbandevelCreateParcels, DynAlp)
 
 //Helper
 void print_ccb (Arrangement_2::Ccb_halfedge_const_circulator circ)
@@ -52,66 +52,66 @@ void print_face (Arrangement_2::Face_const_handle f)
 
 
 
-double PrettyParcels::getLength() const
+double urbandevelCreateParcels::getLength() const
 {
     return length;
 }
 
-void PrettyParcels::setLength(double value)
+void urbandevelCreateParcels::setLength(double value)
 {
     length = value;
 }
 
-double PrettyParcels::getOffset() const
+double urbandevelCreateParcels::getOffset() const
 {
     return offset;
 }
 
-void PrettyParcels::setOffset(double value)
+void urbandevelCreateParcels::setOffset(double value)
 {
     offset = value;
 }
 
-double PrettyParcels::getAspectRatio() const
+double urbandevelCreateParcels::getAspectRatio() const
 {
     return aspectRatio;
 }
 
-void PrettyParcels::setAspectRatio(double value)
+void urbandevelCreateParcels::setAspectRatio(double value)
 {
     aspectRatio = value;
 }
 
-DM::View PrettyParcels::getInputView() const
+DM::View urbandevelCreateParcels::getInputView() const
 {
     return inputView;
 }
 
-void PrettyParcels::setInputView(const DM::View &value)
+void urbandevelCreateParcels::setInputView(const DM::View &value)
 {
     inputView = value;
 }
 
-DM::View PrettyParcels::getResultView() const
+DM::View urbandevelCreateParcels::getResultView() const
 {
     return resultView;
 }
 
-void PrettyParcels::setResultView(const DM::View &value)
+void urbandevelCreateParcels::setResultView(const DM::View &value)
 {
     resultView = value;
 }
 
-bool PrettyParcels::getCombined_edges() const
+bool urbandevelCreateParcels::getCombined_edges() const
 {
     return combined_edges;
 }
 
-void PrettyParcels::setCombined_edges(bool value)
+void urbandevelCreateParcels::setCombined_edges(bool value)
 {
     combined_edges = value;
 }
-PrettyParcels::PrettyParcels()
+urbandevelCreateParcels::urbandevelCreateParcels()
 {
 
     //Parameter Definition
@@ -160,7 +160,7 @@ PrettyParcels::PrettyParcels()
 
 }
 
-void PrettyParcels::init()
+void urbandevelCreateParcels::init()
 {
     if (InputViewName.empty() || OutputViewName.empty())
         return;
@@ -189,7 +189,7 @@ void PrettyParcels::init()
 }
 
 /** The method is based on the minial bounding box */
-void PrettyParcels::run(){
+void urbandevelCreateParcels::run(){
 
     DM::Logger(DM::Warning) << "Redevelopment not finished yet - offset is still missing";
     if (this->aspectRatio < 1) {
@@ -225,7 +225,7 @@ void PrettyParcels::run(){
 
 }
 
-void PrettyParcels::createSubdevision(DM::System * sys,  DM::Face *f, int gen)
+void urbandevelCreateParcels::createSubdevision(DM::System * sys,  DM::Face *f, int gen)
 {
     bool split_length = false;
     std::vector<DM::Node> box;
@@ -296,7 +296,7 @@ void PrettyParcels::createSubdevision(DM::System * sys,  DM::Face *f, int gen)
     }
 }
 
-std::vector<DM::Node *> PrettyParcels::extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & sphs)
+std::vector<DM::Node *> urbandevelCreateParcels::extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & sphs)
 {
     std::vector<DM::Node *> vp;
     Arrangement_2::Ccb_halfedge_const_circulator curr = hec;
@@ -314,7 +314,7 @@ std::vector<DM::Node *> PrettyParcels::extractCGALFace(Arrangement_2::Ccb_halfed
     return vp;
 }
 
-bool PrettyParcels::checkIfHoleFilling(DM::Face * orig, DM::Face * face_new)
+bool urbandevelCreateParcels::checkIfHoleFilling(DM::Face * orig, DM::Face * face_new)
 {
     // Create Small offest and check if node is in hole or node to identify if this is just a filling of a hole
     for (double i = -1; i < 2; i++) {
@@ -341,7 +341,7 @@ bool PrettyParcels::checkIfHoleFilling(DM::Face * orig, DM::Face * face_new)
     return false;
 }
 
-void PrettyParcels::createFinalFaces(DM::System *workingsys, DM::System * sys, DM::Face * orig, DM::View v, DM::SpatialNodeHashMap &sphs)
+void urbandevelCreateParcels::createFinalFaces(DM::System *workingsys, DM::System * sys, DM::Face * orig, DM::View v, DM::SpatialNodeHashMap &sphs)
 {
 
     Arrangement_2::Face_const_iterator              fit;
