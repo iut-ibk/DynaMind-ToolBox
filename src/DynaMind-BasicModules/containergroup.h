@@ -49,6 +49,8 @@ public:
 	
 	std::vector<std::string> inStreams;
 	std::vector<std::string> outStreams;
+	// "module::parameter_name" , "given_name"
+	std::map<std::string, std::string> parameterConfig;
 	
 	bool addStream(std::string name, bool out);
 	bool removeStream(std::string name);

@@ -36,12 +36,23 @@
 #include <QScrollArea>
 #include <dmlogger.h>
 
+#define PARAM_TAB 1
+#define PARAM_CONFIG_TAB 2
+
+#define PARAM_LABEL_COLUMN 0
+#define PARAM_VALUE_COLUMN 1
+
 GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 	QDialog(parent),
 	ui(new Ui::GUIContainerGroup)
 {
 	ui->setupUi(this);
 	ui->configParamArea->setAlignment(Qt::AlignTop);
+	
+	// hide config tab
+	configTabName = ui->tabWidget->tabText(PARAM_CONFIG_TAB);
+	configParamWidget = ui->tabWidget->widget(PARAM_CONFIG_TAB);
+	on_enableConfig_stateChanged(0);
 
 	this->m = m;
 
@@ -55,6 +66,13 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 		if(child->getOwner() == m)
 			childs.push_back(child);
 
+	// init selection and values
+	for(std::map<std::string, std::string>::iterator it = m->parameterConfig.begin(); 
+		it != m->parameterConfig.end(); ++it)
+	{
+		ui->selectedParameters->addItem(new QListWidgetItem(QString::fromStdString(it->first)));
+	}
+
 	foreach(DM::Module* child, childs)
 	{
 		const QString modName = QString::fromStdString(child->getName());
@@ -62,12 +80,13 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 		{
 			QString fullParamName = modName + "::" + QString::fromStdString(p->name);
 
-			if(!map_contains(&parameterRenameMap, fullParamName.toStdString()))
+			if(!map_contains(&m->parameterConfig, fullParamName.toStdString()))
 				ui->availableParameters->addItem(fullParamName);
-			else
-				DM::Logger(Warning) << "group module names not unique";
 		}
-		childModules[child->getName()] = child;
+		if(!map_contains(&childModules, child->getName()))
+			childModules[child->getName()] = child;
+		else
+			DM::Logger(Warning) << "group module names not unique";
 	}
 }
 
@@ -97,8 +116,8 @@ std::string GUIContainerGroup::getParamValue(const std::string& originalParamStr
 void GUIContainerGroup::setParamValue(const std::string& paramName, const std::string& value)
 {
 	QString originalParamString = "";
-	for(std::map<std::string, std::string>::iterator it = parameterRenameMap.begin();
-		it != parameterRenameMap.end(); ++it)
+	for(std::map<std::string, std::string>::iterator it = m->parameterConfig.begin();
+		it != m->parameterConfig.end(); ++it)
 		if(it->second == paramName)
 			originalParamString = QString::fromStdString(it->first);
 
@@ -124,7 +143,7 @@ void GUIContainerGroup::on_addParameter_clicked()
 {
 	foreach(QListWidgetItem* it, ui->availableParameters->selectedItems())
 	{
-		parameterRenameMap[it->text().toStdString()] = it->text().toStdString();
+		m->parameterConfig[it->text().toStdString()] = it->text().toStdString();
 		ui->selectedParameters->addItem(it->clone());
 		delete it;
 	}
@@ -134,7 +153,7 @@ void GUIContainerGroup::on_rmParameter_clicked()
 {
 	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
 	{
-		parameterRenameMap.erase(it->text().toStdString());
+		m->parameterConfig.erase(it->text().toStdString());
 
 		ui->availableParameters->addItem(it->clone());
 		delete it;
@@ -146,7 +165,7 @@ void GUIContainerGroup::on_selectedParameters_itemSelectionChanged()
 	ui->editParamName->setEnabled(false);
 	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
 	{
-		ui->editParamName->setText(it->text());
+		ui->editParamName->setText(QString::fromStdString(m->parameterConfig[it->text().toStdString()]));
 		ui->editParamName->setEnabled(true);
 	}
 }
@@ -154,12 +173,8 @@ void GUIContainerGroup::on_selectedParameters_itemSelectionChanged()
 void GUIContainerGroup::on_editParamName_textEdited(const QString& newText)
 {
 	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
-		parameterRenameMap[it->text().toStdString()] = newText.toStdString();
+		m->parameterConfig[it->text().toStdString()] = newText.toStdString();
 }
-
-#define PARAM_TAB 1
-#define PARAM_LABEL_COLUMN 0
-#define PARAM_VALUE_COLUMN 1
 
 void GUIContainerGroup::on_tabWidget_currentChanged()
 {
@@ -176,8 +191,8 @@ void GUIContainerGroup::on_tabWidget_currentChanged()
 		// reconstruct all elements
 		int i=1;
 		//mforeach(std::string s, parameterRenameMap)
-		for(std::map<std::string, std::string>::iterator it = parameterRenameMap.begin(); 
-			it != parameterRenameMap.end(); ++it)
+		for(std::map<std::string, std::string>::iterator it = m->parameterConfig.begin(); 
+			it != m->parameterConfig.end(); ++it)
 		{
 			// map value = new name
 			ui->configParamArea->addWidget(new QLabel(QString::fromStdString(it->second)), i, PARAM_LABEL_COLUMN);
@@ -249,6 +264,14 @@ void GUIContainerGroup::on_removeStream_clicked()
 		box.setText("stream '" + item->text() + "' not found");
 		box.exec();
 	}
+}
+
+void GUIContainerGroup::on_enableConfig_stateChanged(int state)
+{
+	if(state > 0)
+		ui->tabWidget->addTab(configParamWidget, configTabName);
+	else
+		ui->tabWidget->removeTab(PARAM_CONFIG_TAB);
 }
 
 void GUIContainerGroup::accept() 

@@ -65,9 +65,9 @@ private:
 	// internal linking
 	std::map<std::string, DM::Module*> childModules;
 
-	// should represent selected parameters
-	std::map<std::string, std::string> parameterRenameMap;
-
+	// hidden config tab
+	QWidget* configParamWidget;
+	QString configTabName;
 protected slots:
 	void on_addInStream_clicked();
 	void on_addOutStream_clicked();
@@ -81,6 +81,8 @@ protected slots:
 	void on_selectedParameters_itemSelectionChanged();
 
 	void on_editParamName_textEdited(const QString& newText);
+
+	void on_enableConfig_stateChanged(int state);
 
 	void accept();
 };

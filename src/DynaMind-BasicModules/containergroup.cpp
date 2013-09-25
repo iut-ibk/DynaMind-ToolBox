@@ -36,6 +36,7 @@ ContainerGroup::ContainerGroup()
 {
 	this->addParameter("inStreams", DM::STRING_LIST, &inStreams);
 	this->addParameter("outStreams", DM::STRING_LIST, &outStreams);
+	this->addParameter("parameterConfig", DM::STRING_MAP, &parameterConfig);
 }
 
 void ContainerGroup::run() 
