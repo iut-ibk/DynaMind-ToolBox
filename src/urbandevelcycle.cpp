@@ -29,6 +29,8 @@ DM_DECLARE_NODE_NAME(UrbanDevelCycle, DynAlp)
 UrbanDevelCycle::UrbanDevelCycle()
 {
     // declare parameters
+    startyear = 2000;
+    endyear = 2030;
     yearcycle = 5;
     wp_com = 10;
     wp_ind = 60;
@@ -115,7 +117,22 @@ void UrbanDevelCycle::run()
                 }
             }
         }
-        DM::Attribute* popdiffperyear = currentcity->getAttribute("popdiffperyear");
-        popdiffperyear->setDoubleVector(popdiffvector);
+        DM::Attribute* dmatt = currentcity->getAttribute("popdiffperyear");
+        dmatt->setDoubleVector(popdiffvector);
+
+        dmatt = currentcity->getAttribute("startyear");
+        dmatt->setDouble(yearcycle);
+
+        dmatt = currentcity->getAttribute("endyear");
+        dmatt->setDouble(yearcycle);
+
+        dmatt = currentcity->getAttribute("yearcycle");
+        dmatt->setDouble(yearcycle);
+
+        dmatt = currentcity->getAttribute("wp_com");
+        dmatt->setDouble(wp_com);
+
+        dmatt = currentcity->getAttribute("wp_ind");
+        dmatt->setDouble(wp_ind);
     }
 }

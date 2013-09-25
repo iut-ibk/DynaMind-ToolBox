@@ -43,7 +43,6 @@ private:
     int wp_ind;
 
     DM::View city;
-    DM::View population;
 };
 
 #endif // URBANDEVELCYCLE_H
