@@ -123,11 +123,7 @@ void SimulationTab::keyPressEvent(QKeyEvent * keyEvent )
 	else if (keyEvent->matches(QKeySequence::Copy))
 		copySelection();
 	else if (keyEvent->matches(QKeySequence::Paste))
-	{	
-		QByteArray data = QApplication::clipboard()->text().toUtf8();
-		QBuffer buffer(&data);
-		importSimulation(&buffer, cursorPos);
-	}
+		pasteSelection(cursorPos);
 	else if (keyEvent->matches(QKeySequence::Cut))
 	{
 		copySelection();
@@ -169,7 +165,7 @@ void SimulationTab::pasteSelection(const QPointF& pos)
 {
 	QByteArray data = QApplication::clipboard()->text().toUtf8();
 	QBuffer buffer(&data);
-	importSimulation(&buffer, cursorPos);
+	importSimulation(&buffer, cursorPos, "<clipboard>");
 }
 
 void SimulationTab::deleteSelection()
@@ -179,7 +175,7 @@ void SimulationTab::deleteSelection()
 			n->deleteModelNode();
 }
 
-void SimulationTab::importSimulation(QIODevice* source, const QPointF& target)
+void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, const QString& filePath)
 {
 	clearSelection();
 
@@ -187,7 +183,7 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target)
 	float miny = 0;
 
 	std::map<std::string, DM::Module*> modMap;
-	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  sim->currentDocument, modMap, parentGroup, true);
+	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  filePath, modMap, parentGroup, true);
 
 	GuiSimulationReader simio(source);
 	std::map<QString, ModuleExEntry> moduleExInfo = simio.getEntries();
@@ -196,7 +192,9 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target)
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)
 	{
-		if(modMap[it->first.toStdString()]->getOwner() == NULL)
+		DM::Module* m = NULL;
+		map_contains(&modMap, it->first.toStdString(), m);
+		if(m != NULL && m->getOwner() == NULL)
 		{
 			minx = min(minx, (float)it->second.posX);
 			miny = min(miny, (float)it->second.posY);
@@ -288,7 +286,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	else if(type == "Simulation")
 	{
 		QFile file(moduleName);
-		importSimulation(&file, event->scenePos());
+		importSimulation(&file, event->scenePos(), moduleName);
 	}
 }
 

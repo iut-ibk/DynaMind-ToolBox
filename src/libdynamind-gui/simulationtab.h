@@ -55,7 +55,7 @@ public:
 	DM::Group* getParentGroup(){return parentGroup;};
 
 	// for str+v & sim-drop
-	void importSimulation(QIODevice* source, const QPointF& target);
+	void importSimulation(QIODevice* source, const QPointF& target, const QString& filePath);
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
