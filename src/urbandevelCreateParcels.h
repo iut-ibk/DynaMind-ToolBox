@@ -9,7 +9,7 @@ class DM_HELPER_DLL_EXPORT urbandevelCreateParcels : public DM::Module
 {
     DM_DECLARE_NODE(urbandevelCreateParcels)
     private:
-        DM::View resultView;
+    DM::View resultView;
     DM::View face_nodes;
     DM::View inputView;
     DM::View bbs;
@@ -25,9 +25,6 @@ class DM_HELPER_DLL_EXPORT urbandevelCreateParcels : public DM::Module
     double tol;
     bool combined_edges;
     bool debug;
-
-
-
 
 public:
     urbandevelCreateParcels();

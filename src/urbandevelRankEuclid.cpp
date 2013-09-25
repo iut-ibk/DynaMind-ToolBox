@@ -43,6 +43,8 @@ void urbandevelRankEuclid::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
+    //superblock_centroids = DM::View("SUPERBLOCK_CENTROIDS"), DM::NODE, DM::READ);
+
     // attach new attributes to view
     superblock.getAttribute("develyear");
     superblock.getAttribute("type");
@@ -60,11 +62,12 @@ void urbandevelRankEuclid::run()
     DM::System * sys = this->getData("data");
 
     std::map<std::string,DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
+    std::map<std::string,DM::Component *> sb_centroids = sys->getAllComponentsInView(superblock_centroids);
 
-    mforeach(DM::Component* currentsb, superblocks)
+    mforeach(DM::Component* currentcentroid, sb_centroids)
     {
-        QString develyear = QString::fromStdString(currentsb->getAttribute("develyear")->getString()).simplified();
-
-
+        std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK_ID")->getLink().uuid;
+        DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
+        DM::Logger(DM::Warning) << "superblock foreach";
     }
 }

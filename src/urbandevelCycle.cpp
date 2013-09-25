@@ -52,6 +52,8 @@ void urbandevelCycle::init()
     // attach new attributes to view
     city.getAttribute("year");
     city.getAttribute("population");
+    city.addAttribute("startyear");
+    city.addAttribute("endyear");
     city.addAttribute("yearcycle");
     city.addAttribute("wp_com"); //workplaces
     city.addAttribute("wp_ind");
@@ -121,10 +123,10 @@ void urbandevelCycle::run()
         dmatt->setDoubleVector(popdiffvector);
 
         dmatt = currentcity->getAttribute("startyear");
-        dmatt->setDouble(yearcycle);
+        dmatt->setDouble(startyear);
 
         dmatt = currentcity->getAttribute("endyear");
-        dmatt->setDouble(yearcycle);
+        dmatt->setDouble(endyear);
 
         dmatt = currentcity->getAttribute("yearcycle");
         dmatt->setDouble(yearcycle);

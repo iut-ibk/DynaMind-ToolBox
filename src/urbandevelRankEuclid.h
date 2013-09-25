@@ -40,6 +40,7 @@ private:
     bool prefersmallareas;
 
     DM::View superblock;
+    DM::View superblock_centroids;
 };
 
 #endif // urbandevelRankEuclid_H
