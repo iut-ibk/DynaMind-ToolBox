@@ -29,12 +29,20 @@
 #include <containergroup.h>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <dmsimulation.h>
+#include <QLayout>
+#include <QLabel>
+#include <dmmodule.h>
+#include <QScrollArea>
+#include <dmlogger.h>
 
 GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 	QDialog(parent),
 	ui(new Ui::GUIContainerGroup)
 {
 	ui->setupUi(this);
+	ui->configParamArea->setAlignment(Qt::AlignTop);
+
 	this->m = m;
 
 	foreach (std::string s, m->inStreams)
@@ -42,11 +50,143 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 
 	foreach (std::string s, m->outStreams)
 		insertStreamEntry(s, true);
+
+	foreach(DM::Module* child, m->sim->getModules())
+		if(child->getOwner() == m)
+			childs.push_back(child);
+
+	foreach(DM::Module* child, childs)
+	{
+		const QString modName = QString::fromStdString(child->getName());
+		foreach(DM::Module::Parameter* p,child->getParameters())
+		{
+			QString fullParamName = modName + "::" + QString::fromStdString(p->name);
+
+			if(!map_contains(&parameterRenameMap, fullParamName.toStdString()))
+				ui->availableParameters->addItem(fullParamName);
+			else
+				DM::Logger(Warning) << "group module names not unique";
+		}
+		childModules[child->getName()] = child;
+	}
 }
 
 GUIContainerGroup::~GUIContainerGroup()
 {
 	delete ui;
+}
+
+std::string GUIContainerGroup::getParamValue(const std::string& originalParamString)
+{
+	QStringList sl = QString::fromStdString(originalParamString).split("::",QString::SkipEmptyParts);
+	if(sl.size() != 2)
+	{
+		DM::Logger(Error) << "could not get parameter value";
+		return "";
+	}
+
+	if(DM::Module* m = childModules[sl[0].toStdString()])
+		return m->getParameterAsString(sl[1].toStdString());
+	else
+	{
+		DM::Logger(Error) << "module '" << sl[0].toStdString() << "' not found";
+		return "";
+	}
+}
+
+void GUIContainerGroup::setParamValue(const std::string& paramName, const std::string& value)
+{
+	QString originalParamString = "";
+	for(std::map<std::string, std::string>::iterator it = parameterRenameMap.begin();
+		it != parameterRenameMap.end(); ++it)
+		if(it->second == paramName)
+			originalParamString = QString::fromStdString(it->first);
+
+	if(originalParamString.length() == 0)
+	{
+		DM::Logger(Error) << "parameter not found";
+		return;
+	}
+	QStringList sl = originalParamString.split("::",QString::SkipEmptyParts);
+	if(sl.size() != 2)
+	{
+		DM::Logger(Error) << "could not get parameter value";
+		return;
+	}
+
+	if(DM::Module* m = childModules[sl[0].toStdString()])
+		m->setParameterValue(sl[1].toStdString(), value);
+	else
+		DM::Logger(Error) << "module not found";
+}
+
+void GUIContainerGroup::on_addParameter_clicked()
+{
+	foreach(QListWidgetItem* it, ui->availableParameters->selectedItems())
+	{
+		parameterRenameMap[it->text().toStdString()] = it->text().toStdString();
+		ui->selectedParameters->addItem(it->clone());
+		delete it;
+	}
+}
+
+void GUIContainerGroup::on_rmParameter_clicked()
+{
+	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
+	{
+		parameterRenameMap.erase(it->text().toStdString());
+
+		ui->availableParameters->addItem(it->clone());
+		delete it;
+	}
+}
+
+void GUIContainerGroup::on_selectedParameters_itemSelectionChanged()
+{
+	ui->editParamName->setEnabled(false);
+	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
+	{
+		ui->editParamName->setText(it->text());
+		ui->editParamName->setEnabled(true);
+	}
+}
+
+void GUIContainerGroup::on_editParamName_textEdited(const QString& newText)
+{
+	foreach(QListWidgetItem* it, ui->selectedParameters->selectedItems())
+		parameterRenameMap[it->text().toStdString()] = newText.toStdString();
+}
+
+#define PARAM_TAB 1
+#define PARAM_LABEL_COLUMN 0
+#define PARAM_VALUE_COLUMN 1
+
+void GUIContainerGroup::on_tabWidget_currentChanged()
+{
+	if(ui->tabWidget->currentIndex() == PARAM_TAB)
+	{
+		for(int i=1; i<ui->configParamArea->rowCount(); i++)
+		{
+			if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_LABEL_COLUMN))
+				delete it->widget();
+			if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_VALUE_COLUMN))
+				delete it->widget();
+		}
+
+		// reconstruct all elements
+		int i=1;
+		//mforeach(std::string s, parameterRenameMap)
+		for(std::map<std::string, std::string>::iterator it = parameterRenameMap.begin(); 
+			it != parameterRenameMap.end(); ++it)
+		{
+			// map value = new name
+			ui->configParamArea->addWidget(new QLabel(QString::fromStdString(it->second)), i, PARAM_LABEL_COLUMN);
+			QLineEdit* edit = new QLineEdit(QString::fromStdString(getParamValue(it->first)));
+			// map key = module::param_name
+			ui->configParamArea->addWidget(edit, i, PARAM_VALUE_COLUMN);
+			i++;
+		}
+	}
 }
 
 void GUIContainerGroup::insertStreamEntry(std::string name, bool out)
@@ -113,5 +253,19 @@ void GUIContainerGroup::on_removeStream_clicked()
 
 void GUIContainerGroup::accept() 
 {
+	for(int i=1; i<ui->configParamArea->rowCount(); i++)
+	{
+		QLabel* label = NULL;
+		QLineEdit* value = NULL;
+
+		if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_LABEL_COLUMN))
+			label = dynamic_cast<QLabel*>(it->widget());
+		if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_VALUE_COLUMN))
+			value = dynamic_cast<QLineEdit*>(it->widget());
+
+		if(label && value)
+			setParamValue(label->text().toStdString(), value->text().toStdString());
+	}
+
 	QDialog::accept();
 }

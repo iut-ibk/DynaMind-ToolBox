@@ -29,10 +29,14 @@
 
 #include <QDialog>
 #include <dmcompilersettings.h>
+#include <map>
+#include <dmmodule.h>
 
+/*
 namespace DM {
 class Module;
-}
+struct Module::Parameter;
+}*/
 
 class ContainerGroup;
 namespace Ui {
@@ -51,13 +55,33 @@ private:
 	Ui::GUIContainerGroup *ui;
 	ContainerGroup * m;
 
-	void insertStreamEntry(std::string name, bool out);
+	std::vector<DM::Module*>	childs;
 
+	void insertStreamEntry(std::string name, bool out);
+	
+	std::string getParamValue(const std::string& originalParamString);
+	void setParamValue(const std::string& paramName, const std::string& value);
+
+	// internal linking
+	std::map<std::string, DM::Module*> childModules;
+
+	// should represent selected parameters
+	std::map<std::string, std::string> parameterRenameMap;
 
 protected slots:
 	void on_addInStream_clicked();
 	void on_addOutStream_clicked();
 	void on_removeStream_clicked();
+	
+	void on_addParameter_clicked();
+	void on_rmParameter_clicked();
+
+	void on_tabWidget_currentChanged();
+
+	void on_selectedParameters_itemSelectionChanged();
+
+	void on_editParamName_textEdited(const QString& newText);
+
 	void accept();
 };
 
