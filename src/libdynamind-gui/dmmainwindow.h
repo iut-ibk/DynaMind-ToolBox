@@ -68,7 +68,6 @@ public slots:
 	void clearSimulation();
 	void saveAsSimulation();
 	void simulationFinished();
-	void startEditor();
 	void ReloadModules();
 	void updateSimulation();
 	void resetSimulation();
