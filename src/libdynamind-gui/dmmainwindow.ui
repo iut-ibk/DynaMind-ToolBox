@@ -194,8 +194,6 @@
     <property name="title">
      <string>Module Development</string>
     </property>
-    <addaction name="actionEditor"/>
-    <addaction name="separator"/>
     <addaction name="actionReload_Modules"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -856,7 +854,7 @@
   </action>
   <action name="actionCancel">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../dynamind-modelbuilder/icons.qrc">
      <normaloff>:/Icons/ressources/process-stop.png</normaloff>:/Icons/ressources/process-stop.png</iconset>
    </property>
    <property name="text">
@@ -869,7 +867,6 @@
  </widget>
  <resources>
   <include location="../dynamind-modelbuilder/icons.qrc"/>
-  <include location="icons.qrc"/>
  </resources>
  <connections/>
 </ui>
