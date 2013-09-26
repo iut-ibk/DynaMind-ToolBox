@@ -55,7 +55,7 @@ enum ACCESS
   *
   * @section Type
   * Following Type are supported in DynaMind:
-  *
+  * -   COMPONENT
   * -   NODE
   * -   EDGE
   * -   FACE
