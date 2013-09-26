@@ -77,6 +77,14 @@ enum ModuleStatus
 	MOD_CHECK_ERROR,
 };
 
+/**
+* @class DM::Module
+*
+*
+* @ingroup DynaMind-Core
+*
+* @brief Abstract class as a base for Modules.
+*/
 class DM_HELPER_DLL_EXPORT Module
 {
 	// this ensures that the simulation has full access without opening all methods to public
