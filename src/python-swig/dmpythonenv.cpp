@@ -191,30 +191,6 @@ void PythonEnv::addPythonPath(std::string path) {
 		return;
 	}
 }
-void PythonEnv::startEditra(std::string filename) {
-	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	QSettings settings;
-	QString PathtoEditra = settings.value("Editra").toString().replace("\\","/");
-	if (PathtoEditra[PathtoEditra.size()-1] == '/') {
-		PathtoEditra.remove(PathtoEditra.size()-1,1);
-	}
-
-	ostringstream script;
-	script << "import sys\n";
-	script << "import os\n";
-	script << "\n";
-	script << "sys.path.append('" << PathtoEditra.toStdString() << "')\n";
-	script << "import site\n";
-	script << "sys.argv = [\"\",\"" << filename << "\"]\n";
-	script << "import src.Editra\n";
-	script << "src.Editra.Main()\n";
-
-	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
-	if (PyErr_Occurred()) {
-		PyErr_Print();
-		return;
-	}
-}
 
 std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 {

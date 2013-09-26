@@ -49,7 +49,7 @@ public:
         std::string registerNodes(ModuleRegistry *registry,
                                   const std::string &module);
         bool addOverWriteStdCout();
-        void startEditra(std::string filename = "");
+
 private:
         PythonEnv();
         PythonEnvPriv *priv;
