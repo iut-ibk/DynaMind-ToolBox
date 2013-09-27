@@ -34,6 +34,6 @@ using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
     registry->addNodeFactory(new DM::NodeFactory<urbandevelCreateBuilding>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelCreateParcels>());
-    registry->addNodeFactory(new DM::NodeFactory<urbandevelCycle>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelControl>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelRankEuclid>());
 }
