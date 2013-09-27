@@ -50,6 +50,8 @@
 #include <spatialpressureperformance.h>
 #include <totaldemandperformance.h>
 
+#include <generalgraphanalysis.h>
+
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -78,4 +80,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 
     registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
     registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
+
+    registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
 }

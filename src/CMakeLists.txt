@@ -1,6 +1,6 @@
-FILE(GLOB DYNAVIBE_CPPS *.cpp ./ws/*.cpp ./sewer/*.cpp ./ws/performance/*.cpp ./graph/*.cpp)
+FILE(GLOB DYNAVIBE_CPPS *.cpp ./ws/*.cpp ./sewer/*.cpp ./ws/performance/*.cpp ./graph/*.cpp ./graph/analysis/*.cpp)
 
-INCLUDE_DIRECTORIES(. ./ws ./sewer ./graph ./ws/performance)
+INCLUDE_DIRECTORIES(. ./ws ./sewer ./graph ./ws/performance ./graph/analysis)
 
 ADD_LIBRARY(dynamind-dynavibe SHARED ${DYNAVIBE_CPPS})
 
