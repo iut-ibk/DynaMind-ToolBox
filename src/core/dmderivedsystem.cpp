@@ -52,11 +52,11 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	// copy from overwrites current system, fixes a bug
 	currentSys = this;
 }
-
+/*
 Component* DerivedSystem::getChild(std::string name)
 {
 	return getComponent(name);
-}
+}*/
 
 Component* DerivedSystem::SuccessorCopy(const Component *src)
 {
@@ -73,32 +73,49 @@ Node* DerivedSystem::SuccessorCopy(const Node *src)
 }
 Edge* DerivedSystem::SuccessorCopy(const Edge *src)
 {
-	Edge* e = new Edge(getNode(src->getStartpointName()), getNode(src->getEndpointName()));
+	Node* start = src->getStartNode();
+	Node* end = src->getEndNode();
+
+	if(start && start->getCurrentSystem() != this)
+		start = SuccessorCopy(start);
+	if(end && end->getCurrentSystem() != this)
+		start = SuccessorCopy(end);
+
+	Edge* e = new Edge(start, end);
 	e->CopyFrom(*src, true);
 	return addEdge(e);
 }
 Face* DerivedSystem::SuccessorCopy(const Face *src)
 {
 	std::vector<Node*> newNodes;
-	foreach(Node* node, src->getNodePointers())
-		newNodes.push_back(getNode(node->getUUID()));
+	foreach(Node* n, src->getNodePointers())
+	{
+		if(n->getCurrentSystem() != this)
+			n = SuccessorCopy(n);
+		newNodes.push_back(n);
+	}
 
 	Face* newf = new Face(newNodes);
 	newf->CopyFrom(*src,true);
-
-	foreach(Face *hole, src->getHolePointers())
-		newf->addHole(getFace(hole->getUUID()));
+	
+	std::vector<Face*> newHoles;
+	foreach(Face* h, src->getHolePointers())
+	{
+		if(h->getCurrentSystem() != this)
+			h = SuccessorCopy(h);
+		newf->addHole(h);
+	}
 
 	return addFace(newf);
 }
-
+/*
 const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
 {
 	if(const Component* n = System::getComponentReadOnly(uuid))
 		return n;
 
 	return predecessorSys->getComponentReadOnly(uuid);
-}
+}*/
 const Edge* DerivedSystem::getEdgeReadOnly(Node* start, Node* end)
 {
 	if(const Edge* e = System::getEdgeReadOnly(start,end))
@@ -106,7 +123,7 @@ const Edge* DerivedSystem::getEdgeReadOnly(Node* start, Node* end)
 
 	return predecessorSys->getEdgeReadOnly(start,end);
 }
-
+/*
 Component* DerivedSystem::getComponent(std::string uuid)
 {
 	Component* n = System::getComponent(uuid);
@@ -164,7 +181,7 @@ Edge* DerivedSystem::getEdge(Node* start, Node* end)
 Face * DerivedSystem::getFace(std::string uuid)
 {
 	return (Face*)getComponent(uuid);
-}
+}*/
 std::map<std::string, Component*> DerivedSystem::getAllComponents()
 {
 	if(!allComponentsLoaded)

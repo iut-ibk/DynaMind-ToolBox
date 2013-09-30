@@ -74,7 +74,7 @@ public:
 	bool removeChild(Component* c);
 
 	/*@deprecated*/
-	std::map<std::string, Component*> getAllChilds();
+	//std::map<std::string, Component*> getAllChilds();
 	std::vector<Component*> getChilds();
 
 	/** @brief Copies a System  */
@@ -102,7 +102,7 @@ public:
 	Node * addNode(Node* node);
 
 	/** @brief for Edge::LoadDb() */
-	Node* getNode(QUuid uuid);	// protected for DM::Edge
+	//Node* getNode(QUuid uuid);	// protected for DM::Edge
 
 	/** @brief Adds a new node to the system and returns a pointer to the node.*/
 	Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
@@ -124,41 +124,41 @@ public:
 
 	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
 	@deprecated*/
-	virtual Component* getComponent(std::string uuid);
+	//virtual Component* getComponent(std::string uuid);
 
 	/** @brief Returns a pointer to the node. Returns 0 if Node doesn't exis
 	@deprecated*/
-	virtual Node* getNode(std::string uuid);
+	//virtual Node* getNode(std::string uuid);
 
 	/** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exis
 	@deprecated*/
-	virtual Edge* getEdge(std::string uuid);
+	//virtual Edge* getEdge(std::string uuid);
 
 	/** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist
 	@deprecated*/
-	Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
+	//Edge* getEdge(const std::string &startnodeuuid, const std::string &endnodeuuid);
 
 	/** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist */
 	virtual Edge* getEdge(Node* start, Node* end);
 
 	/** @brief Returns a pointer to the face. Returns 0 if Face doesn't exist
 	@deprecated*/
-	virtual Face * getFace(std::string uuid);
+	//virtual Face * getFace(std::string uuid);
 
 	/** @brief Removes an Edge. Returns false if the edge doesn't exist
 	@deprecated*/
-	bool removeEdge(std::string uuid);
+	//bool removeEdge(std::string uuid);
 
 	/** @brief Removes a Node. Returns false if the node doesn't exist
 	@deprecated*/
-	bool removeNode(std::string uuid);
+	//bool removeNode(std::string uuid);
 
 	/** @brief Removes a Component. Returns false if the component doesn't exist
 	@deprecated*/
-	bool removeComponent(std::string uuid);
+	//bool removeComponent(std::string uuid);
 
 	/** @brief Removes a Face. Returns false if the face doesn't exist */
-	bool removeFace(std::string uuid);
+	//bool removeFace(std::string uuid);
 
 	/** @brief Returns a map of nodes stored in the system
 	@deprecated*/
@@ -194,11 +194,11 @@ public:
 	System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
 
 	/** @brief Removes a Subsystem. Returns false if the subsystem doesn't exist */
-	bool removeSubSystem(std::string uuid);
+	//bool removeSubSystem(std::string uuid);
 
 	/** @brief Returns Subsystem. Returns 0 if Subsystem doesn't exist
 	@deprecated*/
-	System* getSubSystem(std::string uuid);
+	//System* getSubSystem(std::string uuid);
 
 	/** @brief Creates a new Successor state
 	*
@@ -243,7 +243,7 @@ public:
 protected:    
 	/** @brief Returns a pointer to the component. Returns 0 if Component doesn't exist
 	@deprecated*/
-	virtual const Component* getComponentReadOnly(std::string uuid) const;
+	//virtual const Component* getComponentReadOnly(std::string uuid) const;
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
 	void updateViews (Component * c);
@@ -252,10 +252,10 @@ private:
 	void SQLUpdateStates();
 	bool addChild(Component *newcomponent);
 	/*@deprecated*/
-	bool removeChild(std::string name);
+	//bool removeChild(std::string name);
 	bool removeChild(QUuid uuid);
 	/*@deprecated*/
-	virtual Component* getChild(std::string name) const;
+	//virtual Component* getChild(std::string name) const;
 	Component* getChild(QUuid uuid) const;
 	Component* findChild(QUuid uuid) const;
 	/** @brief return table name */

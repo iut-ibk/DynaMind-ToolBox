@@ -59,13 +59,13 @@ QByteArray GetBytes(std::vector<Face*> facevector)
 	}
 	return qba;
 }
-
+/*
 Face::Face(std::vector<std::string> nodes) : Component(true)
 {
 	Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
 					 doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
 }
-
+*/
 Face::Face(const std::vector<Node*>& nodes) : Component(true)
 {
 	setNodes(nodes);
@@ -98,7 +98,7 @@ std::vector<std::string> GetVector(QByteArray qba)
 	}
 	return result;
 }	
-
+/*
 std::vector<std::string> Face::getNodes() const
 {
 	std::vector<std::string> nodes;
@@ -107,7 +107,7 @@ std::vector<std::string> Face::getNodes() const
 		nodes.push_back(n->getUUID());
 	}
 	return nodes;
-}
+}*/
 std::vector<Node*> Face::getNodePointers() const
 {
 	return _nodes;
@@ -146,7 +146,7 @@ const std::vector<Face*> Face::getHolePointers() const
 {
 	return _holes;
 }
-
+/*
 void Face::addHole(std::vector<std::string> hole)
 {
 	System *curSys = this->getCurrentSystem();
@@ -155,7 +155,7 @@ void Face::addHole(std::vector<std::string> hole)
 		holeNodes.push_back(curSys->getNode(uuidNodes));
 
 	addHole(holeNodes);
-}
+}*/
 
 void Face::addHole(std::vector<Node*> hole)
 {

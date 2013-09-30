@@ -83,14 +83,14 @@ public:
 
 	/** @brief set uuid to that points to the start node
 	@deprecated*/
-	void setStartpointName(std::string name);
+	//void setStartpointName(std::string name);
 
 	/** @brief set uuid that points to the end node */
 	void setEndpoint(Node* end);
 
 	/** @brief set uuid that points to the end node
 	@deprecated*/
-	void setEndpointName(std::string name);
+	//void setEndpointName(std::string name);
 
 	/** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
 	Component* clone();

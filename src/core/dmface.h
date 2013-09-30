@@ -54,7 +54,7 @@ public:
 
 	/** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes
 	@deprecated*/
-	Face(std::vector<std::string> nodes);
+	//Face(std::vector<std::string> nodes);
 	Face(const std::vector<Node*>& nodes);
 
 	/** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
@@ -65,7 +65,7 @@ public:
 
 	/** @brief return vector of nodes defining the face
 	@deprecated*/
-	std::vector<std::string> getNodes() const;
+	//std::vector<std::string> getNodes() const;
 
 	/** @brief return vector of nodes defining the face  */
 	std::vector<Node*> getNodePointers() const;
@@ -82,7 +82,7 @@ public:
 
 	/** @brief Add hole
 	@deprecated*/
-	void addHole(std::vector<std::string> hole);
+	//void addHole(std::vector<std::string> hole);
 	void addHole(std::vector<Node*> hole);
 	void addHole(Face* hole);
 
