@@ -38,7 +38,7 @@ void urbandevelCreateBuilding::init()
 void urbandevelCreateBuilding::run()
 {
     // get data from stream/port
-    srand ( time(NULL) );
+    srand ( NULL );
 
     DM::System * data = this->getData("city");
     mforeach(DM::Component * parcel, data->getAllComponentsInView(parcels))
