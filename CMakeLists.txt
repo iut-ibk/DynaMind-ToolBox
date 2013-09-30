@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.4.0")
+ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.5.0")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	message(STATUS "Using Visual C compilers")
@@ -9,10 +9,10 @@ IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	ADD_DEFINITIONS(-D_VARIADIC_MAX=9 -DCGAL_CFG_NO_CPP0X_ISFINITE)
 ENDIF()
 
-IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-        message(STATUS "Using GNU compilers")
-        set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
-ENDIF()
+#IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+#        message(STATUS "Using GNU compilers")
+#        set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
+#ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_INSTALLER "create a windows installer (NSIS)" OFF)
