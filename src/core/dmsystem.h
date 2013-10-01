@@ -74,7 +74,7 @@ public:
 	bool removeChild(Component* c);
 
 	/*@deprecated*/
-	//std::map<std::string, Component*> getAllChilds();
+	std::vector<Component*> getAllChilds();
 	std::vector<Component*> getChilds();
 
 	/** @brief Copies a System  */

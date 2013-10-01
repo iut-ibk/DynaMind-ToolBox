@@ -782,6 +782,10 @@ std::map<std::string, Component*> System::getAllChilds()
 
 	return resultMap;
 }*/
+std::vector<Component*> System::getAllChilds()
+{
+	return getChilds();
+}
 std::vector<Component*> System::getChilds()
 {
 	std::vector<Component*> resultVec;
