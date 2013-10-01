@@ -50,6 +50,9 @@
 #include "offsetface.h"
 #include "addsinglecomponent.h"
 
+#include "parcels.h"
+#include "cityblock.h"
+#include "superblock.h"
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
@@ -78,5 +81,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 	registry->addNodeFactory(new NodeFactory<ContainerGroup>());
 	registry->addNodeFactory(new NodeFactory<OffsetFace>());
 	registry->addNodeFactory(new NodeFactory<AddSingleComponent>());
+	registry->addNodeFactory(new NodeFactory<Parcels>());
+	registry->addNodeFactory(new NodeFactory<CityBlock>());
+	registry->addNodeFactory(new NodeFactory<SuperBlock>());
 }
 

@@ -21,3 +21,6 @@
 |[ExportNodesToFile](ExportNodesToFile.md)|exports nodes and their attributes into a text file
 |[OffsetFace](OffsetFace.md)|offest faces
 |[AddSingleComponent](AddSingleComponent.md)|adds a single component to a view
+|[SuperBlock](SuperBlock.md)| creates a rectangular face |
+|[CityBlock](CityBlock.md)|subdivides a rectangular face into smaller rectangular faces e.g. SUPERBLOCK -> CITYBLOCK |
+|[Parcels](Parcels.md)|subdivides a rectangular face into smaller rectangular faces e.g. CITYBLOCK -> PARCEL|
