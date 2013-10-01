@@ -198,7 +198,7 @@ private:
 	AttributeValue	*value;
 	bool			isInserted;
 	AttributeValue*	getValue() const;
-	std::set<std::string> inViews;
+
 	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
