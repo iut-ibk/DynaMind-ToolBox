@@ -48,6 +48,7 @@
 #include "joindatastreams.h"
 #include "containergroup.h"
 #include "offsetface.h"
+#include "addsinglecomponent.h"
 
 using namespace std;
 
@@ -76,5 +77,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 	registry->addNodeFactory(new NodeFactory<JoinDatastreams>());
 	registry->addNodeFactory(new NodeFactory<ContainerGroup>());
 	registry->addNodeFactory(new NodeFactory<OffsetFace>());
+	registry->addNodeFactory(new NodeFactory<AddSingleComponent>());
 }
 

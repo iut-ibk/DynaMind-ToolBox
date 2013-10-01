@@ -20,3 +20,4 @@
 |[FaceToEdge](FaceToEdge.md)|converts faces to edges
 |[ExportNodesToFile](ExportNodesToFile.md)|exports nodes and their attributes into a text file
 |[OffsetFace](OffsetFace.md)|offest faces
+|[AddSingleComponent](AddSingleComponent.md)|adds a single component to a view
