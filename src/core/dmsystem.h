@@ -177,7 +177,7 @@ public:
 	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 
 	// TODO for faster searching - maybe find a better solution for access
-	std::map<std::string, Component*>	componentNameMap;
+	// std::map<std::string, Component*>	componentNameMap;
 protected:
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
@@ -188,7 +188,7 @@ private:
 	QString getTableName();
 	/** @brief add Predecessor **/
 	void addPredecessors(DM::System * s);
-	
+
 	//DM::Module* lastModule;
 	std::map<QUuid, Node* >			nodes;
 	std::map<QUuid, Edge* >			edges;
@@ -196,12 +196,12 @@ private:
 	std::map<QUuid, RasterData *>	rasterdata;
 	std::map<QUuid, System*>		subsystems;
 	std::map<QUuid, Component* >	components;
-	
+
 	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
 
 	std::map<std::string, View*>	viewdefinitions;
-	std::map<std::string, std::vector<Component*> > views;   
+	std::map<std::string, std::vector<Component*> > views;
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

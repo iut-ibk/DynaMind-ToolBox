@@ -431,8 +431,8 @@ bool System::addChild(Component *newcomponent)
 
 	newcomponent->SetOwner(this);
 	// set componentNameMap - if the name is already initialized
-	if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
-		this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
+	//if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
+	//	this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
 
 	return true;
 }
@@ -453,8 +453,8 @@ bool System::removeChild(Component* c)
 	case SUBSYSTEM:		subsystems.erase(id);   break;
 	}
 
-	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
-		componentNameMap.erase(c->getUUID());
+	//if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
+	//	componentNameMap.erase(c->getUUID());
 
 	typedef std::map<std::string, std::vector<Component*>> viewmap;
 	

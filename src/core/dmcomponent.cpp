@@ -165,8 +165,8 @@ std::string Component::getUUID()
 
 		name = QUuid::createUuid().toString().toStdString();
 		a->setString(name);
-		if(this->currentSys && currentSys != this)	// avoid self referencing
-			currentSys->componentNameMap[name] = this;
+		//if(this->currentSys && currentSys != this)	// avoid self referencing
+		//	currentSys->componentNameMap[name] = this;
 	}
 	return name;
 }
