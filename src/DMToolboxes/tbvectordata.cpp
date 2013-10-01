@@ -222,15 +222,15 @@ void TBVectorData::CorrdinateSystem(const DM::Node &node0, const DM::Node &node1
     DM::Node n1 = node0 - node1;
     DM::Node n2 = node1 - node2;
 
-    if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
-        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
-    }
-    if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
-        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
-    }
-    if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
-        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
-    }
+//    if(n1.getX() == n2.getX() && n1.getY() == n2.getY()) {
+//        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+//    }
+//    if(n1.getX() == n2.getX() && n1.getZ() == n2.getZ()) {
+//        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+//    }
+//    if(n1.getY() == n2.getY() && n1.getZ() == n2.getZ()) {
+//        DM::Logger(DM::Warning) << "failed to create transformation n1 and n2 are parallel";
+//    }
 
     DM::Node e3 = NormalVector(n1, n2);
     DM::Node e2 = NormalVector(n1, e3);
