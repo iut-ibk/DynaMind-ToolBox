@@ -46,95 +46,15 @@ System::System() : Component(true)
 
 	DBConnector::getInstance();
 	SQLInsert();
+	isInserted = true;
 }
+
 System::System(const System& s) : Component(s, true)
 {
-	SQLInsert();
-
-	currentSys = this;
-
-	std::map<Component*,Component*> childReplaceMap;
-	/*
-	mforeach(Component* oldComp, s.ownedchilds)
-	{
-		// init name generation
-		oldComp->getUUID();
-		// copy elements
-		switch(oldComp->getType())
-		{
-		case DM::COMPONENT:
-			childReplaceMap[oldComp] = addComponent(oldComp->clone());
-			break;
-		case DM::NODE:
-			childReplaceMap[oldComp] = addNode((Node*)oldComp->clone());
-			break;
-		case DM::SUBSYSTEM:
-			childReplaceMap[oldComp] = addSubSystem((System*)oldComp->clone());
-			break;
-		case DM::RASTERDATA:
-			childReplaceMap[oldComp] = addRasterData((RasterData*)oldComp->clone());
-			break;
-		default:    break;
-		}
-	}*/
-	// copy edges
-	/*mforeach(Edge* oldEdge, s.edges)
-	{
-		Edge *e = (Edge*)oldEdge->clone();
-		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStartNode()->getQUUID())]);
-		e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEndNode()->getQUUID())]);
-
-		childReplaceMap[oldEdge] = addEdge(e);
-	}*/
-	// copy faces
-	mforeach(Face* oldFace, s.faces)
-	{
-		std::vector<Node*> faceNodes = oldFace->getNodePointers();
-		for(int i=0;i<faceNodes.size();i++)
-			faceNodes[i] = (Node*)childReplaceMap[faceNodes[i]];
-
-		Face* newFace = this->addFace(faceNodes);
-		childReplaceMap[oldFace] = newFace;
-		mforeach(Attribute* a, oldFace->getAllAttributes())
-			newFace->addAttribute(*a);
-	}
-	// after all faces are initialized, we can copy the holes
-	mforeach(Face* oldFace, s.faces)
-	{
-		Face* f = (Face*)childReplaceMap[oldFace];
-		if(!f)
-		{
-			Logger(Error) << "Not found in child replace map: " << oldFace->getUUID();
-			continue;
-		}
-		std::vector<Face*> faceHoles = oldFace->getHolePointers();
-		foreach(Face* h, oldFace->getHolePointers())
-			f->addHole( (Face*)childReplaceMap[h] );
-	}
-	// update view definitions
-	mforeach(View* v, s.viewdefinitions)
-	{
-		View *newv = new View(*v);
-		viewdefinitions[v->getName()] = newv;
-	}
-	// copy component views
-	for ( std::map<Component*, Component*>::const_iterator it = childReplaceMap.begin(); it != childReplaceMap.end(); ++it  )
-		it->second->inViews = it->first->inViews;
-
-	// update views
-	//mforeach(Component* c, ownedchilds)
-	//	this->updateViews(c);
-
-	// update componentNameMap
-	mforeach(Component *c, s.componentNameMap)
-	{
-		Component *newc = NULL;
-		if(map_contains(&childReplaceMap, c, newc))
-			this->componentNameMap[newc->getUUID()] = newc;
-		else
-			Logger(Error) << "Not found in child replace map: " << c->getUUID();
-	}
+	// copied systems don't get inserted into db
+	isInserted = false;
 }
+
 System::~System()
 {
 	mforeach(Component* c, nodes)		delete c;
@@ -153,7 +73,8 @@ System::~System()
 
 	viewdefinitions.clear();
 
-	Component::SQLDelete();
+	if(isInserted)
+		Component::SQLDelete();
 }
 
 DM::View * System::getViewDefinition(string name) 
