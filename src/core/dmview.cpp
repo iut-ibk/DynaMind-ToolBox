@@ -146,9 +146,11 @@ std::vector<std::string> View::getNamesOfLinks()
 
 }
 
-std::string View::getNameOfLinkedView(string name)
+std::string View::getNameOfLinkedView(string linkName) const
 {
-	return this->attributeLinks[name];
+	std::string viewName;
+	map_contains(&attributeLinks, linkName, viewName);
+	return viewName;
 }
 
 

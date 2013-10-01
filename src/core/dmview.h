@@ -142,7 +142,7 @@ public:
 	std::vector<std::string> getNamesOfLinks();
 
 	/** @brief Returns names of object the linked view */
-	std::string getNameOfLinkedView(std::string name);
+	std::string getNameOfLinkedView(std::string linkName) const;
 
 	std::vector<std::string> getAllAttributes() const;
 
