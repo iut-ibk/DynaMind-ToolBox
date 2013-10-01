@@ -109,11 +109,11 @@ QStringList AddLayerDialog::getAttributeVectorNames() const {
 	if (attribute == "")
 		return QStringList();
 
-	if (!system->getUUIDsOfComponentsInView(*view).size())
+	std::vector<Component*> comps = system->getAllComponentsInView(*view);
+	if (!comps.size())
 		return QStringList();
 
-	std::string uuid = system->getUUIDsOfComponentsInView(*view)[0];
-	Attribute *attr = system->getComponent(uuid)->getAttribute(attribute);
+	Attribute *attr = comps[0]->getAttribute(attribute);
 	if (attr->getType() == Attribute::DOUBLEVECTOR) {
 		int len = attr->getDoubleVector().size();
 		QStringList list;
@@ -149,14 +149,14 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
 	else
 		ui->interpreteGroup->setDisabled(current);
 
-	std::map<std::string, Component*> comps = system->getAllComponentsInView(*view);
+	std::vector<Component*> comps = system->getAllComponentsInView(*view);
 	if(comps.size() == 0)
 		return;
 
 	foreach(std::string name, view->getAllAttributes())
 	{
 		Component* repres = NULL;
-		mforeach(Component* c, comps)
+		foreach(Component* c, comps)
 		{
 			if(c)
 			{

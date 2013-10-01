@@ -88,8 +88,7 @@ void Viewer::postSelection(const QPoint &) {
 		if (l->isNameFromLayer(selectedName())) {
 			View v = l->getView();
 			GLuint ns = l->getNameStart();
-			std::string uuid = system->getUUIDsOfComponentsInView(v)[name - ns];
-			ComponentEditor * ce = new ComponentEditor(system->getComponent(uuid));
+			ComponentEditor * ce = new ComponentEditor(system->getAllComponentsInView(v)[name - ns]);
 			ce->show();
 		}
 		nl++;
