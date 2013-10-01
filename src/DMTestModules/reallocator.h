@@ -23,6 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
+#define REALLOCATOR_H
 #ifndef REALLOCATOR_H
 #define REALLOCATOR_H
 

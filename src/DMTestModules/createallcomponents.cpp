@@ -24,6 +24,7 @@
  *
  */
 
+/*
 #include "createallcomponents.h"
 #include <sstream>
 #include <dmsimulation.h>
@@ -182,3 +183,4 @@ void SuccessorCheck::run()
 		return;
 	}
 }
+*/

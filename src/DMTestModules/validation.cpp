@@ -8,7 +8,7 @@
 #include <dmface.h>
 #include <dmrasterdata.h>
 #include <dmlogger.h>
-
+/*
 ComponentID::ComponentID(std::string _uuid, std::string _stateUuid, std::string _owner)
 {
 	first = _uuid;
@@ -190,3 +190,4 @@ bool Validate(std::map<std::string,DM::Component*> map, DM::Component* owner)
 	}
 	return success;
 }
+*/

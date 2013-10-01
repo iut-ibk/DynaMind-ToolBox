@@ -64,36 +64,38 @@ void InOut2::run() {
     Logger(Debug) << "Run InOut";
     //Logger(Debug) << this->getParameterAsString("a");
     sys_in = this->getData("Inport");
-
+	/*
     std::map<std::string, DM::Node*> all_nodes = sys_in->getAllNodes();
 
     for (std::map<std::string, DM::Node*>::const_iterator it = all_nodes.begin(); it != all_nodes.end(); ++it)
     {
         DM::Node * n = it->second;
     }
-
+	*/
     DM::Node * n1 = sys_in->addNode(0,0,2, inlets);
     DM::Node * n2 = sys_in->addNode(0,0,3, inlets);
 
     double b = 0;
 
-    std::map<std::string, DM::System*> subs = sys_in->getAllSubSystems();
+    /*std::map<std::string, DM::System*> subs = sys_in->getAllSubSystems();
 
     for (std::map<std::string, DM::System*>::const_iterator it = subs.begin(); it != subs.end(); ++it)
     {
-        DM::System * s = it->second;
+        DM::System * s = it->second;*/
+	foreach(DM::System* s, sys_in->getAllSubSystems())
+	{
         Logger(Debug) << s->getUUID() << " " << s->getAllNodes().size() << " " << s->getAllEdges().size();
     }
 
 
     sys_in->addEdge(n1, n2, conduits);
-
+	/*
     std::vector<std::string> nstreets = sys_in->getUUIDsOfComponentsInView(streets);
     foreach (std::string str, nstreets) {
         Edge * e = sys_in->getEdge(str);
         e->getAllAttributes();
     }
-
+	*/
 
 }
 

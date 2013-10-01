@@ -24,7 +24,7 @@
  *
  */
 
-
+/*
 #include "reallocator.h"
 
 DM_DECLARE_NODE_NAME(Reallocator, Modules)
@@ -63,4 +63,4 @@ void Reallocator::run()
     DM::Logger(DM::Debug) << "finished reallocation module run";
 }
 
-
+*/
