@@ -205,7 +205,7 @@ private:
 	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
 
-	std::map<QUuid, Component*>		ownedchilds;
+	//std::map<QUuid, Component*>		ownedchilds;
 	std::map<std::string, View*>	viewdefinitions;
 	std::map<std::string, std::vector<Component*> > views;   
 };

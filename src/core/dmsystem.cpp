@@ -43,7 +43,6 @@ System::System() : Component(true)
 {
 	currentSys = this;
 
-	ownedchilds = std::map<QUuid, Component*>();
 	DBConnector::getInstance();
 	SQLInsert();
 }
@@ -54,7 +53,7 @@ System::System(const System& s) : Component(s, true)
 	currentSys = this;
 
 	std::map<Component*,Component*> childReplaceMap;
-
+	/*
 	mforeach(Component* oldComp, s.ownedchilds)
 	{
 		// init name generation
@@ -76,7 +75,7 @@ System::System(const System& s) : Component(s, true)
 			break;
 		default:    break;
 		}
-	}
+	}*/
 	// copy edges
 	/*mforeach(Edge* oldEdge, s.edges)
 	{
@@ -137,10 +136,12 @@ System::System(const System& s) : Component(s, true)
 }
 System::~System()
 {
-	mforeach(Component* c, ownedchilds)
-		delete c;
-
-	ownedchilds.clear();
+	mforeach(Component* c, nodes)		delete c;
+	mforeach(Component* c, edges)		delete c;
+	mforeach(Component* c, faces)		delete c;
+	mforeach(Component* c, rasterdata)	delete c;
+	mforeach(Component* c, subsystems)	delete c;
+	mforeach(Component* c, components)	delete c;
 
 	foreach (DM::System * sys, this->sucessors)
 		if (sys)	delete sys;
@@ -400,7 +401,7 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 		return 0;
 	}
 
-	subsystems[newsystem->getQUUID()]=newsystem;
+	subsystems[newsystem->getQUUID()] = newsystem;
 
 	if (!view.getName().empty()) {
 		this->views[view.getName()].push_back(newsystem);
@@ -495,14 +496,17 @@ System* System::createSuccessor()
 
 	return result;
 }
+
 std::vector<System*> System::getSucessors() const
 {
 	return sucessors;
 }
+
 std::vector<System*> System::getPredecessors() const
 {
 	return predecessors;
 }
+
 void System::addPredecessors(System *s)
 {
 	QMutexLocker ml(mutex);
@@ -511,14 +515,12 @@ void System::addPredecessors(System *s)
 	this->SQLUpdateStates();
 }
 
-
 bool System::addChild(Component *newcomponent)
 {
 	QMutexLocker ml(mutex);
 
 	if(!newcomponent)
 		return false;
-	ownedchilds[newcomponent->getQUUID()] = newcomponent;
 
 	newcomponent->SetOwner(this);
 	// set componentNameMap - if the name is already initialized
@@ -533,19 +535,15 @@ bool System::removeChild(Component* c)
 	QMutexLocker ml(mutex);
 
 	QUuid id = c->getQUUID();
-	if(ownedchilds.find(id)==ownedchilds.end())
-		return false;
-
-	ownedchilds.erase(id);
 
 	switch (c->getType())
 	{
-	case COMPONENT: components.erase(id);   break;
-	case NODE:      nodes.erase(id);   break;
-	case FACE:      faces.erase(id);   break;
-	case EDGE:      edges.erase(id);   break;
-	case RASTERDATA: rasterdata.erase(id);   break;
-	case SUBSYSTEM:    subsystems.erase(id);   break;
+	case COMPONENT:		components.erase(id);   break;
+	case NODE:			nodes.erase(id);		break;
+	case FACE:			faces.erase(id);		break;
+	case EDGE:			edges.erase(id);		break;
+	case RASTERDATA:	rasterdata.erase(id);   break;
+	case SUBSYSTEM:		subsystems.erase(id);   break;
 	}
 
 	if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
@@ -559,39 +557,22 @@ bool System::removeChild(Component* c)
 	delete c;
 	return true;
 }
-/*
-bool System::removeChild(QUuid uuid)
-{
-	QMutexLocker ml(mutex);
-
-	if(ownedchilds.find(uuid)==ownedchilds.end())
-		return false;
-	Component *c = ownedchilds[uuid];
-	return removeChild(c);
-}
-
-Component* System::getChild(QUuid uuid) const
-{
-	Component *c = NULL;
-	map_contains(&ownedchilds, uuid, c);
-	return c;
-}
-Component* System::findChild(QUuid uuid) const
-{
-	if(ownedchilds.find(uuid)==ownedchilds.end())
-		return NULL;
-	return ownedchilds.find(uuid)->second;
-}*/
 
 std::vector<Component*> System::getAllChilds()
 {
 	return getChilds();
 }
+
 std::vector<Component*> System::getChilds()
 {
 	std::vector<Component*> resultVec;
-	mforeach(Component* c,ownedchilds)
-		resultVec.push_back(c);
+
+	mforeach(Component* c,nodes)		resultVec.push_back(c);
+	mforeach(Component* c,edges)		resultVec.push_back(c);
+	mforeach(Component* c,faces)		resultVec.push_back(c);
+	mforeach(Component* c,rasterdata)	resultVec.push_back(c);
+	mforeach(Component* c,subsystems)	resultVec.push_back(c);
+	mforeach(Component* c,components)	resultVec.push_back(c);
 
 	return resultVec;
 }
