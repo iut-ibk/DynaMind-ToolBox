@@ -58,16 +58,8 @@ public:
 	/** @brief return Type */
 	Components getType() const;
 
-	/** @brief return uuid to the startpoint 
-	@deprecated*/
-	//const QUuid getStartpoint() const;
-
 	/** @brief return uuid to the startpoint */
 	Node* getStartNode() const;
-
-	/** @brief return uuid to the endpoint 
-	@deprecated*/
-	//const QUuid getEndpoint() const;
 
 	/** @brief return uuid to the endpoint */
 	Node* getEndNode() const;

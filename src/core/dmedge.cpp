@@ -72,10 +72,6 @@ Node* Edge::getStartNode() const
 {
 	return start;
 }
-/*const QUuid Edge::getStartpoint() const
-{
-	return start->getQUUID();
-}*/
 
 const std::string Edge::getStartpointName() const
 {
@@ -85,10 +81,6 @@ Node* Edge::getEndNode() const
 {
 	return end;
 }
-/*const QUuid Edge::getEndpoint() const
-{
-	return end->getQUUID();
-}*/
 
 const std::string Edge::getEndpointName() const
 {
