@@ -78,14 +78,14 @@ System::System(const System& s) : Component(s, true)
 		}
 	}
 	// copy edges
-	mforeach(Edge* oldEdge, s.edges)
+	/*mforeach(Edge* oldEdge, s.edges)
 	{
 		Edge *e = (Edge*)oldEdge->clone();
 		e->setStartpoint((Node*)childReplaceMap[s.findChild(e->getStartNode()->getQUUID())]);
 		e->setEndpoint((Node*)childReplaceMap[s.findChild(e->getEndNode()->getQUUID())]);
 
 		childReplaceMap[oldEdge] = addEdge(e);
-	}
+	}*/
 	// copy faces
 	mforeach(Face* oldFace, s.faces)
 	{
@@ -559,7 +559,7 @@ bool System::removeChild(Component* c)
 	delete c;
 	return true;
 }
-
+/*
 bool System::removeChild(QUuid uuid)
 {
 	QMutexLocker ml(mutex);
@@ -581,7 +581,7 @@ Component* System::findChild(QUuid uuid) const
 	if(ownedchilds.find(uuid)==ownedchilds.end())
 		return NULL;
 	return ownedchilds.find(uuid)->second;
-}
+}*/
 
 std::vector<Component*> System::getAllChilds()
 {

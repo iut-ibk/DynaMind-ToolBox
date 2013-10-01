@@ -183,9 +183,9 @@ private:
 	void SQLInsert();
 	void SQLUpdateStates();
 	bool addChild(Component *newcomponent);
-	bool removeChild(QUuid uuid);
-	Component* getChild(QUuid uuid) const;
-	Component* findChild(QUuid uuid) const;
+	//bool removeChild(QUuid uuid);
+	//Component* getChild(QUuid uuid) const;
+	//Component* findChild(QUuid uuid) const;
 	/** @brief return table name */
 	QString getTableName();
 	Component* getComponent(QUuid uuid);
