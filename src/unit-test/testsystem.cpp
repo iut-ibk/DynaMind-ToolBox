@@ -64,7 +64,7 @@ TEST_F(TestSystem, DeleteComponentFromView) {
 	sys.removeChild(n);
 
 	int node_counter = 0;
-	mforeach (DM::Component * c, sys.getAllComponentsInView(v)) {
+	foreach (DM::Component * c, sys.getAllComponentsInView(v)) {
 		DM::Logger(DM::Error) << "Should be empty";
 		node_counter++;
 	}
@@ -246,7 +246,7 @@ TEST_F(TestSystem,cachetest) {
 	*/
 	DBConnector::getInstance()->setConfig(cfg);
 }
-
+/*
 TEST_F(TestSystem,simplesqltest) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -272,7 +272,7 @@ TEST_F(TestSystem,simplesqltest) {
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
-
+*/
 
 TEST_F(TestSystem,sqlsuccessortest)
 {
@@ -288,7 +288,7 @@ TEST_F(TestSystem,sqlsuccessortest)
 	delete c;
 
 	// check if no name is created if there is no element
-	System *sys = new System();
+	/*System *sys = new System();
 	c = sys->getComponent((std::string)"test");
 	ASSERT_TRUE(c == NULL);
 	delete sys;
@@ -315,6 +315,7 @@ TEST_F(TestSystem,sqlsuccessortest)
 
 	delete sys;
 	//delete sys2;	successor states are deleted by sys
+*/
 }
 
 TEST_F(TestSystem, SqlNodeTest)
@@ -367,7 +368,7 @@ TEST_F(TestSystem, SqlNodeTest)
  * you now use the pointer of the end node of the edge as start node for the start node map.
  * The method is tested with 3 points and two edges. n1->n2->n3.
  */
-
+/*
 TEST_F(TestSystem, EdgeTestTreeSearch)
 {
 	DM::System * sys = new DM::System();
@@ -397,9 +398,10 @@ TEST_F(TestSystem, EdgeTestTreeSearch)
 	ASSERT_TRUE(se2 != NULL);
 
 	delete sys;
-}
+}*/
 
 /** @brief Similar to EdgeTestTreeSearch, but with successor state*/
+/*
 TEST_F(TestSystem, PredecessorEdgeTestTreeSearch)
 {
 	DM::System * sys = new DM::System();
@@ -441,7 +443,7 @@ TEST_F(TestSystem, PredecessorEdgeTestTreeSearch)
 	ASSERT_TRUE(sys_succ->getChilds().size() == 5);	// 3 nodes + 2 edges
 
 	delete sys;
-}
+}*/
 
 TEST_F(TestSystem, SqlEdgeTest)
 {
@@ -730,6 +732,8 @@ TEST_F(TestSystem, SQLattributes)
 	DM::Attribute::PrintCacheStatistics();
 	//DM::RasterData::PrintCacheStatistics();
 }
+
+/*
 TEST_F(TestSystem, SystemGetEdge)
 {
 	ostream *out = &cout;
@@ -742,7 +746,7 @@ TEST_F(TestSystem, SystemGetEdge)
 	Node* n1 = sys.addNode(4,5,6);
 	Edge *e = sys.addEdge(n0,n1);
 	ASSERT_TRUE(e==sys.getEdge(n0->getUUID(), n1->getUUID()));
-}
+}*/
 
 TEST_F(TestSystem,AttributesInSystem) {
 	ostream *out = &cout;
