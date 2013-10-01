@@ -45,18 +45,11 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	//predecessors = sys->predecessors;
 	views = sys->views;
 
-	//lastModule = sys->lastModule;
-
 	CopyFrom(*sys, true);
 
 	// copy from overwrites current system, fixes a bug
 	currentSys = this;
 }
-/*
-Component* DerivedSystem::getChild(std::string name)
-{
-	return getComponent(name);
-}*/
 
 Component* DerivedSystem::SuccessorCopyTypesafe(const Component *src)
 {
@@ -128,14 +121,7 @@ Face* DerivedSystem::SuccessorCopy(const Face *src)
 
 	return addFace(newf);
 }
-/*
-const Component* DerivedSystem::getComponentReadOnly(std::string uuid) const
-{
-	if(const Component* n = System::getComponentReadOnly(uuid))
-		return n;
 
-	return predecessorSys->getComponentReadOnly(uuid);
-}*/
 const Edge* DerivedSystem::getEdgeReadOnly(Node* start, Node* end)
 {
 	if(const Edge* e = System::getEdgeReadOnly(start,end))
@@ -143,75 +129,12 @@ const Edge* DerivedSystem::getEdgeReadOnly(Node* start, Node* end)
 
 	return predecessorSys->getEdgeReadOnly(start,end);
 }
-/*
-Component* DerivedSystem::getComponent(std::string uuid)
-{
-	Component* n = System::getComponent(uuid);
-	if(!n)
-	{
-		QMutexLocker ml(mutex);
-		const Component *nconst = predecessorSys->getComponentReadOnly(uuid);
-		if(nconst)
-		{
-			switch(nconst->getType())
-			{
-			case NODE:
-				return SuccessorCopy((Node*)nconst);
-			case EDGE:
-				return SuccessorCopy((Edge*)nconst);
-			case FACE:
-				return SuccessorCopy((Face*)nconst);
-			case RASTERDATA:
-				return (Component*)nconst;
-			case SUBSYSTEM:
-			case COMPONENT:
-				return SuccessorCopy(nconst);
-				//case RASTERDATA:
-			default:
-				return NULL;
-			}
-		}
-	}
-	return n;
-}
 
-Node* DerivedSystem::getNode(std::string uuid)
-{
-	return (Node*)getComponent(uuid);
-}
-Edge* DerivedSystem::getEdge(std::string uuid)
-{
-	return (Edge*)getComponent(uuid);
-}
-
-// here is a little bottleneck, as we copy edges through all successor states
-Edge* DerivedSystem::getEdge(Node* start, Node* end)
-{
-	if(Edge* e = System::getEdge(start,end))
-		return e;
-	{
-		QMutexLocker ml(mutex);
-		const Edge *e = predecessorSys->getEdgeReadOnly(start,end);
-		if(e)
-			return SuccessorCopy(e);
-	}
-	return NULL;
-}
-
-Face * DerivedSystem::getFace(std::string uuid)
-{
-	return (Face*)getComponent(uuid);
-}*/
 std::vector<Component*> DerivedSystem::getAllComponents()
 {
 	if(!allComponentsLoaded)
 	{
 		QMutexLocker ml(mutex);
-
-		// load all components
-		/*std::map<std::string, Component*> comps = predecessorSys->getAllComponents();
-		mforeach(Component* c, comps)
-			getComponent(c->getUUID());*/
 
 		foreach(Component* c, predecessorSys->getAllComponents())
 			if(c->getCurrentSystem() != this)
@@ -230,10 +153,6 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
 		return predec_comps;
 	else
 	{
-		/*std::map<std::string, Component*> comps = views[view.getName()];
-		for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
-			it->second = getComponent(it->first);
-		*/
 		std::vector<Component*> &cmps = views[view.getName()];
 		for(std::vector<Component*>::iterator it = cmps.begin(); it != cmps.end(); ++it)
 			if((*it)->getCurrentSystem() != this)
@@ -247,11 +166,6 @@ std::vector<Node*> DerivedSystem::getAllNodes()
 	if(!allNodesLoaded)
 	{
 		QMutexLocker ml(mutex);
-
-		// load all nodes
-		/*std::map<std::string, Node*> nodes = predecessorSys->getAllNodes();
-		mforeach(Node* n, nodes)
-			getNode(n->getUUID());*/
 		
 		foreach(Node* c, predecessorSys->getAllNodes())
 			if(c->getCurrentSystem() != this)
@@ -267,11 +181,6 @@ std::vector<Edge*> DerivedSystem::getAllEdges()
 	{
 		QMutexLocker ml(mutex);
 
-		// load all nodes
-		/*std::map<std::string, Edge*> edges = predecessorSys->getAllEdges();
-		mforeach(Edge* n, edges)
-			getEdge(n->getUUID());*/
-
 		foreach(Edge* c, predecessorSys->getAllEdges())
 			if(c->getCurrentSystem() != this)
 				SuccessorCopy(c);
@@ -286,11 +195,6 @@ std::vector<Face*> DerivedSystem::getAllFaces()
 	{
 		QMutexLocker ml(mutex);
 
-		// load all nodes
-		/*std::map<std::string, Face*> faces = predecessorSys->getAllFaces();
-		mforeach(Face* n, faces)
-			getFace(n->getUUID());*/
-
 		foreach(Face* c, predecessorSys->getAllFaces())
 			if(c->getCurrentSystem() != this)
 				SuccessorCopy(c);
@@ -304,11 +208,6 @@ std::vector<System*> DerivedSystem::getAllSubSystems()
 	if(!allSubSystemsLoaded)
 	{
 		QMutexLocker ml(mutex);
-
-		// load all nodes
-		/*std::map<std::string, System*> subsystems = predecessorSys->getAllSubSystems();
-		mforeach(System* sys, subsystems)
-			getSubSystem(sys->getUUID());*/
 		
 		foreach(System* c, predecessorSys->getAllSubSystems())
 			if(c->getCurrentSystem() != this)
@@ -321,14 +220,5 @@ std::vector<System*> DerivedSystem::getAllSubSystems()
 
 std::vector<RasterData*> DerivedSystem::getAllRasterData()
 {
-	std::vector<RasterData*> pred_rd = this->predecessorSys->getAllRasterData();
-	/*std::vector<RasterData*> rd = System::getAllRasterData();
-
-	for(std::vector<RasterData*>::iterator it = rd.begin();
-		it != rd.end(); ++it)
-	{
-		pred_rd[it->first] = it->second;
-	}*/
-
-	return pred_rd;
+	return this->predecessorSys->getAllRasterData();
 }

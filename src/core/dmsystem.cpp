@@ -41,9 +41,6 @@ using namespace DM;
 
 System::System() : Component(true)
 {
-	//this->lastModule = 0;
-	//this->mutex = new QMutex(QMutex::Recursive);
-
 	currentSys = this;
 
 	ownedchilds = std::map<QUuid, Component*>();
@@ -52,9 +49,6 @@ System::System() : Component(true)
 }
 System::System(const System& s) : Component(s, true)
 {
-	//predecessors = s.predecessors;
-	//lastModule = s.lastModule;
-	//mutex = new QMutex(QMutex::Recursive);
 	SQLInsert();
 
 	currentSys = this;
@@ -159,19 +153,6 @@ System::~System()
 
 	Component::SQLDelete();
 }
-/*
-void System::updateViews(Component * c) 
-{
-	QMutexLocker ml(mutex);
-
-	if (!c) 
-	{
-		DM::Logger(DM::Error)  << "Component NULL in updateView";
-		return;
-	}
-	foreach (std::string view, c->getInViews())
-		this->views[view][c->getUUID()] = c;
-}*/
 
 DM::View * System::getViewDefinition(string name) 
 {
@@ -203,31 +184,16 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
 	if (!view.getName().empty()) {
 		this->views[view.getName()].push_back(c);
-		//this->views[view.getName()][c->getUUID()] = c;
 		c->setView(view.getName());
 	}
-	//this->updateViews(c);
 
 	return c;
 }
-/*
-Component * System::getComponent(std::string uuid)
-{
-	return this->getChild(uuid);
-}
-const Component * System::getComponentReadOnly(std::string uuid) const
-{
-	return this->getChild(uuid);
-}*/
+
 const Edge * System::getEdgeReadOnly(Node* start, Node* end)
 {
 	return (const Edge*)getEdge(start,end);
 }
-/*
-bool System::removeComponent(std::string name)
-{
-	return removeChild(name);
-}*/
 
 Node* System::addNode(Node* node)
 {
@@ -239,7 +205,6 @@ Node* System::addNode(Node* node)
 	}
 	nodes[node->getQUUID()] = node;
 
-	//this->updateViews(node);
 	return node;
 }
 Node* System::addNode(const Node &ref,  const DM::View & view)
@@ -271,58 +236,6 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 	}
 	return n;
 }
-/*
-Node* System::getNode(std::string uuid)
-{
-	Component* c = getChild(uuid);
-	if(c && c->getType() == NODE)
-		return (Node*)c;
-
-	return NULL;
-}
-
-Node* System::getNode(QUuid uuid)
-{
-	Component* c = getChild(uuid);
-	if(c && c->getType() == NODE)
-		return (Node*)c;
-
-	return NULL;
-}
-bool System::removeNode(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	QUuid quuid = getChild(name)->getQUUID();
-	//check if name is a node instance
-	if(nodes.find(quuid)==nodes.end())
-		return false;
-
-	//remove node
-	if(!removeChild(quuid))
-		return false;
-
-
-	//find all connected edges and remove them
-	std::vector<std::string> connectededges;
-	std::map<QUuid,Edge*>::iterator ite;
-	for ( ite=edges.begin() ; ite != edges.end(); ite++ )
-	{
-		Edge* tmpedge = edges[(*ite).first];
-		if(tmpedge->getStartpoint() == quuid
-			|| tmpedge->getEndpoint() == quuid)
-			connectededges.push_back(tmpedge->getUUID());
-	}
-	nodes.erase(quuid);
-
-	for(unsigned int index=0; index<connectededges.size(); index++)
-	{
-		if(!removeEdge(connectededges[index]))
-			return false;
-	}
-
-	return true;
-}*/
 
 Edge* System::addEdge(Edge* edge)
 {
@@ -338,11 +251,6 @@ Edge* System::addEdge(Edge* edge)
 		return 0;
 	}
 
-	/*edges[edge->getQUUID()] = edge;
-	foreach (std::string v, edge->getInViews()) {
-		views[v][edge->getUUID()]=edge;
-	}*/
-	//this->updateViews(edge);
 	return edge;
 }
 Edge* System::addEdge(Node * start, Node * end, const View &view)
@@ -360,21 +268,15 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 	}
 
 	return e;
-}/*
-Edge* System::getEdge(std::string uuid)
-{
-	return (Edge*)getChild(uuid);
-}*/
+}
+
 Edge* System::getEdge(QUuid uuid)
 {
 	if(edges.find(uuid)==edges.end())
 		return 0;
 	return edges[uuid];
-}/*
-Edge* System::getEdge(const std::string & startnode, const std::string & endnode)
-{
-	return getEdge(getNode(startnode),getNode(endnode));
-}*/
+}
+
 Edge* System::getEdge(Node* start, Node* end)
 {
 	foreach(Edge* e,start->getEdges())
@@ -382,22 +284,6 @@ Edge* System::getEdge(Node* start, Node* end)
 			return e;
 	return 0;
 }
-/*
-bool System::removeEdge(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	QUuid quuid = getChild(name)->getQUUID();
-	//check if name is a edge instance
-	if(edges.find(quuid)==edges.end())
-		return false;
-
-	if(!removeChild(quuid))
-		return false;
-	DM::Edge * e  = this->getEdge(quuid);
-	edges.erase(quuid);
-	return true;
-}*/
 
 Face* System::addFace(Face *f) 
 {
@@ -408,8 +294,7 @@ Face* System::addFace(Face *f)
 		return 0;
 	}
 
-	faces[f->getQUUID()]=f;
-	//this->updateViews(f);
+	faces[f->getQUUID()] = f;
 	return f;
 }
 Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
@@ -425,30 +310,7 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 		f->setView(view.getName());
 	}
 	return f;
-}/*
-Face* System::getFace(std::string uuid)
-{
-	Component* c = getChild(uuid);
-	if(c && c->getType() == FACE)
-		return (Face*)c;
-
-	return NULL;
 }
-bool System::removeFace(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	QUuid quuid = getChild(name)->getQUUID();
-	//check if name is a edge instance
-	if(faces.find(quuid)==faces.end())
-		return false;
-
-	if(!removeChild(quuid))
-		return false;
-
-	faces.erase(quuid);
-	return true;
-}*/
 
 RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
@@ -465,7 +327,6 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 		this->views[view.getName()].push_back(r);
 		r->setView(view.getName());
 	}
-	//this->updateViews(r);
 	return r;
 }
 
@@ -547,57 +408,20 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 	}
 
 	return newsystem;
-}/*
-System* System::getSubSystem(std::string uuid)
-{
-	return (System*)getChild(uuid);
-}*/
+}
+
 System* System::getSubSystem(QUuid uuid)
 {
 	if(subsystems.find(uuid)==subsystems.end())
 		return 0;
 
 	return subsystems[uuid];
-}/*
-bool System::removeSubSystem(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	if(!removeChild(name))
-		return false;
-	return true;
-}*/
+}
 
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {
-	/*const std::map<std::string, Component*> &cmps = views[view.getName()];
-	// precaching
-	if(view.getType() == DM::NODE)
-	{
-	QList<Node*> nodes;
-	mforeach(DM::Component* c, cmps)
-	nodes.append((Node*)c);	// we assume, that the view is correctly assigned
-
-	Node::PreCache(nodes);
-	}*/
-
 	return views[view.getName()];
 }
-/*
-std::vector<std::string> System::getUUIDsOfComponentsInView(DM::View view) 
-{
-	std::vector<std::string> names;
-	std::map<std::string, DM::Component*> components_view = this->getAllComponentsInView(view);
-	for (std::map<std::string, DM::Component*>::const_iterator it = components_view.begin(); it != components_view.end(); ++it)
-		names.push_back(it->first);
-
-	return names;
-}
-
-std::vector<std::string> System::getUUIDs(const DM::View  & view)
-{
-	return this->getUUIDsOfComponentsInView(view);
-}*/
 
 std::vector<System*> System::getAllSubSystems()
 {
@@ -702,13 +526,7 @@ bool System::addChild(Component *newcomponent)
 		this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
 
 	return true;
-}/*
-bool System::removeChild(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	return removeChild(getChild(name));
-}*/
+}
 
 bool System::removeChild(Component* c)
 {
@@ -738,7 +556,6 @@ bool System::removeChild(Component* c)
 	for(viewmap::iterator it = views.begin(); it != views.end(); ++it)
 		removeComponentFromView(c, it->first);
 	
-
 	delete c;
 	return true;
 }
@@ -753,14 +570,6 @@ bool System::removeChild(QUuid uuid)
 	return removeChild(c);
 }
 
-/*
-Component* System::getChild(std::string name) const
-{
-	Component *c = NULL;
-	map_contains(&componentNameMap, name, c);
-	return c;
-}*/
-
 Component* System::getChild(QUuid uuid) const
 {
 	Component *c = NULL;
@@ -773,15 +582,7 @@ Component* System::findChild(QUuid uuid) const
 		return NULL;
 	return ownedchilds.find(uuid)->second;
 }
-/*
-std::map<std::string, Component*> System::getAllChilds()
-{
-	std::map<std::string, Component*> resultMap;
-	mforeach(Component* c,ownedchilds)
-		resultMap[c->getUUID()] = c;
 
-	return resultMap;
-}*/
 std::vector<Component*> System::getAllChilds()
 {
 	return getChilds();

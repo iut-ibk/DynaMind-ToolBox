@@ -40,7 +40,6 @@ private:
 	bool allNodesLoaded;
 	bool allSubSystemsLoaded;
 
-	//const Component* getComponentReadOnly(std::string uuid) const;
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 	
 	Component* SuccessorCopyTypesafe(const Component *src);
@@ -50,15 +49,6 @@ private:
 	Face* SuccessorCopy(const Face *src);
 public:
 	DerivedSystem(System* sys);
-
-	//Node* getNode(QUuid uuid);
-
-	/*Component* getComponent(std::string uuid);
-	Node* getNode(std::string uuid);
-	Edge* getEdge(std::string uuid);
-	Edge* getEdge(Node* start, Node* end);
-	Face * getFace(std::string uuid);
-	Component* getChild(std::string name);*/
 
 	std::vector<Component*> getAllComponents();
 	std::vector<Node*> getAllNodes();
