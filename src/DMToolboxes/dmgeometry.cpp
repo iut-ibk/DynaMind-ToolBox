@@ -95,9 +95,8 @@ Node * SpatialNodeHashMap::addNode(double x, double y, double z, double tol, Vie
 
 void SpatialNodeHashMap::addNodesFromView(const DM::View &view)
 {
-    std::vector<std::string> uuid_nodes = sys->getUUIDs(view);
-    foreach (std::string uuid, uuid_nodes)
-        this->addNodeToSpatialNodeHashMap(sys->getNode(uuid));
+	foreach(Component* c, sys->getAllComponentsInView(view))
+        this->addNodeToSpatialNodeHashMap(dynamic_cast<DM::Node*>(c));
 }
 
 SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool init, const DM::View & nodeView) :  devider(devider), sys(sys)
@@ -108,11 +107,9 @@ SpatialNodeHashMap::SpatialNodeHashMap(DM::System * sys, double devider, bool in
         this->addNodesFromView(nodeView);
         return;
     }
-    NodeMap nodeMap = sys->getAllNodes();
-    for (NodeMap::const_iterator it = nodeMap.begin(); it != nodeMap.end(); ++it) {
-        DM::Node * n = it->second;
-        this->addNodeToSpatialNodeHashMap(n);
-    }
+    std::vector<DM::Node*> nodeMap = sys->getAllNodes();
+    for (std::vector<DM::Node*>::const_iterator it = nodeMap.begin(); it != nodeMap.end(); ++it)
+        this->addNodeToSpatialNodeHashMap(*it);
 }
 
 const double &SpatialNodeHashMap::getDevider() const

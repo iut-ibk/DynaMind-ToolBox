@@ -38,7 +38,7 @@
 
 DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
 
-    DM::Edge * e1 = sys->getEdge(n1->getUUID(), n2->getUUID());
+    DM::Edge * e1 = sys->getEdge(n1, n2);
 
     if (e1!=0) {
         if (view.getName().empty()) {
@@ -52,7 +52,7 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n
 
     }
     if (!OrientationMatters) {
-        e1 = sys->getEdge(n2->getUUID(), n1->getUUID());
+        e1 = sys->getEdge(n2, n1);
         if (e1!=0) {
             if (view.getName().empty()) {
                 return e1;
@@ -74,8 +74,8 @@ DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Edge * e
 
     return TBVectorData::getEdge(sys,
                                  view,
-                                 (DM::Node *) sys->getNode(e->getStartpointName()),
-                                 (DM::Node *) sys->getNode(e->getEndpointName()),
+								 (DM::Node *) e->getStartNode(),
+								 (DM::Node *) e->getEndNode(),
                                  OrientationMatters);
 }
 
@@ -172,9 +172,12 @@ QPolygonF TBVectorData::FaceAsQPolgonF(DM::System *sys, DM::Face *f)
 {
     QPolygonF poly;
 
-    std::vector<std::string> uuids = f->getNodes();
+    /*std::vector<std::string> uuids = f->getNodes();
     foreach (std::string uuid, uuids) {
-        DM::Node * n = sys->getNode(uuid);
+        DM::Node * n = sys->getNode(uuid);*/
+
+	foreach(DM::Node* n, f->getNodePointers())
+	{
         QPointF pf(n->getX(), n->getY());
         poly.push_back(pf);
     }
@@ -536,11 +539,13 @@ std::vector<DM::Node> TBVectorData::CreateRaster(DM::System *sys, DM::Face *f, d
     }
 
     std::vector<QPolygonF> holes;
-    foreach (std::vector<std::string> hole, f->getHoles()) {
+
+	foreach(DM::Face* hole, f->getHolePointers())
+	{
         QPolygonF h;
-        for (unsigned int i = 0; i < hole.size(); i++) {
-            DM::Node n = *(sys->getNode(hole[i]));
-            DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
+		foreach(DM::Node* n, hole->getNodePointers()) 
+		{
+            DM::Node n_t =  TBVectorData::RotateVector(alphas, *n);
             h.push_back(QPointF(n_t.getX(), n_t.getY()));
         }
         holes.push_back(h);
@@ -622,8 +627,7 @@ bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_m
     y_max = 0;
 
     if (view.getType() == DM::RASTERDATA) {
-        std::map<std::string, DM::Component*> components = sys->getAllComponentsInView(view);
-        mforeach(DM::Component* c, components) {
+		foreach(DM::Component* c, sys->getAllComponentsInView(view)) {
             if(c->getType() == DM::RASTERDATA) {
                 DM::RasterData * r = (DM::RasterData*)c;
                 x_min = r->getXOffset();
@@ -666,11 +670,13 @@ bool TBVectorData::GetViewExtend(DM::System * sys, DM::View & view, double & x_m
 std::vector<DM::Node *> TBVectorData::GetNodesFromNodes(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
 {
     nodes.clear();
-    std::vector<std::string> uuids = sys->getUUIDs(view);
+	foreach(DM::Component* c, sys->getAllComponentsInView(view))
+		nodes.push_back((DM::Node*)c);
+    /*std::vector<std::string> uuids = sys->getUUIDs(view);
     foreach (std::string uuid, uuids) {
         DM::Node * n = sys->getNode(uuid);
         nodes.push_back(n);
-    }
+    }*/
     return nodes;
 
 }
@@ -678,21 +684,31 @@ std::vector<DM::Node *> TBVectorData::GetNodesFromNodes(DM::System *sys, DM::Vie
 std::vector<DM::Node *> TBVectorData::GetNodesFromEdges(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
 {
     nodes.clear();
+
+	foreach(DM::Component* c, sys->getAllComponentsInView(view))
+	{
+		nodes.push_back(((DM::Edge*)c)->getStartNode());
+		nodes.push_back(((DM::Edge*)c)->getEndNode());
+	}
+	/*
     std::vector<std::string> uuids = sys->getUUIDs(view);
     foreach (std::string uuid, uuids) {
         DM::Edge * e = sys->getEdge(uuid);
         nodes.push_back(sys->getNode(e->getStartpointName()));
         nodes.push_back(sys->getNode(e->getEndpointName()));
-    }
+    }*/
     return nodes;
 }
 
 std::vector<DM::Node *> TBVectorData::GetNodesFromFaces(DM::System *sys, DM::View &view, std::vector<DM::Node *> &nodes)
 {
     nodes.clear();
-    std::vector<std::string> uuids = sys->getUUIDs(view);
+	foreach(DM::Component* c, sys->getAllComponentsInView(view))
+	{
+		DM::Face * f = (DM::Face*)c;
+    /*std::vector<std::string> uuids = sys->getUUIDs(view);
     foreach (std::string uuid, uuids) {
-        DM::Face * f = sys->getFace(uuid);
+        DM::Face * f = sys->getFace(uuid);*/
         std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
         foreach (DM::Node * n, nl)
             nodes.push_back(n);
