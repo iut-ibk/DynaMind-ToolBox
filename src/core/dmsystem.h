@@ -77,9 +77,8 @@ public:
 	std::vector<Component*> getChilds();
 
 	/** @brief Copies a System  */
-private:
 	System(const System& s); // needs to be redone
-public:
+
 	/** @brief creates a new System */
 	System();
 
