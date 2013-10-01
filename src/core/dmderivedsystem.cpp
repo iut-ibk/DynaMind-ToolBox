@@ -58,6 +58,26 @@ Component* DerivedSystem::getChild(std::string name)
 	return getComponent(name);
 }*/
 
+Component* DerivedSystem::SuccessorCopyTypesafe(const Component *src)
+{
+	switch(src->getType())
+	{
+	case NODE:
+		return SuccessorCopy((Node*)src);
+	case EDGE:
+		return SuccessorCopy((Edge*)src);
+	case FACE:
+		return SuccessorCopy((Face*)src);
+	case RASTERDATA:
+		return (Component*)src;
+	case SUBSYSTEM:
+	case COMPONENT:
+		return SuccessorCopy(src);
+	default:
+		return NULL;
+	}
+}
+
 Component* DerivedSystem::SuccessorCopy(const Component *src)
 {
 	Component *c = new Component;
@@ -182,103 +202,133 @@ Face * DerivedSystem::getFace(std::string uuid)
 {
 	return (Face*)getComponent(uuid);
 }*/
-std::map<std::string, Component*> DerivedSystem::getAllComponents()
+std::vector<Component*> DerivedSystem::getAllComponents()
 {
 	if(!allComponentsLoaded)
 	{
 		QMutexLocker ml(mutex);
 
 		// load all components
-		std::map<std::string, Component*> comps = predecessorSys->getAllComponents();
+		/*std::map<std::string, Component*> comps = predecessorSys->getAllComponents();
 		mforeach(Component* c, comps)
-			getComponent(c->getUUID());
+			getComponent(c->getUUID());*/
+
+		foreach(Component* c, predecessorSys->getAllComponents())
+			if(c->getCurrentSystem() != this)
+				SuccessorCopy(c);
+
 		allComponentsLoaded = true;
 	}
 	return System::getAllComponents();
 }
 
-std::map<std::string, Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
+std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
 {
-	const std::map<std::string, Component*> &predec_comps = System::getAllComponentsInView(view);
+	const std::vector<Component*> &predec_comps = System::getAllComponentsInView(view);
 
 	if(view.getWriteAttributes().size() == 0 && view.getAccessType() == READ)
 		return predec_comps;
 	else
 	{
-		std::map<std::string, Component*> comps = views[view.getName()];
+		/*std::map<std::string, Component*> comps = views[view.getName()];
 		for(std::map<std::string, Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
 			it->second = getComponent(it->first);
+		*/
+		std::vector<Component*> &cmps = views[view.getName()];
+		for(std::vector<Component*>::iterator it = cmps.begin(); it != cmps.end(); ++it)
+			if((*it)->getCurrentSystem() != this)
+				*it = SuccessorCopyTypesafe(*it);
 
-		return comps;
+		return cmps;
 	}
 }
-std::map<std::string, Node*> DerivedSystem::getAllNodes()
+std::vector<Node*> DerivedSystem::getAllNodes()
 {
 	if(!allNodesLoaded)
 	{
 		QMutexLocker ml(mutex);
 
 		// load all nodes
-		std::map<std::string, Node*> nodes = predecessorSys->getAllNodes();
+		/*std::map<std::string, Node*> nodes = predecessorSys->getAllNodes();
 		mforeach(Node* n, nodes)
-			getNode(n->getUUID());
+			getNode(n->getUUID());*/
+		
+		foreach(Node* c, predecessorSys->getAllNodes())
+			if(c->getCurrentSystem() != this)
+				SuccessorCopy(c);
+
 		allNodesLoaded = true;
 	}
 	return System::getAllNodes();
 }
-std::map<std::string, Edge*> DerivedSystem::getAllEdges()
+std::vector<Edge*> DerivedSystem::getAllEdges()
 {
 	if(!allEdgesLoaded)
 	{
 		QMutexLocker ml(mutex);
 
 		// load all nodes
-		std::map<std::string, Edge*> edges = predecessorSys->getAllEdges();
+		/*std::map<std::string, Edge*> edges = predecessorSys->getAllEdges();
 		mforeach(Edge* n, edges)
-			getEdge(n->getUUID());
+			getEdge(n->getUUID());*/
+
+		foreach(Edge* c, predecessorSys->getAllEdges())
+			if(c->getCurrentSystem() != this)
+				SuccessorCopy(c);
+
 		allEdgesLoaded = true;
 	}
 	return System::getAllEdges();
 }
-std::map<std::string, Face*> DerivedSystem::getAllFaces()
+std::vector<Face*> DerivedSystem::getAllFaces()
 {
 	if(!allFacesLoaded)
 	{
 		QMutexLocker ml(mutex);
 
 		// load all nodes
-		std::map<std::string, Face*> faces = predecessorSys->getAllFaces();
+		/*std::map<std::string, Face*> faces = predecessorSys->getAllFaces();
 		mforeach(Face* n, faces)
-			getFace(n->getUUID());
+			getFace(n->getUUID());*/
+
+		foreach(Face* c, predecessorSys->getAllFaces())
+			if(c->getCurrentSystem() != this)
+				SuccessorCopy(c);
+
 		allFacesLoaded = true;
 	}
 	return System::getAllFaces();
 }
-std::map<std::string, System*> DerivedSystem::getAllSubSystems()
+std::vector<System*> DerivedSystem::getAllSubSystems()
 {
 	if(!allSubSystemsLoaded)
 	{
 		QMutexLocker ml(mutex);
 
 		// load all nodes
-		std::map<std::string, System*> subsystems = predecessorSys->getAllSubSystems();
+		/*std::map<std::string, System*> subsystems = predecessorSys->getAllSubSystems();
 		mforeach(System* sys, subsystems)
-			getSubSystem(sys->getUUID());
+			getSubSystem(sys->getUUID());*/
+		
+		foreach(System* c, predecessorSys->getAllSubSystems())
+			if(c->getCurrentSystem() != this)
+				SuccessorCopy(c);
+
 		allSubSystemsLoaded = true;
 	}
 	return System::getAllSubSystems();
 }
 
-std::map<std::string, RasterData*> DerivedSystem::getAllRasterData()
+std::vector<RasterData*> DerivedSystem::getAllRasterData()
 {
-	std::map<std::string, RasterData*> pred_rd = this->predecessorSys->getAllRasterData();
-	std::map<std::string, RasterData*> rd = System::getAllRasterData();
+	std::vector<RasterData*> pred_rd = this->predecessorSys->getAllRasterData();
+	/*std::vector<RasterData*> rd = System::getAllRasterData();
 
-	for(std::map<std::string, RasterData*>::iterator it = rd.begin();
+	for(std::vector<RasterData*>::iterator it = rd.begin();
 		it != rd.end(); ++it)
 	{
 		pred_rd[it->first] = it->second;
-	}
+	}*/
 
 	return pred_rd;
 }

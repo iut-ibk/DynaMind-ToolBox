@@ -334,9 +334,14 @@ void Component::setView(const DM::View & view)
 
 void Component::removeView(const View &view)
 {
+	removeView(view.getName());
+}
+
+void Component::removeView(const std::string& viewname)
+{
 	QMutexLocker ml(mutex);
 
-	this->inViews.erase(view.getName());
+	this->inViews.erase(viewname);
 }
 
 const set<std::string> &Component::getInViews() const 

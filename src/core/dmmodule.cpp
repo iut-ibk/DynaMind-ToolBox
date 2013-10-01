@@ -331,11 +331,11 @@ RasterData* Module::getRasterData(std::string name, View view)
 		return data->addRasterData(new RasterData(), view);
 	else
 	{
-		const std::map<std::string, Component*>& comps = data->getAllComponentsInView(view);
+		const std::vector<Component*>& comps = data->getAllComponentsInView(view);
 		if(comps.size()>1)
 			DM::Logger(Warning) << "View contains more than one RasterData set,\
 									may lead to corrupted data stream";
-		mforeach(Component* c, data->getAllComponentsInView(view))
+		foreach(Component* c, data->getAllComponentsInView(view))
 			if(c->getType() == RASTERDATA)
 				return (RasterData*)c;
 		DM::Logger(Error) << "getRasterData: rasterdata in view '" << view.getName() << "' not found";

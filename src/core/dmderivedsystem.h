@@ -42,7 +42,8 @@ private:
 
 	//const Component* getComponentReadOnly(std::string uuid) const;
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
-
+	
+	Component* SuccessorCopyTypesafe(const Component *src);
 	Component* SuccessorCopy(const Component *src);
 	Node* SuccessorCopy(const Node *src);
 	Edge* SuccessorCopy(const Edge *src);
@@ -59,13 +60,13 @@ public:
 	Face * getFace(std::string uuid);
 	Component* getChild(std::string name);*/
 
-	std::map<std::string, Component*> getAllComponents();
-	std::map<std::string, Node*> getAllNodes();
-	std::map<std::string, Edge*> getAllEdges();
-	std::map<std::string, Face*> getAllFaces();
-	std::map<std::string, System*> getAllSubSystems();
-	std::map<std::string, RasterData*> getAllRasterData();
-	std::map<std::string, Component*> getAllComponentsInView(const DM::View & view);
+	std::vector<Component*> getAllComponents();
+	std::vector<Node*> getAllNodes();
+	std::vector<Edge*> getAllEdges();
+	std::vector<Face*> getAllFaces();
+	std::vector<System*> getAllSubSystems();
+	std::vector<RasterData*> getAllRasterData();
+	std::vector<Component*> getAllComponentsInView(const DM::View & view);
 };
 
 }

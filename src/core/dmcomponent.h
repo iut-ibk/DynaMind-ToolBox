@@ -154,8 +154,9 @@ protected:
 	/* @brief Sets stateUuid and ownership in sql db*/
 	virtual void SetOwner(Component *owner);
 	void SQLDelete();
-
+	
 	void removeView(const DM::View & view);
+	void removeView(const std::string& viewname);
 
 	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
 	Component(bool b);

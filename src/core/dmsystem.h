@@ -78,8 +78,9 @@ public:
 	std::vector<Component*> getChilds();
 
 	/** @brief Copies a System  */
-	System(const System& s);
-
+private:
+	System(const System& s); // needs to be redone
+public:
 	/** @brief creates a new System */
 	System();
 
@@ -162,27 +163,27 @@ public:
 
 	/** @brief Returns a map of nodes stored in the system
 	@deprecated*/
-	virtual std::map<std::string, Component*> getAllComponents();
+	virtual std::vector<Component*> getAllComponents();
 
 	/** @brief Returns a map of nodes stored in the system
 	@deprecated*/
-	virtual std::map<std::string, Node*> getAllNodes();
+	virtual std::vector<Node*> getAllNodes();
 
 	/** @brief Returns a map of edges stored in the system
 	@deprecated*/
-	virtual std::map<std::string, Edge*> getAllEdges();
+	virtual std::vector<Edge*> getAllEdges();
 
 	/** @brief Returns a map of faces stored in the system
 	@deprecated*/
-	virtual std::map<std::string, Face*> getAllFaces();
+	virtual std::vector<Face*> getAllFaces();
 
 	/** @brief Returns a map of subsystems stored in the system
 	@deprecated*/
-	virtual std::map<std::string, System*> getAllSubSystems();
+	virtual std::vector<System*> getAllSubSystems();
 
 	/** @brief Returns a map of rasterdata stored in the system
 	@deprecated*/
-	virtual std::map<std::string, RasterData*> getAllRasterData();
+	virtual std::vector<RasterData*> getAllRasterData();
 
 	/** @brief Returns the predecessor of the system */
 	std::vector<System*> getPredecessors() const;
@@ -223,17 +224,18 @@ public:
 
 	/** @brief remove a component from a view */
 	bool removeComponentFromView(Component * comp, const DM::View & view);
+	bool removeComponentFromView(Component * comp, const std::string& viewName);
 
 	/** @brief retrun all components related to a view */
-	virtual std::map<std::string, Component*> getAllComponentsInView(const DM::View &view);
+	virtual std::vector<Component*> getAllComponentsInView(const DM::View &view);
 
 	/** @brief Returns a vector of all uuids stored in a view 
 	@deprecated */
-	std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
+	//std::vector<std::string> getUUIDsOfComponentsInView(DM::View  view);
 
 	/** @brief Returns a vector of all uuids stored in a view, calls getUUIDsOfComponentsInView but it's much shorter
 	@deprecated */
-	std::vector<std::string> getUUIDs(const DM::View &view);
+	//std::vector<std::string> getUUIDs(const DM::View &view);
 
 	/** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
 	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
@@ -246,7 +248,7 @@ protected:
 	//virtual const Component* getComponentReadOnly(std::string uuid) const;
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
-	void updateViews (Component * c);
+	//void updateViews (Component * c);
 	
 	void SQLInsert();
 	void SQLUpdateStates();
@@ -279,7 +281,7 @@ private:
 
 	std::map<QUuid, Component*>		ownedchilds;
 	std::map<std::string, View*>	viewdefinitions;
-	std::map<std::string, std::map<std::string, Component*> > views;   
+	std::map<std::string, std::vector<Component*> > views;   
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
