@@ -182,6 +182,6 @@ private:
 	bool isCached;
 	void CloneAllAttributes();
 };
-typedef std::map<std::string, DM::Component*> ComponentMap;
+//typedef std::map<std::string, DM::Component*> ComponentMap;
 }
 #endif // COMPONENT_H
