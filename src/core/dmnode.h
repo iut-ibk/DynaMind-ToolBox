@@ -160,7 +160,5 @@ public:
 	Vector3(double x,double y,double z){this->x=x;this->y=y;this->z=z;}
 	Vector3(const Vector3 &ref){this->x=ref.x;this->y=ref.y;this->z=ref.z;}
 };
-
-typedef std::map<std::string, DM::Node*> NodeMap;
 }
 #endif // NODE_H
