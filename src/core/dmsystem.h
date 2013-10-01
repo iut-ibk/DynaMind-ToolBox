@@ -183,9 +183,6 @@ private:
 	void SQLInsert();
 	void SQLUpdateStates();
 	bool addChild(Component *newcomponent);
-	//bool removeChild(QUuid uuid);
-	//Component* getChild(QUuid uuid) const;
-	//Component* findChild(QUuid uuid) const;
 	/** @brief return table name */
 	QString getTableName();
 	Component* getComponent(QUuid uuid);
@@ -205,7 +202,6 @@ private:
 	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
 
-	//std::map<QUuid, Component*>		ownedchilds;
 	std::map<std::string, View*>	viewdefinitions;
 	std::map<std::string, std::vector<Component*> > views;   
 };
