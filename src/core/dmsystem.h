@@ -2,6 +2,7 @@
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @author  Michael Mair <abroxos@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  * This file is part of DynaMind
