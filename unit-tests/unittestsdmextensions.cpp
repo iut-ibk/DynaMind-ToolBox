@@ -50,6 +50,67 @@ void addRectangleWithHole(DM::System* sys, DM::View v)
 	f1->addHole(nodes_h);
 }
 
+TEST_F(UnitTestsDMExtensions,OffestPolygon)
+{
+
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::System * sys = new DM::System();
+
+	DM::Node * n1 = sys->addNode(DM::Node(0,0,0));
+	DM::Node * n2 = sys->addNode(DM::Node(0,1,0));
+	DM::Node * n3 = sys->addNode(DM::Node(1,1,0));
+	DM::Node * n4 = sys->addNode(DM::Node(1,0,0));
+
+	std::vector<DM::Node * > nodes;
+	nodes.push_back(n1);
+	nodes.push_back(n2);
+	nodes.push_back(n3);
+	nodes.push_back(n4);
+
+	DM::Face * f = sys->addFace(nodes);
+
+	//Inner Offest
+	std::vector<DM::Node> nodes_offest;
+	nodes_offest= DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.2);
+
+	EXPECT_EQ(nodes_offest.size(), 4);
+
+	std::vector<DM::Node * > nodes_offest_p;
+	foreach (DM::Node n, nodes_offest) {
+		nodes_offest_p.push_back(sys->addNode(n));
+	}
+
+	DM::Face * f1 = sys->addFace(nodes_offest_p);
+	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(f1),0.36);
+
+
+	//Outer Offest
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), -0.2);
+
+	EXPECT_EQ(nodes_offest.size(), 4);
+
+	nodes_offest_p.clear();
+	foreach (DM::Node n, nodes_offest) {
+		nodes_offest_p.push_back(sys->addNode(n));
+	}
+	DM::Face * f2 = sys->addFace(nodes_offest_p);
+
+	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(f2),1.96);
+
+	//Error Offest 1
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.5);
+
+	EXPECT_EQ(nodes_offest.size(), 0);
+
+
+
+	//Error Offest to big
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.6);
+
+	EXPECT_EQ(nodes_offest.size(), 0);
+}
+
 
 TEST_F(UnitTestsDMExtensions,CalculateMinBoundingBoxYDir)
 {
