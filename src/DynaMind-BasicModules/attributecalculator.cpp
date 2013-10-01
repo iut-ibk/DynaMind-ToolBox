@@ -28,11 +28,20 @@
 #include "guiattributecalculator.h"
 #include "userdefinedfunctions.h"
 #include "loopgroup.h"
+#include "parser/mpParser.h"
 
 DM_DECLARE_NODE_NAME(AttributeCalculator, Modules)
 
+//private implemenation to remove muparser dependeny in the header
+struct  AttributeCalculator_Impl
+{
+	DM::System * m_sys;
+	void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
+};
+
 AttributeCalculator::AttributeCalculator()
 {
+	this->m_p = new AttributeCalculator_Impl();
 
 	this->nameOfBaseView = "";
 	this->addParameter("NameOfBaseView", DM::STRING, & this->nameOfBaseView);
@@ -45,10 +54,14 @@ AttributeCalculator::AttributeCalculator()
 	this->addParameter("asVector", DM::BOOL, & this->asVector);
 
 	sys_in = 0;
-	mp_counter = 0;
 	std::vector<DM::View> data;
 	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 	this->addData("Data", data);
+}
+
+AttributeCalculator::~AttributeCalculator()
+{
+	delete m_p;
 }
 
 void AttributeCalculator::init() {
@@ -103,7 +116,7 @@ void AttributeCalculator::init() {
 	i++;
 }
 
-void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
+void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
 {
 	QStringList viewNameList = QString::fromStdString(name).split(".");
 	//Remove First Element, is already what comes with currentcmp
@@ -116,7 +129,7 @@ void  AttributeCalculator::getLinkedAttribute(std::vector< mup::Value> * varaibl
 		std::string newSearchName = viewNameList.join(".").toStdString();
 		foreach (LinkAttribute l, attr->getLinks())
 		{
-			Component * nextcmp = this->sys_in->getComponent(l.uuid);
+			Component * nextcmp = m_sys->getComponent(l.uuid);
 			if(!nextcmp)
 			{
 				Logger(Error) << "Linked Element does not exist";
@@ -169,7 +182,9 @@ QString AttributeCalculator::IfElseConverter(QString expression)
 }
 
 void AttributeCalculator::run() {
+	mup::Value mp_c;
 	this->sys_in = this->getData("Data");
+	m_p->m_sys = sys_in;
 	std::map<std::string, mup::Value * > doubleVariables;
 	mup::ParserX * p  = new mup::ParserX();
 	foreach (std::string variable, varaibleNames)
@@ -192,7 +207,7 @@ void AttributeCalculator::run() {
 	}
 	p->DefineFun(new dm::Random);
 	p->DefineFun(new dm::Round);
-	p->DefineVar("counter", &mp_counter);
+	p->DefineVar("counter", &mp_c);
 
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
@@ -202,13 +217,13 @@ void AttributeCalculator::run() {
 		//mp_counter= (int) this->getInternalCounter()+1;
 		Group* lg = dynamic_cast<Group*>(getOwner());
 		if(lg) {
-			mp_counter = lg->getGroupCounter();
+			mp_c = lg->getGroupCounter();
 			DM::Logger(DM::Debug) << "counter " << lg->getGroupCounter();
 		}
 		else
 		{
 			DM::Logger(DM::Debug) << "attribute calc: counter not found";
-			mp_counter = 0;
+			mp_c = 0;
 		}
 		for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
 			 it != variablesMap.end();
@@ -218,7 +233,7 @@ void AttributeCalculator::run() {
 			//All attributes are stored in one container that is evaluated Later.
 			std::vector< mup::Value> variable_container;
 			//Can be later replaced by a function
-			getLinkedAttribute(&variable_container, cmp, it->first);
+			m_p->getLinkedAttribute(&variable_container, cmp, it->first);
 
 			double val = 0;
 			QStringList string_vals;

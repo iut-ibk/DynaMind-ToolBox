@@ -29,9 +29,10 @@
 
 #include <dmmodule.h>
 #include <dm.h>
-#include "parser/mpParser.h"
 
 using namespace DM;
+struct AttributeCalculator_Impl;
+
 class DM_HELPER_DLL_EXPORT AttributeCalculator : public Module
 {
 
@@ -46,12 +47,13 @@ private:
 	std::string equation;
 	std::map<std::string, DM::View> viewsmap;
 	std::vector<std::string> varaibleNames;
-	void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
+	AttributeCalculator_Impl * m_p; //private implemenation to remove muparser dependeny in the header
 
-	mup::Value mp_counter;
+
 
 public:
 	AttributeCalculator();
+	virtual ~AttributeCalculator();
 	void run();
 	void init();
 	bool createInputDialog();
