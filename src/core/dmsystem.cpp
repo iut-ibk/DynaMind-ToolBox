@@ -162,7 +162,8 @@ Edge* System::addEdge(Edge* edge)
 {
 	QMutexLocker ml(mutex);
 
-	if(!map_contains(&nodes, edge->getStartpoint()) || !map_contains(&nodes, edge->getEndpoint())){
+	if(!map_contains(&nodes, edge->getStartNode()->getQUUID()) || 
+		!map_contains(&nodes, edge->getEndNode()->getQUUID())){
 		delete edge;
 		return 0;
 	}
