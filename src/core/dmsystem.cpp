@@ -71,8 +71,6 @@ System::~System()
 	//    delete v;
 	// memory leak
 
-	viewdefinitions.clear();
-
 	if(isInserted)
 		Component::SQLDelete();
 }
