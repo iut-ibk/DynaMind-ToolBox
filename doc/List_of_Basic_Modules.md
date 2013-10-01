@@ -19,3 +19,4 @@
 |[ClearView](ClearView.md)|removes objects from a view (deprecated use [RemoveComponent](RemoveComponent.md))
 |[FaceToEdge](FaceToEdge.md)|converts faces to edges
 |[ExportNodesToFile](ExportNodesToFile.md)|exports nodes and their attributes into a text file
+|[OffsetFace](OffsetFace.md)|offest faces
