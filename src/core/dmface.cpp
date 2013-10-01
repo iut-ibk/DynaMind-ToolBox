@@ -126,7 +126,7 @@ QString Face::getTableName()
 {
 	return "faces";
 }
-
+/*
 const std::vector<std::vector<std::string> > Face::getHoles() const
 {
 	std::vector<std::vector<std::string> > holes;
@@ -140,7 +140,7 @@ const std::vector<std::vector<std::string> > Face::getHoles() const
 		holes.push_back(hole);
 	}
 	return holes;
-}
+}*/
 
 const std::vector<Face*> Face::getHolePointers() const
 {

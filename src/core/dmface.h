@@ -75,7 +75,7 @@ public:
 
 	/** @brief Returns a vector of holes
 	@deprecated*/
-	const std::vector<std::vector<std::string> > getHoles() const;
+	//const std::vector<std::vector<std::string> > getHoles() const;
 
 	/** @brief Returns a vector of holes  */
 	const std::vector<Face*> getHolePointers() const;
