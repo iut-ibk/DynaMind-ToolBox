@@ -192,13 +192,13 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 
 	return e;
 }
-
+/*
 Edge* System::getEdge(QUuid uuid)
 {
 	if(edges.find(uuid)==edges.end())
 		return 0;
 	return edges[uuid];
-}
+}*/
 
 Edge* System::getEdge(Node* start, Node* end)
 {
@@ -332,14 +332,14 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
 	return newsystem;
 }
-
+/*
 System* System::getSubSystem(QUuid uuid)
 {
 	if(subsystems.find(uuid)==subsystems.end())
 		return 0;
 
 	return subsystems[uuid];
-}
+}*/
 
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {

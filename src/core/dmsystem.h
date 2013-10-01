@@ -186,9 +186,9 @@ private:
 	bool addChild(Component *newcomponent);
 	/** @brief return table name */
 	QString getTableName();
-	Component* getComponent(QUuid uuid);
-	Edge* getEdge(QUuid uuid);
-	System* getSubSystem(QUuid uuid);
+	//Component* getComponent(QUuid uuid);
+	//Edge* getEdge(QUuid uuid);
+	//System* getSubSystem(QUuid uuid);
 	/** @brief add Predecessor **/
 	void addPredecessors(DM::System * s);
 	
