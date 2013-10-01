@@ -127,22 +127,17 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 
 	CDT cdt;
 	Polygon_2 polygon1;
-	std::vector<std::string> nodes;
-	nodes = f_t->getNodes();
-	for (unsigned int  i = 0; i <nodes.size(); i++ ) {
-		DM::Node * n = transformedSys.getNode(nodes[i]);
+	foreach(DM::Node* n, f_t->getNodePointers())
 		polygon1.push_back(Point(n->getX(),n->getY()));
-	}
-	//Insert the polyons into a constrained triangulation
 
+	//Insert the polyons into a constrained triangulation
 	insert_polygon(cdt,polygon1);
 
-	//Add Holes: Holes use the same transormation matrix
-	std::vector<std::vector<std::string> > holes = f->getHoles();
-	foreach (std::vector<std::string> hole, holes) {
+	foreach(DM::Face* hole, f->getHolePointers())
+	{
 		std::vector<DM::Node* > nodes_h;
-		foreach (std::string nuuid, hole) {
-			DM::Node * n = sys->getNode(nuuid);
+		foreach(DM::Node* n, hole->getNodePointers())
+		{
 			DM::Node n_t = TBVectorData::RotateVector(alphas, *n);
 			nodes_h.push_back(transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
 		}

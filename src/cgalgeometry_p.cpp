@@ -60,7 +60,7 @@ Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & vie
 	Segment_list_2 seg_list;
 
 	if (view.getType() == DM::EDGE) {
-		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
+		foreach(DM::Component * c, sys->getAllComponentsInView(view)) {
 			DM::Edge * edge = static_cast<DM::Edge*>(c);
 			DM::Node * n1 = edge->getEndNode();
 			DM::Node * n2 = edge->getStartNode();
@@ -74,7 +74,7 @@ Segment_list_2 CGALGeometry_P::EdgeToSegment2D(DM::System * sys,  DM::View & vie
 	int face_counter = 0;
 	int hole_counter = 0;
 	if (view.getType() == DM::FACE) {
-		mforeach(DM::Component * c, sys->getAllComponentsInView(view)) {
+		foreach(DM::Component * c, sys->getAllComponentsInView(view)) {
 			face_counter++;
 			DM::Face * f = static_cast<DM::Face*>(c);
 			std::vector<DM::Node * > nodes = f->getNodePointers();

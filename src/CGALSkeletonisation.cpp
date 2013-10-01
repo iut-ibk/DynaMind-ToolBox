@@ -125,14 +125,14 @@ DM::System CGALSkeletonisation::StraightSkeletonisation(System *sys, Face *f, do
 
 	DM::System shapes = DM::CGALGeometry::ShapeFinder(&sys_tmp,view_roof_lines,view_roof_faces, false, 0.0001  );
 
-	Logger(Debug) << "number of faces in roof " << shapes.getUUIDs(view_roof_faces).size();
+	const std::vector<Component*>& cmps = shapes.getAllComponentsInView(view_roof_faces);
+	Logger(Debug) << "number of faces in roof " << cmps.size();
 
-	std::vector<std::string> uuids =  shapes.getUUIDs(view_roof_faces);
-
-
-	foreach (std::string uuid, uuids) {
+	foreach(DM::Component* c, cmps)
+	{
+		DM::Face * f = (DM::Face*)c;
 		std::vector<DM::Node*> faces;
-		DM::Face * f = shapes.getFace(uuid);
+		//DM::Face * f = shapes.getFace(uuid);
 		std::vector<DM::Node*> nodes_in_face = TBVectorData::getNodeListFromFace(&shapes, f);
 		foreach (DM::Node * n, nodes_in_face) {
 			faces.push_back(sphn.addNode(n->getX(), n->getY(), n->getZ(), 0.0001,  DM::View()));
