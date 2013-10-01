@@ -34,9 +34,6 @@
 [submodule "PowerVIBe"]
 	path = PowerVIBe
 	url = git://github.com/iut-ibk/PowerVIBe.git
-[submodule "DynaMind-CityBlocks"]
-	path = DynaMind-CityBlocks
-	url = git://github.com/iut-ibk/DynaMind-CityBlocks.git
 [submodule "DynaMind-Extensions"]
 	path = DynaMind-Extensions
 	url = git://github.com/iut-ibk/DynaMind-Extensions.git
