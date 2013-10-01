@@ -77,7 +77,7 @@ System::~System()
 		Component::SQLDelete();
 }
 
-DM::View * System::getViewDefinition(string name) 
+DM::View * System::getViewDefinition(const std::string& name) 
 {
 	if (viewdefinitions.find(name) == viewdefinitions.end()) {
 		Logger(Debug) << "Couldn't find view definition for " << name;
@@ -369,7 +369,7 @@ Component* System::clone()
 	return new System(*this);
 }
 
-bool System::addView(View view)
+bool System::addView(const View& view)
 {
 	QMutexLocker ml(mutex);
 
