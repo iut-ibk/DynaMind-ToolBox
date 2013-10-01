@@ -100,7 +100,7 @@ void OffsetFace::run()
 
 string OffsetFace::getHelpUrl()
 {
-
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/OffsetFace.md";
 }
 
 std::string OffsetFace::getNameInputView() const
