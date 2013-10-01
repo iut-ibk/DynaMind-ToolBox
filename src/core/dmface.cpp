@@ -59,13 +59,7 @@ QByteArray GetBytes(std::vector<Face*> facevector)
 	}
 	return qba;
 }
-/*
-Face::Face(std::vector<std::string> nodes) : Component(true)
-{
-	Logger(Error) << "Warning: Face::Face(std::vector<std::string> nodes)\
-					 doesnt work anymore, use Face::Face(std::vector<Node*> nodes) instead";
-}
-*/
+
 Face::Face(const std::vector<Node*>& nodes) : Component(true)
 {
 	setNodes(nodes);
@@ -97,17 +91,8 @@ std::vector<std::string> GetVector(QByteArray qba)
 		result.push_back(str.toStdString());
 	}
 	return result;
-}	
-/*
-std::vector<std::string> Face::getNodes() const
-{
-	std::vector<std::string> nodes;
-	foreach(Node* n, _nodes)
-	{
-		nodes.push_back(n->getUUID());
-	}
-	return nodes;
-}*/
+}
+
 std::vector<Node*> Face::getNodePointers() const
 {
 	return _nodes;
@@ -126,36 +111,11 @@ QString Face::getTableName()
 {
 	return "faces";
 }
-/*
-const std::vector<std::vector<std::string> > Face::getHoles() const
-{
-	std::vector<std::vector<std::string> > holes;
-	foreach(Face* f, _holes)
-	{
-		std::vector<std::string> hole;
-		foreach(Node* n, f->getNodePointers())
-		{
-			hole.push_back(n->getUUID());
-		}
-		holes.push_back(hole);
-	}
-	return holes;
-}*/
 
 const std::vector<Face*> Face::getHolePointers() const
 {
 	return _holes;
 }
-/*
-void Face::addHole(std::vector<std::string> hole)
-{
-	System *curSys = this->getCurrentSystem();
-	std::vector<Node*> holeNodes;
-	foreach(std::string uuidNodes, hole)
-		holeNodes.push_back(curSys->getNode(uuidNodes));
-
-	addHole(holeNodes);
-}*/
 
 void Face::addHole(std::vector<Node*> hole)
 {

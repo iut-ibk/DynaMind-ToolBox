@@ -103,18 +103,6 @@ void Edge::setStartpoint(Node *start)
 	this->start = start;
 	start->addEdge(this);
 }
-/*
-void Edge::setStartpointName(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	if(!currentSys)
-	{
-		Logger(Error) << "setStartpointName in unattached edge not possible";
-		return;
-	}
-	setStartpoint(currentSys->getNode(name));
-}*/
 
 void Edge::setEndpoint(Node *end)
 {
@@ -124,18 +112,6 @@ void Edge::setEndpoint(Node *end)
 	this->end = end;
 	end->addEdge(this);
 }
-/*
-void Edge::setEndpointName(std::string name)
-{
-	QMutexLocker ml(mutex);
-
-	if(!currentSys)
-	{
-		Logger(Error) << "setEndpointName in unattached edge not possible";
-		return;
-	}
-	setEndpoint(currentSys->getNode(name));
-}*/
 
 Component* Edge::clone()
 {

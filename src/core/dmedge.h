@@ -63,14 +63,14 @@ public:
 	const QUuid getStartpoint() const;
 
 	/** @brief return uuid to the startpoint */
-	Node*	getStartNode() const;
+	Node* getStartNode() const;
 
 	/** @brief return uuid to the endpoint 
 	@deprecated*/
 	const QUuid getEndpoint() const;
 
 	/** @brief return uuid to the endpoint */
-	Node*	getEndNode() const;
+	Node* getEndNode() const;
 
 	/** @brief return uuid to the startpoint */
 	const std::string getStartpointName() const;
@@ -81,16 +81,8 @@ public:
 	/** @brief set uuid to that points to the start node */
 	void setStartpoint(Node* start);
 
-	/** @brief set uuid to that points to the start node
-	@deprecated*/
-	//void setStartpointName(std::string name);
-
 	/** @brief set uuid that points to the end node */
 	void setEndpoint(Node* end);
-
-	/** @brief set uuid that points to the end node
-	@deprecated*/
-	//void setEndpointName(std::string name);
 
 	/** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
 	Component* clone();

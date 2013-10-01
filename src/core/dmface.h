@@ -52,9 +52,7 @@ public:
 	/** @brief destructor */
 	~Face();
 
-	/** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes
-	@deprecated*/
-	//Face(std::vector<std::string> nodes);
+	/** @brief Creates a new Face. A face is defined by a vector of references (uuid's) to existing nodes */
 	Face(const std::vector<Node*>& nodes);
 
 	/** @brief Create a copy of the face also including the Component (Attributes and uuid)*/
@@ -63,26 +61,16 @@ public:
 	/** @brief return Type */
 	Components getType() const;
 
-	/** @brief return vector of nodes defining the face
-	@deprecated*/
-	//std::vector<std::string> getNodes() const;
-
 	/** @brief return vector of nodes defining the face  */
 	std::vector<Node*> getNodePointers() const;
 
 	/** @brief  Creates a pointer to a cloned Face object, including Attributes and uuid*/
 	Component * clone();
 
-	/** @brief Returns a vector of holes
-	@deprecated*/
-	//const std::vector<std::vector<std::string> > getHoles() const;
-
 	/** @brief Returns a vector of holes  */
 	const std::vector<Face*> getHolePointers() const;
 
-	/** @brief Add hole
-	@deprecated*/
-	//void addHole(std::vector<std::string> hole);
+	/** @brief Add hole */
 	void addHole(std::vector<Node*> hole);
 	void addHole(Face* hole);
 
