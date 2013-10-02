@@ -26,6 +26,7 @@ CreateHouses::CreateHouses()
 	onSingal = false;
 	l_on_parcel_b = false;
 	yearFromCity = true;
+	create3DGeometry = true;
 
 	this->addParameter("l", DM::DOUBLE, &l);
 	this->addParameter("b", DM::DOUBLE, &b);
@@ -40,6 +41,7 @@ CreateHouses::CreateHouses()
 	this->addParameter("onSignal", DM::BOOL, &onSingal);
 
 	this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
+	this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
 }
 
@@ -58,10 +60,10 @@ void CreateHouses::run()
 
 	int nparcels = parcelUUIDs.size();
 	int numberOfHouseBuild = 0;
-/*#ifdef _OPENMP
+	/*#ifdef _OPENMP
 	omp_set_num_threads(4);
 #endif*/
-//#pragma omp parallel for
+	//#pragma omp parallel for
 	for (int i = 0; i < nparcels; i++) {
 		DM::Face * parcel = city->getFace(parcelUUIDs[i]);
 
@@ -137,11 +139,6 @@ void CreateHouses::run()
 
 		building->addAttribute("V_living", l*b*stories * 3);
 
-		LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
-		if (alpha > 10) {
-			LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
-		}
-
 		//Create Links
 		building->getAttribute("Footprint")->setLink(footprint.getName(), foot_print->getUUID());
 		foot_print->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
@@ -149,6 +146,18 @@ void CreateHouses::run()
 		parcel->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
 		parcel->addAttribute("is_built",1);
 		numberOfHouseBuild++;
+
+		if (!create3DGeometry) {
+			city->addComponentToView(foot_print, building_model);
+			building->getAttribute("Geometry")->setLink(building_model.getName(), foot_print->getUUID());
+			continue;
+		}
+		LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
+		if (alpha > 10) {
+			LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
+		}
+
+
 
 	}
 	Logger(Standard) << "Created Houses " << numberOfHouseBuild;
@@ -197,6 +206,7 @@ void CreateHouses::init()
 	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
 	footprint.addAttribute("h");
 	footprint.addAttribute("built_year");
+
 
 	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
 	building_model.addAttribute("type");
