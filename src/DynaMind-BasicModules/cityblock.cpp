@@ -105,63 +105,55 @@ string CityBlock::getHelpUrl()
 	return  "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/CityBlock.md";
 }
 
-void CityBlock::run() {
-
+void CityBlock::run() 
+{
 	DM::System * city = this->getData("City");
 
 	DM::SpatialNodeHashMap nodeList(city, devider);
 
-	std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(superblock);
+	//std::vector<std::string> blockids = city->getUUIDsOfComponentsInView(superblock);
 
-	foreach (std::string blockid, blockids) {
+	foreach (DM::Component* c, city->getAllComponentsInView(superblock))
+	{
 		//calulculate height;
+		DM::Face * fblock = (DM::Face*)c;
 
-		DM::Face * fblock = city->getFace(blockid);
 		double minX = 0;
 		double maxX = 0;
 		double minY = 0;
 		double maxY = 0;
-		for (unsigned i = 0; i < fblock->getNodes().size(); i++){
 
-			DM::Node * n1 = city->getNode(fblock->getNodes()[i]);
-			DM::Node * n2 = city->getNode(fblock->getNodes()[i]);
+		int i = 0;
+		double v[3];
+		double x,y;
 
-			if (i == 0) {
-				minX = n1->getX();
-				maxX = n1->getX();
-				minY = n1->getY();
-				maxY = n1->getY();
+		foreach(DM::Node* n, fblock->getNodePointers())
+		{
+			n->get(v);
+			x = v[0];
+			y = v[1];
+
+			if (i++ == 0) 
+			{
+				minX = maxX = x;
+				minY = maxY = y;
 			}
-
-			if(minX > n1->getX())
-				minX = n1->getX();
-			if(minX > n2->getX())
-				minX = n2->getX();
-			if(maxX < n1->getX())
-				maxX = n1->getX();
-			if(maxX < n2->getX())
-				maxX = n2->getX();
-
-			if(minY > n1->getY())
-				minY = n1->getY();
-			if(minY > n2->getY())
-				minY = n2->getY();
-			if(maxY < n1->getY())
-				maxY = n1->getY();
-			if(maxY < n2->getY())
-				maxY = n2->getY();
-
+			else
+			{
+				minX = min(x,minX);
+				minY = min(y,minY);
+				maxX = max(x,maxX);
+				maxY = max(y,maxY);
+			}
 		}
+
 		double blockWidth = maxX - minX;
 		double blockHeight = maxY - minY;
-
 
 		DM::Logger(DM::Debug) << blockHeight;
 		DM::Logger(DM::Debug) << blockWidth;
 
-
 		//Create Parcels
-
 		int elements_x = blockWidth/this->width;
 		int elements_y = blockHeight/this->height;
 		double realwidth = blockWidth / elements_x;
@@ -169,7 +161,6 @@ void CityBlock::run() {
 		fblock->addAttribute("width",realwidth);
 		fblock->addAttribute("height",realheight);
 		StartAndEndNodeList.clear();
-
 
 		int counter = 0;
 		for (int x = 0; x < elements_x; x++) {

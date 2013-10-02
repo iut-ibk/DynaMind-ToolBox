@@ -1,6 +1,7 @@
 #include "joindatastreams.h"
 #include "guijoindatastreams.h"
 #include <algorithm>
+#include <appendviewfromsystem.h>
 
 DM_DECLARE_NODE_NAME(JoinDatastreams, Modules)
 
@@ -85,67 +86,18 @@ void JoinDatastreams::init()
     this->addData("Combined", combined_datastream);
 }
 
-void JoinDatastreams::run() {
-
+void JoinDatastreams::run() 
+{
     DM::System * sys_out = this->getData("Combined");
     //Copy all Components from Views
-    foreach (std::string d, Inports) {
+    foreach (std::string d, Inports) 
+	{
         DM::System * sys = this->getData(d);
         if (sys == 0)
             continue;
-        DM::ComponentMap cm = sys->getAllComponents();
-        for (DM::ComponentMap::const_iterator it = cm.begin(); it != cm.end(); ++it ){
-            sys_out->addComponent(new DM::Component(*(it->second)));
-        }
-        DM::NodeMap nm = sys->getAllNodes();
-        for (DM::NodeMap::const_iterator it = nm.begin(); it != nm.end(); ++it ){
-            sys_out->addNode(new DM::Node(*(it->second)));
-        }
-        DM::EdgeMap em = sys->getAllEdges();
-        for (DM::EdgeMap::const_iterator it = em.begin(); it != em.end(); ++it )
-        {
-            DM::Edge* e = new DM::Edge(*(it->second));
-            e->setStartpoint(sys_out->getNode(e->getStartpointName()));
-            e->setEndpoint(sys_out->getNode(e->getEndpointName()));
-            sys_out->addEdge(e);
-        }
-        DM::FaceMap fm = sys->getAllFaces();
-        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it )
-        {
-            // relink nodes
-            std::vector<DM::Node*> nodes;
-            DM::Face* f = new DM::Face(*(it->second));
-            foreach(DM::Node* n, f->getNodePointers())
-                nodes.push_back(sys_out->getNode(n->getUUID()));
 
-            f->setNodes(nodes);
-            sys_out->addFace(f);
-        }
-        // get new systems faces
-        fm = sys_out->getAllFaces();
-        for (DM::FaceMap::const_iterator it = fm.begin(); it != fm.end(); ++it )
-        {
-            // relink holes
-
-            std::vector<DM::Face*>holes;
-            foreach(DM::Face* f, it->second->getHolePointers())
-                holes.push_back(sys_out->getFace(f->getUUID()));
-
-            it->second->clearHoles();
-            foreach(DM::Face* f, holes)
-                it->second->addHole(f);
-        }
-
-        DM::SystemMap sm = sys->getAllSubSystems();
-        for (DM::SystemMap::const_iterator it = sm.begin(); it != sm.end(); ++it ){
-            sys_out->addSubSystem(new DM::System(*(it->second)));
-        }
-        DM::RasterDataMap rm = sys->getAllRasterData();
-        for (DM::RasterDataMap::const_iterator it = rm.begin(); it != rm.end(); ++it ){
-            sys_out->addRasterData(new DM::RasterData(*(it->second)));
-        }
+		AppendViewFromSystem::AppendSystemElements(sys, sys_out);
     }
-
 }
 
 void JoinDatastreams::addSystem(std::string sys) {

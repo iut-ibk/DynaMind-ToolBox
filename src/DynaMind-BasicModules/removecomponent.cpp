@@ -50,10 +50,10 @@ void RemoveComponent::init() {
 void RemoveComponent::run() {
 	DM::System * city = this->getData("city");
 
-	std::vector<std::string> uuids = city->getUUIDs(this->view_remove);
-	DM::Logger(DM::Debug)  << "Elements in View before" << uuids.size();
-	foreach (std::string uuid, uuids) {
-		DM::Component * cmp = city->getComponent(uuid);
+	std::vector<DM::Component*> comps = city->getAllComponentsInView(this->view_remove);
+	DM::Logger(DM::Debug)  << "Elements in View before" << comps.size();
+	foreach (DM::Component* cmp, comps)
+	{
 		if (cmp->getAttribute("selected")->getDouble() < 0.01)
 			continue;
 		city->removeComponentFromView(cmp, this->view_remove);
@@ -85,8 +85,7 @@ void RemoveComponent::run() {
 		}
 	}
 
-	DM::Logger(DM::Debug)  << "Elements in View after" << city->getUUIDs(this->view_remove).size();
-
+	DM::Logger(DM::Debug)  << "Elements in View after" << city->getAllComponentsInView(this->view_remove).size();
 }
 
 string RemoveComponent::getHelpUrl()

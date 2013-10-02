@@ -56,11 +56,8 @@ void AddDataToNewView::run()
 	}
 	DM::View  v_new = DM::View( this->NameOfNewView, v_existing.getType(), DM::WRITE );
 
-
-	DM::ComponentMap cmp = sys->getAllComponentsInView(v_existing);
-	for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it)
+	foreach(DM::Component* c, sys->getAllComponentsInView(v_existing))
 	{
-		DM::Component * c = sys->getComponent(it->first);
 		if(this->onlySelected)
 			if(DM::Attribute* a = c->getAttribute("selected"))
 				if(a->getDouble() < 0.0001)

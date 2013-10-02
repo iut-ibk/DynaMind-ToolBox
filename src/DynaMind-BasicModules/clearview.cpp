@@ -13,15 +13,14 @@ ClearView::ClearView()
 	this->addData("Data", data);
 }
 
-void ClearView::run() {
+void ClearView::run() 
+{
 	DM::Logger(DM::Warning) << "ClearView is depricated please use RemoveComponent";
 	DM::System * data = this->getData("Data");
 	DM::View v = DM::View (NameOfExistingView, getViewInStream("Data", NameOfExistingView).getType(), DM::MODIFY);
-	DM::ComponentMap cmp = data->getAllComponentsInView(v);
-	for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
-		data->removeComponentFromView(it->second, v);
-	}
-
+	
+	foreach(DM::Component* c, data->getAllComponentsInView(v))
+		data->removeComponentFromView(c,v);
 }
 
 void ClearView::init()

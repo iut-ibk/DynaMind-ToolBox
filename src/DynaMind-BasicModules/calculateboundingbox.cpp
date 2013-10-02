@@ -191,12 +191,11 @@ void CalculateBoundingBox::caculateBoundingBox()
 
 	}
 
-
-
-	std::vector<std::string> uuids = this->city->getUUIDs(vData);
-	if (!this->overAll && this->vData.getType() == DM::FACE) {
-		foreach (std::string uuid, uuids) {
-			DM::Face * f = city->getFace(uuid);
+	if (!this->overAll && this->vData.getType() == DM::FACE) 
+	{
+		foreach(DM::Component* c, city->getAllComponentsInView(vData))
+		{
+			DM::Face * f = (DM::Face*)c;
 			QPolygonF poly = TBVectorData::FaceAsQPolgonF(city, f);
 			QRectF br = poly.boundingRect();
 			qreal * x1 = new double;
@@ -208,7 +207,6 @@ void CalculateBoundingBox::caculateBoundingBox()
 			DM::Node * n2 = this->city->addNode(*x1, *y2, 0);
 			DM::Node * n3 = this->city->addNode(*x2, *y2, 0);
 			DM::Node * n4 = this->city->addNode(*x2, *y1, 0);
-
 
 			std::vector<DM::Node *> vF;
 			vF.push_back(n1);
@@ -224,7 +222,6 @@ void CalculateBoundingBox::caculateBoundingBox()
 
 			bF->getAttribute(vData.getName())->setLink(vData.getName(), f->getUUID());
 			f->getAttribute(newFaces.getName())->setLink(newFaces.getName(), bF->getUUID());
-
 		}
 	}
 }
@@ -233,13 +230,11 @@ void CalculateBoundingBox::caculateMinBoundingBox()
 {
 
 	if (this->overAll) {
-		std::vector<std::string> uuids = this->city->getUUIDs(vData);
 		std::vector<DM::Node *> nodes;
-		foreach (std::string uuid, uuids) {
-			DM::Face * f = city->getFace(uuid);
-			foreach (DM::Node * n, f->getNodePointers()) nodes.push_back(n);
+		foreach(DM::Component* c, city->getAllComponentsInView(vData))
+			foreach(DM::Node * n, ((DM::Face*)c)->getNodePointers()) 
+				nodes.push_back(n);
 
-		}
 		std::vector<double> size;
 		std::vector<DM::Node> ress_nodes;
 
@@ -259,9 +254,9 @@ void CalculateBoundingBox::caculateMinBoundingBox()
 		return;
 	}
 
-	std::vector<std::string> uuids = this->city->getUUIDs(vData);
-	foreach (std::string uuid, uuids) {
-		DM::Face * f = city->getFace(uuid);
+	foreach (DM::Component* c, city->getAllComponentsInView(vData)) 
+	{
+		DM::Face * f = (DM::Face*)c;
 		std::vector<double> size;
 		std::vector<DM::Node> ress_nodes;
 
@@ -284,35 +279,26 @@ void CalculateBoundingBox::caculateMinBoundingBox()
 	}
 }
 
-void CalculateBoundingBox::getNodesFromNodes(std::vector<Node *> &nodes)
+void CalculateBoundingBox::getNodesFromNodes(std::vector<Node*> &nodes)
 {
-	std::vector<std::string> uuids = this->city->getUUIDs(vData);
-	foreach (std::string uuid, uuids) {
-		DM::Node * n = city->getNode(uuid);
-		nodes.push_back(n);
-	}
+	foreach(DM::Component* c, city->getAllComponentsInView(vData))
+		nodes.push_back((DM::Node*)c);
 }
 
 void CalculateBoundingBox::getNodesFromEdges(std::vector<Node *> &nodes)
 {
-	std::vector<std::string> uuids = this->city->getUUIDs(vData);
-	foreach (std::string uuid, uuids) {
-		DM::Edge * e = city->getEdge(uuid);
-		nodes.push_back(city->getNode(e->getStartpointName()));
-		nodes.push_back(city->getNode(e->getEndpointName()));
+	foreach(DM::Component* c, city->getAllComponentsInView(vData))
+	{
+		nodes.push_back(((DM::Edge*)c)->getStartNode());
+		nodes.push_back(((DM::Edge*)c)->getEndNode());
 	}
 }
 
 void CalculateBoundingBox::getNodesFromFaces(std::vector<Node *> &nodes)
 {
-	std::vector<std::string> uuids = this->city->getUUIDs(vData);
-	foreach (std::string uuid, uuids) {
-		DM::Face * f = city->getFace(uuid);
-		std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(city, f);
-		foreach (DM::Node * n, nl)
+	foreach(DM::Component* c, city->getAllComponentsInView(vData))
+		foreach(DM::Node* n, ((DM::Face*)c)->getNodePointers())
 			nodes.push_back(n);
-
-	}
 }
 
 void CalculateBoundingBox::run() {

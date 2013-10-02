@@ -58,9 +58,9 @@ Parcels::Parcels()
   */
 void Parcels::run() {
 	DM::System * city = this->getData("City");
-	std::vector<std::string> cityblocks = city->getUUIDsOfComponentsInView(cityblock);
-	foreach (std::string idblock, cityblocks) {
-		DM::Face * block = city->getFace(idblock);
+	foreach (DM::Component* c, city->getAllComponentsInView(cityblock))
+	{
+		DM::Face * block = (DM::Face*)c;
 		//Get minx and miny as origin
 		double minx;
 		double miny;

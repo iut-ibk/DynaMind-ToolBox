@@ -85,7 +85,8 @@ void OffsetFace::run()
 {
 	DM::System * sys = this->getData("sys");
 
-	mforeach(DM::Component * cmp, sys->getAllComponentsInView(inputView)) {
+	foreach(DM::Component * cmp, sys->getAllComponentsInView(inputView))
+	{
 		DM::Face * f = dynamic_cast<DM::Face*>(cmp);
 		DM::Face * f_off = this->createOffest(sys, f, this->offest);
 		if (!f_off)

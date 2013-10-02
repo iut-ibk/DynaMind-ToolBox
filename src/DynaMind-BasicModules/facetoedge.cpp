@@ -42,13 +42,10 @@ void FaceToEdge::run()
 	std::set<DM::Node*> node_tot;
 	DM::System * sys = this->getData("sys");
 
-	std::vector<std::string> face_uuids = sys->getUUIDs(view_face);
-
-	int number_of_faces = face_uuids.size();
-
 	int edgeCounter = 0;
-	for (int i = 0; i < number_of_faces; i++) {
-		DM::Face * f = sys->getFace(face_uuids[i]);
+	foreach(DM::Component* c, sys->getAllComponentsInView(view_face))
+	{
+		DM::Face* f = (DM::Face*)c;
 
 		std::vector<DM::Node*> nodes = f->getNodePointers();
 		nodes.push_back(nodes[0]);

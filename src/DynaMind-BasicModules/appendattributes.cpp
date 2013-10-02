@@ -66,11 +66,11 @@ void AppendAttributes::run() {
 	DM::Logger(DM::Debug) << "VIEWNAME: " << NameOfExistingView;
 
 	DM::System * sys = this->getData("Data");
-	foreach (std::string s, sys->getUUIDs(vExistingView))
+	foreach(DM::Component* c, sys->getAllComponentsInView(vExistingView))
 	{
 		if(vExistingView.getType()==DM::FACE)
 		{
-			DM::Face * f = sys->getFace(s);
+			DM::Face * f = (DM::Face*)c;
 			std::vector<DM::Node*> nl = TBVectorData::getNodeListFromFace(sys, f);
 			double dattr = 0;
 			if (median) {
@@ -83,7 +83,7 @@ void AppendAttributes::run() {
 
 		if(vExistingView.getType()==DM::NODE)
 		{
-			DM::Node * f = sys->getNode(s);
+			DM::Node * f = (DM::Node*)c;
 			double dattr = r->getCell(f->getX(),f->getY());
 			f->changeAttribute(newAttribute, dattr);
 		}

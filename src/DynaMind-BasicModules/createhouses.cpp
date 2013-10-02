@@ -49,21 +49,14 @@ void CreateHouses::run()
 	DM::System * city = this->getData("City");
 	DM::SpatialNodeHashMap spatialNodeMap(city, 100,false);
 
-	std::vector<std::string> city_uuid = city->getUUIDs(cityView);
-	if (city_uuid.size() != 0) {
-		buildyear = city->getComponent(city_uuid[0])->getAttribute("year")->getDouble();
-	}
+	std::vector<Component*> city_comps = city->getAllComponentsInView(cityView);
+	if (city_comps.size() != 0)
+		buildyear = city_comps[0]->getAttribute("year")->getDouble();
 
-	std::vector<std::string> parcelUUIDs = city->getUUIDs(parcels);
-
-	int nparcels = parcelUUIDs.size();
 	int numberOfHouseBuild = 0;
-/*#ifdef _OPENMP
-	omp_set_num_threads(4);
-#endif*/
-//#pragma omp parallel for
-	for (int i = 0; i < nparcels; i++) {
-		DM::Face * parcel = city->getFace(parcelUUIDs[i]);
+	foreach(DM::Component* c, city->getAllComponentsInView(parcels))
+	{
+		DM::Face* parcel = (DM::Face*)c;
 
 		if (parcel->getAttribute("selected")->getDouble() < 0.01 && onSingal == true)
 			continue;

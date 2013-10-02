@@ -212,7 +212,7 @@ void AttributeCalculator::run() {
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
-	mforeach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
+	foreach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
 	{
 		//mp_counter= (int) this->getInternalCounter()+1;
 		Group* lg = dynamic_cast<Group*>(getOwner());

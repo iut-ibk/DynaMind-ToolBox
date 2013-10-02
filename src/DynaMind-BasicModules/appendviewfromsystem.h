@@ -31,6 +31,7 @@ public:
 	void addSystem(std::string sys);
 	std::string getHelpUrl();
 
+	static void AppendSystemElements(DM::System* source, DM::System* target);
 };
 
 #endif // APPENDVIEWFROMSYSTEM_H

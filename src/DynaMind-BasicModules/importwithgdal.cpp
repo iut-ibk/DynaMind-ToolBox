@@ -275,7 +275,7 @@ void ImportwithGDAL::initPointList(System *sys)
 {
 	nodeList.clear();
 	double v[3];
-	mforeach(Node* n, sys->getAllNodes())
+	foreach(Node* n, sys->getAllNodes())
 	{
 		n->get(v);
 		QString key = this->createHash(v[0], v[1]);
@@ -517,7 +517,7 @@ void ImportwithGDAL::run()
 bool ImportwithGDAL::importVectorData()
 {
 	DM::System * sys = this->getData("Data");
-	int features_before = sys->getUUIDs(this->view).size();
+	int features_before = sys->getAllComponentsInView(this->view).size();
 
 	if (this->linkWithExistingView)
 		this->initPointList(sys);
@@ -583,7 +583,7 @@ bool ImportwithGDAL::importVectorData()
 		//OGRFeature::DestroyFeature( poFeature );
 	}
 	OGRDataSource::DestroyDataSource(poDS);
-	int features_after =  sys->getUUIDs(this->view).size();
+	int features_after =  sys->getAllComponentsInView(this->view).size();
 	Logger(Debug) << "Loaded featuers "<< features_after - features_before;
 	return true;
 }

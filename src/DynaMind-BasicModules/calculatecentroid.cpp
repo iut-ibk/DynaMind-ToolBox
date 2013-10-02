@@ -89,16 +89,14 @@ void CalculateCentroid::init()
 
 }
 
-
-void CalculateCentroid::run() {
+void CalculateCentroid::run() 
+{
 	city = this->getData("Data");
-	std::vector<std::string> names =city->getUUIDsOfComponentsInView(vData);
 	std::stringstream link;
 	link << vData.getName();
-	int elements = names.size();
-	for (int i = 0; i < elements; i++){
-		Face * f = city->getFace(names[i]);
-
+	foreach(DM::Component* c, city->getAllComponentsInView(vData))
+	{
+		Face* f = (Face*)c;
 		if(!f)
 		{
 			DM::Logger(DM::Error) << "Face does not exist";
@@ -111,14 +109,12 @@ void CalculateCentroid::run() {
 		f->addAttribute("centroid_y", p.getY());
 		f->addAttribute("area", area);
 
-
 		Node * cn = city->addNode(p, newPoints);
 		Attribute attr(link.str());
 		attr.setLink(vData.getName(), f->getUUID());
 		cn->addAttribute(attr);
 
 		f->getAttribute(newPoints.getName())->setLink(newPoints.getName(), cn->getUUID());
-
 	}
 }
 bool CalculateCentroid::createInputDialog() {

@@ -297,10 +297,12 @@ void Marker::run() {
 
 	std::vector<DM::Node> points;
 
-	if ( param.Points == true ) {
-		DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
-		for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
-			DM::Node * n = sys_in->getNode(it->first);
+	if ( param.Points == true )
+	{
+		foreach(DM::Component* c, sys_in->getAllComponentsInView(vIdentifier))
+		{
+			DM::Node* n = (DM::Node*)c;
+
 			if (param.selected) {
 				if (n->getAttribute("selected")->getDouble() < 0.001) continue;
 			}
@@ -318,9 +320,9 @@ void Marker::run() {
 	}
 	//AddLines as Points
 	if ( param.Edges == true ) {
-		DM::ComponentMap cmp = sys_in->getAllComponentsInView(vIdentifier);
-		for (DM::ComponentMap::const_iterator it = cmp.begin(); it != cmp.end(); ++it) {
-			DM::Edge * e = sys_in->getEdge(it->first);
+		foreach(DM::Component* c, sys_in->getAllComponentsInView(vIdentifier))
+		{
+			DM::Edge* e = (DM::Edge*)c;
 
 			if (!e) {
 				Logger(Warning) << "Not an Edge " << vIdentifier.getName();
@@ -330,8 +332,8 @@ void Marker::run() {
 			if (param.selected) {
 				if (e->getAttribute("selected")->getDouble() < 0.001) continue;
 			}
-			Node * p1 = sys_in->getNode(e->getStartpointName());
-			Node * p2 = sys_in->getNode(e->getEndpointName());
+			Node * p1 = e->getStartNode();
+			Node * p2 = e->getEndNode();
 			double dx = p2->getX()/CellSizeX - p1->getX()/CellSizeX;
 			double dy = p2->getY()/CellSizeY- p1->getY()/CellSizeY;
 
