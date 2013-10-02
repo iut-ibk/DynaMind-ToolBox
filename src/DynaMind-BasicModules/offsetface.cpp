@@ -89,13 +89,10 @@ void OffsetFace::run()
 		DM::Face * f = dynamic_cast<DM::Face*>(cmp);
 		DM::Face * f_off = this->createOffest(sys, f, this->offest);
 		if (!f_off)
-			return;
+			continue;
 		sys->addComponentToView(f_off, this->outputView);
 	}
-
-
 }
-
 
 
 string OffsetFace::getHelpUrl()
