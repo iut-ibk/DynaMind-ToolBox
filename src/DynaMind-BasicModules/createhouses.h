@@ -25,11 +25,14 @@ private:
 	double b;
 	bool onSingal;
 	bool l_on_parcel_b;
+	bool yearFromCity;
 
 	void createWindows(DM::Face * f, double distance, double width, double height);
 public:
 	CreateHouses();
 	void run();
+	void init();
+	std::string getHelpUrl();
 
 };
 

@@ -25,12 +25,14 @@ CreateHouses::CreateHouses()
 	alpha = 30;
 	onSingal = false;
 	l_on_parcel_b = false;
+	yearFromCity = true;
 
 	this->addParameter("l", DM::DOUBLE, &l);
 	this->addParameter("b", DM::DOUBLE, &b);
 	this->addParameter("stories", DM::INT, &stories);
 	this->addParameter("alhpa", DM::DOUBLE, &alpha);
 	this->addParameter("built_year", DM::INT, &buildyear);
+	this->addParameter("year_from_city", DM::BOOL, &yearFromCity);
 
 	this->addParameter("T_heating", DM::DOUBLE, &heatingT);
 	this->addParameter("T_cooling", DM::DOUBLE, &coolingT);
@@ -39,67 +41,7 @@ CreateHouses::CreateHouses()
 
 	this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
 
-	cityView = DM::View("CITY", DM::FACE, DM::READ);
-	cityView.getAttribute("year");
-	parcels = DM::View("PARCEL", DM::FACE, DM::READ);
-	parcels.addAttribute("is_built");
-
-	parcels.getAttribute("selected");
-	parcels.getAttribute("centroid_x");
-	parcels.getAttribute("centroid_y");
-
-	houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
-
-	houses.addAttribute("centroid_x");
-	houses.addAttribute("centroid_y");
-
-	houses.addAttribute("built_year");
-	houses.addAttribute("stories");
-	houses.addAttribute("stories_below");
-	houses.addAttribute("stories_height");
-
-	houses.addAttribute("floor_area");
-	houses.addAttribute("roof_area");
-	houses.addAttribute("gross_floor_area");
-
-	houses.addAttribute("centroid_x");
-	houses.addAttribute("centroid_y");
-
-	houses.addAttribute("l_bounding");
-	houses.addAttribute("b_bounding");
-	houses.addAttribute("h_bounding");
-	houses.addAttribute("alhpa_bounding");
-
-	houses.addAttribute("alpha_roof");
-
-	houses.addAttribute("cellar_used");
-	houses.addAttribute("roof_used");
-
-	houses.addAttribute("T_heating");
-	houses.addAttribute("T_cooling");
-
-	houses.addAttribute("Geometry");
-	houses.addAttribute("V_living");
-
-	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
-	footprint.addAttribute("year");
-	footprint.addAttribute("h");
-	footprint.addAttribute("built_year");
-	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
-	building_model.addAttribute("type");
-
-	parcels.addLinks("BUILDING", houses.getName());
-	houses.addLinks("PARCEL", parcels.getName());
-
-	std::vector<DM::View> data;
-	data.push_back(houses);
-	data.push_back(parcels);
-	data.push_back(footprint);
-	data.push_back(building_model);
-	data.push_back(cityView);
-	this->addData("City", data);
 }
-
 
 
 void CreateHouses::run()
@@ -133,8 +75,10 @@ void CreateHouses::run()
 		//Calcualte bounding minial bounding box
 		std::vector<double> size;
 		double angle = CGALGeometry::CalculateMinBoundingBox(nodes, bB,size);
-		if (l_on_parcel_b) angle+=90;
-		Node centroid = DM::Node(parcel->getAttribute("centroid_x")->getDouble(),  parcel->getAttribute("centroid_y")->getDouble(), 0);
+		if (l_on_parcel_b)
+			angle+=90;
+
+		Node centroid = DM::CGALGeometry::CaclulateCentroid2D(parcel);
 
 		QPointF f1 (- l/2,  - b/2);
 		QPointF f2 (+ l/2,- b/2);
@@ -155,17 +99,14 @@ void CreateHouses::run()
 			Logger(Error) << "Can't create House";
 			continue;
 		}
-		houseNodes.push_back(houseNodes[0]);
 
 		DM::Component * building = city->addComponent(new Component(), houses);
 
-
 		//Create Building and Footprints
 		DM::Face * foot_print = city->addFace(houseNodes, footprint);
-		foot_print->addAttribute("year", buildyear);
 		foot_print->addAttribute("built_year", buildyear);
 		foot_print->addAttribute("height", stories*3);
-		Node  n = DM::CGALGeometry::CalculateCentroid(city, foot_print);
+		Node  n = DM::CGALGeometry::CaclulateCentroid2D(foot_print);
 		building->addAttribute("type", "single_family_house");
 		building->addAttribute("built_year", buildyear);
 		building->addAttribute("stories", stories);
@@ -202,6 +143,8 @@ void CreateHouses::run()
 		}
 
 		//Create Links
+		building->getAttribute("Footprint")->setLink(footprint.getName(), foot_print->getUUID());
+		foot_print->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
 		building->getAttribute("PARCEL")->setLink(parcels.getName(), parcel->getUUID());
 		parcel->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
 		parcel->addAttribute("is_built",1);
@@ -209,4 +152,77 @@ void CreateHouses::run()
 
 	}
 	Logger(Standard) << "Created Houses " << numberOfHouseBuild;
+}
+
+void CreateHouses::init()
+{
+	cityView = DM::View("CITY", DM::COMPONENT, DM::READ);
+	cityView.getAttribute("year");
+
+	parcels = DM::View("PARCEL", DM::FACE, DM::READ);
+	parcels.addAttribute("is_built");
+	if (this->onSingal)
+		parcels.getAttribute("selected");
+
+	houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
+
+	houses.addAttribute("centroid_x");
+	houses.addAttribute("centroid_y");
+
+	houses.addAttribute("built_year");
+	houses.addAttribute("stories");
+	houses.addAttribute("stories_below");
+	houses.addAttribute("stories_height");
+
+	houses.addAttribute("floor_area");
+	houses.addAttribute("roof_area");
+	houses.addAttribute("gross_floor_area");
+
+	houses.addAttribute("l_bounding");
+	houses.addAttribute("b_bounding");
+	houses.addAttribute("h_bounding");
+	houses.addAttribute("alhpa_bounding");
+
+	houses.addAttribute("alpha_roof");
+
+	houses.addAttribute("cellar_used");
+	houses.addAttribute("roof_used");
+
+	houses.addAttribute("T_heating");
+	houses.addAttribute("T_cooling");
+
+	houses.addAttribute("Geometry");
+	houses.addAttribute("V_living");
+
+	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
+	footprint.addAttribute("h");
+	footprint.addAttribute("built_year");
+
+	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
+	building_model.addAttribute("type");
+	building_model.addAttribute("color");
+	building_model.addAttribute("parent");
+
+	parcels.addLinks("BUILDING", houses.getName());
+	houses.addLinks("PARCEL", parcels.getName());
+	houses.addLinks("Geometry", building_model.getName());
+	houses.addLinks("Footprint", footprint.getName());
+
+	footprint.addLinks("BUILDING",  houses.getName());
+
+	std::vector<DM::View> data;
+	data.push_back(houses);
+	data.push_back(parcels);
+	data.push_back(footprint);
+	data.push_back(building_model);
+	if (this->yearFromCity)
+		data.push_back(cityView);
+
+	this->addData("City", data);
+
+}
+
+string CreateHouses::getHelpUrl()
+{
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/CreateHouses.md";
 }
