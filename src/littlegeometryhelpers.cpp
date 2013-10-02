@@ -36,14 +36,14 @@
 
 std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height, double parapet)
 {
-	std::vector<DM::Node*> nodes = TBVectorData::getNodeListFromFace(sys, f);
+	std::vector<DM::Node*> nodes = f->getNodePointers();
 	//And again we rotate or wall again into x,y assuming. we assume that z is becoming our new x
 	double E[3][3];
 	TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
 
 	double E_to[3][3];
 
-	TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+	TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[nodes.size()-1]), E_to);
 
 
 	DM::Node dN1 = *(nodes[1]) - *(nodes[0]);
@@ -113,8 +113,6 @@ std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys
 			DM::Node n = TBVectorData::RotateVector(alphas_t, window_nodes[j+i*4]);
 			window_nodes_t.push_back(sys->addNode(n));
 		}
-		window_nodes_t.push_back(window_nodes_t[0]);
-
 
 		DM::Node dN1_1 = *(window_nodes_t[1]) - *(window_nodes_t[0]);
 		DM::Node dN2_1  = *(window_nodes_t[2]) - *(window_nodes_t[0]);
@@ -264,7 +262,6 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 	vF1.push_back(n2);
 	vF1.push_back(t2);
 	vF1.push_back(t1);
-	vF1.push_back(n1);
 
 	DM::Face * F1 =  city->addFace(vF1, geometryView);
 	F1->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
@@ -278,7 +275,6 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 	vF2.push_back(t2);
 	vF2.push_back(n3);
 	vF2.push_back(n4);
-	vF2.push_back(t1);
 
 	DM::Face * F2 =  city->addFace(vF2, geometryView);
 	F2->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
@@ -290,7 +286,6 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 	vF3.push_back(n1);
 	vF3.push_back(t1);
 	vF3.push_back(n4);
-	vF3.push_back(n1);
 
 	DM::Face * F3 =  city->addFace(vF3, geometryView);
 	F3->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
@@ -302,7 +297,6 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 	vF4.push_back(n2);
 	vF4.push_back(n3);
 	vF4.push_back(t2);
-	vF4.push_back(n2);
 
 	DM::Face * F4 =  city->addFace(vF4, geometryView);
 	F4->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());

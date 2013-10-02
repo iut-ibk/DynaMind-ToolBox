@@ -118,12 +118,11 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 	for (unsigned int i = 0; i < nodeList.size(); i++) {
 		DM::Node n = *(nodeList[i]);
 		DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
-		transfromedSysSNH.addNode(n_t.getX(), n.getY(), n.getZ(), 0.0001);
+		transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001);
 		ns_t.push_back( transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
 	}
 
 	DM::Face * f_t = transformedSys.addFace(ns_t);
-
 
 	CDT cdt;
 	Polygon_2 polygon1;
@@ -138,11 +137,10 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 	insert_polygon(cdt,polygon1);
 
 	//Add Holes: Holes use the same transormation matrix
-	std::vector<std::vector<std::string> > holes = f->getHoles();
-	foreach (std::vector<std::string> hole, holes) {
+	std::vector<DM::Face *> holes = f->getHolePointers();
+	foreach (DM::Face * hole, holes) {
 		std::vector<DM::Node* > nodes_h;
-		foreach (std::string nuuid, hole) {
-			DM::Node * n = sys->getNode(nuuid);
+		foreach (DM::Node * n , hole->getNodePointers()) {
 			DM::Node n_t = TBVectorData::RotateVector(alphas, *n);
 			nodes_h.push_back(transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
 		}
@@ -166,7 +164,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 			for (int i = 0; i < 3; i++) {
 				DM::Node * n_t = transfromedSysSNH.findNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), 0.0001);
 				if (!n_t) {
-					DM::Logger(DM::Warning) << "Transformend Node doesn't exist trinagulation failed";
+					DM::Logger(DM::Warning) << "Transformend Node doesn't exist triangulation failed";
 					return  triangles.clear();
 				}
 
