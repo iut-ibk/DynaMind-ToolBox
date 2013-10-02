@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #RemoveComponent
 The modules removes selected components from the view and deregisters the component from linked objects. 
 

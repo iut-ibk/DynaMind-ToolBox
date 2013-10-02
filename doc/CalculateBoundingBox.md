@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #CalculateBoundingBox
 
 Calculates bounding box or minimal bounding box of nodes, edges, faces or rasterdata contained by an existing view. (NameOfExistingView). For edges and nodes the bounding box over all elements is calculated (please select overAll option)
@@ -35,7 +35,7 @@ Bounding Boxes minimal
 
 ![](images/calculate_bounding_box_miminal.png)
 
-Bounding Box option overalll standard
+Bounding Box option overall standard
 
 ![](images/calculate_bounding_box_tot_standard.png)
 

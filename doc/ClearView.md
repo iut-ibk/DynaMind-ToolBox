@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #ClearView
 Removes all components from a view. The module is deprecated please use [RemoveComponent](RemoveComponent.md).
 

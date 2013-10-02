@@ -24,3 +24,4 @@
 |[SuperBlock](SuperBlock.md)| creates a rectangular face |
 |[CityBlock](CityBlock.md)|subdivides a rectangular face into smaller rectangular faces e.g. SUPERBLOCK -> CITYBLOCK |
 |[Parcels](Parcels.md)|subdivides a rectangular face into smaller rectangular faces e.g. CITYBLOCK -> PARCEL|
+|[CreateHouses](CreateHouses.md)|creates houses on selected parcels|

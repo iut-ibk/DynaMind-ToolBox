@@ -1,6 +1,6 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #FaceToEdge
-Converts Faces to Edges. Just convertes geometry,attributes are not copied.
+Converts Faces to Edges. Just converts geometry,attributes are not copied.
 
 ##Parameter
 |        Name       |          Type          |       Description         | 

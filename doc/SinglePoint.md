@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #SinglePoint
 The module adds a single point to the data stream
 

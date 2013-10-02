@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #OffsetFace
 
 the module offsets faces defined in the input view. The resulting faces are added to the output view.

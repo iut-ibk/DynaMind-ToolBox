@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 # CellularAutomata
 
 The CellularAutomata module is a powerful tool when working with raster data. It enables you to create your own cellular automate with your own set of rules and neighbourhoods. Since the works with raster data newly created data are not automatically added to the input data stream. Instead a new data stream is created with the resulting data set is created. If you want to append the new data stream to the existing use:

@@ -1,4 +1,4 @@
-[List of Bacis Modules](List_of_Basic_Modules.md)
+[List of Basic Modules](List_of_Basic_Modules.md)
 #CalculateCentroid
 The module calculates the centroids and the area of faces. Just select a view and the module adds a following attributes to a face:
 - area
