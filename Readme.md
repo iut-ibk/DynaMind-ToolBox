@@ -2,5 +2,3 @@ DynaMind-GUI is a easy way to create complex simulation and set parameters in th
 
 ![](doc/images/gui_with_view.png) 
 
-# Get Started
-
