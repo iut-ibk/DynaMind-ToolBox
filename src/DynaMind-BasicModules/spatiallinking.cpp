@@ -94,6 +94,14 @@ string SpatialLinking::getHelpUrl()
 	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/SpatialLinking.md";
 }
 
+template<typename T>
+void flip(T a, T b)
+{
+	T c = a;
+	a = b;
+	b = c;
+}
+
 void SpatialLinking::run() {
 	city = this->getData("Data");
 	//std::vector<std::string> baseUUIDs = city->getUUIDsOfComponentsInView(vbase);
@@ -145,16 +153,12 @@ void SpatialLinking::run() {
 		//QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
 		QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, (Face*)cmp);
 
-		//Search Space
+		// Search Space
 		double xb;
 		double yb;
 		double hb;
 		double wb;
-		TBVectorData::getBoundingBox(((Face*)cmp)->getNodePointers(), xb, yb, hb, wb,true);
-		/*int xmin = (int) (qf.boundingRect().left()) / spatialL-1;
-		int ymin = (int) (qf.boundingRect().bottom()) /spatialL-1;
-		int xmax = (int) (qf.boundingRect().right())/spatialL+1;
-		int ymax = (int) (qf.boundingRect().top())/spatialL+1;*/
+		TBVectorData::getBoundingBox(((Face*)cmp)->getNodePointers(), xb, yb, hb, wb, true);
 
 		int xmin = (int) (xb) / spatialL-1;
 		int ymin = (int) (yb) /spatialL-1;
@@ -162,17 +166,12 @@ void SpatialLinking::run() {
 		int ymax = (int) (yb+hb)/spatialL+1;
 		Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|"<< ymax;
 
-		if (xmin > xmax) {
-			double tmp_x = xmin;
-			xmin = xmax;
-			xmax = tmp_x;
-		}
+		if (xmin > xmax) 
+			flip(xmin, xmax);
 
-		if (ymin > ymax) {
-			double tmp_y = ymin;
-			ymin = ymax;
-			ymax = tmp_y;
-		}
+		if (ymin > ymax)
+			flip(ymin, ymax);
+		
 		std::vector<LinkAttribute> links;
 		int elementInSearchSpace = 0;
 		for (int x = xmin; x <= xmax; x++) {
@@ -180,9 +179,9 @@ void SpatialLinking::run() {
 				QPair<int,int> key(x,y);
 				//Test Each Key
 				std::vector<int> * centers = nodesMap[key];
-				if (!centers) {
+				if (!centers)
 					continue;
-				}
+
 				elementInSearchSpace=elementInSearchSpace+centers->size();
 				foreach (int id, (*centers)) {
 					if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
