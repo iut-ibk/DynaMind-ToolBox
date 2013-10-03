@@ -26,6 +26,7 @@ private:
 	bool onSingal;
 	bool l_on_parcel_b;
 	bool yearFromCity;
+	bool create3DGeometry;
 
 	void createWindows(DM::Face * f, double distance, double width, double height);
 public:
