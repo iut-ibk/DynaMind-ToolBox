@@ -29,40 +29,42 @@
 #include <sstream>
 
 std::map<int, int> DMHelper::convertStringMapToIntMap(std::map<std::string, std::string>  stringmap) {
-    std::map<int, int> returnmap;
-    for(std::map<std::string, std::string>::const_iterator it = stringmap.begin(); it != stringmap.end(); ++it) {
-        returnmap[QString::fromStdString(it->first).toInt()] = QString::fromStdString(it->second).toInt();
-    }
+	std::map<int, int> returnmap;
+	for(std::map<std::string, std::string>::const_iterator it = stringmap.begin(); it != stringmap.end(); ++it) {
+		returnmap[QString::fromStdString(it->first).toInt()] = QString::fromStdString(it->second).toInt();
+	}
 
-    return returnmap;
+	return returnmap;
 }
 
 std::map<std::string, std::string> DMHelper::convertIntMapToStringMap(std::map<int, int>  map) {
-    std::map<std::string, std::string> returnmap;
-    for(std::map<int, int>::const_iterator it = map.begin(); it != map.end(); ++it) {
-        std::stringstream ss1;
-        std::stringstream ss2;
-        ss1 << it->first;
-        ss2 << it->second;
-        returnmap[ss1.str()] = ss2.str();
-    }
+	std::map<std::string, std::string> returnmap;
+	for(std::map<int, int>::const_iterator it = map.begin(); it != map.end(); ++it) {
+		std::stringstream ss1;
+		std::stringstream ss2;
+		ss1 << it->first;
+		ss2 << it->second;
+		returnmap[ss1.str()] = ss2.str();
+	}
 
-    return returnmap;
+	return returnmap;
 }
 
 std::string DMHelper::convertIntMapToDMMapString(std::map<int, int>  intmap) {
 
-    std::stringstream ss;
-    for (std::map<int, int>::const_iterator it = intmap.begin(); it != intmap.end(); ++it) {
-        ss << it->first << "*|*" << it->second << "*||*" ;
-    }
-    std::string s = ss.str();
-    return ss.str();
+	std::stringstream ss;
+	for (std::map<int, int>::const_iterator it = intmap.begin(); it != intmap.end(); ++it) {
+		ss << it->first << "*|*" << it->second << "*||*" ;
+	}
+	std::string s = ss.str();
+	return ss.str();
 }
 
 void DMHelper::LinkComponents(const DM::View &v1, DM::Component *c1, const DM::View &v2, DM::Component *c2)
 {
-    c1->getAttribute(v2.getName())->setLink(v2.getName(), c2->getUUID());
-    c2->getAttribute(v1.getName())->setLink(v1.getName(), c1->getUUID());
+	//c1->getAttribute(v2.getName())->setLink(v2.getName(), c2->getUUID());
+	//c2->getAttribute(v1.getName())->setLink(v1.getName(), c1->getUUID());
+	c1->getAttribute(v2.getName())->addLink(c2, v2.getName());
+	c2->getAttribute(v1.getName())->addLink(c1, v1.getName());
 
 }
