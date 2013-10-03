@@ -670,7 +670,7 @@ Attribute* Attribute::LoadAttribute(const Component* c, const std::string& attri
 	Attribute* a = new Attribute(attributeName);
 	a->isInserted = true;
 
-	AttributeValue* val = new AttributeValue(v,(AttributeType)t.toInt());
+	AttributeValue* val = new AttributeValue(v,(AttributeType)t.toInt(), c->getCurrentSystem());
 	a->value = *val;
 	val->ptr = NULL;
 	return a;

@@ -147,7 +147,7 @@ public:
 	* The method returns a pointer to a new data object (including attributes and uuid) */
 	virtual Component* clone();
 
-	System * getCurrentSystem();
+	System * getCurrentSystem() const;
 	void setCurrentSystem(System * sys);
 	void SaveToDb();
 protected:

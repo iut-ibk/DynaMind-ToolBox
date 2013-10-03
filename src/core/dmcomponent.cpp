@@ -349,7 +349,7 @@ const set<std::string> &Component::getInViews() const
 	return this->inViews;
 }
 
-System * Component::getCurrentSystem() 
+System * Component::getCurrentSystem() const
 {
 	return this->currentSys;
 }

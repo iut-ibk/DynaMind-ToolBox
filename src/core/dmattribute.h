@@ -209,12 +209,6 @@ private:
 	Component*		owner;
 	AttributeValue	value;
 	bool			isInserted;
-<<<<<<< HEAD
-//AttributeValue*	getValue() const;
-
-=======
-	
->>>>>>> 466be65... added load and save from db for attributes
 //	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 };
 typedef std::map<std::string, DM::Attribute*> AttributeMap;
