@@ -698,29 +698,56 @@ TEST_F(TestSystem, SQLattributes)
 
 	DM::Logger(DM::Debug) << "checking links";
 	// LINKS
-	a = new DM::Attribute("fuzzi");
+	DM::System* sys = new DM::System;
+	DM::Component* ca = sys->addComponent(new DM::Component);
+	DM::Component* cb = sys->addComponent(new DM::Component);
+	
+	a = ca->getAttribute("link_a");
+	Attribute* b = cb->getAttribute("link_b");
+	// crosslink
+	a->addLink(cb, "view_name");
+	b->addLink(ca, "view_name");
+	
+	ASSERT_TRUE(a->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(b->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(a->getLinkedComponents()[0] == cb);
+	ASSERT_TRUE(b->getLinkedComponents()[0] == ca);
 
-	std::vector<DM::LinkAttribute> links;
-	DM::LinkAttribute link0 ("0","a");
-	DM::LinkAttribute link1 ("1","b");
-	DM::LinkAttribute link2 ("2","c");
+	DM::System* successingSys = sys->createSuccessor();
+	
+	// get sure component a and b sty the same
+	ASSERT_TRUE(a->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(b->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(a->getLinkedComponents()[0] == cb);
+	ASSERT_TRUE(b->getLinkedComponents()[0] == ca);
 
-	links.push_back(link0);
-	links.push_back(link1);
-	a->setLinks(links);
-	links.push_back(link2);
-	a->setLink(link2.viewname, link2.uuid);
-	std::vector<DM::LinkAttribute> linksOut = a->getLinks();
-
-	for(unsigned int i=0;i<links.size();i++)
+	std::vector<DM::Component*> comps = successingSys->getAllComponents();
+	ASSERT_TRUE(comps.size() == 2);
+	// map successing components
+	std::map<std::string, DM::Attribute*> suc_attribute = comps[0]->getAllAttributes();
+	if(map_contains(&suc_attribute, std::string("link_a")))
 	{
-		ASSERT_TRUE(linksOut[i].uuid == links[i].uuid);
-		ASSERT_TRUE(linksOut[i].viewname == links[i].viewname);
+		ca = comps[0];
+		cb = comps[1];
 	}
-	delete a;
+	else
+	{
+		ca = comps[1];
+		cb = comps[0];
+	}
+	a = ca->getAttribute("link_a");
+	b = cb->getAttribute("link_b");
+	// check links again
+	ASSERT_TRUE(a->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(b->getLinkedComponents().size() == 1);
+	ASSERT_TRUE(a->getLinkedComponents()[0] == cb);
+	ASSERT_TRUE(b->getLinkedComponents()[0] == ca);
+
+	delete sys;
+
 	DM::Logger(DM::Debug) << "checking copy constructor";
 	a = new DM::Attribute("fuzzi", 5.0);
-	DM::Attribute *b = new Attribute(*a);
+	b = new Attribute(*a);
 	ASSERT_TRUE(a->getDouble() == 5.0);
 	ASSERT_TRUE(b->getDouble() == 5.0);
 	delete a;
