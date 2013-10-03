@@ -497,6 +497,8 @@ Component* System::getChild(QUuid quuid)
 	if(map_contains(&rasterdata, quuid, r))	return r;
 	System* s;
 	if(map_contains(&subsystems, quuid, s))	return s;
+
+	return NULL;
 }
 
 Component* System::getSuccessingComponent(const Component* formerComponent)
