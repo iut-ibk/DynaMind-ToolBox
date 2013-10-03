@@ -55,36 +55,31 @@ void iterate_components(DM::System *system, DM::View v, CB &callback = CB())
 {
 	foreach(DM::Component *cmp, system->getAllComponentsInView(v))
 	{
-		std::vector<DM::LinkAttribute> links = cmp->getAttribute("Geometry")->getLinks();
-		/*std::vector<std::string> uuids;
-
-		foreach (DM::LinkAttribute link, links)
-			uuids.push_back(link.uuid);
-
-		if (v.getType() == DM::FACE)
-			uuids.push_back(cmp_uuid);*/
+		std::vector<DM::Component*> cmps = cmp->getAttribute("Geometry")->getLinkedComponents();
+		if(v.getType() == DM::FACE)
+			cmps.push_back(cmp);
 
 		callback(system, v, cmp, 0, 0, before);
-		//foreach (std::string uuid, uuids) 
-		//{
-		//	DM::Face * f = system->getFace(uuid);
-		if(DM::Face* f = (DM::Face*)cmp)
+
+		foreach(DM::Component* c, cmps)
 		{
-			std::vector<double> c = f->getAttribute("color")->getDoubleVector();
-
-			DM::Vector3 color;
-			if (c.size() > 2)
-				color = DM::Vector3(c[0],c[1],c[2]);
-
-			// std::vector<DM::Node> nodes = DM::CGALGeometry::FaceTriangulation(system, f);
-			std::vector<DM::Node> nodes;
-			DM::CGALGeometry::FaceTriangulation(system, f, nodes);
-
-			DM::Vector3 vec;
-			foreach (const DM::Node &n, nodes) 
+			if(DM::Face* f = (DM::Face*)c)
 			{
-				n.get(&vec.x);
-				callback(system, v, cmp, &vec, &color, in_between);
+				std::vector<double> c = f->getAttribute("color")->getDoubleVector();
+
+				DM::Vector3 color;
+				if (c.size() > 2)
+					color = DM::Vector3(c[0],c[1],c[2]);
+
+				std::vector<DM::Node> nodes;
+				DM::CGALGeometry::FaceTriangulation(system, f, nodes);
+
+				DM::Vector3 vec;
+				foreach (const DM::Node &n, nodes) 
+				{
+					n.get(&vec.x);
+					callback(system, v, cmp, &vec, &color, in_between);
+				}
 			}
 		}
 		callback(system, v, cmp, 0, 0, after);
