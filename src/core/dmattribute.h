@@ -157,7 +157,7 @@ public:
 	/** @brief add link object **/
 	//void setLink(std::string viewname, std::string uuid);
 	void addLink(Component* target, const std::string& viewName);
-
+	bool removeLink(Component* target);
 	void clearLinks();
 	std::vector<Component*> getLinkedComponents();
 	/** @brief Sets attribute links the existing vector is cleared! **/

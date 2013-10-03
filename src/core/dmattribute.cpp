@@ -466,6 +466,18 @@ void Attribute::addLink(Component* target, const std::string& viewName)
 	value->second.push_back(target);
 }
 
+bool Attribute::removeLink(Component* target)
+{
+	AttributeValue* a = getValue();
+	if(a->type != LINK || !a->ptr)
+		return false;
+
+	std::vector<Component*>& linkedComponents = ((LinkVector*)a->ptr)->second;
+	int size = linkedComponents.size();
+	std::remove(linkedComponents.begin(), linkedComponents.end(), target);
+	return size != linkedComponents.size();
+}
+
 void Attribute::clearLinks()
 {
 	AttributeValue* a = getValue();
