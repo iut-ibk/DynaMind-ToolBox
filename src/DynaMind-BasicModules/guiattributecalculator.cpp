@@ -233,5 +233,6 @@ void GUIAttributeCalculator::accept() {
 	//this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
 	//this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
 	this->attrcalc->asVector = this->ui->asVector->isChecked();
+	this->attrcalc->init();
 	QDialog::accept();
 }
