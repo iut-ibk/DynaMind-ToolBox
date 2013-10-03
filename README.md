@@ -14,7 +14,7 @@ a easy way to set up and edit your simulation
 
 <img src="https://github.com/iut-ibk/DynaMind-Gui/blob/master/doc/images/gui_with_view.png?raw=true" border="0">
 
-- a set of modules to import, edit, createa dn export data
+- a set of modules to import, edit, createa and export data
 
  - [DynaMind-BasicModules](https://github.com/iut-ibk/DynaMind-BasicModules )
  - [DynaMind-Sewer](https://github.com/iut-ibk/DynaMind-Sewer)
