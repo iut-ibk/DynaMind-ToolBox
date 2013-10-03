@@ -453,27 +453,25 @@ bool Attribute::hasStringVector()
 
 void Attribute::addLink(Component* target, const std::string& viewName)
 {
-	AttributeValue* a = getValue();
-	if(a->type != LINK)
-		a->Free();
+	if(getType() != LINK)
+		value.Free();
 
-	if(!a->ptr)
+	if(!value.ptr)
 	{
-		a->ptr = new LinkVector(viewName, std::vector<Component*>());
-		a->type = LINK;
+		value.ptr = new LinkVector(viewName, std::vector<Component*>());
+		value.type = LINK;
 	}
 
-	LinkVector* value = (LinkVector*)a->ptr;
-	value->second.push_back(target);
+	LinkVector* lvalue = (LinkVector*)value.ptr;
+	lvalue->second.push_back(target);
 }
 
 bool Attribute::removeLink(Component* target)
 {
-	AttributeValue* a = getValue();
-	if(a->type != LINK || !a->ptr)
+	if(value.type != LINK || !value.ptr)
 		return false;
 
-	std::vector<Component*>& linkedComponents = ((LinkVector*)a->ptr)->second;
+	std::vector<Component*>& linkedComponents = ((LinkVector*)value.ptr)->second;
 	int size = linkedComponents.size();
 	std::remove(linkedComponents.begin(), linkedComponents.end(), target);
 	return size != linkedComponents.size();
@@ -481,21 +479,19 @@ bool Attribute::removeLink(Component* target)
 
 void Attribute::clearLinks()
 {
-	AttributeValue* a = getValue();
-	if(a->type == LINK)
-		if(LinkVector* value = (LinkVector*)getValue()->ptr)
-			value->second.clear();
+	if(value.type == LINK)
+		if(LinkVector* lvalue = (LinkVector*)value.ptr)
+			lvalue->second.clear();
 }
 
 std::vector<Component*> Attribute::getLinkedComponents()
 {
-	AttributeValue* a = getValue();
-	if(a->type == LINK)
-		if(LinkVector* value = (LinkVector*)getValue()->ptr)
+	if(value.type == LINK)
+		if(LinkVector* lvalue = (LinkVector*)value.ptr)
 		{
 			//foreach(Component* c, value->second)
-			for(std::vector<Component*>::iterator it = value->second.begin();
-				it != value->second.end(); ++it)
+			for(std::vector<Component*>::iterator it = lvalue->second.begin();
+				it != lvalue->second.end(); ++it)
 			{
 				if((*it)->getCurrentSystem() != GetOwner()->getCurrentSystem())
 				{
@@ -503,7 +499,7 @@ std::vector<Component*> Attribute::getLinkedComponents()
 					*it = GetOwner()->getCurrentSystem()->getSuccessingComponent((*it));
 				}
 			}
-			return value->second;
+			return lvalue->second;
 		}
 	return std::vector<Component*>();
 }

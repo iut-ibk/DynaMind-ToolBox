@@ -206,7 +206,7 @@ private:
 	Component*		owner;
 	AttributeValue	value;
 	bool			isInserted;
-	AttributeValue*	getValue() const;
+//AttributeValue*	getValue() const;
 
 //	static DbCache<Attribute*,Attribute::AttributeValue> attributeCache;
 };
