@@ -54,7 +54,7 @@ void FaceToEdge::run()
 		for (int j = 1; j < number_of_nodes; j++){
 			if (!sharedEdges) {
 				DM::Edge * e = sys->addEdge(nodes[j-1], nodes[j], view_edge);
-				if (linkToFaces) e->getAttribute(face_name)->setLink(face_name, e->getUUID());
+				if (linkToFaces) e->getAttribute(face_name)->addLink(e, face_name);
 				continue;
 			}
 
@@ -74,7 +74,7 @@ void FaceToEdge::run()
 				edgeCounter++;
 			}
 			if (linkToFaces) {
-				e->getAttribute(face_name)->setLink(face_name, f->getUUID());
+				e->getAttribute(face_name)->addLink(f, face_name);
 				e->addAttribute("shared_by", e->getAttribute("shared_by")->getDouble() +1);
 
 			}

@@ -136,10 +136,10 @@ void CreateHouses::run()
 		}
 
 		//Create Links
-		building->getAttribute("Footprint")->setLink(footprint.getName(), foot_print->getUUID());
-		foot_print->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
-		building->getAttribute("PARCEL")->setLink(parcels.getName(), parcel->getUUID());
-		parcel->getAttribute("BUILDING")->setLink(houses.getName(), building->getUUID());
+		building->getAttribute("Footprint")->addLink(foot_print, footprint.getName());
+		foot_print->getAttribute("BUILDING")->addLink(building, houses.getName());
+		building->getAttribute("PARCEL")->addLink(parcel, parcels.getName());
+		parcel->getAttribute("BUILDING")->addLink(building, houses.getName());
 		parcel->addAttribute("is_built",1);
 		numberOfHouseBuild++;
 

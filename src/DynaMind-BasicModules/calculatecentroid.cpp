@@ -111,10 +111,10 @@ void CalculateCentroid::run()
 
 		Node * cn = city->addNode(p, newPoints);
 		Attribute attr(link.str());
-		attr.setLink(vData.getName(), f->getUUID());
+		attr.addLink(f, vData.getName());
 		cn->addAttribute(attr);
 
-		f->getAttribute(newPoints.getName())->setLink(newPoints.getName(), cn->getUUID());
+		f->getAttribute(newPoints.getName())->addLink(cn, newPoints.getName());
 	}
 }
 bool CalculateCentroid::createInputDialog() {

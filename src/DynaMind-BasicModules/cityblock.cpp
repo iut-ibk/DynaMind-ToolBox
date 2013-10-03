@@ -242,19 +242,22 @@ void CityBlock::run()
 
 
 				//Create Links
-				n->getAttribute(cityblock.getName())->setLink(cityblock.getName(), f->getUUID());
-				f->getAttribute(centercityblock.getName())->setLink(centercityblock.getName(), n->getUUID());
+				std::string cityblockName = cityblock.getName();
+				n->getAttribute(cityblock.getName())->addLink(f, cityblockName);
+				f->getAttribute(centercityblock.getName())->addLink(n, centercityblock.getName());
 
-				if (createStreets) {
-					e1->getAttribute(cityblock.getName())->setLink(cityblock.getName(),f->getUUID());
-					e2->getAttribute(cityblock.getName())->setLink(cityblock.getName(),f->getUUID());
-					e3->getAttribute(cityblock.getName())->setLink(cityblock.getName(),f->getUUID());
-					e4->getAttribute(cityblock.getName())->setLink(cityblock.getName(),f->getUUID());
+				if (createStreets) 
+				{
+					e1->getAttribute(cityblock.getName())->addLink(f, cityblockName);
+					e2->getAttribute(cityblock.getName())->addLink(f, cityblockName);
+					e3->getAttribute(cityblock.getName())->addLink(f, cityblockName);
+					e4->getAttribute(cityblock.getName())->addLink(f, cityblockName);
 
-					f->getAttribute(streets.getName())->setLink(streets.getName(), e1->getUUID());
-					f->getAttribute(streets.getName())->setLink(streets.getName(), e2->getUUID());
-					f->getAttribute(streets.getName())->setLink(streets.getName(), e3->getUUID());
-					f->getAttribute(streets.getName())->setLink(streets.getName(), e4->getUUID());
+					std::string streetsName = streets.getName();
+					f->getAttribute(streetsName)->addLink(e1, streetsName);
+					f->getAttribute(streetsName)->addLink(e2, streetsName);
+					f->getAttribute(streetsName)->addLink(e3, streetsName);
+					f->getAttribute(streetsName)->addLink(e4, streetsName);
 				}
 			}
 		}

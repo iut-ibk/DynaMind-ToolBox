@@ -127,9 +127,8 @@ void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * va
 	if (attr->getType() == Attribute::LINK)
 	{
 		std::string newSearchName = viewNameList.join(".").toStdString();
-		foreach (LinkAttribute l, attr->getLinks())
+		foreach(Component* nextcmp, attr->getLinkedComponents())
 		{
-			Component * nextcmp = m_sys->getComponent(l.uuid);
 			if(!nextcmp)
 			{
 				Logger(Error) << "Linked Element does not exist";

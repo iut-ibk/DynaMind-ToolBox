@@ -47,7 +47,8 @@ void RemoveComponent::init() {
 	this->addData("city", datastream);
 }
 
-void RemoveComponent::run() {
+void RemoveComponent::run() 
+{
 	DM::System * city = this->getData("city");
 
 	std::vector<DM::Component*> comps = city->getAllComponentsInView(this->view_remove);
@@ -58,29 +59,14 @@ void RemoveComponent::run() {
 			continue;
 		city->removeComponentFromView(cmp, this->view_remove);
 
-		//remove
-		std::map<std::string, DM::Attribute*> attr_map = cmp->getAllAttributes();
-		for (std::map<std::string, DM::Attribute*>::const_iterator it = attr_map.begin(); it != attr_map.end(); ++it) {
-			DM::Attribute * attr = it->second;
-			if (attr->getType() == DM::Attribute::LINK) {
-				std::vector<DM::LinkAttribute> links = attr->getLinks();
-				foreach (DM::LinkAttribute link, links) {
-					DM::Component * l_cmp = city->getComponent(link.uuid);
-					if (!l_cmp) continue;
-					std::vector<DM::LinkAttribute> cmp_links = l_cmp->getAttribute(this->view_remove.getName())->getLinks();
+		mforeach(DM::Attribute* attr, cmp->getAllAttributes())
+		{
+			if (attr->getType() == DM::Attribute::LINK) 
+			{
+				foreach(DM::Component* l_cmp, attr->getLinkedComponents())
+					l_cmp->getAttribute(this->view_remove.getName())->removeLink(cmp);
 
-					std::vector<DM::LinkAttribute> cmp_links_new;
-
-					foreach (DM::LinkAttribute l, cmp_links) {
-						if (l.uuid != cmp->getUUID() || l.viewname != this->view_remove.getName()) cmp_links_new.push_back(l);
-					}
-					DM::Logger(DM::Debug) << "Remove links " << attr->getName() << "\t" << cmp_links.size() << "/" << cmp_links_new.size();
-
-					l_cmp->getAttribute(this->view_remove.getName())->setLinks(cmp_links_new);
-				}
-
-				attr->setLinks(std::vector<DM::LinkAttribute>());
-
+				attr->clearLinks();
 			}
 		}
 	}

@@ -102,21 +102,17 @@ void flip(T a, T b)
 	b = c;
 }
 
-void SpatialLinking::run() {
+void SpatialLinking::run() 
+{
 	city = this->getData("Data");
-	//std::vector<std::string> baseUUIDs = city->getUUIDsOfComponentsInView(vbase);
-	std::vector<QPointF> centerPoints;
 
 	//Node id that point to elements in the vector are stored in Hashmap for faster lookup
-	QHash<QPair<int, int>, std::vector<int>* > nodesMap;
+	typedef QPair<QPointF, std::vector<Component*> > Bucket;
+	QHash<QPair<int, int>, Bucket > nodesMap;
 
-	//Init Point List
-	int counterID = -1;
-	//foreach (std::string baseUUID, baseUUIDs) {
+	// Init Point List
 	foreach(DM::Component* c, city->getAllComponentsInView(vbase))
 	{
-		counterID++;
-
 		double v[3];
 
 		if (vbase.getType() == DM::FACE)
@@ -124,41 +120,25 @@ void SpatialLinking::run() {
 		else if (vbase.getType() == DM::NODE) 
 			((Node*)c)->get(v);
 
-		centerPoints.push_back(QPointF(v[0], v[1]));
-
 		int x = v[0] / spatialL;
 		int y = v[1] / spatialL;
 
-		QPair<int,int> key(x,y);
-		std::vector<int> * vn;
-		if (!nodesMap.contains(key)) 
-		{
-			vn = new std::vector<int>();
-			nodesMap[key] = vn;
-		}
-		vn = nodesMap[key];
-		vn->push_back(counterID);
+		Bucket& it = nodesMap[QPair<int,int>(x,y)];
+		it.first = QPointF(v[0], v[1]);
+		it.second.push_back(c);
 	}
-	//Check if Center point is within toLink
-
-	//std::vector<std::string> linkUUIDs = city->getUUIDsOfComponentsInView(vlinkto);
-
 	int CounterElementLinked = 0;
-	//int NumberOfLinks = linkUUIDs.size();
 
-	//for (int i = 0; i < NumberOfLinks; i++) {
-	foreach(Component* cmp, city->getAllComponentsInView(vlinkto))
+	foreach(Component* baseCmp, city->getAllComponentsInView(vlinkto))
 	{
-		//std::string linkUUID = linkUUIDs[i];
-		//QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
-		QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, (Face*)cmp);
+		QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, (Face*)baseCmp);
 
 		// Search Space
 		double xb;
 		double yb;
 		double hb;
 		double wb;
-		TBVectorData::getBoundingBox(((Face*)cmp)->getNodePointers(), xb, yb, hb, wb, true);
+		TBVectorData::getBoundingBox(((Face*)baseCmp)->getNodePointers(), xb, yb, hb, wb, true);
 
 		int xmin = (int) (xb) / spatialL-1;
 		int ymin = (int) (yb) /spatialL-1;
@@ -172,34 +152,30 @@ void SpatialLinking::run() {
 		if (ymin > ymax)
 			flip(ymin, ymax);
 		
-		std::vector<LinkAttribute> links;
+		Attribute* baseAttribute = baseCmp->getAttribute(base);
+
 		int elementInSearchSpace = 0;
-		for (int x = xmin; x <= xmax; x++) {
-			for (int y = ymin; y <= ymax; y++) {
-				QPair<int,int> key(x,y);
-				//Test Each Key
-				std::vector<int> * centers = nodesMap[key];
-				if (!centers)
+		for (int x = xmin; x <= xmax; x++) 
+		{
+			for (int y = ymin; y <= ymax; y++) 
+			{
+				const Bucket& bucket = nodesMap[QPair<int,int>(x,y)];
+				const std::vector<Component*>& elementsInBucket = bucket.second;
+				if (elementsInBucket.empty())
 					continue;
 
-				elementInSearchSpace=elementInSearchSpace+centers->size();
-				foreach (int id, (*centers)) {
-					if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
-						LinkAttribute lto;
-						lto.viewname = linkto;
-						lto.uuid = linkUUID;
-						Component * cmp = city->getComponent(baseUUIDs[id]);
-						Attribute * attr = cmp->getAttribute(linkto);
-						std::vector<LinkAttribute>  ls = attr->getLinks();
-						if (std::find(ls.begin(), ls.end(), lto) == ls.end()) ls.push_back(lto);
-						//else Logger(Standard) << "Link already existed";
-						attr->setLinks(ls);
+				elementInSearchSpace = elementInSearchSpace + elementsInBucket.size();
+				foreach (Component* it, elementsInBucket) 
+				{
+					if (qf.containsPoint(bucket.first, Qt::WindingFill)) 
+					{
+						Attribute * attr = it->getAttribute(linkto);
+						std::vector<Component*> linkedComponents = attr->getLinkedComponents();
+						if (std::find(linkedComponents.begin(), linkedComponents.end(), it) == linkedComponents.end()) 
+							attr->addLink(it, linkto);
 
-						LinkAttribute lbase;
-						lbase.viewname = base;
-						lbase.uuid = cmp->getUUID();
+						baseAttribute->addLink(it, base);
 
-						links.push_back(lbase);
 						CounterElementLinked++;
 					}
 
@@ -208,22 +184,8 @@ void SpatialLinking::run() {
 			}
 		}
 		Logger(Debug) << "Element in search space " << elementInSearchSpace;
-		Logger(Debug) << "Linked to " << links.size();
-		//Component * cmp = city->getComponent(linkUUID);
-		Attribute * attr = cmp->getAttribute(base);
-		attr->setLinks(links);
+		Logger(Debug) << "Linked to " << baseAttribute->getLinkedComponents().size();
 	}
-
-	/*QList<QPair<int, int> >keys = nodesMap.keys();
-
-	for (int i = 0; i < keys.size(); i++)
-		delete nodesMap[keys[i]];
-
-	nodesMap.clear();*/
-
-	foreach(std::vector<int>* v, nodesMap)
-		delete v;
-
 
 	Logger(DM::Debug) << "Elements Linked " << CounterElementLinked;
 }

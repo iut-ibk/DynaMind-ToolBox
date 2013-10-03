@@ -220,8 +220,8 @@ void CalculateBoundingBox::caculateBoundingBox()
 			bF->addAttribute("l", x2-x1);
 			bF->addAttribute("b", y2-y1);
 
-			bF->getAttribute(vData.getName())->setLink(vData.getName(), f->getUUID());
-			f->getAttribute(newFaces.getName())->setLink(newFaces.getName(), bF->getUUID());
+			bF->getAttribute(vData.getName())->addLink(f, vData.getName());
+			f->getAttribute(newFaces.getName())->addLink(bF, newFaces.getName());
 		}
 	}
 }
@@ -273,8 +273,8 @@ void CalculateBoundingBox::caculateMinBoundingBox()
 		bF->addAttribute("l",size[0]);
 		bF->addAttribute("b",size[1]);
 
-		bF->getAttribute(vData.getName())->setLink(vData.getName(), f->getUUID());
-		f->getAttribute(newFaces.getName())->setLink(newFaces.getName(), bF->getUUID());
+		bF->getAttribute(vData.getName())->addLink(f, vData.getName());
+		f->getAttribute(newFaces.getName())->addLink(bF, newFaces.getName());
 
 	}
 }
