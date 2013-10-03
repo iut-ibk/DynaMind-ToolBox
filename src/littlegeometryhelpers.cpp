@@ -153,8 +153,8 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
 
 	//Set footprint as floor
 	DM::Face * base_plate = city->addFace(footprint, geometryView);
-	BuildingInterface->getAttribute("Geometry")->setLink("Geometry", base_plate->getUUID());
-	base_plate->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+	BuildingInterface->getAttribute("Geometry")->addLink(base_plate, "Geometry");
+	base_plate->getAttribute("Parent")->addLink(BuildingInterface, buildingView.getName());
 	base_plate->addAttribute("type", "ceiling_cellar");
 
 	//The Building is extruded stepwise. Housenodes is used as a starting point for the extusion
@@ -173,8 +173,8 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
 					foreach (DM::Face * w, windows) {
 						w->addAttribute("type", "window");
 						w->getAttribute("color")->setDoubleVector(windowColor);
-						BuildingInterface->getAttribute("Geometry")->setLink("Geometry", w->getUUID());
-						w->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+						BuildingInterface->getAttribute("Geometry")->addLink(w, "Geometry");
+						w->getAttribute("Parent")->addLink(BuildingInterface, buildingView.getName());
 						city->addComponentToView(w,geometryView);
 					}
 				}
@@ -193,8 +193,8 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
 
 				f->getAttribute("color")->setDoubleVector(roofColor);
 			}
-			BuildingInterface->getAttribute("Geometry")->setLink("Geometry", f->getUUID());
-			f->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
+			BuildingInterface->getAttribute("Geometry")->addLink(f, "Geometry");
+			f->getAttribute("Parent")->addLink(BuildingInterface, buildingView.getName());
 
 		}
 	}
@@ -202,6 +202,24 @@ void LittleGeometryHelpers::CreateStandardBuilding(DM::System * city, DM::View &
 
 
 }
+
+void addFace(DM::System* city, DM::Node* n1, DM::Node* n2, DM::Node* n3, DM::Node* n4, std::string type, std::vector<double> color,
+			 DM::View & buildingView, DM::View &geometryView, DM::Component *BuildingInterface)
+{
+	std::vector<DM::Node* > vf;
+	vf.push_back(n1);
+	vf.push_back(n2);
+	vf.push_back(n3);
+	vf.push_back(n4);
+	vf.push_back(n1);
+
+	DM::Face * f =  city->addFace(vf, geometryView);
+	f->getAttribute("Parent")->addLink(BuildingInterface, buildingView.getName());
+	f->addAttribute("type", type);
+	f->getAttribute("color")->setDoubleVector(color);
+	BuildingInterface->getAttribute("Geometry")->addLink(f, "Geometry");
+}
+
 
 void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & buildingView, DM::View &geometryView, DM::Component *BuildingInterface, std::vector<DM::Node * >  &footprint, double height, double alpha)
 {
@@ -213,10 +231,10 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 	wallColor.push_back(196./255.);
 	wallColor.push_back(196./255.);
 	wallColor.push_back(196./255.);
-	std::vector<double> windowColor;
+	/*std::vector<double> windowColor;
 	windowColor.push_back(204./255.);
 	windowColor.push_back(229./255.);
-	windowColor.push_back(1);
+	windowColor.push_back(1);*/
 
 	const double pi =  3.14159265358979323846;
 	//Create roof for minimal bounding box
@@ -232,7 +250,6 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 
 	double l = dimension[0];
 	double b = dimension[1];
-
 
 	double h = cos (alpha / 180. * pi) * b / 2.;
 	QPointF qcenter(center.getX(), center.getY());
@@ -258,55 +275,9 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 
 	DM::Node * t1 = city->addNode(q_top_1.x(), q_top_1.y(), height + h/2.);
 	DM::Node * t2 = city->addNode(q_top_2.x(), q_top_2.y(), height + h/2.);
-
-	std::vector<DM::Node* > vF1;
-	vF1.push_back(n1);
-	vF1.push_back(n2);
-	vF1.push_back(t2);
-	vF1.push_back(t1);
-	vF1.push_back(n1);
-
-	DM::Face * F1 =  city->addFace(vF1, geometryView);
-	F1->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
-	F1->addAttribute("type", "roof");
-	F1->getAttribute("color")->setDoubleVector(roofColor);
-	BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F1->getUUID());
-
-
-	std::vector<DM::Node* > vF2;
-	vF2.push_back(t1);
-	vF2.push_back(t2);
-	vF2.push_back(n3);
-	vF2.push_back(n4);
-	vF2.push_back(t1);
-
-	DM::Face * F2 =  city->addFace(vF2, geometryView);
-	F2->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
-	F2->addAttribute("type", "roof");
-	F2->getAttribute("color")->setDoubleVector(roofColor);
-	BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F2->getUUID());
-
-	std::vector<DM::Node* > vF3;
-	vF3.push_back(n1);
-	vF3.push_back(t1);
-	vF3.push_back(n4);
-	vF3.push_back(n1);
-
-	DM::Face * F3 =  city->addFace(vF3, geometryView);
-	F3->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
-	F3->addAttribute("type", "roof_wall");
-	F3->getAttribute("color")->setDoubleVector(wallColor);
-	BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F3->getUUID());
-
-	std::vector<DM::Node* > vF4;
-	vF4.push_back(n2);
-	vF4.push_back(n3);
-	vF4.push_back(t2);
-	vF4.push_back(n2);
-
-	DM::Face * F4 =  city->addFace(vF4, geometryView);
-	F4->getAttribute("Parent")->setLink(buildingView.getName(), BuildingInterface->getUUID());
-	F4->addAttribute("type", "roof_wall");
-	F4->getAttribute("color")->setDoubleVector(wallColor);
-	BuildingInterface->getAttribute("Geometry")->setLink("Geometry", F4->getUUID());
+	
+	addFace(city, n1, n2, t2, t1, "roof", roofColor, buildingView, geometryView, BuildingInterface);
+	addFace(city, t1, t2, n3, n4, "roof", roofColor, buildingView, geometryView, BuildingInterface);
+	addFace(city, n1, t1, n4, n1, "roof_wall", wallColor, buildingView, geometryView, BuildingInterface);
+	addFace(city, n2, n3, t2, n2, "roof_wall", wallColor, buildingView, geometryView, BuildingInterface);
 }
