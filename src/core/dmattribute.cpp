@@ -597,6 +597,7 @@ void Attribute::setType(AttributeType type)
 void Attribute::Change(const Attribute &attribute)
 {
 	//name = attribute.name; name should never be changed!
+	value.Free();
 	AttributeValue* val = new AttributeValue(attribute.value);
 	value = *val;
 	val->ptr = NULL;
@@ -658,40 +659,46 @@ Component* Attribute::GetOwner()
 {
 	return owner;
 }
-/*
-Attribute::AttributeValue* Attribute::LoadFromDb()
+
+Attribute* Attribute::LoadAttribute(const Component* c, const std::string& attributeName)
 {
 	QVariant t,v;
-	DBConnector::getInstance()->Select("attributes", owner->getQUUID(), QString::fromStdString(name),
+	DBConnector::getInstance()->Select("attributes", c->getQUUID(), QString::fromStdString(attributeName),
 		"type",     &t,
 		"value",     &v);
-	
-	if(Component* c = GetOwner())
-		if(System* sys = c->getCurrentSystem())
-			return new AttributeValue(v,(AttributeType)t.toInt(), sys);
 
-	return new AttributeValue(v,(AttributeType)t.toInt(), NULL);
+	Attribute* a = new Attribute(attributeName);
+	a->isInserted = true;
+
+	AttributeValue* val = new AttributeValue(v,(AttributeType)t.toInt());
+	a->value = *val;
+	val->ptr = NULL;
+	return a;
 }
 
-void Attribute::SaveToDb(Attribute::AttributeValue *val)
+void Attribute::SaveAttribute(Attribute* a)
 {
-	QVariant qval = val->toQVariant();
-	QVariant qtype = QVariant::fromValue((int)val->type);
-	QString qname = QString::fromStdString(name);
-	if(isInserted)
+	if(a->owner)
+		return;
+	
+	QVariant qval = a->value.toQVariant();
+	QVariant qtype = QVariant::fromValue((int)a->value.type);
+	QString qname = QString::fromStdString(a->name);
+
+	if(a->isInserted)
 	{
 		DBConnector::getInstance()->Update(
-			"attributes",	owner->getQUUID(), qname,
+			"attributes",	a->owner->getQUUID(), qname,
 			"type",			&qtype,
 			"value",		&qval);
 	}
 	else
 	{
 		DBConnector::getInstance()->Insert(
-			"attributes",	owner->getQUUID(), qname,
+			"attributes",	a->owner->getQUUID(), qname,
 			"type",			&qtype,
 			"value",		&qval);
-		isInserted = true;
+		a->isInserted = true;
 	}
 }
-*/
+
