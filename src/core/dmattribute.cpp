@@ -30,10 +30,13 @@
 #include <QVariant>
 #include "dmdbconnector.h"
 #include "dmlogger.h"
+#include <dmsystem.h>
 
 using namespace DM;
 
 DbCache<Attribute*,Attribute::AttributeValue> Attribute::attributeCache(0);
+
+typedef std::pair<std::string, std::vector<Component*> > LinkVector;
 
 void Attribute::ResizeCache(unsigned long size)
 {
@@ -78,16 +81,15 @@ QByteArray GetBinaryValue(std::vector<std::string> v)
 	return bytes;
 }
 
-QByteArray GetBinaryValue(std::vector<LinkAttribute> v)
+QByteArray GetBinaryValue(LinkVector v)
 {
 	QByteArray bytes;
 	QDataStream s(&bytes, QIODevice::WriteOnly);
-	s << (int)v.size();
-	foreach(LinkAttribute it, v)
-	{
-		s << QString::fromStdString(it.uuid);
-		s << QString::fromStdString(it.viewname);
-	}
+	s << QString::fromStdString(v.first);
+	s << (int)v.second.size();
+	foreach(Component* c, v.second)
+		s << c->getQUUID();
+
 	return bytes;
 }
 
@@ -105,23 +107,21 @@ QByteArray GetBinaryValue(TimeSeriesAttribute a)
 	return bytes;
 }
 
-std::vector<LinkAttribute> ToLinkVector(QVariant q)
+LinkVector ToLinkVector(QVariant q, System* owningSystem)
 {
-	std::vector<LinkAttribute> result;
+	LinkVector result;
 	QByteArray bytes = q.toByteArray();
 	QDataStream s(&bytes, QIODevice::ReadOnly);
 	int size;
+	QString viewName;
+	s >> viewName;
+	result.first = viewName.toStdString();
 	s >> size;
-	QString uuid;
-	QString view;
-	LinkAttribute la;
+	QUuid uuid;
 	for(int i=0;i<size;i++)
 	{
 		s >> uuid;
-		s >> view;
-		la.uuid = uuid.toStdString();
-		la.viewname = view.toStdString();
-		result.push_back(la);
+		result.second.push_back(owningSystem->getChild(uuid));
 	}
 	return result;
 }
@@ -197,8 +197,7 @@ Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 		ptr = new TimeSeriesAttribute(*((TimeSeriesAttribute*)ref.ptr));
 		break;
 	case LINK:
-		//ptr = new LinkAttribute(*((LinkAttribute*)ref.ptr));
-		ptr = new std::vector<LinkAttribute>(*((std::vector<LinkAttribute>*)ref.ptr));
+		ptr = new LinkVector(*((LinkVector*)ref.ptr));
 		break;
 	case DOUBLEVECTOR:
 		ptr = new std::vector<double>(*((std::vector<double>*)ref.ptr));
@@ -213,7 +212,7 @@ Attribute::AttributeValue::AttributeValue(const AttributeValue& ref)
 	}
 }
 
-Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type)
+Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type, System* owningSystem)
 {
 	this->type = type;
 	switch(type)
@@ -226,7 +225,7 @@ Attribute::AttributeValue::AttributeValue(QVariant var, AttributeType type)
 		break;
 	case TIMESERIES:ptr = new TimeSeriesAttribute(ToTimeSeriesAttribute(var));
 		break;
-	case LINK:		ptr = new std::vector<LinkAttribute>(ToLinkVector(var));
+	case LINK:		ptr = new LinkVector(ToLinkVector(var, owningSystem));
 		break;
 	case DOUBLEVECTOR:	ptr = new std::vector<double>(ToDoubleVector(var));
 		break;
@@ -247,7 +246,7 @@ void Attribute::AttributeValue::Free()
 		break;
 	case TIMESERIES:	delete (TimeSeriesAttribute*)ptr;
 		break;
-	case LINK:			delete (std::vector<LinkAttribute>*)ptr;
+	case LINK:			delete (LinkVector*)ptr;
 		break;
 	case DOUBLEVECTOR:		delete (std::vector<double>*)ptr;
 		break;
@@ -278,7 +277,7 @@ QVariant Attribute::AttributeValue::toQVariant()
 	case DOUBLE:	return QVariant::fromValue(*(double*)ptr);
 	case STRING:	return QString::fromStdString(*(std::string*)ptr);
 	case TIMESERIES:return GetBinaryValue(*(TimeSeriesAttribute*)ptr);
-	case LINK:		return GetBinaryValue(*(std::vector<LinkAttribute>*)ptr);
+	case LINK:		return GetBinaryValue(*(LinkVector*)ptr);
 	case DOUBLEVECTOR:	return GetBinaryValue(*(std::vector<double>*)ptr);
 	case STRINGVECTOR:	return GetBinaryValue(*(std::vector<std::string>*)ptr);
 	default:		return QVariant();
@@ -451,6 +450,52 @@ bool Attribute::hasStringVector()
 	return false;
 }
 
+void Attribute::addLink(Component* target, const std::string& viewName)
+{
+	AttributeValue* a = getValue();
+	if(a->type != LINK)
+		a->Free();
+
+	if(!a->ptr)
+	{
+		a->ptr = new LinkVector(viewName, std::vector<Component*>());
+		a->type = LINK;
+	}
+
+	LinkVector* value = (LinkVector*)a->ptr;
+	value->second.push_back(target);
+}
+
+void Attribute::clearLinks()
+{
+	AttributeValue* a = getValue();
+	if(a->type == LINK)
+		if(LinkVector* value = (LinkVector*)getValue()->ptr)
+			value->second.clear();
+}
+
+std::vector<Component*> Attribute::getLinkedComponents()
+{
+	AttributeValue* a = getValue();
+	if(a->type == LINK)
+		if(LinkVector* value = (LinkVector*)getValue()->ptr)
+		{
+			//foreach(Component* c, value->second)
+			for(std::vector<Component*>::iterator it = value->second.begin();
+				it != value->second.end(); ++it)
+			{
+				if((*it)->getCurrentSystem() != GetOwner()->getCurrentSystem())
+				{
+					// changed due to successor creation
+					*it = GetOwner()->getCurrentSystem()->getSuccessingComponent((*it));
+				}
+			}
+			return value->second;
+		}
+	return std::vector<Component*>();
+}
+
+/*
 void Attribute::setLink(string viewname, string uuid)
 {
 	std::vector<LinkAttribute> links = getLinks();
@@ -481,7 +526,7 @@ std::vector<LinkAttribute> Attribute::getLinks()
 	AttributeValue* a = getValue();
 	if(a->type == LINK)	return *((std::vector<LinkAttribute>*)a->ptr);
 	return std::vector<LinkAttribute>();
-}
+}*/
 
 void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
 {
@@ -526,7 +571,7 @@ void Attribute::setType(AttributeType type)
 		a->ptr = new TimeSeriesAttribute();
 		break;
 	case LINK:
-		a->ptr = new std::vector<LinkAttribute>();
+		a->ptr = new LinkVector();
 		break;
 	case DOUBLEVECTOR:
 		a->ptr = new std::vector<double>();
@@ -606,7 +651,12 @@ Attribute::AttributeValue* Attribute::LoadFromDb()
 	DBConnector::getInstance()->Select("attributes", _uuid,
 		"type",     &t,
 		"value",     &v);
-	return new AttributeValue(v,(AttributeType)t.toInt());
+	
+	if(Component* c = GetOwner())
+		if(System* sys = c->getCurrentSystem())
+			return new AttributeValue(v,(AttributeType)t.toInt(), sys);
+
+	return new AttributeValue(v,(AttributeType)t.toInt(), NULL);
 }
 
 void Attribute::SaveToDb(Attribute::AttributeValue *val)

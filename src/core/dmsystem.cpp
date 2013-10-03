@@ -369,13 +369,13 @@ bool System::addView(const View& view)
 		return true;
 
 	//extend Dummy Attribute
-	foreach (std::string a , view.getWriteAttributes()) 
+	/*foreach (std::string a , view.getWriteAttributes()) 
 	{
 		DM::Attribute attr(a);
 		attr.setType(view.getAttributeType(a));
 		if (view.getAttributeType(a) == Attribute::LINK)
 			attr.setLink(view.getNameOfLinkedView(a), "");
-	}
+	}*/
 
 	return true;
 }
@@ -481,6 +481,28 @@ std::vector<Component*> System::getChilds()
 	mforeach(Component* c,components)	resultVec.push_back(c);
 
 	return resultVec;
+}
+
+Component* System::getChild(QUuid quuid)
+{
+	Component* c;
+	if(map_contains(&components, quuid, c))	return c;
+	Node* n;
+	if(map_contains(&nodes, quuid, n))	return n;
+	Edge* e;
+	if(map_contains(&edges, quuid, e))	return e;
+	Face* f;
+	if(map_contains(&faces, quuid, f))	return f;
+	RasterData* r;
+	if(map_contains(&rasterdata, quuid, r))	return r;
+	System* s;
+	if(map_contains(&subsystems, quuid, s))	return s;
+}
+
+Component* System::getSuccessingComponent(const Component* formerComponent)
+{
+	// this is a root system => no predec. info available
+	return NULL;
 }
 
 void System::SQLInsert()

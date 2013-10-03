@@ -40,6 +40,9 @@ private:
 	bool allNodesLoaded;
 	bool allSubSystemsLoaded;
 
+	// old component -> successing component
+	std::map<const Component*, Component*>	predecessorComponentMap;
+
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 	
 	Component* SuccessorCopyTypesafe(const Component *src);
@@ -57,6 +60,9 @@ public:
 	std::vector<System*> getAllSubSystems();
 	std::vector<RasterData*> getAllRasterData();
 	std::vector<Component*> getAllComponentsInView(const DM::View & view);
+
+	Component* getChild(QUuid quuid);
+	Component* getSuccessingComponent(const Component* formerComponent);
 };
 
 }

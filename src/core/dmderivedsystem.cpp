@@ -53,6 +53,8 @@ DerivedSystem::DerivedSystem(System* sys): System()
 
 Component* DerivedSystem::SuccessorCopyTypesafe(const Component *src)
 {
+	if(!src)
+		return NULL;
 	switch(src->getType())
 	{
 	case NODE:
@@ -75,6 +77,7 @@ Component* DerivedSystem::SuccessorCopy(const Component *src)
 {
 	Component *c = new Component;
 	c->CopyFrom(*src, true);
+	predecessorComponentMap[src] = c;
 	return addComponent(c);
 }
 Node* DerivedSystem::SuccessorCopy(const Node *src)
@@ -82,6 +85,7 @@ Node* DerivedSystem::SuccessorCopy(const Node *src)
 	Node* n = new Node();
 	*n = *src;
 	n->CopyFrom(*src, true);
+	predecessorComponentMap[src] = n;
 	return addNode(n);
 }
 Edge* DerivedSystem::SuccessorCopy(const Edge *src)
@@ -96,6 +100,7 @@ Edge* DerivedSystem::SuccessorCopy(const Edge *src)
 
 	Edge* e = new Edge(start, end);
 	e->CopyFrom(*src, true);
+	predecessorComponentMap[src] = e;
 	return addEdge(e);
 }
 Face* DerivedSystem::SuccessorCopy(const Face *src)
@@ -118,7 +123,8 @@ Face* DerivedSystem::SuccessorCopy(const Face *src)
 			h = SuccessorCopy(h);
 		newf->addHole(h);
 	}
-
+	
+	predecessorComponentMap[src] = newf;
 	return addFace(newf);
 }
 
@@ -221,4 +227,25 @@ std::vector<System*> DerivedSystem::getAllSubSystems()
 std::vector<RasterData*> DerivedSystem::getAllRasterData()
 {
 	return this->predecessorSys->getAllRasterData();
+}
+
+Component* DerivedSystem::getChild(QUuid quuid)
+{
+	if(Component* c = System::getChild(quuid))
+		return c;
+	else 
+		return SuccessorCopyTypesafe(predecessorSys->getChild(quuid));
+}
+
+
+Component* DerivedSystem::getSuccessingComponent(const Component* formerComponent)
+{
+	Component* successingComponent = NULL;
+	if(map_contains(&predecessorComponentMap, formerComponent, successingComponent))
+		return successingComponent;
+	else
+	{
+		// copy function automatically adds predecessorComponentMap entry fur future access
+		return SuccessorCopyTypesafe(formerComponent);
+	}
 }

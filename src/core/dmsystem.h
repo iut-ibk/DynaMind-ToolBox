@@ -177,6 +177,10 @@ public:
 
 	// TODO for faster searching - maybe find a better solution for access
 	// std::map<std::string, Component*>	componentNameMap;
+
+	virtual Component* getChild(QUuid quuid);
+
+	virtual Component* getSuccessingComponent(const Component* formerComponent);
 protected:
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:

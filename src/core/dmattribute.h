@@ -40,7 +40,7 @@ using namespace std;
 
 namespace DM {
 
-class LinkAttribute 
+/*class LinkAttribute 
 {
 public:
 	LinkAttribute() {}
@@ -51,7 +51,8 @@ public:
 	bool operator==(const LinkAttribute & other) const {
 		return this->uuid == other.uuid && this->viewname == other.viewname;
 	}
-};
+};*/
+
 class TimeSeriesAttribute
 {
 public:
@@ -66,6 +67,7 @@ public:
 };
 
 class Component;
+class System;
 
 /** @ingroup DynaMind-Core
 * An Attribute is used to add informations to an object.
@@ -94,7 +96,7 @@ public:
 		AttributeValue(std::string string);
 		~AttributeValue();
 		void Free();
-		AttributeValue(QVariant var, AttributeType type);
+		AttributeValue(QVariant var, AttributeType type, System* owningSystem);
 		QVariant toQVariant();
 		
 		Attribute::AttributeType type;
@@ -153,13 +155,17 @@ public:
 	/** @brief return datatype*/
 	AttributeType getType() const;
 	/** @brief add link object **/
-	void setLink(std::string viewname, std::string uuid);
+	//void setLink(std::string viewname, std::string uuid);
+	void addLink(Component* target, const std::string& viewName);
+
+	void clearLinks();
+	std::vector<Component*> getLinkedComponents();
 	/** @brief Sets attribute links the existing vector is cleared! **/
-	void setLinks(std::vector<LinkAttribute> links);
+	//void setLinks(std::vector<LinkAttribute> links);
 	/** @brief Returns the first element in the link attribute vector. If no link exists it retruns an empty LinkAttribute */
-	LinkAttribute getLink();
+	//LinkAttribute getLink();
 	/** @brief Returns Vector of Links */
-	std::vector<LinkAttribute> getLinks();
+	//std::vector<LinkAttribute> getLinks();
 	/** @brief add TimeSeries **/
 	void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
 	/** @brief add TimeSeries **/
