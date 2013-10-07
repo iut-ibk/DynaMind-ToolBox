@@ -238,6 +238,8 @@ public:
 	/** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
 	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 
+	void updateView(const View& view);
+
 	// TODO for faster searching - maybe find a better solution for access
 	std::map<std::string, Component*>	componentNameMap;
 protected:    

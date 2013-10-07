@@ -634,6 +634,13 @@ bool System::addView(View view)
 
 	return true;
 }
+
+void System::updateView(const View& view)
+{
+	if(map_contains(&viewdefinitions, view.getName()))
+		*this->viewdefinitions[view.getName()] = view;
+}
+
 const std::vector<DM::View> System::getViews()  
 {
 	std::vector<DM::View> viewlist;
