@@ -128,8 +128,8 @@ QStringList AddLayerDialog::getAttributeVectorNames() const {
 			list << QString::fromStdString(s);
 		}
 		return list;
-	}
-	return QStringList();*/
+	}*/
+	return QStringList();
 }
 
 bool AddLayerDialog::isOverdrawLayer() const {
@@ -156,15 +156,17 @@ void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QT
 	foreach(std::string name, view->getAllAttributes())
 	{
 		Attribute::AttributeType type = view->getAttributeType(name);
-		if(	type == Attribute::DOUBLE || 
-			type == Attribute::DOUBLEVECTOR || 
-			type == Attribute::TIMESERIES)
+		QStringList strings;
+		strings << QString::fromStdString(name);
+		strings << Attribute::getTypeName(type);
+		QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+		ui->attributeList->addTopLevelItem(item);
+
+		if(	type != Attribute::DOUBLE && 
+			type != Attribute::DOUBLEVECTOR && 
+			type != Attribute::TIMESERIES)
 		{
-			QStringList strings;
-			strings << QString::fromStdString(name);
-			strings << Attribute::getTypeName(type);
-			QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-			ui->attributeList->addTopLevelItem(item);
+			item->setDisabled(true);
 		}
 	}
 }
