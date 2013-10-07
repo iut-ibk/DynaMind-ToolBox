@@ -188,9 +188,9 @@ void Module::setInPortData(const std::string &name, System* data)
 	{
 		inPorts[name] = data;
 		// update views
-		if(map_contains(&accessedViews, name))
+		/*if(map_contains(&accessedViews, name))
 			mforeach(const DM::View& v, accessedViews[name])
-				data->updateView(v);
+				data->updateView(v);*/
 	}
 }
 
@@ -311,13 +311,8 @@ System* Module::getData(const std::string& streamName)
 			sys = new System();
 	}
 
-	//bool readOnly = true;
-	mforeach(View v, accessedViews[streamName])
-	{
-		sys->addView(v);
-		//if(v.getAccessType() != READ || v.getWriteAttributes().size() > 0)
-		//	readOnly = false;
-	}
+	//mforeach(View v, accessedViews[streamName])
+	//	sys->addView(v);
 
 	if(hasOutPort(streamName))
 		this->setOutPortData(streamName, sys);

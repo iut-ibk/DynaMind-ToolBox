@@ -67,10 +67,6 @@ System::~System()
 	foreach (DM::System * sys, this->sucessors)
 		if (sys)	delete sys;
 
-	//mforeach(View *v, viewdefinitions)
-	//    delete v;
-	// memory leak
-
 	if(isInserted)
 		Component::SQLDelete();
 }
@@ -343,34 +339,7 @@ Component* System::clone()
 {
 	return new System(*this);
 }
-
-bool System::addView(const View& view)
-{
-	QMutexLocker ml(mutex);
-
-	//For each view create one dummy element
-	DM::View  * existingView = this->viewdefinitions[view.getName()];
-	if (!existingView) 
-	{
-		existingView = new View(view);
-		this->viewdefinitions[view.getName()] = existingView;
-	}
-
-	if (!view.writes())
-		return true;
-
-	//extend Dummy Attribute
-	/*foreach (std::string a , view.getWriteAttributes()) 
-	{
-		DM::Attribute attr(a);
-		attr.setType(view.getAttributeType(a));
-		if (view.getAttributeType(a) == Attribute::LINK)
-			attr.setLink(view.getNameOfLinkedView(a), "");
-	}*/
-
-	return true;
-}
-
+/*
 void System::updateView(const View& view)
 {
 	if(map_contains(&viewdefinitions, view.getName()))
@@ -385,7 +354,7 @@ const std::vector<DM::View> System::getViews()
 		viewlist.push_back(View(*v));
 
 	return viewlist;
-}
+}*/
 
 System* System::createSuccessor()
 {

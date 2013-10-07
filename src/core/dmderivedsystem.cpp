@@ -41,7 +41,6 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	allSubSystemsLoaded = false;
 	//allRasterDataLoaded = false;
 
-	viewdefinitions = sys->viewdefinitions;
 	//predecessors = sys->predecessors;
 	views = sys->views;
 
