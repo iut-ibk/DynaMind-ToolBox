@@ -320,17 +320,60 @@ void ModelNode::changeSuccessorMode()
 	module->setSuccessorMode(!module->isSuccessorMode());
 }
 
+
+void MergeViews(std::map<std::string, DM::View>& target, const std::map<std::string, DM::View>& source)
+{
+	mforeach(const DM::View& srcView, source)
+	{
+		if(map_contains(&target, srcView.getName()))
+		{
+			DM::View& targetView = target[srcView.getName()];
+			std::vector<std::string> baseAttributes = targetView.getAllAttributes();
+			// check attributes
+			foreach(const std::string& attrName, srcView.getAllAttributes())
+			{
+				bool isNew = true;
+				foreach(const std::string& baseAttrName, baseAttributes)
+					if(attrName == baseAttrName)
+						isNew = false;
+
+				if(isNew)
+					targetView.addAttribute(attrName);
+			}
+		}
+		else
+		{
+			// just insert
+			target[srcView.getName()] = srcView;
+		}
+	}
+}
+
 void ModelNode::viewOutportData(QString portName) 
 {
-	DM::System *system = module->getOutPortData(portName.toStdString());
-	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
+	std::map<std::string, DM::View> views;
+	std::map<std::string, DM::View> accessedViews;
+
+	map_contains(&module->getViewsInStream(), portName.toStdString(), views);
+	map_contains(&module->getAccessedViews(), portName.toStdString(), accessedViews);
+	//views.insert(accessedViews.cbegin(), accessedViews.cend());
+	MergeViews(views, accessedViews);
+
+	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getOutPortData(portName.toStdString()), views);
 	viewer_window->show();
 }
 
 void ModelNode::viewInportData(QString portName) 
 {
-	DM::System *system = module->getInPortData(portName.toStdString());
-	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(system);
+	std::map<std::string, DM::View> views;
+	std::map<std::string, DM::View> accessedViews;
+
+	map_contains(&module->getViewsInStream(), portName.toStdString(), views);
+	map_contains(&module->getAccessedViews(), portName.toStdString(), accessedViews);
+	//views.insert(accessedViews.cbegin(), accessedViews.cend());
+	MergeViews(views, accessedViews);
+
+	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getOutPortData(portName.toStdString()), views);
 	viewer_window->show();
 }
 
