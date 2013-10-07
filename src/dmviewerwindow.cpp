@@ -184,14 +184,7 @@ void ViewerWindow::addLayers(std::list<LayerSpec> specs) {
 
 void ViewerWindow::addLayerFromSpec(LayerSpec spec) {
 	DM::View v;
-	bool found = false;
-	foreach (v, system->getViews()) {
-		if (v.getName() == spec.view) {
-			found = true;
-			break;
-		}
-	}
-	Q_ASSERT(found);
+	Q_ASSERT(map_contains(&views, spec.view, v));
 	ui->viewer->makeCurrent();
 	Layer *l = new Layer(system, v, spec.attribute);
 	l->setHeightInterpretation(spec.height);
