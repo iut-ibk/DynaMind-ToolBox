@@ -156,9 +156,6 @@ public:
 	/** @brief return a vector of views avalible in the system */
 	const std::vector<DM::View> getViews();
 
-	/** @brief Retruns View */
-	View * getViewDefinition(const std::string& name);
-
 	/** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
 	Component* clone();
 

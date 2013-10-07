@@ -75,15 +75,6 @@ System::~System()
 		Component::SQLDelete();
 }
 
-DM::View * System::getViewDefinition(const std::string& name) 
-{
-	if (viewdefinitions.find(name) == viewdefinitions.end()) {
-		Logger(Debug) << "Couldn't find view definition for " << name;
-		return 0;
-	}
-	return viewdefinitions[name];
-}
-
 Components System::getType() const
 {
 	return DM::SUBSYSTEM;
