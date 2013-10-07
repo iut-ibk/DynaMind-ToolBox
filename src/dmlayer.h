@@ -62,7 +62,7 @@ enum  RENDERTYPE {
 
 class DM_HELPER_DLL_EXPORT Layer {
 public:
-	Layer(System *system, View v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false, bool AsLine = false);
+	Layer(System *system, const View& v, const std::string &attribute = "", bool D3Ojbect=false, bool AsMesh=false, bool AsLine = false);
 	~Layer();
 
 	void setColorInterpretation(GLuint texture) {
@@ -149,7 +149,7 @@ public:
 
 private:
 	System *system;
-	View view;
+	const View& view;
 	ViewMetaData vmd;
 	View attributeView; //use of maped attributes
 	RENDERTYPE rtype;

@@ -29,6 +29,8 @@
 #include <dmcompilersettings.h>
 #include <QWidget>
 #include <QTimer>
+#include <map>
+#include <dmview.h>
 
 #include "dmcolorramp.h"
 
@@ -56,7 +58,7 @@ class DM_HELPER_DLL_EXPORT ViewerWindow : public QWidget
 	Q_OBJECT
 
 public:
-	explicit ViewerWindow(System *system, QWidget *parent = 0);
+	explicit ViewerWindow(System* system, const std::map<std::string, DM::View>& views, QWidget *parent = 0);
 	~ViewerWindow();
 
 	void addLayers(std::list<LayerSpec> specs);
@@ -84,6 +86,7 @@ private slots:
 private:
 	::Ui::ViewerWindow *ui;
 	DM::System *system;
+	std::map<std::string, DM::View> views;
 	QTimer timer;
 };
 

@@ -28,6 +28,7 @@
 #define ADDLAYERDIALOG_H
 #include <dmcompilersettings.h>
 #include <QDialog>
+#include <map>
 
 namespace Ui {
 class AddLayerDialog;
@@ -49,9 +50,9 @@ class DM_HELPER_DLL_EXPORT AddLayerDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit AddLayerDialog(DM::System *system, QWidget *parent = 0);
+	explicit AddLayerDialog(const std::map<std::string, DM::View>& views, QWidget *parent = 0);
 	~AddLayerDialog();
-	DM::Layer *getLayer(DM::Viewer *v);
+	DM::Layer *getLayer(DM::Viewer *v, System* sys);
 
 	QStringList getAttributeVectorNames() const;
 	bool isOverdrawLayer() const;
@@ -61,7 +62,7 @@ private slots:
 	void on_attributeList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 private:
-	DM::System *system;
+	const std::map<std::string, DM::View>& views;
 	Ui::AddLayerDialog *ui;
 	QColor start, stop;
 

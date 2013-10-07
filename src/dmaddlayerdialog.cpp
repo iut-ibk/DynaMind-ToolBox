@@ -40,14 +40,14 @@
 
 namespace DM {
 
-AddLayerDialog::AddLayerDialog(DM::System *system, QWidget *parent) :
-	QDialog(parent), system(system),
+AddLayerDialog::AddLayerDialog(const std::map<std::string, DM::View>& views, QWidget *parent) :
+	QDialog(parent), views(views),view(NULL),
 	ui(new Ui::AddLayerDialog) 
 {
 	ui->setupUi(this);
 	start = Qt::white;
 	stop = Qt::black;
-	foreach (DM::View v, system->getViews()) 
+	mforeach(const DM::View& v, views) 
 	{
 		QStringList strings;
 		strings << QString::fromStdString(v.getName());
@@ -86,12 +86,12 @@ AddLayerDialog::~AddLayerDialog() {
 	delete ui;
 }
 
-DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
+DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v, System* sys) {
 	if (!view)
-		return 0;
+		return NULL;
 	//Change
 	//DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked());
-	DM::Layer *l = new DM::Layer(system, *view, attribute, ui->checkBox3DObject->isChecked(), ui->checkBoxAsMesh->isChecked(), ui->checkBoxAsLine->isChecked());
+	DM::Layer *l = new DM::Layer(sys, *view, attribute, ui->checkBox3DObject->isChecked(), ui->checkBoxAsMesh->isChecked(), ui->checkBoxAsLine->isChecked());
 	if (ui->colorCheckBox->isChecked()) {
 		v->makeCurrent();
 		l->setColorInterpretation(get_color_ramp((ColorRamp)ui->colorRamp->currentIndex(),  l->LayerColor));
@@ -108,7 +108,8 @@ DM::Layer *AddLayerDialog::getLayer(DM::Viewer *v) {
 QStringList AddLayerDialog::getAttributeVectorNames() const {
 	if (attribute == "")
 		return QStringList();
-
+	// TODO
+	/*
 	std::vector<Component*> comps = system->getAllComponentsInView(*view);
 	if (!comps.size())
 		return QStringList();
@@ -128,7 +129,7 @@ QStringList AddLayerDialog::getAttributeVectorNames() const {
 		}
 		return list;
 	}
-	return QStringList();
+	return QStringList();*/
 }
 
 bool AddLayerDialog::isOverdrawLayer() const {
@@ -138,38 +139,23 @@ bool AddLayerDialog::isOverdrawLayer() const {
 void AddLayerDialog::on_viewList_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *) {
 	ui->attributeList->clear();
 	ui->overdraw->setEnabled(current);
-	view = system->getViewDefinition(current->text(0).toStdString());
-	if(!view)
+
+	if(!map_contains(&views, current->text(0).toStdString()))
 	{
 		DM::Logger(Error) << "view " << current->text(0).toStdString() << "not found";
 		return;
 	}
+	else
+		view = &views.find(current->text(0).toStdString())->second;
+
 	if (view->getType() == DM::RASTERDATA)
 		ui->interpreteGroup->setEnabled(current);
 	else
 		ui->interpreteGroup->setDisabled(current);
 
-	std::vector<Component*> comps = system->getAllComponentsInView(*view);
-	if(comps.size() == 0)
-		return;
-
 	foreach(std::string name, view->getAllAttributes())
 	{
-		Component* repres = NULL;
-		foreach(Component* c, comps)
-		{
-			if(c)
-			{
-				repres = c;
-				break;
-			}
-		}
-		if(!repres)	continue;
-
-		Attribute* a = repres->getAttribute(name);
-		if(!a)	continue;
-
-		Attribute::AttributeType type = a->getType();
+		Attribute::AttributeType type = view->getAttributeType(name);
 		if(	type == Attribute::DOUBLE || 
 			type == Attribute::DOUBLEVECTOR || 
 			type == Attribute::TIMESERIES)

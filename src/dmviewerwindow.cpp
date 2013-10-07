@@ -31,9 +31,9 @@
 
 namespace DM {
 
-ViewerWindow::ViewerWindow(System *system, QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::ViewerWindow), system(system) 
+ViewerWindow::ViewerWindow(System* system, const std::map<std::string, DM::View>& views, QWidget *parent) :
+	QWidget(parent), system(system),
+	ui(new Ui::ViewerWindow), views(views) 
 {
 		ui->setupUi(this);
 
@@ -94,9 +94,9 @@ void ViewerWindow::on_actionAdd_Layer_triggered()
 		return;
 	}
 
-	AddLayerDialog dialog(system, this);
+	AddLayerDialog dialog(views, this);
 	if (dialog.exec()) {
-		Layer *l = dialog.getLayer(ui->viewer);
+		Layer *l = dialog.getLayer(ui->viewer, system);
 		if (!l) return;
 		addLayer(l, dialog.isOverdrawLayer());
 		QStringList attr_names = dialog.getAttributeVectorNames();

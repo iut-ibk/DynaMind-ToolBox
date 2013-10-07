@@ -218,7 +218,7 @@ struct TesselatedFaceDrawer {
 };
 
 
-Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMesh, bool asLine)
+Layer::Layer(System *s, const View& v, const std::string &a,  bool D3Ojbect, bool asMesh, bool asLine)
 	: system(s), view(v),
 	attribute(a), vmd(a),
 	texture(-1),
@@ -228,8 +228,8 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
 	asMesh(asMesh)
 {
 	texture = 0;
-	QString attr = QString::fromStdString(a);
-	QStringList view_attr = attr.split(":");
+	//QString attr = QString::fromStdString(a);
+	//QStringList view_attr = attr.split(":");
 
 
 	if (view.getType() == DM::COMPONENT || this->as3DObject == true)
@@ -256,13 +256,13 @@ Layer::Layer(System *s, View v, const std::string &a,  bool D3Ojbect, bool asMes
 		vmd = ViewMetaData("");
 	}
 
-	if (view_attr.size() == 2)
+	/*if (view_attr.size() == 2)
 	{
 		this->attributeView = *(system->getViewDefinition(view_attr[0].toStdString()));
 		this->attribute = view_attr[1].toStdString();
 
 		vmd = ViewMetaData(this->attribute);
-	}
+	}*/
 }
 
 struct FaceLineDrawer 
