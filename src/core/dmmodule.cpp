@@ -249,10 +249,12 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 
 	foreach(View v, views)
 	{
-		ACCESS a = (ACCESS)v.getAccessType();
-		if(a == READ || a == MODIFY || v.getReadAttributes().size())
+		//ACCESS a = (ACCESS)v.getAccessType();
+		//if(a == READ || a == MODIFY || v.getReadAttributes().size())
+		if(v.reads())
 			inPort = true;
-		if(a == WRITE || a == MODIFY || v.getWriteAttributes().size())
+		//if(a == WRITE || a == MODIFY || v.getWriteAttributes().size())
+		if(v.writes())
 			outPort = true;
 	}
 
@@ -372,7 +374,7 @@ View Module::getViewInStream(const std::string& streamName, const std::string& v
 	if(map_contains(&streamViews, streamName, views))
 		if(map_contains(&views, viewName, view))
 			return view;
-	view.setType(-1);
+
 	return view;
 }
 

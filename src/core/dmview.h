@@ -2,11 +2,12 @@
  * @file
  * @author  Chrisitan Urich <christian.urich@gmail.com>
  * @author  Michael Mair <abroxos@gmail.com>
+ * @author  Markus Sengthaler <m.sengthaler@gmail.com>
  * @version 1.0
  * @section LICENSE
  * This file is part of DynaMite
  *
- * Copyright (C) 2011  Christian Urich, Michael Mair
+ * Copyright (C) 2011  Christian Urich, Michael Mair, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,9 +38,9 @@ namespace DM {
 
 enum ACCESS
 {
-	READ,
-	MODIFY,
-	WRITE
+	READ = 0,
+	MODIFY = 1,
+	WRITE= 2
 };
 
 /**
@@ -90,13 +91,17 @@ public:
 	View();
 
 	/** @brief add attributes that to write by added by the module*/
-	void addAttribute(std::string name);
+	//void addAttribute(std::string name);
 
 	/** @brief add attributes that to write by read by the module*/
-	void getAttribute(std::string name);
+	//void getAttribute(std::string name);
 
 	/** @brief add attributes that to write by modified by the module*/
-	void modifyAttribute(std::string name);
+	//void modifyAttribute(std::string name);
+	
+	/** @brief add attributes to be accessed with this view */
+	void addAttribute(const std::string name, Attribute::AttributeType type, ACCESS access);
+	void addAttribute(const std::string name, std::string linkName, ACCESS access);
 
 	/** @brief Get name of the View*/
 	std::string const & getName() const {return this->name;}
@@ -105,13 +110,13 @@ public:
 	void setName(std::string name){this->name = name;}
 
 	/** @brief Return a list of attributes that are added to the component */
-	std::vector<std::string>  getWriteAttributes  () const;
+	//std::vector<std::string>  getWriteAttributes  () const;
 
 	/** @brief Return a list of attributes that are read */
-	std::vector<std::string>  getReadAttributes  () const;
+	//std::vector<std::string>  getReadAttributes  () const;
 
 	/** @brief Set Type */
-	void setType(int type) {this->type=type;}
+	//void setType(int type) {this->type=type;}
 
 	/** @brief Return Type */
 	int const & getType() const {return type;}
@@ -131,15 +136,17 @@ public:
 	/** @brief Returns Attribute Type */
 	Attribute::AttributeType getAttributeType(std::string name) const;
 
+	ACCESS getAttributeAccessType(std::string name) const;
+
 	/** @brief Sets Attribute Type */
 	void setAttributeType(std::string name, Attribute::AttributeType type);
 
 	/** @brief Adds link attribute */
-	void addLinks(std::string name, View linkedView);	// backwards comp.
-	void addLinks(std::string name, std::string linkedViewName);
+	//void addLinks(std::string name, View linkedView);	// backwards comp.
+	//void addLinks(std::string name, std::string linkedViewName);
 
 	/** @brief Returns names of object that link to other views */
-	std::vector<std::string> getNamesOfLinks();
+	//std::vector<std::string> getNamesOfLinks();
 
 	/** @brief Returns names of object the linked view */
 	std::string getNameOfLinkedView(std::string linkName) const;
@@ -151,9 +158,18 @@ private:
 	std::string name;
 	int accesstypeGeometry;
 
-	std::map<std::string, int> ownedAttributes;
-	std::map<std::string, Attribute::AttributeType> attributeTypes;
-	std::map<std::string, std::string> attributeLinks;
+	//std::map<std::string, int> ownedAttributes;
+	//std::map<std::string, Attribute::AttributeType> attributeTypes;
+	//std::map<std::string, std::string> attributeLinks;
+
+	struct AttributeAccess
+	{
+		Attribute::AttributeType type;
+		ACCESS access;
+		std::string linkedView;
+	};
+
+	std::map<std::string, AttributeAccess> attributes;
 };
 }
 

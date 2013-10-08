@@ -154,7 +154,8 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
 {
 	const std::vector<Component*> &predec_comps = System::getAllComponentsInView(view);
 
-	if(view.getWriteAttributes().size() == 0 && view.getAccessType() == READ)
+	//if(view.getWriteAttributes().size() == 0 && view.getAccessType() == READ)
+	if(!view.writes())
 		return predec_comps;
 	else
 	{
