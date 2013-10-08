@@ -332,13 +332,14 @@ void MergeViews(std::map<std::string, DM::View>& target, const std::map<std::str
 			// check attributes
 			foreach(const std::string& attrName, srcView.getAllAttributes())
 			{
-				bool isNew = true;
-				foreach(const std::string& baseAttrName, baseAttributes)
-					if(attrName == baseAttrName)
-						isNew = false;
-
-				if(isNew)
-					targetView.addAttribute(attrName);
+				if(!vector_contains(&baseAttributes, attrName))
+				{
+					DM::Attribute::AttributeType type = srcView.getAttributeType(attrName);
+					if(type != DM::Attribute::LINK)
+						targetView.addAttribute(attrName, type, DM::READ);	// access doesnt matter
+					else
+						targetView.addAttribute(attrName, srcView.getNameOfLinkedView(attrName), DM::READ);	// access doesnt matter
+				}
 			}
 		}
 		else

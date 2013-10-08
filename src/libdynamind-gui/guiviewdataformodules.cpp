@@ -105,12 +105,17 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 			root_port->addChild(item_view);
 
-
-			foreach (std::string s, v.getReadAttributes()) 
-				item_view->addChild(CreateAttributeItem("read",s, v));
-
-			foreach (std::string s, v.getWriteAttributes()) 
-				item_view->addChild(CreateAttributeItem("write",s, v));
+			foreach(std::string s, v.getAllAttributes()) 
+			{
+				QString typeString;
+				switch(v.getAttributeAccessType(s))
+				{
+				case DM::READ:	typeString = "read";	break;
+				case DM::MODIFY:typeString = "midfy";	break;
+				case DM::WRITE:	typeString = "write";	break;
+				}
+				item_view->addChild(CreateAttributeItem(typeString,s, v));
+			}
 
 			this->ui->treeWidget_views->expandItem(root_port);
 		}
