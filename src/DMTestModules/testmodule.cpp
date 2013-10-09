@@ -42,8 +42,8 @@ DM_DECLARE_NODE_NAME( TestModule,Modules )
 TestModule::TestModule() {
 
 	inlets = DM::View("Inlets", DM::NODE, DM::WRITE);
-	inlets.addAttribute("A");
-	inlets.addAttribute("B");
+	inlets.addAttribute("A", DM::Attribute::NOTYPE, DM::WRITE);
+	inlets.addAttribute("B", DM::Attribute::NOTYPE, DM::WRITE);
 	conduits = DM::View("Conduits", DM::EDGE, DM::WRITE);
 	SomeRandomInformation = DM::View("SomeRandomInformation", DM::EDGE, DM::WRITE);
 	rdata = DM::View("RasterData", DM::RASTERDATA, DM::WRITE);

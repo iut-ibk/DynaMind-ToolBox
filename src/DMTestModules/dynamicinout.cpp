@@ -34,9 +34,9 @@ DynamicInOut::DynamicInOut()
     this->addParameter("NewAttributes", DM::STRING_LIST, &NewAttributes);
 
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
-    inlets.getAttribute("A");
-    inlets.getAttribute("B");
-    inlets.getAttribute("C");
+	inlets.addAttribute("A", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("B", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("C", DM::Attribute::NOTYPE, DM::READ);
     std::vector<DM::View> views;
     PrevSize = 0;
     views.push_back(inlets);
@@ -55,11 +55,11 @@ void DynamicInOut::init() {
         return;
     PrevSize = NewAttributes.size();
     DM::View inlets = DM::View("Inlets", DM::NODE, DM::READ);
-    inlets.getAttribute("A");
-    inlets.getAttribute("B");
-    inlets.getAttribute("C");
+    inlets.addAttribute("A", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("B", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("C", DM::Attribute::NOTYPE, DM::READ);
     foreach(std::string s, NewAttributes)
-        inlets.addAttribute(s);
+        inlets.addAttribute(s, DM::Attribute::NOTYPE, DM::WRITE);
     std::vector<DM::View> views;
     views.push_back(inlets);
     this->addData("Inport", views);

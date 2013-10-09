@@ -37,13 +37,13 @@ InOut2::InOut2() {
     Logger(Debug) << "Create InOut";
     std::vector<DM::View> views;
     inlets = DM::View("Inlets", DM::NODE, DM::READ);
-    inlets.getAttribute("A");
-    inlets.getAttribute("B");
-    inlets.getAttribute("C");
-    inlets.getAttribute("D");
-    inlets.addAttribute("F");
+    inlets.addAttribute("A", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("B", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("C", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("D", DM::Attribute::NOTYPE, DM::READ);
+    inlets.addAttribute("F", DM::Attribute::NOTYPE, DM::WRITE);
     conduits = DM::View("Conduits", DM::EDGE,  DM::READ);
-    conduits.addAttribute("F");
+    conduits.addAttribute("F", DM::Attribute::NOTYPE, DM::WRITE);
 
     views.push_back(inlets);
     views.push_back(conduits);
