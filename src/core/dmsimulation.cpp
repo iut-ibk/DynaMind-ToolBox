@@ -546,7 +546,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 			else	// add new views
 			{
 				// it may be, that a view already exists
-				if(!map_contains(&m->streamViews[streamName], v.getName()))
+				if(map_contains(&m->streamViews[streamName], v.getName()))
 				{
 					DM::Logger(DM::Warning) << "module '" << m->getClassName()
 								<< "' overwrites view '" << v.getName()
