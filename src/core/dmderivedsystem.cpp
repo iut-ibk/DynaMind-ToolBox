@@ -42,7 +42,7 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	//allRasterDataLoaded = false;
 
 	//predecessors = sys->predecessors;
-	views = sys->views;
+	//views = sys->views;
 
 	CopyFrom(*sys, true);
 
@@ -166,7 +166,7 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
 		return predec_comps;
 	else
 	{
-		std::vector<Component*> &cmps = views[view.getName()];
+		std::vector<Component*> &cmps = viewsCaches[view.getName()].filteredElements;
 		for(std::vector<Component*>::iterator it = cmps.begin(); it != cmps.end(); ++it)
 			if((*it)->getCurrentSystem() != this)
 				*it = SuccessorCopyTypesafe(*it);

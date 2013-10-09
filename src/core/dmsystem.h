@@ -190,7 +190,22 @@ private:
 
 	std::vector<DM::System*> sucessors;
 
-	std::map<std::string, std::vector<Component*> > views;
+	//std::map<std::string, std::vector<Component*> > views;
+	class ViewCache
+	{
+	public:
+		void apply(const View& view);
+		bool add(Component* c);
+		bool remove(Component* c);
+		bool legal(Component* c);
+
+		std::vector<Component*> filteredElements;
+	private:
+		View view;
+		std::vector<QUuid>	rawElements;
+	};
+
+	std::map<std::string, ViewCache > viewsCaches;
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

@@ -91,7 +91,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
 	components.insert(c);
 
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(c);
+		this->viewsCaches[view.getName()].add(c);
 
 	return c;
 }
@@ -122,7 +122,7 @@ Node* System::addNode(const Node &ref,  const DM::View & view)
 	if (n == NULL)
 		return NULL;
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(n);
+		this->viewsCaches[view.getName()].add(n);
 
 	return n;
 }
@@ -136,7 +136,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 	if (n == NULL)
 		return NULL;
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(n);
+		this->viewsCaches[view.getName()].add(n);
 
 	return n;
 }
@@ -168,7 +168,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 	if (e == 0)
 		return 0;
 	if (!view.getName().empty()) 
-		this->views[view.getName()].push_back(e);
+		this->viewsCaches[view.getName()].add(e);
 
 	return e;
 }
@@ -202,7 +202,7 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 	if (f == 0)
 		return 0;
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(f);
+		this->viewsCaches[view.getName()].add(f);
 
 	return f;
 }
@@ -219,7 +219,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 	rasterdata.insert(r);
 
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(r);
+		this->viewsCaches[view.getName()].add(r);
 
 	return r;
 }
@@ -245,7 +245,7 @@ bool System::addComponentToView(Component *comp, const View &view)
 {
 	QMutexLocker ml(mutex);
 
-	this->views[view.getName()].push_back(comp);
+	this->viewsCaches[view.getName()].add(comp);
 	return true;
 }
 
@@ -257,10 +257,12 @@ bool System::removeComponentFromView(Component *comp, const std::string& viewNam
 {
 	QMutexLocker ml(mutex);
 
-	std::vector<Component*>& comps = this->views[viewName];
+	viewsCaches[viewName].remove(comp);
+
+	/*std::vector<Component*>& comps = this->views[viewName];
 	std::vector<Component*>::iterator it = std::find(comps.begin(), comps.end(), comp);
 	if(it != comps.end())
-		comps.erase(it);
+		comps.erase(it);*/
 
 	return true;
 }
@@ -278,14 +280,14 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 	subsystems.insert(newsystem);
 
 	if (!view.getName().empty())
-		this->views[view.getName()].push_back(newsystem);
+		this->viewsCaches[view.getName()].add(newsystem);
 
 	return newsystem;
 }
 
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {
-	return views[view.getName()];
+	return viewsCaches[view.getName()].filteredElements;
 }
 
 std::vector<System*> System::getAllSubSystems()
@@ -356,9 +358,9 @@ bool System::removeChild(Component* c)
 	case SUBSYSTEM:		subsystems.erase((System*)c);		break;
 	}
 
-	typedef std::map<std::string, std::vector<Component*>> viewmap;
+	typedef std::map<std::string, ViewCache > viewmap;
 	
-	for(viewmap::iterator it = views.begin(); it != views.end(); ++it)
+	for(viewmap::iterator it = viewsCaches.begin(); it != viewsCaches.end(); ++it)
 		removeComponentFromView(c, it->first);
 	
 	delete c;
@@ -416,3 +418,36 @@ void System::SQLUpdateStates()
 		"sucessors",     sucList,
 		"predecessors",  pre);
 }
+
+void System::ViewCache::apply(const View& view)
+{
+	this->view = view;
+}
+
+bool System::ViewCache::add(Component* c)
+{
+	if(legal(c))
+	{
+		filteredElements.push_back(c);
+		rawElements.push_back(c->getQUUID());
+		return true;
+	}
+	return false;
+}
+
+bool System::ViewCache::remove(Component* c)
+{
+	if(legal(c))
+	{
+		filteredElements.erase(find(filteredElements.begin(), filteredElements.end(), c));
+		rawElements.erase(find(rawElements.begin(), rawElements.end(), c->getQUUID()));
+		return true;
+	}
+	return false;
+}
+
+bool System::ViewCache::legal(Component* c)
+{
+	return true;
+}
+
