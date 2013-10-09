@@ -316,22 +316,6 @@ Component* System::clone()
 {
 	return new System(*this);
 }
-/*
-void System::updateView(const View& view)
-{
-	if(map_contains(&viewdefinitions, view.getName()))
-		*this->viewdefinitions[view.getName()] = view;
-}
-
-const std::vector<DM::View> System::getViews()  
-{
-	std::vector<DM::View> viewlist;
-
-	mforeach(View* v, viewdefinitions)
-		viewlist.push_back(View(*v));
-
-	return viewlist;
-}*/
 
 System* System::createSuccessor()
 {
@@ -374,9 +358,6 @@ bool System::addChild(Component *newcomponent)
 
 	quuidMap[newcomponent->getQUUID()] = newcomponent;
 	newcomponent->SetOwner(this);
-	// set componentNameMap - if the name is already initialized
-	//if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
-	//	this->componentNameMap[newcomponent->getAttribute(UUID_ATTRIBUTE_NAME)->getString()] = newcomponent;
 
 	return true;
 }
@@ -385,7 +366,6 @@ bool System::removeChild(Component* c)
 {
 	QMutexLocker ml(mutex);
 
-	//QUuid id = c->getQUUID();
 	quuidMap.erase(c->getQUUID());
 
 	switch (c->getType())
@@ -397,9 +377,6 @@ bool System::removeChild(Component* c)
 	case RASTERDATA:	rasterdata.erase((RasterData*)c);  break;
 	case SUBSYSTEM:		subsystems.erase((System*)c);		break;
 	}
-
-	//if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
-	//	componentNameMap.erase(c->getUUID());
 
 	typedef std::map<std::string, std::vector<Component*>> viewmap;
 	
@@ -423,13 +400,6 @@ std::vector<Component*> System::getChilds()
 	resultVec.insert(resultVec.end(), faces.begin(), faces.end());
 	resultVec.insert(resultVec.end(), rasterdata.begin(), rasterdata.end());
 	resultVec.insert(resultVec.end(), subsystems.begin(), subsystems.end());
-
-	/*mforeach(Component* c,nodes)		resultVec.push_back(c);
-	mforeach(Component* c,edges)		resultVec.push_back(c);
-	mforeach(Component* c,faces)		resultVec.push_back(c);
-	mforeach(Component* c,rasterdata)	resultVec.push_back(c);
-	mforeach(Component* c,subsystems)	resultVec.push_back(c);
-	mforeach(Component* c,components)	resultVec.push_back(c);*/
 
 	return resultVec;
 }

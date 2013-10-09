@@ -150,9 +150,6 @@ public:
 	*/
 	System* createSuccessor();
 
-	/** @brief return a vector of views avalible in the system */
-	//const std::vector<DM::View> getViews();
-
 	/** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
 	Component* clone();
 
@@ -168,11 +165,6 @@ public:
 
 	/** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
 	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
-
-	//void updateView(const View& view);
-
-	// TODO for faster searching - maybe find a better solution for access
-	// std::map<std::string, Component*>	componentNameMap;
 
 	virtual Component* getChild(QUuid quuid);
 
@@ -197,7 +189,6 @@ private:
 	std::set<Component* >	components;
 
 	std::map<QUuid, Component*>	quuidMap;
-
 
 	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
