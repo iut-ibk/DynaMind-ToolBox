@@ -474,7 +474,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 				}
 				else
 				{
-					View& existingView = m->streamViews[streamName][v.getName()];
+					View& existingView = updatedStreams[streamName][v.getName()];
 					// check if all attributes are ready existing
 					std::vector<std::string> existingAttributes = existingView.getAllAttributes();
 					foreach(std::string attributeName, v.getAllAttributes())
