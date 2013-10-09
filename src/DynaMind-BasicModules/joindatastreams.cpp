@@ -24,7 +24,7 @@ void JoinDatastreams::init()
     //Define New System
 	foreach (std::string s, Inports) 
 		foreach(const DM::View& v, getViewsInStream(s))
-			combined_datastream.push_back(v.cloneWriteOnly());
+			combined_datastream.push_back(v.clone(DM::WRITE));
 
     foreach (std::string s, Inports) 
 	{

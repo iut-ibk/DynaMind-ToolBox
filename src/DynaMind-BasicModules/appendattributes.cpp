@@ -114,7 +114,7 @@ void AppendAttributes::init()
 	if (vExistingView.getName().empty())
 		return;
 
-	vExistingView = vExistingView.cloneReadOnly();
+	vExistingView = vExistingView.clone(DM::READ);
 	vExistingView.addAttribute(newAttribute, DM::Attribute::NOTYPE, DM::WRITE);
 
 	this->vRasterData = DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ);

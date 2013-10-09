@@ -89,7 +89,7 @@ void AppendViewFromSystem::init()
 			{
 				if(!vector_contains(&existingViews, v.getName()))
 				{
-					views.push_back(v.cloneWriteOnly());
+					views.push_back(v.clone(DM::WRITE));
 					existingViews.push_back(v.getName());
 					changed = true;
 				}

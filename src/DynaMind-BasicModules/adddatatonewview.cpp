@@ -72,7 +72,7 @@ void AddDataToNewView::init()
 	// TODO: Works fine until someone is changing something upstream -> no update downstream!
 	// NOTE: redone, upper comment may not be valid anymore
 
-	std::map<std::string, DM::View> views = getViewsInStream()["Data"];
+	std::vector<DM::View> views = getViewsInStream("Data");
 	if(views.size() == 0)
 	{
 		DM::Logger(DM::Warning) << "empty stream in module '" << getClassName() << "'";
@@ -90,8 +90,10 @@ void AddDataToNewView::init()
 		return;
 	}*/
 
-	DM::View inViewDef;
-	if(!map_contains(&views, NameOfExistingView, inViewDef))
+	
+
+	DM::View inViewDef = getViewInStream("Data", NameOfExistingView).clone(DM::READ);
+	if(inViewDef.getName().empty())
 	{
 		DM::Logger(DM::Warning) << "view '" << NameOfExistingView
 			<< "' does not exist in stream 'Data' in module '" << getClassName() << "'";
@@ -100,8 +102,9 @@ void AddDataToNewView::init()
 
 	if(NameOfExistingView == NameOfNewView)
 	{
+		inViewDef = inViewDef.clone(DM::READ);
 		// modify only
-		inViewDef.setAccessType(DM::MODIFY);
+		//inViewDef.setAccessType(DM::MODIFY);
 		// add new attributes
 		foreach(std::string s, this->newAttributes)
 			inViewDef.addAttribute(s, DM::Attribute::NOTYPE, DM::WRITE);
@@ -113,9 +116,8 @@ void AddDataToNewView::init()
 	else
 	{
 		// create new views
-		DM::View inView = inViewDef.cloneReadOnly();
-		DM::View outView = inViewDef.cloneWriteOnly();
-		outView.setName(NameOfNewView);
+		DM::View inView = inViewDef.clone(DM::READ);
+		DM::View outView = inViewDef.clone(DM::WRITE, NameOfNewView);
 		foreach(std::string s, this->newAttributes)
 			outView.addAttribute(s, DM::Attribute::NOTYPE, DM::WRITE);
 
