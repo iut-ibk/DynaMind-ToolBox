@@ -505,9 +505,9 @@ bool Simulation::checkModuleStreamForward(Module* m)
 							// add attribute
 							Attribute::AttributeType type = v.getAttributeType(attributeName);
 							if(type != Attribute::LINK)
-								existingView.addAttribute(attributeName, type, WRITE);
+								existingView.addAttribute(attributeName, type, READ);
 							else
-								existingView.addAttribute(attributeName, v.getNameOfLinkedView(attributeName), WRITE);
+								existingView.addAttribute(attributeName, v.getNameOfLinkedView(attributeName), READ);
 						}
 						
 					}
