@@ -90,44 +90,23 @@ public:
 	View(std::string name, int type, int accesstypeGeometry = READ);
 	View();
 	
+	/** @brief clone the view, forcing a new access type and name */
 	View clone(ACCESS forceAccessType, const std::string& newName = "") const;
-	//View cloneWriteOnly(const std::string& newName = "") const;
-	/** @brief add attributes that to write by added by the module*/
-	//void addAttribute(std::string name);
-
-	/** @brief add attributes that to write by read by the module*/
-	//void getAttribute(std::string name);
-
-	/** @brief add attributes that to write by modified by the module*/
-	//void modifyAttribute(std::string name);
 	
 	/** @brief add attributes to be accessed with this view */
 	void addAttribute(const std::string name, Attribute::AttributeType type, ACCESS access);
+
+	/** @brief Adds link attribute */
 	void addAttribute(const std::string name, std::string linkName, ACCESS access);
 
 	/** @brief Get name of the View*/
 	std::string const & getName() const {return this->name;}
 
-	/** @brief Set name of the view */
-	//void setName(std::string name){this->name = name;}
-
-	/** @brief Return a list of attributes that are added to the component */
-	//std::vector<std::string>  getWriteAttributes  () const;
-
-	/** @brief Return a list of attributes that are read */
-	//std::vector<std::string>  getReadAttributes  () const;
-
-	/** @brief Set Type */
-	//void setType(int type) {this->type=type;}
-
 	/** @brief Return Type */
 	int const & getType() const {return type;}
 
 	/** @brief Return AccessType of the Geometry */
-	int const & getAccessType() const{return accesstypeGeometry;}
-
-	/** @brief set AccessType of the Geometry */
-	//void setAccessType(int Type) {this->accesstypeGeometry = Type;}
+	int const & getAccessType() const {return accesstypeGeometry;}
 
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
 	bool reads() const;
@@ -135,34 +114,25 @@ public:
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or write */
 	bool writes() const;
 
-	/** @brief Returns Attribute Type */
+	/** @brief Returns attribute type */
 	Attribute::AttributeType getAttributeType(std::string name) const;
-
+	
+	/** @brief Returns attribute access type */
 	ACCESS getAttributeAccessType(std::string name) const;
 
 	/** @brief Sets Attribute Type */
 	void setAttributeType(std::string name, Attribute::AttributeType type);
 
-	/** @brief Adds link attribute */
-	//void addLinks(std::string name, View linkedView);	// backwards comp.
-	//void addLinks(std::string name, std::string linkedViewName);
-
-	/** @brief Returns names of object that link to other views */
-	//std::vector<std::string> getNamesOfLinks();
-
 	/** @brief Returns names of object the linked view */
 	std::string getNameOfLinkedView(std::string linkName) const;
-
+	
+	/** @brief Returns names of all attributes */
 	std::vector<std::string> getAllAttributes() const;
 
 private:
 	int type;
 	std::string name;
 	int accesstypeGeometry;
-
-	//std::map<std::string, int> ownedAttributes;
-	//std::map<std::string, Attribute::AttributeType> attributeTypes;
-	//std::map<std::string, std::string> attributeLinks;
 
 	struct AttributeAccess
 	{

@@ -25,7 +25,6 @@
  *
  */
 
-
 #include "dmview.h"
 #include <dmmodule.h>
 #include <dmattribute.h>
@@ -60,43 +59,6 @@ View View::clone(ACCESS forceAccessType, const std::string& newName) const
 	return v;
 }
 
-/*View View::cloneReadOnly() const
-{
-	View v(name, type, READ);
-	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
-		it != v.attributes.end(); ++it)
-	{
-		it->second.access = READ;
-	}
-	return v;
-}
-
-View View::cloneWriteOnly(const std::string& newName) const
-{
-	View v(newName.empty()?name:newName, type, WRITE);
-	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
-		it != v.attributes.end(); ++it)
-	{
-		it->second.access = WRITE;
-	}
-	return v;
-}*/
-
-/*
-void View::addAttribute(std::string name) {
-	this->ownedAttributes[name] = WRITE;
-	this->attributeTypes[name] = Attribute::NOTYPE;
-}
-
-void View::getAttribute(std::string name) {
-	this->ownedAttributes[name] = READ;
-	this->attributeTypes[name] = Attribute::NOTYPE;
-}
-void View::modifyAttribute(std::string name) {
-	this->ownedAttributes[name] = MODIFY;
-	this->attributeTypes[name] = Attribute::NOTYPE;
-}*/
-
 void View::addAttribute(const std::string name, Attribute::AttributeType type, ACCESS access)
 {
 	AttributeAccess& aa = attributes[name];
@@ -111,31 +73,12 @@ void View::addAttribute(const std::string name, std::string linkName, ACCESS acc
 	aa.access = access;
 	aa.linkedView = linkName;
 }
-/*
-std::vector<std::string> View::getWriteAttributes() const {
-	std::vector<std::string> attrs;
-	for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
-		if (it->second > READ)
-			attrs.push_back(it->first);
-
-	return attrs;
-}
-
-std::vector<std::string> View::getReadAttributes() const {
-	std::vector<std::string> attrs;
-	for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
-		if (it->second < WRITE)
-			attrs.push_back(it->first);
-
-	return attrs;
-}*/
 
 bool View::reads() const
 {
 	if (this->accesstypeGeometry < WRITE)
 		return true;
-	//for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
-	//	if (it->second < WRITE)
+
 	mforeach(const AttributeAccess& aa, attributes)
 		if(aa.access < WRITE)
 			return true;
@@ -143,13 +86,11 @@ bool View::reads() const
 	return false;
 }
 
-
 bool View::writes() const
 {
 	if (this->accesstypeGeometry > READ)
 		return true;
-	//for (std::map<std::string, int>::const_iterator it = this->ownedAttributes.begin(); it != this->ownedAttributes.end(); ++it)
-	//	if (it->second > READ)
+
 	mforeach(const AttributeAccess& aa, attributes)
 		if(aa.access > READ)
 			return true;
@@ -159,9 +100,6 @@ bool View::writes() const
 
 Attribute::AttributeType View::getAttributeType(std::string name) const
 {
-	//std::map<std::string, Attribute::AttributeType>::const_iterator it = attributeTypes.find(name);
-	//if(it != attributeTypes.end())
-	//	return it->second;
 	AttributeAccess aa;
 	if(map_contains(&attributes, name, aa))
 		return aa.type;
@@ -184,39 +122,8 @@ std::vector<std::string> View::getAllAttributes() const
 	return names;
 }
 
-/*
-void View::setAttributeType(std::string name, Attribute::AttributeType type)
-{
-	this->attributeTypes[name] = type;
-}*/
-/*
-void View::addLinks(string name, View linkedView)
-{
-	addLinks(name, linkedView.getName());
-}
-
-void View::addLinks(string name, std::string linkedViewName)
-{
-	this->addAttribute(name);
-	this->setAttributeType(name, Attribute::LINK);
-	this->attributeLinks[name] = linkedViewName;
-}*/
-/*
-std::vector<std::string> View::getNamesOfLinks()
-{
-	std::vector<std::string> namesOfView;
-	for (stringmap::const_iterator it = attributeLinks.begin(); it != attributeLinks.end(); ++it) {
-		namesOfView.push_back(it->first);
-	}
-	return namesOfView;
-
-}*/
-
 std::string View::getNameOfLinkedView(string linkName) const
 {
-	//std::string viewName;
-	//map_contains(&attributeLinks, linkName, viewName);
-	//return viewName;
 	AttributeAccess aa;
 	if(map_contains(&attributes, linkName, aa))
 		return aa.linkedView;
