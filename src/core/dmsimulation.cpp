@@ -928,11 +928,11 @@ void Simulation::reset()
 	{
 		foreach(std::string portName, m->getInPortNames())
 			if(System* sys = m->getInPortData(portName))
-				if(sys->getPredecessors().size() == 0)
+				if(!sys->getPredecessor())
 					systems.insert(sys);
 		foreach(std::string portName, m->getOutPortNames())
 			if(System* sys = m->getOutPortData(portName))
-				if(sys->getPredecessors().size() == 0)
+				if(!sys->getPredecessor())
 					systems.insert(sys);
 	}
 	// delete them

@@ -137,7 +137,7 @@ public:
 	virtual std::vector<RasterData*> getAllRasterData();
 
 	/** @brief Returns the predecessor of the system */
-	std::vector<System*> getPredecessors() const;
+	virtual System* getPredecessor() const;
 
 	/** @brief Returns the sucessor of the system */
 	std::vector<System*> getSucessors() const;
@@ -177,8 +177,6 @@ private:
 	bool addChild(Component *newcomponent);
 	/** @brief return table name */
 	QString getTableName();
-	/** @brief add Predecessor **/
-	void addPredecessors(DM::System * s);
 
 	//DM::Module* lastModule;
 	std::set<Node* >			nodes;
@@ -190,7 +188,6 @@ private:
 
 	std::map<QUuid, Component*>	quuidMap;
 
-	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
 
 	std::map<std::string, std::vector<Component*> > views;

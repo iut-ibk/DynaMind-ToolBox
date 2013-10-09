@@ -48,6 +48,13 @@ DerivedSystem::DerivedSystem(System* sys): System()
 
 	// copy from overwrites current system, fixes a bug
 	currentSys = this;
+
+	this->SQLUpdateStates();
+}
+
+System* DerivedSystem::getPredecessor() const
+{
+	return predecessorSys;
 }
 
 Component* DerivedSystem::SuccessorCopyTypesafe(const Component *src)

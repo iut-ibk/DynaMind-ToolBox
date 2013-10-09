@@ -311,7 +311,6 @@ System* System::createSuccessor()
 	System* result = new DerivedSystem(this);
 	this->sucessors.push_back(result);
 	this->SQLUpdateStates();
-	result->addPredecessors(this);
 	result->SQLUpdateStates();
 
 	return result;
@@ -322,17 +321,10 @@ std::vector<System*> System::getSucessors() const
 	return sucessors;
 }
 
-std::vector<System*> System::getPredecessors() const
+System* System::getPredecessor() const
 {
-	return predecessors;
-}
-
-void System::addPredecessors(System *s)
-{
-	QMutexLocker ml(mutex);
-
-	this->predecessors.push_back(s);
-	this->SQLUpdateStates();
+	// only derived systems will have a predecessor
+	return NULL;
 }
 
 bool System::addChild(Component *newcomponent)
@@ -416,11 +408,11 @@ void System::SQLUpdateStates()
 	foreach(System* sys, sucessors)
 		sucList.push_back(sys->getQUUID().toString());
 
-	QStringList preList;
-	foreach(System* sys, predecessors)
-		preList.push_back(sys->getQUUID().toString());
+	QString pre;
+	if(System* sys = getPredecessor())
+		pre = sys->getQUUID().toString();
 
 	DBConnector::getInstance()->Update("systems",       uuid,
 		"sucessors",     sucList,
-		"predecessors",  preList);
+		"predecessors",  pre);
 }

@@ -63,6 +63,9 @@ public:
 
 	Component* getChild(QUuid quuid);
 	Component* getSuccessingComponent(const Component* formerComponent);
+	
+	/** @brief Returns the predecessor of the system */
+	System* getPredecessor() const;
 };
 
 }
