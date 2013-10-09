@@ -42,11 +42,35 @@ View::View(std::string name, int type, int accesstypeGeometry)
 	this->accesstypeGeometry = accesstypeGeometry;
 
 }
+
 View::View() 
 {
 	this->name = "";
 	this->type = -1;
 }
+
+View View::cloneReadOnly() const
+{
+	View v(name, type, READ);
+	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
+		it != v.attributes.end(); ++it)
+	{
+		it->second.access = READ;
+	}
+	return v;
+}
+
+View View::cloneWriteOnly() const
+{
+	View v(name, type, WRITE);
+	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
+		it != v.attributes.end(); ++it)
+	{
+		it->second.access = WRITE;
+	}
+	return v;
+}
+
 /*
 void View::addAttribute(std::string name) {
 	this->ownedAttributes[name] = WRITE;

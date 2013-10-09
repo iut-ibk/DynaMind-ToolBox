@@ -89,7 +89,9 @@ public:
 	/** @brief Default constructor to create a new view */
 	View(std::string name, int type, int accesstypeGeometry = READ);
 	View();
-
+	
+	View cloneReadOnly() const;
+	View cloneWriteOnly() const;
 	/** @brief add attributes that to write by added by the module*/
 	//void addAttribute(std::string name);
 
