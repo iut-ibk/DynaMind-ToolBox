@@ -90,10 +90,8 @@ Component * System::addComponent(Component* c, const DM::View & view)
 
 	components.insert(c);
 
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(c);
-		c->setView(view.getName());
-	}
 
 	return c;
 }
@@ -123,10 +121,9 @@ Node* System::addNode(const Node &ref,  const DM::View & view)
 
 	if (n == NULL)
 		return NULL;
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(n);
-		n->setView(view.getName());
-	}
+
 	return n;
 }
 
@@ -138,10 +135,9 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 
 	if (n == NULL)
 		return NULL;
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(n);
-		n->setView(view.getName());
-	}
+
 	return n;
 }
 
@@ -172,10 +168,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 	if (e == 0)
 		return 0;
 	if (!view.getName().empty()) 
-	{
 		this->views[view.getName()].push_back(e);
-		e->setView(view.getName());
-	}
 
 	return e;
 }
@@ -208,10 +201,9 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 
 	if (f == 0)
 		return 0;
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(f);
-		f->setView(view.getName());
-	}
+
 	return f;
 }
 
@@ -226,10 +218,9 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 
 	rasterdata.insert(r);
 
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(r);
-		r->setView(view.getName());
-	}
+
 	return r;
 }
 
@@ -255,7 +246,6 @@ bool System::addComponentToView(Component *comp, const View &view)
 	QMutexLocker ml(mutex);
 
 	this->views[view.getName()].push_back(comp);
-	comp->setView(view.getName());
 	return true;
 }
 
@@ -266,8 +256,6 @@ bool System::removeComponentFromView(Component *comp, const View &view)
 bool System::removeComponentFromView(Component *comp, const std::string& viewName) 
 {
 	QMutexLocker ml(mutex);
-
-	comp->removeView(viewName);
 
 	std::vector<Component*>& comps = this->views[viewName];
 	std::vector<Component*>::iterator it = std::find(comps.begin(), comps.end(), comp);
@@ -289,10 +277,8 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
 	subsystems.insert(newsystem);
 
-	if (!view.getName().empty()) {
+	if (!view.getName().empty())
 		this->views[view.getName()].push_back(newsystem);
-		newsystem->setView(view.getName());
-	}
 
 	return newsystem;
 }

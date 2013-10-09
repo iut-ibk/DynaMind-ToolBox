@@ -126,21 +126,6 @@ public:
 	/** @brief Returns a map of all Attributes */
 	const std::map<std::string, Attribute*> & getAllAttributes();
 
-	/** @brief adds Component to a View by using the name of the view */
-	void setView(std::string view);
-
-	/** @brief adds Component to a View.
-	*
-	* Therefore the name of the View is used as identifier.
-	*/
-	void setView(const DM::View & view);
-
-	/** @brief Retruns a set of Views in which the Compont is used */
-	std::set<std::string> const &  getInViews() const;
-
-	/** @brief Returns true if Component is in the View */
-	bool isInView(DM::View view) const;
-
 	/** @brief virtual clone method.
 	*
 	* To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
@@ -156,9 +141,6 @@ protected:
 	/* @brief Sets stateUuid and ownership in sql db*/
 	virtual void SetOwner(Component *owner);
 	void SQLDelete();
-	
-	void removeView(const DM::View & view);
-	void removeView(const std::string& viewname);
 
 	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
 	Component(bool b);
@@ -173,7 +155,7 @@ protected:
 	QUuid	uuid;
 	System* currentSys;
 	bool	isInserted;
-	std::set<std::string> inViews;
+	//std::set<std::string> inViews;
 	std::map<std::string,Attribute*> ownedattributes;
 private:
 	bool HasAttribute(std::string name) const;

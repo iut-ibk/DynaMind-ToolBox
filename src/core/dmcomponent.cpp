@@ -63,7 +63,6 @@ Component::Component()
 	uuid = QUuid::createUuid();
 	ownedattributes = std::map<std::string,Attribute*>();
 
-	inViews = std::set<std::string>();
 	currentSys = NULL;
 
 	DBConnector::getInstance();
@@ -78,7 +77,6 @@ Component::Component(bool b)
 	uuid = QUuid::createUuid();
 	ownedattributes = std::map<std::string,Attribute*>();
 
-	inViews = std::set<std::string>();
 	currentSys = NULL;
 	isCached = false;
 }
@@ -86,8 +84,6 @@ Component::Component(bool b)
 void Component::CopyFrom(const Component &c, bool successor)
 {
 	uuid = QUuid::createUuid();
-	inViews = c.inViews;
-	//currentSys = NULL;
 
 	if(!successor)
 	{
@@ -147,14 +143,6 @@ Component& Component::operator=(const Component& other)
 	return *this;
 }
 
-bool Component::isInView(View view) const 
-{
-	foreach (std::string s, inViews) {
-		if (view.getName().compare(s) == 0)
-			return true;
-	}
-	return false;
-}
 std::string Component::getUUID()
 {
 	Attribute* a = this->getAttribute(UUID_ATTRIBUTE_NAME);
@@ -317,42 +305,9 @@ const std::map<std::string, Attribute*> & Component::getAllAttributes()
 	return ownedattributes;
 }
 
-
-
 Component* Component::clone() 
 {
 	return new Component(*this);
-}
-
-void Component::setView(std::string view)
-{
-	QMutexLocker ml(mutex);
-
-	this->inViews.insert(view);
-}
-
-void Component::setView(const DM::View & view)
-{
-	QMutexLocker ml(mutex);
-
-	this->inViews.insert(view.getName());
-}
-
-void Component::removeView(const View &view)
-{
-	removeView(view.getName());
-}
-
-void Component::removeView(const std::string& viewname)
-{
-	QMutexLocker ml(mutex);
-
-	this->inViews.erase(viewname);
-}
-
-const set<std::string> &Component::getInViews() const 
-{
-	return this->inViews;
 }
 
 System * Component::getCurrentSystem() const
