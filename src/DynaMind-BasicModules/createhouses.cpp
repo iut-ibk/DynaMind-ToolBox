@@ -150,58 +150,58 @@ void CreateHouses::run()
 void CreateHouses::init()
 {
 	cityView = DM::View("CITY", DM::COMPONENT, DM::READ);
-	cityView.getAttribute("year");
+	cityView.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
 
 	parcels = DM::View("PARCEL", DM::FACE, DM::READ);
-	parcels.addAttribute("is_built");
+	parcels.addAttribute("is_built", DM::Attribute::DOUBLE, DM::WRITE);
 	if (this->onSingal)
-		parcels.getAttribute("selected");
+		parcels.addAttribute("selected", DM::Attribute::DOUBLE, DM::READ);
 
 	houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
 
-	houses.addAttribute("centroid_x");
-	houses.addAttribute("centroid_y");
+	houses.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("built_year");
-	houses.addAttribute("stories");
-	houses.addAttribute("stories_below");
-	houses.addAttribute("stories_height");
+	houses.addAttribute("built_year", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("stories", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("stories_below", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("stories_height", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("floor_area");
-	houses.addAttribute("roof_area");
-	houses.addAttribute("gross_floor_area");
+	houses.addAttribute("floor_area", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("gross_floor_area", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("l_bounding");
-	houses.addAttribute("b_bounding");
-	houses.addAttribute("h_bounding");
-	houses.addAttribute("alhpa_bounding");
+	houses.addAttribute("l_bounding", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("b_bounding", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("h_bounding", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("alhpa_bounding", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("alpha_roof");
+	houses.addAttribute("alpha_roof", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("cellar_used");
-	houses.addAttribute("roof_used");
+	houses.addAttribute("cellar_used", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("roof_used", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("T_heating");
-	houses.addAttribute("T_cooling");
+	houses.addAttribute("T_heating", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("T_cooling", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("Geometry");
-	houses.addAttribute("V_living");
+	houses.addAttribute("Geometry", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("V_living", DM::Attribute::DOUBLE, DM::WRITE);
 
 	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
-	footprint.addAttribute("h");
-	footprint.addAttribute("built_year");
+	footprint.addAttribute("h", DM::Attribute::DOUBLE, DM::WRITE);
+	footprint.addAttribute("built_year", DM::Attribute::DOUBLE, DM::WRITE);
 
 	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
-	building_model.addAttribute("type");
-	building_model.addAttribute("color");
-	building_model.addAttribute("parent");
+	building_model.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
+	building_model.addAttribute("color", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	building_model.addAttribute("parent", DM::Attribute::DOUBLE, DM::WRITE);
 
-	parcels.addLinks("BUILDING", houses.getName());
-	houses.addLinks("PARCEL", parcels.getName());
-	houses.addLinks("Geometry", building_model.getName());
-	houses.addLinks("Footprint", footprint.getName());
+	parcels.addAttribute("BUILDING", houses.getName(), DM::WRITE);
+	houses.addAttribute("PARCEL", parcels.getName(), DM::WRITE);
+	houses.addAttribute("Geometry", building_model.getName(), DM::WRITE);
+	houses.addAttribute("Footprint", footprint.getName(), DM::WRITE);
 
-	footprint.addLinks("BUILDING",  houses.getName());
+	footprint.addAttribute("BUILDING",  houses.getName(), DM::WRITE);
 
 	std::vector<DM::View> data;
 	data.push_back(houses);

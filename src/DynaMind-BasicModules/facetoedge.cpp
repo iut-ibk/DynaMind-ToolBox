@@ -23,7 +23,7 @@ void FaceToEdge::init()
 	if (face_name.empty())
 		return;
 	this->view_edge = DM::View(edge_name, DM::EDGE, DM::WRITE);
-	if (linkToFaces)  this->view_edge.addLinks(face_name, face_name);
+	if (linkToFaces)  this->view_edge.addAttribute(face_name, face_name, DM::WRITE);
 	this->view_face = DM::View(face_name, DM::FACE, DM::READ);
 
 	std::vector<DM::View> datastream;

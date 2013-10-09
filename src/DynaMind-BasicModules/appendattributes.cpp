@@ -103,7 +103,6 @@ string AppendAttributes::getHelpUrl()
 
 void AppendAttributes::init()
 {
-
 	if (this->NameOfExistingView.empty())
 		return;
 
@@ -112,19 +111,16 @@ void AppendAttributes::init()
 
 	this->vExistingView = this->getViewInStream("Data", NameOfExistingView);
 
-	if (vExistingView.getType() == -1)
+	if (vExistingView.getName().empty())
 		return;
 
-	vExistingView = DM::View(vExistingView.getName(), vExistingView.getType(), DM::READ);
-	vExistingView.addAttribute(newAttribute);
+	vExistingView = vExistingView.cloneReadOnly();
+	vExistingView.addAttribute(newAttribute, DM::Attribute::NOTYPE, DM::WRITE);
 
-	this->vRasterData = DM::View(DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ));
+	this->vRasterData = DM::View(NameOfRasterData, DM::RASTERDATA,  DM::READ);
 
 	data.push_back(vExistingView);
 	data.push_back(vRasterData);
 
 	this->addData("Data", data);
-
-
-
 }

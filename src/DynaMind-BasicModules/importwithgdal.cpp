@@ -75,7 +75,7 @@ ImportwithGDAL::ImportwithGDAL()
 
 	fileok = false;
 
-
+	view = NULL;
 	poCT = NULL;
 }
 ImportwithGDAL::~ImportwithGDAL()
@@ -140,7 +140,7 @@ Component *ImportwithGDAL::loadNode(System *sys, OGRFeature *poFeature)
 	transform(&x,&y);
 
 	DM::Node * n = this->addNode(sys, x + this->offsetX, y +  this->offsetY, 0);
-	sys->addComponentToView(n, this->view);
+	sys->addComponentToView(n, *this->view);
 
 	return n;
 }
@@ -200,7 +200,7 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 				return 0;
 			std::vector<DM::Edge *> edges;
 			for (unsigned int i = 1; i < nlist.size(); i++)
-				edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
+				edges.push_back(sys->addEdge(nlist[i-1], nlist[i], *this->view));
 
 			if (edges.size() > 0)
 				return edges[0];
@@ -214,7 +214,7 @@ Component *ImportwithGDAL::loadEdge(System *sys, OGRFeature *poFeature)
 			return 0;
 		std::vector<DM::Edge *> edges;
 		for (unsigned int i = 1; i < nlist.size(); i++)
-			edges.push_back(sys->addEdge(nlist[i-1], nlist[i], this->view));
+			edges.push_back(sys->addEdge(nlist[i-1], nlist[i], *this->view));
 
 		if (edges.size() > 0)
 			return edges[0];
@@ -239,7 +239,7 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 			return 0;
 		nlist.push_back(nlist[0]);
 
-		DM::Face * f = sys->addFace(nlist, this->view);
+		DM::Face * f = sys->addFace(nlist, *this->view);
 
 		//AddHoles
 		for (int i = 0; i < poPolygon->getNumInteriorRings(); i++) {
@@ -264,7 +264,7 @@ Component *ImportwithGDAL::loadFace(System *sys, OGRFeature *poFeature)
 			if (nlist.size() < 3)
 				return 0;
 			nlist.push_back(nlist[0]);
-			return sys->addFace(nlist, this->view);
+			return sys->addFace(nlist, *this->view);
 		}
 	}
 
@@ -320,8 +320,6 @@ void ImportwithGDAL::init() {
 		}
 
 		fileok = true;
-		view = DM::View();
-		view.setName(ViewName);
 		this->vectorDataInit(poLayer);
 		OGRDataSource::DestroyDataSource(poDS);
 		return;
@@ -342,9 +340,6 @@ void ImportwithGDAL::init() {
 		DM::Logger(DM::Error) << "No view specified";
 		return;
 	}
-
-	view = DM::View();
-	view.setName(ViewName);
 
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
@@ -391,16 +386,6 @@ void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 	int wkbtype = -1;
 	if( poFeature = poLayer->GetNextFeature() )
 	{
-		OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-		for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
-		{
-			OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
-			std::string attrName = poFieldDefn->GetNameRef();
-			// if existent, attrName will be given the value of attributesToImport[attrName]
-			bool exists = map_contains(&attributesToImport, attrName, attrName);
-			if(ImportAll || exists)
-				view.addAttribute(attrName);
-		}
 		if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
 		{
 			OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
@@ -409,39 +394,47 @@ void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 			switch(wkbFlatten(ogrType))
 			{
 			case wkbPoint:
-				view.setType(DM::NODE);
+				view = new DM::View(ViewName, DM::NODE, DM::WRITE);
 				break;
 			case wkbPolygon:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::FACE);
+				view = new DM::View(ViewName, DM::FACE, DM::WRITE);
 				break;
 			case wkbMultiPolygon:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::FACE);
+				view = new DM::View(ViewName, DM::FACE, DM::WRITE);
 				break;
 			case wkbLineString:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::EDGE);
+				view = new DM::View(ViewName, DM::EDGE, DM::WRITE);
 				break;
 			case wkbMultiLineString:
-				view.setAccessType(DM::WRITE);
-				view.setType(DM::EDGE);
+				view = new DM::View(ViewName, DM::EDGE, DM::WRITE);
 				break;
 			default:
 				DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << wkbtype <<" )";
 				fileok = false;
 				return;
 			}
-			view.setAccessType(DM::WRITE);
 			DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
-			OGRFeature::DestroyFeature( poFeature );
 		}
+
+		OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
+		for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
+		{
+			OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
+			std::string attrName = poFieldDefn->GetNameRef();
+			// if existent, attrName will be given the value of attributesToImport[attrName]
+			bool exists = map_contains(&attributesToImport, attrName, attrName);
+			if(ImportAll || exists)
+				view->addAttribute(attrName, DM::Attribute::NOTYPE, DM::WRITE);
+		}
+
+		if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
+			OGRFeature::DestroyFeature( poFeature );
 	}
+
 	std::vector<DM::View> data;
 	if (append)
 		data.push_back( DM::View("dummy", SUBSYSTEM, READ));
-
-	data.push_back(view);
+	data.push_back(*view);
 	this->addData("Data", data);
 }
 
@@ -493,11 +486,11 @@ void ImportwithGDAL::rasterDataInit(GDALDataset  *poDataset)
 	if( poBand->GetColorTable() != NULL )
 		DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
 
-	view.setType(DM::RASTERDATA);
-	view.setAccessType(DM::WRITE);
+	
+	view = new DM::View(ViewName, DM::RASTERDATA, DM::WRITE);
 
 	std::vector<DM::View> data;
-	data.push_back(view);
+	data.push_back(*view);
 	this->addData("Data", data);
 }
 
@@ -517,7 +510,7 @@ void ImportwithGDAL::run()
 bool ImportwithGDAL::importVectorData()
 {
 	DM::System * sys = this->getData("Data");
-	int features_before = sys->getAllComponentsInView(this->view).size();
+	int features_before = sys->getAllComponentsInView(*this->view).size();
 
 	if (this->linkWithExistingView)
 		this->initPointList(sys);
@@ -566,7 +559,7 @@ bool ImportwithGDAL::importVectorData()
 	{
 		OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
 		DM::Component * cmp;
-		switch(view.getType())
+		switch(view->getType())
 		{
 		case DM::NODE:
 			cmp = this->loadNode(sys, poFeature);
@@ -583,7 +576,7 @@ bool ImportwithGDAL::importVectorData()
 		//OGRFeature::DestroyFeature( poFeature );
 	}
 	OGRDataSource::DestroyDataSource(poDS);
-	int features_after =  sys->getAllComponentsInView(this->view).size();
+	int features_after =  sys->getAllComponentsInView(*this->view).size();
 	Logger(Debug) << "Loaded featuers "<< features_after - features_before;
 	return true;
 }
@@ -593,7 +586,7 @@ bool ImportwithGDAL::importRasterData()
 	GDALDataset  *poDataset;
 	GDALRasterBand  *poBand;
 	double adfGeoTransform[6];
-	DM::RasterData * r = this->getRasterData("Data", view);
+	DM::RasterData * r = this->getRasterData("Data", *view);
 
 	poDataset = (GDALDataset *) GDALOpenShared( FileName.c_str(), GA_ReadOnly );
 	poBand = poDataset->GetRasterBand( 1 );

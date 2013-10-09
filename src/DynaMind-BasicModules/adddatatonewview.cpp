@@ -104,7 +104,7 @@ void AddDataToNewView::init()
 		inViewDef.setAccessType(DM::MODIFY);
 		// add new attributes
 		foreach(std::string s, this->newAttributes)
-			inViewDef.addAttribute(s);
+			inViewDef.addAttribute(s, DM::Attribute::NOTYPE, DM::WRITE);
 
 		std::vector<DM::View> data;
 		data.push_back(inViewDef);
@@ -113,16 +113,11 @@ void AddDataToNewView::init()
 	else
 	{
 		// create new views
-		DM::View inView(NameOfExistingView, inViewDef.getType(), DM::READ);
-		DM::View outView(NameOfNewView, inViewDef.getType(), DM::WRITE);
-		// get existent attributes
-		foreach(std::string s, inViewDef.getReadAttributes())
-			outView.addAttribute(s);
-		foreach(std::string s, inViewDef.getWriteAttributes())
-			outView.addAttribute(s);
-		// add new attributes
+		DM::View inView = inViewDef.cloneReadOnly();
+		DM::View outView = inViewDef.cloneWriteOnly();
+		outView.setName(NameOfNewView);
 		foreach(std::string s, this->newAttributes)
-			outView.addAttribute(s);
+			outView.addAttribute(s, DM::Attribute::NOTYPE, DM::WRITE);
 
 		std::vector<DM::View> data;
 		data.push_back(inView);

@@ -78,18 +78,18 @@ void CalculateBoundingBox::init() {
 	{
 		 newFaces = DM::View(NameOfNewView, DM::FACE, DM::WRITE);
 	}
-	newFaces.addAttribute("l");
-	newFaces.addAttribute("b");
-	newFaces.addAttribute("x_min");
-	newFaces.addAttribute("x_max");
-	newFaces.addAttribute("y_min");
-	newFaces.addAttribute("y_max");
+	newFaces.addAttribute("l", DM::Attribute::DOUBLE, DM::WRITE);
+	newFaces.addAttribute("b", DM::Attribute::DOUBLE, DM::WRITE);
+	newFaces.addAttribute("x_min", DM::Attribute::DOUBLE, DM::WRITE);
+	newFaces.addAttribute("x_max", DM::Attribute::DOUBLE, DM::WRITE);
+	newFaces.addAttribute("y_min", DM::Attribute::DOUBLE, DM::WRITE);
+	newFaces.addAttribute("y_max", DM::Attribute::DOUBLE, DM::WRITE);
 
 	DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
 	if (!this->overAll) {
 
-		writeView.addLinks(newFaces.getName(), newFaces);
-		newFaces.addLinks(writeView.getName(), writeView);
+		writeView.addAttribute(newFaces.getName(), newFaces.getName(), DM::WRITE);
+		newFaces.addAttribute(writeView.getName(), writeView.getName(), DM::WRITE);
 	}
 
 	std::vector<DM::View> data;

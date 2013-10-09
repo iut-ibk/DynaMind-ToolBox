@@ -65,25 +65,26 @@ void CityBlock::init()
 	std::vector<DM::View> views;
 	superblock = DM::View(SuperBlockName, DM::FACE, DM::READ);
 	cityblock = DM::View(BlockName, DM::FACE, DM::WRITE);
-	cityblock.addAttribute("area");
-	cityblock.addAttribute("width");
-	cityblock.addAttribute("height");
+	cityblock.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
+	cityblock.addAttribute("width", DM::Attribute::DOUBLE, DM::WRITE);
+	cityblock.addAttribute("height", DM::Attribute::DOUBLE, DM::WRITE);
 
 
 
 	intersections = DM::View(InterSectionsName, DM::NODE, DM::WRITE);
 	centercityblock = DM::View(CenterCityblockName, DM::NODE, DM::WRITE);
-	centercityblock.addAttribute("centroid_x");
-	centercityblock.addAttribute("centroid_y");
-	centercityblock.addLinks(BlockName, cityblock);
-	cityblock.addLinks(CenterCityblockName, centercityblock);
+	centercityblock.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
+	centercityblock.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
+	centercityblock.addAttribute(BlockName, cityblock.getName(), DM::WRITE);
+	cityblock.addAttribute(CenterCityblockName, centercityblock.getName(), DM::WRITE);
 
-	if (this->createStreets) {
+	if (this->createStreets) 
+	{
 		streets = DM::View(EdgeName, DM::EDGE, DM::WRITE);
-		streets.addAttribute("width");
+		streets.addAttribute("width", DM::Attribute::DOUBLE, DM::WRITE);
 
-		cityblock.addLinks(EdgeName,streets);
-		streets.addLinks(BlockName, cityblock);
+		cityblock.addAttribute(EdgeName, streets.getName(), DM::WRITE);
+		streets.addAttribute(BlockName, cityblock.getName(), DM::WRITE);
 
 		views.push_back(streets);
 	}
@@ -93,9 +94,6 @@ void CityBlock::init()
 
 	views.push_back(intersections);
 	views.push_back(centercityblock);
-
-
-
 
 	this->addData("City", views);
 }

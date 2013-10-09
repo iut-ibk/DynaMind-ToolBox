@@ -69,16 +69,16 @@ void CalculateCentroid::init()
 	ss << v.getName() << "_CENTROIDS";
 
 	DM::View writeView = DM::View(v.getName(), v.getType(), DM::READ);
-	writeView.addAttribute("centroid_x");
-	writeView.addAttribute("centroid_y");
-	writeView.addAttribute("area");
-	writeView.addLinks(ss.str(), ss.str());
+	writeView.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
+	writeView.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
+	writeView.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
+	writeView.addAttribute(ss.str(), ss.str(), DM::WRITE);
 
 	newPoints = DM::View(ss.str(), DM::NODE, DM::WRITE);
 
 	std::stringstream link;
 	link << v.getName()<< "_ID";
-	newPoints.addLinks(link.str(), writeView.getName());
+	newPoints.addAttribute(link.str(), writeView.getName(), DM::WRITE);
 
 
 	std::vector<DM::View> data;

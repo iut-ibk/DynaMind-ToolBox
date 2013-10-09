@@ -56,12 +56,13 @@ SuperBlock::SuperBlock()
 void SuperBlock::init() {
 
 	block = DM::View(NameOfSuperBlock, DM::FACE, DM::WRITE);
-	block.addAttribute("height");
-	block.addAttribute("width");
+	block.addAttribute("height", DM::Attribute::DOUBLE, DM::WRITE);
+	block.addAttribute("width", DM::Attribute::DOUBLE, DM::WRITE);
 
 	std::vector<DM::View> views;
 	views.push_back(block);
-	if (this->appendToExisting) views.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
+	if (this->appendToExisting) 
+		views.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
 
 	this->addData("City", views);
 }

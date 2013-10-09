@@ -80,8 +80,8 @@ void SpatialLinking::init() {
 	this->vbase = DM::View(v1.getName(), v1.getType(), READ);
 	this->vlinkto = DM::View(v2.getName(), v2.getType(), READ);
 
-	this->vbase.addLinks(linkto, vlinkto.getName());
-	this->vlinkto.addLinks(base, vbase.getName());
+	this->vbase.addAttribute(linkto, vlinkto.getName(), DM::WRITE);
+	this->vlinkto.addAttribute(base, vbase.getName(), DM::WRITE);
 
 	std::vector<DM::View> data;
 	data.push_back(vbase);

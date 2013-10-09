@@ -75,7 +75,7 @@ private:
 
 
 
-	DM::View view;
+	DM::View* view;
 	double devider;
 	std::map<std::string, std::string> attributesToImport;
 	bool ImportAll;

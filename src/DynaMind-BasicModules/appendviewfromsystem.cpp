@@ -83,49 +83,15 @@ void AppendViewFromSystem::init()
 	if (Inports.size() > 0 )
 	{
 		bool changed = false;
-		foreach (std::string s, Inports)
+		foreach (const std::string& s, Inports)
 		{
-			//DM::System * sys = this->getData(s);
-			//if (sys != 0)
+			foreach(const DM::View& v, this->getViewsInStream(s))
 			{
-				//foreach (std::string v, sys->getNamesOfViews())
-				foreach(DM::View v, this->getViewsInStream(s))
+				if(!vector_contains(&existingViews, v.getName()))
 				{
-					if (std::find(existingViews.begin(), existingViews.end(), v.getName()) == existingViews.end())
-					{
-						//DM::View * old = sys->getViewDefinition(v);
-						DM::View new_v(v.getName(), v.getType(), DM::WRITE);
-						/*if (old->getIdOfDummyComponent().empty())
-							continue;
-						if (!sys->getComponent(old->getIdOfDummyComponent())) {
-							DM::Logger(DM::Error) << "Standard dummy Component 0";
-							sys = 0;
-							return;
-						}
-						DM::AttributeMap cmp = sys->getComponent(old->getIdOfDummyComponent())->getAllAttributes();
-						*/
-						foreach(std::string attName, v.getAllAttributes())
-						{
-							if(v.getAttributeType(attName) == DM::Attribute::LINK)
-								new_v.addLinks(attName, v.getNameOfLinkedView(attName));
-							else
-								new_v.addAttribute(attName);
-						}
-						/*
-						for (DM::AttributeMap::const_iterator it = cmp.begin();
-							 it != cmp.end();
-							 ++it) {
-							if (sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getType() == DM::Attribute::LINK)  {
-								DM::LinkAttribute l_attr = sys->getComponent(old->getIdOfDummyComponent())->getAttribute(it->first)->getLink();
-								new_v.addLinks(it->first, DM::View(l_attr.viewname, DM::READ, DM::COMPONENT));
-							} else {
-							new_v.addAttribute(it->first);
-							}
-						}*/
-						views.push_back(new_v);
-						existingViews.push_back(v.getName());
-						changed = true;
-					}
+					views.push_back(v.cloneWriteOnly());
+					existingViews.push_back(v.getName());
+					changed = true;
 				}
 			}
 		}

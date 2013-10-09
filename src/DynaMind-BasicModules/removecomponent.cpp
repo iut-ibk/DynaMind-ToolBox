@@ -41,7 +41,7 @@ void RemoveComponent::init() {
 		return;
 
 	this->view_remove = DM::View(this->remove_name, DM::COMPONENT, DM::MODIFY);
-	this->view_remove.getAttribute("selected");
+	this->view_remove.addAttribute("selected", DM::Attribute::NOTYPE, DM::MODIFY);
 	std::vector<DM::View> datastream;
 	datastream.push_back(view_remove);
 	this->addData("city", datastream);

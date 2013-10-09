@@ -55,8 +55,8 @@ void ImportRasterData::init()
 	vdata.push_back(data);
 
 	Coords = DM::View("CoordOffset",DM::COMPONENT, DM::WRITE);
-	Coords.addAttribute("Xoffset");
-	Coords.addAttribute("Yoffset");
+	Coords.addAttribute("Xoffset", DM::Attribute::DOUBLE, DM::WRITE);
+	Coords.addAttribute("Yoffset", DM::Attribute::DOUBLE, DM::WRITE);
 	vdata.push_back(Coords);
 	if (this->appendToStream)
 		vdata.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::READ));

@@ -79,11 +79,12 @@ void AttributeCalculator::init() {
 	viewsmap.clear();
 	varaibleNames.clear();
 	DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
-	writeView.addAttribute(nameOfNewAttribute);
+	writeView.addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, DM::WRITE);
 	viewsmap[nameOfBaseView] = writeView;
 	for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
 		 it != variablesMap.end();
-		 ++it) {
+		 ++it) 
+	{
 		QString viewNametotal = QString::fromStdString(it->first);
 		QStringList viewNameList = viewNametotal.split(".");
 		std::string viewname = viewNameList[viewNameList.size()-2].toStdString();
@@ -97,13 +98,9 @@ void AttributeCalculator::init() {
 			viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
 		}
 
-		DM::View toAppend =  viewsmap[viewname];
-		if (attributename.compare(nameOfNewAttribute) != 0)
-			toAppend.getAttribute(attributename);
-		else
-			toAppend.modifyAttribute(attributename);
-		viewsmap[viewname] = toAppend;
-
+		viewsmap[viewname].addAttribute(attributename, 
+										DM::Attribute::NOTYPE, 
+										(attributename == nameOfNewAttribute)?DM::MODIFY : DM::WRITE);
 	}
 	std::vector<DM::View> data;
 	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin();
