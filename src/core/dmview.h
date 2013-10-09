@@ -90,8 +90,8 @@ public:
 	View(std::string name, int type, int accesstypeGeometry = READ);
 	View();
 	
-	View cloneReadOnly() const;
-	View cloneWriteOnly() const;
+	View clone(ACCESS forceAccessType, const std::string& newName = "") const;
+	//View cloneWriteOnly(const std::string& newName = "") const;
 	/** @brief add attributes that to write by added by the module*/
 	//void addAttribute(std::string name);
 
@@ -109,7 +109,7 @@ public:
 	std::string const & getName() const {return this->name;}
 
 	/** @brief Set name of the view */
-	void setName(std::string name){this->name = name;}
+	//void setName(std::string name){this->name = name;}
 
 	/** @brief Return a list of attributes that are added to the component */
 	//std::vector<std::string>  getWriteAttributes  () const;
@@ -127,7 +127,7 @@ public:
 	int const & getAccessType() const{return accesstypeGeometry;}
 
 	/** @brief set AccessType of the Geometry */
-	void setAccessType(int Type) {this->accesstypeGeometry = Type;}
+	//void setAccessType(int Type) {this->accesstypeGeometry = Type;}
 
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
 	bool reads() const;

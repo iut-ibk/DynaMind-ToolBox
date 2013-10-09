@@ -49,7 +49,18 @@ View::View()
 	this->type = -1;
 }
 
-View View::cloneReadOnly() const
+View View::clone(ACCESS forceAccessType, const std::string& newName) const
+{
+	View v(newName.empty()?name:newName, type, forceAccessType);
+	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
+		it != v.attributes.end(); ++it)
+	{
+		it->second.access = forceAccessType;
+	}
+	return v;
+}
+
+/*View View::cloneReadOnly() const
 {
 	View v(name, type, READ);
 	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
@@ -60,16 +71,16 @@ View View::cloneReadOnly() const
 	return v;
 }
 
-View View::cloneWriteOnly() const
+View View::cloneWriteOnly(const std::string& newName) const
 {
-	View v(name, type, WRITE);
+	View v(newName.empty()?name:newName, type, WRITE);
 	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
 		it != v.attributes.end(); ++it)
 	{
 		it->second.access = WRITE;
 	}
 	return v;
-}
+}*/
 
 /*
 void View::addAttribute(std::string name) {
