@@ -57,12 +57,12 @@ System::System(const System& s) : Component(s, true)
 
 System::~System()
 {
-	mforeach(Component* c, nodes)		delete c;
-	mforeach(Component* c, edges)		delete c;
-	mforeach(Component* c, faces)		delete c;
-	mforeach(Component* c, rasterdata)	delete c;
-	mforeach(Component* c, subsystems)	delete c;
-	mforeach(Component* c, components)	delete c;
+	foreach(Component* c, nodes)		delete c;
+	foreach(Component* c, edges)		delete c;
+	foreach(Component* c, faces)		delete c;
+	foreach(Component* c, rasterdata)	delete c;
+	foreach(Component* c, subsystems)	delete c;
+	foreach(Component* c, components)	delete c;
 
 	foreach (DM::System * sys, this->sucessors)
 		if (sys)	delete sys;
@@ -88,7 +88,7 @@ Component * System::addComponent(Component* c, const DM::View & view)
 		return 0;
 	}
 
-	components[c->getQUUID()] = c;
+	components.insert(c);
 
 	if (!view.getName().empty()) {
 		this->views[view.getName()].push_back(c);
@@ -111,7 +111,7 @@ Node* System::addNode(Node* node)
 		delete node;
 		return 0;
 	}
-	nodes[node->getQUUID()] = node;
+	nodes.insert(node);
 
 	return node;
 }
@@ -149,8 +149,9 @@ Edge* System::addEdge(Edge* edge)
 {
 	QMutexLocker ml(mutex);
 
-	if(!map_contains(&nodes, edge->getStartNode()->getQUUID()) || 
-		!map_contains(&nodes, edge->getEndNode()->getQUUID())){
+	if(	nodes.find(edge->getStartNode()) == nodes.end() || 
+		nodes.find(edge->getEndNode()) == nodes.end())
+	{
 		delete edge;
 		return 0;
 	}
@@ -196,7 +197,7 @@ Face* System::addFace(Face *f)
 		return 0;
 	}
 
-	faces[f->getQUUID()] = f;
+	faces.insert(f);
 	return f;
 }
 Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
@@ -223,7 +224,7 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 		return 0;
 	}
 
-	rasterdata[r->getQUUID()] = r;
+	rasterdata.insert(r);
 
 	if (!view.getName().empty()) {
 		this->views[view.getName()].push_back(r);
@@ -234,35 +235,19 @@ RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 
 std::vector<Component*>  System::getAllComponents()
 {
-	std::vector<Component*> comps;
-	mforeach(Component* c, components)
-		comps.push_back(c);
-
-	return comps;
+	return std::vector<Component*>(components.begin(), components.end());
 }
 std::vector<Node*> System::getAllNodes()
 {
-	std::vector<Node*> n;
-	mforeach(Node* it, nodes)	
-		n.push_back(it);
-
-	return n;
+	return std::vector<Node*>(nodes.begin(), nodes.end());
 }
 std::vector<Edge*> System::getAllEdges()
 {
-	std::vector<Edge*> e;
-	mforeach(Edge* it, edges)	
-		e.push_back(it);
-
-	return e;
+	return std::vector<Edge*>(edges.begin(), edges.end());
 }
 std::vector<Face*> System::getAllFaces()
 {
-	std::vector<Face*> f;
-	mforeach(Face* it, faces)	
-		f.push_back(it);
-
-	return f;
+	return std::vector<Face*>(faces.begin(), faces.end());
 }
 
 bool System::addComponentToView(Component *comp, const View &view) 
@@ -302,7 +287,7 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 		return 0;
 	}
 
-	subsystems[newsystem->getQUUID()] = newsystem;
+	subsystems.insert(newsystem);
 
 	if (!view.getName().empty()) {
 		this->views[view.getName()].push_back(newsystem);
@@ -319,20 +304,12 @@ std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 
 std::vector<System*> System::getAllSubSystems()
 {
-	std::vector<System*> syss;
-	mforeach(System* s, subsystems)
-		syss.push_back(s);
-
-	return syss;
+	return std::vector<System*>(subsystems.begin(), subsystems.end());
 }
 
 std::vector<RasterData*> System::getAllRasterData()
 {
-	std::vector<RasterData*> rasters;
-	mforeach(RasterData* r, rasterdata)
-		rasters.push_back(r);
-
-	return rasters;
+	return std::vector<RasterData*>(rasterdata.begin(), rasterdata.end());
 }
 
 Component* System::clone()
@@ -395,6 +372,7 @@ bool System::addChild(Component *newcomponent)
 	if(!newcomponent)
 		return false;
 
+	quuidMap[newcomponent->getQUUID()] = newcomponent;
 	newcomponent->SetOwner(this);
 	// set componentNameMap - if the name is already initialized
 	//if(newcomponent->HasAttribute(UUID_ATTRIBUTE_NAME))
@@ -407,16 +385,17 @@ bool System::removeChild(Component* c)
 {
 	QMutexLocker ml(mutex);
 
-	QUuid id = c->getQUUID();
+	//QUuid id = c->getQUUID();
+	quuidMap.erase(c->getQUUID());
 
 	switch (c->getType())
 	{
-	case COMPONENT:		components.erase(id);   break;
-	case NODE:			nodes.erase(id);		break;
-	case FACE:			faces.erase(id);		break;
-	case EDGE:			edges.erase(id);		break;
-	case RASTERDATA:	rasterdata.erase(id);   break;
-	case SUBSYSTEM:		subsystems.erase(id);   break;
+	case COMPONENT:		components.insert(c);				break;
+	case NODE:			nodes.insert((Node*)c);				break;
+	case FACE:			faces.insert((Face*)c);				break;
+	case EDGE:			edges.insert((Edge*)c);				break;
+	case RASTERDATA:	rasterdata.insert((RasterData*)c);  break;
+	case SUBSYSTEM:		subsystems.insert((System*)c);		break;
 	}
 
 	//if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
@@ -438,14 +417,19 @@ std::vector<Component*> System::getAllChilds()
 
 std::vector<Component*> System::getChilds()
 {
-	std::vector<Component*> resultVec;
+	std::vector<Component*> resultVec(components.begin(), components.end());
+	resultVec.insert(resultVec.end(), nodes.begin(), nodes.end());
+	resultVec.insert(resultVec.end(), edges.begin(), edges.end());
+	resultVec.insert(resultVec.end(), faces.begin(), faces.end());
+	resultVec.insert(resultVec.end(), rasterdata.begin(), rasterdata.end());
+	resultVec.insert(resultVec.end(), subsystems.begin(), subsystems.end());
 
-	mforeach(Component* c,nodes)		resultVec.push_back(c);
+	/*mforeach(Component* c,nodes)		resultVec.push_back(c);
 	mforeach(Component* c,edges)		resultVec.push_back(c);
 	mforeach(Component* c,faces)		resultVec.push_back(c);
 	mforeach(Component* c,rasterdata)	resultVec.push_back(c);
 	mforeach(Component* c,subsystems)	resultVec.push_back(c);
-	mforeach(Component* c,components)	resultVec.push_back(c);
+	mforeach(Component* c,components)	resultVec.push_back(c);*/
 
 	return resultVec;
 }
@@ -453,18 +437,8 @@ std::vector<Component*> System::getChilds()
 Component* System::getChild(QUuid quuid)
 {
 	Component* c;
-	if(map_contains(&components, quuid, c))	return c;
-	Node* n;
-	if(map_contains(&nodes, quuid, n))	return n;
-	Edge* e;
-	if(map_contains(&edges, quuid, e))	return e;
-	Face* f;
-	if(map_contains(&faces, quuid, f))	return f;
-	RasterData* r;
-	if(map_contains(&rasterdata, quuid, r))	return r;
-	System* s;
-	if(map_contains(&subsystems, quuid, s))	return s;
-
+	if(map_contains(&quuidMap, quuid, c))	
+		return c;
 	return NULL;
 }
 

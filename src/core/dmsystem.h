@@ -189,12 +189,15 @@ private:
 	void addPredecessors(DM::System * s);
 
 	//DM::Module* lastModule;
-	std::map<QUuid, Node* >			nodes;
-	std::map<QUuid, Edge* >			edges;
-	std::map<QUuid, Face* >			faces;
-	std::map<QUuid, RasterData *>	rasterdata;
-	std::map<QUuid, System*>		subsystems;
-	std::map<QUuid, Component* >	components;
+	std::set<Node* >			nodes;
+	std::set<Edge* >			edges;
+	std::set<Face* >			faces;
+	std::set<RasterData *>	rasterdata;
+	std::set<System*>		subsystems;
+	std::set<Component* >	components;
+
+	std::map<QUuid, Component*>	quuidMap;
+
 
 	std::vector<DM::System*> predecessors;
 	std::vector<DM::System*> sucessors;
