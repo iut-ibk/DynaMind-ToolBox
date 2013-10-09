@@ -390,12 +390,12 @@ bool System::removeChild(Component* c)
 
 	switch (c->getType())
 	{
-	case COMPONENT:		components.insert(c);				break;
-	case NODE:			nodes.insert((Node*)c);				break;
-	case FACE:			faces.insert((Face*)c);				break;
-	case EDGE:			edges.insert((Edge*)c);				break;
-	case RASTERDATA:	rasterdata.insert((RasterData*)c);  break;
-	case SUBSYSTEM:		subsystems.insert((System*)c);		break;
+	case COMPONENT:		components.erase(c);				break;
+	case NODE:			nodes.erase((Node*)c);				break;
+	case FACE:			faces.erase((Face*)c);				break;
+	case EDGE:			edges.erase((Edge*)c);				break;
+	case RASTERDATA:	rasterdata.erase((RasterData*)c);  break;
+	case SUBSYSTEM:		subsystems.erase((System*)c);		break;
 	}
 
 	//if(c->HasAttribute(UUID_ATTRIBUTE_NAME))
