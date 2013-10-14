@@ -37,6 +37,7 @@
 #include <dmdbconnector.h>
 #include <QSqlQuery>
 #include <QUuid>
+#include <QRegExp>
 
 using namespace DM;
 
@@ -421,55 +422,116 @@ void System::SQLUpdateStates()
 
 void System::updateView(const View& view)
 {
+	viewCaches[view.getName()].sys = this;
 	viewCaches[view.getName()].apply(view);
 }
 
-#include <QRegExp>
-
 void System::ViewCache::apply(const View& view)
 {
+	if(view.getName() != this->view.getName() && this->view.getName().length() != 0)
+	{
+		Logger(Error) << "view filter map corrupt";
+		return;
+	}
+
 	this->view = view;
 
 	QString filterString = QString::fromStdString(view.getFilter());
-
-	QRegExp rx("(\\w+)\\s*([><=]){1,1}\\s*([\\d\\.\\-]+)");
-
-	if(rx.indexIn(filterString) > -1)
+	if(filterString.length() != 0)
 	{
-		QString op = rx.cap(1);
-		if(op == "=")
-			eq.op = ViewCache::Equation::EQUAL;
-		else if(op == "<=")
-			eq.op = ViewCache::Equation::LEQUAL;
-		else if(op == ">=")
-			eq.op = ViewCache::Equation::HEQUAL;
+		QRegExp rx("([\\w\\[\\]]+)\\s*([><=]){1,1}\\s*([\\d\\.\\-]+)");
+
+		if(rx.indexIn(filterString) > -1)
+		{
+			QString op = rx.cap(2);
+			if(op == "=")
+				eq.op = ViewCache::Equation::EQUAL;
+			else if(op == "<=")
+				eq.op = ViewCache::Equation::LEQUAL;
+			else if(op == ">=")
+				eq.op = ViewCache::Equation::HEQUAL;
+			else if(op == ">")
+				eq.op = ViewCache::Equation::HIGHER;
+			else if(op == "<")
+				eq.op = ViewCache::Equation::LOWER;
+			else 
+			{
+				Logger(Error) << "unknown filter operator " << op;
+				return;
+			}
+		
+			std::string str = rx.cap(1).toStdString();
+
+			if(str == "[x]")		eq.axis = Equation::CoordinateAxis::X;
+			else if(str == "[y]")	eq.axis = Equation::CoordinateAxis::Y;
+			else if(str == "[z]")	eq.axis = Equation::CoordinateAxis::Z;
+			else
+			{
+				eq.axis = Equation::CoordinateAxis::NONE;
+				eq.varName = str;
+			}
+
+			eq.val = rx.cap(3).toDouble();
+		}
 		else 
 		{
-			Logger(Error) << "unknown filter operator" << op;
+			Logger(Error) << "invalid filter expression " << filterString;
 			return;
 		}
 
-		eq.varName = rx.cap(0).toStdString();
-		eq.val = rx.cap(2).toDouble();
-	}
-	else 
-	{
-		Logger(Error) << "invalid filter expression";
-		return;
+		// renew filtered elements
+		filteredElements.clear();
+		foreach(QUuid quuid, rawElements)
+		{
+			Component* c = sys->getChild(quuid);
+			if(c && eq.eval(c))
+				filteredElements.push_back(c);
+		}
 	}
 }
 
 bool System::ViewCache::Equation::eval(Component* c) const
 {
-	return true;
+	double d;
+
+	if(c->getType() == NODE)
+	{
+		Node* n = (Node*)c;
+
+		switch(axis)
+		{
+		case CoordinateAxis::X:	d = n->getX();	break;
+		case CoordinateAxis::Y:	d = n->getY();	break;
+		case CoordinateAxis::Z:	d = n->getZ();	break;
+		}
+	}
+
+	if(axis == CoordinateAxis::NONE)
+	{
+		Attribute* a = c->getAttribute(varName);
+		if(a->getType() == Attribute::DOUBLE)
+			d = a->getDouble();
+
+	}
+
+	switch(op)
+	{
+	case Operator::EQUAL:	return d == val;
+	case Operator::LEQUAL:	return d <= val;
+	case Operator::HEQUAL:	return d >= val;
+	case Operator::LOWER:	return d < val;
+	case Operator::HIGHER:	return d > val;
+	}
+	return false;
 }
 
 bool System::ViewCache::add(Component* c)
 {
+	rawElements.push_back(c->getQUUID());
+
 	if(legal(c))
 	{
 		filteredElements.push_back(c);
-		rawElements.push_back(c->getQUUID());
 		return true;
 	}
 	return false;
@@ -477,10 +539,11 @@ bool System::ViewCache::add(Component* c)
 
 bool System::ViewCache::remove(Component* c)
 {
+	rawElements.erase(find(rawElements.begin(), rawElements.end(), c->getQUUID()));
+
 	if(legal(c))
 	{
 		filteredElements.erase(find(filteredElements.begin(), filteredElements.end(), c));
-		rawElements.erase(find(rawElements.begin(), rawElements.end(), c->getQUUID()));
 		return true;
 	}
 	return false;

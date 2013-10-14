@@ -199,7 +199,8 @@ private:
 		struct Equation
 		{
 			std::string varName;
-			enum Operator{EQUAL, LEQUAL, HEQUAL}op;
+			enum CoordinateAxis{NONE,X,Y,Z} axis; 
+			enum Operator{EQUAL, LEQUAL, HEQUAL, LOWER, HIGHER} op;
 			double val;
 
 			bool eval(Component* c) const;
@@ -211,6 +212,7 @@ private:
 		bool legal(Component* c);
 
 		std::vector<Component*> filteredElements;
+		System* sys;
 	private:
 		View view;
 		std::vector<QUuid>	rawElements;
