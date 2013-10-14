@@ -52,7 +52,7 @@
 #endif
 
 namespace DM {
-
+	
 TEST_F(TestSystem, DeleteComponentFromView) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
@@ -69,6 +69,48 @@ TEST_F(TestSystem, DeleteComponentFromView) {
 		node_counter++;
 	}
 	EXPECT_EQ(0, node_counter);
+}
+
+TEST_F(TestSystem, ViewFilter) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Test view filter";
+
+	DM::System* sys = new System;
+
+	DM::View v("TEST", DM::NODE, DM::WRITE);
+	v.addFilter("attr>0");
+	sys->updateView(v);
+
+	DM::Node * n1 = new DM::Node(0,0,0);
+	DM::Node * n2 = new DM::Node(0,0,1);
+	DM::Node * n3 = new DM::Node(0,0,2);
+	n1->addAttribute("attr", 0);
+	n2->addAttribute("attr", 1);
+	n3->addAttribute("attr", 2);
+
+	sys->addComponentToView(sys->addNode(n1), v);
+	sys->addComponentToView(sys->addNode(n2), v);
+	sys->addComponentToView(sys->addNode(n3), v);
+	
+	EXPECT_EQ(sys->getAllNodes().size(), 3);
+	EXPECT_EQ(sys->getAllComponentsInView(v).size(), 2);
+	
+	DM::View v2("TEST2", DM::NODE, DM::WRITE);
+	sys->updateView(v2);
+	sys->addComponentToView(n1, v2);
+	sys->addComponentToView(n2, v2);
+	sys->addComponentToView(n3, v2);
+
+	v2.addFilter("[z]<1");
+	sys->updateView(v2);
+	
+	
+	EXPECT_EQ(sys->getAllNodes().size(), 3);
+	EXPECT_EQ(sys->getAllComponentsInView(v2).size(), 1);
+
+
+	delete sys;
 }
 
 	TEST_F(TestSystem,memoryTest){
