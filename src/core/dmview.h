@@ -87,7 +87,7 @@ class DM_HELPER_DLL_EXPORT View
 {
 public:
 	/** @brief Default constructor to create a new view */
-	View(std::string name, int type, int accesstypeGeometry = READ);
+	View(std::string name, int type, ACCESS accesstypeGeometry = READ);
 	View();
 	
 	/** @brief clone the view, forcing a new access type and name */
@@ -106,7 +106,7 @@ public:
 	int const & getType() const {return type;}
 
 	/** @brief Return AccessType of the Geometry */
-	int const & getAccessType() const {return accesstypeGeometry;}
+	ACCESS getAccessType() const {return accesstypeGeometry;}
 
 	/** @brief Returns true if the accesstype of the geomtry or from one attribute is modify or read */
 	bool reads() const;
@@ -132,7 +132,7 @@ public:
 private:
 	int type;
 	std::string name;
-	int accesstypeGeometry;
+	ACCESS accesstypeGeometry;
 
 	struct AttributeAccess
 	{

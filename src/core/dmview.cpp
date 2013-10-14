@@ -34,7 +34,7 @@ using namespace DM;
 
 typedef std::map<std::string, std::string> stringmap;
 
-View::View(std::string name, int type, int accesstypeGeometry)
+View::View(std::string name, int type, ACCESS accesstypeGeometry)
 {
 	this->name = name;
 	this->type = type;
