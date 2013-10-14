@@ -129,10 +129,14 @@ public:
 	/** @brief Returns names of all attributes */
 	std::vector<std::string> getAllAttributes() const;
 
+	void addFilter(const std::string& condition);
+
+	std::string getFilter() const;
 private:
 	int type;
 	std::string name;
 	ACCESS accesstypeGeometry;
+	std::string	filter;
 
 	struct AttributeAccess
 	{

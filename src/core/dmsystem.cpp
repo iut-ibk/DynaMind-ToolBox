@@ -424,9 +424,44 @@ void System::updateView(const View& view)
 	viewCaches[view.getName()].apply(view);
 }
 
+#include <QRegExp>
+
 void System::ViewCache::apply(const View& view)
 {
 	this->view = view;
+
+	QString filterString = QString::fromStdString(view.getFilter());
+
+	QRegExp rx("(\\w+)\\s*([><=]){1,1}\\s*([\\d\\.\\-]+)");
+
+	if(rx.indexIn(filterString) > -1)
+	{
+		QString op = rx.cap(1);
+		if(op == "=")
+			eq.op = ViewCache::Equation::EQUAL;
+		else if(op == "<=")
+			eq.op = ViewCache::Equation::LEQUAL;
+		else if(op == ">=")
+			eq.op = ViewCache::Equation::HEQUAL;
+		else 
+		{
+			Logger(Error) << "unknown filter operator" << op;
+			return;
+		}
+
+		eq.varName = rx.cap(0).toStdString();
+		eq.val = rx.cap(2).toDouble();
+	}
+	else 
+	{
+		Logger(Error) << "invalid filter expression";
+		return;
+	}
+}
+
+bool System::ViewCache::Equation::eval(Component* c) const
+{
+	return true;
 }
 
 bool System::ViewCache::add(Component* c)
@@ -453,6 +488,6 @@ bool System::ViewCache::remove(Component* c)
 
 bool System::ViewCache::legal(Component* c)
 {
-	return true;
+	return eq.eval(c);
 }
 

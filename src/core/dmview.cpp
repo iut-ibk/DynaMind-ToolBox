@@ -130,4 +130,12 @@ std::string View::getNameOfLinkedView(string linkName) const
 	return "";
 }
 
+void View::addFilter(const std::string& condition)
+{
+	filter = condition;
+}
 
+std::string View::getFilter() const
+{
+	return filter;
+}

@@ -196,6 +196,15 @@ private:
 	class ViewCache
 	{
 	public:
+		struct Equation
+		{
+			std::string varName;
+			enum Operator{EQUAL, LEQUAL, HEQUAL}op;
+			double val;
+
+			bool eval(Component* c) const;
+		}eq;
+
 		void apply(const View& view);
 		bool add(Component* c);
 		bool remove(Component* c);
