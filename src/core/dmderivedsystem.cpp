@@ -166,7 +166,7 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
 		return predec_comps;
 	else
 	{
-		std::vector<Component*> &cmps = viewsCaches[view.getName()].filteredElements;
+		std::vector<Component*> &cmps = viewCaches[view.getName()].filteredElements;
 		for(std::vector<Component*>::iterator it = cmps.begin(); it != cmps.end(); ++it)
 			if((*it)->getCurrentSystem() != this)
 				*it = SuccessorCopyTypesafe(*it);

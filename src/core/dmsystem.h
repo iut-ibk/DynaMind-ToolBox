@@ -205,7 +205,7 @@ private:
 		std::vector<QUuid>	rawElements;
 	};
 
-	std::map<std::string, ViewCache > viewsCaches;
+	std::map<std::string, ViewCache > viewCaches;
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;
