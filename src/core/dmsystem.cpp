@@ -419,6 +419,11 @@ void System::SQLUpdateStates()
 		"predecessors",  pre);
 }
 
+void System::updateView(const View& view)
+{
+	viewCaches[view.getName()].apply(view);
+}
+
 void System::ViewCache::apply(const View& view)
 {
 	this->view = view;

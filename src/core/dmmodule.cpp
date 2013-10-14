@@ -313,8 +313,8 @@ System* Module::getData(const std::string& streamName)
 			sys = new System();
 	}
 
-	//mforeach(View v, accessedViews[streamName])
-	//	sys->addView(v);
+	mforeach(View v, accessedViews[streamName])
+		sys->updateView(v);
 
 	if(hasOutPort(streamName))
 		this->setOutPortData(streamName, sys);

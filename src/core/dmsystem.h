@@ -169,6 +169,8 @@ public:
 	virtual Component* getChild(QUuid quuid);
 
 	virtual Component* getSuccessingComponent(const Component* formerComponent);
+
+	void updateView(const View& view);
 protected:
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
