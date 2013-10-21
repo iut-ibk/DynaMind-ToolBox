@@ -536,7 +536,7 @@ TEST_F(UnitTestsDMExtensions, facetoarrangement) {
 	DM::System * sys = new DM::System();
 	DM::View v("UNIT_TEST", DM::FACE, DM::READ);
 	addRectangleWithHole(sys, v);
-	mforeach(DM::Component * c, sys->getAllComponentsInView(v)) {
+	foreach(DM::Component * c, sys->getAllComponentsInView(v)) {
 		DM::Face * f = static_cast<DM::Face*> (c);
 		DM::CGALGeometry_P::AddFaceToArrangement(arr, f);
 	}
