@@ -428,16 +428,34 @@ void System::updateView(const View& view)
 
 void System::ViewCache::apply(const View& view)
 {
-	if(view.getName() != this->view.getName() && this->view.getName().length() != 0)
+	if(this->view.getName().length() != 0)
 	{
-		Logger(Error) << "view filter map corrupt";
-		return;
+		// if not initializing 
+		if(view.getName() != this->view.getName())
+		{
+			Logger(Error) << "view filter map corrupt";
+			return;
+		}
+		// filter stays the same, continue
+		if(view.getFilter() == this->view.getFilter())
+		{
+			this->view = view;
+			return;
+		}
 	}
 
 	this->view = view;
 
 	QString filterString = QString::fromStdString(view.getFilter());
-	if(filterString.length() != 0)
+	if(filterString.length() == 0)
+	{
+		// just copy raw elements
+		filteredElements.clear();
+		foreach(QUuid quuid, rawElements)
+			if(Component* c = sys->getChild(quuid))
+				filteredElements.push_back(c);
+	}
+	else
 	{
 		QRegExp rx("([\\w\\[\\]]+)\\s*([><=]){1,1}\\s*([\\d\\.\\-]+)");
 
@@ -492,6 +510,9 @@ void System::ViewCache::apply(const View& view)
 
 bool System::ViewCache::Equation::eval(Component* c) const
 {
+	if(this->axis == NONE && this->varName.length() == 0)
+		return true;
+
 	double d;
 
 	if(c->getType() == NODE)
