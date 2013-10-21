@@ -36,60 +36,32 @@
 
 using namespace DM;
 
-DbCache<Node*,Vector3> Node::nodeCache(0); // defined in dmdbconnector.h
-
-void Node::ResizeCache(unsigned long size)
-{
-	nodeCache.resize(size);
-}
-unsigned long Node::GetCacheSize()
-{
-	return nodeCache.getSize();
-}
-
-void Node::ClearCache()
-{
-	nodeCache.Clear();
-}
-
-void Node::PrintCacheStatistics()
-{
-#ifdef CACHE_PROFILING
-	Logger(Standard) << "Node cache statistics:\t"
-		<< "misses: " << (long)nodeCache.misses
-		<< "\thits: " << (long)nodeCache.hits;
-	nodeCache.ResetProfilingCounters();
-#endif
-}
 
 Node::Node( double x, double y, double z) : Component(true)
 {
-	vector = new Vector3();
-	vector->x = x;
-	vector->y = y;
-	vector->z = z;
+	this->x = x;
+	this->y = y;
+	this->z = z;
 	isInserted = false;
 	connectedEdges = 0;
 }
 
 Node::Node() : Component(true)
 {
-	vector = new Vector3();
-	vector->x = 0;
-	vector->y = 0;
-	vector->z = 0;
+	this->x = 0;
+	this->y = 0;
+	this->z = 0;
 	isInserted = false;
 	connectedEdges = 0;
 }
 
 Node::Node(const Node& n) : Component(n, true)
 {
-	vector = new Vector3();
 	Vector3 refv;
 	n.get(&refv.x);
-	vector->x = refv.x;
-	vector->y = refv.y;
-	vector->z = refv.z;
+	this->x = refv.x;
+	this->y = refv.y;
+	this->z = refv.z;
 	isInserted = false;
 	connectedEdges = 0;
 	if(n.connectedEdges)
@@ -98,9 +70,6 @@ Node::Node(const Node& n) : Component(n, true)
 }
 Node::~Node()
 {
-	nodeCache.remove(this);
-	if(vector)			delete vector;
-	//if(isInserted)		Component::SQLDelete();
 	if(connectedEdges)	delete connectedEdges;
 }
 void Node::SetOwner(Component *owner)
@@ -108,16 +77,9 @@ void Node::SetOwner(Component *owner)
 	QMutexLocker ml(mutex);
 
 	currentSys = owner->getCurrentSystem();
-	if(currentSys)
-	{
-		nodeCache.add(this,new Vector3(*vector));
-		delete vector;
-		vector = NULL;
-	}
+
 	mforeach(Attribute* a, ownedattributes)
 		a->setOwner(this);
-	//for (std::map<std::string,Attribute*>::iterator it=ownedattributes.begin() ; it != ownedattributes.end(); ++it )
-	//    it->second->SetOwner(this);
 }
 
 DM::Components Node::getType() const
@@ -130,28 +92,24 @@ QString Node::getTableName()
 }
 double Node::getX() const
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-	return v->x;
+	return this->x;
 }
 
 double Node::getY() const
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-	return v->y;
+	return this->y;
 }
 
 double Node::getZ() const
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-	return v->z;
+	return this->z;
 }
 
 const void Node::get(double *vector) const
 {
-	Vector3* v = this->vector ? this->vector:nodeCache.get((Node*)this);
-	vector[0] = v->x;
-	vector[1] = v->y;
-	vector[2] = v->z;
+	vector[0] = this->x;
+	vector[1] = this->y;
+	vector[2] = this->z;
 }
 
 const double Node::get(unsigned int i) const {
@@ -176,31 +134,27 @@ void Node::set(double x, double y, double z)
 {
 	QMutexLocker ml(mutex);
 
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
-	v->x = x;
-	v->y = y;
-	v->z = z;
+	this->x = x;
+	this->y = y;
+	this->z = z;
 }
 
 void Node::setX(double x)
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-	v->x = x;
+	this->x = x;
 }
 
 void Node::setY(double y)
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-	v->y = y;
+	this->y = y;
 }
 
 void Node::setZ(double z)
 {
-	Vector3* v = vector ? vector:nodeCache.get((Node*)this);
 	QMutexLocker ml(mutex);
-	v->z = z;
+	this->z = z;
 }
 
 Component* Node::clone()
@@ -295,7 +249,7 @@ void Node::removeEdge(Edge* e)
 	if(connectedEdges)
 		connectedEdges->remove(e);
 }
-
+/*
 Vector3* Node::LoadFromDb()
 {
 	QVariant v[3];
@@ -360,3 +314,4 @@ void Node::PreCache(const QList<Node*>& keys)
 {
 	nodeCache.preCache(keys);
 }
+*/

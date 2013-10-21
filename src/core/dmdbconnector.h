@@ -268,15 +268,12 @@ public:
 	unsigned long cacheBlockwritingSize;
 	//!< size of the attribute cache, values over 1e7 recommended; 0 enables an infinite cache
 	unsigned long attributeCacheSize;
-	//!< size of the node cache, values over 1e7 recommended; 0 enables an infinite cache
-	unsigned long nodeCacheSize;
 
 	DBConnectorConfig()
 	{
 		queryStackSize = 100;
 		cacheBlockwritingSize = 50;
 		attributeCacheSize = 0;
-		nodeCacheSize = 0;
 	}
 };
 

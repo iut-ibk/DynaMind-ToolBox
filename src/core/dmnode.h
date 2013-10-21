@@ -126,17 +126,6 @@ public:
 
 	/** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
 	Component* clone();
-
-	static void ResizeCache(unsigned long size);
-	static unsigned long GetCacheSize();
-
-	static void PrintCacheStatistics();
-	static void ClearCache();
-
-	Vector3* LoadFromDb();
-	void SaveToDb(Vector3* v);
-	static void _PreCache(const QList<Node*>& keys, QList<Vector3*>& values);
-	static void PreCache(const QList<Node*>& keys);
 	
 protected:
 	virtual void SetOwner(Component *owner);
@@ -146,9 +135,8 @@ private:
 	void addEdge(Edge* e);
 	void removeEdge(Edge* e);
 	
-	Vector3* vector;
+	double x,y,z;
 	std::list<Edge*> *connectedEdges;	// not cached, for now
-	static DbCache<Node*,Vector3> nodeCache; // defined in dmdbconnector.h
 };
 
 class Vector3
