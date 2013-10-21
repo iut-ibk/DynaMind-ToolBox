@@ -202,7 +202,7 @@ void MinimumSteinerTree::run()
 			//remove_edge(i,p[i],completegraph);
 			path currentpath;
 
-			if(edgetopath.find(std::make_pair<int,int>(i,p[i]))!=edgetopath.end())
+			if(edgetopath.find(std::make_pair<int,int>((int)i,(int)p[i]))!=edgetopath.end())
 				currentpath = edgetopath[std::pair<int,int>(i,p[i])];
 			else
 				currentpath = edgetopath[std::pair<int,int>(p[i],i)];
