@@ -244,11 +244,30 @@ void Node::addEdge(Edge* e)
 		connectedEdges = new std::list<Edge*>();
 	connectedEdges->push_back(e);
 }
+
 void Node::removeEdge(Edge* e)
 {
 	if(connectedEdges)
 		connectedEdges->remove(e);
 }
+
+void Node::Synchronize()
+{
+	if(isInserted)
+	{
+		DBConnector::getInstance()->Update("nodes", uuid,
+			"x",     QVariant::fromValue(this->x),
+			"y",     QVariant::fromValue(this->y),
+			"z",     QVariant::fromValue(this->z));
+	}
+	else
+	{
+		DBConnector::getInstance()->Insert("nodes", uuid,
+			"x",this->x,"y",this->y,"z",this->z);
+		isInserted = true;
+	}
+}
+
 /*
 Vector3* Node::LoadFromDb()
 {
