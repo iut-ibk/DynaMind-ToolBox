@@ -480,12 +480,12 @@ void System::ViewCache::apply(const View& view)
 		
 			std::string str = rx.cap(1).toStdString();
 
-			if(str == "[x]")		eq.axis = Equation::CoordinateAxis::X;
-			else if(str == "[y]")	eq.axis = Equation::CoordinateAxis::Y;
-			else if(str == "[z]")	eq.axis = Equation::CoordinateAxis::Z;
+			if(str == "[x]")		eq.axis = Equation::X;
+			else if(str == "[y]")	eq.axis = Equation::Y;
+			else if(str == "[z]")	eq.axis = Equation::Z;
 			else
 			{
-				eq.axis = Equation::CoordinateAxis::NONE;
+				eq.axis = Equation::NONE;
 				eq.varName = str;
 			}
 
@@ -521,13 +521,13 @@ bool System::ViewCache::Equation::eval(Component* c) const
 
 		switch(axis)
 		{
-		case CoordinateAxis::X:	d = n->getX();	break;
-		case CoordinateAxis::Y:	d = n->getY();	break;
-		case CoordinateAxis::Z:	d = n->getZ();	break;
+		case X:	d = n->getX();	break;
+		case Y:	d = n->getY();	break;
+		case Z:	d = n->getZ();	break;
 		}
 	}
 
-	if(axis == CoordinateAxis::NONE)
+	if(axis == NONE)
 	{
 		Attribute* a = c->getAttribute(varName);
 		if(a->getType() == Attribute::DOUBLE)
@@ -537,11 +537,11 @@ bool System::ViewCache::Equation::eval(Component* c) const
 
 	switch(op)
 	{
-	case Operator::EQUAL:	return d == val;
-	case Operator::LEQUAL:	return d <= val;
-	case Operator::HEQUAL:	return d >= val;
-	case Operator::LOWER:	return d < val;
-	case Operator::HIGHER:	return d > val;
+	case EQUAL:	return d == val;
+	case LEQUAL:	return d <= val;
+	case HEQUAL:	return d >= val;
+	case LOWER:	return d < val;
+	case HIGHER:	return d > val;
 	}
 	return false;
 }
