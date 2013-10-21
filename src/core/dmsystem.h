@@ -198,6 +198,14 @@ private:
 	public:
 		struct Equation
 		{
+			Equation()
+			{
+				varName = "";
+				axis = NONE;
+				op = EQUAL;
+				val = 0.0;
+			}
+
 			std::string varName;
 			enum CoordinateAxis{NONE,X,Y,Z} axis; 
 			enum Operator{EQUAL, LEQUAL, HEQUAL, LOWER, HIGHER} op;
