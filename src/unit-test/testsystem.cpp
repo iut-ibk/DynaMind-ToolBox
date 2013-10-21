@@ -257,15 +257,11 @@ TEST_F(TestSystem,cachetest) {
 	cfgNew.queryStackSize = 1234;
 	cfgNew.cacheBlockwritingSize = 1234;
 	cfgNew.attributeCacheSize = 1234;
-	cfgNew.nodeCacheSize = 1234;
 	DBConnector::getInstance()->setConfig(cfgNew);
 	// check if config is applied correctly
 	DBConnectorConfig cfgNewReturned = DBConnector::getInstance()->getConfig();
 	ASSERT_TRUE(cfgNewReturned.queryStackSize == cfgNew.queryStackSize);
 	ASSERT_TRUE(cfgNewReturned.cacheBlockwritingSize == cfgNew.cacheBlockwritingSize);
-
-	ASSERT_TRUE(cfgNewReturned.nodeCacheSize == cfgNew.nodeCacheSize);
-	ASSERT_TRUE(Node::GetCacheSize() == cfgNew.nodeCacheSize);
 
 	// reset config
 	/*
@@ -396,8 +392,6 @@ TEST_F(TestSystem, SqlNodeTest)
 	delete copy3;
 
 	DBConnector::getInstance()->Synchronize();
-	// print cache statistics
-	DM::Node::PrintCacheStatistics();
 }
 
 /** @brief Tests deleting accessing nodes with edge pointers
@@ -511,8 +505,6 @@ TEST_F(TestSystem, SqlEdgeTest)
 	delete edge;
 
 	DBConnector::getInstance()->Synchronize();
-	// print cache statistics
-	DM::Node::PrintCacheStatistics();
 }
 
 TEST_F(TestSystem, SqlFaceOrder)
@@ -546,8 +538,6 @@ TEST_F(TestSystem, SqlFaceOrder)
 	ASSERT_TRUE(*f.getHolePointers()[0]->getNodePointers()[2]==n2);
 
 	DBConnector::getInstance()->Synchronize();
-	// print cache statistics
-	DM::Node::PrintCacheStatistics();
 }
 TEST_F(TestSystem, SQLRasterdata)
 {
@@ -600,9 +590,6 @@ TEST_F(TestSystem, SQLRasterdata)
 	delete raster;
 
 	DBConnector::getInstance()->Synchronize();
-	// print cache statistics
-	DM::Node::PrintCacheStatistics();
-	//DM::RasterData::PrintCacheStatistics();
 }
 
 TEST_F(TestSystem, SQLattributes)
@@ -799,8 +786,6 @@ TEST_F(TestSystem, SQLattributes)
 	delete b;
 
 	DBConnector::getInstance()->Synchronize();
-	// print cache statistics
-	DM::Node::PrintCacheStatistics();
 }
 
 /*
