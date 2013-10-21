@@ -354,9 +354,12 @@ void ModelNode::viewOutportData(QString portName)
 {
 	std::map<std::string, DM::View> views;
 	std::map<std::string, DM::View> accessedViews;
+	
+	std::map<std::string, std::map<std::string, DM::View> > viewsInStream = module->getViewsInStream();
+	std::map<std::string, std::map<std::string, DM::View> > viewsAccessedInStream = module->getAccessedViews();
 
-	map_contains(&module->getViewsInStream(), portName.toStdString(), views);
-	map_contains(&module->getAccessedViews(), portName.toStdString(), accessedViews);
+	map_contains(&viewsInStream, portName.toStdString(), views);
+	map_contains(&viewsAccessedInStream, portName.toStdString(), accessedViews);
 	//views.insert(accessedViews.cbegin(), accessedViews.cend());
 	MergeViews(views, accessedViews);
 
@@ -369,8 +372,11 @@ void ModelNode::viewInportData(QString portName)
 	std::map<std::string, DM::View> views;
 	std::map<std::string, DM::View> accessedViews;
 
-	map_contains(&module->getViewsInStream(), portName.toStdString(), views);
-	map_contains(&module->getAccessedViews(), portName.toStdString(), accessedViews);
+	std::map<std::string, std::map<std::string, DM::View> > viewsInStream = module->getViewsInStream();
+	std::map<std::string, std::map<std::string, DM::View> > viewsAccessedInStream = module->getAccessedViews();
+
+	map_contains(&viewsInStream, portName.toStdString(), views);
+	map_contains(&viewsAccessedInStream, portName.toStdString(), accessedViews);
 	//views.insert(accessedViews.cbegin(), accessedViews.cend());
 	MergeViews(views, accessedViews);
 
