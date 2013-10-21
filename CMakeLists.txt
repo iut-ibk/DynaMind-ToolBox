@@ -25,7 +25,6 @@ OPTION(WITH_PLUGIN_URBANSIM "if with UrbanSim plugin" OFF)
 OPTION(WITH_PLUGIN_SEWER "if with Sewer plugin" ON)
 OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
 OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
-OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" ON)
 OPTION(WITH_PLUGIN_QGIS "if with QGIS plugin" OFF)
 OPTION(WITH_PLUGIN_BASICMODULES "if with BASICMODULES plugin" ON)
 OPTION(WITH_STANDALONE_EXE "if with standalon executeable" ON)
@@ -35,6 +34,7 @@ OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind)
+
 
 if(WITH_PLUGIN_BASICMODULES)
     set(TOOLBOX ${TOOLBOX} DynaMind-BasicModules)
@@ -79,10 +79,6 @@ endif(WITH_PLUGIN_DANCE4WATER)
 if(WITH_PLUGIN_VIBE)
     set(TOOLBOX ${TOOLBOX} DynaMind-VIBeModules)
 endif(WITH_PLUGIN_VIBE)
-
-if(WITH_PLUGIN_CITYBLOCKS)
-    set(TOOLBOX ${TOOLBOX} DynaMind-CityBlocks)
-endif(WITH_PLUGIN_CITYBLOCKS)
 
 if(WITH_PLUGIN_QGIS)
     set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
