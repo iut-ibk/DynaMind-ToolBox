@@ -121,7 +121,7 @@ public:
 	ACCESS getAttributeAccessType(std::string name) const;
 
 	/** @brief Sets Attribute Type */
-	void setAttributeType(std::string name, Attribute::AttributeType type);
+	//void setAttributeType(std::string name, Attribute::AttributeType type);
 
 	/** @brief Returns names of object the linked view */
 	std::string getNameOfLinkedView(std::string linkName) const;
