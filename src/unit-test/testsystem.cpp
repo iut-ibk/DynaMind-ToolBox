@@ -821,6 +821,33 @@ TEST_F(TestSystem,AttributesInSystem) {
 	delete sys;
 }
 
+TEST_F(TestSystem,SystemDBExInport) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Testing export of system data";
+
+	DM::System sys;
+	DM::View v("testview", DM::NODE, DM::WRITE);
+
+	QUuid quuid = sys.addNode(0,1,2, v)->getQUUID();
+	sys._moveToDb();
+	ASSERT_EQ(sys.getAllNodes().size(), 0);
+	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 0);
+
+	sys.updateView(v);
+	sys._importViewElementsFromDB();
+
+	ASSERT_EQ(sys.getAllNodes().size(), 1);
+	std::vector<DM::Component*> nodesInView = sys.getAllComponentsInView(v);
+	ASSERT_EQ(nodesInView.size(), 1);
+	DM::Node* restoredNode = (Node*)nodesInView[0];
+	ASSERT_TRUE(restoredNode != NULL);
+	ASSERT_EQ(quuid, restoredNode->getQUUID());
+	ASSERT_EQ(restoredNode->getX(), 0);
+	ASSERT_EQ(restoredNode->getY(), 1);
+	ASSERT_EQ(restoredNode->getZ(), 2);
+}
+
 }
 
 #endif
