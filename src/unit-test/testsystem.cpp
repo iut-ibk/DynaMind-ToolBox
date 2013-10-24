@@ -826,26 +826,88 @@ TEST_F(TestSystem,SystemDBExInport) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Testing export of system data";
 
+	// init views
 	DM::System sys;
-	DM::View v("testview", DM::NODE, DM::WRITE);
+	DM::View comp_view("cview", DM::COMPONENT, DM::WRITE);
+	DM::View node_view("nview", DM::NODE, DM::WRITE);
+	DM::View edge_view("eview", DM::EDGE, DM::WRITE);
+	DM::View face_view("fview", DM::FACE, DM::WRITE);
 
-	QUuid quuid = sys.addNode(0,1,2, v)->getQUUID();
+	// init elements
+	DM::Node* n0 = sys.addNode(0, 1, 2, node_view);
+	DM::Node* n1 = sys.addNode(3, 4, 5);	// no view - intended
+	std::vector<Node*> nodes;
+	nodes.push_back(n0);
+	nodes.push_back(n1);
+
+	QUuid node_uuid = n0->getQUUID();
+	QUuid node2_uuid = n1->getQUUID();
+	QUuid edge_uuid = sys.addEdge(new Edge(n0, n1), edge_view)->getQUUID();
+	QUuid comp_uuid = sys.addComponent(new Component, comp_view)->getQUUID();
+	QUuid face_uuid = sys.addFace(nodes, face_view)->getQUUID();
+
+	// move all elements to db
 	sys._moveToDb();
-	ASSERT_EQ(sys.getAllNodes().size(), 0);
-	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 0);
 
-	sys.updateView(v);
+	// check if empty
+	ASSERT_EQ(sys.getAllComponents().size(), 0);
+	ASSERT_EQ(sys.getAllNodes().size(), 0);
+	ASSERT_EQ(sys.getAllEdges().size(), 0);
+	ASSERT_EQ(sys.getAllFaces().size(), 0);
+
+	ASSERT_EQ(sys.getAllComponentsInView(comp_view).size(), 0);
+	ASSERT_EQ(sys.getAllComponentsInView(node_view).size(), 0);
+	ASSERT_EQ(sys.getAllComponentsInView(edge_view).size(), 0);
+	ASSERT_EQ(sys.getAllComponentsInView(face_view).size(), 0);
+
+	// reload elements
+	sys.updateView(comp_view);
+	sys.updateView(node_view);
+	sys.updateView(edge_view);
+	sys.updateView(face_view);
 	sys._importViewElementsFromDB();
 
-	ASSERT_EQ(sys.getAllNodes().size(), 1);
-	std::vector<DM::Component*> nodesInView = sys.getAllComponentsInView(v);
+	// check restored elements
+	ASSERT_EQ(sys.getAllComponents().size(), 1);
+	ASSERT_EQ(sys.getAllNodes().size(), 2);	// 2 nodes should have been loaded (recursive loading)
+	ASSERT_EQ(sys.getAllEdges().size(), 1);
+	//ASSERT_EQ(sys.getAllFaces().size(), 1);
+
+	std::vector<DM::Component*> compsInView = sys.getAllComponentsInView(comp_view);
+	std::vector<DM::Component*> nodesInView = sys.getAllComponentsInView(node_view);
+	std::vector<DM::Component*> edgesInView = sys.getAllComponentsInView(edge_view);
+	//std::vector<DM::Component*> facesInView = sys.getAllComponentsInView(face_view);
+
+	ASSERT_EQ(compsInView.size(), 1);
 	ASSERT_EQ(nodesInView.size(), 1);
-	DM::Node* restoredNode = (Node*)nodesInView[0];
+	ASSERT_EQ(edgesInView.size(), 1);
+	//ASSERT_EQ(facesInView.size(), 1);
+
+	ASSERT_EQ(comp_uuid, compsInView[0]->getQUUID());
+	ASSERT_EQ(node_uuid, nodesInView[0]->getQUUID());
+	ASSERT_EQ(edge_uuid, edgesInView[0]->getQUUID());
+	//ASSERT_EQ(face_uuid, facesInView[0]->getQUUID());
+
+	DM::Node* restoredNode = (DM::Node*)nodesInView[0];
+	DM::Edge* restoredEdge = (DM::Edge*)edgesInView[0];
+	//DM::Face* restoredFace = (DM::Face*)edgesInView[0];
+
 	ASSERT_TRUE(restoredNode != NULL);
-	ASSERT_EQ(quuid, restoredNode->getQUUID());
+	ASSERT_TRUE(restoredEdge != NULL);
+	//ASSERT_TRUE(restoredFace != NULL);
+
 	ASSERT_EQ(restoredNode->getX(), 0);
 	ASSERT_EQ(restoredNode->getY(), 1);
 	ASSERT_EQ(restoredNode->getZ(), 2);
+
+	ASSERT_EQ(restoredEdge->getStartNode()->getQUUID(), node_uuid);
+	ASSERT_EQ(restoredEdge->getEndNode()->getQUUID(), node2_uuid);
+
+	/*nodes = restoredFace->getNodePointers();
+	ASSERT_EQ(nodes.size(), 2);
+	ASSERT_EQ(nodes[0]->getQUUID(), node_uuid);
+	ASSERT_EQ(nodes[1]->getQUUID(), node2_uuid);*/
+
 }
 
 }
