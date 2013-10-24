@@ -871,30 +871,30 @@ TEST_F(TestSystem,SystemDBExInport) {
 	ASSERT_EQ(sys.getAllComponents().size(), 1);
 	ASSERT_EQ(sys.getAllNodes().size(), 2);	// 2 nodes should have been loaded (recursive loading)
 	ASSERT_EQ(sys.getAllEdges().size(), 1);
-	//ASSERT_EQ(sys.getAllFaces().size(), 1);
+	ASSERT_EQ(sys.getAllFaces().size(), 1);
 
 	std::vector<DM::Component*> compsInView = sys.getAllComponentsInView(comp_view);
 	std::vector<DM::Component*> nodesInView = sys.getAllComponentsInView(node_view);
 	std::vector<DM::Component*> edgesInView = sys.getAllComponentsInView(edge_view);
-	//std::vector<DM::Component*> facesInView = sys.getAllComponentsInView(face_view);
+	std::vector<DM::Component*> facesInView = sys.getAllComponentsInView(face_view);
 
 	ASSERT_EQ(compsInView.size(), 1);
 	ASSERT_EQ(nodesInView.size(), 1);
 	ASSERT_EQ(edgesInView.size(), 1);
-	//ASSERT_EQ(facesInView.size(), 1);
+	ASSERT_EQ(facesInView.size(), 1);
 
 	ASSERT_EQ(comp_uuid, compsInView[0]->getQUUID());
 	ASSERT_EQ(node_uuid, nodesInView[0]->getQUUID());
 	ASSERT_EQ(edge_uuid, edgesInView[0]->getQUUID());
-	//ASSERT_EQ(face_uuid, facesInView[0]->getQUUID());
+	ASSERT_EQ(face_uuid, facesInView[0]->getQUUID());
 
-	DM::Node* restoredNode = (DM::Node*)nodesInView[0];
-	DM::Edge* restoredEdge = (DM::Edge*)edgesInView[0];
-	//DM::Face* restoredFace = (DM::Face*)edgesInView[0];
+	DM::Node* restoredNode = dynamic_cast < DM::Node*>(nodesInView[0]);
+	DM::Edge* restoredEdge = dynamic_cast < DM::Edge*>(edgesInView[0]);
+	DM::Face* restoredFace = dynamic_cast<DM::Face*>(facesInView[0]);
 
 	ASSERT_TRUE(restoredNode != NULL);
 	ASSERT_TRUE(restoredEdge != NULL);
-	//ASSERT_TRUE(restoredFace != NULL);
+	ASSERT_TRUE(restoredFace != NULL);
 
 	ASSERT_EQ(restoredNode->getX(), 0);
 	ASSERT_EQ(restoredNode->getY(), 1);
@@ -903,11 +903,10 @@ TEST_F(TestSystem,SystemDBExInport) {
 	ASSERT_EQ(restoredEdge->getStartNode()->getQUUID(), node_uuid);
 	ASSERT_EQ(restoredEdge->getEndNode()->getQUUID(), node2_uuid);
 
-	/*nodes = restoredFace->getNodePointers();
+	nodes = restoredFace->getNodePointers();
 	ASSERT_EQ(nodes.size(), 2);
 	ASSERT_EQ(nodes[0]->getQUUID(), node_uuid);
-	ASSERT_EQ(nodes[1]->getQUUID(), node2_uuid);*/
-
+	ASSERT_EQ(nodes[1]->getQUUID(), node2_uuid);
 }
 
 }
