@@ -63,14 +63,12 @@ QByteArray GetBytes(std::vector<Face*> facevector)
 Face::Face(const std::vector<Node*>& nodes) : Component(true)
 {
 	setNodes(nodes);
-	isInserted = false;
 }
 
 Face::Face(const Face& e) : Component(e, true)
 {
 	this->_nodes = e._nodes;
 	this->_holes = e._holes;
-	isInserted = false;
 }
 Face::~Face()
 {

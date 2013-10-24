@@ -40,8 +40,6 @@ Edge::Edge(Node *start, Node *end) : Component(true)
 	this->end = end;
 	start->addEdge(this);
 	end->addEdge(this);
-
-	isInserted = false;
 }
 
 Edge::Edge(const Edge& e) : Component(e, true)
@@ -50,8 +48,6 @@ Edge::Edge(const Edge& e) : Component(e, true)
 	end = e.getEndNode();
 	start->addEdge(this);
 	end->addEdge(this);
-
-	isInserted = false;
 }
 
 Edge::~Edge()

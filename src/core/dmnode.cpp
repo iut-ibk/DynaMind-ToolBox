@@ -42,7 +42,6 @@ Node::Node( double x, double y, double z) : Component(true)
 	this->x = x;
 	this->y = y;
 	this->z = z;
-	isInserted = false;
 	connectedEdges = 0;
 }
 
@@ -51,7 +50,6 @@ Node::Node() : Component(true)
 	this->x = 0;
 	this->y = 0;
 	this->z = 0;
-	isInserted = false;
 	connectedEdges = 0;
 }
 

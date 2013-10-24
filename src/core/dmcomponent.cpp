@@ -51,6 +51,7 @@ Component::Component()
 	ownedattributes = std::map<std::string,Attribute*>();
 
 	currentSys = NULL;
+	isInserted = false;
 
 	DBConnector::getInstance();
 }
@@ -63,6 +64,7 @@ Component::Component(bool b)
 	ownedattributes = std::map<std::string,Attribute*>();
 
 	currentSys = NULL;
+	isInserted = false;
 }
 
 void Component::CopyFrom(const Component &c, bool successor)
