@@ -174,13 +174,13 @@ void PortNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 	// reset all port hovers
 	QList<QGraphicsItem  *> items = this->scene()->items();
 	foreach (QGraphicsItem  * item, items)
-		if(PortNode* port = dynamic_cast<PortNode*>(item))
+		if(PortNode* port = qgraphicsitem_cast<PortNode*>(item))
 			port->setHover(false);
 
 	// Check Hover Event
 	items = this->scene()->items(event->scenePos());
 	foreach (QGraphicsItem  * item, items)
-		if(PortNode* port = dynamic_cast<PortNode*>(item))
+		if(PortNode* port = qgraphicsitem_cast<PortNode*>(item))
 			port->setHover(true);
 }
 
@@ -216,7 +216,7 @@ void PortNode::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 	QList<QGraphicsItem*> items = this->scene()->items(event->scenePos());
 	foreach (QGraphicsItem  * item, items)
 	{
-		if(PortNode* port = dynamic_cast<PortNode*>(item))
+		if(PortNode* port = qgraphicsitem_cast<PortNode*>(item))
 		{
 			if((this->getType() == DM::OUTPORT && port->getType() == DM::INPORT)
 				|| (this->getType() == DM::INPORT && port->getType() == DM::INPORT && this->getModule()->isGroup())
