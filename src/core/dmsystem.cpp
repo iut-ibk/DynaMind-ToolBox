@@ -457,6 +457,22 @@ void System::_moveToDb()
 	// rasterdatas won't get removed, as well as systems
 }
 
+std::vector<QUuid> GetVector(QByteArray qba)
+{
+	QDataStream stream(&qba, QIODevice::ReadOnly);
+	QByteArray str;
+	std::vector<QUuid> result;
+
+	unsigned int len = 0;
+	stream >> len;
+	for (unsigned int i = 0; i < len; i++)
+	{
+		stream >> str;
+		result.push_back(str);
+	}
+	return result;
+}
+
 void System::_importViewElementsFromDB()
 {
 	DBConnector* db = DBConnector::getInstance();
@@ -466,6 +482,7 @@ void System::_importViewElementsFromDB()
 		viewItem != viewCaches.end(); ++viewItem)
 	{
 		std::map<QUuid, Vector3> nodesInView;
+		std::map<QUuid, std::vector<QUuid> > facesInView;
 
 		switch (viewItem->second.view.getType())
 		{
@@ -516,6 +533,31 @@ void System::_importViewElementsFromDB()
 			}
 			break;
 		case FACE:
+			{
+				QSqlQuery* q = db->getQuery(
+					"SELECT faces.* FROM faces INNER JOIN views ON faces.uuid=views.uuid WHERE views.viewname=?");
+
+				q->addBindValue(QString::fromStdString(viewItem->first));
+
+				if (db->ExecuteSelectQuery(q))
+					foreach(const QList<QVariant>& r, *db->getResults())
+							facesInView[r.at(0).toByteArray()] = GetVector(r.at(2).toByteArray());
+
+				mforeach(const std::vector<QUuid>& v, facesInView)
+				{
+					foreach(QUuid quuid, v)
+					{
+						QSqlQuery* qn = db->getQuery("SELECT * FROM nodes WHERE uuid=?");
+						qn->addBindValue(quuid.toByteArray());
+						if (db->ExecuteSelectQuery(qn))
+						{
+							nodesInView[db->getResults()->at(0).at(0).toByteArray()] = Vector3(	db->getResults()->at(0).at(2).toDouble(),
+																					db->getResults()->at(0).at(3).toDouble(),
+																					db->getResults()->at(0).at(4).toDouble());
+						}
+					}
+				}
+			}
 			break;
 		}
 
@@ -565,6 +607,22 @@ void System::_importViewElementsFromDB()
 			}
 			break;
 		case FACE:
+			{
+				typedef std::map<QUuid, std::vector<QUuid> > RawFaces;
+				for (RawFaces::iterator it = facesInView.begin(); it != facesInView.end(); ++it)
+				{
+					std::vector<Node*> nodes;
+					foreach(QUuid quuid, it->second)
+						nodes.push_back(loadedNodes[quuid]);
+					
+					Face* f = new Face(nodes);
+					f->setQUuid(it->first);
+					if (viewItem->second.add(f))
+						this->addFace(f);
+					else
+						delete f;
+				}
+			}
 			break;
 		}
 	}

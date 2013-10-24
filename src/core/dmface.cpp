@@ -42,7 +42,7 @@ QByteArray GetBytes(std::vector<Node*> nodevector)
 
 	stream << (int)nodevector.size();
 	for(unsigned int i=0;i<nodevector.size();i++)
-		stream << nodevector[i]->getQUUID();
+		stream << nodevector[i]->getQUUID().toByteArray();
 
 	return qba;
 }
@@ -54,9 +54,8 @@ QByteArray GetBytes(std::vector<Face*> facevector)
 
 	stream << (int)facevector.size();
 	for(unsigned int i=0;i<facevector.size();i++)
-	{
 		stream << GetBytes(facevector[i]->getNodePointers());
-	}
+	
 	return qba;
 }
 
@@ -74,22 +73,22 @@ Face::~Face()
 {
 	Component::SQLDelete();
 }
-
-std::vector<std::string> GetVector(QByteArray qba)
+/*
+std::vector<QUuid> GetVector(QByteArray qba)
 {
 	QDataStream stream(&qba, QIODevice::ReadOnly);
-	QString str;
-	std::vector<std::string> result;
+	QByteArray str;
+	std::vector<QUuid> result;
 
 	unsigned int len=0;
 	stream >> len;
 	for(unsigned int i=0;i<len;i++)
 	{
-		stream>>str;
-		result.push_back(str.toStdString());
+		stream >> str;
+		result.push_back(str);
 	}
 	return result;
-}
+}*/
 
 std::vector<Node*> Face::getNodePointers() const
 {
