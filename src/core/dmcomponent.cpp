@@ -43,19 +43,6 @@
 
 using namespace DM;
 
-class ComponentSyncMap: public Asynchron, public std::set<Component*>
-{
-public:
-	void Synchronize()
-	{
-		foreach(Component* c, *this)
-			c->SaveToDb();
-	}
-};
-
-static QMutex componentSyncMutex;
-static ComponentSyncMap componentSyncMap;
-
 Component::Component()
 {
 	mutex = new QMutex(QMutex::Recursive);
@@ -66,8 +53,6 @@ Component::Component()
 	currentSys = NULL;
 
 	DBConnector::getInstance();
-	isCached = true;
-	componentSyncMap.insert(this);
 }
 
 Component::Component(bool b)
@@ -78,7 +63,6 @@ Component::Component(bool b)
 	ownedattributes = std::map<std::string,Attribute*>();
 
 	currentSys = NULL;
-	isCached = false;
 }
 
 void Component::CopyFrom(const Component &c, bool successor)
@@ -103,8 +87,6 @@ Component::Component(const Component& c)
 	currentSys = NULL;
 	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
-	componentSyncMap.insert(this);
-	isCached = true;
 }
 
 Component::Component(const Component& c, bool bInherited)
@@ -112,7 +94,6 @@ Component::Component(const Component& c, bool bInherited)
 	currentSys = NULL;
 	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
-	isCached = false;
 }
 
 Component::~Component()
@@ -123,8 +104,6 @@ Component::~Component()
 			delete a;
 
 	ownedattributes.clear();
-	if(isCached)
-		componentSyncMap.erase(this);
 	// if this class is not of type component, nothing will happen
 	SQLDelete();
 	mutex->unlockInline();
@@ -329,22 +308,23 @@ void Component::SetOwner(Component *owner)
 	currentSys = owner->getCurrentSystem();
 }
 
-void Component::SaveToDb()
+void Component::_moveToDb()
 {
-	QMutexLocker ml(mutex);
-
-	if(this->getType() != DM::COMPONENT || !currentSys)
-		return;
+	// mutex will cause a crash
+	//QMutexLocker ml(mutex);
 
 	if(!isInserted)
 	{
-		isInserted = true;
 		DBConnector::getInstance()->Insert(	"components", uuid, 
 			"owner", (QVariant)currentSys->getQUUID().toByteArray());
+		isInserted = false;
 	}
 	else
+	{
 		DBConnector::getInstance()->Update(	"components", uuid, 
 		"owner", currentSys->getQUUID().toByteArray());
+	}
+	delete this;
 }
 void Component::SQLDelete()
 {

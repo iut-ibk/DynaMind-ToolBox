@@ -42,7 +42,7 @@ class Node;
 * unlimeted number of Attributes. Edges only contain references to nodes stored in the system. As reference the uuid
 * of the Node is used.
 */
-class DM_HELPER_DLL_EXPORT Edge : public Component, Asynchron
+class DM_HELPER_DLL_EXPORT Edge : public Component
 {
 public:
 	/** @brief creates a new Edge. start and end point are references to existing Nodes in the same system. */
@@ -78,8 +78,9 @@ public:
 
 	/** @brief  Creates a pointer to a cloned Edge obejcts, including Attributes and uuid*/
 	Component* clone();
-
-	void Synchronize();
+	
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
 private:
 	/** @brief return table name */
 	QString getTableName();

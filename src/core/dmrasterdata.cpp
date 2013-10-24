@@ -514,3 +514,8 @@ void RasterData::RasterBlockLabel::SaveToDb(QByteArray *qba)
 		DBConnector::getInstance()->ExecuteQuery(q);
 	}
 }
+
+void RasterData::_moveToDb()
+{
+	// don't do anything
+}

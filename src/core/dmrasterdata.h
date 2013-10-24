@@ -164,7 +164,9 @@ public:
 	/** @brief fill a full block of RASTERBLOCKSIZE*RASTERBLOCKSIZE with data 
 	x and y represent the block coordinates, NOT the actual point coordinate */
 	void setBlock(long x, long y, double* data);
-
+	
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
 private:
 	class RasterBlockLabel
 	{

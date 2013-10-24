@@ -110,19 +110,20 @@ Component* Edge::clone()
 	return new Edge(*this);
 }
 
-void Edge::Synchronize()
+void Edge::_moveToDb()
 {
 	if(isInserted)
 	{
 		DBConnector::getInstance()->Update("edges", uuid,
 			"startnode",  start->getQUUID().toByteArray(),
 			"endnode",  end->getQUUID().toByteArray());
+		isInserted = false;
 	}
 	else
 	{
 		DBConnector::getInstance()->Insert("edges", uuid,
 			"startnode",  start->getQUUID().toByteArray(),
 			"endnode",  end->getQUUID().toByteArray());
-		isInserted = true;
 	}
+	delete this;
 }

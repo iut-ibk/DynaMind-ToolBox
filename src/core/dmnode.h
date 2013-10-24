@@ -51,7 +51,7 @@ class Edge;
 * Nodes are derived from the Component class. Therefore nodes are identified by an UUID and can hold an
 * unlimeted number of Attributes.
 */
-class DM_HELPER_DLL_EXPORT Node : public Component, Asynchron
+class DM_HELPER_DLL_EXPORT Node : public Component
 {
 	friend class Edge;
 public:
@@ -127,7 +127,8 @@ public:
 	/** @brief  Creates a pointer to a cloned Node object, including Attributes and uuid*/
 	Component* clone();
 	
-	void Synchronize();
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
 protected:
 	virtual void SetOwner(Component *owner);
 private:

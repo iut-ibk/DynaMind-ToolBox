@@ -171,6 +171,14 @@ public:
 	virtual Component* getSuccessingComponent(const Component* formerComponent);
 
 	void updateView(const View& view);
+
+	void loadFromHost();
+
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
+
+	/** @brief imports all components according to the currently applied views (update view) */
+	void _importViewElementsFromDB();
 protected:
 	const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
@@ -221,9 +229,9 @@ private:
 
 		std::vector<Component*> filteredElements;
 		System* sys;
+		std::vector<QUuid>	rawElements;
 	private:
 		View view;
-		std::vector<QUuid>	rawElements;
 	};
 
 	std::map<std::string, ViewCache > viewCaches;

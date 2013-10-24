@@ -134,7 +134,12 @@ public:
 
 	System * getCurrentSystem() const;
 	void setCurrentSystem(System * sys);
-	void SaveToDb();
+
+	//void SaveToDb();
+
+	
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
 
 	void MoveAttributeToDb(const std::string& name);
 protected:
@@ -163,7 +168,6 @@ private:
 	bool addAttribute(Attribute *pAttribute);
 	void CopyFrom(const Component &c, bool successor = false);
 
-	bool isCached;
 	void CloneAllAttributes();
 };
 //typedef std::map<std::string, DM::Component*> ComponentMap;

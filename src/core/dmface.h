@@ -44,11 +44,9 @@ class Node;
   * therefore the start node != end node
   * @TODO orientation
   */
-class DM_HELPER_DLL_EXPORT Face :  public Component, Asynchron
+class DM_HELPER_DLL_EXPORT Face :  public Component
 {
 public:
-	void Synchronize();
-
 	/** @brief destructor */
 	~Face();
 
@@ -78,6 +76,9 @@ public:
 	void setNodes(const std::vector<Node*>& nodes);
 	/** @brief deletes all holes */
 	void clearHoles();
+
+	/** @brief exports the component to the db, it can afterwards deleted safly */
+	void _moveToDb();
 private:
 	/** @brief return table name */
 	QString getTableName();

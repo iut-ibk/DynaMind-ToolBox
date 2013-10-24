@@ -137,6 +137,10 @@ bool DBConnector::CreateTables()
 					  type SMALLINT, \
 					  value BYTEA, \
 					  PRIMARY KEY (owner, name))")
+		&& query.exec("CREATE TABLE views(\
+					  uuid BINARY(16) NOT NULL, \
+					  viewname VARCHAR(128) NOT NULL, \
+					  PRIMARY KEY (viewname))")
 					  )
 			return true;
 

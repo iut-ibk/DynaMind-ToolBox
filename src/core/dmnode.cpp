@@ -251,7 +251,7 @@ void Node::removeEdge(Edge* e)
 		connectedEdges->remove(e);
 }
 
-void Node::Synchronize()
+void Node::_moveToDb()
 {
 	if(isInserted)
 	{
@@ -259,13 +259,14 @@ void Node::Synchronize()
 			"x",     QVariant::fromValue(this->x),
 			"y",     QVariant::fromValue(this->y),
 			"z",     QVariant::fromValue(this->z));
+		isInserted = false;
 	}
 	else
 	{
 		DBConnector::getInstance()->Insert("nodes", uuid,
 			"x",this->x,"y",this->y,"z",this->z);
-		isInserted = true;
 	}
+	delete this;
 }
 
 /*

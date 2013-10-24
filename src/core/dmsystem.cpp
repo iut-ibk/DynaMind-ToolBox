@@ -426,6 +426,45 @@ void System::updateView(const View& view)
 	viewCaches[view.getName()].apply(view);
 }
 
+void System::_moveToDb()
+{
+	DBConnector* db = DBConnector::getInstance();
+	foreach(Component* c, components)
+		c->_moveToDb();
+	components.clear();
+
+	foreach(Node* c, nodes)
+		c->_moveToDb();
+	nodes.clear();
+
+	foreach(Edge* c, edges)
+		c->_moveToDb();
+	edges.clear();
+
+	foreach(Face* c, faces)
+		c->_moveToDb();
+	faces.clear();
+
+	for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.begin();
+		it != viewCaches.end(); ++it)
+		foreach(QUuid quuid, it->second.rawElements)
+			DBConnector::getInstance()->Insert(	"views",	quuid,
+												"viewname", (QVariant)QString::fromStdString(it->first));
+
+
+
+
+	viewCaches.clear();
+
+	// rasterdatas won't get removed, as well as systems
+}
+
+void System::_importViewElementsFromDB()
+{
+
+}
+
+
 void System::ViewCache::apply(const View& view)
 {
 	if(this->view.getName().length() != 0)

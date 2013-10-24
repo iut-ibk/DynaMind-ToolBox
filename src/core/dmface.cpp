@@ -133,7 +133,7 @@ void Face::addHole(Face* hole)
 	QMutexLocker ml(mutex);
 	_holes.push_back(hole);
 }
-void Face::Synchronize()
+void Face::_moveToDb()
 {
 	if(!getCurrentSystem())
 		return;
@@ -143,15 +143,17 @@ void Face::Synchronize()
 			"owner", getCurrentSystem()->getQUUID().toByteArray(),
 			"nodes", GetBytes(_nodes),
 			"holes", GetBytes(_holes));
+
+		isInserted = false;
 	}
 	else
 	{
-		isInserted = true;
 		DBConnector::getInstance()->Insert("faces", uuid,
 			"owner", getCurrentSystem()->getQUUID().toByteArray(),
 			"nodes", GetBytes(_nodes),
 			"holes", GetBytes(_holes));
 	}
+	delete this;
 }
 
 void Face::setNodes(const std::vector<Node*>& nodes)
