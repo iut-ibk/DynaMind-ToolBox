@@ -163,6 +163,8 @@ protected:
 	//std::set<std::string> inViews;
 	std::map<std::string,Attribute*> ownedattributes;
 private:
+	void setQUuid(const QUuid& quuid);
+
 	bool HasAttribute(std::string name) const;
 	void LoadAttribute(std::string name);
 	bool addAttribute(Attribute *pAttribute);

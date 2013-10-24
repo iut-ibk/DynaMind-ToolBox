@@ -288,7 +288,10 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {
-	return viewCaches[view.getName()].filteredElements;
+	if (map_contains(&viewCaches, view.getName()))
+		return viewCaches[view.getName()].filteredElements;
+	else
+		return std::vector<Component*>();
 }
 
 std::vector<System*> System::getAllSubSystems()
@@ -445,21 +448,45 @@ void System::_moveToDb()
 		c->_moveToDb();
 	faces.clear();
 
-	for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.begin();
-		it != viewCaches.end(); ++it)
+	for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.cbegin();
+		it != viewCaches.cend(); ++it)
 		foreach(QUuid quuid, it->second.rawElements)
 			DBConnector::getInstance()->Insert(	"views",	quuid,
 												"viewname", (QVariant)QString::fromStdString(it->first));
 
+	quuidMap.clear();
 	viewCaches.clear();
 	// rasterdatas won't get removed, as well as systems
 }
 
 void System::_importViewElementsFromDB()
 {
+	DBConnector* db = DBConnector::getInstance();
 
+	for (std::map<std::string, ViewCache >::iterator it = viewCaches.begin();
+		it != viewCaches.end(); ++it)
+	{
+		QSqlQuery* q = db->getQuery(
+			"SELECT nodes.* FROM nodes INNER JOIN views ON nodes.uuid=views.uuid WHERE views.viewname=?");
+		q->addBindValue(QString::fromStdString(it->first));
+		if (db->ExecuteSelectQuery(q))
+		{
+			foreach(const QList<QVariant>& r, *db->getResults())
+			{
+				//const QUuid owner = r.at(1).toByteArray();	// owner
+				Node* n = new Node(	r.at(2).toDouble(), 
+									r.at(3).toDouble(), 
+									r.at(4).toDouble());
+				n->setQUuid(r.at(0).toByteArray());
+
+				if (it->second.add(n))
+					this->addNode(n);
+				else
+					delete n;
+			}
+		}
+	}
 }
-
 
 void System::ViewCache::apply(const View& view)
 {

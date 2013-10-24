@@ -351,3 +351,8 @@ void Component::MoveAttributeToDb(const std::string& name)
 		it->second = NULL;
 	}
 }
+
+void Component::setQUuid(const QUuid& quuid)
+{
+	uuid = quuid;
+}
