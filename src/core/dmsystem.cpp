@@ -433,10 +433,6 @@ void System::_moveToDb()
 		c->_moveToDb();
 	components.clear();
 
-	foreach(Node* c, nodes)
-		c->_moveToDb();
-	nodes.clear();
-
 	foreach(Edge* c, edges)
 		c->_moveToDb();
 	edges.clear();
@@ -444,6 +440,11 @@ void System::_moveToDb()
 	foreach(Face* c, faces)
 		c->_moveToDb();
 	faces.clear();
+
+	// nodes are still linked to edges and faces, thus we export at the end
+	foreach(Node* c, nodes)
+		c->_moveToDb();
+	nodes.clear();
 
 	for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.cbegin();
 		it != viewCaches.cend(); ++it)
@@ -459,28 +460,112 @@ void System::_moveToDb()
 void System::_importViewElementsFromDB()
 {
 	DBConnector* db = DBConnector::getInstance();
+	std::map<QUuid, Node*>	loadedNodes;
 
-	for (std::map<std::string, ViewCache >::iterator it = viewCaches.begin();
-		it != viewCaches.end(); ++it)
+	for (std::map<std::string, ViewCache >::iterator viewItem = viewCaches.begin();
+		viewItem != viewCaches.end(); ++viewItem)
 	{
-		QSqlQuery* q = db->getQuery(
-			"SELECT nodes.* FROM nodes INNER JOIN views ON nodes.uuid=views.uuid WHERE views.viewname=?");
-		q->addBindValue(QString::fromStdString(it->first));
-		if (db->ExecuteSelectQuery(q))
-		{
-			foreach(const QList<QVariant>& r, *db->getResults())
-			{
-				//const QUuid owner = r.at(1).toByteArray();	// owner
-				Node* n = new Node(	r.at(2).toDouble(), 
-									r.at(3).toDouble(), 
-									r.at(4).toDouble());
-				n->setQUuid(r.at(0).toByteArray());
+		std::map<QUuid, Vector3> nodesInView;
 
-				if (it->second.add(n))
-					this->addNode(n);
-				else
-					delete n;
+		switch (viewItem->second.view.getType())
+		{
+		case COMPONENT:
+			{
+				QSqlQuery* q = db->getQuery(
+					"SELECT components.* FROM components INNER JOIN views ON components.uuid=views.uuid WHERE views.viewname=?");
+				q->addBindValue(QString::fromStdString(viewItem->first));
+				if (db->ExecuteSelectQuery(q))
+				{
+					foreach(const QList<QVariant>& r, *db->getResults())
+					{
+						Component* c = new Component();
+						c->setQUuid(r.at(0).toByteArray());
+
+						if (viewItem->second.add(c))
+							this->addComponent(c);
+						else
+							delete c;
+					}
+				}
+					  }
+			break;
+		case NODE:
+			{
+				QSqlQuery* q = db->getQuery(
+					"SELECT nodes.* FROM nodes INNER JOIN views ON nodes.uuid=views.uuid WHERE views.viewname=?");
+
+				q->addBindValue(QString::fromStdString(viewItem->first));
+
+				if (db->ExecuteSelectQuery(q))
+					foreach(const QList<QVariant>& r, *db->getResults())
+						nodesInView[r.at(0).toByteArray()] = Vector3( r.at(2).toDouble(), r.at(3).toDouble(), r.at(4).toDouble() );
 			}
+			break;
+		case EDGE:
+			{
+				QSqlQuery* q = db->getQuery(
+					"SELECT nodes.* FROM nodes \
+					INNER JOIN edges ON edges.startnode = nodes.uuid OR edges.endnode = nodes.uuid \
+					INNER JOIN views ON views.uuid = edges.uuid WHERE views.viewname = ?");
+
+				q->addBindValue(QString::fromStdString(viewItem->first));
+
+				if (db->ExecuteSelectQuery(q))
+					foreach(const QList<QVariant>& r, *db->getResults())
+						nodesInView[r.at(0).toByteArray()] = Vector3( r.at(2).toDouble(), r.at(3).toDouble(), r.at(4).toDouble() );
+			}
+			break;
+		case FACE:
+			break;
+		}
+
+		// create nodes
+		bool nodeView = viewItem->second.view.getType() == NODE;
+		if (nodesInView.size() > 0)
+		{
+			for (std::map<QUuid, Vector3>::iterator nodeItem = nodesInView.begin(); nodeItem != nodesInView.end(); ++nodeItem)
+			{
+				Node* n = NULL;
+				if (!map_contains(&loadedNodes, nodeItem->first, n))
+				{
+					Node* n = new Node( nodeItem->second.x, nodeItem->second.y, nodeItem->second.z );
+					n->setQUuid(nodeItem->first);
+
+					if (!nodeView || viewItem->second.add(n))
+						loadedNodes[n->getQUUID()] = this->addNode(n);
+					else
+						delete n;
+				}
+				else if (nodeView)
+					viewItem->second.add(n);
+			}
+		}
+
+		// link edges and faces
+		switch (viewItem->second.view.getType())
+		{
+		case EDGE:
+			{
+				QSqlQuery* q = db->getQuery(
+					"SELECT edges.* FROM edges INNER JOIN views ON edges.uuid=views.uuid WHERE views.viewname=?");
+				q->addBindValue(QString::fromStdString(viewItem->first));
+				if (db->ExecuteSelectQuery(q))
+				{
+					foreach(const QList<QVariant>& r, *db->getResults())
+					{
+						Edge* c = new Edge(loadedNodes[r.at(2).toByteArray()], loadedNodes[r.at(3).toByteArray()]);
+						c->setQUuid(r.at(0).toByteArray());
+
+						if (viewItem->second.add(c))
+							this->addEdge(c);
+						else
+							delete c;
+					}
+				}
+			}
+			break;
+		case FACE:
+			break;
 		}
 	}
 }

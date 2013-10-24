@@ -230,7 +230,7 @@ private:
 		std::vector<Component*> filteredElements;
 		System* sys;
 		std::vector<QUuid>	rawElements;
-	private:
+	//private:
 		View view;
 	};
 
