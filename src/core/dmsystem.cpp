@@ -451,11 +451,7 @@ void System::_moveToDb()
 			DBConnector::getInstance()->Insert(	"views",	quuid,
 												"viewname", (QVariant)QString::fromStdString(it->first));
 
-
-
-
 	viewCaches.clear();
-
 	// rasterdatas won't get removed, as well as systems
 }
 
