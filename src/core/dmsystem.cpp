@@ -142,7 +142,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 	return n;
 }
 
-Edge* System::addEdge(Edge* edge)
+Edge* System::addEdge(Edge* edge, const DM::View & view)
 {
 	QMutexLocker ml(mutex);
 
@@ -157,6 +157,10 @@ Edge* System::addEdge(Edge* edge)
 		delete edge;
 		return 0;
 	}
+	edges.insert(edge);
+
+	if (!view.getName().empty())
+		this->viewCaches[view.getName()].add(edge);
 
 	return edge;
 }
@@ -164,14 +168,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 {
 	QMutexLocker ml(mutex);
 
-	Edge * e = this->addEdge(new Edge(start, end));
-
-	if (e == 0)
-		return 0;
-	if (!view.getName().empty()) 
-		this->viewCaches[view.getName()].add(e);
-
-	return e;
+	return this->addEdge(new Edge(start, end), view);;
 }
 
 Edge* System::getEdge(Node* start, Node* end)

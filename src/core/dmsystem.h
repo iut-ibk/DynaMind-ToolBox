@@ -101,10 +101,10 @@ public:
 	Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
 
 	/** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
-	Node * addNode(const Node &n,  const DM::View & view = DM::View());
-
+	Node * addNode(const Node &n, const DM::View & view = DM::View());
+	
 	/** @brief Adds a new Edge to the system, the system class takes ownership of the edge */
-	Edge* addEdge(Edge* edge);
+	Edge* addEdge(Edge* edge, const DM::View & view = DM::View());
 
 	/** @brief Creates a new Edge, based on the UUID of the start and end node */
 	Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
