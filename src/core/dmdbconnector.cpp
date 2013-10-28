@@ -42,12 +42,17 @@ using namespace DM;
 
 void PrintSqlErrorE(QSqlError e)
 {
-	Logger(Error) << "sql error: " << e.text();
+	if (!e.text().isEmpty())
+		Logger(Error) << "sql error: " << e.text();
 }
 
 void DM::PrintSqlError(QSqlQuery *q)
 {
 	Logger(Error) << "last cmd: " << q->lastQuery();
+
+	foreach(QString key, q->boundValues().keys())
+		Logger(Error) << "param '" << key.toStdString() << "' = '" << q->boundValues().value(key).toString().toStdString() << "'";
+
 	PrintSqlErrorE(q->lastError());
 }
 
