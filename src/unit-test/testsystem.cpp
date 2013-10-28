@@ -956,6 +956,43 @@ TEST_F(TestSystem, SystemDBExInportSuccessor) {
 	ASSERT_EQ(ssys.getAllComponentsInView(v).size(), 1);
 	ASSERT_EQ(ssys.getAllComponentsInView(v2).size(), 1);
 }
+
+
+TEST_F(TestSystem, SystemDBExInportAttributes) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Testing export of attribute data";
+
+	System sys;
+	View v("v", NODE, WRITE);
+	v.addAttribute("a", Attribute::DOUBLE, WRITE);
+	Node* n = sys.addNode(0, 1, 2, v);
+	n->addAttribute("a", 1.0);
+
+	// move to db
+	sys._moveToDb();
+	// import, first run without attribute in view
+	View v2("v", NODE, READ);
+	sys.updateView(v2);
+	sys._importViewElementsFromDB();
+	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
+	std::map<std::string, Attribute*> attributes = sys.getAllComponentsInView(v)[0]->getAllAttributes();
+	ASSERT_EQ(attributes.size(), 0);
+
+	// move to db
+	sys._moveToDb();
+	// import, second run, load attribute too
+	View v3("v", NODE, READ);
+	v.addAttribute("a", Attribute::DOUBLE, READ);
+	sys.updateView(v);
+	sys._importViewElementsFromDB();
+	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
+	attributes = sys.getAllComponentsInView(v)[0]->getAllAttributes();
+	ASSERT_EQ(attributes.size(), 1);
+	ASSERT_EQ(attributes["a"]->getDouble(), 1.0);
+}
+
+
 }
 
 #endif
