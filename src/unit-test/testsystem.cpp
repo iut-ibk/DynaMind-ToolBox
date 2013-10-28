@@ -907,6 +907,38 @@ TEST_F(TestSystem,SystemDBExInport) {
 	ASSERT_EQ(nodes.size(), 2);
 	ASSERT_EQ(nodes[0]->getQUUID(), node_uuid);
 	ASSERT_EQ(nodes[1]->getQUUID(), node2_uuid);
+
+	// remove from view
+	Component* c = compsInView[0];
+	QUuid quuid = c->getQUUID();
+	sys.removeComponentFromView(c, comp_view.getName());
+	// move all elements to db
+	sys._moveToDb();
+	// reload elements
+	sys.updateView(comp_view);
+	sys._importViewElementsFromDB();
+	ASSERT_EQ(sys.getAllComponents().size(), 0);
+	ASSERT_EQ(sys.getAllComponentsInView(comp_view).size(), 0);
+
+	/*
+	does not work due to lost pointer
+
+	QSqlQuery* q = DBConnector::getInstance()->getQuery("SELECT * FROM components WHERE uuid LIKE ?");
+	q->addBindValue(quuid.toByteArray());
+	ASSERT_TRUE(DBConnector::getInstance()->ExecuteSelectQuery(q));
+	ASSERT_EQ(DBConnector::getInstance()->getResults()->size(), 0);
+	
+	// remove item completly
+	sys.addComponentToView(c, comp_view);
+	sys.removeChild(c);
+	delete c;
+	// move all elements to db
+	sys._moveToDb();
+	// reload elements
+	sys.updateView(comp_view);
+	sys._importViewElementsFromDB();
+	ASSERT_EQ(sys.getAllComponents().size(), 0);
+	*/
 }
 
 TEST_F(TestSystem, SystemDBExInportSuccessor) {
