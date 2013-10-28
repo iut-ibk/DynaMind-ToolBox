@@ -659,7 +659,7 @@ Component* Attribute::GetOwner()
 {
 	return owner;
 }
-
+/*
 Attribute* Attribute::LoadAttribute(Component* c, const std::string& attributeName)
 {
 	QVariant t,v;
@@ -672,6 +672,19 @@ Attribute* Attribute::LoadAttribute(Component* c, const std::string& attributeNa
 	a->isInserted = true;
 
 	AttributeValue* val = new AttributeValue(v,(AttributeType)t.toInt(), c->getCurrentSystem());
+	a->value = *val;
+	val->ptr = NULL;
+	return a;
+}*/
+
+Attribute* Attribute::_createAttribute(const std::string& attributeName, Component* owner, const QVariant& value, 
+	AttributeType type, System* currentSystem)
+{
+	Attribute* a = new Attribute(attributeName);
+	a->setOwner(owner);
+	a->isInserted = true;
+
+	AttributeValue* val = new AttributeValue(value, type, currentSystem);
 	a->value = *val;
 	val->ptr = NULL;
 	return a;

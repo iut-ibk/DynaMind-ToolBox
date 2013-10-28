@@ -200,8 +200,10 @@ public:
 	static void PrintCacheStatistics();
 	static void ClearCache();*/
 	
-	static Attribute* LoadAttribute(Component* c, const std::string& attributeName);
+	//static Attribute* LoadAttribute(Component* c, const std::string& attributeName);
 	static void _MoveAttribute(Attribute* a);
+	static Attribute*  _createAttribute(const std::string& attributeName, Component* owner, 
+		const QVariant& value, AttributeType type, System* currentSystem);
 
 private:
 //	QUuid			_uuid;

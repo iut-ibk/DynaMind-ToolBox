@@ -25,6 +25,7 @@
  *
  */
 
+#include <dmattribute.h>
 #include <dmcomponent.h>
 #include <dmnode.h>
 #include <dmedge.h>
@@ -490,7 +491,8 @@ void System::_importViewElementsFromDB()
 		viewItem != viewCaches.end(); ++viewItem)
 	{
 		std::map<QUuid, std::pair<QUuid, Vector3> > nodesInView;
-		std::map < QUuid, std::pair<QUuid, std::vector<QUuid> > > facesInView;
+		std::map<QUuid, std::pair<QUuid, std::vector<QUuid> > > facesInView;
+		std::map<QUuid, Component*>	elementsInView;
 
 		switch (viewItem->second.view.getType())
 		{
@@ -514,7 +516,10 @@ void System::_importViewElementsFromDB()
 							sys = this->getPredecessor();
 
 						if (sys && viewItem->second.add(c))
+						{
 							sys->addComponent(c);
+							elementsInView[c->getQUUID()] = c;
+						}
 						else
 						{
 							if (!sys)
@@ -523,7 +528,7 @@ void System::_importViewElementsFromDB()
 						}
 					}
 				}
-			}
+					  }
 			break;
 		case NODE:
 			{
@@ -534,28 +539,28 @@ void System::_importViewElementsFromDB()
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(	r.at(1).toByteArray(), 
-																					Vector3(r.at(2).toDouble(),
-																							r.at(3).toDouble(), 
-																							r.at(4).toDouble()));
-			}
+					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(r.at(1).toByteArray(),
+					Vector3(r.at(2).toDouble(),
+					r.at(3).toDouble(),
+					r.at(4).toDouble()));
+				 }
 			break;
 		case EDGE:
 			{
 				QSqlQuery* q = db->getQuery(
 					"SELECT nodes.* FROM nodes \
-					INNER JOIN edges ON edges.startnode = nodes.uuid OR edges.endnode = nodes.uuid \
-					INNER JOIN views ON views.uuid = edges.uuid WHERE views.viewname = ?");
+										INNER JOIN edges ON edges.startnode = nodes.uuid OR edges.endnode = nodes.uuid \
+															INNER JOIN views ON views.uuid = edges.uuid WHERE views.viewname = ?");
 
 				q->addBindValue(QString::fromStdString(viewItem->first));
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(	r.at(1).toByteArray(),
-																					Vector3(r.at(2).toDouble(),
-																							r.at(3).toDouble(),
-																							r.at(4).toDouble()));
-			}
+					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(r.at(1).toByteArray(),
+					Vector3(r.at(2).toDouble(),
+					r.at(3).toDouble(),
+					r.at(4).toDouble()));
+				 }
 			break;
 		case FACE:
 			{
@@ -566,8 +571,8 @@ void System::_importViewElementsFromDB()
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-					facesInView[r.at(0).toByteArray()] = std::pair < QUuid, std::vector<QUuid> > (	r.at(1).toByteArray(),
-																									GetVector(r.at(2).toByteArray()));
+					facesInView[r.at(0).toByteArray()] = std::pair < QUuid, std::vector<QUuid> >(r.at(1).toByteArray(),
+					GetVector(r.at(2).toByteArray()));
 				typedef std::pair < QUuid, std::vector<QUuid> > OwnerVectorPair;
 				mforeach(const OwnerVectorPair& v, facesInView)
 				{
@@ -577,14 +582,14 @@ void System::_importViewElementsFromDB()
 						qn->addBindValue(quuid.toByteArray());
 						if (db->ExecuteSelectQuery(qn))
 						{
-							nodesInView[db->getResults()->at(0).at(0).toByteArray()] = std::pair<QUuid, Vector3>(db->getResults()->at(0).at(1).toByteArray(), 
-																					Vector3(db->getResults()->at(0).at(2).toDouble(),
-																					db->getResults()->at(0).at(3).toDouble(),
-																					db->getResults()->at(0).at(4).toDouble()));
+							nodesInView[db->getResults()->at(0).at(0).toByteArray()] = std::pair<QUuid, Vector3>(db->getResults()->at(0).at(1).toByteArray(),
+								Vector3(db->getResults()->at(0).at(2).toDouble(),
+								db->getResults()->at(0).at(3).toDouble(),
+								db->getResults()->at(0).at(4).toDouble()));
 						}
 					}
 				}
-			}
+				 }
 			break;
 		}
 
@@ -608,7 +613,11 @@ void System::_importViewElementsFromDB()
 						sys = this->getPredecessor();
 
 					if ((!nodeView || viewItem->second.add(n)) && sys)
+					{
 						loadedNodes[n->getQUUID()] = sys->addNode(n);
+						if (nodeView)
+							elementsInView[n->getQUUID()] = n;
+					}
 					else
 					{
 						if (!sys)
@@ -643,7 +652,10 @@ void System::_importViewElementsFromDB()
 							sys = this->getPredecessor();
 
 						if (viewItem->second.add(c) && sys)
+						{
 							this->addEdge(c);
+							elementsInView[c->getQUUID()] = c;
+						}
 						else
 						{
 							if (!sys)
@@ -652,7 +664,7 @@ void System::_importViewElementsFromDB()
 						}
 					}
 				}
-			}
+				 }
 			break;
 		case FACE:
 			{
@@ -662,7 +674,7 @@ void System::_importViewElementsFromDB()
 					std::vector<Node*> nodes;
 					foreach(QUuid quuid, it->second.second)
 						nodes.push_back(loadedNodes[quuid]);
-					
+
 					Face* f = new Face(nodes);
 					f->setQUuid(it->first);
 					f->isInserted = true;
@@ -673,7 +685,10 @@ void System::_importViewElementsFromDB()
 						sys = this->getPredecessor();
 
 					if (viewItem->second.add(f) && sys)
+					{
 						this->addFace(f);
+						elementsInView[f->getQUUID()] = f;
+					}
 					else
 					{
 						if (!sys)
@@ -681,8 +696,31 @@ void System::_importViewElementsFromDB()
 						delete f;
 					}
 				}
-			}
+				 }
 			break;
+		}
+
+		foreach(std::string attributeName, viewItem->second.view.getAllAttributes())
+		{
+			QSqlQuery* q = db->getQuery("SELECT attributes.* FROM attributes \
+										INNER JOIN nodes ON nodes.uuid = attributes.owner \
+										INNER JOIN views ON views.uuid = nodes.uuid WHERE views.viewname = ? AND attributes.name = ?");
+			q->addBindValue(QString::fromStdString(viewItem->first));
+			q->addBindValue(QString::fromStdString(attributeName));
+
+			if (db->ExecuteSelectQuery(q))
+			{
+				foreach(const QList<QVariant>& r, *db->getResults())
+				{
+					Component* c = NULL;
+					if (map_contains(&elementsInView, QUuid(r.at(0).toByteArray()), c))
+					{
+						c->addAttribute(
+							Attribute::_createAttribute(attributeName, c, r.at(3),
+								(Attribute::AttributeType)r.at(2).toInt(), c->currentSys));
+					}
+				}
+			}
 		}
 	}
 }
