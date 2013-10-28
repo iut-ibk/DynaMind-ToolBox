@@ -451,9 +451,14 @@ void System::_moveToDb()
 	{
 		for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.cbegin();
 			it != viewCaches.cend(); ++it)
+		{
+			QSqlQuery* q = db->getQuery("DELETE FROM views WHERE viewname LIKE ?");
+			q->addBindValue(QString::fromStdString(it->first));
+			db->ExecuteQuery(q);
+
 			foreach(QUuid quuid, it->second.rawElements)
-			DBConnector::getInstance()->Insert("views", quuid,
-			"viewname", (QVariant)QString::fromStdString(it->first));
+				db->Insert("views", quuid, "viewname", (QVariant)QString::fromStdString(it->first));
+		}
 	}
 	quuidMap.clear();
 	viewCaches.clear();
@@ -500,6 +505,8 @@ void System::_importViewElementsFromDB()
 					{
 						Component* c = new Component();
 						c->setQUuid(r.at(0).toByteArray());
+						c->isInserted = true;
+
 						QUuid quuidOwner = r.at(1).toByteArray();
 
 						System *sys = this;
@@ -592,6 +599,7 @@ void System::_importViewElementsFromDB()
 				{
 					Node* n = new Node(nodeItem->second.second.x, nodeItem->second.second.y, nodeItem->second.second.z);
 					n->setQUuid(nodeItem->first);
+					n->isInserted = true;
 
 					QUuid quuidOwner = nodeItem->second.first;
 
@@ -627,6 +635,7 @@ void System::_importViewElementsFromDB()
 					{
 						Edge* c = new Edge(loadedNodes[r.at(2).toByteArray()], loadedNodes[r.at(3).toByteArray()]);
 						c->setQUuid(r.at(0).toByteArray());
+						c->isInserted = true;
 						QUuid quuidOwner = r.at(1).toByteArray();
 
 						System *sys = this;
@@ -656,6 +665,7 @@ void System::_importViewElementsFromDB()
 					
 					Face* f = new Face(nodes);
 					f->setQUuid(it->first);
+					f->isInserted = true;
 					QUuid quuidOwner = it->second.first;
 
 					System *sys = this;
