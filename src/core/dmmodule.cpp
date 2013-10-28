@@ -313,14 +313,22 @@ System* Module::getData(const std::string& streamName)
 			sys = new System();
 	}
 
-	if(DBConnector::getInstance()->getConfig().peterDatastream)
+	if (DBConnector::getInstance()->getConfig().peterDatastream)
+	{
+		Logger(Debug) << "moving system into db";
 		sys->_moveToDb();
+		Logger(Debug) << "moving system into db finished";
+	}
 
 	mforeach(View v, accessedViews[streamName])
 		sys->updateView(v);
 
 	if (DBConnector::getInstance()->getConfig().peterDatastream)
+	{
+		Logger(Debug) << "importing system from db";
 		sys->_importViewElementsFromDB();
+		Logger(Debug) << "importing system from db finished";
+	}
 
 	if(hasOutPort(streamName))
 		this->setOutPortData(streamName, sys);
