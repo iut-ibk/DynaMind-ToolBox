@@ -253,16 +253,25 @@ void Node::_moveToDb()
 {
 	if(isInserted)
 	{
-		DBConnector::getInstance()->Update("nodes", uuid,
-			"x",     QVariant::fromValue(this->x),
-			"y",     QVariant::fromValue(this->y),
-			"z",     QVariant::fromValue(this->z));
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE " + getTableName() + " SET owner=?,x=?,y=?,z=? WHERE uuid LIKE ?");
+		q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
+		q->addBindValue(this->x);
+		q->addBindValue(this->y);
+		q->addBindValue(this->z);
+		q->addBindValue(uuid.toByteArray());
+		DBConnector::getInstance()->ExecuteQuery(q);
+
 		isInserted = false;
 	}
 	else
 	{
-		DBConnector::getInstance()->Insert("nodes", uuid,
-			"x",this->x,"y",this->y,"z",this->z);
+		QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO " + getTableName() + " (uuid,owner,x,y,z) VALUES (?,?,?,?,?)");
+		q->addBindValue(uuid.toByteArray());
+		q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
+		q->addBindValue(this->x);
+		q->addBindValue(this->y);
+		q->addBindValue(this->z);
+		DBConnector::getInstance()->ExecuteQuery(q);
 	}
 	delete this;
 }
