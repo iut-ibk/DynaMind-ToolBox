@@ -811,11 +811,15 @@ bool System::ViewCache::add(Component* c)
 
 bool System::ViewCache::remove(Component* c)
 {
-	rawElements.erase(find(rawElements.begin(), rawElements.end(), c->getQUUID()));
+	std::vector<QUuid>::iterator rawItem = find(rawElements.begin(), rawElements.end(), c->getQUUID());
+	if (rawItem != rawElements.end())
+		rawElements.erase(rawItem);
 
 	if(legal(c))
 	{
-		filteredElements.erase(find(filteredElements.begin(), filteredElements.end(), c));
+		std::vector<Component*>::iterator filterItem = find(filteredElements.begin(), filteredElements.end(), c);
+		if (filterItem != filteredElements.end())
+			filteredElements.erase(filterItem);
 		return true;
 	}
 	return false;
