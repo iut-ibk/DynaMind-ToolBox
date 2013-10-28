@@ -42,7 +42,7 @@ DerivedSystem::DerivedSystem(System* sys): System()
 	//allRasterDataLoaded = false;
 
 	//predecessors = sys->predecessors;
-	//views = sys->views;
+	viewCaches = sys->viewCaches;
 
 	CopyFrom(*sys, true);
 
@@ -255,4 +255,10 @@ Component* DerivedSystem::getSuccessingComponent(const Component* formerComponen
 		// copy function automatically adds predecessorComponentMap entry fur future access
 		return SuccessorCopyTypesafe(formerComponent);
 	}
+}
+
+void DerivedSystem::_moveToDb()
+{
+	predecessorSys->_moveToDb();
+	System::_moveToDb();
 }

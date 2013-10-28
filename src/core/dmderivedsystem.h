@@ -66,6 +66,8 @@ public:
 	
 	/** @brief Returns the predecessor of the system */
 	System* getPredecessor() const;
+
+	void _moveToDb();
 };
 
 }
