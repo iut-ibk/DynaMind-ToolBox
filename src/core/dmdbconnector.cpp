@@ -320,27 +320,31 @@ void DBWorker::run()
 #endif
 			selectMutex.lock();
 			selectRows.clear();
-			if(qSelect->exec() && qSelect->next())
+			if(qSelect->exec())
 			{
-				int i=0;
-				do
+				if (qSelect->next())
 				{
-					int j=0;
-
-					QList<QVariant> row;
-					QVariant value = qSelect->value(j++);
-					while(value.isValid())
+					int i = 0;
+					do
 					{
-						row.append(value);
-						value = qSelect->value(j++);
-					}
+						int j = 0;
 
-					selectRows.append(row);
-					i++;
+						QList<QVariant> row;
+						QVariant value = qSelect->value(j++);
+						while (value.isValid())
+						{
+							row.append(value);
+							value = qSelect->value(j++);
+						}
+
+						selectRows.append(row);
+						i++;
+					} while (qSelect->next());
+
+					selectStatus = i;
 				}
-				while(qSelect->next());
-
-				selectStatus = i;
+				else
+					selectStatus = 1;
 			}
 			else
 			{
