@@ -128,5 +128,6 @@ void Edge::_moveToDb()
 		q->addBindValue(end->getQUUID().toByteArray());
 		DBConnector::getInstance()->ExecuteQuery(q);
 	}
+	_moveAttributesToDb();
 	delete this;
 }

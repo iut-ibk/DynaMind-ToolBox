@@ -273,6 +273,7 @@ void Node::_moveToDb()
 		q->addBindValue(this->z);
 		DBConnector::getInstance()->ExecuteQuery(q);
 	}
+	_moveAttributesToDb();
 	delete this;
 }
 

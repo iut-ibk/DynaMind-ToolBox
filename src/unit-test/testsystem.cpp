@@ -630,22 +630,6 @@ TEST_F(TestSystem, SQLattributes)
 			Attribute newatt(name.str(), i+20.0);
 			c->getAttribute(name.str())->Change(newatt);
 		}
-		//DBConnector::getInstance()->Synchronize();
-		// move all attributes to db
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name;
-			name << "name " << i;
-			c->MoveAttributeToDb(name.str());
-		}
-		// check
-		for(int i=0;i<10;i++)
-		{
-			std::stringstream name;
-			name << "name " << i;
-			ASSERT_TRUE(c->getAttribute(name.str())->getDouble() == i+20.0);
-			//Logger(Error) << name.str() << ": " << c->getAttribute(name.str())->getDouble();
-		}
 		// reset cache
 //		Attribute::ResizeCache(cacheBefore);
 		delete c;

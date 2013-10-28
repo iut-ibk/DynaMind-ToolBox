@@ -253,11 +253,6 @@ Attribute* Component::getAttribute(std::string name)
 		a->setOwner(this);
 		ownedattributes[name] = a;
 	}
-	else if(a == NULL)
-	{
-		// empty attribute pointer -> load from db
-		a = ownedattributes[name] = Attribute::LoadAttribute(this, name);
-	}
 	else if(a->GetOwner() != this)
 	{
 		// successor copy
@@ -326,8 +321,17 @@ void Component::_moveToDb()
 			"owner", currentSys->getQUUID().toByteArray());
 		isInserted = false;
 	}
+	_moveAttributesToDb();
 	delete this;
 }
+
+void Component::_moveAttributesToDb()
+{
+	mforeach(Attribute* a, ownedattributes)
+		Attribute::_MoveAttribute(a);
+	ownedattributes.clear();
+}
+
 void Component::SQLDelete()
 {
 	QMutexLocker ml(mutex);
@@ -343,7 +347,7 @@ bool Component::HasAttribute(std::string name) const
 {
 	return ownedattributes.find(name)!=ownedattributes.end();
 }
-
+/*
 void Component::MoveAttributeToDb(const std::string& name)
 {
 	std::map<std::string,Attribute*>::iterator it = ownedattributes.find(name);
@@ -352,7 +356,7 @@ void Component::MoveAttributeToDb(const std::string& name)
 		Attribute::SaveAttribute(it->second);
 		it->second = NULL;
 	}
-}
+}*/
 
 void Component::setQUuid(const QUuid& quuid)
 {

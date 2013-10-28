@@ -140,8 +140,9 @@ public:
 	
 	/** @brief exports the component to the db, it can afterwards deleted safly */
 	virtual void _moveToDb();
+	void _moveAttributesToDb();
 
-	void MoveAttributeToDb(const std::string& name);
+	//void MoveAttributeToDb(const std::string& name);
 protected:
 	/* @brief Sets stateUuid and ownership in sql db*/
 	virtual void SetOwner(Component *owner);

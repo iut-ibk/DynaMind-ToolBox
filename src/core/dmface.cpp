@@ -150,6 +150,7 @@ void Face::_moveToDb()
 			"nodes", GetBytes(_nodes),
 			"holes", GetBytes(_holes));
 	}
+	_moveAttributesToDb();
 	delete this;
 }
 

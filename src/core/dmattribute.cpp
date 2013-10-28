@@ -677,7 +677,7 @@ Attribute* Attribute::LoadAttribute(Component* c, const std::string& attributeNa
 	return a;
 }
 
-void Attribute::SaveAttribute(Attribute* a)
+void Attribute::_MoveAttribute(Attribute* a)
 {
 	if(!a || !a->owner)
 		return;
@@ -692,6 +692,7 @@ void Attribute::SaveAttribute(Attribute* a)
 			"attributes",	a->owner->getQUUID(), qname,
 			"type",			&qtype,
 			"value",		&qval);
+		a->isInserted = false;
 	}
 	else
 	{
@@ -699,7 +700,7 @@ void Attribute::SaveAttribute(Attribute* a)
 			"attributes",	a->owner->getQUUID(), qname,
 			"type",			&qtype,
 			"value",		&qval);
-		a->isInserted = true;
 	}
+	delete a;
 }
 

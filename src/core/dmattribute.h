@@ -201,7 +201,7 @@ public:
 	static void ClearCache();*/
 	
 	static Attribute* LoadAttribute(Component* c, const std::string& attributeName);
-	static void SaveAttribute(Attribute* a);
+	static void _MoveAttribute(Attribute* a);
 
 private:
 //	QUuid			_uuid;
