@@ -909,6 +909,37 @@ TEST_F(TestSystem,SystemDBExInport) {
 	ASSERT_EQ(nodes[1]->getQUUID(), node2_uuid);
 }
 
+TEST_F(TestSystem, SystemDBExInportSuccessor) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Testing export of system data with successors";
+
+	System sys;
+	View v("v", NODE, WRITE);
+	QUuid uuid = sys.addNode(0, 1, 2, v)->getQUUID();
+
+	System& ssys = *sys.createSuccessor();
+	View v2("v2", NODE, WRITE);
+	QUuid suuid = ssys.addNode(3, 4, 5, v2)->getQUUID();
+
+	// move to db
+	ssys._moveToDb();
+	// check if empty
+	ASSERT_EQ(sys.getAllNodes().size(), 0);
+	ASSERT_EQ(ssys.getAllNodes().size(), 0);
+	// import
+	ssys.updateView(v);
+	ssys.updateView(v2);
+	ssys._importViewElementsFromDB();
+
+	// check if everything has been imported
+	ASSERT_EQ(sys.getAllNodes().size(), 1);
+	ASSERT_EQ(ssys.getAllNodes().size(), 1);
+
+	// NOTE: sys will not load views, but the successor system
+	ASSERT_EQ(ssys.getAllComponentsInView(v).size(), 1);
+	ASSERT_EQ(ssys.getAllComponentsInView(v2).size(), 1);
+}
 }
 
 #endif
