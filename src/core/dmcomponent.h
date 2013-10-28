@@ -139,7 +139,7 @@ public:
 
 	
 	/** @brief exports the component to the db, it can afterwards deleted safly */
-	void _moveToDb();
+	virtual void _moveToDb();
 
 	void MoveAttributeToDb(const std::string& name);
 protected:
