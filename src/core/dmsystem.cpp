@@ -497,6 +497,9 @@ void System::_importViewElementsFromDB()
 	for (std::map<std::string, ViewCache >::iterator viewItem = viewCaches.begin();
 		viewItem != viewCaches.end(); ++viewItem)
 	{
+		if (!viewItem->second.view.reads())
+			continue;
+
 		std::map<QUuid, std::pair<QUuid, Vector3> > nodesInView;
 		std::map<QUuid, std::pair<QUuid, std::vector<QUuid> > > facesInView;
 		std::map<QUuid, Component*>	elementsInView;
