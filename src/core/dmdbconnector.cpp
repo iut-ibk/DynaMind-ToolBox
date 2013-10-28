@@ -140,7 +140,7 @@ bool DBConnector::CreateTables()
 		&& query.exec("CREATE TABLE views(\
 					  uuid BINARY(16) NOT NULL, \
 					  viewname VARCHAR(128) NOT NULL, \
-					  PRIMARY KEY (viewname))")
+					  PRIMARY KEY (uuid, viewname))")
 					  )
 			return true;
 
