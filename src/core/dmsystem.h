@@ -174,8 +174,8 @@ public:
 
 	void loadFromHost();
 
-	/** @brief exports the component to the db, it can afterwards deleted safly */
-	void _moveToDb();
+	/** @brief exports the component to the db, it can be deleted safly afterwards */
+	virtual void _moveToDb();
 
 	/** @brief imports all components according to the currently applied views (update view) */
 	void _importViewElementsFromDB();

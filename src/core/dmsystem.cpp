@@ -446,12 +446,15 @@ void System::_moveToDb()
 		c->_moveToDb();
 	nodes.clear();
 
-	for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.cbegin();
-		it != viewCaches.cend(); ++it)
-		foreach(QUuid quuid, it->second.rawElements)
-			DBConnector::getInstance()->Insert(	"views",	quuid,
-												"viewname", (QVariant)QString::fromStdString(it->first));
-
+	// do not export views if this system got successors -> ambiguous views!
+	if (this->getSucessors().size() == 0)
+	{
+		for (std::map<std::string, ViewCache >::const_iterator it = viewCaches.cbegin();
+			it != viewCaches.cend(); ++it)
+			foreach(QUuid quuid, it->second.rawElements)
+			DBConnector::getInstance()->Insert("views", quuid,
+			"viewname", (QVariant)QString::fromStdString(it->first));
+	}
 	quuidMap.clear();
 	viewCaches.clear();
 	// rasterdatas won't get removed, as well as systems
@@ -481,8 +484,8 @@ void System::_importViewElementsFromDB()
 	for (std::map<std::string, ViewCache >::iterator viewItem = viewCaches.begin();
 		viewItem != viewCaches.end(); ++viewItem)
 	{
-		std::map<QUuid, Vector3> nodesInView;
-		std::map<QUuid, std::vector<QUuid> > facesInView;
+		std::map<QUuid, std::pair<QUuid, Vector3> > nodesInView;
+		std::map < QUuid, std::pair<QUuid, std::vector<QUuid> > > facesInView;
 
 		switch (viewItem->second.view.getType())
 		{
@@ -497,14 +500,23 @@ void System::_importViewElementsFromDB()
 					{
 						Component* c = new Component();
 						c->setQUuid(r.at(0).toByteArray());
+						QUuid quuidOwner = r.at(1).toByteArray();
 
-						if (viewItem->second.add(c))
-							this->addComponent(c);
+						System *sys = this;
+						while (this->getQUUID() != quuidOwner && sys != NULL)
+							sys = this->getPredecessor();
+
+						if (sys && viewItem->second.add(c))
+							sys->addComponent(c);
 						else
+						{
+							if (!sys)
+								Logger(Error) << "system " << quuidOwner.toString().toStdString() << "not found";
 							delete c;
+						}
 					}
 				}
-					  }
+			}
 			break;
 		case NODE:
 			{
@@ -515,7 +527,10 @@ void System::_importViewElementsFromDB()
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-						nodesInView[r.at(0).toByteArray()] = Vector3( r.at(2).toDouble(), r.at(3).toDouble(), r.at(4).toDouble() );
+					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(	r.at(1).toByteArray(), 
+																					Vector3(r.at(2).toDouble(),
+																							r.at(3).toDouble(), 
+																							r.at(4).toDouble()));
 			}
 			break;
 		case EDGE:
@@ -529,7 +544,10 @@ void System::_importViewElementsFromDB()
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-						nodesInView[r.at(0).toByteArray()] = Vector3( r.at(2).toDouble(), r.at(3).toDouble(), r.at(4).toDouble() );
+					nodesInView[r.at(0).toByteArray()] = std::pair<QUuid, Vector3>(	r.at(1).toByteArray(),
+																					Vector3(r.at(2).toDouble(),
+																							r.at(3).toDouble(),
+																							r.at(4).toDouble()));
 			}
 			break;
 		case FACE:
@@ -541,19 +559,21 @@ void System::_importViewElementsFromDB()
 
 				if (db->ExecuteSelectQuery(q))
 					foreach(const QList<QVariant>& r, *db->getResults())
-							facesInView[r.at(0).toByteArray()] = GetVector(r.at(2).toByteArray());
-
-				mforeach(const std::vector<QUuid>& v, facesInView)
+					facesInView[r.at(0).toByteArray()] = std::pair < QUuid, std::vector<QUuid> > (	r.at(1).toByteArray(),
+																									GetVector(r.at(2).toByteArray()));
+				typedef std::pair < QUuid, std::vector<QUuid> > OwnerVectorPair;
+				mforeach(const OwnerVectorPair& v, facesInView)
 				{
-					foreach(QUuid quuid, v)
+					foreach(QUuid quuid, v.second)
 					{
 						QSqlQuery* qn = db->getQuery("SELECT * FROM nodes WHERE uuid=?");
 						qn->addBindValue(quuid.toByteArray());
 						if (db->ExecuteSelectQuery(qn))
 						{
-							nodesInView[db->getResults()->at(0).at(0).toByteArray()] = Vector3(	db->getResults()->at(0).at(2).toDouble(),
+							nodesInView[db->getResults()->at(0).at(0).toByteArray()] = std::pair<QUuid, Vector3>(db->getResults()->at(0).at(1).toByteArray(), 
+																					Vector3(db->getResults()->at(0).at(2).toDouble(),
 																					db->getResults()->at(0).at(3).toDouble(),
-																					db->getResults()->at(0).at(4).toDouble());
+																					db->getResults()->at(0).at(4).toDouble()));
 						}
 					}
 				}
@@ -565,18 +585,28 @@ void System::_importViewElementsFromDB()
 		bool nodeView = viewItem->second.view.getType() == NODE;
 		if (nodesInView.size() > 0)
 		{
-			for (std::map<QUuid, Vector3>::iterator nodeItem = nodesInView.begin(); nodeItem != nodesInView.end(); ++nodeItem)
+			for (std::map < QUuid, std::pair < QUuid, Vector3 > > ::iterator nodeItem = nodesInView.begin(); nodeItem != nodesInView.end(); ++nodeItem)
 			{
 				Node* n = NULL;
 				if (!map_contains(&loadedNodes, nodeItem->first, n))
 				{
-					Node* n = new Node( nodeItem->second.x, nodeItem->second.y, nodeItem->second.z );
+					Node* n = new Node(nodeItem->second.second.x, nodeItem->second.second.y, nodeItem->second.second.z);
 					n->setQUuid(nodeItem->first);
 
-					if (!nodeView || viewItem->second.add(n))
-						loadedNodes[n->getQUUID()] = this->addNode(n);
+					QUuid quuidOwner = nodeItem->second.first;
+
+					System* sys = this;
+					while (sys->getQUUID() != quuidOwner && sys != NULL)
+						sys = this->getPredecessor();
+
+					if ((!nodeView || viewItem->second.add(n)) && sys)
+						loadedNodes[n->getQUUID()] = sys->addNode(n);
 					else
+					{
+						if (!sys)
+							Logger(Error) << "system " << quuidOwner.toString().toStdString() << "not found";
 						delete n;
+					}
 				}
 				else if (nodeView)
 					viewItem->second.add(n);
@@ -597,30 +627,49 @@ void System::_importViewElementsFromDB()
 					{
 						Edge* c = new Edge(loadedNodes[r.at(2).toByteArray()], loadedNodes[r.at(3).toByteArray()]);
 						c->setQUuid(r.at(0).toByteArray());
+						QUuid quuidOwner = r.at(1).toByteArray();
 
-						if (viewItem->second.add(c))
+						System *sys = this;
+						while (this->getQUUID() != quuidOwner && sys != NULL)
+							sys = this->getPredecessor();
+
+						if (viewItem->second.add(c) && sys)
 							this->addEdge(c);
 						else
+						{
+							if (!sys)
+								Logger(Error) << "system " << quuidOwner.toString().toStdString() << "not found";
 							delete c;
+						}
 					}
 				}
 			}
 			break;
 		case FACE:
 			{
-				typedef std::map<QUuid, std::vector<QUuid> > RawFaces;
+				typedef std::map < QUuid, std::pair<QUuid, std::vector<QUuid> > > RawFaces;
 				for (RawFaces::iterator it = facesInView.begin(); it != facesInView.end(); ++it)
 				{
 					std::vector<Node*> nodes;
-					foreach(QUuid quuid, it->second)
+					foreach(QUuid quuid, it->second.second)
 						nodes.push_back(loadedNodes[quuid]);
 					
 					Face* f = new Face(nodes);
 					f->setQUuid(it->first);
-					if (viewItem->second.add(f))
+					QUuid quuidOwner = it->second.first;
+
+					System *sys = this;
+					while (this->getQUUID() != quuidOwner && sys != NULL)
+						sys = this->getPredecessor();
+
+					if (viewItem->second.add(f) && sys)
 						this->addFace(f);
 					else
+					{
+						if (!sys)
+							Logger(Error) << "system " << quuidOwner.toString().toStdString() << "not found";
 						delete f;
+					}
 				}
 			}
 			break;
