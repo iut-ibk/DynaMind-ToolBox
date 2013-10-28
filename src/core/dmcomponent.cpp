@@ -319,12 +319,12 @@ void Component::_moveToDb()
 	{
 		DBConnector::getInstance()->Insert(	"components", uuid, 
 			"owner", (QVariant)currentSys->getQUUID().toByteArray());
-		isInserted = false;
 	}
 	else
 	{
 		DBConnector::getInstance()->Update(	"components", uuid, 
-		"owner", currentSys->getQUUID().toByteArray());
+			"owner", currentSys->getQUUID().toByteArray());
+		isInserted = false;
 	}
 	delete this;
 }
