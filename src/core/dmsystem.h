@@ -227,9 +227,9 @@ private:
 		bool remove(Component* c);
 		bool legal(Component* c);
 
-		std::vector<Component*> filteredElements;
+		std::set<Component*> filteredElements;
 		System* sys;
-		std::vector<QUuid>	rawElements;
+		std::set<QUuid>	rawElements;
 	//private:
 		View view;
 	};

@@ -286,10 +286,17 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {
+	std::vector<Component*> comps;
+
 	if (map_contains(&viewCaches, view.getName()))
-		return viewCaches[view.getName()].filteredElements;
-	else
-		return std::vector<Component*>();
+	{
+		const ViewCache &vc = viewCaches[view.getName()];
+		foreach(Component* c, vc.filteredElements)
+			comps.push_back(c);
+
+	}
+
+	return comps;
 }
 
 std::vector<System*> System::getAllSubSystems()
@@ -609,7 +616,7 @@ void System::_importViewElementsFromDB()
 					QUuid quuidOwner = nodeItem->second.first;
 
 					System* sys = this;
-					while (sys->getQUUID() != quuidOwner && sys != NULL)
+					while (sys != NULL && sys->getQUUID() != quuidOwner)
 						sys = this->getPredecessor();
 
 					if ((!nodeView || viewItem->second.add(n)) && sys)
@@ -642,7 +649,14 @@ void System::_importViewElementsFromDB()
 				{
 					foreach(const QList<QVariant>& r, *db->getResults())
 					{
-						Edge* c = new Edge(loadedNodes[r.at(2).toByteArray()], loadedNodes[r.at(3).toByteArray()]);
+						Node* s = loadedNodes[r.at(2).toByteArray()];
+						Node* e = loadedNodes[r.at(3).toByteArray()];
+						if (!s || !e)
+						{
+							Logger(Error) << "loading edge failed: missing start or end point";
+							continue;
+						}
+						Edge* c = new Edge(s, e);
 						c->setQUuid(r.at(0).toByteArray());
 						c->isInserted = true;
 						QUuid quuidOwner = r.at(1).toByteArray();
@@ -752,7 +766,7 @@ void System::ViewCache::apply(const View& view)
 		filteredElements.clear();
 		foreach(QUuid quuid, rawElements)
 			if(Component* c = sys->getChild(quuid))
-				filteredElements.push_back(c);
+				filteredElements.insert(c);
 	}
 	else
 	{
@@ -802,7 +816,7 @@ void System::ViewCache::apply(const View& view)
 		{
 			Component* c = sys->getChild(quuid);
 			if(c && eq.eval(c))
-				filteredElements.push_back(c);
+				filteredElements.insert(c);
 		}
 	}
 }
@@ -847,11 +861,11 @@ bool System::ViewCache::Equation::eval(Component* c) const
 
 bool System::ViewCache::add(Component* c)
 {
-	rawElements.push_back(c->getQUUID());
+	rawElements.insert(c->getQUUID());
 
 	if(legal(c))
 	{
-		filteredElements.push_back(c);
+		filteredElements.insert(c);
 		return true;
 	}
 	return false;
@@ -859,15 +873,11 @@ bool System::ViewCache::add(Component* c)
 
 bool System::ViewCache::remove(Component* c)
 {
-	std::vector<QUuid>::iterator rawItem = find(rawElements.begin(), rawElements.end(), c->getQUUID());
-	if (rawItem != rawElements.end())
-		rawElements.erase(rawItem);
+	rawElements.erase(c->getQUUID());
 
 	if(legal(c))
 	{
-		std::vector<Component*>::iterator filterItem = find(filteredElements.begin(), filteredElements.end(), c);
-		if (filterItem != filteredElements.end())
-			filteredElements.erase(filterItem);
+		filteredElements.erase(c);
 		return true;
 	}
 	return false;

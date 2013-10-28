@@ -166,12 +166,18 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
 		return predec_comps;
 	else
 	{
-		std::vector<Component*> &cmps = viewCaches[view.getName()].filteredElements;
-		for(std::vector<Component*>::iterator it = cmps.begin(); it != cmps.end(); ++it)
-			if((*it)->getCurrentSystem() != this)
-				*it = SuccessorCopyTypesafe(*it);
+		std::set<Component*> old_cmps = viewCaches[view.getName()].filteredElements;
+		std::set<Component*> &cmps = viewCaches[view.getName()].filteredElements;
+		cmps.clear();
+		foreach (Component* c, old_cmps)
+		{
+			if (c->getCurrentSystem() != this)
+				c = SuccessorCopyTypesafe(c);
 
-		return cmps;
+			cmps.insert(SuccessorCopyTypesafe(c));
+		}
+
+		return std::vector<Component*>(cmps.begin(), cmps.end());
 	}
 }
 std::vector<Node*> DerivedSystem::getAllNodes()
