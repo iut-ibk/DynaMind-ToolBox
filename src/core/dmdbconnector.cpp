@@ -459,22 +459,17 @@ DBConnector* DBConnector::getInstance()
 }
 DBConnectorConfig DBConnector::getConfig()
 {
-	DBConnectorConfig cfg;
-	cfg.cacheBlockwritingSize = cacheBlockwritingSize;
-	cfg.queryStackSize = queryStackSize;
-	return cfg;
+	return config;
 }
 void DBConnector::setConfig(DBConnectorConfig cfg)
 {
 	if(cfg.cacheBlockwritingSize<1)
 		Logger(Error) << "invalid value: cache block writing size cannot be <1";
-	else
-		this->cacheBlockwritingSize = cfg.cacheBlockwritingSize;
 
 	if(cfg.queryStackSize<1)
 		Logger(Error) << "invalid value: query stack size cannot be <1";
-	else
-		this->queryStackSize = cfg.queryStackSize;
+
+	config = cfg;
 }
 
 QSqlQuery* DBConnector::getQuery(QString cmd)

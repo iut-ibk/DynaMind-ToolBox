@@ -315,8 +315,7 @@ private:
 
 	// settings
 	bool noDBSync;
-	unsigned long queryStackSize;
-	unsigned long cacheBlockwritingSize;
+	DBConnectorConfig config;
 
 	static void initWorker();
 protected:
@@ -329,9 +328,9 @@ public:
 	//!< sets a new configuration, it is applied instantly, refer to DBConnectorConfig
 	void setConfig(DBConnectorConfig cfg);
 	//!< accessor to query stack size, refer to DBConnectorConfig
-	unsigned long  GetQueryStackSize()			{return queryStackSize;}
+	unsigned long  GetQueryStackSize()			{return config.queryStackSize;}
 	//!< accessor to cache block writing size, refer to DBConnectorConfig
-	unsigned long  GetCacheBlockwritingSize()	{return cacheBlockwritingSize;}
+	unsigned long  GetCacheBlockwritingSize()	{ return config.cacheBlockwritingSize; }
 	//!< get a already prepared query. prepare parameters and send back via Execute(Select)Query
 	QSqlQuery *getQuery(QString cmd);
 	//!< enqueues a WRITE query (asynchron)
