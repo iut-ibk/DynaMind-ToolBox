@@ -466,10 +466,7 @@ DBConnectorConfig DBConnector::getConfig()
 }
 void DBConnector::setConfig(DBConnectorConfig cfg)
 {
-	if(cacheBlockwritingSize>cfg.attributeCacheSize-1)
-		Logger(Error) << "invalid value: cache block writing"
-		<< "size cannot be bigger then attribute cache size -1";
-	else if(cfg.cacheBlockwritingSize<1)
+	if(cfg.cacheBlockwritingSize<1)
 		Logger(Error) << "invalid value: cache block writing size cannot be <1";
 	else
 		this->cacheBlockwritingSize = cfg.cacheBlockwritingSize;

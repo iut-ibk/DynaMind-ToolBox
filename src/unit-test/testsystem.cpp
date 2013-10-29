@@ -256,7 +256,6 @@ TEST_F(TestSystem,cachetest) {
 	DBConnectorConfig cfgNew = cfg;
 	cfgNew.queryStackSize = 1234;
 	cfgNew.cacheBlockwritingSize = 1234;
-	cfgNew.attributeCacheSize = 1234;
 	DBConnector::getInstance()->setConfig(cfgNew);
 	// check if config is applied correctly
 	DBConnectorConfig cfgNewReturned = DBConnector::getInstance()->getConfig();

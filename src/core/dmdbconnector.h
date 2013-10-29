@@ -266,8 +266,6 @@ public:
 	unsigned long queryStackSize;
 	//!< values over 1 enable blocked writes on db
 	unsigned long cacheBlockwritingSize;
-	//!< size of the attribute cache, values over 1e7 recommended; 0 enables an infinite cache
-	unsigned long attributeCacheSize;
 	//!< indicates if the datastream gets petered and moved to db between the modules
 	bool peterDatastream;
 
@@ -275,7 +273,6 @@ public:
 	{
 		queryStackSize = 100;
 		cacheBlockwritingSize = 50;
-		attributeCacheSize = 0;
 		peterDatastream = false;
 	}
 };
