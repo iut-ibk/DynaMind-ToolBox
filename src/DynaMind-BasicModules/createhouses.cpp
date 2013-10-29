@@ -106,6 +106,7 @@ void CreateHouses::run()
 
 		//Create Building and Footprints
 		DM::Face * foot_print = city->addFace(houseNodes, footprint);
+		foot_print->addAttribute("area", DM::CGALGeometry::CalculateArea2D(foot_print));
 		foot_print->addAttribute("built_year", buildyear);
 		foot_print->addAttribute("height", stories*3);
 		Node  n = DM::CGALGeometry::CaclulateCentroid2D(foot_print);
@@ -206,6 +207,7 @@ void CreateHouses::init()
 	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
 	footprint.addAttribute("h");
 	footprint.addAttribute("built_year");
+	footprint.addAttribute("area");
 
 
 	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
