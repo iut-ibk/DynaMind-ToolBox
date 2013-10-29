@@ -522,8 +522,8 @@ void System::_importViewElementsFromDB()
 						QUuid quuidOwner = r.at(1).toByteArray();
 
 						System *sys = this;
-						while (this->getQUUID() != quuidOwner && sys != NULL)
-							sys = this->getPredecessor();
+						while (sys != NULL && sys->getQUUID() != quuidOwner)
+							sys = sys->getPredecessor();
 
 						if (sys && viewItem->second.add(c))
 						{
@@ -620,7 +620,7 @@ void System::_importViewElementsFromDB()
 
 					System* sys = this;
 					while (sys != NULL && sys->getQUUID() != quuidOwner)
-						sys = this->getPredecessor();
+						sys = sys->getPredecessor();
 
 					if ((!nodeView || viewItem->second.add(n)) && sys)
 					{
@@ -665,8 +665,8 @@ void System::_importViewElementsFromDB()
 						QUuid quuidOwner = r.at(1).toByteArray();
 
 						System *sys = this;
-						while (this->getQUUID() != quuidOwner && sys != NULL)
-							sys = this->getPredecessor();
+						while (sys != NULL && sys->getQUUID() != quuidOwner)
+							sys = sys->getPredecessor();
 
 						if (viewItem->second.add(c) && sys)
 						{
@@ -698,8 +698,8 @@ void System::_importViewElementsFromDB()
 					QUuid quuidOwner = it->second.first;
 
 					System *sys = this;
-					while (this->getQUUID() != quuidOwner && sys != NULL)
-						sys = this->getPredecessor();
+					while (sys != NULL && sys->getQUUID() != quuidOwner)
+						sys = sys->getPredecessor();
 
 					if (viewItem->second.add(f) && sys)
 					{
