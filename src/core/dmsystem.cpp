@@ -672,7 +672,7 @@ void System::_importViewElementsFromDB()
 
 						if (viewItem->second.add(c) && sys)
 						{
-							this->addEdge(c);
+							sys->addEdge(c);
 							elementsInView[c->getQUUID()] = c;
 						}
 						else
@@ -705,7 +705,7 @@ void System::_importViewElementsFromDB()
 
 					if (viewItem->second.add(f) && sys)
 					{
-						this->addFace(f);
+						sys->addFace(f);
 						elementsInView[f->getQUUID()] = f;
 					}
 					else
