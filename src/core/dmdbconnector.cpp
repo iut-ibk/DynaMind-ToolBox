@@ -327,9 +327,9 @@ void DBWorker::run()
 			selectRows.clear();
 			if(qSelect->exec())
 			{
+				int cntResults = 0;
 				if (qSelect->next())
 				{
-					int i = 0;
 					do
 					{
 						int j = 0;
@@ -341,15 +341,11 @@ void DBWorker::run()
 							row.append(value);
 							value = qSelect->value(j++);
 						}
-
 						selectRows.append(row);
-						i++;
+						cntResults++;
 					} while (qSelect->next());
-
-					selectStatus = i;
 				}
-				else
-					selectStatus = 1;
+				selectStatus = cntResults;
 			}
 			else
 			{

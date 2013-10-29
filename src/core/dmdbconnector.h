@@ -184,17 +184,17 @@ private:
 	// data updates
 	void run();
 public:
+#define SELECT_NOTDONE -1
+#define SELECT_FALSE -2
+
 	DBWorker(): QThread()
 	{
 		qSelect = NULL;
 		kill = false;
-		selectStatus = 0;
+		selectStatus = SELECT_NOTDONE;
 	}
 	~DBWorker();
 
-#define SELECT_NOTDONE 0
-//#define SELECT_TRUE 1
-#define SELECT_FALSE -1
 	QAtomicInt selectStatus;
     QList< QList<QVariant> >	selectRows;
 
