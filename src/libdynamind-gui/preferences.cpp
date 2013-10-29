@@ -23,6 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
+#include <dmdbconnector.h>
 #include "preferences.h"
 #include "QSettings"
 #include "QFileDialog"
@@ -99,6 +101,11 @@ Preferences::Preferences(QWidget *parent)
 		item->setText(2, server_description[3]);
 		treeWidget_wfs_server->addTopLevelItem(item);
 	}
+
+	DM::DBConnectorConfig dbcfg = DM::DBConnector::getInstance()->getConfig();
+	this->spinBox_CacheBlockWritingSize->setValue(dbcfg.cacheBlockwritingSize);
+	this->spinBox_QueryStackSize->setValue(dbcfg.queryStackSize);
+	this->checkBox_PeterDatastream->setChecked(dbcfg.peterDatastream);
 }
 
 void Preferences::writePreference() 
@@ -120,6 +127,12 @@ void Preferences::writePreference()
 	settings.setValue("UrbanSim", this->lineEdit_urbansim->text());
 	settings.setValue("SWMM", this->lineEdit_swmm->text());
 	settings.setValue("Editra", this->lineEdit_Editra->text());
+
+	DM::DBConnectorConfig dbcfg = DM::DBConnector::getInstance()->getConfig();
+	dbcfg.cacheBlockwritingSize = this->spinBox_CacheBlockWritingSize->value();
+	dbcfg.queryStackSize = this->spinBox_QueryStackSize->value();
+	dbcfg.peterDatastream = this->checkBox_PeterDatastream->isChecked();
+	DM::DBConnector::getInstance()->setConfig(dbcfg);
 }
 void Preferences::openFileDialog() 
 {
