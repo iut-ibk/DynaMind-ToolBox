@@ -597,6 +597,8 @@ void System::_importViewElementsFromDB()
 								db->getResults()->at(0).at(3).toDouble(),
 								db->getResults()->at(0).at(4).toDouble()));
 						}
+						else
+							Logger(Error) << "node " << quuid << "not found";
 					}
 				}
 				 }
