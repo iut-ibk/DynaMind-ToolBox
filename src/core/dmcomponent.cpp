@@ -316,7 +316,7 @@ void Component::SetOwner(Component *owner)
 void Component::_moveToDb()
 {
 	// mutex will cause a crash
-	//QMutexLocker ml(mutex);
+	mutex.lock();
 
 	if(!isInserted)
 	{
@@ -330,6 +330,7 @@ void Component::_moveToDb()
 		isInserted = false;
 	}
 	_moveAttributesToDb();
+	mutex.unlock();
 	delete this;
 }
 
