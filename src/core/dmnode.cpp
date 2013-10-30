@@ -70,15 +70,6 @@ Node::~Node()
 {
 	if(connectedEdges)	delete connectedEdges;
 }
-void Node::SetOwner(Component *owner)
-{
-	QMutexLocker ml(mutex);
-
-	currentSys = owner->getCurrentSystem();
-
-	mforeach(Attribute* a, ownedattributes)
-		a->setOwner(this);
-}
 
 DM::Components Node::getType() const
 {

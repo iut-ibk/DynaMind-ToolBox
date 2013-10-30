@@ -48,7 +48,6 @@ Component::Component()
 	mutex = new QMutex(QMutex::Recursive);
 	DBConnector::getInstance();
 	uuid = QUuid::createUuid();
-	ownedattributes = std::map<std::string,Attribute*>();
 
 	currentSys = NULL;
 	isInserted = false;
@@ -61,7 +60,6 @@ Component::Component(bool b)
 	mutex = new QMutex(QMutex::Recursive);
 	DBConnector::getInstance();
 	uuid = QUuid::createUuid();
-	ownedattributes = std::map<std::string,Attribute*>();
 
 	currentSys = NULL;
 	isInserted = false;
@@ -73,10 +71,10 @@ void Component::CopyFrom(const Component &c, bool successor)
 
 	if(!successor)
 	{
-		mforeach(Attribute* a, c.ownedattributes)
+		foreach(Attribute* a, c.ownedattributes)
 		{
 			Attribute* newa = new Attribute(*a);
-			ownedattributes[newa->getName()] = newa;
+			ownedattributes.push_back(newa);
 			newa->setOwner(this);
 		}
 	}
@@ -101,7 +99,7 @@ Component::Component(const Component& c, bool bInherited)
 Component::~Component()
 {
 	mutex->lockInline();
-	mforeach(Attribute* a, ownedattributes)
+	foreach(Attribute* a, ownedattributes)
 		if(a->GetOwner() == this)
 			delete a;
 
@@ -117,10 +115,10 @@ Component& Component::operator=(const Component& other)
 	QMutexLocker ml(mutex);
 
 	if(this != &other)
-	{
-		mforeach(Attribute* a, other.ownedattributes)
-			this->addAttribute(*a);
-	}
+	for (std::vector<Attribute*>::const_iterator it = other.ownedattributes.cbegin(); 
+		it != other.ownedattributes.cend(); ++it)
+			this->addAttribute(*it);
+
 	return *this;
 }
 
@@ -157,9 +155,11 @@ bool Component::addAttribute(std::string name, double val)
 {
 	QMutexLocker ml(mutex);
 
-	//if(HasAttribute(name))
-	if(map_contains(&ownedattributes, name))
-		return this->changeAttribute(name, val);
+	if (Attribute* a = getExistingAttribute(name))
+	{
+		a->setDouble(val);
+		return true;
+	}
 
 	return this->addAttribute(new Attribute(name, val));
 }
@@ -168,9 +168,11 @@ bool Component::addAttribute(std::string name, std::string val)
 {
 	QMutexLocker ml(mutex);
 
-	//if(HasAttribute(name))
-	if(map_contains(&ownedattributes, name))
-		return this->changeAttribute(name, val);
+	if (Attribute* a = getExistingAttribute(name))
+	{
+		a->setString(val);
+		return true;
+	}
 
 	return this->addAttribute(new Attribute(name, val));
 }
@@ -179,14 +181,17 @@ bool Component::addAttribute(const Attribute &newattribute)
 {
 	QMutexLocker ml(mutex);
 
-	//if(HasAttribute(newattribute.getName()))
-	if(map_contains(&ownedattributes, newattribute.getName()))
-		return this->changeAttribute(newattribute);
+	if (Attribute* a = getExistingAttribute(newattribute.getName()))
+	{
+		a->Change(newattribute);
+		return true;
+	}
 
 	Attribute * a = new Attribute(newattribute);
-	ownedattributes[newattribute.getName()] = a;
 
+	ownedattributes.push_back(a);
 	a->setOwner(this);
+
 	return true;
 }
 
@@ -194,11 +199,9 @@ bool Component::addAttribute(Attribute *pAttribute)
 {
 	QMutexLocker ml(mutex);
 
-	//if(HasAttribute(pAttribute->getName()))
-	if(map_contains(&ownedattributes, pAttribute->getName()))
-		delete ownedattributes[pAttribute->getName()];
+	removeAttribute(pAttribute->getName());
 
-	ownedattributes[pAttribute->getName()] = pAttribute;
+	ownedattributes.push_back(pAttribute);
 	pAttribute->setOwner(this);
 	return true;
 }
@@ -230,56 +233,69 @@ bool Component::changeAttribute(std::string s, std::string val)
 bool Component::removeAttribute(std::string name)
 {
 	QMutexLocker ml(mutex);
-	Attribute * a;
-	if(map_contains(&ownedattributes, name, a))
-	{
-		if(a->GetOwner() == this)
-			delete a;
 
-		ownedattributes.erase(name);
-		return true;
+	for (std::vector<Attribute*>::iterator  it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
+	{
+		if ((*it)->getName() == name)
+		{
+			if ((*it)->GetOwner() == this)
+				delete *it;
+
+			ownedattributes.erase(it);
+			return true;
+		}
 	}
+
 	return false;
 }
 
 Attribute* Component::getAttribute(std::string name)
 {
-	Attribute* a;
-	if(!map_contains(&ownedattributes, name, a))
+	QMutexLocker ml(mutex);
+
+	std::vector<Attribute*>::iterator it;
+	for (it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
+		if ((*it)->getName() == name)
+			break;
+
+	if (it == ownedattributes.end())
 	{
-		QMutexLocker ml(mutex);
 		// create new attribute
-		a = new Attribute(name);
+		Attribute* a = new Attribute(name);
 		a->setOwner(this);
-		ownedattributes[name] = a;
+		ownedattributes.push_back(a);
+		return a;
 	}
-	else if(a->GetOwner() != this)
+	else if((*it)->GetOwner() != this)
 	{
 		// successor copy
-		a = ownedattributes[name] = new Attribute(*a);
+		Attribute* a = new Attribute(**it);
+		ownedattributes.erase(it);
+		ownedattributes.push_back(a);
 		a->setOwner(this);
+		return a;
 	}
 
-	return a;
+	return *it;
 }
 
 void Component::CloneAllAttributes()
 {
-	mforeach(Attribute* a, ownedattributes)
+	for (std::vector<Attribute*>::iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
 	{
-		if(a->GetOwner() != this)
+		if((*it)->GetOwner() != this)
 		{
-			a = ownedattributes[a->getName()] = new Attribute(*a);
-			a->setOwner(this);
+			*it = new Attribute(**it);
+			(*it)->setOwner(this);
 		}
 	}
 }
-
+/*
 const std::map<std::string, Attribute*> & Component::getAllAttributes()
 {
 	CloneAllAttributes();
 	return ownedattributes;
-}
+}*/
 
 Component* Component::clone() 
 {
@@ -327,8 +343,8 @@ void Component::_moveToDb()
 
 void Component::_moveAttributesToDb()
 {
-	mforeach(Attribute* a, ownedattributes)
-		Attribute::_MoveAttribute(a);
+	for (std::vector<Attribute*>::iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
+		Attribute::_MoveAttribute(*it);
 	ownedattributes.clear();
 }
 
@@ -345,7 +361,20 @@ void Component::SQLDelete()
 
 bool Component::HasAttribute(std::string name) const
 {
-	return ownedattributes.find(name)!=ownedattributes.end();
+	for (std::vector<Attribute*>::const_iterator it = ownedattributes.cbegin(); it != ownedattributes.cend(); ++it)
+		if ((*it)->getName() == name)
+			return true;
+
+	return false;
+}
+
+Attribute* Component::getExistingAttribute(const std::string& name) const
+{
+	for (std::vector<Attribute*>::const_iterator it = ownedattributes.cbegin(); it != ownedattributes.cend(); ++it)
+		if ((*it)->getName() == name)
+			return *it;
+
+	return NULL;
 }
 /*
 void Component::MoveAttributeToDb(const std::string& name)

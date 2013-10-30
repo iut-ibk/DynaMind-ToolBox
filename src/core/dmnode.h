@@ -129,8 +129,6 @@ public:
 	
 	/** @brief exports the component to the db, it can afterwards deleted safly */
 	void _moveToDb();
-protected:
-	virtual void SetOwner(Component *owner);
 private:
 	/** @brief return table name */
 	QString getTableName();

@@ -124,7 +124,7 @@ public:
 	Attribute* getAttribute(std::string name);
 
 	/** @brief Returns a map of all Attributes */
-	const std::map<std::string, Attribute*> & getAllAttributes();
+	//const std::map<std::string, Attribute*> & getAllAttributes();
 
 	/** @brief virtual clone method.
 	*
@@ -137,6 +137,7 @@ public:
 
 	//void SaveToDb();
 
+	bool HasAttribute(std::string name) const;
 	
 	/** @brief exports the component to the db, it can afterwards deleted safly */
 	virtual void _moveToDb();
@@ -162,11 +163,11 @@ protected:
 	System* currentSys;
 	bool	isInserted;
 	//std::set<std::string> inViews;
-	std::map<std::string,Attribute*> ownedattributes;
+	std::vector<Attribute*> ownedattributes;
 private:
 	void setQUuid(const QUuid& quuid);
 
-	bool HasAttribute(std::string name) const;
+	Attribute* getExistingAttribute(const std::string& name) const;
 	void LoadAttribute(std::string name);
 	bool addAttribute(Attribute *pAttribute);
 	void CopyFrom(const Component &c, bool successor = false);
