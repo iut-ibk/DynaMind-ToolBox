@@ -156,8 +156,8 @@ void CityBlock::run()
 		int elements_y = blockHeight/this->height;
 		double realwidth = blockWidth / elements_x;
 		double realheight = blockHeight / elements_y;
-		fblock->addAttribute("width",realwidth);
-		fblock->addAttribute("height",realheight);
+		//fblock->addAttribute("width",realwidth);
+		//fblock->addAttribute("height",realheight);
 		StartAndEndNodeList.clear();
 
 		int counter = 0;
