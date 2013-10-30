@@ -811,10 +811,10 @@ TEST_F(TestSystem,SystemDBExInport) {
 
 	// init views
 	DM::System sys;
-	DM::View comp_view("cview", DM::COMPONENT, DM::WRITE);
-	DM::View node_view("nview", DM::NODE, DM::WRITE);
-	DM::View edge_view("eview", DM::EDGE, DM::WRITE);
-	DM::View face_view("fview", DM::FACE, DM::WRITE);
+	DM::View comp_view("cview", DM::COMPONENT, DM::MODIFY);
+	DM::View node_view("nview", DM::NODE, DM::MODIFY);
+	DM::View edge_view("eview", DM::EDGE, DM::MODIFY);
+	DM::View face_view("fview", DM::FACE, DM::MODIFY);
 
 	// init elements
 	DM::Node* n0 = sys.addNode(0, 1, 2, node_view);
@@ -930,11 +930,11 @@ TEST_F(TestSystem, SystemDBExInportSuccessor) {
 	DM::Logger(DM::Standard) << "Testing export of system data with successors";
 
 	System sys;
-	View v("v", NODE, WRITE);
+	View v("v", NODE, MODIFY);
 	QUuid uuid = sys.addNode(0, 1, 2, v)->getQUUID();
 
 	System& ssys = *sys.createSuccessor();
-	View v2("v2", NODE, WRITE);
+	View v2("v2", NODE, MODIFY);
 	QUuid suuid = ssys.addNode(3, 4, 5, v2)->getQUUID();
 
 	// move to db
