@@ -516,7 +516,7 @@ void System::_importViewElementsFromDB()
 					foreach(const QList<QVariant>& r, *db->getResults())
 					{
 						Component* c = new Component();
-						c->setQUuid(r.at(0).toByteArray());
+						c->uuid = r.at(0).toByteArray();
 						c->isInserted = true;
 
 						QUuid quuidOwner = r.at(1).toByteArray();
@@ -615,7 +615,7 @@ void System::_importViewElementsFromDB()
 				if (!map_contains(&loadedNodes, nodeItem->first, n))
 				{
 					Node* n = new Node(nodeItem->second.second.x, nodeItem->second.second.y, nodeItem->second.second.z);
-					n->setQUuid(nodeItem->first);
+					n->uuid = nodeItem->first;
 					n->isInserted = true;
 
 					QUuid quuidOwner = nodeItem->second.first;
@@ -662,7 +662,7 @@ void System::_importViewElementsFromDB()
 							continue;
 						}
 						Edge* c = new Edge(s, e);
-						c->setQUuid(r.at(0).toByteArray());
+						c->uuid = r.at(0).toByteArray();
 						c->isInserted = true;
 						QUuid quuidOwner = r.at(1).toByteArray();
 
@@ -695,7 +695,7 @@ void System::_importViewElementsFromDB()
 						nodes.push_back(loadedNodes[quuid]);
 
 					Face* f = new Face(nodes);
-					f->setQUuid(it->first);
+					f->uuid = it->first;
 					f->isInserted = true;
 					QUuid quuidOwner = it->second.first;
 

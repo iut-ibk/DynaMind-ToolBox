@@ -282,21 +282,18 @@ Attribute* Component::getAttribute(std::string name)
 	return *it;
 }
 
-void Component::CloneAllAttributes()
+const std::vector<Attribute*>& Component::getAllAttributes()
 {
+	// clone all attributes
 	for (std::vector<Attribute*>::iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
 	{
-		if((*it)->GetOwner() != this)
+		if ((*it)->GetOwner() != this)
 		{
 			*it = new Attribute(**it);
 			(*it)->setOwner(this);
 		}
 	}
-}
 
-const std::vector<Attribute*>& Component::getAllAttributes()
-{
-	CloneAllAttributes();
 	return ownedattributes;
 }
 
@@ -308,13 +305,6 @@ Component* Component::clone()
 System * Component::getCurrentSystem() const
 {
 	return this->currentSys;
-}
-
-void Component::setCurrentSystem(System *sys) 
-{
-	QMutexLocker ml(mutex);
-
-	this->currentSys = sys;
 }
 
 void Component::SetOwner(Component *owner)
@@ -378,19 +368,4 @@ Attribute* Component::getExistingAttribute(const std::string& name) const
 			return *it;
 
 	return NULL;
-}
-/*
-void Component::MoveAttributeToDb(const std::string& name)
-{
-	std::map<std::string,Attribute*>::iterator it = ownedattributes.find(name);
-	if(it->second)
-	{
-		Attribute::SaveAttribute(it->second);
-		it->second = NULL;
-	}
-}*/
-
-void Component::setQUuid(const QUuid& quuid)
-{
-	uuid = quuid;
 }

@@ -74,13 +74,10 @@ public:
 	/** @brief =operator */
 	Component& operator=(Component const& other);
 
-	/** @brief create a new component
-	*
-	* The default constructor creates a UUID for the component.
-	*/
+	/** @brief The default constructor creates a UUID for the component */
 	Component();
 
-	/** @brief Copies a component, also the UUID is copied! */
+	/** @brief Copies a component */
 	Component(const Component& s);
 
 	/** @brief Destructor */
@@ -132,21 +129,23 @@ public:
 	* The method returns a pointer to a new data object (including attributes and uuid) */
 	virtual Component* clone();
 
+	/** @brief Returns the owning system */
 	System * getCurrentSystem() const;
-	void setCurrentSystem(System * sys);
 
-	//void SaveToDb();
-
+	/** @brief Returns true if an attribute of the given name exists */
 	bool HasAttribute(std::string name) const;
 	
 	/** @brief exports the component to the db, it can afterwards deleted safly */
 	virtual void _moveToDb();
+
+	/** @brief exports all attributes of this components to the db */
 	void _moveAttributesToDb();
 
-	//void MoveAttributeToDb(const std::string& name);
 protected:
 	/* @brief Sets stateUuid and ownership in sql db*/
 	virtual void SetOwner(Component *owner);
+
+	/** @brief deletes the component from the db, independend of the actual type using getTableName() */
 	void SQLDelete();
 
 	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
@@ -162,18 +161,12 @@ protected:
 	QUuid	uuid;
 	System* currentSys;
 	bool	isInserted;
-	//std::set<std::string> inViews;
 	std::vector<Attribute*> ownedattributes;
 private:
-	void setQUuid(const QUuid& quuid);
 
 	Attribute* getExistingAttribute(const std::string& name) const;
-	void LoadAttribute(std::string name);
 	bool addAttribute(Attribute *pAttribute);
 	void CopyFrom(const Component &c, bool successor = false);
-
-	void CloneAllAttributes();
 };
-//typedef std::map<std::string, DM::Component*> ComponentMap;
 }
 #endif // COMPONENT_H
