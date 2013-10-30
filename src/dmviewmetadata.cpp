@@ -54,27 +54,37 @@ ViewMetaData::ViewMetaData(std::string attribute)
 		fromNode = true;
 }
 
-void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component *c, DM::Vector3 *point, DM::Vector3 *color, iterator_pos pos) {
-	if (pos == before && !fromNode) {
+void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component *c, 
+	DM::Vector3 *point, DM::Vector3 *color, iterator_pos pos) 
+{
+	if (pos == before && !fromNode) 
+	{
 		DM::Attribute *a = c->getAttribute(attr);
-		if (a->getType() == Attribute::DOUBLE) {
-			attr_max = std::max(attr_max, a->getDouble());
-			attr_min = std::min(attr_min, a->getDouble());
-		}
-		if (a->getType() == Attribute::DOUBLEVECTOR ||
-			a->getType() == Attribute::TIMESERIES) {
+		if (a)
+		{
+			if (a->getType() == Attribute::DOUBLE) 
+			{
+				attr_max = std::max(attr_max, a->getDouble());
+				attr_min = std::min(attr_min, a->getDouble());
+			}
+			if (a->getType() == Attribute::DOUBLEVECTOR ||
+				a->getType() == Attribute::TIMESERIES) 
+			{
 
-				std::vector<double> dv = a->getDoubleVector();
-				if (dv.size()) {
-					attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
-					attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
-				}
+					std::vector<double> dv = a->getDoubleVector();
+					if (dv.size()) 
+					{
+						attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
+						attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
+					}
+			}
 		}
 
 		number_of_primitives++;
 	}
 	//If Rasterdata use z as Attribute
-	if (v.getType() == DM::RASTERDATA) {
+	if (v.getType() == DM::RASTERDATA) 
+	{
 		/*DM::ComponentMap cmp = sys->getAllComponentsInView(v);
 		DM::RasterData * r = 0;
 		for (DM::ComponentMap::const_iterator it = cmp.begin();
@@ -86,20 +96,26 @@ void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component 
 		attr_max = r->getMaxValue();
 		attr_min = r->getMinValue();
 	}
-	else if (pos == in_between && fromNode) {
+	else if (pos == in_between && fromNode) 
+	{
 		DM::Attribute *a = c->getAttribute(attr);
-		if (a->getType() == Attribute::DOUBLE) {
-			attr_max = std::max(attr_max, a->getDouble());
-			attr_min = std::min(attr_min, a->getDouble());
-		}
-		if (a->getType() == Attribute::DOUBLEVECTOR ||
-			a->getType() == Attribute::TIMESERIES) {
+		if (a)
+		{
+			if (a->getType() == Attribute::DOUBLE) 
+			{
+				attr_max = std::max(attr_max, a->getDouble());
+				attr_min = std::min(attr_min, a->getDouble());
+			}
+			if (a->getType() == Attribute::DOUBLEVECTOR ||
+				a->getType() == Attribute::TIMESERIES) {
 
-				std::vector<double> dv = a->getDoubleVector();
-				if (dv.size()) {
-					attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
-					attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
-				}
+					std::vector<double> dv = a->getDoubleVector();
+					if (dv.size()) 
+					{
+						attr_max = std::max(attr_max, *std::max_element(dv.begin(), dv.end()));
+						attr_min = std::min(attr_min, *std::min_element(dv.begin(), dv.end()));
+					}
+			}
 		}
 		number_of_primitives++;
 	}
@@ -108,7 +124,6 @@ void ViewMetaData::operator()(DM::System *sys, const DM::View& v, DM::Component 
 	const double tmp[3] = {point->x, point->y, point->z};
 	min_vec(tmp);
 	max_vec(tmp);
-
 }
 
 double ViewMetaData::radius() const {
