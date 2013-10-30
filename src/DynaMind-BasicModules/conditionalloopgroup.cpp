@@ -86,16 +86,14 @@ bool ConditionalLoopGroup::evalConditionString()
 		return false;
 	}
 
-	Attribute* a;
 	foreach(std::string writePort, writeStreams)
 	{
 		if(System* sys = getInPortData(writePort))
 		{
 			foreach(Component* c, sys->getAllComponentsInView(View(viewName, COMPONENT)))
 			{
-				std::map<std::string, Attribute*> attributes = c->getAllAttributes();
-				if(map_contains(&attributes, std::string(attributeName), a))
-					if(!checkAttribute(a, op, value))
+				if(c->HasAttribute(attributeName))
+				if (!checkAttribute(c->getAttribute(attributeName), op, value))
 						return false;
 			}
 		}

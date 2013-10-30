@@ -59,7 +59,7 @@ void RemoveComponent::run()
 			continue;
 		city->removeComponentFromView(cmp, this->view_remove);
 
-		mforeach(DM::Attribute* attr, cmp->getAllAttributes())
+		foreach(DM::Attribute* attr, cmp->getAllAttributes())
 		{
 			if (attr->getType() == DM::Attribute::LINK) 
 			{

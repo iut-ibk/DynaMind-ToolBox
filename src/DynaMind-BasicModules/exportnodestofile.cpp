@@ -35,10 +35,11 @@ void ExportNodesToFile::run() {
 		out << n->getX() << "\t";
 		out << n->getY() << "\t";
 		out << n->getZ() << "\t";
-		DM::AttributeMap am = n->getAllAttributes();
-		for (DM::AttributeMap::const_iterator it = am.begin(); it != am.end(); ++it) {
-			out << it->first << "\t";
-			DM::Attribute * attr = it->second;
+		std::vector<DM::Attribute*> am = n->getAllAttributes();
+		for (std::vector<DM::Attribute*>::const_iterator it = am.begin(); it != am.end(); ++it)
+		{
+			out << (*it)->getName() << "\t";
+			DM::Attribute * attr = *it;
 			if (attr->hasDouble())
 				out << attr->getDouble() << "\t";
 			if (attr->hasString())
