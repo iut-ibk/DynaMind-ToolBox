@@ -40,42 +40,44 @@ namespace DM {
 ComponentEditor::ComponentEditor(Component *c, QWidget *parent) :
 	QDialog(parent),
 	c(c),
-	ui(new Ui::ComponentEditor) {
-		ui->setupUi(this);
+	ui(new Ui::ComponentEditor) 
+{
+	ui->setupUi(this);
 
+	QMap<std::string, DM::Attribute *> attributes(c->getAllAttributes());
 
-		QMap<std::string, DM::Attribute *> attributes(c->getAllAttributes());
+	foreach(DM::Attribute *attr, attributes.values()) 
+	{
+		QStringList strings;
+		strings << QString::fromStdString(attr->getName());
 
-		foreach (DM::Attribute *attr, attributes.values()) {
-			QStringList strings;
-			strings << QString::fromStdString(attr->getName());
+		strings << attr->getTypeName();
 
-			strings << attr->getTypeName();
-
-			if (attr->getType() == Attribute::DOUBLE) {
-				strings << QString("%1").arg(attr->getDouble());
-			}
-
-			if (attr->getType() == Attribute::STRING) {
-				strings << QString::fromStdString(attr->getString());
-			}
-
-			if (attr->getType() == Attribute::STRINGVECTOR) {
+		switch (attr->getType())
+		{
+		case Attribute::DOUBLE:
+			strings << QString("%1").arg(attr->getDouble());
+			break;
+		case Attribute::STRING:
+			strings << QString::fromStdString(attr->getString());
+			break;
+		case Attribute::STRINGVECTOR:
+			{
 				QString s;
-				foreach (double d , attr->getDoubleVector()) {
+				foreach(double d, attr->getDoubleVector())
 					s.append(QString("%1; ").arg(d));
-				}
+
 				strings << s;
 			}
-
-			if (attr->getType() == Attribute::TIMESERIES ||
-				attr->getType() == Attribute::DOUBLEVECTOR) {
-					strings << "...";
-			}
-
-			ui->attributeList->insertTopLevelItem(0, new QTreeWidgetItem(strings));
+			break;
+		case Attribute::TIMESERIES:
+		case Attribute::DOUBLEVECTOR:
+			strings << "...";
+			break;
 		}
 
+		ui->attributeList->insertTopLevelItem(0, new QTreeWidgetItem(strings));
+	}
 }
 
 ComponentEditor::~ComponentEditor() {
