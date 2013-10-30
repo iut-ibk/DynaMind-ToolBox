@@ -44,9 +44,7 @@ ComponentEditor::ComponentEditor(Component *c, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	QMap<std::string, DM::Attribute *> attributes(c->getAllAttributes());
-
-	foreach(DM::Attribute *attr, attributes.values()) 
+	foreach(DM::Attribute *attr, c->getAllAttributes()) 
 	{
 		QStringList strings;
 		strings << QString::fromStdString(attr->getName());
