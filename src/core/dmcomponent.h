@@ -123,8 +123,8 @@ public:
 	/** @brief Returns a pointer to an Attribute */
 	Attribute* getAttribute(std::string name);
 
-	/** @brief Returns a map of all Attributes */
-	//const std::map<std::string, Attribute*> & getAllAttributes();
+	/** @brief Returns a vector of all Attributes */
+	const std::vector<Attribute*>& getAllAttributes();
 
 	/** @brief virtual clone method.
 	*

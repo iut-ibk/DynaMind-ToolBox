@@ -251,6 +251,9 @@ bool Component::removeAttribute(std::string name)
 
 Attribute* Component::getAttribute(std::string name)
 {
+	if (name.empty())
+		return NULL;
+
 	QMutexLocker ml(mutex);
 
 	std::vector<Attribute*>::iterator it;
@@ -290,12 +293,12 @@ void Component::CloneAllAttributes()
 		}
 	}
 }
-/*
-const std::map<std::string, Attribute*> & Component::getAllAttributes()
+
+const std::vector<Attribute*>& Component::getAllAttributes()
 {
 	CloneAllAttributes();
 	return ownedattributes;
-}*/
+}
 
 Component* Component::clone() 
 {
