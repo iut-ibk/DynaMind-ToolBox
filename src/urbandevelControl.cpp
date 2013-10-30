@@ -32,8 +32,8 @@ urbandevelControl::urbandevelControl()
     startyear = 2000;
     endyear = 2030;
     yearcycle = 5;
-    wp_com = 10;
-    wp_ind = 60;
+    wp_com = 60;
+    wp_ind = 10;
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
     this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);

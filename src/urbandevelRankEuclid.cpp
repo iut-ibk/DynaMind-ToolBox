@@ -23,6 +23,7 @@
 
 #include<urbandevelRankEuclid.h>
 #include<dm.h>
+#include<tbvectordata.h>
 
 DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
 
@@ -43,7 +44,8 @@ void urbandevelRankEuclid::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
-    //superblock_centroids = DM::View("SUPERBLOCK_CENTROIDS"), DM::NODE, DM::READ);
+    superblock_centroids = DM::View("SUPERBLOCK_CENTROIDS", DM::NODE, DM::READ);
+    city = DM::View("CITY", DM::NODE, DM::READ);
 
     // attach new attributes to view
     superblock.getAttribute("develyear");
@@ -63,11 +65,16 @@ void urbandevelRankEuclid::run()
 
     std::map<std::string,DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
     std::map<std::string,DM::Component *> sb_centroids = sys->getAllComponentsInView(superblock_centroids);
+    std::map<std::string,DM::Component *> cities = sys->getAllComponentsInView(city);
 
-    mforeach(DM::Component* currentcentroid, sb_centroids)
+    mforeach(DM::Component* currentcity, cities)
     {
-        std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK_ID")->getLink().uuid;
-        DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
-        DM::Logger(DM::Warning) << "superblock foreach";
+        mforeach(DM::Component* currentcentroid, sb_centroids)
+        {
+          std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK_ID")->getLink().uuid;
+          DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
+          double distance = TBVectorData::calculateDistance((DM::Node*)currentcity, (DM::Node*)currentcentroid);
+          DM::Logger(DM::Warning) << "superblock foreach: " << distance;
+        }
     }
 }

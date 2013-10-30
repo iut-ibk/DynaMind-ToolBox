@@ -41,6 +41,7 @@ private:
 
     DM::View superblock;
     DM::View superblock_centroids;
+    DM::View city;
 };
 
 #endif // urbandevelRankEuclid_H
