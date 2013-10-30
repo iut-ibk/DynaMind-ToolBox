@@ -43,9 +43,9 @@
 
 using namespace DM;
 
-Component::Component()
+Component::Component() :
+	mutex(QMutex::Recursive)
 {
-	mutex = new QMutex(QMutex::Recursive);
 	DBConnector::getInstance();
 	uuid = QUuid::createUuid();
 
@@ -55,9 +55,9 @@ Component::Component()
 	DBConnector::getInstance();
 }
 
-Component::Component(bool b)
+Component::Component(bool b) :
+	mutex(QMutex::Recursive)
 {
-	mutex = new QMutex(QMutex::Recursive);
 	DBConnector::getInstance();
 	uuid = QUuid::createUuid();
 
@@ -82,23 +82,23 @@ void Component::CopyFrom(const Component &c, bool successor)
 		ownedattributes = c.ownedattributes;
 }
 
-Component::Component(const Component& c)
+Component::Component(const Component& c) :
+	mutex(QMutex::Recursive)
 {
 	currentSys = NULL;
-	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
 }
 
-Component::Component(const Component& c, bool bInherited)
+Component::Component(const Component& c, bool bInherited) :
+	mutex(QMutex::Recursive)
 {
 	currentSys = NULL;
-	mutex = new QMutex(QMutex::Recursive);
 	CopyFrom(c);
 }
 
 Component::~Component()
 {
-	mutex->lockInline();
+	mutex.lock();
 	foreach(Attribute* a, ownedattributes)
 		if(a->GetOwner() == this)
 			delete a;
@@ -106,13 +106,12 @@ Component::~Component()
 	ownedattributes.clear();
 	// if this class is not of type component, nothing will happen
 	SQLDelete();
-	mutex->unlockInline();
-	delete mutex;
+	mutex.unlock();
 }
 
 Component& Component::operator=(const Component& other)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(this != &other)
 	for (std::vector<Attribute*>::const_iterator it = other.ownedattributes.cbegin(); 
@@ -128,7 +127,7 @@ std::string Component::getUUID()
 	std::string name = a->getString();
 	if(name == "")	
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 
 		name = QUuid::createUuid().toString().toStdString();
 		a->setString(name);
@@ -153,7 +152,7 @@ QString Component::getTableName()
 
 bool Component::addAttribute(std::string name, double val) 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if (Attribute* a = getExistingAttribute(name))
 	{
@@ -166,7 +165,7 @@ bool Component::addAttribute(std::string name, double val)
 
 bool Component::addAttribute(std::string name, std::string val) 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if (Attribute* a = getExistingAttribute(name))
 	{
@@ -179,7 +178,7 @@ bool Component::addAttribute(std::string name, std::string val)
 
 bool Component::addAttribute(const Attribute &newattribute)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if (Attribute* a = getExistingAttribute(newattribute.getName()))
 	{
@@ -197,7 +196,7 @@ bool Component::addAttribute(const Attribute &newattribute)
 
 bool Component::addAttribute(Attribute *pAttribute)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	removeAttribute(pAttribute->getName());
 
@@ -208,7 +207,7 @@ bool Component::addAttribute(Attribute *pAttribute)
 
 bool Component::changeAttribute(const Attribute &newattribute)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	getAttribute(newattribute.getName())->Change(newattribute);
 	return true;
@@ -216,7 +215,7 @@ bool Component::changeAttribute(const Attribute &newattribute)
 
 bool Component::changeAttribute(std::string s, double val)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	getAttribute(s)->setDouble(val);
 	return true;
@@ -224,7 +223,7 @@ bool Component::changeAttribute(std::string s, double val)
 
 bool Component::changeAttribute(std::string s, std::string val)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	getAttribute(s)->setString(val);
 	return true;
@@ -232,7 +231,7 @@ bool Component::changeAttribute(std::string s, std::string val)
 
 bool Component::removeAttribute(std::string name)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	for (std::vector<Attribute*>::iterator  it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
 	{
@@ -254,7 +253,7 @@ Attribute* Component::getAttribute(std::string name)
 	if (name.empty())
 		return NULL;
 
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	std::vector<Attribute*>::iterator it;
 	for (it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
@@ -309,7 +308,7 @@ System * Component::getCurrentSystem() const
 
 void Component::SetOwner(Component *owner)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	currentSys = owner->getCurrentSystem();
 }
@@ -343,7 +342,7 @@ void Component::_moveAttributesToDb()
 
 void Component::SQLDelete()
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(isInserted)
 	{

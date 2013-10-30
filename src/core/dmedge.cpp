@@ -85,7 +85,7 @@ const std::string Edge::getEndpointName() const
 
 void Edge::setStartpoint(Node *start)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	this->start->removeEdge(this);
 	this->start = start;
@@ -94,7 +94,7 @@ void Edge::setStartpoint(Node *start)
 
 void Edge::setEndpoint(Node *end)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	this->end->removeEdge(this);
 	this->end = end;

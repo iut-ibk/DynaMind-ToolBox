@@ -116,7 +116,7 @@ const std::vector<Face*> Face::getHolePointers() const
 
 void Face::addHole(std::vector<Node*> hole)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	_holes.push_back(getCurrentSystem()->addFace(hole));
 }
 
@@ -127,7 +127,7 @@ void Face::addHole(Face* hole)
 		Logger(Error) << "addHole: self reference not possible";
 		return;
 	}
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	_holes.push_back(hole);
 }
 void Face::_moveToDb()
@@ -156,7 +156,7 @@ void Face::_moveToDb()
 
 void Face::setNodes(const std::vector<Node*>& nodes)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	// Check is start != end to garantee that endpoint is not the start point
 	if (nodes.size() == 0) 
 		Logger(Error) << "No Nodes given";
@@ -171,7 +171,7 @@ void Face::setNodes(const std::vector<Node*>& nodes)
 
 void Face::clearHoles()
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	this->_holes.clear();
 }

@@ -121,7 +121,7 @@ std::vector<Edge*> Node::getEdges() const
 
 void Node::set(double x, double y, double z)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	this->x = x;
 	this->y = y;
@@ -130,19 +130,19 @@ void Node::set(double x, double y, double z)
 
 void Node::setX(double x)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	this->x = x;
 }
 
 void Node::setY(double y)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	this->y = y;
 }
 
 void Node::setZ(double z)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 	this->z = z;
 }
 
@@ -153,7 +153,7 @@ Component* Node::clone()
 
 Node& Node::operator=(const Node& other)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(this != &other)
 	{
@@ -267,70 +267,3 @@ void Node::_moveToDb()
 	_moveAttributesToDb();
 	delete this;
 }
-
-/*
-Vector3* Node::LoadFromDb()
-{
-	QVariant v[3];
-	DBConnector::getInstance()->Select(getTableName(), uuid,
-		"x",     &v[0],
-		"y",     &v[1],
-		"z",     &v[2]);
-	return new Vector3(v[0].toDouble(),v[1].toDouble(),v[2].toDouble());
-}
-void Node::SaveToDb(Vector3 *v)
-{
-	if(isInserted)
-	{
-		DBConnector::getInstance()->Update("nodes", uuid,
-			"x",     QVariant::fromValue(v->x),
-			"y",     QVariant::fromValue(v->y),
-			"z",     QVariant::fromValue(v->z));
-	}
-	else
-	{
-		DBConnector::getInstance()->Insert("nodes", uuid,
-			"x",v->x,"y",v->y,"z",v->z);
-		isInserted = true;
-	}
-}
-
-void Node::_PreCache(const QList<Node*>& keys, QList<Vector3*>& values)
-{
-	QList<QUuid*> uuids;
-	long k = 0;
-	while(k<keys.size())
-	{
-		foreach(Node* n, keys)
-		{
-			uuids.append(&n->uuid);
-			if(++k > SQLBLOCKQUERYSIZE)
-				break;
-		}
-
-		QList<QVariant> x,y,z;
-		QList<QUuid>	resultUuids;
-		if(!DBConnector::getInstance()->Select("nodes", uuids, &resultUuids,
-			"x",     &x,
-			"y",     &y,
-			"z",     &z))
-			return;	// no elements retrieved
-
-		for(int i=0;i<resultUuids.size();i++)
-		{
-			int j=0;
-			for(;j<keys.size();j++)
-				if(keys[j]->uuid == resultUuids[i])
-					break;
-
-			if( j != keys.size())	// should always be the case
-				values[j] = new Vector3(x[i].toDouble(), y[i].toDouble(), z[i].toDouble());
-		}
-	}
-}
-
-void Node::PreCache(const QList<Node*>& keys)
-{
-	nodeCache.preCache(keys);
-}
-*/

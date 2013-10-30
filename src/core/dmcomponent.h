@@ -157,7 +157,7 @@ protected:
 	/** @brief return table name */
 	virtual QString getTableName();
 	
-	QMutex* mutex;
+	QMutex	mutex;
 	QUuid	uuid;
 	System* currentSys;
 	bool	isInserted;

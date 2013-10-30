@@ -146,7 +146,7 @@ std::vector<Component*> DerivedSystem::getAllComponents()
 {
 	if(!allComponentsLoaded)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 
 		foreach(Component* c, predecessorSys->getAllComponents())
 			if(c->getCurrentSystem() != this)
@@ -184,7 +184,7 @@ std::vector<Node*> DerivedSystem::getAllNodes()
 {
 	if(!allNodesLoaded)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 		
 		foreach(Node* c, predecessorSys->getAllNodes())
 			if(c->getCurrentSystem() != this)
@@ -198,7 +198,7 @@ std::vector<Edge*> DerivedSystem::getAllEdges()
 {
 	if(!allEdgesLoaded)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 
 		foreach(Edge* c, predecessorSys->getAllEdges())
 			if(c->getCurrentSystem() != this)
@@ -212,7 +212,7 @@ std::vector<Face*> DerivedSystem::getAllFaces()
 {
 	if(!allFacesLoaded)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 
 		foreach(Face* c, predecessorSys->getAllFaces())
 			if(c->getCurrentSystem() != this)
@@ -226,7 +226,7 @@ std::vector<System*> DerivedSystem::getAllSubSystems()
 {
 	if(!allSubSystemsLoaded)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 		
 		foreach(System* c, predecessorSys->getAllSubSystems())
 			if(c->getCurrentSystem() != this)

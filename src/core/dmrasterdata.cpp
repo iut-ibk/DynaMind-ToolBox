@@ -124,7 +124,7 @@ double RasterData::getCell(long x, long y) const
 
 bool RasterData::setCell(long x, long y, double value)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if (  x >-1 && y >-1 && x < this->width && y < this->height) 
 	{
@@ -322,7 +322,7 @@ void RasterData::setSize(long width, long height,
 		|| this->cellSizeX != cellsizeX 
 		|| this->cellSizeY != cellsizeY)
 	{
-		QMutexLocker ml(mutex);
+		QMutexLocker ml(&mutex);
 
 		if(this->width != 0 || this->height != 0)
 			SQLDeleteField();
@@ -343,7 +343,7 @@ void RasterData::setSize(long width, long height,
 
 void RasterData::clear() 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	for (int y = 0; y < this->height; y++)
 		for (int x = 0; x < this->width; x++)
@@ -364,7 +364,8 @@ void RasterData::SQLInsert()
 
 bool RasterData::setValue(long x, long y, double value)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
+
 	return setCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY),value);
 }
 

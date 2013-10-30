@@ -83,7 +83,7 @@ QString System::getTableName()
 }
 Component * System::addComponent(Component* c, const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(!addChild(c)) {
 		delete c;
@@ -105,7 +105,7 @@ const Edge * System::getEdgeReadOnly(Node* start, Node* end)
 
 Node* System::addNode(Node* node)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(!addChild(node)) {
 		delete node;
@@ -117,7 +117,7 @@ Node* System::addNode(Node* node)
 }
 Node* System::addNode(const Node &ref,  const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	Node * n = this->addNode(new Node(ref));
 
@@ -131,7 +131,7 @@ Node* System::addNode(const Node &ref,  const DM::View & view)
 
 Node * System::addNode(double x, double y, double z,  const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	Node * n = this->addNode(new Node(x, y, z));
 
@@ -145,7 +145,7 @@ Node * System::addNode(double x, double y, double z,  const DM::View & view)
 
 Edge* System::addEdge(Edge* edge, const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(	nodes.find(edge->getStartNode()) == nodes.end() || 
 		nodes.find(edge->getEndNode()) == nodes.end())
@@ -167,7 +167,7 @@ Edge* System::addEdge(Edge* edge, const DM::View & view)
 }
 Edge* System::addEdge(Node * start, Node * end, const View &view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	return this->addEdge(new Edge(start, end), view);;
 }
@@ -182,7 +182,7 @@ Edge* System::getEdge(Node* start, Node* end)
 
 Face* System::addFace(Face *f) 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(!addChild(f)) {
 		delete f;
@@ -194,7 +194,7 @@ Face* System::addFace(Face *f)
 }
 Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	Face *f = this->addFace(new Face(nodes));
 
@@ -208,7 +208,7 @@ Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
 
 RasterData * System::addRasterData(RasterData *r, const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(!addChild(r)) {
 		delete r;
@@ -242,7 +242,7 @@ std::vector<Face*> System::getAllFaces()
 
 bool System::addComponentToView(Component *comp, const View &view) 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	this->viewCaches[view.getName()].add(comp);
 	return true;
@@ -254,21 +254,16 @@ bool System::removeComponentFromView(Component *comp, const View &view)
 }
 bool System::removeComponentFromView(Component *comp, const std::string& viewName) 
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	viewCaches[viewName].remove(comp);
-
-	/*std::vector<Component*>& comps = this->views[viewName];
-	std::vector<Component*>::iterator it = std::find(comps.begin(), comps.end(), comp);
-	if(it != comps.end())
-		comps.erase(it);*/
 
 	return true;
 }
 
 System * System::addSubSystem(System *newsystem,  const DM::View & view)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	//TODO add View to subsystem
 	if(!addChild(newsystem)) {
@@ -316,7 +311,7 @@ Component* System::clone()
 
 System* System::createSuccessor()
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	Logger(Debug) << "Create Sucessor ";
 	System* result = new DerivedSystem(this);
@@ -340,7 +335,7 @@ System* System::getPredecessor() const
 
 bool System::addChild(Component *newcomponent)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	if(!newcomponent)
 		return false;
@@ -353,7 +348,7 @@ bool System::addChild(Component *newcomponent)
 
 bool System::removeChild(Component* c)
 {
-	QMutexLocker ml(mutex);
+	QMutexLocker ml(&mutex);
 
 	quuidMap.erase(c->getQUUID());
 
