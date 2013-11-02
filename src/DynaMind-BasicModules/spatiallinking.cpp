@@ -97,7 +97,7 @@ string SpatialLinking::getHelpUrl()
 void SpatialLinking::run() {
 	city = this->getData("Data");
 	std::vector<std::string> baseUUIDs = city->getUUIDsOfComponentsInView(vbase);
-	std::vector<QPointF> centerPoints;
+	std::vector<DM::Node> centerPoints;
 
 	//Node id that point to elements in the vector are stored in Hashmap for faster lookup
 	QHash<QPair<int, int>, std::vector<int> * > nodesMap;
@@ -107,19 +107,19 @@ void SpatialLinking::run() {
 	foreach (std::string baseUUID, baseUUIDs) {
 		counterID++;
 
-		double v[3];
+		DM::Node c_n;
 
 		if (vbase.getType() == DM::FACE) {
 			Face * f = city->getFace(baseUUID);
-			DM::CGALGeometry::CalculateCentroid(city, f, v[0], v[1], v[2]);
+			c_n = DM::CGALGeometry::CaclulateCentroid2D(f);
 		}
 		else if (vbase.getType() == DM::NODE) {
-			city->getNode(baseUUID)->get(v);
+			c_n = *(city->getNode(baseUUID));
 		}
-		centerPoints.push_back(QPointF(v[0], v[1]));
+		centerPoints.push_back(c_n);
 
-		int x = v[0] / spatialL;
-		int y = v[1] / spatialL;
+		int x = c_n.getX() / spatialL;
+		int y = c_n.getY() / spatialL;
 
 
 		QPair<int,int> key(x,y);
@@ -140,7 +140,8 @@ void SpatialLinking::run() {
 
 	for (int i = 0; i < NumberOfLinks; i++) {
 		std::string linkUUID = linkUUIDs[i];
-		QPolygonF qf = TBVectorData::FaceAsQPolgonF(city, city->getFace(linkUUID));
+		DM::Face * f_in = city->getFace(linkUUID);
+
 
 		//Search Space
 		double xb;
@@ -182,7 +183,7 @@ void SpatialLinking::run() {
 				}
 				elementInSearchSpace=elementInSearchSpace+centers->size();
 				foreach (int id, (*centers)) {
-					if (qf.containsPoint(centerPoints[id], Qt::WindingFill)) {
+					if (TBVectorData::PointWithinFace(f_in, &centerPoints[id])) {
 						LinkAttribute lto;
 						lto.viewname = linkto;
 						lto.uuid = linkUUID;
