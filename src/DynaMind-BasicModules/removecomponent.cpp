@@ -31,7 +31,9 @@ DM_DECLARE_NODE_NAME(RemoveComponent,Modules)
 RemoveComponent::RemoveComponent()
 {
 	this->remove_name = "";
+    this->selectedattr = true;
 	this->addParameter("View", DM::STRING, &this->remove_name);
+    this->addParameter("Delete according to selected attribute", DM::BOOL, &this->selectedattr);
 
 
 }
@@ -41,7 +43,8 @@ void RemoveComponent::init() {
 		return;
 
 	this->view_remove = DM::View(this->remove_name, DM::COMPONENT, DM::MODIFY);
-	this->view_remove.getAttribute("selected");
+    if(selectedattr)
+        this->view_remove.getAttribute("selected");
 	std::vector<DM::View> datastream;
 	datastream.push_back(view_remove);
 	this->addData("city", datastream);
@@ -54,7 +57,7 @@ void RemoveComponent::run() {
 	DM::Logger(DM::Debug)  << "Elements in View before" << uuids.size();
 	foreach (std::string uuid, uuids) {
 		DM::Component * cmp = city->getComponent(uuid);
-		if (cmp->getAttribute("selected")->getDouble() < 0.01)
+        if (this->selectedattr && cmp->getAttribute("selected")->getDouble() < 0.01)
 			continue;
 		city->removeComponentFromView(cmp, this->view_remove);
 
