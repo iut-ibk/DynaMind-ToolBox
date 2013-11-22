@@ -23,10 +23,9 @@ FILE(GLOB_RECURSE EPANET_CPP_FILES ./ *.c)
 
 ADD_LIBRARY(epanet2 STATIC ${EPANET_CPP_FILES})
 
-IF(${CLE})
+IF(CLE)
     ADD_DEFINITIONS(-DCLE)
     ADD_EXECUTABLE(Ep2 ${EPANET_CPP_FILES})
-    INSTALL(TARGETS Ep2 DESTINATION bin)
     MESSAGE(STATUS "Building executable")
 ELSE()
     MESSAGE(STATUS "Type \"cmake -DCLE=ON [path]\" to build an Epanet executable")

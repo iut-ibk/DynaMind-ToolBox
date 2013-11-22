@@ -71,10 +71,11 @@ Dimensioning::Dimensioning()
 
 void Dimensioning::run()
 {
-
-	QString dir = QDir::tempPath();
+    //QString dir = "/Users/c8451043/Desktop";
+    QString dir = QDir::tempPath();
 	std::string inpfilename = dir.toStdString() + "/test.inp";
 	std::string rptfilename = dir.toStdString() + "/test.rpt";
+    DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 
 	converter = boost::make_shared<EpanetDynamindConverter>();
 

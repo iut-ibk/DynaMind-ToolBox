@@ -196,11 +196,13 @@ bool EpanetDynamindConverter::checkENRet(int ret)
 	{
 		const uint SIZE = 100;
 		char errorstring[SIZE];
-		EPANET::ENgeterror(ret,errorstring,SIZE);
+        int newerr = EPANET::ENgeterror(ret,errorstring,SIZE);
 
 		if(ret > 7)
 		{
 			DM::Logger(DM::Error) << "EPANET error code: " << ret << " (" << errorstring << ")";
+            if(newerr != 251)
+                checkENRet(newerr);
 			return false;
 		}
 		else
