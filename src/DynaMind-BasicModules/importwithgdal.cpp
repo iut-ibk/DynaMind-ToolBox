@@ -557,7 +557,7 @@ bool ImportwithGDAL::importVectorData()
 	if(poCT == NULL)
 	{
 		transformok = false;
-		DM::Logger(DM::Error) << "Unknown transformation to EPSG:" << this->epsgcode;
+        DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
 	}
 	else
 		transformok = true;
