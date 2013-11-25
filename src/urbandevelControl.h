@@ -41,6 +41,8 @@ private:
     int yearcycle;
     int wp_com;
     int wp_ind;
+    int yearfactor;
+    int areafactor;
 
     DM::View city;
 };

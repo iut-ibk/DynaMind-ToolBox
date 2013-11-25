@@ -24,16 +24,18 @@
 #include<urbandevelRankEuclid.h>
 #include<dm.h>
 #include<tbvectordata.h>
+#include<dmgeometry.h>
+
 
 DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
 
 urbandevelRankEuclid::urbandevelRankEuclid()
 {
     // declare parameters
-    usedevelyears = true;
-    prefersmallareas = false;
-    this->addParameter("use given devel years", DM::BOOL, &this->usedevelyears); // if set the years set in the develareas will be ignored
-    this->addParameter("Prefer small areas", DM::BOOL, &this->prefersmallareas); // develop small areas first
+    usedevelyears = TRUE;
+    prefersmallareas = FALSE;
+    this->addParameter("use devel years", DM::BOOL, &this->usedevelyears); // if set the years set in the develareas will be ignored
+    this->addParameter("prefer small areas", DM::BOOL, &this->prefersmallareas); // develop small areas first
 }
 
 urbandevelRankEuclid::~urbandevelRankEuclid()
@@ -69,12 +71,37 @@ void urbandevelRankEuclid::run()
 
     mforeach(DM::Component* currentcity, cities)
     {
+        double sy = currentcity->getAttribute("startyear")->getDouble();
+        double ey = currentcity->getAttribute("endyear")->getDouble();
+        double yearfactor = currentcity->getAttribute("yearfactor")->getDouble();
+        double areafactor = currentcity->getAttribute("areafactor")->getDouble();
+
         mforeach(DM::Component* currentcentroid, sb_centroids)
         {
-          std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK_ID")->getLink().uuid;
+          std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK")->getLink().uuid;
           DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
-          double distance = TBVectorData::calculateDistance((DM::Node*)currentcity, (DM::Node*)currentcentroid);
-          DM::Logger(DM::Warning) << "superblock foreach: " << distance;
+
+          int distance = static_cast<int>(TBVectorData::calculateDistance((DM::Node*)currentcity, (DM::Node*)currentcentroid));
+
+          double year_factor, area_factor = 0;
+
+          if (usedevelyears) {
+              double dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
+              if (dy == 0 || dy < sy) {dy = sy+1;}
+              if (dy >= ey) {dy = ey-1;}
+
+              year_factor = 1/(-((dy - sy)- (ey - sy)) / ( 10 / yearfactor));
+              DM::Logger(DM::Error) << "dev year|year factor   " << dy << "|" << year_factor;
+          }
+          if (prefersmallareas) {
+              double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock)/10000;
+              area_factor = 10/area*areafactor;
+              DM::Logger(DM::Error) << "area|area factor   " << area << "|" << area_factor;
+          }
+
+          int rank = static_cast<int>(distance * year_factor * area_factor / 10);
+          DM::Logger(DM::Error) << "distance|rank   " << distance << "|" << rank << "\n";
+          currentsuperblock->changeAttribute("rank", distance);
         }
     }
 }

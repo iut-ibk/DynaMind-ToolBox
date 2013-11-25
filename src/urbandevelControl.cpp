@@ -34,11 +34,15 @@ urbandevelControl::urbandevelControl()
     yearcycle = 5;
     wp_com = 60;
     wp_ind = 10;
+    yearfactor = 1;
+    areafactor = 1;
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
     this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);
     this->addParameter("Share of commercial workplaces", DM::INT, &this->wp_com);
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
+    this->addParameter("Weight devel years", DM::INT, &this->yearfactor);
+    this->addParameter("Weight area size", DM::INT, &this->wp_ind);
 }
 
 urbandevelControl::~urbandevelControl()
@@ -57,6 +61,8 @@ void urbandevelControl::init()
     city.addAttribute("yearcycle");
     city.addAttribute("wp_com"); //workplaces
     city.addAttribute("wp_ind");
+    city.addAttribute("yearfactor");
+    city.addAttribute("areafactor");
     city.addAttribute("popdiffperyear");
 
     // push the view-access settings into the module via 'addData'
@@ -136,5 +142,11 @@ void urbandevelControl::run()
 
         dmatt = currentcity->getAttribute("wp_ind");
         dmatt->setDouble(wp_ind);
+
+        dmatt = currentcity->getAttribute("yearfactor");
+        dmatt->setDouble(yearfactor);
+
+        dmatt = currentcity->getAttribute("areafactor");
+        dmatt->setDouble(areafactor);
     }
 }
