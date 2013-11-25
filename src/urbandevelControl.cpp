@@ -41,8 +41,8 @@ urbandevelControl::urbandevelControl()
     this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);
     this->addParameter("Share of commercial workplaces", DM::INT, &this->wp_com);
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
-    this->addParameter("Weight devel years", DM::INT, &this->yearfactor);
-    this->addParameter("Weight area size", DM::INT, &this->wp_ind);
+    this->addParameter("Weight devel years", DM::DOUBLE, &this->yearfactor); //weight used in ranking
+    this->addParameter("Weight area size", DM::DOUBLE, &this->areafactor); //weight used in ranking
 }
 
 urbandevelControl::~urbandevelControl()

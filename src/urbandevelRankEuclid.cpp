@@ -21,6 +21,8 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
+#include <numeric>
+
 #include<urbandevelRankEuclid.h>
 #include<dm.h>
 #include<tbvectordata.h>
@@ -33,9 +35,9 @@ urbandevelRankEuclid::urbandevelRankEuclid()
 {
     // declare parameters
     usedevelyears = TRUE;
-    prefersmallareas = FALSE;
-    this->addParameter("use devel years", DM::BOOL, &this->usedevelyears); // if set the years set in the develareas will be ignored
-    this->addParameter("prefer small areas", DM::BOOL, &this->prefersmallareas); // develop small areas first
+    prefersmallareas = TRUE;
+    this->addParameter("use devel years", DM::BOOL, &this->usedevelyears); // if set the years set in the develareas will be ignored, factor has to be set in View: city->yearfactor
+    this->addParameter("prefer small areas", DM::BOOL, &this->prefersmallareas); // develop small areas first, factor has to be set in View: city->areafactor
 }
 
 urbandevelRankEuclid::~urbandevelRankEuclid()
@@ -71,10 +73,43 @@ void urbandevelRankEuclid::run()
 
     mforeach(DM::Component* currentcity, cities)
     {
-        double sy = currentcity->getAttribute("startyear")->getDouble();
-        double ey = currentcity->getAttribute("endyear")->getDouble();
+        // get max,min and mean devel years and areas
+        int sy = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
+        int ey = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
         double yearfactor = currentcity->getAttribute("yearfactor")->getDouble();
         double areafactor = currentcity->getAttribute("areafactor")->getDouble();
+        int min_dy, max_dy, mean_dy = 0;
+        int min_area, max_area, mean_area = 0;
+        std::vector<int> year_vec;
+        std::vector<int> area_vec;
+
+        mforeach(DM::Component* currentsuperblock, superblocks)
+        {
+            int dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
+            double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock);
+
+            if (dy == 0 || dy < sy) {dy = sy + 1;}
+            if (dy >= ey) {dy = ey - 1;}
+
+            year_vec.push_back(dy);
+            area_vec.push_back(area);
+
+        }
+
+        int year_sum = std::accumulate(year_vec.begin(), year_vec.end(), 0);
+        double area_sum = std::accumulate(area_vec.begin(), area_vec.end(), 0.0);
+
+        min_dy = *std::min_element(year_vec.begin(), year_vec.end());
+        max_dy = *std::max_element(year_vec.begin(), year_vec.end());
+        mean_dy = year_sum / year_vec.size();
+
+        min_area = *std::min_element(area_vec.begin(), area_vec.end());
+        max_area = *std::max_element(area_vec.begin(), area_vec.end());
+        mean_area = area_sum / area_vec.size();
+
+        DM::Logger(DM::Error) << "min|max|mean year" << min_dy << "|" << max_dy << "|" << mean_dy;
+        DM::Logger(DM::Error) << "min|max|mean area" << min_area << "|" << max_area << "|" << mean_area;
+
 
         mforeach(DM::Component* currentcentroid, sb_centroids)
         {
@@ -83,24 +118,24 @@ void urbandevelRankEuclid::run()
 
           int distance = static_cast<int>(TBVectorData::calculateDistance((DM::Node*)currentcity, (DM::Node*)currentcentroid));
 
-          double year_factor, area_factor = 0;
+          double yf, af = 0;
 
           if (usedevelyears) {
-              double dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
+              int dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
               if (dy == 0 || dy < sy) {dy = sy+1;}
               if (dy >= ey) {dy = ey-1;}
 
-              year_factor = 1/(-((dy - sy)- (ey - sy)) / ( 10 / yearfactor));
-              DM::Logger(DM::Error) << "dev year|year factor   " << dy << "|" << year_factor;
+              yf = (dy - sy + 2)/(ey - sy); // values from 0-1
+              //DM::Logger(DM::Error) << "dev year|year factor   " << dy << "|" << yf;
           }
           if (prefersmallareas) {
               double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock)/10000;
-              area_factor = 10/area*areafactor;
-              DM::Logger(DM::Error) << "area|area factor   " << area << "|" << area_factor;
+              af = 1/area;
+              //DM::Logger(DM::Error) << "area|area factor   " << area << "|" << af;
           }
 
-          int rank = static_cast<int>(distance * year_factor * area_factor / 10);
-          DM::Logger(DM::Error) << "distance|rank   " << distance << "|" << rank << "\n";
+          int rank = static_cast<int>(distance * yf * yearfactor * af *areafactor);
+        //  DM::Logger(DM::Error) << "distance|rank   " << distance << "|" << rank << "\n";
           currentsuperblock->changeAttribute("rank", distance);
         }
     }
