@@ -97,8 +97,6 @@ void GeneralGraphAnalysis::run()
     DynamindBoostGraph::Compmap lnm = sys->getAllComponentsInView(layoutnodes);
     DynamindBoostGraph::Compmap lem = sys->getAllComponentsInView(layoutedges);
 
-	//Compmap erm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
-
 	//Create boost graph object of original network
 	DynamindBoostGraph::Graph org_g;
 	std::map<DM::Node*,int> org_nodesindex;
@@ -111,24 +109,19 @@ void GeneralGraphAnalysis::run()
 	std::map<DM::Node*,int> nodesindex;
 	std::map<std::pair < int, int >, DM::Edge*> nodes2edge;
 
+    DynamindBoostGraph::subtractGraphs(lem,em);
     DynamindBoostGraph::createBoostGraph(lnm, lem,g,nodesindex,nodes2edge);
-
-    std::vector<DM::Component*> addedcomponents;
-    //uint currentzone = (*itr).first;
 
     vector<DM::Node*> checknodes;
     DynamindBoostGraph::Compitr itr;
     for(itr=nm.begin(); itr!=nm.end(); ++itr)
         checknodes.push_back(static_cast<DM::Node*>((*itr).second));
 
-    std::vector<std::vector<DM::Node*> > vectorpathnodes;
-    std::vector<std::vector<DM::Edge*> > vectorpathedges;
     std::vector<DM::Node*> checkednodes;
-    std::vector<std::pair<DM::Node*,DM::Node*> > checked_path;
 
     //Try to find an alternative path between junctions within one pressure zone
     uint index = 0;
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int source=0; source < checknodes.size(); source++)
     {
         #pragma omp critical
@@ -140,24 +133,18 @@ void GeneralGraphAnalysis::run()
         if(int(index/float(checknodes.size())*100)%5==0)
             DM::Logger(DM::Standard) << index/float(checknodes.size())*100 << "%";
 
-        //check if junction is part of an edge wich is not in the current graph
+        //check if junction is part of an edge which is not in the current graph
         DM::Node *currentsource = checknodes.at(source);
         std::vector<DM::Edge*>  e = currentsource->getEdges();
         bool possiblenode=false;
-        uint leafcounter = 0;
+
         for(uint i = 0; i < e.size(); i++)
             if(em.find(e[i]->getUUID())==em.end())
             {
                 if(lem.find(e[i]->getUUID())!=lem.end())
                     possiblenode=true;
+                    break;
             }
-            else
-            {
-                leafcounter++;
-            }
-
-        if(leafcounter > 1)
-            continue;
 
         if(!possiblenode)
             continue;
@@ -197,7 +184,6 @@ void GeneralGraphAnalysis::run()
 
             std::vector<DM::Edge*>  e = targetnode->getEdges();
             bool possiblenode=false;
-            uint leafcounter = 0;
 
             for(uint i = 0; i < e.size(); i++)
                 //check if rootjunction is a leaf
@@ -206,25 +192,11 @@ void GeneralGraphAnalysis::run()
                     //check if at least one outedges exists which could be a alternative path
                     if(lem.find(e[i]->getUUID())!=lem.end())
                         possiblenode=true;
+                        break;
                 }
-                else
-                {
-                    leafcounter++;
-                }
-
-            if(leafcounter>=4)
-                continue;
 
             if(!possiblenode)
                 continue;
-
-            if(std::find(checked_path.begin(),checked_path.end(),std::pair<DM::Node*,DM::Node*>(rootnode,targetnode)) != checked_path.end())
-                continue;
-
-            #pragma omp critical
-            {
-                checked_path.push_back(std::pair<DM::Node*,DM::Node*>(targetnode,rootnode));
-            }
 
             std::vector<DM::Node*> pathnodes, org_pathnodes;
             std::vector<DM::Edge*> pathedges, org_pathedges;
@@ -236,24 +208,24 @@ void GeneralGraphAnalysis::run()
             if(!DynamindBoostGraph::findShortestPath(org_pathnodes,org_pathedges,org_distance,org_nodesindex,org_nodes2edge,org_d,org_p,rootnode,targetnode))
                 continue;
 
-            if(distance/org_distance > 0.999)
-                continue;
-
-            #pragma omp critical
-            {
-                result.push_back(distance/org_distance);
-            }
-
+            bool dirty=false;
             for(uint check=1; check<pathnodes.size()-1; check++)
                 if(std::find(checknodes.begin(),checknodes.end(),pathnodes[check])!=checknodes.end())
+                {
+                    dirty=true;
                     continue;
+                }
 
-            #pragma omp critical
+            if(pathedges.size()==org_pathedges.size() && pathedges.size()==1)
+                dirty=true;
+
+            if(!dirty)
             {
-                vectorpathnodes.push_back(pathnodes);
-                vectorpathedges.push_back(pathedges);
+                #pragma omp critical
+                {
+                    result.push_back(distance/org_distance);
+                }
             }
-            break;
         }
     }
 

@@ -51,6 +51,7 @@
 #include <totaldemandperformance.h>
 
 #include <generalgraphanalysis.h>
+#include <totalgraphweight.h>
 
 using namespace std;
 
@@ -82,4 +83,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
 
     registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
+    registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
 }

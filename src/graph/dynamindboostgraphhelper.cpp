@@ -73,6 +73,7 @@ void DynamindBoostGraph::createSkeletonizeBoostGraph(std::map<string, DM::Compon
 	return;
 }
 
+//TODO multiple entries
 bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
 								   std::vector<DM::Edge*> &pathedges,
 								   double &distance,
@@ -86,13 +87,14 @@ bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
 	DM::Node *targetjunction = target;
 	DM::Node *rootjunction = root;
 	int tindex = nodesindex[targetjunction];
-	int rindex = nodesindex[rootjunction];
-	pathnodes.push_back(target);
-	std::vector<int> path;
-	path.push_back(tindex);
+    int rindex = nodesindex[rootjunction];
 
 	if(targetjunction==rootjunction)
 		return false;
+
+    //pathnodes.push_back(target);
+    std::vector<int> path;
+    path.push_back(tindex);
 
 	while( predecessors[tindex] != tindex &&  path[path.size()-1] != rindex)
 	{
@@ -109,30 +111,34 @@ bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
 		tindex=path[s+1];
 
 		DM::Edge *newpipe = 0;
+        DM::Node *targetjunction;
+        DM::Node *sourcejunction;
 
 		if(nodes2edge.find(std::make_pair(sindex,tindex))!=nodes2edge.end())
+        {
 			newpipe = nodes2edge[std::make_pair(sindex,tindex)];
+            sourcejunction = newpipe->getStartNode();
+            targetjunction = newpipe->getEndNode();
+        }
 
 		if(nodes2edge.find(std::make_pair(tindex,sindex))!=nodes2edge.end())
+        {
 			newpipe = nodes2edge[std::make_pair(tindex,sindex)];
+            sourcejunction = newpipe->getEndNode();
+            targetjunction = newpipe->getStartNode();
+        }
 
 		if(!newpipe)
 		{
-			DM::Logger(DM::Warning) << "Could not find specific pipe in system (ERROR ?)";
+            DM::Logger(DM::Warning) << "Could not find specific edge in system (ERROR ?)";
 			return false;
 		}
 
-		DM::Node *targetjunction = newpipe->getEndNode();
-		DM::Node *sourcejunction = newpipe->getStartNode();
-
-		if(sourcejunction != newpipe->getStartNode())
-		{
-			sourcejunction = newpipe->getEndNode();
-			targetjunction = newpipe->getStartNode();
-		}
-
 		distance += TBVectorData::calculateDistance(sourcejunction,targetjunction);
-		pathnodes.push_back(sourcejunction);
+
+        if(s==0)
+            pathnodes.push_back(sourcejunction);
+
 		pathnodes.push_back(targetjunction);
 		pathedges.push_back(newpipe);
 	}

@@ -74,7 +74,7 @@ void ReduceTree::run()
 
 	DM::Logger(DM::Standard) << "Init out/in edges";
 
-	#pragma omp parallel for
+    #pragma omp parallel for
 	for(int i = 0; i < nodesvec.size(); i++)
 	{
 		DM::Node *currentnode = static_cast<DM::Node*>(nodesvec[i]);
@@ -97,7 +97,7 @@ void ReduceTree::run()
 	{
 		DM::Node *currentnode = static_cast<DM::Node*>(nodesvec[i]);
 
-		while(graph.count(currentnode) == 1 && (forcednodes.find(currentnode->getUUID()) == forcednodes.end()))
+        while(graph.count(currentnode) == 1 && (forcednodes.find(currentnode->getUUID()) == forcednodes.end()))
 		{
 			DM::Node* endnode = 0;
 			DM::Edge* currentedge = graph.find(currentnode).value();
