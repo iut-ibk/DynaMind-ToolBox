@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.4.0")
+ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.5.0")
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	message(STATUS "Using Visual C compilers")
@@ -9,10 +9,10 @@ IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	ADD_DEFINITIONS(-D_VARIADIC_MAX=9 -DCGAL_CFG_NO_CPP0X_ISFINITE)
 ENDIF()
 
-IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-        message(STATUS "Using GNU compilers")
-        set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
-ENDIF()
+#IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+#        message(STATUS "Using GNU compilers")
+#        set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
+#ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_INSTALLER "create a windows installer (NSIS)" OFF)
@@ -25,7 +25,6 @@ OPTION(WITH_PLUGIN_URBANSIM "if with UrbanSim plugin" OFF)
 OPTION(WITH_PLUGIN_SEWER "if with Sewer plugin" ON)
 OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
 OPTION(WITH_PLUGIN_VIBE "if with VIBeModules plugin" OFF)
-OPTION(WITH_PLUGIN_CITYBLOCKS "if with Cityblocks plugin" ON)
 OPTION(WITH_PLUGIN_QGIS "if with QGIS plugin" OFF)
 OPTION(WITH_PLUGIN_BASICMODULES "if with BASICMODULES plugin" ON)
 OPTION(WITH_STANDALONE_EXE "if with standalon executeable" ON)
@@ -37,7 +36,6 @@ find_package(Git REQUIRED)
 set(TOOLBOX DynaMind)
 
 if(WITH_UNIT_TESTS)
-    set(WITH_PLUGIN_CITYBLOCKS ON CACHE BOOL "" FORCE)
     set(WITH_PLUGIN_SEWER ON CACHE BOOL "" FORCE)
 endif(WITH_UNIT_TESTS)
 
@@ -85,10 +83,6 @@ if(WITH_PLUGIN_VIBE)
     set(TOOLBOX ${TOOLBOX} DynaMind-VIBeModules)
 endif(WITH_PLUGIN_VIBE)
 
-if(WITH_PLUGIN_CITYBLOCKS)
-    set(TOOLBOX ${TOOLBOX} DynaMind-CityBlocks)
-endif(WITH_PLUGIN_CITYBLOCKS)
-
 if(WITH_PLUGIN_QGIS)
     set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
 endif(WITH_PLUGIN_QGIS)
@@ -124,10 +118,6 @@ SET(DYNAMIND_TOOLBOX_BUILD_DIR ${DynaMind-ToolBox_BINARY_DIR}/output)
 foreach (tool ${TOOLBOX})
     add_subdirectory(${tool})
 endforeach(${tool}) 
-
-if(WITH_UNIT_TESTS)
-    add_subdirectory(DynaMind-ComplexUnitTests)
-endif(WITH_UNIT_TESTS)
 
 add_subdirectory(Data)
 
