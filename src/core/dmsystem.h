@@ -68,173 +68,173 @@ class DerivedSystem;
 */
 class  DM_HELPER_DLL_EXPORT System : public Component
 {
-	friend class DerivedSystem;
+    friend class DerivedSystem;
 public:
-	bool removeChild(Component* c);
+    bool removeChild(Component* c);
 
-	/*@deprecated*/
-	std::vector<Component*> getAllChilds();
-	std::vector<Component*> getChilds();
+    /*@deprecated*/
+    std::vector<Component*> getAllChilds();
+    std::vector<Component*> getChilds();
 
-	/** @brief Copies a System  */
-	System(const System& s); // needs to be redone
+    /** @brief Copies a System  */
+    System(const System& s); // needs to be redone
 
-	/** @brief creates a new System */
-	System();
+    /** @brief creates a new System */
+    System();
 
-	/** @brief Destructor
-	* The destructor also deletes all successor states */
-	~System();
+    /** @brief Destructor
+    * The destructor also deletes all successor states */
+    ~System();
 
-	/** @brief return Type */
-	Components getType() const;
+    /** @brief return Type */
+    Components getType() const;
 
-	/** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
-	Component * addComponent(Component* c, const DM::View & view = DM::View());
+    /** @brief Adds an existing component to the system. The ownership of the component goes to the system*/
+    Component * addComponent(Component* c, const DM::View & view = DM::View());
 
-	/** @brief Adds an existing node to the system. The ownership of the node goes to the system.
-	*  If the node already exists 0 it returns 0, if not the pointer to the node (same as the input)
-	*/
-	Node * addNode(Node* node);
+    /** @brief Adds an existing node to the system. The ownership of the node goes to the system.
+    *  If the node already exists 0 it returns 0, if not the pointer to the node (same as the input)
+    */
+    Node * addNode(Node* node);
 
-	/** @brief Adds a new node to the system and returns a pointer to the node.*/
-	Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
+    /** @brief Adds a new node to the system and returns a pointer to the node.*/
+    Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
 
-	/** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
-	Node * addNode(const Node &n, const DM::View & view = DM::View());
-	
-	/** @brief Adds a new Edge to the system, the system class takes ownership of the edge */
-	Edge* addEdge(Edge* edge, const DM::View & view = DM::View());
+    /** @brief Copies xyz in a new Node, attaches it to the system, returning a pointer*/
+    Node * addNode(const Node &n, const DM::View & view = DM::View());
 
-	/** @brief Creates a new Edge, based on the UUID of the start and end node */
-	Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
+    /** @brief Adds a new Edge to the system, the system class takes ownership of the edge */
+    Edge* addEdge(Edge* edge, const DM::View & view = DM::View());
 
-	/** @brief Adds a new Face to the system, the system class takes ownership of the face  */
-	Face * addFace(Face * f);
+    /** @brief Creates a new Edge, based on the UUID of the start and end node */
+    Edge* addEdge(Node * start, Node * end, const DM::View & view = DM::View());
 
-	/** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
-	Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
+    /** @brief Adds a new Face to the system, the system class takes ownership of the face  */
+    Face * addFace(Face * f);
 
-	/** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist */
-	virtual Edge* getEdge(Node* start, Node* end);
+    /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
+    Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
 
-	/** @brief Returns a map of nodes stored in the system */
-	virtual std::vector<Component*> getAllComponents();
+    /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist */
+    virtual Edge* getEdge(Node* start, Node* end);
 
-	/** @brief Returns a map of nodes stored in the system */
-	virtual std::vector<Node*> getAllNodes();
+    /** @brief Returns a map of nodes stored in the system */
+    virtual std::vector<Component*> getAllComponents();
 
-	/** @brief Returns a map of edges stored in the system */
-	virtual std::vector<Edge*> getAllEdges();
+    /** @brief Returns a map of nodes stored in the system */
+    virtual std::vector<Node*> getAllNodes();
 
-	/** @brief Returns a map of faces stored in the system */
-	virtual std::vector<Face*> getAllFaces();
+    /** @brief Returns a map of edges stored in the system */
+    virtual std::vector<Edge*> getAllEdges();
 
-	/** @brief Returns a map of subsystems stored in the system */
-	virtual std::vector<System*> getAllSubSystems();
+    /** @brief Returns a map of faces stored in the system */
+    virtual std::vector<Face*> getAllFaces();
 
-	/** @brief Returns a map of rasterdata stored in the system */
-	virtual std::vector<RasterData*> getAllRasterData();
+    /** @brief Returns a map of subsystems stored in the system */
+    virtual std::vector<System*> getAllSubSystems();
 
-	/** @brief Returns the predecessor of the system */
-	virtual System* getPredecessor() const;
+    /** @brief Returns a map of rasterdata stored in the system */
+    virtual std::vector<RasterData*> getAllRasterData();
 
-	/** @brief Returns the sucessor of the system */
-	std::vector<System*> getSucessors() const;
+    /** @brief Returns the predecessor of the system */
+    virtual System* getPredecessor() const;
 
-	/** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
-	System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
+    /** @brief Returns the sucessor of the system */
+    std::vector<System*> getSucessors() const;
 
-	/** @brief Creates a new Successor state
-	* @todo add a more detailed description here
-	*/
-	System* createSuccessor();
+    /** @brief adds a new subsystem, the system class takes ownership of the subsystem*/
+    System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
 
-	/** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
-	Component* clone();
+    /** @brief Creates a new Successor state
+    * @todo add a more detailed description here
+    */
+    System* createSuccessor();
 
-	/** @brief add a component to a view */
-	bool addComponentToView(Component * comp, const DM::View & view);
+    /** @brief Creates a clone of the System. UUID and Attributes stay the same as its origin */
+    Component* clone();
 
-	/** @brief remove a component from a view */
-	bool removeComponentFromView(Component * comp, const DM::View & view);
-	bool removeComponentFromView(Component * comp, const std::string& viewName);
+    /** @brief add a component to a view */
+    bool addComponentToView(Component * comp, const DM::View & view);
 
-	/** @brief retrun all components related to a view */
-	virtual std::vector<Component*> getAllComponentsInView(const DM::View &view);
+    /** @brief remove a component from a view */
+    bool removeComponentFromView(Component * comp, const DM::View & view);
+    bool removeComponentFromView(Component * comp, const std::string& viewName);
 
-	/** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
-	RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
+    /** @brief retrun all components related to a view */
+    virtual std::vector<Component*> getAllComponentsInView(const DM::View &view);
 
-	virtual Component* getChild(QUuid quuid);
+    /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
+    RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 
-	virtual Component* getSuccessingComponent(const Component* formerComponent);
+    virtual Component* getChild(QUuid quuid);
 
-	void updateView(const View& view);
+    virtual Component* getSuccessingComponent(const Component* formerComponent);
 
-	void loadFromHost();
+    void updateView(const View& view);
 
-	/** @brief exports the component to the db, it can be deleted safly afterwards */
-	virtual void _moveToDb();
+    //void loadFromHost();
 
-	/** @brief imports all components according to the currently applied views (update view) */
-	void _importViewElementsFromDB();
+    /** @brief exports the component to the db, it can be deleted safly afterwards */
+    virtual void _moveToDb();
+
+    /** @brief imports all components according to the currently applied views (update view) */
+    void _importViewElementsFromDB();
 protected:
-	const Edge* getEdgeReadOnly(Node* start, Node* end);
+    const Edge* getEdgeReadOnly(Node* start, Node* end);
 private:
-	void SQLInsert();
-	void SQLUpdateStates();
-	bool addChild(Component *newcomponent);
-	/** @brief return table name */
-	QString getTableName();
+    void SQLInsert();
+    void SQLUpdateStates();
+    bool addChild(Component *newcomponent);
+    /** @brief return table name */
+    QString getTableName();
 
-	//DM::Module* lastModule;
-	std::set<Node* >			nodes;
-	std::set<Edge* >			edges;
-	std::set<Face* >			faces;
-	std::set<RasterData *>	rasterdata;
-	std::set<System*>		subsystems;
-	std::set<Component* >	components;
+    //DM::Module* lastModule;
+    std::set<Node* >			nodes;
+    std::set<Edge* >			edges;
+    std::set<Face* >			faces;
+    std::set<RasterData *>	rasterdata;
+    std::set<System*>		subsystems;
+    std::set<Component* >	components;
 
-	std::map<QUuid, Component*>	quuidMap;
+    std::map<QUuid, Component*>	quuidMap;
 
-	std::vector<DM::System*> sucessors;
+    std::vector<DM::System*> sucessors;
 
-	//std::map<std::string, std::vector<Component*> > views;
-	class ViewCache
-	{
-	public:
-		struct Equation
-		{
-			Equation()
-			{
-				varName = "";
-				axis = NONE;
-				op = EQUAL;
-				val = 0.0;
-			}
+    //std::map<std::string, std::vector<Component*> > views;
+    class ViewCache
+    {
+    public:
+        struct Equation
+        {
+            Equation()
+            {
+                varName = "";
+                axis = NONE;
+                op = EQUAL;
+                val = 0.0;
+            }
 
-			std::string varName;
-			enum CoordinateAxis{NONE,X,Y,Z} axis; 
-			enum Operator{EQUAL, LEQUAL, HEQUAL, LOWER, HIGHER} op;
-			double val;
+            std::string varName;
+            enum CoordinateAxis{NONE,X,Y,Z} axis;
+            enum Operator{EQUAL, LEQUAL, HEQUAL, LOWER, HIGHER} op;
+            double val;
 
-			bool eval(Component* c) const;
-		}eq;
+            bool eval(Component* c) const;
+        }eq;
 
-		void apply(const View& view);
-		bool add(Component* c);
-		bool remove(Component* c);
-		bool legal(Component* c);
+        void apply(const View& view);
+        bool add(Component* c);
+        bool remove(Component* c);
+        bool legal(Component* c);
 
-		std::set<Component*> filteredElements;
-		System* sys;
-		std::set<QUuid>	rawElements;
-	//private:
-		View view;
-	};
+        std::set<Component*> filteredElements;
+        System* sys;
+        std::set<QUuid>	rawElements;
+    //private:
+        View view;
+    };
 
-	std::map<std::string, ViewCache > viewCaches;
+    std::map<std::string, ViewCache > viewCaches;
 };
 
 typedef std::map<std::string, DM::System*> SystemMap;

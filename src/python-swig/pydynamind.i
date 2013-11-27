@@ -21,7 +21,7 @@
     #include <dmlogger.h>
     #include <dmlogsink.h>
     #include <dmsimulation.h>
-    #include <iostream>    
+    #include <iostream>
     using namespace std;
     using namespace DM;
 %}
@@ -76,19 +76,19 @@ namespace std {
 
 
     enum  DataTypes {
-		INT,
-		LONG,
-		DOUBLE,
-		STRING,
-		FILENAME,
-		STRING_LIST,
-		STRING_MAP,
-		BOOL,
+        INT,
+        LONG,
+        DOUBLE,
+        STRING,
+        FILENAME,
+        STRING_LIST,
+        STRING_MAP,
+        BOOL,
     };
 
     enum PortType {
-	INPORT,
-	OUTPORT,
+    INPORT,
+    OUTPORT,
     };
 
 
@@ -104,7 +104,7 @@ public:
 
     std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
 
-	virtual const char* getClassName() const = 0;
+    virtual const char* getClassName() const = 0;
 
     virtual std::string getParameterAsString(std::string Name);
 

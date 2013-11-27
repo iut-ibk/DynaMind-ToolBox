@@ -46,14 +46,14 @@ namespace DM {
 
 #define UUID_ATTRIBUTE_NAME "_uuid"
 
-enum Components 
+enum Components
 {
-	COMPONENT =0,
-	NODE=1,
-	EDGE=2,
-	FACE=3,
-	SUBSYSTEM=4,
-	RASTERDATA=5
+    COMPONENT =0,
+    NODE=1,
+    EDGE=2,
+    FACE=3,
+    SUBSYSTEM=4,
+    RASTERDATA=5
 };
 
 class Attribute;
@@ -69,105 +69,105 @@ class System;
 
 class DM_HELPER_DLL_EXPORT Component
 {
-	friend class System;
-	friend class DerivedSystem;
+    friend class System;
+    friend class DerivedSystem;
 public:
-	/** @brief =operator */
-	Component& operator=(Component const& other);
+    /** @brief =operator */
+    Component& operator=(Component const& other);
 
-	/** @brief The default constructor creates a UUID for the component */
-	Component();
+    /** @brief The default constructor creates a UUID for the component */
+    Component();
 
-	/** @brief Copies a component */
-	Component(const Component& s);
+    /** @brief Copies a component */
+    Component(const Component& s);
 
-	/** @brief Destructor */
-	virtual ~Component();
+    /** @brief Destructor */
+    virtual ~Component();
 
-	/** @brief return Type */
-	virtual Components getType() const;
+    /** @brief return Type */
+    virtual Components getType() const;
 
-	/** @brief return UUID */
-	std::string getUUID();
+    /** @brief return UUID */
+    std::string getUUID();
 
-	/** @brief return UUID */
-	QUuid getQUUID() const;
+    /** @brief return UUID */
+    QUuid getQUUID() const;
 
-	/** @brief adds a new Attribute to the Component.
-	*
-	* Returns true if the attribute has been added to the Component.
-	* Returns false if the attribute with the same name already exists.
-	*/
-	bool addAttribute(const Attribute &newattribute);
+    /** @brief adds a new Attribute to the Component.
+    *
+    * Returns true if the attribute has been added to the Component.
+    * Returns false if the attribute with the same name already exists.
+    */
+    bool addAttribute(const Attribute &newattribute);
 
-	/** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
-	bool addAttribute(std::string, double val);
+    /** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
+    bool addAttribute(std::string, double val);
 
-	/** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
-	bool addAttribute(std::string, std::string);
+    /** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
+    bool addAttribute(std::string, std::string);
 
-	/** @brief Change existing Attribute. If attribute doesn't exist a new Attribute is added to the Component*/
-	bool changeAttribute(const Attribute &newattribute);
+    /** @brief Change existing Attribute. If attribute doesn't exist a new Attribute is added to the Component*/
+    bool changeAttribute(const Attribute &newattribute);
 
-	/** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
-	bool changeAttribute(std::string, double val);
+    /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
+    bool changeAttribute(std::string, double val);
 
-	/** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
-	bool changeAttribute(std::string s, std::string val);
+    /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
+    bool changeAttribute(std::string s, std::string val);
 
-	/** @brief Remove Attribute, returns false if no Attribute with this name exists */
-	bool removeAttribute(std::string name);
+    /** @brief Remove Attribute, returns false if no Attribute with this name exists */
+    bool removeAttribute(std::string name);
 
-	/** @brief Returns a pointer to an Attribute */
-	Attribute* getAttribute(std::string name);
+    /** @brief Returns a pointer to an Attribute */
+    Attribute* getAttribute(std::string name);
 
-	/** @brief Returns a vector of all Attributes */
-	const std::vector<Attribute*>& getAllAttributes();
+    /** @brief Returns a vector of all Attributes */
+    const std::vector<Attribute*>& getAllAttributes();
 
-	/** @brief virtual clone method.
-	*
-	* To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
-	* The method returns a pointer to a new data object (including attributes and uuid) */
-	virtual Component* clone();
+    /** @brief virtual clone method.
+    *
+    * To create a enw data object, like Node, Edge, Face, the pure virtal clone method needs to be implemented.
+    * The method returns a pointer to a new data object (including attributes and uuid) */
+    virtual Component* clone();
 
-	/** @brief Returns the owning system */
-	System * getCurrentSystem() const;
+    /** @brief Returns the owning system */
+    System * getCurrentSystem() const;
 
-	/** @brief Returns true if an attribute of the given name exists */
-	bool HasAttribute(std::string name) const;
-	
-	/** @brief exports the component to the db, it can afterwards deleted safly */
-	virtual void _moveToDb();
+    /** @brief Returns true if an attribute of the given name exists */
+    bool HasAttribute(std::string name) const;
 
-	/** @brief exports all attributes of this components to the db */
-	void _moveAttributesToDb();
+    /** @brief exports the component to the db, it can afterwards deleted safly */
+    virtual void _moveToDb();
+
+    /** @brief exports all attributes of this components to the db */
+    void _moveAttributesToDb();
 
 protected:
-	/* @brief Sets stateUuid and ownership in sql db*/
-	virtual void SetOwner(Component *owner);
+    /* @brief Sets stateUuid and ownership in sql db*/
+    virtual void SetOwner(Component *owner);
 
-	/** @brief deletes the component from the db, independend of the actual type using getTableName() */
-	void SQLDelete();
+    /** @brief deletes the component from the db, independend of the actual type using getTableName() */
+    void SQLDelete();
 
-	/** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
-	Component(bool b);
+    /** @brief Constructor, for derived classes only, as it doesnt generate a sql entry */
+    Component(bool b);
 
-	/** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
-	Component(const Component& s, bool bInherited);
+    /** @brief Copy constructor, for derived classes only, as it doesnt generate a sql entry */
+    Component(const Component& s, bool bInherited);
 
-	/** @brief return table name */
-	virtual QString getTableName();
-	
-	QMutex	mutex;
-	QUuid	uuid;
-	System* currentSys;
-	bool	isInserted;
-	std::vector<Attribute*> ownedattributes;
+    /** @brief return table name */
+    virtual QString getTableName();
+
+    QMutex*	mutex;
+    QUuid	uuid;
+    System* currentSys;
+    bool	isInserted;
+    std::vector<Attribute*> ownedattributes;
 private:
 
-	Attribute* getExistingAttribute(const std::string& name) const;
-	bool addAttribute(Attribute *pAttribute);
-	void CopyFrom(const Component &c, bool successor = false);
+    Attribute* getExistingAttribute(const std::string& name) const;
+    bool addAttribute(Attribute *pAttribute);
+    void CopyFrom(const Component &c, bool successor = false);
 };
 }
 #endif // COMPONENT_H

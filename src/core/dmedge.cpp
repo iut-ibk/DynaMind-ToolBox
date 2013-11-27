@@ -36,98 +36,98 @@ using namespace DM;
 
 Edge::Edge(Node *start, Node *end) : Component(true)
 {
-	this->start = start;
-	this->end = end;
-	start->addEdge(this);
-	end->addEdge(this);
+    this->start = start;
+    this->end = end;
+    start->addEdge(this);
+    end->addEdge(this);
 }
 
 Edge::Edge(const Edge& e) : Component(e, true)
 {
-	start = e.getStartNode();
-	end = e.getEndNode();
-	start->addEdge(this);
-	end->addEdge(this);
+    start = e.getStartNode();
+    end = e.getEndNode();
+    start->addEdge(this);
+    end->addEdge(this);
 }
 
 Edge::~Edge()
 {
-	if(isInserted)
-		Component::SQLDelete();
+    if(isInserted)
+        Component::SQLDelete();
 }
 DM::Components Edge::getType() const
 {
-	return DM::EDGE;
+    return DM::EDGE;
 }
 QString Edge::getTableName()
 {
-	return "edges";
+    return "edges";
 }
 
 Node* Edge::getStartNode() const
 {
-	return start;
+    return start;
 }
 
 const std::string Edge::getStartpointName() const
 {
-	return start->getUUID();
+    return start->getUUID();
 }
 Node* Edge::getEndNode() const
 {
-	return end;
+    return end;
 }
 
 const std::string Edge::getEndpointName() const
 {
-	return end->getUUID();
+    return end->getUUID();
 }
 
 void Edge::setStartpoint(Node *start)
 {
-	QMutexLocker ml(&mutex);
+    QMutexLocker ml(mutex);
 
-	this->start->removeEdge(this);
-	this->start = start;
-	start->addEdge(this);
+    this->start->removeEdge(this);
+    this->start = start;
+    start->addEdge(this);
 }
 
 void Edge::setEndpoint(Node *end)
 {
-	QMutexLocker ml(&mutex);
+    QMutexLocker ml(mutex);
 
-	this->end->removeEdge(this);
-	this->end = end;
-	end->addEdge(this);
+    this->end->removeEdge(this);
+    this->end = end;
+    end->addEdge(this);
 }
 
 Component* Edge::clone()
 {
-	return new Edge(*this);
+    return new Edge(*this);
 }
 
 void Edge::_moveToDb()
 {
-	if (isInserted)
-	{
-		QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE " + getTableName() + " SET owner=?,startnode=?,endnode=? WHERE uuid LIKE ?");
-		q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
-		q->addBindValue(start->getQUUID().toByteArray());
-		q->addBindValue(end->getQUUID().toByteArray());
-		q->addBindValue(uuid.toByteArray());
-		DBConnector::getInstance()->ExecuteQuery(q);
+    if (isInserted)
+    {
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("UPDATE " + getTableName() + " SET owner=?,startnode=?,endnode=? WHERE uuid LIKE ?");
+        q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
+        q->addBindValue(start->getQUUID().toByteArray());
+        q->addBindValue(end->getQUUID().toByteArray());
+        q->addBindValue(uuid.toByteArray());
+        DBConnector::getInstance()->ExecuteQuery(q);
 
-		isInserted = false;
-	}
-	else
-	{
-		QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO " + getTableName() + " (uuid,owner,startnode,endnode) VALUES (?,?,?,?)");
-		q->addBindValue(uuid.toByteArray());
-		q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
-		q->addBindValue(start->getQUUID().toByteArray());
-		q->addBindValue(end->getQUUID().toByteArray());
-		DBConnector::getInstance()->ExecuteQuery(q);
-	}
-	_moveAttributesToDb();
-	delete this;
+        isInserted = false;
+    }
+    else
+    {
+        QSqlQuery *q = DBConnector::getInstance()->getQuery("INSERT INTO " + getTableName() + " (uuid,owner,startnode,endnode) VALUES (?,?,?,?)");
+        q->addBindValue(uuid.toByteArray());
+        q->addBindValue(((Component*)this->getCurrentSystem())->getQUUID().toByteArray());
+        q->addBindValue(start->getQUUID().toByteArray());
+        q->addBindValue(end->getQUUID().toByteArray());
+        DBConnector::getInstance()->ExecuteQuery(q);
+    }
+    _moveAttributesToDb();
+    delete this;
 }
