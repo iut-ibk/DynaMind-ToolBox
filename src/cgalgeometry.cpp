@@ -200,7 +200,7 @@ double CGALGeometry::CalculateMinBoundingBox(std::vector<Node*> nodes, std::vect
 	return angel;
 }
 
-std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double offset)  {
+std::vector<std::vector< Node> > CGALGeometry::OffsetPolygon(std::vector<Node*> points, double offset)  {
 	typedef CGAL::Exact_predicates_inexact_constructions_kernel K ;
 	typedef K::Point_2                                          Point_2;
 	typedef CGAL::Aff_transformation_2<K>                       Transformation;
@@ -214,12 +214,14 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 	typedef std::vector<PolygonPtr>                             PolygonPtrVector ;
 
 	Polygon_2 poly_s;
-	std::vector<Node> ret_points;
+	std::vector<std::vector<DM::Node> > ret_points;
 
 	if (offset == 0) {
+		std::vector<DM::Node> dmpoly;
 		for (unsigned int i = 0; i < points.size(); i++ ) {
-			ret_points.push_back(Node(points[i]->getX(), points[i]->getY(), 0));
+			dmpoly.push_back(Node(points[i]->getX(), points[i]->getY(), 0));
 		}
+		ret_points.push_back(dmpoly);
 		return ret_points;
 	}
 	double v[3];
@@ -242,9 +244,12 @@ std::vector<Node> CGALGeometry::OffsetPolygon(std::vector<Node*> points, double 
 
 	foreach(PolygonPtr poly, offset_polygons) {
 		Polygon_2 p = *(poly);
+		std::vector<DM::Node> dmpoly;
 		for (unsigned int i = 0; i < p.size(); i++ ) {
-			ret_points.push_back(Node(p[i].x(), p[i].y(), 0));
+			dmpoly.push_back(Node(p[i].x(), p[i].y(), 0));
 		}
+		ret_points.push_back(dmpoly);
+
 	}
 	return ret_points;
 }
