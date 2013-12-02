@@ -150,10 +150,10 @@ void SpanningTree::run()
 
 	//clean view
 	for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
-		sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::NODES]);
+		sys->removeComponentFromView((*itr),viewdef[DM::GRAPH::NODES]);
 
 	for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); itr++)
-		sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::EDGES]);
+		sys->removeComponentFromView((*itr),viewdef[DM::GRAPH::EDGES]);
 
 	DM::Logger(DM::Standard) << "Starting extracting results from algorithm";
 

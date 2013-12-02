@@ -41,20 +41,20 @@ namespace DM
         #define CATCHMENT_LINK
 
         #define CATCHMENT_ATTR \
-        A(Area) \
-        A(Impervious) \
-        A(Raingage)
+		A(Area,DM::Attribute::DOUBLE) \
+		A(Impervious,DM::Attribute::DOUBLE) \
+		A(Raingage,DM::Attribute::DOUBLE)
 
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
-        A(DWF)
+		A(DWF,DM::Attribute::DOUBLE)
 
         #define CONDUIT_LINK
 
         #define CONDUIT_ATTR \
-        A(Diameter) \
-        A(Length)
+		A(Diameter,DM::Attribute::DOUBLE) \
+		A(Length,DM::Attribute::DOUBLE)
 
         #define OUTFALL_LINK
 
@@ -63,7 +63,7 @@ namespace DM
         #define INLET_LINK
 
         #define INLET_ATTR \
-        A(CATCHMENT)
+		A(CATCHMENT,DM::Attribute::DOUBLE)
 
         #define TABLE \
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \

@@ -72,7 +72,7 @@ void SetZfromRasterdata::run()
 {
 	sys = this->getData("Layout");
 	r = this->getRasterData("Layout", viewdef["ELEVATION"]);
-	std::map<std::string,DM::Component*> nodes = sys->getAllComponentsInView(viewdef["NODES"]);
+	std::vector<DM::Component*> nodes = sys->getAllComponentsInView(viewdef["NODES"]);
 
 	if(!r || !nodes.size())
 	{
@@ -88,23 +88,23 @@ void SetZfromRasterdata::run()
 	return;
 }
 
-bool SetZfromRasterdata::setZWithRaster(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset)
+bool SetZfromRasterdata::setZWithRaster(DM::RasterData * r, std::vector<DM::Component*> &nodes,double offset)
 {
-	typedef std::map<std::string, DM::Component*>::iterator Iter;
+	typedef std::vector< DM::Component*>::iterator Iter;
 
 	for(Iter it = nodes.begin(); it != nodes.end(); it++)
 	{
-		DM::Node *currentnode = static_cast<DM::Node*>((*it).second);
+		DM::Node *currentnode = static_cast<DM::Node*>((*it));
 		currentnode->setZ(r->getValue(currentnode->getX(),currentnode->getY())+this->offset);
 	}
 	return true;
 }
 
-bool SetZfromRasterdata::setZWithDelaunay(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset)
+bool SetZfromRasterdata::setZWithDelaunay(DM::RasterData * r, std::vector<DM::Component*> &nodes,double offset)
 {
 	SetZfromRasterdata::Delaunay dt;
 	std::map<Vertex, K::FT, K::Less_xy_2> function_values;
-	typedef std::map<std::string, DM::Component*>::iterator Iter;
+	typedef std::vector<DM::Component*>::iterator Iter;
 
 	if(!nodes.size())
 		return false;
@@ -134,7 +134,7 @@ bool SetZfromRasterdata::setZWithDelaunay(DM::RasterData * r, std::map<std::stri
 
 	for(Iter it = nodes.begin(); it != nodes.end(); it++)
 	{
-		DM::Node *currentnode = static_cast<DM::Node*>((*it).second);
+		DM::Node *currentnode = static_cast<DM::Node*>((*it));
 
 		int li;
 		typedef Delaunay::Locate_type Locate_type;

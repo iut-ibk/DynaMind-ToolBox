@@ -50,7 +50,7 @@ EPANETModelCreator *EpanetDynamindConverter::getCreator()
 bool EpanetDynamindConverter::createEpanetModel(System *sys, string inpfilepath)
 {
 	DM::WS::ViewDefinitionHelper wsd;
-	typedef std::map<std::string, DM::Component*> cmap;
+	typedef std::vector<DM::Component*> cmap;
 	cmap::iterator itr;
 
 	//SET OPTIONS
@@ -61,19 +61,19 @@ bool EpanetDynamindConverter::createEpanetModel(System *sys, string inpfilepath)
 	cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::READ));
 
 	for(itr = junctions.begin(); itr != junctions.end(); ++itr)
-		if(!addJunction(static_cast<DM::Node*>((*itr).second)))return false;
+		if(!addJunction(static_cast<DM::Node*>((*itr))))return false;
 
 	//RESERVOIRS
 	cmap reservoir = sys->getAllComponentsInView(wsd.getView(DM::WS::RESERVOIR, DM::READ));
 
 	for(itr = reservoir.begin(); itr != reservoir.end(); ++itr)
-		if(!addReservoir(static_cast<DM::Node*>((*itr).second)))return false;
+		if(!addReservoir(static_cast<DM::Node*>((*itr))))return false;
 
 	//TANKS
 	cmap tank = sys->getAllComponentsInView(wsd.getView(DM::WS::TANK, DM::READ));
 
 	for(itr = tank.begin(); itr != tank.end(); ++itr)
-		if(!addTank(static_cast<DM::Node*>((*itr).second)))return false;
+		if(!addTank(static_cast<DM::Node*>((*itr))))return false;
 
 	//PIPES
 	cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::READ));
@@ -81,8 +81,8 @@ bool EpanetDynamindConverter::createEpanetModel(System *sys, string inpfilepath)
 	for(itr = pipes.begin(); itr != pipes.end(); ++itr)
 	{
 		bool cv = false;
-		DM::Edge *pipe = static_cast<DM::Edge*>((*itr).second);
-		if(reservoir.find(pipe->getStartNode()->getUUID()) != reservoir.end() || reservoir.find(pipe->getEndNode()->getUUID()) != reservoir.end())
+		DM::Edge *pipe = static_cast<DM::Edge*>((*itr));
+		if(std::find(reservoir.begin(),reservoir.end(),pipe->getStartNode()) != reservoir.end() || std::find(reservoir.begin(),reservoir.end(),pipe->getEndNode()) != reservoir.end())
 			cv = true;
 
 		if(!addPipe(pipe,cv))return false;
@@ -113,14 +113,14 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
 		return false;
 
 	DM::WS::ViewDefinitionHelper wsd;
-	typedef std::map<std::string, DM::Component*> cmap;
+	typedef std::vector<DM::Component*> cmap;
 	cmap::iterator itr;
 
 	cmap pipes = sys->getAllComponentsInView(wsd.getView(DM::WS::PIPE, DM::MODIFY));
 
 	for(itr = pipes.begin(); itr != pipes.end(); ++itr)
 	{
-		DM::Edge *currentedge = static_cast<DM::Edge*>((*itr).second);
+		DM::Edge *currentedge = static_cast<DM::Edge*>((*itr));
 		float currentdiameter;
 		float status;
 		char name[256];
@@ -160,14 +160,14 @@ bool EpanetDynamindConverter::mapJunctionAttributes(System *sys)
 		return false;
 
 	DM::WS::ViewDefinitionHelper wsd;
-	typedef std::map<std::string, DM::Component*> cmap;
+	typedef std::vector<DM::Component*> cmap;
 	cmap::iterator itr;
 
 	cmap junctions = sys->getAllComponentsInView(wsd.getView(DM::WS::JUNCTION, DM::MODIFY));
 
 	for(itr = junctions.begin(); itr != junctions.end(); ++itr)
 	{
-		DM::Node *currentnode = static_cast<DM::Node*>((*itr).second);
+		DM::Node *currentnode = static_cast<DM::Node*>((*itr));
 		float currentpressure;
 		char name[256];
 		strcpy(name, QString::number(components[currentnode]).toStdString().c_str());

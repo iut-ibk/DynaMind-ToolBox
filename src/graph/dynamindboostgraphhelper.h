@@ -36,7 +36,7 @@ class DM_HELPER_DLL_LOCAL DynamindBoostGraph
 {
 public:
 	//Typedef
-	typedef std::map<std::string, DM::Component*> Compmap;
+	typedef std::vector<DM::Component*> Compmap;
 	typedef Compmap::iterator Compitr;
 	typedef boost::adjacency_list < boost::vecS,
 									boost::vecS,
@@ -55,13 +55,13 @@ public:
 						  std::vector<int> &predecessors,
 						  DM::Node* root, DM::Node* target);
 	static void subtractGraphs(Compmap &a, Compmap &b); // result = a-b
-	static void createSkeletonizeBoostGraph(std::map<std::string,DM::Component*> &nodes,
-											std::map<std::string,DM::Component*> &edges,
+	static void createSkeletonizeBoostGraph(Compmap &nodes,
+											Compmap &edges,
 											Graph &Graph,
 											std::map<DM::Node*,int> &nodesindex,
 											std::map<std::pair < int, int >, std::vector<DM::Edge*> > &nodes2edge);
-	static bool createBoostGraph(std::map<std::string,DM::Component*> &nodes,
-						  std::map<std::string,DM::Component*> &edges,
+	static bool createBoostGraph(Compmap &nodes,
+						  Compmap &edges,
 						  Graph &Graph,
 						  std::map<DM::Node*,int> &nodesindex,
 						  std::map<std::pair < int, int >, DM::Edge*> &nodes2edge);

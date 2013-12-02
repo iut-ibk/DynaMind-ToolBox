@@ -37,17 +37,17 @@ namespace DM
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
-        A(Demand) \
-        A(Pressure)
+		A(Demand,DM::Attribute::DOUBLE) \
+		A(Pressure,DM::Attribute::DOUBLE)
 
         #define PIPE_LINK
 
         #define PIPE_ATTR\
-        A(Diameter) \
-        A(Length) \
-        A(Roughness) \
-        A(Minorloss) \
-        A(STATUS)
+		A(Diameter,DM::Attribute::DOUBLE) \
+		A(Length,DM::Attribute::DOUBLE) \
+		A(Roughness,DM::Attribute::DOUBLE) \
+		A(Minorloss,DM::Attribute::DOUBLE) \
+		A(STATUS,DM::Attribute::DOUBLE)
 
         #define RESERVOIR_LINK
 
@@ -63,7 +63,7 @@ namespace DM
         X(RESERVOIR, DM::NODE, RESERVOIR_ATTR, RESERVOIR_LINK) \
         X(TANK, DM::NODE, TANK_ATTR, TANK_LINK)
 
-        #include<viewdefhelper.h> //This would be the header if code completion would work correctly in qtcreator
+		#include<viewdefhelper.h> //This would be the header if code completion would work correctly in qtcreator
     }
 }
 

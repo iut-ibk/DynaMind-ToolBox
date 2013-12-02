@@ -48,7 +48,7 @@ DistributeWeightOnNodes::DistributeWeightOnNodes()
 	DM::View view;
 
 	view = DM::View("NODES", DM::NODE, DM::MODIFY);
-    view.addAttribute("Weight");
+	view.addAttribute("Weight",DM::Attribute::DOUBLE,DM::MODIFY);
 	views.push_back(view);
 	viewdef["NODES"]=view;
 
@@ -61,7 +61,7 @@ DistributeWeightOnNodes::DistributeWeightOnNodes()
 void DistributeWeightOnNodes::run()
 {
 	sys = this->getData("Layout");
-	std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
+	std::vector<DM::Component*> nodes(sys->getAllComponentsInView(viewdef["NODES"]));
 
 	if(!nodes.size())
 	{
@@ -73,7 +73,7 @@ void DistributeWeightOnNodes::run()
 
 	for(int index=0; index < nodes.size(); index++)
 	{
-		DM::Node *currentnode = sys->getNode(nodes[index]);
+		DM::Node *currentnode = dynamic_cast<DM::Node*>(nodes[index]);
 		currentnode->changeAttribute("Weight",weightpernode);
 	}
 	return;

@@ -58,7 +58,7 @@ CalculateEdgeLength::CalculateEdgeLength()
 void CalculateEdgeLength::run()
 {
 	sys = this->getData("Layout");
-	std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
+	std::vector<DM::Component*> edges(sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]));
 
 	if(!edges.size())
 	{
@@ -68,9 +68,9 @@ void CalculateEdgeLength::run()
 
 	for(uint index=0; index < edges.size(); index++)
 	{
-		DM::Edge *currentedge = sys->getEdge(edges[index]);
-		DM::Node *start = sys->getNode(currentedge->getStartpointName());
-		DM::Node *end = sys->getNode(currentedge->getEndpointName());
+		DM::Edge *currentedge = dynamic_cast<DM::Edge*>(edges[index]);
+		DM::Node *start = currentedge->getStartNode();
+		DM::Node *end = currentedge->getEndNode();
 		double length = TBVectorData::calculateDistance(start,end);
 		currentedge->addAttribute(defhelper.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight),length);
 	}

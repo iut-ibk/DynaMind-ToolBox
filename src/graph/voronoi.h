@@ -63,5 +63,5 @@ namespace boost {
 class Voronoi
 {
 public:
-    static bool createVoronoi(std::map<std::string,DM::Component*> &nodes, std::map<std::string,DM::Component*> &face, DM::System *sys, DM::View v);
+	static bool createVoronoi(std::vector<DM::Component*> &nodes, std::vector<DM::Component*> &face, DM::System *sys, DM::View v);
 };

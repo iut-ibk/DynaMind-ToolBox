@@ -63,14 +63,14 @@ void DistributeNodes::run()
 {
 	//Typedefs
 	typedef std::pair<std::string,DM::Component*> Cp;
-	typedef std::map<std::string,DM::Component*>::iterator CompItr;
+	typedef std::vector<DM::Component*>::iterator CompItr;
 
 	//Define vars
 	DM::ER::ViewDefinitionHelper defhelper_er;
 
 	//Get System information
 	this->sys = this->getData("Layout");
-	std::map<std::string,DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
+	std::vector<DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
 	if(fm.size() < 1)
 	{
@@ -85,7 +85,7 @@ void DistributeNodes::run()
 
 	for(CompItr i = fm.begin(); i != fm.end(); ++i)
 	{
-		DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+		DM::Face* currentface = static_cast<DM::Face*>((*i));
 		std::vector<DM::Node*> facenodes = currentface->getNodePointers();
 
 		for(uint index=0; index < facenodes.size(); index++)

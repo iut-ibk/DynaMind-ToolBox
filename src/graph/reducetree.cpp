@@ -59,8 +59,8 @@ ReduceTree::ReduceTree()
 void ReduceTree::run()
 {
 	this->sys = this->getData("Layout");
-	typedef std::map<std::string,DM::Component*>::iterator itr;
-	typedef std::map<std::string,DM::Component*> CMap;
+	typedef std::vector<DM::Component*>::iterator itr;
+	typedef std::vector<DM::Component*> CMap;
 	typedef std::vector<DM::Component*> CVec;
 	CMap edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
 	CMap nodes = sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]);
@@ -68,7 +68,8 @@ void ReduceTree::run()
 	int deletecounter = 0;
 	CVec nodesvec;
 
-	std::transform( nodes.begin(), nodes.end(),std::back_inserter(nodesvec),boost::bind(&CMap::value_type::second,_1) );
+	nodesvec=nodes;
+	//std::transform( nodes.begin(), nodes.end(),std::back_inserter(nodesvec),boost::bind(&CMap::value_type::first,_1) );
 
 	QMultiMap<DM::Node*, DM::Edge*> graph;
 
@@ -77,7 +78,7 @@ void ReduceTree::run()
     #pragma omp parallel for
 	for(int i = 0; i < nodesvec.size(); i++)
 	{
-		DM::Node *currentnode = static_cast<DM::Node*>(nodesvec[i]);
+		DM::Node *currentnode = dynamic_cast<DM::Node*>(nodesvec[i]);
 		std::vector<DM::Edge *> connectededges = getEdgesInView(currentnode,edges);
 
 		for(uint index=0; index < connectededges.size(); index++)
@@ -97,7 +98,7 @@ void ReduceTree::run()
 	{
 		DM::Node *currentnode = static_cast<DM::Node*>(nodesvec[i]);
 
-        while(graph.count(currentnode) == 1 && (forcednodes.find(currentnode->getUUID()) == forcednodes.end()))
+		while(graph.count(currentnode) == 1 && (std::find(forcednodes.begin(), forcednodes.end(),currentnode) == forcednodes.end()))
 		{
 			DM::Node* endnode = 0;
 			DM::Edge* currentedge = graph.find(currentnode).value();
@@ -130,7 +131,7 @@ void ReduceTree::run()
 }
 
 
-std::vector<DM::Edge *> ReduceTree::getEdgesInView(DM::Node* node, std::map<std::string, DM::Component*> &edges)
+std::vector<DM::Edge *> ReduceTree::getEdgesInView(DM::Node* node, std::vector<DM::Component*> &edges)
 {
 	std::vector<DM::Edge *> all = node->getEdges();
 	std::vector<DM::Edge *> result;
@@ -139,7 +140,7 @@ std::vector<DM::Edge *> ReduceTree::getEdgesInView(DM::Node* node, std::map<std:
 	{
 		DM::Edge* currentedge = all[index];
 
-		if(edges.find(currentedge->getUUID()) != edges.end())
+		if(std::find(edges.begin(),edges.end(),currentedge) != edges.end())
 			result.push_back(all[index]);
 	}
 

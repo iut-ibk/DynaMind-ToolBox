@@ -54,7 +54,7 @@ MapNodes2Graph::MapNodes2Graph()
 
 	//Define Parameter street network
 	view = DM::View("NODES", DM::NODE, DM::MODIFY);
-	view.addAttribute("Weight");
+	view.addAttribute("Weight",DM::Attribute::DOUBLE,DM::MODIFY);
 	views.push_back(view);
 	viewdef["NODES"]=view;
 
@@ -75,11 +75,11 @@ void MapNodes2Graph::run()
 	typedef CGAL::Search_traits_2<K> TreeTraits;
 	typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
 	typedef Neighbor_search::Tree Tree;
-	typedef std::map<std::string, DM::Component*>::iterator Itr;
+	typedef std::vector<DM::Component*>::iterator Itr;
 
 	this->sys = this->getData("Layout");
-	std::map<std::string, DM::Component*> nodes = sys->getAllComponentsInView(viewdef["NODES"]);
-	std::map<std::string, DM::Component*> connectingnodes = sys->getAllComponentsInView(viewdef["CONNECTINGNODES"]);
+	std::vector<DM::Component*> nodes = sys->getAllComponentsInView(viewdef["NODES"]);
+	std::vector<DM::Component*> connectingnodes = sys->getAllComponentsInView(viewdef["CONNECTINGNODES"]);
 	std::map<std::pair<int,int>,DM::Node*> nodemap;
 	int notconnectedcounter=0;
 
@@ -99,7 +99,7 @@ void MapNodes2Graph::run()
 
 	for(Itr i = nodes.begin(); i != nodes.end(); ++i)
 	{
-		DM::Node *currentnode = static_cast<DM::Node*>((*i).second);
+		DM::Node *currentnode = static_cast<DM::Node*>((*i));
 		int x = currentnode->getX();
 		int y = currentnode->getY();
 
@@ -113,7 +113,7 @@ void MapNodes2Graph::run()
 
 	for(Itr i = connectingnodes.begin(); i != connectingnodes.end(); ++i)
 	{
-		DM::Node *connectingnode = static_cast<DM::Node*>((*i).second);
+		DM::Node *connectingnode = static_cast<DM::Node*>((*i));
 		int x = connectingnode->getX();
 		int y = connectingnode->getY();
 
@@ -137,7 +137,7 @@ void MapNodes2Graph::run()
 
 	//delete old connecting view
 	for(Itr i = connectingnodes.begin(); i != connectingnodes.end(); ++i)
-		sys->removeComponentFromView((*i).second,viewdef["CONNECTINGNODES"]);
+		sys->removeComponentFromView((*i),viewdef["CONNECTINGNODES"]);
 
 	//instert new connecting nodes
 	for(std::list<DM::Node*>::iterator i = newconnecting.begin(); i != newconnecting.end(); ++i)

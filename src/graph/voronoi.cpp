@@ -6,9 +6,9 @@
 
 using namespace boost::polygon;
 
-bool Voronoi::createVoronoi(std::map<std::string,DM::Component*> &nodes,std::map<std::string,DM::Component*> &face,DM::System *sys, DM::View v)
+bool Voronoi::createVoronoi(std::vector<DM::Component*> &nodes,std::vector<DM::Component*> &face,DM::System *sys, DM::View v)
 {
-    typedef std::map<std::string,DM::Component*>::const_iterator Citerator;
+	typedef std::vector<DM::Component*>::const_iterator Citerator;
     typedef voronoi_diagram<double>::const_edge_iterator const_edge_iterator;
     typedef voronoi_diagram<double>::const_cell_iterator const_cell_iterator;
 
@@ -21,14 +21,14 @@ bool Voronoi::createVoronoi(std::map<std::string,DM::Component*> &nodes,std::map
 
     for(Citerator i = nodes.begin(); i != nodes.end(); ++i)
     {
-        DM::Node* currentnode = dynamic_cast<DM::Node*>((*i).second);
+		DM::Node* currentnode = dynamic_cast<DM::Node*>((*i));
         points.push_back(Point(currentnode->getX(),currentnode->getY()));
         nodepointers.push_back(currentnode);
     }
 
     for(Citerator i = face.begin(); i != face.end(); ++i)
     {
-        DM::Face* currentface = dynamic_cast<DM::Face*>((*i).second);
+		DM::Face* currentface = dynamic_cast<DM::Face*>((*i));
         std::vector<DM::Node*> nodes = currentface->getNodePointers();
 
         for(uint index=0; index < nodes.size(); index++)

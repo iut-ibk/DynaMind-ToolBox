@@ -61,7 +61,7 @@ SpatialPressurePerformance::SpatialPressurePerformance()
 
 void SpatialPressurePerformance::run()
 {
-    typedef std::map<std::string, DM::Component*> cmap;
+	typedef std::vector<DM::Component*> cmap;
     cmap::iterator itr;
     std::vector<DM::Node*> j1, j2;
     QString result = "";
@@ -89,10 +89,10 @@ void SpatialPressurePerformance::run()
 
     //Extract data
     for(itr=junctions1.begin(); itr != junctions1.end(); ++itr)
-        j1.push_back(static_cast<DM::Node*>((*itr).second));
+		j1.push_back(static_cast<DM::Node*>((*itr)));
 
     for(itr=junctions2.begin(); itr != junctions2.end(); ++itr)
-        j2.push_back(static_cast<DM::Node*>((*itr).second));
+		j2.push_back(static_cast<DM::Node*>((*itr)));
 
     Delaunay triangulation;
     std::map<Vertex,DM::Node*> mapping;

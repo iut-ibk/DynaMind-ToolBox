@@ -35,7 +35,7 @@ bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g
 	int nodeindex=0;
 	for(Compitr itr = nodes.begin(); itr!=nodes.end(); ++itr)
 	{
-		nodesindex[static_cast<DM::Node*>((*itr).second)]=nodeindex;
+		nodesindex[static_cast<DM::Node*>((*itr))]=nodeindex;
 		add_vertex(nodeindex,g);
 		nodeindex++;
 	}
@@ -44,7 +44,7 @@ bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g
 	for(Compitr itr = edges.begin(); itr!=edges.end(); ++itr)
 	{
 		int sourceindex, targetindex;
-		DM::Edge *edge = static_cast<DM::Edge*>((*itr).second);
+		DM::Edge *edge = static_cast<DM::Edge*>((*itr));
 
 		double distance = edge->getAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
 
@@ -62,12 +62,12 @@ void DynamindBoostGraph::subtractGraphs(Compmap &a, Compmap &b)
 {
 	for(Compitr itr = b.begin(); itr != b.end(); ++itr)
 	{
-		DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
-		a.erase(currentedge->getUUID());
+		DM::Edge* currentedge = static_cast<DM::Edge*>((*itr));
+		a.erase(std::find(a.begin(),a.end(),currentedge));
 	}
 }
 
-void DynamindBoostGraph::createSkeletonizeBoostGraph(std::map<string, DM::Component *> &nodes, std::map<string, DM::Component *> &edges, DynamindBoostGraph::Graph &Graph, std::map<DM::Node *, int> &nodesindex, std::map<std::pair<int, int>, std::vector<DM::Edge *> > &nodes2edge)
+void DynamindBoostGraph::createSkeletonizeBoostGraph(Compmap &nodes, Compmap &edges, DynamindBoostGraph::Graph &Graph, std::map<DM::Node *, int> &nodesindex, std::map<std::pair<int, int>, std::vector<DM::Edge *> > &nodes2edge)
 {
 	DM::Logger(DM::Error) << "createSkeletonizeBoostGraph Not implemented";
 	return;

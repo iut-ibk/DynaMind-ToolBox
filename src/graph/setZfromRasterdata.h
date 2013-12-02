@@ -58,8 +58,8 @@ public:
 
 	void run();
 	void initmodel(){}
-	bool setZWithRaster(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset);
-	bool setZWithDelaunay(DM::RasterData * r, std::map<std::string, DM::Component*> &nodes,double offset);
+	bool setZWithRaster(DM::RasterData * r, std::vector< DM::Component*> &nodes,double offset);
+	bool setZWithDelaunay(DM::RasterData * r, std::vector< DM::Component*> &nodes,double offset);
 	double interpolateTriangle(DM::Node *point, Delaunay &dt, std::map<Vertex, K::FT, K::Less_xy_2> &function_values);
 };
 

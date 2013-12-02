@@ -70,18 +70,15 @@ GeneralGraphAnalysis::GeneralGraphAnalysis()
     //Graph
     nodesview = defhelper_graph.getView(DM::GRAPH::NODES,DM::READ);
     edgeview = defhelper_graph.getView(DM::GRAPH::EDGES,DM::READ);
-    layoutedges = defhelper_graph.getView(DM::GRAPH::EDGES,DM::READ);
-    layoutnodes = defhelper_graph.getView(DM::GRAPH::NODES,DM::READ);
-
-    layoutedges.setName("LAYOUT_EDGES");
-    layoutnodes.setName("LAYOUT_NODES");
+	layoutedges = defhelper_graph.getView(DM::GRAPH::LAYOUT_EDGES,DM::READ);
+	layoutnodes = defhelper_graph.getView(DM::GRAPH::LAYOUT_NODES,DM::READ);
 
     views.push_back(edgeview);
     views.push_back(nodesview);
     views.push_back(layoutedges);
     views.push_back(layoutnodes);
 
-    this->addData("Layout", views);
+	this->addData("Layout", views);
 }
 
 void GeneralGraphAnalysis::run()
@@ -115,7 +112,7 @@ void GeneralGraphAnalysis::run()
     vector<DM::Node*> checknodes;
     DynamindBoostGraph::Compitr itr;
     for(itr=nm.begin(); itr!=nm.end(); ++itr)
-        checknodes.push_back(static_cast<DM::Node*>((*itr).second));
+		checknodes.push_back(static_cast<DM::Node*>((*itr)));
 
     std::vector<DM::Node*> checkednodes;
 
@@ -139,9 +136,9 @@ void GeneralGraphAnalysis::run()
         bool possiblenode=false;
 
         for(uint i = 0; i < e.size(); i++)
-            if(em.find(e[i]->getUUID())==em.end())
+			if(std::find(em.begin(),em.end(),e[i])==em.end())
             {
-                if(lem.find(e[i]->getUUID())!=lem.end())
+				if(std::find(lem.begin(),lem.end(),e[i])!=lem.end())
                     possiblenode=true;
                     break;
             }
@@ -187,10 +184,10 @@ void GeneralGraphAnalysis::run()
 
             for(uint i = 0; i < e.size(); i++)
                 //check if rootjunction is a leaf
-                if(em.find(e[i]->getUUID())==em.end())
+				if(std::find(em.begin(),em.end(),e[i])==em.end())
                 {
                     //check if at least one outedges exists which could be a alternative path
-                    if(lem.find(e[i]->getUUID())!=lem.end())
+					if(std::find(lem.begin(),lem.end(),e[i])!=lem.end())
                         possiblenode=true;
                         break;
                 }
@@ -230,7 +227,7 @@ void GeneralGraphAnalysis::run()
     }
 
     //write results
-    writeResult("/tmp/testresult.txt", result);
+	writeResult("/tmp/testresult.txt", result);
 }
 
 void GeneralGraphAnalysis::initmodel()

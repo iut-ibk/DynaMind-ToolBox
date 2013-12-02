@@ -47,7 +47,7 @@ SWMMModelCreator *SWMMDynamindConverter::getCreator()
 bool SWMMDynamindConverter::createSWMMModel(System *sys, string inpfilepath, string rainfile)
 {
     DM::S::ViewDefinitionHelper sd;
-	typedef std::map<std::string, DM::Component*> cmap;
+	typedef std::vector<DM::Component*> cmap;
 	cmap::iterator itr;
 
 	//SET OPTIONS
@@ -59,28 +59,31 @@ bool SWMMDynamindConverter::createSWMMModel(System *sys, string inpfilepath, str
     cmap junctions = sys->getAllComponentsInView(sd.getView(DM::S::JUNCTION, DM::READ));
 
 	for(itr = junctions.begin(); itr != junctions.end(); ++itr)
-		if(!addJunction(static_cast<DM::Node*>((*itr).second)))return false;
+		if(!addJunction(static_cast<DM::Node*>((*itr))))return false;
 
     //OUTFALLS
     cmap outfalls = sys->getAllComponentsInView(sd.getView(DM::S::OUTFALL, DM::READ));
 
     for(itr = outfalls.begin(); itr != outfalls.end(); ++itr)
-        if(!addOutfall(static_cast<DM::Node*>((*itr).second)))return false;
+		if(!addOutfall(static_cast<DM::Node*>((*itr))))return false;
 
     //CONDUITS
     cmap conduits = sys->getAllComponentsInView(sd.getView(DM::S::CONDUIT, DM::READ));
 
     for(itr = conduits.begin(); itr != conduits.end(); ++itr)
-        if(!addConduit(static_cast<DM::Edge*>((*itr).second)))return false;
+		if(!addConduit(static_cast<DM::Edge*>((*itr))))return false;
 
     //Catchments
     cmap inlets = sys->getAllComponentsInView(sd.getView(DM::S::INLET, DM::READ));
 
     for(itr = inlets.begin(); itr != inlets.end(); ++itr)
     {
-        DM::Node *currentinlet = static_cast<DM::Node*>((*itr).second);
+		DM::Node *currentinlet = static_cast<DM::Node*>((*itr));
         string cid = currentinlet->getAttribute(sd.getAttributeString(DM::S::INLET,DM::S::INLET_ATTR_DEF::CATCHMENT))->getString();
-        DM::Face *currentcatchment = static_cast<DM::Face*>(sys->getComponent(cid));
+		DM::Logger(DM::Error) << "FIX ME: swmmdynamindconverter.cpp";
+
+		DM::Face *currentcatchment=0;
+		//DM::Face *currentcatchment = static_cast<DM::Face*>(sys->getComponent(cid));
 
         if(currentcatchment==0)
             continue;

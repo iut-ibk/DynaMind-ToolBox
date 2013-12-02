@@ -86,7 +86,7 @@ void MinimumSteinerTree::run()
 	DynamindBoostGraph::createBoostGraph(nodes,dedges,g,nodesindex,nodes2edge);
 
 	for(DynamindBoostGraph::Compitr itr = forcednodes.begin(); itr != forcednodes.end(); ++itr)
-		forcednodeslist.push_back(nodesindex[static_cast<DM::Node*>((*itr).second)]);
+		forcednodeslist.push_back(nodesindex[static_cast<DM::Node*>((*itr))]);
 
 
 	//check if graph is conntected
@@ -217,10 +217,10 @@ void MinimumSteinerTree::run()
 
 	//clean view
 	for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
-		sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::NODES]);
+		sys->removeComponentFromView((*itr),viewdef[DM::GRAPH::NODES]);
 
 	for(DynamindBoostGraph::Compitr itr = dedges.begin(); itr != dedges.end(); ++itr)
-		sys->removeComponentFromView((*itr).second,viewdef[DM::GRAPH::EDGES]);
+		sys->removeComponentFromView((*itr),viewdef[DM::GRAPH::EDGES]);
 
 	//map to dynamind data structure
 	graph_traits< SteinerGraph >::edge_iterator ei,eend;

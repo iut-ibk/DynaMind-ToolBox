@@ -36,15 +36,17 @@ namespace DM
     {
         #define EDGES_LINK
         #define EDGES_ATTR \
-        A(Weight)
+		A(Weight,DM::Attribute::DOUBLE)
 
         #define NODES_LINK
         #define NODES_ATTR \
-        A(Weight)
+		A(Weight,DM::Attribute::DOUBLE)
 
         #define TABLE \
         X(NODES,DM::NODE, NODES_ATTR, NODES_LINK) \
-        X(EDGES,DM::EDGE,EDGES_ATTR, EDGES_LINK)
+		X(EDGES,DM::EDGE,EDGES_ATTR, EDGES_LINK) \
+		X(LAYOUT_NODES,DM::NODE, NODES_ATTR, NODES_LINK) \
+		X(LAYOUT_EDGES,DM::EDGE,EDGES_ATTR, EDGES_LINK)
 
         #include<viewdefhelper.h>
     }

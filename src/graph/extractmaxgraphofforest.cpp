@@ -70,9 +70,9 @@ void ExtractMaxGraph::run()
 	typedef std::pair < int, int >E;
 
 	this->sys = this->getData("Layout");
-	std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::NODES]));
-	std::vector<std::string> edges(sys->getUUIDsOfComponentsInView(viewdef[DM::GRAPH::EDGES]));
-	std::map<std::string,int> nodesindex;
+	std::vector<DM::Component*> nodes(sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]));
+	std::vector<DM::Component*> edges(sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]));
+	std::map<DM::Component*,int> nodesindex;
 	std::map<E,DM::Edge*> nodes2edge;
 
 	for(uint index=0; index<nodes.size(); index++)
@@ -86,10 +86,10 @@ void ExtractMaxGraph::run()
 	for(uint counter=0; counter<edges.size(); counter++)
 	{
 		int sourceindex, targetindex;
-		DM::Edge *edge=this->sys->getEdge(edges[counter]);
+		DM::Edge *edge= dynamic_cast<DM::Edge*>(edges[counter]);
 
-		sourceindex=nodesindex[edge->getStartpointName()];
-		targetindex=nodesindex[edge->getEndpointName()];
+		sourceindex=nodesindex[edge->getStartNode()];
+		targetindex=nodesindex[edge->getEndNode()];
 
 		edgeindex[counter]=E(sourceindex,targetindex);
 		nodes2edge[E(sourceindex,targetindex)]=edge;
@@ -136,10 +136,8 @@ void ExtractMaxGraph::run()
 	//remove edges from forest of graphs
 	for(uint index=0; index < nodes.size(); index++)
 	{
-		std::string nodeid = nodes[index];
-
-		if(component[nodesindex[nodeid]]!=maxgraphindex)
-			this->sys->removeComponentFromView(sys->getComponent(nodeid),viewdef[DM::GRAPH::NODES]);
+		if(component[nodesindex[nodes[index]]]!=maxgraphindex)
+			this->sys->removeComponentFromView(nodes[index],viewdef[DM::GRAPH::NODES]);
 	}
 }
 

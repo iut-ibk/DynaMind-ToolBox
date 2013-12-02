@@ -39,11 +39,11 @@ CreateVoronoiDiagram::CreateVoronoiDiagram()
 
     //Possible edges and nodes
     vc = DM::View("VORONIO_CELL",DM::FACE,DM::WRITE);
-    vc.addAttribute("area");
+	vc.addAttribute("area",DM::Attribute::DOUBLE,DM::WRITE);
     views.push_back(vc);
 
     DM::View vn = defhelper_graph.getView(DM::GRAPH::NODES,DM::WRITE);
-    vn.addAttribute("VoronoiCell");
+	vn.addAttribute("VoronoiCell",DM::Attribute::STRING,DM::WRITE);
     views.push_back(vn);
 
     //examination room
@@ -59,8 +59,8 @@ void CreateVoronoiDiagram::run()
 
     //Get System information
     this->sys = this->getData("Layout");
-    std::map<std::string,DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::READ));
-    std::map<std::string,DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
+	std::vector<DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::READ));
+	std::vector<DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
     if(nm.size()==0)
     {

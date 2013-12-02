@@ -52,7 +52,7 @@ void TotalGraphWeight::run()
 {
     double result = 0.0;
 
-    typedef std::map<std::string, DM::Component*> CM;
+	typedef std::vector<DM::Component*> CM;
     typedef CM::iterator CMItr;
 
 	//Get System information
@@ -64,7 +64,7 @@ void TotalGraphWeight::run()
     CMItr itr;
     for(itr=em.begin(); itr!=em.end(); ++itr)
     {
-        DM::Edge *currentedge = static_cast<DM::Edge*>((*itr).second);
+		DM::Edge *currentedge = static_cast<DM::Edge*>((*itr));
         result+=currentedge->getAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
     }
 

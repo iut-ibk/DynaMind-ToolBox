@@ -76,9 +76,9 @@ void ConnectNodes2Graph::run()
 
 	DM::GRAPH::ViewDefinitionHelper defhelper_graph;
 	this->sys = this->getData("Layout");
-	std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
-	std::vector<std::string> connectingnodes(sys->getUUIDsOfComponentsInView(viewdef["CONNECTINGNODES"]));
-	std::map<std::pair<int,int>,std::string> nodemap;
+	std::vector<DM::Component*> nodes(sys->getAllComponentsInView(viewdef["NODES"]));
+	std::vector<DM::Component*> connectingnodes(sys->getAllComponentsInView(viewdef["CONNECTINGNODES"]));
+	std::map<std::pair<int,int>,DM::Node*> nodemap;
 	int notconnectedcounter=0;
 
 	if(!nodes.size())
@@ -97,11 +97,11 @@ void ConnectNodes2Graph::run()
 
 	for(int index=0; index<nodes.size(); index++)
 	{
-		DM::Node *currentnode = this->sys->getNode(nodes[index]);
+		DM::Node *currentnode = dynamic_cast<DM::Node*>(nodes[index]);
 		int x = currentnode->getX();
 		int y = currentnode->getY();
 
-		nodemap[std::pair<int,int>(x,y)]=currentnode->getUUID();
+		nodemap[std::pair<int,int>(x,y)]=currentnode;
 		Lr.push_back(Point_2(x,y));
 	}
 
@@ -109,7 +109,7 @@ void ConnectNodes2Graph::run()
 
 	for(int index=0; index < connectingnodes.size(); index++)
 	{
-		DM::Node *connectingnode = sys->getNode(connectingnodes[index]);
+		DM::Node *connectingnode = dynamic_cast<DM::Node*>(connectingnodes[index]);
 		int x = connectingnode->getX();
 		int y = connectingnode->getY();
 
@@ -119,11 +119,11 @@ void ConnectNodes2Graph::run()
 
 		Point_2 fn = it->first;
 
-		std::string nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
+		DM::Node* nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
 
 		//std::string nearest = findNearestNode(nodes,connectingnode);
-		DM::Edge* newedge = sys->addEdge(connectingnode,sys->getNode(nearest),viewdef["EDGES"]);
-		double weight = TBVectorData::calculateDistance(connectingnode,sys->getNode(nearest));
+		DM::Edge* newedge = sys->addEdge(connectingnode,nearest,viewdef["EDGES"]);
+		double weight = TBVectorData::calculateDistance(connectingnode,nearest);
 		newedge->changeAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight),weight);
 		sys->addComponentToView(connectingnode,viewdef["NODES"]);
 	}
@@ -132,19 +132,19 @@ void ConnectNodes2Graph::run()
 
 }
 
-std::string ConnectNodes2Graph::findNearestNode(std::vector<std::string>& nodes, DM::Node *connectingNode)
+std::string ConnectNodes2Graph::findNearestNode(std::vector<DM::Node*>& nodes, DM::Node *connectingNode)
 {
-	double currentdistance=TBVectorData::calculateDistance(sys->getNode(nodes[0]),connectingNode);
-	DM::Node *node = sys->getNode(nodes[0]);
+	double currentdistance=TBVectorData::calculateDistance(nodes[0],connectingNode);
+	DM::Node *node = nodes[0];
 
 	for(int index=1; index<nodes.size(); index++)
 	{
-		double distance = TBVectorData::calculateDistance(sys->getNode(nodes[index]),connectingNode);
+		double distance = TBVectorData::calculateDistance(nodes[index],connectingNode);
 
 		if(currentdistance > distance)
 		{
 			currentdistance=distance;
-			node=sys->getNode(nodes[index]);
+			node=nodes[index];
 		}
 	}
 

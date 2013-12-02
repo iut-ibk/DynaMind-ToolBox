@@ -171,9 +171,9 @@ void LoopCreator::run()
 			bool possiblejunction=false;
 			uint leafcounter = 0;
 			for(int i = 0; i < e.size(); i++)
-				if(pm.find(e[i]->getUUID())==pm.end())
+				if(std::find(pm.begin(),pm.end(),e[i]) == pm.end())
 				{
-					if(em.find(e[i]->getUUID())!=em.end())
+					if(std::find(em.begin(),em.end(),e[i]) !=em.end())
 						possiblejunction=true;
 				}
 				else
@@ -226,10 +226,10 @@ void LoopCreator::run()
 
 				for(uint i = 0; i < e.size(); i++)
 					//check if rootjunction is a leaf
-					if(pm.find(e[i]->getUUID())==pm.end())
+					if(std::find(pm.begin(),pm.end(),e[i])==pm.end())
 					{
 						//check if at least one outedges exists which could be a alternative path
-						if(em.find(e[i]->getUUID())!=em.end())
+						if(std::find(em.begin(),em.end(),e[i])!=em.end())
 							possiblejunction=true;
 					}
 					else
@@ -297,7 +297,7 @@ void LoopCreator::calculatePressureZones(DynamindBoostGraph::Compmap &nodes, Loo
 {
 	for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); itr++)
 	{
-		DM::Node* currentnode = static_cast<DM::Node*>((*itr).second);
+		DM::Node* currentnode = static_cast<DM::Node*>((*itr));
 		uint currentzone = getZone(currentnode->getZ(),zonesize,mean);
 
 		if(zones.find(currentzone)==zones.end())
@@ -311,10 +311,10 @@ void LoopCreator::removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges, do
 {
 	for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
 	{
-		DM::Edge* currentedge = static_cast<DM::Edge*>((*itr).second);
+		DM::Edge* currentedge = static_cast<DM::Edge*>((*itr));
 
 		if(getZone(currentedge->getStartNode()->getZ(),zonesize,mean) != getZone(currentedge->getEndNode()->getZ(),zonesize,mean))
-			edges.erase(currentedge->getUUID());
+			edges.erase(std::remove(edges.begin(), edges.end(), currentedge), edges.end());
 	}
 }
 
@@ -350,7 +350,7 @@ void LoopCreator::calcPressureZonesBoundaries(DynamindBoostGraph::Compmap &nodes
 		return;
 
 	for(DynamindBoostGraph::Compitr itr = nodes.begin(); itr != nodes.end(); ++itr)
-		elevations.push_back(static_cast<DM::Node*>((*itr).second)->getZ());
+		elevations.push_back(static_cast<DM::Node*>((*itr))->getZ());
 
 	min = *std::min_element(elevations.begin(), elevations.end());
 	max = *std::max_element(elevations.begin(), elevations.end());

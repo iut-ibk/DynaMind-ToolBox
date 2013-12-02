@@ -58,16 +58,16 @@ void ExtractNodesFromEdges::run()
 {
 	this->sys = this->getData("Layout");
 
-	std::map<std::string,DM::Component*> edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
+	std::vector<DM::Component*> edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
 	std::vector<DM::Component*> nodesadded;
 
-	typedef std::map<std::string,DM::Component*>::iterator itr;
+	typedef std::vector<DM::Component*>::iterator itr;
 
 	DM::Logger(DM::Standard) << "Number of Edges found:" << edges.size();
 
 	for(itr i = edges.begin(); i != edges.end(); i++)
 	{
-		DM::Edge *edge = static_cast<DM::Edge*>((*i).second);
+		DM::Edge *edge = static_cast<DM::Edge*>((*i));
 		DM::Node* sname = edge->getStartNode();
 		DM::Node* tname = edge->getEndNode();
 
@@ -89,7 +89,7 @@ void ExtractNodesFromEdges::run()
 	DM::Logger(DM::Standard) << "Number of extracted nodes: " << nodesadded.size();
 }
 
-bool ExtractNodesFromEdges::checkNode(DM::Node* node, std::map<std::string,DM::Component*> &edges, bool skeletonize)
+bool ExtractNodesFromEdges::checkNode(DM::Node* node, std::vector<DM::Component*> &edges, bool skeletonize)
 {
 	if(!skeletonize)
 		return true;
@@ -98,7 +98,7 @@ bool ExtractNodesFromEdges::checkNode(DM::Node* node, std::map<std::string,DM::C
 	std::vector<DM::Edge*> possible_edges;
 
 	for(uint index=0; index < e.size(); index++)
-		if(edges.find(e[index]->getUUID())!=edges.end())
+		if(std::find(edges.begin(),edges.end(),e[index])!=edges.end())
 			possible_edges.push_back(e[index]);
 
 	if(possible_edges.size() == 2)

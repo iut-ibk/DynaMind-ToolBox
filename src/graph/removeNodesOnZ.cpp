@@ -60,7 +60,7 @@ RemoveNodesOnZ::RemoveNodesOnZ()
 void RemoveNodesOnZ::run()
 {
 	sys = this->getData("Layout");
-	std::vector<std::string> nodes(sys->getUUIDsOfComponentsInView(viewdef["NODES"]));
+	std::vector<DM::Component*> nodes(sys->getAllComponentsInView(viewdef["NODES"]));
 
 	if(!nodes.size())
 	{
@@ -70,7 +70,7 @@ void RemoveNodesOnZ::run()
 
 	for(int index=0; index < nodes.size(); index++)
 	{
-		DM::Node *currentnode = sys->getNode(nodes[index]);
+		DM::Node *currentnode = dynamic_cast<DM::Node*>(nodes[index]);
 		if(currentnode->getZ()>max)
 			sys->removeComponentFromView(currentnode,viewdef["NODES"]);
 	}

@@ -50,30 +50,30 @@ void TrimGraph::run()
 {
 	//Typedefs
 	typedef std::pair<std::string,DM::Component*> Cp;
-	typedef std::map<std::string,DM::Component*>::iterator CompItr;
+	typedef std::vector<DM::Component*>::iterator CompItr;
 
 	//Define vars
 	DM::ER::ViewDefinitionHelper defhelper_er;
 
 	//Get System information
 	this->sys = this->getData("Layout");
-	std::map<std::string,DM::Component*> em = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::EDGES,DM::MODIFY));
-	std::map<std::string,DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY));
-	std::map<std::string,DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
+	std::vector<DM::Component*> em = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::EDGES,DM::MODIFY));
+	std::vector<DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY));
+	std::vector<DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
 	for(CompItr i = em.begin(); i!=em.end(); i++)
 	{
-		DM::Edge* currentedge = static_cast<DM::Edge*>((*i).second);
+		DM::Edge* currentedge = static_cast<DM::Edge*>((*i));
 
 		if(!TBVectorData::EdgeWithinAnyFace(fm,currentedge))
 		{
 			sys->removeComponentFromView(currentedge,defhelper_graph.getView(DM::GRAPH::EDGES,DM::MODIFY));
 
-			if(nm.find(currentedge->getStartNode()->getUUID()) != nm.end())
+			if(std::find(nm.begin(),nm.end(),currentedge->getStartNode()) != nm.end())
 				if(!TBVectorData::PointWithinAnyFace(fm,currentedge->getStartNode()))
 					sys->removeComponentFromView(currentedge->getStartNode(),defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY));
 
-			if(nm.find(currentedge->getEndNode()->getUUID()) != nm.end())
+			if(std::find(nm.begin(),nm.end(),currentedge->getEndNode()) != nm.end())
 				if(!TBVectorData::PointWithinAnyFace(fm,currentedge->getEndNode()))
 					sys->removeComponentFromView(currentedge->getEndNode(),defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY));
 		}

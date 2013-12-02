@@ -53,7 +53,7 @@ public:
 	void initmodel(){}
 
 private:
-	std::vector<DM::Edge*> getEdgesInView(DM::Node* node, std::map<std::string, DM::Component*> &edges);
+	std::vector<DM::Edge*> getEdgesInView(DM::Node* node, std::vector<DM::Component*> &edges);
 };
 
 #endif // ReduceTree_H

@@ -47,7 +47,7 @@ public:
 
 	void run();
 	void initmodel(){}
-	bool checkNode(DM::Node* node, std::map<std::string,DM::Component*> &edges,bool skeletonize);
+	bool checkNode(DM::Node* node, std::vector<DM::Component*> &edges,bool skeletonize);
 };
 
 #endif // ExtractNodesFromEdges_H
