@@ -111,7 +111,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 				switch(v.getAttributeAccessType(s))
 				{
 				case DM::READ:	typeString = "read";	break;
-				case DM::MODIFY:typeString = "midfy";	break;
+				case DM::MODIFY:typeString = "modify";	break;
 				case DM::WRITE:	typeString = "write";	break;
 				}
 				item_view->addChild(CreateAttributeItem(typeString,s, v));
