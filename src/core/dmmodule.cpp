@@ -185,13 +185,7 @@ void Module::setInPortData(const std::string &name, System* data)
 		DM::Logger(Error) << "accessing non existent in port '" << name << "' in module '" 
 		<< this->getClassName() << "', canceled";
 	else
-	{
 		inPorts[name] = data;
-		// update views
-		/*if(map_contains(&accessedViews, name))
-			mforeach(const DM::View& v, accessedViews[name])
-				data->updateView(v);*/
-	}
 }
 
 void Module::setOutPortData(const std::string &name, System* data)

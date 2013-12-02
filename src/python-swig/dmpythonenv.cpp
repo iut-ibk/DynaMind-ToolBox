@@ -115,7 +115,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	if(envvars.contains("DYNAMIND_PYTHON"))
 		Logger(Standard) << "DYNAMIND_PYTHON set";
 	else
-		Logger(Warning) << "DYNAMIND_PYTHON not set";
+        Logger(Debug) << "DYNAMIND_PYTHON not set";
 
 	addPythonPath(envvars.value("DYNAMIND_PYTHON","./").toStdString());
 	addPythonPath("/usr/local/bin");

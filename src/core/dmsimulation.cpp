@@ -156,16 +156,16 @@ bool Simulation::registerModule(const std::string& filepath)
 	{
 		if(moduleRegistry->addNativePlugin(filepath))
 		{
-			DM::Logger(Debug) <<  "successfully loaded native module " << filepath;
+            DM::Logger(Standard) <<  "successfully loaded native module " << filepath;
 			return true;
 		}
 		else
 		{
-			Logger(Warning) <<  "failed loading native module " << filepath;
+            Logger(Debug) <<  "failed loading native module " << filepath;
 			return false;
 		}
 	}
-	Logger(Warning) << "not recognized filename ending " << filepath;
+    Logger(Debug) << "not recognized filename ending " << filepath;
 	return false;
 }
 
