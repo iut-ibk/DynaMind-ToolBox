@@ -17,6 +17,7 @@ Create houses creates simple buildings single family houses and block buildings 
 | T_cooling   | DOUBLE | inside temperature when building is cooled |
 | onSignal   | BOOL | if true buildings are just placed on parcels where selected > 0|
 | l_on_parcel_b   | BOOL | default l building is parallel to l parcel. If false l is parallel to b|
+| create3DGeometry   | BOOL | if false only a footprint is created |
 
 ##Datastream
 |     Identifier    |     Attribute    |      Type             |Access |    Description    |

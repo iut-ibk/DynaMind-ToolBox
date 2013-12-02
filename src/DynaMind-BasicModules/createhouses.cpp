@@ -26,6 +26,7 @@ CreateHouses::CreateHouses()
 	onSingal = false;
 	l_on_parcel_b = false;
 	yearFromCity = true;
+	create3DGeometry = true;
 
 	this->addParameter("l", DM::DOUBLE, &l);
 	this->addParameter("b", DM::DOUBLE, &b);
@@ -40,6 +41,7 @@ CreateHouses::CreateHouses()
 	this->addParameter("onSignal", DM::BOOL, &onSingal);
 
 	this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
+	this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
 }
 
@@ -54,6 +56,7 @@ void CreateHouses::run()
 		buildyear = city_comps[0]->getAttribute("year")->getDouble();
 
 	int numberOfHouseBuild = 0;
+
 	foreach(DM::Component* c, city->getAllComponentsInView(parcels))
 	{
 		DM::Face* parcel = (DM::Face*)c;
@@ -130,11 +133,6 @@ void CreateHouses::run()
 
 		building->addAttribute("V_living", l*b*stories * 3);
 
-		LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
-		if (alpha > 10) {
-			LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
-		}
-
 		//Create Links
 		building->getAttribute("Footprint")->addLink(foot_print, footprint.getName());
 		foot_print->getAttribute("BUILDING")->addLink(building, houses.getName());
@@ -142,6 +140,18 @@ void CreateHouses::run()
 		parcel->getAttribute("BUILDING")->addLink(building, houses.getName());
 		parcel->addAttribute("is_built",1);
 		numberOfHouseBuild++;
+
+		if (!create3DGeometry) {
+			city->addComponentToView(foot_print, building_model);
+			building->getAttribute("Geometry")->addLink(foot_print, building_model.getName());
+			continue;
+		}
+		LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
+		if (alpha > 10) {
+			LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
+		}
+
+
 
 	}
 	Logger(Standard) << "Created Houses " << numberOfHouseBuild;
@@ -190,6 +200,7 @@ void CreateHouses::init()
 	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
 	footprint.addAttribute("h", DM::Attribute::DOUBLE, DM::WRITE);
 	footprint.addAttribute("built_year", DM::Attribute::DOUBLE, DM::WRITE);
+
 
 	building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
 	building_model.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
