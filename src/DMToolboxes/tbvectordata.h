@@ -127,13 +127,13 @@ public:
     static bool PointWithinFace(DM::Face *f, DM::Node *n);
 
     /** @brief Returns ture if a point is within a Face of the face vector otherwise false */
-    static bool PointWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Node *n);
+	static bool PointWithinAnyFace(std::vector<DM::Component*> fv, DM::Node *n);
 
     /** @brief Returns true if start and end node of a edge are point within a face otherwise false */
     static bool EdgeWithinFace(DM::Face *f, DM::Edge *e);
 
     /** @brief Returns true if an edge is within one Face of the face vector otherwise false */
-    static bool EdgeWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Edge *e);
+	static bool EdgeWithinAnyFace(std::vector<DM::Component*> fv, DM::Edge *e);
 
     /** @brief Returns true if a point is within a Polygon othwerwise false */
     static int CalculateWindingNumber(std::vector<DM::Node*> poly, DM::Node *n);
