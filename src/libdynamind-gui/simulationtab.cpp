@@ -285,8 +285,13 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	}
 	else if(type == "Simulation")
 	{
+		moduleName = item->parent()->text(0) + '\\' + moduleName;
+
 		QFile file(moduleName);
-		importSimulation(&file, event->scenePos(), moduleName);
+		if (!file.exists())
+			DM::Logger(DM::Error) << "file " << moduleName << " does not exist";
+		else
+			importSimulation(&file, event->scenePos(), moduleName);
 	}
 }
 
