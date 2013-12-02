@@ -54,9 +54,10 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//,
 {
 	Q_OBJECT
 		Q_INTERFACES(QGraphicsItem)
-		enum { Type = UserType + 1 };
+
 
 public:
+	enum { Type = UserType + 1 };
 	ModelNode(DM::Module* m, GUISimulation* sim);
 	~ModelNode();
 

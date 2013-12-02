@@ -233,7 +233,7 @@ void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 	if(event->buttons() == Qt::LeftButton)
-		if(ModelNode* movingNode = dynamic_cast<ModelNode*>(itemAt(cursorPos)))
+		if(ModelNode* movingNode = qgraphicsitem_cast<ModelNode*>(itemAt(cursorPos)))
 			foreach(QGraphicsItem* it, items(cursorPos))
 		{
 			ModelNode* node = dynamic_cast<ModelNode*>(it);
@@ -269,7 +269,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 	event->accept();
 
-	QTreeWidget *moduleTree = dynamic_cast<QTreeWidget*>(event->source());
+	QTreeWidget *moduleTree = qobject_cast<QTreeWidget*>(event->source());
 
 	if(!moduleTree || !moduleTree->currentItem())
 		return;

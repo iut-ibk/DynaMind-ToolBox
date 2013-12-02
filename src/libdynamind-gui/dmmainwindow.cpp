@@ -266,6 +266,7 @@ void DMMainWindow::saveSimulation()
 void DMMainWindow::clearSimulation() 
 {	
 	this->simulation->clearSimulation();
+    this->getSimulation()->currentDocument.clear();
 }
 
 void DMMainWindow::loadSimulation(int id) 
