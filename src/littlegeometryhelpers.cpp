@@ -36,14 +36,14 @@
 
 std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys, DM::Face *f, double distance, double width, double height, double parapet)
 {
-	std::vector<DM::Node*> nodes = TBVectorData::getNodeListFromFace(sys, f);
+	std::vector<DM::Node*> nodes = f->getNodePointers();
 	//And again we rotate or wall again into x,y assuming. we assume that z is becoming our new x
 	double E[3][3];
 	TBVectorData::CorrdinateSystem( DM::Node(0,0,0), DM::Node(1,0,0), DM::Node(0,1,0), E);
 
 	double E_to[3][3];
 
-	TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[2]), E_to);
+	TBVectorData::CorrdinateSystem( *(nodes[0]), *(nodes[1]), *(nodes[nodes.size()-1]), E_to);
 
 
 	DM::Node dN1 = *(nodes[1]) - *(nodes[0]);
@@ -113,8 +113,6 @@ std::vector<DM::Face*> LittleGeometryHelpers::CreateHolesInAWall(DM::System *sys
 			DM::Node n = TBVectorData::RotateVector(alphas_t, window_nodes[j+i*4]);
 			window_nodes_t.push_back(sys->addNode(n));
 		}
-		window_nodes_t.push_back(window_nodes_t[0]);
-
 
 		DM::Node dN1_1 = *(window_nodes_t[1]) - *(window_nodes_t[0]);
 		DM::Node dN2_1  = *(window_nodes_t[2]) - *(window_nodes_t[0]);
@@ -275,7 +273,7 @@ void LittleGeometryHelpers::CreateRoofRectangle(DM::System *city, DM::View & bui
 
 	DM::Node * t1 = city->addNode(q_top_1.x(), q_top_1.y(), height + h/2.);
 	DM::Node * t2 = city->addNode(q_top_2.x(), q_top_2.y(), height + h/2.);
-	
+
 	addFace(city, n1, n2, t2, t1, "roof", roofColor, buildingView, geometryView, BuildingInterface);
 	addFace(city, t1, t2, n3, n4, "roof", roofColor, buildingView, geometryView, BuildingInterface);
 	addFace(city, n1, t1, n4, n1, "roof_wall", wallColor, buildingView, geometryView, BuildingInterface);

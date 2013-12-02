@@ -530,8 +530,11 @@ bool CGALGeometry::CheckOrientation(std::vector<DM::Node*> nodes)
 		nodes[i]->get(v);
 		poly1.push_back(Point(v[0], v[1]));
 	}
-
-
+	//needs to be simple
+	if (!poly1.is_simple()) {
+		DM::Logger(DM::Warning) << "Polygon is not simple can't check orientation";
+		return true;
+	}
 	CGAL::Orientation orient = poly1.orientation();
 	if (orient == CGAL::CLOCKWISE) {
 		return false;

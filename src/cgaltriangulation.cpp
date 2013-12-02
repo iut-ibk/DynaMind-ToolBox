@@ -118,12 +118,11 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 	for (unsigned int i = 0; i < nodeList.size(); i++) {
 		DM::Node n = *(nodeList[i]);
 		DM::Node n_t =  TBVectorData::RotateVector(alphas, n);
-		transfromedSysSNH.addNode(n_t.getX(), n.getY(), n.getZ(), 0.0001);
+		transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001);
 		ns_t.push_back( transfromedSysSNH.addNode(n_t.getX(), n_t.getY(), n_t.getZ(), 0.0001));
 	}
 
 	DM::Face * f_t = transformedSys.addFace(ns_t);
-
 
 	CDT cdt;
 	Polygon_2 polygon1;
@@ -161,7 +160,7 @@ void CGALTriangulation::Triangulation(DM::System *sys, DM::Face *f, std::vector<
 			for (int i = 0; i < 3; i++) {
 				DM::Node * n_t = transfromedSysSNH.findNode(fit->vertex(i)->point().x(),  fit->vertex(i)->point().y(), 0.0001);
 				if (!n_t) {
-					DM::Logger(DM::Warning) << "Transformend Node doesn't exist trinagulation failed";
+					DM::Logger(DM::Warning) << "Transformend Node doesn't exist triangulation failed";
 					return  triangles.clear();
 				}
 
