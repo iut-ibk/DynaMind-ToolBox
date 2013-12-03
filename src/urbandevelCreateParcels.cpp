@@ -144,12 +144,12 @@ urbandevelCreateParcels::urbandevelCreateParcels()
 
     //Datastream
     this->inputView = DM::View("CITYBLOCK", DM::FACE, DM::READ);
-    this->inputView.getAttribute("selected");
+    this->inputView.addAttribute("selected", DM::Attribute::DOUBLE, DM::READ);
 
     this->resultView = DM::View("PARCEL", DM::FACE, DM::WRITE);
-    this->resultView.addAttribute("selected");
+    this->resultView.addAttribute("selected", DM::Attribute::DOUBLE, DM::WRITE);
 
-    this->resultView.addAttribute("generation");
+    this->resultView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
 
     this->bbs = DM::View("BBS", DM::FACE, DM::WRITE);
 
@@ -170,12 +170,12 @@ void urbandevelCreateParcels::init()
     if (InputView.getType() == -1)
         return;
     inputView = DM::View(InputView.getName(), InputView.getType(), DM::READ);
-    this->inputView.getAttribute("selected");
+    this->inputView.addAttribute("selected", DM::Attribute::DOUBLE, DM::READ);
     resultView = DM::View(OutputViewName, DM::FACE, DM::WRITE);
-    this->resultView.addAttribute("selected");
-    this->resultView.addAttribute("generation");
+    this->resultView.addAttribute("selected", DM::Attribute::DOUBLE, DM::WRITE);
+    this->resultView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
     face_nodes = DM::View("FACE_NODES", DM::NODE, DM::WRITE);
-    face_nodes.addAttribute("street_side");
+    face_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> datastream;
 
@@ -400,7 +400,8 @@ void urbandevelCreateParcels::createFinalFaces(DM::System *workingsys, DM::Syste
         if (checkIfHoleFilling(orig, f)) {
             DM::Logger(DM::Debug) << "Remove face";
             sys->removeComponentFromView(f, v);
-            sys->removeFace(f->getUUID());
+           // sys->removeFace(f->getUUID());
+          //  sys->removeComponentFromView()
             removed_faces++;
         }
 

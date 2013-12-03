@@ -54,16 +54,16 @@ void urbandevelControl::init()
     // create a view - this one modifies an existing view 'myviewname'
     city = DM::View("CITY", DM::NODE, DM::MODIFY);
     // attach new attributes to view
-    city.getAttribute("year");
-    city.getAttribute("population");
-    city.addAttribute("startyear");
-    city.addAttribute("endyear");
-    city.addAttribute("yearcycle");
-    city.addAttribute("wp_com"); //workplaces
-    city.addAttribute("wp_ind");
-    city.addAttribute("yearfactor");
-    city.addAttribute("areafactor");
-    city.addAttribute("popdiffperyear");
+    city.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("population", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("startyear", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("endyear", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
+    city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("yearfactor", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("areafactor", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -76,7 +76,7 @@ void urbandevelControl::run()
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
-    std::map<std::string,DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
     if (cities.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();

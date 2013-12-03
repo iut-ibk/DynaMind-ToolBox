@@ -23,10 +23,10 @@ void urbandevelCreateBuilding::init()
     parcels = DM::View("PARCELS", DM::COMPONENT, DM::MODIFY);
 
     // attach new attributes to view
-    buildings.addAttribute("width");
-    buildings.addAttribute("ratio");
-    buildings.addAttribute("stories");
-    buildings.addAttribute("year");
+    buildings.addAttribute("width", DM::Attribute::DOUBLE, DM::WRITE);
+    buildings.addAttribute("ratio", DM::Attribute::DOUBLE, DM::WRITE);
+    buildings.addAttribute("stories", DM::Attribute::DOUBLE, DM::WRITE);
+    buildings.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
