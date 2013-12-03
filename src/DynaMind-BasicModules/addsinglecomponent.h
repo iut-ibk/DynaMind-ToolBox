@@ -34,7 +34,9 @@ class DM_HELPER_DLL_EXPORT AddSingleComponent : public DM::Module
 	DM_DECLARE_NODE(AddSingleComponent)
 private:
 	std::string ViewName;
+	std::string Type;
 	DM::View ComponentView;
+	bool dummy;
 
 public:
 	AddSingleComponent();
