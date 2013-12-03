@@ -41,6 +41,8 @@ private:
 		DM::View vbase;
 		DM::View vlinkto;
 		double spatialL;
+		bool clear_links;
+		bool selected_only;
 public:
 	SpatialLinking();
 	void run();

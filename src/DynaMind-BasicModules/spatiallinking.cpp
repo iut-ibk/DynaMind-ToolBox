@@ -44,9 +44,13 @@ SpatialLinking::SpatialLinking()
 	this->base = "";
 	this->linkto = "";
 	spatialL = 1000;
+	clear_links = false;
+	this->selected_only = false;
 
 	this->addParameter("Base", DM::STRING, & this->base);
 	this->addParameter("Link", DM::STRING, & this->linkto);
+	this->addParameter("SelectedOnly", DM::BOOL, & selected_only);
+	this->addParameter("ClearLinks", DM::BOOL, & clear_links);
 
 	std::vector<DM::View> data;
 	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -97,6 +101,16 @@ string SpatialLinking::getHelpUrl()
 void SpatialLinking::run() {
 	city = this->getData("Data");
 	std::vector<std::string> baseUUIDs = city->getUUIDsOfComponentsInView(vbase);
+	std::vector<std::string> linkUUIDs = city->getUUIDsOfComponentsInView(vlinkto);
+
+	if (clear_links) {
+		mforeach(DM::Component* cmp, city->getAllComponentsInView(vbase)) {
+			cmp->getAttribute(vlinkto.getName())->setLinks(std::vector<DM::LinkAttribute>());
+		}
+		mforeach(DM::Component* cmp, city->getAllComponentsInView(vlinkto)) {
+			cmp->getAttribute(vbase.getName())->setLinks(std::vector<DM::LinkAttribute>());
+		}
+	}
 	std::vector<DM::Node> centerPoints;
 
 	//Node id that point to elements in the vector are stored in Hashmap for faster lookup
@@ -105,6 +119,13 @@ void SpatialLinking::run() {
 	//Init Point List
 	int counterID = -1;
 	foreach (std::string baseUUID, baseUUIDs) {
+
+		if (selected_only) {
+		 DM::Component * cmp = city->getComponent(baseUUID);
+		 if (cmp->getAttribute("selected")->getDouble() < 0.1)
+			 continue; //Not selected
+		}
+
 		counterID++;
 
 		DM::Node c_n;
@@ -133,7 +154,7 @@ void SpatialLinking::run() {
 	}
 	//Check if Center point is within toLink
 
-	std::vector<std::string> linkUUIDs = city->getUUIDsOfComponentsInView(vlinkto);
+
 
 	int CounterElementLinked = 0;
 	int NumberOfLinks = linkUUIDs.size();
@@ -149,10 +170,6 @@ void SpatialLinking::run() {
 		double hb;
 		double wb;
 		TBVectorData::getBoundingBox(city->getFace(linkUUID)->getNodePointers(), xb, yb, hb, wb,true);
-		/*int xmin = (int) (qf.boundingRect().left()) / spatialL-1;
-		int ymin = (int) (qf.boundingRect().bottom()) /spatialL-1;
-		int xmax = (int) (qf.boundingRect().right())/spatialL+1;
-		int ymax = (int) (qf.boundingRect().top())/spatialL+1;*/
 
 		int xmin = (int) (xb) / spatialL-1;
 		int ymin = (int) (yb) /spatialL-1;
@@ -190,7 +207,8 @@ void SpatialLinking::run() {
 						Component * cmp = city->getComponent(baseUUIDs[id]);
 						Attribute * attr = cmp->getAttribute(linkto);
 						std::vector<LinkAttribute>  ls = attr->getLinks();
-						if (std::find(ls.begin(), ls.end(), lto) == ls.end()) ls.push_back(lto);
+						if (std::find(ls.begin(), ls.end(), lto) == ls.end())
+							ls.push_back(lto);
 						//else Logger(Standard) << "Link already existed";
 						attr->setLinks(ls);
 
