@@ -31,6 +31,7 @@
 #include <QPlainTextEdit>
 #include <QTextCursor>
 #include <cstdio>
+#include <iostream>
 
 class  DM_HELPER_DLL_EXPORT Q_DebugStream : public QObject, public std::basic_streambuf<char>
 {
