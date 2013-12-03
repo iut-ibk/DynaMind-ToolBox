@@ -83,7 +83,7 @@ class ExportToShapeFile(Module):
                 self.createParameter("offsetX", DOUBLE, "OffsetX")
                 self.createParameter("offsetY", DOUBLE, "OffsetY") 
                 self.CoordinateSystemEPSG = 32755
-                self.vec = View("dummy", SUBSYSTEM, READ)
+                self.vec = View("dummy", SUBSYSTEM, MODIFY)
                 self.offsetX = 0
                 self.offsetY = 0                
                 views = []
