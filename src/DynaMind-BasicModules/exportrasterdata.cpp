@@ -13,8 +13,10 @@ ExportRasterData::ExportRasterData()
 	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::READ) );
 	this->FileName = "";
 	this->flip_h = false;
+	this->add_run_number = true;
 	this->addParameter("FileName", DM::FILENAME, &this->FileName);
 	this->addParameter("flip_h", DM::BOOL, &this->flip_h);
+	this->addParameter("add_run_number", DM::BOOL, &this->add_run_number);
 	this->addParameter("NameOfExistingView", DM::STRING, &this->NameOfExistingView);
 	this->addData("Data", data);
 	counter = 0;
@@ -27,7 +29,12 @@ void ExportRasterData::run () {
 	QString extension=".txt";
 	std::stringstream s;
 	s << "_"<<counter;
-	QString fullFileName =   QString::fromStdString(FileName)+  QString::fromStdString(s.str()) +extension;
+	QString fullFileName;
+	if (add_run_number)
+		 fullFileName =   QString::fromStdString(FileName)+  QString::fromStdString(s.str()) +extension;
+	else {
+		fullFileName =   QString::fromStdString(FileName) + extension;
+	}
 	std::fstream txtout;
 
 	txtout.open(fullFileName.toAscii(),std::ios::out);
