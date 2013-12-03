@@ -68,7 +68,7 @@ void GUICellularAutomata_Neighbourhood::accept() {
 	ss << this->getNeighbourhood( ui->comboBox_neigh->currentText().toStdString());
 	//neighs[name] =ss.str();
 	//m->setParameterNative< std::map<std::string, std::string> >("Neighs", neighs);
-	gui->m->param.neighs[name] == ss.str();
+	gui->m->param.neighs[name] = ss.str();
 	emit valuesChanged();
 	QDialog::accept();
 
