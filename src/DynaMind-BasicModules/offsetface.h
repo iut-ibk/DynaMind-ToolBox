@@ -48,7 +48,7 @@ public:
 	void run();
 	void init();
 
-	DM::Face *createOffest(DM::System *sys, DM::Face * f, double offset);
+	std::vector<DM::Face *> createOffest(DM::System *sys, DM::Face * f, double offset);
 
 	std::string getHelpUrl();
 

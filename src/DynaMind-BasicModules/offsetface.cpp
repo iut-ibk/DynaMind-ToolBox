@@ -44,9 +44,9 @@ OffsetFace::OffsetFace()
 void OffsetFace::init()
 {
 	if (nameInputView.empty())
-			return;
+		return;
 	if (nameOutputView.empty())
-			return;
+		return;
 
 	this->inputView = DM::View(nameInputView, DM::FACE, DM::READ);
 	this->outputView = DM::View(nameOutputView, DM::FACE, DM::WRITE);
@@ -60,24 +60,27 @@ void OffsetFace::init()
 
 }
 
-DM::Face *OffsetFace::createOffest(DM::System * sys, DM::Face *f, double offset)
+std::vector<DM::Face *> OffsetFace::createOffest(DM::System * sys, DM::Face *f, double offset)
 {
-	std::vector<DM::Node> nodes = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), offset);
-
-	std::vector<DM::Node*> face_nodes;
-	foreach (DM::Node n, nodes) {
-		DM::Node * np = sys->addNode(n);
-		if (!np) {
-			return NULL;
+	std::vector<std::vector<DM::Node> > nodes = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), offset);
+	std::vector<DM::Face *> ress;
+	for (int i = 0; i < nodes.size(); i++) {
+		std::vector<DM::Node*> face_nodes;
+		foreach (DM::Node n, nodes[i]) {
+			DM::Node * np = sys->addNode(n);
+			if (!np) {
+				return std::vector<DM::Face *>();
+			}
+			face_nodes.push_back(np);
 		}
-		face_nodes.push_back(np);
-	}
-	if (face_nodes.size() < 3) {
-		DM::Logger(DM::Warning) << "offest failed";
-		return NULL;
+		if (face_nodes.size() < 3) {
+			DM::Logger(DM::Warning) << "offest failed";
+			return std::vector<DM::Face *>();
+		}
+		ress.push_back(sys->addFace(face_nodes));
 	}
 
-	return sys->addFace(face_nodes);
+	return ress;
 }
 
 
@@ -87,10 +90,11 @@ void OffsetFace::run()
 
 	mforeach(DM::Component * cmp, sys->getAllComponentsInView(inputView)) {
 		DM::Face * f = dynamic_cast<DM::Face*>(cmp);
-		DM::Face * f_off = this->createOffest(sys, f, this->offest);
-		if (!f_off)
+		std::vector<DM::Face *> f_off = this->createOffest(sys, f, this->offest);
+		if (f_off.size() == 0)
 			continue;
-		sys->addComponentToView(f_off, this->outputView);
+		foreach (DM::Face * f_o, f_off)
+			sys->addComponentToView(f_o, this->outputView);
 	}
 }
 
