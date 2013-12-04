@@ -52,9 +52,9 @@ void urbandevelRankEuclid::init()
     city = DM::View("CITY", DM::NODE, DM::READ);
 
     // attach new attributes to view
-    superblock.getAttribute("develyear");
-    superblock.getAttribute("type");
-    superblock.addAttribute("rank");
+    superblock.addAttribute("develyear", DM::Attribute::DOUBLE, DM::READ);
+    superblock.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
+    superblock.addAttribute("rank", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -67,12 +67,19 @@ void urbandevelRankEuclid::run()
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
-    std::map<std::string,DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
-    std::map<std::string,DM::Component *> sb_centroids = sys->getAllComponentsInView(superblock_centroids);
-    std::map<std::string,DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
+    std::vector<DM::Component *> sb_centroids = sys->getAllComponentsInView(superblock_centroids);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
 
-    mforeach(DM::Component* currentcity, cities)
+    if (cities.size() != 1)
     {
+        DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
+        return;
+    }
+
+//    mforeach(DM::Component* currentcity, cities)
+//    {
+    DM::Component* currentcity = cities[0];
         // get max,min and mean devel years and areas
         int sy = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
         int ey = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
@@ -83,8 +90,9 @@ void urbandevelRankEuclid::run()
         std::vector<int> year_vec;
         std::vector<int> area_vec;
 
-        mforeach(DM::Component* currentsuperblock, superblocks)
+        for (int index = 0; index < superblocks.size(); index++)
         {
+            DM::Component * currentsuperblock = superblocks[index];
             int dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
             double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock);
 
@@ -111,7 +119,7 @@ void urbandevelRankEuclid::run()
         DM::Logger(DM::Error) << "min|max|mean area" << min_area << "|" << max_area << "|" << mean_area;
 
 
-        mforeach(DM::Component* currentcentroid, sb_centroids)
+/*        mforeach(DM::Component* currentcentroid, sb_centroids)
         {
           std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK")->getLink().uuid;
           DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
@@ -139,4 +147,5 @@ void urbandevelRankEuclid::run()
           currentsuperblock->changeAttribute("rank", distance);
         }
     }
+    */
 }

@@ -83,8 +83,7 @@ void urbandevelControl::run()
         return;
     }
 
-    mforeach(DM::Component* currentcity, cities)
-    {
+    DM::Component * currentcity = cities[1];
         //year->2000,2010,2020
         //pop->x,y,z
         QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
@@ -148,5 +147,4 @@ void urbandevelControl::run()
 
         dmatt = currentcity->getAttribute("areafactor");
         dmatt->setDouble(areafactor);
-    }
 }

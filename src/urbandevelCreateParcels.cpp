@@ -190,7 +190,7 @@ void urbandevelCreateParcels::init()
 
 /** The method is based on the minial bounding box */
 void urbandevelCreateParcels::run(){
-
+/*
     DM::Logger(DM::Warning) << "Redevelopment not finished yet - offset is still missing";
     if (this->aspectRatio < 1) {
         DM::Logger(DM::Warning) <<  "Aspect Ration < 1 please, just values > 1 are used";
@@ -222,7 +222,7 @@ void urbandevelCreateParcels::run(){
         DM::Face * f = static_cast<DM::Face *> (c);
         f->addAttribute("selected", 0);
     }
-
+*/
 }
 
 void urbandevelCreateParcels::createSubdevision(DM::System * sys,  DM::Face *f, int gen)
@@ -343,7 +343,7 @@ bool urbandevelCreateParcels::checkIfHoleFilling(DM::Face * orig, DM::Face * fac
 
 void urbandevelCreateParcels::createFinalFaces(DM::System *workingsys, DM::System * sys, DM::Face * orig, DM::View v, DM::SpatialNodeHashMap &sphs)
 {
-
+/*
     Arrangement_2::Face_const_iterator              fit;
     Segment_list_2									segments;
     Arrangement_2									arr;
@@ -411,4 +411,5 @@ void urbandevelCreateParcels::createFinalFaces(DM::System *workingsys, DM::Syste
     DM::Logger(DM::Debug) << "Input Faces " << faceCounter_orig;
     DM::Logger(DM::Debug) << "Created Faces " << faceCounter;
     DM::Logger(DM::Debug) << "Removed Faces " << removed_faces;
+    */
 }

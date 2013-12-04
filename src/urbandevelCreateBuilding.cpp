@@ -41,22 +41,23 @@ void urbandevelCreateBuilding::run()
     srand ( NULL );
 
     DM::System * data = this->getData("city");
-    mforeach(DM::Component * parcel, data->getAllComponentsInView(parcels))
+    std::vector<DM::Component *> parcel = data->getAllComponentsInView(parcels);
+    for (int index = 0; index < parcel.size(); index++)
     {
-        DM::Attribute* parcel_empty = parcel->getAttribute("empty");
+        DM::Attribute* parcel_empty = parcel[index]->getAttribute("empty");
         if (parcel_empty) {
-            if (parcel->getAttribute("maxheight")->getDouble() > 0) { stories = parcel->getAttribute("maxheight")->getDouble(); }
+            if (parcel[index]->getAttribute("maxheight")->getDouble() > 0) { stories = parcel[index]->getAttribute("maxheight")->getDouble(); }
 
-            stories = (int)(parcel->getAttribute("maxheight")->getDouble());
+            stories = (int)(parcel[index]->getAttribute("maxheight")->getDouble());
             int length_rand = static_cast<int>(length/4*3 + (rand() % (length/3)));
             int width_rand = static_cast<int>(length_rand*ratio);
 
 
 
 
-            parcel->getAttribute("centroid_x"); //should be calculated here?
-            parcel->getAttribute("centroid_y");
-            parcel->changeAttribute("empty", 0);
+            parcel[index]->getAttribute("centroid_x"); //should be calculated here?
+            parcel[index]->getAttribute("centroid_y");
+            parcel[index]->changeAttribute("empty", 0);
 
         }
         //g->setDouble(g->getDouble() * 2.0);

@@ -49,9 +49,9 @@ void urbandevelRankArea::init()
     city = DM::View("CITY", DM::NODE, DM::READ);
 
     // attach new attributes to view
-    superblock.getAttribute("develyear");
-    superblock.getAttribute("type");
-    superblock.addAttribute("rank");
+    superblock.addAttribute("develyear", DM::Attribute::DOUBLE, DM::READ);
+    superblock.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
+    superblock.addAttribute("rank", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -63,19 +63,25 @@ void urbandevelRankArea::run()
 {
     // get data from stream/port
     DM::System * sys = this->getData("data");
-    std::map<std::string,DM::Component *> cities = sys->getAllComponentsInView(city);
-    std::map<std::string,DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
 
-    mforeach(DM::Component* currentcity, cities)
+    if (cities.size() != 1)
     {
-        // get max,min and mean devel years and areas
+        DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
+        return;
+    }
+
+    DM::Component * currentcity = cities[1];
+
+    // get max,min and mean devel years and areas
         double areafactor = currentcity->getAttribute("yearfactor")->getDouble();
         int min_area, max_area, mean_area = 0;
         std::vector<double> area_vec;
 
-        mforeach(DM::Component* currentsuperblock, superblocks)
+        for (int index = 0; index < superblocks.size(); index++)
         {
-            double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock);
+            double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)superblocks[index]);
             area_vec.push_back(area);
         }
 
@@ -86,10 +92,9 @@ void urbandevelRankArea::run()
 
         DM::Logger(DM::Error) << "min|max|mean area" << min_area << "|" << max_area << "|" << mean_area;
 
-        mforeach(DM::Component* currentsuperblock, superblocks)
+        for (int index = 0; index < superblocks.size(); index++)
         {
             double area_factor = 000;
-            currentsuperblock->changeAttribute("rank", area_factor);
+            superblocks[index]->changeAttribute("rank", area_factor);
         }
-    }
 }
