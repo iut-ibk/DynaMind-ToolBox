@@ -35,7 +35,7 @@ public:
 
     /** @brief ranks a set of DM::Components according to a given DM::Double Attribute
                 returns a map <double, int> with attribute value and rank value **/
-    static bool darank(pair< std::vector<double>,std::vector<int> >& vec);
+    static bool darank(std::vector<double>& distance ,std::vector<int>& rank, std::string function);
 };
 
 #endif // DAHELPER_H

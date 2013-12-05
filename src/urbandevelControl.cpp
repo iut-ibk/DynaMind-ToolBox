@@ -63,7 +63,7 @@ void urbandevelControl::init()
     city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("yearfactor", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("areafactor", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -83,11 +83,11 @@ void urbandevelControl::run()
         return;
     }
 
-    DM::Component * currentcity = cities[1];
+    DM::Component * currentcity = cities[0];
         //year->2000,2010,2020
         //pop->x,y,z
-        QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
-        QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
+    QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
+    QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
 
         DM::Logger(DM::Debug) << "year: " << year << "  population: " << pop;
 
@@ -95,7 +95,10 @@ void urbandevelControl::run()
         QStringList poplist = pop.split(",");
 
         if (yrlist.size() != poplist.size())
-            DM::Logger(DM::Warning) << "no of years = " << yrlist.size() << "no of popdata = " << poplist.size() << "... must be the same";
+        {
+            DM::Logger(DM::Error) << "no of years = " << yrlist.size() << "no of popdata = " << poplist.size() << "... must be the same";
+            return;
+        }
 
         int sy = startyear;
         int ey = endyear;

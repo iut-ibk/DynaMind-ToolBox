@@ -27,6 +27,7 @@
 #include<dm.h>
 #include<tbvectordata.h>
 #include<dmgeometry.h>
+#include<dahelper.h>
 
 
 DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
@@ -77,75 +78,30 @@ void urbandevelRankEuclid::run()
         return;
     }
 
-//    mforeach(DM::Component* currentcity, cities)
-//    {
-    DM::Component* currentcity = cities[0];
-        // get max,min and mean devel years and areas
-        int sy = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
-        int ey = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
-        double yearfactor = currentcity->getAttribute("yearfactor")->getDouble();
-        double areafactor = currentcity->getAttribute("areafactor")->getDouble();
-        int min_dy, max_dy, mean_dy = 0;
-        int min_area, max_area, mean_area = 0;
-        std::vector<int> year_vec;
-        std::vector<int> area_vec;
+    DM::Component* city = cities[0];
 
-        for (int index = 0; index < superblocks.size(); index++)
+    std::vector<double> distance;
+    std::vector<int> rank;
+
+    for (int i = 0; i < superblocks.size(); i++)
+    {
+        std::vector<DM::Component*> link = superblocks[i]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
+        //DM::Component* centroid = sb_centroids[i];
+        //std::vector<DM::Component*> DM::Attribute::getLinkedComponents();
+
+        if(link.size() < 1)
         {
-            DM::Component * currentsuperblock = superblocks[index];
-            int dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
-            double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock);
-
-            if (dy == 0 || dy < sy) {dy = sy + 1;}
-            if (dy >= ey) {dy = ey - 1;}
-
-            year_vec.push_back(dy);
-            area_vec.push_back(area);
-
+            DM::Logger(DM::Error) << "no superblock - centroid link";
+            return;
         }
 
-        int year_sum = std::accumulate(year_vec.begin(), year_vec.end(), 0);
-        double area_sum = std::accumulate(area_vec.begin(), area_vec.end(), 0.0);
+        DM::Node * centroid = dynamic_cast<DM::Node*>(link[0]);
 
-        min_dy = *std::min_element(year_vec.begin(), year_vec.end());
-        max_dy = *std::max_element(year_vec.begin(), year_vec.end());
-        mean_dy = year_sum / year_vec.size();
-
-        min_area = *std::min_element(area_vec.begin(), area_vec.end());
-        max_area = *std::max_element(area_vec.begin(), area_vec.end());
-        mean_area = area_sum / area_vec.size();
-
-        DM::Logger(DM::Error) << "min|max|mean year" << min_dy << "|" << max_dy << "|" << mean_dy;
-        DM::Logger(DM::Error) << "min|max|mean area" << min_area << "|" << max_area << "|" << mean_area;
-
-
-/*        mforeach(DM::Component* currentcentroid, sb_centroids)
-        {
-          std::string currentsuperblock_ID = currentcentroid->getAttribute("SUPERBLOCK")->getLink().uuid;
-          DM::Face * currentsuperblock = static_cast<DM::Face*>(sys->getComponent(currentsuperblock_ID));
-
-          int distance = static_cast<int>(TBVectorData::calculateDistance((DM::Node*)currentcity, (DM::Node*)currentcentroid));
-
-          double yf, af = 0;
-
-          if (usedevelyears) {
-              int dy = static_cast<int>(currentsuperblock->getAttribute("develyear")->getDouble());
-              if (dy == 0 || dy < sy) {dy = sy+1;}
-              if (dy >= ey) {dy = ey-1;}
-
-              yf = (dy - sy + 2)/(ey - sy); // values from 0-1
-              //DM::Logger(DM::Error) << "dev year|year factor   " << dy << "|" << yf;
-          }
-          if (prefersmallareas) {
-              double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentsuperblock)/10000;
-              af = 1/area;
-              //DM::Logger(DM::Error) << "area|area factor   " << area << "|" << af;
-          }
-
-          int rank = static_cast<int>(distance * yf * yearfactor * af *areafactor);
-        //  DM::Logger(DM::Error) << "distance|rank   " << distance << "|" << rank << "\n";
-          currentsuperblock->changeAttribute("rank", distance);
-        }
+        distance.push_back(TBVectorData::calculateDistance((DM::Node*)city, (DM::Node*)centroid));
     }
-    */
+    DAHelper::darank(distance, rank, "linear");
+    for (int i = 0; i < superblocks.size(); i++)
+    {
+        dynamic_cast<DM::Face*>(superblocks[i])->changeAttribute("rank", rank[i]);
+    }
 }
