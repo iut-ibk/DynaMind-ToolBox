@@ -36,8 +36,7 @@ public:
     void run();
     void init();
 private:
-    bool usedevelyears;
-    bool prefersmallareas;
+    int rank_fun;
 
     DM::View superblock;
     DM::View superblock_centroids;

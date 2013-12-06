@@ -33,9 +33,9 @@ class DAHelper
 {
 public:
 
-    /** @brief ranks a set of DM::Components according to a given DM::Double Attribute
-                returns a map <double, int> with attribute value and rank value **/
-    static bool darank(std::vector<double>& distance ,std::vector<int>& rank, std::string function);
+    /** @brief ranks a set of DM::Components according to a given DM::Double Attribute vector
+            ranking is possible linear [0] and quadratic [1] **/
+    static bool darank(std::vector<double>& distance ,std::vector<int>& rank, int function);
 };
 
 #endif // DAHELPER_H

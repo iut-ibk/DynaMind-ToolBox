@@ -35,10 +35,8 @@ DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
 urbandevelRankEuclid::urbandevelRankEuclid()
 {
     // declare parameters
-    usedevelyears = TRUE;
-    prefersmallareas = TRUE;
-    this->addParameter("use devel years", DM::BOOL, &this->usedevelyears); // if set the years set in the develareas will be ignored, factor has to be set in View: city->yearfactor
-    this->addParameter("prefer small areas", DM::BOOL, &this->prefersmallareas); // develop small areas first, factor has to be set in View: city->areafactor
+    rank_fun = 1;
+    this->addParameter("ranking function", DM::INT, &this->rank_fun); // ranking function
 }
 
 urbandevelRankEuclid::~urbandevelRankEuclid()
@@ -86,8 +84,6 @@ void urbandevelRankEuclid::run()
     for (int i = 0; i < superblocks.size(); i++)
     {
         std::vector<DM::Component*> link = superblocks[i]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
-        //DM::Component* centroid = sb_centroids[i];
-        //std::vector<DM::Component*> DM::Attribute::getLinkedComponents();
 
         if(link.size() < 1)
         {
@@ -99,7 +95,8 @@ void urbandevelRankEuclid::run()
 
         distance.push_back(TBVectorData::calculateDistance((DM::Node*)city, (DM::Node*)centroid));
     }
-    DAHelper::darank(distance, rank, "linear");
+    int method = 1;
+    DAHelper::darank(distance, rank, method);
     for (int i = 0; i < superblocks.size(); i++)
     {
         dynamic_cast<DM::Face*>(superblocks[i])->changeAttribute("rank", rank[i]);
