@@ -35,8 +35,10 @@ DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
 urbandevelRankEuclid::urbandevelRankEuclid()
 {
     // declare parameters
-    rank_fun = 1;
-    this->addParameter("ranking function", DM::INT, &this->rank_fun); // ranking function
+    rank_function = "linear";
+    rank_function_factor = 2;
+    this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
+    this->addParameter("ranking funcktion faktor", DM::INT, &this->rank_function_factor);
 }
 
 urbandevelRankEuclid::~urbandevelRankEuclid()
@@ -95,8 +97,7 @@ void urbandevelRankEuclid::run()
 
         distance.push_back(TBVectorData::calculateDistance((DM::Node*)city, (DM::Node*)centroid));
     }
-    int method = 1;
-    DAHelper::darank(distance, rank, method);
+    DAHelper::darank(distance, rank, rank_function, rank_function_factor);
     for (int i = 0; i < superblocks.size(); i++)
     {
         dynamic_cast<DM::Face*>(superblocks[i])->changeAttribute("rank", rank[i]);

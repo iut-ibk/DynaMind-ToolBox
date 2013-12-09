@@ -35,7 +35,7 @@ public:
 
     /** @brief ranks a set of DM::Components according to a given DM::Double Attribute vector
             ranking is possible linear [0] and quadratic [1] **/
-    static bool darank(std::vector<double>& distance ,std::vector<int>& rank, int function);
+    static bool darank(std::vector<double>& distance ,std::vector<int>& rank, std::string function = "lin", int factor = 1);
 };
 
 #endif // DAHELPER_H

@@ -36,7 +36,8 @@ public:
     void run();
     void init();
 private:
-    int rank_fun;
+    std::string rank_function;
+    int rank_function_factor;
 
     DM::View superblock;
     DM::View superblock_centroids;
