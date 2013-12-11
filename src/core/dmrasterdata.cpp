@@ -345,9 +345,11 @@ void RasterData::clear()
 {
     QMutexLocker ml(mutex);
 
-    for (int y = 0; y < this->height; y++)
-        for (int x = 0; x < this->width; x++)
-            SQLSetValue(x,y,NoValue);
+	for (int y = 0; y < this->height; y++)
+		for (int x = 0; x < this->width; x++)
+			SQLSetValue(x,y,NoValue);
+	this->maxValue = NoValue;
+	this->minValue = NoValue;
 }
 
 Component * RasterData::clone() {
