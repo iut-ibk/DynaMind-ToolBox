@@ -330,6 +330,19 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     return newFaces;
 }
 
+std::vector<double> TBVectorData::calculateDistance(std::vector<DM::Component*> edges)
+{
+	std::vector<double> result;
+
+	for(int index=0; index < edges.size(); index++)
+	{
+		DM::Edge* currentedge = dynamic_cast<DM::Edge*>(edges[index]);
+		result.push_back(calculateDistance(currentedge->getStartNode(), currentedge->getEndNode()));
+	}
+
+	return result;
+}
+
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
 	double p0[3], p1[3];
@@ -746,6 +759,15 @@ void TBVectorData::PrintFace(DM::Face *f, DM::LogLevel loglevel)
 			DM::Logger(loglevel) << n->getX() << "\t"<< n->getY()<< "\t"<< n->getZ();
 		}
 	}
+}
+
+std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Component *> nodefield)
+{
+	std::vector<DM::Node*> nodes;
+	for(int index=0; index < nodefield.size(); index++)
+		nodes.push_back(dynamic_cast<DM::Node*>(nodefield[index]));
+
+	return findNearestNeighbours(root,maxdistance,nodes);
 }
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
