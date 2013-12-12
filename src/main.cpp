@@ -177,8 +177,6 @@ int main(int argc, char *argv[], char *envp[]) {
 		("repeat", po::value<int>(), "repeat simulation")
 		("cpfile", po::value<string>(), "Copy generated files: ([SOURCEFILE],[TARGETPATH]DMITERATION[FILENAME];)* ")
 		("verbose", "verbose output")
-		("nodecache", po::value<unsigned long>(), "node cache size")
-		("attributecache", po::value<unsigned long>(), "attribute cache size")
 		("sqlquerystack", po::value<unsigned long>(), "sql query cache size")
 		("blockwriting", po::value<unsigned long>(), "sql write block size")
 		("loglevel", po::value<int>(), "logger level 0-3 (Debug-Standard-Warning-Error)")
@@ -267,8 +265,6 @@ int main(int argc, char *argv[], char *envp[]) {
 		env->addPythonPath("");
 
 		DM::DBConnectorConfig cfg;
-		if(vm.count("nodecache"))		cfg.nodeCacheSize		 = vm["nodecache"].as<unsigned long>();
-		if(vm.count("attributecache"))	cfg.attributeCacheSize	 = vm["attributecache"].as<unsigned long>();
 		if(vm.count("sqlquerystack"))	cfg.queryStackSize		 = vm["sqlquerystack"].as<unsigned long>();
 		if(vm.count("blockwriting"))	cfg.cacheBlockwritingSize = vm["blockwriting"].as<unsigned long>();
 		DM::DBConnector::getInstance()->setConfig(cfg);
@@ -278,8 +274,6 @@ int main(int argc, char *argv[], char *envp[]) {
 		if(verbose)
 		{
 			DM::Logger(DM::Standard) << ">>>> config:";
-			DM::Logger(DM::Standard) << "node cache size: " << (long)cfg.nodeCacheSize;
-			DM::Logger(DM::Standard) << "attribute cache size: " << (long)cfg.attributeCacheSize;
 			DM::Logger(DM::Standard) << "sql query stack size: " << (long)cfg.queryStackSize;
 			DM::Logger(DM::Standard) << "sql write block size: " << (long)cfg.cacheBlockwritingSize;
 			DM::Logger(DM::Standard) << "num threads: " << numThreads;
