@@ -125,10 +125,11 @@ struct TesselatedFaceDrawer {
 	void operator()(DM::System *s, const DM::View& v, DM::Face *f, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) {
 		if (pos == after) 
 		{
-			current_height = 0.0;
-			current_tex = 0.0;
 
 			render();
+
+			current_height = 0.0;
+			current_tex = 0.0;
 			polygon.clear();
 
 			name_start++;
@@ -200,8 +201,10 @@ struct TesselatedFaceDrawer {
 		foreach(Polygon_2 poly, tesselated) 
 		{
 
-			if(withTexture)
+			if(withTexture) {
 				glColor4f(1.0, 1.0, 1.0, 0.75);
+				glTexCoord1d(current_tex);
+			}
 			else
 				glColor3f(0.0, 0.0, 0.0);
 
