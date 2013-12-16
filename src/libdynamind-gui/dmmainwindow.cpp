@@ -124,7 +124,9 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadModules()), Qt::DirectConnection);
 	connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
-	connect(ui->actionCancel, SIGNAL(triggered()), this , SLOT(cancelSimulation()), Qt::DirectConnection);
+	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
+
+	ui->actionCancel->setEnabled(false);
 }
 
 void DMMainWindow::createModuleListView() 
@@ -189,6 +191,7 @@ void DMMainWindow::runSimulation()
 	ui->actionUpdate->setEnabled(false);
 	ui->actionSave->setEnabled(false);
 	ui->actionSaveAs->setEnabled(false);
+	ui->actionCancel->setEnabled(true);
 
 	simulationThread = new QThread;
 	simulationThreadWrapper = new GuiSimulationObserver(simulation);
@@ -224,6 +227,7 @@ void DMMainWindow::simulationFinished()
 	ui->actionUpdate->setEnabled(true);
 	ui->actionSave->setEnabled(true);
 	ui->actionSaveAs->setEnabled(true);
+	ui->actionCancel->setEnabled(false);
 }
 
 void DMMainWindow::preferences() 
