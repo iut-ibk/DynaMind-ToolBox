@@ -67,19 +67,54 @@ template<int SD_GL_PRIMITIVE>
 struct SimpleDrawer 
 {
 	GLuint name_start;
+	const Layer &l;
+	double attr_span;
 
-	SimpleDrawer(const Layer &l) : name_start(l.getNameStart()) 
-	{}
-
-	void operator()(DM::System *s, const DM::View& v, void *f_e, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) 
+	SimpleDrawer(const Layer &l) : 
+		l(l), name_start(l.getNameStart()) 
 	{
-		if(pos == in_between)
+		const ViewMetaData &vmd = l.getViewMetaData();
+		this->attr_span = vmd.attr_max - vmd.attr_min;
+	}
+
+	void operator()(DM::System *s, const DM::View& v, DM::Component* cmp, DM::Vector3* point, DM::Vector3* color, iterator_pos pos) 
+	{
+		if (pos == in_between)
+		{
+			double current_tex = 0;
+			if (attr_span != 0)
+			{
+				const ViewMetaData &vmd = l.getViewMetaData();
+				Attribute *a = cmp->getAttribute(l.getAttribute());
+				if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES)
+					current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
+				else
+					current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
+			}
+			else
+				current_tex = 0.0;
+
+			current_tex *= 255;
+
+			if (color)
+				glColor3dv(&color->x);
+			else if (current_tex <= 0)
+				glColor3f(0, 0, 0);
+			else
+			{
+				float r = l.LayerColor[(int)current_tex][0] / 255.;
+				float g = l.LayerColor[(int)current_tex][1] / 255.;
+				float b = l.LayerColor[(int)current_tex][2] / 255.;
+				//float a = l.LayerColor[(int)current_tex][3]/255.;
+				glColor3f(r, g, b);
+			}
+
 			glVertex3dv(&point->x);
+		}
 		else if (pos == before) 
 		{
 			glPushName(name_start);
 			glBegin(SD_GL_PRIMITIVE);
-			glColor3f(0, 0, 0);
 		} 
 		else if (pos == after) 
 		{
