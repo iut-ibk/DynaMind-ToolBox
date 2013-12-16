@@ -86,10 +86,13 @@ struct SimpleDrawer
 			{
 				const ViewMetaData &vmd = l.getViewMetaData();
 				Attribute *a = cmp->getAttribute(l.getAttribute());
-				if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES)
-					current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
-				else
-					current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
+				if (a)
+				{
+					if (a->getType() == Attribute::DOUBLEVECTOR || a->getType() == Attribute::TIMESERIES)
+						current_tex = (a->getDoubleVector()[l.getAttributeVectorName()] - vmd.attr_min) / attr_span;
+					else
+						current_tex = (a->getDouble() - vmd.attr_min) / attr_span;
+				}
 			}
 			else
 				current_tex = 0.0;
