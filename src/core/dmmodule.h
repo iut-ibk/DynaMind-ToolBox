@@ -290,7 +290,7 @@ private:
 	// it is updated by simulation::checkModuleStream
 	std::map<std::string, std::map<std::string, View> > streamViews;
 
-
+	// temporary storage for out going streams, necessary when adding a link afterwards
 	std::map<std::string, std::map<std::string, View> > outStreamViews;
 
 	std::vector<ModuleObserver*>	observers;
