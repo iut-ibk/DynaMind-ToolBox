@@ -121,24 +121,26 @@ public:
     static double CalculateArea(std::vector<DM::Node *> const & nodes);
 
     /** @brief Calculate distance of two nodes A and B */
+	static std::vector<double> calculateDistance(std::vector<DM::Component*> edges);
     static double calculateDistance(DM::Node *a, DM::Node *b);
 
     /** @brief Returns true if a point is within a Face otherwise false */
     static bool PointWithinFace(DM::Face *f, DM::Node *n);
 
     /** @brief Returns ture if a point is within a Face of the face vector otherwise false */
-    static bool PointWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Node *n);
+	static bool PointWithinAnyFace(std::vector<DM::Component*> fv, DM::Node *n);
 
     /** @brief Returns true if start and end node of a edge are point within a face otherwise false */
     static bool EdgeWithinFace(DM::Face *f, DM::Edge *e);
 
     /** @brief Returns true if an edge is within one Face of the face vector otherwise false */
-    static bool EdgeWithinAnyFace(std::map<std::string,DM::Component*> fv, DM::Edge *e);
+	static bool EdgeWithinAnyFace(std::vector<DM::Component*> fv, DM::Edge *e);
 
     /** @brief Returns true if a point is within a Polygon othwerwise false */
     static int CalculateWindingNumber(std::vector<DM::Node*> poly, DM::Node *n);
 
     /** @brief Find nearest neighbours of root node within a node field */
+	static std::vector<DM::Node*> findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Component *> nodefield);
     static std::vector<DM::Node*> findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield);
 
     /** @brief Calculate a bounding box of a node cloud [If init is set to false x,y,h,width are the minimum boundingbox] */

@@ -330,6 +330,19 @@ std::vector<DM::Face*> TBVectorData::ExtrudeFace(DM::System * sys, const DM::Vie
     return newFaces;
 }
 
+std::vector<double> TBVectorData::calculateDistance(std::vector<DM::Component*> edges)
+{
+	std::vector<double> result;
+
+	for(int index=0; index < edges.size(); index++)
+	{
+		DM::Edge* currentedge = dynamic_cast<DM::Edge*>(edges[index]);
+		result.push_back(calculateDistance(currentedge->getStartNode(), currentedge->getEndNode()));
+	}
+
+	return result;
+}
+
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
 	double p0[3], p1[3];
@@ -358,14 +371,14 @@ bool TBVectorData::PointWithinFace(DM::Face *f, DM::Node *n)
     return true;
 }
 
-bool TBVectorData::PointWithinAnyFace(std::map<std::string, DM::Component *> fv, DM::Node *n)
+bool TBVectorData::PointWithinAnyFace(std::vector<DM::Component *> fv, DM::Node *n)
 {
     //typedef std::pair<std::string,DM::Component*> Cp;
-    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+	typedef std::vector<DM::Component*>::iterator CompItr;
 
     for(CompItr i = fv.begin(); i != fv.end(); i++)
     {
-        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+		DM::Face* currentface = static_cast<DM::Face*>((*i));
 
         if(TBVectorData::PointWithinFace(currentface,n))
             return true;
@@ -385,14 +398,14 @@ bool TBVectorData::EdgeWithinFace(DM::Face *f, DM::Edge *e)
     return true;
 }
 
-bool TBVectorData::EdgeWithinAnyFace(std::map<string, DM::Component *> fv, DM::Edge *e)
+bool TBVectorData::EdgeWithinAnyFace(std::vector<DM::Component *> fv, DM::Edge *e)
 {
     //typedef std::pair<std::string,DM::Component*> Cp;
-    typedef std::map<std::string,DM::Component*>::iterator CompItr;
+	typedef std::vector<DM::Component*>::iterator CompItr;
 
     for(CompItr i = fv.begin(); i != fv.end(); i++)
     {
-        DM::Face* currentface = static_cast<DM::Face*>((*i).second);
+		DM::Face* currentface = static_cast<DM::Face*>((*i));
 
         if(TBVectorData::EdgeWithinFace(currentface,e))
             return true;
@@ -746,6 +759,15 @@ void TBVectorData::PrintFace(DM::Face *f, DM::LogLevel loglevel)
 			DM::Logger(loglevel) << n->getX() << "\t"<< n->getY()<< "\t"<< n->getZ();
 		}
 	}
+}
+
+std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Component *> nodefield)
+{
+	std::vector<DM::Node*> nodes;
+	for(int index=0; index < nodefield.size(); index++)
+		nodes.push_back(dynamic_cast<DM::Node*>(nodefield[index]));
+
+	return findNearestNeighbours(root,maxdistance,nodes);
 }
 
 std::vector<DM::Node*> TBVectorData::findNearestNeighbours(DM::Node *root, double maxdistance, std::vector<DM::Node *> nodefield)
