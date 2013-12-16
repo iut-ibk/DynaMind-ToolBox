@@ -616,6 +616,9 @@ bool Simulation::checkModuleStreamForward(Module* m)
 
 bool Simulation::checkStream()
 {
+	foreach(Module* m, this->modules)
+		m->streamViews.clear();
+
 	bool success = true;
 	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)

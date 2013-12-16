@@ -196,6 +196,9 @@ public:
 	/** @brief exports a simulation to a device in xml-like format */
 	void writeSimulation(QIODevice* dest, QString filePath);
 
+	/** @brief checks the whole simulation stream for possible missing views */
+	bool checkStream();
+
 protected:
 	/** @brief returns the inport data of the link, taking group ports into account */
 	System* getData(Link* l);
@@ -211,9 +214,6 @@ private:
 	/** @brief shifts data from the outgoing port of a group to the inport of the successor module
 	returns destination module */
 	std::set<Module*> shiftGroupInput(Group* m);
-
-	/** @brief checks the whole simulation stream for possible missing views */
-	bool checkStream();
 
 	/** @brief checks the stream beginning with this module for possible missing views */
 	bool checkModuleStreamForward(Module* m);
