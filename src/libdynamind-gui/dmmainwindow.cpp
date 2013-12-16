@@ -202,11 +202,7 @@ void DMMainWindow::runSimulation()
 }
 void DMMainWindow::updateSimulation()
 {
-	/*
-	this->simulation->reloadModules();
-	createModuleListView();
-	this->simulation->updateSimulation();
-	*/
+	simulation->checkStream();
 }
 void DMMainWindow::resetSimulation()
 {
