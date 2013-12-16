@@ -291,6 +291,12 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 		else
 			Logger(Warning) << "stream incomplete" ;
 	}
+	if (!l->isIntoGroupLink && !l->isOutOfGroupLink)
+	{
+		shiftData(l);
+		l->src->setOutPortData(outPort, NULL);
+	}
+
 	return true;
 }
 bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, std::string inPort)
@@ -444,129 +450,139 @@ bool Simulation::checkModuleStreamForward(Module* m)
 			return true;
 		}
 	}
-	DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
-	m->init();
 
 	// updated stream consist of input stream + written streams in this module
-	std::map<std::string, std::map<std::string,View> > updatedStreams = m->streamViews;
+	std::map<std::string, std::map<std::string, View> > updatedStreams;
 
-	for(std::map<std::string, std::map<std::string,View> >::iterator it = m->accessedViews.begin();
-		it != m->accessedViews.end(); ++it)
+	if (m->getStatus() != MOD_CHECK_OK && m->getStatus() != MOD_EXECUTION_OK)
 	{
-		const std::string& streamName = it->first;
-		DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
+		updatedStreams = m->streamViews;
 
-		mforeach(const View& v, it->second)
+		DM::Logger(DM::Debug) << "initializing module '" << m->getClassName() << "'";
+		m->init();
+
+		for (std::map<std::string, std::map<std::string, View> >::iterator it = m->accessedViews.begin();
+			it != m->accessedViews.end(); ++it)
 		{
-			if(v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
-				continue;				// but for backwards compatibility its necessary
+			const std::string& streamName = it->first;
+			DM::Logger(DM::Debug) << "checking stream '" << streamName << "' in module '" << m->getClassName() << "'";
 
-			if(v.getAccessType() < WRITE)
+			mforeach(const View& v, it->second)
 			{
-				// check if we can access the desired view
-				if(!map_contains(&m->streamViews[streamName], v.getName()))
+				if (v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
+					continue;				// but for backwards compatibility its necessary
+
+				if (v.getAccessType() < WRITE)
 				{
-					DM::Logger(DM::Error) << "module '" << m->getClassName()
-						<< "' tries to access the nonexisting view '" << v.getName()
-						<< "' from stream '" << streamName << "'";
-					m->setStatus(MOD_CHECK_ERROR);
-					success = false;
-				}
-				else
-				{
-					View& existingView = updatedStreams[streamName][v.getName()];
-					// check if all attributes are ready existing
-					std::vector<std::string> existingAttributes = existingView.getAllAttributes();
-					foreach(std::string attributeName, v.getAllAttributes())
+					// check if we can access the desired view
+					if (!map_contains(&m->streamViews[streamName], v.getName()))
 					{
-						if(v.getAttributeAccessType(attributeName) < WRITE)
+						DM::Logger(DM::Error) << "module '" << m->getClassName()
+							<< "' tries to access the nonexisting view '" << v.getName()
+							<< "' from stream '" << streamName << "'";
+						m->setStatus(MOD_CHECK_ERROR);
+						success = false;
+					}
+					else
+					{
+						View& existingView = updatedStreams[streamName][v.getName()];
+						// check if all attributes are ready existing
+						std::vector<std::string> existingAttributes = existingView.getAllAttributes();
+						foreach(std::string attributeName, v.getAllAttributes())
 						{
-							// check if existing
-							if(!vector_contains(&existingAttributes, attributeName))
+							if (v.getAttributeAccessType(attributeName) < WRITE)
 							{
-								DM::Logger(DM::Error) << "module '" << m->getClassName()
-								<< "' tries to access the nonexisting attribute '" << attributeName
-								<< "' in view '" << v.getName()
-								<< "' from stream '" << streamName << "'";
-								m->setStatus(MOD_CHECK_ERROR);
-								success = false;
+								// check if existing
+								if (!vector_contains(&existingAttributes, attributeName))
+								{
+									DM::Logger(DM::Error) << "module '" << m->getClassName()
+										<< "' tries to access the nonexisting attribute '" << attributeName
+										<< "' in view '" << v.getName()
+										<< "' from stream '" << streamName << "'";
+									m->setStatus(MOD_CHECK_ERROR);
+									success = false;
+								}
 							}
+							else
+							{
+								// check if existing
+								if (vector_contains(&existingAttributes, attributeName))
+								{
+									DM::Logger(DM::Warning) << "module '" << m->getClassName()
+										<< "' overwrites attribute '" << attributeName
+										<< "' in view '" << v.getName()
+										<< "' from stream '" << streamName << "'";
+								}
+								// add attribute
+								Attribute::AttributeType type = v.getAttributeType(attributeName);
+								if (type != Attribute::LINK)
+									existingView.addAttribute(attributeName, type, READ);
+								else
+									existingView.addAttribute(attributeName, v.getNameOfLinkedView(attributeName), READ);
+							}
+
 						}
+						/*foreach(std::string attributeName, v.getReadAttributes())
+						{
+						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
+						== existingAttributes.end())
+						{
+						DM::Logger(DM::Error) << "module '" << m->getClassName()
+						<< "' tries to access the nonexisting attribute '" << attributeName
+						<< "' in view '" << v.getName()
+						<< "' from stream '" << streamName << "'";
+						m->setStatus(MOD_CHECK_ERROR);
+						success = false;
+						}
+						}
+						foreach(std::string attributeName, v.getWriteAttributes())
+						{
+						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
+						== existingAttributes.end())
+						{
+						View& existingView = updatedStreams[streamName][v.getName()];
+						Attribute::AttributeType type = v.getAttributeType(attributeName);
+
+						if(type == Attribute::LINK)
+						existingView.addLinks(attributeName, attributeName);
 						else
 						{
-							// check if existing
-							if(vector_contains(&existingAttributes, attributeName))
-							{
-								DM::Logger(DM::Warning) << "module '" << m->getClassName()
-								<< "' overwrites attribute '" << attributeName
-								<< "' in view '" << v.getName()
-								<< "' from stream '" << streamName << "'";
-							}
-							// add attribute
-							Attribute::AttributeType type = v.getAttributeType(attributeName);
-							if(type != Attribute::LINK)
-								existingView.addAttribute(attributeName, type, READ);
-							else
-								existingView.addAttribute(attributeName, v.getNameOfLinkedView(attributeName), READ);
+						existingView.addAttribute(attributeName);
+						existingView.setAttributeType(attributeName, type);
 						}
-						
+						}
+						}*/
 					}
-					/*foreach(std::string attributeName, v.getReadAttributes())
-					{
-						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
-							== existingAttributes.end())
-						{
-							DM::Logger(DM::Error) << "module '" << m->getClassName()
-								<< "' tries to access the nonexisting attribute '" << attributeName
-								<< "' in view '" << v.getName()
-								<< "' from stream '" << streamName << "'";
-							m->setStatus(MOD_CHECK_ERROR);
-							success = false;
-						}
-					}
-					foreach(std::string attributeName, v.getWriteAttributes())
-					{
-						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
-							== existingAttributes.end())
-						{
-							View& existingView = updatedStreams[streamName][v.getName()];
-							Attribute::AttributeType type = v.getAttributeType(attributeName);
-
-							if(type == Attribute::LINK)
-								existingView.addLinks(attributeName, attributeName);
-							else
-							{
-								existingView.addAttribute(attributeName);
-								existingView.setAttributeType(attributeName, type);
-							}
-						}
-					}*/
 				}
-			}
-			else	// add new views
-			{
-				// it may be, that a view already exists
-				if(map_contains(&m->streamViews[streamName], v.getName()))
+				else	// add new views
 				{
-					DM::Logger(DM::Warning) << "module '" << m->getClassName()
-								<< "' overwrites view '" << v.getName()
-								<< "' from stream '" << streamName << "'";
-				}
-				updatedStreams[streamName][v.getName()] = v;
+					// it may be, that a view already exists
+					if (map_contains(&m->streamViews[streamName], v.getName()))
+					{
+						DM::Logger(DM::Warning) << "module '" << m->getClassName()
+							<< "' overwrites view '" << v.getName()
+							<< "' from stream '" << streamName << "'";
+					}
+					updatedStreams[streamName][v.getName()] = v;
 
-				/*View newView = v;
-				View& existingView = updatedStreams[streamName][v.getName()];
-				foreach(std::string attName, existingView.getAllAttributes())
+					/*View newView = v;
+					View& existingView = updatedStreams[streamName][v.getName()];
+					foreach(std::string attName, existingView.getAllAttributes())
 					newView.addAttribute(attName);
 
-				existingView = newView;*/
+					existingView = newView;*/
+				}
 			}
 		}
-	}
-	if(!success)
-		return success;
+		if (!success)
+			return success;
 
-	m->setStatus(MOD_CHECK_OK);
+		m->setStatus(MOD_CHECK_OK);
+
+		m->outStreamViews = updatedStreams;
+	}
+	else
+		updatedStreams = m->outStreamViews;
 
 	// shift views to next module
 	// loop thought all out ports
@@ -665,7 +681,7 @@ void Simulation::run()
 	// get modules with no imput - beginning modules list
 	Worlist worklist;
 	foreach(Module* m, modules)
-		if(m->inPortsSet())
+		if(m->inPortsSet() && m->getStatus() != MOD_EXECUTION_OK)
 			worklist.unique_insert(m);
 
 	// the domain in which we are currently executing, starting with root = NULL

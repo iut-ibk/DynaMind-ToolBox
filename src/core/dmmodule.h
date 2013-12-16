@@ -288,7 +288,10 @@ private:
 
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
-	std::map<std::string, std::map<std::string,View> > streamViews;
+	std::map<std::string, std::map<std::string, View> > streamViews;
+
+
+	std::map<std::string, std::map<std::string, View> > outStreamViews;
 
 	std::vector<ModuleObserver*>	observers;
 	std::vector<Parameter*>			parameters;
