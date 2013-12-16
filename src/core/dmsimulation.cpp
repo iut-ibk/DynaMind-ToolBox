@@ -290,11 +290,23 @@ bool Simulation::addLink(Module* source, std::string outPort, Module* dest, std:
 			Logger(Debug) << "checking stream successfull";
 		else
 			Logger(Warning) << "stream incomplete" ;
-	}
-	if (!l->isIntoGroupLink && !l->isOutOfGroupLink)
-	{
-		shiftData(l);
-		l->src->setOutPortData(outPort, NULL);
+
+
+		if (l->isIntoGroupLink || l->isOutOfGroupLink)
+		{
+			DM::Logger(DM::Warning) << "Relinking groups resets the simulation";
+			this->reset();
+		}
+		else if (getOutgoingLinks(source, outPort).size() > 1)
+		{
+			DM::Logger(DM::Warning) << "Branching resets the simulation";
+			this->reset();
+		}
+		else
+		{
+			shiftData(l);
+			l->src->setOutPortData(outPort, NULL);
+		}
 	}
 
 	return true;
