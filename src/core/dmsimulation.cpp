@@ -522,36 +522,6 @@ bool Simulation::checkModuleStreamForward(Module* m)
 							}
 
 						}
-						/*foreach(std::string attributeName, v.getReadAttributes())
-						{
-						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
-						== existingAttributes.end())
-						{
-						DM::Logger(DM::Error) << "module '" << m->getClassName()
-						<< "' tries to access the nonexisting attribute '" << attributeName
-						<< "' in view '" << v.getName()
-						<< "' from stream '" << streamName << "'";
-						m->setStatus(MOD_CHECK_ERROR);
-						success = false;
-						}
-						}
-						foreach(std::string attributeName, v.getWriteAttributes())
-						{
-						if(find(existingAttributes.begin(), existingAttributes.end(), attributeName)
-						== existingAttributes.end())
-						{
-						View& existingView = updatedStreams[streamName][v.getName()];
-						Attribute::AttributeType type = v.getAttributeType(attributeName);
-
-						if(type == Attribute::LINK)
-						existingView.addLinks(attributeName, attributeName);
-						else
-						{
-						existingView.addAttribute(attributeName);
-						existingView.setAttributeType(attributeName, type);
-						}
-						}
-						}*/
 					}
 				}
 				else	// add new views
@@ -564,13 +534,6 @@ bool Simulation::checkModuleStreamForward(Module* m)
 							<< "' from stream '" << streamName << "'";
 					}
 					updatedStreams[streamName][v.getName()] = v;
-
-					/*View newView = v;
-					View& existingView = updatedStreams[streamName][v.getName()];
-					foreach(std::string attName, existingView.getAllAttributes())
-					newView.addAttribute(attName);
-
-					existingView = newView;*/
 				}
 			}
 		}
