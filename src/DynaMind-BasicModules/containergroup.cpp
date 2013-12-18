@@ -45,6 +45,8 @@ void ContainerGroup::run()
 
 void ContainerGroup::init() 
 {
+	Group::init();
+
 	foreach(std::string streamName, outStreams)
 		if(!initStream(streamName, true, true))
 			setOutPortData(streamName, NULL);
