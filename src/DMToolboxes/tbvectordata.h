@@ -123,6 +123,7 @@ public:
     /** @brief Calculate distance of two nodes A and B */
 	static std::vector<double> calculateDistance(std::vector<DM::Component*> edges);
     static double calculateDistance(DM::Node *a, DM::Node *b);
+	static double calculateDistance(std::vector<DM::Node*> nodes);
 
     /** @brief Returns true if a point is within a Face otherwise false */
     static bool PointWithinFace(DM::Face *f, DM::Node *n);

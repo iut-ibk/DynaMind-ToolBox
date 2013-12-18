@@ -343,6 +343,19 @@ std::vector<double> TBVectorData::calculateDistance(std::vector<DM::Component*> 
 	return result;
 }
 
+double TBVectorData::calculateDistance(std::vector<DM::Node*> nodes)
+{
+	double result=0;
+
+	if(nodes.size() < 2)
+		return 0;
+
+	for(int index=0; index<(nodes.size()-1); index++)
+		result+=calculateDistance(nodes[index],nodes[index+1]);
+
+	return result;
+}
+
 double TBVectorData::calculateDistance(DM::Node *a, DM::Node *b)
 {
 	double p0[3], p1[3];
