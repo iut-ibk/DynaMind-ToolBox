@@ -122,12 +122,18 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
 	{
 		DM::Edge *currentedge = static_cast<DM::Edge*>((*itr));
 		float currentdiameter;
+		float roughness;
 		float status;
 		char name[256];
 		strcpy(name, QString::number(components[currentedge]).toStdString().c_str());
 		int index;
 		if(!checkENRet(EPANET::ENgetlinkindex(name, &index)))
 			return false;
+
+		if(!checkENRet(EPANET::ENgetlinkvalue(index,EN_ROUGHNESS,&roughness)))
+			return false;
+
+		currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Roughness),roughness);
 
 		if(!checkENRet(EPANET::ENgetlinkvalue(index,EN_DIAMETER,&currentdiameter)))
 			return false;
@@ -330,4 +336,32 @@ bool EpanetDynamindConverter::closeEpanetModel()
 	}
 
 	return false;
+}
+
+int EpanetDynamindConverter::getEpanetNodeID(Component *component)
+{
+	if(!components.contains(component))
+		return -1;
+
+	char name[256];
+	strcpy(name, QString::number(components[component]).toStdString().c_str());
+	int index;
+	if(!checkENRet(EPANET::ENgetnodeindex(name, &index)))
+		return -1;
+
+	return index;
+}
+
+int EpanetDynamindConverter::getEpanetLinkID(Component *component)
+{
+	if(!components.contains(component))
+		return -1;
+
+	char name[256];
+	strcpy(name, QString::number(components[component]).toStdString().c_str());
+	int index;
+	if(!checkENRet(EPANET::ENgetlinkindex(name, &index)))
+		return -1;
+
+	return index;
 }

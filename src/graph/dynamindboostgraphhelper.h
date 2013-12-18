@@ -38,6 +38,7 @@ public:
 	//Typedef
 	typedef std::vector<DM::Component*> Compmap;
 	typedef Compmap::iterator Compitr;
+	typedef Compmap::const_iterator Const_Compitr;
 	typedef boost::adjacency_list < boost::vecS,
 									boost::vecS,
 									boost::undirectedS,
@@ -64,7 +65,8 @@ public:
 						  Compmap &edges,
 						  Graph &Graph,
 						  std::map<DM::Node*,int> &nodesindex,
-						  std::map<std::pair < int, int >, DM::Edge*> &nodes2edge);
+						  std::map<std::pair < int, int >, DM::Edge*> &nodes2edge,
+								 std::vector<double> weighting = std::vector<double>());
 };
 
 #endif // DynaMindBoostGraphHelper_H

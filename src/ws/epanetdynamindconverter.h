@@ -50,6 +50,8 @@ public:
 	bool checkENRet(int ret);
 	bool openEpanetModel(std::string inpfilepath, string rptfilepath);
 	bool closeEpanetModel();
+	int getEpanetNodeID(DM::Component* component);
+	int getEpanetLinkID(DM::Component *component);
 
 	//NODE COMPONENTS OF EPANET
 	bool addJunction(DM::Node *junction);

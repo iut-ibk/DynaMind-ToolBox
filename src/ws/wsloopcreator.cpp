@@ -163,7 +163,12 @@ void LoopCreator::run()
 			}
 
 			if(int(index/float(junctions->size())*100)%5==0)
-				DM::Logger(DM::Standard) << index/float(junctions->size())*100 << "%";
+			{
+				#pragma omp critical
+				{
+					DM::Logger(DM::Standard) << index/float(junctions->size())*100 << "%";
+				}
+			}
 
 			//check if junction is part of an edge wich is not in the current graph
 			DM::Node *currentsource = junctions->at(source);
@@ -309,7 +314,9 @@ void LoopCreator::calculatePressureZones(DynamindBoostGraph::Compmap &nodes, Loo
 
 void LoopCreator::removeCrossingZoneEdges(DynamindBoostGraph::Compmap &edges, double zonesize, double mean)
 {
-	for(DynamindBoostGraph::Compitr itr = edges.begin(); itr != edges.end(); ++itr)
+	DynamindBoostGraph::Compmap cedges=edges;
+
+	for(DynamindBoostGraph::Compitr itr = cedges.begin(); itr != cedges.end(); ++itr)
 	{
 		DM::Edge* currentedge = static_cast<DM::Edge*>((*itr));
 

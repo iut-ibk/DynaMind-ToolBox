@@ -40,15 +40,32 @@ class Dimensioning : public DM::Module
 	DM::WS::ViewDefinitionHelper wsd;
 	DM::System * sys;
 	boost::shared_ptr<EpanetDynamindConverter> converter;
-	bool fixeddiameters, pipestatus;
-	double maxdiameter;
+	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata;
+	double maxdiameter, iterations;
 
 public:
 	Dimensioning();
 	void run();
+	void init();
 
 private:
+	bool approximateMainPipes(bool usereservoirsdata,double totaldemand, std::vector<DM::Edge*> &reservoirpipes,bool discretediameters);
+	double calcTotalDemand();
 	bool SitzenfreiDimensioning();
+	bool calibrateReservoirOutFlow(double totaldemand, int maxsteps, double diameterstepsize,std::vector<DM::Edge*> entrypipes, bool discretediameter);
+	bool findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints);
+	bool approximatePipeSizes(bool usemainpipes,bool discretediameter);
+	bool approximatePressure(bool discretediameter);
+	bool approximatePressure(std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &uncheckedpressurepoints,std::vector<DM::Node*> &newpressurepoint, bool nonewpressurepoints);
+	bool approximatePressureOnPath(std::vector<DM::Node*> nodes,std::vector<DM::Node*> &knownPressurePoints,std::vector<DM::Node*> &newpressurepoint,bool nonewpressurepoints);
+	std::vector<DM::Node*> getFlowNeighbours(DM::Node* junction);
+	std::vector<DM::Node*> getInverseFlowNeighbours(DM::Node* junction);
+	DM::Node* getNearestPressure(DM::Node* currentpressurepoint, std::vector<DM::Node*> &nodes);
+	DM::Node* getNearestFlowPoint(DM::Node* currentpoint, std::vector<DM::Node*> &nodes);
+
+	double calcDiameter(double k, double l, double q, double h, double maxdiameter,bool discretediameters);
+	double calcFrictionHeadLoss(double d, double k, double l, double q);
+	double calcLambda(double k, double d, double q, double lambda = 0);
 };
 
 #endif // Dimensioning_H

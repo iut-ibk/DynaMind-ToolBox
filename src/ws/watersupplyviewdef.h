@@ -34,24 +34,34 @@ namespace DM
 {
     namespace WS
     {
+		#define SUGGESTEDMAINLOOPS_ATTR
+
+		#define SUGGESTEDMAINLOOPS_LINK
+
+		#define MAINPIPE_LINK
+
+		#define MAINPIPE_ATTR
+
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
 		A(Demand,DM::Attribute::DOUBLE) \
 		A(Pressure,DM::Attribute::DOUBLE)
 
-        #define PIPE_LINK
+		#define PIPE_LINK
 
         #define PIPE_ATTR\
 		A(Diameter,DM::Attribute::DOUBLE) \
 		A(Length,DM::Attribute::DOUBLE) \
 		A(Roughness,DM::Attribute::DOUBLE) \
 		A(Minorloss,DM::Attribute::DOUBLE) \
-		A(STATUS,DM::Attribute::DOUBLE)
+		A(STATUS,DM::Attribute::DOUBLE) \
+		A(Flow,DM::Attribute::DOUBLE)
 
         #define RESERVOIR_LINK
 
-        #define RESERVOIR_ATTR
+		#define RESERVOIR_ATTR\
+		A(SupplyPercent,DM::Attribute::DOUBLE)
 
         #define TANK_LINK
 
@@ -61,7 +71,9 @@ namespace DM
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \
         X(PIPE,DM::EDGE,PIPE_ATTR, PIPE_LINK) \
         X(RESERVOIR, DM::NODE, RESERVOIR_ATTR, RESERVOIR_LINK) \
-        X(TANK, DM::NODE, TANK_ATTR, TANK_LINK)
+		X(TANK, DM::NODE, TANK_ATTR, TANK_LINK) \
+		X(MAINPIPE,DM::EDGE,MAINPIPE_ATTR, MAINPIPE_LINK) \
+		X(SUGGESTEDMAINLOOPS,DM::EDGE,SUGGESTEDMAINLOOPS_ATTR, SUGGESTEDMAINLOOPS_LINK) \
 
 		#include<viewdefhelper.h> //This would be the header if code completion would work correctly in qtcreator
     }

@@ -28,7 +28,7 @@
 #include <graphviewdef.h>
 #include <tbvectordata.h>
 
-bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g,std::map<DM::Node*,int> &nodesindex,std::map<std::pair < int, int >, DM::Edge*> &nodes2edge)
+bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g,std::map<DM::Node*,int> &nodesindex,std::map<std::pair < int, int >, DM::Edge*> &nodes2edge, std::vector<double> weighting)
 {
 	DM::GRAPH::ViewDefinitionHelper defhelper_graph;
 	g.clear();
@@ -40,13 +40,17 @@ bool DynamindBoostGraph::createBoostGraph(Compmap &nodes,Compmap &edges,Graph &g
 		nodeindex++;
 	}
 
-
-	for(Compitr itr = edges.begin(); itr!=edges.end(); ++itr)
+	for(int index = 0; index < edges.size(); index++)
 	{
 		int sourceindex, targetindex;
-		DM::Edge *edge = static_cast<DM::Edge*>((*itr));
+		DM::Edge *edge = static_cast<DM::Edge*>(edges[index]);
 
-		double distance = edge->getAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
+		double distance = 0;
+
+		if(edges.size()==weighting.size())
+			distance = weighting[index];
+		else
+			distance = edge->getAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight))->getDouble();
 
 		sourceindex = nodesindex[edge->getStartNode()];
 		targetindex = nodesindex[edge->getEndNode()];
@@ -130,7 +134,7 @@ bool DynamindBoostGraph::findShortestPath(std::vector<DM::Node*> &pathnodes,
 
 		if(!newpipe)
 		{
-            DM::Logger(DM::Warning) << "Could not find specific edge in system (ERROR ?)";
+			DM::Logger(DM::Warning) << "Could not find specific edge in system (ERROR ?)";
 			return false;
 		}
 

@@ -27,6 +27,7 @@
 #include "dmmoduleregistry.h"
 #include <spanningtree.h>
 #include <extractnodesfromedges.h>
+#include <extractnodesfromfaces.h>
 #include <connectnodes2graph.h>
 #include <extractmaxgraphofforest.h>
 #include <reducetree.h>
@@ -46,6 +47,7 @@
 #include <createvoronoi.h>
 #include <initsewer.h>
 #include <createswmmmodel.h>
+#include <identifymainpipes.h>
 
 #include <spatialpressureperformance.h>
 #include <totaldemandperformance.h>
@@ -53,11 +55,15 @@
 #include <generalgraphanalysis.h>
 #include <totalgraphweight.h>
 
+//Testing Modules
+//#include <wsproto.h>
+
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
 	registry->addNodeFactory(new DM::NodeFactory<SpanningTree>());
 	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
+	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromFaces>());
 	registry->addNodeFactory(new DM::NodeFactory<ConnectNodes2Graph>());
 	registry->addNodeFactory(new DM::NodeFactory<ExtractMaxGraph>());
 	registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
@@ -68,6 +74,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
 	registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
 	registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
+	registry->addNodeFactory(new DM::NodeFactory<IdentifyMainPipes>());
 	registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
 	registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
 	registry->addNodeFactory(new DM::NodeFactory<MapNodes2Graph>());
@@ -84,4 +91,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 
     registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
     registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
+
+	//TESTMODULES
+	//registry->addNodeFactory(new DM::NodeFactory<WSProto>());
 }

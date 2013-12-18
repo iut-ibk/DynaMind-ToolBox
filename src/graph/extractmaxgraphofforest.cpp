@@ -40,6 +40,7 @@
 //BOOST GRAPH includes
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <dynamindboostgraphhelper.h>
 
 using namespace boost;
 
@@ -70,31 +71,13 @@ void ExtractMaxGraph::run()
 	typedef std::pair < int, int >E;
 
 	this->sys = this->getData("Layout");
-	std::vector<DM::Component*> nodes(sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]));
-	std::vector<DM::Component*> edges(sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]));
-	std::map<DM::Component*,int> nodesindex;
+	std::vector<DM::Component*> nodes = sys->getAllComponentsInView(viewdef[DM::GRAPH::NODES]);
+	std::vector<DM::Component*> edges = sys->getAllComponentsInView(viewdef[DM::GRAPH::EDGES]);
+	std::map<DM::Node*,int> nodesindex;
 	std::map<E,DM::Edge*> nodes2edge;
 
-	for(uint index=0; index<nodes.size(); index++)
-		nodesindex[nodes[index]]=index;
-
-	std::vector<E> edgeindex(edges.size());
-
-	const int num_nodes = nodes.size();
-	Graph g(num_nodes);
-
-	for(uint counter=0; counter<edges.size(); counter++)
-	{
-		int sourceindex, targetindex;
-		DM::Edge *edge= dynamic_cast<DM::Edge*>(edges[counter]);
-
-		sourceindex=nodesindex[edge->getStartNode()];
-		targetindex=nodesindex[edge->getEndNode()];
-
-		edgeindex[counter]=E(sourceindex,targetindex);
-		nodes2edge[E(sourceindex,targetindex)]=edge;
-		add_edge(sourceindex, targetindex, 1, g);
-	}
+	DynamindBoostGraph::Graph g;
+	DynamindBoostGraph::createBoostGraph(nodes,edges,g,nodesindex,nodes2edge);
 
 	//check if graph is conntected
 	std::vector<int> component(num_vertices(g));
@@ -122,21 +105,16 @@ void ExtractMaxGraph::run()
 	//remove edges from forest of graphs
 	for(uint index=0; index < edges.size(); index++)
 	{
-		E current = edgeindex[index];
+		DM::Edge* currentedge = dynamic_cast<DM::Edge*>(edges[index]);
 
-		if(component[current.first]!=maxgraphindex)
-		{
-			DM::Edge *realedge = nodes2edge[current];
-			this->sys->removeComponentFromView(realedge,viewdef[DM::GRAPH::EDGES]);
-			this->sys->removeComponentFromView(realedge->getStartNode(),viewdef[DM::GRAPH::NODES]);
-			this->sys->removeComponentFromView(realedge->getEndNode(),viewdef[DM::GRAPH::NODES]);
-		}
+		if(component[nodesindex[currentedge->getStartNode()]]!=maxgraphindex)
+			this->sys->removeComponentFromView(currentedge,viewdef[DM::GRAPH::EDGES]);
 	}
 
 	//remove edges from forest of graphs
 	for(uint index=0; index < nodes.size(); index++)
 	{
-		if(component[nodesindex[nodes[index]]]!=maxgraphindex)
+		if(component[nodesindex[dynamic_cast<DM::Node*>(nodes[index])]]!=maxgraphindex)
 			this->sys->removeComponentFromView(nodes[index],viewdef[DM::GRAPH::NODES]);
 	}
 }
