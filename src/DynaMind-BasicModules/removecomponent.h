@@ -36,8 +36,8 @@ class  DM_HELPER_DLL_EXPORT RemoveComponent : public DM::Module
 	private:
 		DM::View view_remove;
 		std::string remove_name;
-        bool selectedattr;
 
+		bool useselected;
 
 public:
 	RemoveComponent();
