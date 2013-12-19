@@ -3,7 +3,7 @@
  * @author  Christian Mikovits <christian.mikovits@uibk.ac.at>
  * @version 0.1a
  * @section LICENSE
- * Module for [temporal] ranking of areas for development
+ * Module for controling the urban development cycle
    Copyright (C) 2013 Christian Mikovits
 
    This program is free software; you can redistribute it and/or modify
@@ -21,25 +21,23 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
-#ifndef urbandevelRankYear_H
-#define urbandevelRankYear_H
+#ifndef urbandevelMarkov_H
+#define urbandevelMarkov_H
 
 #include <dmmodule.h>
 
-class urbandevelRankYear: public DM::Module
+class urbandevelMarkov: public DM::Module
 {
-    DM_DECLARE_NODE(urbandevelRankYear)
+    DM_DECLARE_NODE(urbandevelMarkov)
 public:
-    urbandevelRankYear();
-    ~urbandevelRankYear();
+    urbandevelMarkov();
+    ~urbandevelMarkov();
 
     void run();
     void init();
 private:
-    bool usecontrolweight;
-
-    DM::View superblock;
+    int yearcycle;
     DM::View city;
 };
 
-#endif // urbandevelRankYear_H
+#endif // urbandevelMarkov_H

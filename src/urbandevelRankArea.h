@@ -21,17 +21,17 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **/
 
-#ifndef urbandevelRankEuclid_H
-#define urbandevelRankEuclid_H
+#ifndef urbandevelRankArea_H
+#define urbandevelRankArea_H
 
 #include <dmmodule.h>
 
-class urbandevelRankEuclid: public DM::Module
+class urbandevelRankArea: public DM::Module
 {
-    DM_DECLARE_NODE(urbandevelRankEuclid)
+    DM_DECLARE_NODE(urbandevelRankArea)
 public:
-    urbandevelRankEuclid();
-    ~urbandevelRankEuclid();
+    urbandevelRankArea();
+    ~urbandevelRankArea();
 
     void run();
     void init();
@@ -41,8 +41,7 @@ private:
     double rank_weight;
 
     DM::View superblock;
-    DM::View superblock_centroids;
     DM::View city;
 };
 
-#endif // urbandevelRankEuclid_H
+#endif // urbandevelRankArea_H

@@ -23,16 +23,16 @@
 
 #include <numeric>
 
-#include<urbandevelRankEuclid.h>
+#include<urbandevelRankArea.h>
 #include<dm.h>
 #include<tbvectordata.h>
 #include<dmgeometry.h>
 #include<dahelper.h>
 
 
-DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
+DM_DECLARE_NODE_NAME(urbandevelRankArea, DynAlp)
 
-urbandevelRankEuclid::urbandevelRankEuclid()
+urbandevelRankArea::urbandevelRankArea()
 {
     // declare parameters
     rank_function = "linear";
@@ -40,20 +40,21 @@ urbandevelRankEuclid::urbandevelRankEuclid()
     rank_weight = 1;
     this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
     this->addParameter("ranking function faktor", DM::DOUBLE, &this->rank_function_factor);
-    this->addParameter("ranking weight", DM::DOUBLE, &this->rank_weight);
+    this->addParameter("rank_weight", DM::DOUBLE, &this->rank_weight);
+
 }
 
-urbandevelRankEuclid::~urbandevelRankEuclid()
+urbandevelRankArea::~urbandevelRankArea()
 {
 }
 
-void urbandevelRankEuclid::init()
+void urbandevelRankArea::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
-    superblock_centroids = DM::View("SUPERBLOCK_CENTROIDS", DM::NODE, DM::READ);
     city = DM::View("CITY", DM::NODE, DM::READ);
 
+    // attach new attributes to view
     superblock.addAttribute("develrank", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
@@ -62,13 +63,12 @@ void urbandevelRankEuclid::init()
     this->addData("data", views);
 }
 
-void urbandevelRankEuclid::run()
+void urbandevelRankArea::run()
 {
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
-    std::vector<DM::Component *> sb_centroids = sys->getAllComponentsInView(superblock_centroids);
     std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
 
     if (cities.size() != 1)
@@ -79,29 +79,19 @@ void urbandevelRankEuclid::run()
 
     DM::Component* city = cities[0];
 
-    std::vector<double> distance;
+    std::vector<double> area;
     std::vector<int> rank;
     std::vector<int> oldrank;
     bool rnk_exists = FALSE;
 
     for (int i = 0; i < superblocks.size(); i++)
     {
-        std::vector<DM::Component*> link = superblocks[i]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
-
-        if(link.size() < 1)
-        {
-            DM::Logger(DM::Error) << "no superblock - centroid link";
-            return;
-        }
-
-        DM::Node * centroid = dynamic_cast<DM::Node*>(link[0]);
-
-        distance.push_back(TBVectorData::calculateDistance((DM::Node*)city, (DM::Node*)centroid));
-        oldrank.push_back(superblocks[i]->getAttribute("develrank")->getDouble());
+        area.push_back(1/(TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)superblocks[i])));
+        oldrank.push_back((superblocks[i]->getAttribute("develrank")->getDouble()));
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
 
-    DAHelper::darank(distance, rank, rank_function, rank_function_factor);
+    DAHelper::darank(area, rank, rank_function, rank_function_factor);
     if (rnk_exists) { DAHelper::daweight(oldrank, rank, rank_weight); }
 
     for (int i = 0; i < superblocks.size(); i++)

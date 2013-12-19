@@ -34,15 +34,15 @@ urbandevelControl::urbandevelControl()
     yearcycle = 5;
     wp_com = 60;
     wp_ind = 10;
-    yearfactor = 1;
-    areafactor = 1;
+    //yearfactor = 1;
+    //areafactor = 1;
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
     this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);
     this->addParameter("Share of commercial workplaces", DM::INT, &this->wp_com);
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
-    this->addParameter("Weight devel years", DM::DOUBLE, &this->yearfactor); //weight used in ranking
-    this->addParameter("Weight area size", DM::DOUBLE, &this->areafactor); //weight used in ranking
+    //this->addParameter("Weight devel years", DM::DOUBLE, &this->yearfactor); //weight used in ranking
+    //this->addParameter("Weight area size", DM::DOUBLE, &this->areafactor); //weight used in ranking
 }
 
 urbandevelControl::~urbandevelControl()
@@ -61,9 +61,8 @@ void urbandevelControl::init()
     city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
     city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("yearfactor", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("areafactor", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+    city.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -85,11 +84,11 @@ void urbandevelControl::run()
 
     DM::Component * currentcity = cities[0];
         //year->2000,2010,2020
-        //pop->x,y,z
+        //pop->10000,15000,12000
     QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
     QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
 
-        DM::Logger(DM::Debug) << "year: " << year << "  population: " << pop;
+        DM::Logger(DM::Debug) << "year: " << year << "\npopulation: " << pop;
 
         QStringList yrlist = year.split(",");
         QStringList poplist = pop.split(",");
@@ -113,7 +112,7 @@ void urbandevelControl::run()
 
         for (int i=sy; i <= ey; i++) // cycle through the years from startyear to endyear
         {
-            for (int j=0; j < (yrlist.size()-1); j++) // cycle through the given population data
+            for (int j=0; j < yrlist.size()-1; j++) // cycle through the given population data
             {
                 int yr1 = yrlist.at(j).toInt();
                 int yr2 = yrlist.at(j+1).toInt();
@@ -145,9 +144,6 @@ void urbandevelControl::run()
         dmatt = currentcity->getAttribute("wp_ind");
         dmatt->setDouble(wp_ind);
 
-        dmatt = currentcity->getAttribute("yearfactor");
-        dmatt->setDouble(yearfactor);
-
-        dmatt = currentcity->getAttribute("areafactor");
-        dmatt->setDouble(areafactor);
+        dmatt = currentcity->getAttribute("cycleBOOL");
+        dmatt->setDouble('0');
 }

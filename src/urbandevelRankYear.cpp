@@ -23,26 +23,31 @@
 
 #include <numeric>
 
-#include<urbandevelRankArea.h>
+#include<urbandevelRankYear.h>
 #include<dm.h>
 #include<tbvectordata.h>
 #include<dmgeometry.h>
+#include<dahelper.h>
 
 
-DM_DECLARE_NODE_NAME(urbandevelRankArea, DynAlp)
+DM_DECLARE_NODE_NAME(urbandevelRankYear, DynAlp)
 
-urbandevelRankArea::urbandevelRankArea()
+urbandevelRankYear::urbandevelRankYear()
 {
     // declare parameters
-    usecontrolweight = TRUE;
-    this->addParameter("Weight value from Control", DM::BOOL, &this->usecontrolweight); // if set the weighting factor from the control module will be used, otherwise its 1
+    rank_function = "linear";
+    rank_function_factor = 1;
+    rank_weight = 1;
+    this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
+    this->addParameter("ranking funcktion faktor", DM::DOUBLE, &this->rank_function_factor);
+    this->addParameter("ranking weight", DM::DOUBLE, &this->rank_weight);
 }
 
-urbandevelRankArea::~urbandevelRankArea()
+urbandevelRankYear::~urbandevelRankYear()
 {
 }
 
-void urbandevelRankArea::init()
+void urbandevelRankYear::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
     superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
@@ -51,7 +56,7 @@ void urbandevelRankArea::init()
     // attach new attributes to view
     superblock.addAttribute("develyear", DM::Attribute::DOUBLE, DM::READ);
     superblock.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
-    superblock.addAttribute("rank", DM::Attribute::DOUBLE, DM::WRITE);
+    superblock.addAttribute("develrank", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -59,12 +64,13 @@ void urbandevelRankArea::init()
     this->addData("data", views);
 }
 
-void urbandevelRankArea::run()
+void urbandevelRankYear::run()
 {
     // get data from stream/port
     DM::System * sys = this->getData("data");
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(superblock);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
 
     if (cities.size() != 1)
     {
@@ -72,29 +78,30 @@ void urbandevelRankArea::run()
         return;
     }
 
-    DM::Component * currentcity = cities[1];
+    DM::Component* currentcity = cities[0];
 
-    // get max,min and mean devel years and areas
-        double areafactor = currentcity->getAttribute("yearfactor")->getDouble();
-        int min_area, max_area, mean_area = 0;
-        std::vector<double> area_vec;
+    int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
+    int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
 
-        for (int index = 0; index < superblocks.size(); index++)
-        {
-            double area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)superblocks[index]);
-            area_vec.push_back(area);
-        }
+    std::vector<double> year;
+    std::vector<int> oldrank;
+    std::vector<int> rank;
+    bool rnk_exists = FALSE;
 
-        double area_sum = std::accumulate(area_vec.begin(), area_vec.end(), 0.0);
-        min_area = *std::min_element(area_vec.begin(), area_vec.end());
-        max_area = *std::max_element(area_vec.begin(), area_vec.end());
-        mean_area = area_sum / area_vec.size();
+    for (int i = 0; i < superblocks.size(); i++)
+    {
+        int currentyear = static_cast<int>(superblocks[i]->getAttribute("develyear")->getDouble());
+        if ( currentyear <= startyear ) { currentyear = startyear + 1; }
+        if ( currentyear >= endyear ) { currentyear = endyear - 1; }
+        year.push_back(currentyear);
+        oldrank.push_back(static_cast<int>(superblocks[i]->getAttribute("develrank")->getDouble()));
+        if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
+    }
+    DAHelper::darank(year, rank, rank_function, rank_function_factor);
+    if (rnk_exists) { DAHelper::daweight(oldrank, rank, rank_weight); }
 
-        DM::Logger(DM::Error) << "min|max|mean area" << min_area << "|" << max_area << "|" << mean_area;
-
-        for (int index = 0; index < superblocks.size(); index++)
-        {
-            double area_factor = 000;
-            superblocks[index]->changeAttribute("rank", area_factor);
-        }
+    for (int i = 0; i < superblocks.size(); i++)
+    {
+        dynamic_cast<DM::Face*>(superblocks[i])->changeAttribute("develrank", rank[i]);
+    }
 }
