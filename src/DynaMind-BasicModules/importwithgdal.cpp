@@ -424,7 +424,20 @@ void ImportwithGDAL::vectorDataInit(OGRLayer *poLayer)
 			// if existent, attrName will be given the value of attributesToImport[attrName]
 			bool exists = map_contains(&attributesToImport, attrName, attrName);
 			if(ImportAll || exists)
-				view->addAttribute(attrName, DM::Attribute::NOTYPE, DM::WRITE);
+			{
+				switch(poFieldDefn->GetType())
+				{
+				case OFTInteger:
+					view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
+					break;
+				case OFTReal:
+					view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
+					break;
+				default:
+					view->addAttribute(attrName, DM::Attribute::STRING, DM::WRITE);
+					break;
+				}
+			}
 		}
 
 		if(OGRGeometry *poGeometry = poFeature->GetGeometryRef())
