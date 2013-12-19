@@ -40,7 +40,7 @@ class Dimensioning : public DM::Module
 	DM::WS::ViewDefinitionHelper wsd;
 	DM::System * sys;
 	boost::shared_ptr<EpanetDynamindConverter> converter;
-	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata;
+	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter;
 	double maxdiameter, iterations;
 
 public:
@@ -52,7 +52,7 @@ private:
 	bool approximateMainPipes(bool usereservoirsdata,double totaldemand, std::vector<DM::Edge*> &reservoirpipes,bool discretediameters);
 	double calcTotalDemand();
 	bool SitzenfreiDimensioning();
-	bool calibrateReservoirOutFlow(double totaldemand, int maxsteps, double diameterstepsize,std::vector<DM::Edge*> entrypipes, bool discretediameter);
+	bool calibrateReservoirOutFlow(double totaldemand, int maxsteps,std::vector<DM::Edge*> entrypipes, bool discretediameter);
 	bool findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints);
 	bool approximatePipeSizes(bool usemainpipes,bool discretediameter);
 	bool approximatePressure(bool discretediameter);

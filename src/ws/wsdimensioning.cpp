@@ -60,13 +60,17 @@ Dimensioning::Dimensioning()
 	this->maxdiameter=1000;
 	this->usemainpipe=false;
 	this->usereservoirdata=false;
+	this->discrete=true;
 	this->iterations = 5;
+	this->nearestdiscretediameter=true;
 	this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
 	this->addParameter("Maximum diameter [mm]", DM::DOUBLE, &this->maxdiameter);
 	this->addParameter("Automatic set pipe status", DM::BOOL, &this->pipestatus);
 	this->addParameter("Use main pipe data",DM::BOOL, &this->usemainpipe);
 	this->addParameter("Use reservoirs data", DM::BOOL, &this->usereservoirdata);
 	this->addParameter("Number of iterations", DM::DOUBLE, &this->iterations);
+	this->addParameter("Force discrete diameters", DM::BOOL, &this->discrete);
+	this->addParameter("Force nearest discrete diameters", DM::BOOL, &this->nearestdiscretediameter);
 }
 
 void Dimensioning::init()
@@ -88,7 +92,6 @@ void Dimensioning::run()
 	std::string inpfilename = dir.toStdString() + "/test.inp";
 	std::string rptfilename = dir.toStdString() + "/test.rpt";
 	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
-	bool discrete=false;
 
 	if(usemainpipe)
 		fixeddiameters=true;
@@ -118,7 +121,7 @@ void Dimensioning::run()
 		for (int var = 0; var < this->iterations; ++var)
 		{
 			if(usereservoirdata)
-				if(!calibrateReservoirOutFlow(totaldemand, 100,0.01,entrypipes,false))
+				if(!calibrateReservoirOutFlow(totaldemand, 100,entrypipes,false))
 					return;
 
 			if(!approximatePressure(discrete))
@@ -127,6 +130,10 @@ void Dimensioning::run()
 			if(!approximatePipeSizes(true,discrete))
 				return;
 		}
+
+		if(discrete)
+			if(!approximatePipeSizes(true,discrete))
+				return;
 	}
 
 	if(!converter->mapEpanetAttributes(this->sys)) return;
@@ -347,6 +354,7 @@ bool Dimensioning::approximatePressure(bool discretediameter)
 	for(int index=0; index < reservoirs.size(); index++)
 		initunchecked.push_back(dynamic_cast<DM::Node*>(reservoirs[index]));
 
+	/*
 	if(discretediameter)
 	{
 		for(int index=0; index < mainpipes.size(); index++)
@@ -361,7 +369,7 @@ bool Dimensioning::approximatePressure(bool discretediameter)
 			if(std::find(initunchecked.begin(),initunchecked.end(),endnode)==initunchecked.end())
 				initunchecked.push_back(endnode);
 		}
-	}
+	}*/
 
 	while((newpressurepoints.size()!=0 || !iteration) && iteration < maxiteration)
 	{
@@ -820,8 +828,12 @@ bool Dimensioning::SitzenfreiDimensioning()
 	return true;
 }
 
-bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, double diameterstepsize, std::vector<DM::Edge*> entrypipes, bool discretediameter)
+bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, std::vector<DM::Edge*> entrypipes, bool discretediameter)
 {
+	if(discretediameter)
+		DM::Logger(DM::Error) << "Discrete diameters are not implemented during calibrating reservoir outflow";
+
+	double diameterstepsize = 0.01;
 	for(int index=0; index < entrypipes.size(); index++)
 	{
 		DM::Edge* currentpipe = entrypipes[index];
@@ -836,6 +848,7 @@ bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, d
 
 	for(int index=0; index<maxsteps; index++)
 	{
+		double totalerror = 0.0;
 		bool ok = true;
 		for(int p = 0; p < entrypipes.size(); p++)
 		{
@@ -850,18 +863,26 @@ bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, d
 
 			//DM::Logger(DM::Standard) << "DIFF: " << (assumedflow -flow);
 
-			if(std::fabs(assumedflow-flow) > 20)
+			if(std::fabs(flow-assumedflow)/assumedflow > 0.10)
 				ok = false;
+
+			totalerror += std::fabs(flow-assumedflow);
 
 			if(flow < assumedflow)
 				diameter+=(diameterstepsize*1000.0);
 			else
 				diameter-=(diameterstepsize*1000.0);
 
-			if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_DIAMETER,diameter)))return false;
+			if(diameter <= 0.0)
+				diameter = 0.0001;
 
-			if(!converter->checkENRet(EPANET::ENsolveH()))return false;
+			if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_DIAMETER,diameter)))return false;
+			currentpipe->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),diameter);
+			EPANET::ENsolveH();
+
 		}
+
+		diameterstepsize = totalerror/totaldemand/10000.0;
 
 		if( ok )
 			break;
@@ -873,23 +894,23 @@ bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, d
 double Dimensioning::calcDiameter(double k, double l, double q, double h, double maxdiameter, bool discretediameters)
 {
 	std::vector<double> diameters;
-	diameters.push_back(0.0080);
-	diameters.push_back(0.0100);
-	diameters.push_back(0.0125);
-	diameters.push_back(0.0150);
-	diameters.push_back(0.0200);
-	diameters.push_back(0.0250);
-	diameters.push_back(0.0300);
-	diameters.push_back(0.0350);
-	diameters.push_back(0.0400);
-	diameters.push_back(0.0500);
-	diameters.push_back(0.0600);
-	diameters.push_back(0.0800);
-	diameters.push_back(0.1000);
-	diameters.push_back(0.1500);
-	diameters.push_back(0.2000);
-	diameters.push_back(0.4000);
-	diameters.push_back(0.8000);
+	diameters.push_back(0.080);
+	diameters.push_back(0.100);
+	diameters.push_back(0.125);
+	diameters.push_back(0.150);
+	diameters.push_back(0.200);
+	diameters.push_back(0.250);
+	diameters.push_back(0.300);
+	diameters.push_back(0.350);
+	diameters.push_back(0.400);
+	diameters.push_back(0.500);
+	diameters.push_back(0.600);
+	diameters.push_back(0.800);
+	diameters.push_back(1.000);
+	diameters.push_back(1.500);
+	diameters.push_back(2.000);
+	diameters.push_back(4.000);
+	diameters.push_back(8.000);
 
 	if(q < 0.00001)
 		return 0.01;
@@ -941,14 +962,20 @@ double Dimensioning::calcDiameter(double k, double l, double q, double h, double
 		for (int i = 0; i < diameters.size(); ++i)
 			if(d <= diameters[i])
 			{
-				if(i!=0)
-					if((d-diameters[i-1]) < (diameters[i]-d))
-						i--;
+				if(nearestdiscretediameter)
+					if(i!=0)
+					{
+						if((d-diameters[i-1]) < (diameters[i]-d))
+							i--;
+					}
 
 				d=diameters[i];
 				break;
 			}
 	}
+
+	if(d < diameters[0])
+		d = diameters[0];
 
 	return d;
 }
