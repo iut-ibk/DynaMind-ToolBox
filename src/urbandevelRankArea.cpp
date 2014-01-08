@@ -42,7 +42,7 @@ urbandevelRankArea::urbandevelRankArea()
     rank_weight = 1;
 
     this->addParameter("View", DM::STRING, &this->viewname);
-    this->addParameter("reduction", DM::STRING, &this->reduction);
+    this->addParameter("reduction", DM::BOOL, &this->reduction);
     this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
     this->addParameter("ranking function faktor", DM::DOUBLE, &this->rank_function_factor);
     this->addParameter("rank_weight", DM::DOUBLE, &this->rank_weight);
@@ -54,12 +54,11 @@ urbandevelRankArea::~urbandevelRankArea()
 
 void urbandevelRankArea::init()
 {
-    // create a view - this one modifies an existing view 'myviewname'
     rankview = DM::View(viewname, DM::FACE, DM::MODIFY);
     city = DM::View("CITY", DM::NODE, DM::READ);
 
-    // attach new attributes to view
-    rankview.addAttribute("devrank", DM::Attribute::DOUBLE, DM::WRITE);
+    if (reduction) {rankview.addAttribute("redrank", DM::Attribute::DOUBLE, DM::WRITE);}
+    else {rankview.addAttribute("devrank", DM::Attribute::DOUBLE, DM::WRITE);}
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
