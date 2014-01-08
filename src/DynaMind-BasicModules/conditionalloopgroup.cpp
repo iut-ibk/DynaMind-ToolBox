@@ -80,7 +80,7 @@ bool ConditionalLoopGroup::evalConditionString()
 	char op[512];
 	double value = 0.0;
 
-	if(sscanf(conditionString.c_str(), "%[^. ].%s %s %g", viewName, attributeName, op, &value) != 4)
+	if(sscanf(conditionString.c_str(), "%[^. ].%s %s %lg", viewName, attributeName, op, &value) != 4)
 	{
 		Logger(Error) << "invalid condition string in module '" << getName() << "'";
 		return false;
