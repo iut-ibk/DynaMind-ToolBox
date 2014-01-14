@@ -51,7 +51,7 @@ private:
 	virtual bool condition();
 	// a temporary storage for all streams and viewnames in the stream up to this module
 	// it is updated by simulation::checkModuleStream
-	std::map<std::string, std::map<std::string,View> > outStreamViews;
+	//std::map<std::string, std::map<std::string,View> > outStreamViews;
 };
 
 }
