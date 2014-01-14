@@ -152,7 +152,10 @@ public:
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
 
 	/** @brief returns all streams with their views */
-	std::map<std::string, std::map<std::string,View> > getViewsInStream() const;
+	std::map<std::string, std::map<std::string, View> > getViewsInStream() const;
+
+	/** @brief returns all out streams with their views */
+	std::map<std::string, std::map<std::string, View> > getViewsInOutStream() const;
 
 	/** @brief shortcut to getViewsInStream to return all views from a specific stream */
 	std::vector<View> getViewsInStream(const std::string& streamName) const;

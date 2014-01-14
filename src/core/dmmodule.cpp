@@ -358,9 +358,13 @@ std::map<std::string, std::map<std::string,View> > Module::getAccessedViews() co
 {
 	return accessedViews;
 }
-std::map<std::string, std::map<std::string,View> > Module::getViewsInStream() const
+std::map<std::string, std::map<std::string, View> > Module::getViewsInStream() const
 {
 	return streamViews;
+}
+std::map<std::string, std::map<std::string, View> > Module::getViewsInOutStream() const
+{
+	return outStreamViews;
 }
 
 std::vector<View> Module::getViewsInStream(const std::string& streamName) const
