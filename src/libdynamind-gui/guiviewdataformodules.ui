@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Data for Module</string>
+      <string>views accessed in module</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
@@ -60,7 +60,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Data in Simulation Stream</string>
+      <string>module input views</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
