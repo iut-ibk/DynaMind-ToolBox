@@ -46,6 +46,7 @@ void urbandevelCycle::init()
     city.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -75,14 +76,17 @@ void urbandevelCycle::run()
 
     if ( currentyear <= startyear ) { currentyear = startyear + 1; }
     else if ( currentyear < endyear ){ currentyear++; }
-    else if ( currentyear = endyear ){ cyclebool = TRUE; }
+    else if ( currentyear = endyear ){ cyclebool = 0; }
 
     int cycle = currentyear - startyear;
+    int cyclepopdiff = popdiffperyear[cycle];
 
-    DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle;
+    DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
 
     DM::Attribute* set = currentcity->getAttribute("currentyear");
     set->setDouble(currentyear);
     set = currentcity->getAttribute("cycleBOOL");
     set->setDouble(cyclebool);
+    set = currentcity->getAttribute("cyclepopdiff");
+    set->setDouble(cyclepopdiff);
 }

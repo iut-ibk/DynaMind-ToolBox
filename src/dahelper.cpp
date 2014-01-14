@@ -31,7 +31,7 @@ bool DAHelper::daweight(std::vector<int>& oldrank, std::vector<int>& newrank, do
             DM::Logger(DM::Warning) << "rank weight equal or smaller than zero, setting to 0.01";
             rank_weight = 0.1;
         }
-        if (oldrank[i] > 0 ) { newrank[i] = static_cast<int>(round((oldrank[i] + newrank[i]*rank_weight)/(rank_weight+1))); }
+        if (oldrank[i] > 0 ) { newrank[i] = static_cast<int>(qRound((oldrank[i] + newrank[i]*rank_weight)/(rank_weight+1))); }
         DM::Logger(DM::Warning) << "old: " << oldrank[i] << "new :" << newrank[i];
     }
 }

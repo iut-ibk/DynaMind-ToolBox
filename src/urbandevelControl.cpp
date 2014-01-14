@@ -34,8 +34,7 @@ urbandevelControl::urbandevelControl()
     yearcycle = 5;
     wp_com = 60;
     wp_ind = 10;
-    //yearfactor = 1;
-    //areafactor = 1;
+
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
     this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);
@@ -143,5 +142,5 @@ void urbandevelControl::run()
         dmatt->setDouble(wp_ind);
 
         dmatt = currentcity->getAttribute("cycleBOOL");
-        dmatt->setDouble('0');
+        dmatt->setDouble('1');
 }
