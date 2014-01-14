@@ -380,7 +380,7 @@ void ModelNode::viewInportData(QString portName)
 	//views.insert(accessedViews.cbegin(), accessedViews.cend());
 	MergeViews(views, accessedViews);
 
-	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getOutPortData(portName.toStdString()), views);
+	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getInPortData(portName.toStdString()), views);
 	viewer_window->show();
 }
 
