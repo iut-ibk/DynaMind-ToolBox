@@ -320,48 +320,10 @@ void ModelNode::changeSuccessorMode()
 	module->setSuccessorMode(!module->isSuccessorMode());
 }
 
-
-void MergeViews(std::map<std::string, DM::View>& target, const std::map<std::string, DM::View>& source)
-{
-	mforeach(const DM::View& srcView, source)
-	{
-		if(map_contains(&target, srcView.getName()))
-		{
-			DM::View& targetView = target[srcView.getName()];
-			std::vector<std::string> baseAttributes = targetView.getAllAttributes();
-			// check attributes
-			foreach(const std::string& attrName, srcView.getAllAttributes())
-			{
-				if(!vector_contains(&baseAttributes, attrName))
-				{
-					DM::Attribute::AttributeType type = srcView.getAttributeType(attrName);
-					if(type != DM::Attribute::LINK)
-						targetView.addAttribute(attrName, type, DM::READ);	// access doesnt matter
-					else
-						targetView.addAttribute(attrName, srcView.getNameOfLinkedView(attrName), DM::READ);	// access doesnt matter
-				}
-			}
-		}
-		else
-		{
-			// just insert
-			target[srcView.getName()] = srcView;
-		}
-	}
-}
-
 void ModelNode::viewOutportData(QString portName) 
 {
 	std::map<std::string, DM::View> views;
-	std::map<std::string, DM::View> accessedViews;
-	
-	std::map<std::string, std::map<std::string, DM::View> > viewsInStream = module->getViewsInStream();
-	std::map<std::string, std::map<std::string, DM::View> > viewsAccessedInStream = module->getAccessedViews();
-
-	map_contains(&viewsInStream, portName.toStdString(), views);
-	map_contains(&viewsAccessedInStream, portName.toStdString(), accessedViews);
-	//views.insert(accessedViews.cbegin(), accessedViews.cend());
-	MergeViews(views, accessedViews);
+	map_contains(&module->getViewsInOutStream(), portName.toStdString(), views);
 
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getOutPortData(portName.toStdString()), views);
 	viewer_window->show();
@@ -370,15 +332,7 @@ void ModelNode::viewOutportData(QString portName)
 void ModelNode::viewInportData(QString portName) 
 {
 	std::map<std::string, DM::View> views;
-	std::map<std::string, DM::View> accessedViews;
-
-	std::map<std::string, std::map<std::string, DM::View> > viewsInStream = module->getViewsInStream();
-	std::map<std::string, std::map<std::string, DM::View> > viewsAccessedInStream = module->getAccessedViews();
-
-	map_contains(&viewsInStream, portName.toStdString(), views);
-	map_contains(&viewsAccessedInStream, portName.toStdString(), accessedViews);
-	//views.insert(accessedViews.cbegin(), accessedViews.cend());
-	MergeViews(views, accessedViews);
+	map_contains(&module->getViewsInOutStream(), portName.toStdString(), views);
 
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getInPortData(portName.toStdString()), views);
 	viewer_window->show();
