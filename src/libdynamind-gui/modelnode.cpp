@@ -322,7 +322,8 @@ void ModelNode::changeSuccessorMode()
 void ModelNode::viewOutportData(QString portName) 
 {
 	std::map<std::string, DM::View> views;
-	map_contains(&module->getViewsInOutStream(), portName.toStdString(), views);
+	std::map<std::string, std::map<std::string, DM::View> > stream = module->getViewsInOutStream();
+	map_contains(&stream, portName.toStdString(), views);
 
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getOutPortData(portName.toStdString()), views);
 	viewer_window->show();
@@ -331,7 +332,8 @@ void ModelNode::viewOutportData(QString portName)
 void ModelNode::viewInportData(QString portName) 
 {
 	std::map<std::string, DM::View> views;
-	map_contains(&module->getViewsInOutStream(), portName.toStdString(), views);
+	std::map<std::string, std::map<std::string, DM::View> > stream = module->getViewsInOutStream();
+	map_contains(&stream, portName.toStdString(), views);
 
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	module->getInPortData(portName.toStdString()), views);
 	viewer_window->show();
