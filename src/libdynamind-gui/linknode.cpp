@@ -58,13 +58,8 @@ void LinkNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	pen = QPen(Qt::red);
 	}*/
 
-
+	
 	QPen pen(Qt::white);
-	pen.setWidth(3);
-	painter->strokePath(connection_path, pen);
-	painter->fillPath(handle_path, brush);
-	painter->strokePath(handle_path, pen);
-
 
 	pen.setColor(Qt::black);
 	pen.setWidth(1.5);
@@ -121,8 +116,8 @@ void LinkNode::setInPort(QPointF p)
 
 void LinkNode::refresh() 
 {
-	if(outPort)	source = outPort->getCenterPos() + QPointF(9,0);
-	if(inPort)	sink = inPort->getCenterPos()  - QPointF(9,0);
+	if(outPort)	source = outPort->getCenterPos() + QPointF(7,0);
+	if(inPort)	sink = inPort->getCenterPos()  - QPointF(7,0);
 
 	updatePaths();
 
