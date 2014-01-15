@@ -256,6 +256,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 		QAction* action = menu.addAction(QString::fromStdString("view data at out port '"+s+"'"));
 		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
 		signalMapper->setMapping(action, QString::fromStdString(s));
+
+		if (!module->getOutPortData(s))
+			action->setDisabled(true);
 	}
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewOutportData(QString)));
 	
@@ -266,6 +269,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 		QAction* action = menu.addAction(QString::fromStdString("view data at in port '"+s+"'"));
 		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
 		signalMapper->setMapping(action, QString::fromStdString(s));
+
+		if (!module->getInPortData(s))
+			action->setDisabled(true);
 	}
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewInportData(QString)));
 	
