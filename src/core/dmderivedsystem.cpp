@@ -102,7 +102,7 @@ Edge* DerivedSystem::SuccessorCopy(const Edge *src)
     if(start && start->getCurrentSystem() != this)
         start = SuccessorCopy(start);
     if(end && end->getCurrentSystem() != this)
-        start = SuccessorCopy(end);
+        end = SuccessorCopy(end);
 
     Edge* e = new Edge(start, end);
     e->CopyFrom(*src, true);
