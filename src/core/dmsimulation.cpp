@@ -869,8 +869,7 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 	typedef std::map<std::string, View> viewmap;
 	mforeach(viewmap views, m->getAccessedViews())
 		mforeach(const View& view, views)
-		if(view.writes())
-			//if(view.getAccessType() != READ || view.getWriteAttributes().size() > 0)
+			if(view.writes())
 				readOnly = false;
 
 	// do not reset inport if there is no outport and the module is read only
