@@ -166,16 +166,39 @@ void DMMainWindow::createModuleListView()
 	{
 		QTreeWidgetItem * itSimDir;
 		itSimDir = new QTreeWidgetItem(itSimDirs);
-		itSimDir->setText(0,simDir);
+		itSimDir->setText(0, simDir);
 		itSimDir->setText(1,"Simulations");
 
 		QStringList simPaths = QDir(simDir).entryList(QStringList("*.dyn"));
 		foreach(QString simPath, simPaths)
 		{
-			QTreeWidgetItem * itSim;
-			itSim = new QTreeWidgetItem(itSimDir);
-			itSim->setText(0,simPath);
-			itSim->setText(1,"Simulation");
+			QTreeWidgetItem* parent = NULL;
+
+			// parse sim path. if it has an underscore, group it
+			QStringList parsedFile = simPath.split('_');
+			while (parsedFile.size() >= 2)
+			{
+				QList<QTreeWidgetItem*> result = ui->treeWidget->findItems(parsedFile[0], Qt::MatchExactly);
+				if (result.size() == 0)
+				{
+					// not found, create group; if parent already existent, add to parent (subgroup), otherwhise create main group
+					parent = parent ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(ui->treeWidget);
+					parent->setText(0, parsedFile[0]);
+				}
+				else if(result.size() > 1)
+					DM::Logger(DM::Error) << "can't load '" << simPath << "' ambiguous group name '" << parsedFile[0] << "'";
+				else
+					parent = result[0];	// already made, take it
+
+				parsedFile.pop_front();
+			}
+			
+			QTreeWidgetItem * itSim = parent ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(itSimDir);
+
+			itSim->setText(0, parent ? parsedFile[0] : simPath);
+			itSim->setTextColor(0, Qt::blue);
+			itSim->setText(1, "Simulation");
+			itSim->setText(2, simDir + '\\' + simPath);
 		}
 	}
 }

@@ -285,7 +285,7 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 	}
 	else if(type == "Simulation")
 	{
-		moduleName = item->parent()->text(0) + '\\' + moduleName;
+		moduleName = item->text(2);
 
 		QFile file(moduleName);
 		if (!file.exists())

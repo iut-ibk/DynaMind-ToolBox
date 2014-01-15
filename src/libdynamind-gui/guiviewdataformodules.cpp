@@ -121,11 +121,12 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 		}
 	}
 
-	this->ui->treeWidget->setColumnCount(2);
+	this->ui->treeWidget->setColumnCount(3);
 	this->ui->treeWidget->setColumnWidth(0,200);
 	headerItem = this->ui->treeWidget->headerItem();
 	headerItem->setText(0, "Data Stream / View");
 	headerItem->setText(1, "Type");
+	headerItem->setText(2, "Path");
 
 	view_map viewsInStream = m->getViewsInStream();
 	for (view_map::const_iterator it = viewsInStream.begin();
