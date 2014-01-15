@@ -35,8 +35,9 @@
 #include <dmmodule.h>
 #include <QScrollArea>
 #include <dmlogger.h>
+#include <QSpinbox>
 
-#define PARAM_TAB 1
+#define PARAM_TAB 0
 #define PARAM_CONFIG_TAB 2
 
 #define PARAM_LABEL_COLUMN 0
@@ -86,8 +87,10 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 		if(!map_contains(&childModules, child->getName()))
 			childModules[child->getName()] = child;
 		else
-			DM::Logger(Warning) << "group module names not unique";
+			DM::Logger(Warning) << "groups module names not unique";
 	}
+
+	on_tabWidget_currentChanged();
 }
 
 GUIContainerGroup::~GUIContainerGroup()
@@ -95,48 +98,22 @@ GUIContainerGroup::~GUIContainerGroup()
 	delete ui;
 }
 
-std::string GUIContainerGroup::getParamValue(const std::string& originalParamString)
+DM::Module::Parameter* GUIContainerGroup::getParam(const std::string& originalParamString)
 {
-	QStringList sl = QString::fromStdString(originalParamString).split("::",QString::SkipEmptyParts);
-	if(sl.size() != 2)
+	QStringList sl = QString::fromStdString(originalParamString).split("::", QString::SkipEmptyParts);
+	if (sl.size() != 2)
 	{
 		DM::Logger(Error) << "could not get parameter value";
-		return "";
+		return NULL;
 	}
 
-	if(DM::Module* m = childModules[sl[0].toStdString()])
-		return m->getParameterAsString(sl[1].toStdString());
+	if (DM::Module* m = childModules[sl[0].toStdString()])
+		return m->getParameter(sl[1].toStdString());
 	else
 	{
 		DM::Logger(Error) << "module '" << sl[0].toStdString() << "' not found";
-		return "";
+		return NULL;
 	}
-}
-
-void GUIContainerGroup::setParamValue(const std::string& paramName, const std::string& value)
-{
-	QString originalParamString = "";
-	for(std::map<std::string, std::string>::iterator it = m->parameterConfig.begin();
-		it != m->parameterConfig.end(); ++it)
-		if(it->second == paramName)
-			originalParamString = QString::fromStdString(it->first);
-
-	if(originalParamString.length() == 0)
-	{
-		DM::Logger(Error) << "parameter not found";
-		return;
-	}
-	QStringList sl = originalParamString.split("::",QString::SkipEmptyParts);
-	if(sl.size() != 2)
-	{
-		DM::Logger(Error) << "could not get parameter value";
-		return;
-	}
-
-	if(DM::Module* m = childModules[sl[0].toStdString()])
-		m->setParameterValue(sl[1].toStdString(), value);
-	else
-		DM::Logger(Error) << "module not found";
 }
 
 void GUIContainerGroup::on_addParameter_clicked()
@@ -176,30 +153,62 @@ void GUIContainerGroup::on_editParamName_textEdited(const QString& newText)
 		m->parameterConfig[it->text().toStdString()] = newText.toStdString();
 }
 
+void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
+{
+	ParamEdit* pe = new ParamEdit;
+
+	pe->p = getParam(id);
+	pe->label = new QLabel(QString::fromStdString(name));
+
+	switch (pe->p->type)
+	{
+	case DM::STRING:
+	case DM::FILENAME:
+		pe->editWidget = new QLineEdit(QString::fromStdString(*(std::string*)pe->p->data));
+		break;
+	case DM::DOUBLE:
+		pe->editWidget = new QDoubleSpinBox();
+		((QDoubleSpinBox*)pe->editWidget)->setValue(*(double*)pe->p->data);
+		break;
+	case DM::LONG:
+		pe->editWidget = new QSpinBox();
+		((QSpinBox*)pe->editWidget)->setValue(*(long*)pe->p->data);
+	case DM::INT:
+		pe->editWidget = new QSpinBox();
+		((QSpinBox*)pe->editWidget)->setValue(*(int*)pe->p->data);
+		break;
+	case DM::BOOL:
+		pe->editWidget = new QCheckBox;
+		((QCheckBox*)pe->editWidget)->setChecked(*(bool*)pe->p->data);
+		break;
+	default:
+		DM::Logger(DM::Warning) << "unsupported type of parameter " << id;
+		delete pe;
+		return;
+	}
+
+	ui->configParamArea->addWidget(pe->label, ui->configParamArea->rowCount() + 1, PARAM_LABEL_COLUMN);
+	ui->configParamArea->addWidget(pe->editWidget, ui->configParamArea->rowCount(), PARAM_VALUE_COLUMN);
+
+	parameters.push_back(pe);
+}
+
 void GUIContainerGroup::on_tabWidget_currentChanged()
 {
 	if(ui->tabWidget->currentIndex() == PARAM_TAB)
 	{
-		for(int i=1; i<ui->configParamArea->rowCount(); i++)
-		{
-			if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_LABEL_COLUMN))
-				delete it->widget();
-			if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_VALUE_COLUMN))
-				delete it->widget();
-		}
+		// clear all elements
+		foreach(ParamEdit* p, parameters)
+			delete p;
+		
+		parameters.clear();
 
 		// reconstruct all elements
-		int i=1;
-		//mforeach(std::string s, parameterRenameMap)
 		for(std::map<std::string, std::string>::iterator it = m->parameterConfig.begin(); 
 			it != m->parameterConfig.end(); ++it)
 		{
 			// map value = new name
-			ui->configParamArea->addWidget(new QLabel(QString::fromStdString(it->second)), i, PARAM_LABEL_COLUMN);
-			QLineEdit* edit = new QLineEdit(QString::fromStdString(getParamValue(it->first)));
-			// map key = module::param_name
-			ui->configParamArea->addWidget(edit, i, PARAM_VALUE_COLUMN);
-			i++;
+			addParameterEdit(it->first, it->second);
 		}
 	}
 }
@@ -276,18 +285,28 @@ void GUIContainerGroup::on_enableConfig_stateChanged(int state)
 
 void GUIContainerGroup::accept() 
 {
-	for(int i=1; i<ui->configParamArea->rowCount(); i++)
+	foreach(ParamEdit* pe, parameters)
 	{
-		QLabel* label = NULL;
-		QLineEdit* value = NULL;
-
-		if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_LABEL_COLUMN))
-			label = dynamic_cast<QLabel*>(it->widget());
-		if(QLayoutItem* it = ui->configParamArea->itemAtPosition(i, PARAM_VALUE_COLUMN))
-			value = dynamic_cast<QLineEdit*>(it->widget());
-
-		if(label && value)
-			setParamValue(label->text().toStdString(), value->text().toStdString());
+		switch (pe->p->type)
+		{
+		case DM::STRING:
+		case DM::FILENAME:
+			*(std::string*)pe->p->data = ((QLineEdit*)pe->editWidget)->text().toStdString();
+			break;
+		case DM::DOUBLE:
+			*(double*)pe->p->data = ((QDoubleSpinBox*)pe->editWidget)->value();
+			break;
+		case DM::LONG:
+			*(long*)pe->p->data = ((QSpinBox*)pe->editWidget)->value();
+		case DM::INT:
+			*(int*)pe->p->data = ((QSpinBox*)pe->editWidget)->value();
+			break;
+		case DM::BOOL:
+			*(bool*)pe->p->data = ((QCheckBox*)pe->editWidget)->isChecked();
+			break;
+		default:
+			return;
+		}
 	}
 
 	QDialog::accept();

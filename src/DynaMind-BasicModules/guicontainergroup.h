@@ -28,6 +28,7 @@
 #define GUICONTAINERGROUP_H
 
 #include <QDialog>
+#include <QLabel>
 #include <dmcompilersettings.h>
 #include <map>
 #include <dmmodule.h>
@@ -52,22 +53,44 @@ public:
 	~GUIContainerGroup();
 
 private:
-	Ui::GUIContainerGroup *ui;
-	ContainerGroup * m;
-
+	Ui::GUIContainerGroup*		ui;
+	ContainerGroup*				m;
 	std::vector<DM::Module*>	childs;
-
-	void insertStreamEntry(std::string name, bool out);
-	
-	std::string getParamValue(const std::string& originalParamString);
-	void setParamValue(const std::string& paramName, const std::string& value);
 
 	// internal linking
 	std::map<std::string, DM::Module*> childModules;
 
 	// hidden config tab
-	QWidget* configParamWidget;
-	QString configTabName;
+	QWidget*	configParamWidget;
+	QString		configTabName;
+
+	void insertStreamEntry(std::string name, bool out);
+
+	void addParameterEdit(std::string name, std::string id);
+
+	DM::Module::Parameter* getParam(const std::string& originalParamString);
+
+	struct ParamEdit
+	{
+		DM::Module::Parameter* p;
+
+		QWidget* editWidget;
+		QLabel*	label;
+
+		ParamEdit()
+		{
+			label		= NULL;
+			editWidget	= NULL;
+		}
+
+		~ParamEdit()
+		{
+			if(label)		delete label;
+			if(editWidget)	delete editWidget;
+		}
+	};
+
+	std::list<ParamEdit*>	parameters;
 protected slots:
 	void on_addInStream_clicked();
 	void on_addOutStream_clicked();
