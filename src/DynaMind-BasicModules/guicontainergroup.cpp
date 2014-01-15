@@ -186,9 +186,9 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 		delete pe;
 		return;
 	}
-
-	ui->configParamArea->addWidget(pe->label, ui->configParamArea->rowCount() + 1, PARAM_LABEL_COLUMN);
-	ui->configParamArea->addWidget(pe->editWidget, ui->configParamArea->rowCount(), PARAM_VALUE_COLUMN);
+	int row = ui->configParamArea->rowCount();
+	ui->configParamArea->addWidget(pe->label, row, PARAM_LABEL_COLUMN);
+	ui->configParamArea->addWidget(pe->editWidget, row, PARAM_VALUE_COLUMN);
 
 	parameters.push_back(pe);
 }
