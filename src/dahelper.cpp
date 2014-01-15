@@ -34,4 +34,5 @@ bool DAHelper::daweight(std::vector<int>& oldrank, std::vector<int>& newrank, do
         if (oldrank[i] > 0 ) { newrank[i] = static_cast<int>(qRound((oldrank[i] + newrank[i]*rank_weight)/(rank_weight+1))); }
         DM::Logger(DM::Warning) << "old: " << oldrank[i] << "new :" << newrank[i];
     }
+    return 1;
 }
