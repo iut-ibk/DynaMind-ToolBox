@@ -24,6 +24,13 @@ void ExportRasterData::run () {
 	counter++;
 	DM::View(this->NameOfExistingView, DM::RASTERDATA, DM::READ);
 	DM::RasterData * rData = this->getRasterData("Data",DM::View(this->NameOfExistingView, DM::RASTERDATA, DM::READ));
+
+	if (!rData)
+	{
+		DM::Logger(DM::Error) << "Error, no rasterdata found";
+		return;
+	}
+
 	QString extension=".txt";
 	std::stringstream s;
 	s << "_"<<counter;
