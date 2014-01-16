@@ -195,10 +195,10 @@ void DMMainWindow::createModuleListView()
 			
 			QTreeWidgetItem * itSim = parent ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(itSimDir);
 
-			itSim->setText(0, parent ? parsedFile[0] : simPath);
+			itSim->setText(0, parent ? parsedFile[0].replace(".dyn","") : simPath);
 			itSim->setTextColor(0, Qt::blue);
 			itSim->setText(1, "Simulation");
-			itSim->setText(2, simDir + '\\' + simPath);
+			itSim->setText(2, simDir + '//' + simPath);
 		}
 	}
 }
