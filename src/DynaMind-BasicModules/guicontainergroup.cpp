@@ -35,7 +35,7 @@
 #include <dmmodule.h>
 #include <QScrollArea>
 #include <dmlogger.h>
-#include <QSpinbox>
+#include <QSpinBox>
 
 #define PARAM_TAB 0
 #define PARAM_CONFIG_TAB 2
@@ -158,6 +158,10 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 	ParamEdit* pe = new ParamEdit;
 
 	pe->p = getParam(id);
+
+	if(!pe->p)
+		return;
+
 	pe->label = new QLabel(QString::fromStdString(name));
 
 	switch (pe->p->type)
@@ -208,7 +212,7 @@ void GUIContainerGroup::on_tabWidget_currentChanged()
 			it != m->parameterConfig.end(); ++it)
 		{
 			// map value = new name
-			addParameterEdit(it->first, it->second);
+			addParameterEdit(it->second, it->first);
 		}
 	}
 }
