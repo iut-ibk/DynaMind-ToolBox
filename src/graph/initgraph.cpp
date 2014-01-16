@@ -24,7 +24,7 @@
  *
  */
 
-#include <createepanetmodel.h>
+#include <initgraph.h>
 
 //DynaMind includes
 #include <dmsystem.h>
@@ -42,37 +42,29 @@
 
 //Watersupply
 #include <dmepanet.h>
-#include <epanetdynamindconverter.h>
 
 using namespace DM;
 
-DM_DECLARE_NODE_NAME(CreateEPANETModel,Watersupply)
+DM_DECLARE_NODE_NAME(InitGraphSystem,Graph)
 
-CreateEPANETModel::CreateEPANETModel()
+InitGraphSystem::InitGraphSystem()
 {
-	this->inpfilepath="";
-	this->addParameter("Path of inp file", DM::FILENAME, &this->inpfilepath);
+	this->append=false;
+	this->addParameter("AppendToExistingDataStream", DM::BOOL, &this->append);
 
-	std::vector<DM::View> views;
-	views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::MODIFY));
-	views.push_back(wsd.getCompleteView(WS::PIPE,DM::READ));
-	views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
-	views.push_back(wsd.getCompleteView(WS::TANK,DM::READ));
-	this->addData("Watersupply", views);
 }
 
-void CreateEPANETModel::run()
+void InitGraphSystem::init()
 {
-	this->sys = this->getData("Watersupply");
+	this->data = wsd.getAll(DM::WRITE);
 
-	EpanetDynamindConverter converter;
+	if (this->append)
+		data.push_back( DM::View("dummy", SUBSYSTEM, READ));
 
-	if(!this->inpfilepath.size())
-	{
-		DM::Logger(DM::Error) << "No inp file path set";
-		return;
-	}
+	this->addData("Graph", data);
+}
 
-	if(!converter.createEpanetModel(sys,inpfilepath))
-		DM::Logger(DM::Error) << "Could not create inp file for EPANET";
+void InitGraphSystem::run()
+{
+	this->getData("Graph");
 }

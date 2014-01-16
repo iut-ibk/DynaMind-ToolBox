@@ -48,12 +48,14 @@
 #include <initsewer.h>
 #include <createswmmmodel.h>
 #include <identifymainpipes.h>
+#include <initgraph.h>
 
 #include <spatialpressureperformance.h>
 #include <totaldemandperformance.h>
 
 #include <generalgraphanalysis.h>
 #include <totalgraphweight.h>
+#include <evaluateperformanceindicators.h>
 
 //Testing Modules
 //#include <wsproto.h>
@@ -61,6 +63,7 @@
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
+	registry->addNodeFactory(new DM::NodeFactory<InitGraphSystem>());
 	registry->addNodeFactory(new DM::NodeFactory<SpanningTree>());
 	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
 	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromFaces>());
@@ -91,6 +94,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 
     registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
     registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
+	registry->addNodeFactory(new DM::NodeFactory<EvaluatePerformanceIndicators>());
 
 	//TESTMODULES
 	//registry->addNodeFactory(new DM::NodeFactory<WSProto>());

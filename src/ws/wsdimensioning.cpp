@@ -63,6 +63,7 @@ Dimensioning::Dimensioning()
 	this->discrete=true;
 	this->iterations = 5;
 	this->nearestdiscretediameter=true;
+	this->apprdt = 0.005;
 	this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
 	this->addParameter("Maximum diameter [mm]", DM::DOUBLE, &this->maxdiameter);
 	this->addParameter("Automatic set pipe status", DM::BOOL, &this->pipestatus);
@@ -71,6 +72,7 @@ Dimensioning::Dimensioning()
 	this->addParameter("Number of iterations", DM::DOUBLE, &this->iterations);
 	this->addParameter("Force discrete diameters", DM::BOOL, &this->discrete);
 	this->addParameter("Force nearest discrete diameters", DM::BOOL, &this->nearestdiscretediameter);
+	this->addParameter("Assumed pressure head loss [m/m]", DM::DOUBLE, &this->apprdt);
 }
 
 void Dimensioning::init()
@@ -114,6 +116,10 @@ void Dimensioning::run()
 
 	if(!converter->openEpanetModel(inpfilename,rptfilename)) return;
 
+	//set small simulation duration and timesteps
+	EPANET::ENsettimeparam(EN_DURATION,60);
+	EPANET::ENsettimeparam(EN_HYDSTEP,30);
+
 	if(!SitzenfreiDimensioning())return;
 
 	if(usemainpipe)
@@ -124,11 +130,17 @@ void Dimensioning::run()
 				if(!calibrateReservoirOutFlow(totaldemand, 100,entrypipes,false))
 					return;
 
+			DM::Logger(DM::Standard) << "Calibrate reservoir out flow .... DONE";
+
 			if(!approximatePressure(discrete))
 				return;
 
+			DM::Logger(DM::Standard) << "Approximate pressure .... DONE";
+
 			if(!approximatePipeSizes(true,discrete))
 				return;
+
+			DM::Logger(DM::Standard) << "Approximate pipe sizes .... DONE";
 		}
 
 		if(discrete)
@@ -217,7 +229,7 @@ std::vector<DM::Node*> Dimensioning::getFlowNeighbours(DM::Node* junction)
 		if(!converter->checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))
 			return std::vector<DM::Node*>();
 
-		if(std::fabs(flow) < 0.001)
+		if(std::fabs(flow) < 0.01)
 			flow=0.0;
 
 		if(invert)
@@ -453,8 +465,8 @@ bool Dimensioning::approximatePressure(bool discretediameter)
 	if(notset)
 	{
 		DM::Logger(DM::Error)<< "Pressure of " << notset << " junctions not set";
-		return false;
-		//return true;
+		//return false;
+		return true;
 	}
 
 	return true;
@@ -499,7 +511,9 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 
 bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::vector<DM::Node*> &knownPressurePoints,std::vector<DM::Node*> &newpressurepoints, bool nonewpressurepoints)
 {
-	double apprdt = 0.0004;
+	//double apprdt = 0.0004;
+	//double apprdt = 0.002;
+
 	if(nodes.size() < 1)
 		return false;
 
@@ -560,6 +574,15 @@ bool Dimensioning::findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::N
 			alternativepathjunction.push_back(currentPressurePoint);
 
 		DM::Node* next = neighbours[0];
+
+		//cycle check
+		if(std::find(nodes.begin(),nodes.end(),next)!=nodes.end())
+		{
+			DM::Logger(DM::Error) << "Found cyclic flow path";
+			nodes.clear();
+			return true;
+		}
+
 		nodes.push_back(next);
 		neighbours = getFlowNeighbours(next);
 		currentPressurePoint=next;
@@ -611,10 +634,10 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 			pressureDiff=0.0;
 
 		double diameter = 0.0;
-		double roughness = 0.0004; //roughness (m)
+		double roughness = 0.004; //roughness (m)
 
 		if(usemainpipes && std::find(mainpipes.begin(),mainpipes.end(),currentpipe)!=mainpipes.end())
-			roughness = 0.0001;
+			roughness = 0.001;
 
 		if(pressureDiff < 0 && flow > 0)
 		{

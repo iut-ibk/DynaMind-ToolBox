@@ -41,7 +41,7 @@ class Dimensioning : public DM::Module
 	DM::System * sys;
 	boost::shared_ptr<EpanetDynamindConverter> converter;
 	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter;
-	double maxdiameter, iterations;
+	double maxdiameter, iterations, apprdt;
 
 public:
 	Dimensioning();

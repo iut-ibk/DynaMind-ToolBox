@@ -154,8 +154,8 @@ bool EPANETModelCreator::addCoordinate(double x, double y, QString id)
 {
 	QString result = "";
 	result += id + "\t";
-	result += QString::number(x) + "\t";
-	result += QString::number(y) + "\t";
+	result += QString::number(x,'f',6) + "\t";
+	result += QString::number(y,'f',6) + "\t";
 	(*model[EPANETModelCreator::COORDINATES])[id]=result;
 	return true;
 }
@@ -164,11 +164,11 @@ bool EPANETModelCreator::addVertex(double x1, double y1, double x2, double y2, Q
 {
 	QString result = "";
 	result += id + "\t";
-	result += QString::number(x1) + "\t";
-	result += QString::number(y1) + "\n";
+	result += QString::number(x1,'f',6) + "\t";
+	result += QString::number(y1,'f',6) + "\n";
 	result += id + "\t";
-	result += QString::number(x2) + "\t";
-	result += QString::number(y2) + "\t";
+	result += QString::number(x2,'f',6) + "\t";
+	result += QString::number(y2,'f',6) + "\t";
 	(*model[EPANETModelCreator::VERTICES])[id]=result;
 
 	return true;

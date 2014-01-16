@@ -49,12 +49,12 @@ ConnectNodes2Graph::ConnectNodes2Graph()
 	DM::View view;
 
 	//Define Parameter street network
-	view = DM::View("EDGES", DM::EDGE, DM::WRITE);
+	view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
 	views.push_back(view);
 	viewdef["EDGES"]=view;
 
 	//Define Parameter street network
-	view = DM::View("NODES", DM::NODE, DM::WRITE);
+	view = DM::View("NODES", DM::NODE, DM::MODIFY);
 	views.push_back(view);
 	viewdef["NODES"]=view;
 
