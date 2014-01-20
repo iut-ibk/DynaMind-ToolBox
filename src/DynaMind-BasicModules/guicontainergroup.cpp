@@ -174,27 +174,27 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 		{
 			QDoubleSpinBox* dsbox = new QDoubleSpinBox();
 			pe->editWidget = dsbox;
-			dsbox->setValue(*(double*)pe->p->data);
 			dsbox->setMaximum(std::numeric_limits<double>::max());
 			dsbox->setMinimum(std::numeric_limits<double>::lowest());
 			dsbox->setDecimals(5);
+			dsbox->setValue(*(double*)pe->p->data);
 		}
 		break;
 	case DM::LONG:
 		{
 			 QSpinBox* sbox = new QSpinBox();
 			 pe->editWidget = sbox;
-			 sbox->setValue(*(long*)pe->p->data);
 			 sbox->setMaximum(std::numeric_limits<long>::max());
 			 sbox->setMinimum(std::numeric_limits<long>::lowest());
+			 sbox->setValue(*(long*)pe->p->data);
 		}
 		break;
 	case DM::INT:
 		{
 			QSpinBox* sbox = new QSpinBox();
-			sbox->setValue(*(int*)pe->p->data);
 			sbox->setMaximum(std::numeric_limits<int>::max());
 			sbox->setMinimum(std::numeric_limits<int>::lowest());
+			sbox->setValue(*(int*)pe->p->data);
 		}
 		break;
 	case DM::BOOL:
