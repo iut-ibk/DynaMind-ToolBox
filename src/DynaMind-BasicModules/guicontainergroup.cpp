@@ -171,15 +171,31 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 		pe->editWidget = new QLineEdit(QString::fromStdString(*(std::string*)pe->p->data));
 		break;
 	case DM::DOUBLE:
-		pe->editWidget = new QDoubleSpinBox();
-		((QDoubleSpinBox*)pe->editWidget)->setValue(*(double*)pe->p->data);
+		{
+			QDoubleSpinBox* dsbox = new QDoubleSpinBox();
+			pe->editWidget = dsbox;
+			dsbox->setValue(*(double*)pe->p->data);
+			dsbox->setMaximum(std::numeric_limits<double>::max());
+			dsbox->setMinimum(std::numeric_limits<double>::lowest());
+			dsbox->setDecimals(5);
+		}
 		break;
 	case DM::LONG:
-		pe->editWidget = new QSpinBox();
-		((QSpinBox*)pe->editWidget)->setValue(*(long*)pe->p->data);
+		{
+			 QSpinBox* sbox = new QSpinBox();
+			 pe->editWidget = sbox;
+			 sbox->setValue(*(long*)pe->p->data);
+			 sbox->setMaximum(std::numeric_limits<long>::max());
+			 sbox->setMinimum(std::numeric_limits<long>::lowest());
+		}
+		break;
 	case DM::INT:
-		pe->editWidget = new QSpinBox();
-		((QSpinBox*)pe->editWidget)->setValue(*(int*)pe->p->data);
+		{
+			QSpinBox* sbox = new QSpinBox();
+			sbox->setValue(*(int*)pe->p->data);
+			sbox->setMaximum(std::numeric_limits<int>::max());
+			sbox->setMinimum(std::numeric_limits<int>::lowest());
+		}
 		break;
 	case DM::BOOL:
 		pe->editWidget = new QCheckBox;
