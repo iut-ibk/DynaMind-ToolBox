@@ -36,6 +36,7 @@
 #include <QScrollArea>
 #include <dmlogger.h>
 #include <QSpinBox>
+#include <QFileDialog>
 
 #define PARAM_TAB 0
 #define PARAM_CONFIG_TAB 2
@@ -153,6 +154,14 @@ void GUIContainerGroup::on_editParamName_textEdited(const QString& newText)
 		m->parameterConfig[it->text().toStdString()] = newText.toStdString();
 }
 
+void GUIContainerGroup::openFileDialog()
+{
+	QString s = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Files (*.*)"));
+
+	if (!s.isEmpty())
+		emit selectFiles(s);
+}
+
 void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 {
 	ParamEdit* pe = new ParamEdit;
@@ -167,8 +176,21 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 	switch (pe->p->type)
 	{
 	case DM::STRING:
-	case DM::FILENAME:
 		pe->editWidget = new QLineEdit(QString::fromStdString(*(std::string*)pe->p->data));
+		break;
+	case DM::FILENAME:
+		{
+			pe->editWidget = new QWidget();
+			QHBoxLayout* vlayout = new QHBoxLayout(pe->editWidget);
+
+			QLineEdit* le = new QLineEdit(QString::fromStdString(*(std::string*)pe->p->data));
+			vlayout->addWidget(le);
+			QPushButton* pb = new QPushButton("...");
+			vlayout->addWidget(pb);
+
+			connect(pb, SIGNAL(clicked()), this, SLOT(openFileDialog()));
+			connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
+		}
 		break;
 	case DM::DOUBLE:
 		{
@@ -191,7 +213,8 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 		break;
 	case DM::INT:
 		{
-			QSpinBox* sbox = new QSpinBox();
+				QSpinBox* sbox = new QSpinBox();
+				pe->editWidget = sbox;
 			sbox->setMaximum(std::numeric_limits<int>::max());
 			sbox->setMinimum(std::numeric_limits<int>::lowest());
 			sbox->setValue(*(int*)pe->p->data);
@@ -310,16 +333,23 @@ void GUIContainerGroup::accept()
 		switch (pe->p->type)
 		{
 		case DM::STRING:
-		case DM::FILENAME:
 			*(std::string*)pe->p->data = ((QLineEdit*)pe->editWidget)->text().toStdString();
+			break;
+		case DM::FILENAME:
+			{
+				QLineEdit* qle = (QLineEdit*)((QWidget*)pe->editWidget)->children()[1];
+				*(std::string*)pe->p->data = qle->text().toStdString();
+			}
 			break;
 		case DM::DOUBLE:
 			*(double*)pe->p->data = ((QDoubleSpinBox*)pe->editWidget)->value();
 			break;
 		case DM::LONG:
 			*(long*)pe->p->data = ((QSpinBox*)pe->editWidget)->value();
+			break;
 		case DM::INT:
 			*(int*)pe->p->data = ((QSpinBox*)pe->editWidget)->value();
+			break;
 			break;
 		case DM::BOOL:
 			*(bool*)pe->p->data = ((QCheckBox*)pe->editWidget)->isChecked();

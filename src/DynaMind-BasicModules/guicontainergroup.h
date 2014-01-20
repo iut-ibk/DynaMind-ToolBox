@@ -91,6 +91,7 @@ private:
 	};
 
 	std::list<ParamEdit*>	parameters;
+
 protected slots:
 	void on_addInStream_clicked();
 	void on_addOutStream_clicked();
@@ -108,6 +109,10 @@ protected slots:
 	void on_enableConfig_stateChanged(int state);
 
 	void accept();
+
+	void openFileDialog();
+signals:
+	void selectFiles(QString);
 };
 
 #endif // GUICONTAINERGROUP_H
