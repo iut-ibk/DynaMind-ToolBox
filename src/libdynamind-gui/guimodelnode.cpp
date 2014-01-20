@@ -53,6 +53,8 @@
 #include <QTableWidget>
 #include <QHeaderView>
 
+#include <QDoubleSpinBox>
+
 void GUIModelNode::openFileDialog() 
 {
 //#ifdef __APPLE__ // Fix for bug in Qt 4.8.5 that the file dialog freezes
@@ -83,27 +85,40 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 		switch(p->type)
 		{
 		case DM::DOUBLE:
+			{
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(), 0);
+
+				QDoubleSpinBox* dsbox = new QDoubleSpinBox();
+				dsbox->setMaximum(std::numeric_limits<double>::max());
+				dsbox->setMinimum(std::numeric_limits<double>::lowest());
+				dsbox->setDecimals(5);
+				dsbox->setValue(*(double*)p->data);
+				elements.insert(qname, dsbox);
+				layout1->addWidget(dsbox, layout1->rowCount() - 1, 1);
+			}
+			break;
 		case DM::LONG:
+			{
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(), 0);
+
+				QSpinBox* sbox = new QSpinBox();
+				sbox->setMaximum(std::numeric_limits<long>::max());
+				sbox->setMinimum(std::numeric_limits<long>::lowest());
+				elements.insert(qname, sbox);
+				sbox->setValue(*(long*)p->data);
+				layout1->addWidget(sbox, layout1->rowCount() - 1, 1);
+			}
+			break;
 		case DM::INT:
 			{
-				double dval = -1;
-				if(p->type == DM::DOUBLE)		dval = *(double*)p->data;
-				else if(p->type == DM::LONG)	dval = *(long*)p->data;
-				else if(p->type == DM::INT)		dval = *(int*)p->data;
+				layout1->addWidget(new QLabel(qname), layout1->rowCount(), 0);
 
-				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
-
-				QLineEdit * le = new QLineEdit;
-				//QCheckBox * cb = new QCheckBox("from Outside");
-
-				QString numberAsText = QString::number(dval, 'g', 15);
-				le->setText(numberAsText);
-				elements.insert(qname, le);
-				QString s1;
-				s1= "InputDouble|DoubleIn_"+ qname;
-				//cb->setObjectName(s1);
-				layout1->addWidget(le,layout1->rowCount()-1,1);
-				//layout1->addWidget(cb,layout1->rowCount()-1,2);
+				QSpinBox* sbox = new QSpinBox();
+				sbox->setMaximum(std::numeric_limits<int>::max());
+				sbox->setMinimum(std::numeric_limits<int>::lowest());
+				elements.insert(qname, sbox);
+				sbox->setValue(*(int*)p->data);
+				layout1->addWidget(sbox, layout1->rowCount() - 1, 1);
 			}
 			break;
 		case DM::BOOL:
@@ -295,22 +310,13 @@ void GUIModelNode::accept()
 			}
 			break;
 		case DM::INT:
-			{
-				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				*(int*)p->data = le->text().toInt();
-			}
+			*(int*)p->data = ((QSpinBox*)this->elements.value(s))->value();
 			break;
 		case DM::LONG:
-			{
-				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				*(long*)p->data = le->text().toLong();
-			}
+			*(long*)p->data = ((QSpinBox*)this->elements.value(s))->value();
 			break;
 		case DM::DOUBLE:
-			{
-				QLineEdit *le = ( QLineEdit * ) this->elements.value(s);
-				*(double*)p->data = le->text().toDouble();
-			}
+			*(double*)p->data = ((QDoubleSpinBox*)this->elements.value(s))->value();
 			break;
 		case DM::STRING:
 		case DM::FILENAME:
