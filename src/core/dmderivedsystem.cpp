@@ -173,7 +173,7 @@ std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & v
             if (c->getCurrentSystem() != this)
                 c = SuccessorCopyTypesafe(c);
 
-            cmps.insert(SuccessorCopyTypesafe(c));
+            cmps.insert(c);
         }
 
         return std::vector<Component*>(cmps.begin(), cmps.end());
