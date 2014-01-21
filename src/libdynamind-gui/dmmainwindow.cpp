@@ -200,6 +200,9 @@ void DMMainWindow::createModuleListView()
 			itSim->setText(1, "Simulation");
 			itSim->setText(2, simDir + '//' + simPath);
 		}
+
+		if (itSimDir->childCount() == 0)
+			delete itSimDir;
 	}
 }
 
