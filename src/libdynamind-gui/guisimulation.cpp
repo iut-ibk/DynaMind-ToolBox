@@ -228,6 +228,7 @@ bool GUISimulation::loadSimulation(std::string filePath)
 			modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
 	}
 
+	this->selectTab(0);
 	foreach(SimulationTab* tab, tabs)
 		tab->getQGViewer()->fitInView(tab->sceneRect(), Qt::KeepAspectRatio);
 
