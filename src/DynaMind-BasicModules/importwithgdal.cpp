@@ -77,6 +77,10 @@ ImportwithGDAL::ImportwithGDAL()
 
 	view = NULL;
 	poCT = NULL;
+
+	std::vector<DM::View> data;
+	data.push_back(DM::View("dummy", SUBSYSTEM, WRITE));
+	this->addData("Data", data);
 }
 ImportwithGDAL::~ImportwithGDAL()
 {
