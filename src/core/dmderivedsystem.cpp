@@ -81,6 +81,10 @@ Component* DerivedSystem::SuccessorCopyTypesafe(const Component *src)
 
 Component* DerivedSystem::SuccessorCopy(const Component *src)
 {
+	Component* existing_c = NULL;
+	if (map_contains(&predecessorComponentMap, src, existing_c))
+		return existing_c;
+
     Component *c = new Component;
     c->CopyFrom(*src, true);
     predecessorComponentMap[src] = c;
@@ -88,6 +92,10 @@ Component* DerivedSystem::SuccessorCopy(const Component *src)
 }
 Node* DerivedSystem::SuccessorCopy(const Node *src)
 {
+	Component* existing_c = NULL;
+	if (map_contains(&predecessorComponentMap, (const Component*)src, existing_c))
+		return (Node*)existing_c;
+
     Node* n = new Node();
     *n = *src;
     n->CopyFrom(*src, true);
@@ -96,6 +104,10 @@ Node* DerivedSystem::SuccessorCopy(const Node *src)
 }
 Edge* DerivedSystem::SuccessorCopy(const Edge *src)
 {
+	Component* existing_c = NULL;
+	if (map_contains(&predecessorComponentMap, (const Component*)src, existing_c))
+		return (Edge*)existing_c;
+
     Node* start = src->getStartNode();
     Node* end = src->getEndNode();
 
@@ -111,6 +123,10 @@ Edge* DerivedSystem::SuccessorCopy(const Edge *src)
 }
 Face* DerivedSystem::SuccessorCopy(const Face *src)
 {
+	Component* existing_c = NULL;
+	if (map_contains(&predecessorComponentMap, (const Component*)src, existing_c))
+		return (Face*)existing_c;
+
     std::vector<Node*> newNodes;
     foreach(Node* n, src->getNodePointers())
     {
