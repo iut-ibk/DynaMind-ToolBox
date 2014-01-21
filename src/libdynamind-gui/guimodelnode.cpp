@@ -52,6 +52,7 @@
 #include <QTextEdit>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <limits>
 
 #include <QDoubleSpinBox>
 
@@ -90,7 +91,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
 				QDoubleSpinBox* dsbox = new QDoubleSpinBox();
 				dsbox->setMaximum(std::numeric_limits<double>::max());
-				dsbox->setMinimum(std::numeric_limits<double>::lowest());
+				dsbox->setMinimum(-std::numeric_limits<double>::max());
 				dsbox->setDecimals(5);
 				dsbox->setValue(*(double*)p->data);
 				elements.insert(qname, dsbox);
@@ -103,7 +104,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
 				QSpinBox* sbox = new QSpinBox();
 				sbox->setMaximum(std::numeric_limits<long>::max());
-				sbox->setMinimum(std::numeric_limits<long>::lowest());
+				sbox->setMinimum(std::numeric_limits<long>::min());
 				elements.insert(qname, sbox);
 				sbox->setValue(*(long*)p->data);
 				layout1->addWidget(sbox, layout1->rowCount() - 1, 1);
@@ -115,7 +116,7 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 
 				QSpinBox* sbox = new QSpinBox();
 				sbox->setMaximum(std::numeric_limits<int>::max());
-				sbox->setMinimum(std::numeric_limits<int>::lowest());
+				sbox->setMinimum(std::numeric_limits<int>::min());
 				elements.insert(qname, sbox);
 				sbox->setValue(*(int*)p->data);
 				layout1->addWidget(sbox, layout1->rowCount() - 1, 1);
