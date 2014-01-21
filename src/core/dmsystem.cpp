@@ -59,15 +59,15 @@ System::System(const System& s) : Component(s, true)
 
 System::~System()
 {
+	foreach(DM::System * sys, this->sucessors)
+	if (sys)	delete sys;
+
     foreach(Component* c, nodes)		delete c;
     foreach(Component* c, edges)		delete c;
     foreach(Component* c, faces)		delete c;
     foreach(Component* c, rasterdata)	delete c;
     foreach(Component* c, subsystems)	delete c;
     foreach(Component* c, components)	delete c;
-
-    foreach (DM::System * sys, this->sucessors)
-        if (sys)	delete sys;
 
     if(isInserted)
         Component::SQLDelete();
