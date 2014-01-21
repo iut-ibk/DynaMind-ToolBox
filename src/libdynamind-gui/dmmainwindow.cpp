@@ -161,7 +161,7 @@ void DMMainWindow::createModuleListView()
 		return;
 
 	QTreeWidgetItem * itSimDirs = new QTreeWidgetItem(ui->treeWidget);
-	itSimDirs->setText(0, "Simulation directories");
+	itSimDirs->setText(0, "Not categorized");
 	foreach(QString simDir, simPaths)
 	{
 		QTreeWidgetItem * itSimDir;
