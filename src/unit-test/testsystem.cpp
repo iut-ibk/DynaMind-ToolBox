@@ -322,6 +322,39 @@ TEST_F(TestSystem,sqlsuccessortest)
 	ASSERT_TRUE(c->getAttribute(UUID_ATTRIBUTE_NAME)->getString() != "");
 	delete c;
 
+
+
+
+	System* sys = new System;
+	// separate the views of start and endnode
+	View startnodes("startnodes", NODE, WRITE);
+	View endnodes("endnodes", NODE, WRITE);
+	View edges("edges", EDGE, WRITE);
+
+	sys->addNode(0, 1, 2, startnodes);
+	sys->addNode(3, 4, 5, endnodes);
+
+	Node* sn = (Node*)sys->getAllComponentsInView(startnodes)[0];
+	Node* en = (Node*)sys->getAllComponentsInView(endnodes)[0];
+	Edge* e = sys->addEdge(sn, en, edges);
+
+
+	System* ssys = sys->createSuccessor();
+
+	Node* ssn = (Node*)ssys->getAllComponentsInView(startnodes)[0];
+	Node* sen = (Node*)ssys->getAllComponentsInView(endnodes)[0];
+	Edge* se = (Edge*)ssys->getAllComponentsInView(edges)[0];
+
+	ASSERT_TRUE(sn != ssn);
+	ASSERT_TRUE(en != sen);
+	ASSERT_TRUE(e != se);
+
+	ASSERT_TRUE(se->getStartNode() == ssn);
+	ASSERT_TRUE(se->getEndNode() == sen);
+
+	delete sys;
+
+
 	// check if no name is created if there is no element
 	/*System *sys = new System();
 	c = sys->getComponent((std::string)"test");
