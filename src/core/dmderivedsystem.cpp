@@ -265,19 +265,6 @@ Component* DerivedSystem::getChild(QUuid quuid)
         return SuccessorCopyTypesafe(predecessorSys->getChild(quuid));
 }
 
-
-Component* DerivedSystem::getSuccessingComponent(const Component* formerComponent)
-{
-    Component* successingComponent = NULL;
-    if(map_contains(&predecessorComponentMap, formerComponent, successingComponent))
-        return successingComponent;
-    else
-    {
-        // copy function automatically adds predecessorComponentMap entry fur future access
-        return SuccessorCopyTypesafe(formerComponent);
-    }
-}
-
 void DerivedSystem::_moveToDb()
 {
     predecessorSys->_moveToDb();
