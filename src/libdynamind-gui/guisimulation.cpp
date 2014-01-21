@@ -35,6 +35,7 @@
 #include <dmgroup.h>
 #include <qtablewidget.h>
 #include <dmlogger.h>
+#include <QGraphicsView>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -226,6 +227,10 @@ bool GUISimulation::loadSimulation(std::string filePath)
 		if(map_contains(&modMap, it->first.toStdString(), m) && m)
 			modelNodes[m]->setPos(QPointF(it->second.posX, it->second.posY));
 	}
+
+	foreach(SimulationTab* tab, tabs)
+		tab->getQGViewer()->fitInView(tab->sceneRect(), Qt::KeepAspectRatio);
+
 	return result;
 }
 
