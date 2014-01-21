@@ -37,6 +37,7 @@
 #include <dmlogger.h>
 #include <QSpinBox>
 #include <QFileDialog>
+#include <limits>
 
 #define PARAM_TAB 0
 #define PARAM_CONFIG_TAB 2
@@ -197,7 +198,7 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 			QDoubleSpinBox* dsbox = new QDoubleSpinBox();
 			pe->editWidget = dsbox;
 			dsbox->setMaximum(std::numeric_limits<double>::max());
-			dsbox->setMinimum(std::numeric_limits<double>::lowest());
+			dsbox->setMinimum(-std::numeric_limits<double>::max());
 			dsbox->setDecimals(5);
 			dsbox->setValue(*(double*)pe->p->data);
 		}
@@ -207,7 +208,7 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 			 QSpinBox* sbox = new QSpinBox();
 			 pe->editWidget = sbox;
 			 sbox->setMaximum(std::numeric_limits<long>::max());
-			 sbox->setMinimum(std::numeric_limits<long>::lowest());
+			 sbox->setMinimum(std::numeric_limits<long>::min());
 			 sbox->setValue(*(long*)pe->p->data);
 		}
 		break;
@@ -216,7 +217,7 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 				QSpinBox* sbox = new QSpinBox();
 				pe->editWidget = sbox;
 			sbox->setMaximum(std::numeric_limits<int>::max());
-			sbox->setMinimum(std::numeric_limits<int>::lowest());
+			sbox->setMinimum(std::numeric_limits<int>::min());
 			sbox->setValue(*(int*)pe->p->data);
 		}
 		break;
