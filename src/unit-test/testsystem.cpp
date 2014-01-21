@@ -330,6 +330,7 @@ TEST_F(TestSystem,sqlsuccessortest)
 	View startnodes("startnodes", NODE, WRITE);
 	View endnodes("endnodes", NODE, WRITE);
 	View edges("edges", EDGE, WRITE);
+	View faces("faces", FACE, WRITE);
 
 	sys->addNode(0, 1, 2, startnodes);
 	sys->addNode(3, 4, 5, endnodes);
@@ -337,20 +338,31 @@ TEST_F(TestSystem,sqlsuccessortest)
 	Node* sn = (Node*)sys->getAllComponentsInView(startnodes)[0];
 	Node* en = (Node*)sys->getAllComponentsInView(endnodes)[0];
 	Edge* e = sys->addEdge(sn, en, edges);
-
+	std::vector<Node*>	ns;
+	ns.push_back(sn);
+	ns.push_back(en);
+	Face* f = sys->addFace(ns, faces);
 
 	System* ssys = sys->createSuccessor();
 
+	View read_edges("edges", EDGE, READ);
+	View read_faces("faces", FACE, READ);
+
 	Node* ssn = (Node*)ssys->getAllComponentsInView(startnodes)[0];
 	Node* sen = (Node*)ssys->getAllComponentsInView(endnodes)[0];
-	Edge* se = (Edge*)ssys->getAllComponentsInView(edges)[0];
+	Edge* se = (Edge*)ssys->getAllComponentsInView(read_edges)[0];
+	Face* sf = (Face*)ssys->getAllComponentsInView(read_faces)[0];
 
 	ASSERT_TRUE(sn != ssn);
 	ASSERT_TRUE(en != sen);
 	ASSERT_TRUE(e != se);
+	ASSERT_TRUE(f != sf);
 
 	ASSERT_TRUE(se->getStartNode() == ssn);
 	ASSERT_TRUE(se->getEndNode() == sen);
+
+	ASSERT_TRUE(sf->getNodePointers()[0] == ssn);
+	ASSERT_TRUE(sf->getNodePointers()[1] == sen);
 
 	delete sys;
 
