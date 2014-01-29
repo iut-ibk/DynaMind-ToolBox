@@ -324,6 +324,8 @@ void DerivedSystem::reInit(std::set<QUuid>& viewElements, bool readOnly)
 void DerivedSystem::updateViews(const std::vector<View>& views)
 {
 	// if derived system, copy elements if necessary
+	// edges and faces, even if only read, need to be renewed if the node pointer changed
+	// thus we make any node successors first
 	foreach(const View& v, views)
 	{
 		if (!v.writes())
