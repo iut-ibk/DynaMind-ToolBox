@@ -172,7 +172,7 @@ public:
 
     virtual Component* getSuccessingComponent(const Component* formerComponent);
 
-    void updateView(const View& view);
+    void updateViews(const std::vector<View>& views);
 
     //void loadFromHost();
 

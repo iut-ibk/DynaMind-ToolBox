@@ -428,10 +428,41 @@ void System::SQLUpdateStates()
         "predecessors",  pre);
 }
 
-void System::updateView(const View& view)
+void ReInit(System* sys, std::set<QUuid>& viewElements)
 {
-    viewCaches[view.getName()].sys = this;
-    viewCaches[view.getName()].apply(view);
+	std::set<QUuid> re = viewElements;
+	viewElements.clear();
+
+	foreach(QUuid quuid, re)
+		viewElements.insert(sys->_getChild(quuid)->getQUUID());
+}
+
+void System::updateViews(const std::vector<View>& views)
+{
+	if (this->getPredecessor() != NULL)
+	{
+		// if derived system, copy elements if necessary
+		// start with low end elementes, nodes, components, rasterdatas
+		foreach(const View& v, views)
+			if (/*v.writes() &&*/ v.getType() != EDGE && v.getType() != FACE && v.getType() != SUBSYSTEM)
+				ReInit(this, viewCaches[v.getName()].rawElements);
+
+		// nodes have been copied, now proceed with edges and faces
+		foreach(const View& v, views)
+			if (/*v.writes() &&*/ v.getType() == EDGE || v.getType() == FACE)
+				ReInit(this, viewCaches[v.getName()].rawElements);
+
+		// eventhough not fully supported, subsystems can contain all other elements, thus copy them at last
+		foreach(const View& v, views)
+			if (v.writes() && v.getType() == SUBSYSTEM)
+				ReInit(this, viewCaches[v.getName()].rawElements);
+	}
+
+	foreach(const View& v, views)
+	{
+		viewCaches[v.getName()].sys = this;
+		viewCaches[v.getName()].apply(v);
+	}
 }
 
 void System::_moveToDb()
@@ -755,23 +786,25 @@ void System::ViewCache::apply(const View& view)
             return;
         }
         // filter stays the same, continue
-        if(view.getFilter() == this->view.getFilter())
+        /*if(view.getFilter() == this->view.getFilter() 
+			&& ((!view.writes() && view.getType() != EDGE && view.getType() != FACE && view.getType() != SUBSYSTEM)
+			|| this->sys->getPredecessor() == NULL))
         {
             this->view = view;
             return;
-        }
+        }*/
     }
 
     this->view = view;
 
     QString filterString = QString::fromStdString(view.getFilter());
-    if(filterString.length() == 0)
-    {
-        // just copy raw elements
-        filteredElements.clear();
-        foreach(QUuid quuid, rawElements)
-            if(Component* c = sys->getChild(quuid))
-                filteredElements.insert(c);
+	if (filterString.length() == 0)
+	{
+		// just copy raw elements
+		filteredElements.clear();
+
+		foreach(QUuid quuid, rawElements)
+			filteredElements.insert(sys->_getChildReadOnly(quuid));
     }
     else
     {
@@ -817,12 +850,13 @@ void System::ViewCache::apply(const View& view)
 
         // renew filtered elements
         filteredElements.clear();
-        foreach(QUuid quuid, rawElements)
-        {
-            Component* c = sys->getChild(quuid);
-            if(c && eq.eval(c))
-                filteredElements.insert(c);
-        }
+
+		foreach(QUuid quuid, rawElements)
+		{
+			Component* c = sys->_getChildReadOnly(quuid);
+			if (c && eq.eval(c))
+				filteredElements.insert(c);
+		}
     }
 }
 

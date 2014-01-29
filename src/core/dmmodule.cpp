@@ -314,8 +314,13 @@ System* Module::getData(const std::string& streamName)
 		Logger(Debug) << "moving system into db finished";
 	}
 
-	mforeach(View v, accessedViews[streamName])
-		sys->updateView(v);
+	std::vector<View> views;
+	mforeach(const View& v, accessedViews[streamName])
+		views.push_back(v);
+
+	sys->updateViews(views);
+	//mforeach(View v, accessedViews[streamName])
+	//	sys->updateView(v);
 
 	if (DBConnector::getInstance()->getConfig().peterDatastream)
 	{
