@@ -96,7 +96,7 @@ LinkVector ToLinkVector(QVariant q, System* owningSystem)
 	for(int i=0;i<size;i++)
 	{
 		s >> uuid;
-		result.second.push_back(owningSystem->getChild(uuid));
+		result.second.push_back(owningSystem->_getChild(uuid));
 	}
 	return result;
 }

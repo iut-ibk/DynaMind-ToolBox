@@ -246,12 +246,20 @@ std::vector<RasterData*> DerivedSystem::getAllRasterData()
     return this->predecessorSys->getAllRasterData();
 }
 
-Component* DerivedSystem::getChild(QUuid quuid)
+Component* DerivedSystem::_getChild(QUuid quuid)
 {
-    if(Component* c = System::getChild(quuid))
-        return c;
-    else
-        return SuccessorCopyTypesafe(predecessorSys->getChild(quuid));
+	if (Component* c = System::_getChild(quuid))
+		return c;
+	else
+		return SuccessorCopyTypesafe(predecessorSys->_getChild(quuid));
+}
+
+Component* DerivedSystem::_getChildReadOnly(QUuid quuid)
+{
+	if (Component* c = System::_getChild(quuid))
+		return c;
+	else
+		return predecessorSys->_getChild(quuid);
 }
 
 Component* DerivedSystem::getSuccessingComponent(const Component* formerComponent)

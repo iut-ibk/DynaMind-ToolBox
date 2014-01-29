@@ -388,12 +388,17 @@ std::vector<Component*> System::getChilds()
     return resultVec;
 }
 
-Component* System::getChild(QUuid quuid)
+Component* System::_getChild(QUuid quuid)
 {
-    Component* c;
-    if(map_contains(&quuidMap, quuid, c))
-        return c;
-    return NULL;
+	return System::_getChildReadOnly(quuid);
+}
+
+Component* System::_getChildReadOnly(QUuid quuid)
+{
+	Component* c;
+	if (map_contains(&quuidMap, quuid, c))
+		return c;
+	return NULL;
 }
 
 Component* System::getSuccessingComponent(const Component* formerComponent)

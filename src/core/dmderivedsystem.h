@@ -61,7 +61,8 @@ public:
 	std::vector<RasterData*> getAllRasterData();
 //	std::vector<Component*> getAllComponentsInView(const DM::View & view);
 
-	Component* getChild(QUuid quuid);
+	Component* _getChild(QUuid quuid);
+	Component* _getChildReadOnly(QUuid quuid);
 	Component* getSuccessingComponent(const Component* formerComponent);
 	
 	/** @brief Returns the predecessor of the system */

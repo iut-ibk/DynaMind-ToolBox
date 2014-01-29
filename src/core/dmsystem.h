@@ -166,7 +166,9 @@ public:
     /** @brief Adds raster data to the system. The owner ship of the raster data is taken by the system */
     RasterData * addRasterData(RasterData * r,  const DM::View & view = DM::View());
 
-    virtual Component* getChild(QUuid quuid);
+	virtual Component* _getChild(QUuid quuid);
+
+	virtual Component* _getChildReadOnly(QUuid quuid);
 
     virtual Component* getSuccessingComponent(const Component* formerComponent);
 
