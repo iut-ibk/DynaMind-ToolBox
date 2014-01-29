@@ -428,36 +428,8 @@ void System::SQLUpdateStates()
         "predecessors",  pre);
 }
 
-void ReInit(System* sys, std::set<QUuid>& viewElements)
-{
-	std::set<QUuid> re = viewElements;
-	viewElements.clear();
-
-	foreach(QUuid quuid, re)
-		viewElements.insert(sys->_getChild(quuid)->getQUUID());
-}
-
 void System::updateViews(const std::vector<View>& views)
 {
-	if (this->getPredecessor() != NULL)
-	{
-		// if derived system, copy elements if necessary
-		// start with low end elementes, nodes, components, rasterdatas
-		foreach(const View& v, views)
-			if (/*v.writes() &&*/ v.getType() != EDGE && v.getType() != FACE && v.getType() != SUBSYSTEM)
-				ReInit(this, viewCaches[v.getName()].rawElements);
-
-		// nodes have been copied, now proceed with edges and faces
-		foreach(const View& v, views)
-			if (/*v.writes() &&*/ v.getType() == EDGE || v.getType() == FACE)
-				ReInit(this, viewCaches[v.getName()].rawElements);
-
-		// eventhough not fully supported, subsystems can contain all other elements, thus copy them at last
-		foreach(const View& v, views)
-			if (v.writes() && v.getType() == SUBSYSTEM)
-				ReInit(this, viewCaches[v.getName()].rawElements);
-	}
-
 	foreach(const View& v, views)
 	{
 		viewCaches[v.getName()].sys = this;
@@ -786,13 +758,11 @@ void System::ViewCache::apply(const View& view)
             return;
         }
         // filter stays the same, continue
-        /*if(view.getFilter() == this->view.getFilter() 
-			&& ((!view.writes() && view.getType() != EDGE && view.getType() != FACE && view.getType() != SUBSYSTEM)
-			|| this->sys->getPredecessor() == NULL))
+        if(view.getFilter() == this->view.getFilter() && this->sys->getPredecessor() == NULL)
         {
             this->view = view;
             return;
-        }*/
+        }
     }
 
     this->view = view;

@@ -431,7 +431,21 @@ TEST_F(TestSystem,sqlsuccessortest)
 
 	ASSERT_TRUE(sf->getNodePointers()[0] == ssn);
 	ASSERT_TRUE(sf->getNodePointers()[1] == sen);
-	
+
+	// only node READ, should just copy pointer
+	ssys = sys->createSuccessor();	// 4th successor
+
+	views.clear();
+	views.push_back(read_startnodes);
+	views.push_back(read_endnodes);
+	ssys->updateViews(views);
+
+	ssn = (Node*)ssys->getAllComponentsInView(read_startnodes)[0];
+	sen = (Node*)ssys->getAllComponentsInView(read_endnodes)[0];
+
+	ASSERT_TRUE(sn == ssn);
+	ASSERT_TRUE(en == sen);
+
 
 	delete sys;
 

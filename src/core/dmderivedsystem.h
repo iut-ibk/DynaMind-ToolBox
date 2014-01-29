@@ -50,6 +50,9 @@ private:
 	Node* SuccessorCopy(const Node *src);
 	Edge* SuccessorCopy(const Edge *src);
 	Face* SuccessorCopy(const Face *src);
+
+
+	void reInit(std::set<QUuid>& viewElements, bool readOnly);
 public:
 	DerivedSystem(System* sys);
 
@@ -60,6 +63,8 @@ public:
 	std::vector<System*> getAllSubSystems();
 	std::vector<RasterData*> getAllRasterData();
 //	std::vector<Component*> getAllComponentsInView(const DM::View & view);
+
+	void updateViews(const std::vector<View>& views);
 
 	Component* _getChild(QUuid quuid);
 	Component* _getChildReadOnly(QUuid quuid);

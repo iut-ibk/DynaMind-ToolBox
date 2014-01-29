@@ -279,3 +279,91 @@ void DerivedSystem::_moveToDb()
     predecessorSys->_moveToDb();
     System::_moveToDb();
 }
+
+
+void DerivedSystem::reInit(std::set<QUuid>& viewElements, bool readOnly)
+{
+	std::set<QUuid> re = viewElements;
+	viewElements.clear();
+
+	if (readOnly)
+	{
+		foreach(const QUuid quuid, re)
+		{
+			Component* c = _getChildReadOnly(quuid);
+
+			if (!map_contains(&this->predecessorComponentMap, (const Component*) c, c))
+			{
+				if (Edge* e = dynamic_cast<Edge*>(c))
+				{
+					if (e->getStartNode()->getCurrentSystem() != this
+						|| e->getEndNode()->getCurrentSystem() != this)
+						c = _getChild(quuid);
+				}
+				else if (Face* f = dynamic_cast<Face*>(c))
+				{
+					foreach(Node* n, f->getNodePointers())
+					{
+						if (n->getCurrentSystem() != this)
+						{
+							c = _getChild(quuid);
+							break;
+						}
+					}
+				}
+			}
+
+			viewElements.insert(c->getQUUID());
+		}
+	}
+	else
+		foreach(const QUuid quuid, re)
+			viewElements.insert(_getChild(quuid)->getQUUID());
+}
+
+void DerivedSystem::updateViews(const std::vector<View>& views)
+{
+	// if derived system, copy elements if necessary
+	foreach(const View& v, views)
+	{
+		if (!v.writes())
+			continue;
+
+		if (v.getType() == EDGE)
+		{
+			foreach(const QUuid& quuid, viewCaches[v.getName()].rawElements)
+			{
+				_getChild(((Edge*)_getChildReadOnly(quuid))->getStartNode()->getQUUID());
+				_getChild(((Edge*)_getChildReadOnly(quuid))->getEndNode()->getQUUID());
+			}
+		}
+		else if (v.getType() == FACE)
+		{
+			foreach(const QUuid& quuid, viewCaches[v.getName()].rawElements)
+				foreach(Node* n, ((Face*)_getChildReadOnly(quuid))->getNodePointers())
+					if (n->getCurrentSystem() != this)
+						_getChild(n->getQUUID());
+		}
+	}
+
+	// start with low end elementes, nodes, components, rasterdatas
+	foreach(const View& v, views)
+		if (v.getType() != EDGE && v.getType() != FACE && v.getType() != SUBSYSTEM)
+			reInit(viewCaches[v.getName()].rawElements, !v.writes());
+
+	// nodes have been copied, now proceed with edges and faces
+	foreach(const View& v, views)
+		if (v.getType() == EDGE || v.getType() == FACE)
+			reInit(viewCaches[v.getName()].rawElements, !v.writes());
+
+	// eventhough not fully supported, subsystems can contain all other elements, thus copy them at last
+	foreach(const View& v, views)
+		if (v.getType() == SUBSYSTEM)
+			reInit(viewCaches[v.getName()].rawElements, !v.writes());
+
+	foreach(const View& v, views)
+	{
+		viewCaches[v.getName()].sys = this;
+		viewCaches[v.getName()].apply(v);
+	}
+}
