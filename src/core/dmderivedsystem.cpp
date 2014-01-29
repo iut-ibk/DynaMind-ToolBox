@@ -87,7 +87,10 @@ Component* DerivedSystem::SuccessorCopy(const Component *src)
 
     Component *c = new Component;
     c->CopyFrom(*src, true);
+
     predecessorComponentMap[src] = c;
+	quuidMap[c->getQUUID()] = c;
+
     return addComponent(c);
 }
 Node* DerivedSystem::SuccessorCopy(const Node *src)
@@ -98,8 +101,10 @@ Node* DerivedSystem::SuccessorCopy(const Node *src)
 
     Node* n = new Node();
     *n = *src;
-    n->CopyFrom(*src, true);
-    predecessorComponentMap[src] = n;
+	n->CopyFrom(*src, true);
+
+	predecessorComponentMap[src] = n;
+	quuidMap[n->getQUUID()] = n;
 
     return addNode(n);
 }
@@ -118,8 +123,11 @@ Edge* DerivedSystem::SuccessorCopy(const Edge *src)
         end = SuccessorCopy(end);
 
     Edge* e = new Edge(start, end);
-    e->CopyFrom(*src, true);
-    predecessorComponentMap[src] = e;
+	e->CopyFrom(*src, true);
+
+	predecessorComponentMap[src] = e;
+	quuidMap[e->getQUUID()] = e;
+
     return addEdge(e);
 }
 Face* DerivedSystem::SuccessorCopy(const Face *src)
@@ -147,7 +155,9 @@ Face* DerivedSystem::SuccessorCopy(const Face *src)
         newf->addHole(h);
     }
 
-    predecessorComponentMap[src] = newf;
+	predecessorComponentMap[src] = newf;
+	quuidMap[newf->getQUUID()] = newf;
+
     return addFace(newf);
 }
 
