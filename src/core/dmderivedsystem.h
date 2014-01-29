@@ -59,7 +59,7 @@ public:
 	std::vector<Face*> getAllFaces();
 	std::vector<System*> getAllSubSystems();
 	std::vector<RasterData*> getAllRasterData();
-	std::vector<Component*> getAllComponentsInView(const DM::View & view);
+//	std::vector<Component*> getAllComponentsInView(const DM::View & view);
 
 	Component* getChild(QUuid quuid);
 	Component* getSuccessingComponent(const Component* formerComponent);

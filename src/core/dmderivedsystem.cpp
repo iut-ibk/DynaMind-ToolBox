@@ -184,62 +184,6 @@ std::vector<Component*> DerivedSystem::getAllComponents()
     return System::getAllComponents();
 }
 
-std::vector<Component*> DerivedSystem::getAllComponentsInView(const DM::View & view)
-{
-    const std::vector<Component*> &predec_comps = System::getAllComponentsInView(view);
-
-	bool copy = view.writes();
-	if (!copy)
-	{
-		if (view.getType() == EDGE)
-		{
-			foreach(Component* c, predec_comps)
-			{
-				if (map_contains(&predecessorComponentMap, 
-						(const Component*)((Edge*)c)->getStartNode())
-					|| map_contains(&predecessorComponentMap, 
-						(const Component*)((Edge*)c)->getEndNode()))
-				{
-					copy = true;
-					break;
-				}
-			}
-		}
-		else if (view.getType() == FACE)
-		{
-			foreach(Component* c, predec_comps)
-			{
-				foreach(Node* e, ((Face*)c)->getNodePointers())
-				{
-					if (map_contains(&predecessorComponentMap, (const Component*)e))
-					{
-						copy = true;
-						break;
-					}
-				}
-			}
-		}
-
-	}
-	
-	if (copy)
-    {
-        std::set<Component*> old_cmps = viewCaches[view.getName()].filteredElements;
-        std::set<Component*> &cmps = viewCaches[view.getName()].filteredElements;
-        cmps.clear();
-        foreach (Component* c, old_cmps)
-        {
-            if (c->getCurrentSystem() != this)
-                c = SuccessorCopyTypesafe(c);
-
-            cmps.insert(c);
-        }
-
-        return std::vector<Component*>(cmps.begin(), cmps.end());
-    }
-	else
-		return predec_comps;
-}
 std::vector<Node*> DerivedSystem::getAllNodes()
 {
     if(!allNodesLoaded)
