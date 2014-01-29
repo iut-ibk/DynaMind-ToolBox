@@ -80,7 +80,9 @@ TEST_F(TestSystem, ViewFilter) {
 
 	DM::View v("TEST", DM::NODE, DM::WRITE);
 	v.addFilter("attr>0");
-	sys->updateView(v);
+	std::vector<DM::View> views;
+	views.push_back(v);
+	sys->updateViews(views);
 
 	DM::Node * n1 = new DM::Node(0,0,0);
 	DM::Node * n2 = new DM::Node(0,0,1);
@@ -97,13 +99,18 @@ TEST_F(TestSystem, ViewFilter) {
 	EXPECT_EQ(sys->getAllComponentsInView(v).size(), 2);
 	
 	DM::View v2("TEST2", DM::NODE, DM::WRITE);
-	sys->updateView(v2);
+
+	views.clear();
+	views.push_back(v2);
+	sys->updateViews(views);
 	sys->addComponentToView(n1, v2);
 	sys->addComponentToView(n2, v2);
 	sys->addComponentToView(n3, v2);
 
+	views.clear();
 	v2.addFilter("[z]<1");
-	sys->updateView(v2);
+	views.push_back(v2);
+	sys->updateViews(views);
 	
 	
 	EXPECT_EQ(sys->getAllNodes().size(), 3);
@@ -323,14 +330,19 @@ TEST_F(TestSystem,sqlsuccessortest)
 	delete c;
 
 
-
-
 	System* sys = new System;
 	// separate the views of start and endnode
 	View startnodes("startnodes", NODE, WRITE);
 	View endnodes("endnodes", NODE, WRITE);
 	View edges("edges", EDGE, WRITE);
 	View faces("faces", FACE, WRITE);
+
+	std::vector<View> views;
+	views.push_back(startnodes);
+	views.push_back(endnodes);
+	views.push_back(edges);
+	views.push_back(faces);
+	sys->updateViews(views);
 
 	sys->addNode(0, 1, 2, startnodes);
 	sys->addNode(3, 4, 5, endnodes);
@@ -341,12 +353,20 @@ TEST_F(TestSystem,sqlsuccessortest)
 	std::vector<Node*>	ns;
 	ns.push_back(sn);
 	ns.push_back(en);
-	Face* f = sys->addFace(ns, faces);
+	const Face* f = sys->addFace(ns, faces);
 
+	// node WRITE, edges and faces READ
 	System* ssys = sys->createSuccessor();
 
 	View read_edges("edges", EDGE, READ);
 	View read_faces("faces", FACE, READ);
+
+	views.clear();
+	views.push_back(startnodes);
+	views.push_back(endnodes);
+	views.push_back(read_edges);
+	views.push_back(read_faces);
+	ssys->updateViews(views);
 
 	Node* ssn = (Node*)ssys->getAllComponentsInView(startnodes)[0];
 	Node* sen = (Node*)ssys->getAllComponentsInView(endnodes)[0];
@@ -361,11 +381,59 @@ TEST_F(TestSystem,sqlsuccessortest)
 	ASSERT_TRUE(se->getStartNode() == ssn);
 	ASSERT_TRUE(se->getEndNode() == sen);
 
+	//ASSERT_TRUE(ssn->getEdges()[0] == se);
+
 	ASSERT_TRUE(sf->getNodePointers()[0] == ssn);
 	ASSERT_TRUE(sf->getNodePointers()[1] == sen);
 
-	delete sys;
+	
+	// node READ, edges WRITE
+	ssys = sys->createSuccessor();	// 2nd successor
 
+	View read_startnodes("startnodes", NODE, READ);
+	View read_endnodes("endnodes", NODE, READ);
+
+	views.clear();
+	views.push_back(read_startnodes);
+	views.push_back(read_endnodes);
+	views.push_back(edges);
+	ssys->updateViews(views);
+
+	ssn = (Node*)ssys->getAllComponentsInView(read_startnodes)[0];
+	sen = (Node*)ssys->getAllComponentsInView(read_endnodes)[0];
+	se = (Edge*)ssys->getAllComponentsInView(edges)[0];
+
+	ASSERT_TRUE(sn != ssn);
+	ASSERT_TRUE(en != sen);
+	ASSERT_TRUE(e != se);
+
+	ASSERT_TRUE(se->getStartNode() == ssn);
+	ASSERT_TRUE(se->getEndNode() == sen);
+
+	//ASSERT_TRUE(ssn->getEdges()[0] == se);
+
+	// node READ, face WRITE
+	ssys = sys->createSuccessor();	// 3rd successor
+
+	views.clear();
+	views.push_back(read_startnodes);
+	views.push_back(read_endnodes);
+	views.push_back(faces);
+	ssys->updateViews(views);
+
+	ssn = (Node*)ssys->getAllComponentsInView(read_startnodes)[0];
+	sen = (Node*)ssys->getAllComponentsInView(read_endnodes)[0];
+	sf = (Face*)ssys->getAllComponentsInView(faces)[0];
+
+	ASSERT_TRUE(sn != ssn);
+	ASSERT_TRUE(en != sen);
+	ASSERT_TRUE(f != sf);
+
+	ASSERT_TRUE(sf->getNodePointers()[0] == ssn);
+	ASSERT_TRUE(sf->getNodePointers()[1] == sen);
+	
+
+	delete sys;
 
 	// check if no name is created if there is no element
 	/*System *sys = new System();
@@ -888,10 +956,13 @@ TEST_F(TestSystem,SystemDBExInport) {
 	ASSERT_EQ(sys.getAllComponentsInView(face_view).size(), 0);
 
 	// reload elements
-	sys.updateView(comp_view);
-	sys.updateView(node_view);
-	sys.updateView(edge_view);
-	sys.updateView(face_view);
+	std::vector<View> views;
+	views.push_back(comp_view);
+	views.push_back(node_view);
+	views.push_back(edge_view);
+	views.push_back(face_view);
+	sys.updateViews(views);
+
 	sys._importViewElementsFromDB();
 
 	// check restored elements
@@ -942,7 +1013,7 @@ TEST_F(TestSystem,SystemDBExInport) {
 	// move all elements to db
 	sys._moveToDb();
 	// reload elements
-	sys.updateView(comp_view);
+	sys.updateViews(views);
 	sys._importViewElementsFromDB();
 	ASSERT_EQ(sys.getAllComponents().size(), 0);
 	ASSERT_EQ(sys.getAllComponentsInView(comp_view).size(), 0);
@@ -987,8 +1058,11 @@ TEST_F(TestSystem, SystemDBExInportSuccessor) {
 	ASSERT_EQ(sys.getAllNodes().size(), 0);
 	ASSERT_EQ(ssys.getAllNodes().size(), 0);
 	// import
-	ssys.updateView(v);
-	ssys.updateView(v2);
+
+	std::vector<View> views;
+	views.push_back(v);
+	views.push_back(v2);
+	ssys.updateViews(views);
 	ssys._importViewElementsFromDB();
 
 	// check if everything has been imported
@@ -1016,7 +1090,10 @@ TEST_F(TestSystem, SystemDBExInportAttributes) {
 	sys._moveToDb();
 	// import, first run without attribute in view
 	View v2("v", NODE, READ);
-	sys.updateView(v2);
+	std::vector<View> views;
+	views.push_back(v2);
+
+	sys.updateViews(views);
 	sys._importViewElementsFromDB();
 	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
 	ASSERT_FALSE(sys.getAllComponentsInView(v)[0]->HasAttribute("a"));
@@ -1026,7 +1103,10 @@ TEST_F(TestSystem, SystemDBExInportAttributes) {
 	// import, second run, load attribute too
 	View v3("v", NODE, READ);
 	v.addAttribute("a", Attribute::DOUBLE, READ);
-	sys.updateView(v);
+	views.clear();
+	views.push_back(v);
+
+	sys.updateViews(views);
 	sys._importViewElementsFromDB();
 	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
 	ASSERT_TRUE(sys.getAllComponentsInView(v)[0]->HasAttribute("a"));
