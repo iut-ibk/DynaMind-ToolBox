@@ -34,6 +34,8 @@
 
 #include "dmcompilersettings.h"
 class ModuleDescription;
+class QLineEdit;
+class QSignalMapper;
 
 class DM_HELPER_DLL_EXPORT  GUIModelNode : public QWidget
 {
@@ -46,6 +48,7 @@ private:
 	QMap<QString, QGridLayout * > UserDefinedContainer;
 	QString GroupID;
 	ModelNode * modelnode;
+	QSignalMapper* pathSignalMapper;
 
 public:
 	GUIModelNode(DM::Module * m, ModelNode * mn = 0, QWidget * parent = 0);
@@ -55,10 +58,8 @@ public slots:
 	void accept();
 	void reject();
 	void help();
-	void openFileDialog();
+	void openFileDialog(QString label);
 	void addMapRow();
-signals:
-	void selectFiles(QString s);
 };
 
 #endif // GUIMODELNODE_H

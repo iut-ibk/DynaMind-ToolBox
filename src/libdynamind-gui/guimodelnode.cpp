@@ -56,7 +56,7 @@
 
 #include <QDoubleSpinBox>
 
-void GUIModelNode::openFileDialog() 
+void GUIModelNode::openFileDialog(QString label)
 {
 //#ifdef __APPLE__ // Fix for bug in Qt 4.8.5 that the file dialog freezes
 //	QString s = QFileDialog::getOpenFileName(this,
@@ -64,8 +64,9 @@ void GUIModelNode::openFileDialog()
 //#else
 	QString s = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Files (*.*)"));
 //#endif
+
 	if (!s.isEmpty())
-		emit selectFiles (s);
+		((QLineEdit*)elements[label])->setText(s);
 }
 
 GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWidget(parent)
@@ -74,6 +75,8 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 	this->modelnode = mn;
 
 	QGridLayout *layout = new QGridLayout;
+	pathSignalMapper = new QSignalMapper(this);
+	connect(pathSignalMapper, SIGNAL(mapped(QString)), this, SLOT(openFileDialog(QString)));
 
 	layout1 = new QGridLayout;
 	QGroupBox *gbox = new QGroupBox;
@@ -157,8 +160,8 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				layout1->addWidget(le,layout1->rowCount()-1,1);
 				layout1->addWidget(pb,layout1->rowCount()-1,2);
 
-				connect(pb, SIGNAL(clicked()), this, SLOT(openFileDialog()));
-				connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
+				connect(pb, SIGNAL(clicked()), pathSignalMapper, SLOT(map()));
+				pathSignalMapper->setMapping(pb, qname);
 			}
 			break;
 		case DM::STRING_LIST:
