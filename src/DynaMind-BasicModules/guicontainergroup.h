@@ -40,6 +40,8 @@ struct Module::Parameter;
 }*/
 
 class ContainerGroup;
+class QLineEdit;
+
 namespace Ui {
 class GUIContainerGroup;
 }
@@ -56,6 +58,9 @@ private:
 	Ui::GUIContainerGroup*		ui;
 	ContainerGroup*				m;
 	std::vector<DM::Module*>	childs;
+
+	std::map<std::string, QLineEdit*>	pathEditMap;
+	QSignalMapper*	pathSignalMapper;
 
 	// internal linking
 	std::map<std::string, DM::Module*> childModules;
@@ -110,9 +115,8 @@ protected slots:
 
 	void accept();
 
-	void openFileDialog();
-signals:
-	void selectFiles(QString);
+	void openFileDialog(QString label);
+
 };
 
 #endif // GUICONTAINERGROUP_H

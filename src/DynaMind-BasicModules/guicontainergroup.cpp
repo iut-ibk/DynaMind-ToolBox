@@ -51,6 +51,9 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 {
 	ui->setupUi(this);
 	ui->configParamArea->setAlignment(Qt::AlignTop);
+
+	pathSignalMapper = new QSignalMapper(this);
+	connect(pathSignalMapper, SIGNAL(mapped(QString)), this, SLOT(openFileDialog(QString)));
 	
 	// hide config tab
 	configTabName = ui->tabWidget->tabText(PARAM_CONFIG_TAB);
@@ -155,12 +158,12 @@ void GUIContainerGroup::on_editParamName_textEdited(const QString& newText)
 		m->parameterConfig[it->text().toStdString()] = newText.toStdString();
 }
 
-void GUIContainerGroup::openFileDialog()
+void GUIContainerGroup::openFileDialog(QString label)
 {
 	QString s = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Files (*.*)"));
 
 	if (!s.isEmpty())
-		emit selectFiles(s);
+		pathEditMap[label.toStdString()]->setText(s);
 }
 
 void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
@@ -189,8 +192,10 @@ void GUIContainerGroup::addParameterEdit(std::string name, std::string id)
 			QPushButton* pb = new QPushButton("...");
 			vlayout->addWidget(pb);
 
-			connect(pb, SIGNAL(clicked()), this, SLOT(openFileDialog()));
-			connect(this, SIGNAL(selectFiles(QString)), le, SLOT(setText(QString)));
+			pathEditMap[name] = le;
+
+			connect(pb, SIGNAL(clicked()), pathSignalMapper, SLOT(map()));
+			pathSignalMapper->setMapping(pb, QString::fromStdString(name));
 		}
 		break;
 	case DM::DOUBLE:
