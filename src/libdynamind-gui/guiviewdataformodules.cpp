@@ -26,6 +26,8 @@
 #include "guiviewdataformodules.h"
 #include "ui_guiviewdataformodules.h"
 #include <dmmodule.h>
+#include <dmgroup.h>
+#include <dmsimulation.h>
 #include <dm.h>
 
 QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, const DM::View& v)
@@ -53,9 +55,43 @@ QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, const DM:
 	return item_attribute;
 }
 
+typedef std::map<std::string, DM::View> view_map;
+typedef std::map<std::string, std::map<std::string, DM::View> > stream_map;
 
+void GetAccessedViews(DM::Module* m, const std::string& inPort, view_map& accessed_views)
+{
+	mforeach(const DM::View& v, m->getAccessedViews()[inPort])
+	{
+		// geometry
+		if (!map_contains(&accessed_views, v.getName()))
+			accessed_views[v.getName()] = v;
 
-typedef std::map<std::string, std::map<std::string,DM::View> > view_map;
+		// attributes
+		foreach(std::string attrName, v.getAllAttributes())
+			if (!accessed_views[v.getName()].hasAttribute(attrName))
+				accessed_views[v.getName()].addAttribute(attrName, v.getAttributeType(attrName), v.getAttributeAccessType(attrName));
+	}
+}
+
+void RecursiveGetAccessedViews(DM::Simulation::Link* l, DM::Group* g, view_map& accessed_views)
+{
+	DM::Module* m = l->dest;
+	if (m == g)
+		return;
+
+	GetAccessedViews(l->dest, l->inPort, accessed_views);
+
+	foreach(const std::string& outPort, m->getOutPortNames())
+		foreach(DM::Simulation::Link* next_link, g->sim->getOutgoingLinks(m, outPort))
+			RecursiveGetAccessedViews(next_link, g, accessed_views);
+}
+
+void GetAccessedStreamInGroup(DM::Group* g, stream_map& stream)
+{
+	foreach(std::string inPort, g->getInPortNames())
+		foreach(DM::Simulation::Link* link, g->sim->getIntoGroupLinks(g, inPort))
+			RecursiveGetAccessedViews(link, g, stream[inPort]);
+}
 
 GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	QDialog(parent), ui(new Ui::GUIViewDataForModules)
@@ -72,8 +108,15 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Access");
 
-	view_map views = m->getAccessedViews();
-	for (view_map::const_iterator it = views.begin(); it != views.end(); ++it) 
+	stream_map accessed_views;
+
+	if (m->isGroup())
+		GetAccessedStreamInGroup(dynamic_cast<DM::Group*>(m), accessed_views);
+	else
+		accessed_views = m->getAccessedViews();
+
+
+	for (stream_map::const_iterator it = accessed_views.begin(); it != accessed_views.end(); ++it)
 	{
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
 		this->ui->treeWidget_views->addTopLevelItem(root_port);
@@ -128,8 +171,8 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(1, "Type");
 	headerItem->setText(2, "Path");
 
-	view_map viewsInStream = m->getViewsInStream();
-	for (view_map::const_iterator it = viewsInStream.begin();
+	stream_map viewsInStream = m->getViewsInStream();
+	for (stream_map::const_iterator it = viewsInStream.begin();
 		it != viewsInStream.end(); ++it) 
 		//foreach (DM::Port * p, this->m->getOutPorts())
 	{
