@@ -281,19 +281,11 @@ void AttributeCalculator::run() {
 			mup::Value val = p->Eval();
 			//Logger(Debug) << val.ToString();
 			if (!this->asVector) {
-				switch (val.GetType()) {
-				case 's':
-					cmp->addAttribute(nameOfNewAttribute, val.GetString());
-					break;
-				case 'i':
-					cmp->addAttribute(nameOfNewAttribute, val.GetInteger());
-					break;
-				case 'f':
+				if (typeOfNewAttribute == DM::Attribute::DOUBLE)
 					cmp->addAttribute(nameOfNewAttribute, val.GetFloat());
-					break;
-				default:
-					Logger(Warning) << "Unknown type";
-				}
+				else
+					cmp->addAttribute(nameOfNewAttribute, val.GetString());
+
 			} else
 			{
 				DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
