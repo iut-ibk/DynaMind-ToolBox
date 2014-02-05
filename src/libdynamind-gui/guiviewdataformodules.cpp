@@ -30,7 +30,8 @@
 #include <dmsimulation.h>
 #include <dm.h>
 
-QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, const DM::View& v)
+QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, 
+	const DM::View& v, const QColor& color = Qt::white)
 {
 	QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
 	item_attribute->setText(0, QString::fromStdString(name));
@@ -52,6 +53,10 @@ QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, const DM:
 		item_attribute->setText(1, "time series"); break;
 	}
 	item_attribute->setText(2, access);
+
+	for (int i = 0; i < 3; i++)
+		item_attribute->setBackgroundColor(i, color);
+
 	return item_attribute;
 }
 
@@ -123,6 +128,11 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 		mforeach (const DM::View& v, it->second) 
 		{
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
+
+			bool view_missing = false;
+			if (v.reads() && !map_contains(&m->getViewsInStream()[it->first], v.getName()))
+				view_missing = true;
+
 			item_view->setText(0, QString::fromStdString(v.getName()));
 			int type = v.getType();
 
@@ -144,17 +154,35 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 			root_port->addChild(item_view);
 
+			bool any_attribute_missing = false;
 			foreach(std::string s, v.getAllAttributes()) 
 			{
+				bool attribute_missing = false;
 				QString typeString;
 				switch(v.getAttributeAccessType(s))
 				{
-				case DM::READ:	typeString = "read";	break;
-				case DM::MODIFY:typeString = "modify";	break;
-				case DM::WRITE:	typeString = "write";	break;
+				case DM::READ:
+					if (view_missing || !m->getViewsInStream()[it->first][v.getName()].hasAttribute(s))
+					{
+						any_attribute_missing = true;
+						attribute_missing = true;
+					}
+					typeString = "read";
+					break;
+				case DM::MODIFY:	typeString = "modify";	break;
+				case DM::WRITE:		typeString = "write";	break;
 				}
-				item_view->addChild(CreateAttributeItem(typeString,s, v));
+				item_view->addChild(CreateAttributeItem(typeString, s, v, attribute_missing ? Qt::red : Qt::white));
 			}
+
+			QColor color = Qt::white;
+			if (view_missing)
+				color = Qt::red;
+			else if (any_attribute_missing)
+				color = QColor(255, 160, 0);
+
+			for (int i = 0; i < 3; i++)
+				item_view->setBackgroundColor(i, color);
 
 			this->ui->treeWidget_views->expandItem(root_port);
 		}
