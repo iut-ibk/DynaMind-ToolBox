@@ -5,7 +5,7 @@
  * @section LICENSE
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2014  Christian Urich, Markus Sengthaler
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -99,8 +99,6 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	ui->setupUi(this);
 	this->m = m;
 
-	//DM::Logger(DM::Debug) << this->m->getName();
-
 	this->ui->treeWidget_views->setColumnCount(3);
 	this->ui->treeWidget_views->setColumnWidth(0,200);
 	QTreeWidgetItem * headerItem = this->ui->treeWidget_views->headerItem();
@@ -124,8 +122,6 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 		mforeach (const DM::View& v, it->second) 
 		{
-			//if (v.getName().compare("dummy") == 0)
-			//	continue;
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
 			item_view->setText(0, QString::fromStdString(v.getName()));
 			int type = v.getType();
@@ -172,16 +168,8 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 	headerItem->setText(2, "Path");
 
 	stream_map viewsInStream = m->getViewsInStream();
-	for (stream_map::const_iterator it = viewsInStream.begin();
-		it != viewsInStream.end(); ++it) 
-		//foreach (DM::Port * p, this->m->getOutPorts())
+	for (stream_map::const_iterator it = viewsInStream.begin(); it != viewsInStream.end(); ++it)
 	{
-		//std::string dataname = p->getLinkedDataName();
-		//DM::Logger(DM::Debug) << dataname;
-		//DM::System * data = this->m->getData(dataname);
-		//if (!sys == 0)
-		//	continue;
-
 		QTreeWidgetItem * root_port = new QTreeWidgetItem();
 
 		root_port->setText(0, QString::fromStdString(it->first));
@@ -189,10 +177,6 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 		mforeach (const DM::View& v, it->second)
 		{
-			//if (name.compare("dummy") == 0)
-			//	continue;
-			//DM::Logger(DM::Debug) << name;
-			//DM::View * view = sys->getViewDefinition(name);
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
 			item_view->setText(0, QString::fromStdString(v.getName()));
 
@@ -211,20 +195,8 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 			root_port->addChild(item_view);
 
-			//DM::Component * c = sys->getComponent(view->getIdOfDummyComponent());
-			//if (c == 0) {
-			//	continue;
-			//}
-			//std::map<std::string,std::string> attributes = v.getAllAttributes();
-			//for (std::map<std::string,DM::Attribute*>::const_iterator it  = attributes.begin(); it != attributes.end(); ++it) {
 			foreach(std::string attributeName, v.getAllAttributes())
-			{
-				//DM::Logger(DM::Debug) << it->first;
-				/*QTreeWidgetItem * item_attribute = new QTreeWidgetItem();
-				item_attribute->setText(0, QString::fromStdString(attributeName));
-				item_view->addChild(item_attribute);*/
 				item_view->addChild(CreateAttributeItem("write",attributeName, v));
-			}
 		}
 		this->ui->treeWidget->expandItem(root_port);
 	}
