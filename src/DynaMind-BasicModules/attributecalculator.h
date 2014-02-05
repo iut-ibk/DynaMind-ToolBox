@@ -46,7 +46,7 @@ private:
 	std::string nameOfNewAttribute;
 	std::string equation;
 	std::map<std::string, DM::View> viewsmap;
-	std::vector<std::string> varaibleNames;
+	std::vector<std::string> variableNames;
 	AttributeCalculator_Impl * m_p; //private implemenation to remove muparser dependeny in the header
 
 

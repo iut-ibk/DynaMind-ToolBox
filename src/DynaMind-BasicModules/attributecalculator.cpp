@@ -72,27 +72,27 @@ void AttributeCalculator::init() {
 	if (equation.empty())
 		return;
 
-	DM::View baseView  = getViewInStream("Data", nameOfBaseView);
+	DM::View baseView = getViewInStream("Data", nameOfBaseView);
 	if (baseView.getName().length() == 0)
 		return;
 
 	viewsmap.clear();
-	varaibleNames.clear();
-	DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
+	variableNames.clear();
+
+	viewsmap[nameOfBaseView] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
 
 	bool modify = false;
-	viewsmap[nameOfBaseView] = writeView;
 	for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
 		 it != variablesMap.end();
 		 ++it) 
 	{
-		QString viewNametotal = QString::fromStdString(it->first);
-		QStringList viewNameList = viewNametotal.split(".");
-		std::string viewname = viewNameList[viewNameList.size()-2].toStdString();
-		std::string attributename = viewNameList[viewNameList.size()-1].toStdString();
-		varaibleNames.push_back(it->second);
+		QStringList viewNameList = QString::fromStdString(it->first).split(".");
+		std::string viewname = viewNameList.first().toStdString();
+		std::string attributename = viewNameList.last().toStdString();
+		variableNames.push_back(it->second);
 
-		if (viewsmap.find(viewname) == viewsmap.end()) {
+		if (map_contains(&viewsmap, viewname))
+		{
 			baseView  = getViewInStream("Data", viewname);
 			if (baseView.getName().length() == 0)
 				return;
@@ -186,7 +186,7 @@ void AttributeCalculator::run() {
 	m_p->m_sys = sys_in;
 	std::map<std::string, mup::Value * > doubleVariables;
 	mup::ParserX * p  = new mup::ParserX();
-	foreach (std::string variable, varaibleNames)
+	foreach(const std::string& variable, variableNames)
 	{
 		mup::Value * d = new mup::Value(0.0);
 		doubleVariables[variable] = d;
@@ -296,7 +296,7 @@ void AttributeCalculator::run() {
 		}
 	}
 
-	foreach (std::string variable, varaibleNames)
+	foreach(std::string variable, variableNames)
 		delete doubleVariables[variable];
 
 	doubleVariables.clear();
