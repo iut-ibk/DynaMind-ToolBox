@@ -39,8 +39,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	//bool asVector = this->attrcalc->getParameter<bool>("asVector");
 	this->ui->asVector->setChecked(attrcalc->asVector);
 
-
-
 	QStringList headers;
 	headers << "Name" << "Landscape";
 	ui->varaibleTable->setHorizontalHeaderLabels(headers);
@@ -48,9 +46,11 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	ui->varaibleTable->setColumnWidth (1,320);
 	ui->comboView->clear();
 
-
 	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
-	ui->lineEditAttribute->setText(QString::fromStdString( this->attrcalc->getParameterAsString("nameOfNewAttribute")));
+	QString newAttrName = QString::fromStdString(this->attrcalc->getParameterAsString("nameOfNewAttribute"));
+	ui->lineEditAttribute->setText(newAttrName);
+	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data) - DM::Attribute::DOUBLE;
+	ui->attributeType->setCurrentIndex(type);
 
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
@@ -77,6 +77,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 		this->updateAttributeView();
 	}
 
+	// needs viewName
+	on_lineEditAttribute_textChanged(newAttrName);
 
 	//CreateVaraibles List
 	//std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
@@ -89,9 +91,22 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 		item = new QTableWidgetItem(QString::fromStdString(it->second));
 		ui->varaibleTable->setItem(ui->varaibleTable->rowCount()-1,1, item);
 	}
+}
 
-
-
+void GUIAttributeCalculator::on_lineEditAttribute_textChanged(QString attrName)
+{
+	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
+	if (map_contains(&views, viewName.toStdString()))
+	{
+		const DM::View& view = views[viewName.toStdString()];
+		if (view.hasAttribute(attrName.toStdString()))
+		{
+			ui->attributeType->setDisabled(true);
+			ui->attributeType->setCurrentIndex(view.getAttributeType(attrName.toStdString()) - DM::Attribute::DOUBLE);
+		}
+		else
+			ui->attributeType->setDisabled(false);
+	}
 
 }
 
@@ -221,7 +236,7 @@ void GUIAttributeCalculator::accept() {
 	this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
 	this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
 	this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
-
+	*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data = DM::Attribute::DOUBLE + ui->attributeType->currentIndex();
 
 	int rows = ui->varaibleTable->rowCount();
 

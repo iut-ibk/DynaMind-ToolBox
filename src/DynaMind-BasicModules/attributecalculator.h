@@ -44,6 +44,7 @@ private:
 	DM::System * sys_in;
 	std::string nameOfBaseView;
 	std::string nameOfNewAttribute;
+	Attribute::AttributeType typeOfNewAttribute;
 	std::string equation;
 	std::map<std::string, DM::View> viewsmap;
 	std::vector<std::string> variableNames;

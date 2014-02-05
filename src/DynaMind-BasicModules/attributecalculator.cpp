@@ -48,10 +48,13 @@ AttributeCalculator::AttributeCalculator()
 	this->variablesMap = std::map<std::string, std::string>();
 	this->addParameter("variablesMap", DM::STRING_MAP, & this->variablesMap);
 	this->nameOfNewAttribute = "";
-	this->addParameter("nameOfNewAttribute", DM::STRING, & this->nameOfNewAttribute);
+	this->addParameter("nameOfNewAttribute", DM::STRING, &this->nameOfNewAttribute);
+	this->addParameter("typeOfNewAttribute", DM::INT, &this->typeOfNewAttribute);
 	this->addParameter("equation", DM::STRING, & this->equation);
 	this->asVector = false;
 	this->addParameter("asVector", DM::BOOL, & this->asVector);
+
+	typeOfNewAttribute = DM::Attribute::DOUBLE;
 
 	sys_in = 0;
 	std::vector<DM::View> data;
@@ -94,9 +97,9 @@ void AttributeCalculator::init() {
 		const std::string attributename = view_attribute_pair.last().toStdString();
 		variableNames.push_back(it->second);
 
+		const DM::View variable_view = getViewInStream("Data", variable_viewname);
 		if (!map_contains(&viewsmap, variable_viewname))
 		{
-			const DM::View variable_view = getViewInStream("Data", variable_viewname);
 			if (baseView.getName().length() == 0)
 			{
 				DM::Logger(DM::Error) << "view '" << variable_viewname << "' of variable '" << it->second << "' not found in datastream";
@@ -108,10 +111,16 @@ void AttributeCalculator::init() {
 		if (attributename == nameOfNewAttribute)
 			modify = true;
 		else
-			viewsmap[variable_viewname].addAttribute(attributename, DM::Attribute::NOTYPE, DM::READ);
+			viewsmap[variable_viewname].addAttribute(attributename, variable_view.getAttributeType(attributename), DM::READ);
 	}
 
-	viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, modify ? DM::MODIFY : DM::WRITE);
+	if (modify)
+		viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, baseView.getAttributeType(nameOfNewAttribute), DM::MODIFY);
+	else
+	{
+
+		viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, DM::WRITE);
+	}
 
 	std::vector<DM::View> data;
 	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin(); it != viewsmap.end(); ++it)

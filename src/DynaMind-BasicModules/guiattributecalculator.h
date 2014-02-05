@@ -54,6 +54,7 @@ private:
 protected slots:
 	void on_addButton_clicked();
 	void on_comboView_currentIndexChanged (int);
+	void on_lineEditAttribute_textChanged(QString attrName);
 public slots:
 	void accept();
 };
