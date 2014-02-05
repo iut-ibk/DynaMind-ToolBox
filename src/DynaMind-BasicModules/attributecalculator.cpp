@@ -72,9 +72,12 @@ void AttributeCalculator::init() {
 	if (equation.empty())
 		return;
 
-	DM::View baseView = getViewInStream("Data", nameOfBaseView);
+	const DM::View baseView = getViewInStream("Data", nameOfBaseView);
 	if (baseView.getName().length() == 0)
+	{
+		DM::Logger(DM::Error) << "view '" << nameOfBaseView << "' not found in datastream";
 		return;
+	}
 
 	viewsmap.clear();
 	variableNames.clear();
@@ -86,23 +89,26 @@ void AttributeCalculator::init() {
 		 it != variablesMap.end();
 		 ++it) 
 	{
-		QStringList viewNameList = QString::fromStdString(it->first).split(".");
-		std::string viewname = viewNameList.first().toStdString();
-		std::string attributename = viewNameList.last().toStdString();
+		const QStringList view_attribute_pair = QString::fromStdString(it->first).split(".");
+		const std::string variable_viewname = view_attribute_pair.first().toStdString();
+		const std::string attributename = view_attribute_pair.last().toStdString();
 		variableNames.push_back(it->second);
 
-		if (!map_contains(&viewsmap, viewname))
+		if (!map_contains(&viewsmap, variable_viewname))
 		{
-			baseView  = getViewInStream("Data", viewname);
+			const DM::View variable_view = getViewInStream("Data", variable_viewname);
 			if (baseView.getName().length() == 0)
+			{
+				DM::Logger(DM::Error) << "view '" << variable_viewname << "' of variable '" << it->second << "' not found in datastream";
 				return;
-			viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
+			}
+			viewsmap[variable_viewname] = DM::View(variable_view.getName(), variable_view.getType(), DM::READ);
 		}
 
 		if (attributename == nameOfNewAttribute)
 			modify = true;
 		else
-			viewsmap[viewname].addAttribute(attributename, DM::Attribute::NOTYPE, DM::READ);
+			viewsmap[variable_viewname].addAttribute(attributename, DM::Attribute::NOTYPE, DM::READ);
 	}
 
 	viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, modify ? DM::MODIFY : DM::WRITE);
