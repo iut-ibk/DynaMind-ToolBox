@@ -79,7 +79,8 @@ void AttributeCalculator::init() {
 	viewsmap.clear();
 	varaibleNames.clear();
 	DM::View writeView = DM::View(baseView.getName(), baseView.getType(), DM::READ);
-	writeView.addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, DM::WRITE);
+
+	bool modify = false;
 	viewsmap[nameOfBaseView] = writeView;
 	for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
 		 it != variablesMap.end();
@@ -98,10 +99,14 @@ void AttributeCalculator::init() {
 			viewsmap[viewname] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
 		}
 
-		viewsmap[viewname].addAttribute(attributename, 
-										DM::Attribute::NOTYPE, 
-										(attributename == nameOfNewAttribute)?DM::MODIFY : DM::WRITE);
+		if (attributename == nameOfNewAttribute)
+			modify = true;
+		else
+			viewsmap[viewname].addAttribute(attributename, DM::Attribute::NOTYPE, DM::READ);
 	}
+
+	viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, modify ? DM::MODIFY : DM::WRITE);
+
 	std::vector<DM::View> data;
 	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin();
 		 it != viewsmap.end();
