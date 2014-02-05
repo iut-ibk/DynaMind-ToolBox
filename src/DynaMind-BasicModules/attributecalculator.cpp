@@ -91,7 +91,7 @@ void AttributeCalculator::init() {
 		std::string attributename = viewNameList.last().toStdString();
 		variableNames.push_back(it->second);
 
-		if (map_contains(&viewsmap, viewname))
+		if (!map_contains(&viewsmap, viewname))
 		{
 			baseView  = getViewInStream("Data", viewname);
 			if (baseView.getName().length() == 0)
