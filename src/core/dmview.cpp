@@ -122,6 +122,14 @@ std::vector<std::string> View::getAllAttributes() const
 	return names;
 }
 
+bool View::hasAttribute(const std::string& attrName) const
+{
+	if (map_contains(&attributes, attrName))
+		return true;
+	else
+		return false;
+}
+
 std::string View::getNameOfLinkedView(string linkName) const
 {
 	AttributeAccess aa;

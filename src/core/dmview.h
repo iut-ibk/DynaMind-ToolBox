@@ -129,6 +129,8 @@ public:
 	/** @brief Returns names of all attributes */
 	std::vector<std::string> getAllAttributes() const;
 
+	bool hasAttribute(const std::string& attrName) const;
+
 	void addFilter(const std::string& condition);
 
 	std::string getFilter() const;
