@@ -108,11 +108,9 @@ void AttributeCalculator::init() {
 	viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, DM::Attribute::NOTYPE, modify ? DM::MODIFY : DM::WRITE);
 
 	std::vector<DM::View> data;
-	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin();
-		 it != viewsmap.end();
-		 ++it) {
+	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin(); it != viewsmap.end(); ++it)
 		data.push_back(it->second);
-	}
+
 	this->addData("Data", data);
 	int i = 0;
 	i++;
