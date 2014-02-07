@@ -57,6 +57,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	QStringList headers;
 	headers << "Name" << "Landscape";
 	ui->variableTable->setHorizontalHeaderLabels(headers);
+	ui->variableTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->variableTable->horizontalHeader()->setStretchLastSection(true);
 	ui->comboView->clear();
 
 	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
@@ -113,11 +115,12 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	//Createvariables List
 	for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it)
 	{
-		ui->variableTable->setRowCount( ui->variableTable->rowCount()+1);
+		int numRows = ui->variableTable->rowCount();
+		ui->variableTable->setRowCount(numRows + 1);
 		QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(it->first));
-		ui->variableTable->setItem(ui->variableTable->rowCount()-1,0, item);
+		ui->variableTable->setItem(numRows, 0, item);
 		item = new QTableWidgetItem(QString::fromStdString(it->second));
-		ui->variableTable->setItem(ui->variableTable->rowCount()-1,1, item);
+		ui->variableTable->setItem(numRows, 1, item);
 	}
 }
 
