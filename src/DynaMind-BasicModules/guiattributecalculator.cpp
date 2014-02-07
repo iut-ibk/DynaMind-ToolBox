@@ -47,7 +47,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	ui->setupUi(this);
 	this->attrcalc = (AttributeCalculator*) m;
 
-	//bool asVector = this->attrcalc->getParameter<bool>("asVector");
 	this->ui->asVector->setChecked(attrcalc->asVector);
 
 	QStringList headers;
@@ -63,6 +62,7 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
 	ui->attributeType->setCurrentIndex(type);
 
+	// a workaround to enable disabled items in combo boxes
 	QListWidget* content = new QListWidget(ui->attributeType);
 	ui->attributeType->setModel(content->model());
 	content->hide();
@@ -80,15 +80,12 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	DisableItem(content, 4);
 	DisableItem(content, 5);
 	DisableItem(content, 6);
-
+	// disabled items do not change current index
 	ui->attributeType->setCurrentIndex(1);
+	// finished workaround
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
 
-	//if (!this->attrcalc->getSystemIn())
-	//    return;
-	//std::vector<DM::View> views= this->attrcalc->getSystemIn()->getViews();
-	//foreach (DM::View v, views) {
 	mforeach(DM::View v, views)
 		ui->comboView->addItem(QString::fromStdString(v.getName()));
 
@@ -111,8 +108,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	on_lineEditAttribute_textChanged(newAttrName);
 
 	//CreateVaraibles List
-	//std::map<std::string, std::string> variables = this->attrcalc->getParameter<std::map<std::string, std::string> >("variablesMap");
-
 	for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it)
 	{
 		ui->varaibleTable->setRowCount( ui->varaibleTable->rowCount()+1);
