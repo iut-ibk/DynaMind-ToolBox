@@ -64,8 +64,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
 	QString newAttrName = QString::fromStdString(this->attrcalc->getParameterAsString("nameOfNewAttribute"));
 	ui->lineEditAttribute->setText(newAttrName);
-	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
-	ui->attributeType->setCurrentIndex(type);
 
 	// a workaround to enable disabled items in combo boxes
 	QListWidget* content = new QListWidget(ui->attributeType);
@@ -84,9 +82,12 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	DisableItem(content, 3);
 	DisableItem(content, 4);
 
-	if (IsDisabled(content, ui->attributeType->currentIndex()))
-		ui->attributeType->setCurrentIndex(1);
 	// finished workaround
+	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
+	if (IsDisabled(content, type))
+		ui->attributeType->setCurrentIndex(type);
+	else
+		ui->attributeType->setCurrentIndex(1);
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
 
