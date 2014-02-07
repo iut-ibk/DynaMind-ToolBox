@@ -50,6 +50,7 @@ private:
 
 	void createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname);
 
+	void addVariableItem(const QString& reference, const QString& variableName);
 
 protected slots:
 	void on_addButton_clicked();
