@@ -57,8 +57,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	QStringList headers;
 	headers << "Name" << "Landscape";
 	ui->variableTable->setHorizontalHeaderLabels(headers);
-	ui->variableTable->setColumnWidth (0,320);
-	ui->variableTable->setColumnWidth (1,320);
 	ui->comboView->clear();
 
 	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
