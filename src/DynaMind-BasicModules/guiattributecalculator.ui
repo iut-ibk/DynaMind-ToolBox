@@ -68,7 +68,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout">
         <item row="1" column="0">
-         <widget class="QTableWidget" name="varaibleTable">
+         <widget class="QTableWidget" name="variableTable">
           <property name="columnCount">
            <number>2</number>
           </property>

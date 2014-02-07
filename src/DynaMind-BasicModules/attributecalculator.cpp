@@ -36,7 +36,7 @@ DM_DECLARE_NODE_NAME(AttributeCalculator, Modules)
 struct  AttributeCalculator_Impl
 {
 	DM::System * m_sys;
-	void getLinkedAttribute(std::vector< mup::Value> * varaible_container, DM::Component *currentcmp,std::string name);
+	void getLinkedAttribute(std::vector< mup::Value> * variable_container, DM::Component *currentcmp,std::string name);
 };
 
 AttributeCalculator::AttributeCalculator()
@@ -126,7 +126,7 @@ void AttributeCalculator::init() {
 	i++;
 }
 
-void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * varaible_container, Component *currentcmp, std::string name )
+void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * variable_container, Component *currentcmp, std::string name )
 {
 	QStringList viewNameList = QString::fromStdString(name).split(".");
 	//Remove First Element, is already what comes with currentcmp
@@ -144,19 +144,19 @@ void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * va
 				Logger(Error) << "Linked Element does not exist";
 				return;
 			}
-			this->getLinkedAttribute(varaible_container, nextcmp, newSearchName);
+			this->getLinkedAttribute(variable_container, nextcmp, newSearchName);
 		}
 	}
 
 	switch (attr->getType()) {
 	case Attribute::DOUBLE:
-		varaible_container->push_back( mup::Value(attr->getDouble()));
+		variable_container->push_back( mup::Value(attr->getDouble()));
 		break;
 	case Attribute::STRING:
-		varaible_container->push_back(mup::Value(attr->getString()));
+		variable_container->push_back(mup::Value(attr->getString()));
 		break;
 	default:
-		varaible_container->push_back(mup::Value(0));
+		variable_container->push_back(mup::Value(0));
 		break;
 	}
 }
