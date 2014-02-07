@@ -58,6 +58,7 @@ protected slots:
 	void on_comboView_currentIndexChanged (int);
 	void on_lineEditAttribute_textChanged(QString attrName);
 	void on_listAttributes_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+	void on_variableTable_cellChanged(int row, int column);
 public slots:
 	void accept();
 };

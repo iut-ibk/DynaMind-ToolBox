@@ -152,6 +152,11 @@ void GUIAttributeCalculator::on_listAttributes_currentItemChanged(QTreeWidgetIte
 	ui->addButton->setEnabled(current->parent());
 }
 
+void GUIAttributeCalculator::on_variableTable_cellChanged(int row, int column)
+{
+	if (ui->variableTable->item(row, column)->text().isEmpty())
+		ui->variableTable->removeRow(ui->variableTable->currentRow());
+}
 
 GUIAttributeCalculator::~GUIAttributeCalculator()
 {
