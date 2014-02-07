@@ -62,15 +62,23 @@ ComponentEditor::ComponentEditor(Component *c, QWidget *parent) :
 		case Attribute::STRINGVECTOR:
 			{
 				QString s;
-				foreach(double d, attr->getDoubleVector())
-					s.append(QString("%1; ").arg(d));
+				foreach(const std::string& str, attr->getStringVector())
+					s.append(QString::fromStdString(str) + "; ");
 
 				strings << s;
 			}
 			break;
 		case Attribute::TIMESERIES:
-		case Attribute::DOUBLEVECTOR:
 			strings << "...";
+			break;
+		case Attribute::DOUBLEVECTOR:
+			{
+				QString s;
+				foreach(double d, attr->getDoubleVector())
+					s.append(QString("%1; ").arg(d));
+
+				strings << s;
+			}
 			break;
 		}
 
