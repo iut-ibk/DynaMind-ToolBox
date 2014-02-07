@@ -51,8 +51,6 @@ AttributeCalculator::AttributeCalculator()
 	this->addParameter("nameOfNewAttribute", DM::STRING, &this->nameOfNewAttribute);
 	this->addParameter("typeOfNewAttribute", DM::INT, &this->typeOfNewAttribute);
 	this->addParameter("equation", DM::STRING, & this->equation);
-	this->asVector = false;
-	this->addParameter("asVector", DM::BOOL, & this->asVector);
 
 	typeOfNewAttribute = DM::Attribute::DOUBLE;
 
@@ -280,18 +278,31 @@ void AttributeCalculator::run() {
 		{
 			mup::Value val = p->Eval();
 			//Logger(Debug) << val.ToString();
-			if (!this->asVector) {
-				if (typeOfNewAttribute == DM::Attribute::DOUBLE)
-					cmp->addAttribute(nameOfNewAttribute, val.GetFloat());
-				else
-					cmp->addAttribute(nameOfNewAttribute, val.GetString());
 
-			} else
+			switch (typeOfNewAttribute)
 			{
-				DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
-				std::vector<double> vD = attri->getDoubleVector();
-				vD.push_back(val.GetFloat());
-				attri->setDoubleVector(vD);
+			case DM::Attribute::DOUBLE:
+				cmp->addAttribute(nameOfNewAttribute, val.GetFloat());
+				break;
+			case DM::Attribute::STRING:
+				cmp->addAttribute(nameOfNewAttribute, val.GetString());
+				break;
+			case DM::Attribute::DOUBLEVECTOR:
+				{
+					DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
+					std::vector<double> vD = attri->getDoubleVector();
+					vD.push_back(val.GetFloat());
+					attri->setDoubleVector(vD);
+				}
+				break;
+			case DM::Attribute::STRINGVECTOR:
+				{
+					DM::Attribute * attri = cmp->getAttribute(nameOfNewAttribute);
+					std::vector<std::string> vS = attri->getStringVector();
+					vS.push_back(val.GetString());
+					attri->setStringVector(vS);
+				}
+				break;
 			}
 		}
 		catch (mup::ParserError &e)

@@ -142,13 +142,6 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineExpression"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="asVector">
-        <property name="text">
-         <string>Append result to vector</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>

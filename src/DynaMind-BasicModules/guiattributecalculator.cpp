@@ -40,14 +40,19 @@ void DisableItem(QListWidget* content, int item)
 	}
 }
 
+bool IsDisabled(QListWidget* content, int item)
+{
+	if (QListWidgetItem* it = content->item(item))
+		return it->flags() | Qt::ItemIsEnabled;
+	return false;
+}
+
 GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::GUIAttributeCalculator)
 {
 	ui->setupUi(this);
 	this->attrcalc = (AttributeCalculator*) m;
-
-	this->ui->asVector->setChecked(attrcalc->asVector);
 
 	QStringList headers;
 	headers << "Name" << "Landscape";
@@ -78,10 +83,9 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	DisableItem(content, 0);
 	DisableItem(content, 3);
 	DisableItem(content, 4);
-	DisableItem(content, 5);
-	DisableItem(content, 6);
-	// disabled items do not change current index
-	ui->attributeType->setCurrentIndex(1);
+
+	if (IsDisabled(content, ui->attributeType->currentIndex()))
+		ui->attributeType->setCurrentIndex(1);
 	// finished workaround
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
@@ -271,8 +275,6 @@ void GUIAttributeCalculator::accept() {
 
 	}
 	//this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
-	//this->attrcalc->setParameterNative<bool>("asVector", this->ui->asVector->isChecked());
-	this->attrcalc->asVector = this->ui->asVector->isChecked();
 	this->attrcalc->init();
 	QDialog::accept();
 }
