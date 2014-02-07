@@ -57,7 +57,6 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	QStringList headers;
 	headers << "Name" << "Landscape";
 	ui->variableTable->setHorizontalHeaderLabels(headers);
-	//ui->variableTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->variableTable->horizontalHeader()->setStretchLastSection(true);
 	ui->comboView->clear();
 
@@ -112,7 +111,7 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	// needs viewName
 	on_lineEditAttribute_textChanged(newAttrName);
 
-	//Createvariables List
+	// create variables List
 	for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it)
 		addVariableItem(QString::fromStdString(it->first), QString::fromStdString(it->second));
 }
@@ -191,15 +190,11 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
 				createTreeViewEntries(item_attribute, v.getNameOfLinkedView(s));
 			}
 		}
-
-
 	}
 }
 
 void GUIAttributeCalculator::updateAttributeView()
 {
-	//std::vector<std::string> views= this->attrcalc->getSystemIn()->getNamesOfViews();
-
 	ui->listAttributes->clear();
 	if (viewName.isEmpty())
 		return;
@@ -238,7 +233,6 @@ void GUIAttributeCalculator::on_addButton_clicked() {
 		DM::Logger(Error) << "please select an attribute";
 		return;
 	}
-	//elementName << ui->comboView->currentText().toStdString();
 
 	std::vector<std::string> elements;
 	elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
@@ -254,12 +248,6 @@ void GUIAttributeCalculator::on_addButton_clicked() {
 		elementName << "." <<elements[i];
 
 	addVariableItem(QString::fromStdString(elementName.str()), text);
-
-	/*ui->variableTable->setRowCount( ui->variableTable->rowCount()+1);
-	QTableWidgetItem * item = new QTableWidgetItem(QString::fromStdString(elementName.str()));
-	ui->variableTable->setItem(ui->variableTable->rowCount()-1,0, item);
-	item = new QTableWidgetItem(text);
-	ui->variableTable->setItem(ui->variableTable->rowCount()-1,1, item);*/
 }
 
 void GUIAttributeCalculator::on_comboView_currentIndexChanged (int val)
@@ -276,13 +264,12 @@ void GUIAttributeCalculator::accept() {
 	*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data = ui->attributeType->currentIndex();
 
 
-	//std::map<std::string, std::string> variables;
 	for (int i = 0; i < ui->variableTable->rowCount(); i++) {
 		const QTableWidgetItem* rowItem = ui->variableTable->item(i, 0);
 		const QTableWidgetItem* columnItem = ui->variableTable->item(i, 1);
 		this->attrcalc->variablesMap[rowItem->text().toStdString()] = columnItem->text().toStdString();
 	}
-	//this->attrcalc->setParameterNative<std::map<std::string, std::string > >("variablesMap", variables);
+
 	this->attrcalc->init();
 	QDialog::accept();
 }
