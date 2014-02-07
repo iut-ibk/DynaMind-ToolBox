@@ -54,18 +54,7 @@
        <widget class="QLineEdit" name="lineEditAttribute"/>
       </item>
       <item>
-       <widget class="QComboBox" name="attributeType">
-        <item>
-         <property name="text">
-          <string>Double</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>String</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="attributeType"/>
       </item>
      </layout>
     </widget>

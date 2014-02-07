@@ -29,6 +29,17 @@
 #include <QInputDialog>
 #include <sstream>
 
+#include <QListWidget>
+
+void DisableItem(QListWidget* content, int item)
+{
+	if (QListWidgetItem* it = content->item(item))
+	{
+		it->setFlags(Qt::ItemIsEnabled);
+		it->setTextColor(Qt::gray);
+	}
+}
+
 GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::GUIAttributeCalculator)
@@ -49,9 +60,28 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	ui->lineExpression->setText(QString::fromStdString( this->attrcalc->getParameterAsString("equation")));
 	QString newAttrName = QString::fromStdString(this->attrcalc->getParameterAsString("nameOfNewAttribute"));
 	ui->lineEditAttribute->setText(newAttrName);
-	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data) - DM::Attribute::DOUBLE;
+	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
 	ui->attributeType->setCurrentIndex(type);
 
+	QListWidget* content = new QListWidget(ui->attributeType);
+	ui->attributeType->setModel(content->model());
+	content->hide();
+
+	content->addItem("no type");
+	content->addItem("double");
+	content->addItem("string");
+	content->addItem("time series");
+	content->addItem("link");
+	content->addItem("double vector");
+	content->addItem("string vector");
+
+	DisableItem(content, 0);
+	DisableItem(content, 3);
+	DisableItem(content, 4);
+	DisableItem(content, 5);
+	DisableItem(content, 6);
+
+	ui->attributeType->setCurrentIndex(1);
 
 	std::map<std::string, DM::View> views = attrcalc->getViewsInStdStream();
 
@@ -102,7 +132,7 @@ void GUIAttributeCalculator::on_lineEditAttribute_textChanged(QString attrName)
 		if (view.hasAttribute(attrName.toStdString()))
 		{
 			ui->attributeType->setDisabled(true);
-			ui->attributeType->setCurrentIndex(view.getAttributeType(attrName.toStdString()) - DM::Attribute::DOUBLE);
+			ui->attributeType->setCurrentIndex(view.getAttributeType(attrName.toStdString()));
 		}
 		else
 			ui->attributeType->setDisabled(false);
@@ -236,7 +266,7 @@ void GUIAttributeCalculator::accept() {
 	this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
 	this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
 	this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
-	*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data = DM::Attribute::DOUBLE + ui->attributeType->currentIndex();
+	*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data = ui->attributeType->currentIndex();
 
 	int rows = ui->varaibleTable->rowCount();
 
