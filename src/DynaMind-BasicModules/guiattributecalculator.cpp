@@ -31,7 +31,7 @@
 
 #include <QListWidget>
 
-void DisableItem(QListWidget* content, int item)
+void DisableTypeItem(QListWidget* content, int item)
 {
 	if (QListWidgetItem* it = content->item(item))
 	{
@@ -40,7 +40,7 @@ void DisableItem(QListWidget* content, int item)
 	}
 }
 
-bool IsDisabled(QListWidget* content, int item)
+bool IsTypeDisabled(QListWidget* content, int item)
 {
 	if (QListWidgetItem* it = content->item(item))
 		return it->flags() | Qt::ItemIsEnabled;
@@ -77,13 +77,13 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	content->addItem("double vector");
 	content->addItem("string vector");
 
-	DisableItem(content, 0);
-	DisableItem(content, 3);
-	DisableItem(content, 4);
+	DisableTypeItem(content, 0);
+	DisableTypeItem(content, 3);
+	DisableTypeItem(content, 4);
 
 	// finished workaround
 	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
-	if (IsDisabled(content, type))
+	if (IsTypeDisabled(content, type))
 		ui->attributeType->setCurrentIndex(type);
 	else
 		ui->attributeType->setCurrentIndex(1);
@@ -114,6 +114,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	// create variables List
 	for (std::map<std::string, std::string>::iterator it = attrcalc->variablesMap.begin(); it != attrcalc->variablesMap.end(); ++it)
 		addVariableItem(QString::fromStdString(it->first), QString::fromStdString(it->second));
+
+	ui->addButton->setDisabled(true);
 }
 
 void GUIAttributeCalculator::addVariableItem(const QString& reference, const QString& variableName)
@@ -125,6 +127,8 @@ void GUIAttributeCalculator::addVariableItem(const QString& reference, const QSt
 	ui->variableTable->setItem(numRows, 0, item);
 	item = new QTableWidgetItem(variableName);
 	ui->variableTable->setItem(numRows, 1, item);
+
+	ui->variableTable->resizeColumnToContents(0);
 }
 
 void GUIAttributeCalculator::on_lineEditAttribute_textChanged(QString attrName)
@@ -141,7 +145,11 @@ void GUIAttributeCalculator::on_lineEditAttribute_textChanged(QString attrName)
 		else
 			ui->attributeType->setDisabled(false);
 	}
+}
 
+void GUIAttributeCalculator::on_listAttributes_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+{
+	ui->addButton->setEnabled(current->parent());
 }
 
 
@@ -149,7 +157,7 @@ GUIAttributeCalculator::~GUIAttributeCalculator()
 {
 	delete ui;
 }
-
+/*
 void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname)
 {
 
@@ -157,25 +165,27 @@ void GUIAttributeCalculator::createTreeViewEntries(QTreeWidgetItem * root_port, 
 	//foreach (std::string vn, views) {
 	//    DM::View * v = this->attrcalc->getSystemIn()->getViewDefinition(vn);
 
-	mforeach(DM::View v, attrcalc->getViewsInStdStream())
-	{
-		if (v.getName().compare("dummy") == 0)
-			continue;
-		if (v.getName().compare(viewname) != 0)
-			continue;
+	if (viewname == "dummy")
+		return;
 
+	DM::View v;
+	std::map<std::string, View> stream = attrcalc->getViewsInStdStream();
+
+	if (map_contains(&stream, viewname, v))
+	{
 		//DM::Component * c = this->attrcalc->getSystemIn()->getComponent(v->getIdOfDummyComponent());
-		if (v.getAllAttributes().size() == 0) {
-			continue;
-		}
-		//Check if View has already a parent with the same name
+		if (v.getAllAttributes().size() == 0)
+			return;
+
+		// Check if View has already a parent with the same name
 		QTreeWidgetItem * parent = root_port->parent();
-		while (parent) {
-			std::string sparent = parent->text(0).toStdString();
-			if (sparent.compare(viewname) == 0)
+		while (parent) 
+		{
+			if (viewname == parent->text(0).toStdString())
 				return;
-			parent  = parent->parent();
+			parent = parent->parent();
 		}
+
 		foreach(std::string s, v.getAllAttributes())
 		{
 		//std::map<std::string,DM::Attribute*> attributes = c->getAllAttributes();
@@ -213,18 +223,44 @@ void GUIAttributeCalculator::updateAttributeView()
 		root_port->setText(0, QString::fromStdString(strView));
 		this->createTreeViewEntries(root_port, strView);
 	}
-}
+}*/
 
-void GUIAttributeCalculator::on_addButton_clicked() {
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-										 tr("variable Name"), QLineEdit::Normal,
-										 "", &ok);
-	if (!ok || text.isEmpty())
+
+void GUIAttributeCalculator::addViewToTree(const DM::View& v)
+{
+	if (v.getName().empty() || v.getName() == "dummy")
 		return;
 
-	std::stringstream elementName;
+	QTreeWidgetItem * viewItem = new QTreeWidgetItem(QStringList(QString::fromStdString(v.getName())));
+	ui->listAttributes->addTopLevelItem(viewItem);
 
+	if (v.getAllAttributes().size() == 0)
+	{
+		viewItem->setDisabled(true);
+		return;
+	}
+
+	foreach(std::string attrName, v.getAllAttributes())
+	{
+		QTreeWidgetItem* attrItem = new QTreeWidgetItem(QStringList(QString::fromStdString(attrName)));
+		viewItem->addChild(attrItem);
+
+		if (v.getAttributeType(attrName) == DM::Attribute::LINK)
+			attrItem->setDisabled(true);
+	}
+}
+
+void GUIAttributeCalculator::updateAttributeView()
+{
+	ui->listAttributes->clear();
+
+	mforeach(const DM::View& v, attrcalc->getViewsInStdStream())
+		addViewToTree(v);
+}
+
+
+void GUIAttributeCalculator::on_addButton_clicked() 
+{
 	if (ui->listAttributes->size().isNull())
 		return;
 
@@ -233,6 +269,13 @@ void GUIAttributeCalculator::on_addButton_clicked() {
 		DM::Logger(Error) << "please select an attribute";
 		return;
 	}
+
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+		tr("variable Name"), QLineEdit::Normal,
+		"", &ok);
+	if (!ok || text.isEmpty())
+		return;
 
 	std::vector<std::string> elements;
 	elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
@@ -243,6 +286,7 @@ void GUIAttributeCalculator::on_addButton_clicked() {
 		p = p->parent();
 	} while (p);
 
+	std::stringstream elementName;
 	elementName << elements[elements.size()-1];
 	for (int i = elements.size()-2; i > -1; --i)
 		elementName << "." <<elements[i];

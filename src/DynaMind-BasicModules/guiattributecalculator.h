@@ -51,11 +51,13 @@ private:
 	void createTreeViewEntries(QTreeWidgetItem * root_port, std::string viewname);
 
 	void addVariableItem(const QString& reference, const QString& variableName);
+	void addViewToTree(const DM::View& v);
 
 protected slots:
 	void on_addButton_clicked();
 	void on_comboView_currentIndexChanged (int);
 	void on_lineEditAttribute_textChanged(QString attrName);
+	void on_listAttributes_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 public slots:
 	void accept();
 };
