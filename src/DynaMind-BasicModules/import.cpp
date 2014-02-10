@@ -571,24 +571,6 @@ std::vector<Node*> Import::ExtractNodes(System* sys, OGRLineString *ls)
 	return nlist;
 }
 
-std::vector<Node*> Import::ExtractNodesFromFace(System* sys, OGRLinearRing *lr)
-{
-	std::vector<Node*> nlist;
-	OGRPoint poPoint;
-	for(int i=0; i < lr->getNumPoints(); i++)
-	{
-		lr->getPoint(i, &poPoint);
-		double x = poPoint.getX();
-		double y = poPoint.getY();
-		transform(&x,&y);
-		DM::Node * n = this->addNode(sys, x + this->offsetX, y +  this->offsetY, 0);
-
-		if(!vector_contains(&nlist, n))
-			nlist.push_back(n);
-	}
-	return nlist;
-}
-
 Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
@@ -625,7 +607,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 	{
 
 		OGRPolygon *poPolygon = (OGRPolygon *)poGeometry;
-		std::vector<Node*> nlist = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
+		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
 		if (nlist.size() < 3)
 			return 0;
@@ -635,7 +617,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 
 		//AddHoles
 		for (int i = 0; i < poPolygon->getNumInteriorRings(); i++) {
-			std::vector<Node*> nl_hole = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
+			std::vector<Node*> nl_hole = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
 			if (nl_hole.size() < 3)
 				continue;
 			nl_hole.push_back(nl_hole[0]);
@@ -651,7 +633,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 		for (int i = 0; i < number_of_faces; i++)
 		{
 			OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
-			std::vector<Node*> nlist = ExtractNodesFromFace(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
+			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
 			if (nlist.size() < 3)
 				return 0;
