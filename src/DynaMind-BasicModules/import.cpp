@@ -609,24 +609,26 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 		OGRPolygon *poPolygon = (OGRPolygon *)poGeometry;
 		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
-		if (nlist.size() < 3)
-			return 0;
-		nlist.push_back(nlist[0]);
+		if (nlist.size() >= 3)
+		{
+			nlist.push_back(nlist[0]);	// ring closure
+			DM::Face * f = sys->addFace(nlist, *this->view);
 
-		DM::Face * f = sys->addFace(nlist, *this->view);
+			// add holes
+			for (int i = 0; i < poPolygon->getNumInteriorRings(); i++)
+			{
+				std::vector<Node*> nl_hole = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
+				if (nl_hole.size() >= 3)
+				{
+					nl_hole.push_back(nl_hole[0]);	// ring closure
+					f->addHole(nl_hole);
+				}
+			}
 
-		//AddHoles
-		for (int i = 0; i < poPolygon->getNumInteriorRings(); i++) {
-			std::vector<Node*> nl_hole = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
-			if (nl_hole.size() < 3)
-				continue;
-			nl_hole.push_back(nl_hole[0]);
-			f->addHole(nl_hole);
+			return f;
 		}
-
-		return f;
 	}
-	if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
+	else if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiPolygon )
 	{
 		OGRMultiPolygon *mpoPolygon = (OGRMultiPolygon *) poGeometry;
 		int number_of_faces = mpoPolygon->getNumGeometries();
@@ -635,14 +637,15 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 			OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
 			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 
-			if (nlist.size() < 3)
-				return 0;
-			nlist.push_back(nlist[0]);
-			return sys->addFace(nlist, *this->view);
+			if (nlist.size() >= 3)
+			{
+				nlist.push_back(nlist[0]);	// ring closure
+				return sys->addFace(nlist, *this->view);
+			}
 		}
 	}
 
-	return 0;
+	return NULL;
 }
 
 void Import::initPointList(System *sys)
