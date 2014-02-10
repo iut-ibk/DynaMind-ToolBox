@@ -78,7 +78,7 @@ private:
 	DM::View* view;
 	double devider;
 	std::map<std::string, std::string> attributesToImport;
-	bool ImportAll;
+	bool importAll;
 	OGRCoordinateTransformation *poCT;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
