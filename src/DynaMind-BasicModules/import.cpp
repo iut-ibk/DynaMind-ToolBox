@@ -299,6 +299,10 @@ void Import::init()
 	if (!moduleParametersChanged())
 		return;
 
+	OGRRegisterAll();
+	GDALAllRegister();	// neccessary for windows!
+	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+
 	if (!this->WFSServer.empty())
 	{
 		driverType = WFS;
@@ -309,14 +313,14 @@ void Import::init()
 		// create server url with login
 		this->server_full_name = "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
 
-		OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 		OGRDataSource *poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
 
 		if(!poDS)
 			return;
 
 		OGRLayer* poLayer = this->LoadWFSLayer(poDS);
-		if (!poLayer) {
+		if (!poLayer) 
+		{
 			fileok = false;
 			return;
 		}
@@ -327,44 +331,41 @@ void Import::init()
 		return;
 	}
 	else
+	{
 		driverType = ShapeFile;
 
-	fileok = true;
+		fileok = true;
 
-	if(FileName.empty())
-	{
-		DM::Logger(DM::Error) << "No file specified " << FileName;
-		return;
-	}
-
-	if(ViewName.empty())
-	{
-		DM::Logger(DM::Error) << "No view specified";
-		return;
-	}
-
-	OGRRegisterAll();
-	GDALAllRegister();	// neccessary for windows!
-
-	OGRDataSource       *poDS;
-	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-	poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
-
-	if( poDS == NULL )
-	{
-		GDALDataset  *poDataset = (GDALDataset*) GDALOpenShared(FileName.c_str(), GA_ReadOnly );
-		if( poDataset == NULL )
+		if (FileName.empty())
 		{
-			DM::Logger(DM::Error) << "Open failed.";
-			fileok = false;
+			DM::Logger(DM::Error) << "No file specified " << FileName;
+			return;
+		}
+
+		if (ViewName.empty())
+		{
+			DM::Logger(DM::Error) << "No view specified";
+			return;
+		}
+
+		OGRDataSource* poDS = OGRSFDriverRegistrar::Open(FileName.c_str(), FALSE);
+
+		if (poDS == NULL)
+		{
+			GDALDataset  *poDataset = (GDALDataset*)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
+			if (poDataset == NULL)
+			{
+				DM::Logger(DM::Error) << "Open failed.";
+				fileok = false;
+			}
+			else
+				rasterDataInit(poDataset);
 		}
 		else
-			rasterDataInit(poDataset);
-	}
-	else
-	{
-		vectorDataInit(poDS->GetLayer(0));
-		OGRDataSource::DestroyDataSource(poDS);
+		{
+			vectorDataInit(poDS->GetLayer(0));
+			OGRDataSource::DestroyDataSource(poDS);
+		}
 	}
 }
 
