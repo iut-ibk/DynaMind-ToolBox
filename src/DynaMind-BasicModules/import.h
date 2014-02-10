@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef Import_H
-#define Import_H
+#ifndef IMPORT_H
+#define IMPORT_H
 #include <dmmodule.h>
 #include <dm.h>
 #include "ogrsf_frmts.h"
@@ -119,4 +119,4 @@ public:
 	~Import();
 };
 
-#endif // Import_H
+#endif // IMPORT_H
