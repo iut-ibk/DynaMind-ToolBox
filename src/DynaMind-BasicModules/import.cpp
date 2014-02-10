@@ -203,69 +203,67 @@ OGRLayer *Import::LoadWFSLayer(OGRDataSource *poDS)
 void Import::vectorDataInit(OGRLayer *poLayer)
 {
 	isvectordata = true;
-	OGRFeature *poFeature;
+	OGRFeature *poFeature = poLayer->GetNextFeature();
 	poLayer->ResetReading();
-	int wkbtype = -1;
-	if (poFeature = poLayer->GetNextFeature())
+
+	if (!poFeature)
+		return;
+
+	if (OGRGeometry *poGeometry = poFeature->GetGeometryRef())
 	{
-		if (OGRGeometry *poGeometry = poFeature->GetGeometryRef())
+		OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
+		std::string strType = OGRGeometryTypeToName(ogrType);
+		DM::Components dmType;
+
+		switch (wkbFlatten(ogrType))
 		{
-			OGRwkbGeometryType ogrType = poGeometry->getGeometryType();
-			std::string strType = OGRGeometryTypeToName(ogrType);
-
-			switch (wkbFlatten(ogrType))
-			{
-			case wkbPoint:
-				view = new DM::View(ViewName, DM::NODE, DM::WRITE);
-				break;
-			case wkbPolygon:
-				view = new DM::View(ViewName, DM::FACE, DM::WRITE);
-				break;
-			case wkbMultiPolygon:
-				view = new DM::View(ViewName, DM::FACE, DM::WRITE);
-				break;
-			case wkbLineString:
-				view = new DM::View(ViewName, DM::EDGE, DM::WRITE);
-				break;
-			case wkbMultiLineString:
-				view = new DM::View(ViewName, DM::EDGE, DM::WRITE);
-				break;
-			default:
-				DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << wkbtype << " )";
-				fileok = false;
-				return;
-			}
-			DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
+		case wkbPoint:				dmType = DM::NODE;	break;
+		case wkbPolygon:			dmType = DM::FACE;	break;
+		case wkbMultiPolygon:		dmType = DM::FACE;	break;
+		case wkbLineString:			dmType = DM::EDGE;	break;
+		case wkbMultiLineString:	dmType = DM::EDGE;	break;
+		default:
+			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
+			fileok = false;
+			return;
 		}
+		DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
 
-		OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-		for (int iField = 0; iField < poFDefn->GetFieldCount(); iField++)
-		{
-			OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn(iField);
-			std::string attrName = poFieldDefn->GetNameRef();
-			// if existent, attrName will be given the value of attributesToImport[attrName]
-			bool exists = map_contains(&attributesToImport, attrName, attrName);
-			if (ImportAll || exists)
-			{
-				switch (poFieldDefn->GetType())
-				{
-				case OFTInteger:
-					view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
-					break;
-				case OFTReal:
-					view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
-					break;
-				default:
-					view->addAttribute(attrName, DM::Attribute::STRING, DM::WRITE);
-					break;
-				}
-			}
-		}
+		view = new DM::View(ViewName, dmType, DM::WRITE);
 
-		if (OGRGeometry *poGeometry = poFeature->GetGeometryRef())
-			OGRFeature::DestroyFeature(poFeature);
+		OGRFeature::DestroyFeature(poFeature);
+	}
+	else
+	{
+		DM::Logger(DM::Error) << "Can't find any geometry";
+		fileok = false;
+		return;
 	}
 
+	OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
+	for (int iField = 0; iField < poFDefn->GetFieldCount(); iField++)
+	{
+		OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn(iField);
+		std::string attrName = poFieldDefn->GetNameRef();
+		// if existent, attrName will be given the value of attributesToImport[attrName]
+		bool exists = map_contains(&attributesToImport, attrName, attrName);
+		if (ImportAll || exists)
+		{
+			switch (poFieldDefn->GetType())
+			{
+			case OFTInteger:
+				view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
+				break;
+			case OFTReal:
+				view->addAttribute(attrName, DM::Attribute::DOUBLE, DM::WRITE);
+				break;
+			default:
+				view->addAttribute(attrName, DM::Attribute::STRING, DM::WRITE);
+				break;
+			}
+		}
+	}
+	
 	std::vector<DM::View> data;
 	if (append)
 		data.push_back(DM::View("dummy", SUBSYSTEM, READ));
@@ -284,8 +282,10 @@ void Import::rasterDataInit(GDALDataset  *poDataset)
 	double        adfMinMax[2];
 	GDALRasterBand  *poBand;
 
-	DM::Logger(DM::Debug) << "Driver: " << poDataset->GetDriver()->GetDescription() << "/" << poDataset->GetDriver()->GetMetadataItem(GDAL_DMD_LONGNAME);
-	DM::Logger(DM::Debug) << "Size is " << poDataset->GetRasterXSize() << " " << poDataset->GetRasterYSize() << " " << poDataset->GetRasterCount();
+	DM::Logger(DM::Debug)	<< "Driver: " << poDataset->GetDriver()->GetDescription() 
+							<< "/" << poDataset->GetDriver()->GetMetadataItem(GDAL_DMD_LONGNAME);
+	DM::Logger(DM::Debug)	<< "Size is " << poDataset->GetRasterXSize() << " " << poDataset->GetRasterYSize() 
+							<< " " << poDataset->GetRasterCount();
 
 	if (!std::string(poDataset->GetProjectionRef()).empty())
 		DM::Logger(DM::Debug) << "Projection is " << " " << poDataset->GetProjectionRef();
@@ -298,8 +298,8 @@ void Import::rasterDataInit(GDALDataset  *poDataset)
 
 	if (poDataset->GetGeoTransform(adfGeoTransform) == CE_None)
 	{
-		DM::Logger(DM::Debug) << "Origin = " << adfGeoTransform[0] << "," << adfGeoTransform[3];
-		DM::Logger(DM::Debug) << "Pixel Size = " << adfGeoTransform[1] << "," << adfGeoTransform[5];
+		DM::Logger(DM::Debug) << "Origin = "		<< adfGeoTransform[0] << "," << adfGeoTransform[3];
+		DM::Logger(DM::Debug) << "Pixel Size = "	<< adfGeoTransform[1] << "," << adfGeoTransform[5];
 	}
 
 	poBand = poDataset->GetRasterBand(1);
@@ -320,7 +320,6 @@ void Import::rasterDataInit(GDALDataset  *poDataset)
 
 	if (poBand->GetColorTable() != NULL)
 		DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
-
 
 	view = new DM::View(ViewName, DM::RASTERDATA, DM::WRITE);
 
