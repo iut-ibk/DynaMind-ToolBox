@@ -446,49 +446,6 @@ bool Import::importRasterData()
 	}
 
 	r->setSize(nXSize, nYSize, xsize, ysize, xoff, yoff);
-	/*
-	float* blockData = (float*)CPLMalloc(sizeof(float)*RASTERBLOCKSIZE*RASTERBLOCKSIZE);
-	for(int x = 0; x < nXSize/RASTERBLOCKSIZE+1; x++)
-	{
-	for(int y = 0; y < nYSize/RASTERBLOCKSIZE+1; y++)
-	{
-	long maxBlockSizeX = min(nXSize-x*RASTERBLOCKSIZE, RASTERBLOCKSIZE);
-	long maxBlockSizeY = min(nYSize-y*RASTERBLOCKSIZE, RASTERBLOCKSIZE);
-
-	poBand->RasterIO(GF_Read, x*RASTERBLOCKSIZE, y*RASTERBLOCKSIZE, maxBlockSizeX, maxBlockSizeY,
-	blockData, RASTERBLOCKSIZE, RASTERBLOCKSIZE, GDT_Float32, 0, 0);
-
-	if(maxBlockSizeX == RASTERBLOCKSIZE && maxBlockSizeY == RASTERBLOCKSIZE)
-	r->setBlock(x, y, (double*)blockData);	// straight forward copying
-	else
-	{
-	// remap the read block to a zeroed native block field
-	double nativeBlock[RASTERBLOCKSIZE*RASTERBLOCKSIZE];
-	memset(nativeBlock, 0, sizeof(nativeBlock));
-
-	for(int yy=0;yy<maxBlockSizeY;yy++)
-	memcpy(	&nativeBlock[yy*RASTERBLOCKSIZE],
-	&blockData[yy*maxBlockSizeX],
-	sizeof(double)*maxBlockSizeX);
-
-	r->setBlock(x,y,nativeBlock);
-	}
-	}
-	}
-
-	CPLFree(blockData);*/
-	/*
-	float *pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
-
-	for(int index = 0; index < nYSize; index++)
-	{
-	poBand->RasterIO( GF_Read, 0, nYSize-index-1, nXSize, 1, pafScanline, nXSize, 1, GDT_Float32, 0, 0 );
-	for(int x = 0; x < nXSize; x++)
-	r->setCell(x, index, pafScanline[x]);
-	}
-
-	CPLFree(pafScanline);*/
-
 
 	const int blocksInLine = (nXSize / RASTERBLOCKSIZE + 1);
 	// we make scanline big enough to copy from overlapping space
@@ -522,8 +479,9 @@ bool Import::importRasterData()
 	return true;
 }
 
-DM::Node * Import::addNode(DM::System * sys, double x, double y, double z) {
-	//CreateKey
+DM::Node * Import::addNode(DM::System * sys, double x, double y, double z) 
+{
+	// CreateKey
 	DM::Node n_tmp(x,y,z);
 	QString key = this->createHash(x,y);
 	std::vector<DM::Node* > * nodes = &nodeList[key];
