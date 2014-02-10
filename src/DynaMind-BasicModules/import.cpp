@@ -51,8 +51,8 @@ Import::Import()
 	this->addParameter("AppendToExisting", DM::BOOL, &this->append);
 	this->attributesToImport = std::map<std::string, std::string>();
 	this->addParameter("AttributesToImport", DM::STRING_MAP, &this->attributesToImport);
-	this->ImportAll = true;
-	this->addParameter("ImportAll", DM::BOOL, &this->ImportAll);
+	this->importAll = true;
+	this->addParameter("ImportAll", DM::BOOL, &this->importAll);
 	this->linkWithExistingView = false;
 	this->addParameter("linkWithExistingView", DM::BOOL, &this->linkWithExistingView);
 	this->offsetX = 0;
@@ -258,7 +258,7 @@ void Import::vectorDataInit(OGRLayer *poLayer)
 		std::string attrName = poFieldDefn->GetNameRef();
 		// if existent, attrName will be given the value of attributesToImport[attrName]
 		bool exists = map_contains(&attributesToImport, attrName, attrName);
-		if (ImportAll || exists)
+		if (importAll || exists)
 		{
 			switch (poFieldDefn->GetType())
 			{
@@ -512,7 +512,7 @@ void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeatur
 		// if existent, attrName will be given the value of attributesToImport[attrName]
 		bool exists = map_contains(&attributesToImport, attrName, attrName);
 
-		if(ImportAll || exists)
+		if (importAll || exists)
 		{
 			switch(poFieldDefn->GetType())
 			{
