@@ -294,23 +294,21 @@ QString Import::createHash(double x, double y)
 	return QString::number(ix) + "|" +  QString::number(iy);
 }
 
-void Import::init() {
+void Import::init() 
+{
 	if (!moduleParametersChanged())
 		return;
 
 	if (!this->WFSServer.empty())
 	{
 		driverType = WFS;
-		//create server name
-		std::stringstream servername;
-		servername << "WFS:http://";
-		servername <<  this->WFSUsername; //Username
-		servername <<  ":";
+		// password
 		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
-		servername <<  crypto.decryptToString(QString::fromStdString(this->WFSPassword)).toStdString(); //Password
-		servername <<  "@";
-		servername << this->WFSServer;
-		this->server_full_name = servername.str();
+		QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
+
+		// create server url with login
+		this->server_full_name = "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
+
 		OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 		OGRDataSource *poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
 
