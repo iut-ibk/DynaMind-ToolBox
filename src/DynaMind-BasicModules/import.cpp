@@ -420,8 +420,12 @@ bool Import::importVectorData()
 		//OGRFeature::DestroyFeature( poFeature );
 	}
 	OGRDataSource::DestroyDataSource(poDS);
+
+#ifdef _DEBUG
 	int features_after = sys->getAllComponentsInView(*this->view).size();
 	Logger(Debug) << "Loaded featuers " << features_after - features_before;
+#endif
+
 	return true;
 }
 
@@ -591,38 +595,23 @@ Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 	if(!poGeometry)
 		return NULL;
 
-	if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString )
+	if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
 	{
-		OGRMultiLineString *mpoLineString = (OGRMultiLineString *) poGeometry;
-		int number_of_linestrings = mpoLineString->getNumGeometries();
-		for (int i = 0; i < number_of_linestrings; i++)
+		const std::vector<Node*>& nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
+
+		if (nlist.size() > 2)
 		{
-			std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)mpoLineString->getGeometryRef(i));
+			Edge* firstEdge = sys->addEdge(nlist[0], nlist[1], *this->view);
+			for (unsigned int i = 2; i < nlist.size(); i++)
+				sys->addEdge(nlist[i - 1], nlist[i], *this->view);
 
-			if (nlist.size() < 2)
-				return 0;
-			std::vector<DM::Edge *> edges;
-			for (unsigned int i = 1; i < nlist.size(); i++)
-				edges.push_back(sys->addEdge(nlist[i-1], nlist[i], *this->view));
-
-			if (edges.size() > 0)
-				return edges[0];
+			return firstEdge;
 		}
 	}
-	else if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
-	{
-		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
+	else
+		DM::Logger(DM::Warning) << "geometry of type '" << OGRGeometryTypeToName(poGeometry->getGeometryType())  << "' not supported";
 
-		if (nlist.size() < 2)
-			return 0;
-		std::vector<DM::Edge *> edges;
-		for (unsigned int i = 1; i < nlist.size(); i++)
-			edges.push_back(sys->addEdge(nlist[i-1], nlist[i], *this->view));
-
-		if (edges.size() > 0)
-			return edges[0];
-	}
-	return 0;
+	return NULL;
 }
 
 Component *Import::loadFace(System *sys, OGRFeature *poFeature)
