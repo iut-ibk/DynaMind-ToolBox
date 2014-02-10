@@ -91,7 +91,16 @@ Import::~Import()
 void Import::reset()
 {
 	if (poCT)
+	{
 		delete poCT;
+		poCT = NULL;
+	}
+
+	if (view)
+	{
+		delete view;
+		view = NULL;
+	}
 }
 
 // INIT methods
@@ -100,6 +109,8 @@ void Import::init()
 {
 	if (!moduleParametersChanged())
 		return;
+
+	reset();
 
 	fileok = false;
 
@@ -350,9 +361,6 @@ bool Import::importVectorData()
 
 	if (this->linkWithExistingView)
 		this->initPointList(sys);
-
-	if (poCT != NULL)
-		delete poCT;
 
 	OGRSpatialReference *oSourceSRS, *oTargetSRS;
 
