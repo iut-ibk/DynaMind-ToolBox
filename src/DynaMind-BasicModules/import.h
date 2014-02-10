@@ -82,10 +82,10 @@ private:
 	OGRCoordinateTransformation *poCT;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
-	DM::Node * addNode(DM::System * sys, double x, double y, double z);
+	DM::Node * addNode(DM::System * sys, double x, double y);
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
-	std::vector<Node*> ExtractNodes(System* sys, OGRLineString *ls);
+	std::vector<Node*> loadNodes(System* sys, OGRLineString *ls);
 
 	DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
 	DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
