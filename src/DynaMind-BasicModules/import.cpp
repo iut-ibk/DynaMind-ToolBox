@@ -299,6 +299,8 @@ void Import::init()
 	if (!moduleParametersChanged())
 		return;
 
+	fileok = false;
+
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
@@ -320,21 +322,16 @@ void Import::init()
 
 		OGRLayer* poLayer = this->LoadWFSLayer(poDS);
 		if (!poLayer) 
-		{
-			fileok = false;
 			return;
-		}
 
 		fileok = true;
+
 		this->vectorDataInit(poLayer);
 		OGRDataSource::DestroyDataSource(poDS);
-		return;
 	}
 	else
 	{
 		driverType = ShapeFile;
-
-		fileok = true;
 
 		if (FileName.empty())
 		{
@@ -354,15 +351,16 @@ void Import::init()
 		{
 			GDALDataset  *poDataset = (GDALDataset*)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
 			if (poDataset == NULL)
-			{
 				DM::Logger(DM::Error) << "Open failed.";
-				fileok = false;
-			}
 			else
+			{
+				fileok = true;
 				rasterDataInit(poDataset);
+			}
 		}
 		else
 		{
+			fileok = true;
 			vectorDataInit(poDS->GetLayer(0));
 			OGRDataSource::DestroyDataSource(poDS);
 		}
