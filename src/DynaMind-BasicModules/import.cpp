@@ -591,7 +591,6 @@ Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 	if(!poGeometry)
 		return NULL;
 
-	DM::Node * n = 0;
 	if( wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString )
 	{
 		OGRMultiLineString *mpoLineString = (OGRMultiLineString *) poGeometry;
@@ -610,7 +609,7 @@ Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 				return edges[0];
 		}
 	}
-	if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+	else if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
 	{
 		std::vector<Node*> nlist = ExtractNodes(sys, (OGRLineString*)poGeometry);
 
