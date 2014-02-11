@@ -571,23 +571,34 @@ std::vector<Node*> Import::loadNodes(System* sys, OGRLineString *ls)
 	return nlist;
 }
 
+Component *Import::loadLineString(System *sys, OGRLineString *lineString)
+{
+	const std::vector<Node*>& nlist = loadNodes(sys, lineString);
+
+	if (nlist.size() > 2)
+	{
+		Edge* firstEdge = sys->addEdge(nlist[0], nlist[1], *this->view);
+		for (unsigned int i = 2; i < nlist.size(); i++)
+			sys->addEdge(nlist[i - 1], nlist[i], *this->view);
+
+		return firstEdge;
+	}
+}
+
 Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
-	if(!poGeometry)
+	if (!poGeometry)
 		return NULL;
 
-	if( wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+	if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString)
+		return loadLineString(sys, (OGRLineString*)poGeometry);
+	else if (wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString)
 	{
-		const std::vector<Node*>& nlist = loadNodes(sys, (OGRLineString*)poGeometry);
-
-		if (nlist.size() > 2)
+		OGRMultiLineString *mpoMultiLine = (OGRMultiLineString*) poGeometry;
+		for (int i = 0; i < mpoMultiLine->getNumGeometries(); i++)
 		{
-			Edge* firstEdge = sys->addEdge(nlist[0], nlist[1], *this->view);
-			for (unsigned int i = 2; i < nlist.size(); i++)
-				sys->addEdge(nlist[i - 1], nlist[i], *this->view);
-
-			return firstEdge;
+			OGRLineString *poPolygon = (OGRLineString*)mpoMultiLine->getGeometryRef(i);
 		}
 	}
 	else
@@ -605,7 +616,6 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 	DM::Node * n = 0;
 	if( wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
 	{
-
 		OGRPolygon *poPolygon = (OGRPolygon *)poGeometry;
 		std::vector<Node*> nlist = loadNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
 

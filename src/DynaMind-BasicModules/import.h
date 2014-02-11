@@ -85,6 +85,8 @@ private:
 	DM::Node * addNode(DM::System * sys, double x, double y);
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
+	Component *Import::loadLineString(System *sys, OGRLineString *lineString);
+
 	std::vector<Node*> loadNodes(System* sys, OGRLineString *ls);
 
 	DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
