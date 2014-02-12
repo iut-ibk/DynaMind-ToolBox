@@ -60,6 +60,8 @@ Import::Import()
 	this->offsetY = 0;
 	this->addParameter("offsetY", DM::DOUBLE, &this->offsetY);
 
+	this->addParameter("viewConfig", DM::STRING_MAP, &this->viewConfig);
+
 	//WFS Input
 	this->WFSDataName = "";
 	this->addParameter("WFSDataName", DM::STRING, &this->WFSDataName);
@@ -120,7 +122,7 @@ void Import::init()
 
 	if (!this->WFSServer.empty())
 	{
-		driverType = WFS;
+		/*driverType = WFS;
 		// password
 		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
 		QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
@@ -140,7 +142,7 @@ void Import::init()
 		fileok = true;
 
 		this->vectorDataInit(poLayer);
-		OGRDataSource::DestroyDataSource(poDS);
+		OGRDataSource::DestroyDataSource(poDS);*/
 	}
 	else
 	{
@@ -174,7 +176,7 @@ void Import::init()
 		else
 		{
 			fileok = true;
-			initLayers(poDS);
+			reinitLayers(poDS);
 			//vectorDataInit(poDS->GetLayer(0));
 			OGRDataSource::DestroyDataSource(poDS);
 		}
@@ -182,9 +184,10 @@ void Import::init()
 }
 
 
-void Import::initLayers(OGRDataSource* dataSource)
+void Import::reinitLayers(OGRDataSource* dataSource)
 {
 	viewConfig.clear();
+	viewConfigTypes.clear();
 
 	for (int i = 0; i < dataSource->GetLayerCount(); i++)
 	{
@@ -193,16 +196,16 @@ void Import::initLayers(OGRDataSource* dataSource)
 		std::string strType = OGRGeometryTypeToName(ogrType);
 
 		// create a view per layer
-		ImportView view;
-		view.newName = view.oldName = layer->GetName();
+		const std::string viewName = layer->GetName();
+		viewConfig[viewName] = viewName;
 
 		switch (wkbFlatten(ogrType))
 		{
-		case wkbPoint:				view.type = DM::NODE;	break;
+		case wkbPoint:				viewConfigTypes[viewName] = DM::NODE;	break;
 		case wkbPolygon:
-		case wkbMultiPolygon:		view.type = DM::FACE;	break;
+		case wkbMultiPolygon:		viewConfigTypes[viewName] = DM::FACE;	break;
 		case wkbLineString:
-		case wkbMultiLineString:	view.type = DM::EDGE;	break;
+		case wkbMultiLineString:	viewConfigTypes[viewName] = DM::EDGE;	break;
 		default:
 			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
 			fileok = false;
@@ -217,25 +220,59 @@ void Import::initLayers(OGRDataSource* dataSource)
 		{
 			OGRFieldDefn *poFieldDefn = ogrFieldDefn->GetFieldDefn(iField);
 
-			ImportAttribute attribute;
-			attribute.newName = attribute.oldName = poFieldDefn->GetNameRef();
+			std::string combinedViewAttributeName = viewName + "." + poFieldDefn->GetNameRef();
+
+			viewConfig[combinedViewAttributeName] = poFieldDefn->GetNameRef();
 
 			switch (poFieldDefn->GetType())
 			{
 			case OFTInteger:
 			case OFTReal:
-				attribute.type = DM::Attribute::DOUBLE;
+				viewConfigTypes[combinedViewAttributeName] = DM::Attribute::DOUBLE;
 				break;
 			default:
-				attribute.type = DM::Attribute::STRING;
+				viewConfigTypes[combinedViewAttributeName] = DM::Attribute::STRING;
 				break;
 			}
-			view.attributes.push_back(attribute);
 		}
-
-		// save to map
-		viewConfig.push_back(view);
 	}
+}
+
+void Import::initViews()
+{
+	std::map<std::string, DM::View> views;
+
+	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+		if(strchr(it->first.c_str(), '.') == NULL && !it->second.empty()) // is it a view and not empty?
+			views[it->first] = DM::View(it->second, viewConfigTypes[it->first], DM::WRITE);
+
+
+	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+	{
+		if (strchr(it->first.c_str(), '.') != NULL && !it->second.empty()) // is it an attribute and not empty?
+		{
+			QStringList parsedString = QString::fromStdString(it->first).split('.', QString::SkipEmptyParts);
+
+			if (parsedString.size() != 2)
+			{
+				DM::Logger(DM::Error) << "error parsing parameter: " << it->first;
+				continue;
+			}
+
+			DM::View v;
+			if (map_contains(&views, parsedString.first().toStdString(), v))
+				v.addAttribute(	parsedString.last().toStdString(),
+								(DM::Attribute::AttributeType)viewConfigTypes[it->first],
+								DM::WRITE);
+		}
+	}
+
+	std::vector<DM::View> vviews;
+
+	mforeach(const DM::View& v, views)
+		vviews.push_back(v);
+
+	addData("out", vviews);
 }
 
 bool Import::moduleParametersChanged()

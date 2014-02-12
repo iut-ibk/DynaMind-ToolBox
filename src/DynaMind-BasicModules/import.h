@@ -118,29 +118,17 @@ private:
 
 
 private:
-	void initLayers(OGRDataSource* dataSource);
+	void reinitLayers(OGRDataSource* dataSource);
+	void initViews();
 public:
 
+	typedef std::map<std::string, std::string> StringMap;
 
+	// parameter map: layername[.attribute], new-view-name
+	StringMap viewConfig;
 
-	struct ImportAttribute
-	{
-		std::string oldName;
-		std::string newName;
-		DM::Attribute::AttributeType type;
-	};
-
-	struct ImportView
-	{
-		std::string oldName;
-		std::string newName;
-		DM::Components type;
-
-		std::vector<ImportAttribute> attributes;
-	};
-
-	std::vector<ImportView>	viewConfig;
-
+	// layer[.attribute], type; integer to combine attributes and views
+	std::map<std::string, int> viewConfigTypes;
 
 public:
 	void run();

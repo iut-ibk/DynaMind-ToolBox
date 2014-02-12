@@ -6,6 +6,11 @@
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>
 
+#define COL_CHECKBOX	0
+#define COL_ORGNAME		1
+#define COL_ARROW		2
+#define COL_NEWNAME		3
+
 GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::GUIImport)
@@ -30,54 +35,79 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 
 	treeCheckMapper = new QSignalMapper(this);
 
-	foreach(const Import::ImportView& view, this->m->viewConfig)
+	for (Import::StringMap::iterator viewIter = this->m->viewConfig.begin();
+		viewIter != this->m->viewConfig.end(); ++viewIter)
 	{
+		if (strchr(viewIter->first.c_str(), '.') != NULL)
+			continue;	// skip if it is not a view or empty
+
+		bool isViewActive = !viewIter->second.empty();
+		// add view item
 		QTreeWidgetItem* viewItem = new QTreeWidgetItem();
 
-		viewItem->setText(1, QString::fromStdString(view.oldName));
-		viewItem->setText(2, "->");
-		viewItem->setText(3, QString::fromStdString(view.newName));
+		viewItem->setText(COL_ORGNAME, QString::fromStdString(viewIter->first));
+		viewItem->setText(COL_ARROW, "->");
+		viewItem->setText(COL_NEWNAME, QString::fromStdString(isViewActive ? viewIter->second : viewIter->first));
 
-		foreach(const Import::ImportAttribute& attribute, view.attributes)
+		// add attributes
+		for (Import::StringMap::iterator attrIter = this->m->viewConfig.begin();
+			attrIter != this->m->viewConfig.end(); ++attrIter)
 		{
-			QTreeWidgetItem* attrItem = new QTreeWidgetItem();
+			if (strchr(attrIter->first.c_str(), '.') == NULL)
+				continue; // skip if it is a view or emtpy
 
-			attrItem->setText(1, QString::fromStdString(attribute.oldName));
-			attrItem->setText(2, "->");
-			attrItem->setText(3, QString::fromStdString(attribute.newName));
+			bool isAttributeActive = !attrIter->second.empty();
 
-			viewItem->addChild(attrItem);
+			QStringList parsedString = QString::fromStdString(attrIter->first).split('.', QString::SkipEmptyParts);
 
-			QCheckBox* check = new QCheckBox();
-			check->setChecked(true);
-			connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
-			treeCheckMapper->setMapping(check, (QObject*)attrItem);
-			this->ui->viewTree->setItemWidget(attrItem, 0, check);
+			if (parsedString.size() != 2)
+			{
+				DM::Logger(DM::Error) << "error parsing parameter: " << attrIter->first;
+				continue;
+			}
+
+			if (parsedString.first() == QString::fromStdString(viewIter->first))
+			{
+				// this attribute is for this view
+				QTreeWidgetItem* attrItem = new QTreeWidgetItem();
+
+				attrItem->setText(COL_ORGNAME, parsedString.last());
+				attrItem->setText(COL_ARROW, "->");
+				attrItem->setText(COL_NEWNAME, isAttributeActive ? QString::fromStdString(attrIter->second) : parsedString.last());
+
+				viewItem->addChild(attrItem);
+
+				QCheckBox* check = new QCheckBox();
+				check->setChecked(isAttributeActive);
+				connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
+				treeCheckMapper->setMapping(check, (QObject*)attrItem);
+				this->ui->viewTree->setItemWidget(attrItem, COL_CHECKBOX, check);
+			}
 		}
 
 		this->ui->viewTree->addTopLevelItem(viewItem);
 
 		QCheckBox* check = new QCheckBox();
-		check->setChecked(true);
+		check->setChecked(isViewActive);
 		connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
 		treeCheckMapper->setMapping(check, (QObject*)viewItem);
-		this->ui->viewTree->setItemWidget(viewItem, 0, check);
+		this->ui->viewTree->setItemWidget(viewItem, COL_CHECKBOX, check);
 	}
 
 	connect(treeCheckMapper, SIGNAL(mapped(QObject*)),
 		this, SLOT(updateTree(QObject*)));
 
-	this->ui->viewTree->setColumnWidth(0, 70);
-	this->ui->viewTree->resizeColumnToContents(1);
-	this->ui->viewTree->resizeColumnToContents(2);
-	this->ui->viewTree->resizeColumnToContents(3);
+	this->ui->viewTree->setColumnWidth(COL_CHECKBOX, 70);
+	this->ui->viewTree->resizeColumnToContents(COL_ORGNAME);
+	this->ui->viewTree->resizeColumnToContents(COL_ARROW);
+	this->ui->viewTree->resizeColumnToContents(COL_NEWNAME);
 }
 
 void GUIImport::updateTree(QObject* obj)
 {
 	QTreeWidgetItem* sender = (QTreeWidgetItem*)obj;
 
-	QCheckBox* check = (QCheckBox*)ui->viewTree->itemWidget(sender, 0);
+	QCheckBox* check = (QCheckBox*)ui->viewTree->itemWidget(sender, COL_CHECKBOX);
 	if (check->checkState() == Qt::PartiallyChecked)
 		check->setCheckState(Qt::Checked);
 	
@@ -87,7 +117,7 @@ void GUIImport::updateTree(QObject* obj)
 		for (int i = 0; i < sender->childCount(); i++)
 		{
 			QTreeWidgetItem* attrItem = sender->child(i);
-			QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(attrItem, 0);
+			QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(attrItem, COL_CHECKBOX);
 			attr_check->setCheckState(check->checkState());
 		}
 	}
@@ -100,12 +130,12 @@ void GUIImport::updateTree(QObject* obj)
 		{
 			for (int i = 0; i < numChilds; i++)
 			{
-				QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent()->child(i), 0);
+				QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent()->child(i), COL_CHECKBOX);
 				if (attr_check->checkState() == Qt::Checked)
 					numChecked++;
 			}
 
-			QCheckBox* view_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent(), 0);
+			QCheckBox* view_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent(), COL_CHECKBOX);
 
 			if (numChecked == 0)
 				view_check->setCheckState(Qt::Unchecked);
@@ -121,8 +151,8 @@ void GUIImport::on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column
 {
 	bool ok;
 	QString newName = QInputDialog::getText(this, "Renaming", "rename to", QLineEdit::Normal, item->text(3), &ok);
-	if (ok)
-		item->setText(3, newName);
+	if (ok && !newName.isEmpty())
+		item->setText(COL_NEWNAME, newName);
 }
 
 GUIImport::~GUIImport()
@@ -146,6 +176,65 @@ void GUIImport::accept()
 	m->offsetX= this->ui->lineEdit_offx->text().toDouble();
 	m->offsetY= this->ui->lineEdit_offy->text().toDouble();
 
+	for (Import::StringMap::iterator it = m->viewConfig.begin(); it != m->viewConfig.end(); ++it)
+	{
+		if (strchr(it->first.c_str(), '.') == NULL)
+		{
+			// view
+			QList<QTreeWidgetItem*> views = ui->viewTree->findItems(
+				QString::fromStdString(it->first),
+				Qt::MatchFlag::MatchExactly, COL_ORGNAME);
+
+			if (views.size() != 1)
+			{
+				DM::Logger(DM::Error) << "view tree corrupt";
+				return;
+			}
+
+				QCheckBox* checkBox = (QCheckBox*)ui->viewTree->itemWidget(views.first(), COL_CHECKBOX);
+
+				// note: if checked or partially checked -> take it
+				it->second = (checkBox->checkState() != Qt::Unchecked) ? 
+					views.first()->text(COL_NEWNAME).toStdString() : "";
+		}
+		else
+		{
+			// attribute
+			QStringList parsedString = QString::fromStdString(it->first).split('.', QString::SkipEmptyParts);
+
+			if (parsedString.size() != 2)
+			{
+				DM::Logger(DM::Error) << "view tree corrupt";
+				return;
+			}
+
+			QList<QTreeWidgetItem*> attributes = ui->viewTree->findItems(
+				parsedString.last(), Qt::MatchExactly | Qt::MatchRecursive, COL_ORGNAME);
+
+			QTreeWidgetItem* attribute = NULL;
+			foreach(QTreeWidgetItem* a, attributes)
+			{
+				if (a->parent() && a->parent()->text(COL_ORGNAME) == parsedString.first())
+				{
+					attribute = a;
+					break;
+				}
+			}
+
+			if (!attribute)
+			{
+				DM::Logger(DM::Error) << "view tree corrupt";
+				return;
+			}
+
+			QCheckBox* checkBox = (QCheckBox*)ui->viewTree->itemWidget(attribute, COL_CHECKBOX);
+
+			// note: if checked or partially checked -> take it
+			it->second = (checkBox->checkState() != Qt::Unchecked) ?
+				attribute->text(COL_NEWNAME).toStdString() : "";
+		}
+	}
+	
 	m->init();
 	QDialog::accept();
 }
