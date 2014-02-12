@@ -207,29 +207,37 @@
       <item row="2" column="1">
        <widget class="QTreeWidget" name="viewTree">
         <property name="headerHidden">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="columnCount">
-         <number>4</number>
+         <number>5</number>
         </property>
+        <attribute name="headerVisible">
+         <bool>true</bool>
+        </attribute>
         <column>
          <property name="text">
-          <string notr="true">1</string>
+          <string notr="true">active</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string notr="true">2</string>
+          <string notr="true">original name</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string notr="true">3</string>
+          <string notr="true"/>
          </property>
         </column>
         <column>
          <property name="text">
-          <string notr="true">4</string>
+          <string notr="true">new name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">type</string>
          </property>
         </column>
        </widget>

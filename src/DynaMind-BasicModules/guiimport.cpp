@@ -10,6 +10,21 @@
 #define COL_ORGNAME		1
 #define COL_ARROW		2
 #define COL_NEWNAME		3
+#define COL_TYPE		4
+
+
+
+const char* GetTypeString(DM::Components t)
+{
+	static const char* typeNames[] = { "Component", "Node", "Edge", "Face", "System", "RasterData" };
+	return typeNames[t];
+}
+
+const char* GetTypeString(DM::Attribute::AttributeType t)
+{
+	static const char* typeNames[] = { "no type", "double", "string", "time series", "link", "double vector", "string vector" };
+	return typeNames[t];
+}
 
 GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	QDialog(parent),
@@ -48,6 +63,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 		viewItem->setText(COL_ORGNAME, QString::fromStdString(viewIter->first));
 		viewItem->setText(COL_ARROW, "->");
 		viewItem->setText(COL_NEWNAME, QString::fromStdString(isViewActive ? viewIter->second : viewIter->first));
+		viewItem->setText(COL_TYPE, GetTypeString((DM::Components)this->m->viewConfigTypes[viewIter->first]));
 
 		// add attributes
 		for (Import::StringMap::iterator attrIter = this->m->viewConfig.begin();
@@ -73,7 +89,12 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 
 				attrItem->setText(COL_ORGNAME, parsedString.last());
 				attrItem->setText(COL_ARROW, "->");
-				attrItem->setText(COL_NEWNAME, isAttributeActive ? QString::fromStdString(attrIter->second) : parsedString.last());
+				attrItem->setText(COL_NEWNAME, isAttributeActive ? 
+					QString::fromStdString(attrIter->second) : 
+					parsedString.last());
+
+				attrItem->setText(COL_TYPE,
+					GetTypeString((DM::Attribute::AttributeType)this->m->viewConfigTypes[attrIter->first]));
 
 				viewItem->addChild(attrItem);
 
@@ -101,6 +122,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	this->ui->viewTree->resizeColumnToContents(COL_ORGNAME);
 	this->ui->viewTree->resizeColumnToContents(COL_ARROW);
 	this->ui->viewTree->resizeColumnToContents(COL_NEWNAME);
+	this->ui->viewTree->resizeColumnToContents(COL_TYPE);
 }
 
 void GUIImport::updateTree(QObject* obj)
@@ -191,11 +213,11 @@ void GUIImport::accept()
 				return;
 			}
 
-				QCheckBox* checkBox = (QCheckBox*)ui->viewTree->itemWidget(views.first(), COL_CHECKBOX);
+			QCheckBox* checkBox = (QCheckBox*)ui->viewTree->itemWidget(views.first(), COL_CHECKBOX);
 
-				// note: if checked or partially checked -> take it
-				it->second = (checkBox->checkState() != Qt::Unchecked) ? 
-					views.first()->text(COL_NEWNAME).toStdString() : "";
+			// note: if checked or partially checked -> take it
+			it->second = (checkBox->checkState() != Qt::Unchecked) ?
+				views.first()->text(COL_NEWNAME).toStdString() : "";
 		}
 		else
 		{
