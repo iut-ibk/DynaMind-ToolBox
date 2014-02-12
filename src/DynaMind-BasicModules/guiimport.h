@@ -3,6 +3,8 @@
 
 #include <dmcompilersettings.h>
 #include <QDialog>
+#include <QTreeWidget>
+#include <QSignalMapper>
 
 namespace DM {
 class Module;
@@ -24,12 +26,14 @@ public:
 private:
 	Ui::GUIImport *ui;
 	Import * m;
-
+	QSignalMapper* treeCheckMapper;
 
 public slots:
 	void accept();
 	void on_pushButton_wfs_pick_clicked();
 	void on_pushButton_Filename_clicked();
+	void on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column);
+	void updateTree(QObject* obj);
 };
 
 #endif // GUIImport_H

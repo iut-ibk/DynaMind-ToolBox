@@ -3,6 +3,8 @@
 #include "import.h"
 #include "guipickwfsdataset.h"
 #include <QFileDialog>
+#include <QtGui/QTreeWidget>
+#include <QInputDialog>
 
 GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	QDialog(parent),
@@ -26,6 +28,101 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	this->ui->lineEdit_offx->setText(QString::number(this->m->offsetX));
 	this->ui->lineEdit_offy->setText(QString::number(this->m->offsetY));
 
+	treeCheckMapper = new QSignalMapper(this);
+
+	foreach(const Import::ImportView& view, this->m->viewConfig)
+	{
+		QTreeWidgetItem* viewItem = new QTreeWidgetItem();
+
+		viewItem->setText(1, QString::fromStdString(view.oldName));
+		viewItem->setText(2, "->");
+		viewItem->setText(3, QString::fromStdString(view.newName));
+
+		foreach(const Import::ImportAttribute& attribute, view.attributes)
+		{
+			QTreeWidgetItem* attrItem = new QTreeWidgetItem();
+
+			attrItem->setText(1, QString::fromStdString(attribute.oldName));
+			attrItem->setText(2, "->");
+			attrItem->setText(3, QString::fromStdString(attribute.newName));
+
+			viewItem->addChild(attrItem);
+
+			QCheckBox* check = new QCheckBox();
+			check->setChecked(true);
+			connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
+			treeCheckMapper->setMapping(check, (QObject*)attrItem);
+			this->ui->viewTree->setItemWidget(attrItem, 0, check);
+		}
+
+		this->ui->viewTree->addTopLevelItem(viewItem);
+
+		QCheckBox* check = new QCheckBox();
+		check->setChecked(true);
+		connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
+		treeCheckMapper->setMapping(check, (QObject*)viewItem);
+		this->ui->viewTree->setItemWidget(viewItem, 0, check);
+	}
+
+	connect(treeCheckMapper, SIGNAL(mapped(QObject*)),
+		this, SLOT(updateTree(QObject*)));
+
+	this->ui->viewTree->setColumnWidth(0, 70);
+	this->ui->viewTree->resizeColumnToContents(1);
+	this->ui->viewTree->resizeColumnToContents(2);
+	this->ui->viewTree->resizeColumnToContents(3);
+}
+
+void GUIImport::updateTree(QObject* obj)
+{
+	QTreeWidgetItem* sender = (QTreeWidgetItem*)obj;
+
+	QCheckBox* check = (QCheckBox*)ui->viewTree->itemWidget(sender, 0);
+	if (check->checkState() == Qt::PartiallyChecked)
+		check->setCheckState(Qt::Checked);
+	
+	if (!sender->parent())
+	{
+		// just disable or enable childs
+		for (int i = 0; i < sender->childCount(); i++)
+		{
+			QTreeWidgetItem* attrItem = sender->child(i);
+			QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(attrItem, 0);
+			attr_check->setCheckState(check->checkState());
+		}
+	}
+	else
+	{
+		// clicking on child, check state of siblings
+		int numChecked = 0;
+		int numChilds = sender->parent()->childCount();
+		if (numChilds > 0)
+		{
+			for (int i = 0; i < numChilds; i++)
+			{
+				QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent()->child(i), 0);
+				if (attr_check->checkState() == Qt::Checked)
+					numChecked++;
+			}
+
+			QCheckBox* view_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent(), 0);
+
+			if (numChecked == 0)
+				view_check->setCheckState(Qt::Unchecked);
+			else if (numChecked == numChilds)
+				view_check->setCheckState(Qt::Checked);
+			else
+				view_check->setCheckState(Qt::PartiallyChecked);
+		}
+	}
+}
+
+void GUIImport::on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column)
+{
+	bool ok;
+	QString newName = QInputDialog::getText(this, "Renaming", "rename to", QLineEdit::Normal, item->text(3), &ok);
+	if (ok)
+		item->setText(3, newName);
 }
 
 GUIImport::~GUIImport()

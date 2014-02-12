@@ -170,38 +170,68 @@
       <string>DynaMind</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="2" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>EPSG Code</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
        <widget class="QLineEdit" name="lineEdit_viewName"/>
       </item>
-      <item row="2" column="1">
+      <item row="4" column="1">
        <widget class="QLineEdit" name="lineEdit_epsgCode"/>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_append_existing">
         <property name="text">
          <string>append to existing datastream</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>View Name</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="6" column="0">
        <widget class="QCheckBox" name="checkBox_linkWithExistingView">
         <property name="text">
          <string>link with existing view</string>
         </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QTreeWidget" name="viewTree">
+        <property name="headerHidden">
+         <bool>true</bool>
+        </property>
+        <property name="columnCount">
+         <number>4</number>
+        </property>
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">4</string>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>
