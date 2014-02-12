@@ -109,8 +109,8 @@ void Import::reset()
 
 void Import::init()
 {
-	if (!moduleParametersChanged())
-		return;
+	//if (!moduleParametersChanged())
+	//	return;
 
 	reset();
 
@@ -177,6 +177,7 @@ void Import::init()
 		{
 			fileok = true;
 			reinitLayers(poDS);
+			initViews();
 			//vectorDataInit(poDS->GetLayer(0));
 			OGRDataSource::DestroyDataSource(poDS);
 		}
@@ -259,9 +260,9 @@ void Import::initViews()
 				continue;
 			}
 
-			DM::View v;
-			if (map_contains(&views, parsedString.first().toStdString(), v))
-				v.addAttribute(	parsedString.last().toStdString(),
+			std::string viewName = parsedString.first().toStdString();
+			if (map_contains(&views, viewName))
+				views[viewName].addAttribute(parsedString.last().toStdString(),
 								(DM::Attribute::AttributeType)viewConfigTypes[it->first],
 								DM::WRITE);
 		}
