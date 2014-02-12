@@ -111,6 +111,37 @@ private:
 	};
 
 	int driverType;
+
+
+
+
+
+
+private:
+	void initLayers(OGRDataSource* dataSource);
+public:
+
+
+
+	struct ImportAttribute
+	{
+		std::string oldName;
+		std::string newName;
+		DM::Attribute::AttributeType type;
+	};
+
+	struct ImportView
+	{
+		std::string oldName;
+		std::string newName;
+		DM::Components type;
+
+		std::vector<ImportAttribute> attributes;
+	};
+
+	std::vector<ImportView>	viewConfig;
+
+
 public:
 	void run();
 	void init();

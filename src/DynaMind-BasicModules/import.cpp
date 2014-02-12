@@ -174,9 +174,67 @@ void Import::init()
 		else
 		{
 			fileok = true;
-			vectorDataInit(poDS->GetLayer(0));
+			initLayers(poDS);
+			//vectorDataInit(poDS->GetLayer(0));
 			OGRDataSource::DestroyDataSource(poDS);
 		}
+	}
+}
+
+
+void Import::initLayers(OGRDataSource* dataSource)
+{
+	viewConfig.clear();
+
+	for (int i = 0; i < dataSource->GetLayerCount(); i++)
+	{
+		OGRLayer* layer = dataSource->GetLayer(i);
+		OGRwkbGeometryType ogrType = layer->GetGeomType();
+		std::string strType = OGRGeometryTypeToName(ogrType);
+
+		// create a view per layer
+		ImportView view;
+		view.newName = view.oldName = layer->GetName();
+
+		switch (wkbFlatten(ogrType))
+		{
+		case wkbPoint:				view.type = DM::NODE;	break;
+		case wkbPolygon:
+		case wkbMultiPolygon:		view.type = DM::FACE;	break;
+		case wkbLineString:
+		case wkbMultiLineString:	view.type = DM::EDGE;	break;
+		default:
+			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
+			fileok = false;
+			return;
+		}
+		DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
+
+		// add attributes
+
+		OGRFeatureDefn *ogrFieldDefn = layer->GetLayerDefn();
+		for (int iField = 0; iField < ogrFieldDefn->GetFieldCount(); iField++)
+		{
+			OGRFieldDefn *poFieldDefn = ogrFieldDefn->GetFieldDefn(iField);
+
+			ImportAttribute attribute;
+			attribute.newName = attribute.oldName = poFieldDefn->GetNameRef();
+
+			switch (poFieldDefn->GetType())
+			{
+			case OFTInteger:
+			case OFTReal:
+				attribute.type = DM::Attribute::DOUBLE;
+				break;
+			default:
+				attribute.type = DM::Attribute::STRING;
+				break;
+			}
+			view.attributes.push_back(attribute);
+		}
+
+		// save to map
+		viewConfig.push_back(view);
 	}
 }
 
