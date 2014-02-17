@@ -208,7 +208,7 @@ void Import::reinitLayers(OGRDataSource* dataSource)
 		case wkbLineString:
 		case wkbMultiLineString:	viewConfigTypes[viewName] = DM::EDGE;	break;
 		default:
-			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
+			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << (int)ogrType << " )";
 			fileok = false;
 			return;
 		}
@@ -330,7 +330,7 @@ void Import::vectorDataInit(OGRLayer *poLayer)
 		case wkbLineString:			dmType = DM::EDGE;	break;
 		case wkbMultiLineString:	dmType = DM::EDGE;	break;
 		default:
-			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
+			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << (int)ogrType << " )";
 			fileok = false;
 			return;
 		}
