@@ -526,16 +526,18 @@ void Import::loadVectorData()
 		return;
 	}
 
-	OGRLayer *poLayer = poDS->GetLayer(0);
-	if (!poLayer) {
-		Logger(Error) << "Something went wrong while loading layer in ImportVectorData";
-		OGRDataSource::DestroyDataSource(poDS);
-		return;
+	int i = 0;
+	for (; i < poDS->GetLayerCount(); i++)
+	{
+		OGRLayer *poLayer = poDS->GetLayer(i);
+
+		poLayer->ResetReading();
+
+		loadLayer(poLayer, sys);
 	}
 
-	poLayer->ResetReading();
-
-	loadLayer(poLayer, sys);
+	if (i == 0)
+		Logger(Error) << "no layer found";
 
 	OGRDataSource::DestroyDataSource(poDS);
 
