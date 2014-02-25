@@ -509,12 +509,12 @@ void Import::run()
 		DM::Logger(DM::Error) << "Cannot read file";
 	else
 	{
-		if (isvectordata)	importVectorData();
+		if (isvectordata)	loadVectorData();
 		else				importRasterData();
 	}
 }
 
-bool Import::importVectorData()
+void Import::loadVectorData()
 {
 	DM::System * sys = this->getData("Data");
 	int features_before = sys->getAllComponentsInView(*this->view).size();
@@ -530,14 +530,14 @@ bool Import::importVectorData()
 	if (!poDS)
 	{
 		DM::Logger(DM::Error) << "Open failed.";
-		return false;
+		return;
 	}
 
 	OGRLayer *poLayer = poDS->GetLayer(0);
 	if (!poLayer) {
 		Logger(Error) << "Something went wrong while loading layer in ImportVectorData";
 		OGRDataSource::DestroyDataSource(poDS);
-		return false;
+		return;
 	}
 
 	poLayer->ResetReading();
@@ -585,8 +585,6 @@ bool Import::importVectorData()
 	int features_after = sys->getAllComponentsInView(*this->view).size();
 	Logger(Debug) << "Loaded featuers " << features_after - features_before;
 #endif
-
-	return true;
 }
 
 bool Import::importRasterData()

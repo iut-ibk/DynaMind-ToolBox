@@ -96,7 +96,6 @@ private:
 	QString createHash(double x, double y);
 	//void vectorDataInit(OGRLayer       *poLayer);
 	//void rasterDataInit(GDALDataset  *poDataset);
-	bool importVectorData();
 	bool importRasterData();
 	bool transform(double *x, double *y);
 	void reset();
@@ -121,6 +120,8 @@ private:
 	void extractLayers(OGRDataSource* dataSource);
 	void extractLayers(GDALDataset* dataSource);
 	void initViews();
+	void loadVectorData();
+
 public:
 
 	typedef std::map<std::string, std::string> StringMap;
