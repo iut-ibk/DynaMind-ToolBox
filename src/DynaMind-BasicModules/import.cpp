@@ -171,13 +171,13 @@ void Import::init()
 			else
 			{
 				fileok = true;
-				rasterDataInit(poDataset);
+				extractLayers(poDataset);
 			}
 		}
 		else
 		{
 			fileok = true;
-			reinitLayers(poDS);
+			extractLayers(poDS);
 			initViews();
 			//vectorDataInit(poDS->GetLayer(0));
 			OGRDataSource::DestroyDataSource(poDS);
@@ -186,7 +186,7 @@ void Import::init()
 }
 
 
-void Import::reinitLayers(OGRDataSource* dataSource)
+void Import::extractLayers(OGRDataSource* dataSource)
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
@@ -240,15 +240,74 @@ void Import::reinitLayers(OGRDataSource* dataSource)
 	}
 }
 
+void Import::extractLayers(GDALDataset* dataSource)
+{
+	viewConfig.clear();
+	viewConfigTypes.clear();
+
+	isvectordata = false;
+	append = false;
+
+	double        adfGeoTransform[6];
+	int           nBlockXSize, nBlockYSize;
+	int           bGotMin, bGotMax;
+	double        adfMinMax[2];
+	GDALRasterBand  *poBand;
+
+	DM::Logger(DM::Debug) << "Driver: " << dataSource->GetDriver()->GetDescription()
+		<< "/" << dataSource->GetDriver()->GetMetadataItem(GDAL_DMD_LONGNAME);
+	DM::Logger(DM::Debug) << "Size is " << dataSource->GetRasterXSize() << " " << dataSource->GetRasterYSize()
+		<< " " << dataSource->GetRasterCount();
+
+	if (!std::string(dataSource->GetProjectionRef()).empty())
+		DM::Logger(DM::Debug) << "Projection is " << " " << dataSource->GetProjectionRef();
+	else
+	{
+		DM::Logger(DM::Error) << "No projection found";
+		fileok = false;
+		return;
+	}
+
+	if (dataSource->GetGeoTransform(adfGeoTransform) == CE_None)
+	{
+		DM::Logger(DM::Debug) << "Origin = " << adfGeoTransform[0] << "," << adfGeoTransform[3];
+		DM::Logger(DM::Debug) << "Pixel Size = " << adfGeoTransform[1] << "," << adfGeoTransform[5];
+	}
+
+	poBand = dataSource->GetRasterBand(1);
+	poBand->GetBlockSize(&nBlockXSize, &nBlockYSize);
+	DM::Logger(DM::Debug) << "Block=" << nBlockXSize << "x" << nBlockYSize <<
+		"Type=" << GDALGetDataTypeName(poBand->GetRasterDataType()) <<
+		", ColorInterp=" << GDALGetColorInterpretationName(poBand->GetColorInterpretation());
+
+	adfMinMax[0] = poBand->GetMinimum(&bGotMin);
+	adfMinMax[1] = poBand->GetMaximum(&bGotMax);
+	if (!bGotMin || !bGotMax)
+		GDALComputeRasterMinMax((GDALRasterBandH)poBand, TRUE, adfMinMax);
+
+	DM::Logger(DM::Debug) << "Min=" << adfMinMax[0] << ", Max=" << adfMinMax[1];
+
+	if (poBand->GetOverviewCount() > 0)
+		DM::Logger(DM::Debug) << "Band has" << poBand->GetOverviewCount() << " overviews";
+
+	if (poBand->GetColorTable() != NULL)
+		DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
+
+	// set config
+	viewConfig["RasterData"] = "RasterData";
+	viewConfigTypes["RasterData"] = DM::RASTERDATA;
+}
+
 void Import::initViews()
 {
 	std::map<std::string, DM::View> views;
 
+	// add views
 	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
 		if(strchr(it->first.c_str(), '.') == NULL && !it->second.empty()) // is it a view and not empty?
 			views[it->first] = DM::View(it->second, viewConfigTypes[it->first], DM::WRITE);
 
-
+	// add attributes
 	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
 	{
 		if (strchr(it->first.c_str(), '.') != NULL && !it->second.empty()) // is it an attribute and not empty?
@@ -269,6 +328,7 @@ void Import::initViews()
 		}
 	}
 
+	// push to module base
 	std::vector<DM::View> vviews;
 
 	mforeach(const DM::View& v, views)
@@ -311,7 +371,7 @@ OGRLayer *Import::LoadWFSLayer(OGRDataSource *poDS)
 	return 0;
 }
 
-void Import::vectorDataInit(OGRLayer *poLayer)
+/*void Import::vectorDataInit(OGRLayer *poLayer)
 {
 	isvectordata = true;
 	OGRFeature *poFeature = poLayer->GetNextFeature();
@@ -437,7 +497,7 @@ void Import::rasterDataInit(GDALDataset  *poDataset)
 	std::vector<DM::View> data;
 	data.push_back(*view);
 	this->addData("Data", data);
-}
+}*/
 
 // RUN methods
 

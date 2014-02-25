@@ -94,8 +94,8 @@ private:
 	DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
 	void initPointList(DM::System * sys);
 	QString createHash(double x, double y);
-	void vectorDataInit(OGRLayer       *poLayer);
-	void rasterDataInit(GDALDataset  *poDataset);
+	//void vectorDataInit(OGRLayer       *poLayer);
+	//void rasterDataInit(GDALDataset  *poDataset);
 	bool importVectorData();
 	bool importRasterData();
 	bool transform(double *x, double *y);
@@ -118,7 +118,8 @@ private:
 
 
 private:
-	void reinitLayers(OGRDataSource* dataSource);
+	void extractLayers(OGRDataSource* dataSource);
+	void extractLayers(GDALDataset* dataSource);
 	void initViews();
 public:
 
