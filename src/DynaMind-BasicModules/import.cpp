@@ -542,27 +542,35 @@ void Import::loadVectorData()
 
 	poLayer->ResetReading();
 
+	loadLayer(poLayer, sys);
+
+	OGRDataSource::DestroyDataSource(poDS);
+
+#ifdef _DEBUG
+	int features_after = sys->getAllComponentsInView(*this->view).size();
+	Logger(Debug) << "Loaded featuers " << features_after - features_before;
+#endif
+}
+
+void Import::loadLayer(OGRLayer* layer, System* sys)
+{
+	OGRSpatialReference* oSourceSRS;
+	OGRSpatialReference* oTargetSRS;
 	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
-	oSourceSRS = poLayer->GetSpatialRef();
+	oSourceSRS = layer->GetSpatialRef();
 	oTargetSRS = new OGRSpatialReference();
 	oTargetSRS->importFromEPSG(this->epsgcode);
 	// Input spatial reference system objects are assigned by copy
 	// (calling clone() method) and no ownership transfer occurs.
 	poCT = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
-	//OGRSpatialReference::DestroySpatialReference(oTargetSRS); // cannot be deleted (error)
 
-	if (poCT == NULL)
-	{
-		transformok = false;
+	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
-	}
-	else
-		transformok = true;
 
-	while (OGRFeature* poFeature = poLayer->GetNextFeature())
+	while (OGRFeature* poFeature = layer->GetNextFeature())
 	{
-		OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-		DM::Component * cmp;
+		OGRFeatureDefn *poFDefn = layer->GetLayerDefn();
+		DM::Component * cmp = NULL;
 		switch (view->getType())
 		{
 		case DM::NODE:
@@ -577,14 +585,7 @@ void Import::loadVectorData()
 		}
 		if (cmp)
 			this->appendAttributes(cmp, poFDefn, poFeature);
-		//OGRFeature::DestroyFeature( poFeature );
 	}
-	OGRDataSource::DestroyDataSource(poDS);
-
-#ifdef _DEBUG
-	int features_after = sys->getAllComponentsInView(*this->view).size();
-	Logger(Debug) << "Loaded featuers " << features_after - features_before;
-#endif
 }
 
 bool Import::importRasterData()

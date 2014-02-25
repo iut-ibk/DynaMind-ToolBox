@@ -121,7 +121,7 @@ private:
 	void extractLayers(GDALDataset* dataSource);
 	void initViews();
 	void loadVectorData();
-
+	void loadLayer(OGRLayer* layer, System* sys);
 public:
 
 	typedef std::map<std::string, std::string> StringMap;
