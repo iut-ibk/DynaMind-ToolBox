@@ -23,6 +23,8 @@ public:
 	explicit GUIImport(DM::Module * m, QWidget *parent = 0);
 	~GUIImport();
 
+	void updateTree();
+	void updateViewConfig();
 private:
 	Ui::GUIImport *ui;
 	Import * m;
@@ -32,8 +34,9 @@ public slots:
 	void accept();
 	void on_pushButton_wfs_pick_clicked();
 	void on_pushButton_Filename_clicked();
+	void on_lineEdit_Filename_textChanged();
 	void on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column);
-	void updateTree(QObject* obj);
+	void updateTreeChecks(QObject* obj);
 };
 
 #endif // GUIImport_H

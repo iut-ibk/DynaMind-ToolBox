@@ -32,6 +32,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 {
 	this->m = (Import*) m;
 	ui->setupUi(this);
+	treeCheckMapper = NULL;
 
 	this->ui->lineEdit_Filename->setText(QString::fromStdString(m->getParameterAsString("Filename")));
 	this->ui->lineEdit_viewName->setText(QString::fromStdString(m->getParameterAsString("ViewName")));
@@ -47,6 +48,20 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 
 	this->ui->lineEdit_offx->setText(QString::number(this->m->offsetX));
 	this->ui->lineEdit_offy->setText(QString::number(this->m->offsetY));
+
+	updateTree();
+}
+
+void GUIImport::updateTree()
+{
+	if (treeCheckMapper)
+	{
+		delete treeCheckMapper;
+		treeCheckMapper = NULL;
+	}
+
+	while (this->ui->viewTree->takeTopLevelItem(0))
+		;
 
 	treeCheckMapper = new QSignalMapper(this);
 
@@ -89,8 +104,8 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 
 				attrItem->setText(COL_ORGNAME, parsedString.last());
 				attrItem->setText(COL_ARROW, "->");
-				attrItem->setText(COL_NEWNAME, isAttributeActive ? 
-					QString::fromStdString(attrIter->second) : 
+				attrItem->setText(COL_NEWNAME, isAttributeActive ?
+					QString::fromStdString(attrIter->second) :
 					parsedString.last());
 
 				attrItem->setText(COL_TYPE,
@@ -116,7 +131,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	}
 
 	connect(treeCheckMapper, SIGNAL(mapped(QObject*)),
-		this, SLOT(updateTree(QObject*)));
+		this, SLOT(updateTreeChecks(QObject*)));
 
 	this->ui->viewTree->setColumnWidth(COL_CHECKBOX, 70);
 	this->ui->viewTree->resizeColumnToContents(COL_ORGNAME);
@@ -125,7 +140,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	this->ui->viewTree->resizeColumnToContents(COL_TYPE);
 }
 
-void GUIImport::updateTree(QObject* obj)
+void GUIImport::updateTreeChecks(QObject* obj)
 {
 	QTreeWidgetItem* sender = (QTreeWidgetItem*)obj;
 
@@ -198,6 +213,13 @@ void GUIImport::accept()
 	m->offsetX= this->ui->lineEdit_offx->text().toDouble();
 	m->offsetY= this->ui->lineEdit_offy->text().toDouble();
 
+	updateViewConfig();
+	m->init();
+	QDialog::accept();
+}
+
+void GUIImport::updateViewConfig()
+{
 	for (Import::StringMap::iterator it = m->viewConfig.begin(); it != m->viewConfig.end(); ++it)
 	{
 		if (strchr(it->first.c_str(), '.') == NULL)
@@ -256,9 +278,6 @@ void GUIImport::accept()
 				attribute->text(COL_NEWNAME).toStdString() : "";
 		}
 	}
-	
-	m->init();
-	QDialog::accept();
 }
 
 void GUIImport::on_pushButton_wfs_pick_clicked()
@@ -279,4 +298,13 @@ void GUIImport::on_pushButton_Filename_clicked()
 											 tr("Open file"), "", tr("Files (*.*)")) ;
 	if (!s.isEmpty())
 		this->ui->lineEdit_Filename->setText(s);
+
+}
+
+void GUIImport::on_lineEdit_Filename_textChanged()
+{
+	m->FileName = this->ui->lineEdit_Filename->text().toStdString();
+	this->m->init();
+
+	updateTree();
 }

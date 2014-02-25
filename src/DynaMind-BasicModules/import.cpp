@@ -152,7 +152,6 @@ void Import::init()
 		if (FileName.empty())
 		{
 			DM::Logger(DM::Error) << "No file specified " << FileName;
-			reset();
 			return;
 		}
 
