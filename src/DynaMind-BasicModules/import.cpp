@@ -563,9 +563,9 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
 
+	OGRFeatureDefn *poFDefn = layer->GetLayerDefn();
 	while (OGRFeature* poFeature = layer->GetNextFeature())
 	{
-		OGRFeatureDefn *poFDefn = layer->GetLayerDefn();
 		DM::Component * cmp = NULL;
 		switch (view->getType())
 		{
