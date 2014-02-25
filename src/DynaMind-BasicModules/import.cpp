@@ -80,9 +80,7 @@ Import::Import()
 	view = NULL;
 	poCT = NULL;
 
-	std::vector<DM::View> data;
-	data.push_back(DM::View("dummy", SUBSYSTEM, WRITE));
-	this->addData("Data", data);
+	initViews();
 }
 
 Import::~Import()
@@ -92,6 +90,9 @@ Import::~Import()
 
 void Import::reset()
 {
+	viewConfig.clear();
+	viewConfigTypes.clear();
+
 	if (poCT)
 	{
 		delete poCT;
@@ -151,6 +152,7 @@ void Import::init()
 		if (FileName.empty())
 		{
 			DM::Logger(DM::Error) << "No file specified " << FileName;
+			reset();
 			return;
 		}
 
@@ -272,6 +274,9 @@ void Import::initViews()
 
 	mforeach(const DM::View& v, views)
 		vviews.push_back(v);
+
+	if (vviews.empty())
+		vviews.push_back(DM::View("dummy", 0, DM::WRITE));
 
 	addData("out", vviews);
 }
