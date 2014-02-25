@@ -510,7 +510,10 @@ void Import::run()
 void Import::loadVectorData()
 {
 	DM::System * sys = this->getData("Data");
+
+#ifdef _DEBUG
 	int features_before = sys->getAllComponentsInView(*this->view).size();
+#endif
 
 	if (this->linkWithExistingView)
 		this->initPointList(sys);
@@ -530,9 +533,7 @@ void Import::loadVectorData()
 	for (; i < poDS->GetLayerCount(); i++)
 	{
 		OGRLayer *poLayer = poDS->GetLayer(i);
-
 		poLayer->ResetReading();
-
 		loadLayer(poLayer, sys);
 	}
 
