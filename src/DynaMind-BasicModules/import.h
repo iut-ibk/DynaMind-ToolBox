@@ -79,25 +79,25 @@ private:
 	double devider;
 	std::map<std::string, std::string> attributesToImport;
 	bool importAll;
-	OGRCoordinateTransformation *poCT;
+	//OGRCoordinateTransformation *poCT;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
-	DM::Node * addNode(DM::System * sys, double x, double y);
+	DM::Node * addNode(DM::System * sys, double x, double y, OGRCoordinateTransformation *poCT);
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
-	Component *Import::loadLineString(System *sys, OGRLineString *lineString);
+	Component *Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT);
 
-	std::vector<Node*> loadNodes(System* sys, OGRLineString *ls);
+	std::vector<Node*> loadNodes(System* sys, OGRLineString *ls, OGRCoordinateTransformation *poCT);
 
-	DM::Component * loadNode(DM::System * sys,  OGRFeature *poFeature);
-	DM::Component * loadEdge(DM::System * sys,  OGRFeature *poFeature);
-	DM::Component * loadFace(DM::System * sys,  OGRFeature *poFeature);
+	DM::Component * loadNode(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
+	DM::Component * loadEdge(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
+	DM::Component * loadFace(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
 	void initPointList(DM::System * sys);
 	QString createHash(double x, double y);
 	//void vectorDataInit(OGRLayer       *poLayer);
 	//void rasterDataInit(GDALDataset  *poDataset);
 	bool importRasterData();
-	bool transform(double *x, double *y);
+	bool transform(double *x, double *y, OGRCoordinateTransformation *poCT);
 	void reset();
 	bool moduleParametersChanged();
 	std::string server_full_name;

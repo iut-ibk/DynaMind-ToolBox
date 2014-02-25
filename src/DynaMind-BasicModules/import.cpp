@@ -78,7 +78,6 @@ Import::Import()
 	fileok = false;
 
 	view = NULL;
-	poCT = NULL;
 
 	initViews();
 }
@@ -92,12 +91,6 @@ void Import::reset()
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
-
-	if (poCT)
-	{
-		delete poCT;
-		poCT = NULL;
-	}
 
 	if (view)
 	{
@@ -562,7 +555,7 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 	oTargetSRS->importFromEPSG(this->epsgcode);
 	// Input spatial reference system objects are assigned by copy
 	// (calling clone() method) and no ownership transfer occurs.
-	poCT = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
+	OGRCoordinateTransformation* poCT = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
 
 	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
@@ -574,18 +567,21 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 		switch (view->getType())
 		{
 		case DM::NODE:
-			cmp = this->loadNode(sys, poFeature);
+			cmp = this->loadNode(sys, poFeature, poCT);
 			break;
 		case DM::EDGE:
-			cmp = this->loadEdge(sys, poFeature);
+			cmp = this->loadEdge(sys, poFeature, poCT);
 			break;
 		case DM::FACE:
-			cmp = this->loadFace(sys, poFeature);
+			cmp = this->loadFace(sys, poFeature, poCT);
 			break;
 		}
 		if (cmp)
 			this->appendAttributes(cmp, poFDefn, poFeature);
 	}
+
+	if (poCT)
+		delete poCT;
 }
 
 bool Import::importRasterData()
@@ -649,9 +645,9 @@ bool Import::importRasterData()
 	return true;
 }
 
-DM::Node * Import::addNode(DM::System * sys, double x, double y) 
+DM::Node * Import::addNode(DM::System * sys, double x, double y, OGRCoordinateTransformation *poCT)
 {
-	transform(&x, &y);
+	transform(&x, &y, poCT);
 	x += this->offsetX;
 	y += this->offsetY;
 
@@ -697,7 +693,7 @@ void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeatur
 	}
 }
 
-Component *Import::loadNode(System *sys, OGRFeature *poFeature)
+Component *Import::loadNode(System *sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
 	if( poGeometry == NULL || wkbFlatten(poGeometry->getGeometryType()) != wkbPoint )
@@ -705,13 +701,13 @@ Component *Import::loadNode(System *sys, OGRFeature *poFeature)
 
 	OGRPoint *poPoint = (OGRPoint*) poGeometry;
 
-	DM::Node * n = this->addNode(sys, poPoint->getX(), poPoint->getY());
+	DM::Node * n = this->addNode(sys, poPoint->getX(), poPoint->getY(), poCT);
 	sys->addComponentToView(n, *this->view);
 
 	return n;
 }
 
-std::vector<Node*> Import::loadNodes(System* sys, OGRLineString *ls)
+std::vector<Node*> Import::loadNodes(System* sys, OGRLineString *ls, OGRCoordinateTransformation *poCT)
 {
 	OGRRawPoint* points = new OGRRawPoint[ls->getNumPoints()];
 	ls->getPoints(points);
@@ -719,7 +715,7 @@ std::vector<Node*> Import::loadNodes(System* sys, OGRLineString *ls)
 	std::vector<Node*> nlist;
 	for(int i=0; i < ls->getNumPoints(); i++)
 	{
-		DM::Node * n = this->addNode(sys, points[i].x, points[i].y);
+		DM::Node * n = this->addNode(sys, points[i].x, points[i].y, poCT);
 
 		if(!vector_contains(&nlist, n))
 			nlist.push_back(n);
@@ -730,9 +726,9 @@ std::vector<Node*> Import::loadNodes(System* sys, OGRLineString *ls)
 	return nlist;
 }
 
-Component *Import::loadLineString(System *sys, OGRLineString *lineString)
+Component *Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT)
 {
-	const std::vector<Node*>& nlist = loadNodes(sys, lineString);
+	const std::vector<Node*>& nlist = loadNodes(sys, lineString, poCT);
 
 	if (nlist.size() > 2)
 	{
@@ -744,14 +740,14 @@ Component *Import::loadLineString(System *sys, OGRLineString *lineString)
 	}
 }
 
-Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
+Component *Import::loadEdge(System *sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
 	if (!poGeometry)
 		return NULL;
 
 	if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString)
-		return loadLineString(sys, (OGRLineString*)poGeometry);
+		return loadLineString(sys, (OGRLineString*)poGeometry, poCT);
 	else if (wkbFlatten(poGeometry->getGeometryType()) == wkbMultiLineString)
 	{
 		OGRMultiLineString *mpoMultiLine = (OGRMultiLineString*) poGeometry;
@@ -766,7 +762,7 @@ Component *Import::loadEdge(System *sys, OGRFeature *poFeature)
 	return NULL;
 }
 
-Component *Import::loadFace(System *sys, OGRFeature *poFeature)
+Component *Import::loadFace(System *sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
 	if(!poGeometry)
@@ -776,7 +772,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 	if( wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
 	{
 		OGRPolygon *poPolygon = (OGRPolygon *)poGeometry;
-		std::vector<Node*> nlist = loadNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
+		std::vector<Node*> nlist = loadNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing(), poCT);
 
 		if (nlist.size() >= 3)
 		{
@@ -786,7 +782,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 			// add holes
 			for (int i = 0; i < poPolygon->getNumInteriorRings(); i++)
 			{
-				std::vector<Node*> nl_hole = loadNodes(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i));
+				std::vector<Node*> nl_hole = loadNodes(sys, (OGRLinearRing*)poPolygon->getInteriorRing(i), poCT);
 				if (nl_hole.size() >= 3)
 				{
 					nl_hole.push_back(nl_hole[0]);	// ring closure
@@ -804,7 +800,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature)
 		for (int i = 0; i < number_of_faces; i++)
 		{
 			OGRPolygon *poPolygon = (OGRPolygon *) mpoPolygon->getGeometryRef(i);
-			std::vector<Node*> nlist = loadNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing());
+			std::vector<Node*> nlist = loadNodes(sys, (OGRLinearRing*)poPolygon->getExteriorRing(), poCT);
 
 			if (nlist.size() >= 3)
 			{
@@ -848,7 +844,7 @@ string Import::getHelpUrl()
 	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/Import.md";
 }
 
-bool Import::transform(double *x, double *y)
+bool Import::transform(double *x, double *y, OGRCoordinateTransformation *poCT)
 {
 	if (this->driverType == WFS && this->flip_wfs)
 	{
