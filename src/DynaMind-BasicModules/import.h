@@ -77,8 +77,8 @@ private:
 
 
 	double devider;
-	std::map<std::string, std::string> attributesToImport;
-	bool importAll;
+	//std::map<std::string, std::string> attributesToImport;
+	//bool importAll;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
 
