@@ -34,9 +34,15 @@
 
 DM_DECLARE_NODE_NAME(Import, Modules)
 
+#define OUTPORT_NAME "data"
+#define RASTERVIEWNAME "RasterData"
+
 Import::Import()
 {
 	driverType = ShapeFile;
+
+	isvectordata = false;
+	append = false;
 
 	this->FileName = "";
 	this->addParameter("Filename", DM::FILENAME, &this->FileName);
@@ -77,8 +83,6 @@ Import::Import()
 
 	fileok = false;
 
-	view = NULL;
-
 	initViews();
 }
 
@@ -91,12 +95,6 @@ void Import::reset()
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
-
-	if (view)
-	{
-		delete view;
-		view = NULL;
-	}
 }
 
 // INIT methods
@@ -183,6 +181,8 @@ void Import::extractLayers(OGRDataSource* dataSource)
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
+
+	isvectordata = true;
 
 	for (int i = 0; i < dataSource->GetLayerCount(); i++)
 	{
@@ -287,8 +287,8 @@ void Import::extractLayers(GDALDataset* dataSource)
 		DM::Logger(DM::Debug) << "Band has a color table with " << poBand->GetColorTable()->GetColorEntryCount() << " entries";
 
 	// set config
-	viewConfig["RasterData"] = "RasterData";
-	viewConfigTypes["RasterData"] = DM::RASTERDATA;
+	viewConfig[RASTERVIEWNAME] = RASTERVIEWNAME;
+	viewConfigTypes[RASTERVIEWNAME] = DM::RASTERDATA;
 }
 
 void Import::initViews()
@@ -330,7 +330,7 @@ void Import::initViews()
 	if (vviews.empty())
 		vviews.push_back(DM::View("dummy", 0, DM::WRITE));
 
-	addData("out", vviews);
+	addData(OUTPORT_NAME, vviews);
 }
 
 bool Import::moduleParametersChanged()
@@ -509,10 +509,10 @@ void Import::run()
 
 void Import::loadVectorData()
 {
-	DM::System * sys = this->getData("Data");
+	DM::System * sys = this->getData(OUTPORT_NAME);
 
 #ifdef _DEBUG
-	int features_before = sys->getAllComponentsInView(*this->view).size();
+	int features_before = sys->getAllChilds().size();
 #endif
 
 	if (this->linkWithExistingView)
@@ -543,7 +543,7 @@ void Import::loadVectorData()
 	OGRDataSource::DestroyDataSource(poDS);
 
 #ifdef _DEBUG
-	int features_after = sys->getAllComponentsInView(*this->view).size();
+	int features_after = sys->getAllChilds().size();
 	Logger(Debug) << "Loaded featuers " << features_after - features_before;
 #endif
 }
@@ -563,28 +563,143 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
 
-	OGRFeatureDefn *poFDefn = layer->GetLayerDefn();
+	const std::string viewName = viewConfig[layer->GetName()];
+	const DM::View view = getAccessedViews()[OUTPORT_NAME][viewName];
+	const DM::Components dmType = (DM::Components)view.getType();
+
+	OGRFeatureDefn *layerDef = layer->GetLayerDefn();
+
 	while (OGRFeature* poFeature = layer->GetNextFeature())
 	{
-		DM::Component * cmp = NULL;
-		switch (view->getType())
+		OGRGeometry* poGeometry = poFeature->GetGeometryRef();
+
+		switch (wkbFlatten(poGeometry->getGeometryType()))
 		{
-		case DM::NODE:
-			cmp = this->loadNode(sys, poFeature, poCT);
+		case wkbPoint:
+			if (dmType == DM::NODE)
+				loadPoint(	sys, (OGRPoint*)poGeometry, 
+							poCT, layerDef, poFeature, view);
 			break;
-		case DM::EDGE:
-			cmp = this->loadEdge(sys, poFeature, poCT);
+		case wkbLineString:
+			if (dmType == DM::EDGE)
+				loadLineString(	sys, (OGRLineString*)poGeometry, 
+								poCT, layerDef, poFeature, view);
 			break;
-		case DM::FACE:
-			cmp = this->loadFace(sys, poFeature, poCT);
+		case wkbMultiLineString:
+			if (dmType == DM::EDGE)
+			{
+				OGRMultiLineString *mpoMultiLine = (OGRMultiLineString*)poGeometry;
+				for (int i = 0; i < mpoMultiLine->getNumGeometries(); i++)
+					loadLineString(	sys, (OGRLineString*)mpoMultiLine->getGeometryRef(i), 
+									poCT, layerDef, poFeature, view);
+			}
+			break;
+		case wkbPolygon:
+			if (dmType == DM::FACE)
+				loadPolygon(sys, (OGRPolygon*)poGeometry, 
+							poCT, layerDef, poFeature, view);
+		case wkbMultiPolygon:
+			if (dmType == DM::FACE)
+			{
+				OGRMultiPolygon *mpoMultiPoly = (OGRMultiPolygon*)poGeometry;
+				for (int i = 0; i < mpoMultiPoly->getNumGeometries(); i++)
+					loadPolygon(sys, (OGRPolygon*)mpoMultiPoly->getGeometryRef(i), 
+								poCT, layerDef, poFeature, view);
+			}
 			break;
 		}
-		if (cmp)
-			this->appendAttributes(cmp, poFDefn, poFeature);
+
 	}
 
 	if (poCT)
 		delete poCT;
+}
+
+void Import::loadPoint(System *sys, OGRPoint *point, OGRCoordinateTransformation *poCT,
+	OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view)
+{
+	Node* n = this->addNode(sys, point->getX(), point->getY(), poCT, &view);
+	// add attributes
+	this->appendAttributes(n, featureDef, curFeature);
+}
+
+void Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT,
+	OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view)
+{
+	const int nPoints = lineString->getNumPoints();
+	if (nPoints < 2)	// line with one or zero points won't make sense
+		return;
+
+	double* x = new double[nPoints];
+	double* y = new double[nPoints];
+	Node** nodes = new Node*[nPoints];
+
+	lineString->getPoints(x, sizeof(double), y, sizeof(double));
+
+	nodes[0] = this->addNode(sys, x[0], y[0], poCT);
+	for (int i = 1; i < nPoints; i++)
+	{
+		nodes[i] = this->addNode(sys, x[i], y[i], poCT);
+		Edge* e = sys->addEdge(nodes[i - 1], nodes[i]);
+		// add attributes
+		this->appendAttributes(e, featureDef, curFeature);
+		// assign to view
+		sys->addComponentToView(e, view);
+	}
+
+	delete[] nodes;
+	delete[] x;
+	delete[] y;
+}
+
+std::vector<Node*> Import::addFaceNodes(System* sys, const OGRLineString *ring, OGRCoordinateTransformation *poCT)
+{
+	const int nPoints = ring->getNumPoints();
+	if (nPoints < 3)	// poly with less then 3 points doesn't make sense
+		return std::vector<Node*>();
+
+	double* x = new double[nPoints];
+	double* y = new double[nPoints];
+	ring->getPoints(x, sizeof(double), y, sizeof(double));
+
+	std::vector<Node*> nodes;
+	nodes.resize(nPoints+1);
+
+	for (int i = 1; i < nPoints; i++)
+		nodes[i] = this->addNode(sys, x[i], y[i], poCT);
+
+	// ring closure
+	nodes[nPoints] = this->addNode(sys, x[0], y[0], poCT);
+
+	delete[] x;
+	delete[] y;
+
+	return nodes;
+}
+
+void Import::loadPolygon(System *sys, OGRPolygon *polygon, OGRCoordinateTransformation *poCT,
+	OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view)
+{
+	// get nodes
+	const OGRLinearRing* outerRing = polygon->getExteriorRing();
+	const std::vector<Node*>& nodes = addFaceNodes(sys, outerRing, poCT);
+	if (nodes.size() < 3)
+		return;
+
+	if (Face* f = sys->addFace(nodes, view))
+	{
+		// add holes
+		const int nHoles = polygon->getNumInteriorRings();
+		for (int i = 0; i < nHoles; i++)
+		{
+			const std::vector<Node*>& hole_nodes = addFaceNodes(sys, polygon->getInteriorRing(i), poCT);
+			Face* h = sys->addFace(hole_nodes);
+			f->addHole(h);
+		}
+
+		// add attributes
+		this->appendAttributes(f, featureDef, curFeature);
+	}
 }
 
 bool Import::importRasterData()
@@ -592,7 +707,7 @@ bool Import::importRasterData()
 	GDALDataset  *poDataset;
 	GDALRasterBand  *poBand;
 	double adfGeoTransform[6];
-	DM::RasterData * r = this->getRasterData("Data", *view);
+	DM::RasterData * r = this->getRasterData(OUTPORT_NAME, View(RASTERVIEWNAME, DM::RASTERDATA, DM::WRITE));
 
 	poDataset = (GDALDataset *)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
 	poBand = poDataset->GetRasterBand(1);
@@ -648,24 +763,39 @@ bool Import::importRasterData()
 	return true;
 }
 
-DM::Node * Import::addNode(DM::System * sys, double x, double y, OGRCoordinateTransformation *poCT)
+DM::Node * Import::addNode(DM::System * sys, double x, double y, OGRCoordinateTransformation *poCT, const View* view)
 {
 	transform(&x, &y, poCT);
 	x += this->offsetX;
 	y += this->offsetY;
 
 	// create key
-	DM::Node n_tmp(x, y, 0);
-	QString key = this->createHash(x,y);
+	Node* new_node = new Node(x, y, 0);
+	QString key = this->createHash(x, y);
 	std::vector<DM::Node* > * nodes = &nodeList[key];
 
-	foreach (DM::Node * n, *nodes)
-		if (n->compare2d(&n_tmp, tol))
-			return n;
+	foreach(DM::Node * n, *nodes)
+	{
+		if (n->compare2d(new_node, tol))
+		{
+			delete new_node;
 
-	DM::Node * res_n = sys->addNode(n_tmp);
-	nodes->push_back(res_n);
-	return res_n;
+			if (view)
+				sys->addComponentToView(n, *view);
+
+			return n;
+		}
+	}
+	// add to system
+	if (view)
+		sys->addNode(new_node, *view);
+	else
+		sys->addNode(new_node);
+
+	// add to search list
+	nodes->push_back(new_node);
+
+	return new_node;
 }
 
 void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature)
@@ -696,7 +826,7 @@ void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeatur
 	}
 }
 
-Component *Import::loadNode(System *sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT)
+/*Component *Import::loadNode(System *sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT)
 {
 	OGRGeometry *poGeometry = poFeature->GetGeometryRef();
 	if( poGeometry == NULL || wkbFlatten(poGeometry->getGeometryType()) != wkbPoint )
@@ -814,7 +944,7 @@ Component *Import::loadFace(System *sys, OGRFeature *poFeature, OGRCoordinateTra
 	}
 
 	return NULL;
-}
+}*/
 
 void Import::initPointList(System *sys)
 {

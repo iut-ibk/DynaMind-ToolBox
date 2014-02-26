@@ -75,23 +75,21 @@ private:
 
 
 
-	DM::View* view;
+	//DM::View* view;
 	double devider;
 	std::map<std::string, std::string> attributesToImport;
 	bool importAll;
 	//OGRCoordinateTransformation *poCT;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
-	DM::Node * addNode(DM::System * sys, double x, double y, OGRCoordinateTransformation *poCT);
-	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 
-	Component *Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT);
+	//Component *Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT);
 
-	std::vector<Node*> loadNodes(System* sys, OGRLineString *ls, OGRCoordinateTransformation *poCT);
+	//std::vector<Node*> loadNodes(System* sys, OGRLineString *ls, OGRCoordinateTransformation *poCT);
 
-	DM::Component * loadNode(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
-	DM::Component * loadEdge(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
-	DM::Component * loadFace(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
+	//DM::Component * loadNode(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
+	//DM::Component * loadEdge(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
+	//DM::Component * loadFace(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
 	void initPointList(DM::System * sys);
 	QString createHash(double x, double y);
 	//void vectorDataInit(OGRLayer       *poLayer);
@@ -117,11 +115,35 @@ private:
 
 
 private:
+	// main methods
 	void extractLayers(OGRDataSource* dataSource);
+
 	void extractLayers(GDALDataset* dataSource);
+
 	void initViews();
+
 	void loadVectorData();
+
+	// ogr geom. loading methods
 	void loadLayer(OGRLayer* layer, System* sys);
+
+	void loadPoint(System *sys, OGRPoint *point, OGRCoordinateTransformation *poCT,
+		OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view);
+
+	void loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT,
+		OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view);
+
+	void loadPolygon(System *sys, OGRPolygon *polygon, OGRCoordinateTransformation *poCT,
+		OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view);
+
+	// helper methods
+	DM::Node* addNode(DM::System* sys, double x, double y, OGRCoordinateTransformation *poCT,
+		const View* view = NULL);
+
+	std::vector<Node*> addFaceNodes(System* sys, const OGRLineString *ring,
+		OGRCoordinateTransformation *poCT);
+
+	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
 public:
 
 	typedef std::map<std::string, std::string> StringMap;
