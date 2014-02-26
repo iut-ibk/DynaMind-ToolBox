@@ -109,11 +109,12 @@ void Module::setParameterValue(const std::string& name, const std::string& value
 	case DM::STRING_MAP:	
 		{
 			std::map<std::string,std::string> map;
-			QVector<QString> rows = qvalue.split("*||*", QString::SkipEmptyParts).toVector();
+			QVector<QString> rows = qvalue.split("*||*").toVector();
 			foreach(QString rowString, rows)
 			{
-				QVector<QString> keyValuePair =  rowString.split("*|*", QString::SkipEmptyParts).toVector();
-				map[keyValuePair.first().toStdString()] = keyValuePair.last().toStdString();
+				QVector<QString> keyValuePair =  rowString.split("*|*").toVector();
+				if (!(keyValuePair.first().isEmpty() && keyValuePair.last().isEmpty()))	// if key and value are empty, skip
+					map[keyValuePair.first().toStdString()] = keyValuePair.last().toStdString();
 			}
 			*(std::map<std::string,std::string>*)p->data = map;
 		}
