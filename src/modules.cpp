@@ -31,6 +31,8 @@
 #include "urbandevelRankEuclid.h"
 #include "urbandevelRankArea.h"
 #include "urbandevelRankYear.h"
+#include "urbandevelTrigger.h"
+#include "urbandevelPolygonLink.h"
 
 using namespace std;
 
@@ -42,4 +44,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<urbandevelRankEuclid>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelRankArea>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelRankYear>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelPolygonLink>());
 }
