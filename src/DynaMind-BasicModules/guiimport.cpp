@@ -71,13 +71,14 @@ void GUIImport::updateTree()
 		if (strchr(viewIter->first.c_str(), '.') != NULL)
 			continue;	// skip if it is not a view or empty
 
-		bool isViewActive = !viewIter->second.empty();
+		Qt::CheckState state = viewIter->second.empty() ? Qt::Unchecked : Qt::Checked;
+
 		// add view item
 		QTreeWidgetItem* viewItem = new QTreeWidgetItem();
 
 		viewItem->setText(COL_ORGNAME, QString::fromStdString(viewIter->first));
 		viewItem->setText(COL_ARROW, "->");
-		viewItem->setText(COL_NEWNAME, QString::fromStdString(isViewActive ? viewIter->second : viewIter->first));
+		viewItem->setText(COL_NEWNAME, QString::fromStdString(state == Qt::Checked ? viewIter->second : viewIter->first));
 		viewItem->setText(COL_TYPE, GetTypeString((DM::Components)this->m->viewConfigTypes[viewIter->first]));
 
 		// add attributes
@@ -88,6 +89,9 @@ void GUIImport::updateTree()
 				continue; // skip if it is a view or emtpy
 
 			bool isAttributeActive = !attrIter->second.empty();
+
+			if (!isAttributeActive && state == Qt::Checked)
+				state = Qt::PartiallyChecked;
 
 			QStringList parsedString = QString::fromStdString(attrIter->first).split('.', QString::SkipEmptyParts);
 
@@ -124,7 +128,7 @@ void GUIImport::updateTree()
 		this->ui->viewTree->addTopLevelItem(viewItem);
 
 		QCheckBox* check = new QCheckBox();
-		check->setChecked(isViewActive);
+		check->setCheckState(state);
 		connect(check, SIGNAL(clicked()), treeCheckMapper, SLOT(map()));
 		treeCheckMapper->setMapping(check, (QObject*)viewItem);
 		this->ui->viewTree->setItemWidget(viewItem, COL_CHECKBOX, check);
