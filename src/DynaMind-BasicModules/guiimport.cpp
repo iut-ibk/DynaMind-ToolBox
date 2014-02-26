@@ -34,15 +34,15 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	ui->setupUi(this);
 	treeCheckMapper = NULL;
 
-	this->ui->lineEdit_Filename->setText(QString::fromStdString(m->getParameterAsString("Filename")));
-	this->ui->lineEdit_viewName->setText(QString::fromStdString(m->getParameterAsString("ViewName")));
+	this->ui->lineEdit_Filename->setText(QString::fromStdString(this->m->FileName));
+	this->ui->lineEdit_viewName->setText(QString::fromStdString(this->m->ViewName));
 	this->ui->checkBox_append_existing->setChecked(this->m->append);
 
-	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(m->getParameterAsString("WFSServer")));
-	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(m->getParameterAsString("WFSUsername")));
-	this->ui->lineEdit_wfs_password->setText(QString::fromStdString(m->getParameterAsString("WFSPassword")));
-	this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(m->getParameterAsString("WFSDataName")));
-	this->ui->lineEdit_epsgCode->setText(QString::fromStdString(m->getParameterAsString("Transform to EPSG:")));
+	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(this->m->WFSServer));
+	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(this->m->WFSUsername));
+	this->ui->lineEdit_wfs_password->setText(QString::fromStdString(this->m->WFSPassword));
+	this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(this->m->WFSDataName));
+	this->ui->lineEdit_epsgCode->setText(QString::number(this->m->epsgcode));
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
 	this->ui->checkBox_linkWithExistingView->setChecked(this->m->linkWithExistingView);
 
