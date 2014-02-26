@@ -63,7 +63,6 @@ public:
 	double offsetY;
 private:
 	bool isvectordata;
-	bool transformok;
 	double tol;
 
 	std::string FileName_old;
@@ -77,8 +76,6 @@ private:
 
 
 	double devider;
-	//std::map<std::string, std::string> attributesToImport;
-	//bool importAll;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
 

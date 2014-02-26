@@ -762,9 +762,6 @@ bool Import::transform(double *x, double *y, OGRCoordinateTransformation *poCT)
 		*y = tmp_x;
 	}
 
-	if(!transformok)
-		return false;
-
 	if( poCT == NULL || !poCT->Transform( 1, x, y ) )
 		return false;
 
