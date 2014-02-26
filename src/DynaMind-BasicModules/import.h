@@ -36,6 +36,8 @@
 
 using namespace DM;
 
+typedef std::map<std::string, std::string> StringMap;
+
 class DM_HELPER_DLL_EXPORT Import : public Module
 {
 	DM_DECLARE_NODE(Import)
@@ -74,26 +76,14 @@ private:
 	bool append_old;
 
 
-
-	//DM::View* view;
 	double devider;
 	std::map<std::string, std::string> attributesToImport;
 	bool importAll;
-	//OGRCoordinateTransformation *poCT;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
 
-	//Component *Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinateTransformation *poCT);
-
-	//std::vector<Node*> loadNodes(System* sys, OGRLineString *ls, OGRCoordinateTransformation *poCT);
-
-	//DM::Component * loadNode(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
-	//DM::Component * loadEdge(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
-	//DM::Component * loadFace(DM::System * sys, OGRFeature *poFeature, OGRCoordinateTransformation *poCT);
 	void initPointList(DM::System * sys);
 	QString createHash(double x, double y);
-	//void vectorDataInit(OGRLayer       *poLayer);
-	//void rasterDataInit(GDALDataset  *poDataset);
 	bool importRasterData();
 	bool transform(double *x, double *y, OGRCoordinateTransformation *poCT);
 	void reset();
@@ -109,18 +99,19 @@ private:
 
 	int driverType;
 
+public:
+	// public for ui
+	void initViews();
 
-
-
-
-
+	void reloadFile();
 private:
 	// main methods
-	void extractLayers(OGRDataSource* dataSource);
 
-	void extractLayers(GDALDataset* dataSource);
+	static bool ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std::map<std::string, int>& viewConfigTypes);
 
-	void initViews();
+	static bool ExtractLayers(GDALDataset* dataSource, StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
+
+	void adoptViewConfig(StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
 
 	void loadVectorData();
 
@@ -143,10 +134,9 @@ private:
 	std::vector<Node*> addFaceNodes(System* sys, const OGRLineString *ring,
 		OGRCoordinateTransformation *poCT);
 
-	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature);
+	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
 public:
 
-	typedef std::map<std::string, std::string> StringMap;
 
 	// parameter map: layername[.attribute], new-view-name
 	StringMap viewConfig;

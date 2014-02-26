@@ -65,7 +65,7 @@ void GUIImport::updateTree()
 
 	treeCheckMapper = new QSignalMapper(this);
 
-	for (Import::StringMap::iterator viewIter = this->m->viewConfig.begin();
+	for (StringMap::iterator viewIter = this->m->viewConfig.begin();
 		viewIter != this->m->viewConfig.end(); ++viewIter)
 	{
 		if (strchr(viewIter->first.c_str(), '.') != NULL)
@@ -81,7 +81,7 @@ void GUIImport::updateTree()
 		viewItem->setText(COL_TYPE, GetTypeString((DM::Components)this->m->viewConfigTypes[viewIter->first]));
 
 		// add attributes
-		for (Import::StringMap::iterator attrIter = this->m->viewConfig.begin();
+		for (StringMap::iterator attrIter = this->m->viewConfig.begin();
 			attrIter != this->m->viewConfig.end(); ++attrIter)
 		{
 			if (strchr(attrIter->first.c_str(), '.') == NULL)
@@ -214,13 +214,13 @@ void GUIImport::accept()
 	m->offsetY= this->ui->lineEdit_offy->text().toDouble();
 
 	updateViewConfig();
-	m->init();
+	m->initViews();
 	QDialog::accept();
 }
 
 void GUIImport::updateViewConfig()
 {
-	for (Import::StringMap::iterator it = m->viewConfig.begin(); it != m->viewConfig.end(); ++it)
+	for (StringMap::iterator it = m->viewConfig.begin(); it != m->viewConfig.end(); ++it)
 	{
 		if (strchr(it->first.c_str(), '.') == NULL)
 		{
