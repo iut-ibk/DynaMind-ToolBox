@@ -115,7 +115,20 @@ Node* System::addNode(Node* node)
 
     return node;
 }
-Node* System::addNode(const Node &ref,  const DM::View & view)
+
+Node* System::addNode(Node* node, const DM::View& view)
+{
+	if (Node* n = addNode(node))
+	{
+		if (!view.getName().empty())
+			this->viewCaches[view.getName()].add(n);
+
+		return n;
+	}
+	return NULL;
+}
+
+Node* System::addNode(const Node &ref, const DM::View& view)
 {
     QMutexLocker ml(mutex);
 
@@ -129,7 +142,7 @@ Node* System::addNode(const Node &ref,  const DM::View & view)
     return n;
 }
 
-Node * System::addNode(double x, double y, double z,  const DM::View & view)
+Node * System::addNode(double x, double y, double z, const DM::View& view)
 {
     QMutexLocker ml(mutex);
 
@@ -169,7 +182,7 @@ Edge* System::addEdge(Node * start, Node * end, const View &view)
 {
     QMutexLocker ml(mutex);
 
-    return this->addEdge(new Edge(start, end), view);;
+    return this->addEdge(new Edge(start, end), view);
 }
 
 Edge* System::getEdge(Node* start, Node* end)
@@ -192,7 +205,7 @@ Face* System::addFace(Face *f)
     faces.insert(f);
     return f;
 }
-Face* System::addFace(std::vector<DM::Node*> nodes,  const DM::View & view)
+Face* System::addFace(const std::vector<DM::Node*>& nodes,  const DM::View & view)
 {
     QMutexLocker ml(mutex);
 

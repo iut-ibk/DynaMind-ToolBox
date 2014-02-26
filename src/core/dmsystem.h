@@ -93,9 +93,10 @@ public:
     Component * addComponent(Component* c, const DM::View & view = DM::View());
 
     /** @brief Adds an existing node to the system. The ownership of the node goes to the system.
-    *  If the node already exists 0 it returns 0, if not the pointer to the node (same as the input)
+    *  If the node already exists it returns 0, otherwhise the pointer to the node (same as the input)
     */
-    Node * addNode(Node* node);
+	Node * addNode(Node* node);
+	Node * addNode(Node* node, const DM::View& view);
 
     /** @brief Adds a new node to the system and returns a pointer to the node.*/
     Node * addNode(double x, double y, double z, const DM::View & view = DM::View());
@@ -113,7 +114,7 @@ public:
     Face * addFace(Face * f);
 
     /** @brief Creates a new Face, based on the UUID of the nodes stored in the vector */
-    Face * addFace(std::vector<Node*> nodes,  const DM::View & view = DM::View());
+    Face * addFace(const std::vector<Node*>& nodes,  const DM::View & view = DM::View());
 
     /** @brief Returns a pointer to the edge. Returns 0 if Edge doesn't exist */
     virtual Edge* getEdge(Node* start, Node* end);
