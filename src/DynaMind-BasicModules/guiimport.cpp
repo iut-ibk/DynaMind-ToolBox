@@ -149,17 +149,19 @@ void GUIImport::updateTreeChecks(QObject* obj)
 	QTreeWidgetItem* sender = (QTreeWidgetItem*)obj;
 
 	QCheckBox* check = (QCheckBox*)ui->viewTree->itemWidget(sender, COL_CHECKBOX);
-	if (check->checkState() == Qt::PartiallyChecked)
-		check->setCheckState(Qt::Checked);
 	
 	if (!sender->parent())
 	{
+		Qt::CheckState state = check->checkState();
+		if (check->checkState() == Qt::PartiallyChecked)
+			state = Qt::Unchecked;
+		
 		// just disable or enable childs
 		for (int i = 0; i < sender->childCount(); i++)
 		{
 			QTreeWidgetItem* attrItem = sender->child(i);
 			QCheckBox* attr_check = (QCheckBox*)ui->viewTree->itemWidget(attrItem, COL_CHECKBOX);
-			attr_check->setCheckState(check->checkState());
+			attr_check->setCheckState(state);
 		}
 	}
 	else
@@ -178,9 +180,7 @@ void GUIImport::updateTreeChecks(QObject* obj)
 
 			QCheckBox* view_check = (QCheckBox*)ui->viewTree->itemWidget(sender->parent(), COL_CHECKBOX);
 
-			if (numChecked == 0)
-				view_check->setCheckState(Qt::Unchecked);
-			else if (numChecked == numChilds)
+			if (numChecked == numChilds)
 				view_check->setCheckState(Qt::Checked);
 			else
 				view_check->setCheckState(Qt::PartiallyChecked);
