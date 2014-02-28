@@ -58,7 +58,7 @@ void urbandevelPolygonLink::run()
             {
                 block->getAttribute(elements_view.getName())->addLink(element, elements_view.getName()); //Link SB->CB
                 element->getAttribute(blocks_view.getName())->addLink(block, blocks_view.getName()); //Link CB->SB
-                DM::Logger(DM::Warning) << "Link created";
+                DM::Logger(DM::Debug) << "Link created";
             }
         }
     }
