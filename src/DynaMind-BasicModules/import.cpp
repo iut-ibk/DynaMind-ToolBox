@@ -49,8 +49,6 @@ Import::Import()
 	this->addParameter("Filename", DM::FILENAME, &this->FileName);
 	this->epsgcode=31254;
 	this->addParameter("Transform to EPSG:", DM::INT, &this->epsgcode);
-	this->ViewName = "";
-	this->addParameter("ViewName", DM::STRING, &this->ViewName);
 	this->tol = 0.00001;
 	this->addParameter("Tolerance", DM::DOUBLE, &this->tol);
 	devider = 100;
@@ -140,12 +138,6 @@ void Import::reloadFile()
 		if (FileName.empty())
 		{
 			DM::Logger(DM::Error) << "No file specified " << FileName;
-			return;
-		}
-
-		if (ViewName.empty())
-		{
-			DM::Logger(DM::Error) << "No view specified";
 			return;
 		}
 
@@ -359,7 +351,6 @@ bool Import::moduleParametersChanged()
 {
 	bool changed = false;
 	if (FileName_old != FileName)		changed = true; FileName_old = FileName;
-	if (ViewName_old != ViewName)		changed = true; ViewName_old = ViewName;
 	if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
 	if (WFSServer_old != WFSServer)		changed = true; WFSServer_old = WFSServer;
 	if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;

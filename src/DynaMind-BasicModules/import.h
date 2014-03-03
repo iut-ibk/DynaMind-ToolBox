@@ -45,7 +45,6 @@ class DM_HELPER_DLL_EXPORT Import : public Module
 public:
 	// parameters
 	std::string FileName;
-	std::string ViewName;
 
 	std::string WFSDataName;
 	std::string WFSServer;

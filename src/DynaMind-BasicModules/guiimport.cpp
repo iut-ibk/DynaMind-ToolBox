@@ -35,7 +35,6 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	treeCheckMapper = NULL;
 
 	this->ui->lineEdit_Filename->setText(QString::fromStdString(this->m->FileName));
-	this->ui->lineEdit_viewName->setText(QString::fromStdString(this->m->ViewName));
 	this->ui->checkBox_append_existing->setChecked(this->m->append);
 
 	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(this->m->WFSServer));
@@ -204,7 +203,6 @@ GUIImport::~GUIImport()
 void GUIImport::accept()
 {
 	m->FileName = this->ui->lineEdit_Filename->text().toStdString();
-	m->ViewName = this->ui->lineEdit_viewName->text().toStdString();
 	m->append = this->ui->checkBox_append_existing->isChecked();
 	m->WFSServer = this->ui->lineEdit_wfs_server->text().toStdString();
 	m->WFSUsername = this->ui->lineEdit_wfs_username->text().toStdString();
