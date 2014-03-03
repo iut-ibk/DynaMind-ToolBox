@@ -505,7 +505,6 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 			}
 			break;
 		}
-
 	}
 
 	if (poCT)

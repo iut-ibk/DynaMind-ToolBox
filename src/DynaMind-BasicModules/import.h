@@ -42,10 +42,8 @@ class DM_HELPER_DLL_EXPORT Import : public Module
 {
 	DM_DECLARE_NODE(Import)
 
-	private:
-		bool fileok;
-
 public:
+	// parameters
 	std::string FileName;
 	std::string ViewName;
 
@@ -54,16 +52,20 @@ public:
 	std::string WFSUsername;
 	std::string WFSPassword;
 
-	bool append;
-	int epsgcode;
-	bool linkWithExistingView;
-	bool flip_wfs;
+	int		epsgcode;
 
-	double offsetX;
-	double offsetY;
+	bool	append;
+	bool	linkWithExistingView;
+	bool	flip_wfs;
+
+	double	offsetX;
+	double	offsetY;
+
 private:
-	bool isvectordata;
-	double tol;
+	bool	fileok;
+	bool	isvectordata;
+	double	tol;
+	bool	append_old;
 
 	std::string FileName_old;
 	std::string ViewName_old;
@@ -71,9 +73,6 @@ private:
 	std::string WFSServer_old;
 	std::string WFSUsername_old;
 	std::string WFSPassword_old;
-
-	bool append_old;
-
 
 	double devider;
 
@@ -103,7 +102,6 @@ public:
 	void reloadFile();
 private:
 	// main methods
-
 	static bool ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std::map<std::string, int>& viewConfigTypes);
 
 	static bool ExtractLayers(GDALDataset* dataSource, StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
@@ -112,7 +110,7 @@ private:
 
 	void loadVectorData();
 
-	// ogr geom. loading methods
+	// OGR-geom. loading methods
 	void loadLayer(OGRLayer* layer, System* sys);
 
 	void loadPoint(System *sys, OGRPoint *point, OGRCoordinateTransformation *poCT,
@@ -132,9 +130,8 @@ private:
 		OGRCoordinateTransformation *poCT);
 
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
+
 public:
-
-
 	// parameter map: layername[.attribute], new-view-name
 	StringMap viewConfig;
 
