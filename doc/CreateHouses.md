@@ -52,6 +52,7 @@ Create houses creates simple buildings single family houses and block buildings 
 | Footprint 		|   | FACE   | write  | building footprint |
 |                   | built_year  | INT | write | construction year |
 |                   | h  | DOUBLE | write | building height |
+|                   | area  | DOUBLE | write | footprint area |
 |                   | BUILDING  | LINK | write | link to building |
 | Geometry 			|   | FACE   | write  | building footprint |
 |                   | type  | STRING | write | geometry type (window; ceiling; ceiling_roof; wall_outside; roof; roof_wall) |

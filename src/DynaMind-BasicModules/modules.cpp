@@ -50,6 +50,7 @@
 #include "containergroup.h"
 #include "offsetface.h"
 #include "addsinglecomponent.h"
+#include "faceattributetoraster.h"
 
 #include "parcels.h"
 #include "cityblock.h"
@@ -86,5 +87,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 	registry->addNodeFactory(new NodeFactory<Parcels>());
 	registry->addNodeFactory(new NodeFactory<CityBlock>());
 	registry->addNodeFactory(new NodeFactory<SuperBlock>());
+	registry->addNodeFactory(new NodeFactory<FaceAttributeToRaster>());
 }
 

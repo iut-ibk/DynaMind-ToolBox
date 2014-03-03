@@ -31,8 +31,12 @@ DM_DECLARE_NODE_NAME(AddSingleComponent, Modules)
 AddSingleComponent::AddSingleComponent()
 {
 	this->ViewName = "";
+	this->Type = "COMPONENT";
+	this->dummy = false;
 
 	this->addParameter("ViewName", DM::STRING, &this->ViewName);
+	this->addParameter("Type", DM::STRING, &this->Type);
+	this->addParameter("dummy", DM::BOOL, &this->dummy);
 
 }
 
@@ -40,7 +44,20 @@ void AddSingleComponent::init()
 {
 	if (this->ViewName.empty())
 		return;
-	this->ComponentView = DM::View(ViewName, DM::COMPONENT, DM::WRITE);
+	if (this->Type == "COMPONENT")
+		this->ComponentView = DM::View(ViewName, DM::COMPONENT, DM::WRITE);
+	else if (this->Type == "NODE") {
+		this->ComponentView = DM::View(ViewName, DM::NODE, DM::WRITE);
+	}
+	else if (this->Type == "EDGE") {
+		this->ComponentView = DM::View(ViewName, DM::EDGE, DM::WRITE);
+	}
+	else if (this->Type == "FACE") {
+		this->ComponentView = DM::View(ViewName, DM::FACE, DM::WRITE);
+	} else {
+		DM::Logger(DM::Standard) << "Wrong Type";
+		return;
+	}
 
 	std::vector<DM::View> datastream;
 	datastream.push_back(ComponentView);
@@ -52,7 +69,8 @@ void AddSingleComponent::init()
 void AddSingleComponent::run()
 {
 	DM::System * sys = this->getData("sys");
-	sys->addComponent(new DM::Component(), this->ComponentView);
+	if (this->dummy)
+		sys->addComponent(new DM::Component(), this->ComponentView);
 }
 
 std::string AddSingleComponent::getHelpUrl()

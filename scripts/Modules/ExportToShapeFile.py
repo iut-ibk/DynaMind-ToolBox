@@ -83,7 +83,7 @@ class ExportToShapeFile(Module):
                 self.createParameter("offsetX", DOUBLE, "OffsetX")
                 self.createParameter("offsetY", DOUBLE, "OffsetY") 
                 self.CoordinateSystemEPSG = 32755
-                self.vec = View("dummy", SUBSYSTEM, READ)
+                self.vec = View("dummy", SUBSYSTEM, MODIFY)
                 self.offsetX = 0
                 self.offsetY = 0                
                 views = []
@@ -92,6 +92,15 @@ class ExportToShapeFile(Module):
                 self.counter = 0
 
             def run(self):
+                #check if floder exists
+                dir = os.path.dirname(self.FileName)
+
+                try:
+                    os.stat(dir)
+                except:
+                    print "Folder does not exist. Create " + str(dir)
+                    os.mkdir(dir)
+
                 self.counter += 1
                 city = self.getData("City")
                 views = city.getViews()

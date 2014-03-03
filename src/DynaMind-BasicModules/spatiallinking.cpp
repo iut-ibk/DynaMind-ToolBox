@@ -44,9 +44,13 @@ SpatialLinking::SpatialLinking()
 	this->base = "";
 	this->linkto = "";
 	spatialL = 1000;
+	clear_links = false;
+	this->selected_only = false;
 
 	this->addParameter("Base", DM::STRING, & this->base);
 	this->addParameter("Link", DM::STRING, & this->linkto);
+	this->addParameter("SelectedOnly", DM::BOOL, & selected_only);
+	this->addParameter("ClearLinks", DM::BOOL, & clear_links);
 
 	std::vector<DM::View> data;
 	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -102,7 +106,7 @@ void flip(T a, T b)
 	b = c;
 }
 
-void SpatialLinking::run() 
+void SpatialLinking::run()
 {
 	city = this->getData("Data");
 
@@ -117,13 +121,13 @@ void SpatialLinking::run()
 
 		if (vbase.getType() == DM::FACE)
 			DM::CGALGeometry::CalculateCentroid(city, (Face*)c, v[0], v[1], v[2]);
-		else if (vbase.getType() == DM::NODE) 
+		else if (vbase.getType() == DM::NODE)
 			((Node*)c)->get(v);
 
 		int x = v[0] / spatialL;
 		int y = v[1] / spatialL;
 
-		Bucket& it = nodesMap[QPair<int,int>(x,y)];
+		Bucket& it = nodesMap[QPair<int, int>(x, y)];
 		it.first = QPointF(v[0], v[1]);
 		it.second.push_back(c);
 	}
@@ -140,38 +144,38 @@ void SpatialLinking::run()
 		double wb;
 		TBVectorData::getBoundingBox(((Face*)baseCmp)->getNodePointers(), xb, yb, hb, wb, true);
 
-		int xmin = (int) (xb) / spatialL-1;
-		int ymin = (int) (yb) /spatialL-1;
-		int xmax = (int) (xb+wb)/spatialL+1;
-		int ymax = (int) (yb+hb)/spatialL+1;
-		Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|"<< ymax;
+		int xmin = (int)(xb) / spatialL - 1;
+		int ymin = (int)(yb) / spatialL - 1;
+		int xmax = (int)(xb + wb) / spatialL + 1;
+		int ymax = (int)(yb + hb) / spatialL + 1;
+		Logger(Debug) << xmin << "|" << ymin << "|" << xmax << "|" << ymax;
 
-		if (xmin > xmax) 
+		if (xmin > xmax)
 			flip(xmin, xmax);
 
 		if (ymin > ymax)
 			flip(ymin, ymax);
-		
+
 		Attribute* baseAttribute = baseCmp->getAttribute(base);
 
 		int elementInSearchSpace = 0;
-		for (int x = xmin; x <= xmax; x++) 
+		for (int x = xmin; x <= xmax; x++)
 		{
-			for (int y = ymin; y <= ymax; y++) 
+			for (int y = ymin; y <= ymax; y++)
 			{
-				const Bucket& bucket = nodesMap[QPair<int,int>(x,y)];
+				const Bucket& bucket = nodesMap[QPair<int, int>(x, y)];
 				const std::vector<Component*>& elementsInBucket = bucket.second;
 				if (elementsInBucket.empty())
 					continue;
 
 				elementInSearchSpace = elementInSearchSpace + elementsInBucket.size();
-				foreach (Component* it, elementsInBucket) 
+				foreach(Component* it, elementsInBucket)
 				{
-					if (qf.containsPoint(bucket.first, Qt::WindingFill)) 
+					if (qf.containsPoint(bucket.first, Qt::WindingFill))
 					{
 						Attribute * attr = it->getAttribute(linkto);
 						std::vector<Component*> linkedComponents = attr->getLinkedComponents();
-						if (std::find(linkedComponents.begin(), linkedComponents.end(), it) == linkedComponents.end()) 
+						if (std::find(linkedComponents.begin(), linkedComponents.end(), it) == linkedComponents.end())
 							attr->addLink(it, linkto);
 
 						baseAttribute->addLink(it, base);
