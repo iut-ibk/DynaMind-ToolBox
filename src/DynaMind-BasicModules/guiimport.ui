@@ -183,7 +183,7 @@
       <item row="4" column="1">
        <widget class="QLineEdit" name="lineEdit_epsgCode"/>
       </item>
-      <item row="5" column="0" colspan="2">
+      <item row="6" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_append_existing">
         <property name="text">
          <string>append to existing datastream</string>
@@ -197,14 +197,14 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QCheckBox" name="checkBox_linkWithExistingView">
         <property name="text">
-         <string>link with existing view</string>
+         <string>use existing nodes</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="5" column="0" colspan="2">
        <widget class="QTreeWidget" name="viewTree">
         <property name="headerHidden">
          <bool>false</bool>
