@@ -106,24 +106,23 @@ void Import::reloadFile()
 
 	/*if (!this->WFSServer.empty())
 	{
-		driverType = WFS;
 		// password
 		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
 		QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
 
 		// create server url with login
-		this->server_full_name = "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
+		std::string server_full_name = "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
 
 		OGRDataSource *poDS = OGRSFDriverRegistrar::Open(server_full_name.c_str(), FALSE);
 
 		if (!poDS)
 			return;
 
-		OGRLayer* poLayer = this->LoadWFSLayer(poDS);
+		OGRLayer* poLayer = this->LoadWFSLayer(poDS, server_full_name);
 		if (!poLayer)
 			return;
 
-		fileok = true;
+		driverType = WFS;
 
 		this->vectorDataInit(poLayer);
 		OGRDataSource::DestroyDataSource(poDS);
@@ -355,7 +354,7 @@ bool Import::moduleParametersChanged()
 	return changed;
 }
 
-OGRLayer *Import::LoadWFSLayer(OGRDataSource *poDS)
+OGRLayer *Import::LoadWFSLayer(OGRDataSource *poDS, const std::string& server_full_name)
 {
 	OGRLayer            *poLayer;
 	//OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();

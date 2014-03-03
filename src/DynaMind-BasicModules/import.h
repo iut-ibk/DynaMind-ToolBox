@@ -71,12 +71,10 @@ private:
 	std::string WFSPassword_old;
 
 	// internal settings
-	double devider;
+	double	devider;
 	double	tol;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
-
-	std::string server_full_name;
 
 	enum DRIVERTYPE {
 		DataError,
@@ -125,7 +123,7 @@ private:
 
 	bool moduleParametersChanged();
 
-	OGRLayer* LoadWFSLayer(OGRDataSource *poDS);
+	OGRLayer* LoadWFSLayer(OGRDataSource *poDS, const std::string& server_full_name);
 
 	// geo helpers
 	void initPointList(DM::System * sys);
