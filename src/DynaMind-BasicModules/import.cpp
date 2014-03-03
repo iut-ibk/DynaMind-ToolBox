@@ -397,7 +397,7 @@ void Import::run()
 	else
 	{
 		if (isvectordata)	loadVectorData();
-		else				importRasterData();
+		else				loadRasterData();
 	}
 }
 
@@ -598,7 +598,7 @@ void Import::loadPolygon(System *sys, OGRPolygon *polygon, OGRCoordinateTransfor
 	}
 }
 
-bool Import::importRasterData()
+bool Import::loadRasterData()
 {
 	GDALDataset  *poDataset;
 	GDALRasterBand  *poBand;

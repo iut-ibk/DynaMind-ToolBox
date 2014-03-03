@@ -62,6 +62,7 @@ public:
 	double	offsetY;
 
 private:
+	// internal states
 	bool	fileok;
 	bool	isvectordata;
 	double	tol;
@@ -78,22 +79,12 @@ private:
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
 
-	void initPointList(DM::System * sys);
-	QString createHash(double x, double y);
-	bool importRasterData();
-	bool transform(double *x, double *y, OGRCoordinateTransformation *poCT);
-	void reset();
-	bool moduleParametersChanged();
 	std::string server_full_name;
-
-	OGRLayer* LoadWFSLayer(OGRDataSource *poDS);
 
 	enum DRIVERTYPE {
 		ShapeFile,
 		WFS
-	};
-
-	int driverType;
+	}driverType;
 
 public:
 	// public for ui
@@ -109,6 +100,8 @@ private:
 	void adoptViewConfig(StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
 
 	void loadVectorData();
+
+	bool loadRasterData();
 
 	// OGR-geom. loading methods
 	void loadLayer(OGRLayer* layer, System* sys);
@@ -131,6 +124,17 @@ private:
 
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
 
+	bool moduleParametersChanged();
+
+	OGRLayer* LoadWFSLayer(OGRDataSource *poDS);
+
+	// geo helpers
+	void initPointList(DM::System * sys);
+
+	QString createHash(double x, double y);
+
+	bool transform(double *x, double *y, OGRCoordinateTransformation *poCT);
+
 public:
 	// parameter map: layername[.attribute], new-view-name
 	StringMap viewConfig;
@@ -141,6 +145,7 @@ public:
 public:
 	void run();
 	void init();
+	void reset();
 	virtual bool  createInputDialog();
 	string getHelpUrl();
 	Import();
