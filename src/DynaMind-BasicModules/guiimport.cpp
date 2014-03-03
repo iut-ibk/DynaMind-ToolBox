@@ -41,7 +41,7 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(this->m->WFSUsername));
 	this->ui->lineEdit_wfs_password->setText(QString::fromStdString(this->m->WFSPassword));
 	this->ui->lineEdit_wfs_dataset->setText(QString::fromStdString(this->m->WFSDataName));
-	this->ui->lineEdit_epsgCode->setText(QString::number(this->m->epsgcode));
+	this->ui->epsgCode->setValue(this->m->epsgcode);
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
 	this->ui->checkBox_linkWithExistingView->setChecked(this->m->linkWithExistingView);
 
@@ -210,7 +210,7 @@ void GUIImport::accept()
 	m->WFSDataName = this->ui->lineEdit_wfs_dataset->text().toStdString();
 	m->flip_wfs = this->ui->checkBox_flip->isChecked();
 	m->linkWithExistingView = this->ui->checkBox_linkWithExistingView->isChecked();
-	m->epsgcode = this->ui->lineEdit_epsgCode->text().toInt();
+	m->epsgcode = this->ui->epsgCode->value();
 
 	m->offsetX= this->ui->lineEdit_offx->text().toDouble();
 	m->offsetY= this->ui->lineEdit_offy->text().toDouble();

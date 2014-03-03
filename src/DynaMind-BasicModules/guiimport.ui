@@ -180,7 +180,17 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_epsgCode"/>
+         <widget class="QSpinBox" name="epsgCode">
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
