@@ -37,6 +37,8 @@ DM_DECLARE_NODE_NAME(Import, Modules)
 #define OUTPORT_NAME "data"
 #define RASTERVIEWNAME "RasterData"
 
+#define UNKNOWN_TRAFO_STRING "<unknown>"
+
 Import::Import()
 {
 	driverType = DataError;
@@ -141,11 +143,24 @@ void Import::reloadFile()
 
 			StringMap newViewConfig;
 			std::map<std::string, int> newViewConfigTypes;
+			StringMap newEPSGCodes;
 
-			if (!ExtractLayers(poDS, newViewConfig, newViewConfigTypes))
+			if (!ExtractLayers(poDS, newViewConfig, newViewConfigTypes, newEPSGCodes, this->epsgcode))
 				driverType = DataError;
 
 			adoptViewConfig(newViewConfig, newViewConfigTypes);
+
+			// transfer any previously made epsg setting
+			for (StringMap::iterator it = newEPSGCodes.begin(); it != newEPSGCodes.end(); ++it)
+			{
+				if (it->second == UNKNOWN_TRAFO_STRING)
+				{
+					std::string value;
+					if (map_contains(&viewEPSGConfig, it->first, value) && value != UNKNOWN_TRAFO_STRING)
+						newEPSGCodes[it->first] = value;
+				}
+			}
+			viewEPSGConfig = newEPSGCodes;
 
 			initViews();
 			OGRDataSource::DestroyDataSource(poDS);
@@ -174,8 +189,26 @@ void Import::reloadFile()
 	}
 }
 
+OGRCoordinateTransformation* getTrafo(OGRLayer* layer, int targetEPSG, int sourceEPSG = 0)
+{
+	OGRSpatialReference* oSourceSRS;
+	OGRSpatialReference* oTargetSRS;
+	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
+	oSourceSRS = layer->GetSpatialRef();
+	if (sourceEPSG != 0)
+		oSourceSRS->importFromEPSG(targetEPSG);
 
-bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std::map<std::string, int>& viewConfigTypes)
+	oTargetSRS = new OGRSpatialReference();
+	oTargetSRS->importFromEPSG(targetEPSG);
+	// Input spatial reference system objects are assigned by copy
+	// (calling clone() method) and no ownership transfer occurs.
+	return OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
+}
+
+
+bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, 
+	std::map<std::string, int>& viewConfigTypes, StringMap& viewEPSGConfig,
+	int targetEPSG)
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
@@ -203,8 +236,14 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std
 		}
 		DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
 
-		// add attributes
+		// add epsg entry
 
+		if (OGRCoordinateTransformation* trafo = getTrafo(layer, targetEPSG))
+			delete trafo;
+		else
+			viewEPSGConfig[viewName] = UNKNOWN_TRAFO_STRING;
+
+		// add attributes
 		OGRFeatureDefn *ogrFieldDefn = layer->GetLayerDefn();
 		for (int iField = 0; iField < ogrFieldDefn->GetFieldCount(); iField++)
 		{
@@ -439,16 +478,16 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 	if (viewName.empty())
 		return;
 
-	OGRSpatialReference* oSourceSRS;
-	OGRSpatialReference* oTargetSRS;
-	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
-	oSourceSRS = layer->GetSpatialRef();
-	oTargetSRS = new OGRSpatialReference();
-	oTargetSRS->importFromEPSG(this->epsgcode);
-	// Input spatial reference system objects are assigned by copy
-	// (calling clone() method) and no ownership transfer occurs.
-	OGRCoordinateTransformation* poCT = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
-
+	int sourceEPSG = 0;
+	std::string value;
+	if (map_contains(&viewEPSGConfig, viewName, value))
+	{
+		sourceEPSG = atoi(value.c_str());
+		DM::Logger(DM::Debug) << "Overriding source trafo to " << sourceEPSG;
+	}
+		
+	OGRCoordinateTransformation* poCT = getTrafo(layer, this->epsgcode, sourceEPSG);
+	
 	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
 

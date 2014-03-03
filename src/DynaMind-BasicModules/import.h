@@ -90,7 +90,9 @@ public:
 	void reloadFile();
 private:
 	// main methods
-	static bool ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std::map<std::string, int>& viewConfigTypes);
+	static bool ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, 
+		std::map<std::string, int>& viewConfigTypes, StringMap& viewEPSGConfig,
+		int targetEPSG);
 
 	static bool ExtractLayers(GDALDataset* dataSource, StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
 
@@ -139,6 +141,8 @@ public:
 	// layer[.attribute], type; integer to combine attributes and views
 	std::map<std::string, int> viewConfigTypes;
 
+	// layername, epsg (as string, for param.)
+	StringMap viewEPSGConfig;
 public:
 	void run();
 	void init();
