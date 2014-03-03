@@ -39,9 +39,8 @@ DM_DECLARE_NODE_NAME(Import, Modules)
 
 Import::Import()
 {
-	driverType = ShapeFile;
+	driverType = DataError;
 
-	isvectordata = false;
 	append = false;
 
 	this->FileName = "";
@@ -75,8 +74,6 @@ Import::Import()
 
 	this->flip_wfs = false;
 	this->addParameter("flip_wfs", DM::BOOL, &this->flip_wfs);
-
-	fileok = false;
 }
 
 Import::~Import()
@@ -101,15 +98,15 @@ void Import::init()
 
 void Import::reloadFile()
 {
-	fileok = false;
+	driverType = DataError;
 
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 
-	if (!this->WFSServer.empty())
+	/*if (!this->WFSServer.empty())
 	{
-		/*driverType = WFS;
+		driverType = WFS;
 		// password
 		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
 		QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
@@ -129,53 +126,51 @@ void Import::reloadFile()
 		fileok = true;
 
 		this->vectorDataInit(poLayer);
-		OGRDataSource::DestroyDataSource(poDS);*/
+		OGRDataSource::DestroyDataSource(poDS);
 	}
-	else
+	else*/
 	{
-		driverType = ShapeFile;
-
 		if (FileName.empty())
 		{
 			DM::Logger(DM::Error) << "No file specified " << FileName;
 			return;
 		}
 
-		OGRDataSource* poDS = OGRSFDriverRegistrar::Open(FileName.c_str(), FALSE);
+		if (OGRDataSource* poDS = OGRSFDriverRegistrar::Open(FileName.c_str(), FALSE))
+		{
+			driverType = ShapeFile;
 
-		if (poDS == NULL)
+			StringMap newViewConfig;
+			std::map<std::string, int> newViewConfigTypes;
+
+			if (!ExtractLayers(poDS, newViewConfig, newViewConfigTypes))
+				driverType = DataError;
+
+			adoptViewConfig(newViewConfig, newViewConfigTypes);
+
+			initViews();
+			OGRDataSource::DestroyDataSource(poDS);
+		}
+		else
 		{
 			GDALDataset  *poDataset = (GDALDataset*)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
 			if (poDataset == NULL)
 				DM::Logger(DM::Error) << "Open failed.";
 			else
 			{
-				isvectordata = false;
+				driverType = RasterData;
 				append = false;
 
 				StringMap newViewConfig;
 				std::map<std::string, int> newViewConfigTypes;
 
-				fileok = ExtractLayers(poDataset, newViewConfig, newViewConfigTypes);
+				if(!ExtractLayers(poDataset, newViewConfig, newViewConfigTypes))
+					driverType = DataError;
 
 				adoptViewConfig(newViewConfig, newViewConfigTypes);
 
 				initViews();
 			}
-		}
-		else
-		{
-			isvectordata = true;
-
-			StringMap newViewConfig;
-			std::map<std::string, int> newViewConfigTypes;
-
-			fileok = ExtractLayers(poDS, newViewConfig, newViewConfigTypes);
-
-			adoptViewConfig(newViewConfig, newViewConfigTypes);
-
-			initViews();
-			OGRDataSource::DestroyDataSource(poDS);
 		}
 	}
 }
@@ -383,12 +378,18 @@ void Import::run()
 {
 	nodeList.clear();
 
-	if (!fileok)
-		DM::Logger(DM::Error) << "Cannot read file";
-	else
+	switch (driverType)
 	{
-		if (isvectordata)	loadVectorData();
-		else				loadRasterData();
+	case DataError:
+		DM::Logger(DM::Error) << "Cannot read file/data";
+		break;
+	case ShapeFile:
+	case WFS:
+		loadVectorData();
+		break;
+	case RasterData:
+		loadRasterData();
+		break;
 	}
 }
 

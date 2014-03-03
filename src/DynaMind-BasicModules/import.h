@@ -61,12 +61,8 @@ public:
 	double	offsetY;
 
 private:
-	// internal states
-	bool	fileok;
-	bool	isvectordata;
-	double	tol;
-	bool	append_old;
-
+	// backup states
+	bool		append_old;
 	std::string FileName_old;
 	std::string ViewName_old;
 	std::string WFSDataName_old;
@@ -74,15 +70,19 @@ private:
 	std::string WFSUsername_old;
 	std::string WFSPassword_old;
 
+	// internal settings
 	double devider;
+	double	tol;
 
 	QHash<QString, std::vector<DM::Node* > > nodeList;
 
 	std::string server_full_name;
 
 	enum DRIVERTYPE {
+		DataError,
 		ShapeFile,
-		WFS
+		WFS,
+		RasterData,
 	}driverType;
 
 public:
