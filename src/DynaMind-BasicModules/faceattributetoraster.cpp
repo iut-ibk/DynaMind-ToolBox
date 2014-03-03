@@ -35,7 +35,7 @@ void FaceAttributeToRaster::init()
 	}
 
 	this->inputFaceView = DM::View(this->faceName, DM::FACE, DM::READ);
-	this->inputFaceView.addAttribute(this->attributeName);
+	this->inputFaceView.addAttribute(this->attributeName, DM::Attribute::DOUBLE, DM::READ);
 	this->rasterDataView = DM::View(this->rasterDataName, DM::RASTERDATA, DM::MODIFY);
 
 	std::vector<DM::View> datastream;
@@ -63,7 +63,7 @@ void FaceAttributeToRaster::run()
 	qreal * y1 = new double;
 	qreal * y2 = new double;
 
-	mforeach (DM::Component * cmp, sys->getAllComponentsInView(inputFaceView)) {
+	foreach (DM::Component * cmp, sys->getAllComponentsInView(inputFaceView)) {
 		DM::Face * f = (DM::Face*)cmp;
 
 		QPolygonF poly = TBVectorData::FaceAsQPolgonF(sys, f);
