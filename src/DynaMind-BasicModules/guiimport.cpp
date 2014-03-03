@@ -1,5 +1,5 @@
-#include "GUIImport.h"
-#include "ui_GUIImport.h"
+#include <guiimport.h>
+#include <ui_guiimport.h>
 #include "import.h"
 #include "guipickwfsdataset.h"
 #include <QFileDialog>
@@ -229,7 +229,7 @@ void GUIImport::updateViewConfig()
 			// view
 			QList<QTreeWidgetItem*> views = ui->viewTree->findItems(
 				QString::fromStdString(it->first),
-				Qt::MatchFlag::MatchExactly, COL_ORGNAME);
+				Qt::MatchExactly, COL_ORGNAME);
 
 			if (views.size() != 1)
 			{

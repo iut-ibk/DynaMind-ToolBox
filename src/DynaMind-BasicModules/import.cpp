@@ -198,7 +198,7 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, std
 		case wkbLineString:
 		case wkbMultiLineString:	viewConfigTypes[viewName] = DM::EDGE;	break;
 		default:
-			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << ogrType << " )";
+			DM::Logger(DM::Debug) << "Geometry type not implemented: " << strType << " (" << (int)ogrType << " )";
 			return false;
 		}
 		DM::Logger(DM::Debug) << "Found: Geometry type" << strType;
