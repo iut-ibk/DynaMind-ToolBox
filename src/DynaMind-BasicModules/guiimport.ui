@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>463</width>
-    <height>467</height>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,17 +99,27 @@
           <string>WFS Server</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Username</string>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEdit_wfs_password">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
             </property>
            </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEdit_wfs_username"/>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_5">
             <property name="text">
              <string>Password</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Username</string>
             </property>
            </widget>
           </item>
@@ -130,16 +140,6 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="lineEdit_wfs_server"/>
           </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="lineEdit_wfs_password">
-            <property name="echoMode">
-             <enum>QLineEdit::Password</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit_wfs_username"/>
-          </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
@@ -150,7 +150,7 @@
           <item row="3" column="1">
            <widget class="QLineEdit" name="lineEdit_wfs_dataset"/>
           </item>
-          <item row="4" column="0">
+          <item row="3" column="2">
            <widget class="QCheckBox" name="checkBox_flip">
             <property name="text">
              <string>Flip</string>
@@ -170,31 +170,21 @@
       <string>DynaMind</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>EPSG Code</string>
-        </property>
-       </widget>
+      <item row="4" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>EPSG Code</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_epsgCode"/>
+        </item>
+       </layout>
       </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEdit_epsgCode"/>
-      </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_append_existing">
-        <property name="text">
-         <string>append to existing datastream</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QCheckBox" name="checkBox_linkWithExistingView">
-        <property name="text">
-         <string>use existing nodes</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
+      <item row="8" column="0" colspan="2">
        <widget class="QTreeWidget" name="viewTree">
         <property name="headerHidden">
          <bool>false</bool>
@@ -231,6 +221,24 @@
          </property>
         </column>
        </widget>
+      </item>
+      <item row="11" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="checkBox_linkWithExistingView">
+          <property name="text">
+           <string>use existing nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_append_existing">
+          <property name="text">
+           <string>append to existing datastream</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
