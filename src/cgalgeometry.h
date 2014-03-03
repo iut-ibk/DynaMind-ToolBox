@@ -54,7 +54,7 @@ public:
 		 */
 	static double CalculateMinBoundingBox(std::vector<DM::Node*> nodes, std::vector<DM::Node> &boundingBox, std::vector<double> & size);
 
-	static std::vector<DM::Node> OffsetPolygon(std::vector<DM::Node*> points, double offset);
+	static std::vector<std::vector<Node> > OffsetPolygon(std::vector<DM::Node*> points, double offset);
 
 	/** @brief Returns node list that contains the triangulation of the face f.
 		 * Every trinagle is defined by 3 nodes.
