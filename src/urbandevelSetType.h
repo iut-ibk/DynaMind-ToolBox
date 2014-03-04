@@ -13,15 +13,12 @@ public:
     void run();
     void init();
 private:
-    bool setdev();
-    bool setdec();
-
-    int yearcycle;
+    int numbernearest;
     DM::View city;
     DM::View sb;
-    DM::View cb;
-    DM::View parcel;
-    DM::View building;
+    DM::View sb_cent;
+    DM::View bd;
+    DM::View bd_cent;
 };
 
 #endif // urbandevelSetType_H
