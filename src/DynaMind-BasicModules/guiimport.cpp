@@ -11,8 +11,9 @@
 #define COL_ARROW		2
 #define COL_NEWNAME		3
 #define COL_TYPE		4
+#define COL_EPSG		5
 
-
+#define DEFAULT_TRAFO_STRING "<default>"
 
 const char* GetTypeString(DM::Components t)
 {
@@ -80,6 +81,12 @@ void GUIImport::updateTree()
 		viewItem->setText(COL_NEWNAME, QString::fromStdString(state == Qt::Checked ? viewIter->second : viewIter->first));
 		viewItem->setText(COL_TYPE, GetTypeString((DM::Components)this->m->viewConfigTypes[viewIter->first]));
 
+		std::string epsgText;
+		if (map_contains(&m->viewEPSGConfig, viewIter->first, epsgText) && atoi(epsgText.c_str()) == 0)
+			viewItem->setText(COL_EPSG, QString::fromStdString(epsgText));
+		else
+			viewItem->setText(COL_EPSG, DEFAULT_TRAFO_STRING);
+
 		// add attributes
 		for (StringMap::iterator attrIter = this->m->viewConfig.begin();
 			attrIter != this->m->viewConfig.end(); ++attrIter)
@@ -141,6 +148,7 @@ void GUIImport::updateTree()
 	this->ui->viewTree->resizeColumnToContents(COL_ARROW);
 	this->ui->viewTree->resizeColumnToContents(COL_NEWNAME);
 	this->ui->viewTree->resizeColumnToContents(COL_TYPE);
+	this->ui->viewTree->resizeColumnToContents(COL_EPSG);
 }
 
 void GUIImport::updateTreeChecks(QObject* obj)
@@ -189,10 +197,42 @@ void GUIImport::updateTreeChecks(QObject* obj)
 
 void GUIImport::on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column)
 {
-	bool ok;
-	QString newName = QInputDialog::getText(this, "Renaming", "rename to", QLineEdit::Normal, item->text(3), &ok);
-	if (ok && !newName.isEmpty())
-		item->setText(COL_NEWNAME, newName);
+	if (column == COL_NEWNAME)
+	{
+		bool ok;
+		QString newName = QInputDialog::getText(this, "Renaming", "rename to", QLineEdit::Normal, item->text(3), &ok);
+		if (ok && !newName.isEmpty())
+			item->setText(COL_NEWNAME, newName);
+	}
+	else if (column == COL_EPSG)
+	{
+		QList<QTreeWidgetItem*> selection = ui->viewTree->selectedItems();
+
+		if (selection.size() == 0)
+			DM::Logger(DM::Error) << "please select a view";
+		else if (selection.size() > 1)
+			DM::Logger(DM::Error) << "multiselection forbidden";
+		else if (selection[0]->parent())
+			DM::Logger(DM::Error) << "for overriding epsg code, please select a layer";
+		else
+		{
+			bool ok;
+			int epsgCode = QInputDialog::getInteger(this, "Override source transformation",
+				"specify source EPSG code (0 = default)",
+				selection[0]->text(COL_EPSG).toInt(), 0, INT_MAX, 1, &ok);
+
+			if (ok)
+			{
+				QString strEpsgCode;
+				if (epsgCode == 0)
+					strEpsgCode = DEFAULT_TRAFO_STRING;
+				else
+					strEpsgCode = QString::number(epsgCode);
+
+				selection[0]->setText(COL_EPSG, strEpsgCode);
+			}
+		}
+	}
 }
 
 GUIImport::~GUIImport()
@@ -239,7 +279,7 @@ void GUIImport::updateViewConfig()
 
 			QCheckBox* checkBox = (QCheckBox*)ui->viewTree->itemWidget(views.first(), COL_CHECKBOX);
 
-			// note: if checked or partially checked -> take it
+			// note: if checked or partially checked -> take as if checked
 			it->second = (checkBox->checkState() != Qt::Unchecked) ?
 				views.first()->text(COL_NEWNAME).toStdString() : "";
 		}
@@ -279,6 +319,12 @@ void GUIImport::updateViewConfig()
 			it->second = (checkBox->checkState() != Qt::Unchecked) ?
 				attribute->text(COL_NEWNAME).toStdString() : "";
 		}
+	}
+	// epsg overwritings
+	for (int i = 0; i < ui->viewTree->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* it = ui->viewTree->topLevelItem(i);
+		m->viewEPSGConfig[it->text(COL_ORGNAME).toStdString()] = it->text(COL_EPSG).toStdString();
 	}
 }
 

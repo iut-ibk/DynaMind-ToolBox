@@ -64,6 +64,8 @@ Import::Import()
 
 	this->addParameter("viewConfig", DM::STRING_MAP, &this->viewConfig);
 
+	this->addParameter("viewEPSGConfig", DM::STRING_MAP, &this->viewEPSGConfig);
+
 	//WFS Input
 	this->WFSDataName = "";
 	this->addParameter("WFSDataName", DM::STRING, &this->WFSDataName);

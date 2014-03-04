@@ -194,44 +194,6 @@
         </item>
        </layout>
       </item>
-      <item row="8" column="0" colspan="2">
-       <widget class="QTreeWidget" name="viewTree">
-        <property name="headerHidden">
-         <bool>false</bool>
-        </property>
-        <property name="columnCount">
-         <number>5</number>
-        </property>
-        <attribute name="headerVisible">
-         <bool>true</bool>
-        </attribute>
-        <column>
-         <property name="text">
-          <string notr="true">active</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">original name</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">new name</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string notr="true">type</string>
-         </property>
-        </column>
-       </widget>
-      </item>
       <item row="11" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
@@ -249,6 +211,49 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="8" column="0" colspan="2">
+       <widget class="QTreeWidget" name="viewTree">
+        <property name="headerHidden">
+         <bool>false</bool>
+        </property>
+        <property name="columnCount">
+         <number>6</number>
+        </property>
+        <attribute name="headerVisible">
+         <bool>true</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>active</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>-&gt;</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>new name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>type</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>source epsg</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>

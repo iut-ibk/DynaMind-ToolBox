@@ -25,6 +25,7 @@ public:
 
 	void updateTree();
 	void updateViewConfig();
+
 private:
 	Ui::GUIImport *ui;
 	Import * m;
