@@ -5,7 +5,6 @@ DM_DECLARE_NODE_NAME(urbandevelTrigger, DynAlp)
 
 urbandevelTrigger::urbandevelTrigger()
 {
-    this->yearcycle = 0;
 }
 
 urbandevelTrigger::~urbandevelTrigger()
@@ -14,20 +13,19 @@ urbandevelTrigger::~urbandevelTrigger()
 
 void urbandevelTrigger::init()
 {
-    city = DM::View("CITY", DM::NODE, DM::MODIFY);
+    city = DM::View("CITY", DM::NODE, DM::READ);
+    sb = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
+    cb = DM::View("CITYBLOCK", DM::FACE, DM::MODIFY);
+    bd = DM::View("BUILDING", DM::FACE, DM::MODIFY);
 
-    city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::READ); //workplaces
-    city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
-    city.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
     views.push_back(city);
+    views.push_back(sb);
+    views.push_back(cb);
+    views.push_back(bd);
     this->addData("data", views);
 }
 
@@ -45,25 +43,40 @@ void urbandevelTrigger::run()
 
     DM::Component * currentcity = cities[0];
 
-    std::vector<double> popdiffperyear = currentcity->getAttribute("popdiffperyear")->getDoubleVector();
-    int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
-    int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
-    int currentyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
-    bool cyclebool = static_cast<bool>(currentcity->getAttribute("cycleBOOL")->getDouble());
+    int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
 
-    if ( currentyear <= startyear ) { currentyear = startyear + 1; }
-    else if ( currentyear < endyear ){ currentyear++; }
-    else if ( currentyear = endyear ){ cyclebool = 0; }
+    if (cyclepopdiff > 0)
+    {
+        //growth
+        bool ret = setdev();
+    }
+    else if (cyclepopdiff < 0)
+    {
+        //decline
+    }
 
-    int cycle = currentyear - startyear;
-    int cyclepopdiff = popdiffperyear[cycle];
+    //DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
 
-    DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
+    //DM::Attribute* set = currentcity->getAttribute("currentyear");
+    //set->setDouble(currentyear);
+    //set = currentcity->getAttribute("cycleBOOL");
+    //set->setDouble(cyclebool);
+}
 
-    DM::Attribute* set = currentcity->getAttribute("currentyear");
-    set->setDouble(currentyear);
-    set = currentcity->getAttribute("cycleBOOL");
-    set->setDouble(cyclebool);
-    set = currentcity->getAttribute("cyclepopdiff");
-    set->setDouble(cyclepopdiff);
+bool urbandevelTrigger::setdev()
+{
+
+    //check free parcels
+    //check free cb
+    //check free sb
+    //foreach areas
+}
+
+bool urbandevelTrigger::setdec()
+{
+    //check occ sb
+    //check occ cb
+    //check occ parcels
+    //remove population
+    // ??? remove building ???
 }
