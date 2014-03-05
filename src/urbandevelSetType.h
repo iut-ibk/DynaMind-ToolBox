@@ -13,12 +13,9 @@ public:
     void run();
     void init();
 private:
-    int numbernearest;
     DM::View city;
     DM::View sb;
     DM::View sb_cent;
-    DM::View bd;
-    DM::View bd_cent;
 };
 
 #endif // urbandevelSetType_H

@@ -10,9 +10,6 @@ DM_DECLARE_NODE_NAME(urbandevelSetType, DynAlp)
 
 urbandevelSetType::urbandevelSetType()
 {
-    numbernearest = 10;
-
-    this->addParameter("number of buildings", DM::DOUBLE, &this->numbernearest);
 }
 
 urbandevelSetType::~urbandevelSetType()
@@ -23,20 +20,15 @@ void urbandevelSetType::init()
 {
     city = DM::View("CITY", DM::NODE, DM::READ);
     sb = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
-    bd = DM::View("BUILDING", DM::FACE, DM::READ);
     sb_cent = DM::View("SUPERBLOCK_CENTROIDS", DM::NODE, DM::READ);
-    bd_cent = DM::View("BUILDING_CENTROIDS", DM::NODE, DM::READ);
 
-    sb.addAttribute("height", DM::Attribute::DOUBLE, DM::WRITE);
-    bd.addAttribute("height", DM::Attribute::DOUBLE, DM::READ);
+    sb.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
     views.push_back(city);
     views.push_back(sb);
-    views.push_back(bd);
     views.push_back(sb_cent);
-    views.push_back(bd_cent);
     this->addData("data", views);
 }
 
@@ -47,63 +39,69 @@ void urbandevelSetType::run()
 
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
-    std::vector<DM::Component *> buildings = sys->getAllComponentsInView(bd);
-    std::vector<DM::Component *> buildings_centroids = sys->getAllComponentsInView(bd_cent);
-
-    int max = numbernearest;
-    if ( buildings.size() < numbernearest ) { max = buildings.size(); }
 
     std::vector<int> distance;
-    std::vector<int> height;
-    std::map<int, int> distheight;
+    std::vector<std::string> type;
+    std::map<int, std::string> disttype;
 
-    for (int i = 0; i < superblocks.size(); i++)
+    for (int active = 0; active < superblocks.size(); active++)
     {
-        std::vector<DM::Component*> sblink = superblocks[i]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
 
-        if( sblink.size() < 1 )
+        std::string actualtype = superblocks[active]->getAttribute("type")->getString();
+
+        if ( actualtype != "")
+            continue;
+
+        std::vector<DM::Component*> sblinkactive = superblocks[active]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
+
+        if( sblinkactive.size() < 1 )
         {
             DM::Logger(DM::Error) << "no area - centroid link";
             return;
         }
 
-        DM::Node * sbcentroid = dynamic_cast<DM::Node*>(sblink[0]);
+        DM::Node * sbcentroidactive = dynamic_cast<DM::Node*>(sblinkactive[0]);
 
-        for (int j = 0; j < buildings.size(); j++)
+        for (int compare = 0; compare < superblocks.size(); compare++)
         {
-            std::vector<DM::Component*> bdlink = buildings[j]->getAttribute("BUILDING_CENTROIDS")->getLinkedComponents();
+            std::string comparetype = superblocks[compare]->getAttribute("type")->getString();
 
-            if( bdlink.size() < 1 )
+            if ( active == compare || comparetype.empty() )
+                continue;
+
+            std::vector<DM::Component*> sblinkcompare = superblocks[compare]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
+
+            if( sblinkcompare.size() < 1 )
             {
                 DM::Logger(DM::Error) << "no area - centroid link";
                 return;
             }
 
-            DM::Node * bdcentroid = dynamic_cast<DM::Node*>(bdlink[0]);
+            DM::Node * sbcentroidcompare = dynamic_cast<DM::Node*>(sblinkcompare[0]);
 
-            distance.push_back(static_cast<int>( TBVectorData::calculateDistance((DM::Node*)sbcentroid,(DM::Node*)bdcentroid) ));
-            height.push_back(static_cast<int>( buildings[j]->getAttribute("height")->getDouble())) ;
-            DM::Logger(DM::Warning) << "distance " << distance[j] << "height " << height[j];
+            distance.push_back(static_cast<int>( TBVectorData::calculateDistance((DM::Node*)sbcentroidactive,(DM::Node*)sbcentroidcompare) ));
+            type.push_back(static_cast<string>( superblocks[compare]->getAttribute("type")->getString()));
+            DM::Logger(DM::Warning) << "distance " << distance[compare] << "type " << type[compare];
         }
 
-        if (distance.size() != height.size() )
+        if (distance.size() != type.size() )
         {
             DM::Logger(DM::Error) << "distance and height vector lengths differ";
             return;
         }
         for (size_t k = 0; k < distance.size(); ++k)
-            distheight[distance[k]] = height[k];
+            disttype[distance[k]] = type[k];
 
         int avgheight = 0;
 
-        std::map<int,int>::iterator element = distheight.begin();
+        std::map<int,std::string>::iterator element = disttype.begin();
 
-        for (int k = 0; k < max; k++)
+        for (int k = 0; k < distance.size(); k++)
         {
             std::advance(element,k);
-            avgheight = avgheight + element->second;
+            avgheight = avgheight; //+ element->second;
         }
 
-        superblocks[i]->changeAttribute("height", avgheight);
+        superblocks[active]->changeAttribute("type", avgheight);
     }
 }
