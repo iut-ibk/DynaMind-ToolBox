@@ -10,8 +10,7 @@ DM_DECLARE_NODE_NAME(urbandevelSetHeight, DynAlp)
 
 urbandevelSetHeight::urbandevelSetHeight()
 {
-    numbernearest = 10;
-
+    numbernearest = 3;
     this->addParameter("number of buildings", DM::DOUBLE, &this->numbernearest);
 }
 
@@ -50,8 +49,12 @@ void urbandevelSetHeight::run()
     std::vector<DM::Component *> buildings = sys->getAllComponentsInView(bd);
     std::vector<DM::Component *> buildings_centroids = sys->getAllComponentsInView(bd_cent);
 
-    int max = numbernearest;
-    if ( buildings.size() < numbernearest ) { max = buildings.size(); }
+    int max = static_cast<int>(numbernearest);
+
+    if ( buildings.size() < numbernearest )
+        max = buildings.size();
+
+    DM::Logger(DM::Warning) << "max " << max;
 
     std::vector<int> distance;
     std::vector<int> height;
@@ -83,7 +86,7 @@ void urbandevelSetHeight::run()
 
             distance.push_back(static_cast<int>( TBVectorData::calculateDistance((DM::Node*)sbcentroid,(DM::Node*)bdcentroid) ));
             height.push_back(static_cast<int>( buildings[j]->getAttribute("height")->getDouble())) ;
-            DM::Logger(DM::Warning) << "distance " << distance[j] << "height " << height[j];
+
         }
 
         if (distance.size() != height.size() )
@@ -91,19 +94,26 @@ void urbandevelSetHeight::run()
             DM::Logger(DM::Error) << "distance and height vector lengths differ";
             return;
         }
-        for (size_t k = 0; k < distance.size(); ++k)
+        for (int k = 0; k < distance.size(); k++)
+        {
             distheight[distance[k]] = height[k];
 
+        }
         int avgheight = 0;
 
         std::map<int,int>::iterator element = distheight.begin();
+
+        DM::Logger(DM::Warning) << "max " << max;
 
         for (int k = 0; k < max; k++)
         {
             std::advance(element,k);
             avgheight = avgheight + element->second;
+            DM::Logger(DM::Warning) << "heightinc " << avgheight;
         }
 
+        avgheight = avgheight/max;
+        DM::Logger(DM::Warning) << "avgheight " << avgheight;
         superblocks[i]->changeAttribute("height", avgheight);
     }
 }

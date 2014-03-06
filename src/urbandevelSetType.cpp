@@ -42,7 +42,7 @@ void urbandevelSetType::run()
 
     std::vector<int> distance;
     std::vector<std::string> type;
-    std::map<int, std::string> disttype;
+    std::map<std::string, double> disttype;
 
     for (int active = 0; active < superblocks.size(); active++)
     {
@@ -86,22 +86,30 @@ void urbandevelSetType::run()
 
         if (distance.size() != type.size() )
         {
-            DM::Logger(DM::Error) << "distance and height vector lengths differ";
+            DM::Logger(DM::Error) << "distance and type vector lengths differ, cannot really be true";
             return;
         }
-        for (size_t k = 0; k < distance.size(); ++k)
-            disttype[distance[k]] = type[k];
 
-        int avgheight = 0;
+        disttype.clear();
 
-        std::map<int,std::string>::iterator element = disttype.begin();
-
-        for (int k = 0; k < distance.size(); k++)
+        for (int i = 0; i < distance.size(); i++)
         {
-            std::advance(element,k);
-            avgheight = avgheight; //+ element->second;
+            if ( !disttype[type[i]])
+                disttype[type[i]] = 0;
+            else
+                disttype[type[i]] =+ 1/distance[i];
         }
 
-        superblocks[active]->changeAttribute("type", avgheight);
+        std::string settype = "";
+        double lastvalue = 0;
+
+        for(std::map<std::string, double>::iterator iterator = disttype.begin(); iterator != disttype.end(); iterator++)
+        {
+            if ( iterator->second > lastvalue)
+                settype = iterator->first;
+            lastvalue = iterator->second;
+        }
+        superblocks[active]->changeAttribute("type", settype);
     }
+
 }
