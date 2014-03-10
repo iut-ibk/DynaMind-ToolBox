@@ -54,19 +54,14 @@ void urbandevelTrigger::run()
     {
         //decline
     }
-
-    //DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
-
-    //DM::Attribute* set = currentcity->getAttribute("currentyear");
-    //set->setDouble(currentyear);
-    //set = currentcity->getAttribute("cycleBOOL");
-    //set->setDouble(cyclebool);
 }
 
 bool urbandevelTrigger::setdev()
 {
-
     //check free parcels
+
+
+
     //check free cb
     //check free sb
     //foreach areas
