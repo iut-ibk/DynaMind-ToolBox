@@ -90,6 +90,8 @@ bool ExtractNodesFromFaces::extractNodes(DM::Face *face, DM::System *sys, std::v
 
 	for(int index=0; index<holes.size(); index++)
 		extractNodes(holes[index],sys,nodesadded);
+
+	return true;
 }
 
 
