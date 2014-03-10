@@ -54,8 +54,6 @@ void urbandevelSetHeight::run()
     if ( buildings.size() < numbernearest )
         max = buildings.size();
 
-    DM::Logger(DM::Warning) << "max " << max;
-
     std::vector<int> distance;
     std::vector<int> height;
     std::map<int, int> distheight;
@@ -103,17 +101,16 @@ void urbandevelSetHeight::run()
 
         std::map<int,int>::iterator element = distheight.begin();
 
-        DM::Logger(DM::Warning) << "max " << max;
 
         for (int k = 0; k < max; k++)
         {
             std::advance(element,k);
             avgheight = avgheight + element->second;
-            DM::Logger(DM::Warning) << "heightinc " << avgheight;
+            DM::Logger(DM::Debug) << "heightinc " << avgheight;
         }
 
         avgheight = avgheight/max;
-        DM::Logger(DM::Warning) << "avgheight " << avgheight;
+        DM::Logger(DM::Debug) << "avgheight " << avgheight;
         superblocks[i]->changeAttribute("height", avgheight);
     }
 }

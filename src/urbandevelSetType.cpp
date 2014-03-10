@@ -10,6 +10,8 @@ DM_DECLARE_NODE_NAME(urbandevelSetType, DynAlp)
 
 urbandevelSetType::urbandevelSetType()
 {
+    numbernearest = 3;
+    this->addParameter("no superblocks considered", DM::DOUBLE, &this->numbernearest);
 }
 
 urbandevelSetType::~urbandevelSetType()
@@ -40,16 +42,13 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
-    std::vector<int> distance;
-    std::vector<std::string> type;
-    std::map<std::string, double> disttype;
-
     for (int active = 0; active < superblocks.size(); active++)
     {
+        std::map<double,std::string> disttype;
 
         std::string actualtype = superblocks[active]->getAttribute("type")->getString();
 
-        if ( actualtype != "")
+        if ( actualtype != "" )
             continue;
 
         std::vector<DM::Component*> sblinkactive = superblocks[active]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
@@ -79,36 +78,52 @@ void urbandevelSetType::run()
 
             DM::Node * sbcentroidcompare = dynamic_cast<DM::Node*>(sblinkcompare[0]);
 
-            distance.push_back(static_cast<int>( TBVectorData::calculateDistance((DM::Node*)sbcentroidactive,(DM::Node*)sbcentroidcompare) ));
-            type.push_back(static_cast<string>( superblocks[compare]->getAttribute("type")->getString()));
-            DM::Logger(DM::Warning) << "distance " << distance[compare] << "type " << type[compare];
+            double distance = TBVectorData::calculateDistance((DM::Node*)sbcentroidactive,(DM::Node*)sbcentroidcompare)/1000;
+            std::string type =static_cast<string>( superblocks[compare]->getAttribute("type")->getString() );
+
+            disttype[distance] = type;
         }
 
-        if (distance.size() != type.size() )
-        {
-            DM::Logger(DM::Error) << "distance and type vector lengths differ, cannot really be true";
-            return;
-        }
+        int max = numbernearest;
+        if (disttype.size() < numbernearest)
+            max = disttype.size();
 
-        disttype.clear();
-
-        for (int i = 0; i < distance.size(); i++)
-        {
-            if ( !disttype[type[i]])
-                disttype[type[i]] = 0;
-            else
-                disttype[type[i]] =+ 1/distance[i];
-        }
+        map<std::string, pair<double,int> > rnktype;
 
         std::string settype = "";
-        double lastvalue = 0;
+        double setdist = 0;
 
-        for(std::map<std::string, double>::iterator iterator = disttype.begin(); iterator != disttype.end(); iterator++)
+        for (map<double,std::string>::iterator it = disttype.begin(); it != disttype.end(); it++)
         {
-            if ( iterator->second > lastvalue)
-                settype = iterator->first;
-            lastvalue = iterator->second;
+            double distance = it->first;
+            std::string type = it->second;
+
+            map<std::string, pair<double,int> >::iterator rnkit = rnktype.find(type);
+
+            if ( rnkit == rnktype.end() )
+            {
+                rnktype[type].first = 1/distance;
+                rnktype[type].second = 1;
+            }
+            else
+            {
+                rnktype[type].first += 1/distance;
+                rnktype[type].second++;
+            }
+
+            if ( rnktype[type].first > setdist) {
+                setdist = rnktype[type].first;
+                settype = type;
+            }
+
+            if ( rnktype[type].second > max )
+            {
+                break;
+            }
+            DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
+
+        DM::Logger(DM::Debug) << "superblock-" << active << " type " << settype;
         superblocks[active]->changeAttribute("type", settype);
     }
 

@@ -13,6 +13,7 @@ public:
     void run();
     void init();
 private:
+    double numbernearest;
     DM::View city;
     DM::View sb;
     DM::View sb_cent;
