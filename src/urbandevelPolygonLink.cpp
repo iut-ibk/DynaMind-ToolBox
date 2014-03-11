@@ -22,6 +22,8 @@ void urbandevelPolygonLink::init() {
     blocks_view.addAttribute(elements_name, elements_name, DM::WRITE);
     elements_view.addAttribute(blocks_name, blocks_name, DM::WRITE);
 
+    blocks_view.addAttribute("empty", DM::Attribute::DOUBLE, DM::WRITE);
+
     std::vector<DM::View> views;
     views.push_back(blocks_view);
     views.push_back(elements_view);
@@ -39,6 +41,9 @@ void urbandevelPolygonLink::run()
 
     for (int i = 0; i < blocks.size(); i++)
     {
+
+        bool empty = 1;
+
         DM::Face* block = dynamic_cast<DM::Face*>(blocks[i]);
 
         for (int j = 0; j < elements.size(); j++)
@@ -59,7 +64,10 @@ void urbandevelPolygonLink::run()
                 block->getAttribute(elements_view.getName())->addLink(element, elements_view.getName()); //Link SB->CB
                 element->getAttribute(blocks_view.getName())->addLink(block, blocks_view.getName()); //Link CB->SB
                 DM::Logger(DM::Debug) << "Link created";
+                empty = 0;
             }
         }
+
+        block->addAttribute("empty", empty);
     }
 }
