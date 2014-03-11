@@ -240,6 +240,7 @@ void DMMainWindow::resetSimulation()
 void DMMainWindow::cancelSimulation()
 {
 	simulation->cancel();
+	simulationFinished();
 }
 
 void DMMainWindow::simulationFinished() 
