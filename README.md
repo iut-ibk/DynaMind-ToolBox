@@ -20,6 +20,12 @@ a easy way to set up and edit your simulation
  - [DynaMind-Sewer](https://github.com/iut-ibk/DynaMind-Sewer)
  - [DynaMind-DAnCE4Water](https://github.com/christianurich/DynaMind-DAnCE4Water)
 
+##DAnCEKit
+To make DynaMind more accessible we are develpoing a online platform.Try it online [http://dance4water.eng.monash.edu](http://dance4water.eng.monash.edu)
+
+<img src="http://dynamind-toolbox.org/wp-content/uploads/2014/03/Screen-Shot-2014-03-10-at-10.46.56.png" border="0">
+
+
 ## Compile DynaMind
 - [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
 - [Compiling-DynaMind-Toolbox-on-Linux](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Linux)
