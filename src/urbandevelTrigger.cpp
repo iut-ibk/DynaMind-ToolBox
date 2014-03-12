@@ -65,6 +65,7 @@ bool urbandevelTrigger::setdev()
     //check free cb
     //check free sb
     //foreach areas
+    return 1;
 }
 
 bool urbandevelTrigger::setdec()
@@ -74,4 +75,5 @@ bool urbandevelTrigger::setdec()
     //check occ parcels
     //remove population
     // ??? remove building ???
+    return 1;
 }

@@ -96,7 +96,7 @@ void urbandevelControl::run()
                     int yrdiff = yrlist.at(j+1).toInt() - yrlist.at(j).toInt();
                     int popdiff = poplist.at(j+1).toInt() - poplist.at(j).toInt();
                     popdiffvector.push_back(popdiff/yrdiff);
-                    DM::Logger(DM::Warning) << "year: " << i << "popdiffperyear: " << popdiff/yrdiff;
+                    //DM::Logger(DM::Warning) << "year: " << i << "popdiffperyear: " << popdiff/yrdiff;
                 }
             }
         }
@@ -119,5 +119,5 @@ void urbandevelControl::run()
         dmatt->setDouble(wp_ind);
 
         dmatt = currentcity->getAttribute("cycleBOOL");
-        dmatt->setDouble('1');
+        dmatt->setDouble(1);
 }
