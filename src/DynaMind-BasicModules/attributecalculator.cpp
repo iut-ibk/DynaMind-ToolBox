@@ -164,29 +164,12 @@ void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * va
 
 QString AttributeCalculator::IfElseConverter(QString expression)
 {
+	static QRegExp rx("if\\(([^,]+),([^,]+),([^,]+)\\)");
+	static QString replaceString("(\\1?\\2:\\3)");
 
-	if (!expression.contains("if")) return expression;
-	int firstif = expression.indexOf("if");
-	expression = expression.remove(firstif,2);
-	int first_semicolon = expression.indexOf(",");
-	int else_semicolon = expression.indexOf(",",first_semicolon+1);
-	int second_if = expression.indexOf("if");
+	while (rx.indexIn(expression) != -1)
+		expression.replace(rx, replaceString);
 
-	expression = expression.replace(first_semicolon, 1,"?");
-
-	if (second_if < else_semicolon && second_if != -1) {
-		expression = IfElseConverter(expression);
-	}
-
-	second_if = expression.indexOf(",");
-	expression = expression.replace(second_if, 1,":");
-
-	if (expression.contains("if")){
-		second_if = expression.indexOf(",");
-		expression = expression.replace(second_if, 1,":");
-		expression = IfElseConverter(expression);
-
-	}
 	return expression;
 }
 
