@@ -195,7 +195,7 @@ void CreateHouses::init()
 	houses.addAttribute("T_heating", DM::Attribute::DOUBLE, DM::WRITE);
 	houses.addAttribute("T_cooling", DM::Attribute::DOUBLE, DM::WRITE);
 
-	houses.addAttribute("Geometry", DM::Attribute::DOUBLE, DM::WRITE);
+	houses.addAttribute("Geometry", "Geometry", DM::WRITE);
 	houses.addAttribute("V_living", DM::Attribute::DOUBLE, DM::WRITE);
 
 	footprint = DM::View("Footprint", DM::FACE, DM::WRITE);
