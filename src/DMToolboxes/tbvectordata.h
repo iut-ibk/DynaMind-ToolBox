@@ -57,6 +57,11 @@ class Component;
 class DM_HELPER_DLL_EXPORT TBVectorData
 {
 public:
+	//casts
+	static DM::Node* ComponentToNode(DM::Component* c);
+	static DM::Edge* ComponentToEdge(DM::Component* c);
+	static DM::Face* ComponentToFace(DM::Component* c);
+
     /** @brief Returns edge identified by n1 and n2*/
     static DM::Edge * getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters = true);
 
