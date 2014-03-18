@@ -188,6 +188,8 @@ void Simulation::registerModulesFromDefaultLocation()
 	cpv.push_back(QDir::currentPath() + "/bin/Modules");
 #if defined DEBUG || _DEBUG
 	cpv.push_back(QDir::currentPath() + "/../Modules/Debug");
+	cpv.push_back(QDir::currentPath() + "/../../../output/Debug");	// win32 unit-tests
+	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Debug");
 #else
 	cpv.push_back(QDir::currentPath() + "/../Modules/Release");
 	cpv.push_back(QDir::currentPath() + "/../Modules/RelWithDebInfo");
