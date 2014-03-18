@@ -88,6 +88,7 @@ TEST_F(TestSimulation,testMemory){
 	DM::Logger(DM::Standard) << "Add Module";
 	DM::Simulation sim;
 	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("CreateNodes");
 	//std::string m_uuid = m->getUuid();
 	ASSERT_TRUE(m != 0);
@@ -107,7 +108,8 @@ TEST_F(TestSimulation,addModuleToSimulationTest){
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Add Module";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 }
@@ -131,7 +133,8 @@ TEST_F(TestSimulation,repeatedRunTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Repeatet Run";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	for (long i = 0; i < 100; i++) {
@@ -147,7 +150,8 @@ TEST_F(TestSimulation,openmptest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test openmp redirecting";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	int testThreadNumber = 3;
@@ -163,7 +167,8 @@ TEST_F(TestSimulation,linkedModulesTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 
@@ -188,7 +193,8 @@ TEST_F(TestSimulation,linkedDynamicModules) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");
@@ -222,7 +228,8 @@ TEST_F(TestSimulation,LoopGroupTest)
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test group";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 
 	DM::Module* m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
@@ -285,7 +292,8 @@ TEST_F(TestSimulation,linkedDynamicModulesOverGroups)
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Test Linked Modules";
 	DM::Simulation sim;
-	sim.registerModulesFromDirectory(QDir("./"));;
+	sim.registerModulesFromDirectory(QDir("./"));
+	sim.registerModulesFromDefaultLocation();
 	DM::Module * m = sim.addModule("TestModule");
 	ASSERT_TRUE(m != 0);
 	DM::Module * inout  = sim.addModule("InOut");

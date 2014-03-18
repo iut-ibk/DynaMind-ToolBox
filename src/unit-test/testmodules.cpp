@@ -37,6 +37,7 @@ void TestModules::SetUp()
 	DM::Logger(DM::Standard) << "Load Native Module";
 	sim = new DM::Simulation();
 	sim->registerModulesFromDirectory(QDir("./"));
+	sim->registerModulesFromDefaultLocation();
 }
 
 void TestModules::TearDown()
