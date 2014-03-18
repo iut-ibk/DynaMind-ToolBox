@@ -72,7 +72,7 @@ TEST_F(UnitTestsDMExtensions,OffestPolygon)
 
 	//Inner Offest
 	std::vector<DM::Node> nodes_offest;
-	nodes_offest= DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.2);
+	nodes_offest= DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.2)[0];
 
 	EXPECT_EQ(nodes_offest.size(), 4);
 
@@ -86,7 +86,7 @@ TEST_F(UnitTestsDMExtensions,OffestPolygon)
 
 
 	//Outer Offest
-	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), -0.2);
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), -0.2)[0];
 
 	EXPECT_EQ(nodes_offest.size(), 4);
 
@@ -99,14 +99,14 @@ TEST_F(UnitTestsDMExtensions,OffestPolygon)
 	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(f2),1.96);
 
 	//Error Offest 1
-	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.5);
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.5)[0];
 
 	EXPECT_EQ(nodes_offest.size(), 0);
 
 
 
 	//Error Offest to big
-	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.6);
+	nodes_offest = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), 0.6)[0];
 
 	EXPECT_EQ(nodes_offest.size(), 0);
 }
