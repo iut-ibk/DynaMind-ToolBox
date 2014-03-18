@@ -48,16 +48,17 @@ TEST_F(UnitTestsBasicModules, OffsetFace) {
 	DM::View test_in("TEST_IN", DM::FACE, DM::WRITE);
 
 	DM::Face * f = addRectangle(sys, test_in);
-	DM::Face * f_out = of.createOffest(sys, f, 0.2);
+
+	DM::Face * f_out = of.createOffest(sys, f, 0.2)[0];
 	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(f_out) , 0.36);
 
-	f_out = of.createOffest(sys, f, -0.2);
+	f_out = of.createOffest(sys, f, -0.2)[0];
 	EXPECT_DOUBLE_EQ(DM::CGALGeometry::CalculateArea2D(f_out) , 1.96);
 
-	f_out = of.createOffest(sys, f, 0.5);
+	f_out = of.createOffest(sys, f, 0.5)[0];
 	EXPECT_TRUE(f_out == NULL);
 
-	f_out = of.createOffest(sys, f, 0.6);
+	f_out = of.createOffest(sys, f, 0.6)[0];
 	EXPECT_TRUE(f_out == NULL);
 }
 
