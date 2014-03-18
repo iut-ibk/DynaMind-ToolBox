@@ -36,6 +36,22 @@
 #include <QtGlobal>
 
 
+DM::Node *TBVectorData::ComponentToNode(DM::Component *c)
+{
+	return dynamic_cast<DM::Node*>(c);
+}
+
+DM::Edge *TBVectorData::ComponentToEdge(DM::Component *c)
+{
+	return dynamic_cast<DM::Edge*>(c);
+}
+
+DM::Face *TBVectorData::ComponentToFace(DM::Component *c)
+{
+	return dynamic_cast<DM::Face*>(c);
+}
+
+
 DM::Edge * TBVectorData::getEdge(DM::System * sys, DM::View & view, DM::Node * n1, DM::Node * n2, bool OrientationMatters) {
 
     DM::Edge * e1 = sys->getEdge(n1, n2);
