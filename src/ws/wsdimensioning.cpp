@@ -1026,7 +1026,7 @@ double Dimensioning::calcLambda(double k, double d, double q, double lambda)
 	}
 	else
 	{
-		double viscosity = 1.3*std::pow(10,-6);
+		double viscosity = 1.3*std::pow((double)10,-6);
 		double v = q/((std::pow(d,2)/4.0)*M_PI);
 		double Re = (v*d)/viscosity;
 		double tmpl = -2*std::log10((2.51/(Re*std::sqrt(lambda)))+(k/(3.71*d)));
