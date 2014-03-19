@@ -170,6 +170,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
 	if (PyErr_Occurred()) {
+		printf("Error in PythonEnv::addOverWriteStdCout():\n");
 		PyErr_Print();
 		return false;
 	}
@@ -192,14 +193,15 @@ void PythonEnv::addPythonPath(std::string path) {
 	}
 }
 
-std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
+bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 {
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyObject *pydynamind_module = PyImport_ImportModule("pydynamind");
 	if (PyErr_Occurred()) {
-		Logger(Error) << "Could not import pydynamind module";
+		//Logger(Error) << "Could not import pydynamind module";
+		printf("Error in python module '%s':\n", module.c_str());
 		PyErr_Print();
-		return module;
+		return false;
 	}
 
 	bool exists = false;
@@ -244,7 +246,7 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
 	if (PyErr_Occurred())
 	{
 		PyErr_Print();
-		return module;
+		return false;
 	}
 
 	PyObject *pydynamind_dict = PyModule_GetDict(pydynamind_module);
@@ -264,10 +266,10 @@ std::string PythonEnv::registerNodes(ModuleRegistry *registry, const string &mod
 	if (PyErr_Occurred())
 	{
 		PyErr_Print();
-		return module;
+		return false;
 	}
 
 	loadedModules.push_back(module);
 
-	return module;
+	return false;
 }

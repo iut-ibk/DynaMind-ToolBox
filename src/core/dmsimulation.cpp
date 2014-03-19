@@ -134,22 +134,30 @@ bool Simulation::registerModule(const std::string& filepath)
 
 	QString qfilepath = QString::fromStdString(filepath);
 
-	if(qfilepath.endsWith(".py"))
+	if (!qfilepath.contains('.'))
+		return false; // not a file
+	else if(qfilepath.endsWith(".py"))
 	{
 #ifndef PYTHON_EMBEDDING_DISABLED
 		QFileInfo fi = qfilepath;
 		DM::PythonEnv::getInstance()->addPythonPath(fi.absolutePath().toStdString());
+		bool success = true;
+
 		try
 		{
-			DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, fi.fileName().remove(".py").toStdString());
-			Logger(Debug) <<  "successfully loaded python module " << filepath;
-			return true;
+			success = DM::PythonEnv::getInstance()->registerNodes(moduleRegistry, fi.fileName().remove(".py").toStdString());
 		}
-		catch(...)
+		catch (...)
 		{
-			Logger(Warning) <<  "failed loading python module " << filepath;
-			return false;
+			success = false;
 		}
+
+		if (success)
+			Logger(Debug) << "successfully loaded python module " << filepath;
+		else
+			Logger(Error) <<  "failed loading python module " << filepath;
+
+		return success;
 #endif
 	}
 	else if(qfilepath.endsWith(".dll") || qfilepath.endsWith(".so") || qfilepath.endsWith(".dylib"))
@@ -165,6 +173,7 @@ bool Simulation::registerModule(const std::string& filepath)
 			return false;
 		}
 	}
+
     Logger(Debug) << "not recognized filename ending " << filepath;
 	return false;
 }

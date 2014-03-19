@@ -46,7 +46,7 @@ public:
         virtual ~PythonEnv();
         static PythonEnv *getInstance();
         void addPythonPath(std::string path);
-        std::string registerNodes(ModuleRegistry *registry,
+        bool registerNodes(ModuleRegistry *registry,
                                   const std::string &module);
         bool addOverWriteStdCout();
 
