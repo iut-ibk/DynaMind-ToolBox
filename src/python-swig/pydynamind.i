@@ -1,4 +1,5 @@
 %module(directors="1", allprotected="1") pydynamind
+%rename(addLinkAttribute) addAttribute(const std::string name, std::string linkName, ACCESS access);
 %ignore "DM_HELPER_DLL_EXPORT";
 
 %feature("autodoc", "1");
