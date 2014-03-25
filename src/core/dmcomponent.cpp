@@ -353,7 +353,7 @@ void Component::SQLDelete()
     }
 }
 
-bool Component::HasAttribute(std::string name) const
+bool Component::hasAttribute(std::string name) const
 {
     for (std::vector<Attribute*>::const_iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
         if ((*it)->getName() == name)

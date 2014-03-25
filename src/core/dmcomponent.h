@@ -134,7 +134,7 @@ public:
     System * getCurrentSystem() const;
 
     /** @brief Returns true if an attribute of the given name exists */
-    bool HasAttribute(std::string name) const;
+    bool hasAttribute(std::string name) const;
 
     /** @brief exports the component to the db, it can afterwards deleted safly */
     virtual void _moveToDb();
