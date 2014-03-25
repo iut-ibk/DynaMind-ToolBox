@@ -138,7 +138,15 @@ void AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * var
 	//Remove First Element, is already what comes with currentcmp
 	viewNameList.removeFirst();
 
-	Attribute * attr = currentcmp->getAttribute(viewNameList.front().toStdString());
+	std::string attrName = viewNameList.front().toStdString();
+
+	if (!currentcmp->hasAttribute(attrName))
+	{
+		Logger(Error) << "attribute not found: '" << attrName << "'";
+		return;
+	}
+
+	Attribute * attr = currentcmp->getAttribute(attrName);
 
 	if (attr->getType() == Attribute::LINK)
 	{
