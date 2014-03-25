@@ -92,7 +92,7 @@ bool ConditionalLoopGroup::evalConditionString()
 		{
 			foreach(Component* c, sys->getAllComponentsInView(View(viewName, COMPONENT)))
 			{
-				if(c->HasAttribute(attributeName))
+				if(c->hasAttribute(attributeName))
 				if (!checkAttribute(c->getAttribute(attributeName), op, value))
 						return false;
 			}
