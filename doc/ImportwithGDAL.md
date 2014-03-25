@@ -19,7 +19,7 @@ The module loads data from following sources into DynaMind
 | Dataset     | string | only for WFS / data set to load  |
 || || ||
 | View Name     | string | view name of the dataset in DynaMind  |
-| EPSG Code     | int | Coordinate system in which the data set should be transformed while loading a [list of codes](http://spatialreference.org/ref/epsg/)  |
+| EPSGCode     | int | Coordinate system in which the data set should be transformed while loading a [list of codes](http://spatialreference.org/ref/epsg/)  |
 | append to existing data stream     | bool | append loaded data to an existing stream  |
 | link with existing view     | bool | links loaded nodes with existing nodes |
 
