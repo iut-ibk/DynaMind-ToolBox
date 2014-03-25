@@ -18,8 +18,8 @@ The module loads data from following sources into DynaMind
 | Password     | string | only for WFS / password is saved encrypted  |
 | Dataset     | string | only for WFS / data set to load  |
 || || ||
-| View Name     | string | view name of the dataset in DynaMind  |
-| EPSGCode     | int | Coordinate system in which the data set should be transformed while loading a [list of codes](http://spatialreference.org/ref/epsg/)  |
+| ViewName     | string | view name of the dataset in DynaMind  |
+| Transform to EPSG:     | int | Coordinate system in which the data set should be transformed while loading a [list of codes](http://spatialreference.org/ref/epsg/)  |
 | append to existing data stream     | bool | append loaded data to an existing stream  |
 | link with existing view     | bool | links loaded nodes with existing nodes |
 
