@@ -132,7 +132,7 @@ void AttributeCalculator::init() {
 	i++;
 }
 
-void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * variable_container, Component *currentcmp, std::string name )
+void AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * variable_container, Component *currentcmp, std::string name )
 {
 	QStringList viewNameList = QString::fromStdString(name).split(".");
 	//Remove First Element, is already what comes with currentcmp
@@ -162,6 +162,7 @@ void  AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * va
 		variable_container->push_back(mup::Value(attr->getString()));
 		break;
 	default:
+		Logger(Error) << "invalid attribute type, variable '" << viewNameList.front().toStdString() << "' cannot be resolved";
 		variable_container->push_back(mup::Value(0));
 		break;
 	}
