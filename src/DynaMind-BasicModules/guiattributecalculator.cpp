@@ -149,7 +149,7 @@ void GUIAttributeCalculator::on_lineEditAttribute_textChanged(QString attrName)
 
 void GUIAttributeCalculator::on_listAttributes_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
-	ui->addButton->setEnabled(current->parent());
+	ui->addButton->setEnabled(current && current->parent());
 }
 
 void GUIAttributeCalculator::on_variableTable_cellChanged(int row, int column)
