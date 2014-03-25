@@ -69,9 +69,15 @@ void AttributeCalculator::init() {
 	if (nameOfBaseView.empty())
 		return;
 	if (nameOfNewAttribute.empty())
+	{
+		DM::Logger(DM::Error) << "name of attribute to be created/modified missing";
 		return;
+	}
 	if (equation.empty())
+	{
+		DM::Logger(DM::Error) << "equation empty";
 		return;
+	}
 
 	const DM::View baseView = getViewInStream("Data", nameOfBaseView);
 	if (baseView.getName().length() == 0)
@@ -173,7 +179,19 @@ QString AttributeCalculator::IfElseConverter(QString expression)
 	return expression;
 }
 
-void AttributeCalculator::run() {
+void AttributeCalculator::run() 
+{
+	if (nameOfNewAttribute.empty())
+	{
+		DM::Logger(DM::Error) << "name of attribute to be created/modified missing";
+		return;
+	}
+	if (equation.empty())
+	{
+		DM::Logger(DM::Error) << "equation empty";
+		return;
+	}
+
 	mup::Value mp_c;
 	this->sys_in = this->getData("Data");
 	m_p->m_sys = sys_in;
