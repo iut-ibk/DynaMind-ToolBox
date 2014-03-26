@@ -80,8 +80,8 @@ GUIAttributeCalculator::GUIAttributeCalculator(DM::Module * m, QWidget *parent) 
 	DisableTypeItem(content, 0);
 	DisableTypeItem(content, 3);
 	DisableTypeItem(content, 4);
-
 	// finished workaround
+
 	int type = (*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data);
 	if (IsTypeDisabled(content, type))
 		ui->attributeType->setCurrentIndex(type);
@@ -163,13 +163,17 @@ GUIAttributeCalculator::~GUIAttributeCalculator()
 	delete ui;
 }
 
-void GUIAttributeCalculator::addViewToTree(const DM::View& v)
+void GUIAttributeCalculator::addViewToTree(const DM::View& v, QTreeWidgetItem* parent)
 {
 	if (v.getName().empty() || v.getName() == "dummy")
 		return;
 
 	QTreeWidgetItem * viewItem = new QTreeWidgetItem(QStringList(QString::fromStdString(v.getName())));
-	ui->listAttributes->addTopLevelItem(viewItem);
+
+	if (parent)
+		parent->addChild(viewItem);
+	else
+		ui->listAttributes->addTopLevelItem(viewItem);
 
 	if (v.getAllAttributes().size() == 0)
 	{
@@ -179,20 +183,47 @@ void GUIAttributeCalculator::addViewToTree(const DM::View& v)
 
 	foreach(std::string attrName, v.getAllAttributes())
 	{
-		QTreeWidgetItem* attrItem = new QTreeWidgetItem(QStringList(QString::fromStdString(attrName)));
-		viewItem->addChild(attrItem);
 
 		if (v.getAttributeType(attrName) == DM::Attribute::LINK)
-			attrItem->setDisabled(true);
+		{
+			std::string linkedViewName = v.getNameOfLinkedView(attrName);
+
+			QTreeWidgetItem* p = viewItem;
+			while (p)
+			{
+				if (p->text(0).toStdString() == linkedViewName)
+					break;
+				p = p->parent();
+			}
+			// if p != NULL the while loop stopped with break => already added this link before
+			if (!p)
+				addViewToTree(attrcalc->getViewsInStdStream()[linkedViewName], viewItem);
+			else
+			{
+				QTreeWidgetItem* attrItem = new QTreeWidgetItem(QStringList(QString::fromStdString(attrName)));
+				viewItem->addChild(attrItem);
+				attrItem->setDisabled(true);
+			}
+		}
+		else
+		{
+			QTreeWidgetItem* attrItem = new QTreeWidgetItem(QStringList(QString::fromStdString(attrName)));
+			viewItem->addChild(attrItem);
+		}
 	}
 }
 
 void GUIAttributeCalculator::updateAttributeView()
 {
 	ui->listAttributes->clear();
+	// clear variable table leaves one row, instead remove them by element
+	while (ui->variableTable->rowCount()>0)
+		ui->variableTable->removeRow(0);
 
-	mforeach(const DM::View& v, attrcalc->getViewsInStdStream())
-		addViewToTree(v);
+	std::map<std::string, View> viewVector = attrcalc->getViewsInStdStream();
+
+	if (map_contains(&viewVector, viewName.toStdString()))
+		addViewToTree(viewVector[viewName.toStdString()], NULL);
 }
 
 
@@ -214,36 +245,32 @@ void GUIAttributeCalculator::on_addButton_clicked()
 	if (!ok || text.isEmpty())
 		return;
 
-	std::vector<std::string> elements;
-	elements.push_back(ui->listAttributes->currentItem()->text(0).toStdString());
-	QTreeWidgetItem * p = ui->listAttributes->currentItem()->parent();
+	QStringList varPath;
 
-	do {
-		elements.push_back(p->text(0).toStdString());
-		p = p->parent();
-	} while (p);
+	QTreeWidgetItem* it = ui->listAttributes->currentItem();
+	while (it)
+	{
+		varPath.push_front(it->text(0));
+		it = it->parent();
+	}
 
-	std::stringstream elementName;
-	elementName << elements[elements.size()-1];
-	for (int i = elements.size()-2; i > -1; --i)
-		elementName << "." <<elements[i];
-
-	addVariableItem(QString::fromStdString(elementName.str()), text);
+	addVariableItem(varPath.join("."), text);
 }
 
 void GUIAttributeCalculator::on_comboView_currentIndexChanged (int val)
 {
 	viewName = ui->comboView->currentText();
 	this->updateAttributeView();
-
 }
 
-void GUIAttributeCalculator::accept() {
+void GUIAttributeCalculator::accept() 
+{
 	this->attrcalc->setParameterValue("NameOfBaseView", viewName.toStdString());
 	this->attrcalc->setParameterValue("equation", ui->lineExpression->text().toStdString());
 	this->attrcalc->setParameterValue("nameOfNewAttribute", ui->lineEditAttribute->text().toStdString());
 	*(int*)this->attrcalc->getParameter("typeOfNewAttribute")->data = ui->attributeType->currentIndex();
 
+	this->attrcalc->variablesMap.clear();
 
 	for (int i = 0; i < ui->variableTable->rowCount(); i++) {
 		const QTableWidgetItem* rowItem = ui->variableTable->item(i, 0);

@@ -36,7 +36,7 @@ DM_DECLARE_NODE_NAME(AttributeCalculator, Modules)
 struct  AttributeCalculator_Impl
 {
 	DM::System * m_sys;
-	void getLinkedAttribute(std::vector< mup::Value> * variable_container, DM::Component *currentcmp,std::string name);
+	void getLinkedAttribute(std::vector<mup::Value>& variables, DM::Component *currentcmp, QStringList viewPath);
 };
 
 AttributeCalculator::AttributeCalculator()
@@ -96,9 +96,16 @@ void AttributeCalculator::init() {
 		 it != variablesMap.end();
 		 ++it) 
 	{
-		const QStringList view_attribute_pair = QString::fromStdString(it->first).split(".");
-		const std::string variable_viewname = view_attribute_pair.first().toStdString();
-		const std::string attributename = view_attribute_pair.last().toStdString();
+		const QStringList viewPathList = QString::fromStdString(it->first).split(".");
+
+		if (viewPathList.size() < 2)
+		{
+			Logger(Warning) << "illegal variable definition '" << it->second << " = " << it->first << "'";
+			continue;
+		}
+
+		const std::string variable_viewname = viewPathList.at(viewPathList.size()-2).toStdString();
+		const std::string attributename = viewPathList.last().toStdString();
 		variableNames.push_back(it->second);
 
 		const DM::View variable_view = getViewInStream("Data", variable_viewname);
@@ -132,50 +139,42 @@ void AttributeCalculator::init() {
 	i++;
 }
 
-void AttributeCalculator_Impl::getLinkedAttribute(std::vector< mup::Value> * variable_container, Component *currentcmp, std::string name )
+void AttributeCalculator_Impl::getLinkedAttribute(	std::vector<mup::Value>& variables, 
+													DM::Component *currentcmp, QStringList viewPath)
 {
-	QStringList viewNameList = QString::fromStdString(name).split(".");
-	//Remove First Element, is already what comes with currentcmp
-	viewNameList.removeFirst();
+	int viewPathSize = viewPath.size();
+	if (viewPathSize < 1)
+		return;
 
-	std::string attrName = viewNameList.front().toStdString();
+	const std::string attrName = viewPath.first().toStdString();
+	Attribute* attr = currentcmp->getAttribute(attrName);	// we do not check if it exists, could be intended ('empty' attribute)
+	Attribute::AttributeType type = attr->getType();
 
-	if (!currentcmp->hasAttribute(attrName))
+	if (viewPathSize > 1 && type != Attribute::LINK)
 	{
-		Logger(Error) << "attribute not found: '" << attrName << "'";
+		Logger(Error) << "Corrupt search path or attribute; path: '" << viewPath.join(".").toStdString() << "'";
 		return;
 	}
 
-	Attribute * attr = currentcmp->getAttribute(attrName);
-
-	if (attr->getType() == Attribute::LINK)
+	switch (type) 
 	{
-		std::string newSearchName = viewNameList.join(".").toStdString();
-		foreach(Component* nextcmp, attr->getLinkedComponents())
-		{
-			if(!nextcmp)
-			{
-				Logger(Error) << "Linked Element does not exist";
-				return;
-			}
-			this->getLinkedAttribute(variable_container, nextcmp, newSearchName);
-		}
-	}
-
-	switch (attr->getType()) {
+	case Attribute::LINK:
+		viewPath.pop_front();
+		foreach(Component* linkedCmp, attr->getLinkedComponents())
+			getLinkedAttribute(variables, linkedCmp, viewPath);
+		return;
 	case Attribute::DOUBLE:
-		variable_container->push_back( mup::Value(attr->getDouble()));
-		break;
+		variables.push_back(mup::Value(attr->getDouble()));
+		return;
 	case Attribute::STRING:
-		variable_container->push_back(mup::Value(attr->getString()));
-		break;
+		variables.push_back(mup::Value(attr->getString()));
+		return;
 	default:
-		Logger(Error) << "invalid attribute type, variable '" << viewNameList.front().toStdString() << "' cannot be resolved";
-		variable_container->push_back(mup::Value(0));
-		break;
+		Logger(Error) << "invalid attribute type '" << attrName << "' cannot be resolved";
+		variables.push_back(mup::Value());
+		return;
 	}
 }
-
 
 QString AttributeCalculator::IfElseConverter(QString expression)
 {
@@ -252,7 +251,9 @@ void AttributeCalculator::run()
 			//All attributes are stored in one container that is evaluated Later.
 			std::vector< mup::Value> variable_container;
 			//Can be later replaced by a function
-			m_p->getLinkedAttribute(&variable_container, cmp, it->first);
+			QStringList viewPath = QString::fromStdString(it->first).split('.');
+			viewPath.pop_front(); // first element is the view we are already in
+			m_p->getLinkedAttribute(variable_container, cmp, viewPath);
 
 			double val = 0;
 			QStringList string_vals;
