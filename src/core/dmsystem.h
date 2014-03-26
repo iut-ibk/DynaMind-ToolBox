@@ -236,7 +236,7 @@ private:
     //private:
         View view;
     };
-
+	friend class Component;
     std::map<std::string, ViewCache > viewCaches;
 };
 

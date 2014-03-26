@@ -267,6 +267,21 @@ Attribute* Component::getAttribute(std::string name)
         Attribute* a = new Attribute(name);
         a->setOwner(this);
         ownedattributes.push_back(a);
+
+		// get type
+		if (this->currentSys)
+		{
+			mforeach(const System::ViewCache& vc, this->currentSys->viewCaches)
+			{
+				if (vc.view.hasAttribute(name))
+				{
+					Logger(Warning) << "extracting attribute type from view";
+					a->setType(vc.view.getAttributeType(name));
+					break;
+				}
+			}
+		}
+
         return a;
     }
     else if((*it)->GetOwner() != this)
