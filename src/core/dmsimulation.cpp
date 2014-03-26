@@ -433,10 +433,9 @@ bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool 
 			if(!checkGroupStreamForward((Group*)l->dest, l->inPort, !l->isOutOfGroupLink))
 				success = false;
 	}
-	if(success)
+
+	if (!into) // if we followed outside the group, the inner part must have been successful
 		g->setStatus(MOD_CHECK_OK);
-	else
-		g->setStatus(MOD_CHECK_ERROR);
 
 	return success;
 }
