@@ -866,7 +866,7 @@ TEST_F(TestSystem, SQLattributes)
 	std::vector<DM::Component*> comps = successingSys->getAllComponents();
 	ASSERT_TRUE(comps.size() == 2);
 	// map successing components
-	if (comps[0]->HasAttribute("link_a"))
+	if (comps[0]->hasAttribute("link_a"))
 	{
 		ca = comps[0];
 		cb = comps[1];
@@ -1110,7 +1110,7 @@ TEST_F(TestSystem, SystemDBExInportAttributes) {
 	sys.updateViews(views);
 	sys._importViewElementsFromDB();
 	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
-	ASSERT_FALSE(sys.getAllComponentsInView(v)[0]->HasAttribute("a"));
+	ASSERT_FALSE(sys.getAllComponentsInView(v)[0]->hasAttribute("a"));
 
 	// move to db
 	sys._moveToDb();
@@ -1123,7 +1123,7 @@ TEST_F(TestSystem, SystemDBExInportAttributes) {
 	sys.updateViews(views);
 	sys._importViewElementsFromDB();
 	ASSERT_EQ(sys.getAllComponentsInView(v).size(), 1);
-	ASSERT_TRUE(sys.getAllComponentsInView(v)[0]->HasAttribute("a"));
+	ASSERT_TRUE(sys.getAllComponentsInView(v)[0]->hasAttribute("a"));
 	ASSERT_EQ(sys.getAllComponentsInView(v)[0]->getAttribute("a")->getDouble(), 1.0);
 }
 
