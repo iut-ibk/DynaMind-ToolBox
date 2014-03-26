@@ -127,6 +127,9 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 
 		mforeach (const DM::View& v, it->second) 
 		{
+			if (v.getName() == "dummy")
+				continue;
+
 			QTreeWidgetItem * item_view = new QTreeWidgetItem();
 
 			bool view_missing = false;
