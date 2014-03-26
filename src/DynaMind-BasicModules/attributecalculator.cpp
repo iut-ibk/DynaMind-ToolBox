@@ -65,7 +65,8 @@ AttributeCalculator::~AttributeCalculator()
 	delete m_p;
 }
 
-void AttributeCalculator::init() {
+void AttributeCalculator::init() 
+{
 	if (nameOfBaseView.empty())
 		return;
 	if (nameOfNewAttribute.empty())
@@ -79,19 +80,17 @@ void AttributeCalculator::init() {
 		return;
 	}
 
-	const DM::View baseView = getViewInStream("Data", nameOfBaseView);
-	if (baseView.getName().length() == 0)
+	std::map<std::string, View> inViews = getViewsInStream()["Data"];
+	View baseView;
+	if (!map_contains(&inViews, nameOfBaseView, baseView))
 	{
 		DM::Logger(DM::Error) << "view '" << nameOfBaseView << "' not found in datastream";
 		return;
 	}
 
-	viewsmap.clear();
+	std::map<std::string, View> viewsmap;
 	variableNames.clear();
 
-	viewsmap[nameOfBaseView] = DM::View(baseView.getName(), baseView.getType(), DM::READ);
-
-	bool modify = false;
 	for (std::map<std::string, std::string>::const_iterator it = variablesMap.begin();
 		 it != variablesMap.end();
 		 ++it) 
@@ -104,31 +103,36 @@ void AttributeCalculator::init() {
 			continue;
 		}
 
-		const std::string variable_viewname = viewPathList.at(viewPathList.size()-2).toStdString();
-		const std::string attributename = viewPathList.last().toStdString();
+		const std::string variableViewname = viewPathList.at(viewPathList.size()-2).toStdString();
+		const std::string attributeName = viewPathList.last().toStdString();
 		variableNames.push_back(it->second);
 
-		const DM::View variable_view = getViewInStream("Data", variable_viewname);
-		if (!map_contains(&viewsmap, variable_viewname))
+		if (attributeName == nameOfNewAttribute)
+			continue;
+
+		if (!map_contains(&viewsmap, variableViewname))
 		{
-			if (baseView.getName().length() == 0)
+			// take view from datastream
+			if (!map_contains(&inViews, variableViewname))
 			{
-				DM::Logger(DM::Error) << "view '" << variable_viewname << "' of variable '" << it->second << "' not found in datastream";
+				DM::Logger(DM::Error) << "view '" << variableViewname << "' of variable '" << it->second << "' not found in datastream";
 				return;
 			}
-			viewsmap[variable_viewname] = DM::View(variable_view.getName(), variable_view.getType(), DM::READ);
+			// take type
+			viewsmap[variableViewname] = DM::View(variableViewname, inViews[variableViewname].getType(), DM::READ);
 		}
 
-		if (attributename == nameOfNewAttribute)
-			modify = true;
-		else
-			viewsmap[variable_viewname].addAttribute(attributename, variable_view.getAttributeType(attributename), DM::READ);
+		if (!inViews[variableViewname].hasAttribute(attributeName))
+		{
+			Logger(Error) << "attribute '" << attributeName << "' not found in view '" << variableViewname << "'";
+			return;
+		}
+		// add attribute
+		viewsmap[variableViewname].addAttribute(attributeName, inViews[variableViewname].getAttributeType(attributeName), DM::READ);
 	}
 
-	if (modify)
-		viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, baseView.getAttributeType(nameOfNewAttribute), DM::MODIFY);
-	else
-		viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, typeOfNewAttribute, DM::WRITE);
+	viewsmap[nameOfBaseView] = DM::View(nameOfBaseView, baseView.getType(), DM::READ);
+	viewsmap[nameOfBaseView].addAttribute(nameOfNewAttribute, typeOfNewAttribute, DM::WRITE);
 
 	std::vector<DM::View> data;
 	for (std::map<std::string, DM::View>::const_iterator it = viewsmap.begin(); it != viewsmap.end(); ++it)
@@ -230,7 +234,8 @@ void AttributeCalculator::run()
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
-	foreach(Component* cmp, sys_in->getAllComponentsInView(viewsmap[nameOfBaseView]))
+	const DM::View& baseView = getAccessedViews()["Data"]["nameOfBaseView"];
+	foreach(Component* cmp, sys_in->getAllComponentsInView(baseView))
 	{
 		//mp_counter= (int) this->getInternalCounter()+1;
 		Group* lg = dynamic_cast<Group*>(getOwner());
