@@ -500,7 +500,11 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					// check if we can access the desired view
 					if (!map_contains(&m->streamViews[streamName], v.getName()))
 					{
-						DM::Logger(DM::Error) << "module '" << m->getClassName()
+						std::string ownerString = m->getOwner() ? "in '" + m->getOwner()->getName() + "'": "";
+
+						DM::Logger(DM::Error) << "module '" << m->getName()
+							<< "' of type '" << m->getClassName()
+							<< ownerString
 							<< "' tries to access the nonexisting view '" << v.getName()
 							<< "' from stream '" << streamName << "'";
 						m->setStatus(MOD_CHECK_ERROR);
