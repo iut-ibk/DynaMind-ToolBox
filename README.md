@@ -14,11 +14,16 @@ a easy way to set up and edit your simulation
 
 <img src="https://github.com/iut-ibk/DynaMind-Gui/blob/master/doc/images/gui_with_view.png?raw=true" border="0">
 
-- a set of modules to import, edit, createa and export data
+- a set of modules to import, edit, create and export data
 
  - [DynaMind-BasicModules](https://github.com/iut-ibk/DynaMind-BasicModules )
  - [DynaMind-Sewer](https://github.com/iut-ibk/DynaMind-Sewer)
  - [DynaMind-DAnCE4Water](https://github.com/christianurich/DynaMind-DAnCE4Water)
+
+- additonal modules to visualise data
+
+ - [DynaMind-Analysis](https://github.com/christianurich/DynaMind-Analysis)
+
 
 ##DAnCEKit
 To make DynaMind more accessible we are develpoing a online platform.Try it online [http://dance4water.eng.monash.edu](http://dance4water.eng.monash.edu)
