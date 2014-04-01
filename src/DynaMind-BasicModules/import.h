@@ -46,7 +46,6 @@ public:
 	// parameters
 	std::string FileName;
 
-	std::string WFSDataName;
 	std::string WFSServer;
 	std::string WFSUsername;
 	std::string WFSPassword;
@@ -65,7 +64,6 @@ private:
 	bool		append_old;
 	std::string FileName_old;
 	std::string ViewName_old;
-	std::string WFSDataName_old;
 	std::string WFSServer_old;
 	std::string WFSUsername_old;
 	std::string WFSPassword_old;
@@ -124,8 +122,6 @@ private:
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
 
 	bool moduleParametersChanged();
-
-	OGRLayer* LoadWFSLayer(OGRDataSource *poDS, const std::string& server_full_name);
 
 	// geo helpers
 	void initPointList(DM::System * sys);

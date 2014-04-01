@@ -33,9 +33,9 @@ private:
 
 public slots:
 	void accept();
-	void on_pushButton_wfs_pick_clicked();
 	void on_pushButton_Filename_clicked();
 	void on_lineEdit_Filename_textChanged();
+	void on_wfsUpdateButton_clicked();
 	void on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column);
 	void updateTreeChecks(QObject* obj);
 };

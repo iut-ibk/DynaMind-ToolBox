@@ -67,8 +67,6 @@ Import::Import()
 	this->addParameter("viewEPSGConfig", DM::STRING_MAP, &this->viewEPSGConfig);
 
 	//WFS Input
-	this->WFSDataName = "";
-	this->addParameter("WFSDataName", DM::STRING, &this->WFSDataName);
 	this->WFSServer = "";
 	this->addParameter("WFSServer", DM::STRING, &this->WFSServer);
 	this->WFSUsername = "";
@@ -93,9 +91,17 @@ void Import::reset()
 
 void Import::init()
 {
-	if (FileName_old != FileName)
+	if (FileName_old != FileName || 
+		WFSUsername_old != WFSUsername || 
+		WFSServer_old != WFSServer || 
+		WFSPassword_old != WFSPassword)
 	{
 		FileName_old = FileName;
+
+		WFSUsername_old = WFSUsername;
+		WFSServer_old = WFSServer;
+		WFSPassword_old = WFSPassword;
+
 		reloadFile();
 	}
 }
@@ -108,7 +114,7 @@ void Import::reloadFile()
 	GDALAllRegister();	// neccessary for windows!
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 
-	/*if (!this->WFSServer.empty())
+	if (!this->WFSServer.empty())
 	{
 		// password
 		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
@@ -122,16 +128,22 @@ void Import::reloadFile()
 		if (!poDS)
 			return;
 
-		OGRLayer* poLayer = this->LoadWFSLayer(poDS, server_full_name);
-		if (!poLayer)
-			return;
-
 		driverType = WFS;
 
-		this->vectorDataInit(poLayer);
+		StringMap newViewConfig;
+		std::map<std::string, int> newViewConfigTypes;
+		StringMap newEPSGCodes;
+
+		if (!ExtractLayers(poDS, newViewConfig, newViewConfigTypes, newEPSGCodes, this->epsgcode))
+			driverType = DataError;
+
+		adoptViewConfig(newViewConfig, newViewConfigTypes);
+
+		initViews();
+
 		OGRDataSource::DestroyDataSource(poDS);
 	}
-	else*/
+	else
 	{
 		if (FileName.empty())
 		{
@@ -386,30 +398,12 @@ bool Import::moduleParametersChanged()
 {
 	bool changed = false;
 	if (FileName_old != FileName)		changed = true; FileName_old = FileName;
-	if (WFSDataName_old != WFSDataName) changed = true; WFSDataName_old = WFSDataName;
 	if (WFSServer_old != WFSServer)		changed = true; WFSServer_old = WFSServer;
 	if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
 	if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
 	if (append_old != append)			changed = true; append_old = append;
 
 	return changed;
-}
-
-OGRLayer *Import::LoadWFSLayer(OGRDataSource *poDS, const std::string& server_full_name)
-{
-	OGRLayer            *poLayer;
-	//OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-	poDS = OGRSFDriverRegistrar::Open(server_full_name.c_str(), FALSE);
-
-	int LayerCount = poDS->GetLayerCount();
-	for (int i = 0; i < LayerCount; i++)
-	{
-		poLayer = poDS->GetLayer(i);
-		std::string currentLayerName = poLayer->GetName();
-		if (currentLayerName == this->WFSDataName)
-			return poLayer;
-	}
-	return 0;
 }
 
 // RUN methods
