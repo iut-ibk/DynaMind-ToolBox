@@ -126,7 +126,10 @@ void Import::reloadFile()
 		OGRDataSource *poDS = OGRSFDriverRegistrar::Open(server_full_name.c_str(), FALSE);
 
 		if (!poDS)
+		{
+			Logger(Error) << "can't open WFS '" << this->WFSServer << "'";
 			return;
+		}
 
 		driverType = WFS;
 
@@ -227,10 +230,15 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig,
 	viewConfig.clear();
 	viewConfigTypes.clear();
 
-	for (int i = 0; i < dataSource->GetLayerCount(); i++)
+	int nLayers = dataSource->GetLayerCount();
+
+	for (int i = 0; i < nLayers; i++)
 	{
+		Logger(Debug) << "extracting layer " << i << "/" << nLayers;
+
 		OGRLayer* layer = dataSource->GetLayer(i);
-		OGRwkbGeometryType ogrType = layer->GetGeomType();
+		OGRFeatureDefn *ogrFieldDefn = layer->GetLayerDefn();
+		OGRwkbGeometryType ogrType = ogrFieldDefn->GetGeomType();
 		std::string strType = OGRGeometryTypeToName(ogrType);
 
 		// create a view per layer
@@ -258,7 +266,6 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig,
 			viewEPSGConfig[viewName] = UNKNOWN_TRAFO_STRING;
 
 		// add attributes
-		OGRFeatureDefn *ogrFieldDefn = layer->GetLayerDefn();
 		for (int iField = 0; iField < ogrFieldDefn->GetFieldCount(); iField++)
 		{
 			OGRFieldDefn *poFieldDefn = ogrFieldDefn->GetFieldDefn(iField);
