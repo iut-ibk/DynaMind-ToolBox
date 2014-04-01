@@ -5,7 +5,6 @@
 #include <QFileDialog>
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>
-#include "simplecrypt.h"
 
 #define COL_CHECKBOX	0
 #define COL_ORGNAME		1
@@ -41,7 +40,10 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 
 	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(this->m->WFSServer));
 	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(this->m->WFSUsername));
-	this->ui->lineEdit_wfs_password->setText(QString::fromStdString(this->m->WFSPassword));
+
+	QString pw = this->m->crypto.decryptToString(QString::fromStdString(this->m->WFSPassword));
+	this->ui->lineEdit_wfs_password->setText(pw);
+
 	this->ui->epsgCode->setValue(this->m->epsgcode);
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
 	this->ui->checkBox_linkWithExistingView->setChecked(this->m->linkWithExistingView);
@@ -247,8 +249,7 @@ void GUIImport::accept()
 	m->WFSServer = this->ui->lineEdit_wfs_server->text().toStdString();
 	m->WFSUsername = this->ui->lineEdit_wfs_username->text().toStdString();
 
-	SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
-	m->WFSPassword = crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
 
 	m->flip_wfs = this->ui->checkBox_flip->isChecked();
 	m->linkWithExistingView = this->ui->checkBox_linkWithExistingView->isChecked();
@@ -352,8 +353,7 @@ void GUIImport::on_wfsUpdateButton_clicked()
 	m->WFSServer = ui->lineEdit_wfs_server->text().toStdString();
 	m->WFSUsername = ui->lineEdit_wfs_username->text().toStdString();
 
-	SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
-	m->WFSPassword = crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
 
 	this->m->init();
 

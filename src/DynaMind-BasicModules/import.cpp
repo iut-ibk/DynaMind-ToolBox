@@ -26,7 +26,6 @@
 
 #include "import.h"
 #include "tbvectordata.h"
-#include "simplecrypt.h"
 #include <sstream>
 #include <guiimport.h>
 #include <algorithm>
@@ -39,7 +38,8 @@ DM_DECLARE_NODE_NAME(Import, Modules)
 
 #define UNKNOWN_TRAFO_STRING "<unknown>"
 
-Import::Import()
+Import::Import():
+	crypto(Q_UINT64_C(0x0c2ad4a4acb9f023))
 {
 	driverType = DataError;
 
@@ -106,6 +106,14 @@ void Import::init()
 	}
 }
 
+std::string Import::getServerPath()
+{
+	QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
+
+	// create server url with login
+	return "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
+}
+
 void Import::reloadFile()
 {
 	driverType = DataError;
@@ -116,14 +124,7 @@ void Import::reloadFile()
 
 	if (!this->WFSServer.empty())
 	{
-		// password
-		SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
-		QString pwd = crypto.decryptToString(QString::fromStdString(this->WFSPassword));
-
-		// create server url with login
-		std::string server_full_name = "WFS:http://" + this->WFSUsername + ":" + pwd.toStdString() + "@" + this->WFSServer;
-
-		OGRDataSource *poDS = OGRSFDriverRegistrar::Open(server_full_name.c_str(), FALSE);
+		OGRDataSource *poDS = OGRSFDriverRegistrar::Open(getServerPath().c_str(), FALSE);
 
 		if (!poDS)
 		{
@@ -290,7 +291,9 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig,
 	return true;
 }
 
-bool Import::ExtractLayers(GDALDataset* dataSource, StringMap& viewConfig, std::map<std::string, int>& viewConfigTypes)
+bool Import::ExtractLayers(GDALDataset* dataSource, 
+	StringMap& viewConfig, 
+	std::map<std::string, int>& viewConfigTypes)
 {
 	viewConfig.clear();
 	viewConfigTypes.clear();
@@ -425,8 +428,9 @@ void Import::run()
 		DM::Logger(DM::Error) << "Cannot read file/data";
 		break;
 	case ShapeFile:
+		loadVectorData(FileName);
 	case WFS:
-		loadVectorData();
+		loadVectorData(getServerPath());
 		break;
 	case RasterData:
 		loadRasterData();
@@ -434,7 +438,7 @@ void Import::run()
 	}
 }
 
-void Import::loadVectorData()
+void Import::loadVectorData(const std::string& path)
 {
 	DM::System * sys = this->getData(OUTPORT_NAME);
 
@@ -449,7 +453,7 @@ void Import::loadVectorData()
 
 	OGRRegisterAll();
 
-	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(FileName.c_str(), FALSE);
+	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(path.c_str(), FALSE);
 	if (!poDS)
 	{
 		DM::Logger(DM::Error) << "Open failed.";
@@ -457,11 +461,15 @@ void Import::loadVectorData()
 	}
 
 	int i = 0;
-	for (; i < poDS->GetLayerCount(); i++)
+	for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
 	{
-		OGRLayer *poLayer = poDS->GetLayer(i);
-		poLayer->ResetReading();
-		loadLayer(poLayer, sys);
+		if (!it->second.empty() && strchr(it->first.c_str(), '.') == NULL) // selected & not an attribute
+		{
+			OGRLayer *poLayer = poDS->GetLayerByName(it->first.c_str());
+			poLayer->ResetReading();
+			loadLayer(poLayer, sys);
+			i++;
+		}
 	}
 
 	if (i == 0)

@@ -32,6 +32,7 @@
 #include "gdal_priv.h"
 #include <QHash>
 #include <QString>
+#include "simplecrypt.h"
 
 
 using namespace DM;
@@ -86,17 +87,20 @@ public:
 	void initViews();
 
 	void reloadFile();
+
+	SimpleCrypt crypto;
 private:
 	// main methods
 	static bool ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig, 
 		std::map<std::string, int>& viewConfigTypes, StringMap& viewEPSGConfig,
 		int targetEPSG);
 
-	static bool ExtractLayers(GDALDataset* dataSource, StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
+	static bool ExtractLayers(GDALDataset* dataSource, StringMap& newViewConfig, 
+		std::map<std::string, int>& newViewConfigTypes);
 
 	void adoptViewConfig(StringMap& newViewConfig, std::map<std::string, int>& newViewConfigTypes);
 
-	void loadVectorData();
+	void loadVectorData(const std::string& path);
 
 	bool loadRasterData();
 
@@ -130,6 +134,7 @@ private:
 
 	bool transform(double *x, double *y, OGRCoordinateTransformation *poCT);
 
+	std::string getServerPath();
 public:
 	// parameter map: layername[.attribute], new-view-name
 	StringMap viewConfig;
