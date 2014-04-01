@@ -359,3 +359,23 @@ void GUIImport::on_wfsUpdateButton_clicked()
 
 	updateTree();
 }
+
+void GUIImport::on_selectAllButton_clicked()
+{
+	for (int i = 0; i < ui->viewTree->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* it = ui->viewTree->topLevelItem(i);
+		((QCheckBox*)ui->viewTree->itemWidget(it, COL_CHECKBOX))->setChecked(true);
+		updateTreeChecks((QObject*)it);
+	}
+}
+
+void GUIImport::on_selectNothingButton_clicked()
+{
+	for (int i = 0; i < ui->viewTree->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* it = ui->viewTree->topLevelItem(i);
+		((QCheckBox*)ui->viewTree->itemWidget(it, COL_CHECKBOX))->setChecked(false);
+		updateTreeChecks((QObject*)it);
+	}
+}

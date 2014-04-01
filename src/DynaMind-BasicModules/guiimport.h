@@ -38,6 +38,8 @@ public slots:
 	void on_wfsUpdateButton_clicked();
 	void on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column);
 	void updateTreeChecks(QObject* obj);
+	void on_selectAllButton_clicked();
+	void on_selectNothingButton_clicked();
 };
 
 #endif // GUIImport_H
