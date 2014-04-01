@@ -255,8 +255,13 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 
 	if(inPort && !hasInPort(streamName))
 		this->addPort(streamName, INPORT);
+	else if (!inPort && hasInPort(streamName))
+		this->removePort(streamName, INPORT);
+
 	if(outPort && !hasOutPort(streamName))
 		this->addPort(streamName, OUTPORT);
+	else if (!outPort && hasOutPort(streamName))
+		this->removePort(streamName, OUTPORT);
 }
 
 void Module::removeData(const std::string& name)
