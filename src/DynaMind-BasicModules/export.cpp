@@ -44,6 +44,7 @@ Export::Export()
 	this->epsgCode = 31254;
 	this->addParameter("Filename", FILENAME, &this->path);
 	this->addParameter("epsgCode", INT, &this->epsgCode);
+	this->addParameter("viewConfig", STRING_MAP, &this->viewConfig);
 }
 
 Export::~Export()
@@ -55,15 +56,42 @@ void Export::init()
 	std::map<std::string, View> viewsInStream = getViewsInStream()[INPORT];
 	// add missing views
 	mforeach(const View& v, viewsInStream)
+	{
 		if (!map_contains(&viewConfig, v.getName()))
+		{
+			Components viewType = (Components)v.getType();
+			if (viewType == RASTERDATA || viewType == COMPONENT || viewType == SUBSYSTEM)
+				continue;
+
 			viewConfig[v.getName()] = "";
+			viewConfigTypes[v.getName()] = viewType;
+			foreach(const std::string& attrName, v.getAllAttributes())
+			{
+				Attribute::AttributeType attType = v.getAttributeType(attrName);
+				if (attType == Attribute::NOTYPE || attType == Attribute::TIMESERIES 
+					|| attType == Attribute::LINK || attType == Attribute::STRINGVECTOR)
+					continue;
+
+				viewConfig[v.getName() + "." + attrName] = "";
+				viewConfigTypes[v.getName() + "." + attrName] = attType;
+			}
+		}
+	}
 
 	// remove obsolete views
 	StringMap newViewConfig = viewConfig;
 
 	for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
-		if (!map_contains(&viewsInStream, it->first))
+	{
+		// split if we have a separator, otherwhise the string stays untouched
+		std::string viewName = QString::fromStdString(it->first).split('.').first().toStdString();
+		
+		if (!map_contains(&viewsInStream, viewName))
+		{
 			newViewConfig.erase(it->first);
+			viewConfigTypes.erase(it->first);
+		}
+	}
 
 	viewConfig = newViewConfig;
 			
