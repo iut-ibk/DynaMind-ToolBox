@@ -244,7 +244,7 @@ void Export::run()
 		return;
 	}
 	// get views to export
-	std::map<std::string, View> views = getAccessedViews()[INPORT];
+	const std::map<std::string, View>& views = getAccessedViews()[INPORT];
 
 	// finally write
 	int i = 0;
