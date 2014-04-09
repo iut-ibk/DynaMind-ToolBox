@@ -46,11 +46,16 @@ public:
 	void run();
 	void init();
 	void reset();
-	//virtual bool  createInputDialog();
-private:
+	bool  createInputDialog();
+
+	void initViews();
+
 	std::string path;
 	int epsgCode;
-
+	StringMap viewConfig;
+	StringMap viewEPSGConfig;
+	std::map<std::string, int> viewConfigTypes;
+private:
 
 	OGRLayer* prepareNewLayer(const DM::View& view, OGRDataSource* data);
 	void exportLayer(const DM::View& view, OGRLayer* layer, System* system);

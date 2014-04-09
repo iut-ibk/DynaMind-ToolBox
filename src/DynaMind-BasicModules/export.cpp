@@ -27,6 +27,7 @@
 #include "export.h"
 #include "ogrsf_frmts.h"
 #include "gdal_priv.h"
+#include "guiexport.h"
 #include <dmcomponent.h>
 #include <dmlogger.h>
 #include <dmsystem.h>
@@ -50,16 +51,72 @@ Export::~Export()
 }
 
 void Export::init()
+{	
+	std::map<std::string, View> viewsInStream = getViewsInStream()[INPORT];
+	// add missing views
+	mforeach(const View& v, viewsInStream)
+		if (!map_contains(&viewConfig, v.getName()))
+			viewConfig[v.getName()] = "";
+
+	// remove obsolete views
+	StringMap newViewConfig = viewConfig;
+
+	for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+		if (!map_contains(&viewsInStream, it->first))
+			newViewConfig.erase(it->first);
+
+	viewConfig = newViewConfig;
+			
+	initViews();
+}
+
+void Export::initViews()
 {
-	std::vector<View> views;
+	std::map<std::string, View> views;
+	std::map<std::string, View> viewsInStream = getViewsInStream()[INPORT];
 
-	foreach(const View& v, getViewsInStream(INPORT))
-		views.push_back(v.clone(DM::READ));
+	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+	{
+		if (!it->second.empty())
+		{
+			if (strchr(it->first.c_str(), '.') == NULL)
+			{
+				const View& originalView = viewsInStream[it->first];
+				views[it->first] = View(it->first, originalView.getType(), originalView.getAccessType());
+			}
+		}
+	}
 
-	if (views.size() == 0)
-		views.push_back(View("dummy", 0, READ));
+	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+	{
+		if (!it->second.empty())
+		{
+			if (strchr(it->first.c_str(), '.') != NULL)
+			{
+				QStringList viewAttributePair = QString::fromStdString(it->first).split(".");
+				if (viewAttributePair.size() != 2)
+				{
+					Logger(Error) << "importer: viewConfig corrupt";
+					return;
+				}
+				const View& originalView = viewsInStream[it->first];
+				View& view = views[viewAttributePair.first().toStdString()];
+				std::string attName = viewAttributePair.last().toStdString();
+				view.addAttribute(attName, 
+					originalView.getAttributeType(attName), 
+					originalView.getAttributeAccessType(attName));
+			}
+		}
+	}
 
-	addData(INPORT, views);
+	std::vector<View> vviews;
+	mforeach(const View& v, views)
+		vviews.push_back(v.clone(DM::READ));
+
+	if (vviews.size() == 0)
+		vviews.push_back(View("dummy", 0, READ));
+
+	addData(INPORT, vviews);
 }
 
 void Export::reset()
@@ -258,4 +315,11 @@ void Export::run()
 
 	// cleanup
 	delete data;
+}
+
+bool Export::createInputDialog()
+{
+	QWidget * w = new GUIExport(this);
+	w->show();
+	return true;
 }
