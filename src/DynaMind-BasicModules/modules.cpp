@@ -41,6 +41,7 @@
 #include "spatiallinking.h"
 #include "importwithgdal.h"
 #include "import.h"
+#include "export.h"
 #include "calculateboundingbox.h"
 #include "singlepoint.h"
 #include "facetoedge.h"
@@ -75,6 +76,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry)
 	registry->addNodeFactory(new NodeFactory<SpatialLinking>());
 	registry->addNodeFactory(new NodeFactory<ImportwithGDAL>());
 	registry->addNodeFactory(new NodeFactory<Import>());
+	registry->addNodeFactory(new NodeFactory<Export>());
 	registry->addNodeFactory(new NodeFactory<CalculateBoundingBox>());
 	registry->addNodeFactory(new NodeFactory<SinglePoint>());
 	registry->addNodeFactory(new NodeFactory<FaceToEdge>());
