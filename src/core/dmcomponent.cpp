@@ -275,7 +275,7 @@ Attribute* Component::getAttribute(std::string name)
 			{
 				if (vc.view.hasAttribute(name))
 				{
-					Logger(Warning) << "extracting attribute type from view";
+					Logger(Warning) << "extracting attribute type from view ('" << name << "')";
 					a->setType(vc.view.getAttributeType(name));
 					break;
 				}
