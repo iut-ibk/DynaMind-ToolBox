@@ -55,6 +55,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_8">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>OffSetX</string>
             </property>
@@ -62,16 +65,27 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_9">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>OffSetY</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLineEdit" name="lineEdit_offx"/>
+           <widget class="QLineEdit" name="lineEdit_offx">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEdit_offy"/>
+           <widget class="QLineEdit" name="lineEdit_offy">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
