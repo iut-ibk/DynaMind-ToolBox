@@ -77,23 +77,25 @@ void Export::init()
 			}
 		}
 	}
-
-	// remove obsolete views
-	StringMap newViewConfig = viewConfig;
-
-	for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+	if (viewsInStream.size() != 0)
 	{
-		// split if we have a separator, otherwhise the string stays untouched
-		std::string viewName = QString::fromStdString(it->first).split('.').first().toStdString();
-		
-		if (!map_contains(&viewsInStream, viewName))
-		{
-			newViewConfig.erase(it->first);
-			viewConfigTypes.erase(it->first);
-		}
-	}
+		// remove obsolete views
+		StringMap newViewConfig = viewConfig;
 
-	viewConfig = newViewConfig;
+		for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+		{
+			// split if we have a separator, otherwhise the string stays untouched
+			std::string viewName = QString::fromStdString(it->first).split('.').first().toStdString();
+
+			if (!map_contains(&viewsInStream, viewName))
+			{
+				newViewConfig.erase(it->first);
+				viewConfigTypes.erase(it->first);
+			}
+		}
+
+		viewConfig = newViewConfig;
+	}
 			
 	initViews();
 }
