@@ -801,35 +801,35 @@ TEST_F(TestSystem, SQLattributes)
 
 	DM::Logger(DM::Debug) << "checking doubles";
 	// DOUBLE
-	DM::Attribute* a = new DM::Attribute("fuzzi");
+	DM::Attribute* a = new DM::Attribute("fuzzi", Attribute::DOUBLE);
 	a->setDouble(dbl);
 	ASSERT_TRUE(a->getDouble() == dbl);
 	delete a;
 
 	DM::Logger(DM::Debug) << "checking double vectors";
 	// DOUBLE VECTOR
-	a = new DM::Attribute("fuzzi");
+	a = new DM::Attribute("fuzzi", Attribute::DOUBLEVECTOR);
 	a->setDoubleVector(vecDbl);
 	ASSERT_TRUE(a->getDoubleVector() == vecDbl);
 	delete a;
 
 	DM::Logger(DM::Debug) << "checking strings";
 	// STRING
-	a = new DM::Attribute("fuzzi");
+	a = new DM::Attribute("fuzzi", Attribute::STRING);
 	a->setString(str);
 	ASSERT_TRUE(a->getString() == str);
 	delete a;
 
 	DM::Logger(DM::Debug) << "checking string vectors";
 	// STRING VECTOR
-	a = new DM::Attribute("fuzzi");
+	a = new DM::Attribute("fuzzi", Attribute::STRINGVECTOR);
 	a->setStringVector(vecStr);
 	ASSERT_TRUE(a->getStringVector() == vecStr);
 	delete a;
 
 	DM::Logger(DM::Debug) << "checking time series";
 	// TIME SERIES
-	a = new DM::Attribute("fuzzi");
+	a = new DM::Attribute("fuzzi", Attribute::TIMESERIES);
 	a->addTimeSeries(vecStr, vecDbl);
 	std::vector<double> vecDblOut;
 	std::vector<std::string> vecStrOut;
