@@ -232,6 +232,9 @@
         </item>
         <item>
          <widget class="QLabel" name="label_7">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Target EPSG Code</string>
           </property>
@@ -239,6 +242,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="epsgCode">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="frame">
            <bool>true</bool>
           </property>
