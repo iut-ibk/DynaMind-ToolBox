@@ -69,7 +69,7 @@ public:
 	const std::vector<Face*> getHolePointers() const;
 
 	/** @brief Add hole */
-	void addHole(std::vector<Node*> hole);
+	void addHole(const std::vector<Node*>& hole);
 	void addHole(Face* hole);
 
 	/** @brief this function is neccessary to make the copy constructor a usefull */

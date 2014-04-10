@@ -114,7 +114,7 @@ const std::vector<Face*> Face::getHolePointers() const
     return _holes;
 }
 
-void Face::addHole(std::vector<Node*> hole)
+void Face::addHole(const std::vector<Node*>& hole)
 {
     QMutexLocker ml(mutex);
     _holes.push_back(getCurrentSystem()->addFace(hole));

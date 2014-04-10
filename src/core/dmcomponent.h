@@ -101,10 +101,10 @@ public:
     bool addAttribute(const Attribute &newattribute);
 
     /** @brief Add new double attribute to the component. If the Attribute already exists changeAttribute is called */
-    bool addAttribute(std::string, double val);
+	bool addAttribute(const std::string&, double val);
 
 	/** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
-	bool addAttribute(std::string, std::string);
+	bool addAttribute(const std::string&, const std::string&);
 
 	/** @brief Add new string attribute to the component. If the Attribute already exists changeAttribute is called */
 	Attribute* addAttribute(const std::string& name, Attribute::AttributeType type);
@@ -113,16 +113,16 @@ public:
     bool changeAttribute(const Attribute &newattribute);
 
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
-    bool changeAttribute(std::string, double val);
+    bool changeAttribute(const std::string&, double val);
 
     /** @brief Change existing double Attribute. It the Attribute doesn't exist a new double Attribute is added*/
-    bool changeAttribute(std::string s, std::string val);
+	bool changeAttribute(const std::string& s, const std::string& val);
 
     /** @brief Remove Attribute, returns false if no Attribute with this name exists */
-    bool removeAttribute(std::string name);
+	bool removeAttribute(const std::string& name);
 
     /** @brief Returns a pointer to an Attribute */
-    Attribute* getAttribute(std::string name);
+	Attribute* getAttribute(const std::string& name);
 
     /** @brief Returns a vector of all Attributes */
     const std::vector<Attribute*>& getAllAttributes();
@@ -137,7 +137,7 @@ public:
     System * getCurrentSystem() const;
 
     /** @brief Returns true if an attribute of the given name exists */
-    bool hasAttribute(std::string name) const;
+	bool hasAttribute(const std::string& name) const;
 
     /** @brief exports the component to the db, it can afterwards deleted safly */
     virtual void _moveToDb();

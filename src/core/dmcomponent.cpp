@@ -151,7 +151,7 @@ QString Component::getTableName()
     return "components";
 }
 
-bool Component::addAttribute(std::string name, double val)
+bool Component::addAttribute(const std::string& name, double val)
 {
     QMutexLocker ml(mutex);
 
@@ -164,7 +164,7 @@ bool Component::addAttribute(std::string name, double val)
     return this->addAttribute(new Attribute(name, val));
 }
 
-bool Component::addAttribute(std::string name, std::string val)
+bool Component::addAttribute(const std::string& name, const std::string& val)
 {
     QMutexLocker ml(mutex);
 
@@ -225,7 +225,7 @@ bool Component::changeAttribute(const Attribute &newattribute)
     return true;
 }
 
-bool Component::changeAttribute(std::string s, double val)
+bool Component::changeAttribute(const std::string& s, double val)
 {
     QMutexLocker ml(mutex);
 
@@ -233,7 +233,7 @@ bool Component::changeAttribute(std::string s, double val)
     return true;
 }
 
-bool Component::changeAttribute(std::string s, std::string val)
+bool Component::changeAttribute(const std::string& s, const std::string& val)
 {
     QMutexLocker ml(mutex);
 
@@ -241,7 +241,7 @@ bool Component::changeAttribute(std::string s, std::string val)
     return true;
 }
 
-bool Component::removeAttribute(std::string name)
+bool Component::removeAttribute(const std::string& name)
 {
     QMutexLocker ml(mutex);
 
@@ -260,7 +260,7 @@ bool Component::removeAttribute(std::string name)
     return false;
 }
 
-Attribute* Component::getAttribute(std::string name)
+Attribute* Component::getAttribute(const std::string& name)
 {
     if (name.empty())
         return NULL;
@@ -381,7 +381,7 @@ void Component::SQLDelete()
     }
 }
 
-bool Component::hasAttribute(std::string name) const
+bool Component::hasAttribute(const std::string& name) const
 {
     for (std::vector<Attribute*>::const_iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
         if ((*it)->getName() == name)
