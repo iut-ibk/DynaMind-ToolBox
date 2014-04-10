@@ -48,6 +48,7 @@ View::View()
 View View::clone(ACCESS forceAccessType, const std::string& newName) const
 {
 	View v(newName.empty()?name:newName, type, forceAccessType);
+	v.attributes = this->attributes;
 	for(std::map<std::string, AttributeAccess>::iterator it = v.attributes.begin(); 
 		it != v.attributes.end(); ++it)
 	{
