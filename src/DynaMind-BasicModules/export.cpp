@@ -64,7 +64,6 @@ void Export::init()
 				continue;
 
 			viewConfig[v.getName()] = "";
-			viewConfigTypes[v.getName()] = viewType;
 			foreach(const std::string& attrName, v.getAllAttributes())
 			{
 				Attribute::AttributeType attType = v.getAttributeType(attrName);
@@ -77,9 +76,16 @@ void Export::init()
 			}
 		}
 	}
+	// add types
+	mforeach(const View& v, viewsInStream)
+	{
+		viewConfigTypes[v.getName()] = v.getType();
+		foreach(const std::string& attrName, v.getAllAttributes())
+			viewConfigTypes[v.getName() + "." + attrName] = v.getAttributeType(attrName);
+	}
+	// remove obsolete views
 	if (viewsInStream.size() != 0)
 	{
-		// remove obsolete views
 		StringMap newViewConfig = viewConfig;
 
 		for (StringMap::iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
@@ -104,41 +110,42 @@ void Export::initViews()
 {
 	std::map<std::string, View> views;
 	std::map<std::string, View> viewsInStream = getViewsInStream()[INPORT];
-
-	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+	if (viewsInStream.size() != 0)
 	{
-		if (!it->second.empty())
+		for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
 		{
-			if (strchr(it->first.c_str(), '.') == NULL)
+			if (!it->second.empty())
 			{
-				const View& originalView = viewsInStream[it->first];
-				views[it->first] = View(it->first, originalView.getType(), originalView.getAccessType());
-			}
-		}
-	}
-
-	for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
-	{
-		if (!it->second.empty())
-		{
-			if (strchr(it->first.c_str(), '.') != NULL)
-			{
-				QStringList viewAttributePair = QString::fromStdString(it->first).split(".");
-				if (viewAttributePair.size() != 2)
+				if (strchr(it->first.c_str(), '.') == NULL)
 				{
-					Logger(Error) << "importer: viewConfig corrupt";
-					return;
+					const View& originalView = viewsInStream[it->first];
+					views[it->first] = View(it->first, originalView.getType(), originalView.getAccessType());
 				}
-				const View& originalView = viewsInStream[it->first];
-				View& view = views[viewAttributePair.first().toStdString()];
-				std::string attName = viewAttributePair.last().toStdString();
-				view.addAttribute(attName, 
-					originalView.getAttributeType(attName), 
-					originalView.getAttributeAccessType(attName));
+			}
+		}
+
+		for (StringMap::const_iterator it = viewConfig.begin(); it != viewConfig.end(); ++it)
+		{
+			if (!it->second.empty())
+			{
+				if (strchr(it->first.c_str(), '.') != NULL)
+				{
+					QStringList viewAttributePair = QString::fromStdString(it->first).split(".");
+					if (viewAttributePair.size() != 2)
+					{
+						Logger(Error) << "importer: viewConfig corrupt";
+						return;
+					}
+					const View& originalView = viewsInStream[viewAttributePair.first().toStdString()];
+					View& view = views[viewAttributePair.first().toStdString()];
+					std::string attName = viewAttributePair.last().toStdString();
+					view.addAttribute(attName,
+						originalView.getAttributeType(attName),
+						originalView.getAttributeAccessType(attName));
+				}
 			}
 		}
 	}
-
 	std::vector<View> vviews;
 	mforeach(const View& v, views)
 		vviews.push_back(v.clone(DM::READ));
