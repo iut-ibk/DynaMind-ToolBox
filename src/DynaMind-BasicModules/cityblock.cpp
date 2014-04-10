@@ -241,8 +241,8 @@ void CityBlock::run()
 
 				//Create Links
 				std::string cityblockName = cityblock.getName();
-				n->getAttribute(cityblock.getName())->addLink(f, cityblockName);
-				f->getAttribute(centercityblock.getName())->addLink(n, centercityblock.getName());
+				n->addAttribute(cityblock.getName(), DM::Attribute::LINK)->addLink(f, cityblockName);
+				f->addAttribute(centercityblock.getName(), DM::Attribute::LINK)->addLink(n, centercityblock.getName());
 
 				if (createStreets) 
 				{

@@ -110,7 +110,7 @@ void CalculateCentroid::run()
 		f->addAttribute("area", area);
 
 		Node * cn = city->addNode(p, newPoints);
-		Attribute attr(link.str());
+		Attribute attr(link.str(), DM::Attribute::LINK);
 		attr.addLink(f, vData.getName());
 		cn->addAttribute(attr);
 
