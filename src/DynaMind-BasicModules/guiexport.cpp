@@ -16,8 +16,6 @@
 #define COL_TYPE		4
 #define COL_EPSG		5
 
-#define DEFAULT_TRAFO_STRING "<default>"
-
 // defined in guiimport.cpp
 const char* GetTypeString(DM::Components t);
 const char* GetTypeString(DM::Attribute::AttributeType t);
@@ -75,11 +73,7 @@ void GUIExport::updateTree()
 		viewItem->setText(COL_NEWNAME, QString::fromStdString(state == Qt::Checked ? viewIter->second : viewIter->first));
 		viewItem->setText(COL_TYPE, GetTypeString((DM::Components)this->m->viewConfigTypes[viewIter->first]));
 
-		std::string epsgText;
-		if (map_contains(&m->viewEPSGConfig, viewIter->first, epsgText) && atoi(epsgText.c_str()) == 0)
-			viewItem->setText(COL_EPSG, QString::fromStdString(epsgText));
-		else
-			viewItem->setText(COL_EPSG, DEFAULT_TRAFO_STRING);
+		viewItem->setText(COL_EPSG, QString::fromStdString(m->viewEPSGConfig[viewIter->first]));
 
 		// add attributes
 		for (StringMap::iterator attrIter = this->m->viewConfig.begin();
@@ -216,15 +210,7 @@ void GUIExport::on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column
 				selection[0]->text(COL_EPSG).toInt(), 0, INT_MAX, 1, &ok);
 
 			if (ok)
-			{
-				QString strEpsgCode;
-				if (epsgCode == 0)
-					strEpsgCode = DEFAULT_TRAFO_STRING;
-				else
-					strEpsgCode = QString::number(epsgCode);
-
-				selection[0]->setText(COL_EPSG, strEpsgCode);
-			}
+				selection[0]->setText(COL_EPSG, QString::number(epsgCode));
 		}
 	}
 }

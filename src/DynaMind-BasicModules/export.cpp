@@ -38,6 +38,7 @@
 DM_DECLARE_NODE_NAME(Export, Modules)
 
 #define INPORT "inport"
+#define DEFAULT_EPSG "31254"
 
 Export::Export()
 {
@@ -45,6 +46,7 @@ Export::Export()
 	this->addParameter("Filename", FILENAME, &this->path);
 	this->addParameter("epsgCode", INT, &this->epsgCode);
 	this->addParameter("viewConfig", STRING_MAP, &this->viewConfig);
+	this->addParameter("viewEPSGConfig", DM::STRING_MAP, &this->viewEPSGConfig);
 }
 
 Export::~Export()
@@ -80,6 +82,7 @@ void Export::init()
 	mforeach(const View& v, viewsInStream)
 	{
 		viewConfigTypes[v.getName()] = v.getType();
+		viewEPSGConfig[v.getName()] = DEFAULT_EPSG;
 		foreach(const std::string& attrName, v.getAllAttributes())
 			viewConfigTypes[v.getName() + "." + attrName] = v.getAttributeType(attrName);
 	}
@@ -202,13 +205,39 @@ OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 		geomType = wkbPolygon;
 		break;
 	}
+	OGRErr epsgError = OGRERR_NONE;
+	int epsg = atoi(viewEPSGConfig[view.getName()].c_str());
+	OGRLayer* layer = data->GetLayerByName(newLayerName);
+	if (!layer)
+	{
+		// spat ref for coord sys with desired epsg code
+		OGRSpatialReference spatRef;
+		epsgError = spatRef.importFromEPSG(epsg);
+		if (!epsgError)
+		{
+			// create layer
+			layer = data->CreateLayer(newLayerName, &spatRef, geomType);
+			if (!layer)
+			{
+				Logger(Error) << "export: creating layer from view '" << view.getName() << "' failed.";
+				return NULL;
+			}
+		}
+	}
+	else
+	{
+		Logger(Warning) << "export: overwriting existing layer '" 
+			<< newLayerName << "' with data from view '" << view.getName() << "'";
+		epsgError = layer->GetSpatialRef()->importFromEPSG(epsg);
+	}
 
-	// spat ref for coord sys with desired epsg code
-	OGRSpatialReference spatRef;
-	spatRef.importFromEPSG(epsgCode);
+	if (epsgError)
+	{
+		Logger(Error) << "export: invalid epsg code '" << epsg << "' for exporting view '" << view.getName() << "'";
+		return NULL;
+	}
 
-	// create layer
-	OGRLayer* layer = data->CreateLayer(newLayerName, &spatRef, geomType);
+
 	// add attribute fields
 	foreach(const std::string& attName, view.getAllAttributes())
 	{

@@ -52,8 +52,14 @@ public:
 
 	std::string path;
 	int epsgCode;
+
+	// parameter map: layername[.attribute], new-view-name
 	StringMap viewConfig;
+
+	// layername, epsg (as string, for param.)
 	StringMap viewEPSGConfig;
+
+	// layer[.attribute], type; integer to combine attributes and views
 	std::map<std::string, int> viewConfigTypes;
 private:
 
