@@ -155,6 +155,45 @@ void showSettings()
 	}
 }
 
+void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloads)
+{
+	QStringList overloadlist = QString::fromStdString(parameteroverloads).split(";", QString::SkipEmptyParts);
+
+	foreach(const QString& overloading, overloadlist)
+	{
+		QStringList overloadingList = overloading.split(QRegExp("\\.|\\="), QString::SkipEmptyParts);
+		if (overloadingList.size() != 3)
+			DM::Logger(DM::Error) << "wrong format in parameterstring: " << overloading.toStdString() << overloadingList.size();
+		else
+		{
+			std::string moduleName = overloadingList.at(0).toStdString();
+			std::string parameterName = overloadingList.at(1).toStdString();
+			std::string value = overloadingList.at(2).toStdString();
+
+			DM::Module* module = NULL;
+			foreach(DM::Module* modIt, sim->getModules())
+			{
+				if (modIt->getName() == moduleName)
+				{
+					module = modIt;
+					break;
+				}
+			}
+			if (!module)
+			{
+				DM::Logger(DM::Error) << "module '" << moduleName << "' not found";
+				continue;
+			}
+			if (!module->getParameter(parameterName))
+			{
+				DM::Logger(DM::Error) << "parameter '" << parameterName << "' not found in module '" << moduleName << "'";
+				continue;
+			}
+			module->setParameterValue(parameterName, value);
+		}
+	}
+}
+
 int main(int argc, char *argv[], char *envp[]) 
 {
 	QCoreApplication::setOrganizationName("IUT");
@@ -182,6 +221,7 @@ int main(int argc, char *argv[], char *envp[])
 		("settings", po::value<string>(), "set an environment variable")
 		("show-settings", "show environment variables")
 		//("python-modules", po::value<vector <string> >(), "set path to python modules")
+		("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
 		;
 
 
@@ -191,6 +231,7 @@ int main(int argc, char *argv[], char *envp[])
 	bool verbose = false;
 	string cpfile = "";
     string replace = "";
+	string parameteroverloads = "";
 	int numThreads = 1;
 
 	DM::LogLevel ll = DM::Standard;
@@ -233,8 +274,10 @@ int main(int argc, char *argv[], char *envp[])
 
 		if (vm.count("cpfile"))     cpfile = vm["cpfile"].as<string>();
 
-        if (vm.count("replace"))     replace = vm["replace"].as<string>();
+		if (vm.count("replace"))     replace = vm["replace"].as<string>();
 
+		if (vm.count("parameter"))     parameteroverloads = vm["parameter"].as<string>();
+		
 		if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
 		QDateTime time = QDateTime::currentDateTime();
@@ -293,7 +336,9 @@ int main(int argc, char *argv[], char *envp[])
 	s.registerModulesFromDefaultLocation();
 	s.registerModulesFromSettings();
 	realsimulationfile = replacestrings(replace, simulationfile);
+
 	s.loadSimulation(realsimulationfile);
+	OverloadParameters(&s, parameteroverloads);
 
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
