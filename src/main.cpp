@@ -317,8 +317,8 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	catch (po::unknown_option & e)
 	{
-		DM::Logger(DM::Error) << "unknown option";
-		cout << desc << "\n";
+		cout << "unknown option:" << desc << "\n";
+		return -1;
 	}
 
 	if(!QFile::exists(QString::fromStdString(simulationfile)))
