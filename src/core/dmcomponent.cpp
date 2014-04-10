@@ -197,13 +197,24 @@ bool Component::addAttribute(const Attribute &newattribute)
 
 bool Component::addAttribute(Attribute *pAttribute)
 {
-    QMutexLocker ml(mutex);
+	QMutexLocker ml(mutex);
 
-    removeAttribute(pAttribute->getName());
+	removeAttribute(pAttribute->getName());
 
-    ownedattributes.push_back(pAttribute);
-    pAttribute->setOwner(this);
-    return true;
+	ownedattributes.push_back(pAttribute);
+	pAttribute->setOwner(this);
+	return true;
+}
+
+Attribute* Component::addAttribute(const std::string& name, Attribute::AttributeType type)
+{
+	QMutexLocker ml(mutex);
+
+	removeAttribute(name);
+	Attribute* a = new Attribute(name, type);
+	ownedattributes.push_back(a);
+	a->setOwner(this);
+	return a;
 }
 
 bool Component::changeAttribute(const Attribute &newattribute)
@@ -263,11 +274,7 @@ Attribute* Component::getAttribute(std::string name)
 
     if (it == ownedattributes.end())
     {
-        // create new attribute
-        Attribute* a = new Attribute(name);
-        a->setOwner(this);
-        ownedattributes.push_back(a);
-
+		Attribute::AttributeType type = Attribute::NOTYPE;
 		// get type
 		if (this->currentSys)
 		{
@@ -275,12 +282,18 @@ Attribute* Component::getAttribute(std::string name)
 			{
 				if (vc.view.hasAttribute(name))
 				{
-					Logger(Warning) << "extracting attribute type from view ('" << name << "')";
-					a->setType(vc.view.getAttributeType(name));
+					Logger(Warning) << "extracting type of attribute '" << name 
+									<< "' from view '" << vc.view.getName() << "'";
+					type = vc.view.getAttributeType(name);
 					break;
 				}
 			}
 		}
+
+		// create new attribute
+		Attribute* a = new Attribute(name, type);
+		a->setOwner(this);
+		ownedattributes.push_back(a);
 
         return a;
     }

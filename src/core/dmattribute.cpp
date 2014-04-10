@@ -274,9 +274,11 @@ Attribute::Attribute(const Attribute &newattribute):
 	isInserted = false;
 }
 
-Attribute::Attribute(std::string name)
+Attribute::Attribute(std::string name, AttributeType type):
+name(name)
 {
-	this->name=  name;
+	this->name = name;
+	this->setType(type);
 	owner = NULL;
 	isInserted = false;
 }
@@ -548,7 +550,7 @@ Component* Attribute::GetOwner()
 Attribute* Attribute::_createAttribute(const std::string& attributeName, Component* owner, const QVariant& value, 
 	AttributeType type, System* currentSystem)
 {
-	Attribute* a = new Attribute(attributeName);
+	Attribute* a = new Attribute(attributeName, NOTYPE);
 	a->setOwner(owner);
 	a->isInserted = true;
 

@@ -132,7 +132,7 @@ public:
 	Attribute(const Attribute &newattribute);
 
 	/** @brief creates a new named attribute**/
-	Attribute(std::string name);
+	Attribute(std::string name, AttributeType type);
 
 	/** @brief creates a new double attribute**/
 	Attribute(std::string name, double val);
