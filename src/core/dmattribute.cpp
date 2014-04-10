@@ -274,7 +274,7 @@ Attribute::Attribute(const Attribute &newattribute):
 	isInserted = false;
 }
 
-Attribute::Attribute(std::string name, AttributeType type):
+Attribute::Attribute(const std::string& name, AttributeType type) :
 name(name)
 {
 	this->name = name;
@@ -284,14 +284,14 @@ name(name)
 }
 
 
-Attribute::Attribute(std::string name, double val):
+Attribute::Attribute(const std::string& name, double val) :
 	value(val)
 {
 	this->name = name;
 	owner = NULL;
 	isInserted = false;
 }
-Attribute::Attribute(std::string name, std::string val):
+Attribute::Attribute(const std::string& name, std::string val) :
 	value(val)
 {
 	this->name = name;
@@ -320,7 +320,7 @@ Attribute::AttributeType Attribute::getType() const
 	return value.type;
 }
 
-void Attribute::setName(std::string name)
+void Attribute::setName(const std::string& name)
 {
 	this->name=name;
 }
@@ -343,7 +343,7 @@ double Attribute::getDouble()
 	return 0;
 }
 
-void Attribute::setString(std::string s)
+void Attribute::setString(const std::string& s)
 {
 	value.Free();
 	value.type = STRING;
@@ -356,7 +356,7 @@ std::string Attribute::getString()
 	return "";
 }
 
-void Attribute::setDoubleVector(std::vector<double> v)
+void Attribute::setDoubleVector(const std::vector<double>& v)
 {
 	value.Free();
 	value.type = DOUBLEVECTOR;
@@ -369,7 +369,7 @@ std::vector<double> Attribute::getDoubleVector()
 	return std::vector<double>();
 }
 
-void Attribute::setStringVector(std::vector<std::string> s)
+void Attribute::setStringVector(const std::vector<std::string>& s)
 {
 	value.Free();
 	value.type = STRINGVECTOR;
@@ -455,7 +455,8 @@ std::vector<Component*> Attribute::getLinkedComponents()
 	return std::vector<Component*>();
 }
 
-void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value)
+void Attribute::addTimeSeries(	const std::vector<std::string>& timestamp, 
+								const std::vector<double>& value)
 {
 	if(timestamp.size()!=value.size())
 	{
@@ -465,7 +466,7 @@ void Attribute::addTimeSeries(std::vector<std::string> timestamp, std::vector<do
 
 	this->value.Free();
 	this->value.type = TIMESERIES;
-	this->value.ptr = new TimeSeriesAttribute(&timestamp, &value);
+	this->value.ptr = new TimeSeriesAttribute(timestamp, value);
 }
 
 void Attribute::getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value)

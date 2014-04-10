@@ -56,11 +56,11 @@ public:
 class TimeSeriesAttribute
 {
 public:
-	TimeSeriesAttribute(std::vector<std::string>* timestamp, std::vector<double>* value)
+	TimeSeriesAttribute(const std::vector<std::string>& timestamp, const std::vector<double>& value):
+		timestamp(timestamp), value(value)
 	{
-		this->timestamp = *timestamp;
-		this->value = *value;
 	}
+
 	TimeSeriesAttribute(){};
 	std::vector<std::string> timestamp;
 	std::vector<double> value;
@@ -132,13 +132,13 @@ public:
 	Attribute(const Attribute &newattribute);
 
 	/** @brief creates a new named attribute**/
-	Attribute(std::string name, AttributeType type);
+	Attribute(const std::string& name, AttributeType type);
 
 	/** @brief creates a new double attribute**/
-	Attribute(std::string name, double val);
+	Attribute(const std::string& name, double val);
 
 	/** @brief creates a new string attribute**/
-	Attribute(std::string name, std::string val);
+	Attribute(const std::string& name, std::string val);
 
 	/** @brief creates a new attribute**/
 	Attribute();
@@ -150,25 +150,25 @@ public:
 	double getDouble();
 
 	/** @brief set string value**/
-	void setString(std::string s);
+	void setString(const std::string& s);
 
 	/** @brief get string value**/
 	std::string getString();
 
 	/** @brief set double vector**/
-	void setDoubleVector(std::vector<double> v);
+	void setDoubleVector(const std::vector<double>& v);
 
 	/** @brief get double vector**/
 	std::vector<double> getDoubleVector();
 
 	/** @brief set string vector**/
-	void setStringVector(std::vector<std::string> s);
+	void setStringVector(const std::vector<std::string>& s);
 
 	/** @brief get string vector**/
 	std::vector<std::string> getStringVector();
 
 	/** @brief set attribute name */
-	void setName(std::string name);
+	void setName(const std::string& name);
 
 	/** @brief get name */
 	std::string getName() const;
@@ -192,7 +192,7 @@ public:
 	std::vector<Component*> getLinkedComponents();
 
 	/** @brief add TimeSeries **/
-	void addTimeSeries(std::vector<std::string> timestamp, std::vector<double> value);
+	void addTimeSeries(const std::vector<std::string>& timestamp, const std::vector<double>& value);
 
 	/** @brief add TimeSeries **/
 	void getTimeSeries(std::vector<std::string> *timestamp, std::vector<double> *value);
