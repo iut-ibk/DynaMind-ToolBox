@@ -82,7 +82,8 @@ void Export::init()
 	mforeach(const View& v, viewsInStream)
 	{
 		viewConfigTypes[v.getName()] = v.getType();
-		viewEPSGConfig[v.getName()] = DEFAULT_EPSG;
+		if (!map_contains(&viewEPSGConfig, v.getName()))
+			viewEPSGConfig[v.getName()] = DEFAULT_EPSG;
 		foreach(const std::string& attrName, v.getAllAttributes())
 			viewConfigTypes[v.getName() + "." + attrName] = v.getAttributeType(attrName);
 	}
