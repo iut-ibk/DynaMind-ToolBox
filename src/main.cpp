@@ -155,8 +155,8 @@ void showSettings()
 	}
 }
 
-int main(int argc, char *argv[], char *envp[]) {
-
+int main(int argc, char *argv[], char *envp[]) 
+{
 	QCoreApplication::setOrganizationName("IUT");
 	QCoreApplication::setApplicationName("DYNAMIND");
 
