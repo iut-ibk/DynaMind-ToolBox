@@ -1,7 +1,6 @@
 #include <guiimport.h>
 #include <ui_guiimport.h>
 #include "import.h"
-#include "guipickwfsdataset.h"
 #include <QFileDialog>
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>

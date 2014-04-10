@@ -2,7 +2,6 @@
 #include <guiexport.h>
 #include <ui_guiexport.h>
 #include "export.h"
-//#include "guipickwfsdataset.h"
 #include <QFileDialog>
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>
