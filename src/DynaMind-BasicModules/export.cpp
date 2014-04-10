@@ -285,6 +285,14 @@ void Export::exportLayer(const DM::View& view, OGRLayer* layer, System* system)
 				foreach(Node* n, f->getNodePointers())
 					ring.addPoint(n->getX(), n->getY(), n->getZ());
 
+				if (ring.getNumPoints() < 3)
+					continue;
+
+				// ring closure
+				OGRPoint first;
+				ring.getPoint(0, &first);
+				ring.addPoint(&first);
+
 				poly.addRing(&ring);
 
 				feat.SetGeometry(&poly);
