@@ -45,7 +45,6 @@
 #include <dmdbconnector.h>
 #include <dmpythonenv.h>
 
-
 #include <fstream>
 
 #ifdef _OPENMP
@@ -119,17 +118,20 @@ string replacestrings(string &replace, string projectfilepath)
     return tmpfile.toStdString();
 }
 
-void setSettings(std::string s) {
+void setSettings(std::string s) 
+{
 	QStringList avalible_settings;
 	avalible_settings << "SWMM";
 	QString setting = QString::fromStdString(s);
 	QStringList sl = setting.split("=");
-	if (sl.size() != 2) {
+	if (sl.size() != 2) 
+	{
 		std::cout << "Error: couldn't set setting " << s << " format unknown. Format should be NAMEOFSETTING=setting"<< std::endl;
 		return;
 	}
 
-	if (avalible_settings.indexOf(sl[0]) == -1) {
+	if (avalible_settings.indexOf(sl[0]) == -1) 
+	{
 		std::cout << "Unknown setting avalible settings are:" << std::endl;
 		foreach (QString as, avalible_settings)
 			std::cout << as.toStdString() << std::endl;
@@ -137,23 +139,20 @@ void setSettings(std::string s) {
 	}
 	QSettings settings;
 	settings.setValue(sl[0], sl[1]);
-
 }
 
-void showSettings() {
-
+void showSettings() 
+{
 	QSettings settings;
 
 	QStringList avalible_settings;
 	avalible_settings << "SWMM";
 
-
-	foreach (QString as, avalible_settings) {
+	foreach (QString as, avalible_settings) 
+	{
 		QString val = settings.value(as).toString();
 		std::cout << val.toStdString() << std::endl;
 	}
-
-
 }
 
 int main(int argc, char *argv[], char *envp[]) {
@@ -162,7 +161,6 @@ int main(int argc, char *argv[], char *envp[]) {
 	QCoreApplication::setApplicationName("DYNAMIND");
 
 	QThreadPool::globalInstance()->setMaxThreadCount(1);
-
 
 	po::positional_options_description p;
 	p.add("input-file", -1);
@@ -196,10 +194,8 @@ int main(int argc, char *argv[], char *envp[]) {
 	int numThreads = 1;
 
 	DM::LogLevel ll = DM::Standard;
-	try {
-
-
-
+	try 
+	{
 		po::store(po::command_line_parser(argc, argv).
 			options(desc).positional(p).run(), vm);
 		po::notify(vm);
@@ -241,8 +237,6 @@ int main(int argc, char *argv[], char *envp[]) {
 
 		if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
-
-
 		QDateTime time = QDateTime::currentDateTime();
 		QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
 
@@ -252,7 +246,6 @@ int main(int argc, char *argv[], char *envp[]) {
 		std::ofstream* outputFile = new ofstream();
 		outputFile->open(logfilepath.toStdString().c_str());
 		DM::OStreamLogSink* file_log_updater = new DM::OStreamLogSink(*outputFile);
-
 
 		//ostream *out = &cout;
 		DM::Log::init(new DM::OStreamLogSink(cout), ll);
@@ -295,7 +288,6 @@ int main(int argc, char *argv[], char *envp[]) {
 	omp_set_num_threads(numThreads);
 #endif
 
-
 	DM::Simulation s;
 
 	s.registerModulesFromDefaultLocation();
@@ -336,5 +328,4 @@ int main(int argc, char *argv[], char *envp[]) {
         QFile::remove(QString::fromStdString(realsimulationfile));
 
 	QThreadPool::globalInstance()->waitForDone();
-
 }
