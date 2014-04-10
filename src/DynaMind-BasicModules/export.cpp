@@ -166,6 +166,11 @@ static std::string attributeTypeStrings[] =
 
 OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 {
+	// get layer name
+	const char* newLayerName = viewConfig[view.getName()].c_str();
+	if (strlen(newLayerName) == 0)
+		return NULL;
+
 	// get geom type
 	OGRwkbGeometryType geomType;
 
@@ -196,10 +201,16 @@ OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 	spatRef.importFromEPSG(epsgCode);
 
 	// create layer
-	OGRLayer* layer = data->CreateLayer(view.getName().c_str(), &spatRef, geomType);
+	OGRLayer* layer = data->CreateLayer(newLayerName, &spatRef, geomType);
 	// add attribute fields
 	foreach(const std::string& attName, view.getAllAttributes())
 	{
+		// get name
+		std::string searchString = view.getName() + "." + attName;
+		const char* newAttrName = viewConfig[searchString].c_str();
+		if (strlen(newAttrName) == 0)
+			continue;
+		// get type
 		OGRFieldType fieldType;
 		switch (view.getAttributeType(attName))
 		{
@@ -220,8 +231,8 @@ OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 				<< " not supported";
 			continue;
 		}
-
-		OGRFieldDefn fieldDef(attName.c_str(), fieldType);
+		
+		OGRFieldDefn fieldDef(newAttrName, fieldType);
 		layer->CreateField(&fieldDef);
 	}
 	return layer;
@@ -278,22 +289,26 @@ void Export::exportLayer(const DM::View& view, OGRLayer* layer, System* system)
 		// add attributes
 		foreach(Attribute* a, cmp->getAllAttributes())
 		{
-			switch (a->getType())
+			const char* newAttrName = viewConfig[view.getName() + "." + a->getName()].c_str();
+			if (strlen(newAttrName) != 0)
 			{
-			case Attribute::DOUBLE:
-				feat.SetField(a->getName().c_str(), a->getDouble());
-				break;
-			case Attribute::DOUBLEVECTOR:
+				switch (a->getType())
+				{
+				case Attribute::DOUBLE:
+					feat.SetField(newAttrName, a->getDouble());
+					break;
+				case Attribute::DOUBLEVECTOR:
 				{
 					const std::vector<double>& values = a->getDoubleVector();
-					feat.SetField(a->getName().c_str(), values.size(), const_cast<double*>(&values.front()));
+					feat.SetField(newAttrName, values.size(), const_cast<double*>(&values.front()));
 				}
-				break;
-			case Attribute::STRING:
-				feat.SetField(a->getName().c_str(), a->getString().c_str());
-				break;
-			//case Attribute::STRINGVECTOR:
-			//	break;
+					break;
+				case Attribute::STRING:
+					feat.SetField(newAttrName, a->getString().c_str());
+					break;
+					//case Attribute::STRINGVECTOR:
+					//	break;
+				}
 			}
 		}
 
@@ -333,12 +348,12 @@ void Export::run()
 	int i = 0;
 	mforeach(const View& view, views)
 	{
-		Logger(Debug) << "preparing layer '" << view.getName() << "'";
+		Logger(Debug) << "preparing view '" << view.getName() << "'";
 		OGRLayer* layer = prepareNewLayer(view, data);
-		if (!layer)	// unsupported type
+		if (!layer)	// unsupported type or error
 			continue;
 
-		Logger(Debug) << "exporting layer '" << view.getName() << "'";
+		Logger(Debug) << "exporting layer '" << viewConfig[view.getName()] << "'";
 		exportLayer(view, layer, system);
 		Logger(Debug) << "finished layer " << ++i << "/" << views.size();
 	}
