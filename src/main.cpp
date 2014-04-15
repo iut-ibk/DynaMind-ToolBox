@@ -194,6 +194,18 @@ void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloa
 	}
 }
 
+void showParameters(DM::Simulation* sim)
+{
+	cout << "--parameters ";
+	foreach(DM::Module* modIt, sim->getModules())
+	{
+		std::string modName = modIt->getName();
+		foreach(DM::Module::Parameter* p, modIt->getParameters())
+			cout << modName << "." << p->name << "=" << modIt->getParameterAsString(p->name) << ";";
+	}
+	cout << endl;
+}
+
 int main(int argc, char *argv[], char *envp[]) 
 {
 	QCoreApplication::setOrganizationName("IUT");
@@ -222,6 +234,7 @@ int main(int argc, char *argv[], char *envp[])
 		("show-settings", "show environment variables")
 		//("python-modules", po::value<vector <string> >(), "set path to python modules")
 		("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
+		("parameterlist", "shows the available parameters for this file")
 		;
 
 
@@ -340,6 +353,17 @@ int main(int argc, char *argv[], char *envp[])
 	s.loadSimulation(realsimulationfile);
 	OverloadParameters(&s, parameteroverloads);
 
+
+	if (vm.count("parameterlist"))
+	{
+		showParameters(&s);
+
+		if (simulationfile != realsimulationfile)
+			QFile::remove(QString::fromStdString(realsimulationfile));
+
+		return 1;
+	}
+
 	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
 	std::list<qint64> times;
@@ -369,6 +393,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	DM::Logger(DM::Standard) << ">>>> finished simulation at an average of " << (long)avg << "+-"<< (long)sigma << "ms";
 
+	// cleanup
     if(simulationfile!=realsimulationfile)
         QFile::remove(QString::fromStdString(realsimulationfile));
 
