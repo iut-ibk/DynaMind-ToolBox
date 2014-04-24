@@ -252,13 +252,13 @@ OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 		switch (view.getAttributeType(attName))
 		{
 		case Attribute::DOUBLE:
-			fieldType = OGRFieldType::OFTReal;
+			fieldType = OFTReal;
 			break;
 		case Attribute::DOUBLEVECTOR:
-			fieldType = OGRFieldType::OFTRealList;
+			fieldType = OFTRealList;
 			break;
 		case Attribute::STRING:
-			fieldType = OGRFieldType::OFTString;
+			fieldType = OFTString;
 			break;
 		//case Attribute::STRINGVECTOR:
 		//	fieldType = OGRFieldType::OFTStringList;
