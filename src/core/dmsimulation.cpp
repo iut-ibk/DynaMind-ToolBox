@@ -169,7 +169,7 @@ bool Simulation::registerModule(const std::string& filepath)
 		}
 		else
 		{
-            Logger(Warning) <<  "failed loading native module " << filepath;
+			//Logger(Warning) <<  "failed loading native module " << filepath;
 			return false;
 		}
 	}
