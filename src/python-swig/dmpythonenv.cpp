@@ -271,5 +271,5 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 
 	loadedModules.push_back(module);
 
-	return false;
+	return true;
 }
