@@ -229,7 +229,7 @@ bool Component::changeAttribute(const std::string& s, double val)
 {
     QMutexLocker ml(mutex);
 
-    getAttribute(s)->setDouble(val);
+	getAttribute(s)->setDouble(val);
     return true;
 }
 
@@ -273,7 +273,8 @@ Attribute* Component::getAttribute(const std::string& name)
             break;
 
     if (it == ownedattributes.end())
-    {
+	{
+		/*
 		Attribute::AttributeType type = Attribute::NOTYPE;
 		// get type
 		if (this->currentSys)
@@ -282,23 +283,24 @@ Attribute* Component::getAttribute(const std::string& name)
 			{
 				if (vc.view.hasAttribute(name))
 				{
-					Logger(Warning) << "extracting type of attribute '" << name 
+					Logger(Warning) << "extracting type of attribute '" << name
 									<< "' from view '" << vc.view.getName() << "'";
 					type = vc.view.getAttributeType(name);
 					break;
 				}
 			}
 		}
+		*/
 
-		// create new attribute
-		Attribute* a = new Attribute(name, type);
+		// create new attribute with default type: DOUBLE
+		Attribute* a = new Attribute(name, Attribute::DOUBLE);
 		a->setOwner(this);
 		ownedattributes.push_back(a);
 
         return a;
     }
     else if((*it)->GetOwner() != this)
-    {
+	{
         // successor copy
         Attribute* a = new Attribute(**it);
         ownedattributes.erase(it);
@@ -314,7 +316,7 @@ const std::vector<Attribute*>& Component::getAllAttributes()
 {
     // clone all attributes
     for (std::vector<Attribute*>::iterator it = ownedattributes.begin(); it != ownedattributes.end(); ++it)
-    {
+	{
         if ((*it)->GetOwner() != this)
         {
             *it = new Attribute(**it);

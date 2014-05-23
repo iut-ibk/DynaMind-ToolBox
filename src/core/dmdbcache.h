@@ -26,7 +26,7 @@ class DbCache: public Cache<Tkey,Tvalue>, Asynchron
 	void Synchronize()
 	{
 #ifdef NO_DB_SYNC
-		return
+		return;
 #endif
 
 			Node* n=Cache<Tkey,Tvalue>::_root;
