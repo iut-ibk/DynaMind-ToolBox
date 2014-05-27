@@ -751,21 +751,40 @@ void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeatur
 {
 	for( int iField = 0; iField < poFDefn->GetFieldCount(); iField++ )
 	{
-		OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn( iField );
+		OGRFieldDefn *poFieldDefn = poFDefn->GetFieldDefn(iField);
+		int fieldVectorSize = 0;
 
 		std::string attrName = poFieldDefn->GetNameRef();
 		attrName = viewConfig[view.getName() + "." + attrName];
 
 		if (!attrName.empty())
 		{
-			switch(poFieldDefn->GetType())
+			switch (poFieldDefn->GetType())
 			{
 			case OFTInteger:
-				cmp->addAttribute(attrName, (double)poFeature->GetFieldAsInteger(iField));
-				break;
 			case OFTReal:
 				cmp->addAttribute(attrName, poFeature->GetFieldAsDouble(iField));
 				break;
+			case OFTIntegerList:
+			case OFTRealList:
+			{
+				const double* v = poFeature->GetFieldAsDoubleList(iField, &fieldVectorSize);
+				cmp->addAttribute(attrName, DM::Attribute::DOUBLEVECTOR)->setDoubleVector(
+					std::vector<double>(v, v + fieldVectorSize));
+				break;
+			}
+			case OFTStringList:
+			{
+				char** v = poFeature->GetFieldAsStringList(iField);
+				std::vector<std::string> strVector;
+				while (v)
+				{
+					strVector.push_back(std::string(*v));
+					v++;
+				}
+				cmp->addAttribute(attrName, DM::Attribute::STRINGVECTOR)->setStringVector(strVector);
+				break;
+			}
 			default:
 				cmp->addAttribute(attrName, poFeature->GetFieldAsString(iField));
 				break;
