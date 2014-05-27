@@ -221,6 +221,7 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 	}
 
 	sim->getTabWidget()->setCurrentWidget(this->getQGViewer());
+	viewer->setSceneRect(this->sceneRect());
 }
 
 void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
