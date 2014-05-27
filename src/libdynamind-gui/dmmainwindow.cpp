@@ -47,6 +47,7 @@
 
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
+#include "dmdbconnector.h"
 
 void DMMainWindow::ReloadModules() 
 {
@@ -127,6 +128,21 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
 
 	ui->actionCancel->setEnabled(false);
+
+	// load from qsettings
+	QSettings settings;
+	DM::DBConnectorConfig cfg = DM::DBConnector::getInstance()->getConfig();
+	qulonglong v = settings.value("cacheBlockwritingSize", -1).toULongLong();
+	if (v != (qulonglong)-1)
+		cfg.cacheBlockwritingSize = v;
+
+	v = settings.value("queryStackSize", -1).toULongLong();
+	if (v != (qulonglong)-1)
+		cfg.queryStackSize = v;
+
+	int i = settings.value("peterDatastream", -1).toInt();
+	if (i != -1)
+		cfg.peterDatastream = (bool)i;
 }
 
 void DMMainWindow::createModuleListView() 

@@ -133,6 +133,10 @@ void Preferences::writePreference()
 	dbcfg.queryStackSize = this->spinBox_QueryStackSize->value();
 	dbcfg.peterDatastream = this->checkBox_PeterDatastream->isChecked();
 	DM::DBConnector::getInstance()->setConfig(dbcfg);
+
+	settings.setValue("cacheBlockwritingSize", (qulonglong)dbcfg.cacheBlockwritingSize);
+	settings.setValue("queryStackSize", (qulonglong)dbcfg.queryStackSize);
+	settings.setValue("peterDatastream", (int)dbcfg.peterDatastream);
 }
 void Preferences::openFileDialog() 
 {
