@@ -34,7 +34,7 @@
 
 DM_DECLARE_NODE_NAME(Import, Modules)
 
-#define OUTPORT_NAME "data"
+#define PORT_NAME "data"
 #define RASTERVIEWNAME "RasterData"
 
 #define UNKNOWN_TRAFO_STRING "<unknown>"
@@ -43,8 +43,6 @@ Import::Import():
 	crypto(Q_UINT64_C(0x0c2ad4a4acb9f023))
 {
 	driverType = DataError;
-
-	append = false;
 
 	this->FileName = "";
 	this->FileName_old = "";
@@ -105,6 +103,16 @@ void Import::init()
 
 		reloadFile();
 	}
+	updatePorts();
+}
+
+void Import::updatePorts()
+{
+	bool hasInPort = this->hasInPort(PORT_NAME);
+	if (append && !hasInPort)
+		this->addPort(PORT_NAME, INPORT);
+	else if (!append && hasInPort)
+		this->removePort(PORT_NAME, INPORT);
 }
 
 std::string Import::getServerPath()
@@ -404,10 +412,10 @@ void Import::initViews()
 	if (vviews.empty())
 		vviews.push_back(DM::View("dummy", 0, DM::WRITE));
 
-	addData(OUTPORT_NAME, vviews);
+	addData(PORT_NAME, vviews);
 }
 
-bool Import::moduleParametersChanged()
+/*bool Import::moduleParametersChanged()
 {
 	bool changed = false;
 	if (FileName_old != FileName)		changed = true; FileName_old = FileName;
@@ -417,7 +425,7 @@ bool Import::moduleParametersChanged()
 	if (append_old != append)			changed = true; append_old = append;
 
 	return changed;
-}
+}*/
 
 // RUN methods
 
@@ -443,7 +451,7 @@ void Import::run()
 
 void Import::loadVectorData(const std::string& path)
 {
-	DM::System * sys = this->getData(OUTPORT_NAME);
+	DM::System * sys = this->getData(PORT_NAME);
 
 #ifdef _DEBUG
 	int features_before = sys->getAllChilds().size();
@@ -505,7 +513,7 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 	if (!poCT)
 		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
 
-	const DM::View view = getAccessedViews()[OUTPORT_NAME][viewName];
+	const DM::View view = getAccessedViews()[PORT_NAME][viewName];
 	const DM::Components dmType = (DM::Components)view.getType();
 
 	OGRFeatureDefn *layerDef = layer->GetLayerDefn();
@@ -647,7 +655,7 @@ bool Import::loadRasterData()
 	GDALDataset  *poDataset;
 	GDALRasterBand  *poBand;
 	double adfGeoTransform[6];
-	DM::RasterData * r = this->getRasterData(OUTPORT_NAME, View(RASTERVIEWNAME, DM::RASTERDATA, DM::WRITE));
+	DM::RasterData * r = this->getRasterData(PORT_NAME, View(RASTERVIEWNAME, DM::RASTERDATA, DM::WRITE));
 
 	poDataset = (GDALDataset *)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
 	poBand = poDataset->GetRasterBand(1);

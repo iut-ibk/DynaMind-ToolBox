@@ -259,6 +259,7 @@ void GUIImport::accept()
 
 	updateViewConfig();
 	m->initViews();
+	m->updatePorts();
 	QDialog::accept();
 }
 

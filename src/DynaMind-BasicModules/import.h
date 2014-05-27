@@ -89,6 +89,8 @@ public:
 
 	void reloadFile();
 
+	void updatePorts();
+
 	SimpleCrypt crypto;
 private:
 	// main methods
@@ -126,7 +128,7 @@ private:
 
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
 
-	bool moduleParametersChanged();
+	//bool moduleParametersChanged();
 
 	// geo helpers
 	void initPointList(DM::System * sys);
