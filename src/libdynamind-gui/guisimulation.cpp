@@ -230,7 +230,11 @@ bool GUISimulation::loadSimulation(std::string filePath)
 
 	this->selectTab(0);
 	foreach(SimulationTab* tab, tabs)
-		tab->getQGViewer()->fitInView(tab->sceneRect(), Qt::KeepAspectRatio);
+	{
+		QRectF r = tab->itemsBoundingRect();
+		tab->getQGViewer()->fitInView(r, Qt::KeepAspectRatio);
+		tab->getQGViewer()->centerOn(r.center());
+	}
 
 	return result;
 }
@@ -270,7 +274,7 @@ void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*>
 		else
 		{
 			minx = min(minx, (float)m->pos().x());
-			miny = max(miny, (float)m->pos().y());
+			miny = min(miny, (float)m->pos().y());
 		}
 	}
 

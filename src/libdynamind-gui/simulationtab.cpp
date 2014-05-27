@@ -219,9 +219,20 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 			node->setSelected(true);
 		}
 	}
-
 	sim->getTabWidget()->setCurrentWidget(this->getQGViewer());
-	viewer->setSceneRect(this->sceneRect());
+
+	bool isNew = false;
+	foreach(SimulationTab* tab, sim->getTabs())
+	{
+		if (isNew)
+		{
+			QRectF r = tab->itemsBoundingRect();
+			tab->getQGViewer()->fitInView(r, Qt::KeepAspectRatio);
+			tab->getQGViewer()->centerOn(r.center());
+		}
+		if (tab == this)
+			isNew = true;
+	}
 }
 
 void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
