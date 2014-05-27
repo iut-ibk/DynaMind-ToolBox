@@ -234,14 +234,15 @@ void AttributeCalculator::run()
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
-	const DM::View& baseView = getAccessedViews()["Data"]["nameOfBaseView"];
+	const DM::View& baseView = getAccessedViews()["Data"][nameOfBaseView];
+
 	foreach(Component* cmp, sys_in->getAllComponentsInView(baseView))
 	{
-		//mp_counter= (int) this->getInternalCounter()+1;
 		Group* lg = dynamic_cast<Group*>(getOwner());
+		//mp_counter= (int) this->getInternalCounter()+1;
+
 		if(lg) {
 			mp_c = lg->getGroupCounter();
-			DM::Logger(DM::Debug) << "counter " << lg->getGroupCounter();
 		}
 		else
 		{
