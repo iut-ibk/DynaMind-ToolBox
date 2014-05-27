@@ -61,6 +61,9 @@ public:
 
 	// layer[.attribute], type; integer to combine attributes and views
 	std::map<std::string, int> viewConfigTypes;
+
+	// the export type
+	std::string type;
 private:
 
 	OGRLayer* prepareNewLayer(const DM::View& view, OGRDataSource* data);

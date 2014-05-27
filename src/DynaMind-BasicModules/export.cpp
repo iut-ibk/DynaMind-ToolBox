@@ -47,6 +47,7 @@ Export::Export()
 	this->addParameter("epsgCode", INT, &this->epsgCode);
 	this->addParameter("viewConfig", STRING_MAP, &this->viewConfig);
 	this->addParameter("viewEPSGConfig", DM::STRING_MAP, &this->viewEPSGConfig);
+	this->addParameter("type", DM::STRING, &this->type);
 }
 
 Export::~Export()
@@ -373,7 +374,7 @@ void Export::run()
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 	
 	// create file
-	OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+	OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(type.c_str());
 	OGRDataSource* data = driver->CreateDataSource(path.c_str());
 
 	if (!driver)
