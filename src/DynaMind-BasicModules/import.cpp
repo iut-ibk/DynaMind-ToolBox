@@ -236,15 +236,17 @@ bool Import::ExtractLayers(OGRDataSource* dataSource, StringMap& viewConfig,
 
 	for (int i = 0; i < nLayers; i++)
 	{
-		Logger(Debug) << "extracting layer " << i << "/" << nLayers;
 
 		OGRLayer* layer = dataSource->GetLayer(i);
+		const std::string viewName = layer->GetName();
+
+		Logger(Debug) << "extracting layer '" << viewName << "'" << "(" << i << "/" << nLayers << ")";
+
 		OGRFeatureDefn *ogrFieldDefn = layer->GetLayerDefn();
 		OGRwkbGeometryType ogrType = ogrFieldDefn->GetGeomType();
 		std::string strType = OGRGeometryTypeToName(ogrType);
 
 		// create a view per layer
-		const std::string viewName = layer->GetName();
 		viewConfig[viewName] = viewName;
 
 		switch (wkbFlatten(ogrType))
