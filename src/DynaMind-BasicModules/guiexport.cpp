@@ -5,8 +5,10 @@
 #include <QFileDialog>
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>
+#include <QComboBox>
 #include <dmcomponent.h>
 #include <dmlogger.h>
+#include "ogrsf_frmts.h"
 
 #define COL_CHECKBOX	0
 #define COL_ORGNAME		1
@@ -29,18 +31,20 @@ GUIExport::GUIExport(DM::Module *m, QWidget *parent) :
 
 	this->ui->lineEdit_Filename->setText(QString::fromStdString(this->m->path));
 
-	//this->ui->lineEdit_wfs_server->setText(QString::fromStdString(this->m->WFSServer));
-	//this->ui->lineEdit_wfs_username->setText(QString::fromStdString(this->m->WFSUsername));
-	//QString pw = this->m->crypto.decryptToString(QString::fromStdString(this->m->WFSPassword));
-	//this->ui->lineEdit_wfs_password->setText(pw);
-
 	this->ui->epsgCode->setValue(this->m->epsgCode);
-	//this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
-
-	//this->ui->lineEdit_offx->setText(QString::number(this->m->offsetX));
-	//this->ui->lineEdit_offy->setText(QString::number(this->m->offsetY));
 
 	updateTree();
+
+	OGRRegisterAll();
+
+	int nDrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+	for (int i = 0; i < nDrivers; i++)
+	{
+		std::string driverName = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i)->GetName();
+		this->ui->typeComboBox->addItem(QString::fromStdString(driverName));
+		if (driverName == this->m->type)
+			ui->typeComboBox->setCurrentIndex(i);
+	}
 }
 
 void GUIExport::updateTree()
@@ -222,18 +226,8 @@ GUIExport::~GUIExport()
 void GUIExport::accept()
 {
 	m->path = this->ui->lineEdit_Filename->text().toStdString();
-	//m->append = this->ui->checkBox_append_existing->isChecked();
-	//m->WFSServer = this->ui->lineEdit_wfs_server->text().toStdString();
-	//m->WFSUsername = this->ui->lineEdit_wfs_username->text().toStdString();
-
-	//m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
-
-	//m->flip_wfs = this->ui->checkBox_flip->isChecked();
-	//m->linkWithExistingView = this->ui->checkBox_linkWithExistingView->isChecked();
 	m->epsgCode = this->ui->epsgCode->value();
-
-	//m->offsetX= this->ui->lineEdit_offx->text().toDouble();
-	//m->offsetY= this->ui->lineEdit_offy->text().toDouble();
+	m->type = this->ui->typeComboBox->currentText().toStdString();
 
 	updateViewConfig();
 	m->initViews();

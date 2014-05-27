@@ -128,8 +128,6 @@ private:
 
 	void appendAttributes(DM::Component * cmp, OGRFeatureDefn *poFDefn, OGRFeature *poFeature, const View& view);
 
-	//bool moduleParametersChanged();
-
 	// geo helpers
 	void initPointList(DM::System * sys);
 

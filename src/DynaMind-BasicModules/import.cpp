@@ -415,18 +415,6 @@ void Import::initViews()
 	addData(PORT_NAME, vviews);
 }
 
-/*bool Import::moduleParametersChanged()
-{
-	bool changed = false;
-	if (FileName_old != FileName)		changed = true; FileName_old = FileName;
-	if (WFSServer_old != WFSServer)		changed = true; WFSServer_old = WFSServer;
-	if (WFSUsername_old != WFSUsername) changed = true; WFSUsername_old = WFSUsername;
-	if (WFSPassword_old != WFSPassword) changed = true; WFSPassword_old = WFSPassword;
-	if (append_old != append)			changed = true; append_old = append;
-
-	return changed;
-}*/
-
 // RUN methods
 
 void Import::run()
