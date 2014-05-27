@@ -491,7 +491,7 @@ void Import::loadVectorData(const std::string& path)
 
 #ifdef _DEBUG
 	int features_after = sys->getAllChilds().size();
-	Logger(Debug) << "Loaded featuers " << features_after - features_before;
+	Logger(Debug) << "Loaded features: " << features_after - features_before;
 #endif
 }
 
