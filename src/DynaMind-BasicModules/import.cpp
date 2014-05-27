@@ -440,6 +440,7 @@ void Import::run()
 		break;
 	case ShapeFile:
 		loadVectorData(FileName);
+		break;
 	case WFS:
 		loadVectorData(getServerPath());
 		break;
