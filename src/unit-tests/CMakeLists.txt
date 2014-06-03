@@ -1,0 +1,18 @@
+SET(gtest_force_shared_crt "ON" CACHE BOOL "")
+MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
+		    ${gtest_SOURCE_DIR}/include
+		    ${CMAKE_CURRENT_SOURCE_DIR}/../src/DynaMind-BasicModules
+		    ${CMAKE_CURRENT_SOURCE_DIR}/../src/3dparty/muparserx)
+
+INCLUDE_DIRECTORIES( ${DYNAMIND_EXTENSIONS_INCLUDE_DIR})
+
+FILE(GLOB UNIT_CPP *.cpp)
+
+ADD_EXECUTABLE(unit-test_WaterBalance ${UNIT_CPP})
+
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+	SET_TARGET_PROPERTIES(unit-test_BasicModules  PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
+ENDIF()
+
+TARGET_LINK_LIBRARIES(unit-test_WaterBalance gtest_main dynamind-performance-assessment cd3core ${DYNAMIND_TOOLBOX_LIBRARY} ${DYNAMIND_CORE_LIBRARY} ${DYNAMIND_EXTENSIONS_LIBRARY} ${QT_LIBRARIES} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} ${GDAL_LIBRARY})

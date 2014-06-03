@@ -1,5 +1,7 @@
 #include "tank.h"
 #include "defaultblock.h"
+#include "consumption.h"
+#include "storage.h"
 
 #include <noderegistry.h>
 #include <nodefactory.h>
@@ -15,6 +17,8 @@ extern "C" {
 	void CD3_PUBLIC registerNodes(NodeRegistry *registry) {
                 registry->addNodeFactory(new NodeFactory<Tank>(SOURCE));
                 registry->addNodeFactory(new NodeFactory<Default>(SOURCE));
+                registry->addNodeFactory(new NodeFactory<Consumption>(SOURCE));
+                registry->addNodeFactory(new NodeFactory<Storage>(SOURCE));
 	}
 
     void CD3_PUBLIC registerSimulations(SimulationRegistry *registry) {

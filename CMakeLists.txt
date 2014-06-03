@@ -76,3 +76,8 @@ INCLUDE_DIRECTORIES(cd3/src/cd3core)
 
 ADD_SUBDIRECTORY(src/cd3-modules)
 ADD_SUBDIRECTORY(src/DynaMind-Performance-Assessment)
+
+IF(WITH_UNIT_TESTS)
+    ADD_SUBDIRECTORY(src/unit-tests)
+ENDIF(WITH_UNIT_TESTS)
+
