@@ -4,6 +4,7 @@
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <flow.h>
 
 class MapBasedModel;
 class NodeRegistry;
@@ -28,6 +29,9 @@ class WaterBalanceHouseHold: public DM::Module
         WaterBalanceHouseHold();
         void run();
         void initmodel();
+        void clear();
+        Node *createConsumer(int persons);
+        Flow createConstFlow(double const_flow);
 };
 
 #endif // WATERBALANCE_HOUSEHOLD_H

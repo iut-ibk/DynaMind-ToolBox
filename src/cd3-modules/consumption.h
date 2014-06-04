@@ -15,10 +15,19 @@ public:
 private:
     Flow const_flow_potable;
     Flow const_flow_nonpotable;
+
+    Flow const_flow_greywater;
     Flow const_flow_sewer;
-    Flow outp;
-    Flow outnp;
-    Flow outs;
+
+    Flow const_flow_stormwater;
+
+    Flow out_p;
+    Flow out_np;
+
+    Flow out_g;
+    Flow out_s;
+
+    Flow out_sw;
     double totalvolume;
 };
 

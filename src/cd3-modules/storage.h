@@ -13,7 +13,7 @@ public:
     bool init(ptime start, ptime end, int dt);
     int f(ptime time, int dt);
 private:
-    Flow demand_in;
+    Flow in;
     double totalvolume;
 };
 

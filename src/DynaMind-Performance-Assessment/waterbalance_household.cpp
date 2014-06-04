@@ -10,7 +10,6 @@
 #include <logsink.h>
 #include <noderegistry.h>
 #include <simulationregistry.h>
-#include <flow.h>
 #include <dynamindlogsink.h>
 #include <nodeconnection.h>
 
@@ -25,7 +24,6 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 void WaterBalanceHouseHold::run()
 {
     DM::Logger(DM::Standard) << "Init CD3";
-
     initmodel();
 }
 
@@ -54,29 +52,50 @@ void WaterBalanceHouseHold::initmodel()
         simreg->addNativePlugin("libnodes");
 
         p = new SimulationParameters();
-        p->dt = lexical_cast<int>("360");
-        p->start = time_from_string("2001-Jan-01 00:00:00");
-        p->stop = time_from_string("2001-Jan-02 00:00:00");
+        p->dt = lexical_cast<int>("86400");
+        p->start = time_from_string("2000-Jan-01 00:00:00");
+        p->stop = time_from_string("2010-Jan-01 00:00:00");
+
         MapBasedModel m;
 
-
         std::vector<std::string> node_names = nodereg->getRegisteredNames();
-        //1000 29501 ms total
 
-        //        for (int i = 0; i < 100; i++) {
-        Node *consumption = nodereg->createNode("Consumption");
-        m.addNode(QString::number(1).toStdString(), consumption);
-        Flow const_flow;
-        const_flow[0] = -0.001;
-        consumption->setParameter("const_flow_potable",const_flow);
-        consumption->setParameter("const_flow_nonpotable",const_flow);
-        consumption->setParameter("const_flow_sewer",const_flow);
+        Node * rain = nodereg->createNode("IxxRainRead_v2");
+        std::string rainfile = "/Users/curich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx";
+        rain->setParameter("rain_file", rainfile);
+        std::string datetime("d.M.yyyy HH:mm:ss");
+        rain->setParameter("datestring", datetime);
+        m.addNode("r_1", rain);
+
+        Node *runoff = nodereg->createNode("ImperviousRunoff");
+        runoff->setParameter("area", 100.);
+        std::string ro = "ro";
+        m.addNode(ro, runoff);
+
+        m.addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
+        //m.addConnection(new NodeConnection(runoff,"out_sw",storage_rain,"in" ));
+
+        Node * consumer = this->createConsumer(4);
+        m.addNode("c_1", consumer);
 
 
-        Node *storage = nodereg->createNode("Storage");
-        m.addNode(QString::number(2).toStdString(), storage);
+        Node * rwht = nodereg->createNode("RWHT");
+        rwht->setParameter("storage_volume", 2.5);
+        std::string rain_tank = "rain_tank";
+        m.addNode(rain_tank, rwht);
 
-        m.addConnection(new NodeConnection(consumption,"outp",storage,"demand_in" ));
+        m.addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
+        m.addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
+
+        Node *storage_non_p = nodereg->createNode("Storage");
+        m.addNode("1", storage_non_p);
+
+        Node *storage_rain = nodereg->createNode("Storage");
+        m.addNode("2", storage_rain);
+
+        m.addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
+        m.addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
+
 
         s = simreg->createSimulation(simreg->getRegisteredNames().front());
         DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
@@ -86,8 +105,13 @@ void WaterBalanceHouseHold::initmodel()
 
         m.initNodes(s->getSimulationParameters());
         s->start(starttime);
-        Logger(Error) << "Total Consumption"<< *(consumption->getState<double>("TotalVolume"));
-        Logger(Error) << "Total Consumption"<< *(storage->getState<double>("TotalVolume"));
+
+        Logger(Error) << "Total Consumption"<< *(storage_non_p->getState<double>("TotalVolume"));
+        Logger(Error) << "Total Runoff"<< *(storage_rain->getState<double>("TotalVolume"));
+
+        Logger(Error) << "Dry"<< *(rwht->getState<int>("dry"));
+        Logger(Error) << "Spills"<< *(rwht->getState<int>("spills"));
+
 
     }
     catch(...)
@@ -95,9 +119,39 @@ void WaterBalanceHouseHold::initmodel()
         DM::Logger(DM::Error) << "Cannot start CD3 simulation";
     }
 
-
     //clear();
 
     DM::Logger(DM::Debug) << "CD3 simulation finished";
+}
+
+Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
+{
+    Flow cf;
+    cf[0] = const_flow;
+
+    return cf;
+}
+
+Node *WaterBalanceHouseHold::createConsumer(int persons)
+{
+    Node *consumption = nodereg->createNode("Consumption");
+    double l_d_to_m_s = 1./(1000.*60.*60.*24.) * (double) persons;
+    double leak_other = 6. *l_d_to_m_s;
+    double washing_machine = 22 * l_d_to_m_s;
+    double taps = 21. * l_d_to_m_s;
+    double toilet = 19. * l_d_to_m_s;
+    double shower_bath = 34. * l_d_to_m_s;
+
+
+    consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) * -1.));
+    consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet* -1. ));
+    //consumption->setParameter("const_flow_nonpotable",createConstFlow(0 ));
+
+    consumption->setParameter("const_flow_greywater",createConstFlow(0));
+    consumption->setParameter("const_flow_sewer",createConstFlow(leak_other + washing_machine + taps + shower_bath + toilet));
+
+    consumption->setParameter("const_flow_stormwater",createConstFlow(0));
+
+    return consumption;
 }
 
