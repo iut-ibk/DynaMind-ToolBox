@@ -28,6 +28,8 @@ private:
     int spills;
     int dry;
 
+	std::vector<double> storage_behaviour;
+
 };
 
 

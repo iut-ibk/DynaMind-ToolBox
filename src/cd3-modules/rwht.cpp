@@ -16,6 +16,8 @@ RWHT::RWHT() {
     addState(ADD_PARAMETERS(spills));
     addState(ADD_PARAMETERS(dry));
 
+	addState(ADD_PARAMETERS(storage_behaviour));
+
 }
 
 RWHT::~RWHT() {
@@ -45,6 +47,7 @@ int RWHT::f(ptime time, int dt) {
         out_sw[0] = current_volume - storage_volume + vol_straight_to_overflow;
         current_volume = storage_volume;
         spills++;
+		storage_behaviour.push_back(current_volume);
         return dt;
     }
 
@@ -52,7 +55,7 @@ int RWHT::f(ptime time, int dt) {
     if (current_volume <= 0.) {
         out_np[0] = current_volume;
         current_volume = 0;
-         out_sw[0] = 0;
+		out_sw[0] = 0;
         dry++;
     }
 
@@ -61,6 +64,7 @@ int RWHT::f(ptime time, int dt) {
         spills++;
         out_sw[0] = vol_straight_to_overflow;
     }
+	storage_behaviour.push_back(current_volume);
 
     return dt;
 }
