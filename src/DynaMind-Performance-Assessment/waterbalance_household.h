@@ -25,10 +25,20 @@ class WaterBalanceHouseHold: public DM::Module
         ISimulation *s;
         DynaMindStreamLogSink *sink;
         SimulationParameters *p;
+
+		DM::View building;
+		DM::View parcel;
+		DM::View rwht;
+
+		std::vector<double> storage_behaviour;
+		std::string rainfile;
+		std::string cd3_dir;
+
     public:
         WaterBalanceHouseHold();
         void run();
         void initmodel();
+		DM::Component *  createRaintank();
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);

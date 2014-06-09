@@ -18,13 +18,38 @@ DM_DECLARE_NODE_NAME(WaterBalanceHouseHold,Performance)
 
 WaterBalanceHouseHold::WaterBalanceHouseHold()
 {
+	this->rainfile = "";
+	this->addParameter("rainfile", DM::STRING, &this->rainfile);
 
+	this->cd3_dir = "";
+	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
+
+	parcel = DM::View("PARCEL", DM::COMPONENT, DM::READ);
+	parcel.getAttribute("area");
+	parcel.getAttribute("BUILDING");
+	building = DM::View("BUILDING", DM::COMPONENT, DM::READ);
+	building.getAttribute("area");
+	//building.addAttribute("water_savings");
+	rwht = DM::View("RWHT", DM::COMPONENT, DM::WRITE);
+	rwht.addAttribute("storage_behaviour");
+	rwht.addLinks("BUILDING", building);
+
+	std::vector<DM::View> stream;
+	stream.push_back(parcel);
+	stream.push_back(building);
+	stream.push_back(rwht);
+	this->addData("city", stream);
 }
 
 void WaterBalanceHouseHold::run()
 {
+	DM::System * city = this->getData("city");
     DM::Logger(DM::Standard) << "Init CD3";
     initmodel();
+
+
+	DM::Component * rwht_cmp = createRaintank();
+	city->addComponent(rwht_cmp, this->rwht);
 }
 
 
@@ -47,72 +72,16 @@ void WaterBalanceHouseHold::initmodel()
     Logger(Standard) << dir.absolutePath().toStdString();
 
     try{
-        nodereg->addNativePlugin("Modules/libdance4water-nodes");
-        nodereg->addNativePlugin("libnodes");
-        simreg->addNativePlugin("libnodes");
+		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/Modules/libdance4water-nodes";
+		nodereg->addNativePlugin(dance_nodes.toStdString());
+		QString standard_nodes = QString::fromStdString(this->cd3_dir) + "/libnodes";
+		nodereg->addNativePlugin(standard_nodes.toStdString());
+		simreg->addNativePlugin(standard_nodes.toStdString());
 
         p = new SimulationParameters();
         p->dt = lexical_cast<int>("86400");
         p->start = time_from_string("2000-Jan-01 00:00:00");
-        p->stop = time_from_string("2010-Jan-01 00:00:00");
-
-        MapBasedModel m;
-
-        std::vector<std::string> node_names = nodereg->getRegisteredNames();
-
-        Node * rain = nodereg->createNode("IxxRainRead_v2");
-        std::string rainfile = "/Users/curich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx";
-        rain->setParameter("rain_file", rainfile);
-        std::string datetime("d.M.yyyy HH:mm:ss");
-        rain->setParameter("datestring", datetime);
-        m.addNode("r_1", rain);
-
-        Node *runoff = nodereg->createNode("ImperviousRunoff");
-        runoff->setParameter("area", 100.);
-        std::string ro = "ro";
-        m.addNode(ro, runoff);
-
-        m.addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
-        //m.addConnection(new NodeConnection(runoff,"out_sw",storage_rain,"in" ));
-
-        Node * consumer = this->createConsumer(4);
-        m.addNode("c_1", consumer);
-
-
-        Node * rwht = nodereg->createNode("RWHT");
-        rwht->setParameter("storage_volume", 2.5);
-        std::string rain_tank = "rain_tank";
-        m.addNode(rain_tank, rwht);
-
-        m.addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
-        m.addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
-
-        Node *storage_non_p = nodereg->createNode("Storage");
-        m.addNode("1", storage_non_p);
-
-        Node *storage_rain = nodereg->createNode("Storage");
-        m.addNode("2", storage_rain);
-
-        m.addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
-        m.addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
-
-
-        s = simreg->createSimulation(simreg->getRegisteredNames().front());
-        DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
-        s->setModel(&m);
-        s->setSimulationParameters(*p);
-        ptime starttime = s->getSimulationParameters().start;
-
-        m.initNodes(s->getSimulationParameters());
-        s->start(starttime);
-
-        Logger(Error) << "Total Consumption"<< *(storage_non_p->getState<double>("TotalVolume"));
-        Logger(Error) << "Total Runoff"<< *(storage_rain->getState<double>("TotalVolume"));
-
-        Logger(Error) << "Dry"<< *(rwht->getState<int>("dry"));
-        Logger(Error) << "Spills"<< *(rwht->getState<int>("spills"));
-
-
+		p->stop = time_from_string("2001-Jan-01 00:00:00");
     }
     catch(...)
     {
@@ -121,7 +90,73 @@ void WaterBalanceHouseHold::initmodel()
 
     //clear();
 
-    DM::Logger(DM::Debug) << "CD3 simulation finished";
+	DM::Logger(DM::Debug) << "CD3 simulation finished";
+}
+
+DM::Component * WaterBalanceHouseHold::createRaintank()
+{
+	MapBasedModel m;
+
+	Node * rain = nodereg->createNode("IxxRainRead_v2");
+	//std::string rainfile = "/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx";
+	rain->setParameter("rain_file", this->rainfile);
+	std::string datetime("d.M.yyyy HH:mm:ss");
+	rain->setParameter("datestring", datetime);
+	m.addNode("r_1", rain);
+
+	Node *runoff = nodereg->createNode("ImperviousRunoff");
+	runoff->setParameter("area", 100.);
+	std::string ro = "ro";
+	m.addNode(ro, runoff);
+
+	m.addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
+	//m.addConnection(new NodeConnection(runoff,"out_sw",storage_rain,"in" ));
+
+	Node * consumer = this->createConsumer(4);
+	m.addNode("c_1", consumer);
+
+
+	Node * rwht = nodereg->createNode("RWHT");
+	rwht->setParameter("storage_volume", 2.5);
+	std::string rain_tank = "rain_tank";
+	m.addNode(rain_tank, rwht);
+
+	m.addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
+	m.addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
+
+	Node *storage_non_p = nodereg->createNode("Storage");
+	m.addNode("1", storage_non_p);
+
+	Node *storage_rain = nodereg->createNode("Storage");
+	m.addNode("2", storage_rain);
+
+	m.addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
+	m.addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
+
+
+	s = simreg->createSimulation(simreg->getRegisteredNames().front());
+	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
+	s->setModel(&m);
+	s->setSimulationParameters(*p);
+	ptime starttime = s->getSimulationParameters().start;
+
+	m.initNodes(s->getSimulationParameters());
+	s->start(starttime);
+
+	Logger(Debug) << "Total Consumption"<< *(storage_non_p->getState<double>("TotalVolume"));
+	Logger(Debug) << "Total Runoff"<< *(storage_rain->getState<double>("TotalVolume"));
+
+	Logger(Debug) << "Dry"<< *(rwht->getState<int>("dry"));
+	Logger(Debug) << "Spills"<< *(rwht->getState<int>("spills"));
+	storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
+
+
+	DM::Component * rwht_cmp = new DM::Component();
+	DM::Attribute attr = DM::Attribute("storage_behaviour");
+	attr.setDoubleVector(storage_behaviour);
+	rwht_cmp->addAttribute(attr);
+
+	return rwht_cmp;
 }
 
 Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
