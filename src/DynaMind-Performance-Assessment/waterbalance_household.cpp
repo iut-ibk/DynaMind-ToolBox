@@ -16,6 +16,32 @@
 
 DM_DECLARE_NODE_NAME(WaterBalanceHouseHold,Performance)
 
+std::vector<double> WaterBalanceHouseHold::create_montly_values(std::vector<double> dayly)
+{
+	QDate start = QDate::fromString("01.01.2000", "dd.MM.yyyy");
+	std::vector<double> monthly;
+	double sum = 0;
+	int month = 1;
+	for (int i = 0; i < dayly.size(); i++) {
+		QDate today = start.addDays(i);
+		//check if date switched
+		if (month == today.month()) {
+			sum+=dayly[i];
+			continue;
+		}
+		month = today.month();
+		monthly.push_back(sum);
+		sum = dayly[i];
+	}
+	monthly.push_back(sum);
+	return monthly;
+}
+
+void WaterBalanceHouseHold::analyse_raintank()
+{
+
+}
+
 WaterBalanceHouseHold::WaterBalanceHouseHold()
 {
 	this->rainfile = "";
@@ -46,7 +72,6 @@ void WaterBalanceHouseHold::run()
 	DM::System * city = this->getData("city");
     DM::Logger(DM::Standard) << "Init CD3";
     initmodel();
-
 
 	DM::Component * rwht_cmp = createRaintank();
 	city->addComponent(rwht_cmp, this->rwht);
@@ -98,7 +123,6 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 	MapBasedModel m;
 
 	Node * rain = nodereg->createNode("IxxRainRead_v2");
-	//std::string rainfile = "/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx";
 	rain->setParameter("rain_file", this->rainfile);
 	std::string datetime("d.M.yyyy HH:mm:ss");
 	rain->setParameter("datestring", datetime);
@@ -114,7 +138,6 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 
 	Node * consumer = this->createConsumer(4);
 	m.addNode("c_1", consumer);
-
 
 	Node * rwht = nodereg->createNode("RWHT");
 	rwht->setParameter("storage_volume", 2.5);
@@ -133,7 +156,6 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 	m.addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
 	m.addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
 
-
 	s = simreg->createSimulation(simreg->getRegisteredNames().front());
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
 	s->setModel(&m);
@@ -150,10 +172,19 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 	Logger(Debug) << "Spills"<< *(rwht->getState<int>("spills"));
 	storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
 
-
 	DM::Component * rwht_cmp = new DM::Component();
 	DM::Attribute attr = DM::Attribute("storage_behaviour");
 	attr.setDoubleVector(storage_behaviour);
+	rwht_cmp->addAttribute(attr);
+
+	std::vector<double> provided_volume =  *(rwht->getState<std::vector<double> >("provided_volume"));
+
+	attr = DM::Attribute("provided_volume_dayly");
+	attr.setDoubleVector(provided_volume);
+	rwht_cmp->addAttribute(attr);
+
+	attr = DM::Attribute("provided_volume_montly");
+	attr.setDoubleVector(this->create_montly_values(provided_volume));
 	rwht_cmp->addAttribute(attr);
 
 	return rwht_cmp;
@@ -163,7 +194,6 @@ Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
 {
     Flow cf;
     cf[0] = const_flow;
-
     return cf;
 }
 
@@ -176,7 +206,6 @@ Node *WaterBalanceHouseHold::createConsumer(int persons)
     double taps = 21. * l_d_to_m_s;
     double toilet = 19. * l_d_to_m_s;
     double shower_bath = 34. * l_d_to_m_s;
-
 
     consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) * -1.));
     consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet* -1. ));

@@ -29,6 +29,7 @@ private:
     int dry;
 
 	std::vector<double> storage_behaviour;
+	std::vector<double> provided_volume;
 
 };
 

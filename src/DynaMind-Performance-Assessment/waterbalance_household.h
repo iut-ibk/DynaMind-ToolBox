@@ -33,6 +33,8 @@ class WaterBalanceHouseHold: public DM::Module
 		std::vector<double> storage_behaviour;
 		std::string rainfile;
 		std::string cd3_dir;
+		std::vector<double> create_montly_values(std::vector<double> dayly);
+		void analyse_raintank();
 
     public:
         WaterBalanceHouseHold();

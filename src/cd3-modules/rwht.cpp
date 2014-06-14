@@ -17,6 +17,7 @@ RWHT::RWHT() {
     addState(ADD_PARAMETERS(dry));
 
 	addState(ADD_PARAMETERS(storage_behaviour));
+	addState(ADD_PARAMETERS(provided_volume));
 
 }
 
@@ -65,7 +66,7 @@ int RWHT::f(ptime time, int dt) {
         out_sw[0] = vol_straight_to_overflow;
     }
 	storage_behaviour.push_back(current_volume);
-
+	provided_volume.push_back( out_np[0] - in_np[0]);
     return dt;
 }
 
