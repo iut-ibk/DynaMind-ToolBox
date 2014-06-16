@@ -25,6 +25,7 @@ class WaterBalanceHouseHold: public DM::Module
         ISimulation *s;
         DynaMindStreamLogSink *sink;
         SimulationParameters *p;
+		MapBasedModel * m;
 
 		DM::View building;
 		DM::View parcel;

@@ -51,11 +51,11 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
 
 	parcel = DM::View("PARCEL", DM::COMPONENT, DM::READ);
+	parcel.addAttribute("run_off");
 	parcel.getAttribute("area");
 	parcel.getAttribute("BUILDING");
 	building = DM::View("BUILDING", DM::COMPONENT, DM::READ);
 	building.getAttribute("area");
-	//building.addAttribute("water_savings");
 	rwht = DM::View("RWHT", DM::COMPONENT, DM::WRITE);
 	rwht.addAttribute("storage_behaviour");
 	rwht.addLinks("BUILDING", building);
@@ -65,6 +65,9 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	stream.push_back(building);
 	stream.push_back(rwht);
 	this->addData("city", stream);
+
+	//Init Model
+	this->m = new MapBasedModel();
 }
 
 void WaterBalanceHouseHold::run()
@@ -73,19 +76,23 @@ void WaterBalanceHouseHold::run()
 	DM::Logger(DM::Standard) << "Init CD3";
 	initmodel();
 
-	mforeach (DM::Component * cmp, city->getAllComponentsInView(this->parcel)) {
+	mforeach (DM::Component * p, city->getAllComponentsInView(this->parcel)) {
 		double roofarea = 0;
-		std::vector<DM::LinkAttribute> building_ids = cmp->getAttribute("BUILDING")->getLinks();
+		std::vector<DM::LinkAttribute> building_ids = p->getAttribute("BUILDING")->getLinks();
 		Logger(Error) << "Number of Buildings" << building_ids.size();
 		for (int i = 0; i < building_ids.size(); i++){
 			DM::Component * b = city->getComponent(building_ids[i].uuid);
 			roofarea=roofarea+b->getAttribute("area")->getDouble();
 		}
-
 		Logger(Error) << "Connected Roof Area " << roofarea;
 		DM::Component * rwht_cmp = createRaintank(roofarea);
 		city->addComponent(rwht_cmp, this->rwht);
+
+		Node * run_off = m->getNode("ro");
+		std::vector<double> ro = *(run_off->getState<std::vector<double> >("run_off"));
+		p->getAttribute("run_off_monthly")->setDoubleVector(this->create_montly_values(ro));
 	}
+
 }
 
 void WaterBalanceHouseHold::initmodel()
@@ -129,49 +136,45 @@ void WaterBalanceHouseHold::initmodel()
 
 DM::Component * WaterBalanceHouseHold::createRaintank(double area)
 {
-	MapBasedModel m;
-
 	Node * rain = nodereg->createNode("IxxRainRead_v2");
 	rain->setParameter("rain_file", this->rainfile);
 	std::string datetime("d.M.yyyy HH:mm:ss");
 	rain->setParameter("datestring", datetime);
-	m.addNode("r_1", rain);
+	m->addNode("r_1", rain);
 
 	Node *runoff = nodereg->createNode("ImperviousRunoff");
 	runoff->setParameter("area", area);
-	std::string ro = "ro";
-	m.addNode(ro, runoff);
+	m->addNode("ro", runoff);
 
-	m.addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
-	//m.addConnection(new NodeConnection(runoff,"out_sw",storage_rain,"in" ));
+	m->addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
 
 	Node * consumer = this->createConsumer(4);
-	m.addNode("c_1", consumer);
+	m->addNode("c_1", consumer);
 
 	Node * rwht = nodereg->createNode("RWHT");
 	rwht->setParameter("storage_volume", 2.5);
 	std::string rain_tank = "rain_tank";
-	m.addNode(rain_tank, rwht);
+	m->addNode(rain_tank, rwht);
 
-	m.addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
-	m.addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
+	m->addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
+	m->addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
 
 	Node *storage_non_p = nodereg->createNode("Storage");
-	m.addNode("1", storage_non_p);
+	m->addNode("1", storage_non_p);
 
 	Node *storage_rain = nodereg->createNode("Storage");
-	m.addNode("2", storage_rain);
+	m->addNode("2", storage_rain);
 
-	m.addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
-	m.addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
+	m->addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
+	m->addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
 
 	s = simreg->createSimulation(simreg->getRegisteredNames().front());
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
-	s->setModel(&m);
+	s->setModel(m);
 	s->setSimulationParameters(*p);
 	ptime starttime = s->getSimulationParameters().start;
 
-	m.initNodes(s->getSimulationParameters());
+	m->initNodes(s->getSimulationParameters());
 	s->start(starttime);
 
 	Logger(Debug) << "Total Consumption"<< *(storage_non_p->getState<double>("TotalVolume"));

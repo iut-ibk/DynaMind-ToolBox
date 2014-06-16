@@ -16,6 +16,7 @@ private:
     Flow rain_in;
     Flow out_sw;
     double area;
+	std::vector<double> run_off;
 };
 
 
