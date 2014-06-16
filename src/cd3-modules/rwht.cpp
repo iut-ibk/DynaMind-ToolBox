@@ -49,6 +49,7 @@ int RWHT::f(ptime time, int dt) {
         current_volume = storage_volume;
         spills++;
 		storage_behaviour.push_back(current_volume);
+		provided_volume.push_back( out_np[0] - in_np[0]);
         return dt;
     }
 

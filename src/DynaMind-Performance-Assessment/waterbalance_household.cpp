@@ -21,7 +21,7 @@ std::vector<double> WaterBalanceHouseHold::create_montly_values(std::vector<doub
 	QDate start = QDate::fromString("01.01.2000", "dd.MM.yyyy");
 	std::vector<double> monthly;
 	double sum = 0;
-	int month = 1;
+	int month = start.month();
 	for (int i = 0; i < dayly.size(); i++) {
 		QDate today = start.addDays(i);
 		//check if date switched
@@ -75,19 +75,18 @@ void WaterBalanceHouseHold::run()
 
 	mforeach (DM::Component * cmp, city->getAllComponentsInView(this->parcel)) {
 		double roofarea = 0;
-		std::vector<std::string> building_ids = cmp->getAttribute("BUILDING")->getStringVector();
+		std::vector<DM::LinkAttribute> building_ids = cmp->getAttribute("BUILDING")->getLinks();
 		Logger(Error) << "Number of Buildings" << building_ids.size();
 		for (int i = 0; i < building_ids.size(); i++){
-			DM::Component * b = city->getComponent(building_ids[i]);
-			roofarea+=b->getAttribute("area")->getDouble();
+			DM::Component * b = city->getComponent(building_ids[i].uuid);
+			roofarea=roofarea+b->getAttribute("area")->getDouble();
 		}
+
 		Logger(Error) << "Connected Roof Area " << roofarea;
 		DM::Component * rwht_cmp = createRaintank(roofarea);
 		city->addComponent(rwht_cmp, this->rwht);
 	}
-
 }
-
 
 void WaterBalanceHouseHold::initmodel()
 {
