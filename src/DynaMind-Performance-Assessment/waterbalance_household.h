@@ -40,7 +40,7 @@ class WaterBalanceHouseHold: public DM::Module
         WaterBalanceHouseHold();
         void run();
         void initmodel();
-		DM::Component *  createRaintank();
+		DM::Component *  createRaintank(double area);
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);

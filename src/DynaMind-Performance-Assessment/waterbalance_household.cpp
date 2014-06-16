@@ -70,55 +70,65 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 void WaterBalanceHouseHold::run()
 {
 	DM::System * city = this->getData("city");
-    DM::Logger(DM::Standard) << "Init CD3";
-    initmodel();
+	DM::Logger(DM::Standard) << "Init CD3";
+	initmodel();
 
-	DM::Component * rwht_cmp = createRaintank();
-	city->addComponent(rwht_cmp, this->rwht);
+	mforeach (DM::Component * cmp, city->getAllComponentsInView(this->parcel)) {
+		double roofarea = 0;
+		std::vector<std::string> building_ids = cmp->getAttribute("BUILDING")->getStringVector();
+		Logger(Error) << "Number of Buildings" << building_ids.size();
+		for (int i = 0; i < building_ids.size(); i++){
+			DM::Component * b = city->getComponent(building_ids[i]);
+			roofarea+=b->getAttribute("area")->getDouble();
+		}
+		Logger(Error) << "Connected Roof Area " << roofarea;
+		DM::Component * rwht_cmp = createRaintank(roofarea);
+		city->addComponent(rwht_cmp, this->rwht);
+	}
+
 }
 
 
 void WaterBalanceHouseHold::initmodel()
 {
-    sink = new DynaMindStreamLogSink();
-    Log::init(sink, Error);
+	sink = new DynaMindStreamLogSink();
+	Log::init(sink, Error);
 
-    simreg = new SimulationRegistry();
-    nodereg = new NodeRegistry();
-    s = 0;
+	simreg = new SimulationRegistry();
+	nodereg = new NodeRegistry();
+	s = 0;
 
-    std::map<std::string, Flow::CalculationUnit> flowdef;
-    flowdef["Q"]=Flow::flow;
-    Flow::undefine();
-    Flow::define(flowdef);
+	std::map<std::string, Flow::CalculationUnit> flowdef;
+	flowdef["Q"]=Flow::flow;
+	Flow::undefine();
+	Flow::define(flowdef);
 
-    QDir dir("./");
+	QDir dir("./");
 
-    Logger(Standard) << dir.absolutePath().toStdString();
+	Logger(Standard) << dir.absolutePath().toStdString();
 
-    try{
+	try{
 		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/Modules/libdance4water-nodes";
 		nodereg->addNativePlugin(dance_nodes.toStdString());
 		QString standard_nodes = QString::fromStdString(this->cd3_dir) + "/libnodes";
 		nodereg->addNativePlugin(standard_nodes.toStdString());
 		simreg->addNativePlugin(standard_nodes.toStdString());
 
-        p = new SimulationParameters();
-        p->dt = lexical_cast<int>("86400");
-        p->start = time_from_string("2000-Jan-01 00:00:00");
+		p = new SimulationParameters();
+		p->dt = lexical_cast<int>("86400");
+		p->start = time_from_string("2000-Jan-01 00:00:00");
 		p->stop = time_from_string("2001-Jan-01 00:00:00");
-    }
-    catch(...)
-    {
-        DM::Logger(DM::Error) << "Cannot start CD3 simulation";
-    }
+	}
+	catch(...)
+	{
+		DM::Logger(DM::Error) << "Cannot start CD3 simulation";
+	}
 
-    //clear();
 
 	DM::Logger(DM::Debug) << "CD3 simulation finished";
 }
 
-DM::Component * WaterBalanceHouseHold::createRaintank()
+DM::Component * WaterBalanceHouseHold::createRaintank(double area)
 {
 	MapBasedModel m;
 
@@ -129,7 +139,7 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 	m.addNode("r_1", rain);
 
 	Node *runoff = nodereg->createNode("ImperviousRunoff");
-	runoff->setParameter("area", 100.);
+	runoff->setParameter("area", area);
 	std::string ro = "ro";
 	m.addNode(ro, runoff);
 
@@ -192,30 +202,30 @@ DM::Component * WaterBalanceHouseHold::createRaintank()
 
 Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
 {
-    Flow cf;
-    cf[0] = const_flow;
-    return cf;
+	Flow cf;
+	cf[0] = const_flow;
+	return cf;
 }
 
 Node *WaterBalanceHouseHold::createConsumer(int persons)
 {
-    Node *consumption = nodereg->createNode("Consumption");
-    double l_d_to_m_s = 1./(1000.*60.*60.*24.) * (double) persons;
-    double leak_other = 6. *l_d_to_m_s;
-    double washing_machine = 22 * l_d_to_m_s;
-    double taps = 21. * l_d_to_m_s;
-    double toilet = 19. * l_d_to_m_s;
-    double shower_bath = 34. * l_d_to_m_s;
+	Node *consumption = nodereg->createNode("Consumption");
+	double l_d_to_m_s = 1./(1000.*60.*60.*24.) * (double) persons;
+	double leak_other = 6. *l_d_to_m_s;
+	double washing_machine = 22 * l_d_to_m_s;
+	double taps = 21. * l_d_to_m_s;
+	double toilet = 19. * l_d_to_m_s;
+	double shower_bath = 34. * l_d_to_m_s;
 
-    consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) * -1.));
-    consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet* -1. ));
-    //consumption->setParameter("const_flow_nonpotable",createConstFlow(0 ));
+	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) * -1.));
+	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet* -1. ));
+	//consumption->setParameter("const_flow_nonpotable",createConstFlow(0 ));
 
-    consumption->setParameter("const_flow_greywater",createConstFlow(0));
-    consumption->setParameter("const_flow_sewer",createConstFlow(leak_other + washing_machine + taps + shower_bath + toilet));
+	consumption->setParameter("const_flow_greywater",createConstFlow(0));
+	consumption->setParameter("const_flow_sewer",createConstFlow(leak_other + washing_machine + taps + shower_bath + toilet));
 
-    consumption->setParameter("const_flow_stormwater",createConstFlow(0));
+	consumption->setParameter("const_flow_stormwater",createConstFlow(0));
 
-    return consumption;
+	return consumption;
 }
 
