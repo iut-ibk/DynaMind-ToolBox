@@ -13,11 +13,12 @@
 
 #include <ogrsf_frmts.h>
 
-#define SPEEDTEST
+/*#define SPEEDTEST
 #define CONTAINERCREATE
 #define CONTAINERCREATEATTRIBUTE
 #define TESTSTATES
 #define LINKTEST
+*/
 
 #define  ELEMENTS 1000000
 

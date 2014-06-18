@@ -31,6 +31,7 @@
 #include <dmsystem.h>
 #include <dmrasterdata.h>
 #include "dmlogger.h"
+#include <dmsimulation.h>
 
 using namespace std;
 using namespace DM;
@@ -227,6 +228,7 @@ System* Module::getOutPortData(const std::string &name) const
 	return sys;
 }
 
+
 void Module::addData(const std::string& streamName, std::vector<View> views)
 {
 	if(views.size())
@@ -340,6 +342,74 @@ System* Module::getData(const std::string& streamName)
 	return sys;
 }
 
+GDALSystem *Module::getGDALData()
+{
+	return this->sim->getRootSystem();
+/*	if(!hasInPort(streamName) && !hasOutPort(streamName))
+	{
+		Logger(Error) << "stream '" << streamName << "' does not exist in module '" << this->getClassName();
+		return NULL;
+	}
+
+	System *sys = getInPortData(streamName);
+	if(!sys)
+	{
+		if(this->getInPortNames().size() != 0)
+		{
+			bool emptyInPorts = true;
+			mforeach(System* s, inPorts)
+				if(s)
+				{
+					emptyInPorts = false;
+					break;
+				}
+
+			if(emptyInPorts)
+			{
+				// we didn't get a system, but we all ports are empty -> simulation not ready
+				// this can happen if module::init calles getData, which is deprecated
+				DM::Logger(Error) << "module '" << getClassName() << "' may calls getData('"
+					<< streamName << "') while initializing, "
+					<< "please use getViewsInStream to retrieve the desired views from stream";
+				return NULL;
+			}
+		}
+
+		if(hasOutPort(streamName))	// maybe the system is already created during the run
+			sys = getOutPortData(streamName);
+
+		if(!sys)
+			sys = new System();
+	}
+
+	if (DBConnector::getInstance()->getConfig().peterDatastream)
+	{
+		Logger(Debug) << "moving system into db";
+		sys->_moveToDb();
+		Logger(Debug) << "moving system into db finished";
+	}
+
+	std::vector<View> views;
+	mforeach(const View& v, accessedViews[streamName])
+		views.push_back(v);
+
+	sys->updateViews(views);
+	//mforeach(View v, accessedViews[streamName])
+	//	sys->updateView(v);
+
+	if (DBConnector::getInstance()->getConfig().peterDatastream)
+	{
+		Logger(Debug) << "importing system from db";
+		sys->_importViewElementsFromDB();
+		Logger(Debug) << "importing system from db finished";
+	}
+
+	if(hasOutPort(streamName))
+		this->setOutPortData(streamName, sys);
+
+	return sys;*/
+}
+
 RasterData* Module::getRasterData(std::string name, View view)
 {
 	System* data = getData(name);
@@ -434,9 +504,14 @@ void Module::setOwner(Module* owner)
 		Logger(Error) << "reassigning a new parent to a module is not allowed";
 }
 
+void Module::setSimulation(Simulation *sim)
+{
+	this->sim = sim;
+}
+
 void Module::setSuccessorMode(bool value)
 {
-	Logger(Debug) << "changed successor mode state of module '" 
+	Logger(Debug) << "changedß0uccessor mode state of module '"
 		<< getClassName() << "' to " << (value?"ON":"OFF");
 	this->successorMode = value;
 }

@@ -43,6 +43,7 @@ class System;
 class RasterData;
 class ModuleObserver;
 class Simulation;
+class GDALSystem;
 
 // enums
 #if defined _MSC_VER && defined _WIN32 || __cplusplus <= 199711L
@@ -245,6 +246,9 @@ protected:
 	/** @brief returns the data from the desired stream */
 	System* getData(const std::string& streamName);
 
+	/** @brief returns the data from the desired stream */
+	GDALSystem *getGDALData();
+
 	/** @brief checks if in-port does exist */
 	bool hasInPort(const std::string &name) const;
 
@@ -283,6 +287,8 @@ private:
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 
+	void setSimulation(Simulation* sim);
+
 	/** @brief resets the streamviews from sim::checkStream() and deletes all systems on the ports */
 	void reset();
 
@@ -305,6 +311,7 @@ private:
 	Module*			owner;
 	bool			successorMode;
 	std::string		name;
+	DM::Simulation *sim;
 };
 
 }

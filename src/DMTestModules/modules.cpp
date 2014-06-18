@@ -33,6 +33,7 @@
 #include "createnodes.h"
 #include "createallcomponents.h"
 #include "reallocator.h"
+#include "gdaladdcomponent.h"
 
 /**
   * @addtogroup TestModules
@@ -46,6 +47,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
     registry->addNodeFactory(new NodeFactory<DynamicInOut>());
     registry->addNodeFactory(new NodeFactory<GroupTest>());
     registry->addNodeFactory(new NodeFactory<CreateNodes>());
+	registry->addNodeFactory(new NodeFactory<GDALAddComponent>());
     //registry->addNodeFactory(new NodeFactory<CreateAllComponenets>());
     //registry->addNodeFactory(new NodeFactory<Reallocator>());
     //registry->addNodeFactory(new NodeFactory<CheckAllComponenets>());

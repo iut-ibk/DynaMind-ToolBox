@@ -89,6 +89,7 @@ Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool
 		return NULL;
 
 	module->setOwner(parent);
+	module->setSimulation(this);
 
 	if(module->isGroup())
 		dynamic_cast<Group*>(module)->sim = this;
@@ -391,6 +392,11 @@ std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest
 	return ls;
 }
 
+GDALSystem *Simulation::getRootSystem()
+{
+	return this->gdalRootSys;
+}
+
 bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
 	if(!g)
@@ -649,6 +655,9 @@ public:
 
 void Simulation::run()
 {
+	//init GDAL Root system
+	this->gdalRootSys = new DM::GDALSystem();
+
 	canceled = false;
 	// notify progress
 	foreach(SimulationObserver* obs, observers)
