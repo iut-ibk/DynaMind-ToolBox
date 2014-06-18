@@ -13,13 +13,13 @@
 
 #include <ogrsf_frmts.h>
 
-//#define SPEEDTEST
-//#define CONTAINERCREATE
-//#define CONTAINERCREATEATTRIBUTE
-//#define TESTSTATES
+#define SPEEDTEST
+#define CONTAINERCREATE
+#define CONTAINERCREATEATTRIBUTE
+#define TESTSTATES
 #define LINKTEST
 
-#define  ELEMENTS 10000000
+#define  ELEMENTS 1000000
 
 #ifdef SPEEDTEST
 /**
@@ -73,8 +73,15 @@ TEST_F(TestGDAL, TestViewContainerCreate) {
 
 	QTime myTimer;
 	myTimer.start();
-	for (int i = 0; i < ELEMENTS; i++)
-		ASSERT_TRUE(TestComponents->createFeature() != NULL) ;
+	int counter = 0;
+	for (int i = 0; i < ELEMENTS; i++) {
+		counter++;
+		ASSERT_TRUE(TestComponents->createFeature() != NULL);
+		if (counter == 100000) {
+			TestComponents->syncFeatures();
+			counter = 0;
+		}
+	}
 	delete TestComponents;
 	DM::Logger(DM::Standard) << myTimer.elapsed();
 
@@ -175,10 +182,10 @@ TEST_F(TestGDAL, LinkTest) {
 	QTime myTimer;
 	myTimer.start();
 
-	std::vector<std::string> ids;
-	for (int i = 0; i < ELEMENTS/2; i++) {
+	std::vector<long> ids;
+	for (int i = 0; i < ELEMENTS; i++) {
 		OGRFeature * f = TestComponents->createFeature();
-		ids.push_back(f->GetFieldAsString("dynamind_id"));
+		ids.push_back(f->GetFieldAsInteger("dynamind_id"));
 	}
 	TestComponents->syncFeatures();
 
@@ -187,37 +194,25 @@ TEST_F(TestGDAL, LinkTest) {
 	myTimer.restart();
 	for (int i=0; i < 10000; i++) {
 		long feature_id = rand() % ELEMENTS + 1;
-		OGRFeature * f = TestComponents->getFeature(feature_id);
-		std::string l = f->GetFieldAsString("dynamind_id");
+		OGRFeature * f = TestComponents->getOGRFeature(feature_id);
+		long l = f->GetFieldAsInteger("dynamind_id");
 	}
 	DM::Logger(DM::Standard)<< "random access"  << myTimer.elapsed();
-
 
 	myTimer.restart();
 	OGRLayer * lyr = sys.getOGRLayer(DM::View("test", DM::COMPONENT, DM::WRITE));
 	OGRDataSource * ds = sys.getDataSource();
-	ds->ExecuteSQL("CREATE UNIQUE INDEX dynamind_idx ON test (dynamind_id)", 0, "sqlite");
-	DM::Logger(DM::Standard)<< "create index"  << myTimer.elapsed();
 
-
-	for (int i = 0; i < ELEMENTS/2; i++) {
-		OGRFeature * f = TestComponents->createFeature();
-		ids.push_back(f->GetFieldAsString("dynamind_id"));
-	}
-	TestComponents->syncFeatures();
+	//ds->ExecuteSQL("CREATE UNIQUE INDEX dynamind_idx ON test (dynamind_id)", 0, "sqlite");
+	//DM::Logger(DM::Standard)<< "create index"  << myTimer.elapsed();
 
 	myTimer.restart();
+	int count = 0;
 	for (int i=0; i < 10000; i++) {
 		long feature_id = rand() % ELEMENTS;
-		std::string uuid = ids[feature_id];
-		std::stringstream state_filter;
-		state_filter << "dynamind_id = '" << uuid << "'";
-		lyr->ResetReading();
-		lyr->SetAttributeFilter(state_filter.str().c_str());
-		int count = lyr->GetFeatureCount();
-
-		OGRFeature * f = lyr->GetNextFeature();
-		std::string uuid_f = f->GetFieldAsString("dynamind_id");
+		int uuid = ids[feature_id];
+		OGRFeature * f = TestComponents->getFeature(uuid);
+		int uuid_f = f->GetFieldAsInteger("dynamind_id");
 		count++;
 	}
 	DM::Logger(DM::Standard)<< "random access"  << myTimer.elapsed();

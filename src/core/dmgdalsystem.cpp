@@ -26,6 +26,12 @@ GDALSystem::GDALSystem()
 
 	//Create State ID
 	this->state_ids.push_back(QUuid::createUuid().toString().toStdString());
+
+	//Init uuid
+	latestUniqueId = 0;
+
+
+
 }
 
 GDALSystem::GDALSystem(const GDALSystem &s)
@@ -37,6 +43,8 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	state_ids = s.state_ids;
 	dirtyFeatures = s.dirtyFeatures;
 	state_ids = s.state_ids;
+	uniqueIdsTonfid = s.uniqueIdsTonfid;
+	latestUniqueId = s.latestUniqueId;
 
 	//Create new state
 	state_ids.push_back(QUuid::createUuid().toString().toStdString());
@@ -47,12 +55,13 @@ void GDALSystem::updateSystemView(const View &v)
 	//if view is not in map create a new ogr layer
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
 		Logger(Debug) << "Create Layer";
-		OGRLayer * lyr = poDS->CreateLayer("components", NULL, wkbNone, NULL );
+		OGRLayer * lyr = poDS->CreateLayer(v.getName().c_str(), NULL, wkbNone, NULL );
 
 		if (lyr == NULL) {
 			DM::Logger(DM::Error) << "couldn't create layer";
 		}
-		OGRFieldDefn oField_id( "dynamind_id", OFTString );
+
+		OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
 		lyr->CreateField(&oField_id);
 
 		OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
@@ -79,12 +88,11 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
-	f->SetField("dynamind_id", QUuid::createUuid().toString().toStdString().c_str());
+	f->SetField("dynamind_id", (int) latestUniqueId++);
 	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 
 	dirtyFeatures.push_back(f);
 	return f;
-
 }
 
 OGRLayer *GDALSystem::getOGRLayer(const View &v)
@@ -106,19 +114,32 @@ void GDALSystem::resetReading(const View &v)
 {
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
 		Logger(Error) << "Layer not found";
+		return;
 	}
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->ResetReading();
 
 	std::stringstream state_filter;
 	for (int i = 0; i < this->state_ids.size(); i++) {
-		if (i != 0)
+		if (i != 0) {
 			state_filter << " or ";
+		}
 		state_filter << "dynamind_state_id = '" << this->state_ids[i] << "'";
 	}
 	Logger(Debug) << state_filter.str();
 
 	lyr->SetAttributeFilter(state_filter.str().c_str());
+}
+
+OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
+{
+	if (viewLayer.find(v.getName()) == viewLayer.end()) {
+		Logger(Error) << "Layer not found";
+		return NULL;
+	}
+	OGRLayer * lyr = viewLayer[v.getName()];
+
+	return lyr->GetFeature(this->uniqueIdsTonfid[dynamind_id]);
 }
 
 void GDALSystem::syncFeatures(const DM::View & v)
@@ -139,6 +160,7 @@ void GDALSystem::syncFeatures(const DM::View & v)
 		if (!f)
 			continue;
 		lyr->CreateFeature(f);
+		uniqueIdsTonfid.push_back(f->GetFID());
 		OGRFeature::DestroyFeature(f);
 	}
 	lyr->CommitTransaction();

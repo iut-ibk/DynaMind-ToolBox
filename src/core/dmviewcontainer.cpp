@@ -51,7 +51,7 @@ void ViewContainer::syncFeatures()
 	this->_currentSys->syncFeatures(*this);
 }
 
-OGRFeature *ViewContainer::getFeature(long nFID)
+OGRFeature *ViewContainer::getOGRFeature(long nFID)
 {
 	if (!_currentSys) {
 		Logger(Error) << "No GDALSystem registered";
@@ -59,6 +59,11 @@ OGRFeature *ViewContainer::getFeature(long nFID)
 	}
 
 	return this->_currentSys->getOGRLayer(*this)->GetFeature(nFID);
+}
+
+OGRFeature *ViewContainer::getFeature(long dynamind_id)
+{
+	return this->_currentSys->getFeature(*this, dynamind_id);
 }
 
 int ViewContainer::getFeatureCount()
@@ -79,8 +84,4 @@ void ViewContainer::resetReading()
 	}
 	return this->_currentSys->resetReading(*this);
 }
-
-
-
-
 }

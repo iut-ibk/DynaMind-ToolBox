@@ -33,13 +33,19 @@ public:
 
 	GDALSystem *createSuccessor();
 
-private:
-	OGRDataSource		*poDS;
-	OGRSFDriver			*poDrive;
-	std::map<std::string, OGRLayer *> viewLayer;
-	std::vector<std::string> state_ids;
+	OGRFeature * getFeature(const DM::View & v, long dynamind_id);
 
-	std::vector<OGRFeature *> dirtyFeatures;
+private:
+	OGRDataSource						*poDS;
+	OGRSFDriver							*poDrive;
+	std::map<std::string, OGRLayer *>	viewLayer;
+	std::vector<std::string>			state_ids;
+
+
+	std::vector<OGRFeature *>			dirtyFeatures;
+
+	std::vector<long>					uniqueIdsTonfid;
+	long								latestUniqueId;
 
 };
 }

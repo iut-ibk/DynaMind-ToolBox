@@ -30,7 +30,9 @@ public:
 
 	void resetReading();
 
-	OGRFeature *getFeature(long nFID);
+	OGRFeature *getOGRFeature(long nFID);
+
+	OGRFeature *getFeature(long dynamind_id);
 
 
 
