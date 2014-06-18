@@ -27,16 +27,11 @@ public:
 
 	OGRLayer *getOGRLayer(const DM::View & v);
 
+	OGRDataSource *getDataSource();
+
 	void resetReading(const DM::View & v);
 
 	GDALSystem *createSuccessor();
-
-
-
-
-
-
-
 
 private:
 	OGRDataSource		*poDS;

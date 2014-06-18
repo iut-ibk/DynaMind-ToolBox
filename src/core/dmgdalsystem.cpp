@@ -97,6 +97,11 @@ OGRLayer *GDALSystem::getOGRLayer(const View &v)
 	return viewLayer[v.getName()];
 }
 
+OGRDataSource *GDALSystem::getDataSource()
+{
+	return this->poDS;
+}
+
 void GDALSystem::resetReading(const View &v)
 {
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {

@@ -11,12 +11,15 @@
 #include <dmviewcontainer.h>
 #include <dmattribute.h>
 
-#define SPEEDTEST
-#define CONTAINERCREATE
-#define CONTAINERCREATEATTRIBUTE
-#define TESTSTATES
+#include <ogrsf_frmts.h>
 
-#define  ELEMENTS 1000000
+//#define SPEEDTEST
+//#define CONTAINERCREATE
+//#define CONTAINERCREATEATTRIBUTE
+//#define TESTSTATES
+#define LINKTEST
+
+#define  ELEMENTS 10000000
 
 #ifdef SPEEDTEST
 /**
@@ -152,6 +155,72 @@ TEST_F(TestGDAL, TestStates) {
 	TestComponents->setCurrentGDALSystem(&sys);
 	ASSERT_EQ( TestComponents->getFeatureCount(), ELEMENTS ) ;
 	DM::Logger(DM::Standard) << "count" << myTimer.elapsed();
+	delete TestComponents;
+}
+#endif
+
+#ifdef LINKTEST
+TEST_F(TestGDAL, LinkTest) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
+	DM::ViewContainer * TestComponents = new DM::ViewContainer("test", DM::COMPONENT, DM::WRITE);
+	TestComponents->addAttribute("some_attribute", DM::Attribute::STRING, DM::WRITE);
+
+	DM::GDALSystem sys;
+	sys.updateSystemView(*TestComponents);
+
+	TestComponents->setCurrentGDALSystem(&sys);
+
+	QTime myTimer;
+	myTimer.start();
+
+	std::vector<std::string> ids;
+	for (int i = 0; i < ELEMENTS/2; i++) {
+		OGRFeature * f = TestComponents->createFeature();
+		ids.push_back(f->GetFieldAsString("dynamind_id"));
+	}
+	TestComponents->syncFeatures();
+
+	DM::Logger(DM::Standard)<<  "write " << ELEMENTS << " " <<myTimer.elapsed();
+	srand (time(NULL));
+	myTimer.restart();
+	for (int i=0; i < 10000; i++) {
+		long feature_id = rand() % ELEMENTS + 1;
+		OGRFeature * f = TestComponents->getFeature(feature_id);
+		std::string l = f->GetFieldAsString("dynamind_id");
+	}
+	DM::Logger(DM::Standard)<< "random access"  << myTimer.elapsed();
+
+
+	myTimer.restart();
+	OGRLayer * lyr = sys.getOGRLayer(DM::View("test", DM::COMPONENT, DM::WRITE));
+	OGRDataSource * ds = sys.getDataSource();
+	ds->ExecuteSQL("CREATE UNIQUE INDEX dynamind_idx ON test (dynamind_id)", 0, "sqlite");
+	DM::Logger(DM::Standard)<< "create index"  << myTimer.elapsed();
+
+
+	for (int i = 0; i < ELEMENTS/2; i++) {
+		OGRFeature * f = TestComponents->createFeature();
+		ids.push_back(f->GetFieldAsString("dynamind_id"));
+	}
+	TestComponents->syncFeatures();
+
+	myTimer.restart();
+	for (int i=0; i < 10000; i++) {
+		long feature_id = rand() % ELEMENTS;
+		std::string uuid = ids[feature_id];
+		std::stringstream state_filter;
+		state_filter << "dynamind_id = '" << uuid << "'";
+		lyr->ResetReading();
+		lyr->SetAttributeFilter(state_filter.str().c_str());
+		int count = lyr->GetFeatureCount();
+
+		OGRFeature * f = lyr->GetNextFeature();
+		std::string uuid_f = f->GetFieldAsString("dynamind_id");
+		count++;
+	}
+	DM::Logger(DM::Standard)<< "random access"  << myTimer.elapsed();
 	delete TestComponents;
 }
 #endif
