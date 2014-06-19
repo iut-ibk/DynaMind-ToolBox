@@ -15,10 +15,13 @@ class DM_HELPER_DLL_EXPORT GDALAddComponent: public DM::Module
 {
 	DM_DECLARE_NODE(CreateNodes)
 private:
-	DM::ViewContainer households;
+	DM::ViewContainer components;
+	int elements;
+	bool append;
 public:
 	GDALAddComponent();
 	void run();
+	void init();
 };
 
 #endif // GDALADDCOMPONENT_H

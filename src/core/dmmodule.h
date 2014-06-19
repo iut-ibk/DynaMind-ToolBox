@@ -44,6 +44,7 @@ class RasterData;
 class ModuleObserver;
 class Simulation;
 class GDALSystem;
+class ISystem;
 
 // enums
 #if defined _MSC_VER && defined _WIN32 || __cplusplus <= 199711L
@@ -177,10 +178,10 @@ public:
 	void removeData(const std::string& name);
 
 	/** @brief get data from outport; public for ModelNode::viewData */
-	System* getOutPortData(const std::string &name) const;
+	ISystem* getOutPortData(const std::string &name) const;
 	
 	/** @brief get data from inport */
-	System* getInPortData(const std::string &name) const;
+	ISystem* getInPortData(const std::string &name) const;
 
 	/** @brief adds an observer to this module */
 	void addObserver(ModuleObserver* obs);
@@ -244,10 +245,12 @@ public:
 
 protected:
 	/** @brief returns the data from the desired stream */
-	System* getData(const std::string& streamName);
+	ISystem* getIData(const std::string& streamName);
+	ISystem *SystemFactory();
+	System *getData(const std::string& streamName);
 
 	/** @brief returns the data from the desired stream */
-	GDALSystem *getGDALData();
+	GDALSystem *getGDALData(const string &streamName);
 
 	/** @brief checks if in-port does exist */
 	bool hasInPort(const std::string &name) const;
@@ -275,10 +278,12 @@ protected:
 	RasterData* getRasterData(std::string name, View view);
 
 	/** @brief sets inport data - may only by used by DM::Simulation and loopgroup */
-	void setInPortData(const std::string &name, System* data);
+	void setInPortData(const std::string &name, ISystem* data);
 
 	/** @brief */
-	void setOutPortData(const std::string &name, System* data);
+	void setOutPortData(const std::string &name, ISystem *data);
+
+	bool GDALModule;
 
 private:
 	/** @brief sets the current status of the module */
@@ -304,8 +309,8 @@ private:
 
 	std::vector<ModuleObserver*>	observers;
 	std::vector<Parameter*>			parameters;
-	std::map<std::string, System*>	inPorts;
-	std::map<std::string, System*>	outPorts;
+	std::map<std::string, ISystem*>	inPorts;
+	std::map<std::string, ISystem*>	outPorts;
 
 	ModuleStatus	status;
 	Module*			owner;

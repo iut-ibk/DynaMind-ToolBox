@@ -32,17 +32,20 @@ CreateNodes::CreateNodes()
     std::vector<DM::View> data;
     data.push_back( DM::View("Nodes", DM::NODE, DM::WRITE));
     this->addData("sys",data);
+	elements = 100000;
+	this->addParameter("elements", DM::INT, &elements);
+
 	//this->addOutPort("outport");
 }
 
 void CreateNodes::run() {
 	DM::System * sys = this->getData("sys");
-    //DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
+	DM::View v = DM::View("Nodes", DM::NODE, DM::WRITE);
 
-    for (int i = 0; i < 10; i++)
+	for (int i = 0; i < elements; i++)
     {
         DM::Node n =  DM::Node(0,0,0);
-        sys->addNode(n);
+		sys->addNode(n, v);
     }
 
 	//this->setOutPortData("outport", sys);

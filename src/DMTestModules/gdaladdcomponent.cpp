@@ -6,27 +6,50 @@ DM_DECLARE_NODE_NAME(GDALAddComponent, Modules)
 
 GDALAddComponent::GDALAddComponent()
 {
-	households = DM::ViewContainer("household", DM::COMPONENT, DM::WRITE);
-	households.addAttribute("persons",DM::Attribute::STRING, DM::WRITE);
+	GDALModule = true;
+	elements = 100000;
+	this->addParameter("elements", DM::INT, &elements);
+	append = false;
+	this->addParameter("append", DM::BOOL, &append);
+}
+
+void GDALAddComponent::init()
+{
+	if (!append) {
+		components = DM::ViewContainer("component", DM::NODE, DM::WRITE);
+	}
+	else {
+		components = DM::ViewContainer("component", DM::NODE, DM::MODIFY);
+	}
+	components.addAttribute("persons",DM::Attribute::STRING, DM::WRITE);
 
 	std::vector<DM::View> datastream;
-
-	datastream.push_back(households);
+	datastream.push_back(components);
 	this->addData("city", datastream);
 }
 
+
 void GDALAddComponent::run()
 {
-	DM::GDALSystem * sys = this->getGDALData();
-	sys->updateSystemView(households);
+	DM::GDALSystem * sys = this->getGDALData("city");
+	sys->updateView(components);
 
-	this->households.setCurrentGDALSystem(sys);
+	this->components.setCurrentGDALSystem(sys);
 
-	for (int i = 0; i < 100000; i++) {
-		OGRFeature * f = this->households.createFeature();
+	int counter = 0;
+	for (int i = 0; i < elements; i++) {
+		OGRFeature * f = this->components.createFeature();
 		f->SetField("persons", "that is me");
-	}
-	this->households.syncFeatures();
+		OGRPoint pt;
+		pt.setX( i );
+		pt.setY( i );
 
-	DM::Logger(DM::Standard) << "Start";
+		f->SetGeometry(&pt);
+		if (counter == 100000) {
+			components.syncAlteredFeatures();
+			counter = 0;
+		}
+		counter++;
+	}
+	this->components.syncAlteredFeatures();
 }

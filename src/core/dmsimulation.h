@@ -32,8 +32,7 @@
 #include <string>
 #include <vector>
 #include <dmmodule.h>
-#include <dmsystem.h>
-#include <dmgdalsystem.h>
+#include <dmisystem.h>
 
 namespace DM {
 
@@ -202,7 +201,7 @@ public:
 
 protected:
 	/** @brief returns the inport data of the link, taking group ports into account */
-	System* getData(Link* l);
+	ISystem* getData(Link* l);
 
 	/** @brief shifts the data from one link side to another, taking groups into account */
 	void	shiftData(Link* l, bool successor = false);
@@ -238,7 +237,6 @@ public:
 	/** @brief returns all links connected to this port */
 	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
 
-	GDALSystem *getRootSystem();
 private:
 
 	bool canceled;
@@ -247,7 +245,6 @@ private:
 	SimulationStatus	status;
 	ModuleRegistry*		moduleRegistry;
 	std::vector<SimulationObserver*>	observers;
-	GDALSystem* gdalRootSys;
 };
 
 }

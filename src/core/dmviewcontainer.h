@@ -14,7 +14,11 @@ class ViewContainer : public View
 private:
 	GDALSystem * _currentSys;
 
-	std::vector<OGRFeature *> dirtyFeatures;
+	std::vector<OGRFeature *> newFeatures_write;
+	std::vector<OGRFeature *> dirtyFeatures_write;
+	std::vector<OGRFeature *> dirtyFeatures_read;
+
+	bool readonly;
 
 public:
 	ViewContainer();
@@ -24,7 +28,8 @@ public:
 	void setCurrentGDALSystem(DM::GDALSystem * sys);
 
 	OGRFeature *createFeature();
-	void syncFeatures();
+	void syncAlteredFeatures();
+	void syncReadFeatures();
 
 	int getFeatureCount();
 
@@ -33,6 +38,8 @@ public:
 	OGRFeature *getOGRFeature(long nFID);
 
 	OGRFeature *getFeature(long dynamind_id);
+
+	OGRFeature *getNextFeature();
 
 
 

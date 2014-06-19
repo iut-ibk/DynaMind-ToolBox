@@ -32,6 +32,7 @@
 #include <vector>
 #include <dmview.h>
 #include <dmcomponent.h>
+#include <dmisystem.h>
 
 #ifdef SWIG
 #define DM_HELPER_DLL_EXPORT
@@ -66,7 +67,7 @@ class DerivedSystem;
   * To use the System class in a dynamic environment it is possible to create a successor state. Successor states hold a new list of pointer to
   * the objects stored in the system. If a Object is added, removed or changed only the successor system is altered.
 */
-class  DM_HELPER_DLL_EXPORT System : public Component
+class  DM_HELPER_DLL_EXPORT System : public Component, public ISystem
 {
     friend class DerivedSystem;
 public:

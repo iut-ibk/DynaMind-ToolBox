@@ -2,6 +2,7 @@
 
 #include <dmlogger.h>
 #include <dmattribute.h>
+#include <dmsystem.h>
 
 #include <sstream>
 
@@ -29,9 +30,7 @@ GDALSystem::GDALSystem()
 
 	//Init uuid
 	latestUniqueId = 0;
-
-
-
+	predecessor = NULL;
 }
 
 GDALSystem::GDALSystem(const GDALSystem &s)
@@ -41,21 +40,21 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
 	state_ids = s.state_ids;
-	dirtyFeatures = s.dirtyFeatures;
 	state_ids = s.state_ids;
 	uniqueIdsTonfid = s.uniqueIdsTonfid;
 	latestUniqueId = s.latestUniqueId;
+	sucessors = std::vector<DM::GDALSystem*>();
 
 	//Create new state
 	state_ids.push_back(QUuid::createUuid().toString().toStdString());
 }
 
-void GDALSystem::updateSystemView(const View &v)
+
+void GDALSystem::updateView(const View &v)
 {
 	//if view is not in map create a new ogr layer
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
-		Logger(Debug) << "Create Layer";
-		OGRLayer * lyr = poDS->CreateLayer(v.getName().c_str(), NULL, wkbNone, NULL );
+		OGRLayer * lyr = this->createLayer(v);
 
 		if (lyr == NULL) {
 			DM::Logger(DM::Error) << "couldn't create layer";
@@ -81,6 +80,11 @@ void GDALSystem::updateSystemView(const View &v)
 			lyr->CreateField(&oField);
 			continue;
 		}
+		if (v.getAttributeType(attribute_name) == DM::Attribute::DOUBLE){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTReal );
+			lyr->CreateField(&oField);
+			continue;
+		}
 	}
 }
 
@@ -90,8 +94,6 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
 	f->SetField("dynamind_id", (int) latestUniqueId++);
 	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
-
-	dirtyFeatures.push_back(f);
 	return f;
 }
 
@@ -101,7 +103,6 @@ OGRLayer *GDALSystem::getOGRLayer(const View &v)
 		Logger(Error) << "Layer not found";
 		return 0;
 	}
-
 	return viewLayer[v.getName()];
 }
 
@@ -129,6 +130,21 @@ void GDALSystem::resetReading(const View &v)
 	Logger(Debug) << state_filter.str();
 
 	lyr->SetAttributeFilter(state_filter.str().c_str());
+	int counter = lyr->GetFeatureCount(0);
+	int counter_read = lyr->GetFeaturesRead();
+
+
+
+}
+
+GDALSystem *GDALSystem::createSuccessor()
+{
+	Logger(Debug) << "Create Sucessor ";
+	GDALSystem* result = new GDALSystem(*this);
+	this->sucessors.push_back(result);
+	result->setPredecessor(this);
+
+	return result;
 }
 
 OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
@@ -142,14 +158,57 @@ OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
 	return lyr->GetFeature(this->uniqueIdsTonfid[dynamind_id]);
 }
 
-void GDALSystem::syncFeatures(const DM::View & v)
+void GDALSystem::updateViews(const std::vector<View> &views)
+{
+	foreach (DM::View v, views) {
+		this->updateView(v);
+	}
+}
+
+GDALSystem *GDALSystem::getPredecessor() const
+{
+	return this->predecessor;
+}
+
+void GDALSystem::setPredecessor(GDALSystem * sys)
+{
+	this->predecessor = sys;
+}
+
+OGRFeature *GDALSystem::getNextFeature(const View &v)
+{
+	OGRLayer * lyr = viewLayer[v.getName()];
+	return lyr->GetNextFeature();
+}
+
+OGRLayer *GDALSystem::createLayer(const View &v)
+{
+	switch ( v.getType() ) {
+	case DM::COMPONENT:
+		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbNone, NULL );
+		break;
+	case DM::NODE:
+		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPoint, NULL );
+		break;
+	case DM::EDGE:
+		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbLineString, NULL );
+		break;
+	case DM::FACE:
+		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPolygon, NULL );
+		break;
+	}
+
+	return NULL;
+}
+
+void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
 	int counter = 0;
 	int global_counter = 0;
 	lyr->StartTransaction();
-	foreach (OGRFeature * f, dirtyFeatures) {
+	foreach (OGRFeature * f, df) {
 		counter++;
 		global_counter++;
 		if (counter == 10000) {
@@ -160,12 +219,36 @@ void GDALSystem::syncFeatures(const DM::View & v)
 		if (!f)
 			continue;
 		lyr->CreateFeature(f);
+		//@todo check i already exists8
 		uniqueIdsTonfid.push_back(f->GetFID());
 		OGRFeature::DestroyFeature(f);
 	}
 	lyr->CommitTransaction();
+	df.clear();
+}
 
-	dirtyFeatures.clear();
+void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df)
+{
+	OGRLayer * lyr = viewLayer[v.getName()];
+	//Sync all features
+	int counter = 0;
+	int global_counter = 0;
+	lyr->StartTransaction();
+	foreach (OGRFeature * f, df) {
+		counter++;
+		global_counter++;
+		if (counter == 100000) {
+			lyr->CommitTransaction();
+			lyr->StartTransaction();
+			counter=0;
+		}
+		if (!f)
+			continue;
+		lyr->SetFeature(f);
+		OGRFeature::DestroyFeature(f);
+	}
+	lyr->CommitTransaction();
+	df.clear();
 }
 
 }

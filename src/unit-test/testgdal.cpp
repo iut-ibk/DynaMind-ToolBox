@@ -13,16 +13,16 @@
 
 #include <ogrsf_frmts.h>
 
-/*#define SPEEDTEST
+#define SPEEDTEST
 #define CONTAINERCREATE
 #define CONTAINERCREATEATTRIBUTE
 #define TESTSTATES
 #define LINKTEST
-*/
 
-#define  ELEMENTS 1000000
 
-#ifdef SPEEDTEST
+#define  ELEMENTS 100000
+
+
 /**
  * @brief Testing the insert speed as qualtiy control
  * please add test results below
@@ -35,30 +35,6 @@
  *   1.000.000		       6.931		MacBook with uuid; sync 10.000
  *   1.000.000		       3.627		MacBook without uuid; sync 10.000
  */
-TEST_F(TestGDAL,TestInsertSpeed) {
-
-	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
-	DM::Logger(DM::Standard) << "Create System";
-
-	DM::View testview("TestComponents", DM::COMPONENT, DM::WRITE);
-
-
-	DM::GDALSystem sys;
-	sys.updateSystemView(testview);
-
-	QTime myTimer;
-	myTimer.start();
-
-	for (int i = 0; i < ELEMENTS; i++) {
-		sys.createFeature(testview);
-	}
-	sys.syncFeatures(testview);
-	DM::Logger(DM::Standard) << myTimer.elapsed();
-
-	ASSERT_EQ( sys.getOGRLayer(DM::View("TestComponents", DM::COMPONENT, DM::WRITE))->GetFeatureCount(), ELEMENTS);
-}
-#endif
 
 #ifdef CONTAINERCREATE
 TEST_F(TestGDAL, TestViewContainerCreate) {
@@ -68,7 +44,7 @@ TEST_F(TestGDAL, TestViewContainerCreate) {
 	DM::ViewContainer * TestComponents = new DM::ViewContainer("TestComponents", DM::COMPONENT, DM::WRITE);
 
 	DM::GDALSystem sys;
-	sys.updateSystemView(*TestComponents);
+	sys.updateView(*TestComponents);
 
 	TestComponents->setCurrentGDALSystem(&sys);
 
@@ -79,7 +55,7 @@ TEST_F(TestGDAL, TestViewContainerCreate) {
 		counter++;
 		ASSERT_TRUE(TestComponents->createFeature() != NULL);
 		if (counter == 100000) {
-			TestComponents->syncFeatures();
+			TestComponents->syncAlteredFeatures();
 			counter = 0;
 		}
 	}
@@ -100,16 +76,17 @@ TEST_F(TestGDAL, TestViewContainerInsertAttribute) {
 	TestComponents->addAttribute("some_attribute", DM::Attribute::STRING, DM::WRITE);
 
 	DM::GDALSystem sys;
-	sys.updateSystemView(*TestComponents);
+	sys.updateView(*TestComponents);
 
 	TestComponents->setCurrentGDALSystem(&sys);
 
 	OGRFeature * f = TestComponents->createFeature();
 	f->SetField("some_attribute", "this is a test");
-	TestComponents->syncFeatures();
+	TestComponents->syncAlteredFeatures();
 
 	ASSERT_EQ( TestComponents->getFeatureCount(), 1 ) ;
-	ASSERT_STREQ( TestComponents->getFeature(1)->GetFieldAsString("some_attribute"), "this is a test");
+	f = TestComponents->getFeature(0);
+	ASSERT_STREQ(f->GetFieldAsString("some_attribute"), "this is a test");
 
 	delete TestComponents;
 }
@@ -129,7 +106,7 @@ TEST_F(TestGDAL, TestStates) {
 	TestComponents->addAttribute("some_attribute", DM::Attribute::STRING, DM::WRITE);
 
 	DM::GDALSystem sys;
-	sys.updateSystemView(*TestComponents);
+	sys.updateView(*TestComponents);
 
 	TestComponents->setCurrentGDALSystem(&sys);
 
@@ -139,7 +116,7 @@ TEST_F(TestGDAL, TestStates) {
 
 	for (int i = 0; i < ELEMENTS; i++)
 		ASSERT_TRUE(TestComponents->createFeature() != NULL) ;
-	TestComponents->syncFeatures();
+	TestComponents->syncAlteredFeatures();
 	DM::Logger(DM::Standard) <<  "write " << ELEMENTS << " " << myTimer.elapsed();
 
 	myTimer.restart();
@@ -152,7 +129,7 @@ TEST_F(TestGDAL, TestStates) {
 	TestComponents->setCurrentGDALSystem(&sys_2);
 	for (int i = 0; i < ELEMENTS; i++)
 		ASSERT_TRUE(TestComponents->createFeature() != NULL) ;
-	TestComponents->syncFeatures();
+	TestComponents->syncAlteredFeatures();
 	DM::Logger(DM::Standard)<<  "write " << ELEMENTS << " " <<myTimer.elapsed();
 	myTimer.restart();
 	ASSERT_EQ( TestComponents->getFeatureCount(), ELEMENTS*2) ;
@@ -176,7 +153,7 @@ TEST_F(TestGDAL, LinkTest) {
 	TestComponents->addAttribute("some_attribute", DM::Attribute::STRING, DM::WRITE);
 
 	DM::GDALSystem sys;
-	sys.updateSystemView(*TestComponents);
+	sys.updateView(*TestComponents);
 
 	TestComponents->setCurrentGDALSystem(&sys);
 
@@ -188,7 +165,7 @@ TEST_F(TestGDAL, LinkTest) {
 		OGRFeature * f = TestComponents->createFeature();
 		ids.push_back(f->GetFieldAsInteger("dynamind_id"));
 	}
-	TestComponents->syncFeatures();
+	TestComponents->syncAlteredFeatures();
 
 	DM::Logger(DM::Standard)<<  "write " << ELEMENTS << " " <<myTimer.elapsed();
 	srand (time(NULL));
