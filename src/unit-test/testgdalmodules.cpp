@@ -8,14 +8,15 @@
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
 
-#define FEATURES "1000000"
-#define FEATURES_2 "2000000"
+#define FEATURES "100000"
+#define FEATURES_2 "200000"
 
 #define SPEEDTESTDM
 #define SPEEDTEST
 #define CONNECTIONTEST
 #define BRANCHINGTEST
 #define EXPANDING
+#define BRANCHMODIFY
 
 #ifdef SPEEDTESTDM
 TEST_F(TestGDALModules,TestInsertSpeed_DM) {
@@ -143,6 +144,39 @@ TEST_F(TestGDALModules,UpdateTest) {
 	sim.addLink(m1, "city", m2, "city");
 
 	sim.run();
+}
+#endif
+
+#ifdef BRANCHMODIFY
+TEST_F(TestGDALModules,BranchModify) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation sim;
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+
+	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	m1->setParameterValue("elements", FEATURES);
+	m1->setSuccessorMode(true);
+
+	DM::Module * m2 = sim.addModule("UpdateAllComponents");
+
+	m2->setParameterValue("elements", FEATURES);
+	m2->init();
+	sim.addLink(m1, "city", m2, "city");
+
+	sim.run();
+
+	//Check M2
+	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
+	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+
+	QString s_number = QString(FEATURES);
+	int number = s_number.toInt();
+	ASSERT_EQ(components.getFeatureCount(), number);
 }
 #endif
 

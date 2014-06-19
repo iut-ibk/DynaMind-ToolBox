@@ -45,6 +45,7 @@ public:
 
 	OGRFeature *getNextFeature(const DM::View & v);
 
+	std::string getCurrentStateID();
 
 private:
 	OGRDataSource						*poDS;
@@ -58,6 +59,7 @@ private:
 	OGRLayer *createLayer(const View &v);
 	GDALSystem *predecessor;
 	std::vector<DM::GDALSystem*> sucessors;
+	QString DBID;
 };
 }
 

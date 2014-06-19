@@ -20,6 +20,8 @@ private:
 
 	bool readonly;
 
+	void registerFeature(OGRFeature * f);
+
 public:
 	ViewContainer();
 	~ViewContainer();
@@ -40,6 +42,7 @@ public:
 	OGRFeature *getFeature(long dynamind_id);
 
 	OGRFeature *getNextFeature();
+
 
 
 

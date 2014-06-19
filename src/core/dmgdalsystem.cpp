@@ -18,7 +18,11 @@ GDALSystem::GDALSystem()
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
-	QString dbname = "/tmp/" + QUuid::createUuid().toString() + ".db";
+
+	DBID = QUuid::createUuid().toString();
+
+	QString dbname =  "/tmp/" + DBID + ".db";
+
 	poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
 
 	if( poDS == NULL ) {
@@ -36,7 +40,6 @@ GDALSystem::GDALSystem()
 GDALSystem::GDALSystem(const GDALSystem &s)
 {
 	//Copy all that is needed
-	poDS = s.poDS;
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
 	state_ids = s.state_ids;
@@ -44,9 +47,28 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	uniqueIdsTonfid = s.uniqueIdsTonfid;
 	latestUniqueId = s.latestUniqueId;
 	sucessors = std::vector<DM::GDALSystem*>();
+	DBID = QUuid::createUuid().toString();
+
+	//Copy DB
+	QString origin =  "/tmp/" + s.DBID + ".db";
+	QString dest = "/tmp/" + DBID + ".db";
+	QFile::copy(origin, dest);
+
+	//Connect to DB
+	char ** options = NULL;
+	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+
+	poDS = poDrive->Open(dest.toStdString().c_str(), true);
 
 	//Create new state
 	state_ids.push_back(QUuid::createUuid().toString().toStdString());
+
+	//RebuildViewLayer
+	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
+		 it != viewLayer.end(); ++it) {
+		std::string viewname = it->first;
+		viewLayer[it->first] = poDS->GetLayerByName(viewname.c_str());
+	}
 }
 
 
@@ -120,18 +142,17 @@ void GDALSystem::resetReading(const View &v)
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->ResetReading();
 
-	std::stringstream state_filter;
-	for (int i = 0; i < this->state_ids.size(); i++) {
-		if (i != 0) {
-			state_filter << " or ";
-		}
-		state_filter << "dynamind_state_id = '" << this->state_ids[i] << "'";
-	}
-	Logger(Debug) << state_filter.str();
+//	std::stringstream state_filter;
+//	for (int i = 0; i < this->state_ids.size(); i++) {
+//		if (i != 0) {
+//			state_filter << " or ";
+//		}
+//		state_filter << "dynamind_state_id = '" << this->state_ids[i] << "'";
+//	}
+//	Logger(Debug) << state_filter.str();
 
-	lyr->SetAttributeFilter(state_filter.str().c_str());
-	int counter = lyr->GetFeatureCount(0);
-	int counter_read = lyr->GetFeaturesRead();
+//	lyr->SetAttributeFilter(state_filter.str().c_str());
+
 
 
 
@@ -181,6 +202,11 @@ OGRFeature *GDALSystem::getNextFeature(const View &v)
 	return lyr->GetNextFeature();
 }
 
+string GDALSystem::getCurrentStateID()
+{
+	return this->state_ids[state_ids.size()-1];
+}
+
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
 	switch ( v.getType() ) {
@@ -219,7 +245,6 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 		if (!f)
 			continue;
 		lyr->CreateFeature(f);
-		//@todo check i already exists8
 		uniqueIdsTonfid.push_back(f->GetFID());
 		OGRFeature::DestroyFeature(f);
 	}

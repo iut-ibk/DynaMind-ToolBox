@@ -4,6 +4,7 @@
 #include <dmgdalsystem.h>
 
 namespace DM {
+
 ViewContainer::ViewContainer():
 	_currentSys(NULL)
 {
@@ -77,20 +78,36 @@ OGRFeature *ViewContainer::getOGRFeature(long nFID)
 	}
 
 	OGRFeature * f =  this->_currentSys->getOGRLayer(*this)->GetFeature(nFID);
+	registerFeature(f);
 
+	return f;
+
+}
+
+void ViewContainer::registerFeature(OGRFeature * f)
+{
+	if (!f)
+		return;
+	if (readonly) {
+		this->dirtyFeatures_read.push_back(f);
+		return;
+	}
+	this->dirtyFeatures_write.push_back(f);
+	return;
+}
+
+
+OGRFeature *ViewContainer::getFeature(long dynamind_id)
+{
+	OGRFeature * f = this->_currentSys->getFeature(*this, dynamind_id);
 	if (!f)
 		return NULL;
 	if (readonly) {
 		this->dirtyFeatures_read.push_back(f);
 		return f;
 	}
-	this->dirtyFeatures_write.push_back(f);
+	registerFeature(f);
 	return f;
-}
-
-OGRFeature *ViewContainer::getFeature(long dynamind_id)
-{
-	return this->_currentSys->getFeature(*this, dynamind_id);
 }
 
 OGRFeature *ViewContainer::getNextFeature()
@@ -101,13 +118,7 @@ OGRFeature *ViewContainer::getNextFeature()
 	}
 
 	OGRFeature * f =  this->_currentSys->getNextFeature(*this);
-	if (!f)
-		return NULL;
-	if (readonly) {
-		this->dirtyFeatures_read.push_back(f);
-		return f;
-	}
-	this->dirtyFeatures_write.push_back(f);
+	registerFeature(f);
 	return f;
 }
 
