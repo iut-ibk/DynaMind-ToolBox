@@ -323,4 +323,10 @@ private:
 	const char *nodename::filename = #module; \
 	const char *nodename::getFileName() const { return nodename::filename; }
 
+#define  DM_DECLARE_CUSTOM_NODE_NAME(nodename, customname ,module) \
+	const char *nodename::classname = customname; \
+	const char *nodename::getClassName() const { return nodename::classname; } \
+	const char *nodename::filename = module; \
+	const char *nodename::getFileName() const { return nodename::filename; }
+
 #endif // MODULE_H
