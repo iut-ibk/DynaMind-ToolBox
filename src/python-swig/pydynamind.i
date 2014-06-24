@@ -34,16 +34,12 @@
     using namespace DM;
 %}
 
-
-
 %include std_vector.i
 %include std_string.i
 %include std_map.i
 %include cpointer.i
 %include ogr.i
 %include ogr_python.i
-
-
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"

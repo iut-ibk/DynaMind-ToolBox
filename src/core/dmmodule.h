@@ -244,6 +244,12 @@ public:
 	*/
 	void setParameterValue(const std::string& name, const std::string& value);
 
+	/** @brief set if the simulation is reset after parameters a changed within the module*/
+	void forceRefreshSimulation(bool force);
+
+	/** @brief Returns the status of reseting the simulation*/
+	bool getForceRefreshSimulation();
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -320,6 +326,7 @@ private:
 	bool			successorMode;
 	std::string		name;
 	DM::Simulation *sim;
+	bool			forceUpdate;
 };
 
 }
