@@ -43,6 +43,7 @@ Module::Module()
 }
 Module::~Module()
 {
+	forceUpdate=false;
 	foreach(Parameter* p, parameters)
 		delete p;
 
@@ -120,6 +121,16 @@ void Module::setParameterValue(const std::string& name, const std::string& value
 		}
 		break;
 	}
+}
+
+void Module::forceRefreshSimulation(bool force)
+{
+	forceUpdate=force;
+}
+
+bool Module::getForceRefreshSimulation()
+{
+	return forceUpdate;
 }
 
 void Module::addObserver(ModuleObserver* obs)

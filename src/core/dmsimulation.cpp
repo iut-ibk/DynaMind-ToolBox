@@ -550,7 +550,8 @@ bool Simulation::checkModuleStreamForward(Module* m)
 						}
 					}
 				}
-				else	// add new views
+
+				if (v.getAccessType() == WRITE)
 				{
 					// it may be, that a view already exists
 					if (map_contains(&m->streamViews[streamName], v.getName()))
@@ -561,6 +562,9 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					}
 					updatedStreams[streamName][v.getName()] = v;
 				}
+
+				if (v.getAccessType() == DELETE)
+					updatedStreams[streamName].erase(v.getName());
 			}
 		}
 		if (!success)
@@ -621,6 +625,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 
 bool Simulation::checkStream()
 {
+	DM::Logger(DM::Standard) << ">> Check Streams";
 	foreach(Module* m, this->modules)
 		m->streamViews.clear();
 
