@@ -53,6 +53,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
 {
 	child = NULL;
 	module = m;
+	ng = NULL;
 
 	setAcceptDrops(true);
 
@@ -300,7 +301,14 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void ModelNode::editModelNode() 
 {
 	if(!module->createInputDialog())
-		(new GUIModelNode(module ,this))->show();
+	{
+		if(!ng)
+			delete ng;
+
+		ng = new GUIModelNode(module ,this);
+		connect(ng,SIGNAL(updateStream()),this,SLOT(updateSimulation()),Qt::DirectConnection);
+		ng->show();
+	}
 }
 
 void ModelNode::editName() 
@@ -323,6 +331,11 @@ void ModelNode::printData()
 void ModelNode::changeSuccessorMode()
 {
 	module->setSuccessorMode(!module->isSuccessorMode());
+}
+
+void ModelNode::updateSimulation()
+{
+	this->getSimulation()->reset();
 }
 
 void ModelNode::viewOutportData(QString portName) 

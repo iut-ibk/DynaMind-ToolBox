@@ -335,7 +335,8 @@ void GUIModelNode::accept()
 	}
 	module->init();
 	//module->update();	// calls update ports
-
+	if(module->getForceRefreshSimulation())
+		emit updateStream();
 	delete(this);
 }
 void GUIModelNode::reject() {

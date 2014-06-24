@@ -60,6 +60,9 @@ public slots:
 	void help();
 	void openFileDialog(QString label);
 	void addMapRow();
+
+signals:
+	void updateStream();
 };
 
 #endif // GUIMODELNODE_H

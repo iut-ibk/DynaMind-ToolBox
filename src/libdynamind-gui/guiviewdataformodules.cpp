@@ -146,6 +146,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			case DM::FACE:			item_view->setText(1, "Faces");			break;
 			case DM::SUBSYSTEM:		item_view->setText(1, "Systems");		break;
 			case DM::RASTERDATA:	item_view->setText(1, "Raster Data");	break;
+			case DM::COMPONENT:		item_view->setText(1, "Component");		break;
 			}
 
 			switch(v.getAccessType())
@@ -153,6 +154,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			case DM::WRITE:		item_view->setText(2, "write");		break;
 			case DM::READ:		item_view->setText(2, "read");		break;
 			case DM::MODIFY:	item_view->setText(2, "modify");	break;
+			case DM::DELETE:	item_view->setText(2, "delete");	break;
 			}
 
 			root_port->addChild(item_view);

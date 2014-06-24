@@ -47,6 +47,7 @@ class ModelNodeButton;
 class RootGroupNode;
 class PortNode;
 class GUISimulation;
+class GUIModelNode;
 
 class ModelNode;
 
@@ -92,6 +93,7 @@ public slots:
 	void viewInportData(QString portName);
 	void showHelp();
 	void changeSuccessorMode();
+	void updateSimulation();
 signals:
 	void showHelp(std::string, std::string);
 
@@ -108,6 +110,7 @@ protected:
 	QVector<PortNode*>	ports;
 	GUISimulation*		simulation;
 	DM::Module*			module;
+	GUIModelNode *ng;
 private:
 	ModelNode* child;
 };
