@@ -44,7 +44,7 @@ void EraseView::init()
 
 	data.clear();
 	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
-	data.push_back(  DM::View (NameOfView, DM::COMPONENT, DM::DELETE) );
+	data.push_back(  DM::View (NameOfView, DM::COMPONENT, DM::DEL) );
 	this->addData("Data", data);
 }
 
