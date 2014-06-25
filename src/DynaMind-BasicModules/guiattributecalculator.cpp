@@ -216,9 +216,6 @@ void GUIAttributeCalculator::addViewToTree(const DM::View& v, QTreeWidgetItem* p
 void GUIAttributeCalculator::updateAttributeView()
 {
 	ui->listAttributes->clear();
-	// clear variable table leaves one row, instead remove them by element
-	while (ui->variableTable->rowCount()>0)
-		ui->variableTable->removeRow(0);
 
 	std::map<std::string, View> viewVector = attrcalc->getViewsInStdStream();
 
