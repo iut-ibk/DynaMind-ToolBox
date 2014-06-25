@@ -40,8 +40,8 @@ enum ACCESS
 {
 	READ = 0,
 	MODIFY = 1,
-	WRITE= 2,
-	DELETE=3
+	WRITE = 2,
+	DEL = 3
 };
 
 /**
