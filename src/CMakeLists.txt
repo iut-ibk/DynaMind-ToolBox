@@ -1,11 +1,20 @@
-FILE(GLOB DYNAVIBE_CPPS *.cpp ./ws/*.cpp ./sewer/*.cpp ./ws/performance/*.cpp ./graph/*.cpp ./graph/analysis/*.cpp)
+FILE(GLOB DYNAVIBE_CPPS *.cpp ./ws/*.cpp ./sewer/*.cpp ./ws/performance/*.cpp ./graph/*.cpp ./graph/analysis/*.cpp ./testing/*.cpp ./testing/*.c ./general/*.cpp)
 
-INCLUDE_DIRECTORIES(. ./ws ./sewer ./graph ./ws/performance ./graph/analysis)
+INCLUDE_DIRECTORIES(. ./ws ./sewer ./graph ./ws/performance ./graph/analysis ./testing ./general)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+FILE(GLOB DYNAVIBE_UI_FILES ./general/*.ui)
+
+
+QT4_WRAP_UI(DYNAVIBE_CPPS ${DYNAVIBE_UI_FILES})
+QT4_WRAP_CPP(DYNAVIBE_CPPS ${MOC_MODULE_FILES})
 
 ADD_LIBRARY(dynamind-dynavibe SHARED ${DYNAVIBE_CPPS})
+SET_TARGET_PROPERTIES(dynamind-dynavibe PROPERTIES AUTOMOC TRUE)
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 	SET_TARGET_PROPERTIES(dynamind-dynavibe  PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
 ENDIF()
 
 TARGET_LINK_LIBRARIES(dynamind-dynavibe ${DYNAMIND_CORE_LIBRARY} ${Boost_LIBRARIES} ${DYNAMIND_TOOLBOX_LIBRARY} ${DYNAMIND_EXTENSIONS_LIBRARY} ${QT_LIBRARIES} ${CGAL_LIBRARIES} epanet2)
+#TARGET_LINK_LIBRARIES(dynamind-dynavibe ${DYNAMIND_CORE_LIBRARY} ${Boost_LIBRARIES} ${DYNAMIND_TOOLBOX_LIBRARY} ${DYNAMIND_EXTENSIONS_LIBRARY} ${QT_LIBRARIES} ${CGAL_LIBRARIES} epanet2)

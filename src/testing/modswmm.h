@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
  * Copyright (C) 2012  Michael Mair
 
@@ -24,22 +24,25 @@
  *
  */
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#ifndef ModifySWMMModel_H
+#define ModifySWMMModel_H
 
-#include <sstream>
+#include <dmmodule.h>
+#include <dm.h>
 
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
+class ModifySWMMModel : public DM::Module
+{
+	DM_DECLARE_NODE(ModifySWMMModel)
 
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
-}
+	DM::System * sys;
+	std::string inpfilepath;
+    std::string rainfilepath;
+	bool returnp;
 
-#endif //DMEPANET_H
+public:
+	ModifySWMMModel();
+	void run();
+	QStringList getNextValidLine(QTextStream *stream, QTextStream &ostream,bool skip=false);
+};
+
+#endif // ModifySWMMModel_H

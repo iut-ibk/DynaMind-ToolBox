@@ -54,14 +54,16 @@ CreateSWMMModel::CreateSWMMModel()
 
 	this->inpfilepath="";
     this->rainfilepath="";
+
 	this->addParameter("Path of inp file", DM::FILENAME, &this->inpfilepath);
-    this->addParameter("Path of rain file", DM::FILENAME, &this->rainfilepath);
+	this->addParameter("Path of rain file", DM::FILENAME, &this->rainfilepath);
 
 	std::vector<DM::View> views;
     views.push_back(sd.getCompleteView(S::JUNCTION,DM::READ));
     views.push_back(sd.getCompleteView(S::CONDUIT,DM::READ));
     views.push_back(sd.getCompleteView(S::INLET,DM::READ));
     views.push_back(sd.getCompleteView(S::CATCHMENT,DM::READ));
+
     this->addData("Sewer", views);
 }
 

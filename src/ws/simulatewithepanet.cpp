@@ -80,6 +80,7 @@ void SimulateWithEPANET::run()
 	if(!converter->checkENRet(EPANET::ENsolveH()))return;
 
 	DM::Logger(DM::Standard) << "Extracting results from EPANET run";
+	if(!converter->mapEpanetAttributes(this->sys))return;
 
 	if(!converter->closeEpanetModel())return;
 }

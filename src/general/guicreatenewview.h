@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
  * Copyright (C) 2012  Michael Mair
 
@@ -23,23 +23,43 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#ifndef GUICREATENEWVIEW_H
+#define GUICREATENEWVIEW_H
+#include <dmcompilersettings.h>
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#include <QDialog>
+#include <map>
 
-#include <sstream>
 
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
-
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
+namespace DM{
+	class Module;
+}
+namespace Ui {
+class GUICreateNewView;
 }
 
-#endif //DMEPANET_H
+class CreateNewView;
+
+class DM_HELPER_DLL_EXPORT GUICreateNewView : public QDialog
+{
+	Q_OBJECT
+
+public:
+	explicit GUICreateNewView(DM::Module * m, QWidget *parent = 0);
+	~GUICreateNewView();
+
+private:
+	Ui::GUICreateNewView *ui;
+	CreateNewView * m;
+	typedef std::map<std::string,std::string>::iterator MapIt;
+	std::map<std::string,std::string> attributes;
+
+public slots:
+	void accept();
+	void on_buttonAddAttribute_clicked();
+	void on_buttonDeleteAttribute_clicked();
+	void deleteAttribute();
+
+};
+
+#endif // GUICREATENEWVIEW_H

@@ -643,8 +643,8 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 		{
 			if(!(startP > 0 && endP > 0))
 			{
-				//DM::Logger(DM::Warning) << "Pipe with negative pressure difference: " << pressureDiff << " Flow: " << flow;
-				//DM::Logger(DM::Warning) << "Please place a pump here or use more observed pressure points in your system to balance all reservoirs";
+				DM::Logger(DM::Warning) << "Pipe with negative pressure difference: " << pressureDiff << " Flow: " << flow;
+				DM::Logger(DM::Warning) << "Please place a pump here or use more observed pressure points in your system to balance all reservoirs";
 				diameter = calcDiameter(roughness,TBVectorData::calculateDistance(currentpipe->getStartNode(),currentpipe->getEndNode()),flow/1000.0,std::fabs(pressureDiff),maxdiameter,discretediameter);
 			}
 			else

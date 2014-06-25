@@ -59,10 +59,16 @@
 
 //Testing Modules
 //#include <wsproto.h>
+#include <importswmm.h>
+#include <simulatewithswmm.h>
+#include <modswmm.h>
+#include <createnewview.h>
+#include <eraseview.h>
 
 using namespace std;
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
+	//GRAPH
 	registry->addNodeFactory(new DM::NodeFactory<InitGraphSystem>());
 	registry->addNodeFactory(new DM::NodeFactory<SpanningTree>());
 	registry->addNodeFactory(new DM::NodeFactory<ExtractNodesFromEdges>());
@@ -72,12 +78,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<ReduceTree>());
 	registry->addNodeFactory(new DM::NodeFactory<SetZfromRasterdata>());
 	registry->addNodeFactory(new DM::NodeFactory<CalculateEdgeLength>());
-	registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
-	registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
 	registry->addNodeFactory(new DM::NodeFactory<MinimumSteinerTree>());
 	registry->addNodeFactory(new DM::NodeFactory<Dimensioning>());
-	registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
-	registry->addNodeFactory(new DM::NodeFactory<IdentifyMainPipes>());
 	registry->addNodeFactory(new DM::NodeFactory<LoopCreator>());
 	registry->addNodeFactory(new DM::NodeFactory<TrimGraph>());
 	registry->addNodeFactory(new DM::NodeFactory<MapNodes2Graph>());
@@ -85,17 +87,29 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<RemoveNodesOnZ>());
 	registry->addNodeFactory(new DM::NodeFactory<DistributeWeightOnNodes>());
 	registry->addNodeFactory(new DM::NodeFactory<CreateVoronoiDiagram>());
+	registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
+	registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
 
+	//Water supply
+	registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
+	registry->addNodeFactory(new DM::NodeFactory<CreateEPANETModel>());
 	registry->addNodeFactory(new DM::NodeFactory<SpatialPressurePerformance>());
 	registry->addNodeFactory(new DM::NodeFactory<TotalDemandPerformance>());
-
-    registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
-    registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
-
-    registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
-    registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
+	registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
+	registry->addNodeFactory(new DM::NodeFactory<IdentifyMainPipes>());
 	registry->addNodeFactory(new DM::NodeFactory<EvaluatePerformanceIndicators>());
+
+	//Sewer
+	/*
+	registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
+	registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
+	registry->addNodeFactory(new DM::NodeFactory<ImportSWMM>());
+	registry->addNodeFactory(new DM::NodeFactory<SimulateWithSWMM>());
+	registry->addNodeFactory(new DM::NodeFactory<ModifySWMMModel>());
+	*/
 
 	//TESTMODULES
 	//registry->addNodeFactory(new DM::NodeFactory<WSProto>());
+	registry->addNodeFactory(new DM::NodeFactory<CreateNewView>());
+	registry->addNodeFactory(new DM::NodeFactory<EraseView>());
 }

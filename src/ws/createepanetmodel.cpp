@@ -55,9 +55,9 @@ CreateEPANETModel::CreateEPANETModel()
 
 	std::vector<DM::View> views;
 	views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::MODIFY));
-	views.push_back(wsd.getCompleteView(WS::PIPE,DM::READ));
-	views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
-	views.push_back(wsd.getCompleteView(WS::TANK,DM::READ));
+	views.push_back(wsd.getCompleteView(WS::PIPE,DM::MODIFY));
+	views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::MODIFY));
+	views.push_back(wsd.getCompleteView(WS::TANK,DM::MODIFY));
 	this->addData("Watersupply", views);
 }
 

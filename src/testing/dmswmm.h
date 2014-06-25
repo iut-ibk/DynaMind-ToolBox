@@ -24,12 +24,12 @@
  *
  */
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#ifndef DMSWMM_H
+#define DMSWMM_H
 
 #include <sstream>
 
-namespace EPANET{
+namespace SWMM{
     #if defined(_WIN32) || defined(__CYGWIN__)
         #define DLL
     #else
@@ -38,8 +38,9 @@ namespace EPANET{
 
     extern "C"
     {
-        #include <toolkit.h>
+		//#include <swmm5.h>
+		#include <error.h>
     }
 }
 
-#endif //DMEPANET_H
+#endif //DMSWMM_H

@@ -1,12 +1,12 @@
 /**
  * @file
- * @author  Michael Mair <michael.mair@uibk.ac.at>
+ * @author Michael Mair <michael.mair@uibk.ac.at>
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
- * Copyright (C) 2012  Michael Mair
+ * Copyright (C) 2012  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,23 +23,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#include <eraseview.h>
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+DM_DECLARE_NODE_NAME(EraseView, Modules)
+EraseView::EraseView()
+{
+	this->forceRefreshSimulation(true);
+	sys_in = NULL;
+	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	this->addParameter("NameOfView", DM::STRING, &this->NameOfView);
 
-#include <sstream>
-
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
-
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
 }
 
-#endif //DMEPANET_H
+void EraseView::run(){}
+
+void EraseView::init()
+{
+	if(NameOfView=="")
+		return;
+
+	data.clear();
+	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	data.push_back(  DM::View (NameOfView, DM::COMPONENT, DM::DELETE) );
+	this->addData("Data", data);
+}
+
+string EraseView::getHelpUrl()
+{
+	return "";
+}

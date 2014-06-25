@@ -4,9 +4,9 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
- * Copyright (C) 2012  Michael Mair
+ * Copyright (C) 2014 Michael Mair
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,23 +23,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+#ifndef ERASEVIEW_H
+#define ERASEVIEW_H
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#include <dmmodule.h>
+#include <dm.h>
+/**
+ * @ingroup Modules
+ * @brief The EraseView class
+ */
+class DM_HELPER_DLL_EXPORT EraseView : public DM::Module{
 
-#include <sstream>
+	DM_DECLARE_NODE(EraseView)
+	private:
+		DM::System * sys_in;
+		std::vector<DM::View> data;
 
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
+	public:
+		std::string NameOfView;
 
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
-}
+	public:
+		EraseView();
+		void init();
+		void run();
+		std::string getHelpUrl();
+};
 
-#endif //DMEPANET_H
+#endif // ERASEVIEW_H

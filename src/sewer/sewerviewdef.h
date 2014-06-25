@@ -48,6 +48,7 @@ namespace DM
         #define JUNCTION_LINK
 
         #define JUNCTION_ATTR \
+		A(Name,DM::Attribute::STRING) \
 		A(DWF,DM::Attribute::DOUBLE)
 
         #define CONDUIT_LINK
@@ -60,7 +61,15 @@ namespace DM
 
         #define OUTFALL_ATTR
 
-        #define INLET_LINK
+		#define STORAGE_LINK
+
+		#define STORAGE_ATTR
+
+		#define PUMP_LINK
+
+		#define PUMP_ATTR
+
+		#define INLET_LINK
 
         #define INLET_ATTR \
 		A(CATCHMENT,DM::Attribute::DOUBLE)
@@ -68,7 +77,9 @@ namespace DM
         #define TABLE \
         X(JUNCTION,DM::NODE, JUNCTION_ATTR, JUNCTION_LINK) \
         X(CONDUIT,DM::EDGE,CONDUIT_ATTR, CONDUIT_LINK) \
+		X(PUMP,DM::EDGE,PUMP_ATTR, PUMP_LINK) \
         X(OUTFALL, DM::NODE, OUTFALL_ATTR, OUTFALL_LINK) \
+		X(STORAGE, DM::NODE, STORAGE_ATTR, STORAGE_LINK) \
         X(INLET, DM::NODE, INLET_ATTR, INLET_LINK) \
         X(CATCHMENT, DM::FACE, CATCHMENT_ATTR, CATCHMENT_LINK) \
         X(WEIR, DM::NODE, WEIR_ATTR, WEIR_LINK)

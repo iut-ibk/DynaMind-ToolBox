@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
  * Copyright (C) 2012  Michael Mair
 
@@ -24,22 +24,33 @@
  *
  */
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#ifndef ImportSWMM_H
+#define ImportSWMM_H
 
-#include <sstream>
+#include <dmmodule.h>
+#include <dm.h>
 
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
+class ImportSWMM : public DM::Module
+{
+	DM_DECLARE_NODE(ImportSWMM)
 
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
-}
+	vector<DM::View> data;
+	bool append;
+	std::string inpfilepath;
+	DM::System* sys;
+	typedef QMultiMap<QString,QStringList* > rows;
+	typedef QMap<QString,rows* > categories;
 
-#endif //DMEPANET_H
+public:
+	ImportSWMM();
+	void init();
+	void run();
+
+private:
+	bool loadProject(std::string filename);
+	QStringList getNextValidLine(QTextStream *stream);
+	bool addNodesFromSection(QString name, ImportSWMM::categories &tables, QMap<QString,DM::Component*> &elements, DM::View view);
+	bool addEdgesFromSection(QString name, ImportSWMM::categories &tables, QMap<QString,DM::Component*> &elements, DM::View view);
+};
+
+#endif // ImportSWMM_H

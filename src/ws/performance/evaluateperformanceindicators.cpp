@@ -159,7 +159,7 @@ void EvaluatePerformanceIndicators::run()
 	if(pressure)
 	{
 		resultheader+="Pressure,";
-		double minpress = 40;
+		double minpress = 20;
 		double maxpress = 100;
 		double totaldemand=0.0;
 		double validdemand=0.0;

@@ -4,7 +4,7 @@
  * @version 1.0
  * @section LICENSE
  *
- * This file is part of DynaVIBe
+ * This file is part of DynaMind
  *
  * Copyright (C) 2012  Michael Mair
 
@@ -24,22 +24,24 @@
  *
  */
 
-#ifndef DMEPANET_H
-#define DMEPANET_H
+#ifndef SimulateWithSWMM_H
+#define SimulateWithSWMM_H
 
-#include <sstream>
+#include <dmmodule.h>
+#include <dm.h>
+#include <boost/shared_ptr.hpp>
 
-namespace EPANET{
-    #if defined(_WIN32) || defined(__CYGWIN__)
-        #define DLL
-    #else
-        #define SOL
-    #endif
+class SimulateWithSWMM : public DM::Module
+{
+	DM_DECLARE_NODE(SimulateWithSWMM)
 
-    extern "C"
-    {
-        #include <toolkit.h>
-    }
-}
+private:
+	DM::System *sys;
+	std::string inpfilepath;
 
-#endif //DMEPANET_H
+public:
+	SimulateWithSWMM();
+	void run();
+};
+
+#endif // SimulateWithSWMM_H
