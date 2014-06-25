@@ -24,7 +24,7 @@ IF(WIN32 AND NOT UNIX)
 	MESSAGE(FATAL_ERROR "Install dir of GDAL")
     ENDIF()
 
-    MESSAGE(STATUS "Boost library dirs: " ${Boost_LIBRARY_DIRS}) 
+    MESSAGE(STATUS "Boost library dirs: " ${Boost_LIBRARY_DIR}) 
 
     SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dynamind-toolbox.org")
