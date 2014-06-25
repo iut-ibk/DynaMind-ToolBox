@@ -154,7 +154,7 @@ GUIViewDataForModules::GUIViewDataForModules(DM::Module * m, QWidget *parent) :
 			case DM::WRITE:		item_view->setText(2, "write");		break;
 			case DM::READ:		item_view->setText(2, "read");		break;
 			case DM::MODIFY:	item_view->setText(2, "modify");	break;
-			case DM::DELETE:	item_view->setText(2, "delete");	break;
+			case DM::DEL:	item_view->setText(2, "delete");	break;
 			}
 
 			root_port->addChild(item_view);
