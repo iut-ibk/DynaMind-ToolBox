@@ -494,7 +494,12 @@ bool Simulation::checkModuleStreamForward(Module* m)
 				if (v.getName() == "dummy")	// TODO: this is ugly, horrible, terrible and awful
 					continue;				// but for backwards compatibility its necessary
 
-				if (v.getAccessType() < WRITE)
+				DM::ACCESS ac = v.getAccessType();
+
+				if(ac==WRITE && map_contains(&m->streamViews[streamName], v.getName()))
+					ac=MODIFY;
+
+				if (ac < WRITE)
 				{
 					// check if we can access the desired view
 					if (!map_contains(&m->streamViews[streamName], v.getName()))
@@ -516,7 +521,12 @@ bool Simulation::checkModuleStreamForward(Module* m)
 						std::vector<std::string> existingAttributes = existingView.getAllAttributes();
 						foreach(std::string attributeName, v.getAllAttributes())
 						{
-							if (v.getAttributeAccessType(attributeName) < WRITE)
+							DM::ACCESS a = v.getAttributeAccessType(attributeName);
+
+							if(a==WRITE && vector_contains(&existingAttributes, attributeName))
+								a = MODIFY;
+
+							if (a < WRITE)
 							{
 								// check if existing
 								if (!vector_contains(&existingAttributes, attributeName))
@@ -551,7 +561,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					}
 				}
 
-				if (v.getAccessType() == WRITE)
+				if (ac == WRITE)
 				{
 					// it may be, that a view already exists
 					if (map_contains(&m->streamViews[streamName], v.getName()))
@@ -563,7 +573,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					updatedStreams[streamName][v.getName()] = v;
 				}
 
-				if (v.getAccessType() == DELETE)
+				if (ac == DELETE)
 					updatedStreams[streamName].erase(v.getName());
 			}
 		}
