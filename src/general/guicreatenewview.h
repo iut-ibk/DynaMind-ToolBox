@@ -58,8 +58,6 @@ public slots:
 	void accept();
 	void on_buttonAddAttribute_clicked();
 	void on_buttonDeleteAttribute_clicked();
-	void deleteAttribute();
-
 };
 
 #endif // GUICREATENEWVIEW_H
