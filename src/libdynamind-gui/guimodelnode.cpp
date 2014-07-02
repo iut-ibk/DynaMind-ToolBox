@@ -105,9 +105,11 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 			{
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(), 0);
 
-				QSpinBox* sbox = new QSpinBox();
+				QDoubleSpinBox* sbox = new QDoubleSpinBox();
 				sbox->setMaximum(std::numeric_limits<long>::max());
 				sbox->setMinimum(std::numeric_limits<long>::min());
+				sbox->setDecimals(0);
+				sbox->setSingleStep(1);
 				elements.insert(qname, sbox);
 				sbox->setValue(*(long*)p->data);
 				layout1->addWidget(sbox, layout1->rowCount() - 1, 1);
