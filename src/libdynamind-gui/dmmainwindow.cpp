@@ -240,7 +240,7 @@ void DMMainWindow::runSimulation()
 	connect(simulationThreadWrapper, SIGNAL(signalUpdateProgress(float)), this, SLOT(updateProgress(float)));
 	connect(simulationThread, SIGNAL(started()), simulationThreadWrapper, SLOT(run()));
 	connect(simulationThreadWrapper, SIGNAL(finished()), this, SLOT(simulationFinished()));
-	connect(simulationThreadWrapper, SIGNAL(finished()), simulationThread, SLOT(deleteLater()));
+	connect(simulationThread, SIGNAL(finished()), simulationThread, SLOT(deleteLater()));
 	simulationThreadWrapper->moveToThread(simulationThread);
 
 	simulationThread->start();
