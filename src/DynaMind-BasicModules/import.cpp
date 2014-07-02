@@ -532,10 +532,6 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 									poCT, layerDef, poFeature, view);
 			}
 			break;
-		case wkbPolygon:
-			if (dmType == DM::FACE)
-				loadPolygon(sys, (OGRPolygon*)poGeometry, 
-							poCT, layerDef, poFeature, view);
 		case wkbMultiPolygon:
 			if (dmType == DM::FACE)
 			{
@@ -544,6 +540,10 @@ void Import::loadLayer(OGRLayer* layer, System* sys)
 					loadPolygon(sys, (OGRPolygon*)mpoMultiPoly->getGeometryRef(i), 
 								poCT, layerDef, poFeature, view);
 			}
+			break;
+		case wkbPolygon:
+			if (dmType == DM::FACE)
+				loadPolygon(sys, (OGRPolygon*)poGeometry, poCT, layerDef, poFeature, view);
 			break;
 		}
 	}
@@ -599,10 +599,10 @@ std::vector<Node*> Import::addFaceNodes(System* sys, const OGRLineString *ring, 
 	double* y = new double[nPoints];
 	ring->getPoints(x, sizeof(double), y, sizeof(double));
 
-	std::vector<Node*> nodes;
-	nodes.resize(nPoints+1);
+	std::vector<Node*> nodes(nPoints+1);
+	//nodes.resize(nPoints+1);
 
-	for (int i = 1; i < nPoints; i++)
+	for (int i = 0; i < nPoints; i++)
 		nodes[i] = this->addNode(sys, x[i], y[i], poCT);
 
 	// ring closure
