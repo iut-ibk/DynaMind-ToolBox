@@ -46,9 +46,20 @@ bool ConditionalLoopGroup::condition()
 {
 	if(evalConditionString())
 	{
+		currentRun++;
 		loopStreams();
 		return true;
 	}
+
+	if(!this->getGroupCounter())
+	{
+		foreach(std::string streamName, writeStreams)
+		{
+			System* sys = getInPortData(streamName);
+			setOutPortData(streamName,sys);
+		}
+	}
+
 	return false;
 }
 
