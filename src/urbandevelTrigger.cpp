@@ -14,18 +14,16 @@ urbandevelTrigger::~urbandevelTrigger()
 void urbandevelTrigger::init()
 {
     city = DM::View("CITY", DM::NODE, DM::READ);
-    sb = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
-    cb = DM::View("CITYBLOCK", DM::FACE, DM::MODIFY);
-    bd = DM::View("BUILDING", DM::FACE, DM::MODIFY);
+    superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
+    cityblock = DM::View("CITYBLOCK", DM::FACE, DM::MODIFY);
 
     city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
     views.push_back(city);
-    views.push_back(sb);
-    views.push_back(cb);
-    views.push_back(bd);
+    views.push_back(superblock);
+    views.push_back(cityblock);
     this->addData("data", views);
 }
 
@@ -52,21 +50,38 @@ void urbandevelTrigger::run()
     }
     else if (cyclepopdiff < 0)
     {
-        //decline
+        bool ret = setdec();
     }
 }
 
 bool urbandevelTrigger::setdev()
 {
+    DM::System * sys = this->getData("data");
+    std::vector<DM::Component *> sb = sys->getAllComponentsInView(superblock);
+
     //check free parcels
 
+    std::vector<double> rankvec;
 
+    for (int i = 0; i < sb.size(); i++)
+    {
+        if (sb[i]->getAttribute("empty")->getDouble()) {
+            DM::Logger(DM::Warning) << "empty";
+            sb[i]->changeAttribute("selected", '1');
+        }
+        else {
+            DM::Logger(DM::Warning) << "NOT empty";
+        }
 
-    //check free cb
-    //check free sb
-    //foreach areas
+    }
+    //check occ sb
+    //check occ cb
+    //check occ parcels
+    //remove population
+    // ??? remove building ???
     return 1;
 }
+
 
 bool urbandevelTrigger::setdec()
 {

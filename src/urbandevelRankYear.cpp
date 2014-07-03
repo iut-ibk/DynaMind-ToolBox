@@ -20,7 +20,7 @@ urbandevelRankYear::urbandevelRankYear()
     this->addParameter("view", DM::STRING, &this->viewname);
     this->addParameter("rank reduction", DM::BOOL, &this->reduction);
     this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
-    this->addParameter("ranking funcktion faktor", DM::DOUBLE, &this->rank_function_factor);
+    this->addParameter("ranking function faktor", DM::DOUBLE, &this->rank_function_factor);
     this->addParameter("ranking weight", DM::DOUBLE, &this->rank_weight);
 }
 

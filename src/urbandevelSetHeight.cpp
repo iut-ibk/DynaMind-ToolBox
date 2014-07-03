@@ -10,8 +10,16 @@ DM_DECLARE_NODE_NAME(urbandevelSetHeight, DynAlp)
 
 urbandevelSetHeight::urbandevelSetHeight()
 {
-    numbernearest = 3;
-    this->addParameter("number of buildings", DM::DOUBLE, &this->numbernearest);
+//    std::vector<DM::View> data;
+//    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+
+    numbernearest = 9;
+    this->heightView = "";
+
+    this->addParameter("Height from: ", DM::STRING, & this->heightView);
+    this->addParameter("number of objects", DM::INT, &this->numbernearest);
+
+//    this->addData("Data", data);
 }
 
 urbandevelSetHeight::~urbandevelSetHeight()
@@ -22,20 +30,23 @@ void urbandevelSetHeight::init()
 {
     city = DM::View("CITY", DM::NODE, DM::READ);
     sb = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
-    bd = DM::View("BUILDING", DM::FACE, DM::READ);
-    sb_cent = DM::View("SUPERBLOCK_CENTROIDS", DM::NODE, DM::READ);
-    bd_cent = DM::View("BUILDING_CENTROIDS", DM::NODE, DM::READ);
+    hview = DM::View(heightView, DM::FACE, DM::READ);
 
-    sb.addAttribute("height", DM::Attribute::DOUBLE, DM::WRITE);
-    bd.addAttribute("height", DM::Attribute::DOUBLE, DM::READ);
+    sb_cent = DM::View("SUPERBLOCK_CENTROIDS", DM::NODE, DM::READ);
+    hview_cent = DM::View(heightView + "_CENTROIDS", DM::NODE, DM::READ);
+
+    sb.addAttribute("height_max", DM::Attribute::DOUBLE, DM::WRITE);
+    sb.addAttribute("height_min", DM::Attribute::DOUBLE, DM::WRITE);
+    sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+    hview.addAttribute("height", DM::Attribute::DOUBLE, DM::READ);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
     views.push_back(city);
     views.push_back(sb);
-    views.push_back(bd);
+    views.push_back(hview);
     views.push_back(sb_cent);
-    views.push_back(bd_cent);
+    views.push_back(hview_cent);
     this->addData("data", views);
 }
 
@@ -46,8 +57,8 @@ void urbandevelSetHeight::run()
 
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
-    std::vector<DM::Component *> buildings = sys->getAllComponentsInView(bd);
-    std::vector<DM::Component *> buildings_centroids = sys->getAllComponentsInView(bd_cent);
+    std::vector<DM::Component *> buildings = sys->getAllComponentsInView(hview);
+    std::vector<DM::Component *> buildings_centroids = sys->getAllComponentsInView(hview);
 
     int max = static_cast<int>(numbernearest);
 
@@ -72,7 +83,7 @@ void urbandevelSetHeight::run()
 
         for (int j = 0; j < buildings.size(); j++)
         {
-            std::vector<DM::Component*> bdlink = buildings[j]->getAttribute("BUILDING_CENTROIDS")->getLinkedComponents();
+            std::vector<DM::Component*> bdlink = buildings[j]->getAttribute(heightView+"_CENTROIDS")->getLinkedComponents();
 
             if( bdlink.size() < 1 )
             {
@@ -98,6 +109,8 @@ void urbandevelSetHeight::run()
 
         }
         int avgheight = 0;
+        int maxheight = 0;
+        int minheight = 0;
 
         std::map<int,int>::iterator element = distheight.begin();
 
@@ -105,12 +118,29 @@ void urbandevelSetHeight::run()
         for (int k = 0; k < max; k++)
         {
             std::advance(element,k);
-            avgheight = avgheight + element->second;
+
+            int actualheight = element->second;
+            DM::Logger(DM::Warning) << "actual height " << actualheight;
+
+            if (actualheight > maxheight)
+            {
+                maxheight = actualheight;
+                DM::Logger(DM::Warning) << "maxheight " << maxheight;
+            }
+            else if (actualheight < minheight || minheight == 0 )
+            {
+                minheight = actualheight;
+            }
+            avgheight = avgheight + actualheight;
             DM::Logger(DM::Debug) << "heightinc " << avgheight;
         }
 
         avgheight = avgheight/max;
-        DM::Logger(DM::Debug) << "avgheight " << avgheight;
-        superblocks[i]->changeAttribute("height", avgheight);
+        DM::Logger(DM::Warning) << "avgheight " << avgheight;
+        DM::Logger(DM::Warning) << "minheight " << minheight;
+        DM::Logger(DM::Warning) << "maxheight " << maxheight;
+        superblocks[i]->changeAttribute("height_avg", avgheight);
+        superblocks[i]->changeAttribute("height_min", minheight);
+        superblocks[i]->changeAttribute("height_max", maxheight);
     }
 }

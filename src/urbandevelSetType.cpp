@@ -10,8 +10,12 @@ DM_DECLARE_NODE_NAME(urbandevelSetType, DynAlp)
 
 urbandevelSetType::urbandevelSetType()
 {
-    numbernearest = 3;
-    this->addParameter("no superblocks considered", DM::DOUBLE, &this->numbernearest);
+    numbernearest = 9;
+    from_SB = 0;
+    from_nearest = 1;
+    this->addParameter("no superblocks considered", DM::INT, &this->numbernearest);
+    this->addParameter("type from SB", DM::BOOL, &this->from_SB);
+    this->addParameter("type from neighbors", DM::BOOL, &this->from_nearest);
 }
 
 urbandevelSetType::~urbandevelSetType()

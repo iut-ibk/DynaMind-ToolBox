@@ -18,10 +18,8 @@ private:
 
     int yearcycle;
     DM::View city;
-    DM::View sb;
-    DM::View cb;
-    DM::View parcel;
-    DM::View bd;
+    DM::View superblock;
+    DM::View cityblock;
 };
 
 #endif // urbandevelTrigger_H

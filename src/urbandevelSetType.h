@@ -14,6 +14,9 @@ public:
     void init();
 private:
     double numbernearest;
+    bool from_SB;
+    bool from_nearest;
+
     DM::View city;
     DM::View sb;
     DM::View sb_cent;

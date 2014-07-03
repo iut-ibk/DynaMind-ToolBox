@@ -14,11 +14,13 @@ public:
     void init();
 private:
     double numbernearest;
+    std::string heightView;
+
     DM::View city;
     DM::View sb;
     DM::View sb_cent;
-    DM::View bd;
-    DM::View bd_cent;
+    DM::View hview;
+    DM::View hview_cent;
 };
 
 #endif // urbandevelSetHeight_H
