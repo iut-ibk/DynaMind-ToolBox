@@ -12,12 +12,12 @@ bool DAHelper::darank(std::vector<double>& values, std::vector<int>& rank, std::
     {
         double min = pow(*std::min_element(values.begin(), values.end()), 1/factor);
         double max = pow(*std::max_element(values.begin(), values.end()), 1/factor);
-        DM::Logger(DM::Warning) << "min: " << min << "max: " << max;
+        DM::Logger(DM::Debug) << "min: " << min << "max: " << max;
 
         for ( int i = 0; i < values.size(); i++)
         {
             rank.push_back(static_cast<int>( 1 + ( 9 * ( pow( values[i], 1/factor) - min )) / (max-min) ) );
-            DM::Logger(DM::Warning) << "val: " << values[i] << "rank: " << rank[i];
+            DM::Logger(DM::Debug) << "val: " << values[i] << "rank: " << rank[i];
         }
     }
     return 1;
@@ -32,7 +32,7 @@ bool DAHelper::daweight(std::vector<int>& oldrank, std::vector<int>& newrank, do
             rank_weight = 0.1;
         }
         if (oldrank[i] > 0 ) { newrank[i] = static_cast<int>(qRound((oldrank[i] + newrank[i]*rank_weight)/(rank_weight+1))); }
-        DM::Logger(DM::Warning) << "old: " << oldrank[i] << "new :" << newrank[i];
+        DM::Logger(DM::Debug) << "old: " << oldrank[i] << "new :" << newrank[i];
     }
     return 1;
 }

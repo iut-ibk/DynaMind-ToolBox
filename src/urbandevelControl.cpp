@@ -62,7 +62,7 @@ void urbandevelControl::run()
     QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
     QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
 
-        DM::Logger(DM::Debug) << "year: " << year << "\npopulation: " << pop;
+        DM::Logger(DM::Warning) << "year: " << year << "\npopulation: " << pop;
 
         QStringList yrlist = year.split(",");
         QStringList poplist = pop.split(",");

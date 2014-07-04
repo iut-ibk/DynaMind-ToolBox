@@ -58,7 +58,7 @@ void urbandevelCycle::run()
     int cycle = currentyear - startyear;
     int cyclepopdiff = popdiffperyear[cycle];
 
-    DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
+    DM::Logger(DM::Debug) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
 
     DM::Attribute* set = currentcity->getAttribute("currentyear");
     set->setDouble(currentyear);

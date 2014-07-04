@@ -120,12 +120,12 @@ void urbandevelSetHeight::run()
             std::advance(element,k);
 
             int actualheight = element->second;
-            DM::Logger(DM::Warning) << "actual height " << actualheight;
+            DM::Logger(DM::Debug) << "actual height " << actualheight;
 
             if (actualheight > maxheight)
             {
                 maxheight = actualheight;
-                DM::Logger(DM::Warning) << "maxheight " << maxheight;
+                DM::Logger(DM::Debug) << "maxheight " << maxheight;
             }
             else if (actualheight < minheight || minheight == 0 )
             {
@@ -136,9 +136,9 @@ void urbandevelSetHeight::run()
         }
 
         avgheight = avgheight/max;
-        DM::Logger(DM::Warning) << "avgheight " << avgheight;
-        DM::Logger(DM::Warning) << "minheight " << minheight;
-        DM::Logger(DM::Warning) << "maxheight " << maxheight;
+        DM::Logger(DM::Debug) << "avgheight " << avgheight;
+        DM::Logger(DM::Debug) << "minheight " << minheight;
+        DM::Logger(DM::Debug) << "maxheight " << maxheight;
         superblocks[i]->changeAttribute("height_avg", avgheight);
         superblocks[i]->changeAttribute("height_min", minheight);
         superblocks[i]->changeAttribute("height_max", maxheight);
