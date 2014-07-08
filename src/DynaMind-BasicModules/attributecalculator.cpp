@@ -234,7 +234,7 @@ void AttributeCalculator::run()
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
 	p->SetExpr(IfElseConverter(QString::fromStdString(equation)).toStdString());
 
-	const DM::View& baseView = getAccessedViews()["Data"][nameOfBaseView];
+	DM::View baseView = getAccessedViews()["Data"][nameOfBaseView];
 
 	foreach(Component* cmp, sys_in->getAllComponentsInView(baseView))
 	{
