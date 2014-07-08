@@ -153,6 +153,9 @@ void Dimensioning::run()
 	converter->closeEpanetModel();
 
 	DM::Logger(DM::Standard) << "Total demand: " << totaldemand << " m^3/s";
+
+	QFile::remove(QString::fromStdString(inpfilename));
+	QFile::remove(QString::fromStdString(rptfilename));
 }
 
 double Dimensioning::calcTotalDemand()

@@ -310,11 +310,26 @@ bool EpanetDynamindConverter::addPipe(DM::Edge *pipe, bool cv)
 	return true;
 }
 
+EpanetDynamindConverter::~EpanetDynamindConverter()
+{
+	if(openedepanetfile)
+	{
+		EPANET::ENcloseH();
+		EPANET::ENclose();
+	}
+}
+
 bool EpanetDynamindConverter::openEpanetModel(string inpfilepath, string rptfilepath)
 {
-	char inpfile[256];
+	if(openedepanetfile)
+	{
+		EPANET::ENcloseH();
+		EPANET::ENclose();
+	}
+
+	char inpfile[512];
 	strcpy(inpfile,inpfilepath.c_str());
-	char rptfile[256];
+	char rptfile[512];
 	strcpy(rptfile,rptfilepath.c_str());
 
 	openedepanetfile=true;

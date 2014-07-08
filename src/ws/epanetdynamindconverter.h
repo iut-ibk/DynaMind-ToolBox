@@ -60,6 +60,7 @@ public:
 
 	//LINK COMPONENTS OF EPANET
 	bool addPipe(DM::Edge *pipe, bool cv);
+	~EpanetDynamindConverter();
 };
 
 #endif // EpanetDynamindConverter_H

@@ -59,7 +59,7 @@ void SimulateWithEPANET::run()
 	QString dir = QDir::tempPath();
 	std::string inpfilename = dir.toStdString() + "/test.inp";
 	std::string rptfilename = dir.toStdString() + "/test.rpt";
-    DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
+	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 
 	converter = boost::make_shared<EpanetDynamindConverter>();
 
@@ -83,4 +83,7 @@ void SimulateWithEPANET::run()
 	if(!converter->mapEpanetAttributes(this->sys))return;
 
 	if(!converter->closeEpanetModel())return;
+
+	QFile::remove(QString::fromStdString(inpfilename));
+	QFile::remove(QString::fromStdString(rptfilename));
 }
