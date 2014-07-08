@@ -206,6 +206,11 @@ void Module::setOutPortData(const std::string &name, ISystem* data)
 		outPorts[name] = data;
 }
 
+void Module::setIsGDALModule(bool b)
+{
+	this->GDALModule = b;
+}
+
 bool Module::inPortsSet() const
 {
 	mforeach(ISystem* data, inPorts)
@@ -269,6 +274,16 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 		this->addPort(streamName, OUTPORT);
 	else if (!outPort && hasOutPort(streamName))
 		this->removePort(streamName, OUTPORT);
+}
+
+void Module::addGDALData(const string &streamName, std::vector<ViewContainer> views)
+{
+	std::vector<DM::View> converted_views;
+	foreach(DM::View v, views) {
+		converted_views.push_back((DM::View)v);
+	}
+
+	this->addData(streamName, converted_views);
 }
 
 void Module::removeData(const std::string& name)

@@ -2,6 +2,8 @@
 #define VIEWCONTAINER_H
 
 #include <dmview.h>
+#include <ogrsf_frmts.h>
+
 
 class OGRFeature;
 
@@ -24,7 +26,7 @@ private:
 
 public:
 	ViewContainer();
-	~ViewContainer();
+	virtual ~ViewContainer();
 	ViewContainer(std::string name, int type, ACCESS accesstypeGeometry = READ);
 
 	void setCurrentGDALSystem(DM::GDALSystem * sys);
@@ -42,8 +44,6 @@ public:
 	OGRFeature *getFeature(long dynamind_id);
 
 	OGRFeature *getNextFeature();
-
-
 
 
 

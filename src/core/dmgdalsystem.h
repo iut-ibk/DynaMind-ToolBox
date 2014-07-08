@@ -1,16 +1,19 @@
 #ifndef DMGDALSYSTEM_H
 #define DMGDALSYSTEM_H
 
-#include <ogrsf_frmts.h>
-#include <dmview.h>
+
+#include <dmviewcontainer.h>
+#include <dmisystem.h>
+#include <ogr_api.h>
 
 #include <map>
 #include <vector>
-#include <dmisystem.h>
+
 
 class OGRDataSource;
 class OGRSFDriver;
 class OGRLayer;
+class OGRFeature;
 
 namespace DM {
 class GDALSystem : public ISystem
@@ -24,7 +27,9 @@ public:
 
 	void syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df);
 
-	void updateView(const DM::View & v);
+	void updateView(const View &v);
+
+	void updateViewContainer(ViewContainer v);
 
 	OGRFeature *createFeature(const DM::View & v);
 

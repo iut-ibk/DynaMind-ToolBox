@@ -4,6 +4,9 @@
 #include <dmattribute.h>
 #include <dmsystem.h>
 
+#include <ogrsf_frmts.h>
+#include <ogr_api.h>
+
 #include <sstream>
 
 #include <QUuid>
@@ -110,12 +113,18 @@ void GDALSystem::updateView(const View &v)
 	}
 }
 
+void GDALSystem::updateViewContainer(ViewContainer v)
+{
+	this->updateView(v);
+}
+
 OGRFeature *GDALSystem::createFeature(const View &v)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
 	f->SetField("dynamind_id", (int) latestUniqueId++);
 	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+	std::cout << (int)OGR_F_GetFieldCount((OGRFeatureH)f) << std::endl;
 	return f;
 }
 
@@ -175,6 +184,7 @@ OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
 		return NULL;
 	}
 	OGRLayer * lyr = viewLayer[v.getName()];
+
 
 	return lyr->GetFeature(this->uniqueIdsTonfid[dynamind_id]);
 }

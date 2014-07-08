@@ -23,4 +23,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 from pythontestmodule import *
-
+from create_gdal_component import *

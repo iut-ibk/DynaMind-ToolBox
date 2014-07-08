@@ -2,6 +2,7 @@
 
 #include <dmlogger.h>
 #include <dmgdalsystem.h>
+#include <ogrsf_frmts.h>
 
 namespace DM {
 

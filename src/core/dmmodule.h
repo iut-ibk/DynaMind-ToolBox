@@ -35,6 +35,7 @@
 #include <list>
 #include <map>
 #include <dmview.h>
+#include <dmviewcontainer.h>
 
 namespace DM {
 	
@@ -273,6 +274,7 @@ protected:
 	*
 	* If a port already exists no new port is added, existing definitions are overwritten. */
 	void addData(const std::string& streamName, std::vector<View> views);
+	void addGDALData(const std::string& streamName, std::vector<ViewContainer> views);
 
 	/** @brief Returns a pointer raster data set assigend to a view **/
 	RasterData* getRasterData(std::string name, View view);
@@ -283,6 +285,7 @@ protected:
 	/** @brief */
 	void setOutPortData(const std::string &name, ISystem *data);
 
+	void setIsGDALModule(bool b);
 	bool GDALModule;
 
 private:

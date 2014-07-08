@@ -11,12 +11,12 @@
 #define FEATURES "100000"
 #define FEATURES_2 "200000"
 
-#define SPEEDTESTDM
+/*#define SPEEDTESTDM
 #define SPEEDTEST
 #define CONNECTIONTEST
 #define BRANCHINGTEST
 #define EXPANDING
-#define BRANCHMODIFY
+#define BRANCHMODIFY*/
 
 #ifdef SPEEDTESTDM
 TEST_F(TestGDALModules,TestInsertSpeed_DM) {
