@@ -743,7 +743,8 @@ void Import::appendAttributes(Component *cmp, OGRFeatureDefn *poFDefn, OGRFeatur
 		int fieldVectorSize = 0;
 
 		std::string attrName = poFieldDefn->GetNameRef();
-		attrName = viewConfig[view.getName() + "." + attrName];
+		std::string layerName = poFDefn->GetName();
+		attrName = viewConfig[layerName + "." + attrName];
 
 		if (!attrName.empty())
 		{
