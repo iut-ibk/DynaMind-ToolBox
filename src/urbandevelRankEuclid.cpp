@@ -61,6 +61,8 @@ void urbandevelRankEuclid::run()
 
     DM::Component* city = cities[0];
 
+    std::string rankfieldname = "devrank";
+    if (reduction) rankfieldname = "redrank";
     std::vector<double> distance;
     std::vector<int> rank;
     std::vector<int> oldrank;
@@ -79,7 +81,7 @@ void urbandevelRankEuclid::run()
         DM::Node * centroid = dynamic_cast<DM::Node*>(link[0]);
 
         distance.push_back(TBVectorData::calculateDistance((DM::Node*)city, (DM::Node*)centroid));
-        oldrank.push_back(areas[i]->getAttribute("devrank")->getDouble());
+        oldrank.push_back(areas[i]->getAttribute(rankfieldname)->getDouble());
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
 
@@ -88,6 +90,6 @@ void urbandevelRankEuclid::run()
 
     for (int i = 0; i < areas.size(); i++)
     {
-        dynamic_cast<DM::Face*>(areas[i])->changeAttribute("devrank", rank[i]);
+        dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
     }
 }

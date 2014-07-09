@@ -64,6 +64,13 @@ void urbandevelRankYear::run()
     int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
     int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
 
+    std::string yearfieldname = "devyear";
+    std::string rankfieldname = "devrank";
+    if (reduction) {
+        yearfieldname = "redyear";
+        rankfieldname = "redrank";
+    }
+
     std::vector<double> year;
     std::vector<int> oldrank;
     std::vector<int> rank;
@@ -71,11 +78,11 @@ void urbandevelRankYear::run()
 
     for (int i = 0; i < areas.size(); i++)
     {
-        int currentyear = static_cast<int>(areas[i]->getAttribute("develyear")->getDouble());
+        int currentyear = static_cast<int>(areas[i]->getAttribute(yearfieldname)->getDouble());
         if ( currentyear <= startyear ) { currentyear = startyear + 1; }
         if ( currentyear >= endyear ) { currentyear = endyear - 1; }
         year.push_back(currentyear);
-        oldrank.push_back(static_cast<int>(areas[i]->getAttribute("devrank")->getDouble()));
+        oldrank.push_back(static_cast<int>(areas[i]->getAttribute(rankfieldname)->getDouble()));
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
     DAHelper::darank(year, rank, rank_function, rank_function_factor);
@@ -83,6 +90,6 @@ void urbandevelRankYear::run()
 
     for (int i = 0; i < areas.size(); i++)
     {
-        dynamic_cast<DM::Face*>(areas[i])->changeAttribute("devrank", rank[i]);
+        dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
     }
 }

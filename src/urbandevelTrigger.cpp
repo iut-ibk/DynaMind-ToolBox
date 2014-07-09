@@ -43,23 +43,27 @@ void urbandevelTrigger::run()
 
     int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
 
+    //DM::Logger(DM::Warning) << "popdiff is " << cyclepopdiff;
+
     if (cyclepopdiff > 0)
     {
         //growth
-        bool ret = setdev();
+        setdev();
     }
     else if (cyclepopdiff < 0)
     {
-        bool ret = setdec();
+        setdec();
     }
 }
 
-bool urbandevelTrigger::setdev()
+void urbandevelTrigger::setdev()
 {
     DM::System * sys = this->getData("data");
     std::vector<DM::Component *> sb = sys->getAllComponentsInView(superblock);
 
     //check free parcels
+
+    DM::Logger(DM::Warning) << "in development mode";
 
     std::vector<double> rankvec;
 
@@ -77,18 +81,14 @@ bool urbandevelTrigger::setdev()
     //check occ sb
     //check occ cb
     //check occ parcels
-    //remove population
-    // ??? remove building ???
-    return 1;
 }
 
 
-bool urbandevelTrigger::setdec()
+void urbandevelTrigger::setdec()
 {
     //check occ sb
     //check occ cb
     //check occ parcels
     //remove population
     // ??? remove building ???
-    return 1;
 }

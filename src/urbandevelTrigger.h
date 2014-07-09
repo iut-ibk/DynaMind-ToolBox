@@ -13,8 +13,8 @@ public:
     void run();
     void init();
 private:
-    bool setdev();
-    bool setdec();
+    void setdev();
+    void setdec();
 
     int yearcycle;
     DM::View city;

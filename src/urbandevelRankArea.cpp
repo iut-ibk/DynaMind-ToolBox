@@ -46,6 +46,9 @@ void urbandevelRankArea::init()
 void urbandevelRankArea::run()
 {
     // get data from stream/port
+    std::string rankfieldname = "devrank";
+    if (reduction) rankfieldname = "redrank";
+
     DM::System * sys = this->getData("data");
 
     std::vector<DM::Component *> areas = sys->getAllComponentsInView(rankview);
@@ -67,7 +70,7 @@ void urbandevelRankArea::run()
     for (int i = 0; i < areas.size(); i++)
     {
         area.push_back(1/(TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)areas[i])));
-        oldrank.push_back((areas[i]->getAttribute("devrank")->getDouble()));
+        oldrank.push_back((areas[i]->getAttribute(rankfieldname)->getDouble()));
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
 
@@ -76,6 +79,6 @@ void urbandevelRankArea::run()
 
     for (int i = 0; i < areas.size(); i++)
     {
-        dynamic_cast<DM::Face*>(areas[i])->changeAttribute("devrank", rank[i]);
+        dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
     }
 }
