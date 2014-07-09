@@ -61,6 +61,7 @@ void SimulateWithEPANET::run()
 	std::string rptfilename = dir.toStdString() + "/test.rpt";
 	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 
+	converter.reset();
 	converter = boost::make_shared<EpanetDynamindConverter>();
 
 	this->sys = this->getData("Watersupply");
@@ -86,4 +87,5 @@ void SimulateWithEPANET::run()
 
 	QFile::remove(QString::fromStdString(inpfilename));
 	QFile::remove(QString::fromStdString(rptfilename));
+	converter.reset();
 }

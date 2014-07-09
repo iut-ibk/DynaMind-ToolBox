@@ -93,12 +93,13 @@ void Dimensioning::run()
 	QString dir = QDir::tempPath();
 	std::string inpfilename = dir.toStdString() + "/test.inp";
 	std::string rptfilename = dir.toStdString() + "/test.rpt";
-	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 
 	if(usemainpipe)
 		fixeddiameters=true;
 
+	converter.reset();
 	converter = boost::make_shared<EpanetDynamindConverter>();
+	DM::Logger(DM::Standard) << "Epanet loaded";
 
 	this->sys = this->getData("Watersupply");
 	double totaldemand = calcTotalDemand();
@@ -106,19 +107,26 @@ void Dimensioning::run()
 
 	if(usemainpipe)
 		if(!approximateMainPipes(usereservoirdata,totaldemand,entrypipes,discrete))
+		{
+			DM::Logger(DM::Standard) << "Approximate main pipes .... DONE";
 			return;
+		}
 
+	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 	if(!converter->createEpanetModel(this->sys,inpfilename))
 	{
 		DM::Logger(DM::Error) << "Could not create a valid EPANET inp file";
 		return;
 	}
 
+	DM::Logger(DM::Standard) << "Open Epanet model";
 	if(!converter->openEpanetModel(inpfilename,rptfilename)) return;
 
 	//set small simulation duration and timesteps
 	EPANET::ENsettimeparam(EN_DURATION,60);
 	EPANET::ENsettimeparam(EN_HYDSTEP,30);
+
+	DM::Logger(DM::Standard) << "Start pipe sizing";
 
 	if(!SitzenfreiDimensioning())return;
 
@@ -156,6 +164,7 @@ void Dimensioning::run()
 
 	QFile::remove(QString::fromStdString(inpfilename));
 	QFile::remove(QString::fromStdString(rptfilename));
+	converter.reset();
 }
 
 double Dimensioning::calcTotalDemand()
