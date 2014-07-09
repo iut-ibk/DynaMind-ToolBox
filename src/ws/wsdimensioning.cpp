@@ -106,11 +106,10 @@ void Dimensioning::run()
 	std::vector<DM::Edge*> entrypipes;
 
 	if(usemainpipe)
-		if(!approximateMainPipes(usereservoirdata,totaldemand,entrypipes,discrete))
-		{
-			DM::Logger(DM::Standard) << "Approximate main pipes .... DONE";
-			return;
-		}
+	{
+		if(!approximateMainPipes(usereservoirdata,totaldemand,entrypipes,discrete))return;
+		DM::Logger(DM::Standard) << "Approximate main pipes .... DONE";
+	}
 
 	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 	if(!converter->createEpanetModel(this->sys,inpfilename))
@@ -700,10 +699,10 @@ bool Dimensioning::approximateMainPipes(bool usereservoirsdata, double totaldema
 	{
 		DM::Edge* currentedge = dynamic_cast<DM::Edge*>(mainpipe[index]);
 
-		if(std::find(reservoirs.end(),reservoirs.begin(),currentedge->getStartNode())!=reservoirs.end())
+		if(std::find(reservoirs.begin(),reservoirs.end(),currentedge->getStartNode())!=reservoirs.end())
 			entrypipes[currentedge->getStartNode()] = currentedge;
 
-		if(std::find(reservoirs.end(),reservoirs.begin(),currentedge->getEndNode())!=reservoirs.end())
+		if(std::find(reservoirs.begin(),reservoirs.end(),currentedge->getEndNode())!=reservoirs.end())
 			entrypipes[currentedge->getEndNode()] = currentedge;
 
 		currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),defaultdiameter);
