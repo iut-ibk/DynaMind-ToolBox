@@ -952,40 +952,43 @@ double Dimensioning::calcDiameter(double k, double l, double q, double h, double
 	if(h < 0)
 		return -1;
 
-	if(h/l < 0.00001)
-	{
-		return std::sqrt(4*q)/M_PI;
-	}
-
 	double maxerror = 0.0000001;
 	double d = 0.001;
 	double maxd = 6;
 	double mind = 0;
 	double currenterror = h-calcFrictionHeadLoss(d,k,l,q);
 
-	while (std::fabs(currenterror) > maxerror)
+	if(h/l < 0.00001)
 	{
-		//DM::Logger(DM::Error) << currenterror << " " << maxerror;
-		if(currenterror < 0)
+		d =  std::sqrt(4*q)/M_PI;
+	}
+
+	if(d <= 0.001)
+	{
+		while (std::fabs(currenterror) > maxerror)
 		{
-			mind=d;
-			d = d+(maxd-mind)/2;
+			//DM::Logger(DM::Error) << currenterror << " " << maxerror;
+			if(currenterror < 0)
+			{
+				mind=d;
+				d = d+(maxd-mind)/2;
+			}
+
+			if(currenterror > 0)
+			{
+				maxd=d;
+				d = d-(maxd-mind)/2;
+			}
+
+			double frictionhl = calcFrictionHeadLoss(d,k,l,q);
+			double olderror = currenterror;
+			currenterror = h-frictionhl;
+
+			if(olderror==currenterror)
+				break;
+
+			DM::Logger(DM::Debug) << "Friction: " << frictionhl;
 		}
-
-		if(currenterror > 0)
-		{
-			maxd=d;
-			d = d-(maxd-mind)/2;
-		}
-
-		double frictionhl = calcFrictionHeadLoss(d,k,l,q);
-		double olderror = currenterror;
-		currenterror = h-frictionhl;
-
-		if(olderror==currenterror)
-			break;
-
-		DM::Logger(DM::Debug) << "Friction: " << frictionhl;
 	}
 
 	if(d > maxdiameter)
