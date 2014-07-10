@@ -35,8 +35,13 @@ CreateNewView::CreateNewView()
 	sys_in = NULL;
 	this->viewType=0;
 	this->modifyExistingView=true;
-	this->startNewStream=false;
-	data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	this->startNewStream=true;
+
+	if(!startNewStream)
+		data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	else
+		data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::WRITE) );
+
 	this->addData("Data", data);
 	this->addParameter("NameOfView", DM::STRING, &this->NameOfView);
 	this->addParameter("ViewType", DM::INT,&this->viewType);
