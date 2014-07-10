@@ -17,6 +17,28 @@
 #define BRANCHINGTEST
 #define EXPANDING
 #define BRANCHMODIFY*/
+#define GDALImportData
+
+#ifdef GDALImportData
+TEST_F(TestGDALModules,UpdateTest) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation sim;
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+
+	DM::Module * m1 = sim.addModule("GDALImportData");
+	m1->setParameterValue("driver_type", "Shapefile");
+	m1->setParameterValue("source", "/Users/curich/Documents/DynaMind/data/shapefiles/1963_Landuse_Roads.shp");
+	m1->setParameterValue("layer_name", "1963_Landuse_Roads");
+	m1->setParameterValue("view_name", "CITYBLOCK");
+	sim.run();
+}
+
+
+#endif
 
 #ifdef SPEEDTESTDM
 TEST_F(TestGDALModules,TestInsertSpeed_DM) {

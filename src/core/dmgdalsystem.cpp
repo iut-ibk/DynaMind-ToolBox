@@ -124,7 +124,6 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
 	f->SetField("dynamind_id", (int) latestUniqueId++);
 	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
-	std::cout << (int)OGR_F_GetFieldCount((OGRFeatureH)f) << std::endl;
 	return f;
 }
 
