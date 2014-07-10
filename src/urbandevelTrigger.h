@@ -20,6 +20,7 @@ private:
     DM::View city;
     DM::View superblock;
     DM::View cityblock;
+    DM::View parcel;
 };
 
 #endif // urbandevelTrigger_H

@@ -16,6 +16,7 @@ void urbandevelTrigger::init()
     city = DM::View("CITY", DM::NODE, DM::READ);
     superblock = DM::View("SUPERBLOCK", DM::FACE, DM::MODIFY);
     cityblock = DM::View("CITYBLOCK", DM::FACE, DM::MODIFY);
+    parcel = DM::View("PARCEL", DM::FACE, DM::MODIFY);
 
     city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
 
@@ -47,7 +48,6 @@ void urbandevelTrigger::run()
 
     if (cyclepopdiff > 0)
     {
-        //growth
         setdev();
     }
     else if (cyclepopdiff < 0)
@@ -60,6 +60,8 @@ void urbandevelTrigger::setdev()
 {
     DM::System * sys = this->getData("data");
     std::vector<DM::Component *> sb = sys->getAllComponentsInView(superblock);
+    std::vector<DM::Component *> cb = sys->getAllComponentsInView(cityblock);
+    std::vector<DM::Component *> prcl = sys->getAllComponentsInView(parcel);
 
     //check free parcels
 
@@ -67,22 +69,39 @@ void urbandevelTrigger::setdev()
 
     std::vector<double> rankvec;
 
+    for (int i = 0; i < prcl.size(); i++)
+    {
+        std::string status = prcl[i]->getAttribute("status")->getString();
+
+        if (status == "clear") {
+            DM::Logger(DM::Warning) << "clear";
+            prcl[i]->changeAttribute("status", "develop");
+            return;
+        }
+    }
+
+    for (int i = 0; i < cb.size(); i++)
+    {
+        std::string status = cb[i]->getAttribute("status")->getString();
+
+        if (status == "clear") {
+            DM::Logger(DM::Warning) << "clear";
+            cb[i]->changeAttribute("status", "develop");
+            return;
+        }
+    }
+
     for (int i = 0; i < sb.size(); i++)
     {
-        if (sb[i]->getAttribute("empty")->getDouble()) {
-            DM::Logger(DM::Warning) << "empty";
-            sb[i]->changeAttribute("selected", '1');
-        }
-        else {
-            DM::Logger(DM::Warning) << "NOT empty";
-        }
+        std::string status = sb[i]->getAttribute("status")->getString();
 
+        if (status == "clear") {
+            DM::Logger(DM::Warning) << "clear";
+            sb[i]->changeAttribute("status", "develop");
+            return;
+        }
     }
-    //check occ sb
-    //check occ cb
-    //check occ parcels
 }
-
 
 void urbandevelTrigger::setdec()
 {
