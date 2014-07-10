@@ -41,7 +41,7 @@ enum ACCESS
 	READ = 0,
 	MODIFY = 1,
 	WRITE = 2,
-	DEL = 3
+	DELETE = 3
 };
 
 /**

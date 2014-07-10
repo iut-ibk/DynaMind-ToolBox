@@ -575,7 +575,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					updatedStreams[streamName][v.getName()] = v;
 				}
 
-				if (ac == DEL)
+				if (ac == DELETE)
 					updatedStreams[streamName].erase(v.getName());
 			}
 		}
