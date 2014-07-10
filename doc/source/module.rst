@@ -79,7 +79,36 @@ Following types are supported:
 
 Data Stream Definition
 ----------------------
+To be able to connect a module to the data stream, the data read, modified and created by the module need to be defined.
+The data stream in DynaMind is defined as a collection of *Views*. Views describe the data in the stream in terms of their type
+of geometry, attributes and, links to other views. To let the simulation the views used in the module need to be declared in the module
+and added to the data stream. A new view object can be create using ``foo = View("name", GEOMETRY_TYPE, ACCESS)``.
+Attributes are attached with ``foo.addAttribute("name", TYPE, ACCESS)``
 
+.. code-block:: python
+
+    #Data read by the module
+    self.streets = View("STREET", EDGE, READ)
+    self.streets.addAttribute("width", DOUBLE, READ)
+
+    #New data created by this module
+    self.drain = View("DRAIN", EDGE, WRITE)
+    self.drain.addAttribute("diameter", DOUBLE,  WRITE)
+
+..
+
+
+.. code-block:: python
+
+    #Compile views
+    views = []
+    views.append(street)
+    views.append(drain)
+
+    #Add views to stream
+    self.addData("city", views)
+
+..
 
 
 Data Manipulation Process (DMP)
