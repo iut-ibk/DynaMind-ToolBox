@@ -48,7 +48,6 @@ ENDIF()
 
 ADD_SUBDIRECTORY(src/DMTestModules)
 ADD_SUBDIRECTORY(src/DMToolboxes)
-ADD_SUBDIRECTORY(src/GDALModules)
 ADD_SUBDIRECTORY(src/memory_test)
 ADD_SUBDIRECTORY(scripts)
 
