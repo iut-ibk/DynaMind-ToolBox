@@ -89,8 +89,6 @@ public:
 
 	void reloadFile();
 
-	void updatePorts();
-
 	SimpleCrypt crypto;
 private:
 	// main methods

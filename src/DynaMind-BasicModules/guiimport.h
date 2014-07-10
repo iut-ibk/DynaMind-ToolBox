@@ -30,6 +30,7 @@ private:
 	Ui::GUIImport *ui;
 	Import * m;
 	QSignalMapper* treeCheckMapper;
+	QString oldpwd;
 
 public slots:
 	void accept();

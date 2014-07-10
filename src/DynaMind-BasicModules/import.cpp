@@ -103,16 +103,8 @@ void Import::init()
 
 		reloadFile();
 	}
-	updatePorts();
-}
 
-void Import::updatePorts()
-{
-	bool hasInPort = this->hasInPort(PORT_NAME);
-	if (append && !hasInPort)
-		this->addPort(PORT_NAME, INPORT);
-	else if (!append && hasInPort)
-		this->removePort(PORT_NAME, INPORT);
+	initViews();
 }
 
 std::string Import::getServerPath()
@@ -409,8 +401,10 @@ void Import::initViews()
 	mforeach(const DM::View& v, views)
 		vviews.push_back(v);
 
-	if (vviews.empty())
+	if (!this->append)
 		vviews.push_back(DM::View("dummy", 0, DM::WRITE));
+	else
+		vviews.push_back(DM::View("dummy", 0, DM::MODIFY));
 
 	addData(PORT_NAME, vviews);
 }
@@ -599,14 +593,12 @@ std::vector<Node*> Import::addFaceNodes(System* sys, const OGRLineString *ring, 
 	double* y = new double[nPoints];
 	ring->getPoints(x, sizeof(double), y, sizeof(double));
 
-	std::vector<Node*> nodes(nPoints+1);
+	std::vector<Node*> nodes(nPoints);
 	//nodes.resize(nPoints+1);
 
 	for (int i = 0; i < nPoints; i++)
 		nodes[i] = this->addNode(sys, x[i], y[i], poCT);
 
-	// ring closure
-	nodes[nPoints] = this->addNode(sys, x[0], y[0], poCT);
 
 	delete[] x;
 	delete[] y;

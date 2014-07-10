@@ -40,8 +40,8 @@ GUIImport::GUIImport(DM::Module *m, QWidget *parent) :
 	this->ui->lineEdit_wfs_server->setText(QString::fromStdString(this->m->WFSServer));
 	this->ui->lineEdit_wfs_username->setText(QString::fromStdString(this->m->WFSUsername));
 
-	QString pw = this->m->crypto.decryptToString(QString::fromStdString(this->m->WFSPassword));
-	this->ui->lineEdit_wfs_password->setText(pw);
+	oldpwd = this->m->crypto.decryptToString(QString::fromStdString(this->m->WFSPassword));
+	this->ui->lineEdit_wfs_password->setText(oldpwd);
 
 	this->ui->epsgCode->setValue(this->m->epsgcode);
 	this->ui->checkBox_flip->setChecked(this->m->flip_wfs);
@@ -248,7 +248,11 @@ void GUIImport::accept()
 	m->WFSServer = this->ui->lineEdit_wfs_server->text().toStdString();
 	m->WFSUsername = this->ui->lineEdit_wfs_username->text().toStdString();
 
-	m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	if(oldpwd != ui->lineEdit_wfs_password->text())
+	{
+		oldpwd = ui->lineEdit_wfs_password->text();
+		m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	}
 
 	m->flip_wfs = this->ui->checkBox_flip->isChecked();
 	m->linkWithExistingView = this->ui->checkBox_linkWithExistingView->isChecked();
@@ -258,8 +262,7 @@ void GUIImport::accept()
 	m->offsetY= this->ui->lineEdit_offy->text().toDouble();
 
 	updateViewConfig();
-	m->initViews();
-	m->updatePorts();
+	m->init();
 	QDialog::accept();
 }
 
@@ -353,7 +356,11 @@ void GUIImport::on_wfsUpdateButton_clicked()
 	m->WFSServer = ui->lineEdit_wfs_server->text().toStdString();
 	m->WFSUsername = ui->lineEdit_wfs_username->text().toStdString();
 
-	m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	if(oldpwd != ui->lineEdit_wfs_password->text())
+	{
+		oldpwd = ui->lineEdit_wfs_password->text();
+		m->WFSPassword = m->crypto.encryptToString(ui->lineEdit_wfs_password->text()).toStdString();
+	}
 
 	this->m->init();
 
