@@ -96,8 +96,8 @@ void GDALSystem::updateView(const View &v)
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Update Features
 	foreach(std::string attribute_name, v.getAllAttributes()) {
-		//Feature alredy in layer
-		if (lyr->FindFieldIndex(attribute_name.c_str(), true) != -1)
+		//Feature already in layer
+		if (lyr->GetLayerDefn()->GetFieldIndex(attribute_name.c_str()) >= 0)
 			continue;
 
 		if (v.getAttributeType(attribute_name) == DM::Attribute::STRING){
