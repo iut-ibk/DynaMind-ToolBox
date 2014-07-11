@@ -5,6 +5,7 @@
 #include <dmviewcontainer.h>
 #include <dmisystem.h>
 #include <ogr_api.h>
+#include <dmlogger.h>
 
 #include <map>
 #include <vector>
@@ -13,10 +14,10 @@
 #define DM_HELPER_DLL_EXPORT
 #endif
 
-class DM_HELPER_DLL_EXPORT OGRDataSource;
-class DM_HELPER_DLL_EXPORT OGRSFDriver;
-class DM_HELPER_DLL_EXPORT OGRLayer;
-class DM_HELPER_DLL_EXPORT OGRFeature;
+class OGRDataSource;
+class OGRSFDriver;
+class OGRLayer;
+class OGRFeature;
 
 namespace DM {
 class DM_HELPER_DLL_EXPORT GDALSystem : public ISystem
@@ -31,6 +32,12 @@ public:
 	void syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df);
 
 	void updateView(const View &v);
+
+	std::vector<Component*> getAllComponentsInView(const DM::View &view)
+	{
+		DM::Logger(DM::Error) << "getAllComponentsInView not implemented";
+		return std::vector<Component*>();
+	}
 
 	void updateViewContainer(DM::ViewContainer v);
 

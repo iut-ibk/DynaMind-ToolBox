@@ -16,7 +16,7 @@ public:
 	virtual ISystem * createSuccessor() = 0;
 	virtual void updateViews(const std::vector<View>& views) = 0;
 	virtual ISystem *getPredecessor() const = 0;
-	virtual std::vector<Component*> getAllComponentsInView(const DM::View &view){return std::vector<Component*>();}
+	virtual std::vector<Component*> getAllComponentsInView(const DM::View &view) = 0;
 };
 }
 
