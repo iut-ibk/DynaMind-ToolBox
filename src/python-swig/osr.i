@@ -1,4 +1,4 @@
-/******************************************************************************
+/*****************************************************************************
  * $Id: osr.i 25229 2012-11-16 19:06:58Z rouault $
  *
  * Project:  GDAL SWIG Interfaces.
@@ -51,7 +51,7 @@
 %javaconst(1);
 #endif
 
-%include "/usr/local/Cellar/gdal/1.11.0/include/ogr_srs_api.h"
+
 
 #ifdef SWIGCSHARP
 %csconst(0);
