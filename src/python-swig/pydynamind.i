@@ -22,13 +22,13 @@
     #include <dmlogsink.h>
     #include <dmsimulation.h>
     #include <iostream>
-	#include <dmgdalsystem.h>
-	#include <dmviewcontainer.h>
-	#include <ogr_api.h>
-	#include <ogr_core.h>
-	#include <ogr_srs_api.h>
-	#include <cpl_error.h>
-	#include <dmviewcontainer.h>
+    #include <dmgdalsystem.h>
+    #include <dmviewcontainer.h>
+    #include <ogr_api.h>
+    #include <ogr_core.h>
+    #include <ogr_srs_api.h>
+    #include <cpl_error.h>
+    #include <dmviewcontainer.h>
 
     using namespace std;
     using namespace DM;
@@ -53,8 +53,8 @@
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
-//%include "../core/dmgdalsystem.h"
-//%include "../core/dmviewcontainer.h"
+%include "../core/dmgdalsystem.h"
+%include "../core/dmviewcontainer.h"
 
 
 namespace std {
@@ -66,7 +66,7 @@ namespace std {
     %template(nodevector) vector<DM::Node* >;
     %template(facevector) vector<DM::Face* >;
     %template(viewvector) vector<DM::View >;
-	%template(viewcontainervector) vector<DM::ViewContainer >;
+    %template(viewcontainervector) vector<DM::ViewContainer >;
     %template(viewmap) map<string, vector<DM::View* > >;
     %template(componentvector) vector<DM::Component* >;
     %template(attributevector) vector<DM::Attribute* >;
@@ -127,17 +127,13 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
-
-
-
 protected:
-	void addData(std::string name, std::vector<DM::View> view);
-	void addGDALData(std::string name, std::vector<DM::ViewContainer> view);
-
+    void addData(std::string name, std::vector<DM::View> view);
+    void addGDALData(std::string name, std::vector<DM::ViewContainer> view);
     DM::System * getData(std::string dataname);
     DM::RasterData * getRasterData(std::string dataname, const DM::View & view);
-	DM::GDALSystem * getGDALData(std::string dataname);
-	void setIsGDALModule(bool b);
+    DM::GDALSystem * getGDALData(std::string dataname);
+    void setIsGDALModule(bool b);
 
 };
 
@@ -181,38 +177,12 @@ protected:
             self.addParameter(name,DN_type,self._data[name],description)
 
     %}
-	}
-
-class DM::ViewContainer {
-public:
-	ViewContainer();
-	ViewContainer(string name, int type, ACCESS accesstypeGeometry);
-	void setCurrentGDALSystem(DM::GDALSystem *sys);
-	virtual ~ViewContainer();
-
-};
+}
 
 %extend DM::ViewContainer {
 	OGRFeatureShadow *create_feature() {
 		return (OGRFeatureShadow *) $self->createFeature();
 	}
-}
-
-class DM::GDALSystem {
-public:
-	void updateViewContainer( DM::ViewContainer v);
-
-	GDALSystem();
-	virtual ~GDALSystem();
-
-};
-
-
-%extend DM::GDALSystem {
-	void hello_stuff() {
-		std::cout << "Hello Stuff" << std::endl;
-	}
-
 }
 
 %inline %{
