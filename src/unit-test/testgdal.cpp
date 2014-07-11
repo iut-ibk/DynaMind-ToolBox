@@ -13,13 +13,11 @@
 
 #include <ogrsf_frmts.h>
 
-#if !defined(_WIN32) || !defined(__CYGWIN__)
 /*#define SPEEDTEST
 #define CONTAINERCREATE
 #define CONTAINERCREATEATTRIBUTE
 #define TESTSTATES
 #define LINKTEST*/
-#endif
 
 
 #define  ELEMENTS 100000

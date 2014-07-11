@@ -11,15 +11,13 @@
 #define FEATURES "100000"
 #define FEATURES_2 "200000"
 
-#if !defined(_WIN32) || !defined(__CYGWIN__)
-	/*#define SPEEDTESTDM
-	#define SPEEDTEST
-	#define CONNECTIONTEST
-	#define BRANCHINGTEST
-	#define EXPANDING
-	#define BRANCHMODIFY*/
-	#define GDALImportData
-#endif
+/*#define SPEEDTESTDM
+#define SPEEDTEST
+#define CONNECTIONTEST
+#define BRANCHINGTEST
+#define EXPANDING
+#define BRANCHMODIFY*/
+#define GDALImportData
 
 #ifdef GDALImportData
 //PLEASE REMOVE ABSOLUTE PATH
