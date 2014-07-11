@@ -20,6 +20,8 @@
 #define GDALImportData
 
 #ifdef GDALImportData
+//PLEASE REMOVE ABSOLUTE PATH
+/*
 TEST_F(TestGDALModules,UpdateTest) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
@@ -36,8 +38,7 @@ TEST_F(TestGDALModules,UpdateTest) {
 	m1->setParameterValue("view_name", "CITYBLOCK");
 	sim.run();
 }
-
-
+*/
 #endif
 
 #ifdef SPEEDTESTDM
