@@ -51,6 +51,11 @@ OGRFeature *ViewContainer::createFeature()
 	return f;
 }
 
+OGRFeatureShadow *ViewContainer::createFeatureShadow()
+{
+	return (OGRFeatureShadow*)(this->createFeature());
+}
+
 void ViewContainer::syncAlteredFeatures()
 {
 	if (!_currentSys) {

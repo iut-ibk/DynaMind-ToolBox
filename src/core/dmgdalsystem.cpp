@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include <QUuid>
+#include <dmviewcontainer.h>
 
 namespace DM {
 
@@ -113,7 +114,7 @@ void GDALSystem::updateView(const View &v)
 	}
 }
 
-void GDALSystem::updateViewContainer(ViewContainer v)
+void GDALSystem::updateViewContainer(DM::ViewContainer v)
 {
 	this->updateView(v);
 }

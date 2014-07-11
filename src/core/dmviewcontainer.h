@@ -4,6 +4,7 @@
 #include <dmview.h>
 
 class OGRFeature;
+class OGRFeatureShadow;
 
 namespace DM {
 
@@ -29,7 +30,8 @@ public:
 
 	void setCurrentGDALSystem(DM::GDALSystem * sys);
 
-	OGRFeature *createFeature();
+	OGRFeature* createFeature();
+	OGRFeatureShadow* createFeatureShadow();
 	void syncAlteredFeatures();
 	void syncReadFeatures();
 

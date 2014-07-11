@@ -29,7 +29,7 @@ public:
 
 	void updateView(const View &v);
 
-	void updateViewContainer(ViewContainer v);
+	void updateViewContainer(DM::ViewContainer v);
 
 	OGRFeature *createFeature(const DM::View & v);
 
