@@ -9,8 +9,9 @@
 #include <dmsystem.h>
 #include <dmmoduleregistry.h>
 
-
+#if !defined(_WIN32) || !defined(__CYGWIN__)
 #define LOADPYTHON
+#endif
 
 
 #ifdef LOADPYTHON
