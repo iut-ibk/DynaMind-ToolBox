@@ -2,8 +2,6 @@
 #define VIEWCONTAINER_H
 
 #include <dmview.h>
-#include <ogrsf_frmts.h>
-
 
 class OGRFeature;
 
