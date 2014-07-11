@@ -3,14 +3,18 @@
 
 #include <dmview.h>
 
-class OGRFeature;
-class OGRFeatureShadow;
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
+
+class DM_HELPER_DLL_EXPORT OGRFeature;
+class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 
 namespace DM {
 
-class GDALSystem;
+class DM_HELPER_DLL_EXPORT GDALSystem;
 
-class ViewContainer : public View
+class DM_HELPER_DLL_EXPORT ViewContainer : public View
 {
 private:
 	GDALSystem * _currentSys;

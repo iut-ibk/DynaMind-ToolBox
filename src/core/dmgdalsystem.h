@@ -9,14 +9,17 @@
 #include <map>
 #include <vector>
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
 
-class OGRDataSource;
-class OGRSFDriver;
-class OGRLayer;
-class OGRFeature;
+class DM_HELPER_DLL_EXPORT OGRDataSource;
+class DM_HELPER_DLL_EXPORT OGRSFDriver;
+class DM_HELPER_DLL_EXPORT OGRLayer;
+class DM_HELPER_DLL_EXPORT OGRFeature;
 
 namespace DM {
-class GDALSystem : public ISystem
+class DM_HELPER_DLL_EXPORT GDALSystem : public ISystem
 {
 public:
 	GDALSystem();

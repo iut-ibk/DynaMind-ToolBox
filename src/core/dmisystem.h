@@ -3,8 +3,12 @@
 
 #include <dmview.h>
 
+#ifdef SWIG
+#define DM_HELPER_DLL_EXPORT
+#endif
+
 namespace DM {
-class ISystem {
+class DM_HELPER_DLL_EXPORT ISystem {
 public:
 	virtual ~ISystem() {}
 	virtual void _moveToDb(){}
