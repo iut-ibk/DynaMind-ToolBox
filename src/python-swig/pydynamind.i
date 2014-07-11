@@ -53,8 +53,8 @@
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
-%include "../core/dmgdalsystem.h"
-%include "../core/dmviewcontainer.h"
+//%include "../core/dmgdalsystem.h"
+//%include "../core/dmviewcontainer.h"
 
 
 namespace std {
@@ -177,12 +177,38 @@ protected:
             self.addParameter(name,DN_type,self._data[name],description)
 
     %}
-}
+	}
+
+class DM::ViewContainer {
+public:
+	ViewContainer();
+	ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+	void setCurrentGDALSystem(DM::GDALSystem *sys);
+	virtual ~ViewContainer();
+
+};
 
 %extend DM::ViewContainer {
 	OGRFeatureShadow *create_feature() {
 		return (OGRFeatureShadow *) $self->createFeature();
 	}
+}
+
+class DM::GDALSystem {
+public:
+	void updateViewContainer( DM::ViewContainer v);
+
+	GDALSystem();
+	virtual ~GDALSystem();
+
+};
+
+
+%extend DM::GDALSystem {
+	void hello_stuff() {
+		std::cout << "Hello Stuff" << std::endl;
+	}
+
 }
 
 %inline %{

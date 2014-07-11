@@ -43,11 +43,9 @@ class CreateGDALComponents(Module):
             views.append(self.n)
 
             self.addGDALData("OUT", views)
-            print "asdfasf"
 
     
         def run(self):
-            print "HU"
             system = self.getGDALData("OUT")
             print system
             print self.n

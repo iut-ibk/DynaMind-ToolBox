@@ -16,9 +16,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
                     ${dynamind_SOURCE_DIR}/src/DMTestModules
                     ${dynamind_SOURCE_DIR}/src/DMToolboxes)
 
-FILE(GLOB UNIT_CPP testgdal.cpp
-		   testgdalmodules.cpp
-		   testgdalpython.cpp)
+FILE(GLOB UNIT_CPP *.cpp)
 
 
 ADD_EXECUTABLE(unit-test ${UNIT_CPP})

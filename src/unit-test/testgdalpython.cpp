@@ -18,18 +18,19 @@ TEST_F(TestGDALPython,LoadPython) {
 
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
-	DM::Logger(DM::Standard) << "Create System";
+	DM::Logger(DM::Standard) << "Create Simulation";
 
 	DM::Simulation sim;
 
-	QDir dir("../../scripts");
+	QDir dir("../scripts");
 	sim.registerModulesFromDirectory(dir);
 	DM::Logger(DM::Debug) << "Loaded Modules";
 	foreach (std::string m, sim.getModuleRegistry()->getRegisteredModules() ) {
 		DM::Logger(DM::Debug) << m;
 	}
 
-	sim.addModule("CreateGDALComponents");
+	ASSERT_EQ(NULL,!sim.addModule("CreateGDALComponents"));
 	sim.run();
+
 }
 #endif
