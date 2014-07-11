@@ -21,8 +21,7 @@ TEST_F(TestGDALPython,LoadPython) {
 
 	DM::Simulation sim;
 
-	QDir dir("../scripts");
-	sim.registerModulesFromDirectory(dir);
+	sim.registerModulesFromDefaultLocation();
 	DM::Logger(DM::Debug) << "Loaded Modules";
 	foreach (std::string m, sim.getModuleRegistry()->getRegisteredModules() ) {
 		DM::Logger(DM::Debug) << m;
