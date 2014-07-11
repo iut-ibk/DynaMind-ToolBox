@@ -37,8 +37,13 @@ int main(int argc, char **argv) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Debug) << "Add Module";
 	DM::Simulation * sim = new DM::Simulation();
-	sim->registerModule("dynamind-testmodules");
+	sim->registerModulesFromDefaultLocation();
+	sim->registerModulesFromDirectory(QDir("./"));
 	DM::Module * m = sim->addModule("CreateNodes");
+
+	if(!m)
+		return 0;
+
 	sim->run();
 
 	for (int i = 0; i < 100; i++) 
