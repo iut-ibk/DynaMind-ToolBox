@@ -128,7 +128,7 @@ void LoopGroup::loopStreams()
 {
 	foreach(std::string streamName, writeStreams)
 	{
-		if(System* sys = getOutPortData(streamName))
+		if(ISystem* sys = getOutPortData(streamName))
 		{
 			setInPortData(streamName, sys);
 			setOutPortData(streamName, NULL);

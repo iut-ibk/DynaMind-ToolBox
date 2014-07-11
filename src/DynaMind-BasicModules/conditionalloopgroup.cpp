@@ -55,7 +55,7 @@ bool ConditionalLoopGroup::condition()
 	{
 		foreach(std::string streamName, writeStreams)
 		{
-			System* sys = getInPortData(streamName);
+			ISystem* sys = getInPortData(streamName);
 			setOutPortData(streamName,sys);
 		}
 	}
@@ -99,7 +99,7 @@ bool ConditionalLoopGroup::evalConditionString()
 
 	foreach(std::string writePort, writeStreams)
 	{
-		if(System* sys = getInPortData(writePort))
+		if(ISystem* sys = getInPortData(writePort))
 		{
 			foreach(Component* c, sys->getAllComponentsInView(View(viewName, COMPONENT)))
 			{
