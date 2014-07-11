@@ -29,8 +29,10 @@
 #include "dmmoduleobserver.h"
 #include <sstream>
 #include <dmsystem.h>
+#include <dmgdalsystem.h>
 #include <dmrasterdata.h>
 #include "dmlogger.h"
+#include <dmsimulation.h>
 
 using namespace std;
 using namespace DM;
@@ -40,6 +42,7 @@ Module::Module()
 	status = MOD_UNTOUCHED;
 	owner = NULL;
 	successorMode = false;
+	GDALModule = false;
 }
 Module::~Module()
 {
@@ -50,9 +53,9 @@ Module::~Module()
 	parameters.clear();
 
 	// delete systems which end in this module
-	mforeach(System* indata, inPorts)
+	mforeach(ISystem* indata, inPorts)
 	{
-		mforeach(System* outdata, outPorts)
+		mforeach(ISystem* outdata, outPorts)
 			if(indata == outdata)
 				indata = NULL;
 
@@ -192,7 +195,7 @@ bool Module::hasOutPort(const std::string &name) const
 	return map_contains(&outPorts, name);
 }
 
-void Module::setInPortData(const std::string &name, System* data)
+void Module::setInPortData(const std::string &name, ISystem* data)
 {
 	if(!map_contains(&inPorts, name))
 		DM::Logger(Error) << "accessing non existent in port '" << name << "' in module '" 
@@ -201,7 +204,7 @@ void Module::setInPortData(const std::string &name, System* data)
 		inPorts[name] = data;
 }
 
-void Module::setOutPortData(const std::string &name, System* data)
+void Module::setOutPortData(const std::string &name, ISystem* data)
 {
 	if(!map_contains(&outPorts, name))
 		DM::Logger(Error) << "accessing non existent out port '" << name << "' in module '" 
@@ -210,33 +213,39 @@ void Module::setOutPortData(const std::string &name, System* data)
 		outPorts[name] = data;
 }
 
+void Module::setIsGDALModule(bool b)
+{
+	this->GDALModule = b;
+}
+
 bool Module::inPortsSet() const
 {
-	mforeach(System* data, inPorts)
+	mforeach(ISystem* data, inPorts)
 		if(!data)
 			return false;
 	return true;
 }
 bool Module::outPortsSet() const
 {
-	mforeach(System* data, outPorts)
+	mforeach(ISystem* data, outPorts)
 		if(!data)
 			return false;
 	return true;
 }
 
-System* Module::getInPortData(const std::string &name) const
+ISystem* Module::getInPortData(const std::string &name) const
 {
-	System* sys = NULL;
+	ISystem* sys = NULL;
 	map_contains(&inPorts, name, sys);
 	return sys;
 }
-System* Module::getOutPortData(const std::string &name) const
+ISystem* Module::getOutPortData(const std::string &name) const
 {
-	System* sys = NULL;
+	ISystem* sys = NULL;
 	map_contains(&outPorts, name, sys);
 	return sys;
 }
+
 
 void Module::addData(const std::string& streamName, std::vector<View> views)
 {
@@ -274,6 +283,16 @@ void Module::addData(const std::string& streamName, std::vector<View> views)
 		this->removePort(streamName, OUTPORT);
 }
 
+void Module::addGDALData(const string &streamName, std::vector<ViewContainer> views)
+{
+	std::vector<DM::View> converted_views;
+	foreach(DM::View v, views) {
+		converted_views.push_back((DM::View)v);
+	}
+
+	this->addData(streamName, converted_views);
+}
+
 void Module::removeData(const std::string& name)
 {
 	accessedViews.erase(name);
@@ -284,7 +303,7 @@ void Module::removeData(const std::string& name)
 		this->removePort(name, OUTPORT);
 }
 
-System* Module::getData(const std::string& streamName)
+ISystem* Module::getIData(const std::string& streamName)
 {
 	if(!hasInPort(streamName) && !hasOutPort(streamName))
 	{
@@ -292,13 +311,13 @@ System* Module::getData(const std::string& streamName)
 		return NULL;
 	}
 
-	System *sys = getInPortData(streamName);
+	ISystem *sys = getInPortData(streamName);
 	if(!sys)
 	{
 		if(this->getInPortNames().size() != 0)
 		{
 			bool emptyInPorts = true;
-			mforeach(System* s, inPorts)
+			mforeach(ISystem* s, inPorts)
 				if(s)
 				{
 					emptyInPorts = false;
@@ -319,8 +338,10 @@ System* Module::getData(const std::string& streamName)
 		if(hasOutPort(streamName))	// maybe the system is already created during the run
 			sys = getOutPortData(streamName);
 
-		if(!sys)
-			sys = new System();
+		if(!sys) {
+			sys = this->SystemFactory();
+
+		}
 	}
 
 	if (DBConnector::getInstance()->getConfig().peterDatastream)
@@ -335,8 +356,6 @@ System* Module::getData(const std::string& streamName)
 		views.push_back(v);
 
 	sys->updateViews(views);
-	//mforeach(View v, accessedViews[streamName])
-	//	sys->updateView(v);
 
 	if (DBConnector::getInstance()->getConfig().peterDatastream)
 	{
@@ -349,6 +368,26 @@ System* Module::getData(const std::string& streamName)
 		this->setOutPortData(streamName, sys);
 
 	return sys;
+}
+
+ISystem *Module::SystemFactory()
+{
+	if (!this->GDALModule) {
+		return new System();
+	}
+
+	return new GDALSystem();
+}
+
+System *Module::getData(const string &streamName)
+{
+	return (System*)this->getIData(streamName);
+}
+
+
+GDALSystem *Module::getGDALData(const string &streamName)
+{
+	return (GDALSystem*)this->getIData(streamName);
 }
 
 RasterData* Module::getRasterData(std::string name, View view)
@@ -445,9 +484,14 @@ void Module::setOwner(Module* owner)
 		Logger(Error) << "reassigning a new parent to a module is not allowed";
 }
 
+void Module::setSimulation(Simulation *sim)
+{
+	this->sim = sim;
+}
+
 void Module::setSuccessorMode(bool value)
 {
-	Logger(Debug) << "changed successor mode state of module '" 
+	Logger(Debug) << "changed successor mode state of module '"
 		<< getClassName() << "' to " << (value?"ON":"OFF");
 	this->successorMode = value;
 }
@@ -490,7 +534,7 @@ std::string Module::getParameterAsString(const std::string& name) const
 std::vector<std::string> Module::getInPortNames() const
 {
 	std::vector<std::string> list;
-	std::map<std::string, System*>::const_iterator it = inPorts.begin();
+	std::map<std::string, ISystem*>::const_iterator it = inPorts.begin();
 	for(;it != inPorts.end(); ++it)
 		list.push_back(it->first);
 	return list;
@@ -498,7 +542,7 @@ std::vector<std::string> Module::getInPortNames() const
 std::vector<std::string> Module::getOutPortNames() const
 {
 	std::vector<std::string> list;
-	std::map<std::string, System*>::const_iterator it = outPorts.begin();
+	std::map<std::string, ISystem*>::const_iterator it = outPorts.begin();
 	for(;it != outPorts.end(); ++it)
 		list.push_back(it->first);
 	return list;
@@ -508,11 +552,11 @@ void Module::reset()
 {
 	streamViews.clear();
 
-	for(std::map<std::string, System*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
+	for(std::map<std::string, ISystem*>::iterator it = inPorts.begin(); it != inPorts.end(); ++it)
 		if(it->second)
 			it->second = NULL;
 
-	for(std::map<std::string, System*>::iterator it = outPorts.begin(); it != outPorts.end(); ++it)
+	for(std::map<std::string, ISystem*>::iterator it = outPorts.begin(); it != outPorts.end(); ++it)
 		it->second = NULL;
 
 	this->setStatus(MOD_UNTOUCHED);

@@ -41,6 +41,7 @@ class DM_HELPER_DLL_EXPORT CreateNodes : public DM::Module
 public:
     CreateNodes();
     void run();
+	int elements;
 };
 
 #endif // CREATENODES_H

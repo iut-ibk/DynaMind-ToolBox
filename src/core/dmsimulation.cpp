@@ -89,6 +89,7 @@ Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool
 		return NULL;
 
 	module->setOwner(parent);
+	module->setSimulation(this);
 
 	if(module->isGroup())
 		dynamic_cast<Group*>(module)->sim = this;
@@ -391,6 +392,7 @@ std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest
 	return ls;
 }
 
+
 bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
 	if(!g)
@@ -573,7 +575,7 @@ bool Simulation::checkModuleStreamForward(Module* m)
 					updatedStreams[streamName][v.getName()] = v;
 				}
 
-				if (ac == DEL)
+				if (ac == DELETE)
 					updatedStreams[streamName].erase(v.getName());
 			}
 		}
@@ -781,7 +783,7 @@ void Simulation::run()
 					if(m->getOwner() == g)
 					{
 						// FIX: module::getData also searches output if the system is already created
-						for(std::map<std::string, System*>::iterator it = m->outPorts.begin(); it != m->outPorts.end(); ++it)
+						for(std::map<std::string, ISystem*>::iterator it = m->outPorts.begin(); it != m->outPorts.end(); ++it)
 							it->second = NULL;
 
 						m->init();
@@ -830,7 +832,7 @@ void Simulation::cancel()
 	canceled = true;
 }
 
-System* Simulation::getData(Link* l)
+ISystem *Simulation::getData(Link* l)
 {
 	if(l->src->isGroup() && l->dest->getOwner() == l->src)
 		// into group link
@@ -841,7 +843,7 @@ System* Simulation::getData(Link* l)
 
 void Simulation::shiftData(Link* l, bool successor)
 {
-	System * data = getData(l);
+	ISystem * data = getData(l);
 	if(!data)
 		return;
 	if(successor)
@@ -863,7 +865,7 @@ void Simulation::shiftData(Link* l, bool successor)
 std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 {
 	std::set<Module*> nextModules;
-	for(std::map<std::string, System*>::iterator it = m->outPorts.begin();
+	for(std::map<std::string, ISystem*>::iterator it = m->outPorts.begin();
 		it != m->outPorts.end();	++it)
 	{
 		// first get all links starting at the given module
@@ -904,7 +906,7 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 	// do not reset inport if there is no outport and the module is read only
 	if(!(m->outPorts.size() == 0 && readOnly))
 		// reset in ports
-		for(std::map<std::string, System*>::iterator it = m->inPorts.begin();
+		for(std::map<std::string, ISystem*>::iterator it = m->inPorts.begin();
 			it != m->inPorts.end();	++it)
 			it->second = NULL;
 
@@ -945,20 +947,20 @@ void Simulation::reset()
 	Logger(Standard) << ">> Reset Simulation";
 	// gather all root systems, then delete them
 	// if done at once, deleting the root will cause corrupt predecessor methods
-	std::set<System*> systems;
+	std::set<ISystem*> systems;
 	foreach(Module* m, this->modules)
 	{
 		foreach(std::string portName, m->getInPortNames())
-			if(System* sys = m->getInPortData(portName))
+			if(ISystem* sys = m->getInPortData(portName))
 				if(!sys->getPredecessor())
 					systems.insert(sys);
 		foreach(std::string portName, m->getOutPortNames())
-			if(System* sys = m->getOutPortData(portName))
+			if(ISystem* sys = m->getOutPortData(portName))
 				if(!sys->getPredecessor())
 					systems.insert(sys);
 	}
 	// delete them
-	foreach(System* sys, systems)
+	foreach(ISystem* sys, systems)
 		delete sys;
 
 	// reset modules

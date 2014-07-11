@@ -42,6 +42,7 @@ public:
 	{
 		module->addObserver(this);
 	}
+	virtual ~ModuleObserver(){}
 	/** @brief gets called if a port is added */
 	virtual void notifyAddPort(const std::string &name, const PortType type) = 0;
 	/** @brief gets called if a port is removed */
@@ -50,6 +51,7 @@ public:
 	virtual void notifyChangeName(const std::string &name) = 0;
 	/** @brief gets called if the module state changed*/
 	virtual void notifyStateChange() = 0;
+
 };
 
 }

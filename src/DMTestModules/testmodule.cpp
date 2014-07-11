@@ -59,9 +59,6 @@ TestModule::TestModule() {
 
 	value = 10;
 
-
-
-
 	this->addParameter("DoubleValue", DM::DOUBLE, &value);
 
 
@@ -92,12 +89,8 @@ void TestModule::run() {
 
 	}
 	Logger(Debug) << "Run Testmodule";
-
-
-
 }
 
 TestModule::~TestModule() {
 	Logger(Debug) << "Destructor Testmodule";
-
 }

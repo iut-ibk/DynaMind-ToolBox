@@ -32,7 +32,7 @@
 #include <string>
 #include <vector>
 #include <dmmodule.h>
-#include <dmsystem.h>
+#include <dmisystem.h>
 
 namespace DM {
 
@@ -201,7 +201,7 @@ public:
 
 protected:
 	/** @brief returns the inport data of the link, taking group ports into account */
-	System* getData(Link* l);
+	ISystem* getData(Link* l);
 
 	/** @brief shifts the data from one link side to another, taking groups into account */
 	void	shiftData(Link* l, bool successor = false);
