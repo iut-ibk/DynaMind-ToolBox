@@ -4,7 +4,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include <dmviewcontainer.h>
-
+#include <ogrsf_frmts.h>
 
 enum DRIVERTYPE {
 	ShapeFile,
