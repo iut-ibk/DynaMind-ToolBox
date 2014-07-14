@@ -194,7 +194,7 @@ void DMMainWindow::createModuleListView()
 			QStringList parsedFile = simPath.split('_');
 			while (parsedFile.size() >= 2)
 			{
-				QList<QTreeWidgetItem*> result = ui->treeWidget->findItems(parsedFile[0], Qt::MatchExactly);
+				QList<QTreeWidgetItem*> result = ui->treeWidget->findItems(parsedFile[0], Qt::MatchRecursive);
 				if (result.size() == 0)
 				{
 					// not found, create group; if parent already existent, add to parent (subgroup), otherwhise create main group
@@ -208,7 +208,7 @@ void DMMainWindow::createModuleListView()
 
 				parsedFile.pop_front();
 			}
-			
+
 			QTreeWidgetItem * itSim = parent ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(itSimDir);
 
 			itSim->setText(0, parent ? parsedFile[0].replace(".dyn","") : simPath);
