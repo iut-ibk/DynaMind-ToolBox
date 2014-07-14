@@ -50,22 +50,17 @@ void urbandevelBuilding::init()
     houses.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
 
-    houses.addAttribute("built_year", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("stories", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("stories_below", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("stories_height", DM::Attribute::DOUBLE, DM::WRITE);
 
-    houses.addAttribute("floor_area", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("gross_floor_area", DM::Attribute::DOUBLE, DM::WRITE);
-
-    houses.addAttribute("l_bounding", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("b_bounding", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("h_bounding", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("cellar_used", DM::Attribute::DOUBLE, DM::WRITE);
-    houses.addAttribute("roof_used", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("roofarea", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("roofarea_effective", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("trafficarea", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("trafficarea_effective", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("imperviousarea", DM::Attribute::DOUBLE, DM::WRITE);
+    houses.addAttribute("imperviousarea_effective", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("Geometry", "Geometry", DM::WRITE);
-    houses.addAttribute("V_living", DM::Attribute::DOUBLE, DM::WRITE);
+
 
     building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
     building_model.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
@@ -152,17 +147,17 @@ void urbandevelBuilding::run()
         building->addAttribute("stories_below", 0); //cellar counts as story
         building->addAttribute("stories_height",3 );
 
-        building->addAttribute("traffic_area", traffic_area);
-        building->addAttribute("traffic_area_effective", 0.9);
-        building->addAttribute("roof_area", roof_area);
-        building->addAttribute("roof_area_effective", 0.8);
-        building->addAttribute("impervious_area", impervious_area);
-        building->addAttribute("impervious_area_effective", 0.1);
+        building->addAttribute("roofarea", roof_area);
+        building->addAttribute("roofarea_effective", 0.8);
+        building->addAttribute("trafficarea", traffic_area);
+        building->addAttribute("trafficarea_effective", 0.9);
+        building->addAttribute("imperviousarea", impervious_area);
+        building->addAttribute("imperviousarea_effective", 0.1);
 
         //Create Links
         building->getAttribute("PARCEL")->addLink(parcel, parcels.getName());
         parcel->getAttribute("BUILDING")->addLink(building, houses.getName());
-        parcel->addAttribute("is_built",1);
+        parcel->addAttribute("status", "occupied");
         numberOfHouseBuild++;
 
         LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
