@@ -21,16 +21,18 @@ urbandevelBuilding::urbandevelBuilding()
     width = 15;
     onSignal = TRUE;
     l_on_parcel_b = FALSE;
-    yearFromCity = TRUE;
-    create3DGeometry = TRUE;
+    paramfromCity = TRUE;
+    create3DGeometry = FALSE;
+
+    this->addParameter("Parameters from City?", DM::BOOL, &paramfromCity);
+    this->addParameter("on Signal?", DM::BOOL, &onSignal);
 
     this->addParameter("l", DM::DOUBLE, &length);
     this->addParameter("b", DM::DOUBLE, &width);
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
-    this->addParameter("year_from_city", DM::BOOL, &yearFromCity);
 
-    this->addParameter("onSignal", DM::BOOL, &onSignal);
+
 
     this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
     this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
@@ -88,7 +90,7 @@ void urbandevelBuilding::init()
     data.push_back(houses);
     data.push_back(parcels);
     data.push_back(building_model);
-    if (this->yearFromCity)
+    if (this->paramfromCity)
         data.push_back(cityView);
 
     this->addData("City", data);

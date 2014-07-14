@@ -22,7 +22,7 @@ private:
     double width;
     bool onSignal;
     bool l_on_parcel_b;
-    bool yearFromCity;
+    bool paramfromCity;
     bool create3DGeometry;
 
     void createWindows(DM::Face * f, double distance, double width, double height);
