@@ -22,17 +22,19 @@ urbandevelBuilding::urbandevelBuilding()
     onSignal = TRUE;
     rotate90 = FALSE;
     paramfromCity = TRUE;
+    createPopulation = TRUE;
     create3DGeometry = FALSE;
 
-    this->addParameter("Parameters from City?", DM::BOOL, &paramfromCity);
-    this->addParameter("on Signal?", DM::BOOL, &onSignal);
+    this->addParameter("Parameters from City", DM::BOOL, &paramfromCity);
+    this->addParameter("on Signal", DM::BOOL, &onSignal);
+    this->addParameter("create Population", DM::BOOL, &createPopulation);
 
     this->addParameter("width", DM::DOUBLE, &width);
     this->addParameter("ratio", DM::DOUBLE, &ratio);
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
 
-    this->addParameter("l_on_parcel_b", DM::BOOL, &rotate90);
+    this->addParameter("rotate90", DM::BOOL, &rotate90);
     this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
 }
@@ -167,6 +169,26 @@ void urbandevelBuilding::run()
 */
 
 
+        if (createPopulation)
+        {
+            double required_space = city_comps[0]->getAttribute("reqired_space")->getDouble();
+            double population = city_comps[0]->getAttribute("cyclepopdiff")->getDouble();
+
+            double dwf_per_person = 4.1;
+            double WSdemand_per_person = 200;
+            //double maxpeopleinbuilding = roof_area * stories / required_space;
+
+            //DM::Logger(DM::Warning) << "peopleinbuilding  " << maxpeopleinbuilding;
+
+            if (paramfromCity)
+            {
+                dwf_per_person = city_comps[0]->getAttribute("DWF_per_person")->getDouble();
+                WSdemand_per_person = city_comps[0]->getAttribute("WSD_per_person")->getDouble();
+            }
+
+            building->addAttribute("DWF", 0);
+            building->addAttribute("WSdemand", 0);
+        }
     }
     Logger(Standard) << "Created Houses " << numberOfHouseBuild;
 }

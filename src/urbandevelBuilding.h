@@ -23,6 +23,7 @@ private:
     bool onSignal;
     bool rotate90;
     bool paramfromCity;
+    bool createPopulation;
     bool create3DGeometry;
 
     void createWindows(DM::Face * f, double distance, double width, double height);
