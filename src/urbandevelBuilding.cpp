@@ -32,8 +32,6 @@ urbandevelBuilding::urbandevelBuilding()
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
 
-
-
     this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
     this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
@@ -64,16 +62,8 @@ void urbandevelBuilding::init()
     houses.addAttribute("l_bounding", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("b_bounding", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("h_bounding", DM::Attribute::DOUBLE, DM::WRITE);
-//    houses.addAttribute("alhpa_bounding", DM::Attribute::DOUBLE, DM::WRITE);
-
-//    houses.addAttribute("alpha_roof", DM::Attribute::DOUBLE, DM::WRITE);
-
     houses.addAttribute("cellar_used", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("roof_used", DM::Attribute::DOUBLE, DM::WRITE);
-
-//    houses.addAttribute("T_heating", DM::Attribute::DOUBLE, DM::WRITE);
-//   houses.addAttribute("T_cooling", DM::Attribute::DOUBLE, DM::WRITE);
-
     houses.addAttribute("Geometry", "Geometry", DM::WRITE);
     houses.addAttribute("V_living", DM::Attribute::DOUBLE, DM::WRITE);
 
@@ -146,52 +136,33 @@ void urbandevelBuilding::run()
             continue;
         }
 
+        double roof_area = length*width;
+        double traffic_area = roof_area/3;
+        double impervious_area = TBVectorData::CalculateArea((DM::System*)city, (DM::Face*)parcel) - roof_area - traffic_area;
+
         DM::Component * building = city->addComponent(new Component(), houses);
 
         //Create Building and Footprints
-        DM::Face * foot_print = city->addFace(houseNodes, footprint);
-        foot_print->addAttribute("area", DM::CGALGeometry::CalculateArea2D(foot_print));
-        foot_print->addAttribute("year", buildingyear);
-        foot_print->addAttribute("height", stories*3);
-        Node  n = DM::CGALGeometry::CaclulateCentroid2D(foot_print);
+
         building->addAttribute("type", "single_family_house");
         building->addAttribute("year", buildingyear);
         building->addAttribute("stories", stories);
         building->addAttribute("stories_below", 0); //cellar counts as story
         building->addAttribute("stories_height",3 );
 
-        building->addAttribute("building_area", length*width);
-        building->addAttribute("park_area", length*width);
-        building->addAttribute("roof_area", length*width);
-        building->addAttribute("gross_floor_area", length * width * stories * 3);
-
-        building->addAttribute("centroid_x", n.getX());
-        building->addAttribute("centroid_y", n.getY());
-
-        building->addAttribute("l_bounding", length);
-        building->addAttribute("b_bounding", width);
-        building->addAttribute("h_bounding", stories * 3);
-
-        building->addAttribute("alpha_bounding", angle);
-
-        building->addAttribute("cellar_used", 1);
-        building->addAttribute("roof_used", 0);
-
-        building->addAttribute("V_living", length*width*stories * 3);
+        building->addAttribute("traffic_area", traffic_area);
+        building->addAttribute("traffic_area_effective", 0.9);
+        building->addAttribute("roof_area", roof_area);
+        building->addAttribute("roof_area_effective", 0.8);
+        building->addAttribute("impervious_area", impervious_area);
+        building->addAttribute("impervious_area_effective", 0.1);
 
         //Create Links
-        building->getAttribute("Footprint")->addLink(foot_print, footprint.getName());
-        foot_print->getAttribute("BUILDING")->addLink(building, houses.getName());
         building->getAttribute("PARCEL")->addLink(parcel, parcels.getName());
         parcel->getAttribute("BUILDING")->addLink(building, houses.getName());
         parcel->addAttribute("is_built",1);
         numberOfHouseBuild++;
 
-        if (!create3DGeometry) {
-            city->addComponentToView(foot_print, building_model);
-            building->getAttribute("Geometry")->addLink(foot_print, building_model.getName());
-            continue;
-        }
         LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
 /*        if (alpha > 10) {
             LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
