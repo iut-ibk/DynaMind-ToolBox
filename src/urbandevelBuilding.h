@@ -18,10 +18,10 @@ private:
 
     int buildingyear;
     int stories;
-    double length;
     double width;
+    double ratio;
     bool onSignal;
-    bool l_on_parcel_b;
+    bool rotate90;
     bool paramfromCity;
     bool create3DGeometry;
 

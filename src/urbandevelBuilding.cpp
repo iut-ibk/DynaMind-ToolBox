@@ -15,24 +15,24 @@ DM_DECLARE_NODE_NAME(urbandevelBuilding, DynAlp)
 
 urbandevelBuilding::urbandevelBuilding()
 {
+    width = 20;
+    ratio = 1;
     buildingyear = 2010;
     stories = 3;
-    length = 20;
-    width = 15;
     onSignal = TRUE;
-    l_on_parcel_b = FALSE;
+    rotate90 = FALSE;
     paramfromCity = TRUE;
     create3DGeometry = FALSE;
 
     this->addParameter("Parameters from City?", DM::BOOL, &paramfromCity);
     this->addParameter("on Signal?", DM::BOOL, &onSignal);
 
-    this->addParameter("l", DM::DOUBLE, &length);
-    this->addParameter("b", DM::DOUBLE, &width);
+    this->addParameter("width", DM::DOUBLE, &width);
+    this->addParameter("ratio", DM::DOUBLE, &ratio);
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
 
-    this->addParameter("l_on_parcel_b", DM::BOOL, &l_on_parcel_b);
+    this->addParameter("l_on_parcel_b", DM::BOOL, &rotate90);
     this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
 }
@@ -111,10 +111,12 @@ void urbandevelBuilding::run()
         //Calcualte bounding minial bounding box
         std::vector<double> size;
         double angle = CGALGeometry::CalculateMinBoundingBox(nodes, bB,size);
-        if (l_on_parcel_b)
+        if (rotate90)
             angle+=90;
 
         Node centroid = DM::CGALGeometry::CaclulateCentroid2D(parcel);
+
+        double length = width*ratio;
 
         QPointF f1 (- length/2,  - width/2);
         QPointF f2 (+ length/2,- width/2);
