@@ -18,7 +18,6 @@ class DM_HELPER_DLL_EXPORT urbandevelDivision : public DM::Module
     double length;
     double offset;
 
-    bool remove_new;
     std::string inputname;
     std::string outputname;
 

@@ -21,10 +21,8 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("AspectRatio", DM::DOUBLE, &this->aspectratio);
     length = 100;
     this->addParameter("Length", DM::DOUBLE, &this->length);
-    offset = 1;
+    offset = 5;
     this->addParameter("offset", DM::DOUBLE, &this->offset);
-    remove_new = false;
-    this->addParameter("remove_new", DM::BOOL, &this->remove_new);
     tol = 0.00001; //should not be to small
     this->addParameter("tolerance", DM::DOUBLE, &this->tol);
     debug = false;
@@ -51,10 +49,10 @@ void urbandevelDivision::init()
     outputView = DM::View(outputname, DM::FACE, DM::WRITE);
     face_nodes = DM::View("FACE_NODES", DM::NODE, DM::WRITE);
 
-    inputView.addAttribute("selected", DM::Attribute::DOUBLE, DM::READ);
+    inputView.addAttribute("status", DM::Attribute::STRING, DM::READ);
 
 
-    outputView.addAttribute("selected", DM::Attribute::DOUBLE, DM::WRITE);
+    outputView.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
 
     outputView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
 
@@ -88,7 +86,7 @@ void urbandevelDivision::run(){
     {
         DM::System workingSys;
         DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
-        if (f->getAttribute("selected")->getDouble() < 0.01) {
+        if (f->getAttribute("status")->getString() != "develop") {
             DM::Logger(DM::Debug) << "Continue";
             continue;
         }
@@ -100,13 +98,10 @@ void urbandevelDivision::run(){
         DM::Logger(DM::Debug) << "end parceling";
     }
 
-    if (!remove_new)
-        return;
-
     for (int i = 0; i < inputareas.size(); i++)
     {
         DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
-        f->addAttribute("selected", 0);
+        f->addAttribute("status", "populated");
     }
 
 }
@@ -275,7 +270,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             DM::Face * f = dynamic_cast<DM::Face*>(systems[i]);
             DM::Face * f1 = TBVectorData::CopyFaceGeometryToNewSystem(f, sys);
             sys->addComponentToView(f1,v);
-            f1->addAttribute("selected", 1);
+            f1->addAttribute("status", "empty");
         }
         return;
     }
@@ -294,7 +289,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             continue;
 
         DM::Face * f = sys->addFace(vp, v);
-        f->addAttribute("selected", 1);
+        f->addAttribute("status", "empty");
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;

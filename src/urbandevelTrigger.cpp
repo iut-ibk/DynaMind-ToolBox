@@ -65,7 +65,7 @@ void urbandevelTrigger::setdev()
 
     //check free parcels
 
-    DM::Logger(DM::Warning) << "in development mode";
+    DM::Logger(DM::Debug) << "in development mode";
 
     std::vector<double> rankvec;
 
@@ -73,8 +73,8 @@ void urbandevelTrigger::setdev()
     {
         std::string status = prcl[i]->getAttribute("status")->getString();
 
-        if (status == "clear") {
-            DM::Logger(DM::Warning) << "clear";
+        if (status == "empty") {
+            DM::Logger(DM::Warning) << "empty";
             prcl[i]->changeAttribute("status", "develop");
             return;
         }
@@ -84,8 +84,8 @@ void urbandevelTrigger::setdev()
     {
         std::string status = cb[i]->getAttribute("status")->getString();
 
-        if (status == "clear") {
-            DM::Logger(DM::Warning) << "clear";
+        if (status == "empty") {
+            DM::Logger(DM::Warning) << "empty";
             cb[i]->changeAttribute("status", "develop");
             return;
         }
@@ -95,8 +95,8 @@ void urbandevelTrigger::setdev()
     {
         std::string status = sb[i]->getAttribute("status")->getString();
 
-        if (status == "clear") {
-            DM::Logger(DM::Warning) << "clear";
+        if (status == "empty") {
+            DM::Logger(DM::Warning) << "empty";
             sb[i]->changeAttribute("status", "develop");
             return;
         }

@@ -42,7 +42,7 @@ void urbandevelPolygonLink::run()
     for (int i = 0; i < blocks.size(); i++)
     {
 
-        std::string status = "clear";
+        std::string status = "empty";
 
         DM::Face* block = dynamic_cast<DM::Face*>(blocks[i]);
 
@@ -64,7 +64,7 @@ void urbandevelPolygonLink::run()
                 block->getAttribute(elements_view.getName())->addLink(element, elements_view.getName()); //Link SB->CB
                 element->getAttribute(blocks_view.getName())->addLink(block, blocks_view.getName()); //Link CB->SB
                 DM::Logger(DM::Debug) << "Link created";
-                status = "full";
+                status = "populated";
             }
         }
 
