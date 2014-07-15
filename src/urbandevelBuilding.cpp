@@ -195,5 +195,5 @@ void urbandevelBuilding::run()
 
 string urbandevelBuilding::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/urbandevelBuilding.md";
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
 }
