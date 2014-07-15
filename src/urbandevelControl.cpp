@@ -30,7 +30,7 @@ void urbandevelControl::init()
     // attach new attributes to view
     city.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("population", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("workplaces", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
+    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
     city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("startyear", DM::Attribute::DOUBLE, DM::WRITE);
     city.addAttribute("endyear", DM::Attribute::DOUBLE, DM::WRITE);

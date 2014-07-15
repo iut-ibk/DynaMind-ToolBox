@@ -121,6 +121,7 @@ void urbandevelBuilding::run()
 
     foreach(DM::Component* c, sys->getAllComponentsInView(parcels))
     {
+        if (cyclepopdiff == 0) continue;
         DM::Face* parcel = (DM::Face*)c;
 
         if (parcel->getAttribute("status")->getString() != "develop" && onSignal == true)
@@ -167,11 +168,9 @@ void urbandevelBuilding::run()
 
         //Create Building and Footprints
 
-        building->addAttribute("type", "single_family_house");
+        building->addAttribute("type", "residential");
         building->addAttribute("year", buildingyear);
         building->addAttribute("stories", stories);
-        building->addAttribute("stories_below", 0); //cellar counts as story
-        building->addAttribute("stories_height",3 );
 
         building->addAttribute("roofarea", roof_area);
         building->addAttribute("roofarea_effective", 0.8);
@@ -183,7 +182,7 @@ void urbandevelBuilding::run()
         //Create Links
         building->getAttribute("PARCEL")->addLink(parcel, parcels.getName());
         parcel->getAttribute("BUILDING")->addLink(building, houses.getName());
-        parcel->addAttribute("status", "occupied");
+
         numberOfHouseBuild++;
 
         LittleGeometryHelpers::CreateStandardBuilding(sys, houses, building_model, building, houseNodes, stories);
@@ -211,10 +210,13 @@ void urbandevelBuilding::run()
             building->addAttribute("DWF", dwf);
             building->addAttribute("WSD", wsd);
             building->addAttribute("POP", peopleinbuilding);
+            building->addAttribute("height", stories*3.5);
 
-            DM::Logger(DM::Warning) << "pop: " << peopleinbuilding << " cyclepop: " << cyclepopdiff;
+            parcel->addAttribute("status", "populated");
+            currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
         }
     }
+
     DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild;
 }
 
