@@ -31,6 +31,8 @@ private:
 	DM::ViewContainer cityblocks;
 	DM::ViewContainer parcels;
 	int counter_added;
+	double length;
+	double width;
 
 
 public:
@@ -43,6 +45,8 @@ public:
 
 	void addToSystem(SFCGAL::Polygon &poly);
 	Pwh_list_2 splitter(Polygon_2 & rect);
+	void split_left(Point_2 &p3, Pwh_list_2 &ress, Point_2 &p2, Point_2 &p4, Point_2 &p1, Vector_2 &v1);
+	void split_up(Pwh_list_2 &ress, Point_2 &p3, Point_2 &p1, Point_2 &p4, Vector_2 &v2, Point_2 &p2);
 };
 
 #endif // PARCELING_H

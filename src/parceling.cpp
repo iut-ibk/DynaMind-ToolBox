@@ -21,6 +21,12 @@ GDALParceling::GDALParceling()
 
 	parcels = DM::ViewContainer("PARCEL", DM::FACE, DM::WRITE);
 
+	this->width = 100;
+	this->length = 100;
+
+	this->addParameter("width", DM::DOUBLE, &this->width);
+	this->addParameter("length", DM::DOUBLE, &this->length);
+
 	std::vector<DM::ViewContainer> views;
 	views.push_back(cityblocks);
 	views.push_back(parcels);
@@ -30,7 +36,6 @@ GDALParceling::GDALParceling()
 	counter_added = 0;
 
 }
-
 
 void GDALParceling::addToSystem(SFCGAL::Polygon & poly)
 {
@@ -63,6 +68,42 @@ void GDALParceling::addToSystem(SFCGAL::Polygon & poly)
 	counter_added++;
 }
 
+void GDALParceling::split_left(Point_2 & p3, Pwh_list_2 & ress, Point_2 & p2, Point_2 & p4, Point_2 & p1, Vector_2 & v1)
+{
+	Polygon_with_holes_2 split_left;
+	split_left.outer_boundary().push_back(p1);
+	split_left.outer_boundary().push_back(p1+v1);
+	split_left.outer_boundary().push_back(p4+v1);
+	split_left.outer_boundary().push_back(p4);
+	ress.push_back(split_left);
+
+	//Right
+	Polygon_with_holes_2 split_right;
+	split_right.outer_boundary().push_back(p2-v1);
+	split_right.outer_boundary().push_back(p2);
+	split_right.outer_boundary().push_back(p3);
+	split_right.outer_boundary().push_back(p3-v1);
+	ress.push_back(split_right);
+}
+
+void GDALParceling::split_up(Pwh_list_2 & ress, Point_2 & p3, Point_2 & p1, Point_2 & p4, Vector_2 & v2, Point_2 & p2)
+{
+	Polygon_with_holes_2 split_left_1;
+	split_left_1.outer_boundary().push_back(p1);
+	split_left_1.outer_boundary().push_back(p2);
+	split_left_1.outer_boundary().push_back(p2+v2);
+	split_left_1.outer_boundary().push_back(p1+v2);
+	ress.push_back(split_left_1);
+
+	//Right
+	Polygon_with_holes_2 split_right_1;
+	split_right_1.outer_boundary().push_back(p3-v2);
+	split_right_1.outer_boundary().push_back(p3);
+	split_right_1.outer_boundary().push_back(p4);
+	split_right_1.outer_boundary().push_back(p4-v2);
+	ress.push_back(split_right_1);
+}
+
 Pwh_list_2 GDALParceling::splitter(Polygon_2 &rect)
 {
 	Pwh_list_2 ress;
@@ -76,43 +117,28 @@ Pwh_list_2 GDALParceling::splitter(Polygon_2 &rect)
 	Vector_2 v1 = (p2-p1)/2;
 	Vector_2 v2 = (p3-p2)/2;
 
-	if (v1.squared_length() < 400 && v2.squared_length() < 400 ) {
-		return ress;
+	bool v1_bigger = true;
+	if (v1.squared_length() < v2.squared_length()) {
+		v1_bigger = false;
 	}
 
 	//Left
-	if (v1.squared_length() > v2.squared_length()) {
-		Polygon_with_holes_2 split_left;
-		split_left.outer_boundary().push_back(p1);
-		split_left.outer_boundary().push_back(p1+v1);
-		split_left.outer_boundary().push_back(p4+v1);
-		split_left.outer_boundary().push_back(p4);
-		ress.push_back(split_left);
+	if (v1_bigger && v1.squared_length() > this->length*this->length) {
+		split_left(p3, ress, p2, p4, p1, v1);
+		return ress;
+	}
+	if (!v1_bigger && v2.squared_length() > this->length*this->length) {
+		split_up(ress, p3, p1, p4, v2, p2);
+		return ress;
+	}
+	if (v1_bigger && v2.squared_length() > this->width*this->width){
+		split_up(ress, p3, p1, p4, v2, p2);
+		return ress;
+	}
 
-		//Right
-		Polygon_with_holes_2 split_right;
-		split_right.outer_boundary().push_back(p2-v1);
-		split_right.outer_boundary().push_back(p2);
-		split_right.outer_boundary().push_back(p3);
-		split_right.outer_boundary().push_back(p3-v1);
-		ress.push_back(split_right);
-
-	} else {
-		//Left
-		Polygon_with_holes_2 split_left_1;
-		split_left_1.outer_boundary().push_back(p1);
-		split_left_1.outer_boundary().push_back(p2);
-		split_left_1.outer_boundary().push_back(p2+v2);
-		split_left_1.outer_boundary().push_back(p1+v2);
-		ress.push_back(split_left_1);
-
-		//Right
-		Polygon_with_holes_2 split_right_1;
-		split_right_1.outer_boundary().push_back(p3-v2);
-		split_right_1.outer_boundary().push_back(p3);
-		split_right_1.outer_boundary().push_back(p4);
-		split_right_1.outer_boundary().push_back(p4-v2);
-		ress.push_back(split_right_1);
+	if (!v1_bigger && v1.squared_length() > this->width*this->width){
+		split_left(p3, ress, p2, p4, p1, v1);
+		return ress;
 	}
 	return ress;
 }
