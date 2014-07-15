@@ -123,20 +123,20 @@ Pwh_list_2 GDALParceling::splitter(Polygon_2 &rect)
 	}
 
 	//Left
-	if (v1_bigger && v1.squared_length() > this->length*this->length) {
+	if (v1_bigger && v1.squared_length() >= this->length*this->length) {
 		split_left(p3, ress, p2, p4, p1, v1);
 		return ress;
 	}
-	if (!v1_bigger && v2.squared_length() > this->length*this->length) {
+	if (!v1_bigger && v2.squared_length() >= this->length*this->length) {
 		split_up(ress, p3, p1, p4, v2, p2);
 		return ress;
 	}
-	if (v1_bigger && v2.squared_length() > this->width*this->width){
+	if (v1_bigger && v2.squared_length() >= this->width*this->width){
 		split_up(ress, p3, p1, p4, v2, p2);
 		return ress;
 	}
 
-	if (!v1_bigger && v1.squared_length() > this->width*this->width){
+	if (!v1_bigger && v1.squared_length() >= this->width*this->width){
 		split_left(p3, ress, p2, p4, p1, v1);
 		return ress;
 	}
