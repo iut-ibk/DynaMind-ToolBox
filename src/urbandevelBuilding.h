@@ -10,11 +10,12 @@ class DM_HELPER_DLL_EXPORT urbandevelBuilding : public Module
     DM_DECLARE_NODE(urbandevelBuilding);
 
 private:
+    DM::View city;
     DM::View houses;
     DM::View parcels;
     DM::View building_model;
     DM::View footprint;
-    DM::View cityView;
+
 
     int buildingyear;
     int stories;
@@ -25,6 +26,9 @@ private:
     bool paramfromCity;
     bool createPopulation;
     bool create3DGeometry;
+    double dwf_per_person;
+    double wsd_per_person;
+    double space_required;
 
     void createWindows(DM::Face * f, double distance, double width, double height);
 public:

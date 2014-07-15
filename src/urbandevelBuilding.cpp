@@ -10,6 +10,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <algorithm>
 
 DM_DECLARE_NODE_NAME(urbandevelBuilding, DynAlp)
 
@@ -19,6 +20,10 @@ urbandevelBuilding::urbandevelBuilding()
     ratio = 1;
     buildingyear = 2010;
     stories = 3;
+    dwf_per_person = 4.1;
+    wsd_per_person = 200;
+    space_required = 50;
+
     onSignal = TRUE;
     rotate90 = FALSE;
     paramfromCity = TRUE;
@@ -37,12 +42,14 @@ urbandevelBuilding::urbandevelBuilding()
     this->addParameter("rotate90", DM::BOOL, &rotate90);
     this->addParameter("create3DGeometry", DM::BOOL, &create3DGeometry);
 
+    this->addParameter("DWF per person", DM::DOUBLE, &dwf_per_person);
+    this->addParameter("WSD per person", DM::DOUBLE, &wsd_per_person);
+    this->addParameter("req. space per person", DM::DOUBLE, &space_required);
 }
 
 void urbandevelBuilding::init()
 {
-    cityView = DM::View("CITY", DM::COMPONENT, DM::READ);
-    cityView.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
+    city = DM::View("CITY", DM::COMPONENT, DM::READ);
 
     parcels = DM::View("PARCEL", DM::FACE, DM::READ);
     parcels.addAttribute("status", DM::Attribute::DOUBLE, DM::WRITE);
@@ -77,32 +84,49 @@ void urbandevelBuilding::init()
     data.push_back(houses);
     data.push_back(parcels);
     data.push_back(building_model);
-    if (this->paramfromCity)
-        data.push_back(cityView);
 
-    this->addData("City", data);
+    if (this->createPopulation)
+    {
+        city.addAttribute("required_space", DM::Attribute::DOUBLE, DM::READ);
+        city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
+    }
+    if (this->paramfromCity)
+    {
+        city.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
+        city.addAttribute("DWF_per_person", DM::Attribute::DOUBLE, DM::READ);
+        city.addAttribute("WSD_per_person", DM::Attribute::DOUBLE, DM::READ);
+    }
+    data.push_back(city);
+    this->addData("data", data);
 
 }
 
 void urbandevelBuilding::run()
 {
-    DM::System * city = this->getData("City");
-    DM::SpatialNodeHashMap spatialNodeMap(city, 100,false);
+    DM::System * sys = this->getData("data");
+    DM::SpatialNodeHashMap spatialNodeMap(sys, 100,false);
 
-    std::vector<Component*> city_comps = city->getAllComponentsInView(cityView);
-    if (city_comps.size() != 0)
-        buildingyear = city_comps[0]->getAttribute("year")->getDouble();
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    if (cities.size() != 1 && paramfromCity)
+    {
+        DM::Logger(DM::Warning) << "One component expected. There are " << cities.size();
+        return;
+    }
+
+    DM::Component * currentcity = cities[0];
+    if (paramfromCity) buildingyear = currentcity->getAttribute("year")->getDouble();
+    int cyclepopdiff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
 
     int numberOfHouseBuild = 0;
 
-    foreach(DM::Component* c, city->getAllComponentsInView(parcels))
+    foreach(DM::Component* c, sys->getAllComponentsInView(parcels))
     {
         DM::Face* parcel = (DM::Face*)c;
 
         if (parcel->getAttribute("status")->getString() != "develop" && onSignal == true)
             continue;
 
-        std::vector<DM::Node * > nodes  = TBVectorData::getNodeListFromFace(city, parcel);
+        std::vector<DM::Node * > nodes  = TBVectorData::getNodeListFromFace(sys, parcel);
 
         std::vector<DM::Node> bB;
         //Calcualte bounding minial bounding box
@@ -137,9 +161,9 @@ void urbandevelBuilding::run()
 
         double roof_area = length*width;
         double traffic_area = roof_area/3;
-        double impervious_area = TBVectorData::CalculateArea((DM::System*)city, (DM::Face*)parcel) - roof_area - traffic_area;
+        double impervious_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)parcel) - roof_area - traffic_area;
 
-        DM::Component * building = city->addComponent(new Component(), houses);
+        DM::Component * building = sys->addComponent(new Component(), houses);
 
         //Create Building and Footprints
 
@@ -162,7 +186,7 @@ void urbandevelBuilding::run()
         parcel->addAttribute("status", "occupied");
         numberOfHouseBuild++;
 
-        LittleGeometryHelpers::CreateStandardBuilding(city, houses, building_model, building, houseNodes, stories);
+        LittleGeometryHelpers::CreateStandardBuilding(sys, houses, building_model, building, houseNodes, stories);
 /*        if (alpha > 10) {
             LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
         }
@@ -171,26 +195,27 @@ void urbandevelBuilding::run()
 
         if (createPopulation)
         {
-            double required_space = city_comps[0]->getAttribute("reqired_space")->getDouble();
-            double population = city_comps[0]->getAttribute("cyclepopdiff")->getDouble();
-
-            double dwf_per_person = 4.1;
-            double WSdemand_per_person = 200;
-            //double maxpeopleinbuilding = roof_area * stories / required_space;
-
-            //DM::Logger(DM::Warning) << "peopleinbuilding  " << maxpeopleinbuilding;
-
             if (paramfromCity)
             {
-                dwf_per_person = city_comps[0]->getAttribute("DWF_per_person")->getDouble();
-                WSdemand_per_person = city_comps[0]->getAttribute("WSD_per_person")->getDouble();
-            }
+                dwf_per_person = currentcity->getAttribute("DWF_per_person")->getDouble();
+                wsd_per_person = currentcity->getAttribute("WSD_per_person")->getDouble();
+                space_required = currentcity->getAttribute("space_required")->getDouble();
 
-            building->addAttribute("DWF", 0);
-            building->addAttribute("WSdemand", 0);
+            }
+            int peopleinbuilding = static_cast<int>(roof_area * stories / space_required);
+
+            cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
+            double dwf = peopleinbuilding * dwf_per_person;
+            double wsd = peopleinbuilding * wsd_per_person;
+
+            building->addAttribute("DWF", dwf);
+            building->addAttribute("WSD", wsd);
+            building->addAttribute("POP", peopleinbuilding);
+
+            DM::Logger(DM::Warning) << "pop: " << peopleinbuilding << " cyclepop: " << cyclepopdiff;
         }
     }
-    Logger(Standard) << "Created Houses " << numberOfHouseBuild;
+    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild;
 }
 
 string urbandevelBuilding::getHelpUrl()
