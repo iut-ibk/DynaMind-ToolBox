@@ -24,7 +24,7 @@ urbandevelBuilding::urbandevelBuilding()
     this->addParameter("Parameters from City", DM::BOOL, &paramfromCity);
     this->addParameter("create Population", DM::BOOL, &genPopulation);
 
-    this->addParameter("ratio", DM::DOUBLE, &offset);
+    this->addParameter("offset", DM::DOUBLE, &offset);
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
     this->addParameter("space per person", DM::INT, &spacepp);
@@ -148,10 +148,11 @@ void urbandevelBuilding::run()
         {
             int peopleinbuilding = static_cast<int>(roof_area * stories / spacepp);
             cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
+            building->addAttribute("POP", peopleinbuilding);
             currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
         }
         currentparcel->addAttribute("status", "populated");
-        building->addAttribute("height", stories*3.5);
+        building->addAttribute("height", stories*4);
     }
 
     DM::Logger(DM::Debug) << "Created Houses " << numberOfHouseBuild;
