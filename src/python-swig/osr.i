@@ -51,7 +51,7 @@
 %javaconst(1);
 #endif
 
-%include "/usr/local/Cellar/gdal/1.11.0/include/ogr_srs_api.h"
+%include "ogr_srs_api.h"
 
 #ifdef SWIGCSHARP
 %csconst(0);
