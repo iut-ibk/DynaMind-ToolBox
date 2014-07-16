@@ -1,0 +1,7 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+# Change this to your needs
+before_install: sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1-dev libcgal-dev libqglviewer-dev-common libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf
+script: cmake && make
