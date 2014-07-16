@@ -24,6 +24,7 @@
     #include <iostream>
     #include <dmgdalsystem.h>
     #include <dmviewcontainer.h>
+	#include <ogr_api.h>
 
     using namespace std;
     using namespace DM;
