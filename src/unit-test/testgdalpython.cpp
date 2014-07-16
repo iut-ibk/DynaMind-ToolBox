@@ -8,6 +8,7 @@
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
 #include <dmmoduleregistry.h>
+#include <dmpythonenv.h>
 
 #define LOADPYTHON
 
@@ -15,9 +16,12 @@
 #ifdef LOADPYTHON
 TEST_F(TestGDALPython,LoadPython) {
 
+
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "Create Simulation";
+	//std::cout << QDir::currentPath().toStdString() << std::endl;
+	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
 

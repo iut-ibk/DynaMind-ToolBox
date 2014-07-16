@@ -33,7 +33,8 @@
 %include std_string.i
 %include std_map.i
 %include cpointer.i
-
+%include ogr.i
+%include ogr_python.i
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
@@ -47,8 +48,8 @@
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
-%include "../core/dmgdalsystem.h"
-%include "../core/dmviewcontainer.h"
+//%include "../core/dmgdalsystem.h"
+//%include "../core/dmviewcontainer.h"
 
 
 namespace std {
@@ -211,6 +212,21 @@ public:
     bool contains(const std::string &name) const;
 };
 
+class DM::ViewContainer {
+  public:
+	  ViewContainer();
+	  ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+	  void setCurrentGDALSystem(DM::GDALSystem *sys);
+	  virtual ~ViewContainer();
+
+};
+
+%extend DM::ViewContainer {
+	  OGRFeatureShadow *create_feature() {
+		  return (OGRFeatureShadow *) $self->createFeature();
+	  }
+}
+
 %pythoncode %{
 def my_del(self):
     #print "Force no delete of python garbage collector"
@@ -220,7 +236,6 @@ Component.__del__ = my_del
 Node.__del__ = my_del
 Edge.__del__ = my_del
 Face.__del__ = my_del
-
 
 class NodeFactory(INodeFactory):
     def __init__(self, klass):

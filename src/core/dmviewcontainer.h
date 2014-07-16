@@ -8,7 +8,7 @@
 #endif
 
 class DM_HELPER_DLL_EXPORT OGRFeature;
-class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
+//class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 
 namespace DM {
 
@@ -35,7 +35,7 @@ public:
 	void setCurrentGDALSystem(DM::GDALSystem * sys);
 
 	OGRFeature* createFeature();
-	OGRFeatureShadow* createFeatureShadow();
+	//OGRFeatureShadow* createFeatureShadow();
 	void syncAlteredFeatures();
 	void syncReadFeatures();
 

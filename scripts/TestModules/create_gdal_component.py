@@ -50,11 +50,11 @@ class CreateGDALComponents(Module):
             print system
             print self.n
             self.n.setCurrentGDALSystem(system)
-            system.updateViewContainer(self.n)
+            #system.updateViewContainer(self.n)
             
             #ogr.Feature.GetFieldAsInteger("dynamind_id")
 
-            f = self.n.createFeatureShadow()
+            f = self.n.create_feature()
             print f.keys()
             pt = ogr.Geometry(ogr.wkbPoint)
             pt.SetPoint_2D(0, 1, 1)
