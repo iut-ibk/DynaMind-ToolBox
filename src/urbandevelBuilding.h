@@ -4,39 +4,28 @@
 #include <dm.h>
 #include <dmcompilersettings.h>
 
-using namespace DM;
-class DM_HELPER_DLL_EXPORT urbandevelBuilding : public Module
+class DM_HELPER_DLL_EXPORT urbandevelBuilding : public DM::Module
 {
     DM_DECLARE_NODE(urbandevelBuilding);
 
 private:
     DM::View city;
-    DM::View houses;
-    DM::View parcels;
-    DM::View building_model;
-    DM::View footprint;
+    DM::View parcelview;
+    DM::View buildingview;
 
-
+    double offset;
     int buildingyear;
     int stories;
-    double width;
-    double ratio;
     bool onSignal;
-    bool rotate90;
     bool paramfromCity;
-    bool createPopulation;
-    bool create3DGeometry;
-    double dwf_per_person;
-    double wsd_per_person;
-    double space_required;
+    bool genPopulation;
+    int spacepp;
 
-    void createWindows(DM::Face * f, double distance, double width, double height);
 public:
     urbandevelBuilding();
     void run();
     void init();
     std::string getHelpUrl();
-
 };
 
-#endif // CREATESINGLEFAMILYHOUSES_H
+#endif // urbandevelBuilding_H
