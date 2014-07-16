@@ -78,7 +78,7 @@ void GetAccessedViews(DM::Module* m, const std::string& inPort, view_map& access
 	}
 }
 
-void RecursiveGetAccessedViews(DM::Simulation::Link* l, DM::Group* g, view_map& accessed_views)
+void RecursiveGetAccessedViews(DM::Link* l, DM::Group* g, view_map& accessed_views)
 {
 	DM::Module* m = l->dest;
 	if (m == g)
@@ -87,14 +87,14 @@ void RecursiveGetAccessedViews(DM::Simulation::Link* l, DM::Group* g, view_map& 
 	GetAccessedViews(l->dest, l->inPort, accessed_views);
 
 	foreach(const std::string& outPort, m->getOutPortNames())
-		foreach(DM::Simulation::Link* next_link, g->sim->getOutgoingLinks(m, outPort))
+		foreach(DM::Link* next_link, g->sim->getOutgoingLinks(m, outPort))
 			RecursiveGetAccessedViews(next_link, g, accessed_views);
 }
 
 void GetAccessedStreamInGroup(DM::Group* g, stream_map& stream)
 {
 	foreach(std::string inPort, g->getInPortNames())
-		foreach(DM::Simulation::Link* link, g->sim->getIntoGroupLinks(g, inPort))
+		foreach(DM::Link* link, g->sim->getIntoGroupLinks(g, inPort))
 			RecursiveGetAccessedViews(link, g, stream[inPort]);
 }
 

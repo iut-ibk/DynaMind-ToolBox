@@ -135,7 +135,7 @@ void SimulationTab::copySelection()
 {
 	std::list<DM::Module*> modules;
 	std::set<DM::Module*> moduleSet;
-	std::list<DM::Simulation::Link*> links;
+	std::list<DM::Link*> links;
 
 	foreach(SimulationTab* t, sim->getTabs())
 	{
@@ -147,7 +147,7 @@ void SimulationTab::copySelection()
 			}
 	}
 
-	foreach(DM::Simulation::Link* l, sim->getLinks())
+	foreach(DM::Link* l, sim->getLinks())
 	{
 		if(moduleSet.find(l->src) != moduleSet.end() &&
 			moduleSet.find(l->dest) != moduleSet.end())
