@@ -103,8 +103,8 @@ void CalculateCentroid::run()
 			return;
 		}
 
-		Node p = DM::CGALGeometry::CaclulateCentroid2D(f);
-		double area = CGALGeometry::CalculateArea2D(f);
+        Node p = DM::CGALGeometry::CalculateCentroid2D(f);
+        double area = CGALGeometry::CalculateArea2D(f);
 		f->addAttribute("centroid_x", p.getX());
 		f->addAttribute("centroid_y", p.getY());
 		f->addAttribute("area", area);
