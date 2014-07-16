@@ -354,36 +354,36 @@ bool Simulation::removeLink(Module* source, std::string outPort, Module* dest, s
 	return false;
 }
 
-std::vector<Simulation::Link*> Simulation::getIngoingLinks(const Module* dest, const std::string& inPort) const
+std::vector<Link*> Simulation::getIngoingLinks(const Module* dest, const std::string& inPort) const
 {
-	std::vector<Simulation::Link*> ls;
+	std::vector<Link*> ls;
 	foreach(Link* l, links)
 		if(	l->dest == dest && l->inPort == inPort && !l->isOutOfGroupLink)
 			ls.push_back(l);
 
 	return ls;
 }
-std::vector<Simulation::Link*> Simulation::getOutgoingLinks(const Module* src, const std::string& outPort) const
+std::vector<Link*> Simulation::getOutgoingLinks(const Module* src, const std::string& outPort) const
 {
-	std::vector<Simulation::Link*> ls;
+	std::vector<Link*> ls;
 	foreach(Link* l, links)
 		if(	l->src == src && l->outPort == outPort && !l->isIntoGroupLink)
 			ls.push_back(l);
 
 	return ls;
 }
-std::vector<Simulation::Link*> Simulation::getIntoGroupLinks(const Module* src, const std::string& inPort) const
+std::vector<Link*> Simulation::getIntoGroupLinks(const Module* src, const std::string& inPort) const
 {
-	std::vector<Simulation::Link*> ls;
+	std::vector<Link*> ls;
 	foreach(Link* l, links)
 		if(	l->src == src && l->outPort == inPort && l->isIntoGroupLink)
 			ls.push_back(l);
 
 	return ls;
 }
-std::vector<Simulation::Link*> Simulation::getOutOfGroupLinks(const Module* dest, const std::string& outPort) const
+std::vector<Link*> Simulation::getOutOfGroupLinks(const Module* dest, const std::string& outPort) const
 {
-	std::vector<Simulation::Link*> ls;
+	std::vector<Link*> ls;
 	foreach(Link* l, links)
 		if(	l->dest == dest && l->inPort == outPort && l->isOutOfGroupLink)
 			ls.push_back(l);
@@ -921,7 +921,7 @@ std::set<Module*> Simulation::shiftGroupInput(Group* g)
 	{
 		if(g->getInPortData(inPort))
 		{
-			std::vector<Simulation::Link*> intoGroupLinks = getIntoGroupLinks(g, inPort);
+			std::vector<Link*> intoGroupLinks = getIntoGroupLinks(g, inPort);
 			if(intoGroupLinks.size() != 0)
 			{
 				foreach(Link* l, intoGroupLinks)

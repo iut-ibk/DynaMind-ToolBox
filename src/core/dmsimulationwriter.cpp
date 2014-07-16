@@ -82,7 +82,7 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 }
 
 
-void writeLink(QTextStream &out, Simulation::Link* l)
+void writeLink(QTextStream &out, Link* l)
 {
 	out << "\t\t<Link>\n";
 	out << "\t\t\t<BackLink value = \"0\"/>\n";
@@ -102,7 +102,7 @@ void writeLink(QTextStream &out, Simulation::Link* l)
 
 void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath, 
 									   const std::list<Module*>& modules, 
-									   const std::list<Simulation::Link*>& links,
+									   const std::list<Link*>& links,
 									   Module* root) 
 {
 	dest->open(QIODevice::WriteOnly);
@@ -129,7 +129,7 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	// dump links
 	out << "\t<Links>\n";
 
-	foreach(Simulation::Link* l, links)
+	foreach(Link* l, links)
 		writeLink(out, l);
 
 	out << "\t</Links>\n";
