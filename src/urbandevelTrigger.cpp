@@ -46,6 +46,8 @@ void urbandevelTrigger::run()
 
     //DM::Logger(DM::Warning) << "popdiff is " << cyclepopdiff;
 
+    if (cyclepopdiff == 0) return;
+
     if (cyclepopdiff > 0)
     {
         setdev();
@@ -101,13 +103,10 @@ void urbandevelTrigger::setdev()
             return;
         }
     }
+    return;
 }
 
 void urbandevelTrigger::setdec()
 {
-    //check occ sb
-    //check occ cb
-    //check occ parcels
-    //remove population
-    // ??? remove building ???
+    return;
 }

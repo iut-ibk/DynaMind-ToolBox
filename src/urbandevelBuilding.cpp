@@ -2,14 +2,9 @@
 #include "dmgeometry.h"
 #include "cgalgeometry.h"
 #include "tbvectordata.h"
-#include <QPolygonF>
-#include <QTransform>
 #include <dmhelper.h>
 #include <tbvectordata.h>
 #include <littlegeometryhelpers.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 #include <algorithm>
 
 DM_DECLARE_NODE_NAME(urbandevelBuilding, DynAlp)
@@ -54,7 +49,7 @@ void urbandevelBuilding::init()
     parcels = DM::View("PARCEL", DM::FACE, DM::READ);
     parcels.addAttribute("status", DM::Attribute::DOUBLE, DM::WRITE);
 
-    houses = DM::View("BUILDING", DM::COMPONENT, DM::WRITE);
+    houses = DM::View("BUILDING", DM::FACE, DM::MODIFY);
 
     houses.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
@@ -70,12 +65,6 @@ void urbandevelBuilding::init()
     houses.addAttribute("imperviousarea_effective", DM::Attribute::DOUBLE, DM::WRITE);
     houses.addAttribute("Geometry", "Geometry", DM::WRITE);
 
-
-    building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
-    building_model.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
-    building_model.addAttribute("color", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-    building_model.addAttribute("parent", DM::Attribute::DOUBLE, DM::WRITE);
-
     parcels.addAttribute("BUILDING", houses.getName(), DM::WRITE);
     houses.addAttribute("PARCEL", parcels.getName(), DM::WRITE);
     houses.addAttribute("Geometry", building_model.getName(), DM::WRITE);
@@ -83,7 +72,14 @@ void urbandevelBuilding::init()
     std::vector<DM::View> data;
     data.push_back(houses);
     data.push_back(parcels);
-    data.push_back(building_model);
+    if (create3DGeometry)
+    {
+        building_model = DM::View("Geometry", DM::FACE, DM::WRITE);
+        building_model.addAttribute("type", DM::Attribute::DOUBLE, DM::WRITE);
+        building_model.addAttribute("color", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+        building_model.addAttribute("parent", DM::Attribute::DOUBLE, DM::WRITE);
+        data.push_back(building_model);
+    }
 
     if (this->createPopulation)
     {
@@ -133,12 +129,17 @@ void urbandevelBuilding::run()
         //Calcualte bounding minial bounding box
         std::vector<double> size;
         double angle = CGALGeometry::CalculateMinBoundingBox(nodes, bB,size);
-        if (rotate90)
-            angle+=90;
-
-        Node centroid = DM::CGALGeometry::CaclulateCentroid2D(parcel);
+        if (rotate90) angle+=90;
 
         double length = width*ratio;
+
+        Node centroid = DM::CGALGeometry::CalculateCentroid2D(parcel);
+
+        double house_centx = centroid.getX();
+        double house_centy = centroid.getY();
+
+/*
+
 
         QPointF f1 (- length/2,  - width/2);
         QPointF f2 (+ length/2,- width/2);
@@ -159,12 +160,31 @@ void urbandevelBuilding::run()
             Logger(Error) << "Can't create House";
             continue;
         }
-
+*/
         double roof_area = length*width;
         double traffic_area = roof_area/3;
         double impervious_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)parcel) - roof_area - traffic_area;
 
-        DM::Component * building = sys->addComponent(new Component(), houses);
+        //DM::Face * building = sys->addFace(new Face(), houses);
+
+        //Building 2D
+
+        DM::Node * n1 = sys->addNode(house_centx-width/2,house_centy-length/2,0);
+        DM::Node * n2 = sys->addNode(house_centx+width/2,house_centy-length/2,0);
+        DM::Node * n3 = sys->addNode(house_centx+width/2,house_centy+length/2,0);
+        DM::Node * n4 = sys->addNode(house_centx-width/2,house_centy+length/2,0);
+
+        std::vector<DM::Node*> ve;
+        ve.push_back(n1);
+        ve.push_back(n2);
+        ve.push_back(n3);
+        ve.push_back(n4);
+        ve.push_back(n1);
+
+        DM::Face * building = sys->addFace(ve, houses);
+        building->addAttribute("length", width);
+        building->addAttribute("width", width);
+
 
         //Create Building and Footprints
 
@@ -185,7 +205,7 @@ void urbandevelBuilding::run()
 
         numberOfHouseBuild++;
 
-        LittleGeometryHelpers::CreateStandardBuilding(sys, houses, building_model, building, houseNodes, stories);
+        //if (create3DGeometry) LittleGeometryHelpers::CreateStandardBuilding(sys, houses, building_model, building, houseNodes, stories);
 /*        if (alpha > 10) {
             LittleGeometryHelpers::CreateRoofRectangle(city, houses, building_model, building, houseNodes, stories*3, alpha);
         }
@@ -217,7 +237,7 @@ void urbandevelBuilding::run()
         }
     }
 
-    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild;
+    DM::Logger(DM::Debug) << "Created Houses " << numberOfHouseBuild;
 }
 
 string urbandevelBuilding::getHelpUrl()

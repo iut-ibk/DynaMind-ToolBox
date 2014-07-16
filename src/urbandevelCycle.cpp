@@ -66,4 +66,6 @@ void urbandevelCycle::run()
     set->setDouble(cyclebool);
     set = currentcity->getAttribute("cyclepopdiff");
     set->setDouble(cyclepopdiff);
+
+    DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff;
 }
