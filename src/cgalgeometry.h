@@ -89,14 +89,14 @@ public:
     /** @brief Calculate Centroid */
 	static void CalculateCentroid(DM::System * sys, DM::Face * f, double &x, double &y, double &z);
 
-	/** @brief Caclulate Area */
-	static double CalculateArea2D( DM::Face * f);
+    /** @brief Calculate Area */
+    static double CalculateArea2D( DM::Face * f);
 
 	/** @brief Retruns true if node within face, boundary is inside */
 	static bool NodeWithinFace(DM::Face * f, const DM::Node & n);
 
 	/** @brief Calculate Centroid in 2D */
-	static DM::Node CaclulateCentroid2D( DM::Face * f);
+    static DM::Node CalculateCentroid2D( DM::Face * f);
 
 };
 }

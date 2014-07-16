@@ -570,7 +570,7 @@ Node CGALGeometry::CalculateCentroid(System *sys, Face *f)
 	return DM::Node(c2.x(), c2.y(), c2.z());
 }
 
-DM::Node CGALGeometry::CaclulateCentroid2D( DM::Face * f) {
+DM::Node CGALGeometry::CalculateCentroid2D( DM::Face * f) {
 
 	typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 	typedef K::Point_2                                          Point;
