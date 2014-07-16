@@ -59,12 +59,13 @@ OGRFeature *ViewContainer::createFeature()
 void ViewContainer::syncAlteredFeatures()
 {
 	if (!_currentSys) {
-		Logger(Error) << "No GDALSystem registered";
+		//Logger(Error) << "No GDALSystem registered";
 		return;
 	}
 
 	this->_currentSys->syncAlteredFeatures(*this, this->dirtyFeatures_write);
-	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write);
+	this->_currentSys->syncNewFeatures(*this, this->new_Features_write_not_owned, false);
+	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write, false);
 
 }
 
@@ -145,4 +146,18 @@ void ViewContainer::resetReading()
 	}
 	return this->_currentSys->resetReading(*this);
 }
+
+OGRFeatureDefnShadow * DM::ViewContainer::getFeatureDef()
+{
+	return (OGRFeatureDefnShadow *) this->_currentSys->getOGRLayer(*this)->GetLayerDefn();
+}
+
+void ViewContainer::registerFeature(OGRFeatureShadow *f)
+{
+	OGRFeature * feature = (OGRFeature*) f;
+	std::string t(feature->GetDefnRef()->GetFieldDefn(0)->GetNameRef());
+	this->_currentSys->registerFeature(feature, *this);
+	this->new_Features_write_not_owned.push_back(feature);
+}
+
 }

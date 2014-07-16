@@ -124,7 +124,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	addPythonPath("/usr/lib");
 
 	ostringstream script;
-
+	script << "from osgeo import ogr\n";
 	script << "import sys\n";
 	script << "import pydynamind\n";
 	script << "class Logger:\n";

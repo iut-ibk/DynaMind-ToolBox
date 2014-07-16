@@ -7,7 +7,9 @@
 #define DM_HELPER_DLL_EXPORT
 #endif
 
+class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 class DM_HELPER_DLL_EXPORT OGRFeature;
+class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
 //class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 
 namespace DM {
@@ -20,6 +22,7 @@ private:
 	GDALSystem * _currentSys;
 
 	std::vector<OGRFeature *> newFeatures_write;
+	std::vector<OGRFeature *> new_Features_write_not_owned;
 	std::vector<OGRFeature *> dirtyFeatures_write;
 	std::vector<OGRFeature *> dirtyFeatures_read;
 
@@ -49,6 +52,9 @@ public:
 
 	OGRFeature *getNextFeature();
 
+	OGRFeatureDefnShadow * getFeatureDef();
+
+	void registerFeature(OGRFeatureShadow * f);
 
 
 };

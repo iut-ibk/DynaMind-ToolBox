@@ -34,8 +34,8 @@
 %include std_string.i
 %include std_map.i
 %include cpointer.i
-%include ogr.i
-%include ogr_python.i
+//%include ogr.i
+//%include ogr_python.i
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
@@ -51,6 +51,7 @@
 %include "../core/dmsimulation.h"
 //%include "../core/dmgdalsystem.h"
 //%include "../core/dmviewcontainer.h"
+
 
 
 namespace std {
@@ -102,6 +103,7 @@ namespace std {
     INPORT,
     OUTPORT,
     };
+
 
 
 class Module {
@@ -218,14 +220,22 @@ class DM::ViewContainer {
 	  ViewContainer();
 	  ViewContainer(string name, int type, ACCESS accesstypeGeometry);
 	  void setCurrentGDALSystem(DM::GDALSystem *sys);
+	  OGRFeatureDefnShadow * getFeatureDef();
+	  void registerFeature(OGRFeatureShadow *f);
+	  void syncAlteredFeatures();
 	  virtual ~ViewContainer();
-
 };
 
 %extend DM::ViewContainer {
-	  OGRFeatureShadow *create_feature() {
-		  return (OGRFeatureShadow *) $self->createFeature();
-	  }
+	%pythoncode {
+	def create_feature(self):
+		from osgeo import ogr
+		print self.getFeatureDef()
+
+		f = ogr.Feature(self.getFeatureDef())
+		self.registerFeature(f)
+		return f
+	}
 }
 
 %pythoncode %{

@@ -29,7 +29,7 @@ public:
 
 	void syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df);
 
-	void syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df);
+	void syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy);
 
 	void updateView(const View &v);
 
@@ -61,6 +61,8 @@ public:
 	OGRFeature *getNextFeature(const DM::View & v);
 
 	std::string getCurrentStateID();
+
+	void registerFeature(OGRFeature *f, const DM::View & v);
 
 private:
 	OGRDataSource						*poDS;

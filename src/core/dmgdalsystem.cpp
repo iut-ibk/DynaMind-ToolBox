@@ -217,6 +217,12 @@ string GDALSystem::getCurrentStateID()
 	return this->state_ids[state_ids.size()-1];
 }
 
+void GDALSystem::registerFeature(OGRFeature * f, const View &v)
+{
+	f->SetField("dynamind_id", (int) latestUniqueId++);
+	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+}
+
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
 	switch ( v.getType() ) {
@@ -237,7 +243,7 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	return NULL;
 }
 
-void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df)
+void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
@@ -256,7 +262,8 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 			continue;
 		lyr->CreateFeature(f);
 		uniqueIdsTonfid.push_back(f->GetFID());
-		OGRFeature::DestroyFeature(f);
+		if (destroy)
+			OGRFeature::DestroyFeature(f);
 	}
 	lyr->CommitTransaction();
 	df.clear();
