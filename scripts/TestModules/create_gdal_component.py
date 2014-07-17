@@ -47,8 +47,8 @@ class CreateGDALComponents(Module):
     
         def run(self):
             system = self.getGDALData("OUT")
-            print system
-            print self.n
+            #print system
+            #print self.n
             self.n.setCurrentGDALSystem(system)
             #system.updateViewContainer(self.n)
             
@@ -56,8 +56,8 @@ class CreateGDALComponents(Module):
             #f1 = Feature()
             #print f1
             f = self.n.create_feature()
-            print f
-            print f.keys()
+            #print f
+            #print f.keys()
             pt = ogr.Geometry(ogr.wkbPoint)
             pt.SetPoint_2D(0, 1, 1)
             f.SetGeometry(pt)
