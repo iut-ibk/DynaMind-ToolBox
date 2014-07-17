@@ -64,6 +64,7 @@ namespace std {
     %template(facevector) vector<DM::Face* >;
     %template(viewvector) vector<DM::View >;
     %template(viewcontainervector) vector<DM::ViewContainer >;
+	%template(viewcontainervector_p) vector<DM::ViewContainer*>;
     %template(viewmap) map<string, vector<DM::View* > >;
     %template(componentvector) vector<DM::Component* >;
     %template(attributevector) vector<DM::Attribute* >;
@@ -125,6 +126,7 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
+
 protected:
     void addData(std::string name, std::vector<DM::View> view);
 
@@ -135,6 +137,7 @@ protected:
 
     DM::GDALSystem * getGDALData(std::string dataname);
     void setIsGDALModule(bool b);
+	void registerViewContainers(std::vector<DM::ViewContainer *> views);
 
 };
 
@@ -226,14 +229,20 @@ class DM::ViewContainer {
 	  virtual ~ViewContainer();
 };
 
+%pythonbegin %{
+from osgeo import ogr
+%}
+
 %extend DM::ViewContainer {
 	%pythoncode {
+	#Container for OGRObejcts, otherwise the garbage collector eats them
+	__features = []
 	def create_feature(self):
-		from osgeo import ogr
-		print self.getFeatureDef()
-
+		#from osgeo import ogr
 		f = ogr.Feature(self.getFeatureDef())
 		self.registerFeature(f)
+		#Hold Object until destroyed
+		self.__features.append(f)
 		return f
 	}
 }
