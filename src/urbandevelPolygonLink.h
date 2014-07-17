@@ -4,22 +4,26 @@
 #include <dmmodule.h>
 #include <dm.h>
 
-using namespace DM;
-class DM_HELPER_DLL_EXPORT urbandevelPolygonLink : public Module
+class DM_HELPER_DLL_EXPORT urbandevelPolygonLink : public DM::Module
 {
     DM_DECLARE_NODE(urbandevelPolygonLink)
-private:
-        std::string blocks_name;
-        std::string elements_name;
-        DM::System * city;
-        DM::View blocks_view;
-        DM::View elements_view;
-        DM::View elements_centroids_view;
 
 public:
     urbandevelPolygonLink();
+    ~urbandevelPolygonLink();
+
 	void run();
 	void init();
+
+    std::string getHelpUrl();
+
+private:
+    DM::View blockview;
+    DM::View elementview;
+    DM::View elementcentroidview;
+
+    std::string blockview_name;
+    std::string elementview_name;
 };
 
 #endif // urbandevelPolygonLink_H

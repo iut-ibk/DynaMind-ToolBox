@@ -8,39 +8,19 @@
 class DM_HELPER_DLL_EXPORT urbandevelDivision : public DM::Module
 {
     DM_DECLARE_NODE(urbandevelDivision)
-    private:
-    DM::View outputView;
-    DM::View face_nodes;
-    DM::View inputView;
-    DM::View bbs;
-
-    double aspectratio;
-    double length;
-    double offset;
-
-    std::string inputname;
-    std::string outputname;
-
-    double tol;
-    bool combined_edges;
-    bool debug;
-    bool splitShortSide;
-
-
-
 
 public:
     urbandevelDivision();
+    ~urbandevelDivision();
     void run();
     void init();
-    void createSubdevision(DM::System * sys,  DM::Face * f, int gen);
+    std::string getHelpUrl();
 
+    void createSubdivision(DM::System * sys,  DM::Face * f, int gen);
     /** @brief creates final parceling and identify edges, transfers results from working sys to sys */
     void createFinalFaces(DM::System * workingsys, DM::System *sys, DM::Face *orig, DM::View v, DM::SpatialNodeHashMap & sphs);
-
     /** @brief extract faces and returns vector of face nodes*/
     std::vector<DM::Node *> extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & sphs);
-
     /** @brief returns if face is filling of a assumed hole. I assume it is a hole when non of its edges is part of the boundary */
     bool checkIfHoleFilling(DM::Face *orig, DM::Face *face_new);
 
@@ -57,6 +37,24 @@ public:
     void setResultView(const DM::View &value);
     bool getCombined_edges() const;
     void setCombined_edges(bool value);
+
+private:
+    DM::View outputView;
+    DM::View face_nodes;
+    DM::View inputView;
+    DM::View bbs;
+
+    double aspectratio;
+    double length;
+    double offset;
+
+    std::string inputname;
+    std::string outputname;
+
+    double tol;
+    bool combined_edges;
+    bool debug;
+    bool splitShortSide;
 };
 
 #endif // urbandevelDivision_H

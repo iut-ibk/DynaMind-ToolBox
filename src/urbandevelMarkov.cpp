@@ -5,7 +5,7 @@ DM_DECLARE_NODE_NAME(urbandevelMarkov, DynAlp)
 
 urbandevelMarkov::urbandevelMarkov()
 {
-    this->yearcycle = 0;
+    this->dummy = 0;
 }
 
 urbandevelMarkov::~urbandevelMarkov()
@@ -14,18 +14,13 @@ urbandevelMarkov::~urbandevelMarkov()
 
 void urbandevelMarkov::init()
 {
-    city = DM::View("CITY", DM::NODE, DM::MODIFY);
+    cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
 
-    city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::READ); //workplaces
-    city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
-    city.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("dummy", DM::Attribute::DOUBLE, DM::READ);
 
-    // push the view-access settings into the module via 'addData'
-    std::vector<DM::View> views;
-    views.push_back(city);
-    this->addData("data", views);
+    std::vector<DM::View> data;
+    data.push_back(cityview);
+    this->addData("data", data);
 }
 
 void urbandevelMarkov::run()
@@ -33,15 +28,15 @@ void urbandevelMarkov::run()
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
     if (cities.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
         return;
     }
+}
 
-    DM::Component * currentcity = cities[0];
-    std::vector<double> popdiffperyear = currentcity->getAttribute("popdiffperyear")->getDoubleVector();
-    int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
-
+string urbandevelMarkov::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
 }

@@ -8,8 +8,15 @@ class DM_HELPER_DLL_EXPORT urbandevelBuilding : public DM::Module
 {
     DM_DECLARE_NODE(urbandevelBuilding);
 
+public:
+    urbandevelBuilding();
+    ~urbandevelBuilding();
+    void run();
+    void init();
+    std::string getHelpUrl();
+
 private:
-    DM::View city;
+    DM::View cityview;
     DM::View parcelview;
     DM::View buildingview;
 
@@ -20,12 +27,6 @@ private:
     bool paramfromCity;
     bool genPopulation;
     int spacepp;
-
-public:
-    urbandevelBuilding();
-    void run();
-    void init();
-    std::string getHelpUrl();
 };
 
 #endif // urbandevelBuilding_H

@@ -6,15 +6,17 @@
 class urbandevelCycle: public DM::Module
 {
     DM_DECLARE_NODE(urbandevelCycle)
+
 public:
     urbandevelCycle();
     ~urbandevelCycle();
-
     void run();
     void init();
-private:
+    std::string getHelpUrl();
+
+private:    
+    DM::View cityview;
     int yearcycle;
-    DM::View city;
 };
 
 #endif // urbandevelCycle_H

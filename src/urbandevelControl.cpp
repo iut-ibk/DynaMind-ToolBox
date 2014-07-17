@@ -14,7 +14,7 @@ urbandevelControl::urbandevelControl()
 
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
-    this->addParameter("Years per Cycle", DM::INT, &this->yearcycle);
+    this->addParameter("Years per cycle", DM::INT, &this->yearcycle);
     this->addParameter("Share of commercial workplaces", DM::INT, &this->wp_com);
     this->addParameter("Share of industrial workplaces", DM::INT, &this->wp_ind);
 }
@@ -26,23 +26,23 @@ urbandevelControl::~urbandevelControl()
 void urbandevelControl::init()
 {
     // create a view - this one modifies an existing view 'myviewname'
-    city = DM::View("CITY", DM::NODE, DM::MODIFY);
+    cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
     // attach new attributes to view
-    city.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("population", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
-    city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("startyear", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("endyear", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
+    cityview.addAttribute("population", DM::Attribute::DOUBLE, DM::READ);
+    cityview.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::WRITE); //workplaces
+    cityview.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("startyear", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("endyear", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::WRITE);
 
-    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-    city.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+    cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
-    std::vector<DM::View> views;
-    views.push_back(city);
-    this->addData("data", views);
+    std::vector<DM::View> data;
+    data.push_back(cityview);
+    this->addData("data", data);
 }
 
 void urbandevelControl::run()
@@ -50,18 +50,18 @@ void urbandevelControl::run()
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
     if (cities.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
         return;
     }
 
-    DM::Component * currentcity = cities[0];
+    DM::Component * currentcityview = cities[0];
         //year->2000,2010,2020
         //pop->10000,15000,12000
-    QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
-    QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
+    QString year = QString::fromStdString(currentcityview->getAttribute("year")->getString()).simplified();
+    QString pop = QString::fromStdString(currentcityview->getAttribute("population")->getString()).simplified();
 
         DM::Logger(DM::Warning) << "year: " << year << "\npopulation: " << pop;
 
@@ -101,24 +101,29 @@ void urbandevelControl::run()
                 }
             }
         }
-        DM::Attribute* dmatt = currentcity->getAttribute("popdiffperyear");
+        DM::Attribute* dmatt = currentcityview->getAttribute("popdiffperyear");
         dmatt->setDoubleVector(popdiffvector);
 
-        dmatt = currentcity->getAttribute("startyear");
+        dmatt = currentcityview->getAttribute("startyear");
         dmatt->setDouble(startyear);
 
-        dmatt = currentcity->getAttribute("endyear");
+        dmatt = currentcityview->getAttribute("endyear");
         dmatt->setDouble(endyear);
 
-        dmatt = currentcity->getAttribute("yearcycle");
+        dmatt = currentcityview->getAttribute("yearcycle");
         dmatt->setDouble(yearcycle);
 
-        dmatt = currentcity->getAttribute("wp_com");
+        dmatt = currentcityview->getAttribute("wp_com");
         dmatt->setDouble(wp_com);
 
-        dmatt = currentcity->getAttribute("wp_ind");
+        dmatt = currentcityview->getAttribute("wp_ind");
         dmatt->setDouble(wp_ind);
 
-        dmatt = currentcity->getAttribute("cycleBOOL");
+        dmatt = currentcityview->getAttribute("cycleBOOL");
         dmatt->setDouble(1);
+}
+
+string urbandevelControl::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
 }

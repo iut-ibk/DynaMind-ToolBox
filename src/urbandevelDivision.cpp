@@ -40,6 +40,11 @@ urbandevelDivision::urbandevelDivision()
 
 }
 
+urbandevelDivision::~urbandevelDivision()
+{
+
+}
+
 void urbandevelDivision::init()
 {
     if (inputname.empty() || outputname.empty())
@@ -93,7 +98,7 @@ void urbandevelDivision::run(){
         DM::Logger(DM::Debug) << "start parceling";
         DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(f, &workingSys);
         workingSys.addComponentToView(fnew, inputView);
-        this->createSubdevision(&workingSys, fnew, 0);
+        this->createSubdivision(&workingSys, fnew, 0);
         createFinalFaces(&workingSys, sys, fnew, outputView, sphs);
         DM::Logger(DM::Debug) << "end parceling";
     }
@@ -106,7 +111,7 @@ void urbandevelDivision::run(){
 
 }
 
-void urbandevelDivision::createSubdevision(DM::System * sys,  DM::Face *f, int gen)
+void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen)
 {
     bool split_length = false;
     std::vector<DM::Node> box;
@@ -188,7 +193,7 @@ void urbandevelDivision::createSubdevision(DM::System * sys,  DM::Face *f, int g
 
         foreach (DM::Face * f_new ,intersected_faces ) {
             f_new->addAttribute("generation", gen);
-            this->createSubdevision(sys, f_new, gen+1);
+            this->createSubdivision(sys, f_new, gen+1);
         }
     }
 }

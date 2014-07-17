@@ -12,13 +12,15 @@ DM_DECLARE_NODE_NAME(urbandevelRankArea, DynAlp)
 urbandevelRankArea::urbandevelRankArea()
 {
     // declare parameters
-    viewname = "SUPERBLOCK";
-    reduction = 0;
+    rankview_name = "SUPERBLOCK";
+    reduction = FALSE;
     rank_function = "linear";
     rank_function_factor = 1;
     rank_weight = 1;
 
-    this->addParameter("View", DM::STRING, &this->viewname);
+    attribute_name = "devrank";
+
+    this->addParameter("Rank view", DM::STRING, &this->rankview_name);
     this->addParameter("reduction", DM::BOOL, &this->reduction);
     this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
     this->addParameter("ranking function faktor", DM::DOUBLE, &this->rank_function_factor);
@@ -27,41 +29,27 @@ urbandevelRankArea::urbandevelRankArea()
 
 urbandevelRankArea::~urbandevelRankArea()
 {
+
 }
 
 void urbandevelRankArea::init()
 {
-    rankview = DM::View(viewname, DM::FACE, DM::MODIFY);
-    city = DM::View("CITY", DM::NODE, DM::READ);
+    rankview = DM::View(rankview_name, DM::FACE, DM::MODIFY);
 
-    if (reduction) {rankview.addAttribute("redrank", DM::Attribute::DOUBLE, DM::WRITE);}
-    else {rankview.addAttribute("devrank", DM::Attribute::DOUBLE, DM::WRITE);}
+    if (reduction) attribute_name = "redrank";
+    rankview.addAttribute(attribute_name, DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
-    std::vector<DM::View> views;
-    views.push_back(rankview);
-    this->addData("data", views);
+    std::vector<DM::View> data;
+    data.push_back(rankview);
+    this->addData("data", data);
 }
 
 void urbandevelRankArea::run()
 {
-    // get data from stream/port
-    std::string rankfieldname = "devrank";
-    if (reduction) rankfieldname = "redrank";
-
     DM::System * sys = this->getData("data");
 
     std::vector<DM::Component *> areas = sys->getAllComponentsInView(rankview);
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
-
-    if (cities.size() != 1)
-    {
-        DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
-        return;
-    }
-
-    DM::Component* city = cities[0];
-
     std::vector<double> area;
     std::vector<int> rank;
     std::vector<int> oldrank;
@@ -70,7 +58,7 @@ void urbandevelRankArea::run()
     for (int i = 0; i < areas.size(); i++)
     {
         area.push_back(1/(TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)areas[i])));
-        oldrank.push_back((areas[i]->getAttribute(rankfieldname)->getDouble()));
+        oldrank.push_back((areas[i]->getAttribute(attribute_name)->getDouble()));
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
 
@@ -79,6 +67,11 @@ void urbandevelRankArea::run()
 
     for (int i = 0; i < areas.size(); i++)
     {
-        dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
+        dynamic_cast<DM::Face*>(areas[i])->changeAttribute(attribute_name, rank[i]);
     }
+}
+
+std::string urbandevelRankArea::getHelpUrl()
+{
+    return "http://dynalp.com/documentation/urbandevel/RankArea.html";
 }

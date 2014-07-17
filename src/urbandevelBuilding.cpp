@@ -3,9 +3,9 @@
 #include "cgalgeometry.h"
 #include "tbvectordata.h"
 #include <algorithm>
-#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include<CGAL/Polygon_2.h>
-#include<CGAL/create_offset_polygons_2.h>
+//#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//#include<CGAL/Polygon_2.h>
+//#include<CGAL/create_offset_polygons_2.h>
 
 DM_DECLARE_NODE_NAME(urbandevelBuilding, DynAlp)
 
@@ -30,18 +30,23 @@ urbandevelBuilding::urbandevelBuilding()
     this->addParameter("space per person", DM::INT, &spacepp);
 }
 
+urbandevelBuilding::~urbandevelBuilding()
+{
+
+}
+
 void urbandevelBuilding::init()
 {
-    city = DM::View("CITY", DM::COMPONENT, DM::READ);
+    cityview = DM::View("CITY", DM::COMPONENT, DM::READ);
     if (this->genPopulation)
     {
-        city.addAttribute("required_space", DM::Attribute::DOUBLE, DM::READ);
-        city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("required_space", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
     }
     if (this->paramfromCity)
     {
-        city.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
-        city.addAttribute("offset", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("offset", DM::Attribute::DOUBLE, DM::READ);
     }
     parcelview = DM::View("PARCEL", DM::FACE, DM::MODIFY);
     parcelview.addAttribute("status", DM::Attribute::DOUBLE, DM::MODIFY);
@@ -63,8 +68,7 @@ void urbandevelBuilding::init()
     std::vector<DM::View> data;
     data.push_back(buildingview);
     data.push_back(parcelview);
-
-    data.push_back(city);
+    data.push_back(cityview);
     this->addData("data", data);
 
 }
@@ -72,7 +76,7 @@ void urbandevelBuilding::init()
 void urbandevelBuilding::run()
 {
     DM::System * sys = this->getData("data");
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
     std::vector<DM::Component *> parcels = sys->getAllComponentsInView(parcelview);
 
     if (cities.size() != 1 && paramfromCity)

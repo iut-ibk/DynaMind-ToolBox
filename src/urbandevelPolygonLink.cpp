@@ -6,38 +6,43 @@ DM_DECLARE_NODE_NAME(urbandevelPolygonLink, DynAlp)
 
 urbandevelPolygonLink::urbandevelPolygonLink()
 {
-    blocks_name = "SUPERBLOCK";
-    elements_name = "CITYBLOCK";
+    blockview_name = "SUPERBLOCK";
+    elementview_name = "CITYBLOCK";
 
-    this->addParameter("Blocks", DM::STRING, &this->blocks_name);
-    this->addParameter("Elements", DM::STRING, &this->elements_name);
+    this->addParameter("Blocks", DM::STRING, &this->blockview_name);
+    this->addParameter("Elements", DM::STRING, &this->elementview_name);
+}
+
+urbandevelPolygonLink::~urbandevelPolygonLink()
+{
+
 }
 
 void urbandevelPolygonLink::init() {
 
-    blocks_view = DM::View(blocks_name, DM::FACE, DM::READ);
-    elements_view = DM::View(elements_name, DM::FACE, DM::READ);
-    elements_centroids_view = DM::View(elements_name+"_CENTROIDS", DM::NODE, DM::READ);
+    blockview = DM::View(blockview_name, DM::FACE, DM::READ);
+    elementview = DM::View(elementview_name, DM::FACE, DM::READ);
+    elementcentroidview = DM::View(elementview_name+"_CENTROIDS", DM::NODE, DM::READ);
 
-    blocks_view.addAttribute(elements_name, elements_name, DM::WRITE);
-    elements_view.addAttribute(blocks_name, blocks_name, DM::WRITE);
+    blockview.addAttribute(elementview_name, elementview_name, DM::WRITE);
+    elementview.addAttribute(blockview_name, blockview_name, DM::WRITE);
 
-    blocks_view.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
+    blockview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
 
-    std::vector<DM::View> views;
-    views.push_back(blocks_view);
-    views.push_back(elements_view);
-    views.push_back(elements_centroids_view);
-    this->addData("data", views);
+    std::vector<DM::View> data;
+    data.push_back(blockview);
+    data.push_back(elementview);
+    data.push_back(elementcentroidview);
+    this->addData("data", data);
 }
 
 void urbandevelPolygonLink::run()
 {
     DM::System * sys = this->getData("data");
 
-    std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blocks_view);
-    std::vector<DM::Component *> elements = sys->getAllComponentsInView(elements_view);
-    std::vector<DM::Component *> centroids = sys->getAllComponentsInView(elements_centroids_view);
+    std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
+    std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+    std::vector<DM::Component *> centroids = sys->getAllComponentsInView(elementcentroidview);
 
     for (int i = 0; i < blocks.size(); i++)
     {
@@ -49,7 +54,7 @@ void urbandevelPolygonLink::run()
         for (int j = 0; j < elements.size(); j++)
         {
             DM::Face* element = dynamic_cast<DM::Face*>(elements[j]);
-            std::vector<DM::Component*> link = element->getAttribute(elements_name+"_CENTROIDS")->getLinkedComponents();
+            std::vector<DM::Component*> link = element->getAttribute(elementview_name+"_CENTROIDS")->getLinkedComponents();
 
             if(link.size() < 1)
             {
@@ -61,8 +66,8 @@ void urbandevelPolygonLink::run()
 
             if (TBVectorData::PointWithinFace((DM::Face*)block, (DM::Node*)centroid))
             {
-                block->getAttribute(elements_view.getName())->addLink(element, elements_view.getName()); //Link SB->CB
-                element->getAttribute(blocks_view.getName())->addLink(block, blocks_view.getName()); //Link CB->SB
+                block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
+                element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
                 DM::Logger(DM::Debug) << "Link created";
                 status = "populated";
             }
@@ -70,4 +75,9 @@ void urbandevelPolygonLink::run()
 
         block->addAttribute("status", status);
     }
+}
+
+string urbandevelPolygonLink::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
 }

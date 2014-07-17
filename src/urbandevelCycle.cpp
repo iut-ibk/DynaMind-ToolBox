@@ -14,21 +14,21 @@ urbandevelCycle::~urbandevelCycle()
 
 void urbandevelCycle::init()
 {
-    city = DM::View("CITY", DM::NODE, DM::MODIFY);
+    cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
 
-    city.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::READ); //workplaces
-    city.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::READ);
-    city.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
-    city.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
-    city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
+    cityview.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::READ); //workplaces
+    cityview.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::READ);
+    cityview.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
+    cityview.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
-    std::vector<DM::View> views;
-    views.push_back(city);
-    this->addData("data", views);
+    std::vector<DM::View> data;
+    data.push_back(cityview);
+    this->addData("data", data);
 }
 
 void urbandevelCycle::run()
@@ -36,20 +36,20 @@ void urbandevelCycle::run()
     // get data from stream/port
     DM::System * sys = this->getData("data");
 
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(city);
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
     if (cities.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
         return;
     }
 
-    DM::Component * currentcity = cities[0];
+    DM::Component * currentcityview = cities[0];
 
-    std::vector<double> popdiffperyear = currentcity->getAttribute("popdiffperyear")->getDoubleVector();
-    int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
-    int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
-    int currentyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
-    bool cyclebool = static_cast<bool>(currentcity->getAttribute("cycleBOOL")->getDouble());
+    std::vector<double> popdiffperyear = currentcityview->getAttribute("popdiffperyear")->getDoubleVector();
+    int startyear = static_cast<int>(currentcityview->getAttribute("startyear")->getDouble());
+    int endyear = static_cast<int>(currentcityview->getAttribute("endyear")->getDouble());
+    int currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
+    bool cyclebool = static_cast<bool>(currentcityview->getAttribute("cycleBOOL")->getDouble());
 
     if ( currentyear <= startyear ) { currentyear = startyear + 1; }
     else if ( currentyear < endyear ){ currentyear++; }
@@ -60,12 +60,17 @@ void urbandevelCycle::run()
 
     DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
 
-    DM::Attribute* set = currentcity->getAttribute("currentyear");
+    DM::Attribute* set = currentcityview->getAttribute("currentyear");
     set->setDouble(currentyear);
-    set = currentcity->getAttribute("cycleBOOL");
+    set = currentcityview->getAttribute("cycleBOOL");
     set->setDouble(cyclebool);
-    set = currentcity->getAttribute("cyclepopdiff");
+    set = currentcityview->getAttribute("cyclepopdiff");
     set->setDouble(cyclepopdiff);
 
     DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff;
+}
+
+string urbandevelCycle::getHelpUrl()
+{
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
 }
