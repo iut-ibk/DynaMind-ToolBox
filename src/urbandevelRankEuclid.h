@@ -6,22 +6,26 @@
 class urbandevelRankEuclid: public DM::Module
 {
     DM_DECLARE_NODE(urbandevelRankEuclid)
+
 public:
     urbandevelRankEuclid();
     ~urbandevelRankEuclid();
 
     void run();
     void init();
+
 private:
-    std::string viewname;
+    DM::View gravityview;
+    DM::View rankview;
+    DM::View rankview_centroids;
+
+    std::string gravityview_name;
+    std::string rankview_name;
     bool reduction;
     std::string rank_function;
     double rank_function_factor;
     double rank_weight;
-
-    DM::View rankview;
-    DM::View rankview_centroids;
-    DM::View city;
+    bool nodeweight;
 };
 
 #endif // urbandevelRankEuclid_H
