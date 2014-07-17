@@ -11,47 +11,54 @@
 #define FEATURES "100000"
 #define FEATURES_2 "200000"
 
-/*#define SPEEDTESTDM
+#define SPEEDTESTDM
 #define SPEEDTEST
 #define CONNECTIONTEST
 #define BRANCHINGTEST
 #define EXPANDING
-#define BRANCHMODIFY*/
-#define GDALImportData
+#define BRANCHMODIFY
+#define GDALVCAPITEST
 
-#ifdef GDALImportData
-//PLEASE REMOVE ABSOLUTE PATH
-/*
-TEST_F(TestGDALModules,UpdateTest) {
+#ifdef GDALVCAPITEST
+TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim.addModule("GDALAddComponentViewContainer");
+	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m1 = sim.addModule("GDALImportData");
-	m1->setParameterValue("driver_type", "Shapefile");
-	m1->setParameterValue("source", "/Users/curich/Documents/DynaMind/data/shapefiles/1963_Landuse_Roads.shp");
-	m1->setParameterValue("layer_name", "1963_Landuse_Roads");
-	m1->setParameterValue("view_name", "CITYBLOCK");
+	DM::Module * m2 = sim.addModule("GDALAddComponentViewContainer");
+	m2->setParameterValue("elements", FEATURES);
+	m2->setParameterValue("append", "1");
+	m2->init();
+	sim.addLink(m1, "city", m2, "city");
 	sim.run();
+
+	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
+	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+
+	QString s_number = QString(FEATURES);
+	int number = 2* s_number.toInt();
+	ASSERT_EQ(components.getFeatureCount(), number);
 }
-*/
 #endif
 
 #ifdef SPEEDTESTDM
 TEST_F(TestGDALModules,TestInsertSpeed_DM) {
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
-	sim.addModule("CreateNodes")->setParameterValue("elements", FEATURES);;
+	sim.addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
 	sim.run();
 }
 #endif
@@ -60,7 +67,7 @@ TEST_F(TestGDALModules,TestInsertSpeed_DM) {
 TEST_F(TestGDALModules,TestInsertSpeed) {
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
@@ -75,7 +82,7 @@ TEST_F(TestGDALModules,TestInsertSpeed) {
 TEST_F(TestGDALModules,ConnectionTest) {
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
@@ -105,7 +112,7 @@ TEST_F(TestGDALModules,ConnectionTest) {
 TEST_F(TestGDALModules,BranchingTest) {
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
@@ -151,7 +158,7 @@ TEST_F(TestGDALModules,BranchingTest) {
 #ifdef EXPANDING
 TEST_F(TestGDALModules,UpdateTest) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
@@ -173,7 +180,7 @@ TEST_F(TestGDALModules,UpdateTest) {
 #ifdef BRANCHMODIFY
 TEST_F(TestGDALModules,BranchModify) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
@@ -202,6 +209,7 @@ TEST_F(TestGDALModules,BranchModify) {
 	ASSERT_EQ(components.getFeatureCount(), number);
 }
 #endif
+
 
 
 

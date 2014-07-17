@@ -18,7 +18,7 @@ TEST_F(TestGDALPython,LoadPython) {
 
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	//std::cout << QDir::currentPath().toStdString() << std::endl;
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());

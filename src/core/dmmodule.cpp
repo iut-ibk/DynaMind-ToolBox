@@ -44,6 +44,29 @@ Module::Module()
 	successorMode = false;
 	GDALModule = false;
 }
+
+void Module::preRun()
+{
+	if (!this->GDALModule)
+		return;
+	if (!this->regiseredViewContainers.size())
+		return;
+	GDALSystem * sys = this->getGDALData("city");
+	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
+		v->setCurrentGDALSystem(sys);
+	}
+}
+
+void Module::afterRun()
+{
+	if (!this->GDALModule)
+		return;
+	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
+		//Clean Views
+		v->syncAlteredFeatures();
+		v->syncAlteredFeatures();
+	}
+}
 Module::~Module()
 {
 	forceUpdate=false;
@@ -291,6 +314,18 @@ void Module::addGDALData(const string &streamName, std::vector<ViewContainer> vi
 	}
 
 	this->addData(streamName, converted_views);
+}
+
+void Module::registerViewContainers(std::vector<ViewContainer *> views)
+{
+	std::vector<DM::View> converted_views;
+	foreach(DM::View * v, views) {
+		converted_views.push_back((DM::View)*v);
+	}
+
+	this->addData("city", converted_views);
+
+	this->regiseredViewContainers = views;
 }
 
 void Module::removeData(const std::string& name)

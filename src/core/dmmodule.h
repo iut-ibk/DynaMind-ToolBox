@@ -25,9 +25,7 @@
  *
  */
 
-/**
-  * @addtogroup DynaMind-Core
-  */
+
 #ifndef DMMODULE_H
 #define DMMODULE_H
 
@@ -84,7 +82,7 @@ enum ModuleStatus
 * @class DM::Module
 *
 *
-* @ingroup DynaMind-Core
+*
 *
 * @brief Abstract class as a base for Modules.
 */
@@ -110,6 +108,19 @@ public:
 
 	/** @brief constructor */
 	Module();
+
+	/** @brief executed before run is called
+	 *
+	 * used to update the view containers in GDALSystem
+	 */
+	void preRun();
+
+	/** @brief executed after run has ben executed
+	 *
+	 * used to update clean diry view container
+	 */
+	void afterRun();
+
 
 	/** @brief destructor */
 	virtual ~Module();
@@ -169,10 +180,10 @@ public:
 	/** @brief shortcut to getViewsInStream to return all views from the stream view index 0 */
 	std::map<std::string,View> getViewsInStdStream() const;
 
-	/** @brief @deprecated */
+	/** @brief deprecated */
 	std::string getUuid() const;
 
-	/** @brief @deprecated returns all view definitions added via addData */
+	/** @brief deprecated returns all view definitions added via addData */
 	std::map<std::string, std::map<std::string, DM::View> > getViews() const;
 
 	/** @brief just nulls out the inport, may get deprecated */
@@ -256,7 +267,10 @@ protected:
 	ISystem *SystemFactory();
 	System *getData(const std::string& streamName);
 
-	/** @brief returns the data from the desired stream */
+	/** @brief For GDAL systems please use registerViewContainers to manage the data stream
+	 *
+	 *Returns the data from the desired stream
+	*/
 	GDALSystem *getGDALData(const string &streamName);
 
 	/** @brief checks if in-port does exist */
@@ -280,18 +294,36 @@ protected:
 	*
 	* If a port already exists no new port is added, existing definitions are overwritten. */
 	void addData(const std::string& streamName, std::vector<View> views);
+
+	/**
+	 * @brief Registers a GDAL data stream in the simulation. Recommended for interal use only. Module developer
+	 * should use registerViewContainers to register a data stream.
+	 *
+	 * If this method is used the ViewContainer need to be updated with the current system during before
+	 * data can be accessed in run(). Further before run is finished the ViewContainer need to be
+	 * syncronised.
+	 */
 	void addGDALData(const std::string& streamName, std::vector<ViewContainer> views);
+
+	/**
+	 * @brief Registers a GDAL data stream in the simulation. ViewContianers are automatically initialised and don't need
+	 * to be updated
+	 */
+	void registerViewContainers(std::vector<ViewContainer*> views);
 
 	/** @brief Returns a pointer raster data set assigend to a view **/
 	RasterData* getRasterData(std::string name, View view);
 
-	/** @brief sets inport data - may only by used by DM::Simulation and loopgroup */
+	/** @brief Sets inport data - may only by used by DM::Simulation and loopgroup */
 	void setInPortData(const std::string &name, ISystem* data);
 
 	/** @brief */
 	void setOutPortData(const std::string &name, ISystem *data);
 
+	/** @brief Returns if module uses GDAL in Data stream */
 	void setIsGDALModule(bool b);
+
+	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;
 
 private:
@@ -327,6 +359,9 @@ private:
 	std::string		name;
 	DM::Simulation *sim;
 	bool			forceUpdate;
+
+	//View containers registered in the simulation and therefore managed by the simulation
+	std::vector<DM::ViewContainer *> regiseredViewContainers;
 };
 
 }

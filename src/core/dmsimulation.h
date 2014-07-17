@@ -59,7 +59,7 @@ enum SimulationStatus {
 * @class DM::Simulation
 *
 *
-* @ingroup DynaMind-Core
+* 
 *
 * @brief Here is where all the playground is set up. Modules and groups get wired to simulations and
 * executed.

@@ -736,9 +736,13 @@ void Simulation::run()
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
+			//Run PreRun to init GDALSytem before module is executed
+			m->preRun();
+			//Run Module
 			QtConcurrent::run(m, &Module::run).waitForFinished();
-
 			// check for errors
+			//Run AfterRun to clean up GDALModules
+			m->afterRun();
 			ModuleStatus merr = m->getStatus();
 			if(m->getStatus() == MOD_EXECUTION_ERROR)
 			{
