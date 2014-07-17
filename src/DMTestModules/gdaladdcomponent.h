@@ -5,7 +5,7 @@
 #include <dm.h>
 #include <dmviewcontainer.h>
 
-/** @ingroup TestModules
+/**
  * @brief Creates 1000 nodes for memory testing
 
  */

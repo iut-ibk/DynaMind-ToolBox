@@ -23,9 +23,9 @@ void GDALAddComponent::init()
 	}
 	components.addAttribute("persons",DM::Attribute::STRING, DM::WRITE);
 
-	std::vector<DM::View> datastream;
+	std::vector<DM::ViewContainer> datastream;
 	datastream.push_back(components);
-	this->addData("city", datastream);
+	this->addGDALData("city", datastream);
 }
 
 
