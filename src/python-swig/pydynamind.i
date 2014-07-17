@@ -2,6 +2,10 @@
 %rename(addLinkAttribute) addAttribute(const std::string name, std::string linkName, ACCESS access);
 %ignore "DM_HELPER_DLL_EXPORT";
 
+%pythoncode %{
+from osgeo import ogr
+%}
+
 %feature("autodoc", "1");
 %feature("director");
 %{
@@ -228,10 +232,6 @@ class DM::ViewContainer {
 	  void syncAlteredFeatures();
 	  virtual ~ViewContainer();
 };
-
-%pythonbegin %{
-from osgeo import ogr
-%}
 
 %extend DM::ViewContainer {
 	%pythoncode {
