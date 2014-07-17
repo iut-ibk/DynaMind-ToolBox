@@ -52,7 +52,7 @@ enum LogLevel
 	if (level <= max) return *this;\
 	out << logLevel() << ": " << "\n"
 /**
- * @ingroup DynaMind-Core
+ * 
  * @brief DynaMind Log
  *
  * The Logger is implemented as singleton. The Logger need to initialsed by calling the init function.

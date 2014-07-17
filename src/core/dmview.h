@@ -50,7 +50,7 @@ enum ACCESS
   * @brief Data in DynaMind are organised in views. A view provides a description of a
   * component and its attributes and how they are accessed in the module.
   *
-  * @ingroup DynaMind-Core
+  * 
   *
   *
   * A view is defined by:

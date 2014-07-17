@@ -33,7 +33,7 @@
 
 using namespace DM;
 
-/** @ingroup TestModules
+/** 
  * @brief The Module addes the Attributes C to Inlets and D,F to Conduits
  *
  * Data Set:

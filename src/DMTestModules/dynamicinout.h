@@ -33,7 +33,7 @@
 
 using namespace DM;
 
-/** @ingroup TestModules
+/** 
  * @brief Add user defined attribute to Inlets
  *
  * Data Set:

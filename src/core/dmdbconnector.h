@@ -139,7 +139,7 @@ struct QueryList
 
 /**************************************************************//**
 @class DM::DBWorker
-@ingroup DynaMind-Core
+
 @brief 
 A threadclass, asuring asynchron query execution. 
 As QT requires
@@ -248,7 +248,7 @@ public:
 
 /**************************************************************//**
 @class DM::DBConnectorConfig
-@ingroup DynaMind-Core
+
 @brief Offers a structure to get and set settings from the  DBConnector.
 
 COMMENTS
@@ -279,7 +279,7 @@ public:
 
 /**************************************************************//**
 @class DM::DBConnector
-@ingroup DynaMind-Core
+
 @brief Main class to access the database. It offers all neccessary 
 operations to create a db and read, write and delete entries in
 the db.
@@ -403,7 +403,7 @@ public:
 
 /**************************************************************//**
 @class DM::SingletonDestroyer
-@ingroup DynaMind-Core
+
 @brief To ensure a specific order when destructing a singleton,
 we implement a destructor class.
 
@@ -423,7 +423,7 @@ private:
 
 /**************************************************************//**
 @class DM::Asynchron
-@ingroup DynaMind-Core
+
 @brief inheriting this class enables the DbConnector to synchronize 
 this element. The registration and deregistration is done in the
 constructor and destructor respectively, while the synchronizing

@@ -59,7 +59,7 @@ enum Components
 class Attribute;
 class System;
 
-/** @ingroup DynaMind-Core
+/** 
   * @brief Basic class that contains to store informations in DynaMind
   *
   * All Objects like Nodes, Edges and Faces are derived from the component class.

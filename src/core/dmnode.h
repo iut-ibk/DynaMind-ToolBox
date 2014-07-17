@@ -43,7 +43,7 @@ class Component;
 class Vector3;
 class Edge;
 /**
-* @ingroup DynaMind-Core
+* 
 * @brief Provides a 3D node object
 *
 * A node is defined by x, y and z. Edge and Face components just contain reference

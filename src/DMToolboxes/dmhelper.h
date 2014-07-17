@@ -35,7 +35,7 @@
 
 /**
 *
-* @ingroup ToolBoxes
+*
 * @brief Lots of useful functions that make live easier
 * @author Christian Urich
 *

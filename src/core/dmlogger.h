@@ -37,7 +37,7 @@ using namespace std;
 class QString;
 namespace DM {
 /**
- * @ingroup DynaMind-Core
+ * 
  * @brief The Logger class is used to get messages from the core, modules, database.
  *
  * The Logger sends the messages to the sink defined in Log.

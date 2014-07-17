@@ -31,7 +31,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 
-/** @ingroup TestModules
+/** 
  * @brief reallocates alle components and attributes
 
  */

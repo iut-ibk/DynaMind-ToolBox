@@ -56,7 +56,7 @@ typedef std::pair<std::string, Face*> FacePair;
 class DerivedSystem;
 
 /** @class DM::System
-  * @ingroup DynaMind-Core
+  * 
   * @brief The system class provides a description for complex objects.
   *
   * Systems can be described with nodes, edges, faces, rasterdata. Systems can contain sub systems.
@@ -148,7 +148,6 @@ public:
     System * addSubSystem(System *newsystem, const DM::View & view = DM::View());
 
     /** @brief Creates a new Successor state
-    * @todo add a more detailed description here
     */
     System* createSuccessor();
 

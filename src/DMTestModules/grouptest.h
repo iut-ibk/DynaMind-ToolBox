@@ -36,7 +36,7 @@
 using namespace DM;
 
 
-/** @ingroup TestModules
+/** 
  * @brief Creates a group. To get data in the group add a dynamic inport, same for out
  *
  */

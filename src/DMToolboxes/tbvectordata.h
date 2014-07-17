@@ -42,14 +42,9 @@ class Component;
 
 }
 
-/**
-  * @addtogroup ToolBoxes
-  */
-
 
 /**
 *
-* @ingroup ToolBoxes
 * @brief Lots of useful functions that make live easier
 * @author Christian Urich, Michael Mair
 *

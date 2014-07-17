@@ -69,7 +69,7 @@ public:
 class Component;
 class System;
 
-/** @ingroup DynaMind-Core
+/**
 * An Attribute is used to add informations to an object.
 *
 * As attributes Double, Striunb DoubleVector and StringVectors can be used.

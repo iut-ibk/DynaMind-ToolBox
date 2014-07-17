@@ -32,7 +32,7 @@
 #include <dm.h>
 using namespace DM;
 
-/** @ingroup TestModules
+/** 
  * @brief The Module addes the Attributes F to Inlets and F to Conduits
  *
  * Data Set:

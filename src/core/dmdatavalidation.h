@@ -30,7 +30,7 @@ namespace DM {
 	class View;
 	class Component;
 
-/** @ingroup DynaMind-Core
+/** 
   * @brief Helper class for data validation of views
   */
 class  DataValidation

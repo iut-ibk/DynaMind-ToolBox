@@ -35,7 +35,7 @@ namespace DM {
 
 class Node;
 //class Node;
-/** @ingroup DynaMind-Core
+/** 
 * @brief Provides an Edge object. An Edge just contains references to a start and end node.
 *
 * Lines are derived from the Component class. Therefore lines are identified by an UUID and can hold an

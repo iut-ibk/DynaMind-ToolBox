@@ -39,7 +39,7 @@ namespace DM {
 
 /**************************************************************//**
 @class DM::Cache
-@ingroup DynaMind-Core
+
 @brief a dictionary, with limited size, sorted by access order.
 Offers get, add, replace, remove for a key value pair.
 

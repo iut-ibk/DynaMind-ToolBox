@@ -37,7 +37,7 @@ typedef QHash<QString, std::vector<DM::Node* > *> NodeHashMap;
 
 namespace DM {
 
-/** @ingroup ToolBoxes
+/**  
   * @brief Lots of useful functions that make live easier
   * @author Christian Urich
  */

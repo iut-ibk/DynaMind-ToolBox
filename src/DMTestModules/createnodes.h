@@ -30,7 +30,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 
-/** @ingroup TestModules
+/** 
  * @brief Creates 1000 nodes for memory testing
 
  */

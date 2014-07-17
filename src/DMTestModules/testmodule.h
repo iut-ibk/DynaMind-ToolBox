@@ -35,7 +35,7 @@
 #include "dm.h"
 using namespace DM;
 
-/** @ingroup TestModules
+/** 
  * @brief The Module creates an inital data set that a simulation can use for testing
  *
  * Data Set:

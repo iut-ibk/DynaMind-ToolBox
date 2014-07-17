@@ -5,7 +5,7 @@
 
 /**************************************************************//**
 @class DM::DbCache
-@ingroup DynaMind-Core
+
 @brief similar to DM::Cache, but saves data to database when size
 limit is reached and tries to load data from database when element
 is not found.
