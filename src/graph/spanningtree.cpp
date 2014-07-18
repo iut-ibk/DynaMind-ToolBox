@@ -123,7 +123,8 @@ void SpanningTree::run()
 		this->algprim = false;
 		this->algtest = false;
 		DM::Logger(DM::Standard) << "Start random spanning tree algorithm with " << nodes.size() << " nodes and " << edges.size() << " edges";
-		random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]).weight_map(get(edge_weight,g)));
+		random_spanning_tree(g, rng, root_vertex(*vertices(g).first).vertex_index_map(get(vertex_index,g)).predecessor_map(&p[0]));
+		DM::Logger(DM::Standard) << "Random spanning tree calculation done -> Now extracting results";
 	}
 
 	if(this->algtest)
