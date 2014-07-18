@@ -43,3 +43,6 @@
 [submodule "DynaMind-DynAlp"]
 	path = DynaMind-DynAlp
 	url = git://github.com/iut-ibk/DynaMind-DynAlp.git
+[submodule "DynaMind-GDALModules"]
+	path = DynaMind-GDALModules
+	url = git://github.com/christianurich/DynaMind-GDALModules
