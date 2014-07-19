@@ -18,8 +18,9 @@ private:
     int startyear;
     int endyear;
     int yearcycle;
-    int wp_com;
-    int wp_ind;
+    bool wpfromcity;
+    int workplaces;
+    int shareind;
 
     DM::View cityview;
 };
