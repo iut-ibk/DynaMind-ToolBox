@@ -1,11 +1,6 @@
 #include "urbandevelBuilding.h"
-#include "dmgeometry.h"
 #include "cgalgeometry.h"
 #include "tbvectordata.h"
-#include <algorithm>
-//#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
-//#include<CGAL/Polygon_2.h>
-//#include<CGAL/create_offset_polygons_2.h>
 
 DM_DECLARE_NODE_NAME(urbandevelBuilding, DynAlp)
 
@@ -92,6 +87,7 @@ void urbandevelBuilding::run()
         buildingyear = static_cast<int>(currentcity->getAttribute("year")->getDouble());
         offset = static_cast<int>(currentcity->getAttribute("ratio")->getDouble());
     }
+
     int cyclepopdiff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
     int currentyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
 
@@ -164,5 +160,5 @@ void urbandevelBuilding::run()
 
 string urbandevelBuilding::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
+    return "http://dynalp.com/documentation/DynaMind-DynAlp/urbandevelBuilding.html";
 }
