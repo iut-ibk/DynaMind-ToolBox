@@ -11,7 +11,7 @@ DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)
 
 urbandevelRankEuclid::urbandevelRankEuclid()
 {
-    gravityview_name = "GRAVITYPOINT";
+    gravityview_name = "GRAVITY";
     rankview_name = "SUPERBLOCK";
     reduction = FALSE;
     rank_function = "linear";

@@ -25,7 +25,6 @@ void urbandevelCycle::init()
     cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
 
-    // push the view-access settings into the module via 'addData'
     std::vector<DM::View> data;
     data.push_back(cityview);
     this->addData("data", data);
