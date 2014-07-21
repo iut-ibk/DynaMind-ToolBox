@@ -107,6 +107,7 @@ private:
 
 	// OGR-geom. loading methods
 	void loadLayer(OGRLayer* layer, System* sys);
+	void loadLayerInterleaved(OGRDataSource *poDS, OGRLayer* layer, System* sys);
 
 	void loadPoint(System *sys, OGRPoint *point, OGRCoordinateTransformation *poCT,
 		OGRFeatureDefn* featureDef, OGRFeature* curFeature, const DM::View& view);

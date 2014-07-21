@@ -31,6 +31,7 @@
 #include <guiimport.h>
 #include <algorithm>
 #include <QHash>
+#include <cpl_conv.h>
 
 DM_DECLARE_NODE_NAME(Import, Modules)
 
@@ -121,6 +122,7 @@ void Import::reloadFile()
 
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
+	CPLSetConfigOption( "OGR_INTERLEAVED_READING", "YES");
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 
 	if (!this->WFSServer.empty())
@@ -164,8 +166,7 @@ void Import::reloadFile()
 			std::map<std::string, int> newViewConfigTypes;
 			StringMap newEPSGCodes;
 
-			if (!ExtractLayers(poDS, newViewConfig, newViewConfigTypes, newEPSGCodes, this->epsgcode))
-				driverType = DataError;
+			ExtractLayers(poDS, newViewConfig, newViewConfigTypes, newEPSGCodes, this->epsgcode);
 
 			adoptViewConfig(newViewConfig, newViewConfigTypes);
 
@@ -461,7 +462,8 @@ void Import::loadVectorData(const std::string& path)
 		{
 			OGRLayer *poLayer = poDS->GetLayerByName(it->first.c_str());
 			poLayer->ResetReading();
-			loadLayer(poLayer, sys);
+			loadLayerInterleaved(poDS,poLayer,sys);
+			//loadLayer(poLayer, sys);
 			i++;
 		}
 	}
@@ -475,6 +477,94 @@ void Import::loadVectorData(const std::string& path)
 	int features_after = sys->getAllChilds().size();
 	Logger(Debug) << "Loaded features: " << features_after - features_before;
 #endif
+}
+
+void Import::loadLayerInterleaved(OGRDataSource *poDS, OGRLayer* layer, System* sys)
+{
+	std::string layername = layer->GetName();
+	const std::string viewName = viewConfig[layer->GetName()];
+	if (viewName.empty())
+		return;
+
+	int sourceEPSG = 0;
+	std::string value;
+	if (map_contains(&viewEPSGConfig, viewName, value))
+	{
+		sourceEPSG = atoi(value.c_str());
+		DM::Logger(DM::Debug) << "Overriding source trafo to " << sourceEPSG;
+	}
+
+	OGRCoordinateTransformation* poCT = getTrafo(layer, this->epsgcode, sourceEPSG);
+
+	if (!poCT)
+		DM::Logger(DM::Warning) << "Unknown transformation to EPSG:" << this->epsgcode;
+
+	const DM::View view = getAccessedViews()[PORT_NAME][viewName];
+	const DM::Components dmType = (DM::Components)view.getType();
+
+	int bHasLayersNonEmpty;
+	do
+	{
+		bHasLayersNonEmpty = FALSE;
+
+		for( int iLayer = 0; iLayer < poDS->GetLayerCount(); iLayer++ )
+		{
+			OGRLayer *poLayer = poDS->GetLayer(iLayer);
+			OGRFeatureDefn *layerDef = poLayer->GetLayerDefn();
+
+			OGRFeature* poFeature;
+			while( (poFeature = poLayer->GetNextFeature()) != NULL )
+			{
+				if(poLayer->GetName()==layername)
+				{
+					OGRGeometry* poGeometry = poFeature->GetGeometryRef();
+
+					switch (wkbFlatten(poGeometry->getGeometryType()))
+					{
+					case wkbPoint:
+						if (dmType == DM::NODE)
+							loadPoint(	sys, (OGRPoint*)poGeometry,
+										poCT, layerDef, poFeature, view);
+						break;
+					case wkbLineString:
+						if (dmType == DM::EDGE)
+							loadLineString(	sys, (OGRLineString*)poGeometry,
+											poCT, layerDef, poFeature, view);
+						break;
+					case wkbMultiLineString:
+						if (dmType == DM::EDGE)
+						{
+							OGRMultiLineString *mpoMultiLine = (OGRMultiLineString*)poGeometry;
+							for (int i = 0; i < mpoMultiLine->getNumGeometries(); i++)
+								loadLineString(	sys, (OGRLineString*)mpoMultiLine->getGeometryRef(i),
+												poCT, layerDef, poFeature, view);
+						}
+						break;
+					case wkbMultiPolygon:
+						if (dmType == DM::FACE)
+						{
+							OGRMultiPolygon *mpoMultiPoly = (OGRMultiPolygon*)poGeometry;
+							for (int i = 0; i < mpoMultiPoly->getNumGeometries(); i++)
+								loadPolygon(sys, (OGRPolygon*)mpoMultiPoly->getGeometryRef(i),
+											poCT, layerDef, poFeature, view);
+						}
+						break;
+					case wkbPolygon:
+						if (dmType == DM::FACE)
+							loadPolygon(sys, (OGRPolygon*)poGeometry, poCT, layerDef, poFeature, view);
+						break;
+					}
+				}
+
+				bHasLayersNonEmpty = TRUE;
+				OGRFeature::DestroyFeature(poFeature);
+			}
+		}
+	}
+	while( bHasLayersNonEmpty );
+
+	if (poCT)
+		delete poCT;
 }
 
 void Import::loadLayer(OGRLayer* layer, System* sys)
