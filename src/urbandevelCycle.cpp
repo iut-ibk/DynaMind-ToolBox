@@ -17,13 +17,15 @@ void urbandevelCycle::init()
     cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
 
     cityview.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
-    cityview.addAttribute("wp_com", DM::Attribute::DOUBLE, DM::READ); //workplaces
-    cityview.addAttribute("wp_ind", DM::Attribute::DOUBLE, DM::READ);
     cityview.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
+    cityview.addAttribute("comdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
+    cityview.addAttribute("inddiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
     cityview.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(cityview);
@@ -45,6 +47,8 @@ void urbandevelCycle::run()
     DM::Component * currentcityview = cities[0];
 
     std::vector<double> popdiffperyear = currentcityview->getAttribute("popdiffperyear")->getDoubleVector();
+    std::vector<double> comdiffperyear = currentcityview->getAttribute("comdiffperyear")->getDoubleVector();
+    std::vector<double> inddiffperyear = currentcityview->getAttribute("inddiffperyear")->getDoubleVector();
     int startyear = static_cast<int>(currentcityview->getAttribute("startyear")->getDouble());
     int endyear = static_cast<int>(currentcityview->getAttribute("endyear")->getDouble());
     int currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
@@ -56,8 +60,8 @@ void urbandevelCycle::run()
 
     int cycle = currentyear - startyear;
     int cyclepopdiff = popdiffperyear[cycle];
-
-    DM::Logger(DM::Warning) << "year " << currentyear << "cycle " << cycle << "popdiff " << cyclepopdiff;
+    int cyclecomdiff = comdiffperyear[cycle];
+    int cycleinddiff = inddiffperyear[cycle];
 
     DM::Attribute* set = currentcityview->getAttribute("currentyear");
     set->setDouble(currentyear);
@@ -65,8 +69,13 @@ void urbandevelCycle::run()
     set->setDouble(cyclebool);
     set = currentcityview->getAttribute("cyclepopdiff");
     set->setDouble(cyclepopdiff);
+    set = currentcityview->getAttribute("cyclecomdiff");
+    set->setDouble(cyclecomdiff);
+    set = currentcityview->getAttribute("cycleinddiff");
+    set->setDouble(cycleinddiff);
 
-    DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff;
+    DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff
+                            << " comdiff: " << cyclecomdiff << " inddiff: " << cycleinddiff;
 }
 
 string urbandevelCycle::getHelpUrl()

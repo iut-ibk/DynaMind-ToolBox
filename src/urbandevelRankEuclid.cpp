@@ -68,7 +68,7 @@ void urbandevelRankEuclid::run()
         return;
     }
 
-    DM::Logger(DM::Warning) << "rankfield: " << rankfieldname;
+    DM::Logger(DM::Debug) << "rankfield: " << rankfieldname;
     std::vector<double> distance;
     std::vector<int> rank;
     std::vector<int> oldrank;
@@ -115,6 +115,6 @@ void urbandevelRankEuclid::run()
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
-        DM::Logger(DM::Warning) << "rank " << rank[i];
+        DM::Logger(DM::Debug) << "rank " << rank[i];
     }
 }
