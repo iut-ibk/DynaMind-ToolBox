@@ -56,7 +56,6 @@ void urbandevelDivision::init()
 
     inputView.addAttribute("status", DM::Attribute::STRING, DM::READ);
 
-
     outputView.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
 
     outputView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
@@ -109,6 +108,11 @@ void urbandevelDivision::run(){
         f->addAttribute("status", "populated");
     }
 
+}
+
+string urbandevelDivision::getHelpUrl()
+{
+    return "http://dynalp.com";
 }
 
 void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen)
