@@ -71,7 +71,7 @@ void urbandevelControl::run()
         indlist = QString::fromStdString(currentcity->getAttribute("shareind")->getString()).simplified().split(",");
     }
 
-    DM::Logger(DM::Warning) << "year: " << year << "\npopulation: " << pop;
+    DM::Logger(DM::Debug) << "year: " << year << "\npopulation: " << pop;
 
     QStringList yrlist = year.split(",");
     QStringList poplist = pop.split(",");
@@ -133,7 +133,7 @@ void urbandevelControl::run()
                 comdiffvector.push_back(comdiff_per_year);
                 inddiffvector.push_back(inddiff_per_year);
 
-                DM::Logger(DM::Warning) << "yr: " << yr1 << " pop: " << popdiff_per_year << " com: " << comdiff_per_year << " ind: " << inddiff_per_year;
+                DM::Logger(DM::Debug) << "yr: " << yr1 << " pop: " << popdiff_per_year << " com: " << comdiff_per_year << " ind: " << inddiff_per_year;
             }
         }
     }
@@ -151,11 +151,11 @@ void urbandevelControl::run()
     dmatt = currentcity->getAttribute("yearcycle");
     dmatt->setDouble(yearcycle);
 
-    dmatt = currentcity->getAttribute("wp_com");
-       // dmatt->setDouble(wp_com);
+    dmatt = currentcity->getAttribute("comdiffperyear");
+    dmatt->setDoubleVector(comdiffvector);
 
-    dmatt = currentcity->getAttribute("wp_ind");
-       // dmatt->setDouble(wp_ind);
+    dmatt = currentcity->getAttribute("inddiffperyear");
+    dmatt->setDoubleVector(inddiffvector);
 
     dmatt = currentcity->getAttribute("cycleBOOL");
     dmatt->setDouble(1);
