@@ -122,7 +122,6 @@ void Import::reloadFile()
 
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
-	CPLSetConfigOption( "OGR_INTERLEAVED_READING", "YES");
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 
 	if (!this->WFSServer.empty())
@@ -462,8 +461,16 @@ void Import::loadVectorData(const std::string& path)
 		{
 			OGRLayer *poLayer = poDS->GetLayerByName(it->first.c_str());
 			poLayer->ResetReading();
-			loadLayerInterleaved(poDS,poLayer,sys);
-			//loadLayer(poLayer, sys);
+			if(poLayer->GetFeatureCount()<0)
+			{
+				OGRDataSource::DestroyDataSource(poDS);
+				poDS = OGRSFDriverRegistrar::Open(path.c_str(), FALSE);
+				poLayer = poDS->GetLayerByName(it->first.c_str());
+				loadLayerInterleaved(poDS,poLayer,sys);
+			}
+			else
+				loadLayer(poLayer, sys);
+
 			i++;
 		}
 	}
@@ -481,6 +488,7 @@ void Import::loadVectorData(const std::string& path)
 
 void Import::loadLayerInterleaved(OGRDataSource *poDS, OGRLayer* layer, System* sys)
 {
+	CPLSetConfigOption( "OGR_INTERLEAVED_READING", "YES");
 	std::string layername = layer->GetName();
 	const std::string viewName = viewConfig[layer->GetName()];
 	if (viewName.empty())
@@ -554,10 +562,10 @@ void Import::loadLayerInterleaved(OGRDataSource *poDS, OGRLayer* layer, System* 
 							loadPolygon(sys, (OGRPolygon*)poGeometry, poCT, layerDef, poFeature, view);
 						break;
 					}
-				}
 
-				bHasLayersNonEmpty = TRUE;
-				OGRFeature::DestroyFeature(poFeature);
+					bHasLayersNonEmpty = TRUE;
+					OGRFeature::DestroyFeature(poFeature);
+				}
 			}
 		}
 	}
@@ -569,6 +577,7 @@ void Import::loadLayerInterleaved(OGRDataSource *poDS, OGRLayer* layer, System* 
 
 void Import::loadLayer(OGRLayer* layer, System* sys)
 {
+	CPLSetConfigOption( "OGR_INTERLEAVED_READING", "NO");
 	const std::string viewName = viewConfig[layer->GetName()];
 	if (viewName.empty())
 		return;
