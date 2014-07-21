@@ -74,7 +74,7 @@ void CreateHouses::run()
 		if (l_on_parcel_b)
 			angle+=90;
 
-		Node centroid = DM::CGALGeometry::CaclulateCentroid2D(parcel);
+        Node centroid = DM::CGALGeometry::CalculateCentroid2D(parcel);
 
 		QPointF f1 (- l/2,  - b/2);
 		QPointF f2 (+ l/2,- b/2);
@@ -103,7 +103,7 @@ void CreateHouses::run()
 		foot_print->addAttribute("area", DM::CGALGeometry::CalculateArea2D(foot_print));
 		foot_print->addAttribute("built_year", buildyear);
 		foot_print->addAttribute("height", stories*3);
-		Node  n = DM::CGALGeometry::CaclulateCentroid2D(foot_print);
+        Node  n = DM::CGALGeometry::CalculateCentroid2D(foot_print);
 		building->addAttribute("type", "single_family_house");
 		building->addAttribute("built_year", buildyear);
 		building->addAttribute("stories", stories);
