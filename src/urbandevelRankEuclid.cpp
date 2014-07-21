@@ -19,7 +19,9 @@ urbandevelRankEuclid::urbandevelRankEuclid()
     rank_weight = 1;
     nodeweight = TRUE;
 
-    this->addParameter("rank view", DM::STRING, &this->gravityview_name);
+    rankfieldname = "devrank";
+
+    this->addParameter("gravity view", DM::STRING, &this->gravityview_name);
     this->addParameter("rank view", DM::STRING, &this->rankview_name);
     this->addParameter("reduction", DM::BOOL, &this->reduction);
     this->addParameter("ranking function", DM::STRING, &this->rank_function);
@@ -39,7 +41,10 @@ void urbandevelRankEuclid::init()
     rankview = DM::View(rankview_name, DM::FACE, DM::MODIFY);
     rankview_centroids = DM::View(rankview_name+"_CENTROIDS", DM::NODE, DM::READ);
 
+    if (reduction) rankfieldname = "redrank";
+
     if (nodeweight) gravityview.addAttribute("weight",DM::Attribute::DOUBLE, DM::READ);
+    rankview.addAttribute(rankfieldname, DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(gravityview);
@@ -63,8 +68,7 @@ void urbandevelRankEuclid::run()
         return;
     }
 
-    std::string rankfieldname = "devrank";
-    if (reduction) rankfieldname = "redrank";
+    DM::Logger(DM::Warning) << "rankfield: " << rankfieldname;
     std::vector<double> distance;
     std::vector<int> rank;
     std::vector<int> oldrank;
@@ -91,9 +95,12 @@ void urbandevelRankEuclid::run()
             double currentdist = TBVectorData::calculateDistance((DM::Node*)currentnode, (DM::Node*)centroid);
             int gravityweight = 1;
 
-            if (nodeweight) gravityweight = static_cast<int>(currentnode->getAttribute("gravity")->getDouble());
+            if (nodeweight) gravityweight = static_cast<int>(currentnode->getAttribute("weight")->getDouble());
+            if (gravityweight < 1) gravityweight = 1;
+
             currentdist*=gravityweight;
             dist+=currentdist;
+            DM::Logger(DM::Debug) << "gravity: " << gravityweight << " dist: " << dist;
         }
 
         distance.push_back(dist);
@@ -108,5 +115,6 @@ void urbandevelRankEuclid::run()
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
+        DM::Logger(DM::Warning) << "rank " << rank[i];
     }
 }

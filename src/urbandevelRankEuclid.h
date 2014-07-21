@@ -26,6 +26,7 @@ private:
     double rank_function_factor;
     double rank_weight;
     bool nodeweight;
+    std::string rankfieldname;
 };
 
 #endif // urbandevelRankEuclid_H
