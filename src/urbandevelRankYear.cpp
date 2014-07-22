@@ -35,9 +35,9 @@ void urbandevelRankYear::init()
     city = DM::View("CITY", DM::NODE, DM::READ);
 
     // attach new attributes to view
-    rankview.addAttribute("develyear", DM::Attribute::DOUBLE, DM::READ);
+    rankview.addAttribute("devyear", DM::Attribute::DOUBLE, DM::READ);
     rankview.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
-    rankview.addAttribute("develrank", DM::Attribute::DOUBLE, DM::WRITE);
+    rankview.addAttribute("devrank", DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -74,22 +74,28 @@ void urbandevelRankYear::run()
     std::vector<double> year;
     std::vector<int> oldrank;
     std::vector<int> rank;
+    std::vector<double> rankvalue;
     bool rnk_exists = FALSE;
 
     for (int i = 0; i < areas.size(); i++)
     {
         int currentyear = static_cast<int>(areas[i]->getAttribute(yearfieldname)->getDouble());
-        if ( currentyear <= startyear ) { currentyear = startyear + 1; }
-        if ( currentyear >= endyear ) { currentyear = endyear - 1; }
+
+        if ( currentyear < startyear && currentyear >= (startyear - 10) ) currentyear = startyear + 1;
+        else if (currentyear >= endyear || currentyear < (startyear -10) ) currentyear = endyear - 1;
         year.push_back(currentyear);
+        rankvalue.push_back(endyear-currentyear);
+
         oldrank.push_back(static_cast<int>(areas[i]->getAttribute(rankfieldname)->getDouble()));
         if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
     }
-    DAHelper::darank(year, rank, rank_function, rank_function_factor);
-    if (rnk_exists) { DAHelper::daweight(oldrank, rank, rank_weight); }
+
+    DAHelper::darank(rankvalue, rank, rank_function, rank_function_factor);
+    if (rnk_exists) DAHelper::daweight(oldrank, rank, rank_weight);
 
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
+        DM::Logger(DM::Warning) << "year: " << year[i] << " rankvalue: " << rankvalue[i] << " rank: " << rank[i] << " oldrank: " << oldrank[i];
     }
 }
