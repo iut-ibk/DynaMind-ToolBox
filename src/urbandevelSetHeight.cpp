@@ -110,7 +110,7 @@ void urbandevelSetHeight::run()
         }
         int avgheight = 0;
         int maxheight = 0;
-        int minheight = 0;
+        int minheight = 999;
 
         std::map<int,int>::iterator element = distheight.begin();
 
@@ -127,7 +127,7 @@ void urbandevelSetHeight::run()
                 maxheight = actualheight;
                 DM::Logger(DM::Debug) << "maxheight " << maxheight;
             }
-            else if (actualheight < minheight || minheight == 0 )
+            else if (actualheight > 0 && actualheight < minheight)
             {
                 minheight = actualheight;
             }
