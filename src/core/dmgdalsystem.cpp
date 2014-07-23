@@ -249,6 +249,11 @@ void GDALSystem::registerFeature(OGRFeature * f, const View &v)
 	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 }
 
+string GDALSystem::getDBID()
+{
+	return this->DBID.toStdString();
+}
+
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
 	switch ( v.getType() ) {

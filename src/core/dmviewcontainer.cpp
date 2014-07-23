@@ -44,6 +44,11 @@ ViewContainer::~ViewContainer()
 	this->syncReadFeatures();
 }
 
+string ViewContainer::getDBID()
+{
+	return this->_currentSys->getDBID();
+}
+
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
@@ -185,5 +190,6 @@ void ViewContainer::registerFeature(OGRFeatureShadow *f)
 	this->_currentSys->registerFeature(feature, *this);
 	this->new_Features_write_not_owned.push_back(feature);
 }
+
 
 }

@@ -165,6 +165,8 @@ public:
 	 */
 	void registerFeature(OGRFeature *f, const DM::View & v);
 
+	std::string getDBID();
+
 private:
 	OGRDataSource						*poDS;
 	OGRSFDriver							*poDrive;

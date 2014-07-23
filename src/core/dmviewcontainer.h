@@ -143,6 +143,8 @@ public:
 	 */
 	virtual ~ViewContainer();
 
+	std::string getDBID();
+
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++

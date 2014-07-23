@@ -230,13 +230,17 @@ class DM::ViewContainer {
 	  OGRFeatureDefnShadow * getFeatureDef();
 	  void registerFeature(OGRFeatureShadow *f);
 	  void syncAlteredFeatures();
+	  std::string getDBID();
 	  virtual ~ViewContainer();
+	  std::string getName() const;
 };
 
 %extend DM::ViewContainer {
 	%pythoncode {
 	#Container for OGRObejcts, otherwise the garbage collector eats them
 	__features = []
+	__ogr_layer = None
+	__ds = None
 	def create_feature(self):
 		#from osgeo import ogr
 		f = ogr.Feature(self.getFeatureDef())
@@ -244,6 +248,28 @@ class DM::ViewContainer {
 		#Hold Object until destroyed
 		self.__features.append(f)
 		return f
+	def register_layer(self):
+		if self.__ogr_layer != None:
+			return
+		db_id = self.getDBID()
+		self.__ds = ogr.Open("/tmp/"+db_id+".db")
+		table_name = str(self.getName())
+		self.__ogr_layer = self.__ds.GetLayerByName(table_name)
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		self.register_layer()
+		feature = self.__ogr_layer.GetNextFeature()
+		if not feature:
+			raise StopIteration
+		else:
+			return feature
+
+	def reset_reading(self):
+		self.register_layer()
+		self.__ogr_layer.ResetReading()
 	}
 }
 
