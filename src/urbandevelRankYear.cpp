@@ -102,6 +102,6 @@ void urbandevelRankYear::run()
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
-        DM::Logger(DM::Warning) << "year: " << year[i] << " rankvalue: " << rankvalue[i] << " rank: " << rank[i] << " oldrank: " << oldrank[i];
+        DM::Logger(DM::Debug) << "year: " << year[i] << " rankvalue: " << rankvalue[i] << " rank: " << rank[i] << " oldrank: " << oldrank[i];
     }
 }
