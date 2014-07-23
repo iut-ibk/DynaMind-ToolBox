@@ -76,32 +76,36 @@ void urbandevelRankYear::run()
         rankfieldname = "redrank";
     }
 
-    std::vector<double> year;
     std::vector<int> oldrank;
     std::vector<int> rank;
-    std::vector<double> rankvalue;
+    std::vector<int> year;
+    std::vector<double> rankval;
     bool rnk_exists = FALSE;
 
     for (int i = 0; i < areas.size(); i++)
     {
-        int currentyear = static_cast<int>(areas[i]->getAttribute(yearfieldname)->getDouble());
+        int areayear = static_cast<int>(areas[i]->getAttribute(yearfieldname)->getDouble());
+        if ( areayear < startyear && areayear > startyear-10 ) areayear = startyear + 1;
+        else if ( areayear <= startyear-10 ) areayear = endyear;
 
-        if ( currentyear < startyear && currentyear >= (startyear - 10) ) currentyear = startyear + 1;
-        else if (currentyear >= endyear || currentyear < (startyear -10) ) currentyear = endyear - 1;
-        year.push_back(currentyear);
-        if (actualyear >= currentyear) rankvalue.push_back(10);
-        if (actualyear < currentyear) rankvalue.push_back(1);
+        int diffyear = abs(areayear - actualyear);
+        if (diffyear == 0) diffyear = 1;
+
+        double rankvalue = 1/diffyear;
+
+        year.push_back(diffyear);
+        rankval.push_back(rankvalue);
 
         oldrank.push_back(static_cast<int>(areas[i]->getAttribute(rankfieldname)->getDouble()));
         if ( oldrank[i] > 0 ) rnk_exists = TRUE;
     }
 
-    DAHelper::darank(rankvalue, rank, rank_function, rank_function_factor);
+    DAHelper::darank(rankval, rank, rank_function, rank_function_factor);
     if (rnk_exists) DAHelper::daweight(oldrank, rank, rank_weight);
 
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(rankfieldname, rank[i]);
-        DM::Logger(DM::Debug) << "year: " << year[i] << " rankvalue: " << rankvalue[i] << " rank: " << rank[i] << " oldrank: " << oldrank[i];
+        DM::Logger(DM::Warning) << "year: " << year[i] << " rank: " << rank[i] << " oldrank: " << oldrank[i];
     }
 }
