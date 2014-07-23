@@ -13,7 +13,7 @@ bool DAHelper::darank(std::vector<double>& values, std::vector<int>& rank, std::
         double min = pow(*std::min_element(values.begin(), values.end()), 1/factor);
         double max = pow(*std::max_element(values.begin(), values.end()), 1/factor);
 
-        if (min = max) max+=1;
+        if (min == max) max+=1;
 
         DM::Logger(DM::Debug) << "min: " << min << "max: " << max;
 

@@ -34,6 +34,10 @@ void urbandevelRankYear::init()
     rankview = DM::View(viewname, DM::FACE, DM::MODIFY);
     city = DM::View("CITY", DM::NODE, DM::READ);
 
+    city.addAttribute("startyear", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("endyear", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
+
     // attach new attributes to view
     rankview.addAttribute("devyear", DM::Attribute::DOUBLE, DM::READ);
     rankview.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
@@ -63,6 +67,7 @@ void urbandevelRankYear::run()
 
     int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
     int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
+    int actualyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
 
     std::string yearfieldname = "devyear";
     std::string rankfieldname = "devrank";
@@ -84,10 +89,11 @@ void urbandevelRankYear::run()
         if ( currentyear < startyear && currentyear >= (startyear - 10) ) currentyear = startyear + 1;
         else if (currentyear >= endyear || currentyear < (startyear -10) ) currentyear = endyear - 1;
         year.push_back(currentyear);
-        rankvalue.push_back(endyear-currentyear);
+        if (actualyear >= currentyear) rankvalue.push_back(10);
+        if (actualyear < currentyear) rankvalue.push_back(1);
 
         oldrank.push_back(static_cast<int>(areas[i]->getAttribute(rankfieldname)->getDouble()));
-        if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
+        if ( oldrank[i] > 0 ) rnk_exists = TRUE;
     }
 
     DAHelper::darank(rankvalue, rank, rank_function, rank_function_factor);

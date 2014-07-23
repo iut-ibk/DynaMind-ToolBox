@@ -68,6 +68,8 @@ void urbandevelRankArea::run()
     for (int i = 0; i < areas.size(); i++)
     {
         dynamic_cast<DM::Face*>(areas[i])->changeAttribute(attribute_name, rank[i]);
+        DM::Logger(DM::Debug) << "area: " << area[i] << " oldrank: " << oldrank[i] << " rank: " << rank[i];
+
     }
 }
 
