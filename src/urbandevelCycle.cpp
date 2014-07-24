@@ -54,9 +54,9 @@ void urbandevelCycle::run()
     int currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
     bool cyclebool = static_cast<bool>(currentcityview->getAttribute("cycleBOOL")->getDouble());
 
-    if ( currentyear <= startyear ) { currentyear = startyear + 1; }
-    else if ( currentyear < endyear ){ currentyear++; }
-    else if ( currentyear = endyear ){ cyclebool = 0; }
+    if ( currentyear <= startyear ) currentyear = startyear;
+    currentyear++;
+    if ( currentyear == endyear ) cyclebool = 0;
 
     int cycle = currentyear - startyear;
     int cyclepopdiff = popdiffperyear[cycle];

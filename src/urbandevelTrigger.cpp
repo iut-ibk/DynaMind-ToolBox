@@ -46,8 +46,6 @@ void urbandevelTrigger::run()
 
     //DM::Logger(DM::Warning) << "popdiff is " << cyclepopdiff;
 
-    if (cyclepopdiff == 0) return;
-
     if (cyclepopdiff > 0)
     {
         setdev();
@@ -56,6 +54,7 @@ void urbandevelTrigger::run()
     {
         setdec();
     }
+    return;
 }
 
 void urbandevelTrigger::setdev()
