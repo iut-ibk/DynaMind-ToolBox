@@ -26,8 +26,10 @@ void urbandevelPolygonLink::init() {
 
     blockview.addAttribute(elementview_name, elementview_name, DM::WRITE);
     elementview.addAttribute(blockview_name, blockview_name, DM::WRITE);
+    elementview.addAttribute("type", DM::Attribute::STRING, DM::WRITE);
 
     blockview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
+    blockview.addAttribute("type", DM::Attribute::STRING, DM::READ);
 
     std::vector<DM::View> data;
     data.push_back(blockview);
@@ -66,8 +68,10 @@ void urbandevelPolygonLink::run()
 
             if (TBVectorData::PointWithinFace((DM::Face*)block, (DM::Node*)centroid))
             {
+                std::string type = block->getAttribute("type")->getString();
                 block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
                 element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
+                element->changeAttribute("type", type);
                 DM::Logger(DM::Debug) << "Link created";
                 status = "populated";
             }

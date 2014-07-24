@@ -69,11 +69,18 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     std::vector<DM::Component *> cb = sys->getAllComponentsInView(cityblock);
     std::vector<DM::Component *> prcl = sys->getAllComponentsInView(parcel);
 
-    //check free parcels
-
-    DM::Logger(DM::Debug) << "in development mode";
-
     std::vector<double> rankvec;
+
+    for (int i = 0; i < sb.size(); i++)
+    {
+        std::string status = sb[i]->getAttribute("status")->getString();
+
+        if (status == "empty") {
+            DM::Logger(DM::Warning) << "empty";
+            sb[i]->changeAttribute("status", "develop");
+            return;
+        }
+    }
 
     // develop all available parcels, no matter which ranking (fill up existing superblocks)
 
