@@ -69,6 +69,11 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     std::vector<DM::Component *> cb = sys->getAllComponentsInView(cityblock);
     std::vector<DM::Component *> prcl = sys->getAllComponentsInView(parcel);
 
+    std::vector<int> sbrankvec;
+
+    std::string rankfieldname = "redrank";
+    if (dev) rankfieldname = "devrank";
+
     // develop all available parcels, no matter which ranking (fill up existing superblocks)
 
     for (int i = 0; i < prcl.size(); i++)
@@ -102,7 +107,18 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
 
     for (int i = 0; i < sb.size(); i++)
     {
+        int rank = static_cast<int>(sb[i]->getAttribute(rankfieldname)->getDouble());
+        sbrankvec.push_back(rank);
+    }
+
+    int maxrank = *std::max_element(sbrankvec.begin(), sbrankvec.end());
+
+    for (int i = 0; i < sb.size(); i++)
+    {
         std::string status = sb[i]->getAttribute("status")->getString();
+        int sbrank = static_cast<int>(sb[i]->getAttribute(rankfieldname)->getDouble());
+
+        if (sbrank < maxrank) continue;
 
         if (status == "empty") {
             DM::Logger(DM::Warning) << "empty";
