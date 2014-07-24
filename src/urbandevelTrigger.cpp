@@ -19,6 +19,8 @@ void urbandevelTrigger::init()
     parcel = DM::View("PARCEL", DM::FACE, DM::MODIFY);
 
     city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -42,22 +44,25 @@ void urbandevelTrigger::run()
 
     DM::Component * currentcity = cities[0];
 
+    std::vector<std::string> type;
+    type.push_back("res");
+    type.push_back("com");
+    type.push_back("ind");
+
     int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
+    int cyclecomdiff  = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+    int cycleinddiff  = static_cast<int>(currentcity->getAttribute("cycleinddiff")->getDouble());
 
-    //DM::Logger(DM::Warning) << "popdiff is " << cyclepopdiff;
+    bool dev = 1;
 
-    if (cyclepopdiff > 0)
+    for (int i = 0; i < type.size() ; ++i)
     {
-        setdev();
+        if (cyclepopdiff < 0) dev = 0;
+        setdev(type[i],dev);
     }
-    else if (cyclepopdiff < 0)
-    {
-        setdec();
-    }
-    return;
 }
 
-void urbandevelTrigger::setdev()
+void urbandevelTrigger::setdev(std::string type, bool dev)
 {
     DM::System * sys = this->getData("data");
     std::vector<DM::Component *> sb = sys->getAllComponentsInView(superblock);
@@ -70,6 +75,8 @@ void urbandevelTrigger::setdev()
 
     std::vector<double> rankvec;
 
+    // develop all available parcels, no matter which ranking (fill up existing superblocks)
+
     for (int i = 0; i < prcl.size(); i++)
     {
         std::string status = prcl[i]->getAttribute("status")->getString();
@@ -80,6 +87,8 @@ void urbandevelTrigger::setdev()
             return;
         }
     }
+
+    // develop all abvailable cityblocks, no matter which ranking (fill up existing superblocks))
 
     for (int i = 0; i < cb.size(); i++)
     {
@@ -102,10 +111,5 @@ void urbandevelTrigger::setdev()
             return;
         }
     }
-    return;
-}
-
-void urbandevelTrigger::setdec()
-{
     return;
 }
