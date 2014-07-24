@@ -19,6 +19,9 @@ private:
     double rank_function_factor;
     double rank_weight;
 
+    std::string yearfieldname;
+    std::string rankfieldname;
+
     DM::View rankview;
     DM::View city;
 };

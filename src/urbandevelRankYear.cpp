@@ -22,6 +22,9 @@ urbandevelRankYear::urbandevelRankYear()
     this->addParameter("ranking function", DM::STRING, &this->rank_function); // ranking function
     this->addParameter("ranking function faktor", DM::DOUBLE, &this->rank_function_factor);
     this->addParameter("ranking weight", DM::DOUBLE, &this->rank_weight);
+
+    yearfieldname = "devyear";
+    rankfieldname = "devrank";
 }
 
 urbandevelRankYear::~urbandevelRankYear()
@@ -38,10 +41,14 @@ void urbandevelRankYear::init()
     city.addAttribute("endyear", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
 
-    // attach new attributes to view
-    rankview.addAttribute("devyear", DM::Attribute::DOUBLE, DM::READ);
+    if (reduction) {
+        yearfieldname = "redyear";
+        rankfieldname = "redrank";
+    }
+
+    rankview.addAttribute(yearfieldname, DM::Attribute::DOUBLE, DM::READ);
     rankview.addAttribute("type", DM::Attribute::DOUBLE, DM::READ);
-    rankview.addAttribute("devrank", DM::Attribute::DOUBLE, DM::WRITE);
+    rankview.addAttribute(rankfieldname, DM::Attribute::DOUBLE, DM::WRITE);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -69,13 +76,6 @@ void urbandevelRankYear::run()
     int endyear = static_cast<int>(currentcity->getAttribute("endyear")->getDouble());
     int actualyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
 
-    std::string yearfieldname = "devyear";
-    std::string rankfieldname = "devrank";
-    if (reduction) {
-        yearfieldname = "redyear";
-        rankfieldname = "redrank";
-    }
-
     std::vector<int> oldrank;
     std::vector<int> rank;
     std::vector<int> year;
@@ -91,7 +91,9 @@ void urbandevelRankYear::run()
         int diffyear = abs(areayear - actualyear);
         if (diffyear == 0) diffyear = 1;
 
-        double rankvalue = 1/diffyear;
+        double rankvalue;
+        if (!reduction) rankvalue = 1/diffyear;
+        else rankvalue = diffyear;
 
         year.push_back(diffyear);
         rankval.push_back(rankvalue);
