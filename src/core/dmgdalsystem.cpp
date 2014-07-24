@@ -300,7 +300,7 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 	df.clear();
 }
 
-void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df)
+void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
@@ -318,7 +318,8 @@ void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature 
 		if (!f)
 			continue;
 		lyr->SetFeature(f);
-		OGRFeature::DestroyFeature(f);
+		if (destroy)
+			OGRFeature::DestroyFeature(f);
 	}
 	lyr->CommitTransaction();
 	df.clear();

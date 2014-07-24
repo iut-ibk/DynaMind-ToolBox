@@ -113,13 +113,13 @@ public:
 	 *
 	 * used to update the view containers in GDALSystem
 	 */
-	void preRun();
+	virtual void preRun();
 
 	/** @brief executed after run has ben executed
 	 *
 	 * used to update clean diry view container
 	 */
-	void afterRun();
+	virtual void afterRun();
 
 
 	/** @brief destructor */
@@ -322,6 +322,9 @@ protected:
 
 	/** @brief Returns if module uses GDAL in Data stream */
 	void setIsGDALModule(bool b);
+
+	/** @brief Returns true if GDAL module */
+	bool isGdalModule();
 
 	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;

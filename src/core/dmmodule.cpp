@@ -241,6 +241,11 @@ void Module::setIsGDALModule(bool b)
 	this->GDALModule = b;
 }
 
+bool Module::isGdalModule()
+{
+	return this->GDALModule;
+}
+
 bool Module::inPortsSet() const
 {
 	mforeach(ISystem* data, inPorts)

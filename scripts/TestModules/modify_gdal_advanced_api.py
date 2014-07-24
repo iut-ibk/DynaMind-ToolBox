@@ -26,35 +26,26 @@ from osgeo import ogr
 from pydynamind import *
 
 
-class ReadGDALComponentsAdvanced(Module):
+class ModifyGDALComponentsAdvanced(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
-            self.createParameter("elements", INT, "Number of elements")
-            self.elements = 100000
-            self.createParameter("readValue", BOOL, "Read Value")
-            self.readValue = False
-            self.createParameter("sumValue", INT, "Sum value")
-            self.sumValue = 0
             self.__container = ViewContainer()
 
         def init(self):
             self.__container = ViewContainer("component", NODE, READ)
-            if self.readValue:
-                self.__container.addAttribute("value", Attribute.DOUBLE, READ)
+            self.__container.addAttribute("value", Attribute.DOUBLE, WRITE)
             views = []
             views.append(self.__container)
             self.registerViewContainers(views)
 
         def run(self):
             self.elements = 0
-            self.sumValue = 0
             self.__container.reset_reading()
             for feat in self.__container:
-                self.elements+=1
-                if self.readValue:
-                    self.sumValue += int(feat.GetFieldAsDouble("value"))
+                feat.SetField("value", 3)
             self.__container.sync()
+
 
 
 

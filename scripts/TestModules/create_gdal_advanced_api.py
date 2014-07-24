@@ -50,12 +50,13 @@ class CreateGDALComponentsAdvanced(Module):
         def run(self):
 
             for i in range(self.elements):
-                self.elements
                 f = self.__container.create_feature()
                 pt = ogr.Geometry(ogr.wkbPoint)
                 pt.SetPoint_2D(0, 1, 1)
                 f.SetGeometry(pt)
-                #self.features.append(f)
+                if i % 100000 == 0:
+                    self.__container.sync()
+            self.__container.sync()
 
 
 

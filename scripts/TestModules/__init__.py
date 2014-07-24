@@ -26,3 +26,4 @@ from pythontestmodule import *
 from create_gdal_component import *
 from create_gdal_advanced_api import *
 from read_gdal_advanced_api import *
+from modify_gdal_advanced_api import *
