@@ -69,29 +69,18 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     std::vector<DM::Component *> cb = sys->getAllComponentsInView(cityblock);
     std::vector<DM::Component *> prcl = sys->getAllComponentsInView(parcel);
 
-    std::vector<double> rankvec;
-
-    for (int i = 0; i < sb.size(); i++)
-    {
-        std::string status = sb[i]->getAttribute("status")->getString();
-
-        if (status == "empty") {
-            DM::Logger(DM::Warning) << "empty";
-            sb[i]->changeAttribute("status", "develop");
-            return;
-        }
-    }
-
     // develop all available parcels, no matter which ranking (fill up existing superblocks)
 
     for (int i = 0; i < prcl.size(); i++)
     {
-        std::string status = prcl[i]->getAttribute("status")->getString();
+        std::string status = prcl[i]->getAttribute("status")->getString();\
+        std::string prcltype = prcl[i]->getAttribute("type")->getString();
+
+        if (prcltype != type) continue;
 
         if (status == "empty") {
             DM::Logger(DM::Warning) << "empty";
             prcl[i]->changeAttribute("status", "develop");
-            return;
         }
     }
 
@@ -100,6 +89,9 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     for (int i = 0; i < cb.size(); i++)
     {
         std::string status = cb[i]->getAttribute("status")->getString();
+        std::string cbtype = cb[i]->getAttribute("type")->getString();
+
+        if (cbtype != type) continue;
 
         if (status == "empty") {
             DM::Logger(DM::Warning) << "empty";
