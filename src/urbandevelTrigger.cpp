@@ -22,6 +22,15 @@ void urbandevelTrigger::init()
     city.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
 
+    superblock.addAttribute("status", DM::Attribute::STRING, DM::READ);
+    superblock.addAttribute("type", DM::Attribute::STRING, DM::READ);
+
+    cityblock.addAttribute("status", DM::Attribute::STRING, DM::READ);
+    cityblock.addAttribute("type", DM::Attribute::STRING, DM::READ);
+
+    parcel.addAttribute("status", DM::Attribute::STRING, DM::READ);
+    parcel.addAttribute("type", DM::Attribute::STRING, DM::READ);
+
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
     views.push_back(city);
@@ -57,7 +66,8 @@ void urbandevelTrigger::run()
 
     for (int i = 0; i < type.size() ; ++i)
     {
-        if (cyclepopdiff < 0) dev = 0;
+        if ( cyclepopdiff == 0) continue;
+        if ( cyclepopdiff < 0 ) dev = 0;
         setdev(type[i],dev);
     }
 }

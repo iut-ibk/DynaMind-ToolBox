@@ -46,6 +46,11 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
+    std::vector<int>counttype; //1=res, 2=com, 3=ind
+    for (int var = 0; var < 3; ++var) {
+        counttype.push_back(0);
+    }
+
     for (int active = 0; active < superblocks.size(); active++)
     {
         std::map<double,std::string> disttype;
@@ -129,6 +134,19 @@ void urbandevelSetType::run()
 
         DM::Logger(DM::Debug) << "superblock-" << active << " type " << settype;
         superblocks[active]->changeAttribute("type", settype);
+
+        if (settype == "res") counttype[0]++;
+        else if (settype == "com") counttype[1]++;
+        else if (settype == "ind") counttype[2]++;
     }
 
+    for (int count = 0; count < counttype.size(); ++count)
+    {
+        if ( counttype[count] == 0 ) continue;
+
+        for (int active = 0; active < superblocks.size(); active++)
+        {
+
+        }
+    }
 }
