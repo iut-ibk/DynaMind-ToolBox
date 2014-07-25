@@ -20,6 +20,8 @@ private:
     DM::View city;
     DM::View sb;
     DM::View sb_cent;
+
+    std::vector<std::string> typevec;
 };
 
 #endif // urbandevelSetType_H
