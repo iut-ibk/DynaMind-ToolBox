@@ -51,6 +51,11 @@ void urbandevelSetType::run()
 
     std::map<std::string,int> typecount;
 
+    for (int i = 0; i < typevec.size(); ++i)
+    {
+        typecount[typevec[i]] = 0;
+    }
+
     for (int active = 0; active < superblocks.size(); active++)
     {
         std::map<double,std::string> disttype;
@@ -138,14 +143,17 @@ void urbandevelSetType::run()
             DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
         superblocks[active]->changeAttribute("type", settype);
-        typecount[settype] +=1;
+        typecount[settype]++;
     }
 
     // correcting for missing types below
 
-    for (int i = 0; i < typevec.size(); ++i)
-    {
-
+    for (int i = 0; i < typevec.size(); ++i) {
+        DM::Logger(DM::Warning) << "checking type " << typevec[i];
+        if ( typecount.find(typevec[i]) == typecount.end() )
+        {
+            DM::Logger(DM::Warning) << "type never used " << typevec[i];
+        }
     }
 
 }
