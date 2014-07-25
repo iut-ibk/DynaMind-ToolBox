@@ -49,10 +49,11 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
+    std::map<std::string,int> typecount;
+
     for (int active = 0; active < superblocks.size(); active++)
     {
         std::map<double,std::string> disttype;
-        std::map<std::string,double> maxdist;
 
         std::string actualtype = superblocks[active]->getAttribute("type")->getString();
 
@@ -94,12 +95,6 @@ void urbandevelSetType::run()
             std::string type =static_cast<string>( superblocks[compare]->getAttribute("type")->getString() );
 
             disttype[distance] = type;
-            if ( maxdist.find(type) == maxdist.end() )
-            {
-                 if (distance > maxdist[type] ) maxdist[type] = distance;
-            }
-
-            // DM::Logger(DM::Warning) << "type " << type << " dist " << distance << " maxdist " << maxdist[type];
         }
 
         int max = numbernearest;
@@ -118,16 +113,18 @@ void urbandevelSetType::run()
 
             map<std::string, pair<double,int> >::iterator rnkit = rnktype.find(type);
 
-            if ( rnkit == rnktype.end() ) // initialize if first element with type x
+            if ( rnkit == rnktype.end() )   // initialize if first element with type x
             {
                 rnktype[type].first = 1/distance;
                 rnktype[type].second = 1;
             }
-            else // if type already exists increase invert distance and count
+            else                            // if type already exists increase invert distance and count
             {
                 rnktype[type].first += 1/distance;
                 rnktype[type].second++;
             }
+
+            // set largest accumulated invert distance as typedistance
 
             if ( rnktype[type].first > setdist) {
                 setdist = rnktype[type].first;
@@ -140,8 +137,15 @@ void urbandevelSetType::run()
             }
             DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
-
         superblocks[active]->changeAttribute("type", settype);
+        typecount[settype] +=1;
+    }
+
+    // correcting for missing types below
+
+    for (int i = 0; i < typevec.size(); ++i)
+    {
+
     }
 
 }
