@@ -46,14 +46,14 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
-    std::vector<int>counttype; //1=res, 2=com, 3=ind
-    for (int var = 0; var < 3; ++var) {
-        counttype.push_back(0);
-    }
-
     for (int active = 0; active < superblocks.size(); active++)
     {
         std::map<double,std::string> disttype;
+        std::map<std::string,double> maxdist;
+
+        maxdist["res"] = 0;
+        maxdist["com"] = 0;
+        maxdist["ind"] = 0;
 
         std::string actualtype = superblocks[active]->getAttribute("type")->getString();
 
@@ -91,6 +91,9 @@ void urbandevelSetType::run()
             std::string type =static_cast<string>( superblocks[compare]->getAttribute("type")->getString() );
 
             disttype[distance] = type;
+            if (distance > maxdist[type] ) maxdist[type] = distance;
+
+            // DM::Logger(DM::Warning) << "type " << type << " dist " << distance << " maxdist " << maxdist[type];
         }
 
         int max = numbernearest;
@@ -101,6 +104,10 @@ void urbandevelSetType::run()
 
         std::string settype = "";
         double setdist = 0;
+        map<std::string,int> typecount;
+        typecount["res"] = 0;
+        typecount["com"] = 0;
+        typecount["ind"] = 0;
 
         for (map<double,std::string>::iterator it = disttype.begin(); it != disttype.end(); it++)
         {
@@ -109,16 +116,18 @@ void urbandevelSetType::run()
 
             map<std::string, pair<double,int> >::iterator rnkit = rnktype.find(type);
 
-            if ( rnkit == rnktype.end() )
+            if ( rnkit == rnktype.end() ) // initialize if first element with type x
             {
                 rnktype[type].first = 1/distance;
                 rnktype[type].second = 1;
             }
-            else
+            else // if type already exists increase invert distance and count
             {
                 rnktype[type].first += 1/distance;
                 rnktype[type].second++;
             }
+
+            typecount[type]++;
 
             if ( rnktype[type].first > setdist) {
                 setdist = rnktype[type].first;
@@ -132,21 +141,12 @@ void urbandevelSetType::run()
             DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
 
-        DM::Logger(DM::Debug) << "superblock-" << active << " type " << settype;
-        superblocks[active]->changeAttribute("type", settype);
-
-        if (settype == "res") counttype[0]++;
-        else if (settype == "com") counttype[1]++;
-        else if (settype == "ind") counttype[2]++;
-    }
-
-    for (int count = 0; count < counttype.size(); ++count)
-    {
-        if ( counttype[count] == 0 ) continue;
-
-        for (int active = 0; active < superblocks.size(); active++)
+        for (map<std::string,int>::iterator it = typecount.begin(); it != typecount.end(); it++)
         {
-
+            std::string type = it->first;
+            DM::Logger(DM::Warning) << "type not found: " << type;
         }
+        superblocks[active]->changeAttribute("type", settype);
     }
+
 }
