@@ -49,12 +49,7 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
-    std::map<std::string,int> typecount;
-
-    for (int i = 0; i < typevec.size(); ++i)
-    {
-        typecount[typevec[i]] = 0;
-    }
+    std::map<std::string,int> typebool;
 
     for (int active = 0; active < superblocks.size(); active++)
     {
@@ -143,16 +138,19 @@ void urbandevelSetType::run()
             DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
         superblocks[active]->changeAttribute("type", settype);
-        typecount[settype]++;
+        typebool[settype] = 1;
     }
 
     // correcting for missing types below
 
-    for (int i = 0; i < typevec.size(); ++i) {
-        DM::Logger(DM::Warning) << "checking type " << typevec[i];
-        if ( typecount.find(typevec[i]) == typecount.end() )
+    for (int i = 0; i < typevec.size(); ++i)
+    {
+        map<std::string,int>::iterator rnkit = typebool.find(typevec[i]);
+
+        if (rnkit == typebool.end())
         {
-            DM::Logger(DM::Warning) << "type never used " << typevec[i];
+            DM::Logger(DM::Warning) << "never used: " << typevec[i];
+            //
         }
     }
 
