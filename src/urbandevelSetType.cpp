@@ -13,9 +13,11 @@ urbandevelSetType::urbandevelSetType()
     numbernearest = 9;
     from_SB = 0;
     from_nearest = 1;
+    minperctype = 10;
     this->addParameter("no superblocks considered", DM::INT, &this->numbernearest);
     this->addParameter("type from SB", DM::BOOL, &this->from_SB);
     this->addParameter("type from neighbors", DM::BOOL, &this->from_nearest);
+    this->addParameter("min percentage of each type", DM::INT, &this->minperctype);
     typevec.push_back("res");
     typevec.push_back("com");
     typevec.push_back("ind");
@@ -49,7 +51,13 @@ void urbandevelSetType::run()
     std::vector<DM::Component *> superblocks = sys->getAllComponentsInView(sb);
     std::vector<DM::Component *> superblocks_centroids = sys->getAllComponentsInView(sb_cent);
 
-    std::map<std::string,int> typebool;
+    std::map<std::string,int> sbtypecount;
+    std::vector<std::string> sbtypevec;
+    std::vector<double> sbdistvec;
+
+    for (int i = 0; i < typevec.size(); ++i) {
+        sbtypecount[typevec[i]] = 0;
+    }
 
     for (int active = 0; active < superblocks.size(); active++)
     {
@@ -138,20 +146,49 @@ void urbandevelSetType::run()
             DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
         superblocks[active]->changeAttribute("type", settype);
-        typebool[settype] = 1;
+        sbtypevec.push_back(settype);
+        sbdistvec.push_back(setdist);
+        sbtypecount[settype]++;
     }
 
-    // correcting for missing types below
+    // correction for missing types below
+
+    std::vector<int> changevec;
 
     for (int i = 0; i < typevec.size(); ++i)
     {
-        map<std::string,int>::iterator rnkit = typebool.find(typevec[i]);
+        double minnum = superblocks.size() * minperctype;
+        minnum = ceil(minnum/100);
+        std::string type = typevec[i];
 
-        if (rnkit == typebool.end())
+        if (sbtypecount[type] < minnum)
         {
-            DM::Logger(DM::Warning) << "never used: " << typevec[i];
-            //
+            DM::Logger(DM::Debug) << "typecount: " << type << " = " << sbtypecount[type] << " < minnum " <<minnum;
+            std::string inctype = type;
+            std::string dectype;
+
+            for (int j = 0; j < typevec.size(); ++j) {
+                if (sbtypecount[typevec[j]] > superblocks.size()/3 ) dectype = typevec[j];
+            }
+
+            double maxdist = 0;
+            int where;
+
+            for (int j = 0; j < sbtypevec.size(); ++j)
+            {
+                if ( sbtypevec[j] == dectype && sbdistvec[j] > maxdist && find(changevec.begin(),changevec.end(),j) == changevec.end())
+                {
+                    maxdist = sbdistvec[j];
+                    where = j;
+                }
+            }
+            sbtypecount[dectype]--;
+            sbtypecount[inctype]++;
+
+            changevec.push_back(where);
+
+            superblocks[where]->changeAttribute("type", inctype);
+            DM::Logger(DM::Debug) << "change: " <<  dectype << " to: " << inctype;
         }
     }
-
 }

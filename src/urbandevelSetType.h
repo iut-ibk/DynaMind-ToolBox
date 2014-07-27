@@ -13,9 +13,10 @@ public:
     void run();
     void init();
 private:
-    double numbernearest;
+    int numbernearest;
     bool from_SB;
     bool from_nearest;
+    int minperctype;
 
     DM::View city;
     DM::View sb;

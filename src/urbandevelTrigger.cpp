@@ -79,7 +79,7 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     std::vector<DM::Component *> cb = sys->getAllComponentsInView(cityblock);
     std::vector<DM::Component *> prcl = sys->getAllComponentsInView(parcel);
 
-    std::vector<int> sbrankvec;
+    std::vector<int> sbrankvec; //
 
     std::string rankfieldname = "redrank";
     if (dev) rankfieldname = "devrank";
