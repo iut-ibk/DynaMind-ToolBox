@@ -65,13 +65,19 @@ void urbandevelSetType::run()
 
         std::string actualtype = superblocks[active]->getAttribute("type")->getString();
 
-        if ( actualtype == "" ) continue;
         if ( find(typevec.begin(), typevec.end(), actualtype) == typevec.end() )
         {
-            DM::Logger(DM::Warning) << "type '" << actualtype << " is not defined ... skipping";
-            continue;
+            DM::Logger(DM::Warning) << "type" << actualtype << " is not defined ... redefining";
+            actualtype = "";
         }
 
+        if ( !actualtype.empty() )
+        {
+            sbtypecount[actualtype]++;
+            sbtypevec.push_back(actualtype);
+            sbdistvec.push_back(99999);
+            continue;
+        }
         std::vector<DM::Component*> sblinkactive = superblocks[active]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
 
         if( sblinkactive.size() < 1 )
@@ -103,6 +109,7 @@ void urbandevelSetType::run()
             std::string type =static_cast<string>( superblocks[compare]->getAttribute("type")->getString() );
 
             disttype[distance] = type;
+            //DM::Logger(DM::Warning) << "type: " << type << "distance: " << distance;
         }
 
         int max = numbernearest;
@@ -143,7 +150,7 @@ void urbandevelSetType::run()
             {
                 break;
             }
-            DM::Logger(DM::Debug) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
+            //DM::Logger(DM::Warning) << "type = " << type << " num = " << rnktype[type].second << " dist = " << rnktype[type].first;
         }
         superblocks[active]->changeAttribute("type", settype);
         sbtypevec.push_back(settype);
@@ -171,19 +178,22 @@ void urbandevelSetType::run()
                 if (sbtypecount[typevec[j]] > superblocks.size()/3 ) dectype = typevec[j];
             }
 
-            double maxdist = 0;
+            double maxdist = 10^99;
             int where;
 
             for (int j = 0; j < sbtypevec.size(); ++j)
             {
-                if ( sbtypevec[j] == dectype && sbdistvec[j] > maxdist && find(changevec.begin(),changevec.end(),j) == changevec.end())
+                if ( sbtypevec[j] == dectype && sbdistvec[j] < maxdist && find(changevec.begin(),changevec.end(),j) == changevec.end())
                 {
+                    DM::Logger(DM::Warning) << "maxdist loop" << maxdist;
                     maxdist = sbdistvec[j];
                     where = j;
                 }
             }
             sbtypecount[dectype]--;
             sbtypecount[inctype]++;
+
+            DM::Logger(DM::Warning) << "maxdist finish" << maxdist;
 
             changevec.push_back(where);
 
