@@ -91,11 +91,14 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
         std::string status = prcl[i]->getAttribute("status")->getString();\
         std::string prcltype = prcl[i]->getAttribute("type")->getString();
 
-        if (prcltype != type) continue;
+        DM::Logger(DM::Warning) << "analyzing parcel, status: " << status << "; type: " << prcltype;
+
+        if (prcltype != type || status == "populated" ) continue;
 
         if (status == "empty") {
-            DM::Logger(DM::Warning) << "empty";
             prcl[i]->changeAttribute("status", "develop");
+            DM::Logger(DM::Warning) << "setting parcel to develop";
+            return;
         }
     }
 
@@ -106,11 +109,12 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
         std::string status = cb[i]->getAttribute("status")->getString();
         std::string cbtype = cb[i]->getAttribute("type")->getString();
 
-        if (cbtype != type) continue;
+        DM::Logger(DM::Warning) << "analyzing cb, status: " << status << "; type: " << cbtype;
+        if (cbtype != type || status == "populated" ) continue;
 
         if (status == "empty") {
-            DM::Logger(DM::Warning) << "empty";
             cb[i]->changeAttribute("status", "develop");
+            DM::Logger(DM::Warning) << "setting cityblock to develop";
             return;
         }
     }
@@ -126,13 +130,17 @@ void urbandevelTrigger::setdev(std::string type, bool dev)
     for (int i = 0; i < sb.size(); i++)
     {
         std::string status = sb[i]->getAttribute("status")->getString();
+        std::string sbtype = sb[i]->getAttribute("type")->getString();
+
+        DM::Logger(DM::Warning) << "analyzing sb, status: " << status << "; type: " << sbtype;
+
         int sbrank = static_cast<int>(sb[i]->getAttribute(rankfieldname)->getDouble());
 
-        if (sbrank < maxrank) continue;
+        if ( sbrank < maxrank || sbtype != type || status == "populated" ) continue;
 
         if (status == "empty") {
-            DM::Logger(DM::Warning) << "empty";
             sb[i]->changeAttribute("status", "develop");
+            DM::Logger(DM::Warning) << "setting superblock to develop";
             return;
         }
     }

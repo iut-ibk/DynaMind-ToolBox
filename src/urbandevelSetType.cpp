@@ -67,7 +67,7 @@ void urbandevelSetType::run()
 
         if ( find(typevec.begin(), typevec.end(), actualtype) == typevec.end() )
         {
-            DM::Logger(DM::Warning) << "type" << actualtype << " is not defined ... redefining";
+            DM::Logger(DM::Debug) << "type" << actualtype << " is not defined ... redefining";
             actualtype = "";
         }
 
@@ -192,11 +192,7 @@ void urbandevelSetType::run()
             }
             sbtypecount[dectype]--;
             sbtypecount[inctype]++;
-
-            DM::Logger(DM::Warning) << "maxdist finish" << maxdist;
-
             changevec.push_back(where);
-
             superblocks[where]->changeAttribute("type", inctype);
             DM::Logger(DM::Debug) << "change: " <<  dectype << " to: " << inctype;
         }

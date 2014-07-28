@@ -31,8 +31,6 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     splitShortSide = false;
     this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
-    develtype='res';
-    this->addParameter("develype (ignore if empty)", DM::STRING, &this->develtype);
 
     bbs = DM::View("BBS", DM::FACE, DM::WRITE);
     std::vector<DM::View> datastream;
@@ -90,15 +88,19 @@ void urbandevelDivision::run(){
 
     for (int i = 0; i < inputareas.size(); i++)
     {
-        bool devel = 0;
         DM::System workingSys;
         DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
-        if (f->getAttribute("type")->getString() == develtype || develtype.empty() ) devel = 1;
-        if (f->getAttribute("status")->getString() != "develop" && !devel) {
-            DM::Logger(DM::Debug) << "Continue";
+        std::string inputtype = f->getAttribute("type")->getString();
+        std::string inputstatus = f->getAttribute("status")->getString();
+
+        if ( inputstatus != "develop" )
+        {
+            DM::Logger(DM::Warning) << "not parceling as status = " << inputstatus;
             continue;
         }
-        DM::Logger(DM::Debug) << "start parceling";
+
+        DM::Logger(DM::Warning) << "parceling";
+
         DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(f, &workingSys);
         workingSys.addComponentToView(fnew, inputView);
         this->createSubdivision(&workingSys, fnew, 0);
@@ -195,7 +197,7 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
         std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
         if (intersected_faces.size() == 0) {
-            DM::Logger(DM::Warning) << "Advanced parceling createSubdevision interseciton failed";
+            DM::Logger(DM::Debug) << "Advanced parceling createSubdevision intersction failed";
             continue;
         }
 

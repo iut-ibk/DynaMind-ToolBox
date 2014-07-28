@@ -48,13 +48,12 @@ void urbandevelPolygonLink::run()
 
     for (int i = 0; i < blocks.size(); i++)
     {
-
         std::string status = "empty";
-
         DM::Face* block = dynamic_cast<DM::Face*>(blocks[i]);
 
         for (int j = 0; j < elements.size(); j++)
         {
+
             DM::Face* element = dynamic_cast<DM::Face*>(elements[j]);
             std::vector<DM::Component*> link = element->getAttribute(elementview_name+"_CENTROIDS")->getLinkedComponents();
 
@@ -76,7 +75,7 @@ void urbandevelPolygonLink::run()
                 status = "populated";
             }
         }
-
+        DM::Logger(DM::Debug) << "set block " << i << " to " << status;
         block->addAttribute("status", status);
     }
 }
