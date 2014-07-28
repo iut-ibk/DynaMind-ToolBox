@@ -31,6 +31,8 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     splitShortSide = false;
     this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
+    develtype = "res";
+    this->addParameter("develtype (ignore if empty)", DM::STRING, &this->develtype);
 
     bbs = DM::View("BBS", DM::FACE, DM::WRITE);
     std::vector<DM::View> datastream;
@@ -95,15 +97,21 @@ void urbandevelDivision::run(){
 
         if ( inputstatus != "develop" )
         {
-            DM::Logger(DM::Warning) << "not parceling as status = " << inputstatus;
+            DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
             continue;
         }
 
-        DM::Logger(DM::Warning) << "parceling";
+        if ( develtype != inputtype || develtype.empty() )
+        {
+            DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
+            continue;
+        }
+
+        DM::Logger(DM::Debug) << "parceling";
 
         DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(f, &workingSys);
         workingSys.addComponentToView(fnew, inputView);
-        this->createSubdivision(&workingSys, fnew, 0);
+        this->createSubdivision(&workingSys, fnew, 0, inputtype);
         createFinalFaces(&workingSys, sys, fnew, outputView, sphs);
         DM::Logger(DM::Debug) << "end parceling";
     }
@@ -121,7 +129,7 @@ string urbandevelDivision::getHelpUrl()
     return "http://dynalp.com";
 }
 
-void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen)
+void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen, std::string type)
 {
     bool split_length = false;
     std::vector<DM::Node> box;
@@ -193,17 +201,18 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
 
         DM::Face * bb = sys->addFace(intersection_p, bbs);
 
-        bb->addAttribute("generation", gen);
+        bb->addAttribute("type", gen);
         std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
         if (intersected_faces.size() == 0) {
-            DM::Logger(DM::Debug) << "Advanced parceling createSubdevision intersction failed";
+            DM::Logger(DM::Debug) << "Advanced parceling createSubdivision intersction failed";
             continue;
         }
 
         foreach (DM::Face * f_new ,intersected_faces ) {
             f_new->addAttribute("generation", gen);
-            this->createSubdivision(sys, f_new, gen+1);
+            f_new->addAttribute("type", type);
+            this->createSubdivision(sys, f_new, gen+1, type);
         }
     }
 }

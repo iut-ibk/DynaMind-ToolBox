@@ -16,7 +16,7 @@ public:
     void init();
     std::string getHelpUrl();
 
-    void createSubdivision(DM::System * sys,  DM::Face * f, int gen);
+    void createSubdivision(DM::System * sys,  DM::Face * f, int gen, std::string type);
     /** @brief creates final parceling and identify edges, transfers results from working sys to sys */
     void createFinalFaces(DM::System * workingsys, DM::System *sys, DM::Face *orig, DM::View v, DM::SpatialNodeHashMap & sphs);
     /** @brief extract faces and returns vector of face nodes*/
@@ -55,6 +55,7 @@ private:
     bool combined_edges;
     bool debug;
     bool splitShortSide;
+    std::string develtype;
 };
 
 #endif // urbandevelDivision_H
