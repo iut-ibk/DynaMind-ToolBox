@@ -31,6 +31,8 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     splitShortSide = false;
     this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
+    develtype='res';
+    this->addParameter("develype (ignore if empty)", DM::STRING, &this->develtype);
 
     bbs = DM::View("BBS", DM::FACE, DM::WRITE);
     std::vector<DM::View> datastream;
@@ -88,9 +90,11 @@ void urbandevelDivision::run(){
 
     for (int i = 0; i < inputareas.size(); i++)
     {
+        bool devel = 0;
         DM::System workingSys;
         DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
-        if (f->getAttribute("status")->getString() != "develop") {
+        if (f->getAttribute("type")->getString() == develtype || develtype.empty() ) devel = 1;
+        if (f->getAttribute("status")->getString() != "develop" && !devel) {
             DM::Logger(DM::Debug) << "Continue";
             continue;
         }

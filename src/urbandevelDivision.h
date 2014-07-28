@@ -55,6 +55,7 @@ private:
     bool combined_edges;
     bool debug;
     bool splitShortSide;
+    std::string develtype;
 };
 
 #endif // urbandevelDivision_H
