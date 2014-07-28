@@ -26,6 +26,7 @@ void urbandevelCycle::init()
     cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("triggerBOOL", DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(cityview);
@@ -73,6 +74,8 @@ void urbandevelCycle::run()
     set->setDouble(cyclecomdiff);
     set = currentcityview->getAttribute("cycleinddiff");
     set->setDouble(cycleinddiff);
+    set = currentcityview->getAttribute("triggerBOOL");
+    set->setDouble(1);
 
     DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff
                             << " comdiff: " << cyclecomdiff << " inddiff: " << cycleinddiff;

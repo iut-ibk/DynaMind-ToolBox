@@ -21,6 +21,7 @@ void urbandevelTrigger::init()
     city.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
+    city.addAttribute("triggerBOOL", DM::Attribute::DOUBLE, DM::WRITE);
 
     superblock.addAttribute("status", DM::Attribute::STRING, DM::READ);
     superblock.addAttribute("type", DM::Attribute::STRING, DM::READ);
@@ -64,10 +65,17 @@ void urbandevelTrigger::run()
 
     bool dev = 1;
 
+    DM::Logger(DM::Warning) << "popdiff = " << cyclepopdiff;
+
     for (int i = 0; i < type.size() ; ++i)
     {
-        if ( cyclepopdiff == 0) continue;
-        if ( cyclepopdiff < 0 ) dev = 0;
+        cities[0]->changeAttribute("triggerBOOL",1);
+        if ( cyclepopdiff < 0)
+        {
+            cities[0]->changeAttribute("triggerBOOL",0);
+            continue;
+        }
+        //if ( cyclepopdiff < 0 ) dev = 0;
         setdev(type[i],dev);
     }
 }
