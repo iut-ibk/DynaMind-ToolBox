@@ -69,14 +69,13 @@ void urbandevelTrigger::run()
 
     for (int i = 0; i < type.size() ; ++i)
     {
-        cities[0]->changeAttribute("triggerBOOL",1);
-        if ( cyclepopdiff < 0)
+        cities[0]->changeAttribute("triggerBOOL",0);
+
+        if (cyclepopdiff > 0)
         {
-            cities[0]->changeAttribute("triggerBOOL",0);
-            continue;
+            cities[0]->changeAttribute("triggerBOOL",1);
+            setdev(type[i],dev);
         }
-        //if ( cyclepopdiff < 0 ) dev = 0;
-        setdev(type[i],dev);
     }
 }
 

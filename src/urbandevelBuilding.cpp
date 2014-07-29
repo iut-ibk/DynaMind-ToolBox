@@ -35,11 +35,11 @@ void urbandevelBuilding::init()
     cityview = DM::View("CITY", DM::COMPONENT, DM::READ);
     if (this->genPopulation)
     {
-        cityview.addAttribute("required_space", DM::Attribute::DOUBLE, DM::READ);
         cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
     }
     if (this->paramfromCity)
     {
+        cityview.addAttribute("required_space", DM::Attribute::DOUBLE, DM::READ);
         cityview.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
         cityview.addAttribute("offset", DM::Attribute::DOUBLE, DM::READ);
     }
@@ -99,9 +99,10 @@ void urbandevelBuilding::run()
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal
 
-        if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && onSignal))
+        if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && !onSignal))
             continue;
 
+        DM::Logger(DM::Warning) << "creating house";
         //calculate house from parcel with offset
 
         std::vector<std::vector<DM::Node> > result_nodes = DM::CGALGeometry::OffsetPolygon(currentparcel->getNodePointers(), offset);
@@ -155,7 +156,7 @@ void urbandevelBuilding::run()
         building->addAttribute("height", stories*4);
     }
 
-    DM::Logger(DM::Debug) << "Created Houses " << numberOfHouseBuild;
+    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild;
 }
 
 string urbandevelBuilding::getHelpUrl()
