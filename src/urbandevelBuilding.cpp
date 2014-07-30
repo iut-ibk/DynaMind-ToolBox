@@ -14,6 +14,7 @@ urbandevelBuilding::urbandevelBuilding()
     paramfromCity = TRUE;
     genPopulation = TRUE;
     spacepp = 45;
+    buildingtype = "res";
 
     this->addParameter("on Signal", DM::BOOL, &onSignal);
     this->addParameter("Parameters from City", DM::BOOL, &paramfromCity);
@@ -23,6 +24,7 @@ urbandevelBuilding::urbandevelBuilding()
     this->addParameter("stories", DM::INT, &stories);
     this->addParameter("year", DM::INT, &buildingyear);
     this->addParameter("space per person", DM::INT, &spacepp);
+    this->addParameter("check type (ignore if empty)", DM::STRING, &buildingtype);
 }
 
 urbandevelBuilding::~urbandevelBuilding()
@@ -99,10 +101,9 @@ void urbandevelBuilding::run()
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal
 
-        if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && !onSignal))
+        if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && parcels[i]->getAttribute("type")->getString() ==  buildingtype &&!onSignal))
             continue;
 
-        DM::Logger(DM::Warning) << "creating house";
         //calculate house from parcel with offset
 
         std::vector<std::vector<DM::Node> > result_nodes = DM::CGALGeometry::OffsetPolygon(currentparcel->getNodePointers(), offset);
@@ -154,9 +155,10 @@ void urbandevelBuilding::run()
         }
         currentparcel->addAttribute("status", "populated");
         building->addAttribute("height", stories*4);
+        building->addAttribute("type", buildingtype);
     }
 
-    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild;
+    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype;
 }
 
 string urbandevelBuilding::getHelpUrl()

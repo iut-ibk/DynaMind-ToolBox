@@ -27,6 +27,7 @@ private:
     bool paramfromCity;
     bool genPopulation;
     int spacepp;
+    std::string buildingtype;
 };
 
 #endif // urbandevelBuilding_H

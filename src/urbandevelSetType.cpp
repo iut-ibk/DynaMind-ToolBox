@@ -185,7 +185,7 @@ void urbandevelSetType::run()
             {
                 if ( sbtypevec[j] == dectype && sbdistvec[j] < maxdist && find(changevec.begin(),changevec.end(),j) == changevec.end())
                 {
-                    DM::Logger(DM::Warning) << "maxdist loop" << maxdist;
+                    DM::Logger(DM::Debug) << "maxdist loop" << maxdist;
                     maxdist = sbdistvec[j];
                     where = j;
                 }

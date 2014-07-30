@@ -114,14 +114,9 @@ void urbandevelDivision::run(){
         this->createSubdivision(&workingSys, fnew, 0, inputtype);
         createFinalFaces(&workingSys, sys, fnew, outputView, sphs);
         DM::Logger(DM::Debug) << "end parceling";
-    }
 
-    for (int i = 0; i < inputareas.size(); i++)
-    {
-        DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
         f->addAttribute("status", "populated");
     }
-
 }
 
 string urbandevelDivision::getHelpUrl()

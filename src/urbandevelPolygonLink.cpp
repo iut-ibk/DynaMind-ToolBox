@@ -29,7 +29,7 @@ void urbandevelPolygonLink::init() {
     elementview.addAttribute("type", DM::Attribute::STRING, DM::WRITE);
 
     blockview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
-    blockview.addAttribute("type", DM::Attribute::STRING, DM::READ);
+    blockview.addAttribute("type", DM::Attribute::STRING, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(blockview);
