@@ -1,5 +1,4 @@
 =======
-
 Modules
 =======
 
@@ -195,19 +194,33 @@ Data Manipulation Process (DMP)
 
 This is where the actual fun is happening and your module does the actual data processing.
 DMP is described in the ``run`` method of the module. Every time the module is executed the run
-method is called.
+method is called. Depending on the chosen data API the data are either access using the *System* class
+for the *DynaMind Component API* or the *DynaMind GDAL API*
 
 
+Data Access using the DynaMind GDAL API
+---------------------------------------
+The *DynaMind GDAL API* builds on the widely applied GDAL library. In GDAL
+geometric objects are described as ``Feature``. Features contain geometry and attributes describing the object
+and provides methods to set and get geometry as well as attributes. See the GDAL documentation for a full description of the
+`Feature API <http://www.gdal.org/classOGRFeature.html>`_.
+
+The ViewContainer manages the assess to the features stored in the underlying data stream.
+The API of the ViewContainer class is based on the GDAL *Layer API*. However it provides some adaptation to the DynaMind environment.
+
+.. code-block:: python
+
+    def run(self):
+        #Rest Read Position
+        self.streets.reset_reading()
+
+        #Iterate over all features of the ViewContainer
+        for feat in self.streets:
+            street_width = feat.GetFieldAsDouble("width")
+
+..
 
 
-
-
-
-GDAL Module Development using C++
-=================================
-
-Since v0.6 DynaMind enables to develop Modules that use GDAL within the data stream.
-The following documentation gives an introduction in how to develop module using the GDAL functionality.
 
 
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
