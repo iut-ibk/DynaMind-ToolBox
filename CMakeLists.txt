@@ -53,7 +53,7 @@ ADD_SUBDIRECTORY(src/memory_test)
 ADD_SUBDIRECTORY(scripts)
 
 IF(WITH_UNIT_TESTS)
-    INCLUDE(CTEST)
+    enable_testing()
     ADD_SUBDIRECTORY(src/unit-test)
 ENDIF(WITH_UNIT_TESTS)
 
