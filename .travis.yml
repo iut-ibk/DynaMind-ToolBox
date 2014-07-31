@@ -6,4 +6,5 @@ compiler:
 before_install: 
  - sudo apt-get update -qq
  - sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1h libgdal-dev libgdal1-dev libcgal-dev libqglviewer-dev-common libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf
+ - sudo pip install reimport
 script: cmake . -DWITH_UNIT_TESTS=True && make && make test
