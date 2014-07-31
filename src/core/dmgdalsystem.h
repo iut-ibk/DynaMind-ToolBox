@@ -78,8 +78,10 @@ public:
 	 * @brief Syncronises modified Features for a given view with the DB. The method destroyes the features.
 	 * @param v: View
 	 * @param df: Vector of modified Features
+	 * @param destroy:If true method destroy features (default for features created in C++) If flase destroy is not called
+	 * (default for features created in Python)
 	 */
-	void syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df);
+	void syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy);
 
 	/**
 	 * @brief Syncronises newly created Features for a given view with the DB.
@@ -164,6 +166,8 @@ public:
 	 * @brief Registers OGRFeature created outside. Used for Python wrapping
 	 */
 	void registerFeature(OGRFeature *f, const DM::View & v);
+
+	std::string getDBID();
 
 private:
 	OGRDataSource						*poDS;

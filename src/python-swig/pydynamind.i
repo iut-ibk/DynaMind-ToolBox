@@ -141,50 +141,52 @@ protected:
 
     DM::GDALSystem * getGDALData(std::string dataname);
     void setIsGDALModule(bool b);
+	bool isGdalModule();
 	void registerViewContainers(std::vector<DM::ViewContainer *> views);
 
 };
 
 %extend Module {
-    %pythoncode %{
-    _data = {'d':'Module'}
-    def getClassName(self):
-            return self.__class__.__name__
+	%pythoncode %{
+	_data = {'d':'Module'}
+	def getClassName(self):
+		return self.__class__.__name__
 
-    def getFileName(self):
-            return self.__module__.split(".")[0]
+	def getFileName(self):
+		return self.__module__.split(".")[0]
 
-    def __getattr__(self, name):
-            if name in self._data:
-                return self._data[name].value()
+	def __getattr__(self, name):
+		if name in self._data:
+			return self._data[name].value()
 
-    def __setattr__(self, name, value):
-            if name in self._data:
-                return self._data[name].assign(value)
+	def __setattr__(self, name, value):
+		if name in self._data:
+			return self._data[name].assign(value)
 
-            return super(Module, self).__setattr__(name, value)
+		return super(Module, self).__setattr__(name, value)
 
-    def createParameter(self,name, DN_type, description):
-            if 'd' in self._data:
-                if self._data['d'] == 'Module':
-                    self._data = {}
+	def createParameter(self,name, DN_type, description):
+		if 'd' in self._data:
+			if self._data['d'] == 'Module':
+				self._data = {}
 
-            if DN_type == STRING:
-                self._data[name] = p_string()
-            if DN_type == FILENAME:
-                self._data[name] = p_string()
-            if DN_type == DOUBLE:
-                self._data[name] = p_double()
-            if DN_type == LONG:
-                self._data[name] = p_long()
-            if DN_type == INT:
-                self._data[name] = p_int()
-            if DN_type == BOOL:
-                self._data[name] = p_int()
+		if DN_type == STRING:
+			self._data[name] = p_string()
+		if DN_type == FILENAME:
+			self._data[name] = p_string()
+		if DN_type == DOUBLE:
+			self._data[name] = p_double()
+		if DN_type == LONG:
+			 self._data[name] = p_long()
+		if DN_type == INT:
+			self._data[name] = p_int()
+		if DN_type == BOOL:
+			self._data[name] = p_int()
 
-            self.addParameter(name,DN_type,self._data[name],description)
+		self.addParameter(name,DN_type,self._data[name],description)
 
-    %}
+
+	%}
 }
 
 %inline %{
@@ -226,24 +228,59 @@ class DM::ViewContainer {
   public:
 	  ViewContainer();
 	  ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+	  void addAttribute(std::string name, Attribute::AttributeType type, ACCESS access);
 	  void setCurrentGDALSystem(DM::GDALSystem *sys);
 	  OGRFeatureDefnShadow * getFeatureDef();
-	  void registerFeature(OGRFeatureShadow *f);
+	  void registerFeature(OGRFeatureShadow *f, bool isNew);
 	  void syncAlteredFeatures();
+	  std::string getDBID();
 	  virtual ~ViewContainer();
+	  std::string getName() const;
 };
 
 %extend DM::ViewContainer {
 	%pythoncode {
 	#Container for OGRObejcts, otherwise the garbage collector eats them
 	__features = []
+	__ogr_layer = None
+	__ds = None
 	def create_feature(self):
 		#from osgeo import ogr
 		f = ogr.Feature(self.getFeatureDef())
-		self.registerFeature(f)
+		self.registerFeature(f, True)
 		#Hold Object until destroyed
 		self.__features.append(f)
 		return f
+	def register_layer(self):
+		if self.__ogr_layer != None:
+			return
+		db_id = self.getDBID()
+		self.__ds = ogr.Open("/tmp/"+db_id+".db")
+		table_name = str(self.getName())
+		self.__ogr_layer = self.__ds.GetLayerByName(table_name)
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		self.register_layer()
+		feature = self.__ogr_layer.GetNextFeature()
+		if not feature:
+			raise StopIteration
+		else:
+			self.registerFeature(feature, False)
+			self.__features.append(feature)
+			return feature
+
+	def reset_reading(self):
+		self.register_layer()
+		self.__ogr_layer.ResetReading()
+
+	def sync(self):
+		self.syncAlteredFeatures()
+		for f in self.__features:
+			f.Destroy()
+		del self.__features[:]
 	}
 }
 

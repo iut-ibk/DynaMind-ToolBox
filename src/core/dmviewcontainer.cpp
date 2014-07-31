@@ -44,6 +44,11 @@ ViewContainer::~ViewContainer()
 	this->syncReadFeatures();
 }
 
+string ViewContainer::getDBID()
+{
+	return this->_currentSys->getDBID();
+}
+
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
@@ -77,21 +82,17 @@ OGRFeature *ViewContainer::createFeature()
 	return f;
 }
 
-//OGRFeatureShadow *ViewContainer::createFeatureShadow()
-//{
-//	return (OGRFeatureShadow*)(this->createFeature());
-//}
-
 void ViewContainer::syncAlteredFeatures()
 {
 	if (!_currentSys) {
-		//Logger(Error) << "No GDALSystem registered";
 		return;
 	}
 
-	this->_currentSys->syncAlteredFeatures(*this, this->dirtyFeatures_write);
+	this->_currentSys->syncAlteredFeatures(*this, this->dirtyFeatures_write, true);
+	this->_currentSys->syncAlteredFeatures(*this, this->dirtyFeatures_write_not_owned, false);
+
 	this->_currentSys->syncNewFeatures(*this, this->new_Features_write_not_owned, false);
-	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write, false);
+	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write, true);
 
 }
 
@@ -178,12 +179,20 @@ OGRFeatureDefnShadow * DM::ViewContainer::getFeatureDef()
 	return (OGRFeatureDefnShadow *) this->_currentSys->getOGRLayer(*this)->GetLayerDefn();
 }
 
-void ViewContainer::registerFeature(OGRFeatureShadow *f)
+void ViewContainer::registerFeature(OGRFeatureShadow *f, bool isNew)
 {
+	if (this->readonly)
+		return;
 	OGRFeature * feature = (OGRFeature*) f;
-	std::string t(feature->GetDefnRef()->GetFieldDefn(0)->GetNameRef());
-	this->_currentSys->registerFeature(feature, *this);
-	this->new_Features_write_not_owned.push_back(feature);
+
+	if (isNew) {
+		this->_currentSys->registerFeature(feature, *this);
+		this->new_Features_write_not_owned.push_back(feature);
+	} else {
+		this->dirtyFeatures_write_not_owned.push_back(feature);
+	}
+
 }
+
 
 }
