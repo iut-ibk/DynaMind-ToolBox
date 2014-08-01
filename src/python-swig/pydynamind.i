@@ -37,9 +37,8 @@ from osgeo import ogr
 %include std_vector.i
 %include std_string.i
 %include std_map.i
+%include std_list.i
 %include cpointer.i
-//%include ogr.i
-//%include ogr_python.i
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
@@ -53,10 +52,6 @@ from osgeo import ogr
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
-//%include "../core/dmgdalsystem.h"
-//%include "../core/dmviewcontainer.h"
-
-
 
 namespace std {
     %template(stringvector) vector<string>;
@@ -78,6 +73,7 @@ namespace std {
     %template(edgemap) map<string, DM::Edge* >;
     %template(facemap) map<string, DM::Face* >;
     %template(stringmap) map<string, string >;
+	%template(modulelist) list<DM::Module* >;
 }
 
 %pointer_class(std::string,p_string)
@@ -111,7 +107,7 @@ namespace std {
 
 
 
-class Module {
+class DM::Module {
 
 public:
     Module();
@@ -120,6 +116,10 @@ public:
     virtual void run() = 0;
     virtual void init();
     virtual std::string getHelpUrl();
+
+	void setName(std::string name);
+	std::string getName();
+
 
     std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
 
@@ -146,7 +146,13 @@ protected:
 
 };
 
-%extend Module {
+%extend DM::Simulation {
+	void registerModulesFromDirectory(const std::string dir) {
+		$self->registerModulesFromDirectory(QDir(QString::fromStdString(dir)));
+	}
+}
+
+%extend DM::Module {
 	%pythoncode %{
 	_data = {'d':'Module'}
 	def getClassName(self):
@@ -195,10 +201,12 @@ void log(std::string s, DM::LogLevel l) {
     DM::Logger(l) << s;
 }
 
-void initlog(){
+
+//Init Logger and DynaMind
+void initDynaMind(DM::LogLevel loglevel){
 //Init Logger
 ostream *out = &cout;
-DM::Log::init(new OStreamLogSink(*out), DM::Debug);
+DM::Log::init(new OStreamLogSink(*out), loglevel);
 DM::Logger(DM::Debug) << "Start";
 }
 
@@ -208,7 +216,7 @@ class INodeFactory
 {
     public:
         virtual ~INodeFactory(){}
-        virtual Module *createNode() const = 0;
+		virtual DM::Module *createNode() const = 0;
         virtual std::string getNodeName() const = 0;
         virtual std::string getFileName() const = 0;
 };
@@ -219,7 +227,7 @@ public:
     ModuleRegistry();
     bool addNodeFactory(INodeFactory *factory);
     void addNativePlugin(const std::string &plugin_path);
-    Module * createModule(const std::string & name) const;
+	Module * createModule(const std::string & name) const;
     std::list<std::string> getRegisteredModules() const;
     bool contains(const std::string &name) const;
 };

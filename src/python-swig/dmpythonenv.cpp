@@ -42,12 +42,6 @@
 
 using namespace DM;
 
-/*
-extern "C" {
-void init_pydynamind(void);
-}
-*/
-
 void init() {
 	DM::OStreamLogSink *sink = new DM::OStreamLogSink(cout);
 	DM::Log::init(sink, DM::Debug);
@@ -75,12 +69,12 @@ PythonEnv::PythonEnv() {
 
 	if(!Py_IsInitialized()) {
 		Py_Initialize();
+		SWIG_PYTHON_INITIALIZE_THREADS;
+		PyThreadState *pts = PyGILState_GetThisThreadState();
+		PyEval_ReleaseThread(pts);
+	} else {
+		SWIG_PYTHON_INITIALIZE_THREADS;
 	}
-	SWIG_PYTHON_INITIALIZE_THREADS;
-	//init_pydynamind();
-	PyThreadState *pts = PyGILState_GetThisThreadState();
-	PyEval_ReleaseThread(pts);
-
 
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyObject *main = PyImport_ImportModule("__main__");
@@ -115,7 +109,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	if(envvars.contains("DYNAMIND_PYTHON"))
 		Logger(Standard) << "DYNAMIND_PYTHON set";
 	else
-        Logger(Debug) << "DYNAMIND_PYTHON not set";
+		Logger(Debug) << "DYNAMIND_PYTHON not set";
 
 	addPythonPath(envvars.value("DYNAMIND_PYTHON","./").toStdString());
 	addPythonPath("/usr/local/bin");
