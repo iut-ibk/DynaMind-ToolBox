@@ -17,6 +17,8 @@ GDALImportData::GDALImportData()
 	this->addParameter("layer_name", DM::STRING, &layername);
 	viewName = "";
 	this->addParameter("view_name", DM::STRING, &viewName);
+	append = false;
+	this->addParameter("append", DM::BOOL, &append);
 
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
 	poDS = 0;
@@ -46,7 +48,12 @@ void GDALImportData::init()
 	std::vector<DM::ViewContainer> views;
 	views.push_back((*vc));
 
+	if (append) {
+		DM::ViewContainer dummy_view = DM::ViewContainer("dummy", DM::SUBSYSTEM, DM::MODIFY);
+		views.push_back(dummy_view);
+	}
 	this->addGDALData("city", views);
+
 
 }
 

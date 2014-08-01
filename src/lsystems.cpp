@@ -22,12 +22,7 @@ LSystems::LSystems()
 void LSystems::run() {
 	DM::GDALSystem * sys = this->getGDALData("city");
 	view.setCurrentGDALSystem(sys);
-
-
-
-
 }
-
 
 Extend::Extend(OGRPoint pt)
 {

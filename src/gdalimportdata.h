@@ -21,12 +21,12 @@ private:
 	std::string source;
 	std::string layername;
 	std::string viewName;
+	bool append;
 	DM::ViewContainer *initShapefile();
 
 	DM::ViewContainer * vc;
 
 	OGRDataSource *poDS;
-
 
 	OGRLayer *initLayer();
 
