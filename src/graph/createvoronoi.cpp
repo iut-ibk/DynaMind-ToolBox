@@ -68,11 +68,11 @@ void CreateVoronoiDiagram::run()
         return;
     }
 
-    if(fm.size() > 1 || fm.size() == 0)
+    if(fm.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one face is allowed";
         return;
     }
 
-    Voronoi::createVoronoi(nm,fm,this->sys,vc);
+    Voronoi::createVoronoi(nm,fm[0],this->sys,vc);
 }
