@@ -106,10 +106,14 @@ void GDALSystem::updateView(const View &v)
 {
 	//if view is not in map create a new ogr layer
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
+		if ( v.getName() == "dummy" ) {
+			return;
+		}
 		OGRLayer * lyr = this->createLayer(v);
 
 		if (lyr == NULL) {
-			DM::Logger(DM::Error) << "couldn't create layer";
+			DM::Logger(DM::Error) << "couldn't create layer " << v.getName();
+			return;
 		}
 
 		OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
