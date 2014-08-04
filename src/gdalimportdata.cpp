@@ -22,6 +22,7 @@ GDALImportData::GDALImportData()
 
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
 	poDS = 0;
+	baseView = 0;
 }
 
 void GDALImportData::init()
@@ -52,9 +53,27 @@ void GDALImportData::init()
 		DM::ViewContainer dummy_view = DM::ViewContainer("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		views.push_back(dummy_view);
 	}
+
+	if (!this->getSpatialFilter().empty()) {
+		if (baseView)
+			delete baseView;
+		baseView = 0;
+		QString filter = QString::fromStdString(this->getSpatialFilter());
+		QStringList equation = filter.split("=", QString::SkipEmptyParts);
+		QString view_effected = equation[1];
+
+		std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
+
+		if (inViews.find(view_effected.toStdString()) != inViews.end()) {
+			DM::Logger(DM::Error) << "Filter is set";
+			DM::View v = inViews[view_effected.toStdString()];
+			baseView = new DM::ViewContainer (v.getName(), v.getType(), DM::READ);
+			views.push_back( (*baseView ));
+		}
+	} else {
+		baseView = 0;
+	}
 	this->addGDALData("city", views);
-
-
 }
 
 GDALImportData::~GDALImportData()
@@ -80,12 +99,23 @@ void GDALImportData::run()
 		DM::Logger(DM::Error) << "No data stream returned";
 		return;
 	}
-	//city->updateView(*vc);
+
+	OGRFeature *poFeature;
+	OGRMultiPolygon spatialFilter;
 	vc->setCurrentGDALSystem(city);
 
 	OGRLayer * lyr = this->initLayer();
 	lyr->ResetReading();
-	OGRFeature *poFeature;
+
+	//Add Spatial Filter
+	if (baseView) {
+		baseView->setCurrentGDALSystem(city);
+		baseView->resetReading();
+		while ( (poFeature = baseView->getNextFeature()) != NULL ) {
+			spatialFilter.addGeometry( poFeature->GetGeometryRef() );
+		}
+		lyr->SetSpatialFilter(&spatialFilter);
+	}
 
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		OGRFeature * f_new = vc->createFeature();

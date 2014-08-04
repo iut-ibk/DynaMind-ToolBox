@@ -24,6 +24,8 @@ private:
 	bool append;
 	DM::ViewContainer *initShapefile();
 
+	DM::ViewContainer * baseView;
+
 	DM::ViewContainer * vc;
 
 	OGRDataSource *poDS;
