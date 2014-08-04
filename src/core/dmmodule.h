@@ -261,6 +261,13 @@ public:
 	/** @brief Returns the status of reseting the simulation*/
 	bool getForceRefreshSimulation();
 
+	/**
+	 * @brief Set spatial filter
+	 */
+	void setSpatialFilter(std::string filter);
+
+	std::string getSpatialFilter();
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -362,6 +369,7 @@ private:
 	std::string		name;
 	DM::Simulation *sim;
 	bool			forceUpdate;
+	std::string spatialFilter;
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;

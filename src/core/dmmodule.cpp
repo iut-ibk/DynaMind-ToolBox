@@ -43,6 +43,7 @@ Module::Module()
 	owner = NULL;
 	successorMode = false;
 	GDALModule = false;
+	this->spatialFilter = "";
 }
 
 void Module::preRun()
@@ -157,6 +158,16 @@ void Module::forceRefreshSimulation(bool force)
 bool Module::getForceRefreshSimulation()
 {
 	return forceUpdate;
+}
+
+void Module::setSpatialFilter(string filter)
+{
+	this->spatialFilter = filter;
+}
+
+string Module::getSpatialFilter()
+{
+	return this->spatialFilter;
 }
 
 void Module::addObserver(ModuleObserver* obs)

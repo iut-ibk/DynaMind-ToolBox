@@ -117,6 +117,9 @@ public:
     virtual void init();
     virtual std::string getHelpUrl();
 
+	void setSpatialFilter(string filter);
+	std::string getSpatialFilter();
+
 	void setName(std::string name);
 	std::string getName();
 
