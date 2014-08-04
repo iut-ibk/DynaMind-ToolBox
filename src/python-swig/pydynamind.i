@@ -130,6 +130,8 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
+	std::vector<std::string> getInPortNames() const;
+	std::vector<std::string> getOutPortNames() const;
 
 protected:
     void addData(std::string name, std::vector<DM::View> view);
