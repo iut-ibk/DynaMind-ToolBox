@@ -130,7 +130,11 @@ void GDALSystem::updateView(const View &v)
 		//Feature already in layer
 		if (lyr->GetLayerDefn()->GetFieldIndex(attribute_name.c_str()) >= 0)
 			continue;
-
+		if (v.getAttributeType(attribute_name) == DM::Attribute::INT){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
+			lyr->CreateField(&oField);
+			continue;
+		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::STRING){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
 			lyr->CreateField(&oField);
