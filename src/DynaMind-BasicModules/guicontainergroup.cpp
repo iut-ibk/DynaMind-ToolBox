@@ -91,8 +91,8 @@ GUIContainerGroup::GUIContainerGroup(ContainerGroup * m, QWidget *parent):
 		}
 		if(!map_contains(&childModules, child->getName()))
 			childModules[child->getName()] = child;
-		else
-			DM::Logger(Warning) << "groups module names not unique";
+		//else
+		//	DM::Logger(Warning) << "groups module names not unique";
 	}
 
 	on_tabWidget_currentChanged();
