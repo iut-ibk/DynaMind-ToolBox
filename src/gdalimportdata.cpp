@@ -6,8 +6,6 @@
 
 DM_DECLARE_NODE_NAME(GDALImportData, GDALModules)
 
-
-
 GDALImportData::GDALImportData()
 {
 	GDALModule = true;
@@ -27,7 +25,6 @@ GDALImportData::GDALImportData()
 
 void GDALImportData::init()
 {
-
 	if (layername.empty()) {
 		DM::Logger(DM::Error) << "no layer_name set";
 		return;
@@ -53,7 +50,6 @@ void GDALImportData::init()
 		DM::ViewContainer dummy_view = DM::ViewContainer("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		views.push_back(dummy_view);
 	}
-
 	if (!this->getSpatialFilter().empty()) {
 		if (baseView)
 			delete baseView;
@@ -178,7 +174,7 @@ DM::Attribute::AttributeType GDALImportData::OGRToDMAttribute(OGRFieldDefn * fde
 	DM::Attribute::AttributeType type = DM::Attribute::NOTYPE;
 	switch (fdef->GetType()) {
 	case OFTInteger:
-		type = DM::Attribute::DOUBLE;
+		type = DM::Attribute::INT;
 		break;
 	case OFTReal:
 		type = DM::Attribute::DOUBLE;
@@ -214,6 +210,9 @@ int GDALImportData::OGRtoDMGeometry(OGRFeatureDefn *def)
 		break;
 	case wkbMultiLineString:
 		type = DM::EDGE;
+		break;
+	case wkbNone:
+		type = DM::COMPONENT;
 		break;
 	default:
 		DM::Logger(DM::Error) << "Geometry type not implemented: " << strType;
