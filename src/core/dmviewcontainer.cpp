@@ -29,6 +29,7 @@
 #include <dmlogger.h>
 #include <dmgdalsystem.h>
 #include <ogrsf_frmts.h>
+#include <sstream>
 
 namespace DM {
 
@@ -47,6 +48,12 @@ ViewContainer::~ViewContainer()
 string ViewContainer::getDBID()
 {
 	return this->_currentSys->getDBID();
+}
+
+void ViewContainer::setAttributeFilter(string filter)
+{
+	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
+	lyr->SetAttributeFilter(filter.c_str());
 }
 
 
@@ -154,6 +161,14 @@ OGRFeature *ViewContainer::getNextFeature()
 	OGRFeature * f =  this->_currentSys->getNextFeature(*this);
 	registerFeature(f);
 	return f;
+}
+
+void ViewContainer::createIndex(string attribute)
+{
+
+	std::stringstream index;
+	index << "CREATE INDEX "<< attribute <<"_index ON " << this->getName() << " (" << attribute << ")";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
 }
 
 int ViewContainer::getFeatureCount()

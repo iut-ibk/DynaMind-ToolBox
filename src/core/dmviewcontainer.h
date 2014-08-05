@@ -128,6 +128,8 @@ public:
 	 */
 	OGRFeature *getNextFeature();
 
+	void createIndex(std::string attribute);
+
 	/**
 	 * @brief Returns OGRFeatureDefinition. Only used internally to allow python wrapping
 	 */
@@ -144,6 +146,8 @@ public:
 	virtual ~ViewContainer();
 
 	std::string getDBID();
+
+	void setAttributeFilter(std::string filter);
 
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
