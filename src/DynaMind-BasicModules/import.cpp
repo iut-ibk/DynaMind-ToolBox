@@ -670,6 +670,9 @@ void Import::loadLineString(System *sys, OGRLineString *lineString, OGRCoordinat
 	for (int i = 1; i < nPoints; i++)
 	{
 		nodes[i] = this->addNode(sys, x[i], y[i], poCT);
+		if(nodes[i - 1]==nodes[i])
+			continue;
+
 		Edge* e = sys->addEdge(nodes[i - 1], nodes[i]);
 		// add attributes
 		this->appendAttributes(e, featureDef, curFeature, view);
@@ -816,7 +819,7 @@ DM::Node * Import::addNode(DM::System * sys, double x, double y, OGRCoordinateTr
 	}
 	// add to system
 	if (view)
-		sys->addNode(new_node, *view);
+		new_node = sys->addNode(new_node, *view);
 	else
 		sys->addNode(new_node);
 
