@@ -228,7 +228,7 @@ OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
 	}
 	else
 	{
-		Logger(Warning) << "export: overwriting existing layer '" 
+		Logger(Warning) << "export: append data/features to existing layer '"
 			<< newLayerName << "' with data from view '" << view.getName() << "'";
 		epsgError = layer->GetSpatialRef()->importFromEPSG(epsg);
 	}
