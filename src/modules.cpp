@@ -49,6 +49,7 @@
 #include <createswmmmodel.h>
 #include <identifymainpipes.h>
 #include <initgraph.h>
+#include <skeletonize.h>
 
 #include <spatialpressureperformance.h>
 #include <totaldemandperformance.h>
@@ -89,6 +90,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<CreateVoronoiDiagram>());
 	registry->addNodeFactory(new DM::NodeFactory<GeneralGraphAnalysis>());
 	registry->addNodeFactory(new DM::NodeFactory<TotalGraphWeight>());
+	registry->addNodeFactory(new DM::NodeFactory<Skeletonize>());
 
 	//Water supply
 	registry->addNodeFactory(new DM::NodeFactory<SimulateWithEPANET>());
