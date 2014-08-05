@@ -35,8 +35,9 @@
 class DM_HELPER_DLL_EXPORT AddDataToNewView : public DM::Module{
 
 	DM_DECLARE_NODE(AddDataToNewView)
-	private:
-		DM::System * sys_in;
+
+private:
+	DM::System * sys_in;
 	std::string NameOfNewView_old;
 
 public:

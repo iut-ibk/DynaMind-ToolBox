@@ -47,6 +47,7 @@ AddDataToNewView::AddDataToNewView()
 
 void AddDataToNewView::run()
 {
+	int addedelements = 0;
 	DM::System * sys = this->getData("Data");
 	DM::View  v_existing = this->getViewInStream("Data", NameOfExistingView);
 	if (v_existing.getType() ==  -1)
@@ -55,6 +56,7 @@ void AddDataToNewView::run()
 		return;
 	}
 	DM::View  v_new = DM::View( this->NameOfNewView, v_existing.getType(), DM::WRITE );
+	std::vector<DM::Component*> excomp = sys->getAllComponentsInView(v_new);
 
 	foreach(DM::Component* c, sys->getAllComponentsInView(v_existing))
 	{
@@ -63,8 +65,14 @@ void AddDataToNewView::run()
 				if(a->getDouble() < 0.0001)
 					continue;
 
-		sys->addComponentToView(c, v_new);
+		if(!vector_contains(&excomp,c))
+		{
+			sys->addComponentToView(c, v_new);
+			addedelements++;
+		}
 	}
+
+	DM::Logger(DM::Standard) << "Added " << addedelements << " elements. " << sys->getAllComponentsInView(v_existing).size()-addedelements << " elements already in view";
 }
 
 void AddDataToNewView::init()
