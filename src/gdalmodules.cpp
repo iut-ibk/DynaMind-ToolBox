@@ -29,6 +29,8 @@
 #include "parceling.h"
 #include "gdalcreaterectangle.h"
 #include "lsystems.h"
+#include "nonspatiallinking.h"
+#include "gdalattributecalculator.h"
 
 
 /**
@@ -41,4 +43,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALParceling>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALCreateRectangle>());
 	registry->addNodeFactory(new DM::NodeFactory<LSystems>());
+	registry->addNodeFactory(new DM::NodeFactory<NonSpatialLinking>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALAttributeCalculator>());
 }

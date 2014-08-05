@@ -33,7 +33,6 @@ void GDALCreateRectangle::run() {
 	DM::GDALSystem * city = this->getGDALData("city");
 	view.setCurrentGDALSystem(city);
 
-
 	OGRLinearRing lr;
 	lr.addPoint(0,0,0);
 	lr.addPoint(width,0,0);
