@@ -37,9 +37,8 @@ from osgeo import ogr
 %include std_vector.i
 %include std_string.i
 %include std_map.i
+%include std_list.i
 %include cpointer.i
-//%include ogr.i
-//%include ogr_python.i
 
 %include "../core/dmcomponent.h"
 %include "../core/dmsystem.h"
@@ -53,10 +52,6 @@ from osgeo import ogr
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
-//%include "../core/dmgdalsystem.h"
-//%include "../core/dmviewcontainer.h"
-
-
 
 namespace std {
     %template(stringvector) vector<string>;
@@ -78,6 +73,7 @@ namespace std {
     %template(edgemap) map<string, DM::Edge* >;
     %template(facemap) map<string, DM::Face* >;
     %template(stringmap) map<string, string >;
+	%template(modulelist) list<DM::Module* >;
 }
 
 %pointer_class(std::string,p_string)
@@ -111,7 +107,7 @@ namespace std {
 
 
 
-class Module {
+class DM::Module {
 
 public:
     Module();
@@ -120,6 +116,10 @@ public:
     virtual void run() = 0;
     virtual void init();
     virtual std::string getHelpUrl();
+
+	void setName(std::string name);
+	std::string getName();
+
 
     std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
 
@@ -130,6 +130,8 @@ public:
     void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
     virtual void setParameterValue(std::string name, std::string value);
 
+	std::vector<std::string> getInPortNames() const;
+	std::vector<std::string> getOutPortNames() const;
 
 protected:
     void addData(std::string name, std::vector<DM::View> view);
@@ -141,50 +143,58 @@ protected:
 
     DM::GDALSystem * getGDALData(std::string dataname);
     void setIsGDALModule(bool b);
+	bool isGdalModule();
 	void registerViewContainers(std::vector<DM::ViewContainer *> views);
 
 };
 
-%extend Module {
-    %pythoncode %{
-    _data = {'d':'Module'}
-    def getClassName(self):
-            return self.__class__.__name__
+%extend DM::Simulation {
+	void registerModulesFromDirectory(const std::string dir) {
+		$self->registerModulesFromDirectory(QDir(QString::fromStdString(dir)));
+	}
+}
 
-    def getFileName(self):
-            return self.__module__.split(".")[0]
+%extend DM::Module {
+	%pythoncode %{
+	_data = {'d':'Module'}
+	def getClassName(self):
+		return self.__class__.__name__
 
-    def __getattr__(self, name):
-            if name in self._data:
-                return self._data[name].value()
+	def getFileName(self):
+		return self.__module__.split(".")[0]
 
-    def __setattr__(self, name, value):
-            if name in self._data:
-                return self._data[name].assign(value)
+	def __getattr__(self, name):
+		if name in self._data:
+			return self._data[name].value()
 
-            return super(Module, self).__setattr__(name, value)
+	def __setattr__(self, name, value):
+		if name in self._data:
+			return self._data[name].assign(value)
 
-    def createParameter(self,name, DN_type, description):
-            if 'd' in self._data:
-                if self._data['d'] == 'Module':
-                    self._data = {}
+		return super(Module, self).__setattr__(name, value)
 
-            if DN_type == STRING:
-                self._data[name] = p_string()
-            if DN_type == FILENAME:
-                self._data[name] = p_string()
-            if DN_type == DOUBLE:
-                self._data[name] = p_double()
-            if DN_type == LONG:
-                self._data[name] = p_long()
-            if DN_type == INT:
-                self._data[name] = p_int()
-            if DN_type == BOOL:
-                self._data[name] = p_int()
+	def createParameter(self,name, DN_type, description):
+		if 'd' in self._data:
+			if self._data['d'] == 'Module':
+				self._data = {}
 
-            self.addParameter(name,DN_type,self._data[name],description)
+		if DN_type == STRING:
+			self._data[name] = p_string()
+		if DN_type == FILENAME:
+			self._data[name] = p_string()
+		if DN_type == DOUBLE:
+			self._data[name] = p_double()
+		if DN_type == LONG:
+			 self._data[name] = p_long()
+		if DN_type == INT:
+			self._data[name] = p_int()
+		if DN_type == BOOL:
+			self._data[name] = p_int()
 
-    %}
+		self.addParameter(name,DN_type,self._data[name],description)
+
+
+	%}
 }
 
 %inline %{
@@ -193,10 +203,12 @@ void log(std::string s, DM::LogLevel l) {
     DM::Logger(l) << s;
 }
 
-void initlog(){
+
+//Init Logger and DynaMind
+void initDynaMind(DM::LogLevel loglevel){
 //Init Logger
 ostream *out = &cout;
-DM::Log::init(new OStreamLogSink(*out), DM::Debug);
+DM::Log::init(new OStreamLogSink(*out), loglevel);
 DM::Logger(DM::Debug) << "Start";
 }
 
@@ -206,7 +218,7 @@ class INodeFactory
 {
     public:
         virtual ~INodeFactory(){}
-        virtual Module *createNode() const = 0;
+		virtual DM::Module *createNode() const = 0;
         virtual std::string getNodeName() const = 0;
         virtual std::string getFileName() const = 0;
 };
@@ -217,7 +229,7 @@ public:
     ModuleRegistry();
     bool addNodeFactory(INodeFactory *factory);
     void addNativePlugin(const std::string &plugin_path);
-    Module * createModule(const std::string & name) const;
+	Module * createModule(const std::string & name) const;
     std::list<std::string> getRegisteredModules() const;
     bool contains(const std::string &name) const;
 };
@@ -226,24 +238,59 @@ class DM::ViewContainer {
   public:
 	  ViewContainer();
 	  ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+	  void addAttribute(std::string name, Attribute::AttributeType type, ACCESS access);
 	  void setCurrentGDALSystem(DM::GDALSystem *sys);
 	  OGRFeatureDefnShadow * getFeatureDef();
-	  void registerFeature(OGRFeatureShadow *f);
+	  void registerFeature(OGRFeatureShadow *f, bool isNew);
 	  void syncAlteredFeatures();
+	  std::string getDBID();
 	  virtual ~ViewContainer();
+	  std::string getName() const;
 };
 
 %extend DM::ViewContainer {
 	%pythoncode {
 	#Container for OGRObejcts, otherwise the garbage collector eats them
 	__features = []
+	__ogr_layer = None
+	__ds = None
 	def create_feature(self):
 		#from osgeo import ogr
 		f = ogr.Feature(self.getFeatureDef())
-		self.registerFeature(f)
+		self.registerFeature(f, True)
 		#Hold Object until destroyed
 		self.__features.append(f)
 		return f
+	def register_layer(self):
+		if self.__ogr_layer != None:
+			return
+		db_id = self.getDBID()
+		self.__ds = ogr.Open("/tmp/"+db_id+".db")
+		table_name = str(self.getName())
+		self.__ogr_layer = self.__ds.GetLayerByName(table_name)
+
+	def __iter__(self):
+		return self
+
+	def next(self):
+		self.register_layer()
+		feature = self.__ogr_layer.GetNextFeature()
+		if not feature:
+			raise StopIteration
+		else:
+			self.registerFeature(feature, False)
+			self.__features.append(feature)
+			return feature
+
+	def reset_reading(self):
+		self.register_layer()
+		self.__ogr_layer.ResetReading()
+
+	def sync(self):
+		self.syncAlteredFeatures()
+		for f in self.__features:
+			f.Destroy()
+		del self.__features[:]
 	}
 }
 

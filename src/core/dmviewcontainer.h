@@ -136,17 +136,20 @@ public:
 	/**
 	 * @brief Registeres a Feature generated in Python. Only used internally to allow python wrapping
 	 */
-	void registerFeature(OGRFeatureShadow * f);
+	void registerFeature(OGRFeatureShadow * f, bool isNew);
 
 	/**
 	 * @brief ~ViewContainer
 	 */
 	virtual ~ViewContainer();
 
+	std::string getDBID();
+
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++
-	std::vector<OGRFeature *> new_Features_write_not_owned; //Container ffor object generated in Python (couldn't work out how to transfer the ownership)
+	std::vector<OGRFeature *> new_Features_write_not_owned; //Container for object generated in Python (couldn't work out how to transfer the ownership)
+	std::vector<OGRFeature *> dirtyFeatures_write_not_owned; //Container for object generated in Python (couldn't work out how to transfer the ownership)
 	std::vector<OGRFeature *> dirtyFeatures_write;
 	std::vector<OGRFeature *> dirtyFeatures_read;
 	bool readonly;

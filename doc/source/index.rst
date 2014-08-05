@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to DynaMind's User Guide
-====================================
+================================
 
 Contents:
 
@@ -12,15 +12,6 @@ Contents:
    :maxdepth: 2
 
   module
-  view
-
-Updates:
-
-.. toctree::
-   :maxdepth: 2
-
-  dynamind-gdal
-
 
 
 Indices and tables

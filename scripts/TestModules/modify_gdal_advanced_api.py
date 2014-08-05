@@ -26,37 +26,26 @@ from osgeo import ogr
 from pydynamind import *
 
 
-class CreateGDALComponentsAdvanced(Module):
+class ModifyGDALComponentsAdvanced(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
-            self.createParameter("elements", INT, "Number of elements")
-            self.elements = 100000
-
-            self.createParameter("append", BOOL, "true if append")
-            self.append = False
             self.__container = ViewContainer()
 
         def init(self):
-            if self.append:
-                self.__container = ViewContainer("component", NODE, MODIFY)
-            else:
-                self.__container = ViewContainer("component", NODE, WRITE)
-
+            self.__container = ViewContainer("component", NODE, READ)
+            self.__container.addAttribute("value", Attribute.DOUBLE, WRITE)
             views = []
             views.append(self.__container)
             self.registerViewContainers(views)
-            #self.features = []
-        def run(self):
 
-            for i in range(self.elements):
-                f = self.__container.create_feature()
-                pt = ogr.Geometry(ogr.wkbPoint)
-                pt.SetPoint_2D(0, 1, 1)
-                f.SetGeometry(pt)
-                if i % 100000 == 0:
-                    self.__container.sync()
+        def run(self):
+            self.elements = 0
+            self.__container.reset_reading()
+            for feat in self.__container:
+                feat.SetField("value", 3)
             self.__container.sync()
+
 
 
 
