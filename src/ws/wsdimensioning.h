@@ -42,6 +42,7 @@ class Dimensioning : public DM::Module
 	boost::shared_ptr<EpanetDynamindConverter> converter;
 	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter;
 	double maxdiameter, iterations, apprdt;
+	std::vector<DM::Component*> fixedpipes;
 
 public:
 	Dimensioning();
@@ -55,17 +56,13 @@ private:
 	bool calibrateReservoirOutFlow(double totaldemand, int maxsteps,std::vector<DM::Edge*> entrypipes, bool discretediameter);
 	bool findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints);
 	bool approximatePipeSizes(bool usemainpipes,bool discretediameter);
-	bool approximatePressure(bool discretediameter);
-	bool approximatePressure(std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &uncheckedpressurepoints,std::vector<DM::Node*> &newpressurepoint, bool nonewpressurepoints);
-	bool approximatePressureOnPath(std::vector<DM::Node*> nodes,std::vector<DM::Node*> &knownPressurePoints,std::vector<DM::Node*> &newpressurepoint,bool nonewpressurepoints);
-	std::vector<DM::Node*> getFlowNeighbours(DM::Node* junction);
-	std::vector<DM::Node*> getInverseFlowNeighbours(DM::Node* junction);
-	DM::Node* getNearestPressure(DM::Node* currentpressurepoint, std::vector<DM::Node*> &nodes);
-	DM::Node* getNearestFlowPoint(DM::Node* currentpoint, std::vector<DM::Node*> &nodes);
+	bool approximatePressure(bool discretediameter,std::vector<DM::Node*>initunchecked);
+	bool approximatePressure(std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &uncheckedpressurepoints,std::vector<DM::Node*> &newinitunchecked);
+	bool approximatePressureOnPath(std::vector<DM::Node*> nodes,std::vector<DM::Node*> &knownPressurePoints,std::vector<DM::Node*> &newinitunchecked);
+	std::vector<DM::Node*> getInitialPressurepoints();
+	void resetPressureOfJunctions(std::vector<DM::Node*> nodexceptions);
 
-	double calcDiameter(double k, double l, double q, double h, double maxdiameter,bool discretediameters);
-	double calcFrictionHeadLoss(double d, double k, double l, double q);
-	double calcLambda(double k, double d, double q, double lambda = 0);
+	void searchFixedPipes(double maxdiameter, std::vector<DM::Component*> &fixedpipes, std::vector<DM::Component*> allpipes);
 };
 
 #endif // Dimensioning_H
