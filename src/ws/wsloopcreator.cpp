@@ -91,6 +91,9 @@ LoopCreator::LoopCreator()
 
 void LoopCreator::run()
 {
+	if(relalternativepath==0.0)
+		return;
+
 	//Define vars
 	//DM::ER::ViewDefinitionHelper defhelper_er;
 	PressureZones zones;
