@@ -86,6 +86,10 @@ void ViewContainer::setCurrentGDALSystem(GDALSystem *sys)
 		return;
 	}
 	this->_currentSys = sys;
+
+	this->setAttributeFilter("");
+	this->setSpatialFilter(0);
+
 	this->_currentSys->resetReading(*this);
 	if (this->writes())
 		readonly = false;
