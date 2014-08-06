@@ -48,8 +48,4 @@ void GDALCreateRectangle::run() {
 
 	view.syncAlteredFeatures();
 
-
-
-
-
 }

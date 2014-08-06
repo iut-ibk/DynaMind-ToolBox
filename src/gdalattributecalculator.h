@@ -24,6 +24,9 @@ private:
 
 	double solve_variable(OGRFeature *feat, QStringList link_chain);
 
+	bool oneToMany(DM::ViewContainer *lead, DM::ViewContainer *linked);
+
+	std::vector<OGRFeature *> resolveLink(OGRFeature * f, QString first, QString second);
 public:
 	GDALAttributeCalculator();
 	void init();
