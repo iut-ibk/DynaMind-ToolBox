@@ -41,7 +41,7 @@ bool Voronoi::createVoronoi(std::vector<DM::Component*> &nodes, DM::Component *f
     double_voronoi_t vd;
     construct_voronoi(points.begin(), points.end(), &vd);
 
-    DM::Node centroid_points = DM::CGALGeometry::CaclulateCentroid2D(f);
+	DM::Node centroid_points = DM::CGALGeometry::CalculateCentroid2D(f);
 
     double x, y, h, w;
     TBVectorData::getBoundingBox(face_nodes, x, y, h, w, true);
