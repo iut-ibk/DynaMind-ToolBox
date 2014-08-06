@@ -52,8 +52,24 @@ string ViewContainer::getDBID()
 
 void ViewContainer::setAttributeFilter(string filter)
 {
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+
 	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
 	lyr->SetAttributeFilter(filter.c_str());
+}
+
+void ViewContainer::setSpatialFilter(OGRGeometry *geo)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+
+	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
+	lyr->SetSpatialFilter(geo);
 }
 
 
@@ -111,7 +127,7 @@ void ViewContainer::syncReadFeatures()
 	this->dirtyFeatures_read.clear();
 }
 
-OGRFeature *ViewContainer::getOGRFeature(long nFID)
+OGRFeature *ViewContainer::getFeature(long nFID)
 {
 	if (!_currentSys) {
 		Logger(Error) << "No GDALSystem registered";

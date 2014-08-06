@@ -36,6 +36,7 @@
 class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 class DM_HELPER_DLL_EXPORT OGRFeature;
 class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
+class DM_HELPER_DLL_EXPORT OGRGeometry;
 
 namespace DM {
 
@@ -109,7 +110,7 @@ public:
 	 * @brief Returns OGRFeature with the nFID
 	 * @param nFID feature ID
 	 */
-	OGRFeature *getOGRFeature(long nFID);
+	OGRFeature *getFeature(long nFID);
 
 	//OGRFeature *getFeature(long dynamind_id);
 
@@ -147,7 +148,17 @@ public:
 
 	std::string getDBID();
 
+	/**
+	 * @brief Set attribute filter. For doc please see GDAL API
+	 * @param filter
+	 */
 	void setAttributeFilter(std::string filter);
+
+	/**
+	 * @brief Set spatail filter. For doc please see GDAL API
+	 * @param filter
+	 */
+	void setSpatialFilter(OGRGeometry * geo);
 
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
