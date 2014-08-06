@@ -24,32 +24,30 @@
  *
  */
 
-#ifndef ConnectNodes2Graph_H
-#define ConnectNodes2Graph_H
+#ifndef Skeletonize_H
+#define Skeletonize_H
 
 #include <dmmodule.h>
 #include <dm.h>
+#include <graphviewdef.h>
 
-class ConnectNodes2Graph : public DM::Module
+class Skeletonize : public DM::Module
 {
-	DM_DECLARE_NODE(ConnectNodes2Graph)
+	DM_DECLARE_NODE(Skeletonize)
 
 private:
 	typedef std::map<std::string,DM::View> viewmap;
-	typedef std::pair<double,double> Point;
-	typedef std::pair<Point, std::string> E;
 
 	DM::System *sys;
 	viewmap viewdef;
-	double searchradius;
-
+	std::string viewname;
 
 public:
-	ConnectNodes2Graph();
+	Skeletonize();
 
 	void run();
-	void initmodel(){}
-	std::string findNearestNode(std::vector<DM::Node*>& nodes, DM::Node *connectingNode);
+	void init();
+	bool getNeighbourEdges(DM::Node *nodeb, std::vector<DM::Edge*> &neighbours, std::vector<DM::Component*> alledges);
 };
 
-#endif // ConnectNodes2Graph_H
+#endif // Skeletonize_H

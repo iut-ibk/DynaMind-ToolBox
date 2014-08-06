@@ -30,6 +30,7 @@
 #include <dmsystem.h>
 #include <dmlogsink.h>
 #include <math.h>
+#include <cmath>
 #include <tbvectordata.h>
 
 //Watersupply
@@ -280,6 +281,12 @@ bool EpanetDynamindConverter::addTank(DM::Node *tank)
 
 bool EpanetDynamindConverter::addPipe(DM::Edge *pipe, bool cv)
 {
+	if(!components.contains(pipe->getStartNode()) || !components.contains(pipe->getEndNode()))
+	{
+		DM::Logger(DM::Error) << "Cannot add pipe because some nodes are not added";
+		return false;
+	}
+
 	int startnode = components[pipe->getStartNode()];
 	int endnode = components[pipe->getEndNode()];
 
@@ -379,4 +386,321 @@ int EpanetDynamindConverter::getEpanetLinkID(Component *component)
 		return -1;
 
 	return index;
+}
+
+DM::Node* EpanetDynamindConverter::getNearestPressure(DM::Node* currentpressurepoint, std::vector<DM::Node*> &nodes)
+{
+	DM::Node* result = 0;
+	if(getEpanetNodeID(currentpressurepoint) < 0)
+		return result;
+
+	nodes.push_back(currentpressurepoint);
+
+	std::vector<DM::Edge*> edges = currentpressurepoint->getEdges();
+
+	for(int index=0; index < edges.size(); index++)
+	{
+		DM::Edge* currentedge = edges[index];
+
+		if(!components.contains(currentedge))
+			continue;
+
+		DM::Node* neighbournode = currentedge->getStartNode();
+
+		if(neighbournode==currentpressurepoint)
+			neighbournode = currentedge->getEndNode();
+
+		if(std::find(nodes.begin(),nodes.end(),neighbournode)!=nodes.end())
+			continue;
+
+		double neighbourpressure = neighbournode->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
+
+		if(neighbourpressure > 0)
+			return neighbournode;
+
+		neighbournode = getNearestPressure(neighbournode,nodes);
+
+		if(!neighbournode)
+			continue;
+
+		neighbourpressure =  neighbournode->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
+
+		if(neighbourpressure > 0)
+			return neighbournode;
+	}
+
+	return result;
+}
+
+DM::Node* EpanetDynamindConverter::getNearestFlowPoint(DM::Node* currentpoint, std::vector<DM::Node*> &nodes)
+{
+	DM::Node* result = 0;
+	if(!components.contains(currentpoint))
+		return result;
+
+	nodes.push_back(currentpoint);
+
+	std::vector<DM::Edge*> edges = currentpoint->getEdges();
+
+	for(int index=0; index < edges.size(); index++)
+	{
+		DM::Edge* currentedge = edges[index];
+
+		if(!components.contains(currentedge))
+			continue;
+
+		DM::Node* neighbournode = currentedge->getStartNode();
+
+		if(neighbournode==currentpoint)
+			neighbournode = currentedge->getEndNode();
+
+		if(std::find(nodes.begin(),nodes.end(),neighbournode)!=nodes.end())
+			continue;
+
+		if(getFlowNeighbours(neighbournode).size())
+			return neighbournode;
+
+		neighbournode = getNearestFlowPoint(neighbournode,nodes);
+
+		if(!neighbournode)
+			continue;
+
+		return neighbournode;
+	}
+
+	return result;
+}
+
+std::vector<DM::Node*> EpanetDynamindConverter::getInverseFlowNeighbours(DM::Node* junction)
+{
+	std::vector<DM::Node*> result;
+
+	if(!components.contains(junction))
+		return result;
+
+
+	std::vector<DM::Edge*> edgevec = junction->getEdges();
+
+	for(int index=0; index < edgevec.size(); index++)
+	{
+		DM::Edge* currentedge = edgevec[index];
+
+		if(!components.contains(currentedge))
+			continue;
+
+		int ID = getEpanetLinkID(currentedge);
+
+		bool invert=true;
+
+		if(currentedge->getStartNode()==junction)
+			invert=false;
+
+		float flow = 0.0;
+
+		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))return std::vector<DM::Node*>();
+
+		if(std::fabs(flow) < 0.001)
+			flow=0.0;
+
+		if(invert)
+			flow = -flow;
+
+		if(flow <= 0)
+			continue;
+
+		if(currentedge->getStartNode()==junction)
+			result.push_back(currentedge->getEndNode());
+		else
+			result.push_back(currentedge->getStartNode());
+
+		if(!components.contains(result[result.size()-1]))
+			DM::Logger(DM::Error) << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk";
+	}
+
+	return result;
+}
+
+std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junction)
+{
+	std::vector<DM::Node*> result;
+
+	if(!components.contains(junction))
+		return result;
+
+	std::vector<DM::Edge*> edgevec = junction->getEdges();
+
+	for(int index=0; index < edgevec.size(); index++)
+	{
+		DM::Edge* currentedge = edgevec[index];
+
+		if(!components.contains(currentedge))
+			continue;
+
+		int ID = getEpanetLinkID(currentedge);
+
+		bool invert=true;
+
+		if(currentedge->getStartNode()==junction)
+			invert=false;
+
+		float flow = 0.0;
+
+		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))
+			return std::vector<DM::Node*>();
+
+		if(std::fabs(flow) < 0.01)
+			flow=0.0;
+
+		if(invert)
+			flow = -flow;
+
+		if(flow >= 0.0)
+			continue;
+
+		if(currentedge->getStartNode()==junction)
+			result.push_back(currentedge->getEndNode());
+		else
+			result.push_back(currentedge->getStartNode());
+
+		if(!components.contains(result[result.size()-1]))
+			DM::Logger(DM::Error) << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk";
+	}
+
+	return result;
+}
+
+double EpanetDynamindConverter::calcDiameter(double k, double l, double q, double h, double maxdiameter, bool discretediameters, bool nearestdiscretediameter)
+{
+	std::vector<double> diameters;
+	diameters.push_back(0.080);
+	diameters.push_back(0.100);
+	diameters.push_back(0.125);
+	diameters.push_back(0.150);
+	diameters.push_back(0.200);
+	diameters.push_back(0.250);
+	diameters.push_back(0.300);
+	diameters.push_back(0.350);
+	diameters.push_back(0.400);
+	diameters.push_back(0.500);
+	diameters.push_back(0.600);
+	diameters.push_back(0.800);
+	diameters.push_back(1.000);
+	diameters.push_back(1.500);
+	diameters.push_back(2.000);
+	diameters.push_back(4.000);
+	diameters.push_back(8.000);
+
+	if(q < 0.00001)
+		return 0.01;
+
+	if(h < 0)
+		return -1;
+
+	double maxerror = 0.0000001;
+	double d = 0.001;
+	double maxd = 6;
+	double mind = 0;
+	double currenterror = h-calcFrictionHeadLoss(d,k,l,q);
+
+	if(h/l < 0.00001)
+	{
+		d =  std::sqrt(4*q)/M_PI;
+	}
+
+	if(d <= 0.001)
+	{
+		while (std::fabs(currenterror) > maxerror)
+		{
+			//DM::Logger(DM::Error) << currenterror << " " << maxerror;
+			if(currenterror < 0)
+			{
+				mind=d;
+				d = d+(maxd-mind)/2;
+			}
+
+			if(currenterror > 0)
+			{
+				maxd=d;
+				d = d-(maxd-mind)/2;
+			}
+
+			double frictionhl = calcFrictionHeadLoss(d,k,l,q);
+			double olderror = currenterror;
+			currenterror = h-frictionhl;
+
+			if(olderror==currenterror)
+				break;
+
+			DM::Logger(DM::Debug) << "Friction: " << frictionhl;
+		}
+	}
+
+	if(d > maxdiameter)
+		d =  maxdiameter;
+
+	if(discretediameters)
+	{
+		for (int i = 0; i < diameters.size(); ++i)
+			if(d <= diameters[i])
+			{
+				if(nearestdiscretediameter)
+					if(i!=0)
+					{
+						if((d-diameters[i-1]) < (diameters[i]-d))
+							i--;
+					}
+
+				d=diameters[i];
+				break;
+			}
+	}
+
+	if(d < diameters[0])
+		d = diameters[0];
+
+	return d;
+}
+
+double EpanetDynamindConverter::calcFrictionHeadLoss(double d, double k, double l, double q)
+{
+	double headloss = 0;
+
+	headloss =
+			calcLambda(k,d,q)*
+			(l/d)*
+			(std::pow(q/((std::pow(d,2)/4.0)*M_PI),2)/(2*9.81));
+
+	return headloss;
+}
+
+double EpanetDynamindConverter::calcLambda(double k, double d, double q, double lambda)
+{
+	double maxerror = 0.01;
+
+	if(lambda==0)
+	{
+		lambda = 1.0/std::pow(2*std::log10((3.71*d)/k),2);
+		return calcLambda(k,d,q,lambda);
+	}
+	else
+	{
+		double viscosity = 1.3*std::pow((double)10,-6);
+		double v = q/((std::pow(d,2)/4.0)*M_PI);
+		double Re = (v*d)/viscosity;
+		double tmpl = -2*std::log10((2.51/(Re*std::sqrt(lambda)))+(k/(3.71*d)));
+		double error = std::fabs(1/std::sqrt(lambda) - tmpl);
+		double oldlambda = lambda;
+		lambda = 1/std::pow(-tmpl,2);
+
+		if(error > maxerror && oldlambda != lambda)
+		{
+			return calcLambda(k,d,q,lambda);
+		}
+		else
+		{
+			return lambda;
+		}
+	}
+
+	return lambda;
 }

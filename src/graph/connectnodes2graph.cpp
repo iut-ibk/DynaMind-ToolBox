@@ -48,6 +48,9 @@ ConnectNodes2Graph::ConnectNodes2Graph()
 	std::vector<DM::View> views;
 	DM::View view;
 
+	searchradius = 10000;
+	this->addParameter("Search distance", DM::DOUBLE, &this->searchradius);
+
 	//Define Parameter street network
 	view = DM::View("EDGES", DM::EDGE, DM::MODIFY);
 	views.push_back(view);
@@ -120,10 +123,13 @@ void ConnectNodes2Graph::run()
 		Point_2 fn = it->first;
 
 		DM::Node* nearest = nodemap[std::pair<int,int>(fn.x(),fn.y())];
+		double weight = TBVectorData::calculateDistance(connectingnode,nearest);
+
+		if(weight > searchradius)
+			continue;
 
 		//std::string nearest = findNearestNode(nodes,connectingnode);
 		DM::Edge* newedge = sys->addEdge(connectingnode,nearest,viewdef["EDGES"]);
-		double weight = TBVectorData::calculateDistance(connectingnode,nearest);
 		newedge->changeAttribute(defhelper_graph.getAttributeString(DM::GRAPH::EDGES,DM::GRAPH::EDGES_ATTR_DEF::Weight),weight);
 		sys->addComponentToView(connectingnode,viewdef["NODES"]);
 	}

@@ -61,6 +61,15 @@ public:
 	//LINK COMPONENTS OF EPANET
 	bool addPipe(DM::Edge *pipe, bool cv);
 	~EpanetDynamindConverter();
+
+	//HELP FUNCTIONS
+	std::vector<DM::Node*> getFlowNeighbours(DM::Node* junction);
+	std::vector<DM::Node*> getInverseFlowNeighbours(DM::Node* junction);
+	DM::Node* getNearestPressure(DM::Node* currentpressurepoint, std::vector<DM::Node*> &nodes);
+	DM::Node* getNearestFlowPoint(DM::Node* currentpoint, std::vector<DM::Node*> &nodes);
+	double calcDiameter(double k, double l, double q, double h, double maxdiameter,bool discretediameters,bool nearestdiscretediameter);
+	double calcFrictionHeadLoss(double d, double k, double l, double q);
+	double calcLambda(double k, double d, double q, double lambda = 0);
 };
 
 #endif // EpanetDynamindConverter_H

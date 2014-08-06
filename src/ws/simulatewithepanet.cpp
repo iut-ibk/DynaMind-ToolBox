@@ -45,6 +45,9 @@
 #include <epanetdynamindconverter.h>
 #include <epanetmodelcreator.h>
 
+//QT
+#include <QUuid>
+
 using namespace DM;
 
 DM_DECLARE_NODE_NAME(SimulateWithEPANET,Watersupply)
@@ -57,8 +60,15 @@ SimulateWithEPANET::SimulateWithEPANET()
 void SimulateWithEPANET::run()
 {
 	QString dir = QDir::tempPath();
-	std::string inpfilename = dir.toStdString() + "/test.inp";
-	std::string rptfilename = dir.toStdString() + "/test.rpt";
+
+	std::string name = QUuid::createUuid().toString().mid(1,36).toStdString();
+
+	#if defined DEBUG || _DEBUG
+	name = "test";
+	#endif
+
+	std::string inpfilename = dir.toStdString() + "/" + name +".inp";
+	std::string rptfilename = dir.toStdString() + "/" + name +".rpt";
 	DM::Logger(DM::Standard) << "Writing file: " << inpfilename;
 
 	converter.reset();
