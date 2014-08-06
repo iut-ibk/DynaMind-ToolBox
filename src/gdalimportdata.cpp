@@ -114,6 +114,17 @@ void GDALImportData::run()
 	}
 
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
+		if (vc->getType() != DM::COMPONENT) {
+			if (poFeature->GetGeometryRef() == 0) {
+				DM::Logger(DM::Error) << "Feature "<< poFeature->GetFID() << "not importet, no geometry";
+				continue;
+			}
+			if (!poFeature->GetGeometryRef()->IsValid()) {
+				DM::Logger(DM::Error) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
+				continue;
+			}
+
+		}
 		OGRFeature * f_new = vc->createFeature();
 		f_new->SetGeometry(poFeature->GetGeometryRef());
 		foreach(std::string attribute_name, vc->getAllAttributes()) {
