@@ -473,6 +473,7 @@ DM::Node* EpanetDynamindConverter::getNearestFlowPoint(DM::Node* currentpoint, s
 
 std::vector<DM::Node*> EpanetDynamindConverter::getInverseFlowNeighbours(DM::Node* junction)
 {
+	//Downstream neighbours (Neigbours which are getting water of the current junction)
 	std::vector<DM::Node*> result;
 
 	if(!components.contains(junction))
@@ -499,22 +500,19 @@ std::vector<DM::Node*> EpanetDynamindConverter::getInverseFlowNeighbours(DM::Nod
 
 		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))return std::vector<DM::Node*>();
 
-		if(std::fabs(flow) < 0.001)
-			flow=0.0;
+		//if(std::fabs(flow) < 0.01)
+		//	flow=0.0;
 
 		if(invert)
 			flow = -flow;
 
-		if(flow <= 0)
+		if(flow < 0)
 			continue;
 
 		if(currentedge->getStartNode()==junction)
 			result.push_back(currentedge->getEndNode());
 		else
 			result.push_back(currentedge->getStartNode());
-
-		if(!components.contains(result[result.size()-1]))
-			DM::Logger(DM::Error) << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk";
 	}
 
 	return result;
@@ -522,6 +520,7 @@ std::vector<DM::Node*> EpanetDynamindConverter::getInverseFlowNeighbours(DM::Nod
 
 std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junction)
 {
+	//Upstream neighbours (Neigbours which supply water)
 	std::vector<DM::Node*> result;
 
 	if(!components.contains(junction))
@@ -548,8 +547,8 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))
 			return std::vector<DM::Node*>();
 
-		if(std::fabs(flow) < 0.01)
-			flow=0.0;
+		//if(std::fabs(flow) < 0.01)
+		//	flow=0.0;
 
 		if(invert)
 			flow = -flow;
@@ -561,9 +560,6 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 			result.push_back(currentedge->getEndNode());
 		else
 			result.push_back(currentedge->getStartNode());
-
-		if(!components.contains(result[result.size()-1]))
-			DM::Logger(DM::Error) << "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUk";
 	}
 
 	return result;
@@ -655,7 +651,7 @@ double EpanetDynamindConverter::calcDiameter(double k, double l, double q, doubl
 			}
 	}
 
-	if(d < diameters[0])
+	if(d < diameters[0] && discretediameters)
 		d = diameters[0];
 
 	return d;

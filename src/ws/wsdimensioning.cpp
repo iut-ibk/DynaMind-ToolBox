@@ -141,19 +141,23 @@ void Dimensioning::run()
 
 	if(!SitzenfreiDimensioning())return;
 
-	if(usemainpipe)
+	//if(usemainpipe)
 	{
 		DM::Logger(DM::Standard) << "Using main pipe information";
 		std::vector<DM::Node*> givenPressurePoints = getInitialPressurepoints();
 
 		for (int var = 0; var < this->iterations; ++var)
 		{
-			if(usereservoirdata)
+			if(usereservoirdata && usemainpipe)
 			{
 				if(!calibrateReservoirOutFlow(totaldemand, 100,entrypipes,false))
 					return;
 
 				DM::Logger(DM::Standard) << "Calibrate reservoir out flow .... DONE";
+			}
+			else
+			{
+				EPANET::ENsolveH();
 			}
 
 			DM::Logger(DM::Standard) << "Approximate pressure";
@@ -216,6 +220,7 @@ bool Dimensioning::approximatePressure(bool discretediameter,std::vector<DM::Nod
 	std::vector<DM::Node*>newinitunchecked;
 
 	//Balance all loops or systems with more than one water source
+	//Do not change max iteration --- it seams we to not have to iterate to get good results
 	for (int iteration = 0; iteration < 30; iteration++)
 	{
 		if(newinitunchecked.size()==0 && iteration>0)
@@ -372,9 +377,18 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 	double startZ = nodes[nodes.size()-1]->getZ();
 	double endZ = nodes[0]->getZ();
 
-	if(endPressure<=0 && converter->getInverseFlowNeighbours(nodes[0]).size()==0)
+	if(endPressure <= 0.0 && converter->getInverseFlowNeighbours(nodes[0]).size()==0)
 	{
 		endPressure = (startZ-endZ) - apprdt*length + startPressure;
+
+		/*
+		if(endPressure < 0.0)
+		{
+			DM::Logger(DM::Error) << "Negative pressure approximated at the end of a flow path: " << endPressure << "m StartH: " << startZ << "m EndH: " << endZ << "m";
+			endPressure = 10;
+		}
+		*/
+
 		nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),endPressure);
 	}
 
@@ -383,13 +397,26 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 
 	if(deltaP < 0)
 	{
-		if(std::find(newinitunchecked.begin(),newinitunchecked.end(),nodes[0])==newinitunchecked.end())
-			newinitunchecked.push_back(nodes[0]);
+		if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),nodes[0])==knownPressurePoints.end())
+		{
+			bool alreadyforced=false;
 
-		double forcedpressure = (startZ-endZ) + apprdt*length + startPressure;
+			if(std::find(newinitunchecked.begin(),newinitunchecked.end(),nodes[0])==newinitunchecked.end())
+				newinitunchecked.push_back(nodes[0]);
+			else
+				alreadyforced= true;
 
-		nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),forcedpressure);
-		return true;
+
+			double forcedpressure = startPressure + startZ + apprdt*length - endZ;
+
+			DM::Logger(DM::Error) << "Negative pressure approximated at the end of a flow path: " << forcedpressure-endPressure << "m StartH: " << startZ << "m EndH: " << endZ << "m";
+
+			if(alreadyforced)
+				forcedpressure=std::max(forcedpressure,endPressure);
+
+			nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),forcedpressure);
+			return true;
+		}
 	}
 
 	if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),nodes[0])==knownPressurePoints.end())
@@ -515,10 +542,7 @@ bool Dimensioning::findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::N
 	}
 
 	if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),currentPressurePoint)==knownPressurePoints.end())
-	{
-		DM::Logger(DM::Error) << "Pressure of starting point in flow path is not known: " << currentPressurePoint->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
 		return false;
-	}
 
 	return true;
 }
@@ -565,10 +589,10 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 			pressureDiff=0.0;
 
 		double diameter = 0.0;
-		double roughness = 0.004; //roughness (m)
+		double roughness = 0.0004; //roughness (m)
 
 		if(usemainpipes && std::find(mainpipes.begin(),mainpipes.end(),currentpipe)!=mainpipes.end())
-			roughness = 0.001;
+			roughness = 0.0001;
 
 		if(startP > 0 && endP < 0)
 		{
@@ -578,8 +602,8 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 
 		if(pressureDiff < 0 && flow > 0)
 		{
-			DM::Logger(DM::Warning) << "Pipe with negative pressure difference: " << pressureDiff << " Flow: " << flow << " EPANET ID: " << (int)epanetID;
-			DM::Logger(DM::Warning) << "Please place a pump here or use more observed pressure points in your system to balance all reservoirs";
+			//DM::Logger(DM::Warning) << "Pipe with negative pressure difference: " << pressureDiff << " Flow: " << flow << " EPANET ID: " << (int)epanetID;
+			//DM::Logger(DM::Warning) << "Please place a pump here or use more observed pressure points in your system to balance all reservoirs";
 			diameter = converter->calcDiameter(roughness,TBVectorData::calculateDistance(currentpipe->getStartNode(),currentpipe->getEndNode()),flow/1000.0,std::fabs(pressureDiff),maxdiameter,discretediameter,nearestdiscretediameter);
 		}
 		else
