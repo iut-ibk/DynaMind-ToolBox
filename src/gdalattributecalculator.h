@@ -27,6 +27,8 @@ private:
 	bool oneToMany(DM::ViewContainer *lead, DM::ViewContainer *linked);
 
 	std::vector<OGRFeature *> resolveLink(OGRFeature * f, QString first, QString second);
+
+	std::multimap<DM::ViewContainer * , std::string> index_map; //index _id for faster serach
 public:
 	GDALAttributeCalculator();
 	void init();

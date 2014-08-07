@@ -35,6 +35,8 @@ private:
 	int OGRtoDMGeometry(OGRFeatureDefn * def);
 	DM::Attribute::AttributeType OGRToDMAttribute(OGRFieldDefn * fdef);
 
+	bool isFlat;
+
 
 
 public:

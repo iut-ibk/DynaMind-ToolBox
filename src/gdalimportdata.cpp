@@ -112,7 +112,6 @@ void GDALImportData::run()
 		}
 		lyr->SetSpatialFilter(&spatialFilter);
 	}
-
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		if (vc->getType() != DM::COMPONENT) {
 			if (poFeature->GetGeometryRef() == 0) {
@@ -126,7 +125,16 @@ void GDALImportData::run()
 
 		}
 		OGRFeature * f_new = vc->createFeature();
-		f_new->SetGeometry(poFeature->GetGeometryRef());
+
+		if (!this->isFlat) {
+			OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
+			//geo->getNumGeometries()
+			f_new->SetGeometry(geo->getGeometryRef(0));
+		} else {
+			f_new->SetGeometry(poFeature->GetGeometryRef());
+		}
+
+
 		foreach(std::string attribute_name, vc->getAllAttributes()) {
 			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(attribute_name.c_str()));
 			f_new->SetField(attribute_name.c_str(), f);
@@ -209,21 +217,27 @@ int GDALImportData::OGRtoDMGeometry(OGRFeatureDefn *def)
 	{
 	case wkbPoint:
 		type = DM::NODE;
+		isFlat = true;
 		break;
 	case wkbPolygon:
 		type = DM::FACE;
+		isFlat = true;
 		break;
 	case wkbMultiPolygon:
 		type = DM::FACE;
+		isFlat=false;
 		break;
 	case wkbLineString:
 		type = DM::EDGE;
+		isFlat = false;
 		break;
 	case wkbMultiLineString:
 		type = DM::EDGE;
+		isFlat = false;
 		break;
 	case wkbNone:
 		type = DM::COMPONENT;
+		isFlat = true;
 		break;
 	default:
 		DM::Logger(DM::Error) << "Geometry type not implemented: " << strType;

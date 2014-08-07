@@ -1,7 +1,7 @@
 #include "gdalattributecalculator.h"
 #include <sstream>
 #include <ogr_feature.h>
-
+#include <multimap.h>
 #include "parser/mpParser.h"
 
 DM_DECLARE_NODE_NAME(GDALAttributeCalculator, GDALModules)
@@ -30,14 +30,13 @@ GDALAttributeCalculator::GDALAttributeCalculator()
 void GDALAttributeCalculator::initViews()
 {
 	leading_view = 0;
+	index_map.clear();
 
 	for (helper_map::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it) {
 		DM::ViewContainer * v = it->second;
 		delete v;
 	}
 	helper_views_name.clear();
-
-
 
 	QString attr = QString::fromStdString(this->attribute);
 	QStringList lattr = attr.split(".");
@@ -103,6 +102,8 @@ bool GDALAttributeCalculator::oneToMany( DM::ViewContainer * lead,  DM::ViewCont
 
 	if (inViews[linked->getName()].hasAttribute(link_id_onToMany.str())) {
 		linked->addAttribute(link_id_onToMany.str(), DM::Attribute::INT, DM::READ);
+		//Mark to create index for faster search
+		this->index_map.insert(std::pair<DM::ViewContainer * , std::string>(linked, link_id_onToMany.str()));
 		return true;
 	}
 
@@ -168,6 +169,13 @@ void GDALAttributeCalculator::init()
 
 void GDALAttributeCalculator::run()
 {
+	for (std::multimap<DM::ViewContainer *, std::string>::const_iterator it = this->index_map.begin(); it != this->index_map.end(); ++it) {
+		DM::ViewContainer * v = it->first;
+//		if (v == leading_view)
+//			continue;
+		v->createIndex(it->second);
+	}
+
 	leading_view->resetReading();
 
 	OGRFeature * l_feat = 0;

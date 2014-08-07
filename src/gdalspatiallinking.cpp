@@ -72,13 +72,19 @@ void GDALSpatialLinking::run()
 
 		linkView.resetReading();
 		linkView.setSpatialFilter(lead_geo);
+		long counter = 0;
 		while (link_feature = linkView.getNextFeature()) {
 			OGRPoint ct;
 			link_feature->GetGeometryRef()->Centroid(&ct);
 			if (ct.Within(lead_geo)) {
 				link_feature->SetField(link_name.c_str(), id);
+				counter++;
 			}
 
+		}
+		if (counter % 100000){
+			linkView.syncAlteredFeatures();
+			leadingView.syncReadFeatures();
 		}
 	}
 }
