@@ -49,7 +49,7 @@ static vector<boost::tuple<bool, int_point_t, int_poly_t> > shape2cells(int_poly
 
 static vector<int_poly_t> make_finite_vd(vector<int_point_t> points)
 {
-    double_point_t centroid_points;
+    double_point_t centroid_point;
     vector<int_poly_t> ps(points.size());
     double sum_x = 0, sum_y = 0;
     double min_x = INT_MAX, min_y = INT_MAX, max_x = INT_MIN, max_y = INT_MIN;
@@ -69,7 +69,7 @@ static vector<int_poly_t> make_finite_vd(vector<int_point_t> points)
         max_x = px > max_x ? px : max_x;
         max_y = py > max_y ? py : max_y;
     }
-    centroid_points = double_point_t(sum_x / points.size(), sum_y / points.size());
+    centroid_point = double_point_t(sum_x / points.size(), sum_y / points.size());
 
     /* max side of bounding box */
     max_bound = max(max_x - min_x, max_y - min_y);
@@ -99,7 +99,7 @@ static vector<int_poly_t> make_finite_vd(vector<int_point_t> points)
                 t = double_point_t(x(t) / t_len, y(t) / t_len);
                 double_point_t n = double_point_t(-y(t), x(t));
                 double_point_t midpoint = boost::polygon::center(double_segment_t(a,b));
-                double_point_t dir = double_point_t(midpoint.x() - centroid_points.x(), midpoint.y() - centroid_points.y());
+                double_point_t dir = double_point_t(midpoint.x() - centroid_point.x(), midpoint.y() - centroid_point.y());
                 double f = dir.x() * n.x() + dir.y() * n.y() >= 0 ? 1. : -1.;
                 dir = double_point_t(f * n.x(), f * n.y());
                 double_point_t fp = double_point_t(dir.x() * max_bound, dir.y() * max_bound);
