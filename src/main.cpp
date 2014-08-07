@@ -81,7 +81,7 @@ void copyfiles(string &cpfile, int iteration)
 string replacestrings(string &replace, string projectfilepath)
 {
     QStringList replacelist = QString::fromStdString(replace).split(";");
-    QString tmpfile = QString::fromStdString(projectfilepath)+"_tmp.dyn";
+	QString tmpfile = QString::fromStdString(projectfilepath)+"_tmp_" + QUuid::createUuid().toString().mid(1,36) + ".dyn";
 
     if(replace=="")
         return projectfilepath;
