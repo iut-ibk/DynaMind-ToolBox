@@ -42,7 +42,7 @@ CreateVoronoiDiagram::CreateVoronoiDiagram()
 	vc.addAttribute("area",DM::Attribute::DOUBLE,DM::WRITE);
     views.push_back(vc);
 
-    DM::View vn = defhelper_graph.getView(DM::GRAPH::NODES,DM::WRITE);
+    DM::View vn = defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY);
 	vn.addAttribute("VoronoiCell",DM::Attribute::STRING,DM::WRITE);
     views.push_back(vn);
 
@@ -59,7 +59,7 @@ void CreateVoronoiDiagram::run()
 
     //Get System information
     this->sys = this->getData("Layout");
-	std::vector<DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::READ));
+    std::vector<DM::Component*> nm = sys->getAllComponentsInView(defhelper_graph.getView(DM::GRAPH::NODES,DM::MODIFY));
 	std::vector<DM::Component*> fm = sys->getAllComponentsInView(defhelper_er.getView(DM::ER::EXAMINATIONROOM,DM::READ));
 
     if(nm.size()==0)
@@ -68,11 +68,11 @@ void CreateVoronoiDiagram::run()
         return;
     }
 
-    if(fm.size() != 1)
+    if(fm.size()==0)
     {
-        DM::Logger(DM::Warning) << "Only one face is allowed";
+        DM::Logger(DM::Warning) << "At least one face has to be specified";
         return;
     }
 
-    Voronoi::createVoronoi(nm,fm[0],this->sys,vc);
+    Voronoi::createVoronoi(nm,fm,this->sys,vc);
 }
