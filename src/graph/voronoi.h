@@ -7,5 +7,5 @@
 class Voronoi
 {
 public:
-	static bool createVoronoi(std::vector<DM::Component*> &nodes, DM::Component *face, DM::System *sys, DM::View v);
+    static bool createVoronoi(std::vector<DM::Component*> &nodes, std::vector<DM::Component*> &faces, DM::System *sys, DM::View v);
 };
