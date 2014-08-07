@@ -48,6 +48,7 @@ GDALSystem::GDALSystem()
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	DBID = QUuid::createUuid().toString();
 
@@ -87,6 +88,7 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	//Connect to DB
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
 

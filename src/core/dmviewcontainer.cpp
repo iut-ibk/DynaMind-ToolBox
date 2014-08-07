@@ -72,6 +72,15 @@ void ViewContainer::setSpatialFilter(OGRGeometry *geo)
 	lyr->SetSpatialFilter(geo);
 }
 
+void ViewContainer::createSpatialIndex()
+{
+
+	std::stringstream index;
+	index << "SELECT CreateSpatialIndex('" << this->getName() << "','GEOMETRY')";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
+
+}
+
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)

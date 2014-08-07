@@ -160,6 +160,8 @@ public:
 	 */
 	void setSpatialFilter(OGRGeometry * geo);
 
+	void createSpatialIndex();
+
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++
