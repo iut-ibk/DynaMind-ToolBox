@@ -144,7 +144,7 @@ void Dimensioning::run()
 	//if(usemainpipe)
 	{
 		DM::Logger(DM::Standard) << "Using main pipe information";
-		std::vector<DM::Node*> givenPressurePoints = getInitialPressurepoints();
+		initknownpressure = getInitialPressurepoints();
 
 		for (int var = 0; var < this->iterations; ++var)
 		{
@@ -162,7 +162,7 @@ void Dimensioning::run()
 
 			DM::Logger(DM::Standard) << "Approximate pressure";
 
-			if(!approximatePressure(discrete,givenPressurePoints))
+			if(!approximatePressure(discrete,initknownpressure))
 				return;
 
 			DM::Logger(DM::Standard) << "Approximate pressure .... DONE";
@@ -172,7 +172,7 @@ void Dimensioning::run()
 
 			DM::Logger(DM::Standard) << "Approximate pipe sizes .... DONE";
 
-			//resetPressureOfJunctions(givenPressurePoints);
+			//resetPressureOfJunctions(initknownpressure);
 		}
 
 		if(discrete)
@@ -397,6 +397,7 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 
 	if(deltaP < 0)
 	{
+		//Wrong flowpath for the current pressure surface
 		if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),nodes[0])==knownPressurePoints.end())
 		{
 			bool alreadyforced=false;
@@ -408,8 +409,6 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 
 
 			double forcedpressure = startPressure + startZ + apprdt*length - endZ;
-
-			DM::Logger(DM::Error) << "Negative pressure approximated at the end of a flow path: " << forcedpressure-endPressure << "m StartH: " << startZ << "m EndH: " << endZ << "m";
 
 			if(alreadyforced)
 				forcedpressure=std::max(forcedpressure,endPressure);
@@ -528,10 +527,10 @@ bool Dimensioning::findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::N
 
 		DM::Node* next = neighbours[0];
 
-		//cycle check
+		//cycle check -- This should not happen but epanet has some minor cyclic flow -> maybe a treshold sould be implemented
 		if(std::find(nodes.begin(),nodes.end(),next)!=nodes.end())
 		{
-			DM::Logger(DM::Error) << "Found cyclic flow path of length "  << nodes.size();
+			DM::Logger(DM::Debug) << "Found cyclic flow path of length "  << nodes.size();
 			nodes.clear();
 			return true;
 		}
@@ -597,7 +596,7 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 		if(startP > 0 && endP < 0)
 		{
 			//TODO implement Pumpts here
-			DM::Logger(DM::Warning) << "Negative pressure in pressure surface: StartP " << startP  << " EndP " << endP << " Length of pipe: " << length;
+			DM::Logger(DM::Debug) << "Negative pressure in pressure surface: StartP " << startP  << " EndP " << endP << " Length of pipe: " << length;
 		}
 
 		if(pressureDiff < 0 && flow > 0)

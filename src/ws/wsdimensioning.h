@@ -43,6 +43,7 @@ class Dimensioning : public DM::Module
 	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter;
 	double maxdiameter, iterations, apprdt;
 	std::vector<DM::Component*> fixedpipes;
+	std::vector<DM::Node*> initknownpressure;
 
 public:
 	Dimensioning();
