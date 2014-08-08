@@ -43,7 +43,7 @@ Module::Module()
 	owner = NULL;
 	successorMode = false;
 	GDALModule = false;
-	this->spatialFilter = "";
+	moduleFilter = std::vector<Filter>();
 }
 
 void Module::preRun()
@@ -160,14 +160,14 @@ bool Module::getForceRefreshSimulation()
 	return forceUpdate;
 }
 
-void Module::setSpatialFilter(string filter)
+void Module::setFilter(std::vector<Filter> filter)
 {
-	this->spatialFilter = filter;
+	this->moduleFilter = filter;
 }
 
-string Module::getSpatialFilter()
+std::vector<Filter> Module::getFilter()
 {
-	return this->spatialFilter;
+	return this->moduleFilter;
 }
 
 void Module::addObserver(ModuleObserver* obs)

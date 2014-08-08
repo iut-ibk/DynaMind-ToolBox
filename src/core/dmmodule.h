@@ -79,11 +79,22 @@ enum ModuleStatus
 };
 
 /**
+  */
+class DM_HELPER_DLL_EXPORT Filter {
+public:
+	Filter() : viewName(""), attributeFilter(""), spatialFilter(""){}
+	Filter(std::string viewName, std::string attributeFilter = "", std::string spatialFilter = ""): viewName(viewName), attributeFilter(attributeFilter), spatialFilter(spatialFilter){}
+	std::string getViewName() {return viewName;}
+	std::string getAttributeFilter(){return attributeFilter;}
+	std::string getSpatialFilter(){return spatialFilter;}
+private:
+	std::string viewName;
+	std::string attributeFilter;
+	std::string spatialFilter;
+};
+
+/**
 * @class DM::Module
-*
-*
-*
-*
 * @brief Abstract class as a base for Modules.
 */
 class DM_HELPER_DLL_EXPORT Module
@@ -264,9 +275,9 @@ public:
 	/**
 	 * @brief Set spatial filter
 	 */
-	void setSpatialFilter(std::string filter);
+	void setFilter(std::vector<Filter> filters);
 
-	std::string getSpatialFilter();
+	std::vector<Filter> getFilter();
 
 protected:
 	/** @brief returns the data from the desired stream */
@@ -369,7 +380,7 @@ private:
 	std::string		name;
 	DM::Simulation *sim;
 	bool			forceUpdate;
-	std::string spatialFilter;
+	std::vector<Filter> moduleFilter;
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;

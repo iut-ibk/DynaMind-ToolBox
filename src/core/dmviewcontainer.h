@@ -162,6 +162,9 @@ public:
 
 	void createSpatialIndex();
 
+	void deleteFeature(long id);
+
+
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++
@@ -169,6 +172,9 @@ private:
 	std::vector<OGRFeature *> dirtyFeatures_write_not_owned; //Container for object generated in Python (couldn't work out how to transfer the ownership)
 	std::vector<OGRFeature *> dirtyFeatures_write;
 	std::vector<OGRFeature *> dirtyFeatures_read;
+
+	std::vector<long> delete_ids;
+
 	bool readonly;
 	void registerFeature(OGRFeature * f);
 };

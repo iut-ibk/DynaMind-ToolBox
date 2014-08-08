@@ -81,6 +81,15 @@ void ViewContainer::createSpatialIndex()
 
 }
 
+void ViewContainer::deleteFeature(long id)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+	delete_ids.push_back(id);
+}
+
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
@@ -129,6 +138,8 @@ void ViewContainer::syncAlteredFeatures()
 
 	this->_currentSys->syncNewFeatures(*this, this->new_Features_write_not_owned, false);
 	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write, true);
+
+	this->_currentSys->synsDeleteFeatures(*this, this->delete_ids);
 
 }
 

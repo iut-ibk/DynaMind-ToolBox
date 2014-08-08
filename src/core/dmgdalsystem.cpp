@@ -266,18 +266,22 @@ string GDALSystem::getDBID()
 
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
+	OGRSpatialReference* oSourceSRS;
+	oSourceSRS = new OGRSpatialReference();
+	oSourceSRS->importFromEPSG(32755);
+
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbNone, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbNone, NULL );
 		break;
 	case DM::NODE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPoint, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
 		break;
 	case DM::EDGE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbLineString, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbLineString, NULL );
 		break;
 	case DM::FACE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPolygon, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPolygon, NULL );
 		break;
 	}
 
@@ -310,8 +314,25 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 	df.clear();
 }
 
+void GDALSystem::synsDeleteFeatures(const View &v, std::vector<long> &df)
+{
+	Logger(Debug) << "Start Delete";
+	OGRLayer * lyr = viewLayer[v.getName()];
+	lyr->StartTransaction();
+	for (int i = 0; i < df.size(); i++) {
+		lyr->DeleteFeature(df[i]);
+		if (i % 1000000 == 0) {
+			lyr->CommitTransaction();
+			lyr->StartTransaction();
+		}
+	}
+	lyr->CommitTransaction();
+	df.clear();
+}
+
 void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
+	Logger(Debug) << "Sync Altered";
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
 	int counter = 0;
