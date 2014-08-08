@@ -1,5 +1,6 @@
 #include "gdalimportdata.h"
 #include "dmgdalsystem.h"
+#include "ogr_geometry.h"
 
 
 #include <ogr_api.h>
@@ -18,9 +19,32 @@ GDALImportData::GDALImportData()
 	append = false;
 	this->addParameter("append", DM::BOOL, &append);
 
+	this->epsg_to = 0;
+	this->addParameter("epsg_to", DM::INT, &epsg_to);
+
+	this->epsg_from = -1;
+	this->addParameter("epsg_from", DM::INT, &epsg_from);
+
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
 	poDS = 0;
-	baseView = 0;
+	filterView = 0;
+}
+
+OGRCoordinateTransformation* GDALImportData::getTrafo(int sourceEPSG, int targetEPSG)
+{
+	if (sourceEPSG == targetEPSG)
+		return 0;
+	OGRSpatialReference* oSourceSRS;
+	OGRSpatialReference* oTargetSRS;
+	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
+	oSourceSRS = new OGRSpatialReference();
+	oSourceSRS->importFromEPSG(sourceEPSG);
+
+	oTargetSRS = new OGRSpatialReference();
+	oTargetSRS->importFromEPSG(targetEPSG);
+	// Input spatial reference system objects are assigned by copy
+	// (calling clone() method) and no ownership transfer occurs.
+	return OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
 }
 
 void GDALImportData::init()
@@ -50,24 +74,20 @@ void GDALImportData::init()
 		DM::ViewContainer dummy_view = DM::ViewContainer("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		views.push_back(dummy_view);
 	}
-	if (!this->getSpatialFilter().empty()) {
-		if (baseView)
-			delete baseView;
-		baseView = 0;
-		QString filter = QString::fromStdString(this->getSpatialFilter());
-		QStringList equation = filter.split("=", QString::SkipEmptyParts);
-		QString view_effected = equation[1];
-
-		std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
-
-		if (inViews.find(view_effected.toStdString()) != inViews.end()) {
-			DM::Logger(DM::Error) << "Filter is set";
-			DM::View v = inViews[view_effected.toStdString()];
-			baseView = new DM::ViewContainer (v.getName(), v.getType(), DM::READ);
-			views.push_back( (*baseView ));
+	if (this->getFilter().size() > 0) {
+		if (filterView)
+			delete filterView;
+		filterView = 0;
+		foreach (DM::Filter f, this->getFilter()) {
+			std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
+			if (inViews.find(f.getSpatialFilter()) != inViews.end()) {
+				DM::View v = inViews[f.getSpatialFilter()];
+				filterView = new DM::ViewContainer (v.getName(), v.getType(), DM::READ);
+				views.push_back( (*filterView ));
+			}
 		}
 	} else {
-		baseView = 0;
+		filterView = 0;
 	}
 	this->addGDALData("city", views);
 }
@@ -96,22 +116,33 @@ void GDALImportData::run()
 		return;
 	}
 
+
 	OGRFeature *poFeature;
 	OGRMultiPolygon spatialFilter;
 	vc->setCurrentGDALSystem(city);
 
 	OGRLayer * lyr = this->initLayer();
 	lyr->ResetReading();
+	OGRCoordinateTransformation* forward_trans = this->getTrafo(this->epsg_from, this->epsg_to);
+	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->epsg_to, this->epsg_from);
+
+	if (!forward_trans || !backwards_trans) {
+		DM::Logger(DM::Error) << "Unknown Transformation";
+	}
 
 	//Add Spatial Filter
-	if (baseView) {
-		baseView->setCurrentGDALSystem(city);
-		baseView->resetReading();
-		while ( (poFeature = baseView->getNextFeature()) != NULL ) {
-			spatialFilter.addGeometry( poFeature->GetGeometryRef() );
+	if (filterView) {
+		filterView->setCurrentGDALSystem(city);
+		filterView->resetReading();
+		while ( (poFeature = filterView->getNextFeature()) != NULL ) {
+			OGRGeometry *ogr_t = poFeature->GetGeometryRef();
+			if (backwards_trans)
+				ogr_t->transform(backwards_trans);
+			spatialFilter.addGeometry(ogr_t);
 		}
 		lyr->SetSpatialFilter(&spatialFilter);
 	}
+
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		if (vc->getType() != DM::COMPONENT) {
 			if (poFeature->GetGeometryRef() == 0) {
@@ -125,15 +156,16 @@ void GDALImportData::run()
 
 		}
 		OGRFeature * f_new = vc->createFeature();
-
+		OGRGeometry * geo_single = 0;
 		if (!this->isFlat) {
 			OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
-			//geo->getNumGeometries()
-			f_new->SetGeometry(geo->getGeometryRef(0));
+			geo_single = geo->getGeometryRef(0);
 		} else {
-			f_new->SetGeometry(poFeature->GetGeometryRef());
+			geo_single = poFeature->GetGeometryRef();
 		}
-
+		if (forward_trans)
+			geo_single->transform(forward_trans);
+		f_new->SetGeometry(geo_single);
 
 		foreach(std::string attribute_name, vc->getAllAttributes()) {
 			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(attribute_name.c_str()));

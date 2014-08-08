@@ -24,7 +24,7 @@ private:
 	bool append;
 	DM::ViewContainer *initShapefile();
 
-	DM::ViewContainer * baseView;
+	DM::ViewContainer * filterView;
 
 	DM::ViewContainer * vc;
 
@@ -37,6 +37,8 @@ private:
 
 	bool isFlat;
 
+	int epsg_to;
+	int epsg_from; //Needed to set spatial filter
 
 
 public:
@@ -44,6 +46,7 @@ public:
 	void run();
 	void init();
 	virtual ~GDALImportData();
+	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
 };
 
 #endif // IMPORTDATA_H
