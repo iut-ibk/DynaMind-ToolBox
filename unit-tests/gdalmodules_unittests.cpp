@@ -4,11 +4,37 @@
 #include <dmlog.h>
 #include <dmlogsink.h>
 
+#define GDALParcelSplit
 
-TEST_F(GDALModules_Unittests, GDALParceling) {
+#ifdef GDALParcelSplit
+TEST_F(GDALModules_Unittests, GDALParcelSplit) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Create System";
 
+	DM::Simulation sim;
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * rect = sim.addModule("GDALCreateRectangle");
+	rect->setParameterValue("width", "200");
+	rect->setParameterValue("height", "100");
+	rect->setParameterValue("view_name", "CITYBLOCK");
+	rect->init();
+
+
+	DM::Module * parceling = sim.addModule("GDALParcelSplit");
+
+	parceling->setParameterValue("width", "100");
+	parceling->setParameterValue("height", "100");
+
+	sim.addLink(rect, "city",parceling, "city");
+
+
+	sim.run();
 }
+#endif
 
+#ifdef GDALAttributeCaluclator
 TEST_F(GDALModules_Unittests, GDALAttributeCaluclator) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
@@ -60,5 +86,6 @@ TEST_F(GDALModules_Unittests, GDALAttributeCaluclator) {
 
 	sim.run();
 }
+#endif
 
 
