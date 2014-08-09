@@ -17,21 +17,26 @@ GDALParceling::GDALParceling()
 {
 	GDALModule = true;
 
-	cityblocks = DM::ViewContainer("CITYBLOCK", DM::FACE, DM::READ);
-
-	parcels = DM::ViewContainer("PARCEL", DM::FACE, DM::WRITE);
-
 	this->width = 100;
-	this->length = 100;
-
 	this->addParameter("width", DM::DOUBLE, &this->width);
+
+	this->length = 100;
 	this->addParameter("length", DM::DOUBLE, &this->length);
 
-	std::vector<DM::ViewContainer> views;
-	views.push_back(cityblocks);
-	views.push_back(parcels);
+	this->blockName = "CITYBLOCK";
+	this->addParameter("blockName", DM::STRING, &this->blockName);
 
-	this->addGDALData("city", views);
+	this->subdevisionName = "PARCEL";
+	this->addParameter("subdevisionName", DM::STRING, &this->subdevisionName);
+
+	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
+	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
+
+	std::vector<DM::ViewContainer*> views;
+	views.push_back(&cityblocks);
+	views.push_back(&parcels);
+
+	this->registerViewContainers(views);
 
 	counter_added = 0;
 
@@ -174,6 +179,21 @@ void GDALParceling::run()
 	}
 	parcels.syncAlteredFeatures();
 	DM::Logger(DM::Error) << this->counter_added;
+}
+
+void GDALParceling::init()
+{
+	if (this->blockName.empty() || this->subdevisionName.empty())
+		return;
+
+	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
+	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
+
+	std::vector<DM::ViewContainer*> views;
+	views.push_back(&cityblocks);
+	views.push_back(&parcels);
+
+	this->registerViewContainers(views);
 }
 
 void GDALParceling::splitePoly(Polygon_with_holes_2 &p)

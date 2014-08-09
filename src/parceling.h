@@ -15,13 +15,13 @@
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/offset.h>
-//#include <SFCGAL/algorithm/intersection.h>
+
 
 typedef CGAL::Point_2< SFCGAL::Kernel >              Point_2 ;
 typedef CGAL::Vector_2< SFCGAL::Kernel >             Vector_2 ;
 typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
-typedef std::list<Polygon_with_holes_2>                   Pwh_list_2;
+typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
 
 
 class DM_HELPER_DLL_EXPORT GDALParceling: public DM::Module
@@ -34,10 +34,14 @@ private:
 	double length;
 	double width;
 
+	std::string blockName;
+	std::string subdevisionName;
+
 
 public:
 	GDALParceling();
 	void run();
+	void init();
 
 	void splitePoly(Polygon_with_holes_2 &poly);
 
