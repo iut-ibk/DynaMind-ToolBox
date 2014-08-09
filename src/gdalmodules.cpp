@@ -33,6 +33,7 @@
 #include "gdalattributecalculator.h"
 #include "gdalspatiallinking.h"
 #include "gdalerase.h"
+#include "gdaloffset.h"
 
 
 /**
@@ -48,4 +49,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<NonSpatialLinking>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALAttributeCalculator>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALErase>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALOffset>());
 }

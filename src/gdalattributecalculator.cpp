@@ -1,7 +1,6 @@
 #include "gdalattributecalculator.h"
 #include <sstream>
 #include <ogr_feature.h>
-#include <multimap.h>
 #include "parser/mpParser.h"
 
 DM_DECLARE_NODE_NAME(GDALAttributeCalculator, GDALModules)
