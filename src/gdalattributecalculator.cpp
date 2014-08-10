@@ -59,8 +59,8 @@ void GDALAttributeCalculator::initViews()
 		}
 		else
 			v = helper_views_name[l_var[l_var.size()-2].toStdString()];
-
-		v->addAttribute(l_var[l_var.size()-1].toStdString(), DM::Attribute::DOUBLE, DM::READ);
+		if (!v->hasAttribute(l_var[l_var.size()-1].toStdString()))
+			v->addAttribute(l_var[l_var.size()-1].toStdString(), DM::Attribute::DOUBLE, DM::READ);
 
 		//Remove last element
 		l_var.removeLast();
@@ -200,7 +200,6 @@ void GDALAttributeCalculator::run()
 
 			double value = solve_variable(l_feat, l_var);
 			*muVariables[it->first] = mup::Value(value);
-			std::cout << value << std::endl;
 		}
 		try
 		{
@@ -209,7 +208,7 @@ void GDALAttributeCalculator::run()
 		}
 		catch (mup::ParserError &e)
 		{
-			DM::Logger(DM::Error) << e.GetMsg();
+			DM::Logger(DM::Error) << "Error in qeuation "<< e.GetMsg();
 		}
 	}
 }
