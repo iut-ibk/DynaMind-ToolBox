@@ -32,7 +32,6 @@ private:
 	DM::ViewContainer cityblocks;
 	DM::ViewContainer parcels;
 	int counter_added;
-	double length;
 	double width;
 	int generated = 0;
 
