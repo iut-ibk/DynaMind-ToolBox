@@ -3,6 +3,8 @@
 #include <dmlogger.h>
 #include <dmlog.h>
 #include <dmlogsink.h>
+#include <dmviewcontainer.h>
+#include <dmsystem.h>
 
 #define GDALParcelSplit
 
@@ -16,21 +18,45 @@ TEST_F(GDALModules_Unittests, GDALParcelSplit) {
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	DM::Module * rect = sim.addModule("GDALCreateRectangle");
+	rect->setParameterValue("width", "100");
+	rect->setParameterValue("height", "200");
+	rect->setParameterValue("view_name", "CITYBLOCK");
+	rect->init();
+
+
+	DM::Module * parceling = sim.addModule("GDALParcelSplit");
+	sim.addLink(rect, "city",parceling, "city");
+
+
+	sim.run();
+
+	//Check M2
+	DM::GDALSystem * sys = (DM::GDALSystem*) parceling->getOutPortData("city");
+	DM::ViewContainer components = DM::ViewContainer("PARCEL", DM::FACE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+	ASSERT_EQ(components.getFeatureCount(), 26);
+
+	sim.clear();
+
+	rect = sim.addModule("GDALCreateRectangle");
 	rect->setParameterValue("width", "200");
 	rect->setParameterValue("height", "100");
 	rect->setParameterValue("view_name", "CITYBLOCK");
 	rect->init();
 
 
-	DM::Module * parceling = sim.addModule("GDALParcelSplit");
-
-	parceling->setParameterValue("width", "100");
-	parceling->setParameterValue("height", "100");
-
+	 parceling = sim.addModule("GDALParcelSplit");
 	sim.addLink(rect, "city",parceling, "city");
 
 
 	sim.run();
+
+	//Check M2
+	sys = (DM::GDALSystem*) parceling->getOutPortData("city");
+	components = DM::ViewContainer("PARCEL", DM::FACE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+	ASSERT_EQ(components.getFeatureCount(), 26);
+
 }
 #endif
 
@@ -85,6 +111,8 @@ TEST_F(GDALModules_Unittests, GDALAttributeCaluclator) {
 	attr_calc_counter->init();
 
 	sim.run();
+
+
 }
 #endif
 

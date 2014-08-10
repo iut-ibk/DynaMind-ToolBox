@@ -34,6 +34,7 @@ private:
 	int counter_added;
 	double length;
 	double width;
+	int generated = 0;
 
 	std::string blockName;
 	std::string subdevisionName;

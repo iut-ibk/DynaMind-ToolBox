@@ -20,17 +20,17 @@ GDALParcelSplit::GDALParcelSplit()
 {
 	GDALModule = true;
 
-	this->width = 100;
+	this->width = 15;
 	this->addParameter("width", DM::DOUBLE, &this->width);
-
-	this->length = 100;
-	this->addParameter("length", DM::DOUBLE, &this->length);
 
 	this->blockName = "CITYBLOCK";
 	this->addParameter("blockName", DM::STRING, &this->blockName);
 
 	this->subdevisionName = "PARCEL";
 	this->addParameter("subdevisionName", DM::STRING, &this->subdevisionName);
+
+	this->generated = 0;
+	this->addParameter("generated", DM::INT, &this->generated);
 
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
 	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
@@ -65,9 +65,8 @@ void GDALParcelSplit::run()
 {
 	cityblocks.resetReading();
 	OGRFeature *poFeature;
-	int counter = 0;
+	this->counter_added = 0;
 	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
-		counter++;
 		char* geo;
 
 		poFeature->GetGeometryRef()->exportToWkt(&geo);
@@ -85,7 +84,7 @@ void GDALParcelSplit::run()
 		Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
 		splitePoly(p);
 	}
-	DM::Logger(DM::Error) << this->counter_added;
+	this->generated = counter_added;
 }
 
 
@@ -101,22 +100,14 @@ void GDALParcelSplit::splitePoly(Polygon_with_holes_2 &p)
 
 	Pwh_list_2 splitters(this->splitter(p_m));
 
-//	if (splitters.size() == 0) {
-//		SFCGAL::Polygon split_geo(p);
-//		addToSystem(split_geo);
-//		return;
-//	}
-
 	foreach (Polygon_with_holes_2 pwh, splitters) {
 		Pwh_list_2 split_ress;
 		CGAL::intersection(p, pwh,  std::back_inserter(split_ress));
 		foreach(Polygon_with_holes_2 pwh_split, split_ress) {
 			SFCGAL::Polygon split_geo(pwh_split);
 			addToSystem(split_geo);
-			//splitePoly(pwh_split);
 		}
 	}
-	return;
 }
 
 void GDALParcelSplit::addToSystem(SFCGAL::Polygon & poly)
@@ -171,20 +162,23 @@ Pwh_list_2 GDALParcelSplit::splitter(Polygon_2 &rect)
 
 	//Splitt Polygon on the short side in half and the rest in small peaces of 15m
 
-	int numberOfElements_x = sqrt(CGAL::to_double(v1.squared_length()))/15.;
-	int numberOfElements_y = 2;
+	int numberOfElements_x  = (!v1_bigger) ? 2 : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
+	int numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length()))/this->width : 2;
 
 	Vector_2 dv1 = v1/numberOfElements_x;
 	Vector_2 dv2 = v2/numberOfElements_y;
 
 	for (int dx = 0; dx < numberOfElements_x; dx++) {
-		Polygon_with_holes_2 split_left_1;
 		Vector_2 offsetx = dv1*dx;
-		split_left_1.outer_boundary().push_back(p1+ offsetx);
-		split_left_1.outer_boundary().push_back( p1+dv1 + offsetx);
-		split_left_1.outer_boundary().push_back(p1+dv1+dv2 + offsetx);
-		split_left_1.outer_boundary().push_back(p1+dv2 + offsetx);
-		ress.push_back(split_left_1);
+		for (int dy = 0; dy < numberOfElements_y; dy++) {
+			Polygon_with_holes_2 split_left_1;
+			Vector_2 offsety = dv2*dy;
+			split_left_1.outer_boundary().push_back(p1+ offsetx + offsety);
+			split_left_1.outer_boundary().push_back( p1+dv1 + offsetx + offsety);
+			split_left_1.outer_boundary().push_back(p1+dv1+dv2 + offsetx + offsety);
+			split_left_1.outer_boundary().push_back(p1+dv2 + offsetx + offsety);
+			ress.push_back(split_left_1);
+		}
 	}
 	return ress;
 }
