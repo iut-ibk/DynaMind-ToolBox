@@ -23,15 +23,13 @@ void GDALCreateRectangle::init()
 		return;
 	view = DM::ViewContainer(this->viewName, DM::FACE, DM::WRITE);
 
-	std::vector<DM::ViewContainer> datastream;
-	datastream.push_back(view);
+	std::vector<DM::ViewContainer*> datastream;
+	datastream.push_back(&view);
 
-	this->addGDALData("city", datastream);
+	this->registerViewContainers(datastream);
 }
 
 void GDALCreateRectangle::run() {
-	DM::GDALSystem * city = this->getGDALData("city");
-	view.setCurrentGDALSystem(city);
 
 	OGRLinearRing lr;
 	lr.addPoint(0,0,0);
@@ -46,6 +44,5 @@ void GDALCreateRectangle::run() {
 
 	feature->SetGeometry(&poly);
 
-	view.syncAlteredFeatures();
 
 }
