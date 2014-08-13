@@ -35,7 +35,11 @@ EraseView::EraseView()
 
 }
 
-void EraseView::run(){}
+void EraseView::run()
+{
+	sys_in = this->getData("Data");
+	sys_in->getAllComponentsInView(DM::View (NameOfView, DM::COMPONENT, DM::DEL));
+}
 
 void EraseView::init()
 {
