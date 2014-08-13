@@ -142,9 +142,13 @@ void GDALImportData::run()
 		}
 		lyr->SetSpatialFilter(&spatialFilter);
 	}
-
+	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		if (vc->getType() != DM::COMPONENT) {
+			counter++;
+			if (counter%100000 == 0){
+				vc->syncAlteredFeatures();
+			}
 			if (poFeature->GetGeometryRef() == 0) {
 				DM::Logger(DM::Error) << "Feature "<< poFeature->GetFID() << "not importet, no geometry";
 				continue;
@@ -153,7 +157,6 @@ void GDALImportData::run()
 				DM::Logger(DM::Error) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
 				continue;
 			}
-
 		}
 		OGRFeature * f_new = vc->createFeature();
 		OGRGeometry * geo_single = 0;

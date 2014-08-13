@@ -6,10 +6,6 @@
 #include <dmviewcontainer.h>
 #include <ogrsf_frmts.h>
 
-enum DRIVERTYPE {
-	ShapeFile,
-	PostGIS
-};
 
 
 class DM_HELPER_DLL_EXPORT GDALImportData: public DM::Module
