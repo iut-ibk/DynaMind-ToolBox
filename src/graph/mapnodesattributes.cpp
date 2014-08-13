@@ -143,6 +143,6 @@ void MapNodes2Graph::run()
 	for(std::list<DM::Node*>::iterator i = newconnecting.begin(); i != newconnecting.end(); ++i)
 		sys->addComponentToView((*i),viewdef["CONNECTINGNODES"]);
 
-	DM::Logger(DM::Standard) << "Not maped nodes: " << notconnectedcounter;
+	DM::Logger(DM::Standard) << "Not maped nodes: " << notconnectedcounter << " of " << connectingnodes.size();
 
 }
