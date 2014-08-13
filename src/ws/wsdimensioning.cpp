@@ -627,12 +627,16 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 bool Dimensioning::approximateMainPipes(bool usereservoirsdata, double totaldemand, std::vector<DM::Edge*> &respipes,bool discretediameters)
 {
 	double roughness = 0.0001; //roughness (m)
+	double mindiameter = 10;
 	std::vector<DM::Component*> reservoirs = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
 	std::vector<DM::Component*> mainpipe = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::MAINPIPE,DM::READ));
 	std::map<DM::Component*, DM::Edge*> entrypipes;
 
 	std::vector<double> supplypercent;
 	double defaultdiameter = converter->calcDiameter(roughness,1000,totaldemand*0.75,1,maxdiameter/1000.0,discretediameters,nearestdiscretediameter) * 1000;
+
+	if(defaultdiameter == 0)
+		defaultdiameter=mindiameter;
 
 	for(int index=0; index<reservoirs.size(); index++)
 		if(usereservoirsdata)
