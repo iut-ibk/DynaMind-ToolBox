@@ -74,6 +74,7 @@ namespace std {
     %template(facemap) map<string, DM::Face* >;
     %template(stringmap) map<string, string >;
 	%template(modulelist) list<DM::Module* >;
+	%template(filtervector) vector<DM::Filter>;
 }
 
 %pointer_class(std::string,p_string)
@@ -102,10 +103,19 @@ namespace std {
 
     enum PortType {
     INPORT,
-    OUTPORT,
+	OUTPORT,
     };
 
+class DM::FilterArgument {
+	public:
+		FilterArgument(std::string argument);
+};
 
+class DM::Filter {
+public:
+	Filter();
+	Filter(std::string viewName, DM::FilterArgument spatialFilter, DM::FilterArgument attributeFulter);
+};
 
 class DM::Module {
 
@@ -116,6 +126,9 @@ public:
     virtual void run() = 0;
     virtual void init();
     virtual std::string getHelpUrl();
+
+	void setFilter(std::vector<DM::Filter> filter);
+	std::vector<DM::Filter> getFilter();
 
 	void setName(std::string name);
 	std::string getName();

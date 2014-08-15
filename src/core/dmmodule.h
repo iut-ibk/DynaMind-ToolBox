@@ -79,11 +79,35 @@ enum ModuleStatus
 };
 
 /**
+  */
+class DM_HELPER_DLL_EXPORT FilterArgument {
+private:
+	std::string argument;
+public:
+	FilterArgument() : argument(""){}
+	FilterArgument(std::string argument) : argument(argument){}
+	std::string getArgument() {return this->argument;}
+};
+
+/**
+  */
+class DM_HELPER_DLL_EXPORT Filter {
+public:
+	Filter() : viewName(""), attributeFilter(), spatialFilter(){}
+	Filter(std::string viewName, FilterArgument attributeFilter = FilterArgument(), FilterArgument spatialFilter = FilterArgument()): viewName(viewName), attributeFilter(attributeFilter), spatialFilter(spatialFilter){}
+	std::string getViewName() {return viewName;}
+	FilterArgument getAttributeFilter(){return attributeFilter;}
+	FilterArgument getSpatialFilter(){return spatialFilter;}
+private:
+	std::string viewName;
+	FilterArgument attributeFilter;
+	FilterArgument spatialFilter;
+};
+
+
+
+/**
 * @class DM::Module
-*
-*
-*
-*
 * @brief Abstract class as a base for Modules.
 */
 class DM_HELPER_DLL_EXPORT Module
@@ -261,6 +285,13 @@ public:
 	/** @brief Returns the status of reseting the simulation*/
 	bool getForceRefreshSimulation();
 
+	/**
+	 * @brief Set spatial filter
+	 */
+	void setFilter(std::vector<Filter> filters);
+
+	std::vector<Filter> getFilter();
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -362,6 +393,7 @@ private:
 	std::string		name;
 	DM::Simulation *sim;
 	bool			forceUpdate;
+	std::vector<Filter> moduleFilter;
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;
