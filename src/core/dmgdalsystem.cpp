@@ -118,11 +118,11 @@ void GDALSystem::updateView(const View &v)
 			return;
 		}
 
-		OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
-		lyr->CreateField(&oField_id);
+		//OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
+		//lyr->CreateField(&oField_id);
 
-		OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
-		lyr->CreateField(&oField_state_id);
+		//OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
+		//lyr->CreateField(&oField_state_id);
 		viewLayer[v.getName()] = lyr;
 	}
 
@@ -159,8 +159,8 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
-	f->SetField("dynamind_id", (int) latestUniqueId++);
-	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+	//f->SetField("dynamind_id", (int) latestUniqueId++);
+	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 	return f;
 }
 
@@ -255,8 +255,8 @@ string GDALSystem::getCurrentStateID()
 
 void GDALSystem::registerFeature(OGRFeature * f, const View &v)
 {
-	f->SetField("dynamind_id", (int) latestUniqueId++);
-	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+	//f->SetField("dynamind_id", (int) latestUniqueId++);
+	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 }
 
 string GDALSystem::getDBID()
@@ -269,6 +269,7 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
 	oSourceSRS->importFromEPSG(32755);
+//	oSourceSRS = NULL;
 
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
