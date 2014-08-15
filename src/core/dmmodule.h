@@ -80,18 +80,31 @@ enum ModuleStatus
 
 /**
   */
+class DM_HELPER_DLL_EXPORT FilterArgument {
+private:
+	std::string argument;
+public:
+	FilterArgument() : argument(""){}
+	FilterArgument(std::string argument) : argument(argument){}
+	std::string getArgument() {return this->argument;}
+};
+
+/**
+  */
 class DM_HELPER_DLL_EXPORT Filter {
 public:
-	Filter() : viewName(""), attributeFilter(""), spatialFilter(""){}
-	Filter(std::string viewName, std::string attributeFilter = "", std::string spatialFilter = ""): viewName(viewName), attributeFilter(attributeFilter), spatialFilter(spatialFilter){}
+	Filter() : viewName(""), attributeFilter(), spatialFilter(){}
+	Filter(std::string viewName, FilterArgument attributeFilter = FilterArgument(), FilterArgument spatialFilter = FilterArgument()): viewName(viewName), attributeFilter(attributeFilter), spatialFilter(spatialFilter){}
 	std::string getViewName() {return viewName;}
-	std::string getAttributeFilter(){return attributeFilter;}
-	std::string getSpatialFilter(){return spatialFilter;}
+	FilterArgument getAttributeFilter(){return attributeFilter;}
+	FilterArgument getSpatialFilter(){return spatialFilter;}
 private:
 	std::string viewName;
-	std::string attributeFilter;
-	std::string spatialFilter;
+	FilterArgument attributeFilter;
+	FilterArgument spatialFilter;
 };
+
+
 
 /**
 * @class DM::Module

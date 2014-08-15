@@ -103,13 +103,18 @@ namespace std {
 
     enum PortType {
     INPORT,
-    OUTPORT,
+	OUTPORT,
     };
+
+class DM::FilterArgument {
+	public:
+		FilterArgument(std::string argument);
+};
 
 class DM::Filter {
 public:
 	Filter();
-	Filter(std::string viewName, std::string spatialFilter, std::string attributeFulter);
+	Filter(std::string viewName, DM::FilterArgument spatialFilter, DM::FilterArgument attributeFulter);
 };
 
 class DM::Module {
