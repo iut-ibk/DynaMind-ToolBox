@@ -79,11 +79,35 @@ enum ModuleStatus
 };
 
 /**
+  */
+class DM_HELPER_DLL_EXPORT FilterArgument {
+private:
+	std::string argument;
+public:
+	FilterArgument() : argument(""){}
+	FilterArgument(std::string argument) : argument(argument){}
+	std::string getArgument() {return this->argument;}
+};
+
+/**
+  */
+class DM_HELPER_DLL_EXPORT Filter {
+public:
+	Filter() : viewName(""), attributeFilter(), spatialFilter(){}
+	Filter(std::string viewName, FilterArgument attributeFilter = FilterArgument(), FilterArgument spatialFilter = FilterArgument()): viewName(viewName), attributeFilter(attributeFilter), spatialFilter(spatialFilter){}
+	std::string getViewName() {return viewName;}
+	FilterArgument getAttributeFilter(){return attributeFilter;}
+	FilterArgument getSpatialFilter(){return spatialFilter;}
+private:
+	std::string viewName;
+	FilterArgument attributeFilter;
+	FilterArgument spatialFilter;
+};
+
+
+
+/**
 * @class DM::Module
-*
-*
-*
-*
 * @brief Abstract class as a base for Modules.
 */
 class DM_HELPER_DLL_EXPORT Module
@@ -261,6 +285,19 @@ public:
 	/** @brief Returns the status of reseting the simulation*/
 	bool getForceRefreshSimulation();
 
+	/**
+	 * @brief Set filter
+	 */
+	void setFilter(std::vector<Filter> filters);
+
+	/**
+	 * @brief return filter
+	 */
+	std::vector<Filter> getFilter();
+
+	/** @brief sets the current status of the module */
+	void setStatus(ModuleStatus status);
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -330,9 +367,6 @@ protected:
 	bool GDALModule;
 
 private:
-	/** @brief sets the current status of the module */
-	void setStatus(ModuleStatus status);
-
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 
@@ -362,6 +396,7 @@ private:
 	std::string		name;
 	DM::Simulation *sim;
 	bool			forceUpdate;
+	std::vector<Filter> moduleFilter;
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;

@@ -43,6 +43,7 @@ Module::Module()
 	owner = NULL;
 	successorMode = false;
 	GDALModule = false;
+	moduleFilter = std::vector<Filter>();
 }
 
 void Module::preRun()
@@ -157,6 +158,16 @@ void Module::forceRefreshSimulation(bool force)
 bool Module::getForceRefreshSimulation()
 {
 	return forceUpdate;
+}
+
+void Module::setFilter(std::vector<Filter> filter)
+{
+	this->moduleFilter = filter;
+}
+
+std::vector<Filter> Module::getFilter()
+{
+	return this->moduleFilter;
 }
 
 void Module::addObserver(ModuleObserver* obs)

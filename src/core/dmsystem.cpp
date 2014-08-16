@@ -295,6 +295,12 @@ System * System::addSubSystem(System *newsystem,  const DM::View & view)
 std::vector<Component*> System::getAllComponentsInView(const DM::View & view)
 {
     std::vector<Component*> comps;
+	if(view.getAccessType()==DM::DEL && map_contains(&viewCaches, view.getName()))
+	{
+		const ViewCache &vc = viewCaches[view.getName()];
+		foreach(Component* c, vc.filteredElements)
+			removeComponentFromView(c,view.getName());
+	}
 
     if (map_contains(&viewCaches, view.getName()))
     {

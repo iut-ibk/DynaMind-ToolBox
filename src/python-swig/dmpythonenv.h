@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011- 2014 Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,18 +43,18 @@ struct PythonEnvPriv;
 
 class DM_HELPER_DLL_EXPORT PythonEnv {
 public:
-        virtual ~PythonEnv();
-        static PythonEnv *getInstance();
-        void addPythonPath(std::string path);
-        bool registerNodes(ModuleRegistry *registry,
-                                  const std::string &module);
-        bool addOverWriteStdCout();
+	virtual ~PythonEnv();
+	static PythonEnv *getInstance();
+	void addPythonPath(std::string path);
+	bool registerNodes(ModuleRegistry *registry,
+					   const std::string &module);
+	bool addOverWriteStdCout();
 
 private:
-        PythonEnv();
-        PythonEnvPriv *priv;
-        static PythonEnv *instance;
-        std::vector<std::string> loadedModules;
+	PythonEnv();
+	PythonEnvPriv *priv;
+	static PythonEnv *instance;
+	std::vector<std::string> loadedModules;
 };
 
 }

@@ -29,6 +29,7 @@
 #include <dmlogger.h>
 #include <dmgdalsystem.h>
 #include <ogrsf_frmts.h>
+#include <sstream>
 
 namespace DM {
 
@@ -49,6 +50,46 @@ string ViewContainer::getDBID()
 	return this->_currentSys->getDBID();
 }
 
+void ViewContainer::setAttributeFilter(string filter)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+
+	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
+	lyr->SetAttributeFilter(filter.c_str());
+}
+
+void ViewContainer::setSpatialFilter(OGRGeometry *geo)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+
+	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
+	lyr->SetSpatialFilter(geo);
+}
+
+void ViewContainer::createSpatialIndex()
+{
+
+	std::stringstream index;
+	index << "SELECT CreateSpatialIndex('" << this->getName() << "','GEOMETRY')";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
+
+}
+
+void ViewContainer::deleteFeature(long id)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
+	delete_ids.push_back(id);
+}
+
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
@@ -63,6 +104,10 @@ void ViewContainer::setCurrentGDALSystem(GDALSystem *sys)
 		return;
 	}
 	this->_currentSys = sys;
+
+	this->setAttributeFilter("");
+	this->setSpatialFilter(0);
+
 	this->_currentSys->resetReading(*this);
 	if (this->writes())
 		readonly = false;
@@ -94,6 +139,8 @@ void ViewContainer::syncAlteredFeatures()
 	this->_currentSys->syncNewFeatures(*this, this->new_Features_write_not_owned, false);
 	this->_currentSys->syncNewFeatures(*this, this->newFeatures_write, true);
 
+	this->_currentSys->synsDeleteFeatures(*this, this->delete_ids);
+
 }
 
 void ViewContainer::syncReadFeatures()
@@ -104,7 +151,7 @@ void ViewContainer::syncReadFeatures()
 	this->dirtyFeatures_read.clear();
 }
 
-OGRFeature *ViewContainer::getOGRFeature(long nFID)
+OGRFeature *ViewContainer::getFeature(long nFID)
 {
 	if (!_currentSys) {
 		Logger(Error) << "No GDALSystem registered";
@@ -154,6 +201,14 @@ OGRFeature *ViewContainer::getNextFeature()
 	OGRFeature * f =  this->_currentSys->getNextFeature(*this);
 	registerFeature(f);
 	return f;
+}
+
+void ViewContainer::createIndex(string attribute)
+{
+
+	std::stringstream index;
+	index << "CREATE INDEX "<< attribute <<"_index ON " << this->getName() << " (" << attribute << ")";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
 }
 
 int ViewContainer::getFeatureCount()

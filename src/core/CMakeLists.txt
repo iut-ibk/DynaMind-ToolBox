@@ -24,7 +24,7 @@ TARGET_LINK_LIBRARIES(dynamindcore ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTS
 
 IF(PYTHON_EMBEDDING)
     TARGET_LINK_LIBRARIES(dynamindcore ${PYTHON_LIBRARIES})
-    ADD_DEPENDENCIES(dynamindcore pydynamindgen pydmtoolboxgen)
+    #ADD_DEPENDENCIES(dynamindcore pydynamindgen pydmtoolboxgen)
 ENDIF()
 
 INSTALL(TARGETS dynamindcore
