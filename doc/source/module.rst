@@ -158,12 +158,12 @@ The view definition is used by the simulation to check if all data are provided 
 
 Data Stream Definition using ViewContainer
 ------------------------------------------
-When using the DynaMind-GDAL API ViewContainers can be used a easier way to define and access the data stream.
-The ViewContainer enhances the View definition described before providing immediate access to the data. This means
-that the *System* object is no longer required to access the data of a view. Defining a ViewContainer is similar to
-defining a View. However, instead of adding the views to the data stream, the ViewContainers are now registered at
-the module using ``self.registerViewContainers(views)``. The following code block gives an example of how
-to define and register a ViewContainer. Note that to access the data in the ViewContainer later it is important to
+When using the DynaMind-GDAL API ViewContainers provide an easier way to define and access the data stream.
+ViewContainer enhance the View definition described before, providing a more direct access to its data. This means
+that the *System* object is no longer required. Defining a ViewContainer is similar to
+defining a View. However, instead of adding the views to the data stream, ViewContainers are registered at
+the module itself using ``self.registerViewContainers(views)``. The following code block gives an example of how
+to define and register a ViewContainer. Note that, to access the data in the ViewContainer later, it is important to
 add the VewContainer as Attribute to the class using the ``self.`` statement.
 
 
@@ -192,14 +192,14 @@ add the VewContainer as Attribute to the class using the ``self.`` statement.
 Data Manipulation Process (DMP)
 ===============================
 
-This is where the actual fun is happening and your module does the actual data processing.
-DMP is described in the ``run`` method of the module. Every time the module is executed the run
-method is called. Depending on the chosen data API the data are either access using the *System* class
-for the *DynaMind Component API* or the *DynaMind GDAL API*
+This is where the actual data processing is happening.
+The DMP is described in the ``run`` method of the module. Every time the module is executed the run
+method is called. Depending on the chosen data API data are either accessed using the *System* class
+for the *DynaMind Component API* or via *ViewContainer* using the *DynaMind GDAL API*
 
 
-Data Access using the DynaMind GDAL API
----------------------------------------
+Data Access using the *DynaMind GDAL API*
+-----------------------------------------
 The *DynaMind GDAL API* builds on the widely applied GDAL library. In GDAL
 geometric objects are described as ``Feature``. Features contain geometry and attributes describing the object
 and provides methods to set and get geometry as well as attributes. See the GDAL documentation for a full description of the
@@ -220,7 +220,10 @@ The API of the ViewContainer class is based on the GDAL *Layer API*. However it 
 
 ..
 
-
+Error Handling
+--------------
+If an error occurs during the DMP the module should set its execution status to MOD_EXECUTION_ERROR. This let the simulation
+know that an error occurred in the module and it stops the simulation. ``self.setStatus(MOD_EXECUTION_ERROR)``
 
 
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
