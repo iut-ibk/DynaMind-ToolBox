@@ -286,11 +286,17 @@ public:
 	bool getForceRefreshSimulation();
 
 	/**
-	 * @brief Set spatial filter
+	 * @brief Set filter
 	 */
 	void setFilter(std::vector<Filter> filters);
 
+	/**
+	 * @brief return filter
+	 */
 	std::vector<Filter> getFilter();
+
+	/** @brief sets the current status of the module */
+	void setStatus(ModuleStatus status);
 
 protected:
 	/** @brief returns the data from the desired stream */
@@ -361,9 +367,6 @@ protected:
 	bool GDALModule;
 
 private:
-	/** @brief sets the current status of the module */
-	void setStatus(ModuleStatus status);
-
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
 
