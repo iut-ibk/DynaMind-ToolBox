@@ -213,18 +213,6 @@ GDALSystem *GDALSystem::createSuccessor()
 	return result;
 }
 
-/*OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
-{
-	if (viewLayer.find(v.getName()) == viewLayer.end()) {
-		Logger(Error) << "Layer not found";
-		return NULL;
-	}
-	OGRLayer * lyr = viewLayer[v.getName()];
-
-
-	return lyr->GetFeature(this->uniqueIdsTonfid[dynamind_id]);
-}*/
-
 void GDALSystem::updateViews(const std::vector<View> &views)
 {
 	foreach (DM::View v, views) {
