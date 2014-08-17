@@ -20,9 +20,9 @@ private:
 	bool append;
 	DM::ViewContainer *initShapefile();
 
-	DM::ViewContainer * filterView;
+	DM::ViewContainer *filterView;
 
-	DM::ViewContainer * vc;
+	DM::ViewContainer *vc;
 
 	OGRDataSource *poDS;
 
@@ -43,6 +43,7 @@ public:
 	void init();
 	virtual ~GDALImportData();
 	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
+	int DMToOGRGeometry(int dm_geometry);
 };
 
 #endif // IMPORTDATA_H
