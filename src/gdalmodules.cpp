@@ -36,6 +36,7 @@
 #include "gdaloffset.h"
 #include "gdalparcelsplit.h"
 #include "gdalpublishresults.h"
+#include "gdalgeometricattributes.h"
 
 
 /**
@@ -55,4 +56,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALOffset>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALParcelSplit>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALPublishResults>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALGeometricAttributes>());
 }
