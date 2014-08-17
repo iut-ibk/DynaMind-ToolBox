@@ -31,11 +31,11 @@ void GDALSpatialLinking::init()
 		return;
 	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
 	if (inViews.find(leadingViewName) == inViews.end()) {
-		DM::Logger(DM::Error) << "view " << leadingViewName << " not found in in stream";
+		DM::Logger(DM::Warning) << "view " << leadingViewName << " not found in in stream";
 		return;
 	}
 	if (inViews.find(linkViewName) == inViews.end()) {
-		DM::Logger(DM::Error) << "view " << linkViewName << " not found in in stream";
+		DM::Logger(DM::Warning) << "view " << linkViewName << " not found in in stream";
 		return;
 	}
 	this->leadingView = DM::ViewContainer(leadingViewName, inViews[leadingViewName].getType(), DM::READ);
@@ -59,6 +59,7 @@ void GDALSpatialLinking::run()
 {
 	if (!properInit) {
 		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
+		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
 	leadingView.resetReading();
@@ -70,17 +71,29 @@ void GDALSpatialLinking::run()
 		OGRGeometry * lead_geo = lead_feat->GetGeometryRef();
 		int id = lead_feat->GetFID();
 
+		if (!lead_geo) {
+			DM::Logger(DM::Warning) << "Lead feature geometry is null";
+			continue;
+		}
+
 		linkView.resetReading();
 		linkView.setSpatialFilter(lead_geo);
 		long counter = 0;
 		while (link_feature = linkView.getNextFeature()) {
 			OGRPoint ct;
-			link_feature->GetGeometryRef()->Centroid(&ct);
+			OGRGeometry * geo = link_feature->GetGeometryRef();
+			if (!geo){
+				DM::Logger(DM::Warning) << "feature link feature geometry is null";
+				continue;
+			}
+			if (int error = geo->Centroid(&ct) != OGRERR_NONE) {
+				DM::Logger(DM::Warning) << "error calculationg ct " << error;
+				continue;
+			}
 			if (ct.Within(lead_geo)) {
 				link_feature->SetField(link_name.c_str(), id);
 				counter++;
 			}
-
 		}
 		if (counter % 100000){
 			linkView.syncAlteredFeatures();
