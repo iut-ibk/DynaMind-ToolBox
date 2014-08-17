@@ -65,7 +65,7 @@ void Module::afterRun()
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		//Clean Views
 		v->syncAlteredFeatures();
-		v->syncAlteredFeatures();
+		v->syncReadFeatures();
 	}
 }
 Module::~Module()
