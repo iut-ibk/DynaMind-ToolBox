@@ -11,10 +11,15 @@ typedef std::map<std::string, DM::ViewContainer *> helper_map;
 GDALAttributeCalculator::GDALAttributeCalculator()
 {
 	this->GDALModule = true;
+	this->init_failed = true;
 
 	this->attribute = "";
 	this->addParameter("attribute", DM::STRING, &this->attribute);
 	this->equation = "";
+
+	this->addParameter("attribute_type", DM::STRING, &this->attributeType);
+	this->attributeType = "DOUBLE";
+
 	this->addParameter("equation", DM::STRING, &this->equation);
 	this->variables = std::map<std::string, std::string>();
 	this->addParameter("variables", DM::STRING_MAP, &this->variables);
@@ -25,24 +30,43 @@ GDALAttributeCalculator::GDALAttributeCalculator()
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 	this->addGDALData("city", data);
 }
+DM::Attribute::AttributeType GDALAttributeCalculator::convertAttributeType(std::string type) {
+	if (type == "STRING") {
+		return DM::Attribute::STRING;
+	}
+	if (type == "INT") {
+		return DM::Attribute::INT;
+	}
+	return DM::Attribute::DOUBLE;
+}
 
-void GDALAttributeCalculator::initViews()
+
+
+void GDALAttributeCalculator::resetInit()
 {
 	leading_view = 0;
 	index_map.clear();
+	variable_types.clear();
 
 	for (helper_map::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it) {
 		DM::ViewContainer * v = it->second;
 		delete v;
 	}
+
 	helper_views_name.clear();
+}
+
+bool GDALAttributeCalculator::initViews()
+{
+	resetInit();
+	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
 
 	QString attr = QString::fromStdString(this->attribute);
 	QStringList lattr = attr.split(".");
 
 	this->leading_view = new DM::ViewContainer(lattr[0].toStdString(), DM::COMPONENT, DM::READ);
 	leading_attribute = lattr[1].toStdString();
-	this->leading_view->addAttribute(leading_attribute, DM::Attribute::DOUBLE, DM::WRITE);
+	this->leading_view->addAttribute(leading_attribute, convertAttributeType(this->attributeType), DM::WRITE);
 
 	helper_views_name[lattr[0].toStdString()] = leading_view;
 	//Register Variables
@@ -52,6 +76,13 @@ void GDALAttributeCalculator::initViews()
 		//The latest is always the view that is needed
 		QStringList l_var = var.split(".");
 
+		//Check if View exists in stream
+		if(inViews.find(l_var[l_var.size()-2].toStdString()) == inViews.end()) {
+			DM::Logger(DM::Warning) << "View " << l_var[l_var.size()-2].toStdString() << " not found";
+			return false;
+		}
+		DM::View viewInStream = inViews[l_var[l_var.size()-2].toStdString()];
+
 		DM::ViewContainer * v;
 		if (helper_views_name.find(l_var[l_var.size()-2].toStdString()) == helper_views_name.end()) {
 			v = new DM::ViewContainer(l_var[l_var.size()-2].toStdString(), DM::COMPONENT, DM::READ);
@@ -59,8 +90,19 @@ void GDALAttributeCalculator::initViews()
 		}
 		else
 			v = helper_views_name[l_var[l_var.size()-2].toStdString()];
-		if (!v->hasAttribute(l_var[l_var.size()-1].toStdString()))
-			v->addAttribute(l_var[l_var.size()-1].toStdString(), DM::Attribute::DOUBLE, DM::READ);
+
+		//Check if View has attribute
+		if (!viewInStream.hasAttribute(l_var[l_var.size()-1].toStdString())) {
+			DM::Logger(DM::Warning) << "Attribute " << l_var[l_var.size()-1].toStdString() << " not found";
+			return false;
+		}
+
+		DM::Attribute::AttributeType variable_type = viewInStream.getAttributeType(l_var[l_var.size()-1].toStdString());
+		variable_types[it->first] = variable_type;
+		DM::Logger(DM::Debug) << it->first << " " << (int) variable_type;
+		if (!v->hasAttribute(l_var[l_var.size()-1].toStdString())) {
+			v->addAttribute(l_var[l_var.size()-1].toStdString(), variable_type, DM::READ);
+		}
 
 		//Remove last element
 		l_var.removeLast();
@@ -79,6 +121,7 @@ void GDALAttributeCalculator::initViews()
 			l_var.removeLast();
 		}
 	}
+	return true;
 }
 
 
@@ -89,11 +132,11 @@ bool GDALAttributeCalculator::oneToMany( DM::ViewContainer * lead,  DM::ViewCont
 
 	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
 	if (inViews.find(lead->getName()) == inViews.end()){
-		DM::Logger(DM::Error) << "View " << lead->getName() << " not found in stream";
+		DM::Logger(DM::Debug) << "View " << lead->getName() << " not found in stream";
 		return false;
 	}
 	if (inViews.find(linked->getName()) == inViews.end()){
-		DM::Logger(DM::Error) << "View " << linked->getName() << " not found in stream";
+		DM::Logger(DM::Debug) << "View " << linked->getName() << " not found in stream";
 		return false;
 	}
 	std::stringstream link_id_onToMany;
@@ -154,10 +197,15 @@ std::vector<OGRFeature *> GDALAttributeCalculator::resolveLink(OGRFeature * f, Q
 
 void GDALAttributeCalculator::init()
 {
+	init_failed = true;
 	if (this->attribute.empty())
 		return;
-	initViews();
+	if (!initViews()) {
 
+		resetInit();
+		return;
+	}
+	init_failed = false;
 	std::vector<DM::ViewContainer * > data_stream;
 	for (helper_map::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it) {
 		DM::ViewContainer * v = it->second;
@@ -168,12 +216,18 @@ void GDALAttributeCalculator::init()
 
 void GDALAttributeCalculator::run()
 {
+	if (this->init_failed) {
+		DM::Logger(DM::Error) << "Init Failed";
+		this->setStatus(DM::MOD_CHECK_ERROR);
+		return;
+	}
+	//Create Index for faster lookup
 	for (std::multimap<DM::ViewContainer *, std::string>::const_iterator it = this->index_map.begin(); it != this->index_map.end(); ++it) {
 		DM::ViewContainer * v = it->first;
-//		if (v == leading_view)
-//			continue;
 		v->createIndex(it->second);
 	}
+
+	DM::Attribute::AttributeType result_type = leading_view->getAttributeType(leading_attribute);
 
 	leading_view->resetReading();
 
@@ -184,7 +238,18 @@ void GDALAttributeCalculator::run()
 	mup::ParserX * p  = new mup::ParserX();
 
 	for (varaible_map::const_iterator it = variables.begin(); it != variables.end(); ++it) {
-		mup::Value * v = new mup::Value(0.0);
+		DM::Attribute::AttributeType attr_type = variable_types[it->first];
+		mup::Value * v = 0;
+		switch (attr_type) {
+		case DM::Attribute::STRING:
+			v = new mup::Value("");
+			DM::Logger(DM::Debug) << "Init " << it->first << " as string";
+			break;
+		default:
+			v = new mup::Value(0.0);
+			DM::Logger(DM::Debug) << "Init " << it->first << " as double";
+			break;
+		}
 		muVariables[it->first] = v;
 		p->DefineVar(it->first, v);
 	}
@@ -193,45 +258,91 @@ void GDALAttributeCalculator::run()
 	while (l_feat = leading_view->getNextFeature()) {
 		//Update Varaibles
 		for (varaible_map::const_iterator it = variables.begin(); it != variables.end(); ++it) {
-
 			QString var = QString::fromStdString(it->second);
 			//The latest is always the view that is needed
 			QStringList l_var = var.split(".");
 
-			double value = solve_variable(l_feat, l_var);
-			*muVariables[it->first] = mup::Value(value);
+			std::vector<AttributeValue> ressult_vec;
+			DM::Attribute::AttributeType attr_type = this->variable_types[it->first];
+			solve_variable(l_feat, l_var,ressult_vec, attr_type );
+			double d_val = 0;
+			std::string s_val = "";
+			switch (attr_type) {
+			case DM::Attribute::DOUBLE:
+				d_val = 0;
+				foreach(AttributeValue v, ressult_vec) {
+					d_val+=v.d_val;
+				}
+				*muVariables[it->first] = mup::Value(d_val);
+				break;
+			case DM::Attribute::INT:
+				d_val = 0;
+				foreach(AttributeValue v, ressult_vec) {
+					d_val+=v.d_val;
+				}
+				*muVariables[it->first] = mup::Value(d_val);
+				break;
+			case DM::Attribute::STRING:
+				s_val = "";
+				if (ressult_vec.size() > 0)
+					s_val = ressult_vec[0].s_val;
+				*muVariables[it->first] = mup::Value(s_val);
+				break;
+			default:
+				*muVariables[it->first] = mup::Value(d_val);
+				break;
+			}
 		}
 		try
 		{
 			mup::Value val = p->Eval();
+			if (result_type == DM::Attribute::DOUBLE) {
+				l_feat->SetField(leading_attribute.c_str(), (int) val.GetFloat());
+				continue;
+			}
+			if (result_type == DM::Attribute::STRING) {
+				l_feat->SetField(leading_attribute.c_str(), val.GetString().c_str());
+				continue;
+			}
 			l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
 		}
 		catch (mup::ParserError &e)
 		{
-			DM::Logger(DM::Error) << "Error in qeuation "<< e.GetMsg();
+			DM::Logger(DM::Error) << "Error in equation "<< e.GetMsg();
+			this->setStatus(DM::MOD_CHECK_ERROR);
+			return;
 		}
 	}
 }
 
-double GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_chain)
+
+void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_chain, std::vector<AttributeValue> & ress_vector, DM::Attribute::AttributeType attr_type)
 {
-	double val = 0;
 	//Check if last in chain
 	//solve forward
 	if (link_chain.size() > 2) {
 		//Link Name
-
 		std::vector<OGRFeature*> features = resolveLink(feat, link_chain[0], link_chain[1]);
 
 		QStringList link_chain_next = link_chain;
 		link_chain_next.removeFirst();
 
 		foreach (OGRFeature * f, features) {
-			val+=solve_variable(f, link_chain_next);
+			solve_variable(f, link_chain_next, ress_vector, attr_type);
 		}
 	} else {
-		val = feat->GetFieldAsDouble(link_chain[1].toStdString().c_str());
+		DM::ViewContainer * v = helper_views_name[link_chain[0].toStdString()];
+		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
+		AttributeValue val;
+
+		if (attr_type == DM::Attribute::STRING) {
+			val.s_val = feat->GetFieldAsString(link_chain[1].toStdString().c_str());
+			ress_vector.push_back(val);
+			return;
+		}
+		val.d_val = feat->GetFieldAsDouble(link_chain[1].toStdString().c_str());
+		ress_vector.push_back(val);
+		return;
 	}
 
-	return val;
 }
