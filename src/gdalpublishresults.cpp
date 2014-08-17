@@ -24,7 +24,7 @@ GDALPublishResults::GDALPublishResults()
 	this->layerName = "";
 	this->addParameter("layer_name", DM::STRING, &layerName);
 
-	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::MODIFY);
+	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::READ);
 
 
 	std::vector<DM::ViewContainer> datastream;
@@ -43,8 +43,7 @@ void GDALPublishResults::init()
 		DM::Logger(DM::Error) << "view " << viewName << " not found in in stream";
 		return;
 	}
-
-	this->components = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::MODIFY);
+	this->components = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::READ);
 
 	std::vector<DM::ViewContainer *> data_stream;
 
@@ -61,18 +60,30 @@ void GDALPublishResults::run()
 
 	OGRRegisterAll();
 
-	poDriver  = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( this->driverName.c_str() );
-	if( poDriver == NULL )
+	if (!driverName.empty()) {
+		poDriver  = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( this->driverName.c_str() );
+		if( poDriver == NULL )
+		{
+			DM::Logger(DM::Error) << this->driverName << "driver not available.";
+			this->setStatus(DM::MOD_EXECUTION_ERROR);
+			return;
+		}
+
+		poDS = poDriver->CreateDataSource(this->sink.c_str());
+	} else {
+		poDS = OGRSFDriverRegistrar::Open(this->sink.c_str(),true);
+		//poDS = (this->sink.c_str());
+	}
+	if( poDS == NULL )
 	{
-		DM::Logger(DM::Error) << this->driverName << "driver not available.";
+		DM::Logger(DM::Error) <<  "problem creating source";
+		this->setStatus(DM::MOD_EXECUTION_ERROR);
 		return;
 	}
 
-	poDS = poDriver->CreateDataSource(this->sink.c_str());
-
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
-	oSourceSRS->importFromEPSG(32755);
+	oSourceSRS->importFromEPSG(4283);
 
 	OGRLayer * lyr;
 	switch ( components.getType() ) {
@@ -86,11 +97,12 @@ void GDALPublishResults::run()
 		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbLineString, NULL );
 		break;
 	case DM::FACE:
-		 lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbPolygon, NULL );
+		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbPolygon, NULL );
 		break;
 	}
 	if (!lyr) {
 		DM::Logger(DM::Error) << "Layer not created";
+		this->setStatus(DM::MOD_EXECUTION_ERROR);
 		return;
 	}
 	OGRFeatureDefn * def =  (OGRFeatureDefn*)components.getFeatureDef();
