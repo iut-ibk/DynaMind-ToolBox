@@ -188,7 +188,7 @@ std::vector<OGRFeature *> GDALAttributeCalculator::resolveLink(OGRFeature * f, Q
 	link_id_many_to_one << second.toStdString() << "_id";
 
 	DM::ViewContainer * v = helper_views_name[second.toStdString()];
-	OGRFeature * next_f = v->getFeature(f->GetFID());
+	OGRFeature * next_f = v->getFeature(f->GetFieldAsInteger(link_id_many_to_one.str().c_str()));
 	if (next_f)
 		next_features.push_back(next_f);
 	return next_features;
@@ -217,7 +217,7 @@ void GDALAttributeCalculator::init()
 void GDALAttributeCalculator::run()
 {
 	if (this->init_failed) {
-		DM::Logger(DM::Error) << "Init Failed";
+		DM::Logger(DM::Error) << "Attribute Calculator Init Failed";
 		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
@@ -284,8 +284,9 @@ void GDALAttributeCalculator::run()
 				break;
 			case DM::Attribute::STRING:
 				s_val = "";
-				if (ressult_vec.size() > 0)
+				if (ressult_vec.size() > 0) {
 					s_val = ressult_vec[0].s_val;
+				}
 				*muVariables[it->first] = mup::Value(s_val);
 				break;
 			default:
