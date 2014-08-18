@@ -33,7 +33,10 @@ private:
 	DM::ViewContainer parcels;
 	int counter_added;
 	double width;
-	int generated = 0;
+	int generated;
+
+	bool splitFirst;
+
 
 	std::string blockName;
 	std::string subdevisionName;

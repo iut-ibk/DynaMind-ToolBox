@@ -32,6 +32,9 @@ GDALParcelSplit::GDALParcelSplit()
 	this->generated = 0;
 	this->addParameter("generated", DM::INT, &this->generated);
 
+	this->splitFirst = true;
+	this->addParameter("split_first", DM::BOOL, &this->splitFirst);
+
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
 	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
 
@@ -160,10 +163,13 @@ Pwh_list_2 GDALParcelSplit::splitter(Polygon_2 &rect)
 		v1_bigger = false;
 	}
 
-	//Splitt Polygon on the short side in half and the rest in small peaces of 15m
+	//Splitt Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
+	double splite_width = 2;
+	if (!splitFirst)
+			splite_width = 1;
 
-	int numberOfElements_x  = (!v1_bigger) ? 2 : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
-	int numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length()))/this->width : 2;
+	int numberOfElements_x  = (!v1_bigger) ? splite_width : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
+	int numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length()))/this->width : splite_width;
 
 	Vector_2 dv1 = v1/numberOfElements_x;
 	Vector_2 dv2 = v2/numberOfElements_y;
