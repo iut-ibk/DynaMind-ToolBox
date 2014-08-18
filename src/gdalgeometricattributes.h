@@ -12,9 +12,13 @@ class DM_HELPER_DLL_EXPORT GDALGeometricAttributes : public DM::Module
 private:
 	std::string leadingViewName;
 	bool isCalculateArea;
+	bool isAspectRationBB;
+	bool isPercentageFilled;
 
 	DM::ViewContainer vc;
 	double calculateArea(OGRPolygon *poly);
+	double aspectRationBB(OGRPolygon *poly);
+	double percentageFilled(OGRPolygon *ogr_poly);
 public:
 	GDALGeometricAttributes();
 	void run();
