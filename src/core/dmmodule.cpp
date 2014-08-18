@@ -55,6 +55,15 @@ void Module::preRun()
 	GDALSystem * sys = this->getGDALData("city");
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		v->setCurrentGDALSystem(sys);
+		//Set Filter, currently only attribute filter
+		foreach (DM::Filter f, this->moduleFilter){
+			if (f.getViewName() != v->getName())
+				continue;
+			std::string attribute_filter = f.getAttributeFilter().getArgument();
+			if (attribute_filter.empty())
+				continue;
+			v->setAttributeFilter(attribute_filter.c_str());
+		}
 	}
 }
 
