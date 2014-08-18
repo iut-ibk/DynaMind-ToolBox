@@ -60,6 +60,7 @@ MapNodes2Graph::MapNodes2Graph()
 
 	//Nodes which should be connected to the graph
 	view = DM::View("CONNECTINGNODES", DM::NODE, DM::MODIFY);
+	view.addAttribute("Weight",DM::Attribute::DOUBLE,DM::READ);
 	views.push_back(view);
 	viewdef["CONNECTINGNODES"]=view;
 
