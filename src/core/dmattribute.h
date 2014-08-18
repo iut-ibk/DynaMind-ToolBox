@@ -80,13 +80,13 @@ public:
 	enum AttributeType 
 	{
 		NOTYPE,
-		INT,
 		DOUBLE,
 		STRING,
 		TIMESERIES,
 		LINK,
 		DOUBLEVECTOR,
-		STRINGVECTOR
+		STRINGVECTOR,
+		INT
 	};
 	class AttributeValue
 	{
