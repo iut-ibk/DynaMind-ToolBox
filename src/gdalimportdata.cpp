@@ -150,6 +150,15 @@ void GDALImportData::run()
 		}
 		lyr->SetSpatialFilter(&spatialFilter);
 	}
+	//Add Attribute Filter
+	if (this->getFilter().size() > 0) {
+		foreach (DM::Filter f, this->getFilter()) {
+			std::string filter = f.getAttributeFilter().getArgument();
+			lyr->SetAttributeFilter(filter.c_str());
+		}
+	}
+
+
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		if (vc->getType() != DM::COMPONENT) {
