@@ -894,9 +894,6 @@ std::set<Module*> Simulation::shiftModuleOutput(Module* m)
 		}
 		else if(outLinks.size())
 			Logger(Warning) << "module '" << m->getClassName() << "' does not write data to outport '" << it->first << "'";
-		else
-			// dead path
-			Logger(Warning) << "outport '" << it->first << "' from module '" << m->getClassName() << "' not connected";
 	}
 
 	// check if this module is read only
