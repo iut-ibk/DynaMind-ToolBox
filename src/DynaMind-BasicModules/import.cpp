@@ -212,6 +212,10 @@ OGRCoordinateTransformation* getTrafo(OGRLayer* layer, int targetEPSG, int sourc
 {
 	OGRSpatialReference* oSourceSRS;
 	OGRSpatialReference* oTargetSRS;
+
+	if(!targetEPSG)
+		return 0;
+
 	// GetSpatialRef: The returned object is owned by the OGRLayer and should not be modified or freed by the application.
 	oSourceSRS = layer->GetSpatialRef();
 	if (sourceEPSG != 0)
