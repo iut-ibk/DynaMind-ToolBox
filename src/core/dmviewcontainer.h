@@ -36,6 +36,7 @@
 class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 class DM_HELPER_DLL_EXPORT OGRFeature;
 class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
+class DM_HELPER_DLL_EXPORT OGRGeometry;
 
 namespace DM {
 
@@ -109,7 +110,7 @@ public:
 	 * @brief Returns OGRFeature with the nFID
 	 * @param nFID feature ID
 	 */
-	OGRFeature *getOGRFeature(long nFID);
+	OGRFeature *getFeature(long nFID);
 
 	//OGRFeature *getFeature(long dynamind_id);
 
@@ -128,6 +129,8 @@ public:
 	 */
 	OGRFeature *getNextFeature();
 
+	void createIndex(std::string attribute);
+
 	/**
 	 * @brief Returns OGRFeatureDefinition. Only used internally to allow python wrapping
 	 */
@@ -145,6 +148,23 @@ public:
 
 	std::string getDBID();
 
+	/**
+	 * @brief Set attribute filter. For doc please see GDAL API
+	 * @param filter
+	 */
+	void setAttributeFilter(std::string filter);
+
+	/**
+	 * @brief Set spatail filter. For doc please see GDAL API
+	 * @param filter
+	 */
+	void setSpatialFilter(OGRGeometry * geo);
+
+	void createSpatialIndex();
+
+	void deleteFeature(long id);
+
+
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++
@@ -152,6 +172,9 @@ private:
 	std::vector<OGRFeature *> dirtyFeatures_write_not_owned; //Container for object generated in Python (couldn't work out how to transfer the ownership)
 	std::vector<OGRFeature *> dirtyFeatures_write;
 	std::vector<OGRFeature *> dirtyFeatures_read;
+
+	std::vector<long> delete_ids;
+
 	bool readonly;
 	void registerFeature(OGRFeature * f);
 };

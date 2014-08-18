@@ -43,6 +43,7 @@ Module::Module()
 	owner = NULL;
 	successorMode = false;
 	GDALModule = false;
+	moduleFilter = std::vector<Filter>();
 }
 
 void Module::preRun()
@@ -54,6 +55,15 @@ void Module::preRun()
 	GDALSystem * sys = this->getGDALData("city");
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		v->setCurrentGDALSystem(sys);
+		//Set Filter, currently only attribute filter
+		foreach (DM::Filter f, this->moduleFilter){
+			if (f.getViewName() != v->getName())
+				continue;
+			std::string attribute_filter = f.getAttributeFilter().getArgument();
+			if (attribute_filter.empty())
+				continue;
+			v->setAttributeFilter(attribute_filter.c_str());
+		}
 	}
 }
 
@@ -64,7 +74,7 @@ void Module::afterRun()
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		//Clean Views
 		v->syncAlteredFeatures();
-		v->syncAlteredFeatures();
+		v->syncReadFeatures();
 	}
 }
 Module::~Module()
@@ -157,6 +167,16 @@ void Module::forceRefreshSimulation(bool force)
 bool Module::getForceRefreshSimulation()
 {
 	return forceUpdate;
+}
+
+void Module::setFilter(std::vector<Filter> filter)
+{
+	this->moduleFilter = filter;
+}
+
+std::vector<Filter> Module::getFilter()
+{
+	return this->moduleFilter;
 }
 
 void Module::addObserver(ModuleObserver* obs)

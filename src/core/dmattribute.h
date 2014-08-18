@@ -80,6 +80,7 @@ public:
 	enum AttributeType 
 	{
 		NOTYPE,
+		INT,
 		DOUBLE,
 		STRING,
 		TIMESERIES,

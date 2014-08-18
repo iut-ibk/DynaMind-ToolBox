@@ -48,6 +48,7 @@ GDALSystem::GDALSystem()
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	DBID = QUuid::createUuid().toString();
 
@@ -87,6 +88,7 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	//Connect to DB
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
 
@@ -116,11 +118,11 @@ void GDALSystem::updateView(const View &v)
 			return;
 		}
 
-		OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
-		lyr->CreateField(&oField_id);
+		//OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
+		//lyr->CreateField(&oField_id);
 
-		OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
-		lyr->CreateField(&oField_state_id);
+		//OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
+		//lyr->CreateField(&oField_state_id);
 		viewLayer[v.getName()] = lyr;
 	}
 
@@ -130,7 +132,11 @@ void GDALSystem::updateView(const View &v)
 		//Feature already in layer
 		if (lyr->GetLayerDefn()->GetFieldIndex(attribute_name.c_str()) >= 0)
 			continue;
-
+		if (v.getAttributeType(attribute_name) == DM::Attribute::INT){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
+			lyr->CreateField(&oField);
+			continue;
+		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::STRING){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
 			lyr->CreateField(&oField);
@@ -153,8 +159,8 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
-	f->SetField("dynamind_id", (int) latestUniqueId++);
-	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+	//f->SetField("dynamind_id", (int) latestUniqueId++);
+	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 	return f;
 }
 
@@ -207,18 +213,6 @@ GDALSystem *GDALSystem::createSuccessor()
 	return result;
 }
 
-/*OGRFeature *GDALSystem::getFeature(const DM::View & v, long dynamind_id)
-{
-	if (viewLayer.find(v.getName()) == viewLayer.end()) {
-		Logger(Error) << "Layer not found";
-		return NULL;
-	}
-	OGRLayer * lyr = viewLayer[v.getName()];
-
-
-	return lyr->GetFeature(this->uniqueIdsTonfid[dynamind_id]);
-}*/
-
 void GDALSystem::updateViews(const std::vector<View> &views)
 {
 	foreach (DM::View v, views) {
@@ -249,8 +243,8 @@ string GDALSystem::getCurrentStateID()
 
 void GDALSystem::registerFeature(OGRFeature * f, const View &v)
 {
-	f->SetField("dynamind_id", (int) latestUniqueId++);
-	f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
+	//f->SetField("dynamind_id", (int) latestUniqueId++);
+	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 }
 
 string GDALSystem::getDBID()
@@ -260,18 +254,23 @@ string GDALSystem::getDBID()
 
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
+	OGRSpatialReference* oSourceSRS;
+	oSourceSRS = new OGRSpatialReference();
+	oSourceSRS->importFromEPSG(32755);
+//	oSourceSRS = NULL;
+
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbNone, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbNone, NULL );
 		break;
 	case DM::NODE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPoint, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
 		break;
 	case DM::EDGE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbLineString, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbLineString, NULL );
 		break;
 	case DM::FACE:
-		return poDS->CreateLayer(v.getName().c_str(), NULL, wkbPolygon, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPolygon, NULL );
 		break;
 	}
 
@@ -304,8 +303,25 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 	df.clear();
 }
 
+void GDALSystem::synsDeleteFeatures(const View &v, std::vector<long> &df)
+{
+	Logger(Debug) << "Start Delete";
+	OGRLayer * lyr = viewLayer[v.getName()];
+	lyr->StartTransaction();
+	for (int i = 0; i < df.size(); i++) {
+		lyr->DeleteFeature(df[i]);
+		if (i % 1000000 == 0) {
+			lyr->CommitTransaction();
+			lyr->StartTransaction();
+		}
+	}
+	lyr->CommitTransaction();
+	df.clear();
+}
+
 void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
+	Logger(Debug) << "Sync Altered";
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
 	int counter = 0;

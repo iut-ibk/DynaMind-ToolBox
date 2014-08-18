@@ -93,6 +93,8 @@ public:
 	 */
 	void syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy);
 
+	void synsDeleteFeatures(const DM::View & v, std::vector<long> & df);
+
 	/**
 	 * @brief Updates view in system.
 	 *
