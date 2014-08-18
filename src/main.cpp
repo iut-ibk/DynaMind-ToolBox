@@ -103,7 +103,7 @@ string replacestrings(string &replace, string projectfilepath)
             QString target = r.at(1);
             QString source = r.at(0);
             content  = content.replace(source,target);
-            std::cout << "Replace in inputfile: " << source.toStdString() << " to " << target.toStdString();
+			std::cout << "Replace in inputfile: " << source.toStdString() << " to " << target.toStdString() << std::endl;
         }
     }
 
@@ -161,7 +161,20 @@ void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloa
 
 	foreach(const QString& overloading, overloadlist)
 	{
-		QStringList overloadingList = overloading.split(QRegExp("\\.|\\="), QString::SkipEmptyParts);
+		QStringList keyvalueList = overloading.split(QRegExp("\\="), QString::SkipEmptyParts);
+		QStringList overloadingList;
+
+		if(keyvalueList.size() >= 2)
+		{
+			overloadingList = keyvalueList[0].split(QRegExp("\\."), QString::SkipEmptyParts);
+
+			QString value = "";
+			for(int index=1; index < keyvalueList.size(); index++)
+				value+=keyvalueList.at(index);
+
+			overloadingList.push_back(value);
+		}
+
 		if (overloadingList.size() != 3)
 			DM::Logger(DM::Error) << "wrong format in parameterstring: " << overloading.toStdString() << overloadingList.size();
 		else
@@ -201,7 +214,7 @@ void showParameters(DM::Simulation* sim)
 	{
 		std::string modName = modIt->getName();
 		foreach(DM::Module::Parameter* p, modIt->getParameters())
-			cout << modName << "." << p->name << "=" << modIt->getParameterAsString(p->name) << ";";
+			cout << modName << "." << p->name << "=" << modIt->getParameterAsString(p->name) << "\n";
 	}
 	cout << endl;
 }
@@ -384,7 +397,9 @@ int main(int argc, char *argv[], char *envp[])
 	qint64 avg = 0;
 	foreach(qint64 i, times)
 		avg += i;
-	avg /= times.size();
+
+	if(repeat)
+		avg /= times.size();
 
 	qint64 sigma = 0;
 	foreach(qint64 i, times)
