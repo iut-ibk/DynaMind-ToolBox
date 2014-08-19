@@ -60,23 +60,25 @@ class DynaMindScenarios:
         running_procs = []
         
         while executionarguments.__len__() or running_procs.__len__():
+            st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
             if running_procs.__len__() < maxcpu and executionarguments.__len__():
                 ex = executionarguments.pop(0)
                 #print " ".join(ex[0])
                 FNULL = open(ex[1], 'w') 
                 running_procs.append([(Popen(ex[0],stdout=FNULL, stderr=STDOUT)),(ex[1]),(ex)])
+                print st + " Started new dynamind instance: Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
                 
             for proc in running_procs:
                 retcode = proc[0].poll()
                 if retcode is not None: # Process finished.
                     running_procs.remove(proc)
-                    print  "Instance finished. Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
+                    print  st + " Instance finished. Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
                     if retcode != 0:
                         if(retcode == -11 or retcode == -12):
-                            print "Trying to restart process because it returned -11 or -12"
+                            print st + " Trying to restart process because it returned " + str(retcode)
                             executionarguments.append(proc[2])
                         else:
-                            print "Error: " + str(retcode) + " Log: " + proc[1]
+                            print st + " Error: " + str(retcode) + " Log: " + proc[1]
                     else:
                         os.remove(proc[1])
                     break
