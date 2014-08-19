@@ -1,25 +1,6 @@
-# This file is part of DynaMite
-#
-# Copyright (C) 2014 Michael Mair
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
-#
-
 from subprocess import *
 import time
+import datetime
 import os,errno
 
 class DynaMindScenarios:
@@ -51,7 +32,13 @@ class DynaMindScenarios:
                 pass
             else: raise
     
-    def run(self,dynamindmodel,repeat,resultdir,maxcpu,scenarios,scenarioresults):
+    def run(self,dynamindmodel,repeat,resultdir,maxcpu,scenarios,scenarioresults,addtimestamp=False):
+        if addtimestamp :
+            ts = time.time()
+            st = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d_%H_%M_%S')
+            self.__mkdir_p(resultdir + "/" + st)
+            resultdir = resultdir + "/" + st
+        
         rawargs = self.__createargumentlist(scenarios,scenarioresults)
         executionarguments = []
         
@@ -68,37 +55,30 @@ class DynaMindScenarios:
             replacemodeloutput = replacemodeloutput[:-1]
             copyfiles = copyfiles[:-1]    
                     
-            executionarguments.append([("./dynamind","--repeat",str(repeat),"--replace","\"" + replacemodeloutput + "\"","--parameter","\"" + a[0] + "\"","--cpfile","\"" + copyfiles +"\"",dynamindmodel),(resultdir + "/" + a[1] + "/dynamind.log")])
+            executionarguments.append([("./dynamind","--repeat",str(repeat),"--replace",replacemodeloutput,"--parameter",a[0],"--cpfile",copyfiles,dynamindmodel),(resultdir + "/" + a[1] + "/dynamind.log")])
         
         running_procs = []
         
-        while executionarguments.__len__():
-            if running_procs.__len__() < maxcpu:
+        while executionarguments.__len__() or running_procs.__len__():
+            if running_procs.__len__() < maxcpu and executionarguments.__len__():
                 ex = executionarguments.pop(0)
                 #print " ".join(ex[0])
                 FNULL = open(ex[1], 'w') 
-                running_procs.append(Popen(ex[0],stdout=FNULL, stderr=STDOUT))
+                running_procs.append([(Popen(ex[0],stdout=FNULL, stderr=STDOUT)),(ex[1]),(ex)])
                 
             for proc in running_procs:
-                retcode = proc.poll()
+                retcode = proc[0].poll()
                 if retcode is not None: # Process finished.
                     running_procs.remove(proc)
                     print  "Instance finished. Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
                     if retcode != 0:
-                        print "Error: " + str(retcode)
-                    break
-                else: # No process is done, wait a bit and check again.
-                    time.sleep(.1)
-                    continue
-                
-        while running_procs:
-            for proc in running_procs:
-                retcode = proc.poll()
-                if retcode is not None: # Process finished.
-                    running_procs.remove(proc)
-                    print  "Instance finished. Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
-                    if retcode != 0:
-                        print "Error: " + str(retcode)
+                        if(retcode == -11 or retcode == -12):
+                            print "Trying to restart process because it returned -11 or -12"
+                            executionarguments.append(proc[2])
+                        else:
+                            print "Error: " + str(retcode) + " Log: " + proc[1]
+                    else:
+                        os.remove(proc[1])
                     break
                 else: # No process is done, wait a bit and check again.
                     time.sleep(.1)
