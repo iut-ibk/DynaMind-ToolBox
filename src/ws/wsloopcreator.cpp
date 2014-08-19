@@ -165,6 +165,7 @@ void LoopCreator::run()
 				checkednodes.push_back(junctions->at(source));
 			}
 
+			/*
 			if(int(index/float(junctions->size())*100)%5==0)
 			{
 				#pragma omp critical
@@ -172,6 +173,7 @@ void LoopCreator::run()
 					DM::Logger(DM::Standard) << index/float(junctions->size())*100 << "%";
 				}
 			}
+			*/
 
 			//check if junction is part of an edge wich is not in the current graph
 			DM::Node *currentsource = junctions->at(source);
