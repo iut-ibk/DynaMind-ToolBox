@@ -49,6 +49,7 @@ private:
 	X(TANKS) \
 	X(RESERVOIRS) \
 	X(PIPES) \
+	X(TAGS) \
 	X(COORDINATES) \
 	X(VERTICES)
 
@@ -79,12 +80,12 @@ public:
 	EPANETModelCreator(bool vertex=true);
 
 	//NODE COMPONENTS OF EPANET
-	uint addJunction(double x, double y, double elevation, double basedemand=0, std::string demandpattern="");
+	uint addJunction(double x, double y, double elevation, double basedemand, std::string demandpattern, std::string tag);
 	uint addReservoir(double x, double y, double head, std::string headpattern);
 	uint addTank(double x, double y, double bottomelevation, double initiallevel, double minlevel, double maxlevel, double nominaldiamter, double minvolume, std::string volumecurve);
 
 	//LINK COMPONENTS OF EPANET
-	uint addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status);
+	uint addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status, std::string tag);
 
 	//OPTIONS
 	bool setOptionUnits(UNITS unit);

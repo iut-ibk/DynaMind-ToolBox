@@ -687,7 +687,7 @@ bool Dimensioning::approximateMainPipes(bool usereservoirsdata, double totaldema
 bool Dimensioning::SitzenfreiDimensioning()
 {
 	int nnodes, nlinks;
-	int diameter[] = {80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 800, 1000, 1500, 2000, 4000, 8000};
+	int diameter[] = { 80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 800, 1000, 1500, 2000, 4000, 8000};
 	double designvelocity[] = {0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 1.75, 1.75, 2, 2, 2, 2, 2};
 	std::vector<uint> fixedpipes;
 

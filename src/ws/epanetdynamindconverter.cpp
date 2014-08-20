@@ -225,12 +225,14 @@ bool EpanetDynamindConverter::checkENRet(int ret)
 bool EpanetDynamindConverter::addJunction(DM::Node *junction)
 {
 	double x, y , elevation, demand;
+	std::string tag;
 	x = junction->getX();
 	y = junction->getY();
 	elevation = junction->getZ();
 	demand = junction->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Demand))->getDouble();
+	tag = junction->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Tag))->getString();
 
-	uint index = creator.addJunction(x,y,elevation,demand);
+	uint index = creator.addJunction(x,y,elevation,demand,"",tag);
 
 	if(!index)
 		return false;
@@ -294,6 +296,7 @@ bool EpanetDynamindConverter::addPipe(DM::Edge *pipe, bool cv)
 	double diameter = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter))->getDouble();
 	double roughness = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Roughness))->getDouble();
 	double minorloss = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Minorloss))->getDouble();
+	std::string tag = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Tag))->getString();
 	std::string string_status = pipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::STATUS))->getString();
 	bool statuserror = false;
 	EPANETModelCreator::PIPESTATUS status = creator.convertStringToPipeStatus(string_status,statuserror);
@@ -301,7 +304,7 @@ bool EpanetDynamindConverter::addPipe(DM::Edge *pipe, bool cv)
 	if(cv)
 		status = EPANETModelCreator::CV;
 
-	uint index = creator.addPipe(startnode, endnode,length,diameter,roughness,minorloss,status);
+	uint index = creator.addPipe(startnode, endnode,length,diameter,roughness,minorloss,status,tag);
 
 	if(!index)
 		return false;
@@ -568,6 +571,9 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 double EpanetDynamindConverter::calcDiameter(double k, double l, double q, double h, double maxdiameter, bool discretediameters, bool nearestdiscretediameter)
 {
 	std::vector<double> diameters;
+	diameters.push_back(0.020);
+	diameters.push_back(0.032);
+	diameters.push_back(0.050);
 	diameters.push_back(0.080);
 	diameters.push_back(0.100);
 	diameters.push_back(0.125);

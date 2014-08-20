@@ -46,7 +46,8 @@ namespace DM
 
         #define JUNCTION_ATTR \
 		A(Demand,DM::Attribute::DOUBLE) \
-		A(Pressure,DM::Attribute::DOUBLE)
+		A(Pressure,DM::Attribute::DOUBLE) \
+		A(Tag,DM::Attribute::STRING)
 
 		#define PIPE_LINK
 
@@ -56,7 +57,8 @@ namespace DM
 		A(Roughness,DM::Attribute::DOUBLE) \
 		A(Minorloss,DM::Attribute::DOUBLE) \
 		A(STATUS,DM::Attribute::DOUBLE) \
-		A(Flow,DM::Attribute::DOUBLE)
+		A(Flow,DM::Attribute::DOUBLE) \
+		A(Tag, DM::Attribute::STRING)
 
         #define RESERVOIR_LINK
 

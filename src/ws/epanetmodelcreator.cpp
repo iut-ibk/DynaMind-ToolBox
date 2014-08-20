@@ -66,7 +66,7 @@ EPANETModelCreator::EPANETModelCreator(bool vertex)
 	initModel();
 }
 
-uint EPANETModelCreator::addJunction(double x, double y, double elevation, double basedemand, std::string demandpattern)
+uint EPANETModelCreator::addJunction(double x, double y, double elevation, double basedemand, std::string demandpattern, std::string tag)
 {
 	cindex++;
 	QString id = QString::number(cindex);
@@ -79,6 +79,15 @@ uint EPANETModelCreator::addJunction(double x, double y, double elevation, doubl
 	result += QString::fromStdString(demandpattern) + "\t";
 
 	(*model[EPANETModelCreator::JUNCTIONS])[id] = result;
+
+	if(tag != "")
+	{
+		result = "NODE\t";
+		result += id + "\t";
+		result += QString::fromStdString(tag) + "\t";
+
+		(*model[EPANETModelCreator::TAGS])[id] = result;
+	}
 
 	if(!addCoordinate(x,y,QString::number(cindex)))
 		return false;
@@ -128,7 +137,7 @@ uint EPANETModelCreator::addTank(double x, double y, double bottomelevation, dou
 	return cindex;
 }
 
-uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status)
+uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, double diameter, double roughness, double minorloss, EPANETModelCreator::PIPESTATUS status, std::string tag)
 {
 	cindex++;
 	QString id = QString::number(cindex);
@@ -146,6 +155,15 @@ uint EPANETModelCreator::addPipe(uint startnode, uint endnode, double length, do
 	result += QString::fromStdString(EPANETModelCreator::convertPipeStatusToString(status,error)) + "\t";
 
 	(*model[EPANETModelCreator::PIPES])[id]=result;
+
+	if(tag != "")
+	{
+		result = "LINK\t";
+		result += id + "\t";
+		result += QString::fromStdString(tag) + "\t";
+
+		(*model[EPANETModelCreator::TAGS])[id] = result;
+	}
 
 	return cindex;
 }
