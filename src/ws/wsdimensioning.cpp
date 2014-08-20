@@ -359,7 +359,8 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 			return false;
 
 		for(int n=0; n<newuncheckedpressurepoints.size();n++)
-			uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
+			if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
+				uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
 	}
 
 	uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),currentpressurepoint));
