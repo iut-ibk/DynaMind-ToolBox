@@ -45,6 +45,29 @@ static double WaterBodies;
 static double AgriculturalAreas;
 static double ForestsSemiNatural;
 
+class Num2Str : public mup::ICallback {
+public:
+	Num2Str() : ICallback(mup::cmFUNC, "num2str", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		// Get the argument from the argument input vector
+		mup::float_type  a = a_pArg[0]->GetFloat();
+		std::string val =  QString::number(a).toStdString();
+		// The return value is passed by writing it to the reference ret
+		*ret = val;
+	}
+
+	const mup::char_type* GetDesc() const
+	{
+		return "num2str(x) - converting a number to string";
+	}
+	IToken* Clone() const
+	{
+		return new Num2Str(*this);
+	}
+};
+
 class Random : public mup::ICallback {
 public:
 	Random() : ICallback(mup::cmFUNC, "rand", 1)

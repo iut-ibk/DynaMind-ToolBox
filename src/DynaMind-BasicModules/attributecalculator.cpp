@@ -208,7 +208,7 @@ void AttributeCalculator::run()
 	this->sys_in = this->getData("Data");
 	m_p->m_sys = sys_in;
 	std::map<std::string, mup::Value * > doubleVariables;
-	mup::ParserX * p  = new mup::ParserX();
+	mup::ParserX * p  = new mup::ParserX(mup::pckALL_NON_COMPLEX);
 	foreach(const std::string& variable, variableNames)
 	{
 		mup::Value * d = new mup::Value(0.0);
@@ -229,6 +229,7 @@ void AttributeCalculator::run()
 	}
 	p->DefineFun(new dm::Random);
 	p->DefineFun(new dm::Round);
+	p->DefineFun(new dm::Num2Str);
 	p->DefineVar("counter", &mp_c);
 
 	Logger(Standard) << IfElseConverter(QString::fromStdString(equation)).toStdString();
