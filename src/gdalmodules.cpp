@@ -39,6 +39,8 @@
 #include "gdalgeometricattributes.h"
 #include "gdalrandomselector.h"
 #include "gdalremovecomponets.h"
+#include "gdalcopyelementtoview.h"
+#include "gdalcreatebuilding.h"
 
 
 /**
@@ -61,4 +63,6 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALGeometricAttributes>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALRandomSelector>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALRemoveComponets>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALCopyElementToView>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALCreateBuilding>());
 }
