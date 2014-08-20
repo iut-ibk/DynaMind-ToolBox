@@ -16,11 +16,16 @@ public:
 	void init();
 private:
 	DM::ViewContainer components;
+	DM::ViewContainer dummy;
 
 	std::string sink;
 	std::string driverName;
 	std::string viewName;
 	std::string layerName;
+	int targetEPSG;
+	int sourceEPSG;
+	int steps;
+	int internal_counter;
 
 	void writeFeatures(OGRLayer *lyr, std::vector<OGRFeature *> &feats);
 };

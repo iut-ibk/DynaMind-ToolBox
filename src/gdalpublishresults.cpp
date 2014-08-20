@@ -6,6 +6,10 @@
 #include <ogrsf_frmts.h>
 #include <ogr_api.h>
 
+
+#include <dmgroup.h>
+#include <sstream>
+
 DM_DECLARE_NODE_NAME(GDALPublishResults, GDALModules)
 
 GDALPublishResults::GDALPublishResults()
@@ -23,6 +27,16 @@ GDALPublishResults::GDALPublishResults()
 
 	this->layerName = "";
 	this->addParameter("layer_name", DM::STRING, &layerName);
+
+	this->steps = 1;
+	this->addParameter("steps", DM::INT, &steps);
+
+	this->targetEPSG = 0;
+	this->addParameter("targetEPSG", DM::INT, &targetEPSG);
+
+	this->sourceEPSG = 0;
+	this->addParameter("sourceEPSG", DM::INT, &sourceEPSG);
+
 
 	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::READ);
 
@@ -44,13 +58,14 @@ void GDALPublishResults::init()
 		return;
 	}
 	this->components = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::READ);
+	this->dummy = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::MODIFY);
 
 	std::vector<DM::ViewContainer *> data_stream;
 
 	data_stream.push_back(&components);
+	data_stream.push_back(&dummy);
 	this->registerViewContainers(data_stream);
 }
-
 
 void GDALPublishResults::run()
 {
@@ -58,7 +73,36 @@ void GDALPublishResults::run()
 	OGRSFDriver *poDriver;
 	OGRDataSource *poDS;
 
+	DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
+	int interal_counter = 1;
+	if(lg) {
+		interal_counter = lg->getGroupCounter();
+	}
+	DM::Logger(DM::Error) << interal_counter;
+
+	if (interal_counter % this->steps != 0 && interal_counter != 1) {
+		return;
+	}
+
+	char ** options = NULL;
+	options = CSLSetNameValue( options, "PG_USE_COPY", "YES" );
+
+	CPLSetConfigOption("PG_USE_COPY", "YES");
+
 	OGRRegisterAll();
+
+	//Extend string_stream with _xx;
+	std::stringstream sink_name;
+
+	int pos = this->sink.find(".");
+	if (pos == -1) {
+		sink_name << sink;
+		sink_name << "_" << interal_counter;
+	} else {
+		sink_name<< sink.substr(0,pos);
+		sink_name << "_" << interal_counter;
+		sink_name<< sink.substr(pos, sink.size()-1);
+	}
 
 	if (!driverName.empty()) {
 		poDriver  = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( this->driverName.c_str() );
@@ -68,11 +112,10 @@ void GDALPublishResults::run()
 			this->setStatus(DM::MOD_EXECUTION_ERROR);
 			return;
 		}
-
-		poDS = poDriver->CreateDataSource(this->sink.c_str());
+		DM::Logger(DM::Error) << "create " << sink_name.str().c_str();
+		poDS = poDriver->CreateDataSource(sink_name.str().c_str());
 	} else {
-		poDS = OGRSFDriverRegistrar::Open(this->sink.c_str(),true);
-		//poDS = (this->sink.c_str());
+		poDS = OGRSFDriverRegistrar::Open(sink.c_str());
 	}
 	if( poDS == NULL )
 	{
@@ -81,23 +124,34 @@ void GDALPublishResults::run()
 		return;
 	}
 
+
 	OGRSpatialReference* oSourceSRS;
+	OGRSpatialReference* oTargetSRS;
 	oSourceSRS = new OGRSpatialReference();
-	oSourceSRS->importFromEPSG(4283);
+	oSourceSRS->importFromEPSG(sourceEPSG);
+
+	oTargetSRS = new OGRSpatialReference();
+	oTargetSRS->importFromEPSG(targetEPSG);
+	OGRCoordinateTransformation* trans = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
+
+	std::stringstream layer_name;
+	layer_name << this->layerName << "_" << interal_counter;
 
 	OGRLayer * lyr;
+
+
 	switch ( components.getType() ) {
 	case DM::COMPONENT:
-		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbNone, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbNone, NULL );
 		break;
 	case DM::NODE:
-		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbPoint, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPoint, NULL );
 		break;
 	case DM::EDGE:
-		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbLineString, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbLineString, NULL );
 		break;
 	case DM::FACE:
-		lyr = poDS->CreateLayer(this->layerName.c_str(), oSourceSRS, wkbPolygon, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPolygon, options );
 		break;
 	}
 	if (!lyr) {
@@ -111,31 +165,25 @@ void GDALPublishResults::run()
 		lyr->CreateField(def->GetFieldDefn(i));
 	OGRFeature * feat;
 	components.resetReading();
-	std::vector<OGRFeature*> features_write;
 	int counter = 0;
+	lyr->StartTransaction();
 	while (feat = components.getNextFeature()) {
 		counter++;
-		if (counter % 100000 == 0){
-			writeFeatures(lyr, features_write);
-			components.syncReadFeatures();
+		if (counter % 1000000 == 0){
+			lyr->CommitTransaction();
+			lyr->StartTransaction();
 		}
 		OGRFeature * f_new = OGRFeature::CreateFeature( lyr->GetLayerDefn() );
 		for (int i = 0; i < c_fields; i++)
 			f_new->SetField(i, feat->GetRawFieldRef(i));
-		f_new->SetGeometry(feat->GetGeometryRef());
-		features_write.push_back(f_new);
+		OGRGeometry * geo = feat->GetGeometryRef();
+		geo->transform(trans);
+		f_new->SetGeometry(geo);
+		lyr->CreateFeature(f_new);
+		OGRFeature::DestroyFeature(f_new);
 	}
-	writeFeatures(lyr, features_write);
+	lyr->CommitTransaction();
 	OGRDataSource::DestroyDataSource(poDS);
 }
 
-void GDALPublishResults::writeFeatures(OGRLayer * lyr, std::vector<OGRFeature *> & feats) {
-	lyr->StartTransaction();
-	foreach (OGRFeature * f, feats ) {
-		lyr->CreateFeature(f);
-		OGRFeature::DestroyFeature(f);
-	}
-	lyr->CommitTransaction();
-	feats.clear();
-}
 
