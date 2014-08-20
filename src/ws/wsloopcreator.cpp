@@ -152,14 +152,14 @@ void LoopCreator::run()
 
 		//Try to find an alternative path between junctions within one pressure zone
 		uint index = 0;
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for(int source=0; source < junctions->size(); source++)
 		{
 			//for(uint index=0; index < checkednodes.size(); index++)
 			//    if(TBVectorData::calculateDistance(checkednodes[index],junctions->at(source)) < searchdistance)
 			//        continue;
 
-			#pragma omp critical
+			//#pragma omp critical
 			{
 				index++;
 				checkednodes.push_back(junctions->at(source));
@@ -168,7 +168,7 @@ void LoopCreator::run()
 			/*
 			if(int(index/float(junctions->size())*100)%5==0)
 			{
-				#pragma omp critical
+				//#pragma omp critical
 				{
 					DM::Logger(DM::Standard) << index/float(junctions->size())*100 << "%";
 				}
@@ -256,7 +256,7 @@ void LoopCreator::run()
 				if(std::find(checked_path.begin(),checked_path.end(),std::pair<DM::Node*,DM::Node*>(rootjunction,targetjunction)) != checked_path.end())
 					continue;
 
-				#pragma omp critical
+				//#pragma omp critical
 				{
 					checked_path.push_back(std::pair<DM::Node*,DM::Node*>(targetjunction,rootjunction));
 				}
@@ -279,7 +279,7 @@ void LoopCreator::run()
 					if(std::find(junctions->begin(),junctions->end(),pathnodes[check])!=junctions->end())
 						continue;
 
-				#pragma omp critical
+				//#pragma omp critical
 				{
 					vectorpathnodes.push_back(pathnodes);
 					vectorpathedges.push_back(pathedges);
