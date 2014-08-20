@@ -247,12 +247,12 @@ bool Dimensioning::approximatePressure(bool discretediameter,std::vector<DM::Nod
 
 		if(!approximatePressure(knownpressure,unchecked,newinitunchecked))
 		{
-			DM::Logger(DM::Error) << "Cannot aproximate Pressure";
+			DM::Logger(DM::Error) << "Cannot approximate Pressure";
 			return false;
 		}
 
 		DM::Logger(DM::Standard) << "Known pressurepoints after checking all non leaf nodes: " << knownpressure.size() << " of " << junctions.size();
-		DM::Logger(DM::Standard) << "Approximate pressure for all leaf nodes";
+		DM::Logger(DM::Standard) << "Searching all leaf nodes";
 
 		//approximate pressure for all leaf nodes
 		for(int index=0; index < junctions.size(); index++)
@@ -265,8 +265,13 @@ bool Dimensioning::approximatePressure(bool discretediameter,std::vector<DM::Nod
 						unchecked.push_back(currentnode);
 		}
 
+		DM::Logger(DM::Standard) << "Approximate pressure for all leaf nodes";
+
 		if(!approximatePressure(knownpressure,unchecked,newinitunchecked))
+		{
+			DM::Logger(DM::Error) << "Cannot approximate Pressure";
 			return false;
+		}
 
 		DM::Logger(DM::Standard) << "Known pressurepoints after checking all leaf nodes: " << knownpressure.size() << " of " << junctions.size();
 
