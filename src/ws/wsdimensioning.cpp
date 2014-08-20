@@ -364,7 +364,6 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 	}
 
 	uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),currentpressurepoint));
-	DM::Logger(DM::Error) << knownPressurePoints.size() << " " << uncheckedpressurepoints.size() << " " << newinitunchecked.size();
 	return approximatePressure(knownPressurePoints,uncheckedpressurepoints,newinitunchecked);
 }
 
