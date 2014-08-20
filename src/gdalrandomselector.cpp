@@ -17,6 +17,10 @@ GDALRandomSelector::GDALRandomSelector()
 	this->elements = 0;
 	this->addParameter("elements", DM::INT, &this->elements);
 
+	this->units = "";
+	this->addParameter("units", DM::STRING, &this->units);
+
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -26,26 +30,23 @@ GDALRandomSelector::GDALRandomSelector()
 
 void GDALRandomSelector::init()
 {
-	initFailed = true;
+
 	if (viewName.empty() || attribute.empty())
 		return;
 	this->vc = DM::ViewContainer(viewName, DM::FACE, DM::READ);
 	this->vc.addAttribute(attribute, DM::Attribute::INT, DM::WRITE);
+	if (!this->units.empty())
+		vc.addAttribute(units, DM::Attribute::INT, DM::READ);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&vc);
 	this->registerViewContainers(data_stream);
-	initFailed = false;
+
 }
 
 void GDALRandomSelector::run()
 {
 
-	if (initFailed) {
-		DM::Logger(DM::Error) << "Init Failed";
-		this->setStatus(DM::MOD_EXECUTION_ERROR);
-		return;
-	}
 	vc.resetReading();
 	int total_number_of_featurers = vc.getFeatureCount();
 	if (total_number_of_featurers == -1) {
@@ -54,11 +55,9 @@ void GDALRandomSelector::run()
 	}
 	std::vector<int> rand_elements;
 	std::vector<int> ids;
-	int elements_max = (elements < total_number_of_featurers) ? elements : total_number_of_featurers;
+	int elements_max = elements;
 
 	OGRFeature * f;
-
-	DM::Logger(DM::Error) << elements_max << " "<< total_number_of_featurers;
 
 	int counter = 0;
 	while(f = vc.getNextFeature()) {
@@ -69,15 +68,39 @@ void GDALRandomSelector::run()
 	vc.syncReadFeatures();
 
 	vc.resetReading();
+
 	for (int i = 0; i < elements_max; i++) {
 		int r = rand() %total_number_of_featurers;
 		rand_elements[i] = rand_elements[r];
 	}
-	for (int i = 0; i < elements; i++) {
-		f = vc.getFeature(ids[rand_elements[i]]);
-		f->SetField(attribute.c_str(), 1);
-	}
 
+	counter = 0;
+	bool has_unit = true;
+	if (this->units.empty())
+		has_unit = false;
+	while (elements_max > 0) {
+		if (counter > rand_elements.size()-1) {
+			break;
+		}
+		f = vc.getFeature(ids[rand_elements[counter++]]);
+		if (!f) {
+			DM::Logger(DM::Warning) << "Feature not falied";
+			continue;
+		}
+		if (!has_unit) {
+			elements_max--;
+			f->SetField(attribute.c_str(), 1);
+			continue;
+		}
+
+		int e = f->GetFieldAsInteger(units.c_str());
+		if (e == 0) {
+			continue;
+		}
+
+		f->SetField(attribute.c_str(), 1);
+		elements_max-=e;
+	}
 }
 
 

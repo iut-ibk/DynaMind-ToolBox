@@ -20,6 +20,7 @@ private:
 	std::string attribute;
 	int elements;
 	bool initFailed;
+	std::string units;
 
 
 };
