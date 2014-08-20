@@ -6,7 +6,8 @@
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
 
-#define GDALParcelSplit
+//#define GDALParcelSplit
+#define GDALAttributeCaluclator
 
 #ifdef GDALParcelSplit
 TEST_F(GDALModules_Unittests, GDALParcelSplit) {
