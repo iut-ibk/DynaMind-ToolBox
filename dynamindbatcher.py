@@ -2,6 +2,7 @@ from subprocess import *
 import time
 import datetime
 import os,errno
+import shutil
 
 class DynaMindScenarios:
     def __createargumentlist(self,scenarios,scenarioresults,index=0):
@@ -76,6 +77,9 @@ class DynaMindScenarios:
                     if retcode != 0:
                         if(retcode == -11 or retcode == -12):
                             print st + " Trying to restart process because it returned " + str(retcode)
+                            savelog = proc[1] + "." + str(retcode) + ".log"
+                            shutil.copyfile(proc[1], savelog)
+                            print st + " Saved log: " + savelog
                             executionarguments.append(proc[2])
                         else:
                             print st + " Error: " + str(retcode) + " Log: " + proc[1]
