@@ -74,7 +74,6 @@ void ViewContainer::setSpatialFilter(OGRGeometry *geo)
 
 void ViewContainer::createSpatialIndex()
 {
-
 	std::stringstream index;
 	index << "SELECT CreateSpatialIndex('" << this->getName() << "','GEOMETRY')";
 	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
@@ -205,10 +204,15 @@ OGRFeature *ViewContainer::getNextFeature()
 
 void ViewContainer::createIndex(string attribute)
 {
+	std::stringstream index_drop;
+	index_drop << "DROP INDEX "<< attribute <<"_index";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index_drop.str().c_str(), 0, "SQLITE");
+
+
 
 	std::stringstream index;
 	index << "CREATE INDEX "<< attribute <<"_index ON " << this->getName() << " (" << attribute << ")";
-	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
+	lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
 }
 
 int ViewContainer::getFeatureCount()
