@@ -571,8 +571,6 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 double EpanetDynamindConverter::calcDiameter(double k, double l, double q, double h, double maxdiameter, bool discretediameters, bool nearestdiscretediameter)
 {
 	std::vector<double> diameters;
-	diameters.push_back(0.020);
-	diameters.push_back(0.032);
 	diameters.push_back(0.050);
 	diameters.push_back(0.080);
 	diameters.push_back(0.100);
@@ -600,7 +598,7 @@ double EpanetDynamindConverter::calcDiameter(double k, double l, double q, doubl
 
 	double maxerror = 0.0000001;
 	double d = 0.001;
-	double maxd = 6;
+	double maxd = diameters[diameters.size()-1];
 	double mind = 0;
 	double currenterror = h-calcFrictionHeadLoss(d,k,l,q);
 
