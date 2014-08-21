@@ -334,38 +334,41 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 	if(uncheckedpressurepoints.size()==0)
 		return true;
 
-	DM::Node* currentpressurepoint = uncheckedpressurepoints[0];
-
-	double currentpressure = currentpressurepoint->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
-	std::vector<DM::Node*> neighbours = converter->getFlowNeighbours(currentpressurepoint);
-
-	for(int index=0; index<neighbours.size(); index++)
+	while(uncheckedpressurepoints.size() > 0)
 	{
-		DM::Node* currentneighbour = neighbours[index];
+		DM::Node* currentpressurepoint = uncheckedpressurepoints[0];
 
-		if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),currentneighbour)!=knownPressurePoints.end() && currentpressure > 0)
-			continue;
+		double currentpressure = currentpressurepoint->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
+		std::vector<DM::Node*> neighbours = converter->getFlowNeighbours(currentpressurepoint);
 
-		std::vector<DM::Node*> pathpoints;
-		std::vector<DM::Node*> newuncheckedpressurepoints;
+		for(int index=0; index<neighbours.size(); index++)
+		{
+			DM::Node* currentneighbour = neighbours[index];
 
-		if(!findFlowPath(pathpoints,newuncheckedpressurepoints,currentneighbour,knownPressurePoints))
-			continue;
+			if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),currentneighbour)!=knownPressurePoints.end() && currentpressure > 0)
+				continue;
 
-		pathpoints.insert(pathpoints.begin(),currentneighbour);
-		pathpoints.insert(pathpoints.begin(),currentpressurepoint);
+			std::vector<DM::Node*> pathpoints;
+			std::vector<DM::Node*> newuncheckedpressurepoints;
 
-		if(!approximatePressureOnPath(pathpoints,knownPressurePoints, newinitunchecked))
-			return false;
+			if(!findFlowPath(pathpoints,newuncheckedpressurepoints,currentneighbour,knownPressurePoints))
+				continue;
 
-		for(int n=0; n<newuncheckedpressurepoints.size();n++)
-			if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
-				if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
-					uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
+			pathpoints.insert(pathpoints.begin(),currentneighbour);
+			pathpoints.insert(pathpoints.begin(),currentpressurepoint);
+
+			if(!approximatePressureOnPath(pathpoints,knownPressurePoints, newinitunchecked))
+				return false;
+
+			for(int n=0; n<newuncheckedpressurepoints.size();n++)
+				if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
+					if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
+						uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
+		}
+
+		uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),currentpressurepoint));
 	}
-
-	uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),currentpressurepoint));
-	return approximatePressure(knownPressurePoints,uncheckedpressurepoints,newinitunchecked);
+	return true;
 }
 
 bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &newinitunchecked)
