@@ -18,6 +18,10 @@ private:
 	DM::ViewContainer leadingView;
 	DM::ViewContainer joinView;
 
+	bool fullJoin;
+
+	std::vector<std::string> attribute_names;
+
 public:
 	NonSpatialLinking();
 	void run();

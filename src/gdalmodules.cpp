@@ -41,7 +41,7 @@
 #include "gdalremovecomponets.h"
 #include "gdalcopyelementtoview.h"
 #include "gdalcreatebuilding.h"
-
+#include "gdalcreatecentroids.h"
 
 /**
   * @addtogroup TestModules
@@ -65,4 +65,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALRemoveComponets>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALCopyElementToView>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALCreateBuilding>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALCreateCentroids>());
 }

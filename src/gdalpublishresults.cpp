@@ -74,15 +74,16 @@ void GDALPublishResults::run()
 	OGRDataSource *poDS;
 
 	DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
-	int interal_counter = 1;
+	int interal_counter = -1;
 	if(lg) {
 		interal_counter = lg->getGroupCounter();
 	}
 	DM::Logger(DM::Error) << interal_counter;
 
-	if (interal_counter % this->steps != 0 && interal_counter != 1) {
+	if (interal_counter % this->steps != 0 && interal_counter != -1) {
 		return;
 	}
+	DM::Logger(DM::Error) << "Start Inster";
 
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "PG_USE_COPY", "YES" );
@@ -93,15 +94,16 @@ void GDALPublishResults::run()
 
 	//Extend string_stream with _xx;
 	std::stringstream sink_name;
-
-	int pos = this->sink.find(".");
-	if (pos == -1) {
-		sink_name << sink;
-		sink_name << "_" << interal_counter;
-	} else {
-		sink_name<< sink.substr(0,pos);
-		sink_name << "_" << interal_counter;
-		sink_name<< sink.substr(pos, sink.size()-1);
+	if (!driverName.empty()) {
+		int pos = this->sink.find(".");
+		if (pos == -1) {
+			sink_name << sink;
+			sink_name << "_" << interal_counter;
+		} else {
+			sink_name<< sink.substr(0,pos);
+			sink_name << "_" << interal_counter;
+			sink_name<< sink.substr(pos, sink.size()-1);
+		}
 	}
 
 	if (!driverName.empty()) {
@@ -115,7 +117,7 @@ void GDALPublishResults::run()
 		DM::Logger(DM::Error) << "create " << sink_name.str().c_str();
 		poDS = poDriver->CreateDataSource(sink_name.str().c_str());
 	} else {
-		poDS = OGRSFDriverRegistrar::Open(sink.c_str());
+		poDS = OGRSFDriverRegistrar::Open(sink.c_str(), true);
 	}
 	if( poDS == NULL )
 	{
@@ -133,9 +135,15 @@ void GDALPublishResults::run()
 	oTargetSRS = new OGRSpatialReference();
 	oTargetSRS->importFromEPSG(targetEPSG);
 	OGRCoordinateTransformation* trans = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
-
+	if (!trans) {
+		DM::Logger(DM::Error) << "Init transformation failed, check EPSG codes";
+		return;
+	}
 	std::stringstream layer_name;
-	layer_name << this->layerName << "_" << interal_counter;
+	layer_name << this->layerName;
+	if (interal_counter != -1) {
+		 layer_name << "_" << interal_counter;
+	}
 
 	OGRLayer * lyr;
 
@@ -176,9 +184,12 @@ void GDALPublishResults::run()
 		OGRFeature * f_new = OGRFeature::CreateFeature( lyr->GetLayerDefn() );
 		for (int i = 0; i < c_fields; i++)
 			f_new->SetField(i, feat->GetRawFieldRef(i));
-		OGRGeometry * geo = feat->GetGeometryRef();
-		geo->transform(trans);
-		f_new->SetGeometry(geo);
+		if (components.getType() != DM::COMPONENT) {
+			OGRGeometry * geo = feat->GetGeometryRef();
+			if (trans)
+				geo->transform(trans);
+			f_new->SetGeometry(geo);
+		}
 		lyr->CreateFeature(f_new);
 		OGRFeature::DestroyFeature(f_new);
 	}

@@ -161,6 +161,9 @@ void GDALImportData::run()
 
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
+
+		OGRGeometry * geo_single = 0;
+
 		if (vc->getType() != DM::COMPONENT) {
 			counter++;
 			if (counter%100000 == 0){
@@ -174,27 +177,26 @@ void GDALImportData::run()
 				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
 				continue;
 			}
-		}
-
-		OGRGeometry * geo_single = 0;
-		if (!this->isFlat) {
-			OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
-			geo_single = geo->getGeometryRef(0);
-		} else {
-			geo_single = poFeature->GetGeometryRef();
-		}
-
-		//Check Type is fine
-		if (geo_single->getGeometryType() != DMToOGRGeometry(vc->getType())) {
-			DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry type is different";
-			continue;
+			if (!this->isFlat) {
+				OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
+				geo_single = geo->getGeometryRef(0);
+			} else {
+				geo_single = poFeature->GetGeometryRef();
+			}
+			//Check Type is fine
+			if (geo_single->getGeometryType() != DMToOGRGeometry(vc->getType())) {
+				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry type is different";
+				continue;
+			}
 		}
 
 		OGRFeature * f_new = vc->createFeature();
 
-		if (forward_trans)
-			geo_single->transform(forward_trans);
-		f_new->SetGeometry(geo_single);
+		if(geo_single) {
+			if (forward_trans)
+				geo_single->transform(forward_trans);
+			f_new->SetGeometry(geo_single);
+		}
 
 		foreach(std::string attribute_name, vc->getAllAttributes()) {
 			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(attribute_name.c_str()));
