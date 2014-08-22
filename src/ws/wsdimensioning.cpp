@@ -331,6 +331,8 @@ bool Dimensioning::approximatePressure(bool discretediameter,std::vector<DM::Nod
 
 bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &uncheckedpressurepoints, std::vector<DM::Node*> &newinitunchecked)
 {
+	std::vector<DM::Node*> checkedpressurepoints;
+
 	if(uncheckedpressurepoints.size()==0)
 		return true;
 
@@ -361,11 +363,13 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 				return false;
 
 			for(int n=0; n<newuncheckedpressurepoints.size();n++)
-				if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
-					if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
-						uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
+				if(std::find(checkedpressurepoints.begin(),checkedpressurepoints.end(),newuncheckedpressurepoints[n])==checkedpressurepoints.end())
+					if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
+						if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
+							uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
 		}
 
+		checkedpressurepoints.push_back(currentpressurepoint);
 		uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),currentpressurepoint));
 	}
 	return true;
@@ -405,6 +409,7 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 	double deltaP = startZ+startPressure-endZ-endPressure;
 	double currentlength=length;
 
+	/*
 	if(deltaP < 0)
 	{
 		//Wrong flowpath for the current pressure surface
@@ -424,9 +429,9 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 				forcedpressure=std::max(forcedpressure,endPressure);
 
 			nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),forcedpressure);
-			return true;
 		}
 	}
+	*/
 
 	if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),nodes[0])==knownPressurePoints.end())
 		knownPressurePoints.push_back(nodes[0]);
