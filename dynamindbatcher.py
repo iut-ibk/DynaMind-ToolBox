@@ -55,8 +55,10 @@ class DynaMindScenarios:
                 
             replacemodeloutput = replacemodeloutput[:-1]
             copyfiles = copyfiles[:-1]    
-                    
-            executionarguments.append([("./dynamind","--repeat",str(repeat),"--replace",replacemodeloutput,"--parameter",a[0],"--cpfile",copyfiles,dynamindmodel),(resultdir + "/" + a[1] + "/dynamind.log")])
+            
+            logfile = resultdir + "/" + a[1] + "/dynamind.log"
+
+            executionarguments.append([("./dynamind","--repeat",str(repeat),"--replace",replacemodeloutput,"--parameter",a[0],"--logpath",logfile,"--cpfile",copyfiles,dynamindmodel),(resultdir + "/" + a[1] + "/dynamind.log")])
         
         running_procs = []
         
@@ -65,8 +67,9 @@ class DynaMindScenarios:
             if running_procs.__len__() < maxcpu and executionarguments.__len__():
                 ex = executionarguments.pop(0)
                 #print " ".join(ex[0])
-                FNULL = open(ex[1], 'w') 
-                running_procs.append([(Popen(ex[0],stdout=FNULL, stderr=STDOUT)),(ex[1]),(ex)])
+                FLOG = open(ex[1], 'w') 
+                FNULL = open(os.devnull, 'w')
+                running_procs.append([(Popen(ex[0],stdout=FNULL, stderr=FLOG)),(ex[1]),(ex)])
                 print st + " Started new dynamind instance: Still running: " + str(running_procs.__len__()) + " Still waiting: " + str(executionarguments.__len__())
                 
             for proc in running_procs:
