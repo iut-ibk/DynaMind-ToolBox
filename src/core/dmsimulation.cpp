@@ -653,6 +653,16 @@ bool Simulation::checkStream()
 	return success;
 }
 
+void Simulation::setSimulationConfig(SimulationConfig config)
+{
+	this->config = config;
+}
+
+SimulationConfig Simulation::getSimulationConfig()
+{
+	return config;
+}
+
 
 class Worlist: public std::list<Module*>
 {

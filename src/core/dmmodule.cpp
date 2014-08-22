@@ -436,7 +436,7 @@ ISystem *Module::SystemFactory()
 		return new System();
 	}
 
-	return new GDALSystem();
+	return new GDALSystem(sim->getSimulationConfig().getCoorindateSystem());
 }
 
 System *Module::getData(const string &streamName)
