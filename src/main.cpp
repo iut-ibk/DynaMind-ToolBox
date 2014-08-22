@@ -242,6 +242,7 @@ int main(int argc, char *argv[], char *envp[])
 		("sqlquerystack", po::value<unsigned long>(), "sql query cache size")
 		("blockwriting", po::value<unsigned long>(), "sql write block size")
 		("loglevel", po::value<int>(), "logger level 0-3 (Debug-Standard-Warning-Error)")
+		("logpath", po::value<string>(), "Save path for log file")
 		("ompthreads", po::value<int>(), "number of threads used by omp")
 		("settings", po::value<string>(), "set an environment variable")
 		("show-settings", "show environment variables")
@@ -259,6 +260,7 @@ int main(int argc, char *argv[], char *envp[])
     string replace = "";
 	string parameteroverloads = "";
 	int numThreads = 1;
+	string lf = "";
 
 	DM::LogLevel ll = DM::Standard;
 	try 
@@ -306,8 +308,13 @@ int main(int argc, char *argv[], char *envp[])
 		
 		if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
+		if (vm.count("logpath"))		lf = vm["logpath"].as<string>();
+
 		QDateTime time = QDateTime::currentDateTime();
 		QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
+
+		if(QString::fromStdString(lf)!="")
+			logfilepath = QString::fromStdString(lf);
 
 		if(QFile::exists(logfilepath))
 			QFile::remove(logfilepath);
