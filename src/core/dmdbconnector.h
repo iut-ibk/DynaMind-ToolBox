@@ -298,6 +298,9 @@ class SingletonDestroyer;
 class DM_HELPER_DLL_EXPORT DBConnector
 {
 private:
+	QString dbpath;
+
+private:
 	// singleton stuff
 	static DBConnector* instance;
 	DBConnector();
