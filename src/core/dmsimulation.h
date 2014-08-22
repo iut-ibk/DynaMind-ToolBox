@@ -105,6 +105,16 @@ struct DM_HELPER_DLL_EXPORT Link
 	bool isOutOfGroupLink;
 };
 
+class DM_HELPER_DLL_EXPORT SimulationConfig {
+private:
+	int CoordinateSystem; //As EPSG Code
+public:
+	SimulationConfig() : CoordinateSystem(0){}
+	void setCoordinateSystem(int epsgCode) {CoordinateSystem = epsgCode;}
+	int getCoorindateSystem() {return this->CoordinateSystem;}
+
+};
+
 
 class DM_HELPER_DLL_EXPORT Simulation
 {
@@ -201,6 +211,12 @@ public:
 	/** @brief checks the whole simulation stream for possible missing views */
 	bool checkStream();
 
+	/** @brief set simulation config e.g. EPSG code...**/
+	void setSimulationConfig(SimulationConfig config);
+
+	/** @brief returns simulation config **/
+	SimulationConfig getSimulationConfig();
+
 protected:
 	/** @brief returns the inport data of the link, taking group ports into account */
 	ISystem* getData(Link* l);
@@ -247,6 +263,7 @@ private:
 	SimulationStatus	status;
 	ModuleRegistry*		moduleRegistry;
 	std::vector<SimulationObserver*>	observers;
+	SimulationConfig	config;
 };
 
 }

@@ -40,7 +40,7 @@
 
 namespace DM {
 
-GDALSystem::GDALSystem()
+GDALSystem::GDALSystem(int EPSG)
 {
 	//Init SpatialiteServer
 	OGRRegisterAll();
@@ -66,10 +66,12 @@ GDALSystem::GDALSystem()
 	//Init uuid
 	latestUniqueId = 0;
 	predecessor = NULL;
+	this->EPSG = EPSG;
 }
 
 GDALSystem::GDALSystem(const GDALSystem &s)
 {
+	DM::Logger(DM::Warning) << "Split System";
 	//Copy all that is needed
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
@@ -79,6 +81,7 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	latestUniqueId = s.latestUniqueId;
 	sucessors = std::vector<DM::GDALSystem*>();
 	DBID = QUuid::createUuid().toString();
+	EPSG = s.EPSG;
 
 	//Copy DB
 	QString origin =  "/tmp/" + s.DBID + ".db";
@@ -186,21 +189,6 @@ void GDALSystem::resetReading(const View &v)
 	}
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->ResetReading();
-
-//	std::stringstream state_filter;
-//	for (int i = 0; i < this->state_ids.size(); i++) {
-//		if (i != 0) {
-//			state_filter << " or ";
-//		}
-//		state_filter << "dynamind_state_id = '" << this->state_ids[i] << "'";
-//	}
-//	Logger(Debug) << state_filter.str();
-
-//	lyr->SetAttributeFilter(state_filter.str().c_str());
-
-
-
-
 }
 
 GDALSystem *GDALSystem::createSuccessor()
@@ -256,7 +244,7 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 {
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
-	oSourceSRS->importFromEPSG(32755);
+	oSourceSRS->importFromEPSG(this->EPSG);
 //	oSourceSRS = NULL;
 
 	switch ( v.getType() ) {

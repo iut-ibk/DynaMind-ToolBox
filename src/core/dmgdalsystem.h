@@ -63,7 +63,7 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT GDALSystem : public ISystem
 {
 public:
-	GDALSystem();
+	GDALSystem(int EPSG = 0);
 
 	/**
 	 * @brief Creates a new GDALSystem.
@@ -184,6 +184,7 @@ private:
 	GDALSystem *predecessor;
 	std::vector<DM::GDALSystem*> sucessors;
 	QString DBID;
+	int EPSG;
 };
 }
 
