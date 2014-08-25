@@ -297,6 +297,13 @@ class DM::ViewContainer {
 	def __iter__(self):
 		return self
 
+	def get_feature(self, fid):
+		self.register_layer()
+		feature = self.__ogr_layer.GetFeature(fid)
+		self.registerFeature(feature, False)
+		self.__features.append(feature)
+		return feature
+
 	def next(self):
 		self.register_layer()
 		feature = self.__ogr_layer.GetNextFeature()
