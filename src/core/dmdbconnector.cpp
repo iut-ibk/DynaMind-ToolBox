@@ -187,7 +187,7 @@ DBConnector::DBConnector()
 #endif
 
 	QDateTime time = QDateTime::currentDateTime();
-	QString dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
+	dbpath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".db";
 	std::string str = dbpath.toStdString();
 
 	if(QFile::exists(dbpath))
@@ -425,6 +425,7 @@ DBWorker::~DBWorker()
 DBConnector::~DBConnector()
 {
 	killWorker();
+	QFile::remove(dbpath);
 }
 
 void DBConnector::killWorker()
