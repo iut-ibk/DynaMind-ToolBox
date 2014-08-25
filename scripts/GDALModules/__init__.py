@@ -24,4 +24,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-from modify_gdal_advanced_api import *
+
+from simplify_abs_education import *
+from simplify_abs_income import *
