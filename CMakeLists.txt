@@ -1,9 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(dynamind-gdalmodules)
-	set(CMAKE_MODULE_PATH
-	"${dynamind-gdalmodules_SOURCE_DIR}/cmake"
-	"${dynamind-gdalmodules_SOURCE_DIR}/cmake/Utils"
-	"${dynamind-gdalmodules_SOURCE_DIR}/cmake/Packages")
+	SET(CMAKE_MODULE_PATH
+	"${dynamind-gdalmodules_SOURCE_DIR}/CMake/Packages")
 
 FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
 	PATHS   $ENV{DYNAMIND_DIR}/include
@@ -35,15 +33,15 @@ FIND_PACKAGE(GDAL)
 FIND_PACKAGE(SFCGAL)
 INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR})
 
-find_package(OpenMP)
+FIND_PACKAGE(OpenMP)
 
-if(OPENMP_FOUND)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	message(STATUS "OpenMP is enabled")
-else()
-	add_definitions(-DOPENMP_DISABLED)
-	message(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
-endif()
+IF(OPENMP_FOUND)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	MESSAGE(STATUS "OpenMP is enabled")
+ELSE()
+	ADD_DEFINITIONS(-DOPENMP_DISABLED)
+	MESSAGE(STATUS "OpenMP is disabled. Consider using a compiler that supports OpenMP")
+ENDIF()
 
 INCLUDE(${QT_USE_FILE})
 INCLUDE_DIRECTORIES( ${DYNAMIND_INCLUDE_DIR})
@@ -66,6 +64,6 @@ ENDIF()
 
 ADD_SUBDIRECTORY(src)
 
-if(WITH_UNIT_TESTS)
+IF(WITH_UNIT_TESTS)
 	ADD_SUBDIRECTORY(unit-tests)
-endif(WITH_UNIT_TESTS)
+ENDIF(WITH_UNIT_TESTS)
