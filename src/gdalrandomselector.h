@@ -13,14 +13,21 @@ public:
 	GDALRandomSelector();
 	void run();
 	void init();
+
 private:
 	DM::ViewContainer vc;
+	DM::ViewContainer view_from;
 
 	std::string viewName;
 	std::string attribute;
+
+	bool valueFromView;
 	int elements;
 	bool initFailed;
 	std::string units;
+
+	std::string viewNameFrom;
+	std::string attributeNameFrom;
 
 
 };
