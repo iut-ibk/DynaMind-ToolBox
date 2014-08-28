@@ -34,7 +34,9 @@ GUIAboutDialog::GUIAboutDialog(GUISimulation * sim, QWidget *parent) :
 	ui(new Ui::GUIAboutDialog)
 {
 	ui->setupUi(this);
-	ui->label_2->setText(QString::fromStdString(DM::CoreVersion));
+	ui->label_2->setText(QString::fromStdString(DM::Core::getCoreVersion()));
+	ui->contactLabel->setText(QString::fromStdString(DM::Core::getContact()));
+	ui->licenseBox->setText(QString::fromStdString(DM::Core::getLicense()));
 
 	std::list<std::string> modules = sim->getModuleRegistry()->getRegisteredModules();
 	foreach(std::string m, modules)
