@@ -179,8 +179,8 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 {
 	clearSelection();
 
-	float minx = 0;
-	float miny = 0;
+	float minx = 100000000000000000000;
+	float miny = 100000000000000000000;
 
 	std::map<std::string, DM::Module*> modMap;
 	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  filePath, modMap, parentGroup, true);
@@ -196,13 +196,10 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 		map_contains(&modMap, it->first.toStdString(), m);
 		if(m != NULL && m->getOwner() == NULL)
 		{
-			minx = min(minx, (float)it->second.posX);
-			miny = min(miny, (float)it->second.posY);
+			minx = fmin(minx, (float)it->second.posX);
+			miny = fmin(miny, (float)it->second.posY);
 		}
 	}
-
-	minx -= target.x();
-	miny -= target.y();
 
 	for(std::map<QString, ModuleExEntry>::iterator it = moduleExInfo.begin();
 		it != moduleExInfo.end(); ++it)
@@ -212,7 +209,7 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 		{
 			ModelNode* node = sim->getModelNode(m);
 			if(m->getOwner() == NULL)
-				node->setPos(QPointF(it->second.posX-minx, it->second.posY-miny));
+				node->setPos(QPointF(target.x() + (it->second.posX-minx), target.y() + (it->second.posY-miny)));
 			else
 				node->setPos(QPointF(it->second.posX, it->second.posY));
 

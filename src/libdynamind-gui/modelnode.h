@@ -59,7 +59,7 @@ class  DM_HELPER_DLL_EXPORT ModelNode : public  QObject, public QGraphicsItem//,
 
 public:
 	enum { Type = UserType + 1 };
-	ModelNode(DM::Module* m, GUISimulation* sim);
+	ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent = 0);
 	~ModelNode();
 
 	virtual void setSelected ( bool selected ){QGraphicsItem::setSelected ( selected );}

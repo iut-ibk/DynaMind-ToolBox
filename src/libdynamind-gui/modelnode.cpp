@@ -50,7 +50,7 @@
 
 #include "modelobserver.h"
 
-ModelNode::ModelNode(DM::Module* m, GUISimulation* sim)
+ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) : QGraphicsItem(parent)
 {
 	child = NULL;
 	module = m;
@@ -109,6 +109,14 @@ void ModelNode::resize()
 	// update port pos
 	foreach(PortNode* p, ports)
 		p->updatePos();
+
+	if(DM::Module* m = module->getOwner())
+	{
+		if(GroupNode* gn = (GroupNode*)getSimulation()->getModelNode(m)->getChild())
+		{
+			gn->resize();
+		}
+	}
 }
 
 void ModelNode::setPos(const QPointF &pos)
@@ -209,6 +217,8 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	painter->drawText(	(boundingRect().width() - textSize.width())/2,
 		textSize.height() + 0,
 		text);
+
+	this->resize();
 }
 
 QRectF ModelNode::boundingRect() const 
@@ -316,6 +326,8 @@ void ModelNode::editName()
 {
 	module->setName(QInputDialog::getText(0, "set name", "specify name of this module", 
 		QLineEdit::Normal, QString::fromStdString(module->getName())).toStdString());
+
+	this->resize();
 }
 
 void ModelNode::deleteModelNode() 
