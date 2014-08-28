@@ -159,7 +159,6 @@ void EvaluatePerformanceIndicators::run()
 
 	if(pressure || tdemand)
 	{
-		resultheader+="Pressure,";
 		double minpress = 20;
 		double maxpress = 100;
 		double totaldemand=0.0;
@@ -178,12 +177,14 @@ void EvaluatePerformanceIndicators::run()
 
 		if(pressure)
 		{
+			resultheader+="Pressure,";
 			double ppi = validdemand/totaldemand;
 			result += QString::number(ppi,'f',4) + ",";
 		}
 
 		if(tdemand)
 		{
+			resultheader+="Total_Demand,";
 			result += QString::number(totaldemand,'f',4) + ",";
 		}
 	}
