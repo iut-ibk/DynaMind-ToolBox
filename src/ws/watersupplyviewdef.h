@@ -47,6 +47,7 @@ namespace DM
         #define JUNCTION_ATTR \
 		A(Demand,DM::Attribute::DOUBLE) \
 		A(Pressure,DM::Attribute::DOUBLE) \
+		A(TotalHead,DM::Attribute::DOUBLE) \
 		A(Tag,DM::Attribute::STRING)
 
 		#define PIPE_LINK

@@ -124,6 +124,7 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
 		DM::Edge *currentedge = static_cast<DM::Edge*>((*itr));
 		float currentdiameter;
 		float roughness;
+		float flow;
 		float status;
 		char name[256];
 		strcpy(name, QString::number(components[currentedge]).toStdString().c_str());
@@ -140,6 +141,11 @@ bool EpanetDynamindConverter::mapPipeAttributes(System *sys)
 			return false;
 
 		currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),currentdiameter);
+
+		if(!checkENRet(EPANET::ENgetlinkvalue(index,EN_FLOW,&flow)))
+			return false;
+
+		currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Flow),flow);
 
 		if(!checkENRet(EPANET::ENgetlinkvalue(index,EN_STATUS,&status)))
 			return false;
@@ -176,6 +182,7 @@ bool EpanetDynamindConverter::mapJunctionAttributes(System *sys)
 	{
 		DM::Node *currentnode = static_cast<DM::Node*>((*itr));
 		float currentpressure;
+		float currenttotalhead;
 		char name[256];
 		strcpy(name, QString::number(components[currentnode]).toStdString().c_str());
 		int index;
@@ -185,7 +192,11 @@ bool EpanetDynamindConverter::mapJunctionAttributes(System *sys)
 		if(!checkENRet(EPANET::ENgetnodevalue(index,EN_PRESSURE,&currentpressure)))
 			return false;
 
+		if(!checkENRet(EPANET::ENgetnodevalue(index,EN_HEAD,&currenttotalhead)))
+			return false;
+
 		currentnode->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),currentpressure);
+		currentnode->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::TotalHead),currenttotalhead);
 	}
 
 	return true;
@@ -503,8 +514,8 @@ std::vector<DM::Node*> EpanetDynamindConverter::getInverseFlowNeighbours(DM::Nod
 
 		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))return std::vector<DM::Node*>();
 
-		//if(std::fabs(flow) < 0.01)
-		//	flow=0.0;
+		if(std::fabs(flow) < 0.0001)
+			flow=0.0;
 
 		if(invert)
 			flow = -flow;
@@ -550,8 +561,8 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 		if(!checkENRet(EPANET::ENgetlinkvalue(ID,EN_FLOW,&flow)))
 			return std::vector<DM::Node*>();
 
-		//if(std::fabs(flow) < 0.01)
-		//	flow=0.0;
+		if(std::fabs(flow) < 0.0001)
+			flow=0.0;
 
 		if(invert)
 			flow = -flow;
@@ -570,6 +581,7 @@ std::vector<DM::Node*> EpanetDynamindConverter::getFlowNeighbours(DM::Node* junc
 
 double EpanetDynamindConverter::calcDiameter(double k, double l, double q, double h, double maxdiameter, bool discretediameters, bool nearestdiscretediameter)
 {
+	double mindiameter = 0.05;
 	std::vector<double> diameters;
 	diameters.push_back(0.050);
 	diameters.push_back(0.080);
@@ -591,7 +603,7 @@ double EpanetDynamindConverter::calcDiameter(double k, double l, double q, doubl
 	diameters.push_back(8.000);
 
 	if(q < 0.00001)
-		return 0.01;
+		return mindiameter;
 
 	if(h < 0)
 		return -1;
