@@ -179,8 +179,8 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 {
 	clearSelection();
 
-	float minx = 100000000000000000000;
-	float miny = 100000000000000000000;
+	float minx = 100000;
+	float miny = 100000;
 
 	std::map<std::string, DM::Module*> modMap;
 	bool success = ((DM::Simulation*)sim)->loadSimulation(source,  filePath, modMap, parentGroup, true);
