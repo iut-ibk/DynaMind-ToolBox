@@ -40,7 +40,7 @@ class Dimensioning : public DM::Module
 	DM::WS::ViewDefinitionHelper wsd;
 	DM::System * sys;
 	boost::shared_ptr<EpanetDynamindConverter> converter;
-	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter;
+	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter,savesubsurface;
 	double maxdiameter, iterations, apprdt;
 	std::vector<DM::Component*> fixedpipes;
 	std::vector<DM::Node*> initknownpressure;
@@ -56,6 +56,7 @@ private:
 	bool SitzenfreiDimensioning();
 	bool calibrateReservoirOutFlow(double totaldemand, int maxsteps,std::vector<DM::Edge*> entrypipes, bool discretediameter);
 	bool findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints);
+	double findShortestFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints);
 	bool approximatePipeSizes(bool usemainpipes,bool discretediameter);
 	bool approximatePressure(bool discretediameter,std::vector<DM::Node*>initunchecked);
 	bool approximatePressure(std::vector<DM::Node*> &knownPressurePoints, std::vector<DM::Node*> &uncheckedpressurepoints,std::vector<DM::Node*> &newinitunchecked);

@@ -64,6 +64,7 @@ Dimensioning::Dimensioning()
 	this->discrete=true;
 	this->iterations = 5;
 	this->nearestdiscretediameter=true;
+	this->savesubsurface=false;
 	this->apprdt = 0.005;
 	this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
 	this->addParameter("Maximum diameter [mm]", DM::DOUBLE, &this->maxdiameter);
@@ -74,17 +75,24 @@ Dimensioning::Dimensioning()
 	this->addParameter("Force discrete diameters", DM::BOOL, &this->discrete);
 	this->addParameter("Force nearest discrete diameters", DM::BOOL, &this->nearestdiscretediameter);
 	this->addParameter("Assumed pressure head loss [m/m]", DM::DOUBLE, &this->apprdt);
+	this->addParameter("Save approximated total head", DM::BOOL, &this->savesubsurface);
 }
 
 void Dimensioning::init()
 {
 	std::vector<DM::View> views;
-	views.push_back(wsd.getCompleteView(WS::JUNCTION,DM::READ));
+
+	DM::View jview = wsd.getCompleteView(WS::JUNCTION,DM::MODIFY);
+
+	if(savesubsurface)
+		jview.addAttribute("Approximated_Head",DM::Attribute::DOUBLE,DM::WRITE);
+
+	views.push_back(jview);
 	views.push_back(wsd.getCompleteView(WS::PIPE,DM::MODIFY));
 	views.push_back(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
 
 	if(usemainpipe)
-		views.push_back(wsd.getCompleteView(WS::MAINPIPE,DM::READ));
+		views.push_back(wsd.getCompleteView(WS::MAINPIPE,DM::MODIFY));
 
 	this->addData("Watersupply", views);
 }
@@ -180,8 +188,21 @@ void Dimensioning::run()
 				return;
 	}
 
+	if(savesubsurface)
+	{
+		std::vector<DM::Component*> junctions = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::JUNCTION,DM::MODIFY));
+
+		for(int index=0; index<junctions.size(); index++)
+		{
+			DM::Node *j = static_cast<DM::Node*>(junctions[index]);
+			double p = j->getAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure))->getDouble();
+			double h = j->getZ() + p;
+			j->changeAttribute("Approximated_Head",h);
+		}
+	}
+
 	if(!converter->mapEpanetAttributes(this->sys)) return;
-	//if(!converter->checkENRet(EPANET::ENsaveinpfile("/home/csae6550/Desktop/designed.inp")))return;
+
 	converter->closeEpanetModel();
 
 	DM::Logger(DM::Standard) << "Total demand: " << totaldemand << " m^3/s";
@@ -356,7 +377,9 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 			if(!findFlowPath(pathpoints,newuncheckedpressurepoints,currentneighbour,knownPressurePoints))
 				continue;
 
-			pathpoints.insert(pathpoints.begin(),currentneighbour);
+			if(std::find(pathpoints.begin(),pathpoints.end(),currentneighbour)==pathpoints.end())
+				pathpoints.insert(pathpoints.begin(),currentneighbour);
+
 			pathpoints.insert(pathpoints.begin(),currentpressurepoint);
 
 			if(!approximatePressureOnPath(pathpoints,knownPressurePoints, newinitunchecked))
@@ -364,9 +387,13 @@ bool Dimensioning::approximatePressure(std::vector<DM::Node*> &knownPressurePoin
 
 			for(int n=0; n<newuncheckedpressurepoints.size();n++)
 				if(std::find(checkedpressurepoints.begin(),checkedpressurepoints.end(),newuncheckedpressurepoints[n])==checkedpressurepoints.end())
-					if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])==uncheckedpressurepoints.end())
-						if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
-							uncheckedpressurepoints.push_back(newuncheckedpressurepoints[n]);
+					if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),newuncheckedpressurepoints[n])==knownPressurePoints.end())
+					{
+						if(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n])!=uncheckedpressurepoints.end())
+							uncheckedpressurepoints.erase(std::find(uncheckedpressurepoints.begin(),uncheckedpressurepoints.end(),newuncheckedpressurepoints[n]));
+
+						uncheckedpressurepoints.insert(uncheckedpressurepoints.begin(),sizeof(newuncheckedpressurepoints[n]),newuncheckedpressurepoints[n]);
+					}
 		}
 
 		checkedpressurepoints.push_back(currentpressurepoint);
@@ -391,18 +418,10 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 	double startZ = nodes[nodes.size()-1]->getZ();
 	double endZ = nodes[0]->getZ();
 
-	if(endPressure <= 0.0 && converter->getInverseFlowNeighbours(nodes[0]).size()==0)
+	//set pressure for leaf nodes
+	if(endPressure == 0.0 && converter->getInverseFlowNeighbours(nodes[0]).size()==0)
 	{
 		endPressure = (startZ-endZ) - apprdt*length + startPressure;
-
-		/*
-		if(endPressure < 0.0)
-		{
-			DM::Logger(DM::Error) << "Negative pressure approximated at the end of a flow path: " << endPressure << "m StartH: " << startZ << "m EndH: " << endZ << "m";
-			endPressure = 10;
-		}
-		*/
-
 		nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),endPressure);
 	}
 
@@ -429,6 +448,8 @@ bool Dimensioning::approximatePressureOnPath(std::vector<DM::Node*> nodes,std::v
 				forcedpressure=std::max(forcedpressure,endPressure);
 
 			nodes[0]->changeAttribute(wsd.getAttributeString(DM::WS::JUNCTION,DM::WS::JUNCTION_ATTR_DEF::Pressure),forcedpressure);
+			endPressure = forcedpressure;
+			deltaP = startZ+startPressure-endZ-endPressure;
 		}
 	}
 	*/
@@ -551,8 +572,8 @@ bool Dimensioning::findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::N
 		}
 
 		nodes.push_back(next);
-		neighbours = converter->getFlowNeighbours(next);
 		currentPressurePoint=next;
+		neighbours = converter->getFlowNeighbours(currentPressurePoint);
 	}
 
 	if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),currentPressurePoint)==knownPressurePoints.end())
@@ -561,10 +582,74 @@ bool Dimensioning::findFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::N
 	return true;
 }
 
+double Dimensioning::findShortestFlowPath(std::vector<DM::Node*> &nodes, std::vector<DM::Node*> &alternativepathjunction, DM::Node* currentPressurePoint, std::vector<DM::Node*> knownPressurePoints)
+{
+	//Only a alternative version of creating a pressuresubsurface (currently not working correct and its slow)
+	std::vector<DM::Node*> neighbours = converter->getFlowNeighbours(currentPressurePoint);
+
+	while(neighbours.size() == 1)
+	{
+		if(std::find(knownPressurePoints.begin(),knownPressurePoints.end(),currentPressurePoint)!=knownPressurePoints.end())
+			return TBVectorData::calculateDistance(nodes);
+
+		DM::Node* next = neighbours[0];
+
+		//cycle check -- This should not happen but epanet has some minor cyclic flow -> maybe a treshold sould be implemented
+		if(std::find(nodes.begin(),nodes.end(),next)!=nodes.end())
+		{
+			DM::Logger(DM::Error) << "Found cyclic flow path of length "  << nodes.size();
+			nodes.clear();
+			return 100000000000000000;
+		}
+
+		nodes.push_back(next);
+		currentPressurePoint=next;
+		neighbours = converter->getFlowNeighbours(currentPressurePoint);
+	}
+
+	if(neighbours.size() > 1)
+	{
+		if(std::find(nodes.begin(),nodes.end(),currentPressurePoint)==nodes.end())
+			nodes.push_back(currentPressurePoint);
+
+		alternativepathjunction.push_back(currentPressurePoint);
+
+		double shortestdist = 0;
+		std::vector<DM::Node*> shortestalternativepathjunctions;
+		std::vector<DM::Node*> shortestNodes;
+
+		for (int n = 0; n < neighbours.size(); ++n)
+		{
+			std::vector<DM::Node*> sapj;
+			std::vector<DM::Node*> sn;
+			double sd = findShortestFlowPath(sn,sapj,neighbours[n],knownPressurePoints);
+
+			if(n==0 || sd < shortestdist)
+			{
+				shortestdist = sd;
+				shortestalternativepathjunctions = sapj;
+				shortestNodes = sn;
+			}
+		}
+
+		nodes.insert(nodes.end(),shortestNodes.begin(),shortestNodes.end());
+		alternativepathjunction.insert(alternativepathjunction.end(),shortestalternativepathjunctions.begin(),shortestalternativepathjunctions.end());
+	}
+	else
+	{
+		nodes.push_back(currentPressurePoint);
+	}
+
+	return TBVectorData::calculateDistance(nodes);
+}
+
 bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 {
+	double minmainpipediameter = 0.2; //(m)
+
 	std::vector<DM::Component*> allpipes = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::PIPE,DM::READ));
 	std::vector<DM::Component*> mainpipes = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::MAINPIPE,DM::READ));
+	std::vector<DM::Component*> reservoirs = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
 
 	for(int index=0; index<allpipes.size(); index++)
 	{
@@ -608,11 +693,13 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 		if(usemainpipes && std::find(mainpipes.begin(),mainpipes.end(),currentpipe)!=mainpipes.end())
 			roughness = 0.0001;
 
+		/*
 		if(startP > 0 && endP < 0)
 		{
 			//TODO implement Pumpts here
-			DM::Logger(DM::Debug) << "Negative pressure in pressure surface: StartP " << startP  << " EndP " << endP << " Length of pipe: " << length;
+			DM::Logger(DM::Error) << "Negative pressure in pressure surface: StartP " << startP  << " EndP " << endP << " Length of pipe: " << length;
 		}
+		*/
 
 		if(pressureDiff < 0 && flow > 0)
 		{
@@ -627,6 +714,16 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 
 		if(std::find(fixedpipes.begin(),fixedpipes.end(),currentpipe)==fixedpipes.end())
 		{
+			if(usemainpipes && std::find(mainpipes.begin(),mainpipes.end(),currentpipe)!=mainpipes.end())
+			{
+				if(	std::find(reservoirs.begin(),reservoirs.end(),currentpipe->getStartNode()) == reservoirs.end() &&
+					std::find(reservoirs.begin(),reservoirs.end(),currentpipe->getEndNode()) == reservoirs.end())
+				{
+					if(diameter < minmainpipediameter)
+						diameter = minmainpipediameter;
+				}
+			}
+
 			if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_DIAMETER,diameter*1000)))return false;
 			if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_ROUGHNESS,roughness*1000)))return false;
 			currentpipe->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),diameter);
@@ -642,7 +739,7 @@ bool Dimensioning::approximatePipeSizes(bool usemainpipes,bool discretediameter)
 bool Dimensioning::approximateMainPipes(bool usereservoirsdata, double totaldemand, std::vector<DM::Edge*> &respipes,bool discretediameters)
 {
 	double roughness = 0.0001; //roughness (m)
-	double mindiameter = 10;
+	double mindiameter = 0.2; //(m)
 	std::vector<DM::Component*> reservoirs = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
 	std::vector<DM::Component*> mainpipe = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::MAINPIPE,DM::READ));
 	std::map<DM::Component*, DM::Edge*> entrypipes;
