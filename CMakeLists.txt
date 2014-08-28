@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(DynaMind-ToolBox)
 
-ADD_DEFINITIONS(-DDYNAMIND_VERSION_CORE="0.5.0")
-
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	message(STATUS "Using Visual C compilers")
 	set(CMAKE_CXX_FLAGS "/EHsc /bigobj")
