@@ -196,8 +196,8 @@ void SimulationTab::importSimulation(QIODevice* source, const QPointF& target, c
 		map_contains(&modMap, it->first.toStdString(), m);
 		if(m != NULL && m->getOwner() == NULL)
 		{
-			minx = fmin(minx, (float)it->second.posX);
-			miny = fmin(miny, (float)it->second.posY);
+			minx = min(minx, (float)it->second.posX);
+			miny = min(miny, (float)it->second.posY);
 		}
 	}
 
