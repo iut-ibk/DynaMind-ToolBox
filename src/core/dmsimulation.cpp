@@ -66,6 +66,37 @@
 
 using namespace DM;
 
+std::string Core::getCoreVersion()
+{
+	return DYNAMIND_VERSION_CORE;
+}
+
+std::string Core::getAuthor()
+{
+	return "Christian Urich, Michael Mair";
+}
+
+std::string Core::getLicense()
+{
+	std::string license =	"Copyright (C) 2011-2014  " + Core::getAuthor() + "\n\n" +
+							"This program is free software; you can redistribute it and/or modify it under the " +
+							"terms of the GNU General Public License as published by the Free Software Foundation;" +
+							"either version 2 of the License, or (at your option) any later version.\n\n" +
+							"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; " +
+							"without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. " +
+							"See the GNU General Public License for more details.\n\n" +
+							"You should have received a copy of the GNU General Public License along with this program; " +
+							"if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.";
+	return license;
+}
+
+std::string Core::getContact()
+{
+	std::string contact =	"Christian Urich <christian.urich@gmail>\n"\
+							"Michael Mair <michael.mair@uibk.ac.at>";
+	return contact;
+}
+
 Simulation::Simulation()
 {
 	status = SIM_OK;

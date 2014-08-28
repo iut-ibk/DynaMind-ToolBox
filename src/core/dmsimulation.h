@@ -46,7 +46,14 @@ class ModuleRegistry;
 class ModuleLink;
 class Group;
 
-static const  std::string CoreVersion = DYNAMIND_VERSION_CORE;
+class DM_HELPER_DLL_EXPORT Core
+{
+	public:
+		static std::string getCoreVersion();
+		static std::string getAuthor();
+		static std::string getLicense();
+		static std::string getContact();
+};
 
 enum SimulationStatus {
 	SIM_OK,
