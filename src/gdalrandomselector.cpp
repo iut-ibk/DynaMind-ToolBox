@@ -6,6 +6,8 @@ GDALRandomSelector::GDALRandomSelector()
 {
 	GDALModule = true;
 
+	valueFromView = false;
+
 	srand (time(NULL));
 
 	this->viewName = "";
@@ -20,6 +22,14 @@ GDALRandomSelector::GDALRandomSelector()
 	this->units = "";
 	this->addParameter("units", DM::STRING, &this->units);
 
+	this->viewNameFrom = "";
+	this->addParameter("view_from", DM::STRING, &this->viewNameFrom);
+
+	this->attributeNameFrom= "";
+	this->addParameter("attribute_from", DM::STRING, &this->attributeNameFrom);
+
+	this->units = "";
+	this->addParameter("units", DM::STRING, &this->units);
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -30,6 +40,7 @@ GDALRandomSelector::GDALRandomSelector()
 
 void GDALRandomSelector::init()
 {
+	valueFromView = false;
 
 	if (viewName.empty() || attribute.empty())
 		return;
@@ -40,8 +51,14 @@ void GDALRandomSelector::init()
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&vc);
-	this->registerViewContainers(data_stream);
 
+	if (!this->viewNameFrom.empty() && !this->attributeNameFrom.empty()) {
+		this->view_from = DM::ViewContainer(this->viewNameFrom, DM::COMPONENT, DM::READ);
+		this->view_from.addAttribute(this->attributeNameFrom, DM::Attribute::INT, DM::READ);
+		data_stream.push_back(&view_from);
+		valueFromView = true;
+	}
+	this->registerViewContainers(data_stream);
 }
 
 void GDALRandomSelector::run()
@@ -55,7 +72,13 @@ void GDALRandomSelector::run()
 	}
 	std::vector<int> rand_elements;
 	std::vector<int> ids;
+
 	int elements_max = elements;
+
+	if (this->valueFromView) {
+		view_from.resetReading();
+
+	}
 
 	OGRFeature * f;
 

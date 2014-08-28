@@ -110,7 +110,7 @@ class SimplifyABSEducation(Module):
                 #print b01
 
                 for k in self.translation_table_1.keys():
-                     values[self.translation_table_1[k]] = b01.GetFieldAsInteger(k)
+                     values[self.translation_table_1[k]] += b01.GetFieldAsInteger(k)
 
 
                 f = self.__ress.create_feature()
