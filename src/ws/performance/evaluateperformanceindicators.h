@@ -38,7 +38,7 @@ class EvaluatePerformanceIndicators : public DM::Module
 
     DM::WS::ViewDefinitionHelper wsd;
 	DM::System * sys;
-	bool cost, pressure, resilience;
+	bool cost, pressure, resilience, tdemand;
 	std::string filepath;
 
 public:

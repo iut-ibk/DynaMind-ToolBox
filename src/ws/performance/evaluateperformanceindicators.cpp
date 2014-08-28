@@ -48,6 +48,7 @@ EvaluatePerformanceIndicators::EvaluatePerformanceIndicators()
 	this->addParameter("Cost", DM::BOOL, &this->cost);
 	this->addParameter("Pressure", DM::BOOL, &this->pressure);
 	this->addParameter("Resilience", DM::BOOL, &this->resilience);
+	this->addParameter("TotalDemand",DM::BOOL, &this->tdemand);
 
 	this->addParameter("Result file path", DM::FILENAME, &this->filepath);
 
@@ -156,7 +157,7 @@ void EvaluatePerformanceIndicators::run()
 		result += QString::number(totalcost,'f',4) + "," + QString::number(anualcost,'f',4) + ",";
 	}
 
-	if(pressure)
+	if(pressure || tdemand)
 	{
 		resultheader+="Pressure,";
 		double minpress = 20;
@@ -175,8 +176,16 @@ void EvaluatePerformanceIndicators::run()
 				validdemand+=currentdemand;
 		}
 
-		double ppi = validdemand/totaldemand;
-		result += QString::number(ppi,'f',4) + ",";
+		if(pressure)
+		{
+			double ppi = validdemand/totaldemand;
+			result += QString::number(ppi,'f',4) + ",";
+		}
+
+		if(tdemand)
+		{
+			result += QString::number(totaldemand,'f',4) + ",";
+		}
 	}
 
 	if(resilience)
