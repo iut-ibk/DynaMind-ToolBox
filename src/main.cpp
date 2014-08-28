@@ -249,6 +249,9 @@ int main(int argc, char *argv[], char *envp[])
 		//("python-modules", po::value<vector <string> >(), "set path to python modules")
 		("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
 		("parameterlist", "shows the available parameters for this file")
+		("version", "shows the current version of the dynamind core")
+		("license", "shows used license of the dynamind core")
+		("author", "shows the names of the core programmers")
 		;
 
 
@@ -281,11 +284,33 @@ int main(int argc, char *argv[], char *envp[])
 			cout << desc << "\n";
 			return 1;
 		}
+
 		if (vm.count("show-settings"))
 		{
 			showSettings();
 			return 1;
 		}
+
+		if (vm.count("version"))
+		{
+			cout << DM::Core::getCoreVersion() << "\n";
+			return 1;
+		}
+
+		if (vm.count("author"))
+		{
+			cout << DM::Core::getAuthor() << "\n";
+			return 1;
+		}
+
+		if (vm.count("license"))
+		{
+			cout << DM::Core::getLicense() << "\n";
+			return 1;
+		}
+
+
+
 
 		if (vm.count("input-file"))
 			simulationfile =  vm["input-file"].as<string>();
