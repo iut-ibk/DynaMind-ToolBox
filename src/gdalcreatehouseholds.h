@@ -3,7 +3,7 @@
 
 #include <dmmodule.h>
 #include <dm.h>
-#include <random>
+#include <boost/random.hpp>
 
 class DM_HELPER_DLL_EXPORT GDALCreateHouseholds : public DM::Module
 {
@@ -27,9 +27,9 @@ private:
 
 	std::vector<double> hh_income_v;
 	std::vector<double> education_v;
-
-	std::default_random_engine generator;
-	std::uniform_real_distribution<double> distribution;
+	boost::random::mt19937 generator;
+	//boost::random::default_random_engine generator;
+	boost::random::uniform_real_distribution<double> distribution;
 
 	std::string sampler(std::vector<std::string> & names, std::vector<double> & devec);
 

@@ -1,14 +1,14 @@
 #include "gdalcreatehouseholds.h"
 #include "ogrsf_frmts.h"
 #include <sstream>
-#include <random>
+//#include <random>
 
 DM_DECLARE_NODE_NAME(GDALCreateHouseholds, GDALModules)
 
 GDALCreateHouseholds::GDALCreateHouseholds()
 {
-	generator = std::default_random_engine();
-	distribution = std::uniform_real_distribution<double>(0.0,1.0);
+	//generator = std::default_random_engine();
+	distribution = boost::random::uniform_real_distribution<double>(0.0,1.0);
 	srand (time(NULL));
 
 	GDALModule = true;
