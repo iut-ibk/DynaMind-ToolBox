@@ -128,8 +128,6 @@ void GDALImportData::run()
 	OGRMultiPolygon spatialFilter;
 	vc->setCurrentGDALSystem(city);
 
-
-
 	lyr->ResetReading();
 	OGRCoordinateTransformation* forward_trans = this->getTrafo(this->epsg_from, this->epsg_to);
 	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->epsg_to, this->epsg_from);
@@ -161,7 +159,6 @@ void GDALImportData::run()
 
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
-
 		OGRGeometry * geo_single = 0;
 
 		if (vc->getType() != DM::COMPONENT) {
@@ -178,8 +175,31 @@ void GDALImportData::run()
 				continue;
 			}
 			if (!this->isFlat) {
-				OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
-				geo_single = geo->getGeometryRef(0);
+				if (vc->getType() == DM::FACE) {
+					OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
+					if (!geo)
+						continue;
+					if (geo->getNumGeometries() == 0)
+						continue;
+					geo_single = geo->getGeometryRef(0);
+				}
+				if (vc->getType() == DM::EDGE) {
+									std::cout << "sdf1" << std::endl;
+					OGRMultiLineString * geo = (OGRMultiLineString*) poFeature->GetGeometryRef();
+					if (!geo)
+						continue;
+					if (geo->getNumGeometries() == 0)
+						continue;
+					geo_single = geo->getGeometryRef(0);
+				}
+				if (vc->getType() == DM::NODE) {
+					OGRMultiPoint * geo = (OGRMultiPoint*) poFeature->GetGeometryRef();
+					if (!geo)
+						continue;
+					if (geo->getNumGeometries() == 0)
+						continue;
+					geo_single = geo->getGeometryRef(0);
+				}
 			} else {
 				geo_single = poFeature->GetGeometryRef();
 			}
@@ -318,7 +338,7 @@ int GDALImportData::OGRtoDMGeometry(OGRFeatureDefn *def)
 		break;
 	case wkbLineString:
 		type = DM::EDGE;
-		isFlat = false;
+		isFlat = true;
 		break;
 	case wkbMultiLineString:
 		type = DM::EDGE;
