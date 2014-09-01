@@ -30,7 +30,7 @@
 #include <dmgdalsystem.h>
 #include <ogrsf_frmts.h>
 #include <sstream>
-
+#include <iomanip>
 namespace DM {
 
 ViewContainer::ViewContainer():
@@ -89,6 +89,26 @@ void ViewContainer::deleteFeature(long id)
 	delete_ids.push_back(id);
 }
 
+OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p)
+{
+	std::stringstream query;
+	query << std::setprecision(15);
+	query << "SELECT OGC_FID as id, ST_Distance(Geometry, MakePoint("
+		  << p->getX() << "," << p->getY() <<")) AS Distance FROM "<< this->getName() << " WHERE distance < 100.0 ORDER BY distance LIMIT 1";
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
+
+	OGRFeature * f = 0;
+
+	while (f = lyr->GetNextFeature()) {
+		int id =  f->GetFieldAsInteger("id");
+		this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
+		return this->getFeature(id);
+	}
+
+
+	return NULL;
+
+}
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
@@ -163,6 +183,7 @@ OGRFeature *ViewContainer::getFeature(long nFID)
 	return f;
 
 }
+
 
 void ViewContainer::registerFeature(OGRFeature * f)
 {
@@ -252,6 +273,8 @@ void ViewContainer::registerFeature(OGRFeatureShadow *f, bool isNew)
 	}
 
 }
+
+
 
 
 }

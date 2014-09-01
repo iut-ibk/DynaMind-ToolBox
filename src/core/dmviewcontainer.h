@@ -37,10 +37,12 @@ class DM_HELPER_DLL_EXPORT OGRFeatureShadow;
 class DM_HELPER_DLL_EXPORT OGRFeature;
 class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
 class DM_HELPER_DLL_EXPORT OGRGeometry;
+class DM_HELPER_DLL_EXPORT OGRPoint;
 
 namespace DM {
 
 class DM_HELPER_DLL_EXPORT GDALSystem;
+
 
 /**
  * @brief The ViewContainer class is used by to manage data access to the GDALSystem. This includes reading,
@@ -112,6 +114,7 @@ public:
 	 */
 	OGRFeature *getFeature(long nFID);
 
+
 	//OGRFeature *getFeature(long dynamind_id);
 
 	/**
@@ -163,6 +166,9 @@ public:
 	void createSpatialIndex();
 
 	void deleteFeature(long id);
+
+	OGRFeature *findNearestPoint(OGRPoint * p);
+
 
 
 private:
