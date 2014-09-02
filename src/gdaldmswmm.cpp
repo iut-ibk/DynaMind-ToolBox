@@ -50,33 +50,34 @@ GDALDMSWMM::GDALDMSWMM()
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("node_from",  DM::Attribute::INT, DM::READ);
 	conduit.addAttribute("node_to",  DM::Attribute::INT, DM::READ);
-	conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
-	conduit.addAttribute("outlet_offset",  DM::Attribute::DOUBLE, DM::READ);
-
+	//conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
+	//conduit.addAttribute("outlet_offset",  DM::Attribute::DOUBLE, DM::READ);
 	conduit.addAttribute("diameter", DM::Attribute::DOUBLE, DM::READ);
+
 	conduit.addAttribute("capacity", DM::Attribute::DOUBLE, DM::WRITE);
 	conduit.addAttribute("velocity", DM::Attribute::DOUBLE, DM::WRITE);
 
-	inlet = DM::ViewContainer("INLET", DM::NODE, DM::READ);
-	inlet.addAttribute("CATCHMENT", "CITYBLOCKS", DM::READ);
+	inlet = DM::ViewContainer("inlet", DM::NODE, DM::READ);
+	//inlet.addAttribute("catchment", "CITYBLOCKS", DM::READ);
 
 
 	junctions = DM::ViewContainer("junction", DM::NODE, DM::READ);
 	junctions.addAttribute("d", DM::Attribute::DOUBLE, DM::READ);
-	junctions.addAttribute("z", DM::Attribute::DOUBLE, DM::READ);
+	//junctions.addAttribute("z", DM::Attribute::DOUBLE, DM::READ);
 	junctions.addAttribute("invert_elevation", DM::Attribute::DOUBLE, DM::READ);
+
 	junctions.addAttribute("flooding_V", DM::Attribute::DOUBLE, DM::WRITE);
 	junctions.addAttribute("node_depth", DM::Attribute::DOUBLE, DM::WRITE);
 
-	endnodes = DM::ViewContainer("outfall", DM::NODE, DM::READ);
+	//endnodes = DM::ViewContainer("outfall", DM::NODE, DM::READ);
 
 	catchment = DM::ViewContainer("catchment", DM::FACE, DM::READ);
-//	catchment.addAttribute("wastewater", DM::Attribute::DOUBLE, DM::READ);
 	catchment.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-	//catchment.getAttribute("Gradient");
 	catchment.addAttribute("impervious_fraction", DM::Attribute::DOUBLE, DM::READ);
 
 	outfalls= DM::ViewContainer("outfall", DM::NODE, DM::READ);
+
+	nodes= DM::ViewContainer("node", DM::NODE, DM::READ);
 
 //	weir = DM::View("WEIR", DM::EDGE, DM::READ);
 //	weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
@@ -108,7 +109,7 @@ GDALDMSWMM::GDALDMSWMM()
 //	views.push_back(storage);
 //	views.push_back(globals);
 
-	this->FileName = "";
+	this->FileName = "/tmp/swmm";
 	this->climateChangeFactor = 1;
 	this->RainFile = "";
 	this->use_euler = true;
@@ -142,18 +143,19 @@ GDALDMSWMM::GDALDMSWMM()
 
 	data_stream.push_back(&inlet);
 	data_stream.push_back(&junctions);
-	data_stream.push_back(&endnodes);
+	//data_stream.push_back(&endnodes);
 	data_stream.push_back(&catchment);
-	data_stream.push_back(&outfalls);
+	//data_stream.push_back(&outfalls);
 	data_stream.push_back(&conduit);
+	data_stream.push_back(&nodes);
 
 	data_map["inlet"] = &this->inlet;
 	data_map["junction"] = &this->junctions;
-	data_map["endnode"] = &this->endnodes;
+	//data_map["endnode"] = &this->endnodes;
 	data_map["catchment"] = &this->catchment;
-	data_map["outfall"]  = &this->outfalls;
+	//data_map["outfall"]  = &this->outfalls;
 	data_map["conduit"]  = &this->conduit;
-
+	data_map["node"]  = &this->nodes;
 	this->registerViewContainers(data_stream);
 
 

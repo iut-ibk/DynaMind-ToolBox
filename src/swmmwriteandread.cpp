@@ -37,6 +37,7 @@
 #include <cstdlib>
 #include "swmm5.h"
 #include "ogrsf_frmts.h"
+#include <iomanip>
 
 using namespace DM;
 SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> data_map, std::string rainfile, std::string filename) :
@@ -66,8 +67,8 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 	junctions= data_map["junction"];
 	//endnodes= data_map["endnod"];
 	catchments = data_map["catchment"];
-	outfalls= data_map["outfall"];
-	nodes= data_map["nodes"];
+	//outfalls= data_map["outfall"];
+	nodes= data_map["node"];
 
 
 	tmpPath.mkdir(UUIDPath);
@@ -393,7 +394,7 @@ void SWMMWriteAndRead::writeJunctions(std::fstream &inp)
 		inp << junction->GetFieldAsDouble("invert_elevation"); //p->getAttribute("invert_elevation")->getDouble();
 
 		inp << "\t";
-		inp << junction->GetFieldAsDouble("D"); //p->getAttribute("D")->getDouble();
+		inp << junction->GetFieldAsDouble("d"); //p->getAttribute("D")->getDouble();
 		inp << "\t";
 		inp << "0";
 		inp << "\t";
@@ -423,38 +424,17 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 	this->inlets->resetReading();
 	OGRFeature * inlet;
 	while (inlet = this->inlets->getNextFeature())
-		//	foreach(Component* c, inlets)
 	{
 		this->catchments->resetReading();
-		std::stringstream catchment_filter;
-		catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
+		int catchment_id = (int) inlet->GetFieldAsInteger("catchment_id");
+		OGRFeature * catchment = catchments->getFeature(catchment_id);
 
-		this->catchments->setAttributeFilter(catchment_filter.str().c_str());
-
-		OGRFeature * catchment = 0;
-		while (catchment = catchments->getNextFeature()) {
-			break;
-		}
 
 		if (!catchment)
 			continue;
 
 
-
-
-		//		std::vector<DM::Component*> linkedToJunk = inlet_attr->getAttribute("JUNCTION")->getLinkedComponents();
-
-		//		if (linkedToJunk.size() < 1) {
-		//			continue;
-		//		}
-		//		int id = this->UUIDtoINT[linkedToJunk[0]];
-		//		if (id == 0) {
-		//			continue;
-		//		}
-
-
-
-		double area = catchment->GetFieldAsDouble("area");//catchment_attr->getAttribute("area")->getDouble()/10000.;
+		double area = catchment->GetFieldAsDouble("area")/10000.;//catchment_attr->getAttribute("area")->getDouble()/10000.;
 
 		if ( area == 0 ) {
 			continue;
@@ -466,26 +446,18 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 			continue;
 		}
 
-
-		//		if (UUIDtoINT[catchment_attr] == 0) {
-		//			UUIDtoINT[catchment_attr] = GLOBAL_Counter++;
-		//		} else {
-		//			continue;
-		//		}
-
-
 		double width = sqrt(area*10000.);
 		double gradient = 0;
-		//double gradient = fabs(catchment_attr->getAttribute("gradient")->getDouble());
-		//catchment_attr->getAttribute("impervious_fraction")->getDouble();
+
 		double imp = catchment->GetFieldAsDouble("impervious_fraction");
 		if (gradient > 0.01)
 			gradient = 0.01;
 		if (gradient < 0.001)
 			gradient = 0.001;
 		this->TotalImpervious += area*imp;
-		int id = catchment->GetFID();
-		inp << "sub" << id << "\tRG01" << "\t\tnode" << id << "\t" << area << "\t" << imp * 100 << "\t" << width << "\t" << gradient * 100 << "\t1\n";
+		int link_id = inlet->GetFieldAsInteger("node_id");
+
+		inp << "sub" << catchment_id << "\tRG01" << "\t\tnode" << link_id << "\t" << area << "\t" << imp * 100 << "\t" << width << "\t" << gradient * 100 << "\t1\n";
 
 	}
 	inp<<"[POLYGONS]\n";
@@ -497,15 +469,15 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 		//	foreach(Component* c, inlets)
 	{
 		this->catchments->resetReading();
-		std::stringstream catchment_filter;
-		catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
+		//std::stringstream catchment_filter;
+		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
 
-		this->catchments->setAttributeFilter(catchment_filter.str().c_str());
+		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
 
-		OGRFeature * catchment = 0;
-		while (catchment = catchments->getNextFeature()) {
-			break;
-		}
+		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("catchment_id") );
+		//while (catchment = catchments->getNextFeature()) {
+		//	break;
+		//}
 
 		if (!catchment)
 			continue;
@@ -538,29 +510,31 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 		//	foreach(Component* c, inlets)
 	{
 		this->catchments->resetReading();
-		std::stringstream catchment_filter;
-		catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
-		this->catchments->setAttributeFilter(catchment_filter.str().c_str());
+		//std::stringstream catchment_filter;
+		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
 
-		OGRFeature * catchment = 0;
-		while (catchment = catchments->getNextFeature()) {
-			break;
-		}
+		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
+
+		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("catchment_id") );
+		//while (catchment = catchments->getNextFeature()) {
+		//	break;
+		//}
+
 		if (!catchment)
 			continue;
 
 
-		this->junctions->resetReading();
-		std::stringstream junction_filter;
-		junction_filter << "junction_id = " << inlet->GetFieldAsInteger("junction_id");
-		this->junctions->setAttributeFilter(catchment_filter.str().c_str());
+//		this->junctions->resetReading();
+//		std::stringstream junction_filter;
+//		junction_filter << "junction_id = " << inlet->GetFieldAsInteger("junction_id");
+//		this->junctions->setAttributeFilter(catchment_filter.str().c_str());
 
-		OGRFeature * junction = 0;
-		while (junction = junctions->getNextFeature()) {
-			break;
-		}
-		if (!junction)
-			continue;
+//		OGRFeature * junction = 0;
+//		while (junction = junctions->getNextFeature()) {
+//			break;
+//		}
+//		if (!junction)
+//			continue;
 
 		inp << "  sub" << catchment->GetFID() << "\t\t0.015\t0.2\t1.8\t5\t0\tOUTLET\n";
 	}
@@ -782,9 +756,12 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 			//			if (UUIDtoINT[link] == 0)
 			//				UUIDtoINT[link] = GLOBAL_Counter++;
 			int id = conduit->GetFID();
-			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
+/*			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
 			   <<length<<"\t"<<"0.01	" << conduit->GetFieldAsDouble("inlet_offset")  <<"\t"
-			  << conduit->GetFieldAsDouble("outlet_offset") << "\n";
+			  << conduit->GetFieldAsDouble("outlet_offset") << "\n";*/
+			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
+			   <<length<<"\t"<<"0.01	" << 0.0  <<"\t"
+			  << 0.0 << "\n";
 			//		}
 		}
 	}
@@ -1170,9 +1147,13 @@ void SWMMWriteAndRead::writeSWMMFile() {
 	Impervious_Infiltration = 0;
 	this->TotalImpervious = 0;
 
-	QString fileName = this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
+
+	QString fileName = "/tmp/swmm.inp";//this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
 	std::fstream inp;
 	inp.open(fileName.toAscii(),ios::out);
+	std::cout << fileName.toStdString() << std::endl;
+	inp << std::fixed;
+	inp << std::setprecision(9);
 	writeSWMMheader(inp);
 	writeSubcatchments(inp);
 	writeLID_Controlls(inp);

@@ -35,7 +35,7 @@
 class SWMMWriteAndRead
 {
 public:
-	SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*>, std::string rainfile, std::string filename  = "");
+	SWMMWriteAndRead(std::map<string, DM::ViewContainer *>, std::string rainfile, std::string filename  = "");
 	void setRainFile(std::string rainfile);
 	void setClimateChangeFactor(int cf);
 	void writeSWMMFile();
@@ -86,9 +86,9 @@ private:
 	DM::ViewContainer * conduits;
 	DM::ViewContainer * inlets;
 	DM::ViewContainer * junctions;
-	DM::ViewContainer * endnodes;
+	//DM::ViewContainer * endnodes;
 	DM::ViewContainer * catchments;
-	DM::ViewContainer * outfalls;
+	//DM::ViewContainer * outfalls;
 	DM::ViewContainer * nodes;
 
 
