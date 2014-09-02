@@ -15,6 +15,8 @@ private:
 	std::string joinViewName;
 	std::string joinAttributeName;
 
+	std::string alternative_link_name;
+
 	DM::ViewContainer leadingView;
 	DM::ViewContainer joinView;
 

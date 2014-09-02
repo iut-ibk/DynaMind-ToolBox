@@ -18,6 +18,9 @@ NonSpatialLinking::NonSpatialLinking()
 	this->joinAttributeName = "";
 	this->addParameter("join_attribute", DM::STRING, &joinAttributeName);
 
+	this->alternative_link_name = "";
+	this->addParameter("alternative_link_name", DM::STRING, &alternative_link_name);
+
 	this->fullJoin = false;
 	this->addParameter("full_join", DM::BOOL, &fullJoin);
 }
@@ -32,8 +35,12 @@ void NonSpatialLinking::init()
 
 	if(!fullJoin) {
 		std::stringstream id_name;
-		id_name << leadingViewName << "_id";
-		joinView.addAttribute(id_name.str(), DM::Attribute::INT, DM::WRITE);
+		if (alternative_link_name.empty()) {
+			id_name << leadingViewName << "_id";
+			joinView.addAttribute(id_name.str(), DM::Attribute::INT, DM::WRITE);
+		} else {
+			joinView.addAttribute(alternative_link_name, DM::Attribute::INT, DM::WRITE);
+		}
 	} else {
 		viewmap inViews = getViewsInStream()["city"];
 		if (inViews.find(leadingViewName) == inViews.end()) {
@@ -44,7 +51,6 @@ void NonSpatialLinking::init()
 				joinView.addAttribute(attr_name, v.getAttributeType(attr_name), DM::WRITE);
 			}
 			this->attribute_names = v.getAllAttributes();
-
 		}
 	}
 
@@ -62,7 +68,12 @@ void NonSpatialLinking::run()
 	OGRFeature * feat = 0;
 
 	std::stringstream id_name;
-	id_name << leadingViewName << "_id";
+	if (alternative_link_name.empty()) {
+		id_name << leadingViewName << "_id";
+	} else {
+		id_name << this->alternative_link_name;
+	}
+
 	leadingView.createIndex(leadingattributeName);
 	while (feat = joinView.getNextFeature()) {
 		std::stringstream filter;
