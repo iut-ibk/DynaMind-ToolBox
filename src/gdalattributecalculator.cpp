@@ -93,7 +93,11 @@ bool GDALAttributeCalculator::initViews()
 
 		//Check if View has attribute
 		if (!viewInStream.hasAttribute(l_var[l_var.size()-1].toStdString())) {
-			DM::Logger(DM::Warning) << "Attribute " << l_var[l_var.size()-1].toStdString() << " not found";
+			DM::Logger(DM::Warning) << "Attribute " << l_var[l_var.size()-1].toStdString() <<  " for view " << viewInStream.getName() << " not found";
+			foreach (std::string a, viewInStream.getAllAttributes()) {
+				DM::Logger(DM::Warning) << a;
+			}
+
 			return false;
 		}
 
@@ -297,7 +301,7 @@ void GDALAttributeCalculator::run()
 		try
 		{
 			mup::Value val = p->Eval();
-			if (result_type == DM::Attribute::DOUBLE) {
+			if (result_type == DM::Attribute::INT) {
 				l_feat->SetField(leading_attribute.c_str(), (int) val.GetFloat());
 				continue;
 			}
