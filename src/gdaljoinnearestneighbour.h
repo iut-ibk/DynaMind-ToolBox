@@ -22,6 +22,8 @@ private:
 	DM::ViewContainer leadingView;
 	DM::ViewContainer linkView;
 
+	double max_distance;
+
 	std::string link_name;
 };
 

@@ -11,11 +11,16 @@ GDALJoinNearestNeighbour::GDALJoinNearestNeighbour()
 	GDALModule = true;
 	properInit = false;
 
+	max_distance = 100;
+
 	this->leadingViewName = "";
 	this->addParameter("leadingViewName", DM::STRING, &leadingViewName);
 
 	this->linkViewName = "";
 	this->addParameter("linkViewName", DM::STRING, &linkViewName);
+
+	this->max_distance = 100;
+	this->addParameter("max_distance", DM::DOUBLE, &max_distance);
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -28,7 +33,7 @@ void GDALJoinNearestNeighbour::init()
 	properInit = false;
 	if (this->leadingViewName.empty())
 		return;
-	if (this->leadingViewName.empty())
+	if (this->linkViewName.empty())
 		return;
 	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
 	if (inViews.find(leadingViewName) == inViews.end()) {
@@ -69,16 +74,14 @@ void GDALJoinNearestNeighbour::run()
 	OGRFeature * lead_feat = 0;
 	while (lead_feat = leadingView.getNextFeature()) {
 
-		OGRFeature * link_feature = 0;
 		OGRGeometry * lead_geo = lead_feat->GetGeometryRef();
-
 
 		if (!lead_geo) {
 			DM::Logger(DM::Warning) << "Lead feature geometry is null";
 			continue;
 		}
 
-		OGRFeature * f = linkView.findNearestPoint((OGRPoint*) lead_geo);
+		OGRFeature * f = linkView.findNearestPoint((OGRPoint*) lead_geo, max_distance);
 		if (!f)
 			continue;
 		lead_feat->SetField(link_name.c_str(), (int) f->GetFID());
