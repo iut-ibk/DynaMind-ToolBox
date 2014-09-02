@@ -2,6 +2,11 @@
 #include "dmgdalsystem.h"
 #include "ogr_geometry.h"
 
+#include <algorithm>
+#include <string>
+
+
+
 
 #include <ogr_api.h>
 
@@ -184,7 +189,7 @@ void GDALImportData::run()
 					geo_single = geo->getGeometryRef(0);
 				}
 				if (vc->getType() == DM::EDGE) {
-									std::cout << "sdf1" << std::endl;
+					std::cout << "sdf1" << std::endl;
 					OGRMultiLineString * geo = (OGRMultiLineString*) poFeature->GetGeometryRef();
 					if (!geo)
 						continue;
@@ -219,7 +224,8 @@ void GDALImportData::run()
 		}
 
 		foreach(std::string attribute_name, vc->getAllAttributes()) {
-			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(attribute_name.c_str()));
+			std::string real_name = translator[attribute_name];
+			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(real_name.c_str()));
 			f_new->SetField(attribute_name.c_str(), f);
 		}
 		OGRFeature::DestroyFeature( poFeature );
@@ -245,7 +251,7 @@ DM::ViewContainer *GDALImportData::initShapefile()
 	OGRFeatureDefn * def = lyr->GetLayerDefn();
 
 	int dm_geometry = this->OGRtoDMGeometry(def);
-
+	translator.clear();
 	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, dm_geometry, DM::WRITE);
 	for (int i = 0; i < def->GetFieldCount(); i++){
 		OGRFieldDefn * fdef = def->GetFieldDefn(i);
@@ -254,7 +260,13 @@ DM::ViewContainer *GDALImportData::initShapefile()
 		if (type == DM::Attribute::NOTYPE)
 			continue;
 		DM::Logger(DM::Debug) << "Load attribute" << fdef->GetNameRef();
-		view->addAttribute(fdef->GetNameRef(), type, DM::WRITE);
+
+		std::string attribute_name = fdef->GetNameRef();
+		std::transform(attribute_name.begin(), attribute_name.end(), attribute_name.begin(), ::tolower);
+
+		translator[attribute_name] = fdef->GetNameRef();
+
+		view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
 	}
 	return view;
 }

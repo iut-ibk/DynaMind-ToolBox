@@ -44,6 +44,7 @@ public:
 	virtual ~GDALImportData();
 	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
 	int DMToOGRGeometry(int dm_geometry);
+	std::map<std::string, std::string> translator;
 };
 
 #endif // IMPORTDATA_H
