@@ -134,7 +134,7 @@ public:
 	/**
 	 * @brief Resets reader for givesn view
 	 */
-	void resetReading(const DM::View & v);
+	bool resetReading(const DM::View & v);
 
 	GDALSystem *createSuccessor();
 
