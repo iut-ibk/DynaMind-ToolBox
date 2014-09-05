@@ -181,14 +181,15 @@ OGRDataSource *GDALSystem::getDataSource()
 	return this->poDS;
 }
 
-void GDALSystem::resetReading(const View &v)
+bool GDALSystem::resetReading(const View &v)
 {
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
 		Logger(Error) << "Layer not found";
-		return;
+		return false;
 	}
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->ResetReading();
+	return true;
 }
 
 GDALSystem *GDALSystem::createSuccessor()

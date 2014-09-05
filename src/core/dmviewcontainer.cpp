@@ -89,14 +89,17 @@ void ViewContainer::deleteFeature(long id)
 	delete_ids.push_back(id);
 }
 
-OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p)
+OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p, double radius)
 {
 	std::stringstream query;
 	query << std::setprecision(15);
 	query << "SELECT OGC_FID as id, ST_Distance(Geometry, MakePoint("
-		  << p->getX() << "," << p->getY() <<")) AS Distance FROM "<< this->getName() << " WHERE distance < 100.0 ORDER BY distance LIMIT 1";
+		  << p->getX() << "," << p->getY() <<")) AS Distance FROM "<< this->getName() << " WHERE distance < " << radius <<" ORDER BY distance LIMIT 1";
 	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
-
+	if (!lyr) {
+		Logger(Error) << "find nearest point query failed: " << query.str().c_str();
+		return NULL;
+	}
 	OGRFeature * f = 0;
 
 	while (f = lyr->GetNextFeature()) {
@@ -104,10 +107,8 @@ OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p)
 		this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
 		return this->getFeature(id);
 	}
-
-
+	this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
 	return NULL;
-
 }
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
@@ -229,8 +230,6 @@ void ViewContainer::createIndex(string attribute)
 	index_drop << "DROP INDEX "<< attribute <<"_index";
 	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index_drop.str().c_str(), 0, "SQLITE");
 
-
-
 	std::stringstream index;
 	index << "CREATE INDEX "<< attribute <<"_index ON " << this->getName() << " (" << attribute << ")";
 	lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
@@ -245,11 +244,11 @@ int ViewContainer::getFeatureCount()
 	return this->_currentSys->getOGRLayer(*this)->GetFeatureCount();
 }
 
-void ViewContainer::resetReading()
+bool ViewContainer::resetReading()
 {
 	if (!_currentSys) {
 		Logger(Error) << "No GDALSystem registered";
-		return;
+		return false;
 	}
 	return this->_currentSys->resetReading(*this);
 }
@@ -273,8 +272,4 @@ void ViewContainer::registerFeature(OGRFeatureShadow *f, bool isNew)
 	}
 
 }
-
-
-
-
 }

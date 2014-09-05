@@ -107,7 +107,7 @@ public:
 	/**
 	 * @brief Sets the position of the read marker to the beginning.
 	 */
-	void resetReading();
+	bool resetReading();
 	/**
 	 * @brief Returns OGRFeature with the nFID
 	 * @param nFID feature ID
@@ -167,7 +167,7 @@ public:
 
 	void deleteFeature(long id);
 
-	OGRFeature *findNearestPoint(OGRPoint * p);
+	OGRFeature *findNearestPoint(OGRPoint * p, double radius = 1.0);
 
 
 
