@@ -62,14 +62,14 @@ public:
 
 	/** @brief get the value at the specific coordinate 
 	offset will be substracted from the position declaration */
-	double getValue(long x, long y) const;
+	double getValue(double x, double y) const;
 
 	/** @brief get the value in the specific cell */
 	double getCell(long x, long y) const;
 
 	/** @brief set the value at the specific coordinate 
 	offset will be substracted from the position declaration  */
-	bool setValue(long x, long y, double value);
+	bool setValue(double x, double y, double value);
 
 	/** @brief get the value in the specific cell */
 	bool setCell(long x, long y, double value);

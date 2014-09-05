@@ -364,16 +364,16 @@ void RasterData::SQLInsert()
 }
 
 
-bool RasterData::setValue(long x, long y, double value)
+bool RasterData::setValue(double x, double y, double value)
 {
     QMutexLocker ml(mutex);
 
-    return setCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY),value);
+	return setCell((long)((x-xoffset)/cellSizeX),(long)((y-yoffset)/cellSizeY),value);
 }
 
-double RasterData::getValue(long x, long y) const
+double RasterData::getValue(double x, double y) const
 {
-    return getCell((int)((x-xoffset)/cellSizeX),(int)((y-yoffset)/cellSizeY));
+	return getCell((long)((x-xoffset)/cellSizeX),(long)((y-yoffset)/cellSizeY));
 }
 
 void RasterData::SQLInsertField(long width, long height)
