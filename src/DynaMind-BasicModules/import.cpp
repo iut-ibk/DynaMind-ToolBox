@@ -742,7 +742,7 @@ bool Import::loadRasterData()
 	GDALDataset  *poDataset;
 	GDALRasterBand  *poBand;
 	double adfGeoTransform[6];
-	DM::RasterData * r = this->getRasterData(PORT_NAME, View(RASTERVIEWNAME, DM::RASTERDATA, DM::WRITE));
+	DM::RasterData * r = this->getRasterData(PORT_NAME, View(viewConfig[RASTERVIEWNAME], DM::RASTERDATA, DM::WRITE));
 
 	poDataset = (GDALDataset *)GDALOpenShared(FileName.c_str(), GA_ReadOnly);
 	poBand = poDataset->GetRasterBand(1);
