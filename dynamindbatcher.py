@@ -3,6 +3,7 @@ import time
 import datetime
 import os,errno
 import shutil
+import os
 
 class DynaMindScenarios:
     def __createargumentlist(self,scenarios,scenarioresults,index=0):
@@ -11,7 +12,7 @@ class DynaMindScenarios:
             atomicstring = ""
     
             for pv in atomicscenario[0]:
-                atomicstring = atomicstring + pv[0] + "=" + pv[1] + ";"
+                atomicstring = atomicstring + pv[0] + "=" + str(pv[1]) + ";"
                 
             atomicstring = atomicstring[:-1]
     
@@ -33,7 +34,9 @@ class DynaMindScenarios:
                 pass
             else: raise
     
-    def run(self,dynamindmodel,repeat,resultdir,maxcpu,scenarios,scenarioresults,addtimestamp=False):
+    def run(self,dynamindhome,dynamindmodel,repeat,resultdir,maxcpu,scenarios,scenarioresults,addtimestamp=False):
+        os.chdir(dynamindhome)
+        
         if addtimestamp :
             ts = time.time()
             st = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d_%H_%M_%S')
