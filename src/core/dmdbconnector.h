@@ -221,7 +221,7 @@ public:
 
 // castercachesize is initialized when creating a rasterfield
 // would require a raster registration class to change the value in runtime
-#define RASTERBLOCKCACHESIZE 10000
+#define RASTERBLOCKCACHESIZE 100000000
 
 // edge cache is infinite (Asynchron member)
 // component cache is infinite (ComponentSyncMap: Asynchron member)
@@ -229,7 +229,7 @@ public:
 
 // this flag will prevent the DBConnector to establish any db connection
 // greatly improves performance
-//#define NO_DB_SYNC
+#define NO_DB_SYNC
 
 // time in milliseconds to wait, if worker is idle. starts with min, doubles
 // at each idle loop tick.
