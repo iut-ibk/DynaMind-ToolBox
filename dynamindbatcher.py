@@ -35,6 +35,7 @@ class DynaMindScenarios:
             else: raise
     
     def run(self,dynamindhome,dynamindmodel,repeat,resultdir,maxcpu,scenarios,scenarioresults,addtimestamp=False):
+        currentPath = os.getcwd()
         os.chdir(dynamindhome)
         
         if addtimestamp :
@@ -64,6 +65,8 @@ class DynaMindScenarios:
             executionarguments.append([("./dynamind","--repeat",str(repeat),"--replace",replacemodeloutput,"--parameter",a[0],"--logpath",logfile,"--cpfile",copyfiles,dynamindmodel),(resultdir + "/" + a[1] + "/dynamind.log")])
         
         running_procs = []
+
+        success = True
         
         while executionarguments.__len__() or running_procs.__len__():
             st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -89,11 +92,15 @@ class DynaMindScenarios:
                             executionarguments.append(proc[2])
                         else:
                             print st + " Error: " + str(retcode) + " Log: " + proc[1]
-                    else:
-                        os.remove(proc[1])
+                            success = False
+                    #else:
+                    #    os.remove(proc[1])
                     break
                 else: # No process is done, wait a bit and check again.
                     time.sleep(.1)
                     continue
         
         print "All processes finished"
+        os.chdir(currentPath)
+        return success
+
