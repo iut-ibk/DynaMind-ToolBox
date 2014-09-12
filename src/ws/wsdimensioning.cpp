@@ -937,6 +937,8 @@ bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, s
 		DM::Edge* currentpipe = entrypipes[index];
 		double assumedflow = currentpipe->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Flow))->getDouble();
 		float diameter = std::sqrt(4*assumedflow/1000.0)/M_PI*1000;
+		if(diameter < 0)
+			diameter = 10;
 		currentpipe->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),diameter);
 		uint epanetID = converter->getEpanetLinkID(currentpipe);
 		if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_DIAMETER,diameter)))return false;
@@ -972,7 +974,7 @@ bool Dimensioning::calibrateReservoirOutFlow(double totaldemand, int maxsteps, s
 				diameter-=(diameterstepsize*1000.0);
 
 			if(diameter <= 0.0)
-				diameter = 0.0001;
+				diameter = 0.1;
 
 			if(!converter->checkENRet(EPANET::ENsetlinkvalue(epanetID,EN_DIAMETER,diameter)))return false;
 			currentpipe->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter),diameter);
