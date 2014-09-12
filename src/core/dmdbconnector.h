@@ -229,7 +229,7 @@ public:
 
 // this flag will prevent the DBConnector to establish any db connection
 // greatly improves performance
-#define NO_DB_SYNC
+//#define NO_DB_SYNC
 
 // time in milliseconds to wait, if worker is idle. starts with min, doubles
 // at each idle loop tick.
