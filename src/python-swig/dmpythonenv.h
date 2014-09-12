@@ -31,32 +31,29 @@
 #include <vector>
 //using namespace std;
 namespace DM {
-class ModuleRegistry;
-#ifdef __cplusplus
-extern "C" {
-#endif
+	class ModuleRegistry;
 
-#ifdef __cplusplus
+	#ifdef __cplusplus
+		extern "C" {}
+
+		struct PythonEnvPriv;
+
+		class DM_HELPER_DLL_EXPORT PythonEnv {
+		public:
+			virtual ~PythonEnv();
+			static PythonEnv *getInstance();
+			void addPythonPath(std::string path);
+			bool registerNodes(ModuleRegistry *registry,
+							   const std::string &module);
+			bool addOverWriteStdCout();
+
+		private:
+			PythonEnv();
+			PythonEnvPriv *priv;
+			static PythonEnv *instance;
+			std::vector<std::string> loadedModules;
+		};
+
+	#endif
 }
-
-struct PythonEnvPriv;
-
-class DM_HELPER_DLL_EXPORT PythonEnv {
-public:
-	virtual ~PythonEnv();
-	static PythonEnv *getInstance();
-	void addPythonPath(std::string path);
-	bool registerNodes(ModuleRegistry *registry,
-					   const std::string &module);
-	bool addOverWriteStdCout();
-
-private:
-	PythonEnv();
-	PythonEnvPriv *priv;
-	static PythonEnv *instance;
-	std::vector<std::string> loadedModules;
-};
-
-}
-#endif
 #endif // PYTHONENV_H
