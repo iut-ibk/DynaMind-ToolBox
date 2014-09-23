@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2014 Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@
 #include "swmmwriteandread.h"
 #include "swmmreturnperiod.h"
 #include "drainagehelper.h"
-
+#include "ogrsf_frmts.h"
 
 using namespace DM;
 DM_DECLARE_NODE_NAME(GDALDMSWMM, Sewer)
@@ -66,7 +66,7 @@ GDALDMSWMM::GDALDMSWMM()
 	//junctions.addAttribute("z", DM::Attribute::DOUBLE, DM::READ);
 	junctions.addAttribute("invert_elevation", DM::Attribute::DOUBLE, DM::READ);
 
-	junctions.addAttribute("flooding_V", DM::Attribute::DOUBLE, DM::WRITE);
+	junctions.addAttribute("flooding_volume", DM::Attribute::DOUBLE, DM::WRITE);
 	junctions.addAttribute("node_depth", DM::Attribute::DOUBLE, DM::WRITE);
 
 	//endnodes = DM::ViewContainer("outfall", DM::NODE, DM::READ);
@@ -145,7 +145,7 @@ GDALDMSWMM::GDALDMSWMM()
 	data_stream.push_back(&junctions);
 	//data_stream.push_back(&endnodes);
 	data_stream.push_back(&catchment);
-	//data_stream.push_back(&outfalls);
+	data_stream.push_back(&outfalls);
 	data_stream.push_back(&conduit);
 	data_stream.push_back(&nodes);
 
@@ -153,7 +153,7 @@ GDALDMSWMM::GDALDMSWMM()
 	data_map["junction"] = &this->junctions;
 	//data_map["endnode"] = &this->endnodes;
 	data_map["catchment"] = &this->catchment;
-	//data_map["outfall"]  = &this->outfalls;
+	data_map["outfall"]  = &this->outfalls;
 	data_map["conduit"]  = &this->conduit;
 	data_map["node"]  = &this->nodes;
 	this->registerViewContainers(data_stream);
@@ -235,13 +235,42 @@ void GDALDMSWMM::run() {
 	swmm->setBuildYearConsidered(this->consider_built_time);
 	swmm->setClimateChangeFactor(cf);
 	swmm->setupSWMM();
-//	swmm->runSWMM();
-//	swmm->readInReportFile();
+	swmm->runSWMM();
+	swmm->readInReportFile();
 
-//	typedef std::pair<Node*, double > rainnode;
+	std::map<int, double> flooded_nodes = swmm->getFloodedNodes();
+	std::map<int, double> node_depths = swmm->getNodeDepthSummery();
 
-//	foreach(const rainnode& flo, swmm->getFloodedNodes())
-//		flo.first->addAttribute("flooding_V", flo.second);
+	OGRFeature * junction;
+	junctions.resetReading();
+	while (junction = junctions.getNextFeature()) {
+		int id =junction->GetFieldAsInteger("node_id");
+		if (flooded_nodes.find(id) != flooded_nodes.end()) {
+			junction->SetField("flooding_volume", flooded_nodes[id]);
+		}
+		if (node_depths.find(id) != node_depths.end()) {
+			junction->SetField("node_depth", node_depths[id]);
+		}
+	}
+
+	std::map<int, double> flow_cap = swmm->getLinkFlowSummeryCapacity();
+	std::map<int, double> flow_vel = swmm->getLinkFlowSummeryVelocity();
+
+	OGRFeature * c;
+	this->conduit.resetReading();
+	while (c = conduit.getNextFeature()) {
+		int id = c->GetFID();
+		if (flow_cap.find(id) != flow_cap.end()) {
+			c->SetField("capacity", flow_cap[id]);
+		}
+		if (flow_vel.find(id) != flow_vel.end()) {
+			c->SetField("velocity", flow_vel[id]);
+		}
+	}
+//	typedef std::pair<int, double > rainnode;
+
+//	foreach(const rainnode& flo, swmm->getFloodedNodes()) {
+//		flo.first->addAttribute("flooding_volume", flo.second);
 
 //	foreach(const rainnode& no, swmm->getNodeDepthSummery())
 //		no.first->addAttribute("node_depth", no.second);

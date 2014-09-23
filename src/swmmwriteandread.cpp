@@ -65,14 +65,17 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 	conduits = data_map["conduit"];
 	inlets= data_map["inlet"];
 	junctions= data_map["junction"];
-	//endnodes= data_map["endnod"];
 	catchments = data_map["catchment"];
-	//outfalls= data_map["outfall"];
+	outfalls= data_map["outfall"];
 	nodes= data_map["node"];
 
 
-	tmpPath.mkdir(UUIDPath);
+	if (!tmpPath.mkdir(UUIDPath)) {
+		Logger(Error) << "Couldn't create folder " << tmpPath.absolutePath().toStdString() << "/" << UUIDPath.toStdString();
+	}
+
 	this->SWMMPath.setPath(tmpPath.absolutePath() + "/" + UUIDPath);
+	Logger(Error) << this->SWMMPath.absolutePath().toStdString();
 }
 
 void SWMMWriteAndRead::setRainFile(string rainfile)
@@ -86,15 +89,15 @@ void SWMMWriteAndRead::setClimateChangeFactor(int cf)
 }
 
 void SWMMWriteAndRead::readInReportFile() {
-	Logger(Debug) << "Read inputfile " << this->SWMMPath.absolutePath() + "/" + "swmm.rep";
+	Logger(Error) << "Read inputfile " << this->SWMMPath.absolutePath() + "/" + "swmm.rep";
 
-	QMap<int, DM::Component*> revUUIDtoINT;
+	//	QMap<int, DM::Component*> revUUIDtoINT;
 
 
 
-	for (std::map<DM::Component*, int>::const_iterator it = UUIDtoINT.begin(); it !=UUIDtoINT.end(); ++it) {
-		revUUIDtoINT[it->second] =  it->first;
-	}
+	//	for (std::map<DM::Component*, int>::const_iterator it = UUIDtoINT.begin(); it !=UUIDtoINT.end(); ++it) {
+	//		revUUIDtoINT[it->second] =  it->first;
+	//	}
 
 	this->reportFile.setFileName(this->SWMMPath.absolutePath() + "/" + "swmm.rep");
 	this->reportFile.open(QIODevice::ReadOnly);
@@ -212,14 +215,14 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("NODE");
 					int id = id_asstring.toInt();
-					DM::Node * p = (DM::Node*)revUUIDtoINT[id];
-					if (p->getAttribute("WWTP")->getDouble() > 0.01) {
-						p->changeAttribute("OutfallVolume",  QString(data[4]).toDouble());
-						Vwwtp +=QString(data[4]).toDouble();
-					} else {
-						p->changeAttribute("OutfallVolume",  QString(data[4]).toDouble());
-						Voutfall +=QString(data[4]).toDouble();
-					}
+					//DM::Node * p = (DM::Node*)revUUIDtoINT[id];
+					//					if (p->getAttribute("WWTP")->getDouble() > 0.01) {
+					//						p->changeAttribute("OutfallVolume",  QString(data[4]).toDouble());
+					//						Vwwtp +=QString(data[4]).toDouble();
+					//					} else {
+					//p->changeAttribute("OutfallVolume",  QString(data[4]).toDouble());
+					Voutfall +=QString(data[4]).toDouble();
+					//}
 				}
 
 
@@ -242,10 +245,10 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("NODE");
 					int id = id_asstring.toInt();
-					DM::Node * p = (DM::Node*)revUUIDtoINT[id];
-					p->changeAttribute("flooding_V",  QString(data[5]).toDouble());
+					//DM::Node * p = (DM::Node*)revUUIDtoINT[id];
+					//p->changeAttribute("flooding_V",  QString(data[5]).toDouble());
 					Vp += QString(data[5]).toDouble();
-					floodedNodesVolume.push_back(std::pair<DM::Node*, double> (p,QString(data[5]).toDouble() ));
+					floodedNodesVolume[id] = QString(data[5]).toDouble();
 				}
 			}
 		}
@@ -267,12 +270,12 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("NODE");
 					int id = id_asstring.toInt();
-					DM::Node * p = (DM::Node*)revUUIDtoINT[id];
-					if (!p) {
-						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
-						continue;
-					}
-					nodeDepthSummery.push_back(std::pair<DM::Node*, double> (p,QString(data[3]).toDouble() ));
+					//					DM::Node * p = (DM::Node*)revUUIDtoINT[id];
+					//					if (!p) {
+					//						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
+					//						continue;
+					//					}
+					nodeDepthSummery[id] = QString(data[3]).toDouble();
 				}
 			}
 		}
@@ -294,13 +297,13 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("LINK");
 					int id = id_asstring.toInt();
-					DM::Edge * p = (DM::Edge*)revUUIDtoINT[id];
-					if (!p) {
-						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
-						continue;
-					}
-					linkFlowSummery_capacity.push_back(std::pair<DM::Edge*, double>(p, QString(data[7]).toDouble()));
-					linkFlowSummery_velocity.push_back(std::pair<DM::Edge*, double>(p, QString(data[6]).toDouble()));
+					//					DM::Edge * p = (DM::Edge*)revUUIDtoINT[id];
+					//					if (!p) {
+					//						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
+					//						continue;
+					//					}
+					linkFlowSummery_capacity[id] = QString(data[7]).toDouble();
+					linkFlowSummery_velocity[id] = QString(data[6]).toDouble();
 				}
 			}
 		}
@@ -367,25 +370,8 @@ void SWMMWriteAndRead::writeJunctions(std::fstream &inp)
 	OGRFeature * junction;
 	while (junction = junctions->getNextFeature())
 	{
-		//DM::Node * p = (DM::Node*)c;
-		/*if (p->isInView( wwtp ))
-			continue;*/
-		//		if(vector_contains(&outfallComps, c))
-		//			continue;
-		//		if (vector_contains(&storageComps, c))
-		//			continue;
-		//		if (p->getAttribute("Storage")->getDouble() == 1)
-		//			continue;
-		//		if (UUIDtoINT.find(p) == UUIDtoINT.end())
-		//			continue;
+		int id = junction->GetFieldAsInteger("node_id");
 
-		//		int id = UUIDtoINT[p];
-		int id = junction->GetFID();
-
-		//		if (std::find(checkForduplicatedNodes.begin(), checkForduplicatedNodes.end(), id) != checkForduplicatedNodes.end())
-		//			continue;
-
-		//checkForduplicatedNodes.push_back(id);
 		inp << "NODE";
 		inp << id;
 		inp << "\t";
@@ -425,6 +411,10 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 	OGRFeature * inlet;
 	while (inlet = this->inlets->getNextFeature())
 	{
+		int link_id = inlet->GetFieldAsInteger("node_id");
+		if (link_id == 0)
+			continue;
+
 		this->catchments->resetReading();
 		int catchment_id = (int) inlet->GetFieldAsInteger("catchment_id");
 		OGRFeature * catchment = catchments->getFeature(catchment_id);
@@ -455,7 +445,6 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 		if (gradient < 0.001)
 			gradient = 0.001;
 		this->TotalImpervious += area*imp;
-		int link_id = inlet->GetFieldAsInteger("node_id");
 
 		inp << "sub" << catchment_id << "\tRG01" << "\t\tnode" << link_id << "\t" << area << "\t" << imp * 100 << "\t" << width << "\t" << gradient * 100 << "\t1\n";
 
@@ -465,9 +454,10 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 	int counter = 0;
 	this->inlets->resetReading();
 
-	while (inlet = this->inlets->getNextFeature())
-		//	foreach(Component* c, inlets)
-	{
+	while (inlet = this->inlets->getNextFeature()) {
+		int link_id = inlet->GetFieldAsInteger("node_id");
+		if (link_id == 0)
+			continue;
 		this->catchments->resetReading();
 		//std::stringstream catchment_filter;
 		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
@@ -506,9 +496,10 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 	inp<<";;============================================================================\n";
 	this->inlets->resetReading();
 
-	while (inlet = this->inlets->getNextFeature())
-		//	foreach(Component* c, inlets)
-	{
+	while (inlet = this->inlets->getNextFeature()) {
+		int link_id = inlet->GetFieldAsInteger("node_id");
+		if (link_id == 0)
+			continue;
 		this->catchments->resetReading();
 		//std::stringstream catchment_filter;
 		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
@@ -524,17 +515,17 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 			continue;
 
 
-//		this->junctions->resetReading();
-//		std::stringstream junction_filter;
-//		junction_filter << "junction_id = " << inlet->GetFieldAsInteger("junction_id");
-//		this->junctions->setAttributeFilter(catchment_filter.str().c_str());
+		//		this->junctions->resetReading();
+		//		std::stringstream junction_filter;
+		//		junction_filter << "junction_id = " << inlet->GetFieldAsInteger("junction_id");
+		//		this->junctions->setAttributeFilter(catchment_filter.str().c_str());
 
-//		OGRFeature * junction = 0;
-//		while (junction = junctions->getNextFeature()) {
-//			break;
-//		}
-//		if (!junction)
-//			continue;
+		//		OGRFeature * junction = 0;
+		//		while (junction = junctions->getNextFeature()) {
+		//			break;
+		//		}
+		//		if (!junction)
+		//			continue;
 
 		inp << "  sub" << catchment->GetFID() << "\t\t0.015\t0.2\t1.8\t5\t0\tOUTLET\n";
 	}
@@ -689,20 +680,15 @@ void SWMMWriteAndRead:: writeOutfalls(std::fstream &inp) {
 	inp<<"[OUTFALLS]\n";
 	inp<<";;Name	Elev	Stage	Gate\n";
 	inp<<";;============================================================================\n";
-	//	foreach(Component* c, city->getAllComponentsInView(outfalls))
-	//	{
-	//		DM::Node * p = (Node*)c;
 
-	//		/*if (UUIDtoINT.find(p->getUUID()) == UUIDtoINT.end())
-	//			continue;*/
-	//		if (UUIDtoINT[p] == 0) {
-	//			UUIDtoINT[p] = GLOBAL_Counter++;
-	//			this->PointList.push_back(p);
-	//		}
+	this->outfalls->resetReading();
+	OGRFeature * outfall;
 
-	//		double z = p->getAttribute("Z")->getDouble();
-	//		inp<<"NODE"<<this->UUIDtoINT[p]<<"\t"<< z <<"\tFREE\tNO\n";
-	//	}
+	while(outfall = this->outfalls->getNextFeature()) {
+		double z = outfall->GetFieldAsDouble("invert_elevation");//p->getAttribute("Z")->getDouble();
+		int id = outfall->GetFieldAsInteger("node_id");
+		inp<<"NODE"<< id <<"\t"<< z <<"\tFREE\tNO\n";
+	}
 }
 
 void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
@@ -756,7 +742,7 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 			//			if (UUIDtoINT[link] == 0)
 			//				UUIDtoINT[link] = GLOBAL_Counter++;
 			int id = conduit->GetFID();
-/*			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
+			/*			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
 			   <<length<<"\t"<<"0.01	" << conduit->GetFieldAsDouble("inlet_offset")  <<"\t"
 			  << conduit->GetFieldAsDouble("outlet_offset") << "\n";*/
 			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
@@ -1113,19 +1099,19 @@ void SWMMWriteAndRead::writeCoordinates(std::fstream &inp)
 
 	}
 
-//	foreach(Component* c, city->getAllComponentsInView(outfalls))
-//	{
-//		DM::Node* node = (Node*)c;
-//		double x = node->getX();
-//		double y = node->getY();
+	//	foreach(Component* c, city->getAllComponentsInView(outfalls))
+	//	{
+	//		DM::Node* node = (Node*)c;
+	//		double x = node->getX();
+	//		double y = node->getY();
 
-//		inp << "NODE" << UUIDtoINT[node] ;
-//		inp << "\t";
-//		inp << x;
-//		inp << "\t";
-//		inp << y;
-//		inp << "\n";
-//	}
+	//		inp << "NODE" << UUIDtoINT[node] ;
+	//		inp << "\t";
+	//		inp << x;
+	//		inp << "\t";
+	//		inp << y;
+	//		inp << "\n";
+	//	}
 
 	/*for ( int i = 0; i < WWTPs.size(); i++ ) {
 		DM::Node * node = city->getNode(WWTPs[i]);
@@ -1148,7 +1134,7 @@ void SWMMWriteAndRead::writeSWMMFile() {
 	this->TotalImpervious = 0;
 
 
-	QString fileName = "/tmp/swmm.inp";//this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
+	QString fileName = this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
 	std::fstream inp;
 	inp.open(fileName.toAscii(),ios::out);
 	std::cout << fileName.toStdString() << std::endl;
@@ -1176,41 +1162,41 @@ void SWMMWriteAndRead::writeSWMMFile() {
 void SWMMWriteAndRead::setupSWMM()
 {
 	//Get current year from simulation
-//	std::vector<Component*> comps = city->getAllComponentsInView(DM::View("CITY", DM::COMPONENT, DM::READ));
+	//	std::vector<Component*> comps = city->getAllComponentsInView(DM::View("CITY", DM::COMPONENT, DM::READ));
 
-//	if (comps.size() < 1) {
-//		DM::Logger(DM::Error) << "City not found";
-//		return;
-//	}
-//	this->currentYear = comps[0]->getAttribute("year")->getDouble();
+	//	if (comps.size() < 1) {
+	//		DM::Logger(DM::Error) << "City not found";
+	//		return;
+	//	}
+	//	this->currentYear = comps[0]->getAttribute("year")->getDouble();
 
 	floodedNodesVolume.clear();
 	nodeDepthSummery.clear();
 
-//	foreach(Component* c, city->getAllComponentsInView(conduit))
-//	{
-//		Edge* e = (Edge*)c;
-//		//If conduit is not added no id is created
-//		if (this->built_year_considered)
-//			if (e->getAttribute("built_year")->getDouble() == 0.0  || e->getAttribute("built_year")->getDouble() > this->currentYear )
-//				continue;
+	//	foreach(Component* c, city->getAllComponentsInView(conduit))
+	//	{
+	//		Edge* e = (Edge*)c;
+	//		//If conduit is not added no id is created
+	//		if (this->built_year_considered)
+	//			if (e->getAttribute("built_year")->getDouble() == 0.0  || e->getAttribute("built_year")->getDouble() > this->currentYear )
+	//				continue;
 
-//		DM::Node * p1 = e->getStartNode();
-//		DM::Node * p2 = e->getEndNode();
+	//		DM::Node * p1 = e->getStartNode();
+	//		DM::Node * p2 = e->getEndNode();
 
-//		if (UUIDtoINT[e] == 0)
-//			UUIDtoINT[e] = GLOBAL_Counter++;
+	//		if (UUIDtoINT[e] == 0)
+	//			UUIDtoINT[e] = GLOBAL_Counter++;
 
-//		if (UUIDtoINT[p1] == 0) {
-//			UUIDtoINT[p1] = GLOBAL_Counter++;
-//			this->PointList.push_back(p1);
-//		}
+	//		if (UUIDtoINT[p1] == 0) {
+	//			UUIDtoINT[p1] = GLOBAL_Counter++;
+	//			this->PointList.push_back(p1);
+	//		}
 
-//		if (UUIDtoINT[p2] == 0) {
-//			UUIDtoINT[p2] = GLOBAL_Counter++;
-//			this->PointList.push_back(p2);
-//		}
-//	}
+	//		if (UUIDtoINT[p2] == 0) {
+	//			UUIDtoINT[p2] = GLOBAL_Counter++;
+	//			this->PointList.push_back(p2);
+	//		}
+	//	}
 
 	this->writeSWMMFile();
 	this->writeRainFile();
@@ -1221,23 +1207,23 @@ string SWMMWriteAndRead::getSWMMUUIDPath()
 	return this->SWMMPath.absolutePath().toStdString();
 }
 
-std::vector<std::pair<DM::Node*, double > > SWMMWriteAndRead::getFloodedNodes()
+std::map<int, double> SWMMWriteAndRead::getFloodedNodes()
 {
 	return this->floodedNodesVolume;
 }
 
-std::vector<std::pair<DM::Node*, double> > SWMMWriteAndRead::getNodeDepthSummery()
+std::map<int, double> SWMMWriteAndRead::getNodeDepthSummery()
 {
 	return this->nodeDepthSummery;
 }
 
-std::vector<std::pair<DM::Edge*, double> > SWMMWriteAndRead::getLinkFlowSummeryCapacity()
+std::map<int, double> SWMMWriteAndRead::getLinkFlowSummeryCapacity()
 {
 
 	return this->linkFlowSummery_capacity;
 }
 
-std::vector<std::pair<DM::Edge*, double> > SWMMWriteAndRead::getLinkFlowSummeryVelocity()
+std::map<int, double>SWMMWriteAndRead::getLinkFlowSummeryVelocity()
 {
 	return this->linkFlowSummery_velocity;
 }
@@ -1284,15 +1270,15 @@ double SWMMWriteAndRead::getImperiousInfiltration()
 
 double SWMMWriteAndRead::getAverageCapacity()
 {
-	typedef std::pair<DM::Edge*, double > rainnode;
-	//std::vector< std::pair<std::string, double > > valume_capacity = this->getLinkFlowSummeryCapacity();
-	std::vector<rainnode> valume_capacity = getLinkFlowSummeryCapacity();
-	double volume_cap = 0;
+//	typedef std::pair<DM::Edge*, double > rainnode;
+//	//std::vector< std::pair<std::string, double > > valume_capacity = this->getLinkFlowSummeryCapacity();
+//	std::vector<rainnode> valume_capacity = getLinkFlowSummeryCapacity();
+//	double volume_cap = 0;
 
-	foreach (rainnode  fn, valume_capacity)
-		volume_cap += fn.second;
+//	foreach (rainnode  fn, valume_capacity)
+//		volume_cap += fn.second;
 
-	return volume_cap/=valume_capacity.size();
+//	return volume_cap/=valume_capacity.size();
 }
 
 double SWMMWriteAndRead::getWaterLeveleBelow0()
@@ -1402,62 +1388,62 @@ void SWMMWriteAndRead::writeRainFile() {
 
 void SWMMWriteAndRead::createViewDefinition()
 {
-//	conduit = DM::View("CONDUIT", DM::EDGE, DM::READ);
-//	conduit.addAttribute("Diameter", DM::Attribute::DOUBLE, DM::READ);
+	//	conduit = DM::View("CONDUIT", DM::EDGE, DM::READ);
+	//	conduit.addAttribute("Diameter", DM::Attribute::DOUBLE, DM::READ);
 
-//	inlet = DM::View("INLET", DM::NODE, DM::READ);
-//	inlet.addAttribute("CATCHMENT", "CONDUIT", DM::READ);
+	//	inlet = DM::View("INLET", DM::NODE, DM::READ);
+	//	inlet.addAttribute("CATCHMENT", "CONDUIT", DM::READ);
 
 
-//	junctions = DM::View("JUNCTION", DM::NODE, DM::READ);
-//	junctions.addAttribute("D", DM::Attribute::DOUBLE, DM::READ);
-//	junctions.addAttribute("flooding_V", DM::Attribute::DOUBLE, DM::WRITE);
+	//	junctions = DM::View("JUNCTION", DM::NODE, DM::READ);
+	//	junctions.addAttribute("D", DM::Attribute::DOUBLE, DM::READ);
+	//	junctions.addAttribute("flooding_V", DM::Attribute::DOUBLE, DM::WRITE);
 
-//	endnodes = DM::View("OUTFALL", DM::NODE, DM::READ);
+	//	endnodes = DM::View("OUTFALL", DM::NODE, DM::READ);
 
-//	catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
-//	catchment.addAttribute("WasteWater", DM::Attribute::DOUBLE, DM::READ);
-//	catchment.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-//	catchment.addAttribute("Impervious", DM::Attribute::DOUBLE, DM::READ);
+	//	catchment = DM::View("CATCHMENT", DM::FACE, DM::READ);
+	//	catchment.addAttribute("WasteWater", DM::Attribute::DOUBLE, DM::READ);
+	//	catchment.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
+	//	catchment.addAttribute("Impervious", DM::Attribute::DOUBLE, DM::READ);
 
-//	outfalls= DM::View("OUTFALL", DM::NODE, DM::READ);
+	//	outfalls= DM::View("OUTFALL", DM::NODE, DM::READ);
 
-//	weir = DM::View("WEIR", DM::EDGE, DM::READ);
-//	weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
-//	wwtp = DM::View("WWTP", DM::NODE, DM::READ);
+	//	weir = DM::View("WEIR", DM::EDGE, DM::READ);
+	//	weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
+	//	wwtp = DM::View("WWTP", DM::NODE, DM::READ);
 
-//	pumps = DM::View("PUMPS", DM::EDGE, DM::READ);
+	//	pumps = DM::View("PUMPS", DM::EDGE, DM::READ);
 
-//	storage = DM::View("STORAGE", DM::NODE, DM::READ);
-//	storage.addAttribute("Z", DM::Attribute::DOUBLE, DM::READ);
+	//	storage = DM::View("STORAGE", DM::NODE, DM::READ);
+	//	storage.addAttribute("Z", DM::Attribute::DOUBLE, DM::READ);
 }
 
 void SWMMWriteAndRead::evalWaterLevelInJunctions()
 {
-	water_level_below_0 = 0;
-	water_level_below_10 = 0;
-	water_level_below_20 = 0;
+//	water_level_below_0 = 0;
+//	water_level_below_10 = 0;
+//	water_level_below_20 = 0;
 
-	// Filter Nodes that area acutally flooded
-	typedef std::pair<Node*, double > rainnode;
-	foreach (const rainnode& f, getFloodedNodes())
-		if (f.second > 0.0)
-			water_level_below_0++;
+//	// Filter Nodes that area acutally flooded
+//	typedef std::pair<Node*, double > rainnode;
+//	foreach (const rainnode& f, getFloodedNodes())
+//		if (f.second > 0.0)
+//			water_level_below_0++;
 
-	std::vector<rainnode> surcharge = this->getNodeDepthSummery();
-	foreach (const rainnode& fn, surcharge)
-	{
-		DM::Component * n =  fn.first;
-		if (fn.second < 0.009 || !n)
-			continue;
-		double D = n->getAttribute("D")->getDouble();
-		if (D - fn.second < 0.10) water_level_below_10++;
-		if (D - fn.second < 0.20) water_level_below_20++;
-	}
+//	std::vector<rainnode> surcharge = this->getNodeDepthSummery();
+//	foreach (const rainnode& fn, surcharge)
+//	{
+//		DM::Component * n =  fn.first;
+//		if (fn.second < 0.009 || !n)
+//			continue;
+//		double D = n->getAttribute("D")->getDouble();
+//		if (D - fn.second < 0.10) water_level_below_10++;
+//		if (D - fn.second < 0.20) water_level_below_20++;
+//	}
 
-	water_level_below_0 /= surcharge.size();
-	water_level_below_10 /= surcharge.size();
-	water_level_below_20 /= surcharge.size();
+//	water_level_below_0 /= surcharge.size();
+//	water_level_below_10 /= surcharge.size();
+//	water_level_below_20 /= surcharge.size();
 }
 
 void SWMMWriteAndRead::writeSWMMheader(std::fstream &inp)
