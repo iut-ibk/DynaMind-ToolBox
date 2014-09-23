@@ -13,29 +13,29 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 
 	GDALModule = true;
 
-	district = DM::ViewContainer("DISTRICT", DM::COMPONENT, DM::READ);
+	district = DM::ViewContainer("district", DM::COMPONENT, DM::READ);
 	district.addAttribute("hh", DM::Attribute::INT, DM::READ);
 
 	hh_income = DM::ViewContainer("hh_income", DM::COMPONENT, DM::READ);
-	hh_income.addAttribute("DISTRICT_id", DM::Attribute::INT, DM::READ);
+	hh_income.addAttribute("district_id", DM::Attribute::INT, DM::READ);
 	hh_income.addAttribute("cdf_low", DM::Attribute::DOUBLE, DM::READ);
 	hh_income.addAttribute("cdf_medium", DM::Attribute::DOUBLE, DM::READ);
 	hh_income.addAttribute("cdf_high", DM::Attribute::DOUBLE, DM::READ);
 
 	education = DM::ViewContainer("education", DM::COMPONENT, DM::READ);
-	education.addAttribute("DISTRICT_id", DM::Attribute::INT, DM::READ);
+	education.addAttribute("district_id", DM::Attribute::INT, DM::READ);
 	education.addAttribute("cdf_tertiary", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_technical", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_secondary", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_other", DM::Attribute::DOUBLE, DM::READ);
 
 
-	building = DM::ViewContainer("BUILDING", DM::FACE, DM::READ);
+	building = DM::ViewContainer("building", DM::FACE, DM::READ);
 	building.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-	building.addAttribute("DISTRICT_id", DM::Attribute::INT, DM::READ);
+	building.addAttribute("district_id", DM::Attribute::INT, DM::READ);
 
-	household = DM::ViewContainer("HOUSEHOLD", DM::NODE, DM::WRITE);
-	household.addAttribute("BUILDING_id", DM::Attribute::INT, DM::WRITE);
+	household = DM::ViewContainer("household", DM::NODE, DM::WRITE);
+	household.addAttribute("building_id", DM::Attribute::INT, DM::WRITE);
 	household.addAttribute("persons", DM::Attribute::INT, DM::WRITE);
 	household.addAttribute("education", DM::Attribute::STRING, DM::WRITE);
 	household.addAttribute("income", DM::Attribute::STRING, DM::WRITE);
@@ -82,9 +82,9 @@ void GDALCreateHouseholds::run()
 	district.resetReading();
 
 	OGRFeature * d = 0;
-	building.createIndex("DISTRICT_id");
-	hh_income.createIndex("DISTRICT_id");
-	education.createIndex("DISTRICT_id");
+	building.createIndex("district_id");
+	hh_income.createIndex("district_id");
+	education.createIndex("district_id");
 
 	while (d = district.getNextFeature()) {
 		int d_id = d->GetFID();
@@ -94,8 +94,8 @@ void GDALCreateHouseholds::run()
 		filter << "DISTRICT_id = " << d_id;
 		building.setAttributeFilter(filter.str());
 
-		fill_income_cdf(d->GetFID(), "DISTRICT_id" ,education, this->education_names, this->education_v);
-		fill_income_cdf(d->GetFID(), "DISTRICT_id" ,hh_income, this->hh_income_names, this->hh_income_v);
+		fill_income_cdf(d->GetFID(), "district_id" ,education, this->education_names, this->education_v);
+		fill_income_cdf(d->GetFID(), "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
 
 
 		OGRFeature * b = 0;
@@ -120,7 +120,7 @@ void GDALCreateHouseholds::run()
 			if (counter == max_size)
 				counter = 0;
 			OGRFeature * h = household.createFeature();
-			h->SetField("BUILDING_id", building_ids[counter]);
+			h->SetField("building_id", building_ids[counter]);
 			h->SetField("persons",rand() % 4 + 1 );
 			h->SetField("education", this->sampler(this->education_names_p, this->education_v).c_str());
 			h->SetField("income", this->sampler(this->hh_income_names_p, this->hh_income_v).c_str());

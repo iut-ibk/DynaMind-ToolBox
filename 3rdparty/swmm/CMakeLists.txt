@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(swmm)
+project(swmm5)
 
 option(SWMM_LIB "compile as library" ON)
 
@@ -21,11 +21,11 @@ if (SWMM_LIB)
     ENDIF()
 
     message(STATUS "Compiling as library")
-    add_library(swmm STATIC ${SRCS})
+    add_library(swmm5 STATIC ${SRCS})
 else (SWMM_LIB)
     message(STATUS "Compiling as standalone CLI application")
     add_definitions(-DCLE)
-    add_executable(swmm ${SRCS})
+    add_executable(swmm5 ${SRCS})
 endif(SWMM_LIB)
 
-target_link_libraries(swmm -lm)
+target_link_libraries(swmm5 -lm)

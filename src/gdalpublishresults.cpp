@@ -38,7 +38,7 @@ GDALPublishResults::GDALPublishResults()
 	this->addParameter("sourceEPSG", DM::INT, &sourceEPSG);
 
 
-	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::READ);
+	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::MODIFY);
 
 
 	std::vector<DM::ViewContainer> datastream;

@@ -114,8 +114,8 @@ GDALCreateBuilding::GDALCreateBuilding()
 	this->height = 10;
 	this->addParameter("length", DM::DOUBLE, &this->height);
 
-	parcel = DM::ViewContainer("PARCEL", DM::FACE, DM::READ);
-	building = DM::ViewContainer("BUILDING", DM::FACE, DM::WRITE);
+	parcel = DM::ViewContainer("parcel", DM::FACE, DM::READ);
+	building = DM::ViewContainer("building", DM::FACE, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&parcel);
