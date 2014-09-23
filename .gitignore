@@ -21,4 +21,4 @@ build
 bin
 BuildWin/
 *.dyn
-
+*.user*
