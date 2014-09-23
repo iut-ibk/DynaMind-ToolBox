@@ -48,6 +48,8 @@
 #include <simulationtab.h>
 #include <dmlogger.h>
 
+#include <guifilter.h>
+
 #include "modelobserver.h"
 
 ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) : QGraphicsItem(parent)
@@ -215,8 +217,16 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	painter->setFont(font);
 	painter->setPen(QColor(0,0,0));
 	painter->drawText(	(boundingRect().width() - textSize.width())/2,
-		textSize.height() + 0,
+		textSize.height() + 20,
 		text);
+
+	QString text_m =  QString::fromStdString(module->getClassName());
+	textSize = QGraphicsSimpleTextItem(text_m).boundingRect();
+	painter->setFont(font);
+	painter->setPen(QColor(0,0,0));
+	painter->drawText(	(boundingRect().width() - textSize.width())/2,
+		textSize.height() + 0,
+		text_m);
 
 	this->resize();
 }
@@ -292,6 +302,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 	QAction* a_edit = menu.addAction("configurate");
 	QAction* a_editName = menu.addAction("edit name");
+	QAction* a_filter = menu.addAction("edit filter");
 	QAction* a_delete = menu.addAction("delete");
 	QAction* a_successorMode = menu.addAction("force successor mode");
 	menu.addSeparator();
@@ -300,6 +311,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 	connect( a_edit, SIGNAL( triggered() ), this, SLOT( editModelNode() ), Qt::DirectConnection );
 	connect( a_editName, SIGNAL( triggered() ), this, SLOT( editName() ), Qt::DirectConnection );
+	connect( a_filter, SIGNAL( triggered() ), this, SLOT( editFilter() ), Qt::DirectConnection );
 	connect( a_delete, SIGNAL( triggered() ), this, SLOT( deleteModelNode() ), Qt::DirectConnection );
 	connect( a_showHelp, SIGNAL(triggered() ), this, SLOT( showHelp() ), Qt::DirectConnection);
 	connect( a_showData, SIGNAL(triggered() ), this, SLOT( printData() ), Qt::DirectConnection);
@@ -328,6 +340,12 @@ void ModelNode::editName()
 		QLineEdit::Normal, QString::fromStdString(module->getName())).toStdString());
 
 	this->resize();
+}
+
+void ModelNode::editFilter()
+{
+	GUIFilter * gui_f = new GUIFilter(this->module);
+	gui_f->show();
 }
 
 void ModelNode::deleteModelNode() 

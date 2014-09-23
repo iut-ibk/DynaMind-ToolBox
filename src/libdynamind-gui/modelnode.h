@@ -88,6 +88,7 @@ public slots:
 	void deleteModelNode();
 	void editModelNode();
 	void editName();
+	void editFilter();
 	void printData();
 	void viewOutportData(QString portName);
 	void viewInportData(QString portName);
