@@ -8,7 +8,7 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "4")
+SET(CPACK_PACKAGE_VERSION_MINOR "5")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
 
@@ -23,6 +23,8 @@ IF(WIN32 AND NOT UNIX)
     IF(NOT GDALBIN)
 	MESSAGE(FATAL_ERROR "Install dir of GDAL")
     ENDIF()
+
+    MESSAGE(STATUS "Boost library dirs: " ${Boost_LIBRARY_DIR}) 
 
     SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
     SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dynamind-toolbox.org")
@@ -47,15 +49,15 @@ IF(WIN32 AND NOT UNIX)
               ${CGAL_DIR}/bin/CGAL_Core-*-mt-*.dll
 	      ${CGAL_DIR}/auxiliary/gmp/lib/*.dll
               ${QGLVIEWER_INCLUDE_DIR}/QGLViewer/release/QGLViewer2.dll
-              ${Boost_LIBRARY_DIRS}/boost_python-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_thread-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_chrono-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_graph-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_filesystem-*-mt-1_*.dll
-              ${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_python-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_thread-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_chrono-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_graph-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_system-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_signals-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_date_time-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_filesystem-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_program_options-*-mt-1_*.dll
               ${GDALBIN}/*.dll)
 
 
