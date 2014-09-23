@@ -149,6 +149,22 @@ bool SimulationReader::startElement(const QString & namespaceURI,
 		tmpValue.clear();
 		return true;
 	}
+	if (qName == "Filter") {
+		tmpFilter = FilterEntry();
+		return true;
+	}
+	if (qName == "attribtue_filter") {
+		tmpValue.clear();
+		return true;
+	}
+	if (qName == "spatial_filter") {
+		tmpValue.clear();
+		return true;
+	}
+	if (qName == "view_name") {
+		tmpValue.clear();
+		return true;
+	}
 	return true;
 }
 
@@ -164,8 +180,26 @@ bool SimulationReader::endElement(const QString & namespaceURI,
 		this->tmpNode.parameters[tmpParameterName] = tmpValue;
 		tmpValue.clear();
 	}
+	if (qName == "spatial_filter") {
+		tmpValue = tmpValue.trimmed();
+		tmpFilter.spatial_filter = tmpValue;
+		tmpValue.clear();
+	}
+	if (qName == "attribtue_filter") {
+		tmpValue = tmpValue.trimmed();
+		tmpFilter.attribtue_filter = tmpValue;
+		tmpValue.clear();
+	}
+	if (qName == "view_name") {
+		tmpValue = tmpValue.trimmed();
+		tmpFilter.view_name = tmpValue;
+		tmpValue.clear();
+	}
 	if (qName == "Link") {
 		this->linkEntries.append(tmpLink);
+	}
+	if (qName == "Filter") {
+		this->tmpNode.filterEntries.push_back(tmpFilter);
 	}
 	return true;
 }

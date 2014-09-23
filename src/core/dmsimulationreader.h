@@ -30,6 +30,13 @@
 #include <QXmlDefaultHandler>
 #include <QVector>
 
+struct DM_HELPER_DLL_EXPORT FilterEntry
+{
+	QString attribtue_filter;
+	QString spatial_filter;
+	QString view_name;
+};
+
 struct DM_HELPER_DLL_EXPORT ModuleEntry 
 {
 	QString ClassName;
@@ -38,6 +45,7 @@ struct DM_HELPER_DLL_EXPORT ModuleEntry
 	QString GroupUUID;
 	bool DebugMode;
 	QMap<QString, QString> parameters;
+	QVector<FilterEntry> filterEntries;
 };
 
 class DM_HELPER_DLL_EXPORT PortEntry 
@@ -51,6 +59,8 @@ public:
 		isTuplePort = -1;
 	}
 };
+
+
 
 struct DM_HELPER_DLL_EXPORT LinkEntry 
 {
@@ -89,8 +99,11 @@ private:
 	LinkEntry tmpLink;
 	QString tmpParameterName;
 	QString tmpValue;
+	FilterEntry tmpFilter;
 	QVector<ModuleEntry> moduleEntries;
 	QVector<LinkEntry> linkEntries;
+
+
 	QString ParentName;
 	QString RootUUID;
 	long id;

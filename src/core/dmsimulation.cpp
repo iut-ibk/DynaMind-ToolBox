@@ -773,7 +773,7 @@ void Simulation::run()
 			if(m->getStatus() == MOD_EXECUTION_OK)
 				numModulesToFinish++;
 			// execute module
-			Logger(Standard) << "running module '" << m->getName() << "'";
+			Logger(Standard) << "running module '" << m->getClassName() << " "<< m->getName() << "'";
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
@@ -1252,6 +1252,17 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 			// set successor mode
 			m->setSuccessorMode(me.DebugMode);
 			m->setName(me.Name.toStdString());
+
+			// set filter
+			std::vector<DM::Filter> filters;
+
+			foreach (FilterEntry fe, me.filterEntries) {
+				DM::Filter f(fe.view_name.toStdString(),
+							FilterArgument(fe.attribtue_filter.toStdString()),
+							FilterArgument(fe.spatial_filter.toStdString()));
+				filters.push_back(f);
+			}
+			m->setFilter(filters);
 		}
 		else
 			DM::Logger(Error) << "creating module '" << me.ClassName.toStdString() << "' failed";

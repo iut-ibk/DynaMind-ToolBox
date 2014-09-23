@@ -6,7 +6,7 @@
 *
 * This file is part of DynaMind
 *
-* Copyright (C) 2011  Christian Urich
+* Copyright (C) 2011-2014  Christian Urich
 
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ using namespace DM;
 void writeHead(QTextStream &out)
 {
 	out << "<DynaMind>\n";
-	out << "\t<Info Version=\"0.3\"/>\n";
+	out << "\t<Info Version=\"0.4\"/>\n";
 	out << "<DynaMindCore>\n";
 }
 
@@ -61,7 +61,7 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 	foreach(Module::Parameter* p, m->getParameters())
 	{
 		out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(p->name) <<"\">"
-			<< "\n" "\t\t\t\t<![CDATA[";
+			 << "\n" "\t\t\t\t<![CDATA[";
 
 		if(p->type != DM::FILENAME)
 			out <<  QString::fromStdString(m->getParameterAsString(p->name));
@@ -78,6 +78,27 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 			<< "\t\t\t</parameter>\n";
 	}
 
+	foreach (DM::Filter f, m->getFilter()) {
+		out <<  "\t\t\t<Filter>";
+		out << "\n";
+		out <<  "\t\t\t<view_name>";
+		out << "\n" << "\t\t\t\t<![CDATA[";
+		out << QString::fromStdString( f.getViewName() );
+		out << "]]>\n"
+			<< "\t\t\t</view_name>\n";
+		out << "\t\t\t<attribtue_filter>";
+		out << "\n" << "\t\t\t\t<![CDATA[";
+		out << QString::fromStdString( f.getAttributeFilter().getArgument() );
+		out << "]]>\n"
+			<< "\t\t\t</attribtue_filter>\n";
+		out <<  "\t\t\t<spatial_filter>";
+		out << "\n" << "\t\t\t\t<![CDATA[";
+		out << QString::fromStdString( f.getSpatialFilter().getArgument() );
+		out << "]]>\n"
+			<< "\t\t\t</spatial_filter>\n";
+		out << "\t\t\t</Filter>";
+		out << "\n";
+	}
 	out  << "\t\t</Node>\n";
 }
 
@@ -101,9 +122,9 @@ void writeLink(QTextStream &out, Link* l)
 }
 
 void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath, 
-									   const std::list<Module*>& modules, 
+									   const std::list<Module*>& modules,
 									   const std::list<Link*>& links,
-									   Module* root) 
+									   Module* root)
 {
 	dest->open(QIODevice::WriteOnly);
 	Logger(Debug) << "Saving File";
@@ -121,7 +142,7 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 
 	QDir filedir = QFileInfo(filePath).absoluteDir();
 	Logger(Debug) << "Number of Modules " << modules.size();
-	foreach(Module * m, modules) 
+	foreach(Module * m, modules)
 		writeModule(out, m, filedir);
 
 	out << "\t</Nodes>\n";
