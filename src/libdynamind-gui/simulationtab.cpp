@@ -156,7 +156,7 @@ void SimulationTab::copySelection()
 
 	QByteArray data;
 	QBuffer buffer(&data);
-	DM::SimulationWriter::writeSimulation(&buffer, sim->currentDocument, modules, links, parentGroup);
+	DM::SimulationWriter::writeSimulation(&buffer, "<clipboard>", modules, links, parentGroup);
 	sim->appendGuiInformation(&buffer, modules);
 	QApplication::clipboard()->setText(QString(data));
 }

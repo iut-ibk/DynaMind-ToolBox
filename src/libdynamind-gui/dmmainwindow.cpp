@@ -293,7 +293,9 @@ void DMMainWindow::saveAsSimulation()
 			fileName+=".dyn";
 		this->simulation->writeSimulation(fileName.toStdString());
 		this->getSimulation()->currentDocument = fileName;
+		DM::Logger(DM::Standard) << ">> wrote simulation file";
 	}
+
 }
 
 void DMMainWindow::saveSimulation() 
@@ -301,9 +303,11 @@ void DMMainWindow::saveSimulation()
 	if (!this->getSimulation()->currentDocument.isEmpty()) 
 	{
 		this->simulation->writeSimulation(this->getSimulation()->currentDocument.toStdString());
+		DM::Logger(DM::Standard) << ">> wrote simulation file";
 	} 
 	else
 		this->saveAsSimulation();
+
 }
 
 void DMMainWindow::clearSimulation() 
