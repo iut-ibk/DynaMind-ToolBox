@@ -90,6 +90,10 @@ void ModelNode::resize()
 	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
 	width = max(50, (int)textSize.width() + 30);
 
+	QString text_m =  QString::fromStdString(module->getClassName());
+	textSize = QGraphicsSimpleTextItem(text_m).boundingRect();
+	width = max(width, (int)textSize.width() + 30);
+
 	// make groups a bit bigger
 	if(!module->isGroup())
 		height =  45;
