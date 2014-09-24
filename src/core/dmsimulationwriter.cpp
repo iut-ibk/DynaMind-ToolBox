@@ -36,7 +36,7 @@ void writeHead(QTextStream &out)
 	out << "<DynaMindCore>\n";
 }
 
-void writeModule(QTextStream &out, Module* m, QDir filePath)
+void writeModule(QTextStream &out, Module* m, QDir filePath, bool translateRelativePath)
 {
 	Logger(Debug) << "saving module '" << m->getClassName() << "'";
 	Module* owner = m->getOwner();
@@ -63,7 +63,7 @@ void writeModule(QTextStream &out, Module* m, QDir filePath)
 		out <<  "\t\t\t<parameter name=\"" << QString::fromStdString(p->name) <<"\">"
 			 << "\n" "\t\t\t\t<![CDATA[";
 
-		if(p->type != DM::FILENAME)
+		if(p->type != DM::FILENAME || !translateRelativePath)
 			out <<  QString::fromStdString(m->getParameterAsString(p->name));
 		else
 		{
@@ -121,7 +121,7 @@ void writeLink(QTextStream &out, Link* l)
 	out << "\t\t</Link>\n";
 }
 
-void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath, 
+void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 									   const std::list<Module*>& modules,
 									   const std::list<Link*>& links,
 									   Module* root)
@@ -139,11 +139,16 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	out << "\t\t<RootNode>\n";
 	out << "\t\t\t<UUID value=\"" << ADDRESS_TO_INT(root) << "\"/>\n";
 	out << "\t\t</RootNode>\n";
-
-	QDir filedir = QFileInfo(filePath).absoluteDir();
+	QDir filedir;
+	bool translateRelative = false;
+	if (filePath != "<clipboard>") {
+		filedir = QFileInfo(filePath).absoluteDir();
+		translateRelative = true;
+	}
 	Logger(Debug) << "Number of Modules " << modules.size();
 	foreach(Module * m, modules)
-		writeModule(out, m, filedir);
+		writeModule(out, m, filedir, translateRelative);
+
 
 	out << "\t</Nodes>\n";
 

@@ -1239,7 +1239,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 				std::string value = it.value().toStdString();
 				if(DM::Module::Parameter* p = m->getParameter(it.key().toStdString()))
 				{
-					if(p->type == DM::FILENAME)
+					if(p->type == DM::FILENAME && filepath != "<clipboard>")
 					{
 						QDir path(simFileDir.absoluteFilePath(it.value()));
 						DM::Logger(DM::Debug) << "converted relative path '" << value << "'";

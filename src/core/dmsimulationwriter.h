@@ -41,8 +41,8 @@ namespace DM
 class DM_HELPER_DLL_EXPORT SimulationWriter
 {
 public:
-	static void writeSimulation(QIODevice* dest, QString filePath, 
-								const std::list<Module*>& modules, 
+	static void writeSimulation(QIODevice* dest, QString filePath,
+								const std::list<Module*>& modules,
 								const std::list<Link*>& links,
 								Module* root = NULL);
 };
