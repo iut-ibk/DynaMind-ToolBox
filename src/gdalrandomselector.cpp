@@ -77,8 +77,13 @@ void GDALRandomSelector::run()
 
 	if (this->valueFromView) {
 		view_from.resetReading();
-
+		OGRFeature * from;
+		while(from = view_from.getNextFeature()) {
+			elements_max = from->GetFieldAsInteger(this->attributeNameFrom.c_str());
+		}
 	}
+	DM::Logger(DM::Debug) << "Number of elements to select " << elements_max;
+
 
 	OGRFeature * f;
 
