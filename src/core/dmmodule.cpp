@@ -62,7 +62,7 @@ void Module::preRun()
 			std::string attribute_filter = f.getAttributeFilter().getArgument();
 			if (attribute_filter.empty())
 				continue;
-			v->setAttributeFilter(attribute_filter.c_str());
+			v->addModuleAttributeFilter(attribute_filter);
 		}
 	}
 }

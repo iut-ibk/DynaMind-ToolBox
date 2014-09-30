@@ -57,8 +57,23 @@ void ViewContainer::setAttributeFilter(string filter)
 		return;
 	}
 
+	std::stringstream filter_string;
+	for (int i = 0; i < this->moduleLevelFilter.size(); i++) {
+		if (i < 0) {
+			filter_string << "AND ";
+		}
+		filter_string << moduleLevelFilter[i] << " ";
+	}
+
+	if (this->moduleLevelFilter.size() > 0 && !filter.empty()) {
+		filter_string << "AND ";
+	}
+
+	filter_string << filter;
+
 	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
-	lyr->SetAttributeFilter(filter.c_str());
+	//Logger(Error) << "Filter " << filter_string.str().c_str();
+	lyr->SetAttributeFilter(filter_string.str().c_str());
 }
 
 void ViewContainer::setSpatialFilter(OGRGeometry *geo)
@@ -109,6 +124,14 @@ OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p, double radius)
 	}
 	this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
 	return NULL;
+}
+
+void ViewContainer::addModuleAttributeFilter(string filter)
+{
+	this->moduleLevelFilter.clear();
+	this->moduleLevelFilter.push_back(filter);
+
+	this->setAttributeFilter("");
 }
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :

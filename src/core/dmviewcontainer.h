@@ -115,8 +115,6 @@ public:
 	OGRFeature *getFeature(long nFID);
 
 
-	//OGRFeature *getFeature(long dynamind_id);
-
 	/**
 	 * @brief Retruns the pointer the the next feature.
 	 *
@@ -169,7 +167,7 @@ public:
 
 	OGRFeature *findNearestPoint(OGRPoint * p, double radius = 1.0);
 
-
+	void addModuleAttributeFilter(std::string filter);
 
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
@@ -183,6 +181,8 @@ private:
 
 	bool readonly;
 	void registerFeature(OGRFeature * f);
+
+	std::vector<std::string> moduleLevelFilter;
 };
 }
 
