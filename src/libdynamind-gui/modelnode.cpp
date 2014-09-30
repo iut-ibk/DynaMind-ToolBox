@@ -340,9 +340,11 @@ void ModelNode::editModelNode()
 
 void ModelNode::editName() 
 {
-	module->setName(QInputDialog::getText(0, "set name", "specify name of this module", 
-		QLineEdit::Normal, QString::fromStdString(module->getName())).toStdString());
-
+	bool ok;
+	QString text = QInputDialog::getText(0, "set name", "specify name of this module",
+			QLineEdit::Normal, QString::fromStdString(module->getName()), &ok);
+	if (ok && !text.isEmpty())
+		module->setName(text.toStdString());
 	this->resize();
 }
 
