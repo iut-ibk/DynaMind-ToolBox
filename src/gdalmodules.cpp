@@ -45,6 +45,7 @@
 #include "gdalcreatehouseholds.h"
 #include "gdaldmswmm.h"
 #include "gdaljoinnearestneighbour.h"
+#include "gdallogattriubtes.h"
 
 /**
   * @addtogroup TestModules
@@ -72,4 +73,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALCreateHouseholds>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALDMSWMM>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALJoinNearestNeighbour>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALLogAttriubtes>());
 }
