@@ -27,8 +27,9 @@ private:
 
 	double width;
 	double height;
-	double createBuilding(OGRPolygon *ogr_poly);
-	void addToSystem(SFCGAL::Polygon &poly);
+	int residential_units;
+	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
+	OGRGeometry *addToSystem(SFCGAL::Polygon &poly);
 public:
 	GDALCreateBuilding();
 	void run();

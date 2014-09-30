@@ -4,9 +4,6 @@
 #include <ogrsf_frmts.h>
 
 
-
-
-
 typedef CGAL::Point_2< SFCGAL::Kernel >              Point_2 ;
 typedef CGAL::Vector_2< SFCGAL::Kernel >             Vector_2 ;
 typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2 ;
@@ -15,7 +12,7 @@ typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
 
 DM_DECLARE_NODE_NAME(GDALCreateBuilding, GDALModules)
 
-double GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
+OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 {
 	char* geo;
 	ogr_poly->exportToWkt(&geo);
@@ -68,12 +65,12 @@ double GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 
 	SFCGAL::Polygon f(footprint);
 
-	addToSystem(f);
+	return addToSystem(f);
 
 
 }
 
-void GDALCreateBuilding::addToSystem(SFCGAL::Polygon & poly)
+OGRGeometry *  GDALCreateBuilding::addToSystem(SFCGAL::Polygon & poly)
 {
 
 	std::string wkt = poly.asText(9).c_str();
@@ -88,21 +85,17 @@ void GDALCreateBuilding::addToSystem(SFCGAL::Polygon & poly)
 
 	if (!ogr_poly->IsValid()) {
 		DM::Logger(DM::Error) << "Geometry is not valid!";
-		return;
+		return 0;
 	}
 	if (ogr_poly->IsEmpty()) {
 		DM::Logger(DM::Error) << "Geometry is empty ";
 		DM::Logger(DM::Error) << "OGR Error " << err;
 		DM::Logger(DM::Error) << poly.asText(9);
-		return;
+		return 0;
 	}
-	//Create Feature
-	OGRFeature * b = building.createFeature();
-	b->SetGeometry(ogr_poly);
-	OGRGeometryFactory::destroyGeometry(ogr_poly);
 
+	return ogr_poly;
 }
-
 
 GDALCreateBuilding::GDALCreateBuilding()
 {
@@ -114,8 +107,12 @@ GDALCreateBuilding::GDALCreateBuilding()
 	this->height = 10;
 	this->addParameter("length", DM::DOUBLE, &this->height);
 
+	this->residential_units = 1;
+	this->addParameter("residential_units", DM::INT, &this->residential_units);
+
 	parcel = DM::ViewContainer("parcel", DM::FACE, DM::READ);
 	building = DM::ViewContainer("building", DM::FACE, DM::WRITE);
+	building.addAttribute("residential_units", DM::Attribute::INT, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&parcel);
@@ -134,6 +131,14 @@ void GDALCreateBuilding::run()
 		OGRPolygon * geo = (OGRPolygon *)f->GetGeometryRef();
 		if (!geo)
 			continue;
-		this->createBuilding(geo);
+		OGRGeometry * building_geo  = this->createBuilding(geo);
+
+		if (!building_geo)
+			continue;
+		//Create Feature
+		OGRFeature * b = building.createFeature();
+		b->SetGeometry(building_geo);
+		b->SetField("residential_units", this->residential_units);
+		OGRGeometryFactory::destroyGeometry(building_geo);
 	}
 }
