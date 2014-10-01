@@ -88,13 +88,14 @@ GDALDMSWMM::GDALDMSWMM()
 //	storage = DM::View("STORAGE", DM::NODE, DM::READ);
 //	storage.addAttribute("Z", DM::Attribute::DOUBLE, DM::READ);
 
-//	globals = DM::View("CITY", DM::COMPONENT, DM::READ);
-//	globals.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
-//	globals.addAttribute("Vr", DM::Attribute::DOUBLE, DM::WRITE);
-//	globals.addAttribute("Vp", DM::Attribute::DOUBLE, DM::WRITE);
-//	globals.addAttribute("Vout", DM::Attribute::DOUBLE, DM::WRITE);
-//	globals.addAttribute("Vwwtp", DM::Attribute::DOUBLE, DM::WRITE);
-//	globals.addAttribute("drainage_capacity", DM::Attribute::DOUBLE, DM::WRITE);
+	city = DM::ViewContainer("city", DM::COMPONENT, DM::READ);
+	city.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
+	city.addAttribute("v_p", DM::Attribute::DOUBLE, DM::WRITE);
+	city.addAttribute("v_r", DM::Attribute::DOUBLE, DM::WRITE);
+	city.addAttribute("v_wwtp", DM::Attribute::DOUBLE, DM::WRITE);
+	city.addAttribute("v_outfall", DM::Attribute::DOUBLE, DM::WRITE);
+	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
+	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
 
 //	std::vector<DM::View> views;
 
@@ -148,6 +149,8 @@ GDALDMSWMM::GDALDMSWMM()
 	data_stream.push_back(&outfalls);
 	data_stream.push_back(&conduit);
 	data_stream.push_back(&nodes);
+	data_stream.push_back(&city);
+
 
 	data_map["inlet"] = &this->inlet;
 	data_map["junction"] = &this->junctions;
@@ -156,6 +159,7 @@ GDALDMSWMM::GDALDMSWMM()
 	data_map["outfall"]  = &this->outfalls;
 	data_map["conduit"]  = &this->conduit;
 	data_map["node"]  = &this->nodes;
+	data_map["city"]  = &this->city;
 	this->registerViewContainers(data_stream);
 
 

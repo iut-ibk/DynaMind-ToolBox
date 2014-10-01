@@ -42,6 +42,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	DM::ViewContainer conduit;
 	DM::ViewContainer inlet;
 	DM::ViewContainer junctions;
+	DM::ViewContainer city;
 	//DM::ViewContainer endnodes;
 	DM::ViewContainer catchment;
 	DM::ViewContainer outfalls;
