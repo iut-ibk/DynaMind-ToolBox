@@ -89,19 +89,28 @@ void GDALRandomSelector::run()
 
 	int counter = 0;
 	while(f = vc.getNextFeature()) {
-		rand_elements.push_back(counter++);
+		rand_elements.push_back(counter);
 		ids.push_back(f->GetFID());
+		counter++;
+	}
+	if (ids.size() == 0) {
+		DM::Logger(DM::Warning) << "No elements found";
+		return;
 	}
 	vc.syncAlteredFeatures();
 	vc.syncReadFeatures();
 
 	vc.resetReading();
 
-	for (int i = 0; i < elements_max; i++) {
-		int r = rand() %total_number_of_featurers;
+	//total_number_of_featurers = rand_elements.size();
+	DM::Logger(DM::Debug) << "start mixing " << total_number_of_featurers;
+	for (int i = 0; i < total_number_of_featurers; i++) {
+		int r = rand() % total_number_of_featurers;
+		int tmp_value = rand_elements[i];
 		rand_elements[i] = rand_elements[r];
+		rand_elements[r] = tmp_value;
 	}
-
+	DM::Logger(DM::Debug) << "end mixing " << total_number_of_featurers;
 	counter = 0;
 	bool has_unit = true;
 	if (this->units.empty())
@@ -110,9 +119,22 @@ void GDALRandomSelector::run()
 		if (counter > rand_elements.size()-1) {
 			break;
 		}
-		f = vc.getFeature(ids[rand_elements[counter++]]);
+		int pos = rand_elements[counter];
+		if (pos > ids.size()-1) {
+			DM::Logger(DM::Warning) << "invalid index " << pos;
+			DM::Logger(DM::Debug) << ids.size();
+			DM::Logger(DM::Debug) << rand_elements.size();
+			DM::Logger(DM::Debug) << counter-1;
+			break;
+		}
+		f = vc.getFeature(ids[pos]);
+		counter++;
 		if (!f) {
-			DM::Logger(DM::Warning) << "Feature not falied";
+			DM::Logger(DM::Debug) << ids.size();
+			DM::Logger(DM::Debug) << rand_elements.size();
+			DM::Logger(DM::Debug) << counter-1;
+			DM::Logger(DM::Debug) << rand_elements[counter-1];
+			DM::Logger(DM::Warning) << "Feature " << ids[rand_elements[counter-1]] << " not valid";
 			continue;
 		}
 		if (!has_unit) {
@@ -129,6 +151,7 @@ void GDALRandomSelector::run()
 		f->SetField(attribute.c_str(), 1);
 		elements_max-=e;
 	}
+	DM::Logger(DM::Debug) << "Rest "<< elements_max;
 }
 
 
