@@ -68,7 +68,7 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 	catchments = data_map["catchment"];
 	outfalls= data_map["outfall"];
 	nodes= data_map["node"];
-
+	city= data_map["city"];
 
 	if (!tmpPath.mkdir(UUIDPath)) {
 		Logger(Error) << "Couldn't create folder " << tmpPath.absolutePath().toStdString() << "/" << UUIDPath.toStdString();
@@ -123,12 +123,12 @@ void SWMMWriteAndRead::readInReportFile() {
 	foreach (QString l, fileContent) {
 		//if (l.contains("WARNING")) Logger(Warning) << l.toStdString();
 		if (l.contains("ERROR")) {
-			Logger(Error) << l.toStdString(); erroraccrued = true;
+			Logger(Warning) << l.toStdString(); erroraccrued = true;
 		}
 
 	}
 	if (erroraccrued) {
-		Logger(Error) << "Error in SWMM";
+		Logger(Warning) << "Error in SWMM";
 		return;
 	}
 
@@ -317,6 +317,22 @@ void SWMMWriteAndRead::readInReportFile() {
 			counter = -1;
 		}
 		counter ++;
+	}
+	OGRFeature * c;
+	while (OGRFeature * c = city->getNextFeature()) {
+		c->SetField("v_p", Vp);
+		c->SetField("v_r", SurfaceRunOff);
+		c->SetField("v_wwtp", Vwwtp);
+		c->SetField("v_outfall", Voutfall);
+		c->SetField("continuity_error", ContinuityError);
+		c->SetField("average_capacity", this->getAverageCapacity());
+		Logger (Standard)  << "Vp " << Vp;
+		Logger (Standard)  << "Vr " << SurfaceRunOff;
+		Logger (Standard)  << "Vwwtp " << Vwwtp;
+		Logger (Standard)  << "Voutfall " << Voutfall;
+		Logger (Standard)  << "Continuty Error " << this->ContinuityError;
+		Logger (Standard)  << "Average Capacity " << this->getAverageCapacity();
+
 	}
 	Logger (Standard)  << "Vp " << Vp;
 	Logger (Standard)  << "Vr " << SurfaceRunOff;
@@ -1270,15 +1286,14 @@ double SWMMWriteAndRead::getImperiousInfiltration()
 
 double SWMMWriteAndRead::getAverageCapacity()
 {
-//	typedef std::pair<DM::Edge*, double > rainnode;
-//	//std::vector< std::pair<std::string, double > > valume_capacity = this->getLinkFlowSummeryCapacity();
-//	std::vector<rainnode> valume_capacity = getLinkFlowSummeryCapacity();
-//	double volume_cap = 0;
 
-//	foreach (rainnode  fn, valume_capacity)
-//		volume_cap += fn.second;
+	std::map<int, double> valume_capacity = getLinkFlowSummeryCapacity();
+	double volume_cap = 0;
 
-//	return volume_cap/=valume_capacity.size();
+	for(std::map<int, double>::const_iterator it = valume_capacity.begin(); it != valume_capacity.end(); ++it)
+		volume_cap += it->second;
+
+	return volume_cap/=valume_capacity.size();
 }
 
 double SWMMWriteAndRead::getWaterLeveleBelow0()
@@ -1420,30 +1435,30 @@ void SWMMWriteAndRead::createViewDefinition()
 
 void SWMMWriteAndRead::evalWaterLevelInJunctions()
 {
-//	water_level_below_0 = 0;
-//	water_level_below_10 = 0;
-//	water_level_below_20 = 0;
+	//	water_level_below_0 = 0;
+	//	water_level_below_10 = 0;
+	//	water_level_below_20 = 0;
 
-//	// Filter Nodes that area acutally flooded
-//	typedef std::pair<Node*, double > rainnode;
-//	foreach (const rainnode& f, getFloodedNodes())
-//		if (f.second > 0.0)
-//			water_level_below_0++;
+	//	// Filter Nodes that area acutally flooded
+	//	typedef std::pair<Node*, double > rainnode;
+	//	foreach (const rainnode& f, getFloodedNodes())
+	//		if (f.second > 0.0)
+	//			water_level_below_0++;
 
-//	std::vector<rainnode> surcharge = this->getNodeDepthSummery();
-//	foreach (const rainnode& fn, surcharge)
-//	{
-//		DM::Component * n =  fn.first;
-//		if (fn.second < 0.009 || !n)
-//			continue;
-//		double D = n->getAttribute("D")->getDouble();
-//		if (D - fn.second < 0.10) water_level_below_10++;
-//		if (D - fn.second < 0.20) water_level_below_20++;
-//	}
+	//	std::vector<rainnode> surcharge = this->getNodeDepthSummery();
+	//	foreach (const rainnode& fn, surcharge)
+	//	{
+	//		DM::Component * n =  fn.first;
+	//		if (fn.second < 0.009 || !n)
+	//			continue;
+	//		double D = n->getAttribute("D")->getDouble();
+	//		if (D - fn.second < 0.10) water_level_below_10++;
+	//		if (D - fn.second < 0.20) water_level_below_20++;
+	//	}
 
-//	water_level_below_0 /= surcharge.size();
-//	water_level_below_10 /= surcharge.size();
-//	water_level_below_20 /= surcharge.size();
+	//	water_level_below_0 /= surcharge.size();
+	//	water_level_below_10 /= surcharge.size();
+	//	water_level_below_20 /= surcharge.size();
 }
 
 void SWMMWriteAndRead::writeSWMMheader(std::fstream &inp)

@@ -92,6 +92,7 @@ private:
 	DM::ViewContainer * catchments;
 	DM::ViewContainer * outfalls;
 	DM::ViewContainer * nodes;
+	DM::ViewContainer * city;
 
 
 //	DM::View weir;
