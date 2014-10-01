@@ -249,6 +249,10 @@ void GDALAttributeCalculator::run()
 			v = new mup::Value("");
 			DM::Logger(DM::Debug) << "Init " << it->first << " as string";
 			break;
+		case DM::Attribute::INT:
+			v = new mup::Value(0);
+			DM::Logger(DM::Debug) << "Init " << it->first << " as int";
+			break;
 		default:
 			v = new mup::Value(0.0);
 			DM::Logger(DM::Debug) << "Init " << it->first << " as double";
@@ -284,7 +288,7 @@ void GDALAttributeCalculator::run()
 				foreach(AttributeValue v, ressult_vec) {
 					d_val+=v.d_val;
 				}
-				*muVariables[it->first] = mup::Value(d_val);
+				*muVariables[it->first] = (int) mup::Value(d_val);
 				break;
 			case DM::Attribute::STRING:
 				s_val = "";
@@ -335,7 +339,7 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 		foreach (OGRFeature * f, features) {
 			solve_variable(f, link_chain_next, ress_vector, attr_type);
 		}
-	} else {
+	} else if (link_chain.size() == 2) {
 		DM::ViewContainer * v = helper_views_name[link_chain[0].toStdString()];
 		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
 		AttributeValue val;
@@ -347,6 +351,9 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 		}
 		val.d_val = feat->GetFieldAsDouble(link_chain[1].toStdString().c_str());
 		ress_vector.push_back(val);
+		return;
+	} else {
+		DM::Logger(DM::Error) << "something is wrong with the varaible definitaion";
 		return;
 	}
 
