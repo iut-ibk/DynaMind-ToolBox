@@ -79,14 +79,14 @@ GDALDMSWMM::GDALDMSWMM()
 
 	nodes= DM::ViewContainer("node", DM::NODE, DM::READ);
 
-//	weir = DM::View("WEIR", DM::EDGE, DM::READ);
-//	weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
-//	wwtp = DM::View("WWTP", DM::NODE, DM::READ);
+	//	weir = DM::View("WEIR", DM::EDGE, DM::READ);
+	//	weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
+	//	wwtp = DM::View("WWTP", DM::NODE, DM::READ);
 
-//	pumps = DM::View("PUMPS", DM::EDGE, DM::READ);
+	//	pumps = DM::View("PUMPS", DM::EDGE, DM::READ);
 
-//	storage = DM::View("STORAGE", DM::NODE, DM::READ);
-//	storage.addAttribute("Z", DM::Attribute::DOUBLE, DM::READ);
+	//	storage = DM::View("STORAGE", DM::NODE, DM::READ);
+	//	storage.addAttribute("Z", DM::Attribute::DOUBLE, DM::READ);
 
 	city = DM::ViewContainer("city", DM::COMPONENT, DM::READ);
 	city.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
@@ -97,18 +97,18 @@ GDALDMSWMM::GDALDMSWMM()
 	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
 	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
 
-//	std::vector<DM::View> views;
+	//	std::vector<DM::View> views;
 
-//	views.push_back(conduit);
-//	views.push_back(inlet);
-//	views.push_back(junctions);
-//	views.push_back(endnodes);
-//	views.push_back(catchment);
-//	views.push_back(outfalls);
-//	views.push_back(weir);
-//	views.push_back(wwtp);
-//	views.push_back(storage);
-//	views.push_back(globals);
+	//	views.push_back(conduit);
+	//	views.push_back(inlet);
+	//	views.push_back(junctions);
+	//	views.push_back(endnodes);
+	//	views.push_back(catchment);
+	//	views.push_back(outfalls);
+	//	views.push_back(weir);
+	//	views.push_back(wwtp);
+	//	views.push_back(storage);
+	//	views.push_back(globals);
 
 	this->FileName = "/tmp/swmm";
 	this->climateChangeFactor = 1;
@@ -170,26 +170,26 @@ GDALDMSWMM::GDALDMSWMM()
 
 void GDALDMSWMM::init() {
 
-//	std::vector<DM::View> views;
-//	views.push_back(conduit);
-//	views.push_back(inlet);
-//	views.push_back(junctions);
-//	views.push_back(endnodes);
-//	views.push_back(catchment);
-//	views.push_back(outfalls);
+	//	std::vector<DM::View> views;
+	//	views.push_back(conduit);
+	//	views.push_back(inlet);
+	//	views.push_back(junctions);
+	//	views.push_back(endnodes);
+	//	views.push_back(catchment);
+	//	views.push_back(outfalls);
 
-////	if (isCombined){
-////		views.push_back(weir);
-////		views.push_back(wwtp);
-////		views.push_back(storage);
-////	}
-////	views.push_back(globals);
+	////	if (isCombined){
+	////		views.push_back(weir);
+	////		views.push_back(wwtp);
+	////		views.push_back(storage);
+	////	}
+	////	views.push_back(globals);
 
-//	this->addData("City", views);
+	//	this->addData("City", views);
 
-//	if (!QDir(QString::fromStdString(this->FileName)).exists()) {
-//		DM::Logger(DM::Warning) <<  this->FileName << "  does not exist!";
-//	}
+	//	if (!QDir(QString::fromStdString(this->FileName)).exists()) {
+	//		DM::Logger(DM::Warning) <<  this->FileName << "  does not exist!";
+	//	}
 }
 
 string GDALDMSWMM::getHelpUrl()
@@ -209,9 +209,15 @@ void GDALDMSWMM::run() {
 
 	double cf = this->climateChangeFactor;
 
-//	if (this->climateChangeFactorFromCity) {
-//		cf = c->getAttribute("climate_change_factor")->getDouble();
-//	}
+	if (this->climateChangeFactorFromCity) {
+		this->city.resetReading();
+		OGRFeature * city_f;
+		while(city_f = this->city.getNextFeature()){
+			cf = city_f->GetFieldAsDouble("climate_change_factor");
+		}
+	}
+
+
 
 	if (this->use_linear_cf) cf = 1. + years / 20. * (this->climateChangeFactor - 1.);
 
@@ -237,6 +243,7 @@ void GDALDMSWMM::run() {
 	}
 	swmm->setDeleteSWMMWhenDone(this->deleteSWMM);
 	swmm->setBuildYearConsidered(this->consider_built_time);
+
 	swmm->setClimateChangeFactor(cf);
 	swmm->setupSWMM();
 	swmm->runSWMM();
@@ -271,61 +278,61 @@ void GDALDMSWMM::run() {
 			c->SetField("velocity", flow_vel[id]);
 		}
 	}
-//	typedef std::pair<int, double > rainnode;
+	//	typedef std::pair<int, double > rainnode;
 
-//	foreach(const rainnode& flo, swmm->getFloodedNodes()) {
-//		flo.first->addAttribute("flooding_volume", flo.second);
+	//	foreach(const rainnode& flo, swmm->getFloodedNodes()) {
+	//		flo.first->addAttribute("flooding_volume", flo.second);
 
-//	foreach(const rainnode& no, swmm->getNodeDepthSummery())
-//		no.first->addAttribute("node_depth", no.second);
+	//	foreach(const rainnode& no, swmm->getNodeDepthSummery())
+	//		no.first->addAttribute("node_depth", no.second);
 
-//	typedef std::pair<Edge*, double > capnode;
+	//	typedef std::pair<Edge*, double > capnode;
 
-//	foreach(const capnode& cap, swmm->getLinkFlowSummeryCapacity())
-//		cap.first->addAttribute("capacity", cap.second);
+	//	foreach(const capnode& cap, swmm->getLinkFlowSummeryCapacity())
+	//		cap.first->addAttribute("capacity", cap.second);
 
-//	foreach(const capnode& velo, swmm->getLinkFlowSummeryVelocity())
-//		velo.first->addAttribute("velocity", velo.second);
+	//	foreach(const capnode& velo, swmm->getLinkFlowSummeryVelocity())
+	//		velo.first->addAttribute("velocity", velo.second);
 
-//	c->addAttribute("drainage_capacity", swmm->getAverageCapacity());
-//	c->addAttribute("SWMM_ID", swmm->getSWMMUUIDPath());
-//	c->addAttribute("Vr", swmm->getVSurfaceRunoff());
-//	c->addAttribute("Vp", swmm->getVp());
-//	c->addAttribute("Vwwtp", swmm->getVwwtp());
-//	c->addAttribute("Vout", swmm->getVout());
+	//	c->addAttribute("drainage_capacity", swmm->getAverageCapacity());
+	//	c->addAttribute("SWMM_ID", swmm->getSWMMUUIDPath());
+	//	c->addAttribute("Vr", swmm->getVSurfaceRunoff());
+	//	c->addAttribute("Vp", swmm->getVp());
+	//	c->addAttribute("Vwwtp", swmm->getVwwtp());
+	//	c->addAttribute("Vout", swmm->getVout());
 
 
-//	if (!writeResultFile) {
-//		delete swmm;
-//		return;
-//	}
+	//	if (!writeResultFile) {
+	//		delete swmm;
+	//		return;
+	//	}
 	DM::Logger(DM::Standard) << "Start write output files";
-//	int current_year = (int) c->getAttribute("year")->getDouble();
+	//	int current_year = (int) c->getAttribute("year")->getDouble();
 
 
-//	QMap<std::string, std::string> additionalParameter;
-//	Logger(Standard) << c->getAttribute("pop_growth")->getDouble();
-//	Logger(Standard) << c->getAttribute("renewal_rate")->getDouble();
-//	Logger(Standard) << c->getAttribute("masterplan_id")->getDouble();
-//	DM::Logger(DM::Standard) << "year";
-//	additionalParameter["year"] = QString::number(current_year).toStdString();
-//	DM::Logger(DM::Standard) << "pop";
-//	additionalParameter["population_growth"] = QString::number(c->getAttribute("pop_growth")->getDouble()).toStdString();
-//	DM::Logger(DM::Standard) << "ccf";
-//	additionalParameter["climate_change_factor"] = QString::number(cf).toStdString();
-//	DM::Logger(DM::Standard) << "rp";
-//	additionalParameter["return_period"] =  QString::number(this->return_period).toStdString();
-//	DM::Logger(DM::Standard) << "rr";
-//	additionalParameter["renewal_rate"] =  QString::number(c->getAttribute("renewal_rate")->getDouble()).toStdString();
-//	DM::Logger(DM::Standard) << "m_id";
-//	additionalParameter["masterplan_id"] =  QString::number(c->getAttribute("masterplan_id")->getDouble()).toStdString();
-//	DM::Logger(DM::Standard) << "CFInfiltration";
-//	additionalParameter["CFInfiltration"] =  QString::number(c->getAttribute("CFInfiltration")->getDouble()).toStdString();
-//	std::stringstream fname;
-//	Logger(Standard) << "Start Write Report File " <<fname.str();
-//	fname << this->FileName << "/"  <<  current_year << "_" << unique_name << ".cvs";
+	//	QMap<std::string, std::string> additionalParameter;
+	//	Logger(Standard) << c->getAttribute("pop_growth")->getDouble();
+	//	Logger(Standard) << c->getAttribute("renewal_rate")->getDouble();
+	//	Logger(Standard) << c->getAttribute("masterplan_id")->getDouble();
+	//	DM::Logger(DM::Standard) << "year";
+	//	additionalParameter["year"] = QString::number(current_year).toStdString();
+	//	DM::Logger(DM::Standard) << "pop";
+	//	additionalParameter["population_growth"] = QString::number(c->getAttribute("pop_growth")->getDouble()).toStdString();
+	//	DM::Logger(DM::Standard) << "ccf";
+	//	additionalParameter["climate_change_factor"] = QString::number(cf).toStdString();
+	//	DM::Logger(DM::Standard) << "rp";
+	//	additionalParameter["return_period"] =  QString::number(this->return_period).toStdString();
+	//	DM::Logger(DM::Standard) << "rr";
+	//	additionalParameter["renewal_rate"] =  QString::number(c->getAttribute("renewal_rate")->getDouble()).toStdString();
+	//	DM::Logger(DM::Standard) << "m_id";
+	//	additionalParameter["masterplan_id"] =  QString::number(c->getAttribute("masterplan_id")->getDouble()).toStdString();
+	//	DM::Logger(DM::Standard) << "CFInfiltration";
+	//	additionalParameter["CFInfiltration"] =  QString::number(c->getAttribute("CFInfiltration")->getDouble()).toStdString();
+	//	std::stringstream fname;
+	//	Logger(Standard) << "Start Write Report File " <<fname.str();
+	//	fname << this->FileName << "/"  <<  current_year << "_" << unique_name << ".cvs";
 
-//	DrainageHelper::WriteOutputFiles(fname.str(), city, *swmm, additionalParameter.toStdMap());
+	//	DrainageHelper::WriteOutputFiles(fname.str(), city, *swmm, additionalParameter.toStdMap());
 
 	delete swmm;
 }

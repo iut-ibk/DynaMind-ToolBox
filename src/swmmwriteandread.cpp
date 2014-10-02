@@ -75,7 +75,7 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 	}
 
 	this->SWMMPath.setPath(tmpPath.absolutePath() + "/" + UUIDPath);
-	Logger(Error) << this->SWMMPath.absolutePath().toStdString();
+	Logger(Debug) << this->SWMMPath.absolutePath().toStdString();
 }
 
 void SWMMWriteAndRead::setRainFile(string rainfile)
@@ -83,7 +83,7 @@ void SWMMWriteAndRead::setRainFile(string rainfile)
 	this->rainfile = rainfile;
 }
 
-void SWMMWriteAndRead::setClimateChangeFactor(int cf)
+void SWMMWriteAndRead::setClimateChangeFactor(double cf)
 {
 	this->climateChangeFactor = cf;
 }
@@ -929,12 +929,17 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 			//			}
 
 			double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
+			std::string shape = conduit->GetFieldAsString("shape");
 
 			//			if (UUIDtoINT[link] == 0)
 			//				continue;
 			//			if (link->getAttribute("XSECTION")->getLinkedComponents().size() == 0) {
 			//				if (condie.getName().compare(conduit.getName()) == 0)
-			inp << linkname << conduit->GetFID() << "\tCIRCULAR\t"<< d <<" \t0\t0\t0\n";
+			if (shape == "CIRCULAR") {
+				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< d <<" \t0\t0\t0\n";
+			} else if (shape == "RECT_OPEN")  {
+				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+			}
 			continue;
 			//			}
 
@@ -1153,7 +1158,7 @@ void SWMMWriteAndRead::writeSWMMFile() {
 	QString fileName = this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
 	std::fstream inp;
 	inp.open(fileName.toAscii(),ios::out);
-	std::cout << fileName.toStdString() << std::endl;
+	//std::cout << fileName.toStdString() << std::endl;
 	inp << std::fixed;
 	inp << std::setprecision(9);
 	writeSWMMheader(inp);
