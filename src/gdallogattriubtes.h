@@ -15,6 +15,8 @@ public:
 private:
 	std::string leadingViewName;
 	std::vector<std::string> attributeNames;
+	bool printFeatureID;
+	bool excelFriendly;
 
 	DM::ViewContainer leadingView;
 };

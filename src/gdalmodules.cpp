@@ -46,6 +46,9 @@
 #include "gdaldmswmm.h"
 #include "gdaljoinnearestneighbour.h"
 #include "gdallogattriubtes.h"
+#include "gdalcreateneighbourhoodtable.h"
+#include "gdalclusterneighbourhood.h"
+#include "gdalmergefaces.h"
 
 /**
   * @addtogroup TestModules
@@ -74,4 +77,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALDMSWMM>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALJoinNearestNeighbour>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALLogAttriubtes>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALCreateNeighbourhoodTable>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALClusterNeighbourhood>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALMergeFaces>());
 }

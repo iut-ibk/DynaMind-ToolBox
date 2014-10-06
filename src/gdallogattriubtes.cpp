@@ -1,5 +1,6 @@
 #include "gdallogattriubtes.h"
 #include "ogr_feature.h"
+#include <sstream>
 
 DM_DECLARE_NODE_NAME(GDALLogAttriubtes, GDALModules)
 
@@ -12,7 +13,13 @@ GDALLogAttriubtes::GDALLogAttriubtes()
 
 
 	this->attributeNames.clear();
-	this->addParameter("eraseViewName", DM::STRING_LIST, &attributeNames);
+	this->addParameter("attributeNames", DM::STRING_LIST, &attributeNames);
+
+	this->printFeatureID = true;
+	this->addParameter("printFeatureID", DM::BOOL, &printFeatureID);
+
+	this->excelFriendly = false;
+	this->addParameter("excelFriendly", DM::BOOL, &excelFriendly);
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -54,21 +61,36 @@ void GDALLogAttriubtes::run()
 	this->leadingView.resetReading();
 	OGRFeature * f;
 	while (f = this->leadingView.getNextFeature()) {
-		DM::Logger(DM::Error) << this->leadingViewName << " " << f->GetFID();
+		if (printFeatureID) {
+			DM::Logger(DM::Error) << this->leadingViewName << " " << f->GetFID();
+		}
+		std::stringstream ss;
+
 		foreach (std::string attr_name, this->attributeNames) {
 			int feature_type = leadingView.getAttributeType(attr_name);
 			switch (feature_type) {
 			case DM::Attribute::INT:
-				DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsInteger(attr_name.c_str());
+				if (excelFriendly)
+					ss << "\t" << attr_name << "\t" << f->GetFieldAsInteger(attr_name.c_str());
+				else
+					DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsInteger(attr_name.c_str());
 				break;
 			case DM::Attribute::DOUBLE:
-				DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsDouble(attr_name.c_str());
+				if (excelFriendly)
+					ss << "\t" << attr_name << "\t" << f->GetFieldAsDouble(attr_name.c_str());
+				else
+					DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsDouble(attr_name.c_str());
 				break;
 			case DM::Attribute::STRING:
-				DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsString(attr_name.c_str());
+				if (excelFriendly)
+					ss << "\t" << attr_name << "\t" << f->GetFieldAsString(attr_name.c_str());
+				else
+					DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsString(attr_name.c_str());
 				break;
 			}
 		}
+		if (excelFriendly)
+			DM::Logger(DM::Error) << ss.str();
 	}
 }
 
