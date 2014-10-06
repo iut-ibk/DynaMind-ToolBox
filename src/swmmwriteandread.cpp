@@ -89,7 +89,7 @@ void SWMMWriteAndRead::setClimateChangeFactor(double cf)
 }
 
 void SWMMWriteAndRead::readInReportFile() {
-	Logger(Error) << "Read inputfile " << this->SWMMPath.absolutePath() + "/" + "swmm.rep";
+	Logger(Standard) << "Read inputfile " << this->SWMMPath.absolutePath() + "/" + "swmm.rep";
 
 	//	QMap<int, DM::Component*> revUUIDtoINT;
 
