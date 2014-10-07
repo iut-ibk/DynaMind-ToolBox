@@ -116,7 +116,7 @@ void GDALParcelSplit::splitePoly(Polygon_with_holes_2 &p)
 void GDALParcelSplit::addToSystem(SFCGAL::Polygon & poly)
 {
 
-	std::string wkt = poly.asText(9).c_str();
+	std::string wkt = poly.asText(16).c_str();
 
 	char * writable_wr = new char[wkt.size() + 1]; //Note not sure if memeory hole?
 	std::copy(wkt.begin(), wkt.end(), writable_wr);
@@ -133,7 +133,7 @@ void GDALParcelSplit::addToSystem(SFCGAL::Polygon & poly)
 	if (ogr_poly->IsEmpty()) {
 		DM::Logger(DM::Error) << "Geometry is empty ";
 		DM::Logger(DM::Error) << "OGR Error " << err;
-		DM::Logger(DM::Error) << poly.asText(9);
+		DM::Logger(DM::Error) << poly.asText(16);
 		return;
 	}
 	//Create Feature
