@@ -69,10 +69,16 @@ void GDALGeometricAttributes::run()
 		OGRPolygon* geo = (OGRPolygon*)f->GetGeometryRef();
 		if (isCalculateArea)
 			f->SetField("area", this->calculateArea( geo ));
-		if (isAspectRationBB)
-			f->SetField("aspect_ratio_BB", this->aspectRationBB( geo ));
-		if (isPercentageFilled)
-			f->SetField("percentage_filled", this->percentageFilled( geo ));
+		if (isAspectRationBB) {
+			double value = this->aspectRationBB( geo );
+			if (value > -0.1)
+				f->SetField("aspect_ratio_BB", value);
+		}
+		if (isPercentageFilled) {
+			double value = this->percentageFilled( geo );
+			if (value > -0.1)
+				f->SetField("percentage_filled", value);
+		}
 	}
 }
 
@@ -88,8 +94,14 @@ double GDALGeometricAttributes::percentageFilled(OGRPolygon * ogr_poly) {
 
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
+	if (!poly.toPolygon_2(false).is_simple()) {
+		DM::Logger(DM::Warning) << "Polygon is not simple";
+		return -1;
+	}
+
 	//Transfer to GDAL polygon
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
+
 
 	Polygon_2 p_c;
 	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
@@ -97,9 +109,6 @@ double GDALGeometricAttributes::percentageFilled(OGRPolygon * ogr_poly) {
 	//Cacluate Minimal Rect
 	Polygon_2 p_m;
 	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
-
-
-
 
 	return CGAL::to_double(p_m.area()) / ogr_poly->get_Area();
 }
@@ -113,8 +122,14 @@ double GDALGeometricAttributes::aspectRationBB(OGRPolygon * ogr_poly) {
 
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
+	if (!poly.toPolygon_2(false).is_simple()) {
+		DM::Logger(DM::Warning) << "Polygon is not simple";
+		return -1;
+	}
+
 	//Transfer to GDAL polygon
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
+
 
 	Polygon_2 p_c;
 	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
