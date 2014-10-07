@@ -99,7 +99,7 @@ void GDALErase::run()
 				continue;
 			}
 			geometries[existing]  = result;
-			existing_features[existing]->SetGeometry(result);//existing->SetGeometry(result);
+			existing_features[existing]->SetGeometry(result);
 		}
 	}
 
