@@ -59,8 +59,9 @@ OGRGeometry *  GDALMergeFaces::joinCluster(int cluster) {
 	std::stringstream query;
 	query << attriubteName << " = " << cluster;
 
-	leadingView.resetReading();
+
 	leadingView.setAttributeFilter(query.str().c_str());
+	leadingView.resetReading();
 
 	OGRFeature * f;
 	OGRGeometry * geo = 0;
@@ -87,28 +88,20 @@ void GDALMergeFaces::run()
 	while(geo = joinCluster(cluster_id)) {
 		cluster_id++;
 		counter++;
-		//DM::Logger(DM::Error)<< geo->getGeometryName();
-
 		if (wkbMultiPolygon == geo->getGeometryType()){
 			geo = geo->UnionCascaded();
 			OGRMultiPolygon * mgeo = (OGRMultiPolygon*) geo;
 			if (mgeo->getNumGeometries() == 0) {
-				//DM::Logger(DM::Error) << "Error in multipolyogn";
 				continue;
 			}
-			//geo = mgeo->UnionCascaded();
-
-			//DM::Logger(DM::Error)<< "conv "<< mgeo->getNumGeometries();
 			geo = mgeo->getGeometryRef(0);
 
 			int n = mgeo->getNumGeometries();
 			for (int i = 0; i < n; i++) {
 				OGRFeature * f = combinedView.createFeature();
-				OGRPolygon * p = (OGRPolygon *) mgeo->getGeometryRef(i);
-				//DM::Logger(DM::Error) << p->get_Area();
+
 				f->SetGeometry(mgeo->getGeometryRef(i));
 				f->SetField("test_id", counter);
-
 			}
 			continue;
 		}
