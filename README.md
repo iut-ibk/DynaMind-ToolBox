@@ -1,4 +1,4 @@
-DynaMind-ToolBox
+DynaMind-ToolBox 
 ================
 
 DynaMind is an open-source GIS modelling toolbox similar to the ArcGIS - model builder. The idea is that small reusable modules can be linked together to describe a complex workflow in an urban environment. E.g. the evolution of a small city
@@ -17,27 +17,11 @@ a easy way to set up and edit your simulation
 - a set of modules to import, edit, create and export data
 
  - [DynaMind-BasicModules](https://github.com/iut-ibk/DynaMind-BasicModules )
- - [DynaMind-Sewer](https://github.com/iut-ibk/DynaMind-Sewer)
- - [DynaMind-DAnCE4Water](https://github.com/christianurich/DynaMind-DAnCE4Water)
-
-- additonal modules to visualise data
-
- - [DynaMind-Analysis](https://github.com/christianurich/DynaMind-Analysis)
-
-
-##DAnCEKit
-To make DynaMind more accessible we are develpoing a online platform.Try it online [http://dance4water.eng.monash.edu](http://dance4water.eng.monash.edu)
-
-<img src="http://dynamind-toolbox.org/wp-content/uploads/2014/03/Screen-Shot-2014-03-10-at-10.46.56.png" border="0">
 
 
 ## Compile DynaMind
 - [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
 - [Compiling-DynaMind-Toolbox-on-Linux](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Linux)
 
-
-## Download 
-
- - [Windows 32bit binaries](http://dynamind-toolbox.org/downloads/)
 
 
