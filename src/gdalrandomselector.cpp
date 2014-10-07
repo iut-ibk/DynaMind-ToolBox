@@ -28,9 +28,6 @@ GDALRandomSelector::GDALRandomSelector()
 	this->attributeNameFrom= "";
 	this->addParameter("attribute_from", DM::STRING, &this->attributeNameFrom);
 
-	this->units = "";
-	this->addParameter("units", DM::STRING, &this->units);
-
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
