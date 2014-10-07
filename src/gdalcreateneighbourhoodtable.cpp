@@ -64,7 +64,7 @@ void GDALCreateNeighbourhoodTable::run()
 	query << "FROM " << "idx_"<< viewName << "_geometry";
 	query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
 
-	DM::Logger(DM::Error) << query.str();
+	DM::Logger(DM::Debug) << query.str();
 	OGRLayer * l = sys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
 
 	if (!l) {

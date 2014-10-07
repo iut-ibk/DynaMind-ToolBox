@@ -42,7 +42,7 @@ void GDALCreateCentroids::run()
 {
 	leadingView.resetReading();
 	OGRFeature * f;
-	DM::Logger(DM::Error) << link_name;
+	DM::Logger(DM::Debug) << link_name;
 	while (f = leadingView.getNextFeature()) {
 		OGRGeometry * geo = f->GetGeometryRef();
 		if (!geo) {

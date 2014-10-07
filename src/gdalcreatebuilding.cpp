@@ -84,13 +84,13 @@ OGRGeometry *  GDALCreateBuilding::addToSystem(SFCGAL::Polygon & poly)
 	OGRErr err = OGRGeometryFactory::createFromWkt(&writable_wr, 0, &ogr_poly);
 
 	if (!ogr_poly->IsValid()) {
-		DM::Logger(DM::Error) << "Geometry is not valid!";
+		DM::Logger(DM::Warning) << "Geometry is not valid!";
 		return 0;
 	}
 	if (ogr_poly->IsEmpty()) {
-		DM::Logger(DM::Error) << "Geometry is empty ";
-		DM::Logger(DM::Error) << "OGR Error " << err;
-		DM::Logger(DM::Error) << poly.asText(9);
+		DM::Logger(DM::Warning) << "Geometry is empty ";
+		DM::Logger(DM::Warning) << "OGR Error " << err;
+		DM::Logger(DM::Warning) << poly.asText(9);
 		return 0;
 	}
 
