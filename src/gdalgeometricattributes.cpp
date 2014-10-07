@@ -110,7 +110,7 @@ double GDALGeometricAttributes::percentageFilled(OGRPolygon * ogr_poly) {
 	Polygon_2 p_m;
 	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
 
-	return CGAL::to_double(p_m.area()) / ogr_poly->get_Area();
+	return ogr_poly->get_Area() / CGAL::to_double(p_m.area());
 }
 
 
