@@ -2,6 +2,8 @@
 #include <sstream>
 #include <ogr_feature.h>
 #include "parser/mpParser.h"
+#include "userdefinedfunctions.h"
+#include "dmgroup.h"
 
 DM_DECLARE_NODE_NAME(GDALAttributeCalculator, GDALModules)
 
@@ -240,6 +242,12 @@ void GDALAttributeCalculator::run()
 
 	std::map<std::string, mup::Value * > muVariables;
 	mup::ParserX * p  = new mup::ParserX();
+	mup::Value mp_c;
+
+	p->DefineFun(new dm::Random);
+	p->DefineFun(new dm::Round);
+	p->DefineFun(new dm::Num2Str);
+	p->DefineVar("counter", &mp_c);
 
 	for (varaible_map::const_iterator it = variables.begin(); it != variables.end(); ++it) {
 		DM::Attribute::AttributeType attr_type = variable_types[it->first];
@@ -264,6 +272,16 @@ void GDALAttributeCalculator::run()
 	p->SetExpr(this->equation);
 
 	while (l_feat = leading_view->getNextFeature()) {
+		//set mpc
+		DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
+		if(lg) {
+			mp_c = lg->getGroupCounter();
+		}
+		else {
+			DM::Logger(DM::Debug) << "attribute calc: counter not found";
+			mp_c = 0;
+		}
+
 		//Update Varaibles
 		for (varaible_map::const_iterator it = variables.begin(); it != variables.end(); ++it) {
 			QString var = QString::fromStdString(it->second);
