@@ -16,5 +16,6 @@ before_install:
  - cd SFCGAL-1.0.5/
  - cmake . && make && sudo make install
  - cd ..
+ - git submodule update --init --recursive
 
 script: cmake . -DWITH_UNIT_TESTS=True -DWITH_PLUGIN_GDALMODULE=TRUE && make
