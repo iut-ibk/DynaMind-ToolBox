@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/iut-ibk/DynaMind-ToolBox.svg?branch=master)](https://travis-ci.org/iut-ibk/DynaMind-ToolBox)
+
 DynaMind-ToolBox 
 ================
 
