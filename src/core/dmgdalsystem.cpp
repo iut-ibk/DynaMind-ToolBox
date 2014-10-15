@@ -45,6 +45,12 @@ GDALSystem::GDALSystem(int EPSG)
 	//Init SpatialiteServer
 	OGRRegisterAll();
 
+	if (EPSG == 0) {
+		DM::Logger(DM::Error) << "Please set EPSG code for simulation, as default use 3785 as default ";
+		EPSG = 3785;
+	}
+
+
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
