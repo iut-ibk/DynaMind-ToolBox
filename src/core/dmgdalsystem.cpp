@@ -42,6 +42,10 @@ namespace DM {
 
 GDALSystem::GDALSystem(int EPSG)
 {
+	if (EPSG == 0) {
+		DM::Logger(DM::Error) << "Please set EPSG code for simulation, as default use 3785 as default ";
+		EPSG = 3785;
+	}
 	//Init SpatialiteServer
 	OGRRegisterAll();
 
@@ -89,9 +93,9 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	QFile::copy(origin, dest);
 
 	//Connect to DB
-	char ** options = NULL;
-	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
-	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
+//	char ** options = NULL;
+//	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+//	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
 
