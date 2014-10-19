@@ -23,6 +23,8 @@ OPTION(WITH_PLUGIN_GDALMODULE "if with GDALMODULES plugin" OFF)
 OPTION(WITH_STANDALONE_EXE "if with standalon executeable" ON)
 OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
+OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" ON)
+
 
 #Not Supported by the new Core
 #OPTION(WITH_PLUGIN_DANCE4WATER "if with DAnCE4Water plugin" OFF)
@@ -66,9 +68,9 @@ if(WITH_PLUGIN_GDALMODULE)
     set(TOOLBOX ${TOOLBOX} DynaMind-GDALModules)
 endif(WITH_PLUGIN_GDALMODULE)
 
-#if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
-#endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
+if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
+    set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
+endif(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
 
 #if(WITH_PLUGIN_POWERVIBE)
 #    set(TOOLBOX ${TOOLBOX} PowerVIBe)
