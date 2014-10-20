@@ -27,21 +27,21 @@ class WaterBalanceHouseHold: public DM::Module
         SimulationParameters *p;
 		MapBasedModel * m;
 
-		DM::View building;
-		DM::View parcel;
-		DM::View rwht;
+		DM::ViewContainer buildings;
+		DM::ViewContainer parcels;
+		DM::ViewContainer rwhts;
 
 		std::vector<double> storage_behaviour;
 		std::string rainfile;
 		std::string cd3_dir;
-		std::vector<double> create_montly_values(std::vector<double> dayly);
+		std::vector<double> create_montlhy_values(std::vector<double> daily);
 		void analyse_raintank();
 
     public:
         WaterBalanceHouseHold();
         void run();
         void initmodel();
-		DM::Component *  createRaintank(double area, double persons);
+		bool createRaintank(OGRFeature *f, double area, double persons);
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);

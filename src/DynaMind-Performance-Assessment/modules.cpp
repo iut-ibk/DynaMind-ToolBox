@@ -34,6 +34,6 @@ using namespace std;
 
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-    registry->addNodeFactory(new DM::NodeFactory<WaterBalance>());
+	//registry->addNodeFactory(new DM::NodeFactory<WaterBalance>());
     registry->addNodeFactory(new DM::NodeFactory<WaterBalanceHouseHold>());
 }

@@ -1,5 +1,5 @@
 #include "waterbalance_household.h"
-
+#include "ogrsf_frmts.h"
 //CD3 includes
 #include <node.h>
 #include <simulation.h>
@@ -12,26 +12,27 @@
 #include <simulationregistry.h>
 #include <dynamindlogsink.h>
 #include <nodeconnection.h>
-
+#include <dmgdalhelper.h>
 
 DM_DECLARE_NODE_NAME(WaterBalanceHouseHold,Performance)
 
-std::vector<double> WaterBalanceHouseHold::create_montly_values(std::vector<double> dayly)
+std::vector<double> WaterBalanceHouseHold::create_montlhy_values(std::vector<double> daily)
 {
+
 	QDate start = QDate::fromString("01.01.2000", "dd.MM.yyyy");
 	std::vector<double> monthly;
 	double sum = 0;
 	int month = start.month();
-	for (int i = 0; i < dayly.size(); i++) {
+	for (int i = 0; i < daily.size(); i++) {
 		QDate today = start.addDays(i);
 		//check if date switched
 		if (month == today.month()) {
-			sum+=dayly[i];
+			sum+=daily[i];
 			continue;
 		}
 		month = today.month();
 		monthly.push_back(sum);
-		sum = dayly[i];
+		sum = daily[i];
 	}
 	monthly.push_back(sum);
 	return monthly;
@@ -44,33 +45,39 @@ void WaterBalanceHouseHold::analyse_raintank()
 
 WaterBalanceHouseHold::WaterBalanceHouseHold()
 {
+	this->GDALModule = true;
 	this->rainfile = "";
 	this->addParameter("rainfile", DM::STRING, &this->rainfile);
 
 	this->cd3_dir = "";
 	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
 
-	parcel = DM::View("PARCEL", DM::COMPONENT, DM::READ);
-	parcel.addAttribute("run_off");
-	parcel.getAttribute("area");
-	parcel.getAttribute("non_potable_demand");
-	parcel.getAttribute("potable_demand");
+	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
+	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
 
-	parcel.getAttribute("people");
-	parcel.getAttribute("roof_area");
+	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::WRITE);
+	parcels.addAttribute("non_potable_demand", DM::Attribute::DOUBLE, DM::WRITE);
+	parcels.addAttribute("potable_demand", DM::Attribute::DOUBLE, DM::WRITE);
+	parcels.addAttribute("run_off_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
-	parcel.getAttribute("BUILDING");
-	building = DM::View("BUILDING", DM::COMPONENT, DM::READ);
-	building.getAttribute("area");
-	rwht = DM::View("RWHT", DM::COMPONENT, DM::WRITE);
-	rwht.addAttribute("storage_behaviour");
-	rwht.addLinks("BUILDING", building);
+	parcels.addAttribute("building_id", DM::Attribute::INT, DM::READ);
+	buildings = DM::ViewContainer("building", DM::COMPONENT, DM::READ);
+	buildings.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
+	buildings.addAttribute("persons", DM::Attribute::INT, DM::READ);
 
-	std::vector<DM::View> stream;
-	stream.push_back(parcel);
-	stream.push_back(building);
-	stream.push_back(rwht);
-	this->addData("city", stream);
+	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
+	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	rwhts.addAttribute("provided_volume_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	rwhts.addAttribute("connected_roof_area", DM::Attribute::DOUBLE, DM::WRITE);
+
+	rwhts.addAttribute("building_id", DM::Attribute::INT, DM::WRITE);
+
+	std::vector<DM::ViewContainer*> stream;
+	stream.push_back(&parcels);
+	stream.push_back(&buildings);
+	stream.push_back(&rwhts);
+	this->registerViewContainers(stream);
 
 	//Init Model
 	this->m = new MapBasedModel();
@@ -78,45 +85,47 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 
 void WaterBalanceHouseHold::run()
 {
-	DM::System * city = this->getData("city");
-	DM::Logger(DM::Standard) << "Init CD3";
+	DM::Logger(DM::Debug) << "Init CD3";
 	initmodel();
-
-	mforeach (DM::Component * p, city->getAllComponentsInView(this->parcel)) {
+	DM::Logger(DM::Debug) << "Init CD3 done";
+	buildings.createIndex("parcel_id");
+	OGRFeature * p;
+	this->parcels.resetReading();
+	while(p = this->parcels.getNextFeature()) {
 		double roofarea = 0;
-		std::vector<DM::LinkAttribute> building_ids = p->getAttribute("BUILDING")->getLinks();
-		Logger(Error) << "Number of Buildings" << building_ids.size();
-		for (int i = 0; i < building_ids.size(); i++){
-			DM::Component * b = city->getComponent(building_ids[i].uuid);
-			roofarea=roofarea+b->getAttribute("area")->getDouble();
+		double persons = 0;
+
+		buildings.resetReading();
+		std::stringstream parcel_query;
+		parcel_query << "parcel_id = " << p->GetFID();
+		buildings.setAttributeFilter(parcel_query.str().c_str());
+
+		OGRFeature * b;
+		while (b = buildings.getNextFeature()) {
+			roofarea+=b->GetFieldAsDouble("area");
+			persons+= b->GetFieldAsInteger("persons");
 		}
-		Logger(Error) << "Connected Roof Area " << roofarea;
+		DM::Logger(DM::Standard) << "Connected Roof Area " << roofarea;
 
-
-		DM::Component * rwht_cmp = createRaintank(roofarea, p->getAttribute("persons")->getDouble());
-		city->addComponent(rwht_cmp, this->rwht);
+		OGRFeature * rwht = rwhts.createFeature();
+		createRaintank(rwht, roofarea, persons);
 
 		Node * run_off = m->getNode("ro");
 		std::vector<double> ro = *(run_off->getState<std::vector<double> >("run_off"));
-		p->getAttribute("run_off_monthly")->setDoubleVector(this->create_montly_values(ro));
 
-
-
+		DM::DMFeature::SetDoubleList( p, "run_off_monthly", this->create_montlhy_values(ro));
 		Node * pot = m->getNode("s_pot");
-
-
 		Node * non_pot = m->getNode("s_non_pot");
-
 
 		double non_potable = *(non_pot->getState<double>("TotalVolume"));
 		double potable = *(pot->getState<double>("TotalVolume"));
 
-		p->addAttribute("non_potable_demand",-non_potable);
-		p->addAttribute("potable_demand", -potable);
-		p->addAttribute("total_roof_area", roofarea);
+		p->SetField("non_potable_demand",-non_potable);
+		p->SetField("potable_demand", -potable);
+		p->SetField("total_roof_area", roofarea);
 
-		Logger(Error) << "Total Consumption non potable"<< non_potable;
-		Logger(Error) << "Total Consumption  potable"<< potable;
+		Logger(Debug) << "Total Consumption non potable"<< non_potable;
+		Logger(Debug) << "Total Consumption  potable"<< potable;
 
 	}
 
@@ -157,13 +166,17 @@ void WaterBalanceHouseHold::initmodel()
 		DM::Logger(DM::Error) << "Cannot start CD3 simulation";
 	}
 
-
 	DM::Logger(DM::Debug) << "CD3 simulation finished";
 }
 
-DM::Component * WaterBalanceHouseHold::createRaintank(double area, double persons)
+bool WaterBalanceHouseHold::createRaintank(OGRFeature * f, double area, double persons)
 {
+	DM::Logger(DM::Debug) << "Start Raintank";
 	Node * rain = nodereg->createNode("IxxRainRead_v2");
+	if (!rain) {
+		DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
+		return false;
+	}
 	rain->setParameter("rain_file", this->rainfile);
 	std::string datetime("d.M.yyyy HH:mm:ss");
 	rain->setParameter("datestring", datetime);
@@ -181,7 +194,6 @@ DM::Component * WaterBalanceHouseHold::createRaintank(double area, double person
 	Node * rwht = nodereg->createNode("RWHT");
 	rwht->setParameter("storage_volume", 2.5);
 	m->addNode("rain_tank", rwht);
-
 
 	m->addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
 
@@ -219,24 +231,18 @@ DM::Component * WaterBalanceHouseHold::createRaintank(double area, double person
 	Logger(Debug) << "Spills"<< *(rwht->getState<int>("spills"));
 	storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
 
-	DM::Component * rwht_cmp = new DM::Component();
-	DM::Attribute attr = DM::Attribute("storage_behaviour");
-	attr.setDoubleVector(storage_behaviour);
-	rwht_cmp->addAttribute(attr);
+	DM::DMFeature::SetDoubleList(f, "storage_behaviour_daily", storage_behaviour);
+
 
 	std::vector<double> provided_volume =  *(rwht->getState<std::vector<double> >("provided_volume"));
 
-	attr = DM::Attribute("provided_volume_dayly");
-	attr.setDoubleVector(provided_volume);
-	rwht_cmp->addAttribute(attr);
-	Logger(Error) << "roof_area " << area;
-	rwht_cmp->addAttribute("connected_roof_area", area);
+	DM::DMFeature::SetDoubleList(f, "provided_volume_daily", provided_volume);
 
-	attr = DM::Attribute("provided_volume_montly");
-	attr.setDoubleVector(this->create_montly_values(provided_volume));
-	rwht_cmp->addAttribute(attr);
+	f->SetField("connected_roof_area", area);
 
-	return rwht_cmp;
+	DM::DMFeature::SetDoubleList(f, "provided_volume_monthly", this->create_montlhy_values(provided_volume));
+
+	return true;
 }
 
 Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
