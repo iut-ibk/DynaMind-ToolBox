@@ -7,6 +7,7 @@
 #include <ogrsf_frmts.h>
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
+#include <dmgdalhelper.h>
 
 #define FEATURES "100000"
 #define FEATURES_2 "200000"
@@ -18,6 +19,7 @@
 #define EXPANDING
 #define BRANCHMODIFY
 #define GDALVCAPITEST
+#define WRITEATTRIBUTES
 
 #ifdef GDALVCAPITEST
 TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
@@ -209,6 +211,47 @@ TEST_F(TestGDALModules,BranchModify) {
 	ASSERT_EQ(components.getFeatureCount(), number);
 }
 #endif
+
+#ifdef WRITEATTRIBUTES
+TEST_F(TestGDALModules,WriteAttributes) {
+
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation sim;
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	m1->setParameterValue("elements", FEATURES);
+	m1->setParameterValue("add_attributes", "1");
+
+	sim.run();
+
+	DM::GDALSystem * sys = (DM::GDALSystem*) m1->getOutPortData("city");
+	ASSERT_TRUE(sys);
+	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+
+	OGRFeature * f;
+	components.resetReading();
+	while (f = components.getNextFeature()) {
+		ASSERT_TRUE(f);
+		double double_val = f->GetFieldAsDouble("double_attribute");
+		ASSERT_FLOAT_EQ( double_val, 10.5 );
+
+		std::vector<double> ress_vec;
+		DM::DMFeature::GetDoubleList(f,"double_vector_attribute", ress_vec );
+		DM::Logger(DM::Error) << ress_vec.size();
+		ASSERT_EQ( ress_vec.size(), 3 );
+		ASSERT_FLOAT_EQ( ress_vec[2], 30.5 );
+		return;
+	}
+	ASSERT_TRUE(false);
+
+}
+#endif
+
 
 
 

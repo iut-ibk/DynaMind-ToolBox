@@ -156,6 +156,17 @@ void GDALSystem::updateView(const View &v)
 			lyr->CreateField(&oField);
 			continue;
 		}
+		if (v.getAttributeType(attribute_name) == DM::Attribute::STRINGVECTOR){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTStringList );
+			lyr->CreateField(&oField);
+			DM::Logger(DM::Error) << "Attribute typer STRINGVECTOR is currently not supported";
+			continue;
+		}
+		if (v.getAttributeType(attribute_name) == DM::Attribute::DOUBLEVECTOR){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
+			lyr->CreateField(&oField);
+			continue;
+		}
 	}
 }
 

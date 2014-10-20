@@ -18,6 +18,8 @@ private:
 	DM::ViewContainer components;
 	int elements;
 	bool append;
+	bool addAttributes;
+
 public:
 	GDALAddComponent();
 	void run();
