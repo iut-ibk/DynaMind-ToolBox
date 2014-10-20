@@ -180,6 +180,11 @@ protected:
 }
 
 %extend DM::Module {
+	std::string getGdalDBName(std::string outport) {
+		GDALSystem * sys =  (DM::GDALSystem*) $self->getOutPortData(outport);
+		return sys->getDBID();
+	}
+
 	%pythoncode %{
 	_data = {'d':'Module'}
 	def getClassName(self):
