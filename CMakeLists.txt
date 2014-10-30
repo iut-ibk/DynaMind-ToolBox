@@ -23,7 +23,7 @@ OPTION(WITH_PLUGIN_GDALMODULE "if with GDALMODULES plugin" OFF)
 OPTION(WITH_STANDALONE_EXE "if with standalon executeable" ON)
 OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
-OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" ON)
+OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 
 
 #Not Supported by the new Core
