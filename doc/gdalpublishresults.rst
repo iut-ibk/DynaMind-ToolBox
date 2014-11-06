@@ -2,7 +2,7 @@
 GDALPublishResults
 ==================
 
-Export GIS data from DynaMind to a common GIS format`GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
+Export GIS data from DynaMind to a common GIS format `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------
