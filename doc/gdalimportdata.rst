@@ -2,7 +2,7 @@
 GDALImportData
 ==============
 
-Imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`.
+Imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------
@@ -28,7 +28,7 @@ Detailed Description
 
 The import GDAL module us usually the fist module in a DynaMind Simulation. It builds on the GDAL library and
 therefore allows data to imported form multiple common GIS sources. An overview of supported formats can be
-found `here <http://www.gdal.org/ogr_formats.html>`. Please ensure that the `epsg_to` and `epsg_from` parameters are set currently to
+found `here <http://www.gdal.org/ogr_formats.html>`_. Please ensure that the `epsg_to` and `epsg_from` parameters are set currently to
 ensure that the simulation is executed correctly. `epsg_to` should be the same throughout the simulation.
 
 
@@ -38,7 +38,7 @@ _____________________
 This is the most common way to import data into your simulation. please point the source parameter to your file.
 The layer_name is the same as the name of the source file (without the directories and the `.shp` file ending). Please
 also set the epsg_to and epsg_from parameter. These are used to transform the data in the right coordinate system.
-If you are not sure about EPSG code of your source file have a look at `Prj2EPSG <http://prj2epsg.org/search>`. This website
+If you are not sure about EPSG code of your source file have a look at `Prj2EPSG <http://prj2epsg.org/search>`_. This website
 allows you to identify your coordinate system based on the `.prj` file that comes with the shape file.
 
 
