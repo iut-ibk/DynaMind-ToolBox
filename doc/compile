@@ -6,6 +6,8 @@ rm html/*
 rm latex/*
 rm pdf/*
 
+## compile
+
 for i in `ls markdown/*.md`
 do
 	filename=$(basename $i)
@@ -15,6 +17,10 @@ do
 	pdflatex -output-directory=pdf latex/$filename.tex > /dev/null 2>&1
 done
 
+## pdftex cleanup
+
 find pdf/ -type f ! -iname '*.pdf' -delete
 
-echo "success"
+## deploy
+
+rsync -a html latex pdf c8451116@dynalp.com:~/dynalp.com/documentation/DynaMind/
