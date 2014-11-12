@@ -50,3 +50,9 @@ If you want to obtain data from a PostGIS server please set the source to follow
 `PG:dbname=melbourne host=127.0.0.1 port=5432 user=username password=password` and layer_name to the layer
 name to be imported.
 
+
+Import from WFS
+_______________
+
+If you want to obtain data from a WFS server please set the source to following `WFS:hostname` and layer_name to the layer
+name to be imported.
