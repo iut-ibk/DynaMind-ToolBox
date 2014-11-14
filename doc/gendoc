@@ -1,0 +1,57 @@
+#!/bin/bash
+
+if [ ! $# == 1 ]; then
+	echo "one argument needed:"
+	echo "  - analyse"
+	echo "  - compile"
+	echo "  - deploy"
+	exit 0
+fi
+## analyse
+
+if [[ $1 = "analyse" ]]; then
+
+	echo "missing:"
+	for i in `ls ../src/urbandevel/*.cpp`
+	do
+		filename=$(basename $i)
+		filename="${filename%.*}"
+		if [ ! -f urbandevel/$filename.md ]; then
+			echo "  $filename"
+		fi
+	done
+	
+elif [[ $1 = "compile" ]]; then
+
+## cleanup
+
+	rm -rf output/*
+	mkdir output/html
+	mkdir output/latex
+	mkdir output/pdf
+
+## compile
+
+	for i in `ls urbandevel/*.md`
+	do
+		filename=$(basename $i)
+		filename="${filename%.*}"
+		kramdown -o html $i > output/html/$filename.html
+		kramdown -o latex --template 'dynalp.erb' $i > output/latex/$filename.tex
+	#	pdflatex -output-directory=output/pdf latex/$filename.tex > /dev/null 2>&1
+		kramdown -o pdf $i > output/pdf/$filename.pdf
+	done
+
+## pdftex cleanup
+
+	#find pdf/ -type f ! -iname '*.pdf' -delete
+
+elif [[ $1 = "deploy" ]]; then
+
+	rsync -a html latex pdf c8451116@dynalp.com:~/dynalp.com/documentation/DynaMind/
+
+else
+
+	echo "no valid argument"
+	
+fi
