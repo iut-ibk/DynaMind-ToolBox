@@ -15,12 +15,13 @@ do
 	filename="${filename%.*}"
 	kramdown -o html $i > output/html/$filename.html
 	kramdown -o latex --template 'dynalp.erb' $i > output/latex/$filename.tex
-	pdflatex -output-directory=output/pdf latex/$filename.tex > /dev/null 2>&1
+#	pdflatex -output-directory=output/pdf latex/$filename.tex > /dev/null 2>&1
+	kramdown -o pdf $i > output/pdf/$filename.pdf
 done
 
 ## pdftex cleanup
 
-find pdf/ -type f ! -iname '*.pdf' -delete
+#find pdf/ -type f ! -iname '*.pdf' -delete
 
 ## deploy
 
