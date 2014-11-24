@@ -134,8 +134,15 @@ void GDALImportData::run()
 	vc->setCurrentGDALSystem(city);
 
 	lyr->ResetReading();
-	OGRCoordinateTransformation* forward_trans = this->getTrafo(this->epsg_from, this->epsg_to);
-	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->epsg_to, this->epsg_from);
+
+	int epsg_from_internal = this->epsg_from;
+	if (this->epsg_from == -1) {
+		epsg_from_internal = lyr->GetSpatialRef()->GetEPSGGeogCS();
+		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << epsg_from_internal;
+	}
+
+	OGRCoordinateTransformation* forward_trans = this->getTrafo(epsg_from_internal, this->epsg_to);
+	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->epsg_to, epsg_from_internal);
 
 	if (!forward_trans || !backwards_trans) {
 		DM::Logger(DM::Warning) << "Unknown Transformation";
@@ -327,6 +334,11 @@ int GDALImportData::DMToOGRGeometry(int dm_geometry) {
 		break;
 	}
 	return type;
+}
+
+string GDALImportData::getHelpUrl()
+{
+	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/gdalimportdata.rsthttps://github.com/christianurich/DynaMind-GDALModules/blob/master/doc/gdalimportdata.rst";
 }
 
 int GDALImportData::OGRtoDMGeometry(OGRFeatureDefn *def)

@@ -45,6 +45,8 @@ public:
 	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
 	int DMToOGRGeometry(int dm_geometry);
 	std::map<std::string, std::string> translator;
+
+	std::string getHelpUrl();
 };
 
 #endif // IMPORTDATA_H
