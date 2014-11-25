@@ -11,64 +11,64 @@
 rm(list=ls())
 
 # read
+filepath<-("/home/gaelic/Code/DynaMind/DynaMind-DynAlp/data") # the path must consist another folder named UVF and DAT
+setwd(filepath)
 
-filepath<-("U:/Datenaustausch/Tanja/Downscaling_ZRen/HADCM3_A1B/") # the path must consist another folder named UVF and DAT
-setwd(paste(filepath,"1971-00/",sep=""))
-list<-dir()
+list<-dir(pattern="*.uvf")
 
 for (n in 1:length(list))
   {
-    datei<-list[n]
+    file<-list[n]
     
     # erst nur die Zeilen einlesen, in der die Jahrhunderte, die Stationsnr & die Koordinaten und die Anfangs- und Endzeit stehen
-    infos<-read.table(datei,header=F,sep=" ",dec=".",comment.char="$",nrows=3,skip=4,flush=F,strip.white=T,fill=T)
+    infos<-read.table(file,header=F,sep=" ",dec=".",comment.char="$",nrows=3,skip=4,flush=F,strip.white=T,fill=T)
     
-    JHDa<-infos[1,17] # Anfangsjahrhundert
-    JHDe<-infos[1,18] # Endjahrhundert
-    Ta<-substr(infos[3,1],1,10)   # Anfangszeitpunkt
-    Te<-substr(infos[3,1],11,20)  # Endzeitpunkt
+    cent_start<-infos[1,17] # Anfangsjahrhundert
+    cent_end<-infos[1,18] # Endjahrhundert
+    time_start<-substr(infos[3,1],1,10)   # Anfangszeitpunkt
+    time_end<-substr(infos[3,1],11,20)  # Endzeitpunkt
     
-    # ganze Tabelle einlesen, ab den Messwerten
-    messw<-read.table(datei,header=F,sep=" ",dec=".", col.names=c("T","mm"),colClasses=c("character","character"),comment.char="$",skip=7) #,nrows=500
+    # ganze Tabelle einlesen, ab den valueserten
+    values<-read.table(file,header=F,sep=" ",dec=".", col.names=c("T","mm"),colClasses=c("character","character"),comment.char="$",skip=7) #,nrows=500
     
-    if(messw[dim(messw)[1],1]!=Te || messw[1,1]!=Ta)
+    if(values[dim(values)[1],1]!=time_end || values[1,1]!=time_start)
     {
-      print(paste("Bei ",datei," Fehler in den Daten"))
+      print(paste(file,": error in data -> time missmatch, skipping file"))
       next
     }
     
-    Y<-substr(messw$T,1,2) # alle Jahreszahlen herausholen
+    Y<-substr(values$T,1,2) # alle Jahreszahlen herausholen
     
-    if (JHDa==JHDe)   # wenn AnfangsJHD und EndJHD gleich sind, dann bei jedem Zeitpunkt der Messdaten die ersten beiden Zahlen davor anf?gen, um auf normale Jahreszahlen zu kommen
+    if (cent_start==cent_end)   # wenn AnfangsJHD und EndJHD gleich sind, dann bei jedem Zeitpunkt der Messdaten die ersten beiden Zahlen davor anf?gen, um auf normale Jahreszahlen zu kommen
       {
-        Y<-paste(substr(JHDa,1,2),Y,sep="")
+        Y<-paste(substr(cent_start,1,2),Y,sep="")
       }
     
-    if (JHDa<JHDe && messw$T[1]>50)  # wenn AnfangsJHD kleiner als EndJHD, dann ab dem Wert, der mit 00 (f?r 2000) anf?ngt, 19 davorsetzen, danach 20
+    if (cent_start<cent_end && values$T[1]>50)  # wenn AnfangsJHD kleiner als EndJHD, dann ab dem Wert, der mit 00 (f?r 2000) anf?ngt, 19 davorsetzen, danach 20
       {
         for(i in 2:length(Y))     # letzter Index des alten Jahrhunderts herausfinden
           {
             if(Y[i]<Y[i-1])
             {
-              wechsel<-i-1
+              changecent<-i-1
             }
           }
         
-        Y[1:wechsel]<-paste(substr(JHDa,1,2),Y[1:wechsel],sep="")         # allen Werten vor dem JHD-Wechsel die AnfangsJHD-Zahl vorne anf?gen
-        Y[-(1:wechsel)]<-paste(substr(JHDe,1,2),Y[-(1:wechsel)],sep="")   # allen Werten nach dem JHD-Wechsel die EndJHD-Zahl vorne anf?gen
+        Y[1:changecent]<-paste(substr(cent_start,1,2),Y[1:changecent],sep="")         # allen Werten vor dem JHD-changecent die AnfangsJHD-Zahl vorne anf?gen
+        Y[-(1:changecent)]<-paste(substr(cent_end,1,2),Y[-(1:changecent)],sep="")   # allen Werten nach dem JHD-changecent die EndJHD-Zahl vorne anf?gen
         
       }
     
     # zu speichernde Tabelle aufbauen und f?llen
-    savetab<-matrix(nrow=dim(messw)[1],ncol=7)
-    savetab[,1]<-as.character(infos[2,1])
+    savetab<-matrix(nrow=dim(values)[1],ncol=7)
+    savetab[,1]<-"rg1"
     savetab[,2]<-Y
-    savetab[,3]<-substr(messw$T,3,4)  # Spalte f?r Monat
-    savetab[,4]<-substr(messw$T,5,6)  # Spalte f?r Tag
-    savetab[,5]<-substr(messw$T,7,8)  # Spalte f?r Stunde
-    savetab[,6]<-substr(messw$T,9,10) # Spalte f?r Minute
-    savetab[,7]<-messw$mm             # Spalte f?r Messwert in [mm]
+    savetab[,3]<-substr(values$T,3,4)  # Spalte f?r Monat
+    savetab[,4]<-substr(values$T,5,6)  # Spalte f?r Tag
+    savetab[,5]<-substr(values$T,7,8)  # Spalte f?r Stunde
+    savetab[,6]<-substr(values$T,9,10) # Spalte f?r Minute
+    savetab[,7]<-values$mm             # Spalte f?r valuesert in [mm]
     
-    # Tabelle im Ordner /dat als .dat-Datei speichern
-    write.table(savetab,paste(Ordnerpfad,"1971-00-dat/",infos[2,1],".dat",sep=""),append=F,sep=" ",dec=".",row.names=F,col.names=F,quote=F)
+    # Tabelle im Ordner als .dat-Datei speichern
+    write.table(savetab,paste(filepath,"/",infos[2,1],".dat",sep=""),append=F,sep=" ",dec=".",row.names=F,col.names=F,quote=F)
  }
