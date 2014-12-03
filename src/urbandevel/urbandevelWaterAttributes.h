@@ -1,8 +1,7 @@
 #ifndef urbandevelWaterAttributes_H
 #define urbandevelWaterAttributes_H
 
-#include <dm.h>
-#include <dmcompilersettings.h>
+#include <dmmodule.h>
 
 class urbandevelWaterAttributes : public DM::Module
 {

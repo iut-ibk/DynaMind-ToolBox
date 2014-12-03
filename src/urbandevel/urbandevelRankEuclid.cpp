@@ -1,10 +1,8 @@
-#include <numeric>
-
-#include<urbandevelRankEuclid.h>
-#include<dm.h>
-#include<tbvectordata.h>
-#include<dmgeometry.h>
-#include<dahelper.h>
+#include <urbandevelRankEuclid.h>
+#include <dm.h>
+#include <tbvectordata.h>
+#include <dmgeometry.h>
+#include <dahelper.h>
 
 
 DM_DECLARE_NODE_NAME(urbandevelRankEuclid, DynAlp)

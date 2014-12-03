@@ -1,5 +1,5 @@
-#include<urbandevelTrigger.h>
-#include<dm.h>
+#include <urbandevelTrigger.h>
+#include <dm.h>
 
 DM_DECLARE_NODE_NAME(urbandevelTrigger, DynAlp)
 

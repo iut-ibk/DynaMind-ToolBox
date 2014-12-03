@@ -1,7 +1,8 @@
 #ifndef urbandevelDivision_H
 #define urbandevelDivision_H
 
-#include <dm.h>
+#include <dmmodule.h>
+
 #include <dmgeometry.h>
 #include <cgalgeometry_p.h>
 

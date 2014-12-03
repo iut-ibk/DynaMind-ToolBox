@@ -1,8 +1,7 @@
 #ifndef urbandevelBuilding_H
 #define urbandevelBuilding_H
 
-#include <dm.h>
-#include <dmcompilersettings.h>
+#include <dmmodule.h>
 
 class DM_HELPER_DLL_EXPORT urbandevelBuilding : public DM::Module
 {

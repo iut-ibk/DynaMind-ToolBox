@@ -1,11 +1,8 @@
-#include <numeric>
-
-#include<urbandevelRankYear.h>
-#include<dm.h>
-#include<tbvectordata.h>
-#include<dmgeometry.h>
-#include<dahelper.h>
-
+#include <urbandevelRankYear.h>
+#include <dm.h>
+#include <tbvectordata.h>
+#include <dmgeometry.h>
+#include <dahelper.h>
 
 DM_DECLARE_NODE_NAME(urbandevelRankYear, DynAlp)
 

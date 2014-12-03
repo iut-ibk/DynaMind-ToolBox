@@ -2,7 +2,6 @@
 #define urbandevelPolygonLink_H
 
 #include <dmmodule.h>
-#include <dm.h>
 
 class DM_HELPER_DLL_EXPORT urbandevelPolygonLink : public DM::Module
 {
