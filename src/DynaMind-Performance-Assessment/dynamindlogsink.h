@@ -32,8 +32,10 @@ public:
     DynaMindStreamLogSink();
 
 	void close() {}
+	LogSink &operator<<(LogLevel level);
     LogSink &operator<<(const std::string &string);
     LogSink &operator<<(const char *string);
+	LogSink &operator<<(double d);
     LogSink &operator<<(int i);
     LogSink &operator<<(LSEndl e);
 };

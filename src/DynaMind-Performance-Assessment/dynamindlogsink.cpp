@@ -24,6 +24,11 @@ DynaMindStreamLogSink::DynaMindStreamLogSink()
 
 }
 
+LogSink &DynaMindStreamLogSink::operator<<(LogLevel level) {
+	(void) level;
+	return *this;
+}
+
 LogSink &DynaMindStreamLogSink::operator<<(const std::string &s) {
     DM::Logger() << s;
 	return *this;
@@ -31,6 +36,12 @@ LogSink &DynaMindStreamLogSink::operator<<(const std::string &s) {
 
 LogSink &DynaMindStreamLogSink::operator<<(const char *s) {
     DM::Logger() << s;
+	return *this;
+}
+
+LogSink &DynaMindStreamLogSink::operator<<(double d)
+{
+	DM::Logger() << d;
 	return *this;
 }
 
@@ -43,4 +54,6 @@ LogSink &DynaMindStreamLogSink::operator<<(LSEndl e) {
     DM::Logger() << "\n";
 	return *this;
 }
+
+
 
