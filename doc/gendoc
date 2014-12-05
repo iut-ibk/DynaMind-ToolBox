@@ -2,14 +2,27 @@
 
 if [ ! $# == 1 ]; then
 	echo "one argument needed:"
+	echo "  - clean"
 	echo "  - analyse"
 	echo "  - compile"
 	echo "  - deploy"
 	exit 0
 fi
+
+## clean
+
+if [[ $1 = "clean" ]]; then
+
+	rm -rf output/*
+	mkdir output/html
+	mkdir output/latex
+	mkdir output/pdf
+
+	echo "clean"
+
 ## analyse
 
-if [[ $1 = "analyse" ]]; then
+elif [[ $1 = "analyse" ]]; then
 
 	echo "missing:"
 	for i in `ls ../src/urbandevel/*.cpp`
@@ -22,13 +35,6 @@ if [[ $1 = "analyse" ]]; then
 	done
 	
 elif [[ $1 = "compile" ]]; then
-
-## cleanup
-
-	rm -rf output/*
-	mkdir output/html
-	mkdir output/latex
-	mkdir output/pdf
 
 ## compile
 
