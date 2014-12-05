@@ -91,7 +91,7 @@ void GDALCreateHouseholds::run()
 		int households = d->GetFieldAsInteger("hh");
 		building.resetReading();
 		std::stringstream filter;
-		filter << "DISTRICT_id = " << d_id;
+		filter << "district_id = " << d_id;
 		building.setAttributeFilter(filter.str());
 
 		fill_income_cdf(d->GetFID(), "district_id" ,education, this->education_names, this->education_v);
