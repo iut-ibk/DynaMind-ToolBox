@@ -16,16 +16,24 @@ library(miscTools)
 
 # workspace & Dateiname
 
-setwd("~/Code/DynaMind/DynaMind-DynAlp/data")
-file<-("intervalyear.csv")
+#setwd("/home/gaelic/Work/DATA/Rainfall/Eulerconvert")
+files<-Sys.glob(file.path("*csv"))
 
-limit<-1	# limit until (if unit=min val must be divisible by 5)
-unit<-"h"	# min, h, d
-datetimebegin<-"2000 01 01 00 00"
+set.limits<-c(45,60,90,120)	# limit until (if unit=min val must be divisible by 5)
+set.unit<-"min"	# min, h, d
+set.datetimebegin<-"2000 01 01 00 00"
 
 # read file
 
-tab<-read.csv(file)
+for (m in 1:length(set.limits))
+{
+for (k in 1:length(files))
+{
+    limit = set.limits[m]
+    unit = set.unit
+    datetimebegin = set.datetimebegin
+
+tab<-read.csv(files[k])
 
 # convert from hours or days to minutes
 
@@ -55,9 +63,15 @@ if(unit=="d")
 	limiti<-which(tab[,1]==limit)
 }
 
+if(unit=="min")
+{
+    limiti<-which(tab[,1]==limit)
+}
+
 if(maxmin<limit || tab[1,1]>=limit || is.na(limit)==TRUE)
 {
-	print(paste("limit error"))
+    
+	print(paste("limit error in: ",files[j]))
 }
 
 
@@ -65,7 +79,7 @@ if(maxmin<limit || tab[1,1]>=limit || is.na(limit)==TRUE)
 
 minutes<-seq(5,limit,5)
 
-for(i in 1:length(annualities))
+for (i in 1:length(annualities))
 {
 	# gen dataframe with values for actual annuality
 	mm_anno<-data.frame(Minuten=tab[1:limiti,1],mm_kum=tab[1:limiti,i+2])
@@ -104,7 +118,11 @@ for(i in 1:length(annualities))
   
 # save table to file
  
-	write.table(eulertab,paste(getwd(),"/",substr(names(tab)[i+2],2,nchar(names(tab)[i+2])),"_to_",limit,"min.dat",sep=""),append=F,sep=" ",dec=",",row.names=F,col.names=F,quote=F)
+    fnwe<-strsplit(files[k], "\\.")[[1]][1]
+ 
+	write.table(eulertab,paste(fnwe,"_e-",substr(names(tab)[i+2],2,nchar(names(tab)[i+2])),"_",limit,".dat",sep=""),append=F,sep=" ",dec=",",row.names=F,col.names=F,quote=F)
 
+}
+}
 }
 
