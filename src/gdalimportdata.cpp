@@ -186,17 +186,18 @@ void GDALImportData::run()
 				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
 				continue;
 			}
-			if (!this->isFlat) {
+			if (!this->checkIsFlat(poFeature->GetGeometryRef()->getGeometryType())) {
 				if (vc->getType() == DM::FACE) {
 					OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
 					if (!geo)
 						continue;
 					if (geo->getNumGeometries() == 0)
 						continue;
-					geo_single = geo->getGeometryRef(0);
+					geo_single = geo->getGeometryRef(0);//OGRGeometryFactory::forceToPolygon(geo);
+					//std::cout << geo->getGeometryType() << std::endl;
+					//geo_single = geo->UnionCascaded();
 				}
 				if (vc->getType() == DM::EDGE) {
-					std::cout << "sdf1" << std::endl;
 					OGRMultiLineString * geo = (OGRMultiLineString*) poFeature->GetGeometryRef();
 					if (!geo)
 						continue;
@@ -217,7 +218,12 @@ void GDALImportData::run()
 			}
 			//Check Type is fine
 			if (geo_single->getGeometryType() != DMToOGRGeometry(vc->getType())) {
-				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry type is different";
+				DM::Logger(DM::Warning) << "Feature "
+										<< poFeature->GetFID()
+										<< " not importet, expected "
+										<< (int) DMToOGRGeometry(vc->getType())
+										<< " instead of " << (int) geo_single->getGeometryType()
+										<< " geometry type is different";
 				continue;
 			}
 		}
@@ -314,6 +320,35 @@ DM::Attribute::AttributeType GDALImportData::OGRToDMAttribute(OGRFieldDefn * fde
 		break;
 	}
 	return type;
+}
+
+bool GDALImportData::checkIsFlat(int ogrType)
+{
+	bool isFlat;
+	switch(ogrType)
+	{
+	case wkbPoint:
+		isFlat = true;
+		break;
+	case wkbPolygon:
+		isFlat = true;
+		break;
+	case wkbMultiPolygon:
+		isFlat=false;
+		break;
+	case wkbLineString:
+		isFlat = true;
+		break;
+	case wkbMultiLineString:
+		isFlat = false;
+		break;
+	case wkbNone:
+		isFlat = true;
+		break;
+	default:
+		isFlat = false;
+	}
+	return isFlat;
 }
 
 int GDALImportData::DMToOGRGeometry(int dm_geometry) {
