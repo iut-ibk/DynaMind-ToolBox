@@ -6,5 +6,6 @@ GDALModules
    :maxdepth: 2
 
   gdalimportdata
+  gdalpublishresults
 
 
