@@ -80,6 +80,7 @@ PythonEnv::PythonEnv() {
 	PyObject *main = PyImport_ImportModule("__main__");
 	priv->main_namespace = PyModule_GetDict(main);
 	Py_DECREF(main);
+	SWIG_PYTHON_THREAD_END_BLOCK;
 
 #if defined(SWIG_PYTHON_THREADS)
 	Logger(Standard) << "Pythonthreads enabled";
@@ -166,9 +167,10 @@ bool PythonEnv::addOverWriteStdCout() {
 	if (PyErr_Occurred()) {
 		printf("Error in PythonEnv::addOverWriteStdCout():\n");
 		PyErr_Print();
+		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
-
+	SWIG_PYTHON_THREAD_END_BLOCK;
 	return true;
 }
 
@@ -185,6 +187,7 @@ void PythonEnv::addPythonPath(std::string path) {
 		PyErr_Print();
 		return;
 	}
+	SWIG_PYTHON_THREAD_END_BLOCK;
 }
 
 bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
@@ -195,6 +198,7 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 		//Logger(Error) << "Could not import pydynamind module";
 		printf("Error in python module '%s':\n", module.c_str());
 		PyErr_Print();
+		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
 
@@ -202,6 +206,7 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	if (std::find(this->loadedModules.begin(), this->loadedModules.end(), module) !=  this->loadedModules.end()) {
 		Logger(Debug) << "Module Already Loaded";
 		exists = true;
+		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 
 	QSettings settings;
@@ -240,6 +245,7 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	if (PyErr_Occurred())
 	{
 		PyErr_Print();
+		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
 
@@ -260,10 +266,11 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	if (PyErr_Occurred())
 	{
 		PyErr_Print();
+		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
 
 	loadedModules.push_back(module);
-
+	SWIG_PYTHON_THREAD_END_BLOCK;
 	return true;
 }
