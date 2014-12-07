@@ -1241,10 +1241,12 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 				{
 					if(p->type == DM::FILENAME && filepath != "<clipboard>")
 					{
-						QDir path(simFileDir.absoluteFilePath(it.value()));
-						DM::Logger(DM::Debug) << "converted relative path '" << value << "'";
-						value = path.canonicalPath().toStdString();
-						DM::Logger(DM::Debug) << "to absolute path '" << value << "'";
+						if (!it.value().contains("host=")){
+							QDir path(simFileDir.absoluteFilePath(it.value()));
+							DM::Logger(DM::Debug) << "converted relative path '" << value << "'";
+							value = path.canonicalPath().toStdString();
+							DM::Logger(DM::Debug) << "to absolute path '" << value << "'";
+						}
 					}
 				}
 				m->setParameterValue(it.key().toStdString(), value);
