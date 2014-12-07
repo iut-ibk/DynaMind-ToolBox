@@ -185,6 +185,7 @@ void PythonEnv::addPythonPath(std::string path) {
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
 	if (PyErr_Occurred()) {
 		PyErr_Print();
+		SWIG_PYTHON_THREAD_END_BLOCK;
 		return;
 	}
 	SWIG_PYTHON_THREAD_END_BLOCK;
@@ -206,7 +207,6 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	if (std::find(this->loadedModules.begin(), this->loadedModules.end(), module) !=  this->loadedModules.end()) {
 		Logger(Debug) << "Module Already Loaded";
 		exists = true;
-		SWIG_PYTHON_THREAD_END_BLOCK;
 	}
 
 	QSettings settings;
