@@ -16,21 +16,41 @@
 
 DM_DECLARE_NODE_NAME(WaterBalanceHouseHold,Performance)
 
-std::vector<double> WaterBalanceHouseHold::create_montlhy_values(std::vector<double> daily)
+
+std::string WaterBalanceHouseHold::getEvapofile() const
+{
+	return evapofile;
+}
+
+void WaterBalanceHouseHold::setEvapofile(const std::string &value)
+{
+	evapofile = value;
+}
+
+std::string WaterBalanceHouseHold::getRainfile() const
+{
+	return rainfile;
+}
+
+void WaterBalanceHouseHold::setRainfile(const std::string &value)
+{
+	rainfile = value;
+}
+std::vector<double> WaterBalanceHouseHold::create_montlhy_values(std::vector<double> daily, int seconds)
 {
 
-	QDate start = QDate::fromString("01.01.2000", "dd.MM.yyyy");
+	QDateTime start = QDateTime::fromString("00:00:00 01.09.2000", "hh:mm:ss dd.MM.yyyy");
 	std::vector<double> monthly;
 	double sum = 0;
-	int month = start.month();
+	int month = start.date().month();
 	for (int i = 0; i < daily.size(); i++) {
-		QDate today = start.addDays(i);
+		QDateTime today = start.addSecs(seconds*i);
 		//check if date switched
-		if (month == today.month()) {
+		if (month == today.date().month()) {
 			sum+=daily[i];
 			continue;
 		}
-		month = today.month();
+		month = today.date().month();
 		monthly.push_back(sum);
 		sum = daily[i];
 	}
@@ -49,16 +69,21 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	this->rainfile = "";
 	this->addParameter("rainfile", DM::STRING, &this->rainfile);
 
+	this->evapofile = "";
+	this->addParameter("evapofile", DM::STRING, &this->evapofile);
+
 	this->cd3_dir = "";
 	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
+	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
 	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
 
 	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("non_potable_demand", DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("potable_demand", DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("run_off_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("non_potable_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
 	parcels.addAttribute("building_id", DM::Attribute::INT, DM::READ);
 	buildings = DM::ViewContainer("building", DM::COMPONENT, DM::READ);
@@ -79,8 +104,7 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	stream.push_back(&rwhts);
 	this->registerViewContainers(stream);
 
-	//Init Model
-	this->m = new MapBasedModel();
+	this->initCD3();
 }
 
 void WaterBalanceHouseHold::run()
@@ -94,6 +118,7 @@ void WaterBalanceHouseHold::run()
 	while(p = this->parcels.getNextFeature()) {
 		double roofarea = 0;
 		double persons = 0;
+		double parcel_area = p->GetFieldAsDouble("area");
 
 		buildings.resetReading();
 		std::stringstream parcel_query;
@@ -108,20 +133,30 @@ void WaterBalanceHouseHold::run()
 		DM::Logger(DM::Standard) << "Connected Roof Area " << roofarea;
 
 		OGRFeature * rwht = rwhts.createFeature();
-		createRaintank(rwht, roofarea, persons);
+		double imp_fraction = 0;
 
-		Node * run_off = m->getNode("ro");
-		std::vector<double> ro = *(run_off->getState<std::vector<double> >("run_off"));
+		if (roofarea > 0) {
+			imp_fraction = roofarea / parcel_area;
+		}
+		std::cout << roofarea << "/" << parcel_area << std::endl;
+		createRaintank(rwht, parcel_area, imp_fraction, 1.0 - imp_fraction - 0.15, persons, 2.5);
 
-		DM::DMFeature::SetDoubleList( p, "run_off_monthly", this->create_montlhy_values(ro));
+		Node * flow_probe_runoff = m->getNode("flow_probe_runoff");
+		std::vector<double> ro = *(flow_probe_runoff->getState<std::vector<double> >("Flow"));
+		DM::DMFeature::SetDoubleList( p, "run_off_monthly", this->create_montlhy_values(ro, 86400));
+
+		Node * nonpot_before = m->getNode("nonpot_before");
+		std::vector<double> ro1 = *(nonpot_before->getState<std::vector<double> >("Flow"));
+		DM::DMFeature::SetDoubleList( p, "non_potable_monthly", this->create_montlhy_values(ro1, 86400));
+
 		Node * pot = m->getNode("s_pot");
 		Node * non_pot = m->getNode("s_non_pot");
 
 		double non_potable = *(non_pot->getState<double>("TotalVolume"));
 		double potable = *(pot->getState<double>("TotalVolume"));
 
-		p->SetField("non_potable_demand",-non_potable);
-		p->SetField("potable_demand", -potable);
+		p->SetField("non_potable_demand",non_potable);
+		p->SetField("potable_demand", potable);
 		p->SetField("total_roof_area", roofarea);
 
 		Logger(Debug) << "Total Consumption non potable"<< non_potable;
@@ -150,16 +185,19 @@ void WaterBalanceHouseHold::initmodel()
 	Logger(Standard) << dir.absolutePath().toStdString();
 
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/Modules/libdance4water-nodes";
+		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/libdance4water-nodes";
 		nodereg->addNativePlugin(dance_nodes.toStdString());
-		QString standard_nodes = QString::fromStdString(this->cd3_dir) + "/libnodes";
-		nodereg->addNativePlugin(standard_nodes.toStdString());
-		simreg->addNativePlugin(standard_nodes.toStdString());
+		try{
+		nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+		}  catch(...) {
+			Logger(Error) << "big fat error";
+
+		}
 
 		p = new SimulationParameters();
 		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Jan-01 00:00:00");
-		p->stop = time_from_string("2001-Jan-01 00:00:00");
+		p->start = time_from_string("2000-Sep-01 00:00:00");
+		p->stop = time_from_string("2001-Sep-01 00:00:00");
 	}
 	catch(...)
 	{
@@ -169,7 +207,12 @@ void WaterBalanceHouseHold::initmodel()
 	DM::Logger(DM::Debug) << "CD3 simulation finished";
 }
 
-bool WaterBalanceHouseHold::createRaintank(OGRFeature * f, double area, double persons)
+bool WaterBalanceHouseHold::createRaintank(OGRFeature * f,
+										   double lot_area,
+										   double roof_imp_fra,
+										   double perv_area_fra,
+										   double persons,
+										   double storage_volume)
 {
 	DM::Logger(DM::Debug) << "Start Raintank";
 	Node * rain = nodereg->createNode("IxxRainRead_v2");
@@ -182,36 +225,75 @@ bool WaterBalanceHouseHold::createRaintank(OGRFeature * f, double area, double p
 	rain->setParameter("datestring", datetime);
 	m->addNode("r_1", rain);
 
-	Node *runoff = nodereg->createNode("ImperviousRunoff");
-	runoff->setParameter("area", area);
-	m->addNode("ro", runoff);
+	//evapo
+	Node * evapo = nodereg->createNode("IxxRainRead_v2");
+	if (!evapo) {
+		DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
+		return false;
+	}
+	evapo->setParameter("rain_file", this->evapofile);
+	evapo->setParameter("datestring", datetime);
+	m->addNode("e_1", evapo);
 
-	m->addConnection(new NodeConnection(rain,"out",runoff,"rain_in" ));
+	//catchment
+	Node * catchment_w_routing = nodereg->createNode("Catchment_w_Routing");
+	if (!rain) {
+		DM::Logger(DM::Error) << "Couldn't create " << " Catchment_w_Routing";
+		return false;
+	}
+
+	catchment_w_routing->setParameter("Catchment_Area_[m^2]", lot_area);
+	catchment_w_routing->setParameter("Fraktion_of_Pervious_Area_pA_[-]", perv_area_fra);
+	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]",1.0 - roof_imp_fra - perv_area_fra);
+	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]",roof_imp_fra);
+	catchment_w_routing->setParameter("Outdoor_Demand_Weighing_Factor_[-]", 0.5);
+	m->addNode("cw_1", catchment_w_routing);
+
+	m->addConnection(new NodeConnection(rain,"out",catchment_w_routing,"Rain" ));
+	m->addConnection(new NodeConnection(evapo,"out",catchment_w_routing,"Evapotranspiration"));
+
+	Node * flow_probe_runoff = nodereg->createNode("FlowProbe");
+	m->addNode("flow_probe_runoff", flow_probe_runoff);
+	m->addConnection(new NodeConnection(catchment_w_routing,"Collected_Water",flow_probe_runoff,"in" ));
+
+
+
+
+	Node *runoff = nodereg->createNode("Storage");
+	m->addNode("runoff", runoff);
+	m->addConnection(new NodeConnection(catchment_w_routing,"Runoff",runoff,"in"));
 
 	Node * consumer = this->createConsumer(persons);
 	m->addNode("c_1", consumer);
 
+	Node *non_pot_mixer = nodereg->createNode("Mixer");
+	m->addNode("non_pot_mixer", non_pot_mixer);
+
+	Node * nonpot_before = nodereg->createNode("FlowProbe");
+	m->addNode("nonpot_before", nonpot_before);
+	m->addConnection(new NodeConnection(non_pot_mixer,"out",nonpot_before,"in" ));
+
+
 	Node * rwht = nodereg->createNode("RWHT");
-	rwht->setParameter("storage_volume", 2.5);
+	rwht->setParameter("storage_volume", storage_volume);
 	m->addNode("rain_tank", rwht);
-
-	m->addConnection(new NodeConnection(runoff,"out_sw",rwht,"in_sw" ));
-
-	Node *storage_non_p = nodereg->createNode("Storage");
-	m->addNode("s_non_pot", storage_non_p);
-
-	Node *storage_pot = nodereg->createNode("Storage");
-	m->addNode("s_pot", storage_pot);
+	m->addConnection(new NodeConnection(flow_probe_runoff,"out",rwht,"in_sw" ));
+	m->addConnection(new NodeConnection(nonpot_before,"out",rwht,"in_np" ));
 
 	Node *storage_rain = nodereg->createNode("Storage");
 	m->addNode("2", storage_rain);
 
-	m->addConnection(new NodeConnection(consumer,"out_p",storage_pot,"in" ));
-	m->addConnection(new NodeConnection(consumer,"out_np",rwht,"in_np" ));
-
+	Node *storage_non_p = nodereg->createNode("Storage");
+	m->addNode("s_non_pot", storage_non_p);
 	m->addConnection(new NodeConnection(rwht,"out_sw",storage_rain,"in" ));
 	m->addConnection(new NodeConnection(rwht,"out_np",storage_non_p,"in" ));
 
+
+	//Potable Demand
+	Node *storage_pot = nodereg->createNode("Storage");
+	m->addNode("s_pot", storage_pot);
+
+	m->addConnection(new NodeConnection(consumer,"out_p",storage_pot,"in" ));
 
 	s = simreg->createSimulation("DefaultSimulation");
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
@@ -220,27 +302,39 @@ bool WaterBalanceHouseHold::createRaintank(OGRFeature * f, double area, double p
 	ptime starttime = s->getSimulationParameters().start;
 
 	m->initNodes(s->getSimulationParameters());
+
+	m->addConnection(new NodeConnection(consumer,"out_np",non_pot_mixer,"in_0"));
+	m->addConnection(new NodeConnection(catchment_w_routing,"Outdoor_Demand",non_pot_mixer,"in_1"));
+
 	s->start(starttime);
 
-	std::cout<< *(storage_non_p->getState<double>("TotalVolume")) << std::endl;
-	std::cout<< *(storage_pot->getState<double>("TotalVolume")) << std::endl;
+	catchment_w_routing->setParameter("Catchment_Area_[m^2]", lot_area);
+	catchment_w_routing->setParameter("Fraktion_of_Pervious_Area_pA_[-]", perv_area_fra);
+	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]",1.0 - roof_imp_fra - perv_area_fra);
+	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]",roof_imp_fra);
+	std::cout << "Results" << std::endl;
+	std::cout << lot_area << "\t" << perv_area_fra << "\t" << 1.0 - roof_imp_fra - perv_area_fra << "\t" << roof_imp_fra <<std::endl;
+	std::cout<< "Potable Demand\t"<< *(storage_pot->getState<double>("TotalVolume")) << "\tm3" << std::endl;
+	std::cout<< "Non-Potable Demand\t"<< *(storage_non_p->getState<double>("TotalVolume")) << "\tm3" << std::endl;
+	std::cout<< "Total Runoff\t"<< *(runoff->getState<double>("TotalVolume")) << "\tm3" << std::endl;
+	std::cout<< "Rain Runoff \t"<< *(storage_rain->getState<double>("TotalVolume")) << "\tm3" << std::endl;
+	std::cout << "--------" << std::endl;
 
 	Logger(Error) << "Total Runoff"<< *(storage_rain->getState<double>("TotalVolume"));
 
 	Logger(Debug) << "Dry"<< *(rwht->getState<int>("dry"));
 	Logger(Debug) << "Spills"<< *(rwht->getState<int>("spills"));
-	storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
 
+	if (!f) // for unit testing
+		return true;
+	storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
 	DM::DMFeature::SetDoubleList(f, "storage_behaviour_daily", storage_behaviour);
 
-
 	std::vector<double> provided_volume =  *(rwht->getState<std::vector<double> >("provided_volume"));
-
 	DM::DMFeature::SetDoubleList(f, "provided_volume_daily", provided_volume);
 
-	f->SetField("connected_roof_area", area);
-
-	DM::DMFeature::SetDoubleList(f, "provided_volume_monthly", this->create_montlhy_values(provided_volume));
+	f->SetField("connected_roof_area", lot_area * roof_imp_fra);
+	DM::DMFeature::SetDoubleList(f, "provided_volume_monthly", this->create_montlhy_values(provided_volume, 86400));
 
 	return true;
 }
@@ -250,6 +344,12 @@ Flow WaterBalanceHouseHold::createConstFlow(double const_flow)
 	Flow cf;
 	cf[0] = const_flow;
 	return cf;
+}
+
+void WaterBalanceHouseHold::initCD3()
+{
+	//Init Model
+	this->m = new MapBasedModel();
 }
 
 Node *WaterBalanceHouseHold::createConsumer(int persons)
@@ -262,8 +362,8 @@ Node *WaterBalanceHouseHold::createConsumer(int persons)
 	double toilet = 19. * l_d_to_m_s;
 	double shower_bath = 34. * l_d_to_m_s;
 
-	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) * -1.));
-	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet* -1. ));
+	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other + washing_machine + taps + shower_bath) ));
+	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet ));
 	//consumption->setParameter("const_flow_nonpotable",createConstFlow(0 ));
 
 	consumption->setParameter("const_flow_greywater",createConstFlow(0));
@@ -274,3 +374,13 @@ Node *WaterBalanceHouseHold::createConsumer(int persons)
 	return consumption;
 }
 
+
+std::string WaterBalanceHouseHold::getCd3_dir() const
+{
+	return cd3_dir;
+}
+
+void WaterBalanceHouseHold::setCd3_dir(const std::string &value)
+{
+	cd3_dir = value;
+}

@@ -85,8 +85,10 @@ SimpleWaterBalance::SimpleWaterBalance()
 	stream.push_back(&households);
 	this->registerViewContainers(stream);
 
+
 	//Init Model
 	this->m = new MapBasedModel();
+
 }
 
 void SimpleWaterBalance::run()
@@ -264,9 +266,14 @@ void SimpleWaterBalance::initmodel()
 	try{
 		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/Modules/libdance4water-nodes";
 		nodereg->addNativePlugin(dance_nodes.toStdString());
+		try{
+		nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		//		QString standard_nodes = QString::fromStdString(this->cd3_dir) + "/libnodes";
 		//		nodereg->addNativePlugin(standard_nodes.toStdString());
 		//		simreg->addNativePlugin(standard_nodes.toStdString());
+		}  catch(...) {
+			std::cout << "big fat error" << std::endl;
+		}
 
 		p = new SimulationParameters();
 		p->dt = lexical_cast<int>("86400");

@@ -40,7 +40,7 @@ int RWHT::f(ptime time, int dt) {
     double vol_straight_to_overflow = in_sw[0] - vol_increase;
 
     //Current Volume availible
-    current_volume = current_volume + vol_increase + in_np[0]; //demand is negative (in_np)
+	current_volume = current_volume + vol_increase - in_np[0];
 
     //tank is full
     if (current_volume > storage_volume) {
@@ -49,13 +49,13 @@ int RWHT::f(ptime time, int dt) {
         current_volume = storage_volume;
         spills++;
 		storage_behaviour.push_back(current_volume);
-		provided_volume.push_back( out_np[0] - in_np[0]);
+		provided_volume.push_back( in_np[0] - out_np[0]) ;
         return dt;
     }
 
     //demand is not fullfiled (tank is empty)
     if (current_volume <= 0.) {
-        out_np[0] = current_volume;
+		out_np[0] = current_volume*-1.;
         current_volume = 0;
 		out_sw[0] = 0;
         dry++;
@@ -67,7 +67,7 @@ int RWHT::f(ptime time, int dt) {
         out_sw[0] = vol_straight_to_overflow;
     }
 	storage_behaviour.push_back(current_volume);
-	provided_volume.push_back( out_np[0] - in_np[0]);
+	provided_volume.push_back( in_np[0] - out_np[0]);
     return dt;
 }
 
