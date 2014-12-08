@@ -39,7 +39,7 @@ void WaterBalanceHouseHold::setRainfile(const std::string &value)
 std::vector<double> WaterBalanceHouseHold::create_montlhy_values(std::vector<double> daily, int seconds)
 {
 
-	QDateTime start = QDateTime::fromString("00:00:00 01.09.2000", "hh:mm:ss dd.MM.yyyy");
+	QDateTime start = QDateTime::fromString("00:00:00 01.01.2000", "hh:mm:ss dd.MM.yyyy");
 	std::vector<double> monthly;
 	double sum = 0;
 	int month = start.date().month();
@@ -91,6 +91,7 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	buildings.addAttribute("persons", DM::Attribute::INT, DM::READ);
 
 	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
+	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	rwhts.addAttribute("provided_volume_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
@@ -139,7 +140,7 @@ void WaterBalanceHouseHold::run()
 			imp_fraction = roofarea / parcel_area;
 		}
 		std::cout << roofarea << "/" << parcel_area << std::endl;
-		createRaintank(rwht, parcel_area, imp_fraction, 1.0 - imp_fraction - 0.15, persons, 2.5);
+		createRaintank(rwht, parcel_area, imp_fraction, 1.0 - imp_fraction - 0.15, persons, 5.0);
 
 		Node * flow_probe_runoff = m->getNode("flow_probe_runoff");
 		std::vector<double> ro = *(flow_probe_runoff->getState<std::vector<double> >("Flow"));
@@ -196,8 +197,8 @@ void WaterBalanceHouseHold::initmodel()
 
 		p = new SimulationParameters();
 		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Sep-01 00:00:00");
-		p->stop = time_from_string("2001-Sep-01 00:00:00");
+		p->start = time_from_string("2000-Jan-01 00:00:00");
+		p->stop = time_from_string("2001-Jan-01 00:00:00");
 	}
 	catch(...)
 	{
@@ -246,7 +247,7 @@ bool WaterBalanceHouseHold::createRaintank(OGRFeature * f,
 	catchment_w_routing->setParameter("Fraktion_of_Pervious_Area_pA_[-]", perv_area_fra);
 	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]",1.0 - roof_imp_fra - perv_area_fra);
 	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]",roof_imp_fra);
-	catchment_w_routing->setParameter("Outdoor_Demand_Weighing_Factor_[-]", 0.5);
+	catchment_w_routing->setParameter("Outdoor_Demand_Weighing_Factor_[-]", 0.25);
 	m->addNode("cw_1", catchment_w_routing);
 
 	m->addConnection(new NodeConnection(rain,"out",catchment_w_routing,"Rain" ));
@@ -318,6 +319,7 @@ bool WaterBalanceHouseHold::createRaintank(OGRFeature * f,
 	std::cout<< "Non-Potable Demand\t"<< *(storage_non_p->getState<double>("TotalVolume")) << "\tm3" << std::endl;
 	std::cout<< "Total Runoff\t"<< *(runoff->getState<double>("TotalVolume")) << "\tm3" << std::endl;
 	std::cout<< "Rain Runoff \t"<< *(storage_rain->getState<double>("TotalVolume")) << "\tm3" << std::endl;
+
 	std::cout << "--------" << std::endl;
 
 	Logger(Error) << "Total Runoff"<< *(storage_rain->getState<double>("TotalVolume"));
@@ -336,6 +338,7 @@ bool WaterBalanceHouseHold::createRaintank(OGRFeature * f,
 	f->SetField("connected_roof_area", lot_area * roof_imp_fra);
 	DM::DMFeature::SetDoubleList(f, "provided_volume_monthly", this->create_montlhy_values(provided_volume, 86400));
 
+	f->SetField("volume", storage_volume);
 	return true;
 }
 
