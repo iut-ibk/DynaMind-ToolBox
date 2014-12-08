@@ -4,6 +4,7 @@
 #include "storage.h"
 #include "imperviousrunoff.h"
 #include "rwht.h"
+#include "flowprobe.h"
 
 #include <noderegistry.h>
 #include <nodefactory.h>
@@ -23,6 +24,7 @@ extern "C" {
                 registry->addNodeFactory(new NodeFactory<Storage>(SOURCE));
                 registry->addNodeFactory(new NodeFactory<ImperviousRunoff>(SOURCE));
                 registry->addNodeFactory(new NodeFactory<RWHT>(SOURCE));
+				registry->addNodeFactory(new NodeFactory<FlowProbe>(SOURCE));
 	}
 
     void CD3_PUBLIC registerSimulations(SimulationRegistry *registry) {
