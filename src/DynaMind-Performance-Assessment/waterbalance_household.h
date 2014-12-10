@@ -5,6 +5,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 #include <flow.h>
+#include <vector>
 
 class MapBasedModel;
 class NodeRegistry;
@@ -31,23 +32,25 @@ class WaterBalanceHouseHold: public DM::Module
 		DM::ViewContainer parcels;
 		DM::ViewContainer rwhts;
 
-		std::vector<double> storage_behaviour;
 		std::string rainfile;
 		std::string evapofile;
 		std::string cd3_dir;
+		std::vector<string> storage_volume_tank;
+
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
-		void analyse_raintank();
+
+		std::vector<double> stormwater_runoff;
+		std::vector<double> non_potable_demand;
+
 
     public:
         WaterBalanceHouseHold();
         void run();
         void initmodel();
-		bool createRaintank(OGRFeature * f,
-							double area,
+		bool calculateRunoffAndDemand(double area,
 							double roof_imp_fra,
 							double perv_area_fra,
-							double persons,
-							double storage_volume);
+							double persons);
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);
@@ -58,6 +61,13 @@ class WaterBalanceHouseHold: public DM::Module
 		void setEvapofile(const std::string &value);
 		std::string getRainfile() const;
 		void setRainfile(const std::string &value);
+		Node * addRainTank(double storage_volume, Node* in_flow, Node* nonpot_before);
+		Node * addRainwaterTank(Node* flow_probe_runoff, Node* nonpot_before, double storage_volume);
+		double createTankOption(OGRFeature *rwht, double storage_volume, std::vector<double> & runoff, std::vector<double>  & demand);
+		std::vector<double> getStormwater_runoff() const;
+		void setStormwater_runoff(const std::vector<double> &value);
+		std::vector<double> getNon_potable_demand() const;
+		void setNon_potable_demand(const std::vector<double> &value);
 };
 
 #endif // WATERBALANCE_HOUSEHOLD_H
