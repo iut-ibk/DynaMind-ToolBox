@@ -63,7 +63,17 @@ namespace DM {
 class DM_HELPER_DLL_EXPORT GDALSystem : public ISystem
 {
 public:
+	/**
+	 * @brief Constructor for GDALSystem
+	 * @param EPSG
+	 */
 	GDALSystem(int EPSG = 0);
+
+	/**
+	 * @brief Init GDAL System with Database
+	 * @param EPSG
+	 */
+	void setGDALDatabase(const string &database);
 
 	/**
 	 * @brief Creates a new GDALSystem.

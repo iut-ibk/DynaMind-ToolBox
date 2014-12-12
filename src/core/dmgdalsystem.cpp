@@ -46,15 +46,19 @@ GDALSystem::GDALSystem(int EPSG)
 	OGRRegisterAll();
 
 	if (EPSG == 0) {
-		DM::Logger(DM::Error) << "Please set EPSG code for simulation, as default use 3785 as default ";
-		EPSG = 3785;
+		DM::Logger(DM::Warning) << "Please set EPSG code for simulation";
+		EPSG = 0;
 	}
 
 
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
-	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
+	if (EPSG != 0) {
+		DM::Logger(DM::Warning) << "No EPSG code defined, disable spatialite backend";
+		options = CSLSetNameValue( options, "SPATIALITE", "YES" );
+	}
+
 
 	DBID = QUuid::createUuid().toString();
 
@@ -75,13 +79,36 @@ GDALSystem::GDALSystem(int EPSG)
 	this->EPSG = EPSG;
 }
 
+void GDALSystem::setGDALDatabase(const string & database)
+{
+	OGRDataSource::DestroyDataSource(poDS);
+
+	DBID = QUuid::createUuid().toString();
+
+	//Copy DB
+	QString origin = QString::fromStdString(database);
+	QString dest = "/tmp/" + DBID + ".db";
+	QFile::copy(origin, dest);
+
+	poDS = poDrive->Open(dest.toStdString().c_str(), true);
+
+	//Create new state
+	state_ids.push_back(QUuid::createUuid().toString().toStdString());
+
+	//RebuildViewLayer
+	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
+		 it != viewLayer.end(); ++it) {
+		std::string viewname = it->first;
+		viewLayer[it->first] = poDS->GetLayerByName(viewname.c_str());
+	}
+}
+
 GDALSystem::GDALSystem(const GDALSystem &s)
 {
 	DM::Logger(DM::Warning) << "Split System";
 	//Copy all that is needed
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
-	state_ids = s.state_ids;
 	state_ids = s.state_ids;
 	uniqueIdsTonfid = s.uniqueIdsTonfid;
 	latestUniqueId = s.latestUniqueId;
@@ -93,11 +120,6 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	QString origin =  "/tmp/" + s.DBID + ".db";
 	QString dest = "/tmp/" + DBID + ".db";
 	QFile::copy(origin, dest);
-
-	//Connect to DB
-	char ** options = NULL;
-	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
-	options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
 
@@ -179,8 +201,6 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 {
 	OGRLayer * lyr = viewLayer[v.getName()];
 	OGRFeature * f = OGRFeature::CreateFeature(lyr->GetLayerDefn());
-	//f->SetField("dynamind_id", (int) latestUniqueId++);
-	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
 	return f;
 }
 
