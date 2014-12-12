@@ -28,10 +28,6 @@ private:
 
 	OGRLayer *initLayer();
 
-	int OGRtoDMGeometry(OGRFeatureDefn * def);
-	DM::Attribute::AttributeType OGRToDMAttribute(OGRFieldDefn * fdef);
-
-	bool isFlat;
 	bool checkIsFlat(int ogrFlat);
 
 	int epsg_to;
@@ -44,7 +40,7 @@ public:
 	void init();
 	virtual ~GDALImportData();
 	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
-	int DMToOGRGeometry(int dm_geometry);
+
 	std::map<std::string, std::string> translator;
 
 	std::string getHelpUrl();

@@ -5,9 +5,7 @@
 #include <algorithm>
 #include <string>
 
-
-
-
+#include "gdalutilities.h"
 #include <ogr_api.h>
 
 DM_DECLARE_NODE_NAME(GDALImportData, GDALModules)
@@ -168,7 +166,6 @@ void GDALImportData::run()
 		}
 	}
 
-
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		OGRGeometry * geo_single = 0;
@@ -217,11 +214,11 @@ void GDALImportData::run()
 				geo_single = poFeature->GetGeometryRef();
 			}
 			//Check Type is fine
-			if (geo_single->getGeometryType() != DMToOGRGeometry(vc->getType())) {
+			if (geo_single->getGeometryType() != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
 				DM::Logger(DM::Warning) << "Feature "
 										<< poFeature->GetFID()
 										<< " not importet, expected "
-										<< (int) DMToOGRGeometry(vc->getType())
+										<< (int) DM::GDALUtilities::DMToOGRGeometry(vc->getType())
 										<< " instead of " << (int) geo_single->getGeometryType()
 										<< " geometry type is different";
 				continue;
@@ -263,13 +260,13 @@ DM::ViewContainer *GDALImportData::initShapefile()
 
 	OGRFeatureDefn * def = lyr->GetLayerDefn();
 
-	int dm_geometry = this->OGRtoDMGeometry(def);
+	int dm_geometry = DM::GDALUtilities::OGRtoDMGeometry(def);
 	translator.clear();
 	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, dm_geometry, DM::WRITE);
 	for (int i = 0; i < def->GetFieldCount(); i++){
 		OGRFieldDefn * fdef = def->GetFieldDefn(i);
 		//DM Datatype
-		DM::Attribute::AttributeType type = OGRToDMAttribute(fdef);
+		DM::Attribute::AttributeType type = DM::GDALUtilities::OGRToDMAttribute(fdef);
 		if (type == DM::Attribute::NOTYPE)
 			continue;
 		DM::Logger(DM::Debug) << "Load attribute" << fdef->GetNameRef();
@@ -303,24 +300,7 @@ OGRLayer *GDALImportData::initLayer()
 	return lyr;
 }
 
-DM::Attribute::AttributeType GDALImportData::OGRToDMAttribute(OGRFieldDefn * fdef) {
-	DM::Attribute::AttributeType type = DM::Attribute::NOTYPE;
-	switch (fdef->GetType()) {
-	case OFTInteger:
-		type = DM::Attribute::INT;
-		break;
-	case OFTReal:
-		type = DM::Attribute::DOUBLE;
-		break;
-	case OFTString:
-		type = DM::Attribute::STRING;
-		break;
-	default:
-		DM::Logger(DM::Warning) << "Type not supported attributed " << fdef->GetNameRef() << " not loaded";
-		break;
-	}
-	return type;
-}
+
 
 bool GDALImportData::checkIsFlat(int ogrType)
 {
@@ -351,68 +331,11 @@ bool GDALImportData::checkIsFlat(int ogrType)
 	return isFlat;
 }
 
-int GDALImportData::DMToOGRGeometry(int dm_geometry) {
-	int type = wkbNone;
-	switch(dm_geometry)
-	{
-	case DM::NODE:
-		type = wkbPoint;
-		break;
-	case DM::FACE:
-		type = wkbPolygon;
-		break;
-	case DM::EDGE:
-		type = wkbLineString;
-		break;
-	case  DM::COMPONENT:
-		type = wkbNone;
-		break;
-	}
-	return type;
-}
-
 string GDALImportData::getHelpUrl()
 {
 	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/gdalimportdata.rsthttps://github.com/christianurich/DynaMind-GDALModules/blob/master/doc/gdalimportdata.rst";
 }
 
-int GDALImportData::OGRtoDMGeometry(OGRFeatureDefn *def)
-{
-	int type = -1;
-	OGRwkbGeometryType ogrType = def->GetGeomType();
-	std::string strType = OGRGeometryTypeToName(ogrType);
-	switch(wkbFlatten(ogrType))
-	{
-	case wkbPoint:
-		type = DM::NODE;
-		isFlat = true;
-		break;
-	case wkbPolygon:
-		type = DM::FACE;
-		isFlat = true;
-		break;
-	case wkbMultiPolygon:
-		type = DM::FACE;
-		isFlat=false;
-		break;
-	case wkbLineString:
-		type = DM::EDGE;
-		isFlat = true;
-		break;
-	case wkbMultiLineString:
-		type = DM::EDGE;
-		isFlat = false;
-		break;
-	case wkbNone:
-		type = DM::COMPONENT;
-		isFlat = true;
-		break;
-	default:
-		DM::Logger(DM::Warning) << "Geometry type not implemented: " << strType;
-		return -1;
-	}
-	DM::Logger(DM::Debug) << "Found: Geometry type " << strType;
-	return type;
-}
+
 
 
