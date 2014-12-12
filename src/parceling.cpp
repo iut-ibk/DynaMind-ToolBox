@@ -23,10 +23,10 @@ GDALParceling::GDALParceling()
 	this->length = 100;
 	this->addParameter("length", DM::DOUBLE, &this->length);
 
-	this->blockName = "CITYBLOCK";
+	this->blockName = "cityblock";
 	this->addParameter("blockName", DM::STRING, &this->blockName);
 
-	this->subdevisionName = "PARCEL";
+	this->subdevisionName = "parcel";
 	this->addParameter("subdevisionName", DM::STRING, &this->subdevisionName);
 
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);

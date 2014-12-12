@@ -23,10 +23,10 @@ GDALParcelSplit::GDALParcelSplit()
 	this->width = 15;
 	this->addParameter("width", DM::DOUBLE, &this->width);
 
-	this->blockName = "CITYBLOCK";
+	this->blockName = "cityblock";
 	this->addParameter("blockName", DM::STRING, &this->blockName);
 
-	this->subdevisionName = "PARCEL";
+	this->subdevisionName = "parcel";
 	this->addParameter("subdevisionName", DM::STRING, &this->subdevisionName);
 
 	this->generated = 0;

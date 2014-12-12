@@ -3,11 +3,13 @@
 
 #include <gtest/gtest.h>
 
+namespace {
 class GDALModules_Unittests : public ::testing::Test
-{
-public:
+	{
 
-};
+
+	};
+}
 
 
 #endif // GDALMODULES_UNITTESTS_H
