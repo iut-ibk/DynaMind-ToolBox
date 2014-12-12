@@ -23,10 +23,11 @@ class WaterBalanceHouseHold: public DM::Module
     private:
         SimulationRegistry *simreg;
         NodeRegistry *nodereg;
-        ISimulation *s;
+
         DynaMindStreamLogSink *sink;
         SimulationParameters *p;
-		MapBasedModel * m;
+//        ISimulation *s;
+//		MapBasedModel * m;
 
 		DM::ViewContainer buildings;
 		DM::ViewContainer parcels;
@@ -41,7 +42,7 @@ class WaterBalanceHouseHold: public DM::Module
 
 		std::vector<double> stormwater_runoff;
 		std::vector<double> non_potable_demand;
-
+		std::vector<double> potable_demand;
 
     public:
         WaterBalanceHouseHold();
@@ -54,7 +55,6 @@ class WaterBalanceHouseHold: public DM::Module
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);
-		void initCD3();
 		std::string getCd3_dir() const;
 		void setCd3_dir(const std::string &value);
 		std::string getEvapofile() const;

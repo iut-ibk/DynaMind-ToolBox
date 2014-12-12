@@ -7,7 +7,7 @@
 #include "../DynaMind-Performance-Assessment/simplewaterbalance.h"
 #include "../DynaMind-Performance-Assessment/waterbalance_household.h"
 
-//#define WATERBALANCE
+#define WATERBALANCE
 #define WATERBALANCETANKS
 //#define SIMPLEWATEBALANCE
 
@@ -36,9 +36,11 @@ TEST_F(UnitTestWaterBalance,setParameterInModule)
 	wb.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
 	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx");
 	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/Evapotranspiration.ixx");
-	wb.initCD3();
 	wb.initmodel();
-	wb.createRaintank(0,1000,.25, .5, 4, 2.5);
+	wb.calculateRunoffAndDemand(1000,.25, .5, 4);
+	std::vector<double> sw = wb.getStormwater_runoff();
+	std::vector<double> non_p=  wb.getNon_potable_demand();
+	wb.createTankOption(0, 2.5, sw,non_p);
 
 
 
@@ -46,9 +48,11 @@ TEST_F(UnitTestWaterBalance,setParameterInModule)
 	wb1.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
 	wb1.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain_24.ixx");
 	wb1.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_eva_24.ixx");
-	wb1.initCD3();
 	wb1.initmodel();
-	wb1.createRaintank(0,500,.25, .5, 4, 0);
+	wb1.calculateRunoffAndDemand(1000,.25, .5, 4);
+	sw = wb1.getStormwater_runoff();
+	non_p=  wb1.getNon_potable_demand();
+	wb1.createTankOption(0, 0, sw,non_p);
 
 }
 #endif
@@ -62,7 +66,6 @@ TEST_F(UnitTestWaterBalance,testTanks)
 	wb.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
 	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx");
 	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/Evapotranspiration.ixx");
-	wb.initCD3();
 	wb.initmodel();
 	wb.calculateRunoffAndDemand(1000,.25, .5, 4);
 	std::vector<double> sw = wb.getStormwater_runoff();
