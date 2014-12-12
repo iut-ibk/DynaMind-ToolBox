@@ -62,6 +62,7 @@ ELSE()
 	SET(SCRIPT_PATH ${dynamind-basicmodules_BINARY_DIR}/PythonModules )
 ENDIF()
 
+ADD_SUBDIRECTORY(scripts)
 ADD_SUBDIRECTORY(src)
 
 IF(WITH_UNIT_TESTS)
