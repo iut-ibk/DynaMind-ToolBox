@@ -49,6 +49,7 @@
 #include "gdalcreateneighbourhoodtable.h"
 #include "gdalclusterneighbourhood.h"
 #include "gdalmergefaces.h"
+#include "gdalhotstarter.h"
 
 /**
   * @addtogroup TestModules
@@ -80,4 +81,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALCreateNeighbourhoodTable>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALClusterNeighbourhood>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALMergeFaces>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALHotStarter>());
 }
