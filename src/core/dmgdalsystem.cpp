@@ -55,8 +55,9 @@ GDALSystem::GDALSystem(int EPSG)
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
 	if (EPSG != 0) {
-		DM::Logger(DM::Warning) << "No EPSG code defined, disable spatialite backend";
 		options = CSLSetNameValue( options, "SPATIALITE", "YES" );
+	} else {
+		DM::Logger(DM::Warning) << "No EPSG code defined, disable spatialite backend";
 	}
 
 
