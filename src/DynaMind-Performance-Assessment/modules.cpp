@@ -28,6 +28,8 @@
 #include "waterbalance.h"
 #include "waterbalance_household.h"
 #include "simplewaterbalance.h"
+#include "waterdemandmodel.h"
+#include "rainwaterharvestingoptions.h"
 
 
 using namespace std;
@@ -35,7 +37,8 @@ using namespace std;
 
 
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
-	//registry->addNodeFactory(new DM::NodeFactory<WaterBalance>());
     registry->addNodeFactory(new DM::NodeFactory<WaterBalanceHouseHold>());
 	registry->addNodeFactory(new DM::NodeFactory<SimpleWaterBalance>());
+	registry->addNodeFactory(new DM::NodeFactory<WaterDemandModel>());
+	registry->addNodeFactory(new DM::NodeFactory<RainWaterHarvestingOptions>());
 }

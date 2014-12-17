@@ -6,10 +6,11 @@
 #include <dmpythonenv.h>
 #include "../DynaMind-Performance-Assessment/simplewaterbalance.h"
 #include "../DynaMind-Performance-Assessment/waterbalance_household.h"
+#include "../DynaMind-Performance-Assessment/waterdemandmodel.h"
 
-#define WATERBALANCE
-#define WATERBALANCETANKS
-//#define SIMPLEWATEBALANCE
+//#define WATERBALANCE
+//#define WATERBALANCETANKS
+#define WATERDEMANDMODEL
 
 void UnitTestWaterBalance::SetUp()
 {
@@ -78,15 +79,17 @@ TEST_F(UnitTestWaterBalance,testTanks)
 }
 #endif
 
-#ifdef SIMPLEWATEBALANCE
+#ifdef WATERDEMANDMODEL
 TEST_F(UnitTestWaterBalance, LoadModule) {
-	ASSERT_TRUE(sim!=0);
-	SimpleWaterBalance  * m =  (SimpleWaterBalance *) sim->addModule("SimpleWaterBalance");
-	m->setParameterValue("cd3_dir", "/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
-	m->initmodel();
-	sim->run();
+	WaterDemandModel wb;
+	wb.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
+	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_eva_24.ixx");
+	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain_24.ixx");
+	wb.initmodel();
+	wb.calculateRunoffAndDemand(500, 0.2, 0.8, 1);
+	std::vector<double> sw = wb.getStormwater_runoff();
+	std::vector<double> non_p=  wb.getNon_potable_demand();
 
-	sim->addModule("CreateGDALComponents");
-	ASSERT_TRUE(m!=0);
+
 }
 #endif
