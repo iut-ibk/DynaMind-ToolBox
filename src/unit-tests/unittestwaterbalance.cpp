@@ -8,8 +8,8 @@
 #include "../DynaMind-Performance-Assessment/waterbalance_household.h"
 #include "../DynaMind-Performance-Assessment/waterdemandmodel.h"
 
-//#define WATERBALANCE
-//#define WATERBALANCETANKS
+#define WATERBALANCE
+#define WATERBALANCETANKS
 #define WATERDEMANDMODEL
 
 void UnitTestWaterBalance::SetUp()
@@ -65,8 +65,8 @@ TEST_F(UnitTestWaterBalance,testTanks)
 
 	WaterBalanceHouseHold wb;
 	wb.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/debug/output/Modules");
-	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx");
-	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/Evapotranspiration.ixx");
+	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_eva_24.ixx");
+	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain_24.ixx");
 	wb.initmodel();
 	wb.calculateRunoffAndDemand(1000,.25, .5, 4);
 	std::vector<double> sw = wb.getStormwater_runoff();
