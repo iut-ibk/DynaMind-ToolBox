@@ -35,10 +35,10 @@ WaterDemandModel::WaterDemandModel()
 	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
 	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::READ);
 	parcels.addAttribute("garden_area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("non_potable_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("potable_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("outdoor_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("run_off_roof_dayly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> stream;
 	stream.push_back(&parcels);
@@ -69,16 +69,16 @@ void WaterDemandModel::run()
 //		this->outdoor_demand = *(flow_probe_outdoor->getState<std::vector<double> >("Flow"));
 
 
-//		parcels.addAttribute("non_potable_demand_dayly", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("potable_demand_dayly", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("outdoor_demand_dayly", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("run_off_roof_dayly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+//		parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
+//		parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
+//		parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
+//		parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
-		DM::DMFeature::SetDoubleList( p, "potable_demand_dayly", this->mutiplyVector(this->potable_demand, persons));
-		DM::DMFeature::SetDoubleList( p, "non_potable_demand_dayly", this->mutiplyVector(this->non_potable_demand, persons));
-		DM::DMFeature::SetDoubleList( p, "outdoor_demand_dayly",  this->mutiplyVector(this->outdoor_demand,garden_area/400.));
-		//DM::DMFeature::SetDoubleList( p, "outdoor_demand_dayly", this->outdoor_demand);
-		DM::DMFeature::SetDoubleList( p, "run_off_roof_dayly", this->mutiplyVector(this->stormwater_runoff,roof_area/100.));
+		DM::DMFeature::SetDoubleList( p, "potable_demand_daily", this->mutiplyVector(this->potable_demand, persons));
+		DM::DMFeature::SetDoubleList( p, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand, persons));
+		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily",  this->mutiplyVector(this->outdoor_demand,garden_area/400.));
+		//DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->outdoor_demand);
+		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff,roof_area/100.));
 	}
 }
 

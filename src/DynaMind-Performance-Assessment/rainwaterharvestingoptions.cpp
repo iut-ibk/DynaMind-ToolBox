@@ -29,10 +29,10 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	this->addParameter("storage_volume", DM::STRING_LIST, &this->storage_volume_tank);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
-	parcels.addAttribute("non_potable_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::READ);
-	parcels.addAttribute("potable_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::READ);
-	parcels.addAttribute("outdoor_demand_dayly", DM::Attribute::DOUBLEVECTOR, DM::READ);
-	parcels.addAttribute("run_off_roof_dayly", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 
 	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
 	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
@@ -83,19 +83,19 @@ void RainWaterHarvestingOptions::run()
 	while(p = this->parcels.getNextFeature()) {
 		//Create Raintanks
 		//Input Vectors
-		std::vector<double> non_potable_demand_dayly;
-		std::vector<double> run_off_roof_dayly;
-		std::vector<double> outdoor_demand_dayly;
+		std::vector<double> non_potable_demand_daily;
+		std::vector<double> run_off_roof_daily;
+		std::vector<double> outdoor_demand_daily;
 
-		DM::DMFeature::GetDoubleList(p, "non_potable_demand_dayly", non_potable_demand_dayly);
-		DM::DMFeature::GetDoubleList(p, "run_off_roof_dayly", run_off_roof_dayly);
-		DM::DMFeature::GetDoubleList(p, "outdoor_demand_dayly", outdoor_demand_dayly);
+		DM::DMFeature::GetDoubleList(p, "non_potable_demand_daily", non_potable_demand_daily);
+		DM::DMFeature::GetDoubleList(p, "run_off_roof_daily", run_off_roof_daily);
+		DM::DMFeature::GetDoubleList(p, "outdoor_demand_daily", outdoor_demand_daily);
 
 
 		for (int i = 0; i < this->storage_volume_tank.size(); i++){
 			OGRFeature * rwht = rwhts.createFeature();
 			rwht->SetField("parcel_id", (int)p->GetFID());
-			this->createTankOption(rwht, QString::fromStdString(storage_volume_tank[i]).toDouble(), run_off_roof_dayly, outdoor_demand_dayly,  non_potable_demand_dayly);
+			this->createTankOption(rwht, QString::fromStdString(storage_volume_tank[i]).toDouble(), run_off_roof_daily, outdoor_demand_daily,  non_potable_demand_daily);
 		}
 	}
 }
