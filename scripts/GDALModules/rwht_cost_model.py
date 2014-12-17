@@ -39,8 +39,9 @@ class RWHTCostModel(Module):
             self.__rwht.addAttribute("maintenance_costs", Attribute.DOUBLE, WRITE)
             self.__rwht.addAttribute("annual_savings", Attribute.DOUBLE, WRITE)
 
-            #Data base values are from CRC-WSC A4
-            self.__construction_cost_db = {"melbourne": {2 : 2375, 5: 2485, 10: 2560 }}
+            #Data base values are from CRC-WSC A4  $2.170 	 $2.630 	 $3.025
+            # $2.525 	 $2.985 	 $3.560
+            self.__construction_cost_db = {"melbourne": {2 : 2170, 5: 2630, 10: 3025 }}
 
             views = []
             views.append(self.__rwht)
@@ -66,6 +67,8 @@ class RWHTCostModel(Module):
                 volume = rwht.GetFieldAsDouble("volume")
                 rwht.SetField("construction_costs", self.__construction_costs("melbourne", volume))
 
+                annual_water_savings = rwht.GetFieldAsDouble("annual_water_savings")
+                rwht.SetField("annual_savings", annual_water_savings * 2.50)
 
 
 
