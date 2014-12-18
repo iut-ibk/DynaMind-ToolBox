@@ -28,6 +28,11 @@ GDALImportData::GDALImportData()
 	this->epsg_from = -1;
 	this->addParameter("epsg_from", DM::INT, &epsg_from);
 
+	//dummy to get the ports
+	std::vector<DM::ViewContainer> data;
+	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	this->addGDALData("city", data);
+
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
 	poDS = 0;
 	filterView = 0;
