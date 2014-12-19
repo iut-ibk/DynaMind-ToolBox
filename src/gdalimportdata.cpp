@@ -30,7 +30,7 @@ GDALImportData::GDALImportData()
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
-	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
 	this->addGDALData("city", data);
 
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
@@ -57,18 +57,31 @@ OGRCoordinateTransformation* GDALImportData::getTrafo(int sourceEPSG, int target
 
 void GDALImportData::init()
 {
+	bool initFailed = false;
 	if (layername.empty()) {
 		DM::Logger(DM::Warning) << "no layer_name set";
-		return;
+		initFailed = true;
 	}
 	if (viewName.empty()) {
 		DM::Logger(DM::Warning) << "no view_name set";
-		return;
+		initFailed = true;
 	}
 	if (source.empty()){
 		DM::Logger(DM::Warning) << "no source set";
+		initFailed = true;
+	}
+
+	if (initFailed) {
+
+		std::vector<DM::ViewContainer> data;
+		if (this->append)
+			data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+		else
+			data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
+		this->addGDALData("city", data);
 		return;
 	}
+
 
 	vc = this->initShapefile();
 
