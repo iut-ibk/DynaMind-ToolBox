@@ -187,23 +187,29 @@ void GDALImportData::run()
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		OGRGeometry * geo_single = 0;
-
 		if (vc->getType() != DM::COMPONENT) {
 			counter++;
 			if (counter%100000 == 0){
 				vc->syncAlteredFeatures();
 			}
-			if (poFeature->GetGeometryRef() == 0) {
+			OGRGeometry * geo_ref = poFeature->GetGeometryRef();
+			if (geo_ref == 0) {
 				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, no geometry";
 				continue;
 			}
-			if (!poFeature->GetGeometryRef()->IsValid()) {
-				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
-				continue;
+			if (!geo_ref->IsValid()) {
+				OGRGeometry * buf =  geo_ref->Buffer(0);
+				if (!buf->IsValid()) {
+					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
+					continue;
+				} else {
+					DM::Logger(DM::Warning) << "Try to use buffered feature for "<< poFeature->GetFID();
+					geo_ref = buf;
+				}
 			}
-			if (!this->checkIsFlat(poFeature->GetGeometryRef()->getGeometryType())) {
+			if (!this->checkIsFlat(geo_ref->getGeometryType())) {
 				if (vc->getType() == DM::FACE) {
-					OGRMultiPolygon * geo = (OGRMultiPolygon*) poFeature->GetGeometryRef();
+					OGRMultiPolygon * geo = (OGRMultiPolygon*) geo_ref;
 					if (!geo)
 						continue;
 					if (geo->getNumGeometries() == 0)
@@ -213,7 +219,7 @@ void GDALImportData::run()
 					//geo_single = geo->UnionCascaded();
 				}
 				if (vc->getType() == DM::EDGE) {
-					OGRMultiLineString * geo = (OGRMultiLineString*) poFeature->GetGeometryRef();
+					OGRMultiLineString * geo = (OGRMultiLineString*) geo_ref;
 					if (!geo)
 						continue;
 					if (geo->getNumGeometries() == 0)
@@ -221,7 +227,7 @@ void GDALImportData::run()
 					geo_single = geo->getGeometryRef(0);
 				}
 				if (vc->getType() == DM::NODE) {
-					OGRMultiPoint * geo = (OGRMultiPoint*) poFeature->GetGeometryRef();
+					OGRMultiPoint * geo = (OGRMultiPoint*) geo_ref;
 					if (!geo)
 						continue;
 					if (geo->getNumGeometries() == 0)

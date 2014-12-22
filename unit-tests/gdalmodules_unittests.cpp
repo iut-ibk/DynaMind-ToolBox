@@ -11,12 +11,39 @@
 #include <ogrsf_frmts.h>
 #include <dmsystem.h>
 
-#define GDALPARCELSPLIT
-#define GDALATTRIBUTECALCULATOR
-#define GDALHOTSTARTSIMULATION
+//#define GDALPARCELSPLIT
+//#define GDALATTRIBUTECALCULATOR
+//#define GDALHOTSTARTSIMULATION
+#define IMPORTWITHGDAL
+
+
+#ifdef IMPORTWITHGDAL
+/**
+ * @brief Test self intersection warning in GDAL
+ */
+TEST_F(GDALModules_Unittests, GDALSelfIntersect) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation * sim = new DM::Simulation();
+	QDir dir("./");
+	DM::SimulationConfig simconf;
+	simconf.setCoordinateSystem(4283);
+	sim->setSimulationConfig(simconf);
+	sim->registerModulesFromDirectory(dir);
+	DM::Module * rect = sim->addModule("GDALImportData");
+	rect->setParameterValue("source", "/Users/christianurich/Documents/DynaMind-ToolBox/DynaMind-GDALModules/test_data/self_itersect.shp");
+	rect->setParameterValue("layer_name", "self_itersect");
+	rect->setParameterValue("view_name", "test");
+	rect->setParameterValue("epsg_from", "32755");
+	rect->setParameterValue("epsg_to", "4283");
+	sim->run();
+
+}
+#endif
 
 #ifdef GDALHOTSTARTSIMULATION
-
 
 /**
  * @brief Test the GDALHotStartSimulation. The first simulation is just used to create
