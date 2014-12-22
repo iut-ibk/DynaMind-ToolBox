@@ -86,11 +86,12 @@ void GDALSpatialLinking::run()
 				DM::Logger(DM::Warning) << "feature link feature geometry is null";
 				continue;
 			}
-			if (int error = geo->Centroid(&ct) != OGRERR_NONE) {
+			/*if (int error = geo->Centroid(&ct) != OGRERR_NONE) {
 				DM::Logger(DM::Warning) << "error calculationg ct " << error;
 				continue;
-			}
-			if (ct.Within(lead_geo)) {
+			}*/
+			if (geo->Within(lead_geo) || geo->Intersect(lead_geo)) {
+			//if (ct.Within(lead_geo)) {
 				link_feature->SetField(link_name.c_str(), id);
 				counter++;
 			}
