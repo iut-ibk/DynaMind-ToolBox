@@ -16,6 +16,9 @@ GDALSpatialLinking::GDALSpatialLinking()
 	this->linkViewName = "";
 	this->addParameter("linkViewName", DM::STRING, &linkViewName);
 
+	this->withCentroid = true;
+	this->addParameter("withCentroid", DM::BOOL, &withCentroid);
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -55,6 +58,21 @@ void GDALSpatialLinking::init()
 	properInit = true;
 }
 
+bool GDALSpatialLinking::checkCentroid(OGRGeometry* geo, OGRGeometry * lead_geo)
+{
+	OGRPoint ct;
+	if (int error = geo->Centroid(&ct) != OGRERR_NONE) {
+		DM::Logger(DM::Warning) << "error calculationg ct " << error;
+		return false;
+	}
+	return ct.Within(lead_geo);
+}
+
+bool GDALSpatialLinking::checkIntersection(OGRGeometry* geo, OGRGeometry * lead_geo)
+{
+	return (geo->Within(lead_geo) || geo->Intersects(lead_geo));
+}
+
 void GDALSpatialLinking::run()
 {
 	if (!properInit) {
@@ -80,21 +98,21 @@ void GDALSpatialLinking::run()
 		linkView.setSpatialFilter(lead_geo);
 		long counter = 0;
 		while (link_feature = linkView.getNextFeature()) {
-			OGRPoint ct;
+
 			OGRGeometry * geo = link_feature->GetGeometryRef();
 			if (!geo){
 				DM::Logger(DM::Warning) << "feature link feature geometry is null";
 				continue;
 			}
-			/*if (int error = geo->Centroid(&ct) != OGRERR_NONE) {
-				DM::Logger(DM::Warning) << "error calculationg ct " << error;
+			bool isLinked = false;
+			if (withCentroid)
+				isLinked = checkCentroid(geo, lead_geo);
+			else
+				isLinked = checkIntersection(geo, lead_geo);
+			if (!isLinked)
 				continue;
-			}*/
-			if (geo->Within(lead_geo) || geo->Intersect(lead_geo)) {
-			//if (ct.Within(lead_geo)) {
-				link_feature->SetField(link_name.c_str(), id);
-				counter++;
-			}
+			link_feature->SetField(link_name.c_str(), id);
+			counter++;
 		}
 		if (counter % 100000){
 			linkView.syncAlteredFeatures();

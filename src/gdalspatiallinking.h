@@ -37,11 +37,14 @@ public:
 	GDALSpatialLinking();
 	void init();
 	void run();
+	bool checkCentroid(OGRGeometry* geo, OGRGeometry *lead_geo);
+	bool checkIntersection(OGRGeometry* geo, OGRGeometry * lead_geo);
 private:
 	bool properInit; // is true when init succeeded
 
 	std::string leadingViewName;
 	std::string linkViewName;
+	bool withCentroid;
 
 	DM::ViewContainer leadingView;
 	DM::ViewContainer linkView;
