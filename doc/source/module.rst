@@ -4,10 +4,10 @@ Module Development
 
 Modules are the heart and soul of every DynaMind simulation. A module is a process to manipulate data in the data stream "running" through the module.
 DynaMind supports the development of reusable modules by making data used in modules transparent, and parameters easy to modify. Further, an easy to us interface allows  modules to be connected to complex
-simulations. The following section gives an introduction in the basic concepts of the module development. For the code examples the
-Python interface is used, however the Python API is is similar to the C++ API. The API doc can be found `here <http://www.dynamind-toolbox.org/wp-content/uploads/api-doc/nightly/doc/doxygen/output/html/index.html>`_.
+simulations. The following section gives an introduction in the basic concepts needed for the module development. For the code examples the
+Python interface is used, however the Python API is similar to the C++ API. The API doc can be found `here <http://www.dynamind-toolbox.org/wp-content/uploads/api-doc/nightly/doc/doxygen/output/html/index.html>`_.
 
-To provide this functionality modules consist of two main parts:
+Modules consist of two main parts:
 
     1. The *Initialisation* makes used data and parameters known to the simulation.
     2. The *Data Manipulation Process* (DMP) or the *run method* which contains the actual algorithms to manipulate data.
@@ -49,7 +49,7 @@ The following code block shows an implementation of the two parts.
 
 Module Initialisation
 =====================
-Lets take closer look at the module initialisation. The idea of the module initialisation is to make the parameters and data
+Lets take a closer look at the module initialisation. The idea of the module initialisation is to make the parameters and data
 used by the module transparent to the simulation and to the users. The initialisation distinguishes between (1) the parameter definition;
 which describes parameter that can be set by the user and (2) the data stream definition; which defines the needed, generated and modified data
 in terms of geometry types and attributes.
@@ -95,8 +95,8 @@ Following parameter types are supported:
 
 Data stream definition using Views (only recommended for advanced users)
 ------------------------------------------------------------------------
-To be able to connect a module to the data stream, the data read, modified and created by the module need to be defined.
-The data stream in DynaMind is defined as a collection of *Views*. *Views* describe data in the stream in terms of their geometry type, attributes and, links to other views.
+To be able to connect a module to the data stream the data read, modified and created by the module need to be defined.
+A data stream in DynaMind is defined as a collection of *Views*. *Views* describe data in the stream in terms of their geometry type, attributes and, links to other views.
 To let the simulation know which data are used, views need to be registered during module initialisation. Views are created using
 ``foo = View("name", GEOMETRY_TYPE, ACCESS)``. Attributes are attached with ``foo.addAttribute("name", TYPE, ACCESS)``. For both
 geometry and attribute the following access modes are available:  READ, WRITE or MODIFY.
@@ -125,7 +125,7 @@ Available geometry types:
 +---------------+-----------------------------------------------------+
 |EDGE           | connection between nodes                            |
 +---------------+-----------------------------------------------------+
-|FACE           | Closed polygon, can contain wholes                  |
+|FACE           | closed polygon, can contain wholes                  |
 +---------------+-----------------------------------------------------+
 
 Available attribute types:
@@ -210,10 +210,10 @@ and provides methods to set and get geometry as well as attributes. See the GDAL
 
 The ViewContainer manages the assess to the features stored in the underlying data stream.
 The API of the ViewContainer class is based on the GDAL *Layer API* tailored to the DynaMind environment.
-To iterate over all features you can use the ViewContainer directly  in a ``for`` loop (see the following dode block). The returns
-feature is a "real" GDAL Feature for the API please the `GDAL Feature API <http://www.gdal.org/classOGRFeature.html>`_.
+To iterate over all features you can use the ViewContainer directly  in a ``for`` loop (see the following code block). The returned
+feature is a "real" GDAL Feature. (Please have a look at `GDAL Feature API <http://www.gdal.org/classOGRFeature.html>`_ ).
 Before you start reading the components it is recommended to reset the iterator using ``ViewContainer.reset_reading()``.
-Currently it is still required to clear the ViewContainer cache after it has been used with calling ``ViewContainer.syns()``
+Currently it is still required to clear the ViewContainer cache after it has been used with calling ``ViewContainer.sync()``
 
 .. code-block:: python
 
@@ -231,7 +231,7 @@ Currently it is still required to clear the ViewContainer cache after it has bee
 **Create Features**
 
 ``ViewContainer.create_feature()`` registers a new feature in the ViewContainer. The created itself is empty and
-does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL python API.
+does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL Python API.
 For performance reasons the features are not directly written into the data stream. To finally write the features and clear
 the ViewContainer cache please call ``ViewContainer.sync()``.
 
