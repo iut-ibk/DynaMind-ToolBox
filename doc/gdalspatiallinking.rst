@@ -15,13 +15,27 @@ Parameter
 +===================+========================+========================================================================+
 |leadingViewName    | STRING                 | name of leading view; needs to be a FACE                               |
 +-------------------+------------------------+------------------------------------------------------------------------+
-|linkViewName       | STRING                 | name of link view; NODE or FACE components within the leading view FACE|
-|                   |                        | are joined to the leading view.                                        |
+|linkViewName       | STRING                 | name of link view; NODE, EDGE or FACE components within the leading    |
+|                   |                        | view FACE are joined to the leading view.                              |
 +-------------------+------------------------+------------------------------------------------------------------------+
 |withCentroid       | BOOL                   | links either when centroid is within the lead face (true), false if    |
 |                   |                        | link view component is within or intersects face                       |
 +-------------------+------------------------+------------------------------------------------------------------------+
 
+Data-stream
+-----------
+
++--------------------+--------------------------+------------------+-------+------------------------------------------+
+|        View        |          Attribute       |       Type       |Access |    Description                           |
++====================+==========================+==================+=======+==========================================+
+| **leadingViewName**|                          | FACE             | read  | lead view components                     |
++--------------------+--------------------------+------------------+-------+------------------------------------------+
+|                    |                          |                  |       |                                          |
++--------------------+--------------------------+------------------+-------+------------------------------------------+
+| **linkViewName**   |                          |  FACE;EDGE;NODE  | read  | view linked to lead view                 |
++--------------------+--------------------------+------------------+-------+------------------------------------------+
+|                    | **leadingViewName**_id   |    INT           | write | id of linked lead view component         |
++--------------------+--------------------------+------------------+-------+------------------------------------------+
 
 
 Detailed Description
