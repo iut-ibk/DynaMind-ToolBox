@@ -2,7 +2,7 @@
 GDALPublishResults
 ==================
 
-Export GIS data from DynaMind to a common GIS format `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
+Export GIS data from DynaMind to common GIS formats `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------
@@ -29,8 +29,9 @@ Parameter
 Detailed Description
 --------------------
 
-The module builds on the GDAL/OGR library and therefore supports to export data from DynaMind into
-common GIS data formats. n overview of supported formats can be found `here <http://www.gdal.org/ogr_formats.html>`_.
+The module builds on the GDAL/OGR library and supports export of data from DynaMind into
+common GIS data formats. An overview of supported formats can be found `here <http://www.gdal.org/ogr_formats.html>`_.
+
 
 
 Export to PostGIS
