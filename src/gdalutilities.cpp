@@ -19,7 +19,7 @@ int GDALUtilities::DMToOGRGeometry(int dm_geometry)
 	case DM::EDGE:
 		type = wkbLineString;
 		break;
-	case  DM::COMPONENT:
+	case DM::COMPONENT:
 		type = wkbNone;
 		break;
 	}
@@ -34,6 +34,9 @@ int GDALUtilities::OGRtoDMGeometry(OGRFeatureDefn *def)
 	switch(wkbFlatten(ogrType))
 	{
 	case wkbPoint:
+		type = DM::NODE;
+		break;
+	case wkbMultiPoint:
 		type = DM::NODE;
 		break;
 	case wkbPolygon:
