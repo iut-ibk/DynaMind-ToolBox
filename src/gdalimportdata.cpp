@@ -187,6 +187,7 @@ void GDALImportData::run()
 	int counter = 0;
 	while( (poFeature = lyr->GetNextFeature()) != NULL ) {
 		OGRGeometry * geo_single = 0;
+		std::vector<OGRGeometry*> geo_collection;
 		if (vc->getType() != DM::COMPONENT) {
 			counter++;
 			if (counter%100000 == 0){
@@ -215,8 +216,10 @@ void GDALImportData::run()
 					if (geo->getNumGeometries() == 0)
 						continue;
 					geo_single = geo->getGeometryRef(0);//OGRGeometryFactory::forceToPolygon(geo);
-					//std::cout << geo->getGeometryType() << std::endl;
-					//geo_single = geo->UnionCascaded();
+					for (int i = 0; i < geo->getNumGeometries(); i++) {
+						geo_collection.push_back(geo->getGeometryRef(i));
+					}
+
 				}
 				if (vc->getType() == DM::EDGE) {
 					OGRMultiLineString * geo = (OGRMultiLineString*) geo_ref;
@@ -225,6 +228,9 @@ void GDALImportData::run()
 					if (geo->getNumGeometries() == 0)
 						continue;
 					geo_single = geo->getGeometryRef(0);
+					for (int i = 0; i < geo->getNumGeometries(); i++) {
+						geo_collection.push_back(geo->getGeometryRef(i));
+					}
 				}
 				if (vc->getType() == DM::NODE) {
 					OGRMultiPoint * geo = (OGRMultiPoint*) geo_ref;
@@ -233,34 +239,42 @@ void GDALImportData::run()
 					if (geo->getNumGeometries() == 0)
 						continue;
 					geo_single = geo->getGeometryRef(0);
+					for (int i = 0; i < geo->getNumGeometries(); i++) {
+						geo_collection.push_back(geo->getGeometryRef(i));
+					}
 				}
 			} else {
 				geo_single = poFeature->GetGeometryRef();
+				geo_collection.push_back(geo_single);
 			}
 			//Check Type is fine
-			if (geo_single->getGeometryType() != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
+			if (wkbFlatten(geo_single->getGeometryType()) != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
 				DM::Logger(DM::Warning) << "Feature "
 										<< poFeature->GetFID()
 										<< " not importet, expected "
 										<< (int) DM::GDALUtilities::DMToOGRGeometry(vc->getType())
-										<< " instead of " << (int) geo_single->getGeometryType()
+										<< " instead of " << (int) wkbFlatten(geo_single->getGeometryType())
 										<< " geometry type is different";
 				continue;
 			}
+
+		} else {
+			geo_collection.push_back(0); // Add empty element to add geometry
 		}
 
-		OGRFeature * f_new = vc->createFeature();
-
-		if(geo_single) {
-			if (forward_trans)
-				geo_single->transform(forward_trans);
-			f_new->SetGeometry(geo_single);
-		}
-
-		foreach(std::string attribute_name, vc->getAllAttributes()) {
-			std::string real_name = translator[attribute_name];
-			OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(real_name.c_str()));
-			f_new->SetField(attribute_name.c_str(), f);
+		foreach(OGRGeometry * g, geo_collection){
+			OGRFeature * f_new = vc->createFeature();
+				if(g) {
+					if (forward_trans)
+						g->transform(forward_trans);
+					g->flattenTo2D();
+					f_new->SetGeometry(g);
+				}
+				foreach(std::string attribute_name, vc->getAllAttributes()) {
+					std::string real_name = translator[attribute_name];
+					OGRField * f = poFeature->GetRawFieldRef(poFeature->GetFieldIndex(real_name.c_str()));
+					f_new->SetField(attribute_name.c_str(), f);
+				}
 		}
 		OGRFeature::DestroyFeature( poFeature );
 	}
@@ -329,7 +343,7 @@ OGRLayer *GDALImportData::initLayer()
 bool GDALImportData::checkIsFlat(int ogrType)
 {
 	bool isFlat;
-	switch(ogrType)
+	switch(wkbFlatten(ogrType))
 	{
 	case wkbPoint:
 		isFlat = true;
