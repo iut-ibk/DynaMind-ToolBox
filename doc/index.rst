@@ -11,6 +11,10 @@ GDALModules
    gdalimportdata
    gdalpublishresults
    gdalspatiallinking
+   gdalparcelsplit
+   gdalparceling
+   gdaloffset
    rwhtcostmodel
+
 
 
