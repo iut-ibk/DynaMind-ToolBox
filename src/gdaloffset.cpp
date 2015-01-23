@@ -14,10 +14,10 @@ GDALOffset::GDALOffset()
 {
 	GDALModule = true;
 
-	this->blockName = "CITYBLOCK";
+	this->blockName = "cityblock";
 	this->addParameter("blockName", DM::STRING, &this->blockName);
 
-	this->subdevisionName = "PARCEL";
+	this->subdevisionName = "parcel";
 	this->addParameter("subdevisionName", DM::STRING, &this->subdevisionName);
 
 	this->offset = 0;
