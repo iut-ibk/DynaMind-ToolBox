@@ -423,6 +423,14 @@ std::vector<Link*> Simulation::getOutOfGroupLinks(const Module* dest, const std:
 	return ls;
 }
 
+std::string Simulation::serialise()
+{
+	QBuffer dest;
+	writeSimulation(&dest, "<clipboard>");
+
+	return QString(dest.data()).toStdString();
+}
+
 
 bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
@@ -1320,6 +1328,7 @@ void Simulation::writeSimulation(QIODevice* dest, QString filePath)
 	SimulationWriter::writeSimulation(	dest, filePath,
 		getModules(), getLinks());
 }
+
 void Simulation::writeSimulation(std::string filePath)
 {
 	QString qFilePath = QString::fromStdString(filePath);

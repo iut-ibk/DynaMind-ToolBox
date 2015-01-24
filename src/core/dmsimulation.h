@@ -262,6 +262,9 @@ public:
 	/** @brief returns all links connected to this port */
 	std::vector<Link*> getOutOfGroupLinks(const Module* dest, const std::string& outPort) const;
 
+	/** @brief serialise simuatlion */
+	std::string serialise();
+
 private:
 
 	bool canceled;
