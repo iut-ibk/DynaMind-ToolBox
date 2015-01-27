@@ -24,16 +24,91 @@
 \hypersetup{colorlinks=true,urlcolor=blue}
 
 \begin{document}
-\emph{Author:} Christian Mikovits
+\emph{Author:} Christian Mikovits\newline
 \emph{Version:} 0.1
 
 \section{urbandevelBuilding}\hypertarget{urbandevelbuilding}{}\label{urbandevelbuilding}
 
 \subsection{Overview}\hypertarget{overview}{}\label{overview}
 
+This module generates buildings on existing parcels.
+
 \subsection{Description}\hypertarget{description}{}\label{description}
 
+The buildings (FACE) are created on existing parcels (FACE).
+It consists of the following options to be defined in the module configuration:
+- on Signal [BOOL]: if TRUE  at a given `ratio' [0-1] defined in the module settings.
+
 \subsection{Usage}\hypertarget{usage}{}\label{usage}
+
+\subsubsection{Options}\hypertarget{options}{}\label{options}
+
+\begin{itemize}
+\item 'on Signal': BOOLEAN [0/1]\newline
+  built houses only if indicated by PARCEL.status equals the needed buildingtype which is defined by the SUPERBLOCK
+\item 'Parameters from City': BOOLEAN [0/1]\newline
+  defines if the parameters (description below) should be taken from the CITY view.
+\item 'create Population': BOOLEAN [0/1]\newline
+  should population values be taken from CITY.cyclepopdiff and distributed
+\item 'offset': DOUBLE [0.1-0.9]
+\item 'stories': INT [\textgreater{}1]
+\item 'year': INT
+\item 'space per person': INT
+\item 'check type (ignore if empty)': STRING
+\end{itemize}
+
+\subsubsection{Input}\hypertarget{input}{}\label{input}
+
+Needed Views:
+
+\begin{itemize}
+\item CITY
+
+
+\begin{itemize}
+\item cyclepopdiff (optional)
+\item required\_space (optional)
+\item year (optional)
+\item offset (optional)
+\end{itemize}
+\item PARCEL
+
+
+\begin{itemize}
+\item status
+\end{itemize}
+\item BUILDING (optional)
+\end{itemize}
+
+\subsubsection{Output}\hypertarget{output}{}\label{output}
+
+\begin{itemize}
+\item PARCEL
+
+
+\begin{itemize}
+\item status
+\item BUILDING (link)
+\end{itemize}
+\item BUILDING
+
+
+\begin{itemize}
+\item centroid\_x
+\item centroid\_y
+\item year
+\item stories
+\item A\_roof
+\item Aeff\_roof
+\item A\_road
+\item Aeff\_road
+\item A\_imp
+\item Aeff\_imp
+\item PARCEL (link)
+\end{itemize}
+\end{itemize}
+
+The user has to provide 
 
 \subsection{Example}\hypertarget{example}{}\label{example}
 

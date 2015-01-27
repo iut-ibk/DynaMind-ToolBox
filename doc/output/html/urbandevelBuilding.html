@@ -1,12 +1,83 @@
-<p><em>Author:</em> Christian Mikovits
+<p><em>Author:</em> Christian Mikovits<br />
 <em>Version:</em> 0.1</p>
 
 <h1 id="urbandevelbuilding">urbandevelBuilding</h1>
 
 <h2 id="overview">Overview</h2>
 
+<p>This module generates buildings on existing parcels.</p>
+
 <h2 id="description">Description</h2>
 
+<p>The buildings (FACE) are created on existing parcels (FACE).
+It consists of the following options to be defined in the module configuration:
+- on Signal [BOOL]: if TRUE  at a given ‘ratio’ [0-1] defined in the module settings.</p>
+
 <h2 id="usage">Usage</h2>
+
+<h3 id="options">Options</h3>
+
+<ul>
+  <li>'on Signal': BOOLEAN [0/1]<br />
+  built houses only if indicated by PARCEL.status equals the needed buildingtype which is defined by the SUPERBLOCK</li>
+  <li>'Parameters from City': BOOLEAN [0/1]<br />
+  defines if the parameters (description below) should be taken from the CITY view.</li>
+  <li>'create Population': BOOLEAN [0/1]<br />
+  should population values be taken from CITY.cyclepopdiff and distributed</li>
+  <li>'offset': DOUBLE [0.1-0.9]</li>
+  <li>'stories': INT [&gt;1]</li>
+  <li>'year': INT</li>
+  <li>'space per person': INT</li>
+  <li>'check type (ignore if empty)': STRING</li>
+</ul>
+
+<h3 id="input">Input</h3>
+
+<p>Needed Views:</p>
+
+<ul>
+  <li>CITY
+    <ul>
+      <li>cyclepopdiff (optional)</li>
+      <li>required_space (optional)</li>
+      <li>year (optional)</li>
+      <li>offset (optional)</li>
+    </ul>
+  </li>
+  <li>PARCEL
+    <ul>
+      <li>status</li>
+    </ul>
+  </li>
+  <li>BUILDING (optional)</li>
+</ul>
+
+<h3 id="output">Output</h3>
+
+<ul>
+  <li>PARCEL
+    <ul>
+      <li>status</li>
+      <li>BUILDING (link)</li>
+    </ul>
+  </li>
+  <li>BUILDING
+    <ul>
+      <li>centroid_x</li>
+      <li>centroid_y</li>
+      <li>year</li>
+      <li>stories</li>
+      <li>A_roof</li>
+      <li>Aeff_roof</li>
+      <li>A_road</li>
+      <li>Aeff_road</li>
+      <li>A_imp</li>
+      <li>Aeff_imp</li>
+      <li>PARCEL (link)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The user has to provide </p>
 
 <h2 id="example">Example</h2>
