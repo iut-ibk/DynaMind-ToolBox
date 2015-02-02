@@ -26,36 +26,31 @@ from osgeo import ogr
 from pydynamind import *
 
 
-class CreateGDALComponentsAdvanced(Module):
+class CreateGDALComponentLinks(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
             self.createParameter("elements", INT, "Number of elements")
             self.elements = 100000
 
-            self.createParameter("append", BOOL, "true if append")
-            self.append = False
-            self.__container = ViewContainer()
 
         def init(self):
-            if self.append:
-                self.__container = ViewContainer("component", NODE, MODIFY)
-            else:
-                self.__container = ViewContainer("component", NODE, WRITE)
+            self.__container = ViewContainer("component", NODE, READ)
 
-            views = []
-            views.append(self.__container)
-            self.registerViewContainers(views)
+            self.__container_links = ViewContainer("component_link", COMPONENT, WRITE)
+            self.__container_links.addAttribute("component_id", Attribute.INT, WRITE)
+
+            self.registerViewContainers([self.__container, self.__container_links])
             #self.features = []
+
         def run(self):
-            for i in range(self.elements):
-                f = self.__container.create_feature()
-                pt = ogr.Geometry(ogr.wkbPoint)
-                pt.SetPoint_2D(0, 1, 1)
-                f.SetGeometry(pt)
-                if i % 100000 == 0:
-                    self.__container.sync()
+            self.__container.reset_reading()
+            for cmp in self.__container:
+                f = self.__container_links.create_feature()
+                f.SetField("component_id", cmp.GetFID())
+
             self.__container.sync()
+            self.__container_links.sync()
 
 
 

@@ -4,8 +4,8 @@
 @version 1.0
 @section LICENSE
 
-This file is part of VIBe2
-Copyright (C) 2011  Christian Urich
+This file is part of DynaMind
+Copyright (C) 2011-2015  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,3 +27,5 @@ from create_gdal_component import *
 from create_gdal_advanced_api import *
 from read_gdal_advanced_api import *
 from modify_gdal_advanced_api import *
+from create_gdal_links_api import *
+from get_linked_component import *

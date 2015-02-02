@@ -105,11 +105,11 @@ The following code block shows how views are defined using the Python interface.
 .. code-block:: python
 
     #Data read by the module
-    self.streets = View("STREET", EDGE, READ)
+    self.streets = View("street", EDGE, READ)
     self.streets.addAttribute("width", DOUBLE, READ)
 
     #New data created by this module
-    self.drain = View("DRAIN", EDGE, WRITE)
+    self.drain = View("drain", EDGE, WRITE)
     self.drain.addAttribute("diameter", DOUBLE,  WRITE)
 
 ..
@@ -171,11 +171,11 @@ add the ViewContainer as Attribute to the class using the ``self.`` statement.
 .. code-block:: python
 
     #Data read by the module
-    self.streets = ViewContainer("STREET", EDGE, READ)
+    self.streets = ViewContainer("street", EDGE, READ)
     self.streets.addAttribute("width", DOUBLE, READ)
 
     #New data created by this module
-    self.drain = ViewContainer("DRAIN", EDGE, WRITE)
+    self.drain = ViewContainer("drain", EDGE, WRITE)
     self.drain.addAttribute("diameter", DOUBLE,  WRITE)
 
     #Compile views
@@ -277,6 +277,63 @@ Error Handling
 If an error occurs during the DMP the module should set its execution status to MOD_EXECUTION_ERROR. This let the simulation
 know that an error occurred in the module and it stops the simulation. ``self.setStatus(MOD_EXECUTION_ERROR)``
 
+Advanced API
+============
+Advanced features include working with linked data sets as one of the key concepts of DynaMind.
+
+Linked Data
+-----------
+
+To link two features commonly and attribute is to create a an attribute that points from feature A to feature B.
+This allows one to many relations ships to be created. The reflection of many to many relations ships requires a separate link table.
+
+.. code-block:: python
+
+    #parcel <- building
+    self.parcel = ViewContainer("parcel", FACE, READ)
+
+    #Link parcels to building using the parcel id
+    self.building = ViewContainer("building", FACE, READ)
+    self.building.addAttribute("parcel_id", INT,  WRITE)
+
+
+    #Register ViewContainer to stream
+    self.registerViewContainers([self.parcel, self.building])
+
+..
+
+Features can be linked using the feature id ``GetFID()``.
+
+
+.. code-block:: python
+
+    for p in parcel:
+        #Find building in parcel
+        b.SetField("parcel_id", p.GetFID())
+
+..
+
+To return the get the linked feature use the ``get_feature``, which returns the feature with the corresponding FID
+
+.. code-block:: python
+
+    for b in building:
+        p_id = b.GetFieldAsInteger("parcel_id")
+        p = parcel.get_feature(p_id)
+
+..
+
+
+If you require to return the reveres, this means all features B that point that are linked to a specific feature A you may
+use the following function
+
+.. code-block:: python
+
+    for p in parcel:
+        for b in self.building.get_linked_features(p):
+        # Do something with the buildings on the same parcel
+
+..
 
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
 .. [2] A STRING_LIST is string. The strings a separated using ``*|*`` e.g. ``*|*text1*|*test2*|*``

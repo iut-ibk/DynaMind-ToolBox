@@ -5,7 +5,7 @@
 @section LICENSE
 
 This file is part of DynaMind
-Copyright (C) 2011-2012  Christian Urich
+Copyright (C) 2015  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,36 +26,40 @@ from osgeo import ogr
 from pydynamind import *
 
 
-class CreateGDALComponentsAdvanced(Module):
+class GetLinkedComponent(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
             self.createParameter("elements", INT, "Number of elements")
             self.elements = 100000
 
-            self.createParameter("append", BOOL, "true if append")
-            self.append = False
-            self.__container = ViewContainer()
 
         def init(self):
-            if self.append:
-                self.__container = ViewContainer("component", NODE, MODIFY)
-            else:
-                self.__container = ViewContainer("component", NODE, WRITE)
+            self.__container = ViewContainer("component", NODE, READ)
 
-            views = []
-            views.append(self.__container)
-            self.registerViewContainers(views)
-            #self.features = []
+            self.__container_links = ViewContainer("component_link", COMPONENT, READ)
+            self.__container_links.addAttribute("component_id", Attribute.INT, READ)
+
+            self.registerViewContainers([self.__container, self.__container_links])
+
         def run(self):
-            for i in range(self.elements):
-                f = self.__container.create_feature()
-                pt = ogr.Geometry(ogr.wkbPoint)
-                pt.SetPoint_2D(0, 1, 1)
-                f.SetGeometry(pt)
-                if i % 100000 == 0:
-                    self.__container.sync()
+
+            #
+            self.__container_links.create_index("component_id")
+            self.__container_links.reset_reading()
+            self.__container.reset_reading()
+            counter = 0
+            for cmp in self.__container:
+                search_id = cmp.GetFID()
+                # self.__container_links.reset_reading()
+                # self.__container_links.set_attribute_filter("component_id = " + str(search_id))
+                for cmp_link in self.__container_links.get_linked_features(cmp):
+                    if cmp_link.GetFieldAsInteger("component_id") == search_id:
+                        counter+=1
+            self.elements = counter
+
             self.__container.sync()
+            self.__container_links.sync()
 
 
 

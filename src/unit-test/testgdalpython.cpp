@@ -14,6 +14,7 @@
 #define ADVANCEDAPI
 #define READAPI
 #define MODIFYAPI
+#define TESTLINK
 
 #define FEATURES "100000"
 #define FEATURES_2 "200000"
@@ -153,4 +154,42 @@ TEST_F(TestGDALPython,PythonModifyTest) {
 	ASSERT_EQ(3*number1, number);
 }
 #endif
+
+#ifdef TESTLINK
+TEST_F(TestGDALPython,PythonLinks) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create Simulation";
+	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
+
+	DM::Simulation sim;
+
+	sim.registerModulesFromDefaultLocation();
+
+	DM::Logger(DM::Debug) << "Loaded Modules";
+
+	DM::Module * m1 = sim.addModule("CreateGDALComponentsAdvanced");
+	m1->setParameterValue("elements", FEATURES);
+	m1->init();
+
+	DM::Module * m2 = sim.addModule("CreateGDALComponentLinks");
+	m2->init();
+
+	DM::Module * m3 = sim.addModule("GetLinkedComponent");
+	m3->setParameterValue("elements", "0");
+	m3->init();
+
+
+	sim.addLink(m1, "city", m2, "city");
+	sim.addLink(m2, "city", m3, "city");
+	sim.run();
+
+	QString s_number1 = QString(FEATURES);
+	int number1 = s_number1.toInt();
+	int number = QString(QString::fromStdString(m3->getParameterAsString("elements"))).toInt();
+	ASSERT_EQ(number1, number);
+
+}
+#endif
+
 

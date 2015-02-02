@@ -269,10 +269,12 @@ class DM::ViewContainer {
 		ViewContainer();
 		ViewContainer(string name, int type, ACCESS accesstypeGeometry);
 		void addAttribute(std::string name, Attribute::AttributeType type, ACCESS access);
+		void setAttributeFilter(std::string filter);
 		void setCurrentGDALSystem(DM::GDALSystem *sys);
 		OGRFeatureDefnShadow * getFeatureDef();
 		void registerFeature(OGRFeatureShadow *f, bool isNew);
 		void syncAlteredFeatures();
+		void createIndex(std::string attribute);
 		std::string getDBID();
 		virtual ~ViewContainer();
 		std::string getName() const;
@@ -281,25 +283,50 @@ class DM::ViewContainer {
 %extend DM::ViewContainer {
 	%pythoncode {
 	#Container for OGRObejcts, otherwise the garbage collector eats them
-	__features = []
+	__features = None
 	__ogr_layer = None
 	__ds = None
+
 	def create_feature(self):
 		#from osgeo import ogr
+		self.register_layer()
 		f = ogr.Feature(self.getFeatureDef())
 		self.registerFeature(f, True)
 		#Hold Object until destroyed
 		self.__features.append(f)
 		return f
+
+	def set_attribute_filter(self, attribute_filter):
+		self.register_layer()
+		self.__ogr_layer.SetAttributeFilter(attribute_filter)
+
+	def create_index(self, attribute_name):
+		self.createIndex(attribute_name)
+		return
+		db_id = self.getDBID()
+		ds = ogr.Open("/tmp/"+db_id+".db", True)
+		result = ds.ExecuteSQL("CREATE INDEX "+ attribute_name +"_index ON " + self.getName() + " (" + attribute_name + ");")
+		ds.Destroy()
+
 	def register_layer(self):
-		if self.__ogr_layer != None:
+		if self.__ogr_layer:
 			return
 		db_id = self.getDBID()
+		self.__features = []
 		self.__ds = ogr.Open("/tmp/"+db_id+".db")
 		table_name = str(self.getName())
 		self.__ogr_layer = self.__ds.GetLayerByName(table_name)
 
 	def __iter__(self):
+		return self
+
+	def get_linked_features(self, feature, link_id = ""):
+		self.reset_reading()
+		link_name = feature.GetDefnRef().GetName()
+		if link_id:
+			self.set_attribute_filter(link_id+" = " + str(feature.GetFID()))
+		else:
+			self.set_attribute_filter(link_name+"_id = " + str(feature.GetFID()))
 		return self
 
 	def get_feature(self, fid):
