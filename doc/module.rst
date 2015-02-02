@@ -335,6 +335,20 @@ use the following function
 
 ..
 
+
+To speed things up please create a search index before using the ``get_linked_features`` method.
+This can be done with the ``create_index`` method. The method needs to be called first after the run. Otherwise it causes and
+error.
+
+.. code-block:: python
+
+        def run(self):
+            # Init index before doing anything else. Otherwise it causes an error.
+            self.building.create_index("component_id")
+
+
+..
+
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
 .. [2] A STRING_LIST is string. The strings a separated using ``*|*`` e.g. ``*|*text1*|*test2*|*``
 .. [3] A STRING_MAP is string. The strings a separated using ``*||*``for a new row and ``*|*`` for columns e.g. ``*||*key1*|*value1*||*key2*|*value2*||*``
