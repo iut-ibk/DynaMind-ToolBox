@@ -31,24 +31,47 @@ class RWHTCostModel(Module):
             Module.__init__(self)
             self.setIsGDALModule(True)
 
+            self.__construction_cost_db = {"melbourne": {2: 2525, 5: 2985, 10: 3560}}
+            discount_rate = 0.05
+            self.__years = []
+            self.__discount_factor = []
+            for y in xrange(1, 21, 1):
+                self.__years.append(y)
+                self.__discount_factor.append(1./(1.+discount_rate)**(y-1))
+
+
         def init(self):
-            self.__rwht = ViewContainer("rwht", NODE, WRITE)
+            self.__rwht = ViewContainer("rwht", COMPONENT, WRITE)
             self.__rwht.addAttribute("volume", Attribute.DOUBLE, READ)
             self.__rwht.addAttribute("annual_water_savings", Attribute.DOUBLE, READ)
-            self.__rwht.addAttribute("construction_costs", Attribute.DOUBLE, WRITE)
-            self.__rwht.addAttribute("maintenance_costs", Attribute.DOUBLE, WRITE)
-            self.__rwht.addAttribute("annual_savings", Attribute.DOUBLE, WRITE)
+            self.__rwht.addAttribute("non_potable_savings", Attribute.DOUBLE, READ)
+            self.__rwht.addAttribute("outdoor_water_savings", Attribute.DOUBLE, READ)
+            self.__rwht.addAttribute("parcel_id", Attribute.INT, READ)
+            self.__rwht.addAttribute("active", Attribute.INT, WRITE)
+            self.__rwht.addAttribute("pv_total_costs", Attribute.DOUBLE, WRITE)
+            self.__rwht.addAttribute("pv_non_potable_saving", Attribute.DOUBLE, WRITE)
+            self.__rwht.addAttribute("pv_outdoor_savings", Attribute.DOUBLE, WRITE)
+            self.__rwht.addAttribute("pv", Attribute.DOUBLE, WRITE)
 
-            #Data base values are from CRC-WSC A4  $2.170 	 $2.630 	 $3.025
-            # $2.525 	 $2.985 	 $3.560
-            self.__construction_cost_db = {"melbourne": {2 : 2170, 5: 2630, 10: 3025 }}
+            self.__parcel = ViewContainer("parcel", FACE, READ)
+            self.__parcel.addAttribute("pv", Attribute.DOUBLE, WRITE)
 
-            views = []
-            views.append(self.__rwht)
+            self.__building = ViewContainer("building", FACE, READ)
+            self.__building.addAttribute("parcel_id", Attribute.INT, READ)
 
-            self.registerViewContainers(views)
+            self.__household = ViewContainer("household", NODE, READ)
+            self.__household.addAttribute("building_id", Attribute.INT, READ)
+            self.__household.addAttribute("wtp_water_security", Attribute.DOUBLE, WRITE)
 
-        def __construction_costs(self, location, size):
+            #self.__household = ViewContainer("age", Attribute.INT, READ)
+            #self.__household = ViewContainer("education", Attribute.STRING, READ)
+            #self.__household = ViewContainer("bedrooms", Attribute.INT, READ)
+
+
+
+            self.registerViewContainers([self.__rwht, self.__household, self.__parcel, self.__building])
+
+        def construction_costs(self, location, size):
             """
             Returns construction costs based on the tank size
             :param size:
@@ -57,18 +80,97 @@ class RWHTCostModel(Module):
             try:
                 return self.__construction_cost_db[location][int(size)]
             except:
-                return -1.0
+                raise LookupError("No such tank found")
+
+        def maintenance_costs(self):
+            maintenance_cost = []
+            for y in self.__years:
+                maintenance_cost.append(20.)
+
+            discount_maintenance_cost = [d * m for d, m in zip(self.__discount_factor, maintenance_cost)]
+
+            return sum(discount_maintenance_cost)
+
+        def pv_total_costs(self, location, volume):
+            try:
+                return self.construction_costs(location,  volume) + self.maintenance_costs()
+            except (LookupError):
+                raise ValueError("can't calculate total costs")
+
+        def pv_non_potable_saving(self, annual_water_savings):
+            indoor_water_price = []
+            for y in self.__years:
+                indoor_water_price.append(2.5)
+            discount_non_potable_savings = [d * m * annual_water_savings for d, m in zip(self.__discount_factor, indoor_water_price)]
+
+            return sum(discount_non_potable_savings)
+
+        def pv_outdoor_savings(self, age, education, bedroom, outdoor_demand, non_potable_savings):
+            wtp_water_stress = self.agent_wtp(age, education, bedroom)
+            if outdoor_demand > non_potable_savings:
+                wtp_water_stress = 0
+
+            return sum([d * wtp_water_stress for d in self.__discount_factor])
+
+        def agent_wtp(self, age, education, bedroom):
+            return 3.208593 - 0.6362358*bedroom + 0.356186*age - 0.0027977*age*age - 1.883466*education
+
+        def get_household(self, p):
+            for b in self.__building.get_linked_features(p):
+                for h in self.__household.get_linked_features(b):
+                    return h
 
 
         def run(self):
-            self.__rwht.reset_reading()
-            for rwht in self.__rwht:
-                #Create CDF
-                volume = rwht.GetFieldAsDouble("volume")
-                rwht.SetField("construction_costs", self.__construction_costs("melbourne", volume))
+            self.__building.create_index("parcel_id")
+            self.__household.create_index("building_id")
+            self.__rwht.create_index("parcel_id")
 
-                annual_water_savings = rwht.GetFieldAsDouble("annual_water_savings")
-                rwht.SetField("annual_savings", annual_water_savings * 2.50)
+            self.__parcel.reset_reading()
+            counter = 0
+            for p in self.__parcel:
+                h = self.get_household(p)
+                pv_current = -1000000.
+                for r in self.__rwht.get_linked_features(p):
+
+                    pv_total_costs = self.pv_total_costs("melbourne", r.GetFieldAsDouble("volume"))
+                    pv_non_potable_saving = self.pv_non_potable_saving(r.GetFieldAsDouble("annual_water_savings"))
+                    pv_outdoor_savings = self.pv_outdoor_savings(31,1,4, 10,20)
+                    pv = pv_non_potable_saving + pv_outdoor_savings - pv_total_costs
+                    r.SetField("pv_total_costs", pv_total_costs)
+                    r.SetField("pv_outdoor_savings",pv_outdoor_savings)
+                    r.SetField("pv_non_potable_saving",pv_non_potable_saving)
+                    r.SetField("pv", pv)
+
+                    if pv > pv_current:
+                        pv_current = pv
+                p.SetField("pv", pv)
+
+                #self.__rwht.sync()
+            self.__rwht.sync()
+            self.__parcel.sync()
+            print counter
+
+
+
+
+
+            # for rwht in self.__rwht:
+            #     # Create CDF
+            #     volume = rwht.GetFieldAsDouble("volume")
+            #     rwht.SetField("construction_costs", self.construction_costs("melbourne", volume))
+            #
+            #     annual_water_savings = rwht.GetFieldAsDouble("annual_water_savings")
+            #     rwht.SetField("annual_savings", annual_water_savings * 2.50)
+
+
+if __name__ == "__main__":
+    r = RWHTCostModel()
+    r.init()
+
+    print r.pv_total_costs("melbourne", 2), r.pv_non_potable_saving(50), r.pv_outdoor_savings(31,1,4,20,40)
+    print r.pv_total_costs("melbourne", 5), r.pv_non_potable_saving(100), r.pv_outdoor_savings(31,1,4,20,10)
+    print r.pv_total_costs("melbourne", 10), r.pv_non_potable_saving(150), r.pv_outdoor_savings(31,0,4,20,20)
 
 
 

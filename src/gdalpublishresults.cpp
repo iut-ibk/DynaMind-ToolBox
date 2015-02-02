@@ -83,7 +83,7 @@ void GDALPublishResults::run()
 	if (interal_counter % this->steps != 0 && interal_counter != -1) {
 		return;
 	}
-	DM::Logger(DM::Error) << "Start Inster";
+	DM::Logger(DM::Debug) << "Start Inster";
 
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "PG_USE_COPY", "YES" );
@@ -147,7 +147,6 @@ void GDALPublishResults::run()
 
 	OGRLayer * lyr;
 
-
 	switch ( components.getType() ) {
 	case DM::COMPONENT:
 		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbNone, NULL );
@@ -163,9 +162,10 @@ void GDALPublishResults::run()
 		break;
 	}
 	if (!lyr) {
-		DM::Logger(DM::Error) << "Layer not created";
+		DM::Logger(DM::Error) << "Layer not created " << components.getType();
 		this->setStatus(DM::MOD_EXECUTION_ERROR);
 		return;
+
 	}
 	OGRFeatureDefn * def =  (OGRFeatureDefn*)components.getFeatureDef();
 	int c_fields = def->GetFieldCount();
