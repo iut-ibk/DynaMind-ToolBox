@@ -4,6 +4,7 @@
  DynaMind-Toolbox
         begin                : 2014-26-012
         copyright            : (C) 2014 Christian Urich
+        copyright            : (C) 2014 Michael Mair
         email                : christian.urich@gmail.com
  ***************************************************************************/
 
@@ -21,12 +22,24 @@ __docformat__ = 'restructuredtext en'
 
 import shutil
 import os
+import sys
 
-def compile_documents_modules(modules):
+def compile_documents_modules(sourcepath,modules):
+    indexedmodules = []
     for m in modules:
-        directory = "../../" + m + "/doc"
-        remove_compiled_module(m)
-        shutil.copytree(directory,  os.curdir+"/"+m)
+        try:
+            directory = sourcepath + "/" + m + "/doc"
+            if m == "DynaMind":
+                directory = directory + "/source"
+
+            remove_compiled_module(m)
+            shutil.copytree(directory,  os.curdir+"/"+m)
+            indexedmodules.append(m)
+        except:
+            print "No doc found for " + m
+
+    return indexedmodules
+
 
 def create_compiled_index(modules):
 
@@ -35,7 +48,7 @@ def create_compiled_index(modules):
     index = f.readlines()
 
     for m in modules:
-        index.append("  " + m+'/index\n')
+        index.append("  " + m + '/index\n')
 
     index.append("\n")
     index.append("Indices and tables\n")
@@ -62,12 +75,16 @@ def remove_compiled_module(m):
 
 
 if __name__ == "__main__":
-    modules = ["DynaMind", "DynaMind-GDALModules"]
-    compile_documents_modules(modules)
-    create_compiled_index(modules)
-    # remove_compiled_module(modules)
+    path = ""
+    modules = []
+    args = sys.argv[1:]
+    path = args[0]
+    args = args[1:]
 
+    print "Source path: " +  path
 
+    for i in args:
+        modules.append(i)
 
-
-
+    indexedmodules  = compile_documents_modules(path,modules)
+    create_compiled_index(indexedmodules)
