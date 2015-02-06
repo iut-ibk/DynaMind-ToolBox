@@ -29,9 +29,6 @@ def compile_documents_modules(sourcepath,modules):
     for m in modules:
         try:
             directory = sourcepath + "/" + m + "/doc"
-            if m == "DynaMind":
-                directory = directory + "/source"
-
             remove_compiled_module(m)
             shutil.copytree(directory,  os.curdir+"/"+m)
             indexedmodules.append(m)
