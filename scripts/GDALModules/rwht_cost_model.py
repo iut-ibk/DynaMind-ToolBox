@@ -55,21 +55,23 @@ class RWHTCostModel(Module):
 
             self.__parcel = ViewContainer("parcel", FACE, READ)
             self.__parcel.addAttribute("pv", Attribute.DOUBLE, WRITE)
+            self.__parcel.addAttribute("annual_water_savings", Attribute.DOUBLE, WRITE)
 
-            self.__building = ViewContainer("building", FACE, READ)
-            self.__building.addAttribute("parcel_id", Attribute.INT, READ)
+            # self.__building = ViewContainer("building", FACE, READ)
+            # self.__building.addAttribute("parcel_id", Attribute.INT, READ)
 
-            self.__household = ViewContainer("household", NODE, READ)
-            self.__household.addAttribute("building_id", Attribute.INT, READ)
-            self.__household.addAttribute("wtp_water_security", Attribute.DOUBLE, WRITE)
+            # self.__household = ViewContainer("household", NODE, READ)
+            # self.__household.addAttribute("building_id", Attribute.INT, READ)
+            # self.__household.addAttribute("wtp_water_security", Attribute.DOUBLE, WRITE)
 
             #self.__household = ViewContainer("age", Attribute.INT, READ)
             #self.__household = ViewContainer("education", Attribute.STRING, READ)
             #self.__household = ViewContainer("bedrooms", Attribute.INT, READ)
+            #self.__household, self.__building,
 
 
 
-            self.registerViewContainers([self.__rwht, self.__household, self.__parcel, self.__building])
+            self.registerViewContainers([self.__rwht, self.__parcel])
 
         def construction_costs(self, location, size):
             """
@@ -120,17 +122,22 @@ class RWHTCostModel(Module):
                 for h in self.__household.get_linked_features(b):
                     return h
 
-
         def run(self):
-            self.__building.create_index("parcel_id")
-            self.__household.create_index("building_id")
+            # self.__building.create_index("parcel_id")
+            # self.__household.create_index("building_id")
             self.__rwht.create_index("parcel_id")
 
             self.__parcel.reset_reading()
             counter = 0
+            counter_parcel = 0
+            pv_2000 =0
+            pv_1500 =0
+            pv_750 =0
             for p in self.__parcel:
-                h = self.get_household(p)
+                counter_parcel+=1
+                #h = self.get_household(p)
                 pv_current = -1000000.
+                annual_water_savings = 0
                 for r in self.__rwht.get_linked_features(p):
 
                     pv_total_costs = self.pv_total_costs("melbourne", r.GetFieldAsDouble("volume"))
@@ -141,18 +148,35 @@ class RWHTCostModel(Module):
                     r.SetField("pv_outdoor_savings",pv_outdoor_savings)
                     r.SetField("pv_non_potable_saving",pv_non_potable_saving)
                     r.SetField("pv", pv)
+                    counter+=1
 
                     if pv > pv_current:
                         pv_current = pv
-                p.SetField("pv", pv)
+                        annual_water_savings = r.GetFieldAsDouble("annual_water_savings")
 
+                if counter % 1000 == 0:
+                    print counter
+                if pv >= -1500.:
+                    pv_1500 +=1
+                if pv >= -750.:
+                    pv_750 +=1
+                if pv >= -2000.:
+                    pv_2000 +=1
+                p.SetField("pv", pv)
+                p.SetField("annual_water_savings", annual_water_savings)
+
+                #self.__parcel.sync()
                 #self.__rwht.sync()
+
+
+
             self.__rwht.sync()
             self.__parcel.sync()
+
+            print pv_2000 / float(counter_parcel)
+            print pv_1500 / float(counter_parcel)
+            print pv_750 / float(counter_parcel)
             print counter
-
-
-
 
 
             # for rwht in self.__rwht:
