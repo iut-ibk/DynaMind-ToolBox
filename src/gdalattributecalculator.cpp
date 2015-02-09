@@ -183,7 +183,7 @@ std::vector<OGRFeature *> GDALAttributeCalculator::resolveLink(OGRFeature * f, Q
 		filter << link_id_onToMany.str() << " = " << search_id;
 		v->resetReading();
 		v->setAttributeFilter(filter.str());
-		DM::Logger(DM::Debug) << filter.str();
+		//DM::Logger(DM::Debug) << filter.str();
 		while(next_f = v->getNextFeature()) {
 			next_features.push_back(next_f);
 		}
@@ -278,7 +278,7 @@ void GDALAttributeCalculator::run()
 			mp_c = lg->getGroupCounter();
 		}
 		else {
-			DM::Logger(DM::Debug) << "attribute calc: counter not found";
+			//DM::Logger(DM::Debug) << "attribute calc: counter not found";
 			mp_c = 0;
 		}
 
