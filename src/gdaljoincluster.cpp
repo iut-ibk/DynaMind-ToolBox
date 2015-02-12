@@ -39,7 +39,7 @@ void GDALJoinCluster::run()
 	junctions.resetReading();
 
 	//This should identify the endpoints
-	junctions.setAttributeFilter("possible_endpoint > 0");
+	//junctions.setAttributeFilter("possible_endpoint > 0");
 	OGRFeature * f;
 
 	typedef std::pair<long, double> segment;
@@ -49,7 +49,7 @@ void GDALJoinCluster::run()
 		OGRPoint * p = (OGRPoint *)f->GetGeometryRef();
 		if (!p)
 			continue;
-		OGRGeometry *p_buffer = p->Buffer(0.1);
+		OGRGeometry *p_buffer = p->Buffer(0.5);
 		network.resetReading();
 		network.setSpatialFilter(p_buffer);
 
@@ -69,7 +69,7 @@ void GDALJoinCluster::run()
 				GEOSGeometry* geos_p = p->exportToGEOS(gh);
 				GEOSGeometry* line = n->exportToGEOS(gh);
 				double p_l = GEOSProject_r(gh, line, geos_p);
-				DM::Logger(DM::Error) << p_l;
+				//DM::Logger(DM::Error) << p_l;
 				if (p_l == 0) {
 					continue;
 				}
@@ -100,10 +100,14 @@ void GDALJoinCluster::run()
 			segment s_i = segements_vec[i];
 			//find min element
 			int lowest_element = i;
+			double current_low = s_i.second;
 			for(int j = i; j < segements_vec.size(); j++) {
 				segment s_j = segements_vec[j];
-				if (s_j.second < s_i.second)
+				if (s_j.second < current_low) {
 					lowest_element = j;
+					current_low = s_j.second;
+				}
+
 			}
 			//switch pos
 			segment s_tmp = segements_vec[lowest_element];
@@ -116,8 +120,9 @@ void GDALJoinCluster::run()
 		OGRLineString * n = (OGRLineString *)e->GetGeometryRef();
 		for(int i = 1; i < segements_vec.size(); i++ ) {
 			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
+			//DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
 			if (!s) {
-				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
+				//DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
 				continue;
 			}
 			OGRFeature * s_f = this->network.createFeature();

@@ -53,6 +53,7 @@
 #include "gdalclusternetwork.h"
 #include "directnetwork.h"
 #include "gdaljoincluster.h"
+#include "gdalextractnodes.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -84,4 +85,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALClusterNetwork>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALDirectNetwork>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALJoinCluster>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALExtractNodes>());
 }
