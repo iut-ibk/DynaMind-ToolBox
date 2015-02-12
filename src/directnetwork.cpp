@@ -111,11 +111,13 @@ void GDALDirectNetwork::run()
 	//Start point list
 	std::vector<long> start;
 	for (std::map<long,  std::vector<long> >::const_iterator it = start_nodes.begin(); it != start_nodes.end(); ++it) {
-		//DM::Logger(DM::Error) << it->first << " " << it->second.size();
+
 		if(it->second.size() == 1) {
 			start.push_back(it->first);
 		}
 	}
+
+	//Find possble endpoints
 	for(int i = 0; i < start.size(); i++) {
 		for (std::map<long, int>::const_iterator it = edge_cluster.begin(); it != edge_cluster.end(); ++it) {
 			edge_cluster[it->first] = -1;
@@ -123,7 +125,7 @@ void GDALDirectNetwork::run()
 		int start_id = start[i];
 		double sum_delta = walk_the_edge(edge_list, start_nodes, edge_cluster, start_id);
 		node_id_delta[start[i]] = sum_delta;
-		//DM::Logger(DM::Error) << start[i] << " " << sum_delta;
+
 		OGRFeature * e  = this->network.getFeature(start_nodes[start_id][0]);
 		long cluster_id = e->GetFieldAsInteger("cluster_id");
 		if (end_point_list.count(cluster_id) == 0) {
@@ -143,18 +145,20 @@ void GDALDirectNetwork::run()
 			}
 		}
 	}
-	std::set<long> possible_endpoints_sorted;
+	std::map<long, long> possible_endpoints_sorted;
 
 	for (std::map<long, std::vector<long> >::const_iterator it = end_point_list.begin(); it != end_point_list.end(); ++it) {
 		std::vector<long> el = it->second;
 		foreach (long e, el) {
-			possible_endpoints_sorted.insert(e);
+			possible_endpoints_sorted[e] = it->first;
 		}
 	}
+
 	for (std::map<long, double>::const_iterator it = node_id_delta.begin(); it != node_id_delta.end(); ++it) {
 		OGRFeature * f = junctions.getFeature(n_id_to_fid[it->first]);
-		if (possible_endpoints_sorted.find(it->first) != possible_endpoints_sorted.end())
-			f->SetField("possible_endpoint", 1);
+		if (possible_endpoints_sorted.count(it->first) > 0) {
+			f->SetField("possible_endpoint", (int) possible_endpoints_sorted[it->first]);
+		}
 
 		f->SetField("height_diff", it->second);
 	}
