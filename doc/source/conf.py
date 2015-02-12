@@ -12,29 +12,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-sys.path.append("../source")
-import compile_doc
-
-
 import sphinx_rtd_theme
 import sphinx_bootstrap_theme
-
-
-
-#Compile DynaMind Doc
-modules = ["DynaMind", "DynaMind-GDALModules"]
-compile_doc.compile_documents_modules(modules)
-compile_doc.create_compiled_index(modules)
-
-
-
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
-#sys.path.insert(0, '/Users/curich/DynaMind/src/core')
 
 # -- General configuration ------------------------------------------------
 
@@ -64,7 +43,7 @@ master_doc = 'index_compile'
 
 # General information about the project.
 project = u'DynaMind'
-copyright = u'2014, Christian Urich'
+copyright = u'2014, Christian Urich, Michael Mair'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

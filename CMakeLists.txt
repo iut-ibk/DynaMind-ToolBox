@@ -24,6 +24,7 @@ OPTION(WITH_STANDALONE_EXE "if with standalon executeable" ON)
 OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
+OPTION(WITH_DOC "Create Docu" OFF)
 
 
 #Not Supported by the new Core
@@ -129,6 +130,10 @@ foreach (tool ${TOOLBOX})
 endforeach(${tool}) 
 
 add_subdirectory(Data)
+
+if(WITH_DOC)
+    add_subdirectory(./doc/)
+endif()
 
 if(WITH_INSTALLER)
     INCLUDE(DynaMind-ToolBoxCPack_with_Python.txt)
