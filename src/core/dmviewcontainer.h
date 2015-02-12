@@ -38,6 +38,7 @@ class DM_HELPER_DLL_EXPORT OGRFeature;
 class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
 class DM_HELPER_DLL_EXPORT OGRGeometry;
 class DM_HELPER_DLL_EXPORT OGRPoint;
+class DM_HELPER_DLL_EXPORT OGRLayer;
 
 namespace DM {
 
@@ -168,6 +169,8 @@ public:
 	OGRFeature *findNearestPoint(OGRPoint * p, double radius = 1.0);
 
 	void addModuleAttributeFilter(std::string filter);
+
+	OGRLayer *executeSQL(std::string query);
 
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation

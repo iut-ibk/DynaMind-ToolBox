@@ -95,6 +95,8 @@ void ViewContainer::createSpatialIndex()
 
 }
 
+
+
 void ViewContainer::deleteFeature(long id)
 {
 	if (!_currentSys) {
@@ -132,6 +134,11 @@ void ViewContainer::addModuleAttributeFilter(string filter)
 	this->moduleLevelFilter.push_back(filter);
 
 	this->setAttributeFilter("");
+}
+
+OGRLayer *ViewContainer::executeSQL(string query)
+{
+	return this->_currentSys->getDataSource()->ExecuteSQL(query.c_str(), 0, "SQLITE");
 }
 
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
