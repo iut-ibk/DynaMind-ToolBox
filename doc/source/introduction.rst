@@ -3,8 +3,8 @@ Introduction
 ============
 
 DynaMind is a light weight open source GIS workflow engine (similar ArcGIS's model builder) for
-developers and researchers to build complex simulations based on rich GIS data.
-Aim is to build small but reusable modules, that combined, can solve complex problems. DynaMind provides the
+developers and researchers to build complex simulations based on rich GIS data sets.
+Aim is to build small and reusable modules, that combined, can solve complex problems. DynaMind provides the
 foundation  complex scientific simulations by providing a light weight workflow engine
 
 (i) workflow engine
