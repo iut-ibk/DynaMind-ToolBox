@@ -16,8 +16,9 @@
 #define MODIFYAPI
 #define TESTLINK
 
-#define FEATURES "100000"
-#define FEATURES_2 "200000"
+#define FEATURES "1000"
+#define FEATURES_2 "2000"
+#define DEFAULTEPSG 31254
 
 #ifdef LOADPYTHON
 TEST_F(TestGDALPython,LoadPython) {
@@ -28,6 +29,9 @@ TEST_F(TestGDALPython,LoadPython) {
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 
 	sim.registerModulesFromDefaultLocation();
 	DM::Logger(DM::Debug) << "Loaded Modules";
@@ -50,6 +54,9 @@ TEST_F(TestGDALPython,PythonConnectionTest) {
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 
 	sim.registerModulesFromDefaultLocation();
 
@@ -84,6 +91,9 @@ TEST_F(TestGDALPython,PythonReadTest) {
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 
 	sim.registerModulesFromDefaultLocation();
 
@@ -120,6 +130,9 @@ TEST_F(TestGDALPython,PythonModifyTest) {
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 
 	sim.registerModulesFromDefaultLocation();
 
@@ -163,6 +176,9 @@ TEST_F(TestGDALPython,PythonLinks) {
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 
 	sim.registerModulesFromDefaultLocation();
 

@@ -9,8 +9,9 @@
 #include <dmsystem.h>
 #include <dmgdalhelper.h>
 
-#define FEATURES "100000"
-#define FEATURES_2 "200000"
+#define FEATURES "1000"
+#define FEATURES_2 "2000"
+#define DEFAULTEPSG 31254
 
 #define SPEEDTESTDM
 #define SPEEDTEST
@@ -28,6 +29,9 @@ TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	DM::Module * m1 = sim.addModule("GDALAddComponentViewContainer");
@@ -58,6 +62,9 @@ TEST_F(TestGDALModules,TestInsertSpeed_DM) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	sim.addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
@@ -73,6 +80,9 @@ TEST_F(TestGDALModules,TestInsertSpeed) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	sim.addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
@@ -88,6 +98,9 @@ TEST_F(TestGDALModules,ConnectionTest) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	DM::Module * m1 = sim.addModule("GDALAddComponent");
@@ -118,6 +131,9 @@ TEST_F(TestGDALModules,BranchingTest) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 
@@ -164,6 +180,9 @@ TEST_F(TestGDALModules,UpdateTest) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 
@@ -186,6 +205,9 @@ TEST_F(TestGDALModules,BranchModify) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 
@@ -220,6 +242,9 @@ TEST_F(TestGDALModules,WriteAttributes) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
 	DM::Module * m1 = sim.addModule("GDALAddComponent");
