@@ -8,6 +8,7 @@ class GDALJoinCluster : public DM::Module
 		DM_DECLARE_NODE(GDALJoinCluster)
 
 		private:
+			double buffer;
 			DM::ViewContainer network;
 			DM::ViewContainer junctions;
 public:

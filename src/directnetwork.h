@@ -16,7 +16,12 @@ private:
 public:
 	GDALDirectNetwork();
 	void run();
-	double walk_the_edge(std::map<long, std::pair<long, long> > & edge_list, std::map<long, std::vector<long> > & start_nodes, std::map<long, int> & edge_cluster, int start_id, double current_height = 0);
+	double walk_the_edge(std::map<long, std::pair<long, long> > & edge_list,
+						 std::map<long, std::vector<long> > & start_nodes,
+						 std::map<long, int> & edge_cluster,
+						 int start_id,
+						 int current_marker,
+						 double current_height = 0);
 };
 
 

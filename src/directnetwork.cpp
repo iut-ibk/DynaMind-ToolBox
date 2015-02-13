@@ -31,7 +31,12 @@ GDALDirectNetwork::GDALDirectNetwork()
 }
 
 
-double GDALDirectNetwork::walk_the_edge(std::map<long, std::pair<long, long> > & edge_list, std::map<long, std::vector<long> > & start_nodes, std::map<long, int> & edge_cluster,  int start_id, double current_height)
+double GDALDirectNetwork::walk_the_edge(std::map<long, std::pair<long, long> > & edge_list,
+										std::map<long, std::vector<long> > & start_nodes,
+										std::map<long, int> & edge_cluster,
+										int start_id,
+										int current_marker,
+										double current_height)
 {
 	//Get Connecting Edge
 	std::vector<long> edges = start_nodes[start_id];
@@ -43,9 +48,9 @@ double GDALDirectNetwork::walk_the_edge(std::map<long, std::pair<long, long> > &
 	double height_diff = 0;
 
 	foreach(long e_id, edges) {
-		if (edge_cluster[e_id] != -1)
+		if (edge_cluster[e_id] != current_marker)
 			continue;
-		edge_cluster[e_id] = 1;
+		edge_cluster[e_id] = current_marker;
 		std::pair<long, long> edge = edge_list[e_id];
 		long s_id = edge.first;
 		long end_id = edge.second;
@@ -61,7 +66,7 @@ double GDALDirectNetwork::walk_the_edge(std::map<long, std::pair<long, long> > &
 		//Caluclate delta h;
 		if (height_start != 0.0 && height_end != 0.0)
 			height_diff += height_start - height_end;
-		height_diff += walk_the_edge(edge_list, start_nodes, edge_cluster, next_id, height_start);
+		height_diff += walk_the_edge(edge_list, start_nodes, edge_cluster, next_id, current_marker, height_start);
 	}
 
 	return height_diff;
@@ -85,7 +90,7 @@ void GDALDirectNetwork::run()
 	std::map<long, double> node_id_delta;
 	std::map<long, std::vector<long> > end_point_list;
 	network.resetReading();
-	//network.setAttributeFilter("cluster_id = 689");
+
 	//Init Node List
 	while (f = network.getNextFeature()) {
 		long start_id =f->GetFieldAsInteger("start_id");
@@ -119,11 +124,12 @@ void GDALDirectNetwork::run()
 
 	//Find possble endpoints
 	for(int i = 0; i < start.size(); i++) {
-		for (std::map<long, int>::const_iterator it = edge_cluster.begin(); it != edge_cluster.end(); ++it) {
+		DM::Logger(DM::Debug) << i << "|" << start.size();
+		/*for (std::map<long, int>::const_iterator it = edge_cluster.begin(); it != edge_cluster.end(); ++it) {
 			edge_cluster[it->first] = -1;
-		}
+		}*/
 		int start_id = start[i];
-		double sum_delta = walk_the_edge(edge_list, start_nodes, edge_cluster, start_id);
+		double sum_delta = walk_the_edge(edge_list, start_nodes, edge_cluster, start_id, i+1);
 		node_id_delta[start[i]] = sum_delta;
 
 		OGRFeature * e  = this->network.getFeature(start_nodes[start_id][0]);

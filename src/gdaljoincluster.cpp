@@ -12,7 +12,8 @@ DM_DECLARE_NODE_NAME(GDALJoinCluster, GDALModules)
 GDALJoinCluster::GDALJoinCluster()
 {
 	GDALModule = true;
-
+	buffer = 0.5;
+	this->addParameter("buffer", DM::DOUBLE, &buffer);
 	network = DM::ViewContainer("network", DM::EDGE, DM::MODIFY);
 	network.addAttribute("cluster_id",  DM::Attribute::INT, DM::READ);
 	network.addAttribute("start_id",  DM::Attribute::INT, DM::MODIFY);
@@ -36,8 +37,49 @@ GDALJoinCluster::GDALJoinCluster()
 void GDALJoinCluster::run()
 {
 	junctions.createIndex("possible_endpoint");
+
+
+	/*OGRFeature * f;
 	junctions.resetReading();
 
+	//edge_id, cluster id
+	std::map<long, std::pair<long, long> > edge_list;
+	std::map<long, std::vector<long> > start_nodes;
+	std::map<long, int> edge_cluster;
+	network.resetReading();
+
+	//Init Node List
+	while (f = network.getNextFeature()) {
+		long start_id =f->GetFieldAsInteger("start_id");
+		long end_id =f->GetFieldAsInteger("end_id");
+		if (start_id == end_id)
+			continue;
+		edge_cluster[f->GetFID()] = -1;
+		edge_list[f->GetFID()] = std::pair<long, long>(start_id, end_id);
+
+		if (start_nodes.count(start_id) == 0)
+			start_nodes[start_id] = std::vector<long>();
+
+		if (start_nodes.count(end_id) == 0)
+			start_nodes[end_id] = std::vector<long>();
+
+		std::vector<long> & vec_start =  start_nodes[start_id];
+		vec_start.push_back(f->GetFID());
+		std::vector<long> & vec_end = start_nodes[end_id];
+		vec_end.push_back(f->GetFID());
+
+	}
+
+	//Start point list
+	std::vector<long> start;
+	for (std::map<long,  std::vector<long> >::const_iterator it = start_nodes.begin(); it != start_nodes.end(); ++it) {
+
+		if(it->second.size() == 1) {
+			start.push_back(it->first);
+		}
+	}*/
+
+	junctions.resetReading();
 	//This should identify the endpoints
 	//junctions.setAttributeFilter("possible_endpoint > 0");
 	OGRFeature * f;
@@ -46,10 +88,13 @@ void GDALJoinCluster::run()
 	std::map<long, std::vector< segment > > segments;
 	GEOSContextHandle_t gh = OGRGeometry::createGEOSContext();
 	while (f = junctions.getNextFeature()) {
+	//for(int i = 0; i < start.size(); i++) {
+		//DM::Logger(DM::Debug) << i << "|" << start.size();
+		//f = junctions.getFeature(start[i]);
 		OGRPoint * p = (OGRPoint *)f->GetGeometryRef();
 		if (!p)
 			continue;
-		OGRGeometry *p_buffer = p->Buffer(0.5);
+		OGRGeometry *p_buffer = p->Buffer(this->buffer);
 		network.resetReading();
 		network.setSpatialFilter(p_buffer);
 
@@ -122,7 +167,7 @@ void GDALJoinCluster::run()
 			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
 			//DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
 			if (!s) {
-				//DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
+				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
 				continue;
 			}
 			OGRFeature * s_f = this->network.createFeature();

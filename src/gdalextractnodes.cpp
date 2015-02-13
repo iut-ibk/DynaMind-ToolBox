@@ -15,8 +15,8 @@ GDALExtractNodes::GDALExtractNodes()
 	network = DM::ViewContainer("network", DM::EDGE, DM::READ);
 	network.addAttribute("start_id",  DM::Attribute::INT, DM::WRITE);
 	network.addAttribute("end_id",  DM::Attribute::INT, DM::WRITE);
-	network.addAttribute("upstream_i", DM::Attribute::DOUBLE, DM::READ);
-	network.addAttribute("downstre_1", DM::Attribute::DOUBLE, DM::READ);
+	network.addAttribute("level_lo", DM::Attribute::DOUBLE, DM::READ);
+	network.addAttribute("level_up", DM::Attribute::DOUBLE, DM::READ);
 
 	junctions = DM::ViewContainer("node", DM::NODE, DM::WRITE);
 	junctions.addAttribute("node_id",  DM::Attribute::INT, DM::WRITE);
@@ -76,8 +76,8 @@ void GDALExtractNodes::run()
 		OGRPoint p2;
 		edge->getPoint(0, &p1);
 		edge->getPoint(points-1, &p2);
-		double up = f->GetFieldAsDouble("upstream_i");
-		double down = f->GetFieldAsDouble("downstre_1");
+		double up = f->GetFieldAsDouble("level_lo");
+		double down = f->GetFieldAsDouble("level_up");
 
 		long start_id = getNodeID(node_id, p1, node_list, tolerance, up);
 		long end_id = getNodeID(node_id, p2, node_list, tolerance, down);
