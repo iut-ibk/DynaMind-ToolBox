@@ -14,6 +14,7 @@ GDALModules
    gdalparcelsplit
    gdalparceling
    gdaloffset
+   gdalcopyelementtoview
    rwhtcostmodel
 
 
