@@ -110,8 +110,16 @@ OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p, double radius)
 {
 	std::stringstream query;
 	query << std::setprecision(15);
-	query << "SELECT OGC_FID as id, ST_Distance(Geometry, MakePoint("
-		  << p->getX() << "," << p->getY() <<")) AS Distance FROM "<< this->getName() << " WHERE distance < " << radius <<" ORDER BY distance LIMIT 1";
+	/*query << "SELECT OGC_FID as id, ST_Distance(Geometry, MakePoint("
+		  << p->getX() << "," << p->getY() <<")) AS Distance FROM "<< this->getName() << " WHERE distance < " << radius
+		 << " AND ST_Contains(ST_Expand(MakePoint(" << p->getX() << "," << p->getY() <<"),200),Geometry)" <<"  ORDER BY distance LIMIT 1";*/
+	query << "SELECT OGC_FID as id, "
+		  << "ST_Distance(Geometry, MakePoint("
+		  << p->getX() << "," << p->getY() <<")) AS distance FROM "<< this->getName()
+		  << " WHERE ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = '" << this->getName() << "'"
+		  << "AND search_frame = BuildCircleMbr("<< p->getX() << ","<< p->getY() << "," << radius << "))  ORDER BY distance ASC LIMIT 1";
+
+	//DM::Logger(DM::Error) << query.str();
 	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
 	if (!lyr) {
 		Logger(Error) << "find nearest point query failed: " << query.str().c_str();
