@@ -72,8 +72,8 @@ void GDALJoinNearestNeighbour::run()
 	linkView.resetReading();
 
 	OGRFeature * lead_feat = 0;
+	linkView.createSpatialIndex();
 	while (lead_feat = leadingView.getNextFeature()) {
-
 		OGRGeometry * lead_geo = lead_feat->GetGeometryRef();
 
 		if (!lead_geo) {
