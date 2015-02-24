@@ -1,9 +1,9 @@
-===========
-GDALModules
-===========
+=======
+Modules
+=======
 
 .. toctree::
-   :maxdepth: 2
+   :titlesonly:
 
 
    gdalerase
@@ -12,9 +12,11 @@ GDALModules
    gdalpublishresults
    gdalspatiallinking
    gdalparcelsplit
+   gdalcalculatecentroids
    gdalparceling
    gdaloffset
    gdalcopyelementtoview
+   gdaljoinnearestneighbour
    rwhtcostmodel
 
 
