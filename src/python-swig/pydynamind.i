@@ -387,3 +387,381 @@ def registerNodes(registry):
 		registry.addNodeFactory(NodeFactory(klass).__disown__())
 
 %}
+
+%pythoncode %{
+
+import pydynamind as DM
+import uuid
+class SIM_STATUS:
+		RUNNING, OK = range(2)
+
+class Sim:
+		"""
+		Wrapper of the DynaMind Simulation class. Although DyanMind provides an almost complete wrapper for the Simulation class
+		this class provides functionality used in the dance_platform web application. The class is currently implemented as Singelton to make it
+		easier to use in the flask environment.
+
+		"""
+		_sim = DM.Simulation
+		_sim_status = SIM_STATUS.OK
+
+		def __init__(self):
+			"""
+			Init Logger and register Modules from default location
+			"""
+			DM.initDynaMind(DM.Standard)
+			self._sim = DM.Simulation()
+
+		def register_modules(self, path):
+			"""
+			Register dynamind module
+			"""
+			print "Register " + path
+			self._sim.registerModulesFromDirectory(path)
+		def run(self):
+			"""
+			Start simulation
+			"""
+			if self.is_busy():
+				print "Can't run simulation. a simulation is currently running"
+				return
+
+			self._sim_status = SIM_STATUS.RUNNING
+			self._sim.run()
+			self._sim_status = SIM_STATUS.OK
+
+		def is_busy(self):
+			if self._sim_status != SIM_STATUS.OK:
+				return True
+			return False
+
+		def __add_module(self, class_name, module_name, parent=None):
+			"""
+			Add module to DynaMind
+			:param class_name: Name of the module class
+			:param module_name: Name of generated module
+			:return: True if module was added to the simulation
+			"""
+			if self.is_busy():
+				print "Can't add module. A simulation is currently running"
+				return
+			if parent:
+				m = self._sim.addModule(class_name, parent)
+			else:
+				m = self._sim.addModule(class_name)
+			if m == None:
+				return False
+			m.setName(module_name)
+			return True
+
+		def __dict_to_dm_string(self, dictionary):
+			"""
+			Convert python dictionary to DynaMind string
+			:param dictionary:
+			:return:
+			"""
+			dm_string = ""
+			for k in dictionary.keys():
+				dm_string += '*||*'
+				dm_string += str(k)
+				dm_string += '*|*'
+				dm_string += str(dictionary[k])
+			if dm_string is not "":
+				dm_string += '*||*'
+			return dm_string
+
+		def __list_to_dm_string(self, list):
+			"""
+			Convert python list to DynaMind string
+			:param dictionary:
+			:return:
+			"""
+			dm_string = ""
+			dm_string += "*|*"
+			for e in list:
+				dm_string += e
+				dm_string += "*|*"
+			return dm_string
+
+
+		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, module_name=""):
+			"""
+			Add model the python way
+			:param class_name:
+			:param parameter:
+			:param connect_module:
+			:param parent_group:
+			:return:
+			"""
+			m_uuid = str(uuid.uuid4())
+			if module_name:
+				m_uuid = module_name
+			success = self.__add_module(class_name, m_uuid, parent_group)
+			if not success:
+				print "Adding module " + str(class_name) + " failed"
+				return None
+
+			m = self.get_module_by_name(m_uuid)
+
+			self._set_module_parameter(m, parameter)
+
+			if connect_module:
+				m.init()
+				self.link_modules(connect_module, m)
+			m.init()
+
+			return m
+
+		def set_modules_parameter(self, model_parameter_dict={}):
+			"""
+			Sets parameter for a whole bunch of modules stored in a dict. See set_module_parameter for how to define a
+			module parameter set
+			:param model_parameter_dict: dict of modules including module parameter
+			:return:
+			"""
+			for module_parameter in model_parameter_dict.iteritems():
+				# Iterate over every module
+				self.set_module_parameter(module_parameter)
+
+		def set_module_parameter(self, module_description=()):
+			"""
+			Set model parameter
+			:param module_description: the module description is a tuple with (module name, parameter list)
+			the parameter list is a dict that may contain following key word:
+			- parameter: {parameter name in module, parameter value}
+			- filter: {filter name, filter definition}
+			:return: nothing if everything was fine
+			"""
+
+			module_name, parameters = module_description
+
+			#get modules
+			m = self.get_module_by_name(module_name)
+			if "parameter" in parameters:
+				self._set_module_parameter(m, parameters["parameter"])
+			if "filter" in parameters:
+				filter = parameters["filter"]
+				attribute_filter = ""
+				spatial_filter = ""
+				if "attribute" in filter:
+					attribute_filter = filter["attribute"]
+				if "spatial" in filter:
+					spatial_filter = filter["spatial"]
+				filters = [DM.Filter("", DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter)))]
+				m.setFilter(filters)
+				m.init()
+
+		def _set_module_parameter(self, module, parameter={}):
+			"""
+			Set model parameter
+			:param name: name of the module
+			:param parameter: module parameter list
+			:return:
+			"""
+			for k in parameter.keys():
+				val = parameter[k]
+				if type(val) is dict:
+					val = self.__dict_to_dm_string(val)
+				if type(val) is list:
+					val = self.__list_to_dm_string(val)
+				if type(val) is bool:
+					if val == True:
+						val = "1"
+					else:
+						val = "0"
+				if type(val) is float:
+					val = str(val)
+				if type(val) is int:
+					val = str(val)
+				module.setParameterValue(str(k), str(val))
+
+
+		def remove_module(self, module_name):
+			"""
+			Remove module from Simulation
+			:param module_name:
+			:return:
+			"""
+			if self.is_busy():
+				print "Can't remove module. A simulation is currently running"
+				return
+			modules = self._sim.getModules()
+			modules_map = {}
+			for m in modules:
+				modules_map[m.getName()] = m
+			try:
+				module = modules_map[module_name]
+			except KeyError:
+				print "Module " + str(module_name) + " not found"
+				return
+
+			self._sim.removeModule(module)
+
+		def set_epsg_code(self, epsg_code):
+			"""
+			Set EPGS code of simulation
+			:param epsg_code:
+			:return:
+			"""
+			sim_config = DM.SimulationConfig()
+			sim_config.setCoordinateSystem(epsg_code)
+
+			self._sim.setSimulationConfig(sim_config)
+
+		def load_simulation(self, filename):
+			"""
+			Load dynamind simulation
+			:param filename: Name of the .dyn file to load
+			"""
+			if self.is_busy():
+				print "Can't load simulation. A simulation is currently running"
+				return
+			print self._sim
+			print filename
+
+			self._sim_status = SIM_STATUS.RUNNING
+			self._sim.loadSimulation(str(filename))
+			self._sim_status = SIM_STATUS.OK
+
+		def get_module_by_name(self, name):
+			"""
+			Return module by name, be careful names are not unique! IF a mo
+			:param name: name of the module
+			:return:
+			"""
+			modules = self._sim.getModules()
+			modules_map = {}
+			for m in modules:
+				modules_map[m.getName()] = m
+			try:
+				m = modules_map[name]
+			except KeyError:
+				raise Exception("No Module with the name " + str(name))
+			return m
+
+		def get_module(self, module_id):
+			"""
+			Finds and returns module in simulation
+			:param module_id: unique id of the module
+			:return: module
+			"""
+			modules = self._sim.getModules()
+			modules_map = {}
+			for m in modules:
+				modules_map[m.getUuid()] = m
+			m = modules_map[module_id]
+			return m
+
+		def add_link(self, m_source, outport_name, m_sink, inport_name):
+			"""
+			Link two modules using their port names. If modules have only one port also link_modules
+			can be used.
+			:param m_source:
+			:param outport_name:
+			:param m_sink:
+			:param inport_name:
+			:return:
+			"""
+			if not self._sim.addLink(m_source, outport_name, m_sink, inport_name):
+				raise Exception("Couldn't link module " + str(m_source.getName()) + " with " + str(m_sink.getName()))
+
+		def link_modules(self, m_source, m_sink):
+			"""
+			Helper Class to make inking modules less tedious. Just works with if
+			module has one source and one sink. Otherwise troughs exception
+			:param m_source: Module
+			:param m_sink: Module
+			:return: nothing
+			"""
+			inports = m_sink.getInPortNames()
+			outports = m_source.getOutPortNames()
+
+			if len(inports) == 0 or len(outports) == 0:
+				 raise Exception("Module has no out ports. Couldn't link module " + str(m_source.getName()) + " with " + str(m_sink.getName()))
+
+			self.add_link(m_source, outports[0], m_sink, inports[0])
+
+		def get_links(self):
+			"""
+			returns a list of links
+			:return:
+			"""
+			return self._sim.getLinks()
+
+		def clear(self):
+			"""
+			Clear simulation
+
+			removes all modules from the simulation
+			"""
+			if self.is_busy():
+				print "Can't reset simulation. a simulation is currently running"
+				return
+			self._sim_status = SIM_STATUS.RUNNING
+			self._sim.clear()
+			self._sim_status = SIM_STATUS.OK
+
+		def reset(self):
+			"""
+			Reset simulation
+
+			resets current simulation
+			"""
+			if self.is_busy():
+				print "Can't reset simulation. a simulation is currently running"
+				return
+			self._sim_status = SIM_STATUS.RUNNING
+			self._sim.reset()
+			self._sim_status = SIM_STATUS.OK
+
+		def map_of_loaded_modules(self):
+			"""
+			Return map of the modules in the simulation
+			:return: [key|name]
+			"""
+			modulemap = {}
+			modules = self._sim.getModules()
+
+			for m in modules:
+				modulemap[m.getUuid()] = m.getName()
+			return modulemap
+
+
+		def serialise(self):
+			"""
+			Serialise simulation
+			:return: Returns simulation as xml string
+			"""
+			return self._sim.serialise()
+
+		def write_simulation_file(self, filename):
+			"""
+			Write simulation to file
+			:param filename: name of the file
+			"""
+			self._sim.writeSimulation(filename)
+
+		def execute(self, dynamind_model, epsg_code, parameter_set):
+
+			self.clear()
+			self.set_epsg_code(epsg_code)
+
+			simulation_file = tempfile.gettempdir() + str(uuid.uuid4())+".dyn"
+
+			#Create temp simulation file and load sim
+			sim_file = open(simulation_file, "w")
+			sim_file.write(dynamind_model)
+			sim_file.close()
+
+			self.load_simulation(simulation_file)
+			#Can now be removed
+			os.remove(simulation_file)
+
+			self.set_modules_parameter(parameter_set)
+			print self.serialise()
+			self.run()
+
+
+
+%}
+
