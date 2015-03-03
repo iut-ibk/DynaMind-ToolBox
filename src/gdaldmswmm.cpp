@@ -58,6 +58,7 @@ GDALDMSWMM::GDALDMSWMM()
 	conduit.addAttribute("velocity", DM::Attribute::DOUBLE, DM::WRITE);
 
 	inlet = DM::ViewContainer("inlet", DM::NODE, DM::READ);
+	inlet.addAttribute("node_id", DM::Attribute::INT, DM::READ);
 	//inlet.addAttribute("catchment", "CITYBLOCKS", DM::READ);
 
 
