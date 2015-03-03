@@ -6,11 +6,14 @@
 Welcome to DynaMind's User Guide
 ================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 2
+  :maxdepth: 2
 
-  introduction
   quick-intro-gui
+  known_problems
+
+Modules
+=======
+.. toctree::
+  :titlesonly:
 
