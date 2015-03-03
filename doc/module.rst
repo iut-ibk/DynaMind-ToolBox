@@ -45,7 +45,7 @@ The following code block shows an implementation of the two parts.
             def run(self):
                 #Data Stream Manipulation
                 ....
-
+..
 
 Module Initialisation
 =====================
@@ -54,7 +54,7 @@ used by the module transparent to the simulation and to the users. The initialis
 which describes parameter that can be set by the user and (2) the data stream definition; which defines the needed, generated and modified data
 in terms of geometry types and attributes.
 
-Parameter definition
+Parameter Definition
 --------------------
 Parameter defined in the initialisation can be modified by the user. A parameter can be added using ``self.createParameter("ParameterName", TYPE, "description")``.
 To initalise the parameter with a default value use ``self.ParameterName = foo``.
@@ -93,7 +93,7 @@ Following parameter types are supported:
 |STRING_MAP     | map of strings   [3]_ |
 +---------------+-----------------------+
 
-Data stream definition using Views (only recommended for advanced users)
+Data Stream Definition Using Views (only recommended for advanced users)
 ------------------------------------------------------------------------
 To be able to connect a module to the data stream the data read, modified and created by the module need to be defined.
 A data stream in DynaMind is defined as a collection of *Views*. *Views* describe data in the stream in terms of their geometry type, attributes and, links to other views.
@@ -157,7 +157,7 @@ The view definition is used by the simulation to check if all data are provided 
 
 ..
 
-Data stream definition using ViewContainer
+Data Stream Definition Using ViewContainer
 ------------------------------------------
 When using the DynaMind-GDAL API ViewContainers provide an easier way to define and access the data stream.
 ViewContainer enhance the View definition described before, providing a more direct access to its data. This means
@@ -199,7 +199,7 @@ method is called. Depending on the chosen data API data are either accessed usin
 for the *DynaMind Component API* or via *ViewContainer* using the *DynaMind GDAL API*
 
 
-Data Access using the *DynaMind GDAL API*
+Data Access Using the *DynaMind GDAL API*
 -----------------------------------------
 The *DynaMind GDAL API* builds on the widely applied GDAL library. In GDAL
 geometric objects are described as ``Feature``. Features contain geometry and attributes describing the object
