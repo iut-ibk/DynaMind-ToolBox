@@ -1,9 +1,10 @@
-==============
-GDALHotStarter
-==============
+====================
+Hot Start Simulation
+====================
 
-
-The GDALHoststarter is used to hot start a simulation with a previous database. This is particularly useful for bigger simulation where the data preparation and linking of data takes a significant amount of time, but once established, can be used as basis for many simulations.
+:index:`GDALHoststarter <GDALModules; GDALHoststarter | Hot start simulation>` is used to hot start a simulation with a previous database.
+This is particularly useful for bigger simulation where the data preparation and linking of data takes a significant amount of time,
+but once established, can be used as basis for many simulations.
 
 Parameter
 ---------

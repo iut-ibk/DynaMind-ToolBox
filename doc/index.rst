@@ -1,10 +1,9 @@
-=======
-Modules
-=======
+=======================
+Standard Modules (GDAL)
+=======================
 
 .. toctree::
    :titlesonly:
-
 
    gdalerase
    gdalhotstarter

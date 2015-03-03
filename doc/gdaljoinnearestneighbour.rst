@@ -1,9 +1,9 @@
 
 ======================
-:index:`Link Nearest Neighbour <pair: Modules; GDALJoinNearestNeighbour>`
+Link Nearest Neighbour
 ======================
 
-``GDALJoinNearestNeighbour`` joins the closest link view component to a leading view component.
+:index:`GDALJoinNearestNeighbour <GDALModules; GDALJoinNearestNeighbour | Link Nearest Neighbour>` joins the closest link view component to a leading view component.
 
 Parameter
 ---------
