@@ -44,7 +44,64 @@ After registering modules and defining a spatial reference the DynaMind simulati
 Adding Modules
 ==============
 
-To add modules call the ``add_module function`` of the initialised simulation.
+To add modules call the ``add_module(class_name, parameter={}, connect_module=None, parent_group=None, filters={}, module_name="")`` function of the initialised simulation.
+This functions adds a new module to the simulation and returns the generated module. The returned module can be used to link the module later to another module.
+
+Parameter:
+
+ - class_name: The class name of the to add module. A list of available modules can be found in the documentation. In the example below the GDALImportData is loaded to import data into the simulation
+ - parameter: A dictionary to set module parameter. The dictionary uses as key the parameter name and as value the parameter value e.g. ``{'parameter1': 10}``. The list of parameter for a module can be found in its documentation
+ - connect_module: The newly created module is connected to the connect_module
+ - parent_group: This is used to add the module to a group
+ - filters: A dict of filters. ``{ view_name : {'attribute': 'attribute filter' :  spatial: 'view name'} }``
+ - module_name: per default the module name is a randomly set; module_name can be used to define a specific name.
+
+.. code-block:: python
+
+    # Load data from PostGIS database with GDALImport Data. Per default the module has no import
+    catchment = sim.add_module('GDALImportData',{'source': 'PG:dbname=elwood host=localhost port=5432 user=user password=password',
+                                          'layer_name': 'elwood_catchment',
+                                          'view_name': 'catchment',
+                                          'epsg_from': 4283,
+                                          'epsg_to': 32755,
+                                          'append' : False})
+
+    filter = DM.Filter("", DM.FilterArgument("lu_desc = 'Road Void'"), DM.FilterArgument("catchment"))
+
+    # load land use data with the attribute lu_desc = 'Road Void' and that are within the catchment.
+    # the parameter append is set to true to allow to connect the module to the catchment module created before
+    land_use = sim.add_module('GDALImportData', {'source': 'PG:dbname=melbourne host=localhost port=5432 user=user password=password',
+                                          'layer_name': 'landuse_victoria',
+                                          'view_name': 'landuse',
+                                          'epsg_from': 4283,
+                                          'epsg_to': 32755,
+                                          'append' : True},
+                             catchment,
+                             filters={'landuse': {'attribute': "lu_desc = 'Road Void'",
+                                                  'spatial': "catchment"}
+                             })
+    # Upload results to PostGIS database
+    export = sim.add_module('GDALPublishResults',
+                               {'sink': 'PG:dbname=melbourne host=localhost port=5432 user=user password=password',
+                                'driver_name': '',
+                                'targetEPSG' : '4283',
+                                'sourceEPSG' : '32755',
+                                'view_name': 'catchment',
+                                'layer_name': 'result_catchment'},
+                             land_use)
+
+..
 
 
 
+Execute Simulation
+==================
+
+After adding and linking the modules the simulation can be executed calling the ``run()`` method.
+
+.. code-block:: python
+
+    # Execute simulation
+    sim.run()
+
+..

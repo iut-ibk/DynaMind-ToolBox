@@ -328,6 +328,15 @@ class DM::ViewContainer {
 	def __iter__(self):
 		return self
 
+
+	def get_ogr_layer(self):
+		self.register_layer()
+		return self.__ogr_layer
+
+	def get_ogr_ds(self):
+		self.register_layer()
+		return self.__ds
+
 	def get_linked_features(self, feature, link_id = ""):
 		self.reset_reading()
 		link_name = feature.GetDefnRef().GetName()
@@ -492,7 +501,7 @@ class Sim:
 			return dm_string
 
 
-		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, filters=[], module_name=""):
+		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, filters={}, module_name=""):
 			"""
 			Add model the python way
 			:param class_name:
@@ -516,7 +525,17 @@ class Sim:
 			if connect_module:
 				m.init()
 				self.link_modules(connect_module, m)
-			m.setFilter(filters)
+			filters_list = []
+			for f in filters.keys():
+				filter = filters[f]
+				attribute_filter = ""
+				spatial_filter = ""
+				if "attribute" in filter:
+					attribute_filter = filter["attribute"]
+				if "spatial" in filter:
+					spatial_filter = filter["spatial"]
+					filters_list.append(DM.Filter(f, DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter))))
+			m.setFilter(filters_list)
 			m.init()
 
 			return m
