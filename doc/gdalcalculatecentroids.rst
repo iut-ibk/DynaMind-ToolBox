@@ -1,8 +1,8 @@
-===================
-GDALCreateCentroids
-===================
+================
+Create Centroids
+================
 
-Creates a new node in the centroid of a face
+:index:`GDALCreateCentroids <GDALModules; GDALCreateCentroids | Create centroids>` creates a new node in the centroid of a face
 
 Parameter
 ---------

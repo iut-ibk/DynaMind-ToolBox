@@ -1,8 +1,8 @@
-==============
-GDALImportData
-==============
+===============
+Import GIS Data
+===============
 
-Imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
+:index:`GDALImportData <GDALModules; GDALImportData | Import data>` imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------
@@ -32,7 +32,7 @@ found `here <http://www.gdal.org/ogr_formats.html>`_. Please ensure that the `ep
 ensure that the simulation is executed correctly. `epsg_to` should be the same throughout the simulation.
 
 
-Import form Shapefile
+Import from Shapefile
 _____________________
 
 This is the most common way to import data into your simulation. please point the source parameter to your file.
@@ -43,7 +43,7 @@ allows you to identify your coordinate system based on the `.prj` file that come
 
 
 
-Import form PostGIS
+Import from PostGIS
 ___________________
 
 If you want to obtain data from a PostGIS server please set the source to following

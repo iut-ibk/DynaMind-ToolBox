@@ -1,9 +1,8 @@
-==========
-GDALOffset
-==========
+============
+Offset Faces
+============
 
-Inner offsets faces.
-
+:index:`GDALOffset <GDALModules; GDALOffset | Offset faces>` Inner offsets faces.
 
 Parameter
 ---------

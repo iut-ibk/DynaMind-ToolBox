@@ -1,8 +1,8 @@
-==================
-GDALPublishResults
-==================
+===============
+Export GIS data
+===============
 
-Export GIS data from DynaMind to common GIS formats `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
+:index:`GDALPublishResults <GDALModules; GDALPublishResults | Export GIS data>` export GIS data from DynaMind to common GIS formats `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------

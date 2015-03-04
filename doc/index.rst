@@ -5,6 +5,8 @@ Standard Modules (GDAL)
 .. toctree::
    :titlesonly:
 
+
+   overview
    gdalerase
    gdalhotstarter
    gdalimportdata
@@ -16,7 +18,6 @@ Standard Modules (GDAL)
    gdaloffset
    gdalcopyelementtoview
    gdaljoinnearestneighbour
-   rwhtcostmodel
 
 
 

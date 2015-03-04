@@ -1,8 +1,8 @@
-=============
-GDALParceling
-=============
+============
+Parcel Faces
+============
 
-Splits a face into n parts with a defined width.
+:index:`GDALParceling <GDALModules; GDALParceling | Parcel faces>` splits a face into n parts with a defined width.
 
 
 Parameter

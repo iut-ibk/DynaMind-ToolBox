@@ -1,8 +1,8 @@
-==================
-GDALSpatialLinking
-==================
+========================
+Spatially Link Data Sets
+========================
 
-This module spatially links GIS data. This means if a components of the leading view is joined to the link view by
+:index:`GDALSpatialLinking <GDALModules; GDALSpatialLinking | Spatially link data sets>` spatially links GIS data. This means if a components of the leading view is joined to the link view by
 creating a id.
 
 For example to join parcels with buildings, parcels is the leading view and buildings is the link view

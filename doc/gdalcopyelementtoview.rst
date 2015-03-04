@@ -1,8 +1,8 @@
-=====================
-GDALCopyElementToView
-=====================
+=============
+Copy Features
+=============
 
-Copies elements from one view to another
+:index:`GDALCopyElementToView <GDALModules; GDALCopyElementToView | Copy features>` copies elements from one view to another
 
 Parameter
 ---------
@@ -12,7 +12,7 @@ Parameter
 +===================+========================+=======================================================================+
 |from_view          | STRING                 | source of the elements that are copied                                |
 +-------------------+------------------------+-----------------------------------------------------------------------+
-|to_view            | STRING                 | destiation to where elements are copied                               |
+|to_view            | STRING                 | destination to where elements are copied                              |
 +-------------------+------------------------+-----------------------------------------------------------------------+
 
 Data-stream

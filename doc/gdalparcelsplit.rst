@@ -1,8 +1,8 @@
-===============
-GDALParcelSplit
-===============
+=================
+Subdivide Parcels
+=================
 
-Splits a face into n parts with a defined width.
+:index:`GDALParcelSplit <GDALModules; GDALParcelSplit | Subdivide parcel>` splits a face into n parts with a defined width.
 
 
 Parameter

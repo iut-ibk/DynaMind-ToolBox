@@ -1,9 +1,8 @@
-=========
-GDALErase
-=========
+=================
+Subtract Features
+=================
 
-Intersects features from the *eraseViewName* with features from *leadingViewName* and removes intersecting faces from the
-*leadingViewName*
+:index:`GDALErase <GDALModules; GDALErase | Subtract features>` intersects features from the *eraseViewName* with features from *leadingViewName* and removes intersecting faces from the *leadingViewName*
 
 Parameter
 ---------
