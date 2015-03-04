@@ -55,6 +55,7 @@ from osgeo import ogr
 
 namespace std {
 	%template(stringvector) vector<string>;
+	%template(viewvector)  map<string, DM::View>;
 	%template(doublevector) vector<double>;
 	%template(systemvector) vector<DM::System* >;
 	%template(systemmap) map<string, DM::System* >;
@@ -155,6 +156,11 @@ public:
 
 	std::vector<std::string> getInPortNames() const;
 	std::vector<std::string> getOutPortNames() const;
+
+	std::map<std::string,DM::View> getViewsInStdStream() const;
+
+
+
 
 	void setStatus(DM::ModuleStatus status);
 
@@ -484,7 +490,7 @@ class Sim:
 			return dm_string
 
 
-		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, module_name=""):
+		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, filters=[], module_name=""):
 			"""
 			Add model the python way
 			:param class_name:
@@ -508,6 +514,7 @@ class Sim:
 			if connect_module:
 				m.init()
 				self.link_modules(connect_module, m)
+			m.setFilter(filters)
 			m.init()
 
 			return m

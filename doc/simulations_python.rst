@@ -41,5 +41,10 @@ After registering modules and defining a spatial reference the DynaMind simulati
 
 ..
 
+Adding Modules
+==============
+
+To add modules call the ``add_module function`` of the initialised simulation.
+
 
 
