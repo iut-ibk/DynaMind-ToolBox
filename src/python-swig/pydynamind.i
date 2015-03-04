@@ -289,8 +289,6 @@ class DM::ViewContainer {
 %extend DM::ViewContainer {
 	%pythoncode {
 	#Container for OGRObejcts, otherwise the garbage collector eats them
-	__features = None
-	__ogr_layer = None
 	__ds = None
 
 	def create_feature(self):
@@ -315,13 +313,17 @@ class DM::ViewContainer {
 		ds.Destroy()
 
 	def register_layer(self):
-		if self.__ogr_layer:
+		try:
+			self.__ogr_layer
+		except:
+			db_id = self.getDBID()
+			self.__features = []
+			if self.__ds == None:
+				self.__ds = ogr.Open("/tmp/"+db_id+".db")
+			table_name = str(self.getName())
+			self.__ogr_layer = self.__ds.GetLayerByName(table_name)
+		else:
 			return
-		db_id = self.getDBID()
-		self.__features = []
-		self.__ds = ogr.Open("/tmp/"+db_id+".db")
-		table_name = str(self.getName())
-		self.__ogr_layer = self.__ds.GetLayerByName(table_name)
 
 	def __iter__(self):
 		return self
