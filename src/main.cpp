@@ -249,6 +249,7 @@ int main(int argc, char *argv[], char *envp[])
 		//("python-modules", po::value<vector <string> >(), "set path to python modules")
 		("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
 		("parameterlist", "shows the available parameters for this file")
+		("with-status-updates", "print custom status updates")
 		("version", "shows the current version of the dynamind core")
 		("license", "shows used license of the dynamind core")
 		("author", "shows the names of the core programmers")
@@ -259,6 +260,7 @@ int main(int argc, char *argv[], char *envp[])
 	std::vector<std::string> pythonModules;
 	int repeat = 1;
 	bool verbose = false;
+	bool withStatusUpdates = false;
 	string cpfile = "";
     string replace = "";
 	string parameteroverloads = "";
@@ -273,6 +275,7 @@ int main(int argc, char *argv[], char *envp[])
 		po::notify(vm);
 
 		verbose = vm.count("verbose");
+		withStatusUpdates = vm.count("with-status-updates");
 
 		if (vm.count("settings")) {
 			setSettings(vm["settings"].as<string>());
@@ -389,7 +392,11 @@ int main(int argc, char *argv[], char *envp[])
 	omp_set_num_threads(numThreads);
 #endif
 
-	DM::Simulation s;
+    DM::Simulation s;
+    if (withStatusUpdates) {
+        std::string path("dynamindstatus-" + std::to_string(getpid()) + ".log");
+        s.installStatusUpdater(path);
+    }
 
 	s.registerModulesFromDefaultLocation();
 	s.registerModulesFromSettings();
