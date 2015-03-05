@@ -30,6 +30,7 @@
 
 #include "dmcompilersettings.h"
 #include <string>
+#include <fstream>
 #include <vector>
 #include <dmmodule.h>
 #include <dmisystem.h>
@@ -249,6 +250,15 @@ private:
 	/** @brief checks the stream beginning with this group for possible missing views */
 	bool checkGroupStreamForward(Group* g, std::string streamName, bool into);
 
+	/** @brief if true, print custom status updates */
+	bool withStatusUpdates;
+
+	/** @brief the file to print the status updates to */
+	std::ofstream statusFile;
+
+	/** @brief emit a status update */
+	void emitStatusUpdate(float progress, const std::string& msg);
+
 public:
 	/** @brief returns all links connected to this port */
 	std::vector<Link*> getIngoingLinks(const Module* dest, const std::string& inPort) const;
@@ -265,8 +275,10 @@ public:
 	/** @brief serialise simuatlion */
 	std::string serialise();
 
-private:
+	/** @brief print status updates to given file path */
+	void installStatusUpdater(const std::string& path);
 
+private:
 	bool canceled;
 	std::list<Module*>	modules;
 	std::list<Link*>	links;

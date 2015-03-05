@@ -101,6 +101,8 @@ Simulation::Simulation()
 {
 	status = SIM_OK;
 	moduleRegistry = new ModuleRegistry();
+
+	withStatusUpdates = false;
 }
 
 Simulation::~Simulation()
@@ -111,6 +113,15 @@ Simulation::~Simulation()
 
 	foreach(SimulationObserver* obs, observers)
 		delete obs;
+
+	if (withStatusUpdates)
+		statusFile.close();
+}
+
+void Simulation::installStatusUpdater(const std::string& path)
+{
+	withStatusUpdates = true;
+	statusFile.open(path);
 }
 
 Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
@@ -431,7 +442,6 @@ std::string Simulation::serialise()
 	return QString(dest.data()).toStdString();
 }
 
-
 bool Simulation::checkGroupStreamForward(Group* g, std::string streamName, bool into)
 {
 	if(!g)
@@ -702,8 +712,13 @@ SimulationConfig Simulation::getSimulationConfig()
 	return config;
 }
 
+void Simulation::emitStatusUpdate(float progress, const std::string& msg)
+{
+	std::string tStamp = QDateTime::currentDateTime().toString("ddMMyyhhmmss").toStdString();
+	statusFile << tStamp << " " << (size_t) (progress * 100) << " " << status << " '" << msg << "'" << endl;
+}
 
-class Worlist: public std::list<Module*>
+class Worklist: public std::list<Module*>
 {
 public:
 	void unique_insert(Module* m)
@@ -720,6 +735,10 @@ void Simulation::run()
 	foreach(SimulationObserver* obs, observers)
 		obs->update(0);
 
+	if (withStatusUpdates) {
+		emitStatusUpdate(0., "initializing simulation");
+	}
+
 	QElapsedTimer simtimer;
 	simtimer.start();
 
@@ -728,13 +747,18 @@ void Simulation::run()
 	{
 		Logger(Error) << ">> checking simulation failed";
 		this->status = SIM_FAILED;
+
+		if (withStatusUpdates) {
+			emitStatusUpdate(0., "checking simulation failed");
+		}
+
 		return;
 	}
 	Logger(Standard) << ">> checking simulation succeeded (took " << (long)simtimer.elapsed() << "ms)";
 	simtimer.restart();
 	Logger(Standard) << ">> starting simulation";
 	// get modules with no imput - beginning modules list
-	Worlist worklist;
+	Worklist worklist;
 	foreach(Module* m, modules)
 		if(m->inPortsSet() && m->getStatus() != MOD_EXECUTION_OK)
 			worklist.unique_insert(m);
@@ -749,7 +773,7 @@ void Simulation::run()
 	while(worklist.size() && !canceled)
 	{
 		// get first element
-		Worlist::iterator it = worklist.begin();
+		Worklist::iterator it = worklist.begin();
 		Module* m = *it;
 		worklist.remove(m);
 
@@ -785,6 +809,12 @@ void Simulation::run()
 			QElapsedTimer modTimer;
 			modTimer.start();
 			m->setStatus(MOD_EXECUTING);
+
+			float progress = (float)cntModulesFinished/numModulesToFinish;
+			if (withStatusUpdates) {
+				emitStatusUpdate(progress, "running module " + m->getName());
+			}
+
 			//Run PreRun to init GDALSytem before module is executed
 			m->preRun();
 			//Run Module
@@ -792,7 +822,8 @@ void Simulation::run()
 			// check for errors
 			//Run AfterRun to clean up GDALModules
 			m->afterRun();
-			ModuleStatus merr = m->getStatus();
+
+			cntModulesFinished++;
 			if(m->getStatus() == MOD_EXECUTION_ERROR)
 			{
 				if(Module* owner = m->getOwner())
@@ -800,6 +831,11 @@ void Simulation::run()
 
 				Logger(Error) << "module '" << m->getName() << "' failed after " << (long)modTimer.elapsed() << "ms";
 				this->status = DM::SIM_FAILED;
+
+				if (withStatusUpdates) {
+					emitStatusUpdate(0., "module " + m->getName() + " failed");
+				}
+
 				return;
 			}
 			else
@@ -809,8 +845,6 @@ void Simulation::run()
 				m->setStatus(MOD_EXECUTION_OK);
 
 				// notify progress
-				cntModulesFinished++;
-				float progress = (float)cntModulesFinished/numModulesToFinish;
 				foreach(SimulationObserver* obs, observers)
 					obs->update(progress);
 			}
@@ -876,6 +910,10 @@ void Simulation::run()
 		// notify progress
 		foreach(SimulationObserver* obs, observers)
 			obs->update(1);
+	}
+
+	if (withStatusUpdates) {
+		emitStatusUpdate(canceled ? 0. : 1., "finished simulation");
 	}
 }
 
