@@ -121,7 +121,7 @@ Simulation::~Simulation()
 void Simulation::installStatusUpdater(const std::string& path)
 {
 	withStatusUpdates = true;
-	statusFile.open(path);
+	statusFile.open(path.c_str());
 }
 
 Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
