@@ -29,3 +29,5 @@ from read_gdal_advanced_api import *
 from modify_gdal_advanced_api import *
 from create_gdal_links_api import *
 from get_linked_component import *
+from advanced_data_types import *
+from read_advanced_data_types import *

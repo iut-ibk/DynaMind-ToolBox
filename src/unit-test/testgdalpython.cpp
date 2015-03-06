@@ -15,6 +15,7 @@
 #define READAPI
 #define MODIFYAPI
 #define TESTLINK
+#define TESTADVANCEDDATATYPES
 
 #define FEATURES "1000"
 #define FEATURES_2 "2000"
@@ -208,4 +209,36 @@ TEST_F(TestGDALPython,PythonLinks) {
 }
 #endif
 
+#ifdef TESTADVANCEDDATATYPES
+TEST_F(TestGDALPython,AdvancedDataTypes) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create Simulation";
+	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
+
+	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
+
+	sim.registerModulesFromDefaultLocation();
+
+	DM::Logger(DM::Debug) << "Loaded Modules";
+
+	DM::Module * m1 = sim.addModule("AdvancedDataTypes");
+	m1->setParameterValue("elements", FEATURES);
+	m1->init();
+
+	DM::Module * m2 = sim.addModule("ReadAdvancedDataTypes");
+	m2->init();
+
+
+	sim.addLink(m1, "city", m2, "city");
+
+	sim.run();
+
+
+
+}
+#endif
 
