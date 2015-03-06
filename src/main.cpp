@@ -394,8 +394,9 @@ int main(int argc, char *argv[], char *envp[])
 
     DM::Simulation s;
     if (withStatusUpdates) {
-        std::string path("dynamindstatus-" + std::to_string(getpid()) + ".log");
-        s.installStatusUpdater(path);
+        stringstream path;
+        path << "dynamindstatus-" << getpid() << ".log";
+        s.installStatusUpdater(path.str());
     }
 
 	s.registerModulesFromDefaultLocation();
