@@ -12,12 +12,15 @@ Standard Modules (GDAL)
    gdalimportdata
    gdalpublishresults
    gdalspatiallinking
+   nonspatiallinking
    gdalparcelsplit
    gdalcalculatecentroids
    gdalparceling
    gdaloffset
    gdalcopyelementtoview
    gdaljoinnearestneighbour
+   gdalattributecalculator
+   gdalgeometricattributes
 
 
 

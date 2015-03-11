@@ -42,3 +42,18 @@ If you want to export data to a PostGIS server please set sink to following
 the name the driver name is already set with the PG command.
 
 
+Sample Code for Python Simulation
+---------------------------------
+.. code-block:: python
+
+    # Upload results to PostGIS database
+    export = sim.add_module('GDALPublishResults',
+                               {'sink': 'PG:dbname=melbourne host=localhost port=5432 user=user password=password',
+                                'driver_name': '',
+                                'targetEPSG' : '4283',
+                                'sourceEPSG' : '32755',
+                                'view_name': 'catchment',
+                                'layer_name': 'result_catchment'},
+                                link_to_module)
+
+..

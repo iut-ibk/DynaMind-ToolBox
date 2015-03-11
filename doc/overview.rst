@@ -12,4 +12,6 @@ Module List
 - :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
 - :doc:`GDALPublishResults </DynaMind-GDALModules/gdalpublishresults>` Export GIS data
 - :doc:`GDALSpatialLinking </DynaMind-GDALModules/gdalspatiallinking>` Spatially link data
-
+- :doc:`NonSpatialLinking </DynaMind-GDALModules/nonspatiallinking>` Link data sets with identifier
+- :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
+- :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
