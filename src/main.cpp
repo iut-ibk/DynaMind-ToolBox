@@ -395,7 +395,7 @@ int main(int argc, char *argv[], char *envp[])
     DM::Simulation s;
     if (withStatusUpdates) {
         stringstream path;
-        path << "dynamindstatus-" << getpid() << ".log";
+		path << "dynamindstatus-" << QCoreApplication::applicationPid() << ".log";
         s.installStatusUpdater(path.str());
     }
 
