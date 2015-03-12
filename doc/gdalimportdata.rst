@@ -23,6 +23,7 @@ Parameter
 |epsg_from          | INT                    | epsg code of the source                                               |
 +-------------------+------------------------+-----------------------------------------------------------------------+
 
+
 Detailed Description
 --------------------
 
@@ -56,3 +57,31 @@ _______________
 
 If you want to obtain data from a WFS server please set the source to following `WFS:hostname` and layer_name to the layer
 name to be imported.
+
+
+Sample Code for Python Simulation
+---------------------------------
+.. code-block:: python
+
+    # Load data from PostGIS database with GDALImport Data. Per default the module has no inport
+    catchment = sim.add_module('GDALImportData',{'source': 'PG:dbname=elwood host=localhost port=5432 user=user password=password',
+                                          'layer_name': 'elwood_catchment',
+                                          'view_name': 'catchment',
+                                          'epsg_from': 4283,
+                                          'epsg_to': 32755,
+                                          'append' : False})
+
+    # load land use data with the attribute lu_desc = 'Road Void' and that are within the catchment.
+    # the parameter append is set to true to allow to connect the module to the catchment module created before
+    land_use = sim.add_module('GDALImportData', {'source': 'PG:dbname=melbourne host=localhost port=5432 user=user password=password',
+                                          'layer_name': 'landuse_victoria',
+                                          'view_name': 'landuse',
+                                          'epsg_from': 4283,
+                                          'epsg_to': 32755,
+                                          'append' : True},
+                             catchment,
+                             filters={'landuse': {'attribute': "lu_desc = 'Road Void'",
+                                                  'spatial': "catchment"}
+                             })
+
+..
