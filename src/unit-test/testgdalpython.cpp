@@ -14,8 +14,8 @@
 #define ADVANCEDAPI
 #define READAPI
 #define MODIFYAPI
-#define TESTLINK
-#define TESTADVANCEDDATATYPES
+//#define TESTLINK
+//#define TESTADVANCEDDATATYPES
 
 #define FEATURES "1000"
 #define FEATURES_2 "2000"
@@ -236,9 +236,6 @@ TEST_F(TestGDALPython,AdvancedDataTypes) {
 	sim.addLink(m1, "city", m2, "city");
 
 	sim.run();
-
-
-
 }
 #endif
 
