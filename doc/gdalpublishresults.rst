@@ -24,7 +24,8 @@ Parameter
 +-------------------+------------------------+-----------------------------------------------------------------------+
 |sourceEPSG         | INT                    | EPSG code used in the simulation                                      |
 +-------------------+------------------------+-----------------------------------------------------------------------+
-
+|overwrite          | BOOL                   | if true and existing datasource is overwriten, default is false       |
++-------------------+------------------------+-----------------------------------------------------------------------+
 
 Detailed Description
 --------------------
@@ -53,7 +54,8 @@ Sample Code for Python Simulation
                                 'targetEPSG' : '4283',
                                 'sourceEPSG' : '32755',
                                 'view_name': 'catchment',
-                                'layer_name': 'result_catchment'},
+                                'layer_name': 'result_catchment',
+                                'overwrite': False},
                                 link_to_module)
 
 ..

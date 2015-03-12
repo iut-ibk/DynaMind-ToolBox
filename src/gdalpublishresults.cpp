@@ -37,6 +37,8 @@ GDALPublishResults::GDALPublishResults()
 	this->sourceEPSG = 0;
 	this->addParameter("sourceEPSG", DM::INT, &sourceEPSG);
 
+	this->overwrite = false;
+	this->addParameter("overwrite", DM::BOOL, &overwrite);
 
 	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::MODIFY);
 
@@ -88,8 +90,11 @@ void GDALPublishResults::run()
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "PG_USE_COPY", "YES" );
 
-	CPLSetConfigOption("PG_USE_COPY", "YES");
+	//Set Overwrite
+	if (overwrite)
+		options = CSLSetNameValue( options, "OVERWRITE", "YES" );
 
+	CPLSetConfigOption("PG_USE_COPY", "YES");
 	OGRRegisterAll();
 
 	//Extend string_stream with _xx;
@@ -149,24 +154,25 @@ void GDALPublishResults::run()
 
 	switch ( components.getType() ) {
 	case DM::COMPONENT:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbNone, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbNone, options );
 		break;
 	case DM::NODE:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPoint, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPoint, options );
 		break;
 	case DM::EDGE:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbLineString, NULL );
+		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbLineString, options );
 		break;
 	case DM::FACE:
 		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPolygon, options );
 		break;
 	}
+
 	if (!lyr) {
 		DM::Logger(DM::Error) << "Layer not created " << components.getType();
 		this->setStatus(DM::MOD_EXECUTION_ERROR);
 		return;
-
 	}
+
 	OGRFeatureDefn * def =  (OGRFeatureDefn*)components.getFeatureDef();
 	int c_fields = def->GetFieldCount();
 	for (int i = 0; i < c_fields; i++)

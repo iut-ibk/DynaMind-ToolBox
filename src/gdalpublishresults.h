@@ -52,6 +52,7 @@ private:
 	int sourceEPSG;
 	int steps;
 	int internal_counter;
+	bool overwrite;
 
 	void writeFeatures(OGRLayer *lyr, std::vector<OGRFeature *> &feats);
 };
