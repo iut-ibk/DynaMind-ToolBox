@@ -83,11 +83,11 @@ namespace std {
 %pointer_class(long,p_long)
 %pointer_class(double,p_double)
 
-%feature("director:except") {
+%feature("director:except") %{
 	if ($error != NULL) {
 		PyErr_Print();
 	}
-}
+%}
 
 
 
@@ -186,7 +186,7 @@ protected:
 }
 
 %extend DM::Module {
-	std::string getGdalDBName(std::string outport) {
+	std::string getGDALDBName(std::string outport) {
 		GDALSystem * sys =  (DM::GDALSystem*) $self->getOutPortData(outport);
 		return sys->getDBID();
 	}
@@ -228,6 +228,7 @@ protected:
 			self._data[name] = p_int()
 
 		self.addParameter(name,DN_type,self._data[name],description)
+
 
 
 	%}
@@ -287,7 +288,7 @@ class DM::ViewContainer {
 };
 
 %extend DM::ViewContainer {
-	%pythoncode {
+	%pythoncode %{
 	#Container for OGRObejcts, otherwise the garbage collector eats them
 	__ds = None
 
@@ -372,7 +373,7 @@ class DM::ViewContainer {
 		for f in self.__features:
 			f.Destroy()
 		del self.__features[:]
-	}
+	%}
 }
 
 %pythoncode %{
@@ -788,8 +789,5 @@ class Sim:
 			self.set_modules_parameter(parameter_set)
 			print self.serialise()
 			self.run()
-
-
-
 %}
 
