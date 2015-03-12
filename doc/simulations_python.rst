@@ -103,3 +103,24 @@ After adding and linking the modules the simulation can be executed calling the 
     sim.run()
 
 ..
+
+==================
+Advanced Use Cases
+==================
+
+Access GDAL Database
+====================
+
+The simulation object is a complete DynaMind simulation. This means that when a simulation has been executed the simulation
+still holds the calculate data until the simulation is destroyed. This allows the data to be accessed within the Python
+script. To do this data (or the name of the database) can be retrieved from the last module in the simulation using `getGDALDBName()`
+
+
+.. code-block:: python
+
+    # load land use data with the attribute lu_desc = 'Road Void' and that are within the catchment.
+    # the parameter append is set to true to allow to connect the module to the catchment module created before
+    sim.run()
+    #return db name from last module
+    last_module.getGDALDBName()
+..
