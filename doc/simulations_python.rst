@@ -66,8 +66,6 @@ Parameter:
                                           'epsg_to': 32755,
                                           'append' : False})
 
-    filter = DM.Filter("", DM.FilterArgument("lu_desc = 'Road Void'"), DM.FilterArgument("catchment"))
-
     # load land use data with the attribute lu_desc = 'Road Void' and that are within the catchment.
     # the parameter append is set to true to allow to connect the module to the catchment module created before
     land_use = sim.add_module('GDALImportData', {'source': 'PG:dbname=melbourne host=localhost port=5432 user=user password=password',
