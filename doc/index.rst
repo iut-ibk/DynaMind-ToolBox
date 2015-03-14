@@ -21,6 +21,7 @@ Standard Modules (GDAL)
    gdaljoinnearestneighbour
    gdalattributecalculator
    gdalgeometricattributes
+   gdalcreatebuilding
 
 
 
