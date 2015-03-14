@@ -186,7 +186,10 @@ protected:
 }
 
 %extend DM::Module {
-	std::string getGDALDBName(std::string outport) {
+	std::string getGDALDBName() {
+		std::string outport="";
+		if (outport == "")
+			outport =  $self->getOutPortNames()[0];
 		GDALSystem * sys =  (DM::GDALSystem*) $self->getOutPortData(outport);
 		return sys->getDBID();
 	}
