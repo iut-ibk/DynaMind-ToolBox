@@ -40,7 +40,7 @@ def compile_documents_modules(sourcepath,modules):
 
 def create_compiled_index(modules):
 
-    f = open("index.rst", "r")
+    f = open("index_template.rst", "r")
 
     index = f.readlines()
 
@@ -52,15 +52,15 @@ def create_compiled_index(modules):
     index.append("==================\n")
     index.append("\n")
     index.append("* :ref:`genindex`\n")
-    index.append("* :ref:`modindex`\n")
-    index.append("* :ref:`search`\n")
+    # index.append("* :ref:`modindex`\n")
+    # index.append("* :ref:`search`\n")
 
 
     #print ''.join([str(x) for x in index])
 
     f.close()
 
-    f = open("index_compile.rst", "w")
+    f = open("index.rst", "w")
     f.write(''.join([str(x) for x in index]))
 
 

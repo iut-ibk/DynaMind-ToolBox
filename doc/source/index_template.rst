@@ -8,12 +8,13 @@ Welcome to DynaMind's User Guide
 
 .. toctree::
   :maxdepth: 2
-
+  
   quick-intro-gui
   known_problems
 
-Modules
-=======
+Packages
+========
 .. toctree::
-  :titlesonly:
+  :maxdepth: 2
+
 
