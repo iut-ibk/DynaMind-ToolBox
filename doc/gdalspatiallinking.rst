@@ -55,4 +55,16 @@ intersect and within algorithms.
 
 
 
+Sample Code for Python Simulation
+---------------------------------
+
+.. code-block:: python
+
+   # Link cityblock with parcel
+   cityblock_parcel = sim.add_module('GDALSpatialLinking',
+                                     {'leadingViewName': 'cityblock',
+                                      'linkViewName': 'parcel',
+                                      'withCentroid': True}, parcels)
+..
+
 
