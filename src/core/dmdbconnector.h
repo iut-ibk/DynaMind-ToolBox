@@ -72,21 +72,21 @@ class FIFOQueue
 	};
 	Node* root;
 	Node* last;
-	QMutex m;
-	QAtomicInt isEmpty;
-	QAtomicInt maxOneLeft;
+	Mutex m;
+	AtomicInt isEmpty;
+	AtomicInt maxOneLeft;
 public:
 	FIFOQueue()
 	{
 		root = NULL;
 		last = NULL;
-		isEmpty = true;
-		maxOneLeft = true;
+		isEmpty.store(true);
+		maxOneLeft.store(true);
 	}
 	~FIFOQueue(){}
 	T* pop()
 	{
-		if(isEmpty)
+		if(isEmpty.loadAcquire())
 			return NULL;
 
 		m.lock();
@@ -95,12 +95,12 @@ public:
 
 		if(root == last)
 		{
-			isEmpty = true;
-			maxOneLeft = true;
+			isEmpty.store(true);
+			maxOneLeft.store(true);
 			last = NULL;
 		}
 		else if(root->next == last)
-			maxOneLeft = true;
+			maxOneLeft.store(true);
 
 		root = n->next;
 		delete n;
@@ -110,24 +110,24 @@ public:
 	void push(T* data)
 	{
 		m.lock();
-		if(isEmpty)
+		if(isEmpty.loadAcquire())
 			root = last = new Node(data);
 		else
 		{
 			last->next = new Node(data);
 			last = last->next;
-			maxOneLeft = false;
+			maxOneLeft.store(false);
 		}
-		isEmpty = false;
+		isEmpty.store(false);
 		m.unlock();
 	}
 	inline bool IsEmpty()
 	{
-		return isEmpty;
+		return isEmpty.loadAcquire();
 	}
 	inline bool IsMaxOneLeft()
 	{
-		return maxOneLeft;
+		return maxOneLeft.loadAcquire();
 	}
 };
 
@@ -152,7 +152,7 @@ COMMENTS
 class DBWorker: public QThread
 {
 private:
-	QMutex queryMutex;
+	Mutex queryMutex;
 
 	// flag for leaving run() loop
 	bool	kill;
@@ -162,8 +162,8 @@ private:
 
 	// a mutex guaranties the receiver to wait until the worker
 	// returns the value (synchronized read)
-	QMutex	selectMutex;
-	QMutex	clientSelectMutex;
+	Mutex	selectMutex;
+	Mutex	clientSelectMutex;
 
 	// single select query
 	QSqlQuery *qSelect;
@@ -195,7 +195,7 @@ public:
 	}
 	~DBWorker();
 
-	QAtomicInt selectStatus;
+	AtomicInt selectStatus;
     QList< QList<QVariant> >	selectRows;
 
 	//!< add a new query to the write list (asynchron)

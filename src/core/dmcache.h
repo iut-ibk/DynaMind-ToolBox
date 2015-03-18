@@ -31,6 +31,29 @@
 
 namespace DM {
 
+class Mutex : public QMutex
+{
+public:
+	Mutex() : QMutex(){}
+	Mutex(QMutex::RecursionMode m) : QMutex(m){}
+	~Mutex(){}
+
+#ifdef USEQT5
+		void lockInline(){return lock();}
+		void unlockInline(){return unlock();}
+#endif
+};
+
+class AtomicInt : public QAtomicInt
+{
+public:
+	AtomicInt & operator= (int value) {QAtomicInt::operator=(value); return *this;}
+#ifndef USEQT5
+		AtomicInt loadAcquire(){return *this;}
+		void store(int v){ QAtomicInt::operator=(v);}
+#endif
+};
+
 /**************************************************************//**
 ** CACHE SETTINGS
 ******************************************************************/
@@ -51,6 +74,7 @@ Each method is optimized to maximum performance in several test
 cases (e.g. unit tests). Modify with care.
 ******************************************************************/
 template<class Tkey,class Tvalue>
+
 class Cache
 {
 protected:
@@ -83,7 +107,8 @@ protected:
 	Node*   _last;
 	unsigned long    _size;
 	unsigned long    _cnt;
-	QMutex*	mutex;
+
+	Mutex*	mutex;
 
 	// sets up a new node; be aware that no linking is done
 	inline Node* newNode(const Tkey &k, Tvalue* v)
@@ -143,8 +168,13 @@ public:
 	unsigned long misses;
 	void ResetProfilingCounters()
 	{
-		mutex->lockInline();
-		misses = 0;
+		#ifndef USEQT5
+			mutex->lockInline();
+		#else
+			mutex->lock();
+		#endif
+
+			misses = 0;
 		hits = 0;
 		mutex->unlockInline();
 	}
@@ -156,7 +186,7 @@ public:
 		_cnt = 0;
 		_root = NULL;
 		_last = NULL;
-		mutex = new QMutex(QMutex::Recursive);
+		mutex = new Mutex(QMutex::Recursive);
 #ifdef CACHE_PROFILING
 		hits = 0;
 		misses = 0;

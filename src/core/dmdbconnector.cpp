@@ -70,11 +70,11 @@ void SingletonDestroyer::SetSingleton (DBConnector* s) {
 }
 
 static std::set<Asynchron*>* syncList = NULL;
-static QMutex* syncMutex = NULL;
+static Mutex* syncMutex = NULL;
 
 Asynchron::Asynchron()
 {
-	if(!syncMutex) syncMutex = new QMutex();
+	if(!syncMutex) syncMutex = new Mutex();
 	syncMutex->lockInline();
 	if(!syncList)	syncList = new std::set<Asynchron*>();
 
@@ -378,11 +378,11 @@ bool DBWorker::ExecuteSelect(QSqlQuery *q)
 	selectMutex.unlockInline();
 
 	// wait for finish
-	while(selectStatus == SELECT_NOTDONE)
+	while(selectStatus.loadAcquire() == SELECT_NOTDONE)
 		usleep(EXE_THREAD_SLEEP_TIME);
 
 	clientSelectMutex.unlock();
-	return selectStatus>0;
+	return selectStatus.loadAcquire()>0;
 }
 
 QSqlQuery* DBWorker::getQuery(QString cmd)
