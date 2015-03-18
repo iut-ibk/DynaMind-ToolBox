@@ -63,7 +63,7 @@ GDALSystem::GDALSystem(int EPSG)
 
 	DBID = QUuid::createUuid().toString();
 
-	QString dbname =  "/tmp/" + DBID + ".db";
+	QString dbname =  QDir::tempPath() + "/" + DBID + ".db";
 
 	poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
 
@@ -88,7 +88,7 @@ void GDALSystem::setGDALDatabase(const string & database)
 
 	//Copy DB
 	QString origin = QString::fromStdString(database);
-	QString dest = "/tmp/" + DBID + ".db";
+	QString dest = QDir::tempPath() + "/" + DBID + ".db";
 	QFile::copy(origin, dest);
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
@@ -118,8 +118,8 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	EPSG = s.EPSG;
 
 	//Copy DB
-	QString origin =  "/tmp/" + s.DBID + ".db";
-	QString dest = "/tmp/" + DBID + ".db";
+	QString origin =  QDir::tempPath() + "/" + s.DBID + ".db";
+	QString dest = QDir::tempPath() + "/" + DBID + ".db";
 	QFile::copy(origin, dest);
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
