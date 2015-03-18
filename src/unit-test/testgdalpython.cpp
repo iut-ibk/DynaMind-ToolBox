@@ -8,7 +8,10 @@
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
 #include <dmmoduleregistry.h>
-#include <dmpythonenv.h>
+
+#ifndef PYTHON_EMBEDDING_DISABLED
+	#include <dmpythonenv.h>
+#endif
 
 #define LOADPYTHON
 #define ADVANCEDAPI
@@ -21,6 +24,7 @@
 #define FEATURES_2 "2000"
 #define DEFAULTEPSG 31254
 
+#ifndef PYTHON_EMBEDDING_DISABLED
 #ifdef LOADPYTHON
 TEST_F(TestGDALPython,LoadPython) {
 	ostream *out = &cout;
@@ -237,5 +241,6 @@ TEST_F(TestGDALPython,AdvancedDataTypes) {
 
 	sim.run();
 }
+#endif
 #endif
 
