@@ -2,11 +2,6 @@ SET(gtest_force_shared_crt "ON" CACHE BOOL "")
 ADD_SUBDIRECTORY(gtest-1.7.0)
 MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
 enable_testing()
-# sql stuff
-FIND_PACKAGE(Qt4 REQUIRED)
-SET(QT_USE_QTSQL true)
-# ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
-INCLUDE(${QT_USE_FILE})
 
 FILE(GLOB DYNAMIND_CPPS *.cpp)
 FILE(GLOB DYNAMIND_HEADER *.h)
@@ -21,12 +16,11 @@ FILE(GLOB GTEST_SOURCE_FILES *.cpp)
 
 ADD_EXECUTABLE(unit-test ${GTEST_SOURCE_FILES})
 
-#IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-#	set_target_properties(unit-test PROPERTIES VS_SCC_LOCALPATH ${EXECUTABLE_OUTPUT_PATH})
-#ENDIF()
-
-TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamindtoolbox dynamind-testmodules
-    ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSQL_LIBRARIES})
+IF(USEQT5)
+    TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamindtoolbox dynamind-testmodules Qt5::Gui Qt5::Core Qt5::Sql Qt5::Concurrent Qt5::Xml ${GDAL_LIBRARY})
+ELSE()
+    TARGET_LINK_LIBRARIES(unit-test gtest_main dynamindcore dynamindtoolbox dynamind-testmodules ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSQL_LIBRARIES} ${GDAL_LIBRARY})
+ENDIF()
 
 set(TESTS
 	TestGDALModules.GDAL_ADVANCE_API_TEST,
