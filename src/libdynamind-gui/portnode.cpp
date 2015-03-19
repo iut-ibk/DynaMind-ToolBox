@@ -39,7 +39,7 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
 {
 	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
 	this->setAcceptHoverEvents(true);
-	this->setAcceptsHoverEvents(true);
+//	this->setAcceptsHoverEvents(true);
 	this->portName = portName;
 
 	unstableLink = NULL;

@@ -78,7 +78,7 @@ void SimulationTab::enhanceSelection()
 
 void SimulationTab::mousePressEvent(QGraphicsSceneMouseEvent *event) 
 {
-	if(!itemAt(event->scenePos()))
+	if(!itemAt(event->scenePos(),QTransform()))
 		foreach(SimulationTab* t, sim->getTabs())
 		t->clearSelection();
 
@@ -242,7 +242,7 @@ void SimulationTab::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 	if(event->buttons() == Qt::LeftButton)
-		if(ModelNode* movingNode = qgraphicsitem_cast<ModelNode*>(itemAt(cursorPos)))
+		if(ModelNode* movingNode = qgraphicsitem_cast<ModelNode*>(itemAt(cursorPos,QTransform())))
 			foreach(QGraphicsItem* it, items(cursorPos))
 		{
 			ModelNode* node = dynamic_cast<ModelNode*>(it);
@@ -265,7 +265,7 @@ void SimulationTab::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
 	DM::Group* parent = this->parentGroup;
-	ModelNode* node = dynamic_cast<ModelNode*>(this->itemAt(event->scenePos()));
+	ModelNode* node = dynamic_cast<ModelNode*>(this->itemAt(event->scenePos(),QTransform()));
 	if(node)
 	{
 		if(node->getModule()->isGroup())

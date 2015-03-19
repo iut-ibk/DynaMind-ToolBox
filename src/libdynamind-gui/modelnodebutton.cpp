@@ -28,7 +28,7 @@
 #include <QPainter>
 
 
-ModelNodeButton::ModelNodeButton(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent, scene) {
+ModelNodeButton::ModelNodeButton(QGraphicsItem * parent, QGraphicsScene * scene) :QGraphicsItem(parent) {
 	img = QImage (":/Icons/ressources/list-remove.png");
 	minimized = false;
 }
