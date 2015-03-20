@@ -65,6 +65,7 @@ private:
 	void resetPressureOfJunctions(std::vector<DM::Node*> nodexceptions);
 
 	void searchFixedPipes(double maxdiameter, std::vector<DM::Component*> &fixedpipes, std::vector<DM::Component*> allpipes);
+	bool searchEntryPipes(double totaldemand, bool usereservoirsdata, std::vector<DM::Edge*> &respipes);
 };
 
 #endif // Dimensioning_H

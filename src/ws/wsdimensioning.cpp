@@ -125,6 +125,10 @@ void Dimensioning::run()
 	double totaldemand = calcTotalDemand();
 	std::vector<DM::Edge*> entrypipes;
 
+	searchEntryPipes(totaldemand,usereservoirdata,entrypipes);
+
+	DM::Logger(DM::Standard) << "Found " << entrypipes.size() << " pipes conneted to a water source";
+
 	if(usemainpipe)
 	{
 		if(!approximateMainPipes(usereservoirdata,totaldemand,entrypipes,discrete))return;
@@ -151,12 +155,12 @@ void Dimensioning::run()
 
 	//if(usemainpipe)
 	{
-		DM::Logger(DM::Standard) << "Using main pipe information";
+		//DM::Logger(DM::Standard) << "Using main pipe information";
 		initknownpressure = getInitialPressurepoints();
 
 		for (int var = 0; var < this->iterations; ++var)
 		{
-			if(usereservoirdata && usemainpipe)
+			if(usereservoirdata)
 			{
 				if(!calibrateReservoirOutFlow(totaldemand, 100,entrypipes,false))
 					return;
@@ -228,6 +232,46 @@ void Dimensioning::searchFixedPipes(double maxdiameter, std::vector<Component *>
 	for (int i = 0; i < allpipes.size(); ++i)
 		if(allpipes[i]->getAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Diameter))->getDouble() >= maxdiameter)
 			fixedpipes.push_back(allpipes[i]);
+}
+
+bool Dimensioning::searchEntryPipes(double totaldemand, bool usereservoirsdata, std::vector<Edge *> &respipes)
+{
+	std::vector<DM::Component*> reservoirs = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::RESERVOIR,DM::READ));
+	std::vector<DM::Component*> pipes = this->sys->getAllComponentsInView(wsd.getCompleteView(WS::PIPE,DM::READ));
+	std::map<DM::Component*, DM::Edge*> entrypipes;
+	std::vector<double> supplypercent;
+
+	for(int index=0; index<reservoirs.size(); index++)
+		if(usereservoirsdata)
+			supplypercent.push_back(reservoirs[index]->getAttribute(wsd.getAttributeString(DM::WS::RESERVOIR,DM::WS::RESERVOIR_ATTR_DEF::SupplyPercent))->getDouble()/100.0);
+		else
+			supplypercent.push_back(1.0/reservoirs.size());
+
+
+	for(int index = 0; index < pipes.size(); index++)
+	{
+		DM::Edge* currentedge = dynamic_cast<DM::Edge*>(pipes[index]);
+
+		if(std::find(reservoirs.begin(),reservoirs.end(),currentedge->getStartNode())!=reservoirs.end())
+			entrypipes[currentedge->getStartNode()] = currentedge;
+
+		if(std::find(reservoirs.begin(),reservoirs.end(),currentedge->getEndNode())!=reservoirs.end())
+			entrypipes[currentedge->getEndNode()] = currentedge;
+	}
+
+	if(reservoirs.size() > entrypipes.size())
+			return false;
+
+	for(int index=0; index < reservoirs.size(); index++)
+	{
+		DM::Edge* currentedge = entrypipes[reservoirs[index]];
+		if(std::find(respipes.begin(),respipes.end(),currentedge)==respipes.end())
+			respipes.push_back(currentedge);
+
+		if(usereservoirsdata)
+			currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Flow),totaldemand*supplypercent[index]*1000);
+	}
+	return true;
 }
 
 bool Dimensioning::approximatePressure(bool discretediameter,std::vector<DM::Node*>initunchecked)
@@ -780,7 +824,8 @@ bool Dimensioning::approximateMainPipes(bool usereservoirsdata, double totaldema
 	for(int index=0; index < reservoirs.size(); index++)
 	{
 		DM::Edge* currentedge = entrypipes[reservoirs[index]];
-		respipes.push_back(currentedge);
+		if(std::find(respipes.begin(),respipes.end(),currentedge)==respipes.end())
+			respipes.push_back(currentedge);
 
 		if(usereservoirsdata)
 			currentedge->changeAttribute(wsd.getAttributeString(DM::WS::PIPE,DM::WS::PIPE_ATTR_DEF::Flow),totaldemand*supplypercent[index]*1000);
