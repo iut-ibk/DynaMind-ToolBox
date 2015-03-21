@@ -6,6 +6,9 @@ compiler:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1h libgdal-dev libgdal1-dev libqglviewer-dev-common libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf libgmp-dev libmpfr-dev libboost-all-dev
+ - sudo add-apt-repository ppa:kalakris/cmake -y
+ - sudo apt-get update -q
+ - sudo apt-get install cmake
  - sudo pip install reimport
  - curl https://gforge.inria.fr/frs/download.php/33525/CGAL-4.4.tar.gz | tar zxv
  - cd CGAL-4.4
