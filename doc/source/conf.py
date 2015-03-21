@@ -13,7 +13,8 @@
 # serve to show the default.
 
 import sphinx_rtd_theme
-import sphinx_bootstrap_theme
+import sys
+import os
 
 # -- General configuration ------------------------------------------------
 
@@ -43,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DynaMind'
-copyright = u'2014, Christian Urich, Michael Mair'
+copyright = u'2014-2015, Christian Urich, Michael Mair'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -66,7 +67,11 @@ release = '0.7'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+
+print os.path.abspath('../../output')
+sys.path.insert(0, os.path.abspath('../../output'))
+
+exclude_patterns = ['sphinx.ext.autodoc']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
