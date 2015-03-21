@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Module Development &mdash; DynaMind 0.7 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="DynaMind 0.7 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> DynaMind</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quick-intro-gui.html">A Quick Introduction to the DynaMind GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quick-intro-gui.html#the-problem">The Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-intro-gui.html#building-a-workflow">Building a workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-intro-gui.html#executing-a-workflow">Executing a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-intro-gui.html#solution">Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_problems.html">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_problems.html#gdal-python-modules">GDAL Python Modules</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="DynaMind/index.html">DynaMind Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/module.html">Module Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html">Create Simulations in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html#advanced-use-cases">Advanced Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DynaMind/index.html#dynamind-core-api">DynaMind Core API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/dynamind_sim_api.html">Sim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/dynamind_sim_api.html#module">Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">DynaMind</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Module Development</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/module.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-development">
+<h1>Module Development<a class="headerlink" href="#module-development" title="Permalink to this headline">¶</a></h1>
+<p>Modules are the heart and soul of every DynaMind simulation. A module is a process to manipulate data in the data stream &#8220;running&#8221; through the module.
+DynaMind supports the development of reusable modules by making data used in modules transparent, and parameters easy to modify. Further, an easy to us interface allows  modules to be connected to complex
+simulations. The following section gives an introduction in the basic concepts needed for the module development. For the code examples the
+Python interface is used, however the Python API is similar to the C++ API. The API doc can be found <a class="reference external" href="http://www.dynamind-toolbox.org/wp-content/uploads/api-doc/nightly/doc/doxygen/output/html/index.html">here</a>.</p>
+<p>Modules consist of two main parts:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>The <em>Initialisation</em> makes used data and parameters known to the simulation.</li>
+<li>The <em>Data Manipulation Process</em> (DMP) or the <em>run method</em> which contains the actual algorithms to manipulate data.</li>
+</ol>
+</div></blockquote>
+<p>To access the data DynaMind provides two different data representations:</p>
+<blockquote>
+<div><ol class="lowerroman simple">
+<li>The <em>DynaMind Component API</em>: A native DynaMind API providing standard GIS components.</li>
+<li>The <em>DynaMind GDAL API</em>: Builds on the widely used GDAL API <a class="reference external" href="http://www.gdal.org">see</a>.</li>
+</ol>
+</div></blockquote>
+<p>The documentation focuses on the use on the newer DynaMind GDAL API.</p>
+<p>The following code block shows an implementation of the two parts.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyModule</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Module Initialisation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">Module</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="c">#To use the GDAL API</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setIsGDALModule</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="c">#Parameter Definition</span>
+            <span class="o">...</span>
+
+            <span class="c">#Data Stream Definition</span>
+            <span class="o">...</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Data Manipulation Process (DMP)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c">#Data Stream Manipulation</span>
+            <span class="o">....</span>
+</pre></div>
+</div>
+<div class="section" id="module-initialisation">
+<h2>Module Initialisation<a class="headerlink" href="#module-initialisation" title="Permalink to this headline">¶</a></h2>
+<p>Lets take a closer look at the module initialisation. The idea of the module initialisation is to make the parameters and data
+used by the module transparent to the simulation and to the users. The initialisation distinguishes between (1) the parameter definition;
+which describes parameter that can be set by the user and (2) the data stream definition; which defines the needed, generated and modified data
+in terms of geometry types and attributes.</p>
+<div class="section" id="parameter-definition">
+<h3>Parameter definition<a class="headerlink" href="#parameter-definition" title="Permalink to this headline">¶</a></h3>
+<p>Parameter defined in the initialisation can be modified by the user. A parameter can be added using <code class="docutils literal"><span class="pre">self.createParameter(&quot;ParameterName&quot;,</span> <span class="pre">TYPE,</span> <span class="pre">&quot;description&quot;)</span></code>.
+To initalise the parameter with a default value use <code class="docutils literal"><span class="pre">self.ParameterName</span> <span class="pre">=</span> <span class="pre">foo</span></code>.</p>
+<p>Parameters, once generated, are managed by DynaMind. This means that every time before the DMP is called the module parameter values are updated. Further, parameters
+are automatically saved and loaded from the DyanMind save file. Also DynaMind provides interfaces to change parameter from outside the
+module.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Create Parameter</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">createParameter</span><span class="p">(</span><span class="s">&quot;MyParameter&quot;</span><span class="p">,</span><span class="n">LONG</span><span class="p">,</span><span class="s">&quot;Sample Description&quot;</span><span class="p">)</span>
+
+<span class="c">#Initalise Parameter (may be called after the parameter is created!)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">MyParameter</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>Following parameter types are supported:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BOOL</td>
+<td>boolean</td>
+</tr>
+<tr class="row-odd"><td>INT</td>
+<td>integer</td>
+</tr>
+<tr class="row-even"><td>LONG</td>
+<td>long integer</td>
+</tr>
+<tr class="row-odd"><td>STRING</td>
+<td>string</td>
+</tr>
+<tr class="row-even"><td>FILENAME</td>
+<td>location to file <a class="footnote-reference" href="#id4" id="id1">[1]</a></td>
+</tr>
+<tr class="row-odd"><td>STRING_LIST</td>
+<td>list of strings  <a class="footnote-reference" href="#id5" id="id2">[2]</a></td>
+</tr>
+<tr class="row-even"><td>STRING_MAP</td>
+<td>map of strings   <a class="footnote-reference" href="#id6" id="id3">[3]</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-stream-definition-using-views-only-recommended-for-advanced-users">
+<h3>Data stream definition using Views (only recommended for advanced users)<a class="headerlink" href="#data-stream-definition-using-views-only-recommended-for-advanced-users" title="Permalink to this headline">¶</a></h3>
+<p>To be able to connect a module to the data stream the data read, modified and created by the module need to be defined.
+A data stream in DynaMind is defined as a collection of <em>Views</em>. <em>Views</em> describe data in the stream in terms of their geometry type, attributes and, links to other views.
+To let the simulation know which data are used, views need to be registered during module initialisation. Views are created using
+<code class="docutils literal"><span class="pre">foo</span> <span class="pre">=</span> <span class="pre">View(&quot;name&quot;,</span> <span class="pre">GEOMETRY_TYPE,</span> <span class="pre">ACCESS)</span></code>. Attributes are attached with <code class="docutils literal"><span class="pre">foo.addAttribute(&quot;name&quot;,</span> <span class="pre">TYPE,</span> <span class="pre">ACCESS)</span></code>. For both
+geometry and attribute the following access modes are available:  READ, WRITE or MODIFY.
+The following code block shows how views are defined using the Python interface.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Data read by the module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+
+<span class="c">#New data created by this module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Available geometry types:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Geometry Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>COMPONET</td>
+<td>data without geometry</td>
+</tr>
+<tr class="row-odd"><td>NODE</td>
+<td>node in x,y,z</td>
+</tr>
+<tr class="row-even"><td>EDGE</td>
+<td>connection between nodes</td>
+</tr>
+<tr class="row-odd"><td>FACE</td>
+<td>closed polygon, can contain wholes</td>
+</tr>
+</tbody>
+</table>
+<p>Available attribute types:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DOUBLE</td>
+<td>double value</td>
+</tr>
+<tr class="row-odd"><td>STRING</td>
+<td>string</td>
+</tr>
+<tr class="row-even"><td>DOUBLEVECTOR</td>
+<td>vector of doubles</td>
+</tr>
+<tr class="row-odd"><td>STRINGVECTOR</td>
+<td>vector of strings</td>
+</tr>
+</tbody>
+</table>
+<p>To register the views in DynaMind, views compiled into a vector and with <code class="docutils literal"><span class="pre">self.addData(&quot;name&quot;,</span> <span class="pre">views)</span></code> registered at the module.
+The view definition is used by the simulation to check if all data are provided needed from a module, but also to optimise the data stream.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Compile views</span>
+<span class="n">views</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">street</span><span class="p">)</span>
+<span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span>
+
+<span class="c">#Add views to stream</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">addData</span><span class="p">(</span><span class="s">&quot;city&quot;</span><span class="p">,</span> <span class="n">views</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-stream-definition-using-viewcontainer">
+<h3>Data stream definition using ViewContainer<a class="headerlink" href="#data-stream-definition-using-viewcontainer" title="Permalink to this headline">¶</a></h3>
+<p>When using the DynaMind-GDAL API ViewContainers provide an easier way to define and access the data stream.
+ViewContainer enhance the View definition described before, providing a more direct access to its data. This means
+that the <em>System</em> object is no longer required. Defining a ViewContainer is similar to
+defining a View. However, instead of adding the views to the data stream, ViewContainers are registered at
+the module itself using <code class="docutils literal"><span class="pre">self.registerViewContainers(views)</span></code>. The following code block gives an example of how
+to define and register a ViewContainer. Note that, to access the data in the ViewContainer later, it is important to
+add the ViewContainer as Attribute to the class using the <code class="docutils literal"><span class="pre">self.</span></code> statement.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Data read by the module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+
+<span class="c">#New data created by this module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
+
+<span class="c">#Compile views</span>
+<span class="n">views</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">street</span><span class="p">)</span>
+<span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span>
+
+<span class="c">#Register ViewContainer to stream</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">registerViewContainers</span><span class="p">(</span><span class="n">views</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="data-manipulation-process-dmp">
+<h2>Data Manipulation Process (DMP)<a class="headerlink" href="#data-manipulation-process-dmp" title="Permalink to this headline">¶</a></h2>
+<p>This is where the actual data processing is happening.
+The DMP is described in the <code class="docutils literal"><span class="pre">run</span></code> method of the module. Every time the module is executed the run
+method is called. Depending on the chosen data API data are either accessed using the <em>System</em> class
+for the <em>DynaMind Component API</em> or via <em>ViewContainer</em> using the <em>DynaMind GDAL API</em></p>
+<div class="section" id="data-access-using-the-dynamind-gdal-api">
+<h3>Data Access using the <em>DynaMind GDAL API</em><a class="headerlink" href="#data-access-using-the-dynamind-gdal-api" title="Permalink to this headline">¶</a></h3>
+<p>The <em>DynaMind GDAL API</em> builds on the widely applied GDAL library. In GDAL
+geometric objects are described as <code class="docutils literal"><span class="pre">Feature</span></code>. Features contain geometry and attributes describing the object
+and provides methods to set and get geometry as well as attributes. See the GDAL documentation for a full description of the
+<a class="reference external" href="http://www.gdal.org/classOGRFeature.html">Feature API</a>.</p>
+<p><strong>Access Features</strong></p>
+<p>The ViewContainer manages the assess to the features stored in the underlying data stream.
+The API of the ViewContainer class is based on the GDAL <em>Layer API</em> tailored to the DynaMind environment.
+To iterate over all features you can use the ViewContainer directly  in a <code class="docutils literal"><span class="pre">for</span></code> loop (see the following code block). The returned
+feature is a &#8220;real&#8221; GDAL Feature. (Please have a look at <a class="reference external" href="http://www.gdal.org/classOGRFeature.html">GDAL Feature API</a> ).
+Before you start reading the components it is recommended to reset the iterator using <code class="docutils literal"><span class="pre">ViewContainer.reset_reading()</span></code>.
+Currently it is still required to clear the ViewContainer cache after it has been used with calling <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c">#Rest read position</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
+
+    <span class="c">#Iterate over all features of the ViewContainer</span>
+    <span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
+        <span class="n">street_width</span> <span class="o">=</span> <span class="n">street</span><span class="o">.</span><span class="n">GetFieldAsDouble</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">)</span>
+    <span class="c">#Clear container cache</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Create Features</strong></p>
+<p><code class="docutils literal"><span class="pre">ViewContainer.create_feature()</span></code> registers a new feature in the ViewContainer. The created itself is empty and
+does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL Python API.
+For performance reasons the features are not directly written into the data stream. To finally write the features and clear
+the ViewContainer cache please call <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Create 1000 new nodes</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="c">#Create new feature</span>
+    <span class="n">street</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">create_feature</span><span class="p">()</span>
+
+    <span class="c">#Create geometry</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
+    <span class="n">pt</span><span class="o">.</span><span class="n">SetPoint_2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c">#Set geometry in feature</span>
+    <span class="n">street</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+<span class="c">#Write create features into stream</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Modify Features</strong></p>
+<p>Similar to reading features, existing features can be modified while iterating over the features stored in the ViewContainer.
+To write the altered features to the data stream please use <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Rest read position</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
+<span class="c">#Iterate over all features and set street width to 3</span>
+<span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
+    <span class="n">street</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c">#Write altered features to stream</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="error-handling">
+<h3>Error Handling<a class="headerlink" href="#error-handling" title="Permalink to this headline">¶</a></h3>
+<p>If an error occurs during the DMP the module should set its execution status to MOD_EXECUTION_ERROR. This let the simulation
+know that an error occurred in the module and it stops the simulation. <code class="docutils literal"><span class="pre">self.setStatus(MOD_EXECUTION_ERROR)</span></code></p>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>A STRING_LIST is string. The strings a separated using <code class="docutils literal"><span class="pre">*|*</span></code> e.g. <code class="docutils literal"><span class="pre">*|*text1*|*test2*|*</span></code></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>A STRING_MAP is string. The strings a separated using <code class="docutils literal"><span class="pre">*||*``for</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">row</span> <span class="pre">and</span> <span class="pre">``*|*</span></code> for columns e.g. <code class="docutils literal"><span class="pre">*||*key1*|*value1*||*key2*|*value2*||*</span></code></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2015, Christian Urich, Michael Mair.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
