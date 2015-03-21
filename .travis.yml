@@ -40,10 +40,11 @@ after_success:
   - git config --global user.email ${GIT_EMAIL}
   -
   - # now we make the directory for the docs and cd into it
+  - make
   - cd
   - mkdir developmentDocs
   - cd developmentDocs/
-  -
+  - 
   - # clone the whole repo again, but switch to gh_pages branch
   - git clone https://github.com/iut-ibk/DynaMind-ToolBox.git .
   - git checkout gh-pages
@@ -51,7 +52,8 @@ after_success:
   - # go back up and build the documentation, pointing it towards
   - # that dir we just made
   - cp -r /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/ .
-  -
+  - ls /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/
+  - ls
   - # cd into the docs dir and commit and push the new docs.
   - git add --all .
   - git commit -m "Auto-updating developer documentation"
