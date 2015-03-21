@@ -4,9 +4,10 @@
 
 %pythoncode %{
 from osgeo import ogr
+import tempfile
 %}
 
-%feature("autodoc", "1");
+//%feature("autodoc", "3");
 %feature("director");
 %{
     #include <dmsimulation.h>
@@ -91,7 +92,7 @@ namespace std {
 
 
 
-enum  DataTypes {
+enum DataTypes {
 	INT,
 	LONG,
 	DOUBLE,
@@ -125,43 +126,85 @@ class DM::FilterArgument {
 class DM::Filter {
 public:
 	Filter();
-	Filter(std::string viewName, DM::FilterArgument spatialFilter, DM::FilterArgument attributeFulter);
+	Filter(std::string viewName, DM::FilterArgument spatialFilter, DM::FilterArgument attributeFilter);
 };
 
+%feature("autodoc", "
+
+    The DynaMind module class
+
+") Module;
 class DM::Module {
 
 public:
 	Module();
 	virtual ~Module();
 	virtual bool createInputDialog();
-	virtual void run() = 0;
-	virtual void init();
-	virtual std::string getHelpUrl();
+
+    virtual std::string getHelpUrl();
 
 	void setFilter(std::vector<DM::Filter> filter);
 	std::vector<DM::Filter> getFilter();
 
+    %feature("autodoc", "setName(name)
+
+    Sets module name
+
+    :type name: str
+    :param name: set module name
+
+    ") setName;
 	void setName(std::string name);
+
+    %feature("autodoc", "getName()
+
+    Gets module name
+
+    :return: Module name
+    :rtype: str
+
+    ") getName;
 	std::string getName();
 
+    %feature("autodoc", "init()
 
-	std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
+    This method should be overwritten if the module modifies the data stream definition in response to
+    parameter input or the incoming data stream.
 
-	virtual const char* getClassName() const = 0;
+    Outside the module, it calls the init method of the module. Usually the Simulation takes care of initialising modules.
 
+    ") init;
+	virtual void init();
+
+    %feature("autodoc", "run()
+
+    This method needs to be overwritten when developing a new module
+
+    ") run;
+	virtual void run() = 0;
+
+	//std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
+
+
+    %feature("autodoc", "getParameterAsString(module_name)
+
+    Gets module parameter as string
+
+    :type module_name: str
+    :param module_name: parameter name
+    :return: parameter value as string
+    :rtype: str
+
+    ") getParameterAsString;
 	virtual std::string getParameterAsString(std::string Name);
 
+	virtual const char* getClassName() const = 0;
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 	virtual void setParameterValue(std::string name, std::string value);
 
 	std::vector<std::string> getInPortNames() const;
 	std::vector<std::string> getOutPortNames() const;
-
 	std::map<std::string,DM::View> getViewsInStdStream() const;
-
-
-
-
 	void setStatus(DM::ModuleStatus status);
 
 protected:
@@ -173,8 +216,27 @@ protected:
 
 
 	DM::GDALSystem * getGDALData(std::string dataname);
+
+    %feature("autodoc", "setIsGDALModule(is_gdal_module)
+
+    Set to True to activate the GDAL API
+
+    :type is_gdal_module: Boolean
+    :param is_gdal_module: True for GDAL API
+
+    ") setIsGDALModule;
 	void setIsGDALModule(bool b);
 	bool isGdalModule();
+
+    %feature("autodoc", "registerViewContainers(view_containers)
+
+    Registers a list of view containers in the Module. This is used in the Constructor or in :func:`~pydynamind.Module.init`
+    to register views to be used later in :func:`~pydynamind.Module.run`
+
+    :type view_containers: [ :class:`~pydynamind.ViewContainer` ]
+    :param view_containers: List of view containers
+
+    ") registerViewContainers;
 	void registerViewContainers(std::vector<DM::ViewContainer *> views);
 
 };
@@ -186,6 +248,14 @@ protected:
 }
 
 %extend DM::Module {
+    %feature("autodoc", "getGDALDBName()
+
+    Gets GDAL database name of the current simulation used in this module
+
+    :return: database name
+    :rtype: string
+
+    ") getGDALDBName;
 	std::string getGDALDBName() {
 		std::string outport="";
 		if (outport == "")
@@ -212,7 +282,29 @@ protected:
 
 		return super(Module, self).__setattr__(name, value)
 
-	def createParameter(self,name, DN_type, description):
+	def createParameter(self,name, DN_type, description = ""):
+		"""
+
+		Creates a new module parameter. This method is used to add new parameter to the module.
+		This module should only be used in the Constructor of the module.
+		The parameter can be access in the module using ``self.parameter_name = value``.
+		To do this, :func:`~pydynamind.Module.createParameter` may be called before the parameter is accessed.
+
+		:type name: str
+		:param name: parameter name
+		:type DN_type: :class:`~pydynamind.DataTypes`
+		:param DN_type: DynaMind attribute. Following attributes are supported:
+
+			- pydynamind.BOOL : Boolean
+			- pydynamind.INT : Integer
+			- pydynamind.DOUBLE : Float
+			- pydynamind.STRING : String
+			- pydynamind.FILENAME : File name
+
+		:type description: str
+		:param description: add parameter description
+
+		"""
 		if 'd' in self._data:
 			if self._data['d'] == 'Module':
 				self._data = {}
@@ -231,8 +323,6 @@ protected:
 			self._data[name] = p_int()
 
 		self.addParameter(name,DN_type,self._data[name],description)
-
-
 
 	%}
 }
@@ -274,10 +364,60 @@ class ModuleRegistry
 		bool contains(const std::string &name) const;
 };
 
+%feature("autodoc", "
+
+Class to access the GIS data. The class utilises heavily the GDAL library.
+Internally the view container links to a GDAL layer and provides a simple
+wrapper to read, and create OGRFeatures. The Python/GDAL documentation can be
+found `here <http://gdal.org/python/>`_
+
+:type name: str
+:param name: view name
+:type type: pydynamind.TYPE
+:param type: Defines component type. Following types are supported:
+
+    - pydynamind.COMPONENT
+    - pydynamind.NODE
+    - pydynamind.EDGE
+    - pydynamind.FACE
+
+:type access_geometry:
+:param access_geometry: Defines access to the geometry. Following types are supported:
+
+    - pydynamind.READ
+    - pydynamind.MODIFY
+    - pydynamind.WRITE
+
+") ViewContainer;
+
 class DM::ViewContainer {
 	public:
+	    %feature("autodoc", "__init__(self, name, type, access_geometry) -> ViewContainer")  ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+	    ViewContainer(string name, int type, ACCESS accesstypeGeometry);
 		ViewContainer();
-		ViewContainer(string name, int type, ACCESS accesstypeGeometry);
+
+		%feature("autodoc", "addAttribute(name, attribute_type, access)
+
+        Add attribute access to the view container.
+
+        :type name: str
+        :param name: attribute name
+        :type attribute_type: pydynamind.Attribute.TYPE
+        :param attribute_type: Defines the attribute type. Following attributes are supported:
+
+            - pydynamind.Attribute.INT
+            - pydynamind.Attribute.DOUBLE
+            - pydynamind.Attribute.STRING
+            - pydynamind.Attribute.DOUBLEVECTOR
+
+        :type access: pydynamind.ACCESS
+        :param access: Defines access to the attribute. Following types are supported:
+
+            - pydynamind.READ
+            - pydynamind.MODIFY
+            - pydynamind.WRITE
+
+        ") addAttribute;
 		void addAttribute(std::string name, Attribute::AttributeType type, ACCESS access);
 		void setAttributeFilter(std::string filter);
 		void setCurrentGDALSystem(DM::GDALSystem *sys);
@@ -292,10 +432,19 @@ class DM::ViewContainer {
 
 %extend DM::ViewContainer {
 	%pythoncode %{
-	#Container for OGRObejcts, otherwise the garbage collector eats them
+	#Container for OGRObjects, otherwise the garbage collector eats them
 	__ds = None
 
 	def create_feature(self):
+		"""
+
+        Creates and inserts a new feature into the view. Features created with this function are
+        managed by DynaMind and do not need to be destroyed.
+
+        :return: feature
+        :rtype: OGRFeature
+
+        """
 		#from osgeo import ogr
 		self.register_layer()
 		f = ogr.Feature(self.getFeatureDef())
@@ -305,14 +454,37 @@ class DM::ViewContainer {
 		return f
 
 	def set_attribute_filter(self, attribute_filter):
+		"""
+
+        Sets attribute filter.
+        Before setting an attribute filter please call :func:`~pydynamind.ViewContainer.reset`.
+        Filters can be set using OGR SQL a documentation can be found `here <http://www.gdal.org/ogr_sql.html>`_
+        To speed up the filtering please create an index first with  :func:`~pydynamind.ViewContainer.create_index`
+        The Attribute filter may be used in combination with :func:`~pydynamind.ViewContainer.next`
+
+        :type attribute_filter: str
+        :param attribute_filter: Attribute filter using OGR SQL syntax
+
+        """
+
 		self.register_layer()
 		self.__ogr_layer.SetAttributeFilter(attribute_filter)
 
 	def create_index(self, attribute_name):
+		"""
+
+        Creates a fresh index for an attribute. This speeds up the search within this index
+        dramatically.
+
+        :type attribute_name: str
+        :param attribute_name: attribute name on which the index should be created
+
+        """
+
 		self.createIndex(attribute_name)
 		return
 		db_id = self.getDBID()
-		ds = ogr.Open("/tmp/"+db_id+".db", True)
+		ds = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db", True)
 		result = ds.ExecuteSQL("CREATE INDEX "+ attribute_name +"_index ON " + self.getName() + " (" + attribute_name + ");")
 		ds.Destroy()
 
@@ -323,7 +495,8 @@ class DM::ViewContainer {
 			db_id = self.getDBID()
 			self.__features = []
 			if self.__ds == None:
-				self.__ds = ogr.Open("/tmp/"+db_id+".db")
+				tempfile.gettempdir()
+				self.__ds = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
 			table_name = str(self.getName())
 			self.__ogr_layer = self.__ds.GetLayerByName(table_name)
 		else:
@@ -334,14 +507,40 @@ class DM::ViewContainer {
 
 
 	def get_ogr_layer(self):
+		"""
+
+        Returns the OGR layer. Only use if really really needed.
+
+        :return: OGR Layer
+        :rtype: OGRLayer
+
+        """
 		self.register_layer()
 		return self.__ogr_layer
 
 	def get_ogr_ds(self):
+		"""
+
+        Returns OGR data source. Only use if really really needed.
+
+        :return: OGR data source
+        :rtype: OGRDataSource
+
+        """
 		self.register_layer()
 		return self.__ds
 
 	def get_linked_features(self, feature, link_id = ""):
+		"""
+
+        Sets a filter to easy access linked features. May be used in combination with :func:`~pydynamind.ViewContainer.next`
+        For example: ``for feature in self.view_container.get_linked_features(feature_from_other_view):``
+        :type feature: OGRFeature
+        :param feature: OGRFeature linking to this view
+        :return: this ViewContainer set to only return linked features
+        :rtype: :class:`~pydynamind.ViewContainer`
+
+        """
 		self.reset_reading()
 		link_name = feature.GetDefnRef().GetName()
 		if link_id:
@@ -350,7 +549,18 @@ class DM::ViewContainer {
 			self.set_attribute_filter(link_name+"_id = " + str(feature.GetFID()))
 		return self
 
+
 	def get_feature(self, fid):
+		"""
+
+        Returns feature with id.
+
+        :type fid: int
+        :param fid: feature id
+        :return: feature
+        :rtype: OGRFeature
+
+        """
 		self.register_layer()
 		feature = self.__ogr_layer.GetFeature(fid)
 		self.registerFeature(feature, False)
@@ -358,6 +568,19 @@ class DM::ViewContainer {
 		return feature
 
 	def next(self):
+		"""
+
+        Iterator to iterate over the features in the :class:`~pydynamind.ViewContainer` under consideration of the
+        set filters. The method my not be directly called but enables easy access to iterate over features using the standard
+        for loop. e.g. ``for feature in self.view_container:``
+
+        Before iterating over the all features please call :func:`~pydynamind.ViewContainer.reset_reading`.
+
+
+        :return: next feature
+        :rtype: OGRFeature
+
+        """
 		self.register_layer()
 		feature = self.__ogr_layer.GetNextFeature()
 		if not feature:
@@ -368,10 +591,20 @@ class DM::ViewContainer {
 			return feature
 
 	def reset_reading(self):
+		"""
+
+        Resets iterator
+
+        """
 		self.register_layer()
 		self.__ogr_layer.ResetReading()
 
 	def sync(self):
+		"""
+        Synchronises the ViewContainer writing the data to the database and freeing the memory.
+        May be used before the end of the run method.
+
+        """
 		self.syncAlteredFeatures()
 		for f in self.__features:
 			f.Destroy()
@@ -418,10 +651,7 @@ class SIM_STATUS:
 
 class Sim:
 		"""
-		Wrapper of the DynaMind Simulation class. Although DyanMind provides an almost complete wrapper for the Simulation class
-		this class provides functionality used in the dance_platform web application. The class is currently implemented as Singelton to make it
-		easier to use in the flask environment.
-
+		Pythonic wrapper of the DynaMind Simulation class.
 		"""
 		_sim = DM.Simulation
 		_sim_status = SIM_STATUS.OK
@@ -435,13 +665,14 @@ class Sim:
 
 		def register_modules(self, path):
 			"""
-			Register dynamind module
+			Registers Python or C++ DynaMind modules for the simulation.
 			"""
 			print "Register " + path
 			self._sim.registerModulesFromDirectory(path)
+
 		def run(self):
 			"""
-			Start simulation
+			Runs simulation
 			"""
 			if self.is_busy():
 				print "Can't run simulation. a simulation is currently running"
@@ -452,6 +683,13 @@ class Sim:
 			self._sim_status = SIM_STATUS.OK
 
 		def is_busy(self):
+			"""
+			Check if currently a simulation is running
+
+			:return: True if busy, False if not
+			:rtype: Boolean
+			"""
+
 			if self._sim_status != SIM_STATUS.OK:
 				return True
 			return False
@@ -459,6 +697,7 @@ class Sim:
 		def __add_module(self, class_name, module_name, parent=None):
 			"""
 			Add module to DynaMind
+
 			:param class_name: Name of the module class
 			:param module_name: Name of generated module
 			:return: True if module was added to the simulation
@@ -479,6 +718,7 @@ class Sim:
 			"""
 			Convert python dictionary to DynaMind string
 			:param dictionary:
+
 			:return:
 			"""
 			dm_string = ""
@@ -494,6 +734,7 @@ class Sim:
 		def __list_to_dm_string(self, list):
 			"""
 			Convert python list to DynaMind string
+
 			:param dictionary:
 			:return:
 			"""
@@ -507,13 +748,32 @@ class Sim:
 
 		def add_module(self, class_name, parameter={}, connect_module=None, parent_group=None, filters={}, module_name=""):
 			"""
-			Add model the python way
-			:param class_name:
-			:param parameter:
-			:param connect_module:
-			:param parent_group:
-			:return:
+			Add a new model or group to the simulation the python way.
+
+			:type class_name: str
+			:param class_name: class name of module. See documentation for available modules
+			:type parameter: dict
+			:param parameter: module parameter as dict. ``{'parameter name': parameter_value}``. Following parameter are supported
+
+					- boolean: Boolean
+					- int: Integer
+					- float: Float and Doubles
+					- str: String value
+					- vector: String list ``['val1', 'val2', '...']``
+					- dict: String map as dict ``{'key': 'value'}``
+
+			:type connect_module: :class:`~pydynamind.Module`
+			:param connect_module: upstream module that the new module is connected to
+			:type parent_group: :class:`~pydynamind.Module`
+			:param parent_group: parent group if the newly created module. If not set the module is added to the root group.
+			:type filters: dict
+			:param filters: set module filter ``{ 'view_name' : {'attribute': 'attribute filter' :  spatial: 'view name'} }``
+			:type module_name: str
+			:param module_name: alternative module name. This is useful to later find the module in the simulation
+			:return: created module. If the creation fails, it returns None.
+			:rtype: :class:`~pydynamind.Module`
 			"""
+
 			m_uuid = str(uuid.uuid4())
 			if module_name:
 				m_uuid = module_name
@@ -546,10 +806,11 @@ class Sim:
 
 		def set_modules_parameter(self, model_parameter_dict={}):
 			"""
-			Sets parameter for a whole bunch of modules stored in a dict. See set_module_parameter for how to define a
-			module parameter set
-			:param model_parameter_dict: dict of modules including module parameter
-			:return:
+			Sets parameters and filters for a whole bunch of modules stored in a dict. See :func:`~pydynamind.Sim.set_module_parameter` for how to define a
+			module parameter set.
+
+			:type filters: dict
+			:param model_parameter_dict: dict of modules including module parameter ``{'module name': module description, ...}``
 			"""
 			for module_parameter in model_parameter_dict.iteritems():
 				# Iterate over every module
@@ -557,12 +818,17 @@ class Sim:
 
 		def set_module_parameter(self, module_description=()):
 			"""
-			Set model parameter
+			:deprecated: 0.7
+
+			Set model parameter, this method will be removed. Please use :func:`~pydynamind.Sim.set_modules_parameter`
+
+			:type: tuple
 			:param module_description: the module description is a tuple with (module name, parameter list)
 			the parameter list is a dict that may contain following key word:
-			- parameter: {parameter name in module, parameter value}
-			- filter: {filter name, filter definition}
-			:return: nothing if everything was fine
+
+				- parameter: ``{'parameter name': parameter_value,...}``
+				- filter: ``{ 'view_name' : {'attribute': 'attribute filter' :  spatial: 'view name'} }``
+
 			"""
 
 			module_name, parameters = module_description
@@ -586,8 +852,10 @@ class Sim:
 		def _set_module_parameter(self, module, parameter={}):
 			"""
 			Set model parameter
+
 			:param name: name of the module
 			:param parameter: module parameter list
+
 			:return:
 			"""
 			for k in parameter.keys():
@@ -610,9 +878,10 @@ class Sim:
 
 		def remove_module(self, module_name):
 			"""
-			Remove module from Simulation
-			:param module_name:
-			:return:
+			Removes a module from the simulation
+
+			:type module_name: str
+			:param module_name: module name
 			"""
 			if self.is_busy():
 				print "Can't remove module. A simulation is currently running"
@@ -631,9 +900,10 @@ class Sim:
 
 		def set_epsg_code(self, epsg_code):
 			"""
-			Set EPGS code of simulation
-			:param epsg_code:
-			:return:
+			Sets EPGS code of simulation
+
+			:type module_name: int
+			:param epsg_code: EPSG code as integer
 			"""
 			sim_config = DM.SimulationConfig()
 			sim_config.setCoordinateSystem(epsg_code)
@@ -642,14 +912,14 @@ class Sim:
 
 		def load_simulation(self, filename):
 			"""
-			Load dynamind simulation
+			Loads DynaMind simulation
+
+			:type filename: str
 			:param filename: Name of the .dyn file to load
 			"""
 			if self.is_busy():
 				print "Can't load simulation. A simulation is currently running"
 				return
-			print self._sim
-			print filename
 
 			self._sim_status = SIM_STATUS.RUNNING
 			self._sim.loadSimulation(str(filename))
@@ -657,9 +927,12 @@ class Sim:
 
 		def get_module_by_name(self, name):
 			"""
-			Return module by name, be careful names are not unique! IF a mo
+			Returns module by name, be careful names are not unique! If the module can not be found an exception will be raised.
+
+			:type name: str
 			:param name: name of the module
-			:return:
+			:return: module
+			:rtype: :class:`~pydynamind.Module`
 			"""
 			modules = self._sim.getModules()
 			modules_map = {}
@@ -673,9 +946,12 @@ class Sim:
 
 		def get_module(self, module_id):
 			"""
-			Finds and returns module in simulation
+			Finds and returns a module in simulation. The module_id can be get from :func:`~pydynamind.Sim.map_of_loaded_modules`.
+
+			:type module_id: str
 			:param module_id: unique id of the module
 			:return: module
+			:rtype: :class:`~pydynamind.Module`
 			"""
 			modules = self._sim.getModules()
 			modules_map = {}
@@ -686,25 +962,35 @@ class Sim:
 
 		def add_link(self, m_source, outport_name, m_sink, inport_name):
 			"""
-			Link two modules using their port names. If modules have only one port also link_modules
+			Links two modules using their port names. If modules have only one port also :func:`~pydynamind.Sim.link_modules`
 			can be used.
-			:param m_source:
-			:param outport_name:
-			:param m_sink:
-			:param inport_name:
-			:return:
+
+			:type m_source: :class:`~pydynamind.Module`
+			:param m_source: source module
+
+			:type outport_name: str
+			:param outport_name: name of the outport
+
+			:type m_sink: :class:`~pydynamind.Module`
+			:param m_sink: sink module
+
+			:type inport_name: str
+			:param inport_name: inport name
 			"""
 			if not self._sim.addLink(m_source, outport_name, m_sink, inport_name):
 				raise Exception("Couldn't link module " + str(m_source.getName()) + " with " + str(m_sink.getName()))
 
 		def link_modules(self, m_source, m_sink):
 			"""
-			Helper Class to make inking modules less tedious. Just works with if
-			module has one source and one sink. Otherwise troughs exception
+			Helper to make linking modules less tedious. Just works if the to connecting
+			modules have just one in and outport (This is the case for most module). Otherwise throws exception
+
+			:type m_source: dynamind.Module
 			:param m_source: Module
+			:type m_sink: dynamind.Module
 			:param m_sink: Module
-			:return: nothing
 			"""
+
 			inports = m_sink.getInPortNames()
 			outports = m_source.getOutPortNames()
 
@@ -715,16 +1001,16 @@ class Sim:
 
 		def get_links(self):
 			"""
-			returns a list of links
-			:return:
+			Returns all links in simulation as vector
+
+			:return: vector of links
+			:rtype: [:class:`~pydynamind.Link`]
 			"""
 			return self._sim.getLinks()
 
 		def clear(self):
 			"""
-			Clear simulation
-
-			removes all modules from the simulation
+			Removes all modules, groups and links from the simulation
 			"""
 			if self.is_busy():
 				print "Can't reset simulation. a simulation is currently running"
@@ -735,9 +1021,7 @@ class Sim:
 
 		def reset(self):
 			"""
-			Reset simulation
-
-			resets current simulation
+			Resets the data stream of the simulation.
 			"""
 			if self.is_busy():
 				print "Can't reset simulation. a simulation is currently running"
@@ -748,8 +1032,10 @@ class Sim:
 
 		def map_of_loaded_modules(self):
 			"""
-			Return map of the modules in the simulation
-			:return: [key|name]
+			Returns a map of the modules in the simulation.
+
+			:return: ``{'module_id' : 'module name',...}``
+			:rtype: dict
 			"""
 			modulemap = {}
 			modules = self._sim.getModules()
@@ -762,18 +1048,32 @@ class Sim:
 		def serialise(self):
 			"""
 			Serialise simulation
+
 			:return: Returns simulation as xml string
+			:rtype: str
 			"""
 			return self._sim.serialise()
 
 		def write_simulation_file(self, filename):
 			"""
-			Write simulation to file
+			Writes simulation to file
+
+			:type filename: str
 			:param filename: name of the file
 			"""
 			self._sim.writeSimulation(filename)
 
 		def execute(self, dynamind_model, epsg_code, parameter_set):
+			"""
+			Execute a dynamind model. The dynamind model is added to the simulation and parameters are set before the simulation is executed
+
+			:type dynamind_model: str
+			:param dynamind_model: dynamind model as string. See :func:`~pydynamind.Sim.serialise`
+			:type epsg_code: int
+			:param epsg_code: EPSG code
+			:type parameter_set: dict
+			:param parameter_set: set of modules parameters for the definition of the dict please see :func:`~pydynamind.Sim.set_modules_parameter`
+			"""
 
 			self.clear()
 			self.set_epsg_code(epsg_code)

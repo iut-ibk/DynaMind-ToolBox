@@ -120,7 +120,6 @@ public:
 	SimulationConfig() : CoordinateSystem(0){}
 	void setCoordinateSystem(int epsgCode) {CoordinateSystem = epsgCode;}
 	int getCoorindateSystem() {return this->CoordinateSystem;}
-
 };
 
 
