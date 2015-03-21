@@ -10,6 +10,8 @@ before_install:
  - sudo apt-get update -q
  - sudo apt-get install cmake
  - sudo pip install reimport
+ - sudo pip install sphinx
+ - sudo pip install sphinx_rtd_theme
  - curl https://gforge.inria.fr/frs/download.php/33525/CGAL-4.4.tar.gz | tar zxv
  - cd CGAL-4.4
  - cmake . && make && sudo make install 
@@ -21,4 +23,6 @@ before_install:
  - cd ..
  - git submodule update --init --recursive
 
-script: cmake . -DWITH_UNIT_TESTS=True && make
+script: cmake . -DWITH_UNIT_TESTS=True -DWITH_DOC=True && make
+
+
