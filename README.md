@@ -10,15 +10,18 @@ The heart of the DynaMind-Toolbox is [DynaMind](https://github.com/iut-ibk/DynaM
 
 The DyanMind-Toolbox comes with:
 
-- [Modellbuilder](https://github.com/iut-ibk/DynaMind-Gui)
-a easy way to set up and edit your simulation
+
+- a model build to set up and edit simulations
 
 <img src="https://github.com/iut-ibk/DynaMind-Gui/blob/master/doc/images/gui_with_view.png?raw=true" border="0">
 
 - a set of modules to import, edit, create and export data
+- an easy to use Python interface to create new simulation or build new modules.
 
- - [DynaMind-BasicModules](https://github.com/iut-ibk/DynaMind-BasicModules )
+Documentation can be found [here](http://iut-ibk.github.io/DynaMind-ToolBox)
 
+
+ 
 
 ## Compile DynaMind
 - [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
