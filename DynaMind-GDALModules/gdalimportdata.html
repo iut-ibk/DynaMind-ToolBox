@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Import GIS Data &mdash; DynaMind 0.7 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="DynaMind 0.7 documentation" href="../index.html"/>
+        <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
+        <link rel="next" title="Export GIS data" href="gdalpublishresults.html"/>
+        <link rel="prev" title="Hot Start Simulation" href="gdalhotstarter.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> DynaMind</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick-intro-gui.html">A Quick Introduction to the DynaMind GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#the-problem">The Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#building-a-workflow">Building a workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#executing-a-workflow">Executing a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#solution">Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../known_problems.html">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../known_problems.html#gdal-python-modules">GDAL Python Modules</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html">DynaMind Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/module.html">Module Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/simulations_python.html">Create Simulations in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/simulations_python.html#advanced-use-cases">Advanced Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html#dynamind-core-api">DynaMind Core API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html">Sim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#module">Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Module List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalerase.html">Subtract Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalhotstarter.html">Hot Start Simulation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Import GIS Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalpublishresults.html">Export GIS data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalspatiallinking.html">Spatially Link Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nonspatiallinking.html">Link Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalparcelsplit.html">Subdivide Parcels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalparceling.html">Parcel Faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdaloffset.html">Offset Faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcopyelementtoview.html">Copy Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdaljoinnearestneighbour.html">Link Nearest Neighbour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">DynaMind</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
+      
+    <li>Import GIS Data</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/DynaMind-GDALModules/gdalimportdata.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="import-gis-data">
+<h1>Import GIS Data<a class="headerlink" href="#import-gis-data" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>GDALImportData imports GIS data into DynaMind from common GIS sources supported by the <a class="reference external" href="http://www.gdal.org/ogr_formats.html">GDAL/OGR</a>.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="21%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>source</td>
+<td>STRING</td>
+<td>data source (detailed description see below)</td>
+</tr>
+<tr class="row-odd"><td>layer_name</td>
+<td>STRING</td>
+<td>name of the imported layer</td>
+</tr>
+<tr class="row-even"><td>view_name</td>
+<td>STRING</td>
+<td>name of view</td>
+</tr>
+<tr class="row-odd"><td>append</td>
+<td>BOOL</td>
+<td>true if append data to existing stream and creates additional inport</td>
+</tr>
+<tr class="row-even"><td>epsg_to</td>
+<td>INT</td>
+<td>epsg code used internally in the simulation</td>
+</tr>
+<tr class="row-odd"><td>epsg_from</td>
+<td>INT</td>
+<td>epsg code of the source</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>The import GDAL module us usually the fist module in a DynaMind Simulation. It builds on the GDAL library and
+therefore allows data to imported form multiple common GIS sources. An overview of supported formats can be
+found <a class="reference external" href="http://www.gdal.org/ogr_formats.html">here</a>. Please ensure that the <cite>epsg_to</cite> and <cite>epsg_from</cite> parameters are set currently to
+ensure that the simulation is executed correctly. <cite>epsg_to</cite> should be the same throughout the simulation.</p>
+<div class="section" id="import-from-shapefile">
+<h3>Import from Shapefile<a class="headerlink" href="#import-from-shapefile" title="Permalink to this headline">¶</a></h3>
+<p>This is the most common way to import data into your simulation. please point the source parameter to your file.
+The layer_name is the same as the name of the source file (without the directories and the <cite>.shp</cite> file ending). Please
+also set the epsg_to and epsg_from parameter. These are used to transform the data in the right coordinate system.
+If you are not sure about EPSG code of your source file have a look at <a class="reference external" href="http://prj2epsg.org/search">Prj2EPSG</a>. This website
+allows you to identify your coordinate system based on the <cite>.prj</cite> file that comes with the shape file.</p>
+</div>
+<div class="section" id="import-from-postgis">
+<h3>Import from PostGIS<a class="headerlink" href="#import-from-postgis" title="Permalink to this headline">¶</a></h3>
+<p>If you want to obtain data from a PostGIS server please set the source to following
+<cite>PG:dbname=melbourne host=127.0.0.1 port=5432 user=username password=password</cite> and layer_name to the layer
+name to be imported.</p>
+</div>
+<div class="section" id="import-from-wfs">
+<h3>Import from WFS<a class="headerlink" href="#import-from-wfs" title="Permalink to this headline">¶</a></h3>
+<p>If you want to obtain data from a WFS server please set the source to following <cite>WFS:hostname</cite> and layer_name to the layer
+name to be imported.</p>
+</div>
+</div>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Load data from PostGIS database with GDALImport Data. Per default the module has no inport</span>
+<span class="n">catchment</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=elwood host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;elwood_catchment&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;catchment&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
+
+<span class="c"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
+<span class="c"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
+<span class="n">land_use</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse_victoria&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse&#39;</span><span class="p">,</span>
+                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                         <span class="n">catchment</span><span class="p">,</span>
+                         <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
+                                              <span class="s">&#39;spatial&#39;</span><span class="p">:</span> <span class="s">&quot;catchment&quot;</span><span class="p">}</span>
+                         <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gdalpublishresults.html" class="btn btn-neutral float-right" title="Export GIS data">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gdalhotstarter.html" class="btn btn-neutral" title="Hot Start Simulation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2015, Christian Urich, Michael Mair.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

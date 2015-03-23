@@ -22,6 +22,7 @@ Packages
   DynaMind-BasicModules/index
   DynaMind-Gui/index
   DynaMind-Sewer/index
+  DynaMind-GDALModules/index
 
 Indices and tables
 ==================

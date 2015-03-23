@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Link Nearest Neighbour &mdash; DynaMind 0.7 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="DynaMind 0.7 documentation" href="../index.html"/>
+        <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
+        <link rel="next" title="Calculate Attributes" href="gdalattributecalculator.html"/>
+        <link rel="prev" title="Copy Features" href="gdalcopyelementtoview.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> DynaMind</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick-intro-gui.html">A Quick Introduction to the DynaMind GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#the-problem">The Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#building-a-workflow">Building a workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#executing-a-workflow">Executing a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#solution">Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../known_problems.html">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../known_problems.html#gdal-python-modules">GDAL Python Modules</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html">DynaMind Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/module.html">Module Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/simulations_python.html">Create Simulations in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/simulations_python.html#advanced-use-cases">Advanced Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html#dynamind-core-api">DynaMind Core API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html">Sim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#module">Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Module List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalerase.html">Subtract Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalhotstarter.html">Hot Start Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalpublishresults.html">Export GIS data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalspatiallinking.html">Spatially Link Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nonspatiallinking.html">Link Data Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalparcelsplit.html">Subdivide Parcels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalparceling.html">Parcel Faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdaloffset.html">Offset Faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcopyelementtoview.html">Copy Features</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Link Nearest Neighbour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">DynaMind</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
+      
+    <li>Link Nearest Neighbour</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/DynaMind-GDALModules/gdaljoinnearestneighbour.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="link-nearest-neighbour">
+<h1>Link Nearest Neighbour<a class="headerlink" href="#link-nearest-neighbour" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>GDALJoinNearestNeighbour joins the closest link view component to a leading view component.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="21%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>leadingViewName</td>
+<td>STRING</td>
+<td>source nodes</td>
+</tr>
+<tr class="row-odd"><td>linkViewName</td>
+<td>STRING</td>
+<td>linked nodes</td>
+</tr>
+<tr class="row-even"><td>max_distance</td>
+<td>DOUBLE</td>
+<td>max search radius</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-stream">
+<h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="20%" />
+<col width="23%" />
+<col width="6%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">View</th>
+<th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Access</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>leadingViewName</td>
+<td>&nbsp;</td>
+<td>NODE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>linkViewName_id</td>
+<td>INT</td>
+<td>write</td>
+<td>link id to the closest link view component</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>linkViewName</td>
+<td>&nbsp;</td>
+<td>NODE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gdalattributecalculator.html" class="btn btn-neutral float-right" title="Calculate Attributes">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gdalcopyelementtoview.html" class="btn btn-neutral" title="Copy Features"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2015, Christian Urich, Michael Mair.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
