@@ -14,10 +14,6 @@
 	path = DynaMind-Sewer
 	url = git://github.com/iut-ibk/DynaMind-Sewer.git
 	branch = master
-[submodule "P8Modules"]
-	path = P8Modules
-	url = git://github.com/iut-ibk/P8Modules.git
-	branch = master
 [submodule "DynaMind-Performance-Assessment"]
 	path = DynaMind-Performance-Assessment
 	url = git://github.com/iut-ibk/DynaMind-Performance-Assessment.git
