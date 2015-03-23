@@ -19,7 +19,7 @@ Data Handling
 -------------
 
 - :doc:`GDALCopyElementToView </DynaMind-GDALModules/gdalcopyelementtoview>` Copy features
-
+- :doc:`GDALRemoveComponets </DynaMind-GDALModules/gdalremovecomponents>` Delete components
 - :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
 - :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
 

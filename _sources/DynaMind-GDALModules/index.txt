@@ -22,6 +22,7 @@ Standard Modules (GDAL)
    gdalattributecalculator
    gdalgeometricattributes
    gdalcreatebuilding
+   gdalremovecomponents
 
 
 
