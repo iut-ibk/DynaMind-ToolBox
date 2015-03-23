@@ -51,7 +51,7 @@ after_success:
   -
   - # go back up and build the documentation, pointing it towards
   - # that dir we just made
-  - cp -r /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/ .
+  - cp -r /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/* .
   - ls /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/
   - ls
   - # cd into the docs dir and commit and push the new docs.
