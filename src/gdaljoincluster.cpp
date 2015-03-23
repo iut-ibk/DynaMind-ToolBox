@@ -157,19 +157,20 @@ void GDALJoinCluster::run()
 		long edge_id = it->first;
 		OGRFeature * e = network.getFeature(edge_id);
 		OGRLineString * n = (OGRLineString *)e->GetGeometryRef();
-		for(int i = 1; i < segements_vec.size(); i++ ) {
-			if (segements_vec[i-1].second == segements_vec[i].second)
-				continue;
-			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
-			if (!s) {
-				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
-				continue;
-			}
-			OGRFeature * s_f = this->network.createFeature();
-			s_f->SetGeometry(s);
-			s_f->SetField("new", 1);
-			s_f->SetField("start_id", (int)segements_vec[i-1].first);
-			s_f->SetField("end_id", (int)segements_vec[i].first);
-		}
+//Build problem with 1.10
+//		for(int i = 1; i < segements_vec.size(); i++ ) {
+//			if (segements_vec[i-1].second == segements_vec[i].second)
+//				continue;
+//			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
+//			if (!s) {
+//				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
+//				continue;
+//			}
+//			OGRFeature * s_f = this->network.createFeature();
+//			s_f->SetGeometry(s);
+//			s_f->SetField("new", 1);
+//			s_f->SetField("start_id", (int)segements_vec[i-1].first);
+//			s_f->SetField("end_id", (int)segements_vec[i].first);
+//		}
 	}
 }
