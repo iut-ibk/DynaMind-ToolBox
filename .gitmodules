@@ -18,17 +18,9 @@
 	path = P8Modules
 	url = git://github.com/iut-ibk/P8Modules.git
 	branch = master
-[submodule "DynaMind-UrbanSim"]
-	path = DynaMind-UrbanSim
-	url = git://github.com/iut-ibk/DynaMind-UrbanSim.git
-	branch = master
 [submodule "DynaMind-Performance-Assessment"]
 	path = DynaMind-Performance-Assessment
 	url = git://github.com/iut-ibk/DynaMind-Performance-Assessment.git
-	branch = master
-[submodule "DynaMind-VIBeModules"]
-	path = DynaMind-VIBeModules
-	url = git://github.com/iut-ibk/DynaMind-VIBeModules.git
 	branch = master
 [submodule "DynaMind-DAnCE4Water"]
 	path = DynaMind-DAnCE4Water
@@ -37,10 +29,6 @@
 [submodule "DynaVIBe"]
 	path = DynaVIBe
 	url = git://github.com/iut-ibk/DynaVIBe.git
-	branch = master
-[submodule "PowerVIBe"]
-	path = PowerVIBe
-	url = git://github.com/iut-ibk/PowerVIBe.git
 	branch = master
 [submodule "DynaMind-Extensions"]
 	path = DynaMind-Extensions
