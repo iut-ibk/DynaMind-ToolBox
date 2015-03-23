@@ -87,44 +87,45 @@ void GDALJoinCluster::run()
 			OGRLineString * n = (OGRLineString *)f_n->GetGeometryRef();
 			if (!n)
 				continue;
-			if (n->Intersects(p_buffer)) {
-				int intersected_cluster = f_n->GetFieldAsInteger("cluster_id");
-				//avoid intersections within cluster
-				if (intersected_cluster == current_cluster) {
-					//DM::Logger(DM::Error) << "Self intersect";
-					continue;
-				}
+//Problem with GDAL 1.10
+//			if (n->Intersects(p_buffer)) {
+//				int intersected_cluster = f_n->GetFieldAsInteger("cluster_id");
+//				//avoid intersections within cluster
+//				if (intersected_cluster == current_cluster) {
+//					//DM::Logger(DM::Error) << "Self intersect";
+//					continue;
+//				}
 
-				//Calculate intersections
-				GEOSGeometry* geos_p = p->exportToGEOS(gh);
-				GEOSGeometry* line = n->exportToGEOS(gh);
-				double p_l = GEOSProject_r(gh, line, geos_p);
-				if (p_l == 0) {
-					continue;
-				}
-				if (segments.count(f_n->GetFID()) == 0) {
-					std::vector<segment> seg_vec;
-					seg_vec.push_back(segment(end_node, 0));
-					seg_vec.push_back(segment(start_node, n->get_Length()));
-					segments[f_n->GetFID()] = seg_vec;
-				}
-				std::pair<long, long> intersection_pair;
-				if ( current_cluster < intersected_cluster ) {
-					intersection_pair = std::pair<long, long>(current_cluster, intersected_cluster);
-				} else {
-					intersection_pair = std::pair<long, long>(intersected_cluster, current_cluster);
-				}
-				/*if (cluster_intersections.find(intersection_pair) != cluster_intersections.end()) {
-					DM::Logger(DM::Error) << "Cluster have existing intersection";
-				}*/
+//				//Calculate intersections
+//				GEOSGeometry* geos_p = p->exportToGEOS(gh);
+//				GEOSGeometry* line = n->exportToGEOS(gh);
+//				double p_l = GEOSProject_r(gh, line, geos_p);
+//				if (p_l == 0) {
+//					continue;
+//				}
+//				if (segments.count(f_n->GetFID()) == 0) {
+//					std::vector<segment> seg_vec;
+//					seg_vec.push_back(segment(end_node, 0));
+//					seg_vec.push_back(segment(start_node, n->get_Length()));
+//					segments[f_n->GetFID()] = seg_vec;
+//				}
+//				std::pair<long, long> intersection_pair;
+//				if ( current_cluster < intersected_cluster ) {
+//					intersection_pair = std::pair<long, long>(current_cluster, intersected_cluster);
+//				} else {
+//					intersection_pair = std::pair<long, long>(intersected_cluster, current_cluster);
+//				}
+//				/*if (cluster_intersections.find(intersection_pair) != cluster_intersections.end()) {
+//					DM::Logger(DM::Error) << "Cluster have existing intersection";
+//				}*/
 
-				cluster_intersections.insert(intersection_pair);
-				std::vector<segment> & seg_vec = segments[f_n->GetFID()];
-				seg_vec.push_back(segment(node_id, p_l));
+//				cluster_intersections.insert(intersection_pair);
+//				std::vector<segment> & seg_vec = segments[f_n->GetFID()];
+//				seg_vec.push_back(segment(node_id, p_l));
 
-				f_n->SetField("intersect_id", f->GetFieldAsInteger("node_id"));
-				f->SetField("intersects", (int) f_n->GetFID());
-			}
+//				f_n->SetField("intersect_id", f->GetFieldAsInteger("node_id"));
+//				f->SetField("intersects", (int) f_n->GetFID());
+//			}
 		}
 	}
 
