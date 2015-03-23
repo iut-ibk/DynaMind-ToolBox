@@ -19,10 +19,7 @@ The DyanMind-Toolbox comes with:
 - an easy to use Python interface to create new simulation or build new modules.
 
 Documentation can be found [here](http://iut-ibk.github.io/DynaMind-ToolBox)
-
-
  
-
 ## Compile DynaMind
 - [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
 - [Compiling-DynaMind-Toolbox-on-Linux](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Linux)
