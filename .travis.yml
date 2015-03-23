@@ -5,8 +5,16 @@ compiler:
 # Change this to your needs
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1h libgdal-dev libgdal1-dev libqglviewer-dev-common libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf libgmp-dev libmpfr-dev libboost-all-dev
+ - sudo add-apt-repository ppa:boost-latest/ppa -y
+ - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y
+ - sudo apt-get update -q
+ - sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1h libgdal-dev libgdal1-dev libqglviewer-dev-common python-numpy python-scipy python-gdal python-matplotlib python-netcdf libgmp-dev libmpfr-dev boost1.55
+ - sudo add-apt-repository ppa:kalakris/cmake -y
+ - sudo apt-get update -q
+ - sudo apt-get install cmake
  - sudo pip install reimport
+ - sudo pip install sphinx
+ - sudo pip install sphinx_rtd_theme
  - curl https://gforge.inria.fr/frs/download.php/33525/CGAL-4.4.tar.gz | tar zxv
  - cd CGAL-4.4
  - cmake . && make && sudo make install 
@@ -18,4 +26,38 @@ before_install:
  - cd ..
  - git submodule update --init --recursive
 
-script: cmake . -DWITH_UNIT_TESTS=True && make
+script: cmake . -DWITH_UNIT_TESTS=True -DWITH_PLUGIN_GDALMODULE=True -DWITH_DOC=True && make
+
+env:
+  global:
+    - secure: "SoPI/6Vt3jM20G48DmeJwQYF4Tw407R6ndtvJUaQA/Ok6JiHwdaHk3rfY6An7cfjHMLt877skKZFcI1WmaCnefI2+INlUwykQnPCwUFUudciRmgtVzenizYnNmIg2zY552d6FgFCxi5q1kFblOW8/gTjMx+mU7ZGLHECQfEBexM="
+after_success:
+  - ## the following automatically builds the doxygen
+  - ## documentation and pushes it to the gh_pages branch
+  -
+  - # First, set up credentials using the environment variables
+  - # GIT_NAME, GIT_EMAIL and GH_TOKEN. These were passed
+  - # encrypted to travis and should have been decrypted
+  - # using travis' private key before this script was run.
+  - git config --global user.name ${GIT_NAME}
+  - git config --global user.email ${GIT_EMAIL}
+  -
+  - # now we make the directory for the docs and cd into it
+  - make
+  - cd
+  - mkdir developmentDocs
+  - cd developmentDocs/
+  - 
+  - # clone the whole repo again, but switch to gh_pages branch
+  - git clone https://github.com/iut-ibk/DynaMind-ToolBox.git .
+  - git checkout gh-pages
+  -
+  - # go back up and build the documentation, pointing it towards
+  - # that dir we just made
+  - cp -r /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/* .
+  - # cd into the docs dir and commit and push the new docs.
+  - git add --all .
+  - git commit -m "Auto-updating developer documentation"
+  - git push https://${GH_TOKEN}@github.com/iut-ibk/DynaMind-ToolBox gh-pages
+
+
