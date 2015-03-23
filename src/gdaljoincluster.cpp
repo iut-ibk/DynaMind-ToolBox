@@ -43,7 +43,7 @@ void GDALJoinCluster::run()
 
 	typedef std::pair<long, double> segment;
 	std::map<long, std::vector< segment > > segments;
-	GEOSContextHandle_t gh = OGRGeometry::createGEOSContext();
+	//GEOSContextHandle_t gh = OGRGeometry::createGEOSContext();
 
 	//Sort all intersection and choose smallest
 	struct intersection {
