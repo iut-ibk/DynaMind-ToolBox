@@ -23,7 +23,7 @@ before_install:
  - cd ..
  - git submodule update --init --recursive
 
-script: cmake . -DWITH_UNIT_TESTS=True -DWITH_DOC=True && make
+script: cmake . -DWITH_UNIT_TESTS=True -WITH_PLUGIN_GDALMODULE=True -DWITH_DOC=True && make
 
 env:
   global:
@@ -52,8 +52,6 @@ after_success:
   - # go back up and build the documentation, pointing it towards
   - # that dir we just made
   - cp -r /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/* .
-  - ls /home/travis/build/iut-ibk/DynaMind-ToolBox/doc/html/
-  - ls
   - # cd into the docs dir and commit and push the new docs.
   - git add --all .
   - git commit -m "Auto-updating developer documentation"
