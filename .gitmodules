@@ -14,10 +14,6 @@
 	path = DynaMind-Sewer
 	url = git://github.com/iut-ibk/DynaMind-Sewer.git
 	branch = master
-[submodule "DynaMind-QGIS"]
-	path = DynaMind-QGIS
-	url = git://github.com/christianurich/DynaMind-QGIS.git
-	branch = master
 [submodule "P8Modules"]
 	path = P8Modules
 	url = git://github.com/iut-ibk/P8Modules.git
