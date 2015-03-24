@@ -54,7 +54,7 @@ elif [[ $1 = "compile" ]]; then
 
 elif [[ $1 = "deploy" ]]; then
 
-	rsync -a html latex pdf c8451116@dynalp.com:~/dynalp.com/documentation/DynaMind/
+	rsync -a output/html output/latex output/pdf c8451116@dynalp.com:~/dynalp.com/documentation/DynaMind/
 
 else
 
