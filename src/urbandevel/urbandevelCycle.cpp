@@ -5,7 +5,6 @@ DM_DECLARE_NODE_NAME(urbandevelCycle, DynAlp)
 
 urbandevelCycle::urbandevelCycle()
 {
-    this->yearcycle = 0;
 }
 
 urbandevelCycle::~urbandevelCycle()
@@ -16,17 +15,16 @@ void urbandevelCycle::init()
 {
     cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
 
-    cityview.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::READ);
     cityview.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
     cityview.addAttribute("comdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
     cityview.addAttribute("inddiffperyear", DM::Attribute::DOUBLEVECTOR, DM::READ);
     cityview.addAttribute("cycle", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::WRITE);
-    cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cyclebool", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::WRITE);
-    cityview.addAttribute("triggerBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("triggerbool", DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(cityview);
@@ -59,14 +57,14 @@ void urbandevelCycle::run()
     currentyear++;
     if ( currentyear == endyear ) cyclebool = 0;
 
-    int cycle = currentyear - startyear;
+    int cycle = currentyear - startyear -1;
     int cyclepopdiff = popdiffperyear[cycle];
     int cyclecomdiff = comdiffperyear[cycle];
     int cycleinddiff = inddiffperyear[cycle];
 
     DM::Attribute* set = currentcityview->getAttribute("currentyear");
     set->setDouble(currentyear);
-    set = currentcityview->getAttribute("cycleBOOL");
+    set = currentcityview->getAttribute("cyclebool");
     set->setDouble(cyclebool);
     set = currentcityview->getAttribute("cyclepopdiff");
     set->setDouble(cyclepopdiff);
@@ -74,7 +72,7 @@ void urbandevelCycle::run()
     set->setDouble(cyclecomdiff);
     set = currentcityview->getAttribute("cycleinddiff");
     set->setDouble(cycleinddiff);
-    set = currentcityview->getAttribute("triggerBOOL");
+    set = currentcityview->getAttribute("triggerbool");
     set->setDouble(1);
 
     DM::Logger(DM::Warning) << "CYCLE - year: " << currentyear << " popdiff: " << cyclepopdiff

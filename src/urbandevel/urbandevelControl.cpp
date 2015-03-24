@@ -7,17 +7,15 @@ urbandevelControl::urbandevelControl()
 {
     startyear = 2000;
     endyear = 2030;
-    yearcycle = 5;
-    wpfromcity = TRUE;
+    wpfromcity = FALSE;
     workplaces = 60;
-    shareind = 10;
+    shareindwp = 10;
 
     this->addParameter("Start year", DM::INT, &this->startyear); // if not set first year of data will be used
     this->addParameter("End year", DM::INT, &this->endyear); // if not set last year of data will be used
-    this->addParameter("Years per cycle", DM::INT, &this->yearcycle);
     this->addParameter("Fetch workplace information from CITY", DM::BOOL, &this->wpfromcity);
     this->addParameter("Workplaces per 100 inh.", DM::INT, &this->workplaces);
-    this->addParameter("Share industrial workplaces", DM::INT, &this->shareind);
+    this->addParameter("Share industrial workplaces", DM::INT, &this->shareindwp);
 }
 
 urbandevelControl::~urbandevelControl()
@@ -28,16 +26,21 @@ urbandevelControl::~urbandevelControl()
 void urbandevelControl::init()
 {
     cityview = DM::View("CITY", DM::NODE, DM::MODIFY);
-    cityview.addAttribute("year", DM::Attribute::DOUBLE, DM::READ);
-    cityview.addAttribute("population", DM::Attribute::DOUBLE, DM::READ);
+    cityview.addAttribute("year", DM::Attribute::STRING, DM::READ);
+    cityview.addAttribute("population", DM::Attribute::STRING, DM::READ);
     cityview.addAttribute("startyear", DM::Attribute::DOUBLE, DM::WRITE);
     cityview.addAttribute("endyear", DM::Attribute::DOUBLE, DM::WRITE);
-    cityview.addAttribute("yearcycle", DM::Attribute::DOUBLE, DM::WRITE);
 
     cityview.addAttribute("popdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
     cityview.addAttribute("comdiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
     cityview.addAttribute("inddiffperyear", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-    cityview.addAttribute("cycleBOOL", DM::Attribute::DOUBLE, DM::WRITE);
+    cityview.addAttribute("cyclebool", DM::Attribute::DOUBLE, DM::WRITE);
+
+    if (wpfromcity)
+    {
+        cityview.addAttribute("workplaces", DM::Attribute::STRING, DM::READ);
+        cityview.addAttribute("shareindwpwp", DM::Attribute::STRING, DM::READ);
+    }
 
     std::vector<DM::View> data;
     data.push_back(cityview);
@@ -59,8 +62,8 @@ void urbandevelControl::run()
 
     // Read CSV Strings from CITY.year and CITY.population; must be the same length
 
-    QString year = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified();
-    QString pop = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified();
+    QStringList yearlist = QString::fromStdString(currentcity->getAttribute("year")->getString()).simplified().split(",");
+    QStringList poplist = QString::fromStdString(currentcity->getAttribute("population")->getString()).simplified().split(",");
 
     QStringList wplist;
     QStringList indlist;
@@ -68,37 +71,32 @@ void urbandevelControl::run()
     if (wpfromcity)
     {
         wplist = QString::fromStdString(currentcity->getAttribute("workplaces")->getString()).simplified().split(",");
-        indlist = QString::fromStdString(currentcity->getAttribute("shareind")->getString()).simplified().split(",");
+        indlist = QString::fromStdString(currentcity->getAttribute("shareindwp")->getString()).simplified().split(",");
     }
 
-    DM::Logger(DM::Debug) << "year: " << year << "\npopulation: " << pop;
-
-    QStringList yrlist = year.split(",");
-    QStringList poplist = pop.split(",");
-
-    if (yrlist.size() != poplist.size())
+    if (yearlist.size() != poplist.size())
     {
-        DM::Logger(DM::Error) << "no of years = " << yrlist.size() << "no of popdata = " << poplist.size() << "... must be the same";
+        DM::Logger(DM::Error) << "no of years = " << yearlist.size() << "no of popdata = " << poplist.size() << "... must be the same";
         return;
     }
 
     if (wpfromcity)
     {
-        if (yrlist.size() != wplist.size())
+        if (yearlist.size() != wplist.size())
         {
-            DM::Logger(DM::Error) << "no of years = " << yrlist.size() << "no of workplaces = " << wplist.size() << "... must be the same";
+            DM::Logger(DM::Error) << "no of years = " << yearlist.size() << "no of workplaces = " << wplist.size() << "... must be the same";
         }
-        else if (yrlist.size() != indlist.size())
+        else if (yearlist.size() != indlist.size())
         {
-            DM::Logger(DM::Error) << "no of years = " << yrlist.size() << "no of share of industrial worplaces = " << indlist.size() << "... must be the same";
+            DM::Logger(DM::Error) << "no of years = " << yearlist.size() << "no of share of industrial worplaces = " << indlist.size() << "... must be the same";
         }
     }
 
     int sy = startyear;
     int ey = endyear;
 
-    if (startyear == 0) int sy = yrlist.at(0).toInt();
-    if (endyear == 0) int ey = yrlist.at(yrlist.size()).toInt();
+    if (startyear == 0) int sy = yearlist.at(0).toInt();
+    if (endyear == 0) int ey = yearlist.at(yearlist.size()).toInt();
 
     if (sy > ey) DM::Logger(DM::Warning) << "start year = " << sy << ">" << "end year = " << ey;
 
@@ -108,18 +106,20 @@ void urbandevelControl::run()
 
     for (int i=sy; i <= ey; i++) // cycle through the years from startyear to endyear
     {
-        for (int j=0; j < yrlist.size()-1; j++) // second cycle through all given population data (vector)
+        for (int j=0; j < yearlist.size()-1; j++) // second cycle through all given population data (vector)
         {
-            int yr1 = yrlist.at(j).toInt(); // get actual year
-            int yr2 = yrlist.at(j+1).toInt(); // get next year
+            int yr1 = yearlist.at(j).toInt(); // get actual year
+            int yr2 = yearlist.at(j+1).toInt(); // get next year
 
-            if (i > yr1 && i < yr2)
+            //DM::Logger(DM::Warning) << "actual year = " << yr1 << ">" << "next year = " << yr2;
+
+            if (i > yr1 && i <= yr2)
             {
-                int yrdiff = yrlist.at(j+1).toInt() - yrlist.at(j).toInt();
+                int yrdiff = yearlist.at(j+1).toInt() - yearlist.at(j).toInt();
                 int popdiff = poplist.at(j+1).toInt() - poplist.at(j).toInt();
                 int popdiff_per_year = popdiff/yrdiff;
 
-                int inddiff_per_year = popdiff_per_year * workplaces * shareind / 10000;
+                int inddiff_per_year = popdiff_per_year * workplaces * shareindwp / 10000;
                 int comdiff_per_year = (popdiff_per_year * workplaces / 100) - inddiff_per_year;
 
                 if (wpfromcity)
@@ -133,7 +133,7 @@ void urbandevelControl::run()
                 comdiffvector.push_back(comdiff_per_year);
                 inddiffvector.push_back(inddiff_per_year);
 
-                DM::Logger(DM::Debug) << "yr: " << yr1 << " pop: " << popdiff_per_year << " com: " << comdiff_per_year << " ind: " << inddiff_per_year;
+                DM::Logger(DM::Warning) << "year: " << i << " pop: " << popdiff_per_year << " com: " << comdiff_per_year << " ind: " << inddiff_per_year;
             }
         }
     }
@@ -148,16 +148,13 @@ void urbandevelControl::run()
     dmatt = currentcity->getAttribute("endyear");
     dmatt->setDouble(endyear);
 
-    dmatt = currentcity->getAttribute("yearcycle");
-    dmatt->setDouble(yearcycle);
-
     dmatt = currentcity->getAttribute("comdiffperyear");
     dmatt->setDoubleVector(comdiffvector);
 
     dmatt = currentcity->getAttribute("inddiffperyear");
     dmatt->setDoubleVector(inddiffvector);
 
-    dmatt = currentcity->getAttribute("cycleBOOL");
+    dmatt = currentcity->getAttribute("cyclebool");
     dmatt->setDouble(1);
 }
 

@@ -12,7 +12,7 @@ urbandevelRankEuclid::urbandevelRankEuclid()
     gravityview_name = "GRAVITY";
     rankview_name = "SUPERBLOCK";
     reduction = FALSE;
-    rank_function = "linear";
+    rank_function = "power";
     rank_function_factor = 1;
     rank_weight = 1;
     nodeweight = TRUE;

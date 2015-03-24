@@ -16,7 +16,6 @@ public:
 
 private:    
     DM::View cityview;
-    int yearcycle;
 };
 
 #endif // urbandevelCycle_H

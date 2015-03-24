@@ -17,10 +17,9 @@ public:
 private:
     int startyear;
     int endyear;
-    int yearcycle;
     bool wpfromcity;
     int workplaces;
-    int shareind;
+    int shareindwp;
 
     DM::View cityview;
 };
