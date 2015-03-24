@@ -11,6 +11,7 @@ public:
             ranking is possible: linear or power(x) **/
     static bool darank(std::vector<double>& distance ,std::vector<int>& rank, std::string function = "lin", double factor = 1);
     static bool daweight(std::vector<int>& oldrank, std::vector<int>& newrank, double rank_weight = 1);
+    static int dapercentile(std::vector<int>& values, int percentile = 10);
 
 };
 

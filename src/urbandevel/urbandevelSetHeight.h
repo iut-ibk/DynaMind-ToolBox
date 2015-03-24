@@ -18,6 +18,7 @@ private:
     bool heightinmeter;
     int heightperstory;
     int numbernearest;
+    int percentile;
 
     DM::View city;
     DM::View sb;

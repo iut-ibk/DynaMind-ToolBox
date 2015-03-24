@@ -18,14 +18,14 @@ urbandevelSetHeight::urbandevelSetHeight()
     heightinmeter = 1;
     heightperstory = 4;
     numbernearest = 9;
-
-
+    percentile = 20;
 
     this->addParameter("from View: ", DM::STRING, &this->heightView);
     this->addParameter("Attribute: ", DM::STRING, &this->heightAttr);
     this->addParameter("Story height (m): ", DM::INT, &this->heightperstory);
     this->addParameter("Height in meters (else stories): ", DM::BOOL, &this->heightinmeter);
     this->addParameter("Number of objects: ", DM::INT, &this->numbernearest);
+    this->addParameter("Percentile min/max: ", DM::INT, &this->percentile);
 
 //    this->addData("Data", data);
 }
@@ -73,12 +73,12 @@ void urbandevelSetHeight::run()
     if ( buildings.size() < numbernearest )
         max = buildings.size();
 
-    std::vector<int> distance;
-    std::vector<int> height;
-    std::map<int, int> distheight;
-
     for (int i = 0; i < superblocks.size(); i++)
     {
+        std::vector<int> distance;
+        std::vector<int> height;
+        std::map<int, int> distheight;
+
         std::vector<DM::Component*> sblink = superblocks[i]->getAttribute("SUPERBLOCK_CENTROIDS")->getLinkedComponents();
 
         if( sblink.size() < 1 )
@@ -115,10 +115,13 @@ void urbandevelSetHeight::run()
         {
             distheight[distance[k]] = height[k];
 
+            DM::Logger(DM::Debug) << "distance: " << distance[k] << " height: " << height[k];
+
         }
-        int avgheight = 0;
-        int maxheight = 0;
-        int minheight = 999;
+
+        //DM::Logger(DM::Warning) << "no height bd: " << distance.size();
+
+        std::vector<int> heightvec;
 
         std::map<int,int>::iterator element = distheight.begin();
 
@@ -127,32 +130,27 @@ void urbandevelSetHeight::run()
         {
             std::advance(element,k);
 
-            int actualheight = element->second;
-            DM::Logger(DM::Debug) << "actual height " << actualheight;
+            if (element->second > 1) {
+                heightvec.push_back(element->second);
+            }
 
-            if (actualheight > maxheight)
-            {
-                maxheight = actualheight;
-                DM::Logger(DM::Debug) << "maxheight " << maxheight;
-            }
-            else if (actualheight > 0 && actualheight < minheight)
-            {
-                minheight = actualheight;
-            }
-            avgheight = avgheight + actualheight;
-            DM::Logger(DM::Debug) << "heightinc " << avgheight;
+            DM::Logger(DM::Debug) << "height: " << element->second;
         }
 
-        avgheight = avgheight/max;
+        int avgheight = DAHelper::dapercentile(heightvec, 50);
+        int minheight = DAHelper::dapercentile(heightvec, percentile);
+        int maxheight = DAHelper::dapercentile(heightvec, 100-percentile);
 
         if (heightinmeter) {
             avgheight = avgheight / heightperstory;
             minheight = minheight / heightperstory;
             maxheight = maxheight / heightperstory;
         }
+
         DM::Logger(DM::Debug) << "avgheight " << avgheight;
         DM::Logger(DM::Debug) << "minheight " << minheight;
         DM::Logger(DM::Debug) << "maxheight " << maxheight;
+
         superblocks[i]->changeAttribute("height_avg", avgheight);
         superblocks[i]->changeAttribute("height_min", minheight);
         superblocks[i]->changeAttribute("height_max", maxheight);
