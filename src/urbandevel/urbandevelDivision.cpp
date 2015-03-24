@@ -121,7 +121,7 @@ void urbandevelDivision::run(){
 
 string urbandevelDivision::getHelpUrl()
 {
-    return "http://dynalp.com";
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/tree/master/doc/output/html/urbandevelDivision.html";
 }
 
 void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen, std::string type)

@@ -13,11 +13,19 @@ urbandevelSetHeight::urbandevelSetHeight()
 //    std::vector<DM::View> data;
 //    data.push_back(  DM::View ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 
+    heightView = "BUILDING";
+    heightAttr = "stories";
+    heightinmeter = 1;
+    heightperstory = 4;
     numbernearest = 9;
-    this->heightView = "";
 
-    this->addParameter("Height from: ", DM::STRING, & this->heightView);
-    this->addParameter("number of objects", DM::INT, &this->numbernearest);
+
+
+    this->addParameter("from View: ", DM::STRING, &this->heightView);
+    this->addParameter("Attribute: ", DM::STRING, &this->heightAttr);
+    this->addParameter("Story height (m): ", DM::INT, &this->heightperstory);
+    this->addParameter("Height in meters (else stories): ", DM::BOOL, &this->heightinmeter);
+    this->addParameter("Number of objects: ", DM::INT, &this->numbernearest);
 
 //    this->addData("Data", data);
 }
@@ -38,7 +46,7 @@ void urbandevelSetHeight::init()
     sb.addAttribute("height_max", DM::Attribute::DOUBLE, DM::WRITE);
     sb.addAttribute("height_min", DM::Attribute::DOUBLE, DM::WRITE);
     sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
-    hview.addAttribute("height", DM::Attribute::DOUBLE, DM::READ);
+    hview.addAttribute(heightAttr, DM::Attribute::DOUBLE, DM::READ);
 
     // push the view-access settings into the module via 'addData'
     std::vector<DM::View> views;
@@ -94,7 +102,7 @@ void urbandevelSetHeight::run()
             DM::Node * bdcentroid = dynamic_cast<DM::Node*>(bdlink[0]);
 
             distance.push_back(static_cast<int>( TBVectorData::calculateDistance((DM::Node*)sbcentroid,(DM::Node*)bdcentroid) ));
-            height.push_back(static_cast<int>( buildings[j]->getAttribute("height")->getDouble())) ;
+            height.push_back(static_cast<int>( buildings[j]->getAttribute(heightAttr)->getDouble())) ;
 
         }
 
@@ -136,6 +144,12 @@ void urbandevelSetHeight::run()
         }
 
         avgheight = avgheight/max;
+
+        if (heightinmeter) {
+            avgheight = avgheight / heightperstory;
+            minheight = minheight / heightperstory;
+            maxheight = maxheight / heightperstory;
+        }
         DM::Logger(DM::Debug) << "avgheight " << avgheight;
         DM::Logger(DM::Debug) << "minheight " << minheight;
         DM::Logger(DM::Debug) << "maxheight " << maxheight;

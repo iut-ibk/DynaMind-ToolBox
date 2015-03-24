@@ -164,5 +164,5 @@ void urbandevelBuilding::run()
 
 string urbandevelBuilding::getHelpUrl()
 {
-    return "http://dynalp.com/documentation/DynaMind-DynAlp/urbandevelBuilding.html";
+    return "https://raw.githubusercontent.com/iut-ibk/DynaMind-DynAlp/master/doc/output/html/urbandevelBuilding.html";
 }

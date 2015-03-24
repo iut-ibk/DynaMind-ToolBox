@@ -13,8 +13,11 @@ public:
     void run();
     void init();
 private:
-    double numbernearest;
     std::string heightView;
+    std::string heightAttr;
+    bool heightinmeter;
+    int heightperstory;
+    int numbernearest;
 
     DM::View city;
     DM::View sb;

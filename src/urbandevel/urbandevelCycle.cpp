@@ -81,5 +81,5 @@ void urbandevelCycle::run()
 
 string urbandevelCycle::getHelpUrl()
 {
-    return "https://github.com/iut-ibk/DynaMind-DynAlp/blob/master/doc/urbandevelBuilding.md";
+    return "https://github.com/iut-ibk/DynaMind-DynAlp/tree/master/doc/output/html/urbandevelCycle.html";
 }
