@@ -666,8 +666,11 @@ class Sim:
 		def register_modules(self, path):
 			"""
 			Registers Python or C++ DynaMind modules for the simulation.
+
+			:type path: str
+			:param path: path to module
 			"""
-			print "Register " + path
+
 			self._sim.registerModulesFromDirectory(path)
 
 		def run(self):
