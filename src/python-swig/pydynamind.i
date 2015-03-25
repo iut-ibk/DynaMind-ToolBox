@@ -56,7 +56,7 @@ import tempfile
 
 namespace std {
 	%template(stringvector) vector<string>;
-	%template(viewvector)  map<string, DM::View>;
+	%template(viewmap)  map<string, DM::View>;
 	%template(doublevector) vector<double>;
 	%template(systemvector) vector<DM::System* >;
 	%template(systemmap) map<string, DM::System* >;
@@ -66,7 +66,7 @@ namespace std {
 	%template(viewvector) vector<DM::View >;
 	%template(viewcontainervector) vector<DM::ViewContainer >;
 	%template(viewcontainervector_p) vector<DM::ViewContainer*>;
-	%template(viewmap) map<string, vector<DM::View* > >;
+	%template(viewpointermap) map<string, vector<DM::View* > >;
 	%template(componentvector) vector<DM::Component* >;
 	%template(attributevector) vector<DM::Attribute* >;
 	%template(attributemap) map<string, DM::Attribute* >;
@@ -199,6 +199,10 @@ public:
     ") getParameterAsString;
 	virtual std::string getParameterAsString(std::string Name);
 
+	std::map<std::string,DM::View> getViewsInStdStream() const;
+	std::map<std::string,DM::View> getViewsOutStdStream() const;
+	 std::map<std::string,DM::View> getAccessedStdViews() const;
+
 	virtual const char* getClassName() const = 0;
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 	virtual void setParameterValue(std::string name, std::string value);
@@ -206,7 +210,7 @@ public:
 	std::string getUuid() const;
 	std::vector<std::string> getInPortNames() const;
 	std::vector<std::string> getOutPortNames() const;
-	std::map<std::string,DM::View> getViewsInStdStream() const;
+
 	void setStatus(DM::ModuleStatus status);
 
 protected:
@@ -265,10 +269,45 @@ protected:
 		GDALSystem * sys =  (DM::GDALSystem*) $self->getOutPortData(outport);
 		return sys->getDBID();
 	}
+	%feature("autodoc", "getParameterList()
+
+			 Returns names of parameters in the module as list
+
+			 :return: paramter list
+			 :rtype: [str]
+
+	") getParameterList;
+	std::vector<std::string> getParameterList(){
+			std::vector<DM::Module::Parameter*> parameters = $self->getParameters();
+			std::vector<std::string> names;
+			foreach(DM::Module::Parameter* p, parameters) {
+					 names.push_back(p->name);
+			}
+			return names;
+	}
+	%feature("autodoc", "get_class_name()
+
+	Returns real class name
+
+	:return: class name
+	:rtype: str
+
+	") get_class_name;
+	std::string get_class_name() {
+		return $self->getClassName();
+	}
 
 	%pythoncode %{
 	_data = {'d':'Module'}
 	def getClassName(self):
+		"""
+		Returns class name. However if called in Python the it returns Module for C++ modules.
+		To obtain the real class name please call :func:`~pydynamind.Module.get_class_name`
+
+		:type description: str
+		:param description: class name
+
+		"""
 		return self.__class__.__name__
 
 	def getFileName(self):

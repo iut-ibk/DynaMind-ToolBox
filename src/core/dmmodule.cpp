@@ -478,6 +478,14 @@ std::map<std::string, std::map<std::string,View> > Module::getAccessedViews() co
 {
 	return accessedViews;
 }
+
+std::map<string, View> Module::getAccessedStdViews() const
+{
+	if(accessedViews.size() > 0)
+		return (accessedViews.begin())->second;
+	else
+		return std::map<std::string,View>();
+}
 std::map<std::string, std::map<std::string, View> > Module::getViewsInStream() const
 {
 	return streamViews;
@@ -518,10 +526,21 @@ std::map<std::string,View> Module::getViewsInStdStream() const
 		return std::map<std::string,View>();
 }
 
+std::map<string, View> Module::getViewsOutStdStream() const
+{
+	if(outStreamViews.size() > 0)
+		return (outStreamViews.begin())->second;
+	else
+		return std::map<std::string,View>();
+
+}
+
 std::string Module::getUuid() const
 {
-	Logger(Warning) << "module::getUuid() deprecated";
-	return "<Module::getUuid deprecated>";
+	std::stringstream ss;
+	ss << this;
+	return ss.str();
+
 }
 
 std::map<std::string, std::map<std::string, DM::View> > Module::getViews() const

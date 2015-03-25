@@ -189,11 +189,15 @@ public:
 	/** @brief returns all views accessed by this module */
 	std::map<std::string, std::map<std::string,View> > getAccessedViews() const;
 
+	/** @brief returns all views accessed by this module on the starndard port*/
+	std::map<std::string,View> getAccessedStdViews() const;
+
 	/** @brief returns all streams with their views */
 	std::map<std::string, std::map<std::string, View> > getViewsInStream() const;
 
 	/** @brief returns all out streams with their views */
 	std::map<std::string, std::map<std::string, View> > getViewsInOutStream() const;
+
 
 	/** @brief shortcut to getViewsInStream to return all views from a specific stream */
 	std::vector<View> getViewsInStream(const std::string& streamName) const;
@@ -203,6 +207,9 @@ public:
 
 	/** @brief shortcut to getViewsInStream to return all views from the stream view index 0 */
 	std::map<std::string,View> getViewsInStdStream() const;
+
+	/** @brief shortcut to getViewsOutStream to return all views from the stream view index 0 */
+	std::map<std::string, View> getViewsOutStdStream() const;
 
 	/** @brief deprecated */
 	std::string getUuid() const;
