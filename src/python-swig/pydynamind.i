@@ -77,6 +77,7 @@ namespace std {
 	%template(stringmap) map<string, string >;
 	%template(modulelist) list<DM::Module* >;
 	%template(filtervector) vector<DM::Filter>;
+	%template(linkvector) list<DM::Link*>;
 }
 
 %pointer_class(std::string,p_string)
@@ -202,6 +203,7 @@ public:
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 	virtual void setParameterValue(std::string name, std::string value);
 
+	std::string getUuid() const;
 	std::vector<std::string> getInPortNames() const;
 	std::vector<std::string> getOutPortNames() const;
 	std::map<std::string,DM::View> getViewsInStdStream() const;
