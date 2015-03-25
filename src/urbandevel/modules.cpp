@@ -9,6 +9,8 @@
 #include "urbandevelRankArea.h"
 #include "urbandevelRankYear.h"
 #include "urbandevelTrigger.h"
+#include "urbandevelDevelopment.h"
+#include "urbandevelReduction.h"
 #include "urbandevelPolygonLink.h"
 #include "urbandevelSetHeight.h"
 #include "urbandevelSetType.h"
@@ -26,6 +28,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<urbandevelRankYear>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelPolygonLink>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelTrigger>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelDevelopment>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelReduction>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelSetType>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelSetHeight>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelWaterAttributes>());

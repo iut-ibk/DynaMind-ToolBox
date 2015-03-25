@@ -13,9 +13,6 @@ public:
     void run();
     void init();
 private:
-    void setdev(std::string type, bool dev);
-
-    int yearcycle;
     DM::View city;
     DM::View superblock;
     DM::View cityblock;
