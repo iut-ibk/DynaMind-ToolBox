@@ -66,7 +66,7 @@ int DAHelper::dapercentile(std::vector<int>& values, int percentile)
         perc = sortvalues[static_cast<int>(ceil(idx))];
     }
 
-    DM::Logger(DM::Warning) << "percentile " << percentile << " index " << idx << " value " << perc;
+    DM::Logger(DM::Debug) << "percentile " << percentile << " index " << idx << " value " << perc;
 
     return perc;
 }
