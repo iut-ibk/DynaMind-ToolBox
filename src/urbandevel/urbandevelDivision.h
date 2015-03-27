@@ -40,6 +40,7 @@ public:
     void setCombined_edges(bool value);
 
 private:
+    DM::View cityview;
     DM::View outputView;
     DM::View face_nodes;
     DM::View inputView;
@@ -57,6 +58,8 @@ private:
     bool debug;
     bool splitShortSide;
     std::string develtype;
+
+    int currentyear;
 };
 
 #endif // urbandevelDivision_H

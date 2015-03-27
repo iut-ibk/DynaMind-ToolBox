@@ -55,17 +55,21 @@ void urbandevelDivision::init()
     inputView = DM::View(inputname, DM::FACE, DM::READ);
     outputView = DM::View(outputname, DM::FACE, DM::WRITE);
     face_nodes = DM::View("FACE_NODES", DM::NODE, DM::WRITE);
+    cityview = DM::View("CITY", DM::NODE, DM::READ);
+
+    cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
 
     inputView.addAttribute("status", DM::Attribute::STRING, DM::READ);
 
     outputView.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
-
     outputView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
+    outputView.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
 
     face_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
     std::vector<DM::View> datastream;
 
+    datastream.push_back(cityview);
     datastream.push_back(inputView);
     datastream.push_back(outputView);
     datastream.push_back(face_nodes);
@@ -85,6 +89,17 @@ void urbandevelDivision::run(){
 
     DM::System * sys = this->getData("data");
     DM::SpatialNodeHashMap sphs(sys,100,false);
+
+    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
+    if (cities.size() != 1)
+    {
+        DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
+        return;
+    }
+
+    DM::Component * currentcityview = cities[0];
+
+    currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
 
     std::vector<DM::Component *> inputareas = sys->getAllComponentsInView(inputView);
 
@@ -115,7 +130,7 @@ void urbandevelDivision::run(){
         createFinalFaces(&workingSys, sys, fnew, outputView, sphs);
         DM::Logger(DM::Debug) << "end parceling";
 
-        f->addAttribute("status", "populated");
+        f->addAttribute("status", "developed");
     }
 }
 
@@ -205,8 +220,9 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
         }
 
         foreach (DM::Face * f_new ,intersected_faces ) {
-            f_new->addAttribute("generation", gen);
-            f_new->addAttribute("type", type);
+            //f_new->addAttribute("generation", gen);
+            //f_new->addAttribute("type", type);
+            //f_new->addAttribute("status","empty");
             this->createSubdivision(sys, f_new, gen+1, type);
         }
     }
@@ -308,7 +324,9 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             continue;
 
         DM::Face * f = sys->addFace(vp, v);
+        f->addAttribute("year", currentyear);
         f->addAttribute("status", "empty");
+        f->addAttribute("type",develtype);
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;

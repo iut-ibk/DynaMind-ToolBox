@@ -51,7 +51,7 @@ void urbandevelCycle::run()
     int startyear = static_cast<int>(currentcityview->getAttribute("startyear")->getDouble());
     int endyear = static_cast<int>(currentcityview->getAttribute("endyear")->getDouble());
     int currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
-    bool cyclebool = static_cast<bool>(currentcityview->getAttribute("cycleBOOL")->getDouble());
+    bool cyclebool = 1;
 
     if ( currentyear <= startyear ) currentyear = startyear;
     currentyear++;
