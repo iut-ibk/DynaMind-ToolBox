@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'DynaMind'
+project = u'DynaMind-ToolBox'
 copyright = u'2014-2015, Christian Urich, Michael Mair'
 
 # The version info for the project you're documenting, acts as replacement for
