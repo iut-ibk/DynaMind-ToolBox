@@ -7,17 +7,26 @@ DynaMind Core
 
   module
   simulations_python
+  release_notes
 
 
-=================
-DynaMind Core API
-=================
+========================
+DynaMind Core Python API
+========================
 
 
 .. toctree::
   :maxdepth: 2
 
   dynamind_sim_api
+
+=====================
+DynaMind Core C++ API
+=====================
+
+.. doxygenclass:: DM::Module
+  :members:
+
 
 
 
