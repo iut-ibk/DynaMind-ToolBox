@@ -20,13 +20,6 @@ DynaMind Core Python API
 
   dynamind_sim_api
 
-=====================
-DynaMind Core C++ API
-=====================
-
-.. doxygenclass:: DM::Module
-  :members:
-
 
 
 
