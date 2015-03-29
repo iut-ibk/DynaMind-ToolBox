@@ -53,7 +53,11 @@ enum Components
     EDGE=2,
     FACE=3,
     SUBSYSTEM=4,
-    RASTERDATA=5
+	RASTERDATA=5,
+	//Support for GDAL conform data types
+	POINT=1,
+	LINESTRING=2,
+	POLYGON=3
 };
 
 class Attribute;
