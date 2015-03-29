@@ -523,7 +523,9 @@ class DM::ViewContainer {
 
         """
 
-		self.createIndex(attribute_name)
+		#self.createIndex(attribute_name)
+		ds = self.get_ogr_ds()
+		ds.ExecuteSQL("CREATE INDEX "+ attribute_name +"_index ON " + self.getName() + " (" + attribute_name + ");")
 		return
 
 	def register_layer(self):
