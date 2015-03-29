@@ -48,8 +48,8 @@ GDALDMSWMM::GDALDMSWMM()
 	internalTimestep = 0;
 
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
-	conduit.addAttribute("node_from",  DM::Attribute::INT, DM::READ);
-	conduit.addAttribute("node_to",  DM::Attribute::INT, DM::READ);
+	conduit.addAttribute("node_from",  "node", DM::READ);
+	conduit.addAttribute("node_to",  "node", DM::READ);
 	//conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
 	//conduit.addAttribute("outlet_offset",  DM::Attribute::DOUBLE, DM::READ);
 	conduit.addAttribute("diameter", DM::Attribute::DOUBLE, DM::READ);
@@ -58,7 +58,7 @@ GDALDMSWMM::GDALDMSWMM()
 	conduit.addAttribute("velocity", DM::Attribute::DOUBLE, DM::WRITE);
 
 	inlet = DM::ViewContainer("inlet", DM::NODE, DM::READ);
-	inlet.addAttribute("node_id", DM::Attribute::INT, DM::READ);
+	inlet.addAttribute("node_id", "node", DM::READ);
 	//inlet.addAttribute("catchment", "CITYBLOCKS", DM::READ);
 
 

@@ -27,7 +27,7 @@ void GDALCreateCentroids::init()
 	ss_link_name << leadingViewName << "_id";
 
 	link_name = ss_link_name.str();
-	centroidView.addAttribute(link_name, DM::Attribute::INT, DM::WRITE);
+	centroidView.addAttribute(link_name, leadingViewName, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&leadingView);

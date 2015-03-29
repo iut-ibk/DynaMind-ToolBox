@@ -50,7 +50,7 @@ void GDALJoinNearestNeighbour::init()
 	std::stringstream l_name;
 	l_name << linkViewName << "_id";
 	link_name = l_name.str();
-	this->leadingView.addAttribute(link_name, DM::Attribute::INT, DM::WRITE);
+	this->leadingView.addAttribute(link_name, linkViewName , DM::WRITE);
 
 	std::vector<DM::ViewContainer *> data_stream;
 	data_stream.push_back(&leadingView);

@@ -48,8 +48,8 @@ void GDALClusterNeighbourhood::init()
 
 	ngView = DM::ViewContainer(this->neighName, DM::COMPONENT, DM::READ);
 
-	ngView.addAttribute(name_id1, DM::Attribute::INT, DM::READ);
-	ngView.addAttribute(name_id2, DM::Attribute::INT, DM::READ);
+	ngView.addAttribute(name_id1, this->viewName, DM::READ);
+	ngView.addAttribute(name_id2, this->viewName, DM::READ);
 
 	std::vector<DM::ViewContainer*> data;
 	data.push_back( &leadingView);

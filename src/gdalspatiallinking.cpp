@@ -47,7 +47,7 @@ void GDALSpatialLinking::init()
 	std::stringstream l_name;
 	l_name << leadingViewName << "_id";
 	link_name = l_name.str();
-	this->linkView.addAttribute(link_name, DM::Attribute::INT, DM::WRITE);
+	this->linkView.addAttribute(link_name, leadingViewName, DM::WRITE);
 
 	std::vector<DM::ViewContainer *> data_stream;
 	data_stream.push_back(&leadingView);

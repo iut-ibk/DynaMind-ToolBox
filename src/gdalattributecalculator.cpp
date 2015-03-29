@@ -149,7 +149,7 @@ bool GDALAttributeCalculator::oneToMany( DM::ViewContainer * lead,  DM::ViewCont
 	link_id_onToMany << lead->getName() << "_id"; //PARCEL
 
 	if (inViews[linked->getName()].hasAttribute(link_id_onToMany.str())) {
-		linked->addAttribute(link_id_onToMany.str(), DM::Attribute::INT, DM::READ);
+		linked->addAttribute(link_id_onToMany.str(), lead->getName() , DM::READ);
 		//Mark to create index for faster search
 		this->index_map.insert(std::pair<DM::ViewContainer * , std::string>(linked, link_id_onToMany.str()));
 		return true;
@@ -159,7 +159,7 @@ bool GDALAttributeCalculator::oneToMany( DM::ViewContainer * lead,  DM::ViewCont
 	link_id_many_to_one << linked->getName() << "_id";
 
 	if (inViews[lead->getName()].hasAttribute(link_id_many_to_one.str())) {
-		lead->addAttribute(link_id_many_to_one.str(), DM::Attribute::INT, DM::READ);
+		lead->addAttribute(link_id_many_to_one.str(), lead->getName() , DM::READ);
 		return true;
 	}
 
@@ -183,7 +183,6 @@ std::vector<OGRFeature *> GDALAttributeCalculator::resolveLink(OGRFeature * f, Q
 		filter << link_id_onToMany.str() << " = " << search_id;
 		v->resetReading();
 		v->setAttributeFilter(filter.str());
-		//DM::Logger(DM::Debug) << filter.str();
 		while(next_f = v->getNextFeature()) {
 			next_features.push_back(next_f);
 		}
@@ -199,7 +198,6 @@ std::vector<OGRFeature *> GDALAttributeCalculator::resolveLink(OGRFeature * f, Q
 		next_features.push_back(next_f);
 	return next_features;
 }
-
 
 void GDALAttributeCalculator::init()
 {
