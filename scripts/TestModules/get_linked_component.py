@@ -44,10 +44,11 @@ class GetLinkedComponent(Module):
 
         def run(self):
 
-            #
-            self.__container_links.create_index("component_id")
             self.__container_links.reset_reading()
             self.__container.reset_reading()
+            #
+            #self.__container_links.create_index("component_id")
+
             counter = 0
             for cmp in self.__container:
                 search_id = cmp.GetFID()
