@@ -21,6 +21,7 @@
 #define BRANCHMODIFY
 #define GDALVCAPITEST
 #define WRITEATTRIBUTES
+#define TESTLINKS
 
 #ifdef GDALVCAPITEST
 TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
@@ -274,6 +275,36 @@ TEST_F(TestGDALModules,WriteAttributes) {
 	}
 	ASSERT_TRUE(false);
 
+}
+#endif
+
+#ifdef TESTLINKS
+TEST_F(TestGDALModules,TestGDALLinks) {
+
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim.addModule("GDALAddComponentViewContainer");
+	m1->setParameterValue("elements", FEATURES);
+
+	DM::Module * m2 = sim.addModule("GDALLinkedComponent");
+	m2->setParameterValue("elements", FEATURES);
+	m2->setParameterValue("append", "1");
+	m2->init();
+	sim.addLink(m1, "city", m2, "city");
+
+	DM::Module * m3 = sim.addModule("GDALValidateLinks");
+	m3->init();
+	sim.addLink(m2, "city", m3, "city");
+	sim.run();
+	ASSERT_EQ(sim.getSimulationStatus(), DM::SIM_OK);
 }
 #endif
 

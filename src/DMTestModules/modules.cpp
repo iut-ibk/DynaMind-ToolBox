@@ -36,6 +36,8 @@
 #include "gdaladdcomponent.h"
 #include "updateallcomponents.h"
 #include "gdaladdcomponentviewcontainer.h"
+#include "gdallinkedcomponent.h"
+#include "gdalvalidatelinks.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) {
@@ -48,6 +50,8 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(ModuleRegistry *registry) 
 	registry->addNodeFactory(new NodeFactory<GDALAddComponent>());
 	registry->addNodeFactory(new NodeFactory<GDALAddComponentViewContainer>());
 	registry->addNodeFactory(new NodeFactory<UpdateAllComponents>());
+	registry->addNodeFactory(new NodeFactory<GDALLinkedComponent>());
+	registry->addNodeFactory(new NodeFactory<GDALValidateLinks>());
     //registry->addNodeFactory(new NodeFactory<CreateAllComponenets>());
     //registry->addNodeFactory(new NodeFactory<Reallocator>());
     //registry->addNodeFactory(new NodeFactory<CheckAllComponenets>());

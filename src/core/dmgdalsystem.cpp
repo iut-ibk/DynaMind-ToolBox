@@ -190,6 +190,15 @@ void GDALSystem::updateView(const View &v)
 			lyr->CreateField(&oField);
 			continue;
 		}
+		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
+			std::stringstream query;
+			v.getNameOfLinkedView(attribute_name.c_str());
+			query << "ALTER TABLE " << v.getName() << " ADD COLUMN " << attribute_name.c_str() << " INTEGER REFERENCES " << v.getNameOfLinkedView(attribute_name.c_str()) << "(OGC_FID)";
+			this->poDS->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
+			lyr->GetLayerDefn()->AddFieldDefn(&oField);
+			continue;
+		}
 	}
 }
 

@@ -162,15 +162,49 @@ public:
 	 */
 	void setSpatialFilter(OGRGeometry * geo);
 
+	/**
+	 * @brief Creates the spatial index
+	 */
 	void createSpatialIndex();
 
+	/**
+	 * @brief Removes feature
+	 * @param id
+	 */
 	void deleteFeature(long id);
 
+	/**
+	 * @brief Returns nearest point
+	 * @param p
+	 * @param radius
+	 * @return
+	 */
 	OGRFeature *findNearestPoint(OGRPoint * p, double radius = 1.0);
 
+	/**
+	 * @brief Set Attribute Filter
+	 * @param filter
+	 */
 	void addModuleAttributeFilter(std::string filter);
 
+	/**
+	 * @brief Execute SQLQuery
+	 * @param query
+	 * @return
+	 */
 	OGRLayer *executeSQL(std::string query);
+
+	/**
+	 * @brief Links feature f1 to feature f2 features.
+	 *
+	 * Links f2 to f1 using the f2_id as default name. The link is established using the OGC_FID form f2
+	 */
+	void linkFeatures(OGRFeature * f1, OGRFeature * f2, std::string link_name = "");
+
+	/**
+	 * @brief Returns features for the view container that are linked to the feature f
+	 */
+	std::vector<OGRFeature *> getLinkedFeatures(OGRFeature *f, std::string link_name = "");
 
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation

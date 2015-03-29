@@ -149,6 +149,42 @@ OGRLayer *ViewContainer::executeSQL(string query)
 	return this->_currentSys->getDataSource()->ExecuteSQL(query.c_str(), 0, "SQLITE");
 }
 
+void ViewContainer::linkFeatures(OGRFeature *f1, OGRFeature *f2, string link_name)
+{
+	//Default link name is view name f2_id
+	if (link_name.empty()) {
+		std::stringstream link_ss;
+		link_ss << f2->GetDefnRef()->GetName() << "_id";
+		link_name = link_ss.str();
+	}
+	f1->SetField(link_name.c_str(), (int) f2->GetFID());
+
+}
+
+std::vector<OGRFeature *> ViewContainer::getLinkedFeatures(OGRFeature *f, string link_name)
+{
+	//Default link name is view name f2_id
+	if (link_name.empty()) {
+		std::stringstream link_ss;
+		link_ss <<  f->GetDefnRef()->GetName() << "_id";
+		link_name = link_ss.str();
+	}
+	std::vector<OGRFeature *> linked_features;
+
+	std::stringstream filter;
+	filter << link_name << " = " << f->GetFID();
+	this->resetReading();
+	this->setAttributeFilter(filter.str());
+
+	OGRFeature * f_linked;
+	while(f_linked = this->getNextFeature()) {
+		linked_features.push_back(f_linked);
+	}
+
+	return linked_features;
+
+}
+
 ViewContainer::ViewContainer(string name, int type, DM::ACCESS accesstypeGeometry) :
 	View(name, type, accesstypeGeometry), _currentSys(NULL)
 {
@@ -222,7 +258,6 @@ OGRFeature *ViewContainer::getFeature(long nFID)
 	return f;
 
 }
-
 
 void ViewContainer::registerFeature(OGRFeature * f)
 {
@@ -310,4 +345,6 @@ void ViewContainer::registerFeature(OGRFeatureShadow *f, bool isNew)
 	}
 
 }
+
+
 }
