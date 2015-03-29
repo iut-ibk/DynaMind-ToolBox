@@ -15,4 +15,5 @@ CMakeLists.txt.user
 build
 *.bat
 bin
+doc/doxygen/output/
 
