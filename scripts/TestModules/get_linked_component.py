@@ -35,7 +35,7 @@ class GetLinkedComponent(Module):
 
 
         def init(self):
-            self.__container = ViewContainer("component", NODE, READ)
+            self.__container = ViewContainer("component", COMPONENT, READ)
 
             self.__container_links = ViewContainer("component_link", COMPONENT, READ)
             self.__container_links.addAttribute("component_id", Attribute.INT, READ)

@@ -35,7 +35,7 @@ class ReadAdvancedDataTypes(Module):
 
 
         def init(self):
-            self.__container = ViewContainer("component", NODE, READ)
+            self.__container = ViewContainer("component", COMPONENT, READ)
             self.__container.addAttribute("vector", Attribute.DOUBLEVECTOR, READ)
             views = []
             views.append(self.__container)

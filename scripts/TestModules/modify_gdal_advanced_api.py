@@ -33,7 +33,7 @@ class ModifyGDALComponentsAdvanced(Module):
             self.__container = ViewContainer()
 
         def init(self):
-            self.__container = ViewContainer("component", NODE, READ)
+            self.__container = ViewContainer("component", COMPONENT, READ)
             self.__container.addAttribute("value", Attribute.DOUBLE, WRITE)
             views = []
             views.append(self.__container)

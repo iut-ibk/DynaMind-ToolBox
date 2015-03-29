@@ -39,7 +39,7 @@ class ReadGDALComponentsAdvanced(Module):
             self.__container = ViewContainer()
 
         def init(self):
-            self.__container = ViewContainer("component", NODE, READ)
+            self.__container = ViewContainer("component", COMPONENT, READ)
             if self.readValue:
                 self.__container.addAttribute("value", Attribute.DOUBLE, READ)
             views = []
