@@ -62,7 +62,7 @@ class GetLinkedComponent(Module):
             self.elements = counter
 
             self.__container.sync()
-            self.__container_links.sync()
+            self.__container_links.finalise()
 
 
 

@@ -36,7 +36,7 @@ class ReadAdvancedDataTypes(Module):
 
         def init(self):
             self.__container = ViewContainer("component", COMPONENT, READ)
-            self.__container.addAttribute("vector", Attribute.DOUBLE, READ)
+            self.__container.addAttribute("vector", Attribute.DOUBLEVECTOR, READ)
             views = []
             views.append(self.__container)
             self.registerViewContainers(views)
@@ -47,7 +47,7 @@ class ReadAdvancedDataTypes(Module):
             for feat in self.__container:
                 s = str(feat.GetFieldAsString("vector"))
                 floats = map(float, s.split())
-            self.__container.sync()
+            self.__container.finalise()
 
 
 

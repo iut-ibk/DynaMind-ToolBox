@@ -44,7 +44,7 @@ class ModifyGDALComponentsAdvanced(Module):
             self.__container.reset_reading()
             for feat in self.__container:
                 feat.SetField("value", 3)
-            self.__container.sync()
+            self.__container.finalise()
 
 
 

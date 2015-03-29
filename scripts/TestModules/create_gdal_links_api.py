@@ -49,8 +49,8 @@ class CreateGDALComponentLinks(Module):
                 f = self.__container_links.create_feature()
                 f.SetField("component_id", cmp.GetFID())
 
-            self.__container.sync()
-            self.__container_links.sync()
+            self.__container.finalise()
+            self.__container_links.finalise()
 
 
 

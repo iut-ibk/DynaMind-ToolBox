@@ -54,7 +54,7 @@ class ReadGDALComponentsAdvanced(Module):
                 self.elements+=1
                 if self.readValue:
                     self.sumValue += int(feat.GetFieldAsDouble("value"))
-            self.__container.sync()
+            self.__container.finalise()
 
 
 

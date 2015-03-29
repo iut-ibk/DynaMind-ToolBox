@@ -55,7 +55,7 @@ class CreateGDALComponentsAdvanced(Module):
                 f.SetGeometry(pt)
                 if i % 100000 == 0:
                     self.__container.sync()
-            self.__container.sync()
+            self.__container.finalise()
 
 
 

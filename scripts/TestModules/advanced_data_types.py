@@ -32,4 +32,4 @@ class AdvancedDataTypes(Module):
                 f.SetField("vector", " ".join(format(x, "10.10") for x in a))
                 if i % 100000 == 0:
                     self.__container.sync()
-            self.__container.sync()
+            self.__container.finalise()

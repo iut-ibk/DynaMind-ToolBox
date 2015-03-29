@@ -474,8 +474,9 @@ class DM::ViewContainer {
 %extend DM::ViewContainer {
 	%pythoncode %{
 	#Container for OGRObjects, otherwise the garbage collector eats them
-	__ds = None
 
+	__ds = {}
+	__connection_counter = {}
 	def create_feature(self):
 		"""
 
@@ -524,10 +525,6 @@ class DM::ViewContainer {
 
 		self.createIndex(attribute_name)
 		return
-		db_id = self.getDBID()
-		ds = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db", True)
-		result = ds.ExecuteSQL("CREATE INDEX "+ attribute_name +"_index ON " + self.getName() + " (" + attribute_name + ");")
-		ds.Destroy()
 
 	def register_layer(self):
 		try:
@@ -535,13 +532,21 @@ class DM::ViewContainer {
 		except:
 			db_id = self.getDBID()
 			self.__features = []
-			if self.__ds == None:
-				tempfile.gettempdir()
-				self.__ds = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
+			if db_id not in self.__ds.keys():
+				print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
+				self.__ds[db_id] = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
+				self.__connection_counter[db_id] = 0
+			else:
+				print "Reuse connection"
 			table_name = str(self.getName())
-			self.__ogr_layer = self.__ds.GetLayerByName(table_name)
-		else:
-			return
+			print "Register Layer " + str(table_name)
+			self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
+			self.__connection_counter[db_id]+=1
+
+			if self.__ogr_layer == None:
+				print "Layer registration failed"
+				raise
+
 
 	def __iter__(self):
 		return self
@@ -569,7 +574,7 @@ class DM::ViewContainer {
 
         """
 		self.register_layer()
-		return self.__ds
+		return self.__ds[self.getDBID()]
 
 	def get_linked_features(self, feature, link_id = ""):
 		"""
@@ -650,6 +655,26 @@ class DM::ViewContainer {
 		for f in self.__features:
 			f.Destroy()
 		del self.__features[:]
+
+
+		#self.__ds[self.getDBID()].Destroy()
+
+	def finalise(self):
+		"""
+		Synchronises the ViewContainer writing the data to the database and freeing the memory.
+		May be used before the end of the run method.
+
+		"""
+		self.sync()
+		print "Destroy Layer"
+		print self.__connection_counter[self.getDBID()]
+		if self.__connection_counter[self.getDBID()] == 1:
+			print "Real Destroy Connection"
+			del self.__ds[self.getDBID()]
+			self.__ds = {}
+
+		self.__connection_counter[self.getDBID()]-=1
+
 	%}
 }
 
