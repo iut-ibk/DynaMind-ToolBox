@@ -475,8 +475,8 @@ class DM::ViewContainer {
 	%pythoncode %{
 	#Container for OGRObjects, otherwise the garbage collector eats them
 
-	__ds = {}
-	__connection_counter = {}
+	#__ds = {}
+	#__connection_counter = {}
 	def create_feature(self):
 		"""
 
@@ -534,16 +534,14 @@ class DM::ViewContainer {
 		except:
 			db_id = self.getDBID()
 			self.__features = []
-			if db_id not in self.__ds.keys():
-				print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
-				self.__ds[db_id] = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
-				self.__connection_counter[db_id] = 0
-			else:
-				print "Reuse connection"
+			print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
+			self.__ds = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
+			#self.__connection_counter[db_id] = 0
+
 			table_name = str(self.getName())
 			print "Register Layer " + str(table_name)
-			self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
-			self.__connection_counter[db_id]+=1
+			self.__ogr_layer = self.__ds.GetLayerByName(table_name)
+			#self.__connection_counter[db_id]+=1
 
 			if self.__ogr_layer == None:
 				print "Layer registration failed"
@@ -576,7 +574,7 @@ class DM::ViewContainer {
 
         """
 		self.register_layer()
-		return self.__ds[self.getDBID()]
+		return self.__ds
 
 	def get_linked_features(self, feature, link_id = ""):
 		"""
@@ -669,13 +667,11 @@ class DM::ViewContainer {
 		"""
 		self.sync()
 		print "Destroy Layer"
-		print self.__connection_counter[self.getDBID()]
-		if self.__connection_counter[self.getDBID()] == 1:
-			print "Real Destroy Connection"
-			del self.__ds[self.getDBID()]
-			self.__ds = {}
+		#print self.__connection_counter[self.getDBID()]
+		del self.__ds
+		#self.__ds = {}
 
-		self.__connection_counter[self.getDBID()]-=1
+		#self.__connection_counter[self.getDBID()]-=1
 
 	%}
 }
