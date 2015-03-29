@@ -91,7 +91,7 @@ TEST_F(TestGDALPython,PythonConnectionTest) {
 #ifdef READAPI
 TEST_F(TestGDALPython,PythonReadTest) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
@@ -130,7 +130,7 @@ TEST_F(TestGDALPython,PythonReadTest) {
 #ifdef MODIFYAPI
 TEST_F(TestGDALPython,PythonModifyTest) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
@@ -176,7 +176,7 @@ TEST_F(TestGDALPython,PythonModifyTest) {
 #ifdef TESTLINK
 TEST_F(TestGDALPython,PythonLinks) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
@@ -216,7 +216,7 @@ TEST_F(TestGDALPython,PythonLinks) {
 #ifdef TESTADVANCEDDATATYPES
 TEST_F(TestGDALPython,AdvancedDataTypes) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 
