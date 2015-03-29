@@ -15,10 +15,10 @@ class AdvancedDataTypes(Module):
 
         def init(self):
             if self.append:
-                self.__container = ViewContainer("component", COMPONENT, MODIFY)
+                self.__container = ViewContainer("component", NODE, MODIFY)
                 self.__container.addAttribute("vector", DM.Attribute.DOUBLEVECTOR, WRITE)
             else:
-                self.__container = ViewContainer("component", COMPONENT, WRITE)
+                self.__container = ViewContainer("component", NODE, WRITE)
                 self.__container.addAttribute("vector", DM.Attribute.DOUBLEVECTOR, WRITE)
 
             views = []

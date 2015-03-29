@@ -37,7 +37,7 @@ class CreateGDALComponentLinks(Module):
         def init(self):
             self.__container = ViewContainer("component", NODE, READ)
 
-            self.__container_links = ViewContainer("component_link", COMPONENT, WRITE)
+            self.__container_links = ViewContainer("component_link", NODE, WRITE)
             self.__container_links.addAttribute("component_id", Attribute.INT, WRITE)
 
             self.registerViewContainers([self.__container, self.__container_links])
