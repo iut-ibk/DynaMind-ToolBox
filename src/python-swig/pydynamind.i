@@ -535,18 +535,18 @@ class DM::ViewContainer {
 			db_id = self.getDBID()
 			self.__features = []
 			if db_id not in self.__ds.keys():
-				print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
+				#print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
 				self.__ds[db_id] = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
 				self.__connection_counter[db_id] = 0
 			else:
 				print "Reuse connection"
 			table_name = str(self.getName())
-			print "Register Layer " + str(table_name)
+			#print "Register Layer " + str(table_name)
 			self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
 			self.__connection_counter[db_id]+=1
 
 			if self.__ogr_layer == None:
-				print "Layer registration failed"
+				#print "Layer registration failed"
 				raise
 
 
@@ -668,10 +668,10 @@ class DM::ViewContainer {
 
 		"""
 		self.sync()
-		print "Destroy Layer"
-		print self.__connection_counter[self.getDBID()]
+		#print "Destroy Layer"
+		#print self.__connection_counter[self.getDBID()]
 		if self.__connection_counter[self.getDBID()] == 1:
-			print "Real Destroy Connection"
+			#print "Real Destroy Connection"
 			del self.__ds[self.getDBID()]
 			self.__ds = {}
 
