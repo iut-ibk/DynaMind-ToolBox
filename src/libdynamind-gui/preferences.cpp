@@ -33,9 +33,10 @@
 
 #include <iostream>
 
-Preferences::Preferences(QWidget *parent)
+Preferences::Preferences(DM::Simulation * sim, QWidget *parent)
 {
 	setupUi(this);
+	this->sim = sim;
 	connect( buttonBox, SIGNAL( accepted() ), this, SLOT( writePreference() ), Qt::DirectConnection );
 	connect(pushButton, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
 	connect(pushButton_2, SIGNAL(clicked()),this, SLOT( add() ), Qt::DirectConnection );
@@ -101,11 +102,12 @@ Preferences::Preferences(QWidget *parent)
 		item->setText(2, server_description[3]);
 		treeWidget_wfs_server->addTopLevelItem(item);
 	}
-
 	DM::DBConnectorConfig dbcfg = DM::DBConnector::getInstance()->getConfig();
 	this->spinBox_CacheBlockWritingSize->setValue(dbcfg.cacheBlockwritingSize);
 	this->spinBox_QueryStackSize->setValue(dbcfg.queryStackSize);
 	this->checkBox_PeterDatastream->setChecked(dbcfg.peterDatastream);
+
+	this->spinBox_EPSG->setValue(sim->getSimulationConfig().getCoorindateSystem());
 }
 
 void Preferences::writePreference() 
@@ -137,6 +139,10 @@ void Preferences::writePreference()
 	settings.setValue("cacheBlockwritingSize", (qulonglong)dbcfg.cacheBlockwritingSize);
 	settings.setValue("queryStackSize", (qulonglong)dbcfg.queryStackSize);
 	settings.setValue("peterDatastream", (int)dbcfg.peterDatastream);
+
+	DM::SimulationConfig conf = sim->getSimulationConfig();
+	conf.setCoordinateSystem(this->spinBox_EPSG->value());
+	sim->setSimulationConfig(conf);
 }
 void Preferences::openFileDialog() 
 {

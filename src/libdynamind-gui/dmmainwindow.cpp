@@ -275,7 +275,7 @@ void DMMainWindow::simulationFinished()
 
 void DMMainWindow::preferences() 
 {	
-	Preferences *p =  new Preferences(this);
+	Preferences *p =  new Preferences(this->getSimulation(), this);
 	p->exec();
 }
 

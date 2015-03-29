@@ -27,14 +27,16 @@
 #define PREFERENCES_H
 
 #include "dmcompilersettings.h"
+#include "dmsimulation.h"
 #include <ui_preferences.h>
 
 class DM_HELPER_DLL_EXPORT Preferences :public QDialog, public Ui::Preferences
 {
 	Q_OBJECT
 public:
-	Preferences(QWidget *parent = 0);
-
+	Preferences(DM::Simulation *sim, QWidget *parent = 0);
+private:
+	DM::Simulation * sim;
 public slots:
 	void writePreference();
 	void openFileDialog();
