@@ -27,6 +27,7 @@
 #define DMSIMULATIONREADER_H
 
 #include "dmcompilersettings.h"
+#include "dmsimulation.h"
 #include <QXmlDefaultHandler>
 #include <QVector>
 
@@ -94,7 +95,13 @@ public:
 		return this->RootUUID;
 	}
 
+	DM::SimulationConfig getSettings() {
+		return this->settingsConfig;
+	}
+
+
 private:
+	DM::SimulationConfig settingsConfig;
 	ModuleEntry tmpNode;
 	LinkEntry tmpLink;
 	QString tmpParameterName;

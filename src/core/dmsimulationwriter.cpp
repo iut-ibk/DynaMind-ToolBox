@@ -32,8 +32,15 @@ using namespace DM;
 void writeHead(QTextStream &out)
 {
 	out << "<DynaMind>\n";
-	out << "\t<Info Version=\"0.4\"/>\n";
+	out << "\t<Info Version=\"0.5\"/>\n";
 	out << "<DynaMindCore>\n";
+}
+
+void writeSettings(QTextStream &out, const SimulationConfig & config) {
+	out  << "\t<Settings>\n";
+	out << "\t"<< "\t<EPSG value=\""
+				<< config.getCoorindateSystem() << "\"/>\n";
+	out  << "\t</Settings>\n";
 }
 
 void writeModule(QTextStream &out, Module* m, QDir filePath, bool translateRelativePath)
@@ -122,6 +129,7 @@ void writeLink(QTextStream &out, Link* l)
 }
 
 void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
+									   const SimulationConfig & settings,
 									   const std::list<Module*>& modules,
 									   const std::list<Link*>& links,
 									   Module* root)
@@ -132,6 +140,8 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	QTextStream out(dest);
 
 	writeHead(out);
+
+	writeSettings(out, settings);
 
 	// dump groups and modules
 	out << "\t<Nodes>\n";

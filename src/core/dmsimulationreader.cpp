@@ -6,7 +6,7 @@
  *
  * This file is part of DynaMind
  *
- * Copyright (C) 2011  Christian Urich
+ * Copyright (C) 2011-2015  Christian Urich
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,26 +45,35 @@ bool SimulationReader::fatalError(const QXmlParseException & exception)
 {
 	DM::Logger(DM::Error) << "fatal error while parsing xml " << exception.message().toStdString();
 
-    return true;
+	return true;
 }
 
 bool SimulationReader::characters(const QString & ch) 
 {
-    tmpValue = tmpValue + ch;
-    return true;
+	tmpValue = tmpValue + ch;
+	return true;
 }
 
 bool SimulationReader::startElement(const QString & namespaceURI,
 									const QString & localName,
 									const QString & qName,
-									const QXmlAttributes & atts) 
+									const QXmlAttributes & atts)
 {
 	Q_UNUSED(namespaceURI)
-		Q_UNUSED(localName)
-		if (qName == "DynaMind")
-			return true;
+	Q_UNUSED(localName)
+	if (qName == "DynaMind")
+		return true;
 	if (qName == "DynaMindCore")
 		return true;
+
+	if (qName == "Settings") {
+		settingsConfig = DM::SimulationConfig();
+		return true;
+	}
+	if (qName == "EPSG") {
+		this->settingsConfig.setCoordinateSystem(atts.value("value").toInt());
+		return true;
+	}
 	if (qName == "Nodes") {
 		ParentName = "Nodes";
 		return true;
@@ -170,7 +179,7 @@ bool SimulationReader::startElement(const QString & namespaceURI,
 
 bool SimulationReader::endElement(const QString & namespaceURI,
 								  const QString & localName,
-								  const QString & qName) 
+								  const QString & qName)
 {
 	if (qName == "Node") {
 		this->moduleEntries.append(tmpNode);

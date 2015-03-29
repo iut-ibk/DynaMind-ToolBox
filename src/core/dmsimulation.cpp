@@ -1249,6 +1249,8 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 
 	SimulationReader simreader(source);
 
+	this->setSimulationConfig(simreader.getSettings());
+
 	QVector<ModuleEntry> moduleEntries = simreader.getModules();
 	QVector<LinkEntry> linkEntries = simreader.getLinks();
 	UpdateVersion(linkEntries, moduleEntries);
@@ -1363,7 +1365,7 @@ bool Simulation::loadSimulation(std::string filePath)
 
 void Simulation::writeSimulation(QIODevice* dest, QString filePath)
 {
-	SimulationWriter::writeSimulation(	dest, filePath,
+	SimulationWriter::writeSimulation(	dest, filePath, this->getSimulationConfig(),
 		getModules(), getLinks());
 }
 
