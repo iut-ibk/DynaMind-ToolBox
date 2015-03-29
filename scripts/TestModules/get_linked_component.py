@@ -56,8 +56,8 @@ class GetLinkedComponent(Module):
                 for cmp_link in self.__container_links.get_linked_features(cmp):
                     if cmp_link.GetFieldAsInteger("component_id") == search_id:
                         counter+=1
-                if counter % 1000 == 0:
-                    self.__container_links.sync()
+                # if counter % 1000 == 0:
+                #     self.__container_links.sync()
 
             self.elements = counter
 
