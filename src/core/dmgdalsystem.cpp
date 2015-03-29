@@ -297,7 +297,11 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
+		#ifdef _WIN32 //Use in windows since driver seems to have a problem to create wkbNone tables
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
+		#else
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbNone, NULL );
+		#endif
 		break;
 	case DM::NODE:
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
