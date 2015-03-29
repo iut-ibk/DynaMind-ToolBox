@@ -522,7 +522,7 @@ class DM::ViewContainer {
         :param attribute_name: attribute name on which the index should be created
 
         """
-
+		self.register_layer()
 		#self.createIndex(attribute_name)
 		ds = self.get_ogr_ds()
 		ds.ExecuteSQL("CREATE INDEX "+ attribute_name +"_index ON " + self.getName() + " (" + attribute_name + ");")
