@@ -20,7 +20,7 @@ OPTION(WITH_GUI "if with GUI" ON)
 OPTION(WITH_EXTENSIONS "if with Extensions plugin" ON)
 OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin" OFF)
 OPTION(WITH_DOC "Create Docu" OFF)
-OPTION(PYTHON_EMBEDDING "Embedding Python" OFF)
+OPTION(PYTHON_EMBEDDING "Embedding Python" ON)
 OPTION(USEQT5 "Use Qt5" OFF)
 
 find_package(Git REQUIRED)
