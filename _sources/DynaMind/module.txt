@@ -213,7 +213,7 @@ The API of the ViewContainer class is based on the GDAL *Layer API* tailored to 
 To iterate over all features you can use the ViewContainer directly  in a ``for`` loop (see the following code block). The returned
 feature is a "real" GDAL Feature. (Please have a look at `GDAL Feature API <http://www.gdal.org/classOGRFeature.html>`_ ).
 Before you start reading the components it is recommended to reset the iterator using ``ViewContainer.reset_reading()``.
-Currently it is still required to clear the ViewContainer cache after it has been used with calling ``ViewContainer.sync()``
+Currently it is still required to clear the ViewContainer cache after it has been used with calling ``ViewContainer.finalise()``
 
 .. code-block:: python
 
@@ -225,7 +225,7 @@ Currently it is still required to clear the ViewContainer cache after it has bee
         for street in self.streets:
             street_width = street.GetFieldAsDouble("width")
         #Clear container cache
-        self.streets.sync()
+        self.streets.finalise()
 ..
 
 **Create Features**
@@ -233,7 +233,7 @@ Currently it is still required to clear the ViewContainer cache after it has bee
 ``ViewContainer.create_feature()`` registers a new feature in the ViewContainer. The created itself is empty and
 does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL Python API.
 For performance reasons the features are not directly written into the data stream. To finally write the features and clear
-the ViewContainer cache please call ``ViewContainer.sync()``.
+the ViewContainer cache please call ``ViewContainer.finalise()``.
 
 
 .. code-block:: python
@@ -250,14 +250,14 @@ the ViewContainer cache please call ``ViewContainer.sync()``.
         #Set geometry in feature
         street.SetGeometry(pt)
     #Write create features into stream
-    self.streets.sync()
+    self.streets.finalise()
 
 ..
 
 **Modify Features**
 
 Similar to reading features, existing features can be modified while iterating over the features stored in the ViewContainer.
-To write the altered features to the data stream please use ``ViewContainer.sync()``.
+To write the altered features to the data stream please use ``ViewContainer.finalise()``.
 
 
 .. code-block:: python
@@ -268,7 +268,7 @@ To write the altered features to the data stream please use ``ViewContainer.sync
     for street in self.streets:
         street.SetField("width", 3)
     #Write altered features to stream
-    self.streets.sync()
+    self.streets.finalise()
 
 ..
 

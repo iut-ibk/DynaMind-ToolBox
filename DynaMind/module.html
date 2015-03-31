@@ -378,7 +378,7 @@ The API of the ViewContainer class is based on the GDAL <em>Layer API</em> tailo
 To iterate over all features you can use the ViewContainer directly  in a <code class="docutils literal"><span class="pre">for</span></code> loop (see the following code block). The returned
 feature is a &#8220;real&#8221; GDAL Feature. (Please have a look at <a class="reference external" href="http://www.gdal.org/classOGRFeature.html">GDAL Feature API</a> ).
 Before you start reading the components it is recommended to reset the iterator using <code class="docutils literal"><span class="pre">ViewContainer.reset_reading()</span></code>.
-Currently it is still required to clear the ViewContainer cache after it has been used with calling <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code></p>
+Currently it is still required to clear the ViewContainer cache after it has been used with calling <code class="docutils literal"><span class="pre">ViewContainer.finalise()</span></code></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c">#Rest read position</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
@@ -387,14 +387,14 @@ Currently it is still required to clear the ViewContainer cache after it has bee
     <span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
         <span class="n">street_width</span> <span class="o">=</span> <span class="n">street</span><span class="o">.</span><span class="n">GetFieldAsDouble</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">)</span>
     <span class="c">#Clear container cache</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">finalise</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Create Features</strong></p>
 <p><code class="docutils literal"><span class="pre">ViewContainer.create_feature()</span></code> registers a new feature in the ViewContainer. The created itself is empty and
 does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL Python API.
 For performance reasons the features are not directly written into the data stream. To finally write the features and clear
-the ViewContainer cache please call <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
+the ViewContainer cache please call <code class="docutils literal"><span class="pre">ViewContainer.finalise()</span></code>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#Create 1000 new nodes</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
     <span class="c">#Create new feature</span>
@@ -407,19 +407,19 @@ the ViewContainer cache please call <code class="docutils literal"><span class="
     <span class="c">#Set geometry in feature</span>
     <span class="n">street</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
 <span class="c">#Write create features into stream</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">finalise</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Modify Features</strong></p>
 <p>Similar to reading features, existing features can be modified while iterating over the features stored in the ViewContainer.
-To write the altered features to the data stream please use <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
+To write the altered features to the data stream please use <code class="docutils literal"><span class="pre">ViewContainer.finalise()</span></code>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#Rest read position</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
 <span class="c">#Iterate over all features and set street width to 3</span>
 <span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
     <span class="n">street</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="c">#Write altered features to stream</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">finalise</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
