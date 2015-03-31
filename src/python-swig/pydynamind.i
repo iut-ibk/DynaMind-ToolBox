@@ -641,18 +641,17 @@ class DM::ViewContainer {
 	def reset_reading(self):
 		"""
 
-        Resets iterator
+		Resets iterator
 
-        """
+		"""
 		self.register_layer()
 		self.__ogr_layer.ResetReading()
 
 	def sync(self):
 		"""
-        Synchronises the ViewContainer writing the data to the database and freeing the memory.
-        May be used before the end of the run method.
+		Synchronises the ViewContainer writing the data to the database and freeing the memory.
 
-        """
+		"""
 		self.syncAlteredFeatures()
 		for f in self.__features:
 			f.Destroy()
@@ -663,7 +662,7 @@ class DM::ViewContainer {
 
 	def finalise(self):
 		"""
-		Synchronises the ViewContainer writing the data to the database and freeing the memory.
+		Closes the ViewContainer writing the data to the database and freeing the memory.
 		May be used before the end of the run method.
 
 		"""
