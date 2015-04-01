@@ -1,3 +1,7 @@
+//devnotes:
+// do not hardcode values (imperviousness )
+// check space per person correctly)
+
 #include <urbandevelBuilding.h>
 #include <cgalgeometry.h>
 #include <tbvectordata.h>
@@ -100,7 +104,7 @@ void urbandevelBuilding::run()
     {
         DM::Face * currentparcel = dynamic_cast<DM::Face *>(parcels[i]);
         // do not generate houses if no population (if population should be generated) is available
-        // OR no parcel status equals develop (if development should happen on signal
+        // OR no parcel status equals develop (if development should happen on signal)
 
         if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && parcels[i]->getAttribute("type")->getString() ==  buildingtype &&!onSignal))
             continue;
