@@ -27,7 +27,12 @@
 #define GUICREATENEWVIEW_H
 #include <dmcompilersettings.h>
 
+#if QT_VERSION >= 0x050000
+#include <QtWidgets>
+#else
 #include <QDialog>
+#endif
+
 #include <map>
 
 
