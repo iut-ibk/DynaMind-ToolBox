@@ -1,11 +1,16 @@
-
 #include <guiexport.h>
 #include <ui_guiexport.h>
 #include "export.h"
+
+#if QT_VERSION >= 0x050000
+#include <QtWidgets>
+#else
 #include <QFileDialog>
 #include <QtGui/QTreeWidget>
 #include <QInputDialog>
 #include <QComboBox>
+#endif
+
 #include <dmcomponent.h>
 #include <dmlogger.h>
 #include "ogrsf_frmts.h"
@@ -208,7 +213,7 @@ void GUIExport::on_viewTree_itemDoubleClicked(QTreeWidgetItem * item, int column
 		else
 		{
 			bool ok;
-			int epsgCode = QInputDialog::getInteger(this, "Override source transformation",
+			int epsgCode = QInputDialog::getInt(this, "Override source transformation",
 				"specify source EPSG code (0 = default)",
 				selection[0]->text(COL_EPSG).toInt(), 0, INT_MAX, 1, &ok);
 

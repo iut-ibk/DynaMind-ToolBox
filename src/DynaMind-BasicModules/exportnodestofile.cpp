@@ -27,7 +27,7 @@ void ExportNodesToFile::run() {
 
 	QString fileName = QString::fromStdString(this->FileName);
 	std::fstream out;
-	out.open(fileName.toAscii(),fstream::out | fstream::app);
+	out.open(fileName.toLatin1(),fstream::out | fstream::app);
 
 	foreach (DM::Component* c, sys->getAllComponentsInView(readview)) 
 	{

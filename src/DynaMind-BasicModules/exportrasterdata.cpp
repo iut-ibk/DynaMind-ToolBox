@@ -44,7 +44,7 @@ void ExportRasterData::run () {
 	}
 	std::fstream txtout;
 
-	txtout.open(fullFileName.toAscii(),std::ios::out);
+	txtout.open(fullFileName.toLatin1(),std::ios::out);
 
 	//header for ARCGIS import
 
