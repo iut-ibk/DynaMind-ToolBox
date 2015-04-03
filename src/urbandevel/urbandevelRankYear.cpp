@@ -96,7 +96,7 @@ void urbandevelRankYear::run()
         rankval.push_back(rankvalue);
 
         oldrank.push_back(static_cast<int>(areas[i]->getAttribute(rankfieldname)->getDouble()));
-        if ( oldrank[i] > 0 ) rnk_exists = TRUE;
+        if ( oldrank[i] > 0 ) rnk_exists = true;
     }
 
     DAHelper::darank(rankval, rank, rank_function, rank_function_factor);
