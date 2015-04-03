@@ -77,7 +77,7 @@ void urbandevelRankYear::run()
     std::vector<int> rank;
     std::vector<int> year;
     std::vector<double> rankval;
-    bool rnk_exists = FALSE;
+    bool rnk_exists = false;
 
     for (int i = 0; i < areas.size(); i++)
     {

@@ -5,7 +5,7 @@ DM_DECLARE_NODE_NAME(urbandevelWaterAttributes, DynAlp)
 
 urbandevelWaterAttributes::urbandevelWaterAttributes()
 {
-    paramfromCity = TRUE;
+    paramfromCity = true;
 
     dwfpp = 4.1;
     wsdpp = 200;

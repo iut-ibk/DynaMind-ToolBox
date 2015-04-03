@@ -15,9 +15,9 @@ urbandevelBuilding::urbandevelBuilding()
     buildingyear = 1900;
     stories = 3;
 
-    onSignal = TRUE;
-    paramfromCity = TRUE;
-    genPopulation = TRUE;
+    onSignal = true;
+    paramfromCity = true;
+    genPopulation = true;
     spacepp = 45;
     buildingtype = "res";
 

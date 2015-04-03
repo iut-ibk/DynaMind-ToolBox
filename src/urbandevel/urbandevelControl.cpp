@@ -7,7 +7,7 @@ urbandevelControl::urbandevelControl()
 {
     startyear = 2000;
     endyear = 2030;
-    wpfromcity = FALSE;
+    wpfromcity = false;
     workplaces = 60;
     shareindwp = 10;
 

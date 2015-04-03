@@ -11,11 +11,11 @@ urbandevelRankEuclid::urbandevelRankEuclid()
 {
     gravityview_name = "GRAVITY";
     rankview_name = "SUPERBLOCK";
-    reduction = FALSE;
+    reduction = false;
     rank_function = "power";
     rank_function_factor = 1;
     rank_weight = 1;
-    nodeweight = TRUE;
+    nodeweight = true;
 
     rankfieldname = "devrank";
 
@@ -70,7 +70,7 @@ void urbandevelRankEuclid::run()
     std::vector<double> distance;
     std::vector<int> rank;
     std::vector<int> oldrank;
-    bool rnk_exists = FALSE;
+    bool rnk_exists = false;
 
     for (int i = 0; i < areas.size(); i++)
     {
@@ -104,7 +104,7 @@ void urbandevelRankEuclid::run()
         distance.push_back(dist);
 
         oldrank.push_back(areas[i]->getAttribute(rankfieldname)->getDouble());
-        if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
+        if ( oldrank[i] > 0 ) { rnk_exists = true; }
     }
 
     DAHelper::darank(distance, rank, rank_function, rank_function_factor);

@@ -11,7 +11,7 @@ urbandevelRankArea::urbandevelRankArea()
 {
     // declare parameters
     rankview_name = "SUPERBLOCK";
-    reduction = FALSE;
+    reduction = false;
     rank_function = "linear";
     rank_function_factor = 1;
     rank_weight = 1;
@@ -51,13 +51,13 @@ void urbandevelRankArea::run()
     std::vector<double> area;
     std::vector<int> rank;
     std::vector<int> oldrank;
-    bool rnk_exists = FALSE;
+    bool rnk_exists = false;
 
     for (int i = 0; i < areas.size(); i++)
     {
         area.push_back(1/(TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)areas[i])));
         oldrank.push_back((areas[i]->getAttribute(attribute_name)->getDouble()));
-        if ( oldrank[i] > 0 ) { rnk_exists = TRUE; }
+        if ( oldrank[i] > 0 ) { rnk_exists = true; }
     }
 
     DAHelper::darank(area, rank, rank_function, rank_function_factor);
