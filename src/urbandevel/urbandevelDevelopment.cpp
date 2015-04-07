@@ -98,8 +98,10 @@ void urbandevelDevelopment::run()
                     prcl[i]->changeAttribute("status", "develop");
                     DM::Logger(DM::Warning) << "setting parcel to develop, returning";
 
-                    cyclepopdiff=cyclepopdiff-20;
-                    cities[0]->changeAttribute("cyclepopdiff",cyclepopdiff);
+
+                    //Just for testing purposes:
+                    //cyclepopdiff=cyclepopdiff-20;
+                    //cities[0]->changeAttribute("cyclepopdiff",cyclepopdiff);
 
                     return;
                 }

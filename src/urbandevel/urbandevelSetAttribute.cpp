@@ -66,7 +66,7 @@ void urbandevelSetAttribute::run()
             else {
                 element->changeAttribute(setattribute, setvalue);
             }
-            DM::Logger(DM::Debug) << "Attribute Set";
+            //DM::Logger(DM::Debug) << "Attribute Set";
         }
     }
 }

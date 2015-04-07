@@ -1,6 +1,7 @@
 //devnotes:
 // do not hardcode values (imperviousness )
 // check space per person correctly)
+// not working at all atm
 
 #include <urbandevelBuilding.h>
 #include <cgalgeometry.h>
@@ -54,7 +55,7 @@ void urbandevelBuilding::init()
     parcelview.addAttribute("status", DM::Attribute::DOUBLE, DM::MODIFY);
     parcelview.addAttribute("BUILDING", buildingview.getName(), DM::WRITE);
 
-    buildingview = DM::View("BUILDING", DM::FACE, DM::MODIFY);
+    buildingview = DM::View("BUILDINGNEW", DM::FACE, DM::WRITE);
     buildingview.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
@@ -99,6 +100,7 @@ void urbandevelBuilding::run()
     int currentyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
 
     int numberOfHouseBuild = 0;
+    int numberOfPeople = 0;
 
     for (int i = 0; i < parcels.size(); i++)
     {
@@ -157,13 +159,14 @@ void urbandevelBuilding::run()
             cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
             building->addAttribute("POP", peopleinbuilding);
             currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
+            numberOfPeople = numberOfPeople + peopleinbuilding;
         }
         currentparcel->addAttribute("status", "populated");
         building->addAttribute("height", stories*4);
         building->addAttribute("type", buildingtype);
     }
 
-    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype;
+    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
 }
 
 string urbandevelBuilding::getHelpUrl()
