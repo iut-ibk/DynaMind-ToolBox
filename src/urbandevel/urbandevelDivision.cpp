@@ -35,10 +35,10 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("develtype (ignore if empty)", DM::STRING, &this->develtype);
 
     bbs = DM::View("BBS", DM::FACE, DM::WRITE);
-    std::vector<DM::View> datastream;
-    datastream.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
+    std::vector<DM::View> data;
+    data.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
 
-    this->addData("data", datastream);
+    this->addData("data", data);
 
 }
 
@@ -54,7 +54,7 @@ void urbandevelDivision::init()
 
     inputView = DM::View(inputname, DM::FACE, DM::READ);
     outputView = DM::View(outputname, DM::FACE, DM::WRITE);
-    face_nodes = DM::View("FACE_NODES", DM::NODE, DM::WRITE);
+    outputView_nodes = DM::View(outputname+"_NODES", DM::NODE, DM::WRITE);
     cityview = DM::View("CITY", DM::NODE, DM::READ);
 
     cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
@@ -65,18 +65,18 @@ void urbandevelDivision::init()
     outputView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
     outputView.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
 
-    face_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
+    outputView_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
-    std::vector<DM::View> datastream;
+    std::vector<DM::View> data;
 
-    datastream.push_back(cityview);
-    datastream.push_back(inputView);
-    datastream.push_back(outputView);
-    datastream.push_back(face_nodes);
+    data.push_back(cityview);
+    data.push_back(inputView);
+    data.push_back(outputView);
+    data.push_back(outputView_nodes);
     //if (debug)
     //    datastream.push_back(DM::View("faces_debug", DM::FACE, DM::WRITE));
 
-    this->addData("data", datastream);
+    this->addData("data", data);
 }
 
 /** The method is based on the minial bounding box */
@@ -220,9 +220,6 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
         }
 
         foreach (DM::Face * f_new ,intersected_faces ) {
-            //f_new->addAttribute("generation", gen);
-            //f_new->addAttribute("type", type);
-            //f_new->addAttribute("status","empty");
             this->createSubdivision(sys, f_new, gen+1, type);
         }
     }
@@ -235,7 +232,7 @@ std::vector<DM::Node *> urbandevelDivision::extractCGALFace(Arrangement_2::Ccb_h
     do{
         double x = CGAL::to_double(curr->source()->point().x());
         double y = CGAL::to_double(curr->source()->point().y());
-        DM::Node * n = sphs.addNode(x,y,0,tol, this->face_nodes);
+        DM::Node * n = sphs.addNode(x,y,0,tol, this->outputView_nodes);
         if (curr->twin()->face()->is_unbounded())
             n->addAttribute("street_side", 1);
         vp.push_back(n);

@@ -42,7 +42,7 @@ public:
 private:
     DM::View cityview;
     DM::View outputView;
-    DM::View face_nodes;
+    DM::View outputView_nodes;
     DM::View inputView;
     DM::View bbs;
 
