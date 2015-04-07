@@ -13,6 +13,8 @@ urbandevelSetAttribute::urbandevelSetAttribute()
     this->addParameter("Check Value", DM::STRING, &this->checkvalue);
     this->addParameter("Set Attribute", DM::STRING, &this->setattribute);
     this->addParameter("Set Value", DM::STRING, &this->setvalue);
+    this->addParameter("Check Value as Number", DM::BOOL, &this->cisnumber);
+    this->addParameter("Set Value as Number", DM::BOOL, &this->sisnumber);
 }
 
 urbandevelSetAttribute::~urbandevelSetAttribute()
@@ -23,10 +25,14 @@ urbandevelSetAttribute::~urbandevelSetAttribute()
 void urbandevelSetAttribute::init() {
 
     view = DM::View(view_name, DM::COMPONENT, DM::READ);
-
     view.addAttribute(checkattribute, DM::Attribute::STRING, DM::READ);
-    view.addAttribute(setattribute, DM::Attribute::STRING, DM::WRITE);
 
+    if (sisnumber) {
+        view.addAttribute(setattribute, DM::Attribute::DOUBLE, DM::WRITE);
+    }
+    else {
+        view.addAttribute(setattribute, DM::Attribute::STRING, DM::WRITE);
+    }
 
     std::vector<DM::View> data;
     data.push_back(view);
@@ -39,14 +45,27 @@ void urbandevelSetAttribute::run()
 
     std::vector<DM::Component *> elements = sys->getAllComponentsInView(view);
 
+    QString qsetval = QString::fromStdString(setvalue);
+    QString qcheckval = QString::fromStdString(checkvalue);
+
+
     for (int i = 0; i < elements.size(); i++)
     {
         DM::Component* element = dynamic_cast<DM::Component*>(elements[i]);
 
-        std::string curvalue= element->getAttribute(checkattribute)->getString();
-        if (curvalue == checkvalue)
+        QString curvalue = QString::fromStdString(element->getAttribute(checkattribute)->getString());
+
+        //DM::Logger(DM::Warning) << "compare ... as" << sisnumber << " " << checkvalue << " == " << curvalue;
+
+        if ( ( !cisnumber && curvalue == qcheckval ) || (cisnumber && curvalue.toDouble() == qcheckval.toDouble() ))
         {
-            element->changeAttribute(setattribute, setvalue);
+            DM::Logger(DM::Debug) << "Match. Setting: " << setvalue;
+            if (sisnumber) {
+                element->changeAttribute(setattribute, qsetval.toDouble());
+            }
+            else {
+                element->changeAttribute(setattribute, setvalue);
+            }
             DM::Logger(DM::Debug) << "Attribute Set";
         }
     }

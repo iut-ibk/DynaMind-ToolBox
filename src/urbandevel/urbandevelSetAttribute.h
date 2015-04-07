@@ -24,6 +24,8 @@ private:
     std::string setattribute;
     std::string checkvalue;
     std::string setvalue;
+    bool cisnumber;
+    bool sisnumber;
 };
 
 #endif // urbandevelSetAttribute_H
