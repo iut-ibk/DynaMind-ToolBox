@@ -12,6 +12,7 @@
 #include "urbandevelDevelopment.h"
 #include "urbandevelReduction.h"
 #include "urbandevelPolygonLink.h"
+#include "urbandevelSetAttribute.h"
 #include "urbandevelSetHeight.h"
 #include "urbandevelSetType.h"
 #include "urbandevelWaterAttributes.h"
@@ -31,6 +32,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<urbandevelDevelopment>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelReduction>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelSetType>());
+    registry->addNodeFactory(new DM::NodeFactory<urbandevelSetAttribute>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelSetHeight>());
     registry->addNodeFactory(new DM::NodeFactory<urbandevelWaterAttributes>());
 }
