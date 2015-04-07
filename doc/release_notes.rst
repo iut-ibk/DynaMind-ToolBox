@@ -1,3 +1,11 @@
+======================
+Release Notes v0.8 dev
+======================
+
+- Increased OGC conformity
+- Proper linking of tables
+
+
 ==================
 Release Notes v0.7
 ==================
