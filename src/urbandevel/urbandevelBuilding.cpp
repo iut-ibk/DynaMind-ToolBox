@@ -52,7 +52,8 @@ void urbandevelBuilding::init()
         cityview.addAttribute("offset", DM::Attribute::DOUBLE, DM::READ);
     }
     parcelview = DM::View("PARCEL", DM::FACE, DM::MODIFY);
-    parcelview.addAttribute("status", DM::Attribute::DOUBLE, DM::MODIFY);
+    parcelview.addAttribute("status", DM::Attribute::STRING, DM::MODIFY);
+    parcelview.addAttribute("fail", DM::Attribute::DOUBLE, DM::WRITE);
     parcelview.addAttribute("BUILDING", buildingview.getName(), DM::WRITE);
 
     buildingview = DM::View("BUILDINGNEW", DM::FACE, DM::WRITE);
@@ -105,11 +106,28 @@ void urbandevelBuilding::run()
     for (int i = 0; i < parcels.size(); i++)
     {
         DM::Face * currentparcel = dynamic_cast<DM::Face *>(parcels[i]);
+        double parcel_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentparcel);
+        if (parcel_area < 150)
+            continue;
+        std::string parcelstatus = currentparcel->getAttribute("status")->getString();
+        std::string parceltype = currentparcel->getAttribute("type")->getString();
+
+        std::string checkstatus = "develop";
+
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal)
 
-        if ((cyclepopdiff == 0 && genPopulation) || (parcels[i]->getAttribute("status")->getString() != "develop" && parcels[i]->getAttribute("type")->getString() ==  buildingtype &&!onSignal))
+        if ( genPopulation && cyclepopdiff <= 0 )
             continue;
+
+        if ( onSignal ) {
+            if ( parcelstatus.compare(checkstatus) != 0 )
+                continue;
+            if (parceltype.compare(buildingtype) != 0 )
+                continue;
+        }
+
+        //DM::Logger(DM::Warning) << "developing parcel: status " << parcelstatus << " type " << parceltype;
 
         //calculate house from parcel with offset
 
@@ -118,19 +136,30 @@ void urbandevelBuilding::run()
         //taking only first polygon result
 
         std::vector<DM::Node*> buildingnodes;
+
+        currentcity->addAttribute("cyclepopdiff", 0);
+        currentparcel->addAttribute("fail", "1");
+
+        return;
+
         foreach (DM::Node n, result_nodes[0])
         {
+            DM::Logger(DM::Warning) << "push back node";
             DM::Node * np = sys->addNode(n);
                 if (np) buildingnodes.push_back(np);
+
         }
         if (buildingnodes.size() < 3) {
                 DM::Logger(DM::Warning) << "offest failed";
         }
 
+        DM::Logger(DM::Warning) << "generated nodes";
+
         DM::Face * building = sys->addFace(buildingnodes, buildingview);
 
+        DM::Logger(DM::Warning) << "added face";
+
         double roof_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)building);
-        double parcel_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentparcel);
         double traffic_area = (parcel_area - roof_area)/3;
         double impervious_area = parcel_area - traffic_area - roof_area;
 

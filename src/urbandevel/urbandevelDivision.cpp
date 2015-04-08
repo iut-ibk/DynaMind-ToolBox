@@ -27,6 +27,8 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("tolerance", DM::DOUBLE, &this->tol);
     debug = false;
     this->addParameter("debug", DM::BOOL, &this->debug);
+    sizefromSB = false;
+    this->addParameter("adjust size from SB height", DM::BOOL, &this->sizefromSB);
     combined_edges = false;
     this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     splitShortSide = false;
@@ -39,7 +41,6 @@ urbandevelDivision::urbandevelDivision()
     data.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
 
     this->addData("data", data);
-
 }
 
 urbandevelDivision::~urbandevelDivision()
@@ -67,12 +68,20 @@ void urbandevelDivision::init()
 
     outputView_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
+    if (sizefromSB) {
+        sb = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
+        sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::READ);
+        outputView.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+    }
+
     std::vector<DM::View> data;
 
     data.push_back(cityview);
     data.push_back(inputView);
     data.push_back(outputView);
     data.push_back(outputView_nodes);
+    if (sizefromSB)
+        data.push_back(sb);
     //if (debug)
     //    datastream.push_back(DM::View("faces_debug", DM::FACE, DM::WRITE));
 
@@ -107,6 +116,31 @@ void urbandevelDivision::run(){
     {
         DM::System workingSys;
         DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
+
+        height_avg = 0;
+        worklength = length;
+
+        if (sizefromSB) {
+            std::vector<DM::Component*> sblink = f->getAttribute("SUPERBLOCK")->getLinkedComponents();
+            if (sblink.size() != 1)
+            {
+                DM::Logger(DM::Warning) << "Superblocks mismatch (exactly one component needed). There are " << sblink.size();
+                height_avg = 1;
+            }
+            else {
+                height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
+            }
+
+            DM::Logger(DM::Warning) << "Adjusting length with average height: " << height_avg;
+
+            if (height_avg >=3) {
+                worklength = worklength*2;
+            }
+            if (height_avg >=6) {
+                worklength = worklength*4;
+            }
+        }
+
         std::string inputtype = f->getAttribute("type")->getString();
         std::string inputstatus = f->getAttribute("status")->getString();
 
@@ -164,8 +198,8 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
     double split_l = size[0];
     double split_width = size[1];
 
-    if (2*this->length > split_l) {
-        if ( (this->length / this->aspectratio) * 2 >   split_width) { //width
+    if (2*worklength > split_l) {
+        if ( (worklength / aspectratio) * 2 >   split_width) { //width
             sys->addComponentToView(f, this->outputView);
             return;
         }
@@ -175,14 +209,14 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
          split_l = size[1];
          split_width = size[0];
     }
-    if (2*this->length > split_l)
+    if (2*worklength > split_l)
         split_length = true;
     int elements = 2;
     if (split_length) {
         if(!this->splitShortSide)
-            elements = size[1] / (this->length / this->aspectratio);
+            elements = size[1] / (worklength / aspectratio);
         else
-            elements = size[0] / (this->length / this->aspectratio);
+            elements = size[0] / (worklength / this->aspectratio);
     }
     for (int i = 0; i < elements; i++) {
         double l = size[0];
@@ -302,7 +336,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             DM::Face * f = dynamic_cast<DM::Face*>(systems[i]);
             DM::Face * f1 = TBVectorData::CopyFaceGeometryToNewSystem(f, sys);
             sys->addComponentToView(f1,v);
-            f1->addAttribute("status", "empty");
+            //not needed? f1->addAttribute("status", "empty");
         }
         return;
     }
@@ -324,6 +358,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
         f->addAttribute("year", currentyear);
         f->addAttribute("status", "empty");
         f->addAttribute("type",develtype);
+        f->addAttribute("height_avg", height_avg);
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;
@@ -393,7 +428,7 @@ void print_face (Arrangement_2::Face_const_handle f)
 
 double urbandevelDivision::getLength() const
 {
-    return length;
+    return worklength;
 }
 
 void urbandevelDivision::setLength(double value)

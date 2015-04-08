@@ -45,6 +45,7 @@ private:
     DM::View outputView_nodes;
     DM::View inputView;
     DM::View bbs;
+    DM::View sb;
 
     double aspectratio;
     double length;
@@ -56,10 +57,13 @@ private:
     double tol;
     bool combined_edges;
     bool debug;
+    bool sizefromSB;
     bool splitShortSide;
     std::string develtype;
 
     int currentyear;
+    int worklength;
+    int height_avg;
 };
 
 #endif // urbandevelDivision_H
