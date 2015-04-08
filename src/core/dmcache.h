@@ -38,7 +38,7 @@ public:
 	Mutex(QMutex::RecursionMode m) : QMutex(m){}
 	~Mutex(){}
 
-#ifdef USEQT5
+#if QT_VERSION >= 0x050000
 		void lockInline(){return lock();}
 		void unlockInline(){return unlock();}
 #endif
@@ -48,7 +48,7 @@ class AtomicInt : public QAtomicInt
 {
 public:
 	AtomicInt & operator= (int value) {QAtomicInt::operator=(value); return *this;}
-#ifndef USEQT5
+#if QT_VERSION < 0x050000
 		AtomicInt loadAcquire(){return *this;}
 		void store(int v){ QAtomicInt::operator=(v);}
 #endif
@@ -168,10 +168,10 @@ public:
 	unsigned long misses;
 	void ResetProfilingCounters()
 	{
-		#ifndef USEQT5
-			mutex->lockInline();
-		#else
+        #if QT_VERSION >= 0x050000
 			mutex->lock();
+		#else
+			mutex->lockInline();
 		#endif
 
 			misses = 0;
