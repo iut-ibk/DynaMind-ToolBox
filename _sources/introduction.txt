@@ -16,10 +16,10 @@ Overview
 
 DynaMind follows a modular design concepts with `DynaMind <https://github.com/iut-ibk/DynaMind>`_ being the heart and sole of the workflow/simulation engine. `DynaMind <https://github.com/iut-ibk/DynaMind>`_  provides the workflow logic and module handling, which can be accessed through following C++ or Python interfaces:
 
- 1. :doc:`Simulation interface </DynaMind/simulations_python>` to create, modify and execute simulations
- 2. :doc:`Module interface </DynaMind/module>` that enables users to developed their own modules through an easy to use database interface building on in the `GDAL <http://www.gdal.org>`_ library.
+ 1. :doc:`simulation interface </DynaMind/simulations_python>` to create, modify and execute simulations
+ 2. :doc:`module interface </DynaMind/module>` that enables users to developed their own modules through an easy to use database interface building on in the `GDAL <http://www.gdal.org>`_ library.
 
-To provide a ready to use environment the DynaMind-Toolbox combines several tools building on `DynaMind <https://github.com/iut-ibk/DynaMind>`_ including:
+To provide a ready to use environmentThe DynaMind-Toolbox combines several tools building on `DynaMind <https://github.com/iut-ibk/DynaMind>`_ .This includes:
 
 -  Standard modules to import and export data from GIS databases and Shapefiles and do simple manipulations :doc:`module interface </DynaMind-GDALModules/overview>`
 -  Graphical user interface to build simulations :doc:`quick-intro-gui`
@@ -40,7 +40,7 @@ In a typical simulation a series of modules are combined to define a workflow.
 
 - *Data Import:*  Firstly, a simulation requires data, often from multiple sources. The standard modules provide therefore a set of modules building on the GDAL library supporting a variety of standard GIS exchange formats (:doc:`see here </DynaMind-GDALModules/gdalimportdata>`) as well as non GIS data.
 - *Interlinked Data Set:* An interlinked data set provides the foundation for complex simulations. The :doc:`Standard Modules </DynaMind-GDALModules/overview>` provide several modules to :doc:`spatially </DynaMind-GDALModules/gdalspatiallinking>` or :doc:`non-spatially </DynaMind-GDALModules/nonspatiallinking>` link different data sets to an interlinked data model that reflects this interrelationships.
-- *Manipulate Data:* To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (:doc:`see here </DynaMind-GDALModules/gdalattributecalculator>`). Combining several of this modules allows complex processes to be described.
+- *Manipulate Data* To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (:doc:`see here </DynaMind-GDALModules/gdalattributecalculator>`). Combining several of this modules allows complex processes to be described.
 - *Grouping of Modules:* Models can be combined to a module Group. Such a group can be executed repeatedly. Similar to a for loop, groups can be used to iteratively manipulate data to describe dynamic processes.
 -  *Export and Publish Results* To publish the resulting data sets the :doc:`Standard Modules </DynaMind-GDALModules/overview>` provide modules to export data into common GIS exchange formats or GIS databases.
 
