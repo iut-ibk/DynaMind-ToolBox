@@ -8,7 +8,8 @@ Welcome to DynaMind's User Guide
 
 .. toctree::
   :maxdepth: 2
-  
+
+  introduction
   quick-intro-gui
   known_problems
 
