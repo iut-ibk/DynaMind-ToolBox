@@ -69,9 +69,9 @@ void urbandevelDivision::init()
     outputView_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
     if (sizefromSB) {
+        outputView.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
         sb = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
         sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::READ);
-        outputView.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
     }
 
     std::vector<DM::View> data;
@@ -80,8 +80,9 @@ void urbandevelDivision::init()
     data.push_back(inputView);
     data.push_back(outputView);
     data.push_back(outputView_nodes);
-    if (sizefromSB)
+    if (sizefromSB) {
         data.push_back(sb);
+    }
     //if (debug)
     //    datastream.push_back(DM::View("faces_debug", DM::FACE, DM::WRITE));
 
@@ -131,14 +132,13 @@ void urbandevelDivision::run(){
                 height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
             }
 
-            DM::Logger(DM::Warning) << "Adjusting length with average height: " << height_avg;
-
             if (height_avg >=3) {
-                worklength = worklength*2;
+                worklength = worklength*1.5;
             }
             if (height_avg >=6) {
-                worklength = worklength*4;
+                worklength = worklength*1.5;
             }
+            DM::Logger(DM::Warning) << "Adjusting length of " << outputname << " with: " << height_avg << " from " << length << " to " << worklength;
         }
 
         std::string inputtype = f->getAttribute("type")->getString();
@@ -359,6 +359,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
         f->addAttribute("status", "empty");
         f->addAttribute("type",develtype);
         f->addAttribute("height_avg", height_avg);
+        f->getAttribute(inputView.getName())->addLink(f, outputView.getName()); // Link from output to input
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;
