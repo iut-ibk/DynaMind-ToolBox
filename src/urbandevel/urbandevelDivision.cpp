@@ -12,35 +12,30 @@ DM_DECLARE_NODE_NAME(urbandevelDivision, DynAlp)
 
 urbandevelDivision::urbandevelDivision()
 {
-    inputname = "SUPERBLOCK";
-    this->addParameter("Input View", DM::STRING, &this->inputname);
-    outputname = "CITYBLOCK";
-    this->addParameter("Output View", DM::STRING, &this->outputname);
+    blockview_name = "SUPERBLOCK";
+    elementview_name = "CITYBLOCK";
 
     aspectratio = 2;
-    this->addParameter("AspectRatio", DM::DOUBLE, &this->aspectratio);
     length = 100;
-    this->addParameter("Length", DM::DOUBLE, &this->length);
-    offset = 5;
-    this->addParameter("offset", DM::DOUBLE, &this->offset);
-    tol = 0.00001; //should not be to small
-    this->addParameter("tolerance", DM::DOUBLE, &this->tol);
-    debug = false;
-    this->addParameter("debug", DM::BOOL, &this->debug);
+    offset = 4;
+    tol = 0.001; //should not be too small
+    onSignal = true;
     sizefromSB = false;
-    this->addParameter("adjust size from SB height", DM::BOOL, &this->sizefromSB);
     combined_edges = false;
-    this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     splitShortSide = false;
-    this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
     develtype = "res";
+
+    this->addParameter("Input", DM::STRING, &this->blockview_name);
+    this->addParameter("Output", DM::STRING, &this->elementview_name);
+    this->addParameter("AspectRatio", DM::DOUBLE, &this->aspectratio);
+    this->addParameter("Length", DM::DOUBLE, &this->length);
+    this->addParameter("offset", DM::DOUBLE, &this->offset);
+    this->addParameter("tolerance", DM::DOUBLE, &this->tol);
+    this->addParameter("Develop on signal", DM::BOOL, &this->onSignal);
+    this->addParameter("adjust size from SB height", DM::BOOL, &this->sizefromSB);
+    this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
+    this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
     this->addParameter("develtype (ignore if empty)", DM::STRING, &this->develtype);
-
-    bbs = DM::View("BBS", DM::FACE, DM::WRITE);
-    std::vector<DM::View> data;
-    data.push_back(DM::View("dummy", DM::SUBSYSTEM, DM::MODIFY));
-
-    this->addData("data", data);
 }
 
 urbandevelDivision::~urbandevelDivision()
@@ -50,26 +45,31 @@ urbandevelDivision::~urbandevelDivision()
 
 void urbandevelDivision::init()
 {
-    if (inputname.empty() || outputname.empty())
+    if (blockview_name.empty() || elementview_name.empty())
         return;
 
-    inputView = DM::View(inputname, DM::FACE, DM::READ);
-    outputView = DM::View(outputname, DM::FACE, DM::WRITE);
-    outputView_nodes = DM::View(outputname+"_NODES", DM::NODE, DM::WRITE);
     cityview = DM::View("CITY", DM::NODE, DM::READ);
+    blockview = DM::View(blockview_name, DM::FACE, DM::READ);
+    elementview = DM::View(elementview_name, DM::FACE, DM::WRITE);
+    elementview_nodes = DM::View(elementview_name+"_NODES", DM::NODE, DM::WRITE);
+    bbs = DM::View("BBS", DM::FACE, DM::WRITE);
 
     cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
 
-    inputView.addAttribute("status", DM::Attribute::STRING, DM::READ);
+    blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
+    blockview.addAttribute("noheight", DM::Attribute::DOUBLE, DM::WRITE);
 
-    outputView.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
-    outputView.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
-    outputView.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
+    elementview.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute(blockview_name, elementview_name, DM::WRITE);
 
-    outputView_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
     if (sizefromSB) {
-        outputView.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+        elementview.addAttribute(blockview_name, elementview_name, DM::MODIFY);
+        elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
         sb = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
         sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::READ);
     }
@@ -77,30 +77,26 @@ void urbandevelDivision::init()
     std::vector<DM::View> data;
 
     data.push_back(cityview);
-    data.push_back(inputView);
-    data.push_back(outputView);
-    data.push_back(outputView_nodes);
+    data.push_back(blockview);
+    data.push_back(elementview);
+    data.push_back(elementview_nodes);
     if (sizefromSB) {
         data.push_back(sb);
     }
-    //if (debug)
-    //    datastream.push_back(DM::View("faces_debug", DM::FACE, DM::WRITE));
 
     this->addData("data", data);
 }
 
 /** The method is based on the minial bounding box */
-void urbandevelDivision::run(){
-
-    //DM::Logger(DM::Warning) << "Redevelopment not finished yet - offset is still missing";
-    if (this->aspectratio < 1) {
-        DM::Logger(DM::Warning) <<  "Aspect Ration < 1 please, just values > 1 are used";
-    }
+void urbandevelDivision::run()
+{
+    debug = false;
 
     DM::System * sys = this->getData("data");
-    DM::SpatialNodeHashMap sphs(sys,100,false);
+    DM::SpatialNodeHashMap snhm(sys,100,false);
 
     std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
+
     if (cities.size() != 1)
     {
         DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
@@ -111,60 +107,84 @@ void urbandevelDivision::run(){
 
     currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
 
-    std::vector<DM::Component *> inputareas = sys->getAllComponentsInView(inputView);
+    std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
 
-    for (int i = 0; i < inputareas.size(); i++)
+    for (int i = 0; i < blocks.size(); i++)
     {
         DM::System workingSys;
-        DM::Face * f = static_cast<DM::Face *> (inputareas[i]);
+        DM::Face * block = static_cast<DM::Face *> (blocks[i]);
 
         height_avg = 0;
         worklength = length;
 
-        if (sizefromSB) {
-            std::vector<DM::Component*> sblink = f->getAttribute("SUPERBLOCK")->getLinkedComponents();
-            if (sblink.size() != 1)
-            {
-                DM::Logger(DM::Warning) << "Superblocks mismatch (exactly one component needed). There are " << sblink.size();
-                height_avg = 1;
-            }
-            else {
-                height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
-            }
+        std::string inputtype = block->getAttribute("type")->getString();
+        std::string inputstatus = block->getAttribute("status")->getString();
 
-            if (height_avg >=3) {
-                worklength = worklength*1.5;
-            }
-            if (height_avg >=6) {
-                worklength = worklength*1.5;
-            }
-            DM::Logger(DM::Warning) << "Adjusting length of " << outputname << " with: " << height_avg << " from " << length << " to " << worklength;
-        }
+        // if development should happen on signal and the status is not "develop" skip the block
 
-        std::string inputtype = f->getAttribute("type")->getString();
-        std::string inputstatus = f->getAttribute("status")->getString();
-
-        if ( inputstatus != "develop" )
+        if ( onSignal && inputstatus != "develop")
         {
             DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
             continue;
         }
 
-        if ( develtype != inputtype || develtype.empty() )
+        // if no develtype is set and does not match skip the block
+
+        if ( !develtype.empty() && develtype != inputtype)
         {
             DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
             continue;
         }
 
-        DM::Logger(DM::Debug) << "parceling";
+        // if sizefromSB is true modify the length variable according to the height value
 
-        DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(f, &workingSys);
-        workingSys.addComponentToView(fnew, inputView);
+        if (sizefromSB) {
+
+            std::vector<DM::Component*> sblink = block->getAttribute("SUPERBLOCK")->getLinkedComponents();
+
+            block->addAttribute("noheight", 0);
+
+            if (sblink.size() != 1)
+            {
+                DM::Logger(DM::Warning) << "Superblocks mismatch (exactly one component needed). There are " << sblink.size();
+                height_avg = 1;
+                block->addAttribute("noheight",2);
+            }
+            else {
+                height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
+                block->addAttribute("noheight",1);
+            }
+
+            if (height_avg >=3) {
+                worklength = worklength*1.5;
+            }
+            else if (height_avg >=6) {
+                worklength = worklength*3;
+            }
+
+            DM::Logger(DM::Warning) << "Adjusting length " << height_avg << " from " << length << " to " << worklength;
+        }
+
+        DM::Logger(DM::Debug) << "begin parceling";
+
+        DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
+        workingSys.addComponentToView(fnew, blockview);
         this->createSubdivision(&workingSys, fnew, 0, inputtype);
-        createFinalFaces(&workingSys, sys, fnew, outputView, sphs);
+        createFinalFaces(&workingSys, sys, fnew, elementview, snhm);
         DM::Logger(DM::Debug) << "end parceling";
 
-        f->addAttribute("status", "developed");
+        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+
+        for (int j = 0; j < elements.size(); j++) {
+            DM::Face * element = static_cast<DM::Face *> (elements[j]);
+
+            element->addAttribute("year", currentyear);
+            element->addAttribute("status", "empty");
+            element->addAttribute("type",develtype);
+            element->addAttribute("height_avg", height_avg);
+        }
+
+        block->addAttribute("status", "developed");
     }
 }
 
@@ -200,7 +220,7 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
 
     if (2*worklength > split_l) {
         if ( (worklength / aspectratio) * 2 >   split_width) { //width
-            sys->addComponentToView(f, this->outputView);
+            sys->addComponentToView(f, this->elementview);
             return;
         }
     }
@@ -259,14 +279,14 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
     }
 }
 
-std::vector<DM::Node *> urbandevelDivision::extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & sphs)
+std::vector<DM::Node *> urbandevelDivision::extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & snhm)
 {
     std::vector<DM::Node *> vp;
     Arrangement_2::Ccb_halfedge_const_circulator curr = hec;
     do{
         double x = CGAL::to_double(curr->source()->point().x());
         double y = CGAL::to_double(curr->source()->point().y());
-        DM::Node * n = sphs.addNode(x,y,0,tol, this->outputView_nodes);
+        DM::Node * n = snhm.addNode(x,y,0,tol, this->elementview_nodes);
         if (curr->twin()->face()->is_unbounded())
             n->addAttribute("street_side", 1);
         vp.push_back(n);
@@ -355,11 +375,6 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             continue;
 
         DM::Face * f = sys->addFace(vp, v);
-        f->addAttribute("year", currentyear);
-        f->addAttribute("status", "empty");
-        f->addAttribute("type",develtype);
-        f->addAttribute("height_avg", height_avg);
-        f->getAttribute(inputView.getName())->addLink(f, outputView.getName()); // Link from output to input
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;
@@ -373,7 +388,6 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             DM::Logger(DM::Debug) << "Remove face";
             sys->removeComponentFromView(f, v);
             sys->removeChild(f);
-            //sys->removeFace(f->getUUID());
             removed_faces++;
         }
 
@@ -425,7 +439,7 @@ void print_face (Arrangement_2::Face_const_handle f)
     }
 }
 
-
+/*
 
 double urbandevelDivision::getLength() const
 {
@@ -459,22 +473,22 @@ void urbandevelDivision::setAspectRatio(double value)
 
 DM::View urbandevelDivision::getInputView() const
 {
-    return inputView;
+    return blockview;
 }
 
 void urbandevelDivision::setInputView(const DM::View &value)
 {
-    inputView = value;
+    blockview = value;
 }
 
 DM::View urbandevelDivision::getResultView() const
 {
-    return outputView;
+    return elementview;
 }
 
 void urbandevelDivision::setResultView(const DM::View &value)
 {
-    outputView = value;
+    elementview = value;
 }
 
 bool urbandevelDivision::getCombined_edges() const
@@ -486,3 +500,5 @@ void urbandevelDivision::setCombined_edges(bool value)
 {
     combined_edges = value;
 }
+
+*/

@@ -18,45 +18,31 @@ public:
     std::string getHelpUrl();
 
     void createSubdivision(DM::System * sys,  DM::Face * f, int gen, std::string type);
-    /** @brief creates final parceling and identify edges, transfers results from working sys to sys */
-    void createFinalFaces(DM::System * workingsys, DM::System *sys, DM::Face *orig, DM::View v, DM::SpatialNodeHashMap & sphs);
-    /** @brief extract faces and returns vector of face nodes*/
-    std::vector<DM::Node *> extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & sphs);
-    /** @brief returns if face is filling of a assumed hole. I assume it is a hole when non of its edges is part of the boundary */
+
+    void createFinalFaces(DM::System * workingsys, DM::System *sys, DM::Face *orig, DM::View v, DM::SpatialNodeHashMap & snhm);
+
+    std::vector<DM::Node *> extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & snhm);
+
     bool checkIfHoleFilling(DM::Face *orig, DM::Face *face_new);
-
-
-    double getLength() const;
-    void setLength(double value);
-    double getOffset() const;
-    void setOffset(double value);
-    double getAspectRatio() const;
-    void setAspectRatio(double value);
-    DM::View getInputView() const;
-    void setInputView(const DM::View &value);
-    DM::View getResultView() const;
-    void setResultView(const DM::View &value);
-    bool getCombined_edges() const;
-    void setCombined_edges(bool value);
 
 private:
     DM::View cityview;
-    DM::View outputView;
-    DM::View outputView_nodes;
-    DM::View inputView;
+    DM::View blockview;
+    DM::View elementview;
+    DM::View elementview_nodes;
     DM::View bbs;
+
     DM::View sb;
+
+    std::string blockview_name;
+    std::string elementview_name;
 
     double aspectratio;
     double length;
     double offset;
-
-    std::string inputname;
-    std::string outputname;
-
     double tol;
     bool combined_edges;
-    bool debug;
+    bool onSignal;
     bool sizefromSB;
     bool splitShortSide;
     std::string develtype;
@@ -64,6 +50,8 @@ private:
     int currentyear;
     int worklength;
     int height_avg;
+
+    bool debug;
 };
 
 #endif // urbandevelDivision_H
