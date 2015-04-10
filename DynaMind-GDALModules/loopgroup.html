@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Standard Modules (GDAL) &mdash; DynaMind-ToolBox 0.7 documentation</title>
+  <title>Loop Group &mdash; DynaMind-ToolBox 0.7 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="DynaMind-ToolBox 0.7 documentation" href="../index.html"/>
-        <link rel="next" title="Module List" href="overview.html"/>
-        <link rel="prev" title="Sim" href="../DynaMind/dynamind_sim_api.html"/> 
+        <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
+        <link rel="next" title="Release Notes v0.1" href="release_notes.html"/>
+        <link rel="prev" title="Remove Component" href="gdalremovecomponents.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -94,7 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Standard Modules (GDAL)</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="overview.html">Module List</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gdalerase.html">Subtract Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gdalhotstarter.html">Hot Start Simulation</a></li>
@@ -112,7 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gdalremovecomponents.html">Remove Component</a></li>
-<li class="toctree-l2"><a class="reference internal" href="loopgroup.html">Loop Group</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Loop Group</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes.html">Release Notes v0.1</a></li>
 </ul>
 </li>
@@ -141,10 +142,12 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>Standard Modules (GDAL)</li>
+          <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
+      
+    <li>Loop Group</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="../_sources/DynaMind-GDALModules/index.txt" rel="nofollow"> View page source</a>
+          <a href="../_sources/DynaMind-GDALModules/loopgroup.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -152,65 +155,47 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="standard-modules-gdal">
-<h1>Standard Modules (GDAL)<a class="headerlink" href="#standard-modules-gdal" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Module List</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalerase.html">Subtract Features</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalhotstarter.html">Hot Start Simulation</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalpublishresults.html">Export GIS data</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalspatiallinking.html">Spatially Link Data Sets</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="nonspatiallinking.html">Link Data Sets</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalparcelsplit.html">Subdivide Parcels</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalparceling.html">Parcel Faces</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdaloffset.html">Offset Faces</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalcopyelementtoview.html">Copy Features</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdaljoinnearestneighbour.html">Link Nearest Neighbour</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gdalremovecomponents.html">Remove Component</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="loopgroup.html">Loop Group</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes v0.1</a></li>
+  <div class="section" id="loop-group">
+<h1>Loop Group<a class="headerlink" href="#loop-group" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>LoopGroup can be used to group modules
+and groups. Further it allows modules inside the group to be repeatedly executed and iteratively change data. The loop group itself does not manipulate any data.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="21%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Runs</td>
+<td>INT</td>
+<td>number of runs</td>
+</tr>
+<tr class="row-odd"><td>writeStreams</td>
+<td>STRING_LIST</td>
+<td>data streams that are iteratively changed</td>
+</tr>
+<tr class="row-even"><td>readStreams</td>
+<td>STRING_LIST</td>
+<td>data streams that are not iteratively changed</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-stream">
+<h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
+<p>The LoopGroup itself does not manipulate any data but takes care that the right data are passed to the modules.
+The LoopGroup distinguishes between two modes, read and write.</p>
+<ul class="simple">
+<li>read mode: data are not iteratively processed and for the timestep t+1 the original data-stream is used.</li>
+<li>write mode: data processed by the group are used as input for the group at timestep t+1</li>
 </ul>
 </div>
 </div>
@@ -221,10 +206,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="overview.html" class="btn btn-neutral float-right" title="Module List">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="release_notes.html" class="btn btn-neutral float-right" title="Release Notes v0.1">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../DynaMind/dynamind_sim_api.html" class="btn btn-neutral" title="Sim"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdalremovecomponents.html" class="btn btn-neutral" title="Remove Component"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

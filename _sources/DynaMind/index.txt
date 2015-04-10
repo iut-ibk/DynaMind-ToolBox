@@ -1,6 +1,6 @@
-=============
-DynaMind Core
-=============
+========
+DynaMind
+========
 
 .. toctree::
   :maxdepth: 2
@@ -10,9 +10,9 @@ DynaMind Core
   release_notes
 
 
-========================
-DynaMind Core Python API
-========================
+===================
+DynaMind Python API
+===================
 
 
 .. toctree::

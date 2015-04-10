@@ -1,14 +1,18 @@
-======================
+=============
+Release Notes
+=============
+
+
 Release Notes v0.8 dev
-======================
+----------------------
 
 - Increased OGC conformity
 - Proper linking of tables
+- Improved documentation
 
 
-==================
 Release Notes v0.7
-==================
+------------------
 
 - Integration of data base backend enabling big simulation. Note: Modules using the GDAL based data stream are not compatible with older modules
 - Support for spatial and attribute filters for modules [1]_
