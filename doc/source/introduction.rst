@@ -1,6 +1,6 @@
-================
-DynaMind-Toolbox
-================
+========
+Overview
+========
 
 DynaMind is a light weight open source GIS workflow/simulation engine for developers and researchers to make development and sharing of models that work with rich interlinked GIS data sets easier.
 
@@ -10,9 +10,6 @@ Key features of DynaMind are:
 - Standardised and easy to use interfaces building on the GDAL library for C++ and Python to develop GIS models as DynaMind Modules that can be shared with others
 - Support for working with interlinked GIS and non-GIS data.
 
-
-Overview
-========
 
 DynaMind follows a modular design concepts with `DynaMind <https://github.com/iut-ibk/DynaMind>`_ being the heart and sole of the workflow/simulation engine. `DynaMind <https://github.com/iut-ibk/DynaMind>`_  provides the workflow logic and module handling, which can be accessed through following C++ or Python interfaces:
 
