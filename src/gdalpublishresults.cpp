@@ -80,7 +80,7 @@ void GDALPublishResults::run()
 	if(lg) {
 		interal_counter = lg->getGroupCounter();
 	}
-	DM::Logger(DM::Error) << interal_counter;
+	DM::Logger(DM::Debug) << interal_counter;
 
 	if (interal_counter % this->steps != 0 && interal_counter != -1) {
 		return;
