@@ -95,7 +95,7 @@ void urbandevelDevelopment::run()
                 if (prcltype != type[j] || status == "populated" ) continue;
 
                 if (status == "empty") {
-                    prcl[i]->changeAttribute("status", "develop");
+                    prcl[i]->changeAttribute("status", "process");
                     DM::Logger(DM::Warning) << "setting parcel to develop, returning";
 
 
@@ -122,7 +122,7 @@ void urbandevelDevelopment::run()
                 if (cbtype != type[j] || status == "populated" ) continue;
 
                 if (status == "empty") {
-                    cb[i]->changeAttribute("status", "develop");
+                    cb[i]->changeAttribute("status", "process");
                     DM::Logger(DM::Warning) << "setting cityblock to develop";
 
                     return;
@@ -145,7 +145,7 @@ void urbandevelDevelopment::run()
                 if (sbtype != type[j] || status == "populated" ) continue;
 
                 if (status == "empty") {
-                    sb[i]->changeAttribute("status", "develop");
+                    sb[i]->changeAttribute("status", "process");
                     DM::Logger(DM::Warning) << "setting superblock to develop";
 
                     return;

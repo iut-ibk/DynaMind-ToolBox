@@ -63,6 +63,7 @@ void urbandevelDivision::init()
     elementview.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute(blockview_name, elementview_name, DM::WRITE);
 
     elementview_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
@@ -122,12 +123,16 @@ void urbandevelDivision::run()
 
         // if development should happen on signal and the status is not "develop" skip the block
 
-        if ( onSignal && inputstatus != "develop")
+        if ( onSignal )
         {
-            DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
-            continue;
+            if ( inputstatus != "process" )
+            {
+                DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
+                continue;
+            }
         }
 
+        DM::Logger(DM::Warning) << "block past signal check";
         // if no develtype is set and does not match skip the block
 
         if ( !develtype.empty() && develtype != inputtype)
@@ -135,6 +140,8 @@ void urbandevelDivision::run()
             DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
             continue;
         }
+
+        DM::Logger(DM::Warning) << "block past type check";
 
         // if sizefromSB is true modify the length variable according to the height value
 
@@ -167,23 +174,37 @@ void urbandevelDivision::run()
 
         DM::Logger(DM::Debug) << "begin parceling";
 
-        DM::Face * fnew = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
-        workingSys.addComponentToView(fnew, blockview);
-        this->createSubdivision(&workingSys, fnew, 0, inputtype);
-        createFinalFaces(&workingSys, sys, fnew, elementview, snhm);
+        DM::Face * newblock = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
+        workingSys.addComponentToView(newblock, blockview);
+        this->createSubdivision(&workingSys, newblock, 0, inputtype);
+        createFinalFaces(&workingSys, sys, newblock, elementview, snhm);
         DM::Logger(DM::Debug) << "end parceling";
 
         std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
 
-        for (int j = 0; j < elements.size(); j++) {
+        for (int j = 0; j < elements.size(); j++)
+        {
             DM::Face * element = static_cast<DM::Face *> (elements[j]);
+            std::string status = element->getAttribute("status")->getString();
 
-            element->addAttribute("year", currentyear);
-            element->addAttribute("status", "empty");
-            element->addAttribute("type",develtype);
-            element->addAttribute("height_avg", height_avg);
+            //DM::Logger(DM::Warning) << "status = " << status;
+
+            if (status == "new")
+            {
+                double area = DM::CGALGeometry::CalculateArea2D(element);
+                //element->addAttribute("centroid_x", a.getX());
+                //element->addAttribute("centroid_y", a.getY());
+                element->addAttribute("area", area);
+                element->addAttribute("year", currentyear);
+                element->addAttribute("status", "empty");
+                element->addAttribute("type",develtype);
+                element->addAttribute("height_avg", height_avg);
+                element->addAttribute("area", area);
+                block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
+                element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
+            }
+
         }
-
         block->addAttribute("status", "developed");
     }
 }
@@ -193,13 +214,13 @@ string urbandevelDivision::getHelpUrl()
     return "https://github.com/iut-ibk/DynaMind-DynAlp/tree/master/doc/output/html/urbandevelDivision.html";
 }
 
-void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int gen, std::string type)
+void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *block, int gen, std::string type)
 {
     bool split_length = false;
     std::vector<DM::Node> box;
     std::vector<double> size;
 
-    double alpha = DM::CGALGeometry::CalculateMinBoundingBox(TBVectorData::getNodeListFromFace(sys, f), box, size);
+    double alpha = DM::CGALGeometry::CalculateMinBoundingBox(TBVectorData::getNodeListFromFace(sys, block), box, size);
 
 
     DM::Face * bb;
@@ -220,7 +241,7 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
 
     if (2*worklength > split_l) {
         if ( (worklength / aspectratio) * 2 >   split_width) { //width
-            sys->addComponentToView(f, this->elementview);
+            sys->addComponentToView(block, this->elementview);
             return;
         }
     }
@@ -266,6 +287,7 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *f, int g
         DM::Face * bb = sys->addFace(intersection_p, bbs);
 
         bb->addAttribute("type", gen);
+
         std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, f, bb);
 
         if (intersected_faces.size() == 0) {
@@ -349,6 +371,9 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             faceCounter_orig++;
         }
     }
+
+    std::vector<DM::Component *> systems = workingsys->getAllComponentsInView(v);
+
     if (!combined_edges){
         std::vector<DM::Component *> systems = workingsys->getAllComponentsInView(v);
         for (int i = 0; i < systems.size(); i++)
@@ -356,7 +381,6 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             DM::Face * f = dynamic_cast<DM::Face*>(systems[i]);
             DM::Face * f1 = TBVectorData::CopyFaceGeometryToNewSystem(f, sys);
             sys->addComponentToView(f1,v);
-            //not needed? f1->addAttribute("status", "empty");
         }
         return;
     }
@@ -375,6 +399,7 @@ void urbandevelDivision::createFinalFaces(DM::System *workingsys, DM::System * s
             continue;
 
         DM::Face * f = sys->addFace(vp, v);
+        f->addAttribute("status", "new");
 
         //Extract Holes
         Arrangement_2::Hole_const_iterator hi;

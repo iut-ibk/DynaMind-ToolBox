@@ -17,13 +17,10 @@ public:
     void init();
     std::string getHelpUrl();
 
-    void createSubdivision(DM::System * sys,  DM::Face * f, int gen, std::string type);
-
+    void createSubdivision(DM::System * sys,  DM::Face * block, int gen, std::string type);
     void createFinalFaces(DM::System * workingsys, DM::System *sys, DM::Face *orig, DM::View v, DM::SpatialNodeHashMap & snhm);
-
     std::vector<DM::Node *> extractCGALFace(Arrangement_2::Ccb_halfedge_const_circulator hec, DM::SpatialNodeHashMap & snhm);
-
-    bool checkIfHoleFilling(DM::Face *orig, DM::Face *face_new);
+    bool checkIfHoleFilling(DM::Face *block, DM::Face *element);
 
 private:
     DM::View cityview;
