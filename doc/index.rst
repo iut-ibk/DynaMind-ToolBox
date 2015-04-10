@@ -23,6 +23,7 @@ Standard Modules (GDAL)
    gdalgeometricattributes
    gdalcreatebuilding
    gdalremovecomponents
+   loopgroup
    release_notes
 
 

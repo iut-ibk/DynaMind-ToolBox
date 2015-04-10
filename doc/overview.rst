@@ -35,3 +35,8 @@ Geometry Processing
 - :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
 - :doc:`GDALCreateBuilding </DynaMind-GDALModules/gdalcreatebuilding>` Generate simple buildings
 
+Groups
+------
+
+- :doc:`GDALCreateCentroids </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
+
