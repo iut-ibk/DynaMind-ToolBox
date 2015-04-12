@@ -319,6 +319,8 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 
 void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
+	if (df.size() == 0)
+		return;
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
 	int counter = 0;
@@ -345,6 +347,8 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 
 void GDALSystem::synsDeleteFeatures(const View &v, std::vector<long> &df)
 {
+	if (df.size() == 0)
+		return;
 	Logger(Debug) << "Start Delete";
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->StartTransaction();
@@ -361,7 +365,13 @@ void GDALSystem::synsDeleteFeatures(const View &v, std::vector<long> &df)
 
 void GDALSystem::syncAlteredFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
 {
+	if (df.size() == 0)
+		return;
 	Logger(Debug) << "Sync Altered";
+	if (viewLayer.find(v.getName()) == viewLayer.end()) {
+		DM::Logger(DM::Warning) << "Can't sync features layer does not exists";
+		return;
+	}
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Sync all features
 	int counter = 0;
