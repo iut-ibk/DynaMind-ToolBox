@@ -65,7 +65,10 @@ bool GDALAttributeCalculator::initViews()
 
 	QString attr = QString::fromStdString(this->attribute);
 	QStringList lattr = attr.split(".");
-
+	if (lattr.size() != 2) {
+		DM::Logger(DM::Error) << "Wrong attribute definition use VIEWNAME.AttributeName";
+		return false;
+	}
 	this->leading_view = new DM::ViewContainer(lattr[0].toStdString(), DM::COMPONENT, DM::READ);
 	leading_attribute = lattr[1].toStdString();
 	this->leading_view->addAttribute(leading_attribute, convertAttributeType(this->attributeType), DM::WRITE);

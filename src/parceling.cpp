@@ -178,7 +178,7 @@ void GDALParceling::run()
 		splitePoly(p);
 	}
 	parcels.syncAlteredFeatures();
-	DM::Logger(DM::Error) << this->counter_added;
+	DM::Logger(DM::Debug) << this->counter_added;
 }
 
 void GDALParceling::init()
