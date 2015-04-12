@@ -48,16 +48,10 @@ void urbandevelDivision::init()
     if (blockview_name.empty() || elementview_name.empty())
         return;
 
-    cityview = DM::View("CITY", DM::NODE, DM::READ);
     blockview = DM::View(blockview_name, DM::FACE, DM::READ);
     elementview = DM::View(elementview_name, DM::FACE, DM::WRITE);
     elementview_nodes = DM::View(elementview_name+"_NODES", DM::NODE, DM::WRITE);
     bbs = DM::View("BBS", DM::FACE, DM::WRITE);
-
-    cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
-
-    blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
-    blockview.addAttribute("noheight", DM::Attribute::DOUBLE, DM::WRITE);
 
     elementview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
     elementview.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
@@ -68,6 +62,15 @@ void urbandevelDivision::init()
 
     elementview_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);
 
+    if(onSignal)
+    {
+        cityview = DM::View("CITY", DM::NODE, DM::READ);
+        cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
+
+        blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
+        blockview.addAttribute("noheight", DM::Attribute::DOUBLE, DM::WRITE);
+    }
+
     if (sizefromSB) {
         elementview.addAttribute(blockview_name, elementview_name, DM::MODIFY);
         elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
@@ -77,13 +80,13 @@ void urbandevelDivision::init()
 
     std::vector<DM::View> data;
 
-    data.push_back(cityview);
+    if (onSignal)
+        data.push_back(cityview);
     data.push_back(blockview);
     data.push_back(elementview);
     data.push_back(elementview_nodes);
-    if (sizefromSB) {
+    if (sizefromSB)
         data.push_back(sb);
-    }
 
     this->addData("data", data);
 }
@@ -96,17 +99,21 @@ void urbandevelDivision::run()
     DM::System * sys = this->getData("data");
     DM::SpatialNodeHashMap snhm(sys,100,false);
 
-    std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
-
-    if (cities.size() != 1)
+    if (onSignal)
     {
-        DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
-        return;
+
+        std::vector<DM::Component *> cities = sys->getAllComponentsInView(cityview);
+
+        if (cities.size() != 1)
+        {
+            DM::Logger(DM::Warning) << "Only one component expected. There are " << cities.size();
+            return;
+        }
+
+        DM::Component * currentcityview = cities[0];
+
+        currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
     }
-
-    DM::Component * currentcityview = cities[0];
-
-    currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
 
     std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
 
@@ -118,13 +125,16 @@ void urbandevelDivision::run()
         height_avg = 0;
         worklength = length;
 
-        std::string inputtype = block->getAttribute("type")->getString();
-        std::string inputstatus = block->getAttribute("status")->getString();
-
         // if development should happen on signal and the status is not "develop" skip the block
+
+        std::string inputtype = "notonsignal";
+        std::string inputstatus = "notonsignal";
 
         if ( onSignal )
         {
+            inputtype = block->getAttribute("type")->getString();
+            inputstatus = block->getAttribute("status")->getString();
+
             if ( inputstatus != "process" )
             {
                 DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
@@ -172,22 +182,59 @@ void urbandevelDivision::run()
             DM::Logger(DM::Warning) << "Adjusting length " << height_avg << " from " << length << " to " << worklength;
         }
 
-        DM::Logger(DM::Debug) << "begin parceling";
+        DM::Logger(DM::Warning) << "begin parceling";
 
         DM::Face * newblock = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
         workingSys.addComponentToView(newblock, blockview);
         this->createSubdivision(&workingSys, newblock, 0, inputtype);
         createFinalFaces(&workingSys, sys, newblock, elementview, snhm);
-        DM::Logger(DM::Debug) << "end parceling";
+        //sys->removeComponentFromView(newblock, elementview);
+        //sys->removeChild(newblock);
 
+        DM::Logger(DM::Debug) << "end parceling";
         std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+
+        std::vector<int> duplicates;
 
         for (int j = 0; j < elements.size(); j++)
         {
             DM::Face * element = static_cast<DM::Face *> (elements[j]);
             std::string status = element->getAttribute("status")->getString();
 
+            DM::Node centroid = DM::CGALGeometry::CalculateCentroid2D(element);
+
+            std::vector<DM::Component *> compelements = sys->getAllComponentsInView(elementview);
+
+            for (int m = 0; m < compelements.size(); m++)
+            {
+                if (j == m)
+                    continue;
+                DM::Face * compelement = static_cast<DM::Face *> (compelements[m]);
+                DM::Node compcentroid = DM::CGALGeometry::CalculateCentroid2D(compelement);
+                if ( centroid.getX() == compcentroid.getX() && centroid.getY() == compcentroid.getY())
+                {
+                    DM::Logger(DM::Warning) << "duplicate identified: " << m;
+                    duplicates.push_back(m);
+                }
+
+            }
+        }
+
+        for (int j = 0; j < duplicates.size(); j++)
+        {
+            int m = duplicates[j];
+            sys->removeComponentFromView(elements[m],elementview);
+        }
+
+        elements = sys->getAllComponentsInView(elementview);
+
+        for (int j = 0; j < elements.size(); j++)
+        {
             //DM::Logger(DM::Warning) << "status = " << status;
+
+            DM::Face * element = static_cast<DM::Face *> (elements[j]);
+            std::string status = element->getAttribute("status")->getString();
+
 
             if (status == "new")
             {
@@ -199,7 +246,7 @@ void urbandevelDivision::run()
                 element->addAttribute("status", "empty");
                 element->addAttribute("type",develtype);
                 element->addAttribute("height_avg", height_avg);
-                element->addAttribute("area", area);
+
                 block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
                 element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
             }
@@ -288,7 +335,7 @@ void urbandevelDivision::createSubdivision(DM::System * sys,  DM::Face *block, i
 
         bb->addAttribute("type", gen);
 
-        std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, f, bb);
+        std::vector<DM::Face *> intersected_faces = DM::CGALGeometry::IntersectFace(sys, block, bb);
 
         if (intersected_faces.size() == 0) {
             DM::Logger(DM::Debug) << "Advanced parceling createSubdivision intersction failed";
