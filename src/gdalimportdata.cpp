@@ -279,6 +279,8 @@ void GDALImportData::run()
 		OGRFeature::DestroyFeature( poFeature );
 	}
 	vc->syncAlteredFeatures();
+	if (filterView)
+		filterView->syncReadFeatures();
 }
 
 DM::ViewContainer *GDALImportData::initShapefile()
