@@ -338,7 +338,6 @@ void ViewContainer::registerFeature(OGRFeatureShadow *f, bool isNew)
 	OGRFeature * feature = (OGRFeature*) f;
 
 	if (isNew) {
-		this->_currentSys->registerFeature(feature, *this);
 		this->new_Features_write_not_owned.push_back(feature);
 	} else {
 		this->dirtyFeatures_write_not_owned.push_back(feature);

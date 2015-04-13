@@ -174,11 +174,6 @@ public:
 	 */
 	std::string getCurrentStateID();
 
-	/**
-	 * @brief Registers OGRFeature created outside. Used for Python wrapping
-	 */
-	void registerFeature(OGRFeature *f, const DM::View & v);
-
 	std::string getDBID();
 
 private:
@@ -186,9 +181,6 @@ private:
 	OGRSFDriver							*poDrive;
 	std::map<std::string, OGRLayer *>	viewLayer;
 	std::vector<std::string>			state_ids;
-
-	std::vector<long>					uniqueIdsTonfid;
-	long								latestUniqueId;
 
 	OGRLayer *createLayer(const View &v);
 	GDALSystem *predecessor;

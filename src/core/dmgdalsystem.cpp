@@ -74,8 +74,6 @@ GDALSystem::GDALSystem(int EPSG)
 	//Create State ID
 	this->state_ids.push_back(QUuid::createUuid().toString().toStdString());
 
-	//Init uuid
-	latestUniqueId = 0;
 	predecessor = NULL;
 	this->EPSG = EPSG;
 }
@@ -111,8 +109,6 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
 	state_ids = s.state_ids;
-	uniqueIdsTonfid = s.uniqueIdsTonfid;
-	latestUniqueId = s.latestUniqueId;
 	sucessors = std::vector<DM::GDALSystem*>();
 	DBID = QUuid::createUuid().toString();
 	EPSG = s.EPSG;
@@ -149,12 +145,6 @@ void GDALSystem::updateView(const View &v)
 			DM::Logger(DM::Error) << "couldn't create layer " << v.getName();
 			return;
 		}
-
-		//OGRFieldDefn oField_id( "dynamind_id", OFTInteger );
-		//lyr->CreateField(&oField_id);
-
-		//OGRFieldDefn oField_state_id( "dynamind_state_id", OFTString );
-		//lyr->CreateField(&oField_state_id);
 		viewLayer[v.getName()] = lyr;
 	}
 
@@ -277,11 +267,6 @@ string GDALSystem::getCurrentStateID()
 	return this->state_ids[state_ids.size()-1];
 }
 
-void GDALSystem::registerFeature(OGRFeature * f, const View &v)
-{
-	//f->SetField("dynamind_id", (int) latestUniqueId++);
-	//f->SetField("dynamind_state_id", this->state_ids[state_ids.size()-1].c_str());
-}
 
 string GDALSystem::getDBID()
 {
@@ -293,7 +278,6 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
 	oSourceSRS->importFromEPSG(this->EPSG);
-//	oSourceSRS = NULL;
 
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
@@ -337,7 +321,6 @@ void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> &
 		if (!f)
 			continue;
 		lyr->CreateFeature(f);
-		uniqueIdsTonfid.push_back(f->GetFID());
 		if (destroy)
 			OGRFeature::DestroyFeature(f);
 	}
