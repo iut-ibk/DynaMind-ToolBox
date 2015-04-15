@@ -7,6 +7,7 @@ DynaMind
 
   module
   simulations_python
+  interlinked_datasets
   release_notes
 
 
