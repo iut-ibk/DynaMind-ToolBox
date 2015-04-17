@@ -868,7 +868,7 @@ class Sim:
 					attribute_filter = filter["attribute"]
 				if "spatial" in filter:
 					spatial_filter = filter["spatial"]
-					filters_list.append(DM.Filter(f, DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter))))
+				filters_list.append(DM.Filter(f, DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter))))
 			m.setFilter(filters_list)
 			m.init()
 
