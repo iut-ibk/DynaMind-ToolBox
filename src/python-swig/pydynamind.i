@@ -837,7 +837,7 @@ class Sim:
 			:type parent_group: :class:`~pydynamind.Module`
 			:param parent_group: parent group if the newly created module. If not set the module is added to the root group.
 			:type filters: dict
-			:param filters: set module filter ``{ 'view_name' : {'attribute': 'attribute filter' :  spatial: 'view name'} }``
+			:param filters: set module filter ``{ 'view_name' : {'attribute': 'attribute filter' ,  'spatial': 'view name'} }``
 			:type module_name: str
 			:param module_name: alternative module name. This is useful to later find the module in the simulation
 			:return: created module. If the creation fails, it returns None.
