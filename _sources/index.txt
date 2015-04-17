@@ -11,7 +11,7 @@ Welcome to DynaMind's User Guide
 
   introduction
   quick-intro-gui
-  known_problems
+  tipps_and_tricks
 
 Packages
 ========

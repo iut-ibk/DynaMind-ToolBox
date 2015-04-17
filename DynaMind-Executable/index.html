@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DynaMind Commandline &mdash; DynaMind-ToolBox 0.7 documentation</title>
+  <title>DynaMind Commandline &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -30,8 +30,8 @@
   
 
   
-    <link rel="top" title="DynaMind-ToolBox 0.7 documentation" href="../index.html"/>
-        <link rel="prev" title="Release Notes v0.1" href="../DynaMind-GDALModules/release_notes.html"/> 
+    <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
+        <link rel="prev" title="Loop Group" href="../DynaMind-GDALModules/loopgroup.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -74,8 +74,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#solution">Solution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../known_problems.html">Known Issues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../known_problems.html#gdal-python-modules">GDAL Python Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tipps_and_tricks.html">Tips and Tricks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tipps_and_tricks.html#importing-csv">Importing CSV</a></li>
 </ul>
 </li>
 </ul>
@@ -95,25 +95,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-GDALModules/index.html">Standard Modules (GDAL)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/overview.html">Module List</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalerase.html">Subtract Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalhotstarter.html">Hot Start Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalimportdata.html">Import GIS Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalpublishresults.html">Export GIS data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalspatiallinking.html">Spatially Link Data Sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/nonspatiallinking.html">Link Data Sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalparcelsplit.html">Subdivide Parcels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalcalculatecentroids.html">Create Centroids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalparceling.html">Parcel Faces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdaloffset.html">Offset Faces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalcopyelementtoview.html">Copy Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdaljoinnearestneighbour.html">Link Nearest Neighbour</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalattributecalculator.html">Calculate Attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalgeometricattributes.html">Calculate Area</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalcreatebuilding.html">Generate Simple Buildings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/gdalremovecomponents.html">Remove Component</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/loopgroup.html">Loop Group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/release_notes.html">Release Notes v0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#data-import-and-export">Data Import and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#linking">Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#data-handling">Data Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#geometry-processing">Geometry Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#groups">Groups</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">DynaMind Commandline</a></li>
@@ -187,7 +174,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../DynaMind-GDALModules/release_notes.html" class="btn btn-neutral" title="Release Notes v0.1"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../DynaMind-GDALModules/loopgroup.html" class="btn btn-neutral" title="Loop Group"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -217,7 +204,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.7',
+            VERSION:'0.8 dev',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Offset Faces &mdash; DynaMind-ToolBox 0.7 documentation</title>
+  <title>Offset Faces &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -30,10 +30,10 @@
   
 
   
-    <link rel="top" title="DynaMind-ToolBox 0.7 documentation" href="../index.html"/>
+    <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Copy Features" href="gdalcopyelementtoview.html"/>
-        <link rel="prev" title="Parcel Faces" href="gdalparceling.html"/> 
+        <link rel="next" title="Parcel Faces" href="gdalparceling.html"/>
+        <link rel="prev" title="Subtract Features" href="gdalerase.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -76,8 +76,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../quick-intro-gui.html#solution">Solution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../known_problems.html">Known Issues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../known_problems.html#gdal-python-modules">GDAL Python Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tipps_and_tricks.html">Tips and Tricks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tipps_and_tricks.html#importing-csv">Importing CSV</a></li>
 </ul>
 </li>
 </ul>
@@ -97,25 +97,12 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="overview.html">Module List</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalerase.html">Subtract Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalhotstarter.html">Hot Start Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalpublishresults.html">Export GIS data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalspatiallinking.html">Spatially Link Data Sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nonspatiallinking.html">Link Data Sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalparcelsplit.html">Subdivide Parcels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalparceling.html">Parcel Faces</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Offset Faces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalcopyelementtoview.html">Copy Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdaljoinnearestneighbour.html">Link Nearest Neighbour</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gdalremovecomponents.html">Remove Component</a></li>
-<li class="toctree-l2"><a class="reference internal" href="loopgroup.html">Loop Group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="release_notes.html">Release Notes v0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-import-and-export">Data Import and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#linking">Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-handling">Data Handling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#groups">Groups</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-Executable/index.html">DynaMind Commandline</a></li>
@@ -237,10 +224,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalcopyelementtoview.html" class="btn btn-neutral float-right" title="Copy Features">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalparceling.html" class="btn btn-neutral float-right" title="Parcel Faces">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalparceling.html" class="btn btn-neutral" title="Parcel Faces"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdalerase.html" class="btn btn-neutral" title="Subtract Features"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -270,7 +257,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.7',
+            VERSION:'0.8 dev',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
