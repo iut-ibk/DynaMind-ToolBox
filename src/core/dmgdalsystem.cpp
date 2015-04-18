@@ -36,6 +36,8 @@
 #include <sstream>
 
 #include <QUuid>
+#include <QFile>
+
 #include <dmviewcontainer.h>
 
 namespace DM {
@@ -63,7 +65,7 @@ GDALSystem::GDALSystem(int EPSG)
 
 	DBID = QUuid::createUuid().toString();
 
-	QString dbname =  QDir::tempPath() + "/" + DBID + ".db";
+	QString dbname =  QString::fromStdString(this->getDBID());
 
 	poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
 
@@ -86,7 +88,7 @@ void GDALSystem::setGDALDatabase(const string & database)
 
 	//Copy DB
 	QString origin = QString::fromStdString(database);
-	QString dest = QDir::tempPath() + "/" + DBID + ".db";
+	QString dest = QString::fromStdString(this->getDBID());
 	QFile::copy(origin, dest);
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
@@ -102,9 +104,23 @@ void GDALSystem::setGDALDatabase(const string & database)
 	}
 }
 
+std::string GDALSystem::getWorkingDirectory() const
+{
+
+	//Check if folder exits
+	QDir working_dir;
+	QString path = QDir::tempPath() + "/dynamind/";
+	if (!working_dir.exists(path)){
+		if (!working_dir.mkpath(path)) {
+			DM::Logger(DM::Error) << "failed to create folder";
+		}
+	}
+	return path.toStdString();
+}
+
 GDALSystem::GDALSystem(const GDALSystem &s)
 {
-	DM::Logger(DM::Warning) << "Split System";
+	DM::Logger(DM::Warning) << "Split System " << s.getDBID();
 	//Copy all that is needed
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
@@ -114,8 +130,8 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	EPSG = s.EPSG;
 
 	//Copy DB
-	QString origin =  QDir::tempPath() + "/" + s.DBID + ".db";
-	QString dest = QDir::tempPath() + "/" + DBID + ".db";
+	QString origin =  QString::fromStdString(s.getDBID());
+	QString dest = QString::fromStdString(this->getDBID());
 	QFile::copy(origin, dest);
 
 	poDS = poDrive->Open(dest.toStdString().c_str(), true);
@@ -268,9 +284,26 @@ string GDALSystem::getCurrentStateID()
 }
 
 
-string GDALSystem::getDBID()
+string GDALSystem::getDBID() const
 {
-	return this->DBID.toStdString();
+	return this->getWorkingDirectory() + this->DBID.toStdString() + ".db";
+}
+
+GDALSystem::~GDALSystem()
+{
+	if (poDS) {
+		OGRDataSource::DestroyDataSource(poDS);
+		poDS = NULL;
+
+		//Delete Database
+		QString dbname =  QString::fromStdString(this->getDBID());
+		QFile::remove(dbname);
+
+		foreach (DM::GDALSystem * suc, this->sucessors) {
+			delete suc;
+		}
+	}
+
 }
 
 OGRLayer *GDALSystem::createLayer(const View &v)

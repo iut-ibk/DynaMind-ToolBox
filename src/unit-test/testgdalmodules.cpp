@@ -9,19 +9,63 @@
 #include <dmsystem.h>
 #include <dmgdalhelper.h>
 
+#include <qdir>
 #define FEATURES "1000"
 #define FEATURES_2 "2000"
 #define DEFAULTEPSG 31254
 
-#define SPEEDTESTDM
-#define SPEEDTEST
-#define CONNECTIONTEST
+//#define SPEEDTESTDM
+//#define SPEEDTEST
+//#define CONNECTIONTEST
 #define BRANCHINGTEST
-#define EXPANDING
-#define BRANCHMODIFY
-#define GDALVCAPITEST
-#define WRITEATTRIBUTES
-#define TESTLINKS
+//#define EXPANDING
+//#define BRANCHMODIFY
+//#define GDALVCAPITEST
+//#define WRITEATTRIBUTES
+//#define TESTLINKS
+
+bool clean_workingdir(QString dirname) {
+	bool result = true;
+	QDir dir(dirname);
+
+	if (dir.exists(dirname)) {
+		Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+			if (info.isDir()) {
+				result = clean_workingdir(info.absoluteFilePath());
+			}
+			else {
+				result = QFile::remove(info.absoluteFilePath());
+			}
+
+			if (!result) {
+				return result;
+			}
+		}
+		result = dir.rmdir(dirname);
+	}
+	return result;
+}
+
+
+DM::Simulation * startup(){
+	clean_workingdir(QDir::tempPath()+"/dynamind");
+	return new DM::Simulation();
+}
+
+bool cleanup(DM::Simulation * sim) {
+	delete sim;
+	QString dirname = QDir::tempPath()+"/dynamind";
+	QDir dir(dirname);
+	if (dir.exists(dirname)) {
+		Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+			if (!info.isDir()) {
+				return false; // directory not empty;
+			}
+		}
+	}
+
+	return true;
+}
 
 #ifdef GDALVCAPITEST
 TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
@@ -29,21 +73,21 @@ TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	DM::Module * m1 = sim.addModule("GDALAddComponentViewContainer");
+	sim->registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim->addModule("GDALAddComponentViewContainer");
 	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m2 = sim.addModule("GDALAddComponentViewContainer");
+	DM::Module * m2 = sim->addModule("GDALAddComponentViewContainer");
 	m2->setParameterValue("elements", FEATURES);
 	m2->setParameterValue("append", "1");
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
-	sim.run();
+	sim->addLink(m1, "city", m2, "city");
+	sim->run();
 
 	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
 	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
@@ -52,6 +96,9 @@ TEST_F(TestGDALModules,GDAL_ADVANCE_API_TEST) {
 	QString s_number = QString(FEATURES);
 	int number = 2* s_number.toInt();
 	ASSERT_EQ(components.getFeatureCount(), number);
+
+	ASSERT_TRUE(cleanup(sim));
+
 }
 #endif
 
@@ -62,14 +109,16 @@ TEST_F(TestGDALModules,TestInsertSpeed_DM) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	sim.addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
-	sim.run();
+	sim->registerModulesFromDirectory(dir);
+	sim->addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
+	sim->run();
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -80,14 +129,15 @@ TEST_F(TestGDALModules,TestInsertSpeed) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	sim.addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
-	sim.run();
+	sim->registerModulesFromDirectory(dir);
+	sim->addModule("GDALAddComponent")->setParameterValue("elements", FEATURES);
+	sim->run();
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -98,21 +148,21 @@ TEST_F(TestGDALModules,ConnectionTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	sim->registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
 	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m2 = sim.addModule("GDALAddComponent");
+	DM::Module * m2 = sim->addModule("GDALAddComponent");
 	m2->setParameterValue("elements", FEATURES);
 	m2->setParameterValue("append", "1");
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
-	sim.run();
+	sim->addLink(m1, "city", m2, "city");
+	sim->run();
 
 	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
 	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
@@ -121,6 +171,8 @@ TEST_F(TestGDALModules,ConnectionTest) {
 	QString s_number = QString(FEATURES);
 	int number = 2* s_number.toInt();
 	ASSERT_EQ(components.getFeatureCount(), number);
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -128,32 +180,32 @@ TEST_F(TestGDALModules,ConnectionTest) {
 TEST_F(TestGDALModules,BranchingTest) {
 
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Warning);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
+	sim->registerModulesFromDirectory(dir);
 
-	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
 	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m2 = sim.addModule("GDALAddComponent");
+	DM::Module * m2 = sim->addModule("GDALAddComponent");
 	m2->setParameterValue("elements", FEATURES);
 	m2->setParameterValue("append", "1");
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
+	sim->addLink(m1, "city", m2, "city");
 
-	DM::Module * m3 = sim.addModule("GDALAddComponent");
+	DM::Module * m3 = sim->addModule("GDALAddComponent");
 	m3->setParameterValue("elements", FEATURES_2);
 	m3->setParameterValue("append", "1");
 	m3->init();
-	sim.addLink(m1, "city", m3, "city");
+	sim->addLink(m1, "city", m3, "city");
 
-	sim.run();
+	sim->run();
 
 	//Check M2
 	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
@@ -171,6 +223,8 @@ TEST_F(TestGDALModules,BranchingTest) {
 	s_number = QString(FEATURES);
 	number = 3* s_number.toInt();
 	ASSERT_EQ(components.getFeatureCount(), number);
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -180,22 +234,24 @@ TEST_F(TestGDALModules,UpdateTest) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
+	sim->registerModulesFromDirectory(dir);
 
-	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
 	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m2 = sim.addModule("UpdateAllComponents");
+	DM::Module * m2 = sim->addModule("UpdateAllComponents");
 	m2->setParameterValue("elements", FEATURES);
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
+	sim->addLink(m1, "city", m2, "city");
 
-	sim.run();
+	sim->run();
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -205,24 +261,24 @@ TEST_F(TestGDALModules,BranchModify) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
+	sim->registerModulesFromDirectory(dir);
 
-	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
 	m1->setParameterValue("elements", FEATURES);
 	m1->setSuccessorMode(true);
 
-	DM::Module * m2 = sim.addModule("UpdateAllComponents");
+	DM::Module * m2 = sim->addModule("UpdateAllComponents");
 
 	m2->setParameterValue("elements", FEATURES);
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
+	sim->addLink(m1, "city", m2, "city");
 
-	sim.run();
+	sim->run();
 
 	//Check M2
 	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
@@ -232,6 +288,8 @@ TEST_F(TestGDALModules,BranchModify) {
 	QString s_number = QString(FEATURES);
 	int number = s_number.toInt();
 	ASSERT_EQ(components.getFeatureCount(), number);
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 
@@ -242,17 +300,17 @@ TEST_F(TestGDALModules,WriteAttributes) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim = startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	DM::Module * m1 = sim.addModule("GDALAddComponent");
+	sim->registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
 	m1->setParameterValue("elements", FEATURES);
 	m1->setParameterValue("add_attributes", "1");
 
-	sim.run();
+	sim->run();
 
 	DM::GDALSystem * sys = (DM::GDALSystem*) m1->getOutPortData("city");
 	ASSERT_TRUE(sys);
@@ -273,7 +331,8 @@ TEST_F(TestGDALModules,WriteAttributes) {
 		ASSERT_FLOAT_EQ( ress_vec[2], 30.5 );
 		return;
 	}
-	ASSERT_TRUE(false);
+
+	ASSERT_TRUE(cleanup(sim));
 
 }
 #endif
@@ -285,26 +344,28 @@ TEST_F(TestGDALModules,TestGDALLinks) {
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
-	DM::Simulation sim;
+	DM::Simulation * sim =startup();
 	DM::SimulationConfig conf;
 	conf.setCoordinateSystem(DEFAULTEPSG);
-	sim.setSimulationConfig(conf);
+	sim->setSimulationConfig(conf);
 	QDir dir("./");
-	sim.registerModulesFromDirectory(dir);
-	DM::Module * m1 = sim.addModule("GDALAddComponentViewContainer");
+	sim->registerModulesFromDirectory(dir);
+	DM::Module * m1 = sim->addModule("GDALAddComponentViewContainer");
 	m1->setParameterValue("elements", FEATURES);
 
-	DM::Module * m2 = sim.addModule("GDALLinkedComponent");
+	DM::Module * m2 = sim->addModule("GDALLinkedComponent");
 	m2->setParameterValue("elements", FEATURES);
 	m2->setParameterValue("append", "1");
 	m2->init();
-	sim.addLink(m1, "city", m2, "city");
+	sim->addLink(m1, "city", m2, "city");
 
-	DM::Module * m3 = sim.addModule("GDALValidateLinks");
+	DM::Module * m3 = sim->addModule("GDALValidateLinks");
 	m3->init();
-	sim.addLink(m2, "city", m3, "city");
-	sim.run();
-	ASSERT_EQ(sim.getSimulationStatus(), DM::SIM_OK);
+	sim->addLink(m2, "city", m3, "city");
+	sim->run();
+	ASSERT_EQ(sim->getSimulationStatus(), DM::SIM_OK);
+
+	ASSERT_TRUE(cleanup(sim));
 }
 #endif
 

@@ -535,8 +535,8 @@ class DM::ViewContainer {
 			db_id = self.getDBID()
 			self.__features = []
 			if db_id not in self.__ds.keys():
-				#print "Register Datasource " + str(tempfile.gettempdir()+"/"+db_id+".db")
-				self.__ds[db_id] = ogr.Open(tempfile.gettempdir()+"/"+db_id+".db")
+				#print "Register Datasource " + str(db_id)
+				self.__ds[db_id] = ogr.Open(db_id)
 				self.__connection_counter[db_id] = 0
 			else:
 				print "Reuse connection"

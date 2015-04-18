@@ -76,6 +76,11 @@ public:
 	void setGDALDatabase(const string &database);
 
 	/**
+	 * @brief Returns working directory of the Database
+	 */
+	std::string getWorkingDirectory() const;
+
+	/**
 	 * @brief Creates a new GDALSystem.
 	 *
 	 * To create a new GDAL the DB the source DB is copies and a new uuid is assigend to the new DB.
@@ -174,7 +179,12 @@ public:
 	 */
 	std::string getCurrentStateID();
 
-	std::string getDBID();
+	/**
+	 * @brief Return database including location
+	 */
+	std::string getDBID() const;
+
+	virtual ~GDALSystem();
 
 private:
 	OGRDataSource						*poDS;

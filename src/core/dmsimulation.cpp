@@ -167,6 +167,7 @@ void Simulation::removeModule(Module* m)
 
 void Simulation::clear()
 {
+	this->reset();
 	foreach(Module* m, modules)
 		removeModule(m);
 }
@@ -1048,8 +1049,9 @@ void Simulation::reset()
 					systems.insert(sys);
 	}
 	// delete them
-	foreach(ISystem* sys, systems)
+	foreach(ISystem* sys, systems) {
 		delete sys;
+	}
 
 	// reset modules
 	foreach(Module* m, this->modules)
