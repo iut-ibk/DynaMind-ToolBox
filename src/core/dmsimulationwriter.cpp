@@ -40,6 +40,10 @@ void writeSettings(QTextStream &out, const SimulationConfig & config) {
 	out  << "\t<Settings>\n";
 	out << "\t"<< "\t<EPSG value=\""
 				<< config.getCoorindateSystem() << "\"/>\n";
+	out << "\t"<< "\t<WorkingDir value=\""
+				<< QString::fromStdString(config.getWorkingDir()) << "\"/>\n";
+	out << "\t"<< "\t<KeepSystems value=\""
+				<< config.getKeepSystems() << "\"/>\n";
 	out  << "\t</Settings>\n";
 }
 

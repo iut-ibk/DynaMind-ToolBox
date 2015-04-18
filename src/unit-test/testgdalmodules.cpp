@@ -14,15 +14,17 @@
 #define FEATURES_2 "2000"
 #define DEFAULTEPSG 31254
 
-//#define SPEEDTESTDM
-//#define SPEEDTEST
-//#define CONNECTIONTEST
+#define SPEEDTESTDM
+#define SPEEDTEST
+#define CONNECTIONTEST
 #define BRANCHINGTEST
-//#define EXPANDING
-//#define BRANCHMODIFY
-//#define GDALVCAPITEST
-//#define WRITEATTRIBUTES
-//#define TESTLINKS
+#define EXPANDING
+#define BRANCHMODIFY
+#define GDALVCAPITEST
+#define WRITEATTRIBUTES
+#define TESTLINKS
+#define TESTSYSTEMSETTINGS
+#define TESTSAVELOAD
 
 bool clean_workingdir(QString dirname) {
 	bool result = true;
@@ -47,16 +49,21 @@ bool clean_workingdir(QString dirname) {
 }
 
 
-DM::Simulation * startup(){
-	clean_workingdir(QDir::tempPath()+"/dynamind");
+DM::Simulation * startup(QString working_dir = ""){
+	if (working_dir.isEmpty()) {
+		working_dir = QDir::tempPath()+"/dynamind";
+	}
+	clean_workingdir(working_dir);
 	return new DM::Simulation();
 }
 
-bool cleanup(DM::Simulation * sim) {
+bool cleanup(DM::Simulation * sim, QString working_dir = "") {
 	delete sim;
-	QString dirname = QDir::tempPath()+"/dynamind";
-	QDir dir(dirname);
-	if (dir.exists(dirname)) {
+	if (working_dir.isEmpty()) {
+		working_dir = QDir::tempPath()+"/dynamind";
+	}
+	QDir dir(working_dir);
+	if (dir.exists(working_dir)) {
 		Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
 			if (!info.isDir()) {
 				return false; // directory not empty;
@@ -369,6 +376,113 @@ TEST_F(TestGDALModules,TestGDALLinks) {
 }
 #endif
 
+#ifdef TESTSYSTEMSETTINGS
+TEST_F(TestGDALModules,TestSystemSettings) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create System";
+
+
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	conf.setWorkingDir(QString(QDir::tempPath()+"/dynamind_test").toStdString());
+	conf.setKeepSystems(true);
+	DM::Simulation * sim = startup(QString::fromStdString(conf.getWorkingDir()));
+	sim->setSimulationConfig(conf);
+	QDir dir("./");
+	sim->registerModulesFromDirectory(dir);
+
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
+	m1->setParameterValue("elements", FEATURES);
+	m1->setSuccessorMode(true);
+
+	DM::Module * m2 = sim->addModule("UpdateAllComponents");
+
+	m2->setParameterValue("elements", FEATURES);
+	m2->init();
+	sim->addLink(m1, "city", m2, "city");
+
+	sim->run();
+
+	//Check M2
+	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
+	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+
+	QString s_number = QString(FEATURES);
+	int number = s_number.toInt();
+	ASSERT_EQ(components.getFeatureCount(), number);
+
+	ASSERT_FALSE(cleanup(sim, QString::fromStdString(conf.getWorkingDir())));
+}
+#endif
+
+#ifdef TESTSAVELOAD
+TEST_F(TestGDALModules,TestSaveLoad) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create System";
+
+
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	conf.setWorkingDir(QString(QDir::tempPath()+"/dynamind_test").toStdString());
+	conf.setKeepSystems(true);
+	DM::Simulation * sim = startup(QString::fromStdString(conf.getWorkingDir()));
+	sim->setSimulationConfig(conf);
+	QDir dir("./");
+	sim->registerModulesFromDirectory(dir);
+
+	DM::Module * m1 = sim->addModule("GDALAddComponent");
+	m1->setParameterValue("elements", FEATURES);
+	m1->setSuccessorMode(true);
+
+	DM::Module * m2 = sim->addModule("UpdateAllComponents");
+	std::string me2_name = m2->getName();
+
+	m2->setParameterValue("elements", FEATURES);
+	m2->init();
+	sim->addLink(m1, "city", m2, "city");
+
+	sim->run();
+
+	//Check M2
+	DM::GDALSystem * sys = (DM::GDALSystem*) m2->getOutPortData("city");
+	DM::ViewContainer components = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+
+	QString s_number = QString(FEATURES);
+	int number = s_number.toInt();
+	ASSERT_EQ(components.getFeatureCount(), number);
+
+	std::string simulation_file = QString(QDir::tempPath()+"/testfile.dyn").toStdString();
+	sim->writeSimulation(simulation_file);
+	ASSERT_FALSE(cleanup(sim, QString::fromStdString(conf.getWorkingDir())));
+
+	sim = startup(QString::fromStdString(conf.getWorkingDir()));
+	sim->registerModulesFromDirectory(dir);
+	sim->loadSimulation(simulation_file);
+
+	sim->run();
+	m2 = 0;
+	foreach(DM::Module * m, sim->getModules()) {
+		if (m->getName() == me2_name) {
+			m2 = m;
+		}
+	}
+
+	//Check M2
+	sys = (DM::GDALSystem*) m2->getOutPortData("city");
+	DM::ViewContainer components1 = DM::ViewContainer("component", DM::NODE, DM::READ);
+	components1.setCurrentGDALSystem(sys);
+
+	s_number = QString(FEATURES);
+	number = s_number.toInt();
+	ASSERT_EQ(components1.getFeatureCount(), number);
+
+	ASSERT_FALSE(cleanup(sim, QString::fromStdString(conf.getWorkingDir())));
+}
+#endif
 
 
 

@@ -42,7 +42,10 @@
 
 namespace DM {
 
-GDALSystem::GDALSystem(int EPSG)
+GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) :
+	EPSG(EPSG),
+	workingDir(workingDir),
+	keepDatabaseFile(keepDatabaseFile)
 {
 	//Init SpatialiteServer
 	OGRRegisterAll();
@@ -51,8 +54,9 @@ GDALSystem::GDALSystem(int EPSG)
 		DM::Logger(DM::Warning) << "Please set EPSG code for simulation";
 		EPSG = 0;
 	}
-
-
+	if (workingDir == "") {
+		 this->workingDir = QString(QDir::tempPath() + "/dynamind").toStdString();
+	}
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
@@ -109,7 +113,7 @@ std::string GDALSystem::getWorkingDirectory() const
 
 	//Check if folder exits
 	QDir working_dir;
-	QString path = QDir::tempPath() + "/dynamind/";
+	QString path = QString::fromStdString(this->workingDir) + "/";
 	if (!working_dir.exists(path)){
 		if (!working_dir.mkpath(path)) {
 			DM::Logger(DM::Error) << "failed to create folder";
@@ -125,6 +129,8 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	poDrive = s.poDrive;
 	viewLayer = s.viewLayer;
 	state_ids = s.state_ids;
+	keepDatabaseFile = s.keepDatabaseFile;
+	workingDir = s.workingDir;
 	sucessors = std::vector<DM::GDALSystem*>();
 	DBID = QUuid::createUuid().toString();
 	EPSG = s.EPSG;
@@ -297,7 +303,8 @@ GDALSystem::~GDALSystem()
 
 		//Delete Database
 		QString dbname =  QString::fromStdString(this->getDBID());
-		QFile::remove(dbname);
+		if (!this->keepDatabaseFile)
+			QFile::remove(dbname);
 
 		foreach (DM::GDALSystem * suc, this->sucessors) {
 			delete suc;

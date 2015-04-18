@@ -67,7 +67,7 @@ public:
 	 * @brief Constructor for GDALSystem
 	 * @param EPSG
 	 */
-	GDALSystem(int EPSG = 0);
+	GDALSystem(int EPSG = 0,std::string workingDir = "", bool keepDatabaseFile = false);
 
 	/**
 	 * @brief Init GDAL System with Database
@@ -196,6 +196,8 @@ private:
 	GDALSystem *predecessor;
 	std::vector<DM::GDALSystem*> sucessors;
 	QString DBID;
+	std::string workingDir;
+	bool keepDatabaseFile;
 	int EPSG;
 };
 }

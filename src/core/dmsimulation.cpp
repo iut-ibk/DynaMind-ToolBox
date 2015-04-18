@@ -1389,3 +1389,23 @@ void Simulation::removeObserver(SimulationObserver *obs)
 		observers.erase(it);
 }
 
+
+
+std::string SimulationConfig::getWorkingDir() const
+{
+	return workingDir;
+}
+
+void SimulationConfig::setWorkingDir(const std::string &value)
+{
+	workingDir = value;
+}
+bool SimulationConfig::getKeepSystems() const
+{
+	return keepSystems;
+}
+
+void SimulationConfig::setKeepSystems(bool value)
+{
+	keepSystems = value;
+}

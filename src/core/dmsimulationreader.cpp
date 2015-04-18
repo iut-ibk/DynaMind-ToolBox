@@ -74,6 +74,14 @@ bool SimulationReader::startElement(const QString & namespaceURI,
 		this->settingsConfig.setCoordinateSystem(atts.value("value").toInt());
 		return true;
 	}
+	if (qName == "WorkingDir") {
+		this->settingsConfig.setWorkingDir(atts.value("value").toStdString());
+		return true;
+	}
+	if (qName == "KeepSystems") {
+		this->settingsConfig.setKeepSystems((bool)atts.value("value").toInt());
+		return true;
+	}
 	if (qName == "Nodes") {
 		ParentName = "Nodes";
 		return true;
