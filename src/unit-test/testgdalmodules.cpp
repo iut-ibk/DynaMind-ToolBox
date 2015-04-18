@@ -8,8 +8,8 @@
 #include <dmviewcontainer.h>
 #include <dmsystem.h>
 #include <dmgdalhelper.h>
+#include <QDir>
 
-#include <qdir>
 #define FEATURES "1000"
 #define FEATURES_2 "2000"
 #define DEFAULTEPSG 31254
