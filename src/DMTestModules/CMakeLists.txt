@@ -7,8 +7,8 @@ add_library(dynamind-testmodules SHARED ${MODULE_CPPS})
 
 target_link_libraries (dynamind-testmodules dynamindcore)
 
-INSTALL(TARGETS dynamind-testmodules
-        DESTINATION "lib"
-        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+INSTALL(TARGETS  dynamind-testmodules
+		DESTINATION "share/DynaMind/native_extensions"
+		PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 
