@@ -2,7 +2,6 @@
 
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
-//#include <geos/operation/linemerge/LineMerger.h>
 #include <geos_c.h>
 
 #include <dm.h>
@@ -43,7 +42,7 @@ void GDALJoinCluster::run()
 
 	typedef std::pair<long, double> segment;
 	std::map<long, std::vector< segment > > segments;
-	//GEOSContextHandle_t gh = OGRGeometry::createGEOSContext();
+	GEOSContextHandle_t gh = OGRGeometry::createGEOSContext();
 
 	//Sort all intersection and choose smallest
 	struct intersection {
@@ -88,44 +87,44 @@ void GDALJoinCluster::run()
 			if (!n)
 				continue;
 //Problem with GDAL 1.10
-//			if (n->Intersects(p_buffer)) {
-//				int intersected_cluster = f_n->GetFieldAsInteger("cluster_id");
-//				//avoid intersections within cluster
-//				if (intersected_cluster == current_cluster) {
-//					//DM::Logger(DM::Error) << "Self intersect";
-//					continue;
-//				}
+			if (n->Intersects(p_buffer)) {
+				int intersected_cluster = f_n->GetFieldAsInteger("cluster_id");
+				//avoid intersections within cluster
+				if (intersected_cluster == current_cluster) {
+					//DM::Logger(DM::Error) << "Self intersect";
+					continue;
+				}
 
-//				//Calculate intersections
-//				GEOSGeometry* geos_p = p->exportToGEOS(gh);
-//				GEOSGeometry* line = n->exportToGEOS(gh);
-//				double p_l = GEOSProject_r(gh, line, geos_p);
-//				if (p_l == 0) {
-//					continue;
-//				}
-//				if (segments.count(f_n->GetFID()) == 0) {
-//					std::vector<segment> seg_vec;
-//					seg_vec.push_back(segment(end_node, 0));
-//					seg_vec.push_back(segment(start_node, n->get_Length()));
-//					segments[f_n->GetFID()] = seg_vec;
-//				}
-//				std::pair<long, long> intersection_pair;
-//				if ( current_cluster < intersected_cluster ) {
-//					intersection_pair = std::pair<long, long>(current_cluster, intersected_cluster);
-//				} else {
-//					intersection_pair = std::pair<long, long>(intersected_cluster, current_cluster);
-//				}
-//				/*if (cluster_intersections.find(intersection_pair) != cluster_intersections.end()) {
-//					DM::Logger(DM::Error) << "Cluster have existing intersection";
-//				}*/
+				//Calculate intersections
+				GEOSGeometry* geos_p = p->exportToGEOS(gh);
+				GEOSGeometry* line = n->exportToGEOS(gh);
+				double p_l = GEOSProject_r(gh, line, geos_p);
+				if (p_l == 0) {
+					continue;
+				}
+				if (segments.count(f_n->GetFID()) == 0) {
+					std::vector<segment> seg_vec;
+					seg_vec.push_back(segment(end_node, 0));
+					seg_vec.push_back(segment(start_node, n->get_Length()));
+					segments[f_n->GetFID()] = seg_vec;
+				}
+				std::pair<long, long> intersection_pair;
+				if ( current_cluster < intersected_cluster ) {
+					intersection_pair = std::pair<long, long>(current_cluster, intersected_cluster);
+				} else {
+					intersection_pair = std::pair<long, long>(intersected_cluster, current_cluster);
+				}
+				/*if (cluster_intersections.find(intersection_pair) != cluster_intersections.end()) {
+					DM::Logger(DM::Error) << "Cluster have existing intersection";
+				}*/
 
-//				cluster_intersections.insert(intersection_pair);
-//				std::vector<segment> & seg_vec = segments[f_n->GetFID()];
-//				seg_vec.push_back(segment(node_id, p_l));
+				cluster_intersections.insert(intersection_pair);
+				std::vector<segment> & seg_vec = segments[f_n->GetFID()];
+				seg_vec.push_back(segment(node_id, p_l));
 
-//				f_n->SetField("intersect_id", f->GetFieldAsInteger("node_id"));
-//				f->SetField("intersects", (int) f_n->GetFID());
-//			}
+				f_n->SetField("intersect_id", f->GetFieldAsInteger("node_id"));
+				f->SetField("intersects", (int) f_n->GetFID());
+			}
 		}
 	}
 
@@ -159,19 +158,19 @@ void GDALJoinCluster::run()
 		OGRFeature * e = network.getFeature(edge_id);
 		OGRLineString * n = (OGRLineString *)e->GetGeometryRef();
 //Build problem with 1.10
-//		for(int i = 1; i < segements_vec.size(); i++ ) {
-//			if (segements_vec[i-1].second == segements_vec[i].second)
-//				continue;
-//			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
-//			if (!s) {
-//				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
-//				continue;
-//			}
-//			OGRFeature * s_f = this->network.createFeature();
-//			s_f->SetGeometry(s);
-//			s_f->SetField("new", 1);
-//			s_f->SetField("start_id", (int)segements_vec[i-1].first);
-//			s_f->SetField("end_id", (int)segements_vec[i].first);
-//		}
+		for(int i = 1; i < segements_vec.size(); i++ ) {
+			if (segements_vec[i-1].second == segements_vec[i].second)
+				continue;
+			OGRLineString * s = n->getSubLine(segements_vec[i-1].second, segements_vec[i].second, false);
+			if (!s) {
+				DM::Logger(DM::Error) << segements_vec[i-1].second << " " << segements_vec[i].second;
+				continue;
+			}
+			OGRFeature * s_f = this->network.createFeature();
+			s_f->SetGeometry(s);
+			s_f->SetField("new", 1);
+			s_f->SetField("start_id", (int)segements_vec[i-1].first);
+			s_f->SetField("end_id", (int)segements_vec[i].first);
+		}
 	}
 }
