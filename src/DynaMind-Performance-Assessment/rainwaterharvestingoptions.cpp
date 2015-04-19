@@ -33,6 +33,8 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	parcels.addAttribute("annual_outdoor_demand",DM::Attribute::DOUBLE, DM::WRITE);
+	parcels.addAttribute("annual_non_potable_demand",DM::Attribute::DOUBLE, DM::WRITE);
 
 	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
 	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
@@ -43,6 +45,7 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
+
 
 	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
 
@@ -97,6 +100,15 @@ void RainWaterHarvestingOptions::run()
 			rwht->SetField("parcel_id", (int)p->GetFID());
 			this->createTankOption(rwht, QString::fromStdString(storage_volume_tank[i]).toDouble(), run_off_roof_daily, outdoor_demand_daily,  non_potable_demand_daily);
 		}
+		double non_potable_demand = 0;
+		double outdoor_demand = 0;
+
+		for (int i = 0; i <  outdoor_demand_daily.size(); i++) {
+			outdoor_demand+=outdoor_demand_daily[i];
+			non_potable_demand+=non_potable_demand_daily[i];
+		}
+		p->SetField("annual_outdoor_demand", outdoor_demand);
+		p->SetField("annual_non_potable_demand", non_potable_demand);
 	}
 }
 
