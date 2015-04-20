@@ -19,7 +19,7 @@ The DyanMind-Toolbox comes with:
 - an easy to use Python interface to create new simulation or build new modules.
 
 Documentation can be found [here](http://iut-ibk.github.io/DynaMind-ToolBox)
-## Install on Mac with Homebrew
+## Install on Mac with teh [Dynamind-Homebrew tap](https://github.com/christianurich/homebrew-dynamind)
 
 ```
 brew tap christianurich/dynamind
