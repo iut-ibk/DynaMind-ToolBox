@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tips and Tricks &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Install and Run &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="index.html"/>
-        <link rel="next" title="Install and Run" href="install_and_compile.html"/>
-        <link rel="prev" title="A Quick Introduction to the DynaMind GUI" href="quick-intro-gui.html"/> 
+        <link rel="next" title="DynaMind" href="DynaMind/index.html"/>
+        <link rel="prev" title="Tips and Tricks" href="tipps_and_tricks.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -75,13 +75,13 @@
 <li class="toctree-l2"><a class="reference internal" href="quick-intro-gui.html#solution">Solution</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Tips and Tricks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#importing-csv">Importing CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tipps_and_tricks.html">Tips and Tricks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tipps_and_tricks.html#importing-csv">Importing CSV</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install_and_compile.html">Install and Run</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install_and_compile.html#osx">OSX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install_and_compile.html#linux-ubuntu">Linux (Ubuntu)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Install and Run</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#osx">OSX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linux-ubuntu">Linux (Ubuntu)</a></li>
 </ul>
 </li>
 </ul>
@@ -134,10 +134,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Tips and Tricks</li>
+    <li>Install and Run</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/tipps_and_tricks.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/install_and_compile.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -145,12 +145,51 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="tips-and-tricks">
-<h1>Tips and Tricks<a class="headerlink" href="#tips-and-tricks" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="importing-csv">
-<h2>Importing CSV<a class="headerlink" href="#importing-csv" title="Permalink to this headline">¶</a></h2>
-<p>All CSV data are per default imported as string. To define the data types put a .csvt file with
-your csv files that defines the data types. e.g. &#8220;Integer&#8221;,&#8221;Integer&#8221;,</p>
+  <div class="section" id="install-and-run">
+<h1>Install and Run<a class="headerlink" href="#install-and-run" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="osx">
+<h2>OSX<a class="headerlink" href="#osx" title="Permalink to this headline">¶</a></h2>
+<p>For OSX the DynaMind-ToolBox can be installed with the highly recommended <a class="reference external" href="http://brew.sh">Homebrew</a> build system</p>
+<div class="highlight-bash"><div class="highlight"><pre>brew tap christianurich/dynamind
+brew install dynamind
+</pre></div>
+</div>
+<p>To start DynaMind open a console and run <a href="#id1"><span class="problematic" id="id2">`dynamind`_</span></a> or <a href="#id3"><span class="problematic" id="id4">`dynamind-gui`_</span></a></p>
+</div>
+<div class="section" id="linux-ubuntu">
+<h2>Linux (Ubuntu)<a class="headerlink" href="#linux-ubuntu" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
+sudo apt-get update
+sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1-dev libcgal-dev libqglviewer-dev libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf
+
+sudo pip install reimport
+sudo pip install netCDF4
+sudo pip install reimport
+sudo pip install sphinx
+sudo pip install sphinx_rtd_theme
+
+
+<span class="c">#install SFCGAL</span>
+wget https://github.com/Oslandia/SFCGAL/archive/v1.0.5.zip
+unzip v1.0.5.zip
+<span class="nb">cd </span>SFCGAL-1.0.5/
+cmake . <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> sudo make install
+<span class="nb">cd</span> ..
+<span class="c">#rm -rf SFCGAL-1.0/</span>
+rm v1.0.5.zip
+
+git clone git://github.com/iut-ibk/DynaMind-ToolBox.git
+
+<span class="nb">cd </span>DynaMind-ToolBox/
+
+
+git submodule update --init --recursive
+
+
+cmake . -DWITH_PLUGIN_GDALMODULE<span class="o">=</span>TRUE -DWITH_DOC<span class="o">=</span>True <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
+</pre></div>
+</div>
+<p>To start DynaMind open a console and run <code class="docutils literal"><span class="pre">dynamind</span></code> or <code class="docutils literal"><span class="pre">dynamind-gui</span></code></p>
 </div>
 </div>
 
@@ -160,10 +199,10 @@ your csv files that defines the data types. e.g. &#8220;Integer&#8221;,&#8221;In
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install_and_compile.html" class="btn btn-neutral float-right" title="Install and Run">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="DynaMind/index.html" class="btn btn-neutral float-right" title="DynaMind">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="quick-intro-gui.html" class="btn btn-neutral" title="A Quick Introduction to the DynaMind GUI"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tipps_and_tricks.html" class="btn btn-neutral" title="Tips and Tricks"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
