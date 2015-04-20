@@ -9,6 +9,7 @@ Release Notes v0.8 dev
 - Increased OGC conformity
 - Proper linking of tables
 - Improved documentation
+- Improved installation (proper directories) and OSX build with homebrew
 
 
 Release Notes v0.7
