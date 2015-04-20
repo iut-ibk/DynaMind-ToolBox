@@ -12,6 +12,7 @@ Welcome to DynaMind's User Guide
   introduction
   quick-intro-gui
   tipps_and_tricks
+  install_and_compile
 
 Packages
 ========
