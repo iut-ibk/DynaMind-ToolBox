@@ -9,6 +9,7 @@ ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
 OPTION(WITH_INSTALLER "create a windows installer (NSIS)" OFF)
+OPTION(WITH_INSTALLER_GDAL "create a windows installer (NSIS)" OFF)
 OPTION(WITH_UNIT_TESTS "build unit tests" OFF)
 OPTION(WITH_PLUGIN_DYNALP "if with DYNALP plugin" OFF)
 OPTION(WITH_PLUGIN_DYNAVIBE "if with DynaVIBe plugin" OFF)
