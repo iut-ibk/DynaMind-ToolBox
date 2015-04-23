@@ -19,6 +19,11 @@ before_install:
  - cd CGAL-4.4
  - cmake . && make && sudo make install 
  - cd ..
+ - wget https://github.com/Oslandia/SFCGAL/archive/v1.0.5.zip 
+ - unzip v1.0.5.zip 
+ - cd SFCGAL-1.0.5/
+ - cmake . && make && sudo make install
+ - cd ..
  - git submodule update --init --recursive
 
 script: cmake . -DWITH_UNIT_TESTS=True -DWITH_PLUGIN_GDALMODULE=True -DWITH_DOC=True && make
