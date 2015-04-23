@@ -1,0 +1,90 @@
+SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION .)
+INCLUDE(InstallRequiredSystemLibraries)
+#CMake has a bug and does not include vcomp90.dll in system libraries
+#as workaraound this dll is included in the python package for dynamind (as soon as this bug is fixed the durty workaround will be removed)
+
+SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox")
+SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "5")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
+
+
+IF(WIN32 AND NOT UNIX)
+    SET(PYTHONBIN "" CACHE PATH "A directory which contains a complete python installation")
+    SET(GDALBIN "" CACHE PATH "Install dir of GDAL")
+    IF(NOT PYTHONBIN)
+	MESSAGE(FATAL_ERROR "Please set PYTHONBIN a directory which contains a complete python installation with numpy, scipy, pyqt4, reimport, gdal, netCDF4")
+    ENDIF()
+
+    IF(NOT GDALBIN)
+	MESSAGE(FATAL_ERROR "Install dir of GDAL")
+    ENDIF()
+
+    MESSAGE(STATUS "Boost library dirs: " ${Boost_LIBRARY_DIR}) 
+
+    SET(CPACK_NSIS_DISPLAY_NAME "DynaMind-Toolbox")
+    SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dynamind-toolbox.org")
+    SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.dynamind-toolbox.org")
+    SET(CPACK_NSIS_CONTACT "christian.urich@gmail.com, michael.mair@uibk.ac.at")
+    SET(CPACK_NSIS_EXECUTABLES_DIRECTORY .)
+
+    SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        !include \\\"winmessages.nsh\\\"
+        !define env_hklm 'HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\"'
+        !define env_hkcu 'HKCU \\\"Environment\\\"'
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_DIR $INSTDIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        WriteRegExpandStr  \\\${env_hklm} DYNAMIND_PYTHON $INSTDIR\\\\lib
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        ClearErrors
+        ")
+        FILE(GLOB DLLS
+              ${QT_BINARY_DIR}/*.dll
+              ${CGAL_DIR}/bin/CGAL-*-mt-*.dll
+              ${CGAL_DIR}/bin/CGAL_ImageIO-*-mt-*.dll
+              ${CGAL_DIR}/bin/CGAL_Core-*-mt-*.dll
+	      ${CGAL_DIR}/auxiliary/gmp/lib/*.dll
+              ${QGLVIEWER_INCLUDE_DIR}/QGLViewer/release/QGLViewer2.dll
+              ${Boost_LIBRARY_DIR}/boost_python-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_thread-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_chrono-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_graph-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_system-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_signals-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_date_time-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_filesystem-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_program_options-*-mt-1_*.dll
+              ${GDALBIN}/*.dll
+              ${SFCGALBIN}/*.dll)
+
+
+     INSTALL (DIRECTORY "${DynaMind-ToolBox_BINARY_DIR}/output/" DESTINATION .)
+     INSTALL (DIRECTORY "${PYTHONBIN}/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/projlib/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/gdalplugins/" DESTINATION .)
+     INSTALL (DIRECTORY "${GDALBIN}/gdal-data/" DESTINATION .)
+
+     INSTALL(FILES ${DLLS} DESTINATION .)
+
+     FIND_PACKAGE(Qt4 REQUIRED QtSql)
+     MESSAGE(STATUS "QT PLUGINS DIR: " ${QT_PLUGINS_DIR})
+     INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/qtconf/qt.conf" DESTINATION .)
+     INSTALL(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll DESTINATION plugins/sqldrivers)
+
+     if(WITH_GUI)
+        set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
+     endif()
+
+     SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\lib\\\\DynaMind\\\\3dparty\\\\Editra\\\\\\\"
+        DeleteRegValue \\\${env_hklm} DYNAMIND_DIR
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+        DeleteRegValue \\\${env_hklm} DYNAMIND_PYTHON
+        SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000
+      ")
+ENDIF()
+INCLUDE(CPack)
