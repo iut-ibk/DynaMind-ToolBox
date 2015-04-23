@@ -8,8 +8,8 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_NAME "DynaMind-Toolbox")
 SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "5")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "8")
+SET(CPACK_PACKAGE_VERSION_PATCH "dev")
 SET(CPACK_RESOURCE_FILE_LICENSE "${DynaMind-ToolBox_SOURCE_DIR}/LICENSE")
 
 
@@ -53,6 +53,8 @@ IF(WIN32 AND NOT UNIX)
               ${Boost_LIBRARY_DIR}/boost_thread-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_chrono-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_graph-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_system-*-mt-1_*.dll
+              ${Boost_LIBRARY_DIR}/boost_serialization-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_system-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_signals-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_date_time-*-mt-1_*.dll
