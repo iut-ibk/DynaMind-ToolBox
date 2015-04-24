@@ -100,7 +100,7 @@ void urbandevelDevelopment::run()
 
 
                     //Just for testing purposes:
-                    cyclepopdiff=cyclepopdiff-50;
+                    cyclepopdiff=cyclepopdiff-500;
                     cities[0]->changeAttribute("cyclepopdiff",cyclepopdiff);
 
                     return;

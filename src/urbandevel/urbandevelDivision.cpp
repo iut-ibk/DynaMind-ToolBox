@@ -142,7 +142,7 @@ void urbandevelDivision::run()
             }
         }
 
-        DM::Logger(DM::Warning) << "block past signal check";
+        DM::Logger(DM::Warning) << "block past signal check, status = " << inputstatus;
         // if no develtype is set and does not match skip the block
 
         if ( !develtype.empty() && develtype != inputtype)
@@ -192,6 +192,7 @@ void urbandevelDivision::run()
         //sys->removeChild(newblock);
 
         DM::Logger(DM::Debug) << "end parceling";
+        /*
         std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
 
         std::vector<int> duplicates;
@@ -225,7 +226,7 @@ void urbandevelDivision::run()
             int m = duplicates[j];
             sys->removeComponentFromView(elements[m],elementview);
         }
-
+        */
         elements = sys->getAllComponentsInView(elementview);
 
         for (int j = 0; j < elements.size(); j++)
