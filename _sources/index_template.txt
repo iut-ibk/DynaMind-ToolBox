@@ -10,9 +10,10 @@ Welcome to DynaMind's User Guide
   :maxdepth: 2
 
   introduction
+  install_and_compile
   quick-intro-gui
   tipps_and_tricks
-  install_and_compile
+
 
 Packages
 ========
