@@ -58,3 +58,10 @@ Linux (Ubuntu)
 
 
 To start DynaMind open a console and run ``dynamind`` or ``dynamind-gui``
+
+Windows
+=======
+
+An installer for windows can be found `here (https://github.com/iut-ibk/DynaMind-ToolBox/releases/download/v0.8.1dev/DynaMind-Toolbox-0.8.dev-win32.exe)`_
+
+
