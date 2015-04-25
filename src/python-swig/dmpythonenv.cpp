@@ -122,8 +122,9 @@ bool PythonEnv::addOverWriteStdCout() {
 	script << "from osgeo import ogr\n";
 #if defined(_WIN32)
 	script << "import os\n";
-	script << "os.environ[\"PATH\"] = os.environ[\"PATH\"]+\";\" + os.environ[\"DYNAMIND_DIR\"] + \"/DLLS\"\n";
-	script << "print os.environ[\"PATH\"]\n";
+	if "DYNAMIND_DIR" in os.environ.keys():
+		script << "os.environ[\"PATH\"] = os.environ[\"PATH\"]+\";\" + os.environ[\"DYNAMIND_DIR\"] + \"/DLLS\"\n";
+
 #endif
 	script << "import sys\n";
 	script << "import pydynamind\n";
