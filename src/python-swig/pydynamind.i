@@ -975,7 +975,7 @@ class Sim:
 			:type module_name: int
 			:param epsg_code: EPSG code as integer
 			"""
-			sim_config = DM.SimulationConfig()
+			sim_config = self._sim.getSimulationConfig()
 			sim_config.setCoordinateSystem(epsg_code)
 
 			self._sim.setSimulationConfig(sim_config)
@@ -1123,6 +1123,30 @@ class Sim:
 			:rtype: str
 			"""
 			return self._sim.serialise()
+
+		def set_working_dir(self, directory):
+			"""
+			Sets working directory, the location where the cahe database is created
+
+			:type directory: str
+			:param directory: directory name
+			"""
+			sim_config = self._sim.getSimulationConfig()
+			sim_config.setWorkingDir(directory)
+			self._sim.setSimulationConfig(sim_config)
+
+		def keep_system_cache(self, keep_cache):
+			"""
+			If the system cache (the simulation database) should not be deleted after the simulation has been executed
+			set the parameter to True
+
+			:type keep_cache: boolean
+			:param keep_cache: True or False to keep the system cache
+			"""
+			sim_config = self._sim.getSimulationConfig()
+			sim_config.setKeepSystems(keep_cache)
+			self._sim.setSimulationConfig(sim_config)
+
 
 		def write_simulation_file(self, filename):
 			"""
