@@ -10,6 +10,7 @@ Release Notes v0.8 dev
 - Proper linking of tables
 - Improved documentation
 - Improved installation (proper directories) and OSX build with homebrew
+- Additional Simulation parameter to set epsg codes, working directories
 
 
 Release Notes v0.7

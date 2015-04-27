@@ -307,6 +307,21 @@ can be used.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pydynamind.Sim.keep_system_cache">
+<code class="descname">keep_system_cache</code><span class="sig-paren">(</span><em>keep_cache</em><span class="sig-paren">)</span><a class="headerlink" href="#pydynamind.Sim.keep_system_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the system cache (the simulation database) should not be deleted after the simulation has been executed
+set the parameter to True</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>keep_cache</strong> (<em>boolean</em>) &#8211; True or False to keep the system cache</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pydynamind.Sim.link_modules">
 <code class="descname">link_modules</code><span class="sig-paren">(</span><em>m_source</em>, <em>m_sink</em><span class="sig-paren">)</span><a class="headerlink" href="#pydynamind.Sim.link_modules" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to make linking modules less tedious. Just works if the to connecting
@@ -466,6 +481,20 @@ module parameter set.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_parameter_dict</strong> &#8211; dict of modules including module parameter <code class="docutils literal"><span class="pre">{'module</span> <span class="pre">name':</span> <span class="pre">module</span> <span class="pre">description,</span> <span class="pre">...}</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydynamind.Sim.set_working_dir">
+<code class="descname">set_working_dir</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#pydynamind.Sim.set_working_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets working directory, the location where the cahe database is created</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directory</strong> (<em>str</em>) &#8211; directory name</td>
 </tr>
 </tbody>
 </table>
