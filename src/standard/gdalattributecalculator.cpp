@@ -258,6 +258,7 @@ void GDALAttributeCalculator::run()
 			v = new mup::Value("");
 			DM::Logger(DM::Debug) << "Init " << it->first << " as string";
 			break;
+		case DM::Attribute::LINK:
 		case DM::Attribute::INT:
 			v = new mup::Value(0);
 			DM::Logger(DM::Debug) << "Init " << it->first << " as int";
@@ -302,6 +303,7 @@ void GDALAttributeCalculator::run()
 				}
 				*muVariables[it->first] = mup::Value(d_val);
 				break;
+			case DM::Attribute::LINK:
 			case DM::Attribute::INT:
 				d_val = 0;
 				foreach(AttributeValue v, ressult_vec) {
