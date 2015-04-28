@@ -204,11 +204,16 @@ void GDALSystem::updateView(const View &v)
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
-			std::stringstream query;
-			v.getNameOfLinkedView(attribute_name.c_str());
-			query << "ALTER TABLE " << v.getName() << " ADD COLUMN " << attribute_name.c_str() << " INTEGER REFERENCES " << v.getNameOfLinkedView(attribute_name.c_str()) << "(OGC_FID)";
-			this->poDS->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
-			lyr->GetLayerDefn()->AddFieldDefn(&oField);
+			lyr->CreateField(&oField);
+// Not using real reference because it an not reproducable
+// problems that the link attribute might not be written.
+// Going back to implement it as simeple integer.
+// Uncomment above line for another try later.
+//			std::stringstream query;
+//			v.getNameOfLinkedView(attribute_name.c_str());
+//			query << "ALTER TABLE " << v.getName() << " ADD COLUMN " << attribute_name.c_str() << " INTEGER REFERENCES " << v.getNameOfLinkedView(attribute_name.c_str()) << "(OGC_FID)";
+//			this->poDS->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
+//			lyr->GetLayerDefn()->AddFieldDefn(&oField);
 			continue;
 		}
 	}
