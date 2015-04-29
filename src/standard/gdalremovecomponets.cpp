@@ -26,23 +26,12 @@ void GDALRemoveComponets::init()
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&vc);
 	this->registerViewContainers(data_stream);
-	DM::Logger(DM::Error) << "filter";
-	std::vector<DM::Filter> filters = this->getFilter();
-	foreach (DM::Filter fl, filters) {
-		DM::Logger(DM::Error) << "filter:" << fl.getAttributeFilter().getArgument();
-	}
 }
 
 void GDALRemoveComponets::run()
 {
 	OGRFeature * f;
 	vc.resetReading();
-	std::vector<DM::Filter> filters = this->getFilter();
-
-	foreach (DM::Filter fl, filters) {
-		DM::Logger(DM::Error) << "filter:" << fl.getAttributeFilter().getArgument();
-	}
-
 	while(f = vc.getNextFeature()) {
 		vc.deleteFeature(f->GetFID());
 	}
