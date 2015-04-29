@@ -5,7 +5,7 @@ Module List
 
 Data Import and Export
 ----------------------
-- :doc:`GDALHoststarter </DynaMind-GDALModules/gdalhotstarter>` Hot start simulation
+- :doc:`GDALHotStarter </DynaMind-GDALModules/gdalhotstarter>` Hot start simulation
 - :doc:`GDALImportData </DynaMind-GDALModules/gdalimportdata>` Import data
 - :doc:`GDALPublishResults </DynaMind-GDALModules/gdalpublishresults>` Export GIS data
 

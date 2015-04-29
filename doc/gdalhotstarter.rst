@@ -2,7 +2,7 @@
 Hot Start Simulation
 ====================
 
-:index:`GDALHoststarter <GDALModules; GDALHoststarter | Hot start simulation>` is used to hot start a simulation with a previous database.
+:index:`GDALHotStarter <GDALModules; GDALHotStarter | Hot start simulation>` is used to hot start a simulation with a previous database.
 This is particularly useful for bigger simulation where the data preparation and linking of data takes a significant amount of time,
 but once established, can be used as basis for many simulations.
 
@@ -19,7 +19,7 @@ Parameter
 Detailed Description
 --------------------
 
-The simulation database from a previous simulation can be used to "hot start" a new simulation. This GDALHostStarter may
+The simulation database from a previous simulation can be used to "hot start" a new simulation. This GDALHotStarter may
 be the first module in a simulation since it replaces the current simulation file with the *hot_start_database* defined in the
 parameter settings. The file is copied and therefore the original file stays untouched.
 
