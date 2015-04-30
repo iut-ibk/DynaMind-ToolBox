@@ -44,6 +44,9 @@ private:
 	DM::ViewContainer vc_to;
 	std::string fromViewName;
 	std::string toViewName;
+	bool add_link;
+	bool copy_attributes;
+	std::string link_name;
 };
 
 
