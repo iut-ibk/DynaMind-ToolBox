@@ -694,11 +694,10 @@ bool Simulation::checkStream()
 	bool success = true;
 	QList<QFuture<bool>*> results;
 	foreach(Module* m, modules)
-		if(m->getInPortNames().size() == 0)
-			checkModuleStreamForward(m);
-	//foreach(std::string outPort, m->getOutPortNames())
-	//	if(!checkModuleStreamForward(m, outPort))
-	//		success = false;
+		if(m->getInPortNames().size() == 0) {
+			if (!checkModuleStreamForward(m))
+				return false;
+		}
 
 	return success;
 }
