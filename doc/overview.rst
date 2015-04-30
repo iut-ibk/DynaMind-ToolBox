@@ -23,7 +23,7 @@ Data Handling
 - :doc:`GDALRemoveComponets </DynaMind-GDALModules/gdalremovecomponents>` Delete components
 - :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
 - :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
-
+- :doc:`GDALCalculateLength </DynaMind-GDALModules/gdalcalculatelength>` Calculate length
 
 Geometry Processing
 -------------------

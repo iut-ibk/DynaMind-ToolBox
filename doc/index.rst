@@ -45,6 +45,7 @@ Data Handling
    gdalremovecomponents
    gdalattributecalculator
    gdalgeometricattributes
+   gdalcalculatelength
 
 
 Geometry Processing
@@ -58,6 +59,7 @@ Geometry Processing
    gdalparceling
    gdalparcelsplit
    gdalcreatebuilding
+
 
 
 
