@@ -432,7 +432,7 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 			continue;
 
 		this->catchments->resetReading();
-		int catchment_id = (int) inlet->GetFieldAsInteger("catchment_id");
+		int catchment_id = (int) inlet->GetFieldAsInteger("sub_catchment_id");
 		OGRFeature * catchment = catchments->getFeature(catchment_id);
 
 
@@ -480,7 +480,7 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 
 		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
 
-		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("catchment_id") );
+		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("sub_catchment_id") );
 		//while (catchment = catchments->getNextFeature()) {
 		//	break;
 		//}
@@ -522,7 +522,7 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 
 		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
 
-		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("catchment_id") );
+		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("sub_catchment_id") );
 		//while (catchment = catchments->getNextFeature()) {
 		//	break;
 		//}
@@ -741,6 +741,10 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 
 			double length = line->get_Length();
 
+			if (length < 0.5)
+				continue;
+
+
 			//			if (!map_contains(&UUIDtoINT, (DM::Component*)nStartNode))
 			//				UUIDtoINT[nStartNode] = GLOBAL_Counter++;
 			//			if (!map_contains(&UUIDtoINT, (DM::Component*)nEndNode))
@@ -929,17 +933,17 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 			//			}
 
 			double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
-			std::string shape = conduit->GetFieldAsString("shape");
+			//std::string shape = conduit->GetFieldAsString("shape");
 
 			//			if (UUIDtoINT[link] == 0)
 			//				continue;
 			//			if (link->getAttribute("XSECTION")->getLinkedComponents().size() == 0) {
 			//				if (condie.getName().compare(conduit.getName()) == 0)
-			if (shape == "CIRCULAR") {
-				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< d <<" \t0\t0\t0\n";
-			} else if (shape == "RECT_OPEN")  {
-				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
-			}
+//			if (shape == "CIRCULAR") {
+				inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< 1 <<" \t0\t0\t0\n";
+//			} else if (shape == "RECT_OPEN")  {
+//				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+//			}
 			continue;
 			//			}
 
