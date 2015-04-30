@@ -45,6 +45,7 @@ Data Handling
    gdalremovecomponents
    gdalattributecalculator
    gdalgeometricattributes
+   gdalcalculatelength
 
 
 Geometry Processing
@@ -61,9 +62,18 @@ Geometry Processing
 
 
 
+
 Groups
 ------
 .. toctree::
    :titlesonly:
 
    loopgroup
+
+
+Urban Drainage
+--------------
+.. toctree::
+   :titlesonly:
+
+   gdaldmswmm

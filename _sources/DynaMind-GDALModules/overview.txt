@@ -23,7 +23,7 @@ Data Handling
 - :doc:`GDALRemoveComponets </DynaMind-GDALModules/gdalremovecomponents>` Delete components
 - :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
 - :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
-
+- :doc:`GDALCalculateLength </DynaMind-GDALModules/gdalcalculatelength>` Calculate length
 
 Geometry Processing
 -------------------
@@ -40,3 +40,8 @@ Groups
 
 - :doc:`LoopGroup </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
 
+
+Urban Drainage
+--------------
+
+- :doc:`GDALDMSWMM </DynaMind-GDALModules/gdaldmswmm>` SWMM integration

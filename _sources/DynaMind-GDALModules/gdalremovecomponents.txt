@@ -24,3 +24,14 @@ Data-stream
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
 
+Sample Code for Python Simulation
+---------------------------------
+.. code-block:: python
+
+    # Clean network with same start and end node
+    clean_network = sim.add_module('GDALRemoveComponets',
+                                  {'view_name': 'network'},
+                                  nodes,
+                                  filters={'network': {'attribute': "start_id = 0 or end_id = 0"}})
+
+..

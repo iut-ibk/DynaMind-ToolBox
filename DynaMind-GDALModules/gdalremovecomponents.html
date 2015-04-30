@@ -109,6 +109,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#data-handling">Data Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#groups">Groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-Executable/index.html">DynaMind Commandline</a></li>
@@ -201,6 +202,16 @@
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Clean network with same start and end node</span>
+<span class="n">clean_network</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALRemoveComponets&#39;</span><span class="p">,</span>
+                              <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;network&#39;</span><span class="p">},</span>
+                              <span class="n">nodes</span><span class="p">,</span>
+                              <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;network&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;start_id = 0 or end_id = 0&quot;</span><span class="p">}})</span>
+</pre></div>
+</div>
 </div>
 </div>
 

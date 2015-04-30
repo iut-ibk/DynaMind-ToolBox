@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Export GIS data &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Calculate Length &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Spatially Link Data Sets" href="gdalspatiallinking.html"/>
-        <link rel="prev" title="Import GIS Data" href="gdalimportdata.html"/> 
+        <link rel="next" title="Create Centroids" href="gdalcalculatecentroids.html"/>
+        <link rel="prev" title="Calculate Area" href="gdalgeometricattributes.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -104,9 +104,9 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-import-and-export">Data Import and Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-import-and-export">Data Import and Export</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#linking">Linking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#data-handling">Data Handling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-handling">Data Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#groups">Groups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a></li>
@@ -139,10 +139,10 @@
       
           <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
       
-    <li>Export GIS data</li>
+    <li>Calculate Length</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="../_sources/DynaMind-GDALModules/gdalpublishresults.txt" rel="nofollow"> View page source</a>
+          <a href="../_sources/DynaMind-GDALModules/gdalcalculatelength.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -150,16 +150,16 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="export-gis-data">
-<h1>Export GIS data<a class="headerlink" href="#export-gis-data" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>GDALPublishResults export GIS data from DynaMind to common GIS formats <a class="reference external" href="http://www.gdal.org/ogr_formats.html">GDAL/OGR</a>.</p>
+  <div class="section" id="calculate-length">
+<h1>Calculate Length<a class="headerlink" href="#calculate-length" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>GDALCalculateLength Calculates the length of and edge or linestring.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="21%" />
-<col width="62%" />
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -168,64 +168,53 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>sink</td>
+<tr class="row-even"><td>leading_view</td>
 <td>STRING</td>
-<td>points to where the view should be exported</td>
-</tr>
-<tr class="row-odd"><td>driver_name</td>
-<td>STRING</td>
-<td>name of used driver</td>
-</tr>
-<tr class="row-even"><td>view_name</td>
-<td>STRING</td>
-<td>name of view  to be exported</td>
-</tr>
-<tr class="row-odd"><td>layer_name</td>
-<td>STRING</td>
-<td>layer_name in sink</td>
-</tr>
-<tr class="row-even"><td>steps</td>
-<td>INT</td>
-<td>is used in loop data are exported every x step</td>
-</tr>
-<tr class="row-odd"><td>targetEPSG</td>
-<td>INT</td>
-<td>target EPSG code</td>
-</tr>
-<tr class="row-even"><td>sourceEPSG</td>
-<td>INT</td>
-<td>EPSG code used in the simulation</td>
-</tr>
-<tr class="row-odd"><td>overwrite</td>
-<td>BOOL</td>
-<td>if true and existing datasource is overwriten, default is false</td>
+<td>may be from type EDGE or LINESTRING</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="detailed-description">
-<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>The module builds on the GDAL/OGR library and supports export of data from DynaMind into
-common GIS data formats. An overview of supported formats can be found <a class="reference external" href="http://www.gdal.org/ogr_formats.html">here</a>.</p>
-<div class="section" id="export-to-postgis">
-<h3>Export to PostGIS<a class="headerlink" href="#export-to-postgis" title="Permalink to this headline">¶</a></h3>
-<p>If you want to export data to a PostGIS server please set sink to following
-<cite>PG:dbname=melbourne host=127.0.0.1 port=5432 user=username password=password</cite> and driver_name is <cite>&#8216;&#8217;</cite> (empty) since
-the name the driver name is already set with the PG command.</p>
-</div>
+<div class="section" id="data-stream">
+<h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="24%" />
+<col width="16%" />
+<col width="6%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">View</th>
+<th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Access</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>leading_view</td>
+<td>&nbsp;</td>
+<td>EDGE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>length</td>
+<td>DOUBLE</td>
+<td>write</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Upload results to PostGIS database</span>
-<span class="n">export</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALPublishResults&#39;</span><span class="p">,</span>
-                           <span class="p">{</span><span class="s">&#39;sink&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;driver_name&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;targetEPSG&#39;</span> <span class="p">:</span> <span class="s">&#39;4283&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;sourceEPSG&#39;</span> <span class="p">:</span> <span class="s">&#39;32755&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;catchment&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;result_catchment&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;overwrite&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
-                            <span class="n">link_to_module</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#calculate length of edges in network</span>
+<span class="n">calculate_length</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALCalculateLength&#39;</span><span class="p">,</span>
+                           <span class="p">{</span><span class="s">&#39;leading_view&#39;</span><span class="p">:</span> <span class="s">&#39;network&#39;</span><span class="p">},</span>
+                           <span class="n">previous_module</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -237,10 +226,10 @@ the name the driver name is already set with the PG command.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalspatiallinking.html" class="btn btn-neutral float-right" title="Spatially Link Data Sets">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalcalculatecentroids.html" class="btn btn-neutral float-right" title="Create Centroids">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalimportdata.html" class="btn btn-neutral" title="Import GIS Data"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdalgeometricattributes.html" class="btn btn-neutral" title="Calculate Area"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
