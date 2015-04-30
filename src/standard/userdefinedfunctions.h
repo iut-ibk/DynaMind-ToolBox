@@ -68,6 +68,29 @@ public:
 	}
 };
 
+class Str2Num : public mup::ICallback {
+public:
+	Str2Num() : ICallback(mup::cmFUNC, "str2num", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		// Get the argument from the argument input vector
+		mup::string_type  a = a_pArg[0]->GetString();
+		double val =  QString::fromStdString(a).toDouble();
+		// The return value is passed by writing it to the reference ret
+		*ret = val;
+	}
+
+	const mup::char_type* GetDesc() const
+	{
+		return "str2num(x) - converting a string to number";
+	}
+	IToken* Clone() const
+	{
+		return new Str2Num(*this);
+	}
+};
+
 class Random : public mup::ICallback {
 public:
 	Random() : ICallback(mup::cmFUNC, "rand", 1)
