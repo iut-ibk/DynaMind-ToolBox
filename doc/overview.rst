@@ -40,3 +40,8 @@ Groups
 
 - :doc:`LoopGroup </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
 
+
+Urban Drainage
+--------------
+
+- :doc:`GDALDMSWMM </DynaMind-GDALModules/gdaldmswmm>` SWMM integration

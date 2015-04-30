@@ -746,8 +746,8 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 			//			if (!map_contains(&UUIDtoINT, (DM::Component*)nEndNode))
 			//				UUIDtoINT[nEndNode] = GLOBAL_Counter++;
 
-			int StartNode = conduit->GetFieldAsInteger("node_from");
-			int EndNode = conduit->GetFieldAsInteger("node_to");
+			int StartNode = conduit->GetFieldAsInteger("start_id");
+			int EndNode = conduit->GetFieldAsInteger("end_id");
 			//int StartNode =  UUIDtoINT[nStartNode];
 
 			if ( EndNode == StartNode) {

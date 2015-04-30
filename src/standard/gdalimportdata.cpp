@@ -373,7 +373,7 @@ bool GDALImportData::checkIsFlat(int ogrType)
 
 string GDALImportData::getHelpUrl()
 {
-	return "https://github.com/iut-ibk/DynaMind-BasicModules/blob/master/doc/gdalimportdata.rsthttps://github.com/christianurich/DynaMind-GDALModules/blob/master/doc/gdalimportdata.rst";
+	return "http://iut-ibk.github.io/DynaMind-ToolBox/DynaMind-GDALModules/gdalimportdata.html";
 }
 
 
