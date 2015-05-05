@@ -56,7 +56,7 @@ void urbandevelBuilding::init()
     parcelview.addAttribute("fail", DM::Attribute::DOUBLE, DM::WRITE);
     parcelview.addAttribute("BUILDING", buildingview.getName(), DM::WRITE);
 
-    buildingview = DM::View("BUILDINGNEW", DM::FACE, DM::WRITE);
+    buildingview = DM::View("BUILDING", DM::FACE, DM::WRITE);
     buildingview.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
@@ -112,7 +112,7 @@ void urbandevelBuilding::run()
         std::string parcelstatus = currentparcel->getAttribute("status")->getString();
         std::string parceltype = currentparcel->getAttribute("type")->getString();
 
-        std::string checkstatus = "develop";
+        std::string checkstatus = "process";
 
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal)
@@ -122,25 +122,42 @@ void urbandevelBuilding::run()
 
         if ( onSignal ) {
             if ( parcelstatus.compare(checkstatus) != 0 )
+            {
+                DM::Logger(DM::Warning) << "BD: skipping parcel, status = " << parcelstatus;
                 continue;
+            }
             if (parceltype.compare(buildingtype) != 0 )
+            {
+                DM::Logger(DM::Warning) << "BD: skipping parcel, parceltype = " << parceltype;
                 continue;
+            }
         }
 
-        //DM::Logger(DM::Warning) << "developing parcel: status " << parcelstatus << " type " << parceltype;
+        // check if it is simple after offset
+
+        if (currentparcel->)
+        {
+            DM::Logger(DM::Warning) << "Polygon Offset failed, only " << result_nodes[0].size() << "nodes";
+            currentparcel->addAttribute("status","recreation");
+            continue;
+        }
+
+        DM::Logger(DM::Warning) << "BD: developing parcel: status " << parcelstatus << " type " << parceltype;
 
         //calculate house from parcel with offset
 
         std::vector<std::vector<DM::Node> > result_nodes = DM::CGALGeometry::OffsetPolygon(currentparcel->getNodePointers(), offset);
 
+        DM::Logger(DM::Warning) << "Result Nodes number: " << result_nodes[0].size();
+
         //taking only first polygon result
 
         std::vector<DM::Node*> buildingnodes;
 
-        currentcity->addAttribute("cyclepopdiff", 0);
-        currentparcel->addAttribute("fail", "1");
+        //currentcity->addAttribute("cyclepopdiff", 0);
+        //currentparcel->addAttribute("fail", "1");
 
-        return;
+        //return;
 
         foreach (DM::Node n, result_nodes[0])
         {

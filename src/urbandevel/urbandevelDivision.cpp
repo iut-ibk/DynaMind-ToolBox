@@ -227,7 +227,7 @@ void urbandevelDivision::run()
             sys->removeComponentFromView(elements[m],elementview);
         }
         */
-        elements = sys->getAllComponentsInView(elementview);
+        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
 
         for (int j = 0; j < elements.size(); j++)
         {
