@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Known Issues &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
@@ -14,7 +15,6 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -33,7 +33,7 @@
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="index.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -45,8 +45,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
         
-          <a href="index.html" class="fa fa-home"> DynaMind-ToolBox</a>
+
         
+          <a href="index.html" class="icon icon-home"> DynaMind-ToolBox
+        
+
+        
+        </a>
+
         
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -55,6 +61,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -86,11 +94,44 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="DynaMind/index.html">DynaMind</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind/module.html">Module Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html">Create Simulations in Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html#advanced-use-cases">Advanced Use Cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind/interlinked_datasets.html">Interlinked Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/module.html">Module Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/module.html#module-initialisation">Module Initialisation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#parameter-definition">Parameter Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#data-stream-definition-using-views-only-recommended-for-advanced-users">Data Stream Definition Using Views (only recommended for advanced users)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#data-stream-definition-using-viewcontainer">Data Stream Definition Using ViewContainer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/module.html#data-manipulation-process-dmp">Data Manipulation Process (DMP)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#data-access-using-the-dynamind-gdal-api">Data Access Using the <em>DynaMind GDAL API</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/module.html#advanced-api">Advanced API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind/module.html#linked-data">Linked Data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html">Create Simulations in Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/simulations_python.html#initialising-a-new-simulation">Initialising a New Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/simulations_python.html#adding-modules">Adding Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/simulations_python.html#execute-simulation">Execute Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/simulations_python.html#advanced-use-cases">Advanced Use Cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/simulations_python.html#access-gdal-database">Access GDAL Database</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/interlinked_datasets.html">Interlinked Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/interlinked_datasets.html#data-model">Data Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/interlinked_datasets.html#naming-convention">Naming Convention</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind/release_notes.html">Release Notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/release_notes.html#release-notes-v0-8-dev">Release Notes v0.8 dev</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind/release_notes.html#release-notes-v0-7">Release Notes v0.7</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="DynaMind/index.html#dynamind-python-api">DynaMind Python API</a><ul>
@@ -100,13 +141,160 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="DynaMind-GDALModules/index.html">Standard Modules (GDAL)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#data-import-and-export">Data Import and Export</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#linking">Linking</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#data-handling">Data Handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#geometry-processing">Geometry Processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#groups">Groups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#urban-drainage">Urban Drainage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/overview.html">Standard Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#data-import-and-export">Data Import and Export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#linking">Linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#data-handling">Data Handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#geometry-processing">Geometry Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#groups">Groups</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/overview.html#urban-drainage">Urban Drainage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#data-preparation">Data Preparation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/overview.html#swmm">SWMM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/release_notes.html">Release Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/release_notes.html#v0-2">v0.2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/release_notes.html#v0-1">v0.1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#data-import-and-export">Data Import and Export</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalhotstarter.html">Hot Start Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalhotstarter.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalhotstarter.html#detailed-description">Detailed Description</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html">Import GIS Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalpublishresults.html">Export GIS data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalpublishresults.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalpublishresults.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalpublishresults.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#linking">Linking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html">Spatially Link Data Sets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html">Link Data Sets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdaljoinnearestneighbour.html">Link Nearest Neighbour</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaljoinnearestneighbour.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaljoinnearestneighbour.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaljoinnearestneighbour.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#data-handling">Data Handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalcopyelementtoview.html">Copy Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcopyelementtoview.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcopyelementtoview.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcopyelementtoview.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalremovecomponents.html">Remove Component</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalremovecomponents.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalremovecomponents.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalremovecomponents.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html">Calculate Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalgeometricattributes.html">Calculate Area</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalgeometricattributes.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalgeometricattributes.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalgeometricattributes.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatelength.html">Calculate Length</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatelength.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatelength.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatelength.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#geometry-processing">Geometry Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatecentroids.html">Create Centroids</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatecentroids.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcalculatecentroids.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalerase.html">Subtract Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalerase.html#parameter">Parameter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdaloffset.html">Offset Faces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaloffset.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaloffset.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalparceling.html">Parcel Faces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparceling.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparceling.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparceling.html#detailed-description">Detailed Description</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalparcelsplit.html">Subdivide Parcels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparcelsplit.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparcelsplit.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalparcelsplit.html#detailed-description">Detailed Description</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalcreatebuilding.html">Generate Simple Buildings</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcreatebuilding.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcreatebuilding.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalcreatebuilding.html#detailed-description">Detailed Description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#groups">Groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/loopgroup.html">Loop Group</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/loopgroup.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/loopgroup.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DynaMind-GDALModules/index.html#urban-drainage">Urban Drainage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#data-preparation">Data Preparation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalextractnodes.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DynaMind-GDALModules/index.html#external-programs">External Programs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdaldmswmm.html">SWMM Integration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdaldmswmm.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="DynaMind-Executable/index.html">DynaMind Commandline</a></li>
@@ -137,7 +325,9 @@
     <li>Known Issues</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/known_problems.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/known_problems.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
@@ -167,10 +357,10 @@ end of the simulation.</p>
         &copy; Copyright 2014-2015, Christian Urich, Michael Mair.
     </p>
   </div>
-
   Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
+
 </footer>
+
         </div>
       </div>
 
