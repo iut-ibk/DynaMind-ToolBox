@@ -347,9 +347,9 @@
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
+<col width="18%" />
 <col width="21%" />
-<col width="62%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -369,6 +369,14 @@
 <tr class="row-even"><td>view_name</td>
 <td>STRING</td>
 <td>name of view</td>
+</tr>
+<tr class="row-odd"><td>import_attribute_as</td>
+<td>STRING_MAP</td>
+<td>Import only specific attribute under a new name. If nothing as been</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>all attributes will be imported. Otherwise only the defined ones</td>
 </tr>
 <tr class="row-odd"><td>append</td>
 <td>BOOL</td>
@@ -433,6 +441,15 @@ name to be imported.</p>
                          <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
                                               <span class="s">&#39;spatial&#39;</span><span class="p">:</span> <span class="s">&quot;catchment&quot;</span><span class="p">}</span>
                          <span class="p">})</span>
+
+<span class="c"># Import nodes with only the attribute leveltop as elevation</span>
+<span class="n">nodes</span>   <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                         <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span><span class="p">,</span>
+                         <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span><span class="p">,</span>
+                         <span class="s">&#39;import_attribute_as&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;leveltop&#39;</span><span class="p">:</span> <span class="s">&#39;elevation&#39;</span><span class="p">},</span>
+                         <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                         <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
