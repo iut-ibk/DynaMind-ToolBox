@@ -56,7 +56,7 @@ void urbandevelBuilding::init()
     parcelview.addAttribute("fail", DM::Attribute::DOUBLE, DM::WRITE);
     parcelview.addAttribute("BUILDING", buildingview.getName(), DM::WRITE);
 
-    buildingview = DM::View("BUILDINGNEW", DM::FACE, DM::WRITE);
+    buildingview = DM::View("BUILDING", DM::FACE, DM::WRITE);
     buildingview.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
@@ -107,12 +107,16 @@ void urbandevelBuilding::run()
     {
         DM::Face * currentparcel = dynamic_cast<DM::Face *>(parcels[i]);
         double parcel_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentparcel);
-        if (parcel_area < 150)
+        if (parcel_area < 400)
+        {
+            DM::Logger(DM::Warning) << "BD: parcel to small";
+            currentparcel->addAttribute("status","recreation");
             continue;
+        }
         std::string parcelstatus = currentparcel->getAttribute("status")->getString();
         std::string parceltype = currentparcel->getAttribute("type")->getString();
 
-        std::string checkstatus = "develop";
+        std::string checkstatus = "process";
 
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal)
@@ -127,75 +131,79 @@ void urbandevelBuilding::run()
                 continue;
         }
 
-        //DM::Logger(DM::Warning) << "developing parcel: status " << parcelstatus << " type " << parceltype;
+        std::vector<DM::Face *> f_off = this->createOffest(sys, currentparcel, offset);
 
-        //calculate house from parcel with offset
-
-        std::vector<std::vector<DM::Node> > result_nodes = DM::CGALGeometry::OffsetPolygon(currentparcel->getNodePointers(), offset);
-
-        //taking only first polygon result
-
-        std::vector<DM::Node*> buildingnodes;
-
-        currentcity->addAttribute("cyclepopdiff", 0);
-        currentparcel->addAttribute("fail", "1");
-
-        return;
-
-        foreach (DM::Node n, result_nodes[0])
+        if (f_off.size() == 0)
         {
-            DM::Logger(DM::Warning) << "push back node";
-            DM::Node * np = sys->addNode(n);
-                if (np) buildingnodes.push_back(np);
-
+            DM::Logger(DM::Warning) << "offset not possible, parcel tainted";
+            currentparcel->addAttribute("status","recreation");
+            continue;
         }
-        if (buildingnodes.size() < 3) {
-                DM::Logger(DM::Warning) << "offest failed";
-        }
-
-        DM::Logger(DM::Warning) << "generated nodes";
-
-        DM::Face * building = sys->addFace(buildingnodes, buildingview);
-
-        DM::Logger(DM::Warning) << "added face";
-
-        double roof_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)building);
-        double traffic_area = (parcel_area - roof_area)/3;
-        double impervious_area = parcel_area - traffic_area - roof_area;
-
-        //Attributes
-
-        building->addAttribute("type", "residential");
-        building->addAttribute("year", buildingyear);
-        building->addAttribute("stories", stories);
-
-        building->addAttribute("roofarea", roof_area);
-        building->addAttribute("roofarea_effective", 0.8);
-        building->addAttribute("trafficarea", traffic_area);
-        building->addAttribute("trafficarea_effective", 0.9);
-        building->addAttribute("imperviousarea", impervious_area);
-        building->addAttribute("imperviousarea_effective", 0.1);
-
-        //Create Links
-        building->getAttribute("PARCEL")->addLink(currentparcel, parcelview.getName());
-        currentparcel->getAttribute("BUILDING")->addLink(building, buildingview.getName());
-
-        numberOfHouseBuild++;
-
-        if (genPopulation)
+        foreach (DM::Face * building, f_off)
         {
-            int peopleinbuilding = static_cast<int>(roof_area * stories / spacepp);
-            cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
-            building->addAttribute("POP", peopleinbuilding);
-            currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
-            numberOfPeople = numberOfPeople + peopleinbuilding;
+            sys->addComponentToView(building, buildingview);
+
+            double roof_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)building);
+            double traffic_area = (parcel_area - roof_area)/3;
+            double impervious_area = parcel_area - traffic_area - roof_area;
+
+            building->addAttribute("type", "residential");
+            building->addAttribute("year", buildingyear);
+            building->addAttribute("stories", stories);
+
+            building->addAttribute("roofarea", roof_area);
+            building->addAttribute("roofarea_effective", 0.8);
+            currentparcel->addAttribute("trafficarea", traffic_area);
+            currentparcel->addAttribute("trafficarea_effective", 0.9);
+            currentparcel->addAttribute("imperviousarea", impervious_area);
+            currentparcel->addAttribute("imperviousarea_effective", 0.1);
+
+            //Create Links
+            building->getAttribute("PARCEL")->addLink(currentparcel, parcelview.getName());
+            currentparcel->getAttribute("BUILDING")->addLink(building, buildingview.getName());
+
+            numberOfHouseBuild++;
+
+            if (genPopulation)
+            {
+                int peopleinbuilding = static_cast<int>(roof_area * stories / spacepp);
+                cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
+                building->addAttribute("POP", peopleinbuilding);
+                currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
+                numberOfPeople = numberOfPeople + peopleinbuilding;
+            }
+            currentparcel->addAttribute("status", "populated");
+            building->addAttribute("height", stories*4);
+            building->addAttribute("type", buildingtype);
         }
-        currentparcel->addAttribute("status", "populated");
-        building->addAttribute("height", stories*4);
-        building->addAttribute("type", buildingtype);
+
+          DM::Logger(DM::Warning) << "added face(s)";
     }
 
     DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
+}
+
+std::vector<DM::Face *> urbandevelBuilding::createOffest(DM::System * sys, DM::Face *f, double offset)
+{
+    std::vector<std::vector<DM::Node> > nodes = DM::CGALGeometry::OffsetPolygon(f->getNodePointers(), offset);
+    std::vector<DM::Face *> ress;
+    for (int i = 0; i < nodes.size(); i++) {
+        std::vector<DM::Node*> face_nodes;
+        foreach (DM::Node n, nodes[i]) {
+            DM::Node * np = sys->addNode(n);
+            if (!np) {
+                return std::vector<DM::Face *>();
+            }
+            face_nodes.push_back(np);
+        }
+        if (face_nodes.size() < 3) {
+            DM::Logger(DM::Warning) << "offest failed";
+            return std::vector<DM::Face *>();
+        }
+        ress.push_back(sys->addFace(face_nodes));
+    }
+
+    return ress;
 }
 
 string urbandevelBuilding::getHelpUrl()

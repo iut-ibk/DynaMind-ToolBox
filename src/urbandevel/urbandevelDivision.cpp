@@ -192,9 +192,9 @@ void urbandevelDivision::run()
         //sys->removeChild(newblock);
 
         DM::Logger(DM::Debug) << "end parceling";
-        /*
-        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
 
+        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+        /*
         std::vector<int> duplicates;
 
         for (int j = 0; j < elements.size(); j++)

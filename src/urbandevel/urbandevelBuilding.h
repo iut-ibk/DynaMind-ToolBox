@@ -2,6 +2,7 @@
 #define urbandevelBuilding_H
 
 #include <dmmodule.h>
+#include <dm.h>
 
 class DM_HELPER_DLL_EXPORT urbandevelBuilding : public DM::Module
 {
@@ -15,6 +16,9 @@ public:
     std::string getHelpUrl();
 
 private:
+
+    std::vector<DM::Face *> createOffest(DM::System * sys, DM::Face *f, double offset);
+
     DM::View cityview;
     DM::View parcelview;
     DM::View buildingview;
