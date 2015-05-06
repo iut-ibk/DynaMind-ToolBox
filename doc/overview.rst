@@ -1,6 +1,7 @@
-Module List
-===========
+Standard Modules
+================
 
+A range of standard modules that can be used for versatile use cases.
 
 
 Data Import and Export
@@ -42,6 +43,16 @@ Groups
 
 
 Urban Drainage
---------------
+==============
+
+A range of modules to help with data cleaning to prepare integrate urban drainage networks into SWMM.
+
+Data Preparation
+----------------
+
+- :doc:`GDALExtractNodes </DynaMind-GDALModules/gdalextractnodes>` Creates start and end nodes for a given drainage network
+
+SWMM
+----
 
 - :doc:`GDALDMSWMM </DynaMind-GDALModules/gdaldmswmm>` SWMM integration
