@@ -43,6 +43,7 @@ private:
 	std::string source;
 	std::string layername;
 	std::string viewName;
+	std::map<std::string, std::string> import_attribute_as;
 	bool append;
 	DM::ViewContainer *initShapefile();
 

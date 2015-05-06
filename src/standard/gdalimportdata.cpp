@@ -15,10 +15,16 @@ GDALImportData::GDALImportData()
 	GDALModule = true;
 	OGRRegisterAll();
 	this->addParameter("source", DM::FILENAME, &source);
+
 	layername = "";
 	this->addParameter("layer_name", DM::STRING, &layername);
+
 	viewName = "";
 	this->addParameter("view_name", DM::STRING, &viewName);
+
+	import_attribute_as.clear();
+	this->addParameter("import_attribute_as", DM::STRING_MAP, &import_attribute_as);
+
 	append = false;
 	this->addParameter("append", DM::BOOL, &append);
 
@@ -304,23 +310,52 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 	int dm_geometry = DM::GDALUtilities::OGRtoDMGeometry(def);
 	translator.clear();
 	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, dm_geometry, DM::WRITE);
-	for (int i = 0; i < def->GetFieldCount(); i++){
-		OGRFieldDefn * fdef = def->GetFieldDefn(i);
-		//DM Datatype
-		DM::Attribute::AttributeType type = DM::GDALUtilities::OGRToDMAttribute(fdef);
-		if (type == DM::Attribute::NOTYPE)
-			continue;
-		DM::Logger(DM::Debug) << "Load attribute" << fdef->GetNameRef();
+	if (import_attribute_as.empty()) { //If no attribtue set import everthing
+		for (int i = 0; i < def->GetFieldCount(); i++){
+			OGRFieldDefn * fdef = def->GetFieldDefn(i);
+			//DM Datatype
+			DM::Attribute::AttributeType type = DM::GDALUtilities::OGRToDMAttribute(fdef);
+			if (type == DM::Attribute::NOTYPE)
+				continue;
+			DM::Logger(DM::Debug) << "Load attribute" << fdef->GetNameRef();
 
-		std::string attribute_name = fdef->GetNameRef();
-		std::transform(attribute_name.begin(), attribute_name.end(), attribute_name.begin(), ::tolower);
+			//everthing needs to be lower case
+			std::string attribute_name = fdef->GetNameRef();
+			std::transform(attribute_name.begin(), attribute_name.end(), attribute_name.begin(), ::tolower);
 
-		if (attribute_name == "ogc_fid") //Don't import ogc_fid field. This may cause a problem
-			continue;
-		translator[attribute_name] = fdef->GetNameRef();
+			if (attribute_name == "ogc_fid") //Don't import ogc_fid field. This may cause a problem
+				continue;
+			translator[attribute_name] = fdef->GetNameRef();
+			view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
 
-		view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
+
+		}
+	} else { //if attribute is set stick to list
+		for (std::map<std::string, std::string>::const_iterator it = import_attribute_as.begin();
+			 it != import_attribute_as.end(); ++it) {
+				int f_index = def->GetFieldIndex(it->first.c_str());
+				if(f_index < 0) {
+					DM::Logger(DM::Error) << "Attribute " << it->first << " not found";
+					delete view;
+					return 0;
+				}
+				OGRFieldDefn * fdef = def->GetFieldDefn(f_index);
+				DM::Attribute::AttributeType type = DM::GDALUtilities::OGRToDMAttribute(fdef);
+				if (type == DM::Attribute::NOTYPE) {
+					DM::Logger(DM::Error) << "Attribute " << it->first << " unknown type";
+					delete view;
+					return 0;
+				}
+				std::string attribute_name = it->second;
+				translator[attribute_name] = it->first;
+				view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
+		}
 	}
+
+
+
+
+
 	return view;
 }
 
