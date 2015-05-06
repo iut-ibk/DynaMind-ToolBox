@@ -283,7 +283,8 @@ void GDALImportData::run()
 		filterView->syncReadFeatures();
 }
 
-DM::ViewContainer *GDALImportData::initShapefile()
+
+DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 {
 	if (vc) { // if vc is set delete and reset
 		delete vc;
@@ -314,6 +315,8 @@ DM::ViewContainer *GDALImportData::initShapefile()
 		std::string attribute_name = fdef->GetNameRef();
 		std::transform(attribute_name.begin(), attribute_name.end(), attribute_name.begin(), ::tolower);
 
+		if (attribute_name == "ogc_fid") //Don't import ogc_fid field. This may cause a problem
+			continue;
 		translator[attribute_name] = fdef->GetNameRef();
 
 		view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
