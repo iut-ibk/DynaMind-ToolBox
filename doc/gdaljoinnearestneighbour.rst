@@ -33,4 +33,15 @@ Data-stream
 |   linkViewName      |                          | NODE                        | read  |                                            |
 +---------------------+--------------------------+-----------------------------+-------+--------------------------------------------+
 
+Sample Code for Python Simulation
+---------------------------------
+.. code-block:: python
 
+    #Join inlets to nodes with a search radius of 100m
+    node_join = sim.add_module('GDALJoinNearestNeighbour',
+                               {'leadingViewName': 'inlet',
+                                'linkViewName': 'node'
+                                'max_distance': 100},
+                               inlets)
+
+ ..
