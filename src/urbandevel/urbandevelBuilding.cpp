@@ -137,44 +137,14 @@ void urbandevelBuilding::run()
             }
         }
 
-<<<<<<< HEAD
         std::vector<DM::Face *> f_off = this->createOffest(sys, currentparcel, offset);
 
         if (f_off.size() == 0)
-=======
-        // check if it is simple after offset
-
-        if (currentparcel->)
         {
-            DM::Logger(DM::Warning) << "Polygon Offset failed, only " << result_nodes[0].size() << "nodes";
             currentparcel->addAttribute("status","recreation");
             continue;
         }
 
-        DM::Logger(DM::Warning) << "BD: developing parcel: status " << parcelstatus << " type " << parceltype;
-
-        //calculate house from parcel with offset
-
-        std::vector<std::vector<DM::Node> > result_nodes = DM::CGALGeometry::OffsetPolygon(currentparcel->getNodePointers(), offset);
-
-        DM::Logger(DM::Warning) << "Result Nodes number: " << result_nodes[0].size();
-
-        //taking only first polygon result
-
-        std::vector<DM::Node*> buildingnodes;
-
-        //currentcity->addAttribute("cyclepopdiff", 0);
-        //currentparcel->addAttribute("fail", "1");
-
-        //return;
-
-        foreach (DM::Node n, result_nodes[0])
->>>>>>> 9b786ec306a9cbda6e50cd99d935c149077249a5
-        {
-            DM::Logger(DM::Warning) << "offset not possible, parcel tainted";
-            currentparcel->addAttribute("status","recreation");
-            continue;
-        }
         foreach (DM::Face * building, f_off)
         {
             sys->addComponentToView(building, buildingview);

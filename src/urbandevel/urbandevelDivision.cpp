@@ -140,12 +140,14 @@ void urbandevelDivision::run()
                 DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
                 continue;
             }
+
+
         }
 
         DM::Logger(DM::Warning) << "block past signal check, status = " << inputstatus;
         // if no develtype is set and does not match skip the block
 
-        if ( !develtype.empty() && develtype != inputtype)
+        if ( !develtype.empty() && develtype.compare(inputtype) != 0 )
         {
             DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
             continue;
@@ -188,45 +190,9 @@ void urbandevelDivision::run()
         workingSys.addComponentToView(newblock, blockview);
         this->createSubdivision(&workingSys, newblock, 0, inputtype);
         createFinalFaces(&workingSys, sys, newblock, elementview, snhm);
-        //sys->removeComponentFromView(newblock, elementview);
-        //sys->removeChild(newblock);
 
         DM::Logger(DM::Debug) << "end parceling";
 
-        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
-        /*
-        std::vector<int> duplicates;
-
-        for (int j = 0; j < elements.size(); j++)
-        {
-            DM::Face * element = static_cast<DM::Face *> (elements[j]);
-            std::string status = element->getAttribute("status")->getString();
-
-            DM::Node centroid = DM::CGALGeometry::CalculateCentroid2D(element);
-
-            std::vector<DM::Component *> compelements = sys->getAllComponentsInView(elementview);
-
-            for (int m = 0; m < compelements.size(); m++)
-            {
-                if (j == m)
-                    continue;
-                DM::Face * compelement = static_cast<DM::Face *> (compelements[m]);
-                DM::Node compcentroid = DM::CGALGeometry::CalculateCentroid2D(compelement);
-                if ( centroid.getX() == compcentroid.getX() && centroid.getY() == compcentroid.getY())
-                {
-                    DM::Logger(DM::Warning) << "duplicate identified: " << m;
-                    duplicates.push_back(m);
-                }
-
-            }
-        }
-
-        for (int j = 0; j < duplicates.size(); j++)
-        {
-            int m = duplicates[j];
-            sys->removeComponentFromView(elements[m],elementview);
-        }
-        */
         std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
 
         for (int j = 0; j < elements.size(); j++)
