@@ -107,9 +107,9 @@ void urbandevelBuilding::run()
     {
         DM::Face * currentparcel = dynamic_cast<DM::Face *>(parcels[i]);
         double parcel_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)currentparcel);
-        if (parcel_area < 400)
+        if (parcel_area < 300)
         {
-            DM::Logger(DM::Warning) << "BD: parcel to small";
+            DM::Logger(DM::Debug) << "BD: parcel to small";
             currentparcel->addAttribute("status","recreation");
             continue;
         }
@@ -127,12 +127,12 @@ void urbandevelBuilding::run()
         if ( onSignal ) {
             if ( parcelstatus.compare(checkstatus) != 0 )
             {
-                DM::Logger(DM::Warning) << "BD: skipping parcel, status = " << parcelstatus;
+                DM::Logger(DM::Debug) << "BD: skipping parcel, status = " << parcelstatus;
                 continue;
             }
             if (parceltype.compare(buildingtype) != 0 )
             {
-                DM::Logger(DM::Warning) << "BD: skipping parcel, parceltype = " << parceltype;
+                DM::Logger(DM::Debug) << "BD: skipping parcel, parceltype = " << parceltype;
                 continue;
             }
         }

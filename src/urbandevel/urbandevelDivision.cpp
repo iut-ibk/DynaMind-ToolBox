@@ -68,6 +68,7 @@ void urbandevelDivision::init()
         cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
 
         blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
+        blockview.addAttribute("type", DM::Attribute::STRING, DM::READ);
         blockview.addAttribute("noheight", DM::Attribute::DOUBLE, DM::WRITE);
     }
 

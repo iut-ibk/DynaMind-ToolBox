@@ -64,8 +64,8 @@ void urbandevelDevelopment::run()
 
     std::vector<std::string> type;
     type.push_back("res");
-    //type.push_back("com");
-    //type.push_back("ind");
+    type.push_back("com");
+    type.push_back("ind");
 
     int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
     int cyclecomdiff  = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
@@ -83,7 +83,7 @@ void urbandevelDevelopment::run()
         {
             //check empty parcels
 
-            DM::Logger(DM::Debug) << "checking for empty parcels, type: " << type[j];
+            DM::Logger(DM::Warning) << "checking for empty parcels, type: " << type[j];
 
             for (int i = 0; i < prcl.size(); i++)
             {
@@ -96,13 +96,7 @@ void urbandevelDevelopment::run()
 
                 if (status == "empty") {
                     prcl[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting parcel to develop, returning";
-
-
-                    //Just for testing purposes:
-                    //cyclepopdiff=cyclepopdiff-500;
-                    //cities[0]->changeAttribute("cyclepopdiff",cyclepopdiff);
-
+                    DM::Logger(DM::Warning) << "setting parcel to develop, , type: " << prcltype;
                     return;
                 }
 
@@ -123,8 +117,7 @@ void urbandevelDevelopment::run()
 
                 if (status == "empty") {
                     cb[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting cityblock to develop";
-
+                    DM::Logger(DM::Warning) << "setting cityblock to develop, type: " << cbtype;
                     return;
                 }
 
@@ -146,7 +139,7 @@ void urbandevelDevelopment::run()
 
                 if (status == "empty") {
                     sb[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting superblock to develop";
+                    DM::Logger(DM::Warning) << "setting superblock to develop, type: " << sbtype;
 
                     return;
                 }
