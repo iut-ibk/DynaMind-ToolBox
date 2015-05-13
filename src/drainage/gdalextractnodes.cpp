@@ -26,42 +26,55 @@ GDALExtractNodes::GDALExtractNodes()
 	data_stream.push_back(&network);
 	data_stream.push_back(&junctions);
 
-	this->registerViewContainers(data_stream);
+	tolerance = 0.01;
+	this->addParameter("tolerance", DM::DOUBLE, &tolerance);
+
+	is_downstream_upstream = true;
+	this->addParameter("is_downstream_upstream", DM::BOOL, &is_downstream_upstream);
+
+	registerViewContainers(data_stream);
+	this->addParameter("tolerance", DM::DOUBLE, &tolerance);
 }
 
-int GDALExtractNodes::getNodeID(long & node_id, OGRPoint &  p1, std::map<std::pair<long, long>, long > & node_list, double tolerance, double elev)
+long GDALExtractNodes::getNodeID( OGRPoint &  p1, std::map<std::pair<long, long>, std::pair<long, OGRFeature *> > & node_list, double elev)
 {
 	double x = p1.getX();
 	double y = p1.getY();
-	std::pair<long, long> node_hash ((long)x*tolerance, (long)y*tolerance);
+	std::pair<long, long> node_hash ((long)x/tolerance, (long)y/tolerance);
 	if (node_list.count(node_hash) == 0) {
 		node_id++;
-		node_list[node_hash] = node_id;
+
 		OGRFeature * j = junctions.createFeature();
 		j->SetField("node_id", (int)node_id);
 		j->SetField("height", elev);
 		j->SetGeometry(&p1);
+		node_list[node_hash] = std::pair<long, OGRFeature *>(node_id,j);
 		return node_id;
 	} else {
-		return node_list[node_hash];
+		std::pair<long, OGRFeature *> node =  node_list[node_hash];
+		//Check if height is lower than the current height
+		OGRFeature * f = node.second;
+		if (elev != 0.0 && elev < f->GetFieldAsDouble("height")) {
+			f->SetField("height", elev);
+		}
+		return node.first;
 	}
 }
 
 
 void GDALExtractNodes::run()
 {
-	double tolerance = 100;
 	network.resetReading();
 
 	OGRFeature * f;
 
 	//contains a coordinate pair (x,y) and an id
-	std::map<std::pair<long, long>, long > node_list;
+
+	std::map<std::pair<long, long>, std::pair<long, OGRFeature *> > node_list;
 
 	//edge_id, cluster id
 	std::map<long, int> edge_cluster;
 	std::map<long, std::pair<long, long> > edge_list;
-	std::map<long, std::vector<long> > start_nodes;
 
 	long node_id = 0;
 
@@ -74,13 +87,18 @@ void GDALExtractNodes::run()
 		int points = edge->getNumPoints();
 		OGRPoint p1;
 		OGRPoint p2;
-		edge->getPoint(0, &p1);
-		edge->getPoint(points-1, &p2);
-		double up = f->GetFieldAsDouble("level_lo");
-		double down = f->GetFieldAsDouble("level_up");
+		if (is_downstream_upstream) {
+			edge->getPoint(0, &p1);
+			edge->getPoint(points-1, &p2);
+		} else {
+			edge->getPoint(0, &p2);
+			edge->getPoint(points-1, &p1);
+		}
+		double down = f->GetFieldAsDouble("level_lo");
+		double up = f->GetFieldAsDouble("level_up");
 
-		long start_id = getNodeID(node_id, p1, node_list, tolerance, up);
-		long end_id = getNodeID(node_id, p2, node_list, tolerance, down);
+		long start_id = getNodeID( p2, node_list, down);
+		long end_id = getNodeID( p1, node_list, up);
 
 		if (start_id == end_id)
 			continue;
