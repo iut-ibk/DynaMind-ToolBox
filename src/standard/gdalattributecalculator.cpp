@@ -257,7 +257,7 @@ void GDALAttributeCalculator::run()
 		switch (attr_type) {
 		case DM::Attribute::STRING:
 			v = new mup::Value("");
-			DM::Logger(DM::Debug) << "Init " << it->first << " as string";
+			DM::Logger(DM::Debug) <<  it->first << " " << attr_type << " Init " << it->first << " as string";
 			break;
 		case DM::Attribute::LINK:
 		case DM::Attribute::INT:
