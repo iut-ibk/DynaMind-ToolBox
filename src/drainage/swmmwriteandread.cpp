@@ -38,6 +38,7 @@
 #include "swmm5.h"
 #include "ogrsf_frmts.h"
 #include <iomanip>
+#include <dmgdalhelper.h>
 
 using namespace DM;
 SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> data_map, std::string rainfile, std::string filename) :
@@ -318,7 +319,6 @@ void SWMMWriteAndRead::readInReportFile() {
 		}
 		counter ++;
 	}
-	OGRFeature * c;
 	while (OGRFeature * c = city->getNextFeature()) {
 		c->SetField("v_p", Vp);
 		c->SetField("v_r", SurfaceRunOff);
@@ -334,26 +334,12 @@ void SWMMWriteAndRead::readInReportFile() {
 		Logger (Standard)  << "Average Capacity " << this->getAverageCapacity();
 
 	}
-	Logger (Standard)  << "Vp " << Vp;
-	Logger (Standard)  << "Vr " << SurfaceRunOff;
-	Logger (Standard)  << "Vwwtp " << Vwwtp;
-	Logger (Standard)  << "Voutfall " << Voutfall;
-	Logger (Standard)  << "Continuty Error " << this->ContinuityError;
-	Logger (Standard)  << "Average Capacity " << this->getAverageCapacity();
-
 
 	this->Vp = Vp;
 	this->Vwwtp = Vwwtp;
 	this->VsurfaceRunoff = SurfaceRunOff;
 	this->Vout = Voutfall;
 
-	//	foreach(DM::Component* c, city->getAllComponentsInView(globals))
-	//	{
-	//		c->addAttribute("Vr", SurfaceRunOff);
-	//		c->addAttribute("Vwwtp", Vwwtp);
-	//		c->addAttribute("Vp", Vp);
-	//		c->getAttribute("SWMM_ID")->setString(QString(this->SWMMPath.path()).toStdString());
-	//	}
 
 	this->evalWaterLevelInJunctions();
 	Logger (Standard)  << "Flooded Nodes " << this->getWaterLeveleBelow0();
@@ -893,6 +879,47 @@ void SWMMWriteAndRead::writeCurves(fstream &inp)
 	inp<<"\n";
 }
 
+void SWMMWriteAndRead::writeTransetcts(fstream &inp)
+{
+	inp<<"\n";
+	inp<<"[TRANSECTS]\n";
+	inp<<";;Transect Data in HEC-2 format\n";
+
+	this->conduits->resetReading();
+	OGRFeature * conduit;
+	while (conduit = conduits->getNextFeature()) {
+		std::string shape = conduit->GetFieldAsString("type");
+
+
+		if (shape != "IRREGULAR")
+			continue;
+		//Logger(Error) << "irregular";
+		std::vector<double> depth;
+		std::vector<double> width;
+
+		DM::DMFeature::GetDoubleList(conduit, "cscol1", width);
+		DM::DMFeature::GetDoubleList(conduit, "cscol2", depth);
+
+		std::stringstream coordinates;
+		coordinates << std::fixed;
+		coordinates << std::setprecision(8);
+		int length = width.size();
+		int added_elements = 0;
+		for(int i = 0; i < width.size(); i++) {
+			coordinates << depth[i] << " " << width[i] << " ";
+			added_elements++;
+			if (length > 18 && i < length-2)
+				i++;
+		}
+
+		inp << ";\n";
+		inp << "NC 0.01     0.01     0.01\n";
+
+		inp << "X1 "<< "trans"<<conduit->GetFID() << "\t" << added_elements << "\t1" << "\t" << added_elements <<"        0.0      0.0      0.0      0.0      0.0\n";
+		inp << "GR "<< coordinates.str() << "\n";
+	}
+}
+
 void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 	//std::vector<std::string> OutfallNames = city->getUUIDsOfComponentsInView(weir);
 
@@ -932,18 +959,23 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 			//				UUIDtoINT[nEndNode] = GLOBAL_Counter++;
 			//			}
 
-			double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
-			//std::string shape = conduit->GetFieldAsString("shape");
 
-			//			if (UUIDtoINT[link] == 0)
-			//				continue;
-			//			if (link->getAttribute("XSECTION")->getLinkedComponents().size() == 0) {
-			//				if (condie.getName().compare(conduit.getName()) == 0)
-//			if (shape == "CIRCULAR") {
-				inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< 1 <<" \t0\t0\t0\n";
-//			} else if (shape == "RECT_OPEN")  {
-//				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
-//			}
+			std::string shape = conduit->GetFieldAsString("type");
+
+
+			if (shape == "IRREGULAR"){
+				inp << linkname << conduit->GetFID() << "\t" << "IRREGULAR" << "\t"<< "trans" << conduit->GetFID() <<" \t0\t0\t0\n";
+			} else if (shape == "RECT_CLOSED"){
+				double h = conduit->GetFieldAsDouble("diameter");
+				double w = conduit->GetFieldAsDouble("width");
+				inp << linkname << conduit->GetFID() << "\t" << "RECT_CLOSED" << "\t"<< h <<" \t" << w << "\t0\t0\n";
+			}else { //Everthing is is CIRCULAR
+				double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
+				inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< d <<" \t0\t0\t0\n";
+			}
+			//			} else if (shape == "RECT_OPEN")  {
+			//inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+			//			}
 			continue;
 			//			}
 
@@ -1175,6 +1207,7 @@ void SWMMWriteAndRead::writeSWMMFile() {
 	writeConduits(inp);
 	writeWeir(inp);
 	writeXSection(inp);
+	writeTransetcts(inp);
 	writeDWF(inp);
 	writeCoordinates(inp);
 	writePumps(inp);

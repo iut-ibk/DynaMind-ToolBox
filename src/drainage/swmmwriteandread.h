@@ -120,6 +120,7 @@ private:
 	void writeLID_Controlls(std::fstream &inp);
 	void writeLID_Usage(std::fstream &inp);
 	void writeCurves(std::fstream & inp);
+	void writeTransetcts(std::fstream & inp);
 
 
 	void writeRainFile();
