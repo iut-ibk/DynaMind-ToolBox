@@ -91,15 +91,6 @@ void SWMMWriteAndRead::setClimateChangeFactor(double cf)
 
 void SWMMWriteAndRead::readInReportFile() {
 	Logger(Standard) << "Read inputfile " << this->SWMMPath.absolutePath() + "/" + "swmm.rep";
-
-	//	QMap<int, DM::Component*> revUUIDtoINT;
-
-
-
-	//	for (std::map<DM::Component*, int>::const_iterator it = UUIDtoINT.begin(); it !=UUIDtoINT.end(); ++it) {
-	//		revUUIDtoINT[it->second] =  it->first;
-	//	}
-
 	this->reportFile.setFileName(this->SWMMPath.absolutePath() + "/" + "swmm.rep");
 	this->reportFile.open(QIODevice::ReadOnly);
 	QTextStream in(&this->reportFile);
@@ -122,7 +113,6 @@ void SWMMWriteAndRead::readInReportFile() {
 
 
 	foreach (QString l, fileContent) {
-		//if (l.contains("WARNING")) Logger(Warning) << l.toStdString();
 		if (l.contains("ERROR")) {
 			Logger(Warning) << l.toStdString(); erroraccrued = true;
 		}
@@ -707,22 +697,6 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 	OGRFeature * conduit;
 
 	while (conduit = conduits->getNextFeature()) {
-
-		//foreach(DM::View con, conduits)
-		{
-			//		foreach(Component* conduit, city->getAllComponentsInView(con))
-			//		{
-			//			DM::Edge* link = (Edge*)conduit;
-
-			//			if (!map_contains(&UUIDtoINT, conduit))
-			//				continue;
-
-			//			DM::Node * nStartNode = link->getStartNode();
-			//			DM::Node * nEndNode = link->getEndNode();
-
-			//			double x = nStartNode->getX()  - nEndNode->getX();
-			//			double y = nStartNode->getY() - nEndNode->getY();
-
 			OGRLineString * line = (OGRLineString *)conduit->GetGeometryRef();
 
 			double length = line->get_Length();
@@ -730,32 +704,20 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 			if (length < 0.5)
 				continue;
 
-
-			//			if (!map_contains(&UUIDtoINT, (DM::Component*)nStartNode))
-			//				UUIDtoINT[nStartNode] = GLOBAL_Counter++;
-			//			if (!map_contains(&UUIDtoINT, (DM::Component*)nEndNode))
-			//				UUIDtoINT[nEndNode] = GLOBAL_Counter++;
-
 			int StartNode = conduit->GetFieldAsInteger("start_id");
 			int EndNode = conduit->GetFieldAsInteger("end_id");
-			//int StartNode =  UUIDtoINT[nStartNode];
+			double inletoffset = conduit->GetFieldAsDouble("inlet_offset");
+			double outlet_offset = conduit->GetFieldAsDouble("outlet_offset");
 
 			if ( EndNode == StartNode) {
 				Logger(Warning) << "Start Node is End Node";
 				continue;
 			}
 
-			//			if (UUIDtoINT[link] == 0)
-			//				UUIDtoINT[link] = GLOBAL_Counter++;
 			int id = conduit->GetFID();
-			/*			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
-			   <<length<<"\t"<<"0.01	" << conduit->GetFieldAsDouble("inlet_offset")  <<"\t"
-			  << conduit->GetFieldAsDouble("outlet_offset") << "\n";*/
 			inp	<<"LINK"<< id <<"\tNODE"<<EndNode<<"\tNODE"<<StartNode<<"\t"
-			   <<length<<"\t"<<"0.01	" << 0.0  <<"\t"
-			  << 0.0 << "\n";
-			//		}
-		}
+			   <<length<<"\t"<< "0.01	" << inletoffset  <<"\t"
+			  << outlet_offset << "\n";
 	}
 }
 

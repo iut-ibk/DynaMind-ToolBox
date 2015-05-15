@@ -53,9 +53,8 @@ GDALDMSWMM::GDALDMSWMM()
 	conduit.addAttribute("diameter", DM::Attribute::DOUBLE, DM::READ);
 	conduit.addAttribute("capacity", DM::Attribute::DOUBLE, DM::WRITE);
 	conduit.addAttribute("velocity", DM::Attribute::DOUBLE, DM::WRITE);
-
-	//conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
-	//conduit.addAttribute("outlet_offset",  DM::Attribute::DOUBLE, DM::READ);
+	conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
+	conduit.addAttribute("outlet_offset",  DM::Attribute::DOUBLE, DM::READ);
 
 	inlet = DM::ViewContainer("inlet", DM::NODE, DM::READ);
 	inlet.addAttribute("node_id", "node", DM::READ);

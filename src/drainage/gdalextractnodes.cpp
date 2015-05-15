@@ -40,7 +40,7 @@ long GDALExtractNodes::getNodeID( OGRPoint &  p1, std::map<std::pair<long, long>
 {
 	double x = p1.getX();
 	double y = p1.getY();
-	std::pair<long, long> node_hash ((long)x/tolerance, (long)y/tolerance);
+	std::pair<long, long> node_hash ((long) (x/tolerance), (long) (y/tolerance));
 	if (node_list.count(node_hash) == 0) {
 		node_id++;
 
@@ -76,7 +76,7 @@ void GDALExtractNodes::run()
 	std::map<long, int> edge_cluster;
 	std::map<long, std::pair<long, long> > edge_list;
 
-	long node_id = 0;
+	node_id = 0;
 
 	//Init Node List
 	while (f = network.getNextFeature()) {
@@ -97,8 +97,8 @@ void GDALExtractNodes::run()
 		double down = f->GetFieldAsDouble("level_lo");
 		double up = f->GetFieldAsDouble("level_up");
 
-		long start_id = getNodeID( p2, node_list, down);
-		long end_id = getNodeID( p1, node_list, up);
+		long start_id = getNodeID( p1, node_list, down);
+		long end_id = getNodeID( p2, node_list, up);
 
 		if (start_id == end_id)
 			continue;
