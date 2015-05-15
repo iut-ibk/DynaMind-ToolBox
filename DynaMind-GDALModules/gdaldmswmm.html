@@ -286,7 +286,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#detail-description">Detail Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -352,7 +355,7 @@
 <col width="5%" />
 <col width="12%" />
 <col width="6%" />
-<col width="37%" />
+<col width="38%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">View</th>
@@ -374,20 +377,68 @@
 <td>LINK</td>
 <td>node</td>
 <td>read</td>
-<td>&nbsp;</td>
+<td>down stream node</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
 <td>end_id</td>
 <td>LINK</td>
 <td>node</td>
 <td>read</td>
+<td>up stream node</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>inlet_offset</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>offset at up stream node in (m)</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>outlet_offset</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>offset at down stream node in (m)</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>type</td>
+<td colspan="2">string</td>
+<td>read</td>
+<td>type of the cross section supported are</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
 <td>&nbsp;</td>
+<td colspan="2">&nbsp;</td>
+<td>&nbsp;</td>
+<td>CIRCULAR, IRREGULAR, RECT_CLOSED</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
 <td>diameter</td>
 <td colspan="2">double</td>
 <td>read</td>
-<td>pipe diameter in m</td>
+<td>pipe height (diameter) in m</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>width</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>pipe width in m</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>cscol1 <a class="footnote-reference" href="#id2" id="id1">[1]</a></td>
+<td colspan="2">double list</td>
+<td>read</td>
+<td>cross section width in m (only if IRREGULAR)</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>cscol2</td>
+<td colspan="2">double list</td>
+<td>read</td>
+<td>cross section depth in m (only if IRREGULAR)</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>cscol3</td>
+<td colspan="2">double list</td>
+<td>read</td>
+<td>roughness</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
 <td>capacity</td>
@@ -534,6 +585,13 @@
 </tr>
 </tbody>
 </table>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Their is a problem in SWMM that only up to 18 stations can be exported. If cscol has more that 18 stations only every</td></tr>
+</tbody>
+</table>
+<p>other station is exported</p>
 </div>
 </div>
 

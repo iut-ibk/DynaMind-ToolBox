@@ -286,7 +286,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="">Create Start and End Node from a Pipe Network</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detail-description">Detail Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -344,6 +347,33 @@
 <h1>Create Start and End Node from a Pipe Network<a class="headerlink" href="#create-start-and-end-node-from-a-pipe-network" title="Permalink to this headline">¶</a></h1>
 <p><span class="target" id="index-0"></span>GDALExtractNodes Creates start and end nodes from
 a pipe network. This modules is used to prepare drainage network data for the SWMM export.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="16%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>tolerance</td>
+<td>DOUBLE</td>
+<td>Tolerance used to identify if nodes are identical default 0.01 (m)</td>
+</tr>
+<tr class="row-odd"><td>is_downstream_upstream</td>
+<td>BOOL</td>
+<td>True if the downstream node is the first one defining the edge. False if the other way around.
+Default is true</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="data-stream">
 <h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -419,6 +449,20 @@ a pipe network. This modules is used to prepare drainage network data for the SW
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="detail-description">
+<h2>Detail Description<a class="headerlink" href="#detail-description" title="Permalink to this headline">¶</a></h2>
+<p>The module iterates over all edges in the network. For each of the edges it extracts the coordinates of the start and end node as well as their
+height (level_lo / level_up). It checks if for these coordinates a if node exists within the defined tolerance. If no existing node is found a new node is created. The node height is defined by the lowest level of the connected edges.</p>
+</div>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nodes</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALExtractNodes&#39;</span><span class="p">,</span>
+                       <span class="p">{</span><span class="s">&#39;tolerance&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+                        <span class="s">&#39;is_downstream_upstream&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
+                       <span class="n">pipe_network</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
