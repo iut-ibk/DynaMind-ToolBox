@@ -41,7 +41,7 @@ public:
 	bool checkIntersection(OGRGeometry* geo, OGRGeometry * lead_geo);
 private:
 	bool properInit; // is true when init succeeded
-
+	bool experimental;
 	std::string leadingViewName;
 	std::string linkViewName;
 	bool withCentroid;

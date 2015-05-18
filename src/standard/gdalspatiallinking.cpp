@@ -19,6 +19,10 @@ GDALSpatialLinking::GDALSpatialLinking()
 	this->withCentroid = true;
 	this->addParameter("withCentroid", DM::BOOL, &withCentroid);
 
+	this->experimental = false;
+	this->addParameter("experimental", DM::BOOL, &experimental);
+
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -78,6 +82,18 @@ void GDALSpatialLinking::run()
 	if (!properInit) {
 		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
 		this->setStatus(DM::MOD_CHECK_ERROR);
+		return;
+	}
+	//Experimental spatilite interface
+	if (this->experimental) {
+		leadingView.createSpatialIndex();
+		std::stringstream query;
+		query << "UPDATE " << this->linkViewName << " ";
+		query << "SET " << leadingViewName << "_id=(SELECT P.ogc_fid FROM " << leadingViewName << " as P ";
+		query << "WHERE ST_WITHIN( CENTROID(" << linkViewName <<".Geometry), P.Geometry) == 1 AND P.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name ='";
+		query << leadingViewName << "' AND search_frame = " << linkViewName << ".Geometry ORDER BY ROWID) )";
+		DM::Logger(DM::Debug) << query.str();
+		leadingView.executeSQL(query.str().c_str());
 		return;
 	}
 	leadingView.resetReading();
