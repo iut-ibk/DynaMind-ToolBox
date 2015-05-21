@@ -21,6 +21,9 @@ Parameter
 |withCentroid       | BOOL                   | links either when centroid is within the lead face (true), false if    |
 |                   |                        | link view component is within or intersects face                       |
 +-------------------+------------------------+------------------------------------------------------------------------+
+|experimental       | BOOL                   | uses experimental spatialite native interface which is much faster     |
+|                   |                        | default is currently false                                             |
++-------------------+------------------------+------------------------------------------------------------------------+
 
 Data-stream
 -----------
