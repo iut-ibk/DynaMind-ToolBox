@@ -26,7 +26,7 @@ before_install:
  - cd ..
  - git submodule update --init --recursive
 
-script: cmake . -DWITH_UNIT_TESTS=True -DWITH_PLUGIN_GDALMODULE=True -DWITH_DOC=True && make
+script: cmake . -DWITH_UNIT_TESTS=True -DWITH_PLUGIN_GDALMODULE=True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=True -DWITH_DOC=True && make
 
 env:
   global:
