@@ -15,7 +15,7 @@ Linking
 - :doc:`GDALSpatialLinking </DynaMind-GDALModules/gdalspatiallinking>` Spatially link data
 - :doc:`NonSpatialLinking </DynaMind-GDALModules/nonspatiallinking>` Link data sets with identifier
 - :doc:`GDALJoinNearestNeighbour </DynaMind-GDALModules/gdaljoinnearestneighbour>` Link nearest neighbour
-
+- :doc:`GDALCreateNeighbourhoodTable </DynaMind-GDALModules/gdalcreateneighbourhoodtable>` Link Adjacent Faces
 
 Data Handling
 -------------

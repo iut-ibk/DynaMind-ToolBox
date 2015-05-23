@@ -33,6 +33,7 @@ Linking
    gdalspatiallinking
    nonspatiallinking
    gdaljoinnearestneighbour
+   gdalcreateneighbourhoodtable
 
 
 

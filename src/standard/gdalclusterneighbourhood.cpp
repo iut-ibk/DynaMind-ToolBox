@@ -6,7 +6,6 @@
 #include <sstream>
 #include <ogrsf_frmts.h>
 #include <map>
-#include "gdalcreateneighbourhoodtable.h"
 
 
 DM_DECLARE_NODE_NAME(GDALClusterNeighbourhood, GDALModules)

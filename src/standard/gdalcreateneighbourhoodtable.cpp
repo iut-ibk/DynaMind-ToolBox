@@ -55,6 +55,7 @@ void GDALCreateNeighbourhoodTable::init()
 
 void GDALCreateNeighbourhoodTable::run()
 {
+	leadingView.createSpatialIndex();
 	DM::GDALSystem * sys = this->getGDALData("city");
 
 	std::stringstream query;
