@@ -29,7 +29,7 @@
 
 #include <dmmodule.h>
 
-class GDALClusterNeighbourhood: public DM::Module
+class DM_HELPER_DLL_EXPORT GDALClusterNeighbourhood: public DM::Module
 {
 	DM_DECLARE_NODE(GDALClusterNeighbourhood)
 public:
