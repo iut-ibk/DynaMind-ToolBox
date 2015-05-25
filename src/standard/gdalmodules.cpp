@@ -50,6 +50,7 @@
 #include "gdalmergefaces.h"
 #include "gdalhotstarter.h"
 #include "gdalcalculatelength.h"
+#include "dm_calculatedistance.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -78,4 +79,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALMergeFaces>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALHotStarter>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALCalculateLength>());
+	registry->addNodeFactory(new DM::NodeFactory<DM_CalculateDistance>());
 }
