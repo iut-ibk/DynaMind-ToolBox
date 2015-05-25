@@ -25,6 +25,7 @@ Data Handling
 - :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
 - :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
 - :doc:`GDALCalculateLength </DynaMind-GDALModules/gdalcalculatelength>` Calculate length
+- :doc:`DM_CalculateDistance </DynaMind-GDALModules/dm_calculatedistance>` Calculate distance
 
 Geometry Processing
 -------------------

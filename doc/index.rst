@@ -47,6 +47,7 @@ Data Handling
    gdalattributecalculator
    gdalgeometricattributes
    gdalcalculatelength
+   dm_calculatedistance
 
 
 Geometry Processing
