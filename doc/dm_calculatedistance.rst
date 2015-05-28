@@ -41,7 +41,7 @@ Sample Code for Python Simulation
 
     distance = sim.add_module('DM_CalculateDistance',
                               {'lead_view_name': 'parcel',
-                               'distance_view_name': 'heighway',
+                               'distance_view_name': 'highway',
                                'attribute_name': 'distance'},
                                 parcel)
 ..
