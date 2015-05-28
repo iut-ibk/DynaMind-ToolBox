@@ -11,14 +11,19 @@ private:
 
 	DM::ViewContainer network;
 	DM::ViewContainer junctions;
+
+	std::string view_name;
+	std::string node_name;
 	double tolerance;
 	long node_id;
 	bool is_downstream_upstream;
+	bool add_height;
 
 
 public:
 	GDALExtractNodes();
 	void run();
+	void init();
 	long getNodeID(OGRPoint &p1, std::map<std::pair<long, long>, std::pair<long, OGRFeature *> > &node_list, double elev = 0);
 
 };

@@ -85,6 +85,7 @@ Data Preparation
    :titlesonly:
 
    gdalextractnodes
+   gdalclusternetwork
 
 
 External Programs

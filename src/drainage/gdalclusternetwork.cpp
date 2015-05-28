@@ -12,11 +12,17 @@ GDALClusterNetwork::GDALClusterNetwork()
 {
 	GDALModule = true;
 
-	network = DM::ViewContainer("network", DM::EDGE, DM::READ);
+	this->view_name = "network";
+	this->addParameter("view_name", DM::STRING, &network);
+
+}
+
+void GDALClusterNetwork::init()
+{
+	network = DM::ViewContainer(view_name, DM::EDGE, DM::READ);
 	network.addAttribute("cluster_id",  DM::Attribute::INT, DM::WRITE);
 	network.addAttribute("start_id",  DM::Attribute::INT, DM::READ);
 	network.addAttribute("end_id",  DM::Attribute::INT, DM::READ);
-
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&network);
@@ -102,5 +108,7 @@ void GDALClusterNetwork::run()
 		f->SetField("cluster_id", edge_cluster[f->GetFID()]);
 	}
 }
+
+
 
 

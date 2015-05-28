@@ -12,19 +12,11 @@ GDALExtractNodes::GDALExtractNodes()
 {
 	GDALModule = true;
 
-	network = DM::ViewContainer("network", DM::EDGE, DM::READ);
-	network.addAttribute("start_id",  DM::Attribute::INT, DM::WRITE);
-	network.addAttribute("end_id",  DM::Attribute::INT, DM::WRITE);
-	network.addAttribute("level_lo", DM::Attribute::DOUBLE, DM::READ);
-	network.addAttribute("level_up", DM::Attribute::DOUBLE, DM::READ);
+	this->view_name = "network";
+	this->addParameter("view_name", DM::STRING, &view_name);
 
-	junctions = DM::ViewContainer("node", DM::NODE, DM::WRITE);
-	junctions.addAttribute("node_id",  DM::Attribute::INT, DM::WRITE);
-	junctions.addAttribute("height",  DM::Attribute::DOUBLE, DM::WRITE);
-
-	std::vector<DM::ViewContainer*> data_stream;
-	data_stream.push_back(&network);
-	data_stream.push_back(&junctions);
+	this->node_name = "node";
+	this->addParameter("node_name", DM::STRING, &node_name);
 
 	tolerance = 0.01;
 	this->addParameter("tolerance", DM::DOUBLE, &tolerance);
@@ -32,9 +24,34 @@ GDALExtractNodes::GDALExtractNodes()
 	is_downstream_upstream = true;
 	this->addParameter("is_downstream_upstream", DM::BOOL, &is_downstream_upstream);
 
-	registerViewContainers(data_stream);
-	this->addParameter("tolerance", DM::DOUBLE, &tolerance);
+	add_height = true;
+	this->addParameter("add_height", DM::BOOL, &add_height);
+
 }
+
+void GDALExtractNodes::init()
+{
+	network = DM::ViewContainer(this->view_name, DM::EDGE, DM::READ);
+	network.addAttribute("start_id",  DM::Attribute::INT, DM::WRITE);
+	network.addAttribute("end_id",  DM::Attribute::INT, DM::WRITE);
+	if (add_height) {
+		network.addAttribute("level_lo", DM::Attribute::DOUBLE, DM::READ);
+		network.addAttribute("level_up", DM::Attribute::DOUBLE, DM::READ);
+	}
+
+	junctions = DM::ViewContainer(this->node_name, DM::NODE, DM::WRITE);
+	junctions.addAttribute("node_id",  DM::Attribute::INT, DM::WRITE);
+	if (add_height) {
+		junctions.addAttribute("height",  DM::Attribute::DOUBLE, DM::WRITE);
+	}
+
+	std::vector<DM::ViewContainer*> data_stream;
+	data_stream.push_back(&network);
+	data_stream.push_back(&junctions);
+
+	registerViewContainers(data_stream);
+}
+
 
 long GDALExtractNodes::getNodeID( OGRPoint &  p1, std::map<std::pair<long, long>, std::pair<long, OGRFeature *> > & node_list, double elev)
 {
@@ -46,7 +63,8 @@ long GDALExtractNodes::getNodeID( OGRPoint &  p1, std::map<std::pair<long, long>
 
 		OGRFeature * j = junctions.createFeature();
 		j->SetField("node_id", (int)node_id);
-		j->SetField("height", elev);
+		if (add_height)
+			j->SetField("height", elev);
 		j->SetGeometry(&p1);
 		node_list[node_hash] = std::pair<long, OGRFeature *>(node_id,j);
 		return node_id;
@@ -54,13 +72,16 @@ long GDALExtractNodes::getNodeID( OGRPoint &  p1, std::map<std::pair<long, long>
 		std::pair<long, OGRFeature *> node =  node_list[node_hash];
 		//Check if height is lower than the current height
 		OGRFeature * f = node.second;
+
+		if (!add_height)
+			return node.first;
+
 		if (elev != 0.0 && elev < f->GetFieldAsDouble("height")) {
 			f->SetField("height", elev);
 		}
 		return node.first;
 	}
 }
-
 
 void GDALExtractNodes::run()
 {
@@ -94,8 +115,13 @@ void GDALExtractNodes::run()
 			edge->getPoint(0, &p2);
 			edge->getPoint(points-1, &p1);
 		}
-		double down = f->GetFieldAsDouble("level_lo");
-		double up = f->GetFieldAsDouble("level_up");
+		double down = 0;
+		double up = 0;
+
+		if (add_height) {
+			down = f->GetFieldAsDouble("level_lo");
+			up = f->GetFieldAsDouble("level_up");
+		}
 
 		long start_id = getNodeID( p1, node_list, down);
 		long end_id = getNodeID( p2, node_list, up);
@@ -114,5 +140,6 @@ void GDALExtractNodes::run()
 		f->SetField("end_id", (int) edge_list[f->GetFID()].second);
 	}
 }
+
 
 
