@@ -272,10 +272,27 @@ To write the altered features to the data stream please use ``ViewContainer.fina
 
 ..
 
+Logging
+-------
+To log status messages of a module use ``log("message", Standard)``. DynaMind supports 4 different log level (Debug, Standard, Warning, Error).
+
+
 Error Handling
 --------------
 If an error occurs during the DMP the module should set its execution status to MOD_EXECUTION_ERROR. This let the simulation
 know that an error occurred in the module and it stops the simulation. ``self.setStatus(MOD_EXECUTION_ERROR)``
+
+.. code-block:: python
+
+    # Example for using the logger and setting the simulation status
+    if not self.cd3_node_dir:
+         log("please set path to CityDrain3 nodes", Error)
+         self.setStatus(MOD_CHECK_ERROR)
+         return
+
+..
+
+
 
 Advanced API
 ============

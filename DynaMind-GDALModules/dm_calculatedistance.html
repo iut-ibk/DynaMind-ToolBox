@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Calculate Distance &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Hot Start Simulation" href="gdalhotstarter.html"/>
-        <link rel="prev" title="Standard Modules" href="overview.html"/> 
+        <link rel="next" title="Create Centroids" href="gdalcalculatecentroids.html"/>
+        <link rel="prev" title="Calculate Length" href="gdalcalculatelength.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -145,7 +145,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#overview">Overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="overview.html">Standard Modules</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="overview.html#data-import-and-export">Data Import and Export</a></li>
 <li class="toctree-l4"><a class="reference internal" href="overview.html#linking">Linking</a></li>
@@ -159,9 +159,9 @@
 <li class="toctree-l4"><a class="reference internal" href="overview.html#swmm">SWMM</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Release Notes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#v0-2">v0.2</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#v0-1">v0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="release_notes.html">Release Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="release_notes.html#v0-2">v0.2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="release_notes.html#v0-1">v0.1</a></li>
 </ul>
 </li>
 </ul>
@@ -213,7 +213,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#data-handling">Data Handling</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-handling">Data Handling</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gdalcopyelementtoview.html">Copy Features</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalcopyelementtoview.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalcopyelementtoview.html#data-stream">Data-stream</a></li>
@@ -243,10 +243,10 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatelength.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dm_calculatedistance.html">Calculate Distance</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Calculate Distance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -363,11 +363,11 @@
       
           <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
       
-    <li>Release Notes</li>
+    <li>Calculate Distance</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/release_notes.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dm_calculatedistance.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -376,22 +376,95 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="release-notes">
-<h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="v0-2">
-<h2>v0.2<a class="headerlink" href="#v0-2" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ul class="simple">
-<li>new modules to calculate length <a class="reference internal" href="gdalcalculatelength.html"><em>GDALCalculateLength</em></a></li>
-<li>experimental speed improvement for spatial linking (10 times and more) using native spatialite</li>
-</ul>
-</div></blockquote>
+  <div class="section" id="calculate-distance">
+<h1>Calculate Distance<a class="headerlink" href="#calculate-distance" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>DM_CalculateDistance Module calculates
+the distance form the lead view feature to every other feature in the distance view.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>lead_view_name</td>
+<td>STRING</td>
+<td>lead view name</td>
+</tr>
+<tr class="row-odd"><td>distance_view_name</td>
+<td>STRING</td>
+<td>view to which the distance is calculated</td>
+</tr>
+<tr class="row-even"><td>attribute_name</td>
+<td>DOUBLE</td>
+<td>sum of the distances of the current feature to every other feature</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="section" id="v0-1">
-<h2>v0.1<a class="headerlink" href="#v0-1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Initial set of modules working with the new GDAL data stream backend</li>
-</ul>
+<div class="section" id="data-stream">
+<h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="24%" />
+<col width="16%" />
+<col width="6%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">View</th>
+<th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Access</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>lead_view_name</td>
+<td>&nbsp;</td>
+<td>NODE, EDGE, FACE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>attribute_name</td>
+<td>DOUBLE</td>
+<td>write</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>distance_view_name</td>
+<td>&nbsp;</td>
+<td>NODE, EDGE, FACE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">distance</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;DM_CalculateDistance&#39;</span><span class="p">,</span>
+                          <span class="p">{</span><span class="s">&#39;lead_view_name&#39;</span><span class="p">:</span> <span class="s">&#39;parcel&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;distance_view_name&#39;</span><span class="p">:</span> <span class="s">&#39;highway&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;attribute_name&#39;</span><span class="p">:</span> <span class="s">&#39;distance&#39;</span><span class="p">},</span>
+                            <span class="n">parcel</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -401,10 +474,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalhotstarter.html" class="btn btn-neutral float-right" title="Hot Start Simulation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalcalculatecentroids.html" class="btn btn-neutral float-right" title="Create Centroids" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="overview.html" class="btn btn-neutral" title="Standard Modules" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdalcalculatelength.html" class="btn btn-neutral" title="Calculate Length" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

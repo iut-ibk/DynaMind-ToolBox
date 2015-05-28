@@ -32,7 +32,7 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="SWMM Integration" href="gdaldmswmm.html"/>
+        <link rel="next" title="Identify Clusters of Connected Lines" href="gdalclusternetwork.html"/>
         <link rel="prev" title="Loop Group" href="loopgroup.html"/> 
 
   
@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../DynaMind/module.html#data-manipulation-process-dmp">Data Manipulation Process (DMP)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind/module.html#data-access-using-the-dynamind-gdal-api">Data Access Using the <em>DynaMind GDAL API</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind/module.html#logging">Logging</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind/module.html#error-handling">Error Handling</a></li>
 </ul>
 </li>
@@ -204,6 +205,12 @@
 <li class="toctree-l4"><a class="reference internal" href="gdaljoinnearestneighbour.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="gdalcreateneighbourhoodtable.html">Link Adjacent Faces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreateneighbourhoodtable.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreateneighbourhoodtable.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreateneighbourhoodtable.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#data-handling">Data Handling</a><ul>
@@ -234,6 +241,12 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatelength.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatelength.html#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatelength.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dm_calculatedistance.html">Calculate Distance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dm_calculatedistance.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -290,6 +303,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#detail-description">Detail Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gdalclusternetwork.html">Identify Clusters of Connected Lines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
 </ul>
@@ -377,6 +395,14 @@ a pipe network. This modules is used to prepare drainage network data for the SW
 </tr>
 </thead>
 <tbody valign="top">
+<tr class="row-even"><td>view_name</td>
+<td>STRING</td>
+<td>Name of network view</td>
+</tr>
+<tr class="row-odd"><td>node_name</td>
+<td>STRING</td>
+<td>Name of node view</td>
+</tr>
 <tr class="row-even"><td>tolerance</td>
 <td>DOUBLE</td>
 <td>Tolerance used to identify if nodes are identical default 0.01 (m)</td>
@@ -386,6 +412,10 @@ a pipe network. This modules is used to prepare drainage network data for the SW
 <td>True if the downstream node is the first one defining the edge. False if the other way around.
 Default is true</td>
 </tr>
+<tr class="row-even"><td>add_height</td>
+<td>BOOL</td>
+<td>add height from edge</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -393,11 +423,11 @@ Default is true</td>
 <h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="18%" />
-<col width="24%" />
-<col width="16%" />
+<col width="17%" />
+<col width="23%" />
+<col width="15%" />
 <col width="6%" />
-<col width="37%" />
+<col width="38%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">View</th>
@@ -408,7 +438,7 @@ Default is true</td>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>network</td>
+<tr class="row-even"><td>view_name</td>
 <td>&nbsp;</td>
 <td>EDGE</td>
 <td>read</td>
@@ -430,13 +460,13 @@ Default is true</td>
 <td>level_lo</td>
 <td>DOUBLE</td>
 <td>read</td>
-<td>pipe level downstream</td>
+<td>if add_height is true, pipe level downstream</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
 <td>level_up</td>
 <td>DOUBLE</td>
 <td>read</td>
-<td>pipe level upstream</td>
+<td>if add_height is true,   pipe level upstream</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
 <td>&nbsp;</td>
@@ -444,7 +474,7 @@ Default is true</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>node</td>
+<tr class="row-even"><td>node_name</td>
 <td>&nbsp;</td>
 <td>WRITE</td>
 <td>read</td>
@@ -460,7 +490,7 @@ Default is true</td>
 <td>height</td>
 <td>DOUBLE</td>
 <td>write</td>
-<td>&nbsp;</td>
+<td>if add_height is true</td>
 </tr>
 </tbody>
 </table>
@@ -487,7 +517,7 @@ height (level_lo / level_up). It checks if for these coordinates a if node exist
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdaldmswmm.html" class="btn btn-neutral float-right" title="SWMM Integration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalclusternetwork.html" class="btn btn-neutral float-right" title="Identify Clusters of Connected Lines" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="loopgroup.html" class="btn btn-neutral" title="Loop Group" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

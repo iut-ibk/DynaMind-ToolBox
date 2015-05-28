@@ -33,6 +33,7 @@ Linking
    gdalspatiallinking
    nonspatiallinking
    gdaljoinnearestneighbour
+   gdalcreateneighbourhoodtable
 
 
 
@@ -46,6 +47,7 @@ Data Handling
    gdalattributecalculator
    gdalgeometricattributes
    gdalcalculatelength
+   dm_calculatedistance
 
 
 Geometry Processing
@@ -83,6 +85,7 @@ Data Preparation
    :titlesonly:
 
    gdalextractnodes
+   gdalclusternetwork
 
 
 External Programs

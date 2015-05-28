@@ -15,7 +15,7 @@ Linking
 - :doc:`GDALSpatialLinking </DynaMind-GDALModules/gdalspatiallinking>` Spatially link data
 - :doc:`NonSpatialLinking </DynaMind-GDALModules/nonspatiallinking>` Link data sets with identifier
 - :doc:`GDALJoinNearestNeighbour </DynaMind-GDALModules/gdaljoinnearestneighbour>` Link nearest neighbour
-
+- :doc:`GDALCreateNeighbourhoodTable </DynaMind-GDALModules/gdalcreateneighbourhoodtable>` Link Adjacent Faces
 
 Data Handling
 -------------
@@ -25,6 +25,7 @@ Data Handling
 - :doc:`GDALAttributeCalculator </DynaMind-GDALModules/gdalattributecalculator>` Calculate attributes
 - :doc:`GDALGeometricAttributes </DynaMind-GDALModules/gdalgeometricattributes>` Calculate area
 - :doc:`GDALCalculateLength </DynaMind-GDALModules/gdalcalculatelength>` Calculate length
+- :doc:`DM_CalculateDistance </DynaMind-GDALModules/dm_calculatedistance>` Calculate distance
 
 Geometry Processing
 -------------------
@@ -51,6 +52,7 @@ Data Preparation
 ----------------
 
 - :doc:`GDALExtractNodes </DynaMind-GDALModules/gdalextractnodes>` Creates start and end nodes for a given drainage network
+- :doc:`GDALClusterNetwork </DynaMind-GDALModules/gdalclusternetwork>` Identify clusters of connected lines
 
 SWMM
 ----

@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#data-manipulation-process-dmp">Data Manipulation Process (DMP)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#data-access-using-the-dynamind-gdal-api">Data Access Using the <em>DynaMind GDAL API</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logging">Logging</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#error-handling">Error Handling</a></li>
 </ul>
 </li>
@@ -204,6 +205,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdaljoinnearestneighbour.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/gdalcreateneighbourhoodtable.html">Link Adjacent Faces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcreateneighbourhoodtable.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcreateneighbourhoodtable.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcreateneighbourhoodtable.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#data-handling">Data Handling</a><ul>
@@ -234,6 +241,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcalculatelength.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcalculatelength.html#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalcalculatelength.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/dm_calculatedistance.html">Calculate Distance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_calculatedistance.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_calculatedistance.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_calculatedistance.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -290,6 +303,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalextractnodes.html#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalextractnodes.html#detail-description">Detail Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalextractnodes.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/gdalclusternetwork.html">Identify Clusters of Connected Lines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalclusternetwork.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalclusternetwork.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
 </ul>
@@ -631,10 +649,21 @@ To write the altered features to the data stream please use <code class="docutil
 </pre></div>
 </div>
 </div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>To log status messages of a module use <code class="docutils literal"><span class="pre">log(&quot;message&quot;,</span> <span class="pre">Standard)</span></code>. DynaMind supports 4 different log level (Debug, Standard, Warning, Error).</p>
+</div>
 <div class="section" id="error-handling">
 <h3>Error Handling<a class="headerlink" href="#error-handling" title="Permalink to this headline">¶</a></h3>
 <p>If an error occurs during the DMP the module should set its execution status to MOD_EXECUTION_ERROR. This let the simulation
 know that an error occurred in the module and it stops the simulation. <code class="docutils literal"><span class="pre">self.setStatus(MOD_EXECUTION_ERROR)</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Example for using the logger and setting the simulation status</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cd3_node_dir</span><span class="p">:</span>
+     <span class="n">log</span><span class="p">(</span><span class="s">&quot;please set path to CityDrain3 nodes&quot;</span><span class="p">,</span> <span class="n">Error</span><span class="p">)</span>
+     <span class="bp">self</span><span class="o">.</span><span class="n">setStatus</span><span class="p">(</span><span class="n">MOD_CHECK_ERROR</span><span class="p">)</span>
+     <span class="k">return</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="advanced-api">
