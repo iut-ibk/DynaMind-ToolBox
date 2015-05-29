@@ -1,6 +1,5 @@
 #include "gdalclusternetwork.h"
 
-
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
@@ -13,8 +12,7 @@ GDALClusterNetwork::GDALClusterNetwork()
 	GDALModule = true;
 
 	this->view_name = "network";
-	this->addParameter("view_name", DM::STRING, &network);
-
+	this->addParameter("view_name", DM::STRING, &view_name);
 }
 
 void GDALClusterNetwork::init()
