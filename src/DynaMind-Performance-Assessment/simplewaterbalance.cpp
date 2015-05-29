@@ -264,7 +264,7 @@ void SimpleWaterBalance::initmodel()
 	Logger(Standard) << dir.absolutePath().toStdString();
 
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/Modules/libdance4water-nodes";
+		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "libdance4water-nodes";
 		nodereg->addNativePlugin(dance_nodes.toStdString());
 		try{
 		nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
