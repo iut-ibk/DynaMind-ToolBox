@@ -28,3 +28,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from simplify_abs_education import *
 from simplify_abs_income import *
 from rwht_cost_model import *
+from dm_direct_graph import *

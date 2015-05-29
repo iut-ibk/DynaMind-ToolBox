@@ -86,6 +86,7 @@ Data Preparation
 
    gdalextractnodes
    gdalclusternetwork
+   dm_direct_graph
 
 
 External Programs
