@@ -2,7 +2,8 @@
 Direct Graph
 ============
 
-:index:`DM_DirectGraph <GDALModules; DM_DirectGraph | Direct graph>` directs a graph from the root node to the leafs
+:index:`DM_DirectGraph <GDALModules; DM_DirectGraph | Direct graph>` directs a graph from the root node to the leafs.
+With ``start_id`` as downstream node and ``end_id`` as upstream node.
 
 Parameter
 ---------
@@ -24,9 +25,9 @@ Data-stream
 +====================+===========================+==================+=======+==========================================+
 | view_name          |                           | EDGE             | read  |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | start_id                  | INT              | modify|                                          |
+|                    | start_id                  | INT              | modify| downstream node                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | end_id                    | INT              | modify|                                          |
+|                    | end_id                    | INT              | modify| upstream node                            |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 |                    | visited                   | INT              | write |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
