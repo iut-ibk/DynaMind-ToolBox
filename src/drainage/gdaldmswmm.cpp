@@ -51,6 +51,7 @@ GDALDMSWMM::GDALDMSWMM()
 	conduit.addAttribute("start_id", "node", DM::READ);
 	conduit.addAttribute("end_id", "node", DM::READ);
 	conduit.addAttribute("diameter", DM::Attribute::DOUBLE, DM::READ);
+	conduit.addAttribute("type", DM::Attribute::STRING, DM::READ);
 	conduit.addAttribute("capacity", DM::Attribute::DOUBLE, DM::WRITE);
 	conduit.addAttribute("velocity", DM::Attribute::DOUBLE, DM::WRITE);
 	conduit.addAttribute("inlet_offset",  DM::Attribute::DOUBLE, DM::READ);
@@ -78,8 +79,6 @@ GDALDMSWMM::GDALDMSWMM()
 
 	nodes= DM::ViewContainer("node", DM::NODE, DM::READ);
 
-
-
 	city = DM::ViewContainer("city", DM::COMPONENT, DM::READ);
 	city.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
 	city.addAttribute("v_p", DM::Attribute::DOUBLE, DM::WRITE);
@@ -88,7 +87,6 @@ GDALDMSWMM::GDALDMSWMM()
 	city.addAttribute("v_outfall", DM::Attribute::DOUBLE, DM::WRITE);
 	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
 	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
-
 
 	this->FileName = "/tmp/swmm";
 	this->climateChangeFactor = 1;
