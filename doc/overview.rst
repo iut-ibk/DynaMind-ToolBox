@@ -54,6 +54,7 @@ Data Preparation
 - :doc:`GDALExtractNodes </DynaMind-GDALModules/gdalextractnodes>` Creates start and end nodes for a given drainage network
 - :doc:`GDALClusterNetwork </DynaMind-GDALModules/gdalclusternetwork>` Identify clusters of connected lines
 - :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>` Direct graph
+- :doc:`DM_ValueFromRaster</DynaMind-GDALModules/dm_value_from_raster>` Copy raster data values onto nodes>
 
 SWMM
 ----
