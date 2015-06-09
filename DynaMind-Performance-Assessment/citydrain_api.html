@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
-        <link rel="up" title="Performance Assessment" href="index.html"/>
+        <link rel="up" title="CityDrain3" href="index.html"/>
         <link rel="next" title="DynaMind Commandline" href="../DynaMind-Executable/index.html"/>
-        <link rel="prev" title="CityDrain 3 for Module Developers" href="citydrain3.html"/> 
+        <link rel="prev" title="Flow Probe" href="node_flowprobe.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -310,6 +310,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalclusternetwork.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/dm_direct_graph.html">Direct Graph</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_direct_graph.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_direct_graph.html#data-stream">Data-stream</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/dm_value_from_raster.html">Value From Rater</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_value_from_raster.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_value_from_raster.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/dm_value_from_raster.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#external-programs">External Programs</a><ul>
@@ -321,11 +332,29 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Performance Assessment</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#citydrain3">CityDrain3</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">CityDrain3</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="citydrain3.html">CityDrain 3 for Module Developers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="citydrain3.html#what-is-citydrain">What is CityDrain</a></li>
 <li class="toctree-l4"><a class="reference internal" href="citydrain3.html#simulation-interface">Simulation Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#nodes">Nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="node_sewer.html">Sewer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="node_sewer.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="node_sewer.html#in-and-out">In and Out</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="node_mixer.html">Mixer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="node_mixer.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="node_mixer.html#in-and-out">In and Out</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="node_flowprobe.html">Flow Probe</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="node_flowprobe.html#state-variable">State Variable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="node_flowprobe.html#in-and-out">In and Out</a></li>
 </ul>
 </li>
 </ul>
@@ -361,7 +390,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="index.html">Performance Assessment</a> &raquo;</li>
+          <li><a href="index.html">CityDrain3</a> &raquo;</li>
       
     <li>CityDrain3</li>
       <li class="wy-breadcrumbs-aside">
@@ -445,6 +474,21 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="pycd3.CityDrain3.register_python_plugin">
+<code class="descname">register_python_plugin</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#pycd3.CityDrain3.register_python_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> &#8211; file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pycd3.CityDrain3.set_simulation_parameter">
 <code class="descname">set_simulation_parameter</code><span class="sig-paren">(</span><em>start_time</em>, <em>end_time</em>, <em>delta_t</em><span class="sig-paren">)</span><a class="headerlink" href="#pycd3.CityDrain3.set_simulation_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set simulation start, end time as well as delta T</p>
@@ -494,7 +538,7 @@
         <a href="../DynaMind-Executable/index.html" class="btn btn-neutral float-right" title="DynaMind Commandline" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="citydrain3.html" class="btn btn-neutral" title="CityDrain 3 for Module Developers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="node_flowprobe.html" class="btn btn-neutral" title="Flow Probe" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

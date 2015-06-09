@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generate Simple Buildings &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Value From Rater &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Loop Group" href="loopgroup.html"/>
-        <link rel="prev" title="Subdivide Parcels" href="gdalparcelsplit.html"/> 
+        <link rel="next" title="SWMM Integration" href="gdaldmswmm.html"/>
+        <link rel="prev" title="Direct Graph" href="dm_direct_graph.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -144,7 +144,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Standard Modules (GDAL)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="overview.html">Standard Modules</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="overview.html#data-import-and-export">Data Import and Export</a></li>
@@ -251,7 +251,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatecentroids.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalcalculatecentroids.html#data-stream">Data-stream</a></li>
@@ -278,10 +278,10 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalparcelsplit.html#detailed-description">Detailed Description</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Generate Simple Buildings</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreatebuilding.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreatebuilding.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalcreatebuilding.html#detailed-description">Detailed Description</a></li>
 </ul>
 </li>
 </ul>
@@ -296,8 +296,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#data-stream">Data-stream</a></li>
@@ -315,10 +315,10 @@
 <li class="toctree-l4"><a class="reference internal" href="dm_direct_graph.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dm_value_from_raster.html">Value From Rater</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dm_value_from_raster.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_value_from_raster.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_value_from_raster.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Value From Rater</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 </ul>
@@ -392,11 +392,11 @@
       
           <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
       
-    <li>Generate Simple Buildings</li>
+    <li>Value From Rater</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalcreatebuilding.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dm_value_from_raster.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -405,17 +405,17 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="generate-simple-buildings">
-<h1>Generate Simple Buildings<a class="headerlink" href="#generate-simple-buildings" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>GDALCreateBuilding Generates simple
-buildings in the centre of the parcel</p>
+  <div class="section" id="value-from-rater">
+<h1>Value From Rater<a class="headerlink" href="#value-from-rater" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>DM_ValueFromRaster adds the value from at the node
+location.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="21%" />
-<col width="63%" />
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -424,17 +424,17 @@ buildings in the centre of the parcel</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>width</td>
-<td>DOUBLE</td>
-<td>standard with of the building</td>
+<tr class="row-even"><td>view_name</td>
+<td>STRING</td>
+<td>lead view name</td>
 </tr>
-<tr class="row-odd"><td>length</td>
-<td>DOUBLE</td>
-<td>standard length of the building</td>
+<tr class="row-odd"><td>attribute_name</td>
+<td>STRING</td>
+<td>name of the attribute added to the nodes</td>
 </tr>
-<tr class="row-even"><td>residential_units</td>
-<td>INT</td>
-<td>residential units</td>
+<tr class="row-even"><td>raster_file</td>
+<td>STRING</td>
+<td>raster data file</td>
 </tr>
 </tbody>
 </table>
@@ -444,7 +444,7 @@ buildings in the centre of the parcel</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
-<col width="23%" />
+<col width="24%" />
 <col width="16%" />
 <col width="6%" />
 <col width="37%" />
@@ -458,36 +458,30 @@ buildings in the centre of the parcel</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>parcel</td>
+<tr class="row-even"><td>view_name</td>
 <td>&nbsp;</td>
-<td>FACE</td>
+<td>NODE</td>
 <td>read</td>
-<td>parcels where building is placed</td>
+<td>&nbsp;</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td>building</td>
-<td>&nbsp;</td>
-<td>FACE</td>
+<td>attribute_name</td>
+<td>DOUBLE</td>
 <td>write</td>
-<td>resulting faces</td>
-</tr>
-<tr class="row-odd"><td>&nbsp;</td>
-<td>residential_units</td>
-<td>INT</td>
-<td>write</td>
-<td>residential units (from input)</td>
+<td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="detailed-description">
-<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>Creates simple buildings in the centroids of the parcel.</p>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">value_form_raster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;DM_ValueFromRaster&#39;</span><span class="p">,</span>
+                          <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;inlet&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;attribute_name&#39;</span><span class="p">:</span> <span class="s">&#39;height&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;raster_file&#39;</span><span class="p">:</span> <span class="s">&#39;vicmap_elev_dtm20.tif&#39;</span><span class="p">},</span>
+                           <span class="n">nodes</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -497,10 +491,10 @@ buildings in the centre of the parcel</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="loopgroup.html" class="btn btn-neutral float-right" title="Loop Group" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdaldmswmm.html" class="btn btn-neutral float-right" title="SWMM Integration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalparcelsplit.html" class="btn btn-neutral" title="Subdivide Parcels" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dm_direct_graph.html" class="btn btn-neutral" title="Direct Graph" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
