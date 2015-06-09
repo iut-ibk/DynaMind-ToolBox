@@ -4,7 +4,7 @@ Mixer
 
 :index:`Mixer <CD3Node; Mixer | Combining streams>` combines two or more.
 Depending on the num_inputs parameter n inports are created.
-The ports are number form 1 to n.
+The ports are number from 0 to n-1.
 
 Flow
 
@@ -40,13 +40,13 @@ In and Out
 +--------------------+------------+----------------+
 |        View        | Type       |   Description  |
 +====================+============+================+
-| in_1               | in         |                |
+| in_0               | in         |                |
 +--------------------+------------+----------------+
-| in_2               | in         |                |
+| in_1               | in         |                |
 +--------------------+------------+----------------+
 | ...                | in         |                |
 +--------------------+------------+----------------+
-| in_n               | in         |                |
+| in_n-1             | in         |                |
 +--------------------+------------+----------------+
 | out                | out        |                |
 +--------------------+------------+----------------+
