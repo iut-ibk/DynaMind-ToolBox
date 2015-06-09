@@ -5,7 +5,7 @@ import gdal, osr
 from gdalconst import *
 import struct
 
-class DM_ValueToRaster(Module):
+class DM_ValueFromRaster(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
