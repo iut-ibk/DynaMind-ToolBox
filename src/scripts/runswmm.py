@@ -6,21 +6,37 @@ import subprocess
 import tempfile
 import time
 import smtplib
+import argparse
 from email.mime.text import MIMEText
 
+EMAIL = "christian.mikovits@uibk.ac.at"
+SMTP = "smtp.uibk.ac.at"
 
-MAX_PROCS = 20 #multiprocessing.cpu_count()-1 #or give a number
+def create_argparser():
+    parser = argparse.ArgumentParser(description='runs swmm5 processes in parallel')
+    parser.add_argument('-p', '--procs', default=multiprocessing.cpu_count()-1, dest='max_procs',
+    					help='how many processors should be used,\n\t default and maximum is number of processors - 1')
+    parser.add_argument('-e', '--email', default=EMAIL, dest='email',
+    					help='email address for the finish notification')
+    parser.add_argument('-s', '--smtp', default=SMTP, dest='smtp',
+    					help='smtp server to send the message')
 
+    parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
+    					help='sets ')
+    parser.add_argument('-d', '--dryrun', dest='dryrun', action='store_true',
+    					help='')
 
-def execswmm(swmm5bin, simname, cursimdir, num):
+    return parser
+
+def execswmm(swmm5bin, simname, cursimdir, num, totalnum):
 	binextender = "./"
 	if sys.platform == 'win32':
 		binextender == ""
 
 	cmd = (binextender+swmm5bin,simname+".inp",simname+".rep")
-	print("Starting process %s: %s" % (num, simname))
+	print("Starting process %s of %s: %s" % (num, totalnum, simname))
 	sp = subprocess.call(cmd,cwd=cursimdir,stdout=subprocess.DEVNULL)
-	print("Finished process: %s" % num)
+	print("Finished process: %s of %s" % (num, totalnum))
 	return 0
 	
 def execswmm_parallel(args):
@@ -29,17 +45,20 @@ def execswmm_parallel(args):
 def sendmessage():
 	msg = MIMEText("")
 	msg['Subject'] = "runswmm just finished"
-	msg['From'] = "christian.mikvits@uibk.ac.at"
-	msg['To'] = "christian.mikovits@uibk.ac.at"
-	c = smtplib.SMTP('smtp.uibk.ac.at')
+	msg['From'] = EMAIL
+	msg['To'] = EMAIL
+	c = smtplib.SMTP(SMTP)
 	c.send_message(msg)
 	c.quit()
 
 def main():
 
-	workdir = os.getcwd()
-	tempdir = tempfile.gettempdir()
-
+	parser = create_argparser()
+	args = parser.parse_args()
+	workdir = args.workdir
+	tempdir = args.workdir
+	max_procs = args.max_procs
+	
 	swmm5bin = "swmm5"
 	if sys.platform == 'win32':
 		swmm5bin = "swmm5.exe"
@@ -48,22 +67,34 @@ def main():
 	datdirs = os.path.join(workdir,"datfiles")
 	simdirs = os.path.join(tempdir,"simdirs")
 	swmm5loc = os.path.join(workdir,swmm5bin)
-
-	try:
-		shutil.rmtree(simdirs)
-	except:
-		pass
 	
-	os.mkdir(simdirs)
+	print(args)
+	
+	if args.dryrun != True:
 
-	pool = multiprocessing.Pool(processes=MAX_PROCS)
+		try:
+			shutil.rmtree(simdirs)
+		except:
+			pass
+	
+		os.mkdir(simdirs)
+
+	pool = multiprocessing.Pool(processes=max_procs)
 	inpfiles = glob.glob(inpdirs+"/*inp")
+	if len(inpfiles) == 0:
+		print("no inputfiles found")
+		sys.exit(0)
+	
 	datfiles = glob.glob(datdirs+"/*dat")
+	if len(datfiles) == 0:
+		print("no rainfiles found")
+		sys.exit(0)
+
 	totaliterations = len(inpfiles)*len(datfiles)
 
-	print("Starting a total of %s itarations using %s CPUs" % (totaliterations,MAX_PROCS))
+	print("Starting a total of %s itarations using %s CPUs" % (totaliterations,max_procs))
 	x=0
-
+	
 	for inpfile in inpfiles:
 		for datfile in datfiles:
 			x=x+1
@@ -83,10 +114,10 @@ def main():
 			shutil.copyfile(inpfile,curinpfile)
 			shutil.copyfile(datfile,curdatfile)
 		
-			params = [(swmm5bin,simname,cursimdir,x)]
-		
+			params = [(swmm5bin,simname,cursimdir,x,totaliterations)]
+			
 			res = pool.map_async(execswmm_parallel, params)
-
+			
 	res.get()
 	print("FINISHED")
 	sendmessage()
