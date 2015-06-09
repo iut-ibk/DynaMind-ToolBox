@@ -51,7 +51,7 @@ int GDALUtilities::OGRtoDMGeometry(OGRFeatureDefn *def)
 	case wkbMultiLineString:
 		type = DM::EDGE;
 		break;
-	case wkbNone:
+	case wkbUnknown:
 		type = DM::COMPONENT;
 		break;
 	default:
