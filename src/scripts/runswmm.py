@@ -9,17 +9,14 @@ import smtplib
 import argparse
 from email.mime.text import MIMEText
 
-EMAIL = "christian.mikovits@uibk.ac.at"
-SMTP = "smtp.uibk.ac.at"
-
 def create_argparser():
     parser = argparse.ArgumentParser(description='runs swmm5 processes in parallel\n')
     parser.add_argument('-p', '--procs', type=int, default=multiprocessing.cpu_count()-1, dest='max_procs',
     					help='how many processors should be used,\n\t default and maximum is number of processors - 1')
-    parser.add_argument('-e', '--email', default=EMAIL, dest='email',
+    parser.add_argument('-e', '--email', default='', dest='email',
     					help='email address for the finish notification')
-    parser.add_argument('-s', '--smtp', default=SMTP, dest='smtp',
-    					help='smtp server to send the message')
+    parser.add_argument('-s', '--smtp', default='', dest='smtp',
+    					help='smtp server to send the message, else the plain maildomain from the email provided will be used.')
     parser.add_argument('-r', '--readdir', default=os.getcwd(), dest='readdir',
     					help='sets the ')
     parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
@@ -48,29 +45,29 @@ def execswmm(swmm5bin, simname, cursimdir, perc):
 def execswmm_parallel(params):
 	return execswmm(*params)
 
-def sendmessage():
+def sendmessage(email, server):
 	msg = MIMEText("")
 	msg['Subject'] = "runswmm just finished"
-	msg['From'] = EMAIL
-	msg['To'] = EMAIL
-	c = smtplib.SMTP(SMTP)
+	msg['From'] = email
+	msg['To'] = email
+	c = smtplib.SMTP(server)
 	c.send_message(msg)
 	c.quit()
 	
-def create_simulations(readdir, workdir, swmm5bin):
+def create_simulations(readdir, workdir, swmm5bin, resume):
 
 	inpdir = os.path.join(readdir,"inpfiles")
 	datdir = os.path.join(readdir,"datfiles")
 	simdirs = os.path.join(workdir,"simdirs")
 	swmm5loc = os.path.join(readdir,swmm5bin)
 	
-	inpfiles = glob.glob(inpdirs+"/*inp")
+	inpfiles = glob.glob(inpdir+"/*inp")
 
 	if len(inpfiles) == 0:
 		print("no inputfiles found")
 		sys.exit(0)
 	
-	datfiles = glob.glob(datdirs+"/*dat")
+	datfiles = glob.glob(datdir+"/*dat")
 	if len(datfiles) == 0:
 		print("no rainfiles found")
 		sys.exit(0)
@@ -89,7 +86,7 @@ def create_simulations(readdir, workdir, swmm5bin):
 			curdatfile = os.path.join(cursimdir,"rain.dat")
 			currepfile = os.path.join(cursimdir,simname+".rep")
 			
-			if args.resume == True:
+			if resume == True:
 				donefile = os.path.join(cursimdir,simname+".done")
 				if os.path.isfile(donefile):
 					continue
@@ -117,14 +114,28 @@ def cleanworkdir(workdir):
 	
 	return 0
 
+def run_simpool(simulations,swmm5bin,max_procs):
+	
+	pool = multiprocessing.Pool(processes=max_procs)
+	totaliterations=len(simulations)
+	
+	print("Starting a total of %s itarations using %s of %s CPUs" % (totaliterations,max_procs,multiprocessing.cpu_count()))
+				
+	for index, params in enumerate(simulations):
+		perc = int(index/totaliterations*100)
+		params = [(swmm5bin, params[0], params[1], perc)]
+		res = pool.map_async(execswmm_parallel, params)
+			
+	if totaliterations == 0:
+		sys.exit("Nothing to do")
+	
+	res.get()
+	return 0
+
 def main():
 
 	parser = create_argparser()
 	args = parser.parse_args()
-	
-	readdir = args.readdir
-	workdir = args.workdir
-	max_procs = args.max_procs
 	
 	swmm5bin = "swmm5"
 	if sys.platform == 'win32':
@@ -136,28 +147,12 @@ def main():
 		
 	if args.cleanworkdir == True:
 		cleanworkdir(workdir)
-		
-	pool = multiprocessing.Pool(processes=max_procs)
-
-		
-	simulations = create_simulations(inputdir, workdir, swmm5bin)
-
-	totaliterations=len(simulations)
 	
-	print("Starting a total of %s itarations using %s of %s CPUs" % (totaliterations,max_procs,multiprocessing.cpu_count()))
-				
-	for index, params in enumerate(simulations):
-		perc = int(index/totaliterations*100)
-		params = [(swmm5bin, params[0], params[1], perc)]
-		
-		res = pool.map_async(execswmm_parallel, params)
-			
-	if totaliterations == 0:
-		sys.exit("Nothing to do")
+	simulations = create_simulations(args.readdir, args.workdir, swmm5bin, args.resume)
+	run_simpool(simulations,swmm5bin,args.max_procs)
 	
-	res.get()
-	print("FINISHED")
-	sendmessage()
+	if args.email != '':
+		sendmessage(args.email, args.smtp)
 
 if __name__ == "__main__":
 	main()
