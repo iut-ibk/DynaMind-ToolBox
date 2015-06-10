@@ -21,7 +21,8 @@ def create_argparser():
     					help='sets the ')
     parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
     					help='sets the simulation and report directory')
-    parser.add_argument('--clean', dest='cleanworkdir', action='store_true',
+
+    parser.add_argument('--clean', dest='clean', action='store_true',
     					help='')
     parser.add_argument('--resume', dest='resume', action='store_true',
     					help='')
@@ -46,6 +47,8 @@ def execswmm_parallel(params):
 	return execswmm(*params)
 
 def sendmessage(email, server):
+	if server == '':
+		server = email.split('@')[1]
 	msg = MIMEText("")
 	msg['Subject'] = "runswmm just finished"
 	msg['From'] = email
@@ -54,11 +57,10 @@ def sendmessage(email, server):
 	c.send_message(msg)
 	c.quit()
 	
-def create_simulations(readdir, workdir, swmm5bin, resume):
+def create_simulations(readdir, simdirs, swmm5bin, resume):
 
 	inpdir = os.path.join(readdir,"inpfiles")
 	datdir = os.path.join(readdir,"datfiles")
-	simdirs = os.path.join(workdir,"simdirs")
 	swmm5loc = os.path.join(readdir,swmm5bin)
 	
 	inpfiles = glob.glob(inpdir+"/*inp")
@@ -104,13 +106,13 @@ def create_simulations(readdir, workdir, swmm5bin, resume):
 
 	return simulations
 	
-def cleanworkdir(workdir):
+def cleansimdirs(simdirs):
 	try:
-		shutil.rmtree(workdir)
+		shutil.rmtree(simdirs)
 	except:
 		pass
 	
-	os.mkdir(workdir)
+	os.mkdir(simdirs)
 	
 	return 0
 
@@ -144,11 +146,13 @@ def main():
 	if args.run != True:
 		print(args)
 		sys.exit()
-		
-	if args.cleanworkdir == True:
-		cleanworkdir(workdir)
+
+	simdirs = os.path.join(args.workdir,"simdirs")
+
+	if args.clean == True:
+		cleansimdirs(simdirs)
 	
-	simulations = create_simulations(args.readdir, args.workdir, swmm5bin, args.resume)
+	simulations = create_simulations(args.readdir, simdirs, swmm5bin, args.resume)
 	run_simpool(simulations,swmm5bin,args.max_procs)
 	
 	if args.email != '':
