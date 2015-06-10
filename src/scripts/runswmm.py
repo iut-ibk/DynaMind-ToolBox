@@ -13,34 +13,40 @@ EMAIL = "christian.mikovits@uibk.ac.at"
 SMTP = "smtp.uibk.ac.at"
 
 def create_argparser():
-    parser = argparse.ArgumentParser(description='runs swmm5 processes in parallel')
-    parser.add_argument('-p', '--procs', default=multiprocessing.cpu_count()-1, dest='max_procs',
+    parser = argparse.ArgumentParser(description='runs swmm5 processes in parallel\n')
+    parser.add_argument('-p', '--procs', type=int, default=multiprocessing.cpu_count()-1, dest='max_procs',
     					help='how many processors should be used,\n\t default and maximum is number of processors - 1')
     parser.add_argument('-e', '--email', default=EMAIL, dest='email',
     					help='email address for the finish notification')
     parser.add_argument('-s', '--smtp', default=SMTP, dest='smtp',
     					help='smtp server to send the message')
-
+    parser.add_argument('-r', '--readdir', default=os.getcwd(), dest='readdir',
+    					help='sets the ')
     parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
-    					help='sets ')
-    parser.add_argument('-d', '--dryrun', dest='dryrun', action='store_true',
+    					help='sets the simulation and report directory')
+    parser.add_argument('--clean', dest='cleanworkdir', action='store_true',
+    					help='')
+    parser.add_argument('--resume', dest='resume', action='store_true',
+    					help='')
+    parser.add_argument('--run', dest='run', action='store_true',
     					help='')
 
     return parser
 
-def execswmm(swmm5bin, simname, cursimdir, num, totalnum):
+def execswmm(swmm5bin, simname, cursimdir, perc):
 	binextender = "./"
 	if sys.platform == 'win32':
 		binextender == ""
 
 	cmd = (binextender+swmm5bin,simname+".inp",simname+".rep")
-	print("Starting process %s of %s: %s" % (num, totalnum, simname))
+	print("%s%%: Processing %s" % (perc, simname))
 	sp = subprocess.call(cmd,cwd=cursimdir,stdout=subprocess.DEVNULL)
-	print("Finished process: %s of %s" % (num, totalnum))
+	donefile = os.path.join(cursimdir,simname+".done")
+	open(donefile, 'x').close()
 	return 0
 	
-def execswmm_parallel(args):
-	return execswmm(*args)
+def execswmm_parallel(params):
+	return execswmm(*params)
 
 def sendmessage():
 	msg = MIMEText("")
@@ -50,37 +56,16 @@ def sendmessage():
 	c = smtplib.SMTP(SMTP)
 	c.send_message(msg)
 	c.quit()
-
-def main():
-
-	parser = create_argparser()
-	args = parser.parse_args()
-	workdir = args.workdir
-	tempdir = args.workdir
-	max_procs = args.max_procs
 	
-	swmm5bin = "swmm5"
-	if sys.platform == 'win32':
-		swmm5bin = "swmm5.exe"
+def create_simulations(readdir, workdir, swmm5bin):
 
-	inpdirs = os.path.join(workdir,"inpfiles")
-	datdirs = os.path.join(workdir,"datfiles")
-	simdirs = os.path.join(tempdir,"simdirs")
-	swmm5loc = os.path.join(workdir,swmm5bin)
+	inpdir = os.path.join(readdir,"inpfiles")
+	datdir = os.path.join(readdir,"datfiles")
+	simdirs = os.path.join(workdir,"simdirs")
+	swmm5loc = os.path.join(readdir,swmm5bin)
 	
-	print(args)
-	
-	if args.dryrun != True:
-
-		try:
-			shutil.rmtree(simdirs)
-		except:
-			pass
-	
-		os.mkdir(simdirs)
-
-	pool = multiprocessing.Pool(processes=max_procs)
 	inpfiles = glob.glob(inpdirs+"/*inp")
+
 	if len(inpfiles) == 0:
 		print("no inputfiles found")
 		sys.exit(0)
@@ -90,14 +75,10 @@ def main():
 		print("no rainfiles found")
 		sys.exit(0)
 
-	totaliterations = len(inpfiles)*len(datfiles)
-
-	print("Starting a total of %s itarations using %s CPUs" % (totaliterations,max_procs))
-	x=0
+	simulations = list()
 	
 	for inpfile in inpfiles:
 		for datfile in datfiles:
-			x=x+1
 			inpname=os.path.split(inpfile)[1].split('.')[0]
 			datname=os.path.split(datfile)[1].split('.')[0]
 			simname=inpname+'_'+datname
@@ -107,17 +88,73 @@ def main():
 			curinpfile = os.path.join(cursimdir,simname+".inp")
 			curdatfile = os.path.join(cursimdir,"rain.dat")
 			currepfile = os.path.join(cursimdir,simname+".rep")
-		
+			
+			if args.resume == True:
+				donefile = os.path.join(cursimdir,simname+".done")
+				if os.path.isfile(donefile):
+					continue
+			try:
+				shutil.rmtree(cursimdir)
+			except:
+				pass
 			os.mkdir(cursimdir)
-		
 			shutil.copy(swmm5loc,cursimdir)
 			shutil.copyfile(inpfile,curinpfile)
 			shutil.copyfile(datfile,curdatfile)
+			
+			siminfo = (simname,cursimdir)
+			simulations.append(siminfo)
+
+	return simulations
+	
+def cleanworkdir(workdir):
+	try:
+		shutil.rmtree(workdir)
+	except:
+		pass
+	
+	os.mkdir(workdir)
+	
+	return 0
+
+def main():
+
+	parser = create_argparser()
+	args = parser.parse_args()
+	
+	readdir = args.readdir
+	workdir = args.workdir
+	max_procs = args.max_procs
+	
+	swmm5bin = "swmm5"
+	if sys.platform == 'win32':
+		swmm5bin = "swmm5.exe"
+
+	if args.run != True:
+		print(args)
+		sys.exit()
 		
-			params = [(swmm5bin,simname,cursimdir,x,totaliterations)]
+	if args.cleanworkdir == True:
+		cleanworkdir(workdir)
+		
+	pool = multiprocessing.Pool(processes=max_procs)
+
+		
+	simulations = create_simulations(inputdir, workdir, swmm5bin)
+
+	totaliterations=len(simulations)
+	
+	print("Starting a total of %s itarations using %s of %s CPUs" % (totaliterations,max_procs,multiprocessing.cpu_count()))
+				
+	for index, params in enumerate(simulations):
+		perc = int(index/totaliterations*100)
+		params = [(swmm5bin, params[0], params[1], perc)]
+		
+		res = pool.map_async(execswmm_parallel, params)
 			
-			res = pool.map_async(execswmm_parallel, params)
-			
+	if totaliterations == 0:
+		sys.exit("Nothing to do")
+	
 	res.get()
 	print("FINISHED")
 	sendmessage()
