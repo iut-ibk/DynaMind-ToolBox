@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	app.processEvents();
 	QThreadPool::globalInstance()->setMaxThreadCount(0);
 
-	DMMainWindow mw(app.arguments());
+	DMMainWindow mw;
 	mw.show();
 	splash1.finish(&mw);
 

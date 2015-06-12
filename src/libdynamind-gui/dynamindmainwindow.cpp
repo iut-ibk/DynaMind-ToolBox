@@ -28,9 +28,9 @@
 #include <dmmainwindow.h>
 #include <guisimulation.h>
 
-DynaMindMainWindow::DynaMindMainWindow(QStringList args)
+DynaMindMainWindow::DynaMindMainWindow()
 {
-	mw = new DMMainWindow(args);
+	mw = new DMMainWindow();
 }
 
 void DynaMindMainWindow::createMainWindow() {

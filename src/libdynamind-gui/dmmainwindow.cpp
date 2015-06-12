@@ -77,7 +77,7 @@ void DMMainWindow::updateProgress(float progress)
 	ui->progressBar->setValue((int)(progress*100));
 }
 
-DMMainWindow::DMMainWindow(QStringList args, QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
+DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::DMMainWindow)
 {
 	// qt init
 	Q_INIT_RESOURCE(icons);
@@ -127,6 +127,7 @@ DMMainWindow::DMMainWindow(QStringList args, QWidget * parent) : QMainWindow(par
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
 
+    QStringList args = QCoreApplication::arguments();
     if (args.size() == 2) {
 		this->clearSimulation();
 		this->getSimulation()->currentDocument = args[1];
