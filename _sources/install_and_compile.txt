@@ -55,8 +55,15 @@ Linux (Ubuntu)
 
     git submodule update --init --recursive
 
-
-    cmake . -DWITH_PLUGIN_GDALMODULE=TRUE -DWITH_DOC=True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=True -DWITH_PLUGIN_GDALDRAINAGE=True && make && make install
+    mkdir build
+    
+    cd build
+    
+    cmake ../ -DWITH_PLUGIN_GDALMODULE=TRUE -DWITH_DOC=True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=True -DWITH_PLUGIN_GDALDRAINAGE=True
+    
+    make
+    
+    make install
 
 ..
 

@@ -446,8 +446,15 @@ git clone git://github.com/iut-ibk/DynaMind-ToolBox.git
 
 git submodule update --init --recursive
 
+mkdir build
 
-cmake . -DWITH_PLUGIN_GDALMODULE<span class="o">=</span>TRUE -DWITH_DOC<span class="o">=</span>True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT<span class="o">=</span>True -DWITH_PLUGIN_GDALDRAINAGE<span class="o">=</span>True <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
+<span class="nb">cd </span>build
+
+cmake ../ -DWITH_PLUGIN_GDALMODULE<span class="o">=</span>TRUE -DWITH_DOC<span class="o">=</span>True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT<span class="o">=</span>True -DWITH_PLUGIN_GDALDRAINAGE<span class="o">=</span>True
+
+make
+
+make install
 </pre></div>
 </div>
 <p>To start DynaMind open a console and run <code class="docutils literal"><span class="pre">dynamind</span></code> or <code class="docutils literal"><span class="pre">dynamind-gui</span></code></p>
