@@ -30,7 +30,7 @@ Linux (Ubuntu)
 
     sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     sudo apt-get update
-    sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1-dev libcgal-dev libqglviewer-dev libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf
+    sudo apt-get install build-essential cmake git swig qt4-dev-tools python-dev python-pip libgdal1-dev libcgal-dev libqglviewer-dev libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib python-netcdf libboost-all-dev
 
     sudo pip install reimport
     sudo pip install netCDF4
@@ -56,7 +56,7 @@ Linux (Ubuntu)
     git submodule update --init --recursive
 
 
-    cmake . -DWITH_PLUGIN_GDALMODULE=TRUE -DWITH_DOC=True && make && make install
+    cmake . -DWITH_PLUGIN_GDALMODULE=TRUE -DWITH_DOC=True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=True -DWITH_PLUGIN_GDALDRAINAGE=True && make && make install
 
 ..
 
