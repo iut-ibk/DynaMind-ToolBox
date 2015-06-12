@@ -48,7 +48,7 @@ class DM_HELPER_DLL_EXPORT DMMainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
-	DMMainWindow(QWidget *parent = 0);
+	DMMainWindow(QStringList args, QWidget *parent = 0);
 	~DMMainWindow();
 	GuiLogSink *log_updater;
 	GUISimulation * getSimulation() {return this->simulation;}

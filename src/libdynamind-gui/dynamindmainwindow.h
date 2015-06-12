@@ -10,7 +10,7 @@ class DM_HELPER_DLL_EXPORT DynaMindMainWindow
 private:
 	DMMainWindow * mw;
 public:
-	DynaMindMainWindow();
+	DynaMindMainWindow(QStringList args);
 	void createMainWindow();
 	void registerNativeDll(std::string fileName);
 };
