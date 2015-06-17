@@ -9,7 +9,11 @@ INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR})
 
 ADD_LIBRARY(dynamind-performance-assessment SHARED ${MODULE_CPPS} ${CD3_HELPER})
 
-TARGET_LINK_LIBRARIES(dynamind-performance-assessment cd3core ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
+IF(USEQT5)
+    TARGET_LINK_LIBRARIES(dynamind-performance-assessment cd3core ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} Qt5::Core)
+ELSE()
+    TARGET_LINK_LIBRARIES(dynamind-performance-assessment cd3core ${DYNAMIND_TOOLBOX_LIBRARY}  ${DYNAMIND_CORE_LIBRARY} ${QT_LIBRARIES})
+ENDIF()
 
 INSTALL(TARGETS dynamind-performance-assessment
 		DESTINATION "share/DynaMind/native_extensions"
