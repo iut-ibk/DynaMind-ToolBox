@@ -24,7 +24,7 @@ OPTION(WITH_PLUGIN_PERFORMANCE_ASSESSMENT "if with performance assessment plugin
 OPTION(WITH_DOC "Create Docu" OFF)
 OPTION(PYTHON_EMBEDDING "Embedding Python" ON)
 OPTION(USEQT5 "Use Qt5" OFF)
-OPTION(QGL_FROM_SOURCE "Build QGLViewer from source" OFF)
+OPTION(QGL_FROM_SOURCE "Build QGLViewer from source" ON)
 
 set(QT_MAJOR_VERSION 4)
 if(USEQT5)
