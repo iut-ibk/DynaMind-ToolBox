@@ -62,6 +62,9 @@ ViewerWindow::ViewerWindow(System* system, const std::map<std::string, DM::View>
 		QObject::connect(ui->addLayer, SIGNAL(pressed()), ui->actionAdd_Layer, SLOT(trigger()));
 		// as it has no function yet, we disable rm layer
 		ui->removeLayer->setDisabled(true);
+
+        //XXX: this is a temporary hack to enforce a redraw
+        ui->viewer->drawText(0, 0, ".");
 }
 
 ViewerWindow::~ViewerWindow() {
