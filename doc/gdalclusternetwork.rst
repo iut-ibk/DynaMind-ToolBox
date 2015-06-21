@@ -32,3 +32,14 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+---------------------------------------------+
 
 
+
+Sample Code for Python Simulation
+---------------------------------
+.. code-block:: python
+
+    #calculate length of edges in network
+    cluster = sim.add_module('GDALClusterNetwork',
+                             {'view_name': 'drainage'},
+                             network)
+..
+
