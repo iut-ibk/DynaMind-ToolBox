@@ -39,6 +39,8 @@
 #include <portnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
+#include <dm.h>
+
 //#define QGLVIEWER
 
 #ifdef VIEWER
@@ -62,6 +64,8 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) 
 	child = NULL;
 	module = m;
 	ng = NULL;
+	width = 50;
+	height = 50;
 
 	setAcceptDrops(true);
 
@@ -69,6 +73,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) 
 	this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 	this->setFlag(QGraphicsItem::ItemIsMovable, true);
 	this->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+	this->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
 	resize();
 
@@ -77,6 +82,7 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) 
 
 	hovered = false;
 	setAcceptHoverEvents(true);
+
 }
 
 ModelNode::~ModelNode() 
@@ -91,19 +97,13 @@ ModelNode::~ModelNode()
 void ModelNode::resize()
 {
 	// module name has to fit in node
-	QString text = QString::fromStdString(module->getName());
-	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
-	width = max(50, (int)textSize.width() + 30);
 
-	QString text_m =  QString::fromStdString(module->getClassName());
-	textSize = QGraphicsSimpleTextItem(text_m).boundingRect();
-	width = max(width, (int)textSize.width() + 30);
 
-	// make groups a bit bigger
-	if(!module->isGroup())
-		height =  45;
-	else
-		height =  65;
+	//	// make groups a bit bigger
+	//	if(!module->isGroup())
+	//		height =  45;
+	//	else
+	//		height =  65;
 
 	// ports names have to fit
 	/*int maxPortSize = 0;
@@ -114,8 +114,8 @@ void ModelNode::resize()
 	width = max(width, 2*maxPortSize);*/
 
 	// port number has to fit
-	int maxPortCount = max(module->getInPortNames().size(), module->getOutPortNames().size());
-	height = max(height, 20 + 15 * maxPortCount);
+	//	int maxPortCount = max(module->getInPortNames().size(), module->getOutPortNames().size());
+	//	height = max(height, 20 + 15 * maxPortCount);
 
 	// update port pos
 	foreach(PortNode* p, ports)
@@ -176,7 +176,11 @@ void ModelNode::removePort(const std::string &name, const DM::PortType type)
 	resize();
 }
 
-void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) 
+typedef std::map<std::string, std::map<std::string, DM::View> > stream_map;
+typedef std::map<std::string, DM::View> view_map;
+
+
+void ModelNode::paint_rect(QPainter *painter)
 {
 	if(isSelected() || hovered)
 		setZValue(5.0); //Above Link
@@ -184,25 +188,15 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		setZValue(2.0);
 
 	float lineWidth = 1.0f;
-	QColor fillcolor;    
-	QColor border_color = QColor(0,0,0); //COLOR_MODULEBORDER;
+	QColor fillcolor = COLOR_MOD_BG_COLOR;
+	QColor border_color = COLOR_MODULEBORDER; //COLOR_MODULEBORDER;
 
-	switch(module->getStatus())
-	{
-	case DM::MOD_UNTOUCHED:			fillcolor = QColor(244,141,2);	break;
 
-	case DM::MOD_EXECUTING:			fillcolor = QColor(142,174,255);	break;
-	case DM::MOD_EXECUTION_OK:		fillcolor = QColor(191,213,154);		break;
-	case DM::MOD_EXECUTION_ERROR:	fillcolor = QColor(244,141,2);		break;
 
-	case DM::MOD_CHECK_OK:			fillcolor = QColor(255,255,255);	break;
-	case DM::MOD_CHECK_ERROR:		fillcolor = QColor(244,141,2);	break;
-	}
-
-	if(module->isSuccessorMode() && (module->getStatus() == DM::MOD_EXECUTION_OK || module->getStatus() == DM::MOD_CHECK_OK) )
+	/*if(module->isSuccessorMode() && (module->getStatus() == DM::MOD_EXECUTION_OK || module->getStatus() == DM::MOD_CHECK_OK) )
 	{
 		fillcolor = QColor(254,221,86);
-	}
+	}*/
 
 	if(isSelected() || hovered)
 	{
@@ -212,40 +206,350 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 	// the constructor for QColor is neccessary
 	QPen rectPen(QColor(border_color), lineWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-
 	QBrush brush(fillcolor);
 
 	QPainterPath rectPath;
 	rectPath.addRect(boundingRect().adjusted(lineWidth,lineWidth,-lineWidth,-lineWidth));
 	painter->fillPath(rectPath, brush);
 	painter->strokePath(rectPath, rectPen);
+}
 
-	QString text =  QString::fromStdString(module->getName());
-	QRectF textSize = QGraphicsSimpleTextItem(text).boundingRect();
+double ModelNode::paint_header(QPainter * painter, double & pos) {
+
+	// Set Module Class
+
+	// the constructor for QColor is neccessary
+	//QPen rectPen(QColor(254,221,86), 1.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+	float lineWidth = 1.0f;
+	QColor fillcolor;
+	switch(module->getStatus())
+	{
+	case DM::MOD_UNTOUCHED:			fillcolor = COLOR_MOD_UNTOUCHED;			break;
+
+	case DM::MOD_EXECUTING:			fillcolor = COLOR_MOD_EXECUTING;			break;
+	case DM::MOD_EXECUTION_OK:		fillcolor = COLOR_MOD_EXECUTION_OK;			break;
+	case DM::MOD_EXECUTION_ERROR:	fillcolor = COLOR_MOD_EXECUTION_ERROR;		break;
+
+	case DM::MOD_CHECK_OK:			fillcolor = COLOR_MOD_CHECK_OK;				break;
+	case DM::MOD_CHECK_ERROR:		fillcolor = COLOR_MOD_CHECK_ERROR;			break;
+	}
+
+	if(isSelected() || hovered)
+	{
+		lineWidth = 2.0f;
+	}
+	QBrush brush(fillcolor);
+	QPainterPath rectPath;
+	rectPath.addRect(boundingRect().x() + 2*lineWidth, boundingRect().y() + 2*lineWidth, boundingRect().width()-4*lineWidth, pos + 27 - 2*lineWidth );
+	painter->fillPath(rectPath, brush);
+	//painter->strokePath(rectPath, rectPen);
+
+	QString text =  QString::fromStdString(module->getClassName());
+	QRectF textSize_Name = QGraphicsSimpleTextItem(text).boundingRect();
 	QFont font = painter->font();
 	painter->setFont(font);
-	painter->setPen(QColor(0,0,0));
-	painter->drawText(	(boundingRect().width() - textSize.width())/2,
-		textSize.height() + 20,
-		text);
+	painter->setPen(COLOR_MODLE_TEXT_COLOR);
+	// Set Name
+	painter->drawText(	10,
+						textSize_Name.height() + 0,
+						text);
 
-	QString text_m =  QString::fromStdString(module->getClassName());
-	textSize = QGraphicsSimpleTextItem(text_m).boundingRect();
+	QString text_m =  QString::fromStdString(module->getName());
+	QRectF textSize_m = QGraphicsSimpleTextItem(text_m).boundingRect();
 	painter->setFont(font);
-	painter->setPen(QColor(0,0,0));
-	painter->drawText(	(boundingRect().width() - textSize.width())/2,
-		textSize.height() + 0,
-		text_m);
 
+
+	painter->setPen(COLOR_MODLE_TEXT_COLOR);
+	painter->drawText(	20 + textSize_Name.width(),
+						textSize_m.height() + 0,
+						text_m);
+	width = max(width, (int)textSize_Name.width() + (int)textSize_m.width()+ 25);
+
+	return pos + 25;
+}
+
+
+double ModelNode::paint_datastream(QPainter *painter, double & pos)
+{
+	stream_map viewsInStream = this->module->getAccessedViews();
+	if (viewsInStream.size() == 0) {
+		return pos;
+	}
+	pos = pos + 12;
+	int counter = 0;
+	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->drawText(	10, pos + 13* counter,
+						"Data-stream");
+	counter++;
+
+
+
+	for (stream_map::const_iterator it = viewsInStream.begin(); it != viewsInStream.end(); ++it)
+	{
+		mforeach (const DM::View& v, it->second)
+		{
+			if (v.getName() == "dummy")
+				continue;
+
+
+			bool view_missing = false;
+			if (v.reads() && !map_contains(&this->module->getViewsInStream()[it->first], v.getName()))
+				view_missing = true;
+
+
+			int type = v.getType();
+			std::stringstream datastream;
+			datastream << v.getName() << "\t";
+			switch(v.getType())
+			{
+			case DM::NODE:			datastream <<  "Nodes\t";			break;
+			case DM::EDGE:			datastream <<  "Edges\t";			break;
+			case DM::FACE:			datastream <<  "Faces\t";			break;
+			case DM::SUBSYSTEM:		datastream <<  "Systems\t";		break;
+			case DM::RASTERDATA:	datastream <<  "Raster Data\t";	break;
+			case DM::COMPONENT:		datastream <<  "Component\t";		break;
+			}
+
+			switch(v.getAccessType())
+			{
+			case DM::WRITE:		datastream <<  "write";		break;
+			case DM::READ:		datastream << "read";		break;
+			case DM::MODIFY:	datastream <<  "modify";	break;
+			}
+
+			QString textdata =  QString::fromStdString(datastream.str());
+
+			width = max(width,  (int)QGraphicsSimpleTextItem(textdata).boundingRect().width()+ 10);
+
+			painter->setPen(COLOR_MODLE_TEXT_COLOR);
+			if (view_missing)
+				painter->setPen(COLOR_MODULE_COLOR_ERROR);
+
+			painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+			painter->drawText(	12, pos + 13* counter,
+								textdata);
+			counter++;
+			foreach(std::string s, v.getAllAttributes())
+			{
+				std::stringstream attribute_stream;
+				attribute_stream << s << "\t";
+				bool attribute_missing = false;
+				QString typeString;
+				switch(v.getAttributeAccessType(s))
+				{
+				case DM::READ:
+					if (view_missing || !this->module->getViewsInStream()[it->first][v.getName()].hasAttribute(s))
+					{
+						//any_attribute_missing = true;
+						attribute_missing = true;
+					}
+					typeString = "read";
+					break;
+				case DM::MODIFY:	typeString = "modify";	break;
+				case DM::WRITE:		typeString = "write";	break;
+				}
+
+				switch(v.getAttributeType(s))
+				{
+				case DM::Attribute::DOUBLE:
+					attribute_stream << "double"; break;
+				case DM::Attribute::DOUBLEVECTOR:
+					attribute_stream << "doublevector"; break;
+				case DM::Attribute::LINK:
+					attribute_stream <<  "link"; break;
+				case DM::Attribute::NOTYPE:
+					attribute_stream <<  "no type"; break;
+				case DM::Attribute::STRING:
+					attribute_stream <<  "string"; break;
+				case DM::Attribute::STRINGVECTOR:
+					attribute_stream <<  "stringvector"; break;
+				case DM::Attribute::TIMESERIES:
+					attribute_stream <<  "time series"; break;
+				}
+
+				attribute_stream  << "\t" << typeString.toStdString() ;
+				textdata =  QString::fromStdString(attribute_stream.str());
+
+				width = max(width,  (int)QGraphicsSimpleTextItem(textdata).boundingRect().width() + 16);
+				painter->setPen(COLOR_MODLE_TEXT_COLOR);
+				if (attribute_missing)
+					painter->setPen(COLOR_MODULE_COLOR_ERROR);
+				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->drawText(	14, pos + 13* counter,
+									textdata);
+				counter++;
+			}
+		}
+	}
+
+	return (counter*13) + pos;
+}
+
+double ModelNode::paint_parameter(QPainter *painter, double & pos)
+{
+
+
+	pos = pos + 12;
+	int counter = 0;
+
+	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->drawText(	10, pos + 13* counter,
+						"Parameter");
+	counter++;
+
+
+
+	foreach (DM::Module::Parameter * p, this->module->getParameters()) {
+
+		std::stringstream parameter;
+		parameter << p->name;
+		parameter << "\t";
+		switch(p->type)
+		{
+		case DM::INT:		parameter <<  *(int*)		p->data;	break;
+		case DM::LONG:		parameter <<  *(long*)	p->data;	break;
+		case DM::DOUBLE:	parameter <<  *(double*)	p->data ;break;
+		case DM::BOOL:
+			if (*(bool*)	p->data)
+				parameter << "true";
+			else
+				parameter << "false";
+			break;
+		case DM::FILENAME:
+		case DM::STRING:	parameter <<  *(std::string*)	p->data;	break;
+
+		case DM::STRING_LIST:
+			{
+				QString textdata = QString::fromStdString(parameter.str());
+				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->drawText(	12, pos + 13* counter,
+									textdata);
+				counter++;
+				foreach (std::string s, *(std::vector<std::string>*)p->data) {
+					std::stringstream ss;
+					ss << " - ";
+					ss << s;
+					textdata = QString::fromStdString(ss.str());
+					painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+					painter->drawText(	14, pos + 13* counter,
+										textdata);
+					counter++;
+				}
+				continue;
+			}
+			break;
+
+		case DM::STRING_MAP:
+			{
+				std::map<std::string,std::string> var_map = *(std::map<std::string,std::string>*)p->data;
+				QString textdata = QString::fromStdString(parameter.str());
+				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->drawText(	12, pos + 13* counter,
+									textdata);
+				counter++;
+				for (std::map<std::string,std::string>::const_iterator it = var_map.begin(); it != var_map.end(); ++it) {
+					std::stringstream ss;
+					ss << " - ";
+					ss << it->first;
+					ss << "\t";
+					ss << it->second;
+					textdata = QString::fromStdString(ss.str());
+					painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+					painter->drawText(	14, pos + 13* counter,
+										textdata);
+					counter++;
+				}
+				continue;
+			}
+			break;
+		}
+
+
+		QString textdata = QString::fromStdString(parameter.str());
+		painter->setPen(COLOR_MODLE_TEXT_COLOR);
+
+		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+		painter->drawText(	12, pos + 13* counter,
+							textdata);
+
+		width = max(width,  (int)QGraphicsSimpleTextItem(textdata).boundingRect().width() + 14);
+		counter++;
+
+	}
+
+	return (counter*13) + pos;
+}
+
+
+double ModelNode::paint_filter(QPainter *painter, double & pos)
+{
+	if ( this->module->getFilter().size() == 0 )
+		return pos;
+
+	pos = pos + 12;
+	int counter = 0;
+
+	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->drawText(	10, pos + 13* counter,
+						"Filter");
+	counter++;
+
+	foreach (DM::Filter f, this->module->getFilter()) {
+
+		std::stringstream filter;
+		//filter << f.getViewName();
+		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+		painter->drawText(	12, pos + 13* counter,
+							QString::fromStdString(f.getViewName()));
+		counter++;
+		if (!f.getAttributeFilter().getArgument().empty())
+			filter << " attribute: " << f.getAttributeFilter().getArgument();
+		if (!f.getSpatialFilter().getArgument().empty())
+			filter<< " spatial: " << f.getSpatialFilter().getArgument();
+
+		QString textdata = QString::fromStdString(filter.str());
+		painter->setPen(COLOR_MODLE_TEXT_COLOR);
+
+		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+		painter->drawText(	12, pos + 13* counter,
+							textdata);
+
+		width = max(width,  (int)QGraphicsSimpleTextItem(textdata).boundingRect().width() + 14);
+		counter++;
+	}
+
+	return (counter*13) + pos;
+}
+
+
+void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	double pos = 0;
+
+	paint_rect(painter);
+
+	// Header
+	pos = paint_header(painter, pos);
+
+	// Parameter
+	pos = paint_parameter(painter, pos);
+	// Filter
+	pos = paint_filter(painter, pos);
+	// Data stream
+	pos = paint_datastream(painter, pos);
+
+	this->height = max(height, (int) pos);
 	this->resize();
 }
 
-QRectF ModelNode::boundingRect() const 
+
+
+QRectF ModelNode::boundingRect() const
 {
 	return QRect (0, 0, width, height);
 }
 
-void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )  
+void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
 	if(DM::Module* m = module->getOwner())
 	{
@@ -258,7 +562,7 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 	QGraphicsItem::mouseMoveEvent(event);
 }
 
-void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) 
+void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
 {
 	editModelNode();
 }
@@ -276,10 +580,10 @@ void ModelNode::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
 	QGraphicsItem::hoverLeaveEvent(event );
 }
 
-void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) 
+void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
 	QMenu menu;
-	
+
 	// out port viewer
 	QSignalMapper* signalMapper = new QSignalMapper(this);
 	foreach(string s, module->getOutPortNames())
@@ -292,7 +596,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 			action->setDisabled(true);
 	}
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewOutportData(QString)));
-	
+
 	// in port viewer
 	signalMapper = new QSignalMapper(this);
 	foreach(string s, module->getInPortNames())
@@ -305,7 +609,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 			action->setDisabled(true);
 	}
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewInportData(QString)));
-	
+
 	if(module->getOutPortNames().size()+module->getInPortNames().size() > 0)
 		menu.addSeparator();
 
@@ -330,7 +634,7 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 	menu.exec(event->screenPos());
 }
 
-void ModelNode::editModelNode() 
+void ModelNode::editModelNode()
 {
 	if(!module->createInputDialog())
 	{
@@ -343,11 +647,11 @@ void ModelNode::editModelNode()
 	}
 }
 
-void ModelNode::editName() 
+void ModelNode::editName()
 {
 	bool ok;
 	QString text = QInputDialog::getText(0, "set name", "specify name of this module",
-			QLineEdit::Normal, QString::fromStdString(module->getName()), &ok);
+										 QLineEdit::Normal, QString::fromStdString(module->getName()), &ok);
 	if (ok && !text.isEmpty())
 		module->setName(text.toStdString());
 	this->resize();
@@ -359,12 +663,12 @@ void ModelNode::editFilter()
 	gui_f->show();
 }
 
-void ModelNode::deleteModelNode() 
+void ModelNode::deleteModelNode()
 {
 	getSimulation()->removeModule(getModule());
 }
 
-void ModelNode::printData() 
+void ModelNode::printData()
 {
 	GUIViewDataForModules * gv = new GUIViewDataForModules(module);
 	gv->show();
@@ -380,7 +684,7 @@ void ModelNode::updateSimulation()
 	this->getSimulation()->reset();
 }
 
-void ModelNode::viewOutportData(QString portName) 
+void ModelNode::viewOutportData(QString portName)
 {
 	std::map<std::string, DM::View> views;
 	std::map<std::string, std::map<std::string, DM::View> > stream = module->getViewsInOutStream();
@@ -399,7 +703,7 @@ void ModelNode::viewOutportData(QString portName)
 #endif
 }
 
-void ModelNode::viewInportData(QString portName) 
+void ModelNode::viewInportData(QString portName)
 {
 	std::map<std::string, DM::View> views;
 	std::map<std::string, std::map<std::string, DM::View> > stream = module->getViewsInOutStream();
@@ -418,7 +722,7 @@ void ModelNode::viewInportData(QString portName)
 #endif
 }
 
-void ModelNode::showHelp() 
+void ModelNode::showHelp()
 {
 	GUIHelpViewer* ghv = new GUIHelpViewer(simulation);
 	ghv->showHelpForModule(module);

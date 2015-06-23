@@ -84,6 +84,9 @@ public:
 	void setPos(const QPointF &pos);
 
 	void resize();
+	double paint_header(QPainter *painter, double &pos);
+	void paint_rect(QPainter *painter);
+	double paint_datastream(QPainter *painter, double &pos);
 public slots:
 	void deleteModelNode();
 	void editModelNode();
@@ -114,6 +117,8 @@ protected:
 	GUIModelNode *ng;
 private:
 	ModelNode* child;
+	double paint_filter(QPainter *painter, double &pos);
+	double paint_parameter(QPainter *painter, double &pos);
 };
 
 #endif // MODELNODE_H

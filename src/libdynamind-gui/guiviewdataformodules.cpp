@@ -30,7 +30,7 @@
 #include <dmsimulation.h>
 #include <dm.h>
 
-QTreeWidgetItem* CreateAttributeItem(QString access, std::string name, 
+QTreeWidgetItem* CreateAttributeItem(QString access, std::string name,
 	const DM::View& v, const QColor& color = Qt::white)
 {
 	QTreeWidgetItem * item_attribute = new QTreeWidgetItem();

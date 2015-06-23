@@ -50,12 +50,12 @@ PortNode::PortNode(QString portName, DM::Module * m, DM::PortType type,
 
 	this->simulation = simulation;
 
-	portLabel.setText(portName);
-	portLabel.setVisible(false);
-	portLabel.setPos(this->pos());
+	// portLabel.setText(portName);
+	// portLabel.setVisible(false);
+	// portLabel.setPos(this->pos());
 
-	if(portType == DM::INPORT)	portLabel.moveBy( boundingRect().width() + 3 , 0);
-	else						portLabel.moveBy( -portLabel.boundingRect().width() - 3, 0);
+	// if(portType == DM::INPORT)	portLabel.moveBy( boundingRect().width() + 3 , 0);
+	// else						portLabel.moveBy( -portLabel.boundingRect().width() - 3, 0);
 
 }
 
@@ -129,7 +129,7 @@ void PortNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	painter->fillPath(path, color);
 	painter->strokePath(path, pen);
 
-	portLabel.setVisible(isHover);
+	// portLabel.setVisible(isHover);
 }
 
 QRectF PortNode::boundingRect() const
