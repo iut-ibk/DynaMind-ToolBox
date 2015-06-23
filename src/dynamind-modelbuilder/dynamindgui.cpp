@@ -31,7 +31,9 @@
 #include <QSplashScreen>
 #include <QThreadPool>
 #include <dynamindmainwindow.h>
+#ifdef VIEWER
 #include <QGLFormat>
+#endif
 int main(int argc, char *argv[]) 
 {
 	QApplication app(argc, argv);
@@ -42,10 +44,12 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("IUT");
 	QCoreApplication::setApplicationName("DYNAMIND");
 
+#ifdef VIEWER
 	QGLFormat glf = QGLFormat::defaultFormat();
 	glf.setSampleBuffers(true);
 	glf.setSamples(4);
 	QGLFormat::setDefaultFormat(glf);
+#endif
 
 	QPixmap pixmap(":/Splash/ressources/logo.png");
 	QSplashScreen splash1;

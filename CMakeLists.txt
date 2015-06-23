@@ -105,7 +105,15 @@ ELSE()
     SET(LIBRARY_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
     SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 ENDIF()
-ADD_SUBDIRECTORY(DynaMind-Viewer)
+
+OPTION(WITH_VIEWER "if with Viewer plugin" ON)
+
+if(WITH_VIEWER)
+	add_definitions( -DVIEWER )
+	ADD_SUBDIRECTORY(DynaMind-Viewer)
+endif(WITH_VIEWER)
+
+
 ADD_SUBDIRECTORY(src/libdynamind-gui)
 ADD_SUBDIRECTORY(src/dynamind-modelbuilder)
 #create menu entry in ubuntu
