@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <math.h>
 #include "headers.h"
 #include "lid.h"                                                               //(5.0.019 - LR)

@@ -26,7 +26,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <math.h>
-#include "malloc.h"                                                            //(5.0.019 - LR)
+//#include "malloc.h"                                                            //(5.0.019 - LR)
 #include "stdlib.h"                                                            //(5.0.019 - LR)
 #include "headers.h"
 #include "infil.h"                                                             //(5.0.019 - LR)
