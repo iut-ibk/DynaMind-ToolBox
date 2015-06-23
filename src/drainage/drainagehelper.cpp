@@ -7,7 +7,7 @@ void DrainageHelper::CreateEulerRainFile(double duration, double deltaT, double 
 
 	QString fileName = QString::fromStdString(rfile);
 	std::fstream out;
-	out.open(fileName.toAscii(),ios::out);
+	out.open(fileName.toLatin1(),ios::out);
 
 	std::vector<double> rainseries_tmp;
 	int steps = duration/deltaT;
