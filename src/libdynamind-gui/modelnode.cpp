@@ -39,7 +39,6 @@
 #include <portnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
-//#define QGLVIEWER
 
 #ifdef VIEWER
 #include <dmviewerwindow.h>
@@ -393,7 +392,7 @@ void ModelNode::viewOutportData(QString portName)
 		DM::Logger(DM::Error) << "Cannot view this type of system: PLEASE IMPLEMENT ME";
 		return;
 	}
-#ifdef QVIEWER
+#ifdef VIEWER
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(sys, views);
 	viewer_window->show();
 #endif
@@ -412,7 +411,7 @@ void ModelNode::viewInportData(QString portName)
 		DM::Logger(DM::Error) << "Cannot view this type of system: PLEASE IMPLEMENT ME";
 		return;
 	}
-#ifdef QVIEWER
+#ifdef VIEWER
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(	sys, views);
 	viewer_window->show();
 #endif
