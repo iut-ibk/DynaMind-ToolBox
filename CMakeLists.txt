@@ -59,37 +59,13 @@ if(WITH_PLUGIN_SEWER)
     set(TOOLBOX ${TOOLBOX} DynaMind-Sewer)
 endif()
 
-if(NOT USEQT5 AND WITH_PLUGIN_GDALMODULE)
+if(WITH_PLUGIN_GDALMODULE)
     set(TOOLBOX ${TOOLBOX} DynaMind-GDALModules)
 endif()
 
 if(WITH_PLUGIN_PERFORMANCE_ASSESSMENT)
     set(TOOLBOX ${TOOLBOX} DynaMind-Performance-Assessment)
 endif()
-
-#if(WITH_PLUGIN_POWERVIBE)
-#    set(TOOLBOX ${TOOLBOX} PowerVIBe)
-#endif(WITH_PLUGIN_POWERVIBE)
-
-#if(WITH_PLUGIN_URBANSIM)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-UrbanSim)
-#endif(WITH_PLUGIN_URBANSIM)
-
-#if(WITH_PLUGIN_DANCE4WATER)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-DAnCE4Water)
-#endif(WITH_PLUGIN_DANCE4WATER)
-
-#if(WITH_PLUGIN_VIBE)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-VIBeModules)
-#endif(WITH_PLUGIN_VIBE)
-
-#if(WITH_PLUGIN_CITYBLOCKS)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-CityBlocks)
-#endif(WITH_PLUGIN_CITYBLOCKS)
-
-#if(WITH_PLUGIN_QGIS)
-#    set(TOOLBOX ${TOOLBOX} DynaMind-QGIS)
-#endif(WITH_PLUGIN_QGIS)
 
 if(WITH_STANDALONE_EXE)
     set(TOOLBOX ${TOOLBOX} DynaMind-Executable)
