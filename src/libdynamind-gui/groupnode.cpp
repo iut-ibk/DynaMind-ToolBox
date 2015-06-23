@@ -26,8 +26,8 @@
 
 #include "groupnode.h"
 #include "portnode.h"
+#include "ColorPalette.h"
 #include <QGraphicsDropShadowEffect>
-
 #include <guisimulation.h>
 
 GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, ModelNode* parent)
@@ -35,7 +35,7 @@ GroupNode::GroupNode(DM::Module *module, GUISimulation* s, SimulationTab* tab, M
 {
 	this->setFlag(QGraphicsItem::ItemIsSelectable, false);
 	this->setFlag(QGraphicsItem::ItemIsMovable, false);
-
+	this->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 	resize();
 }
 
@@ -132,8 +132,8 @@ void CheapShadowEffect(QPainter *painter, const QRectF boundingRect)
 
 void GroupNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	painter->setBrush(QColor(239,235,226));
-	painter->setPen(QPen(Qt::black, 4.0));
+	painter->setBrush(COLOR_TAB_BG);
+	painter->setPen(QPen(COLOR_MODULEBORDER, 4.0));
 	painter->drawRect(boundingRect());
 }
 

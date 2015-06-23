@@ -38,6 +38,7 @@
 #include <qclipboard.h>
 #include <dmsimulationwriter.h>
 #include <simulationio.h>
+#include <QGLWidget>
 
 #include <dmlogger.h>
 #include "ColorPalette.h"
@@ -46,10 +47,12 @@ SimulationTab::SimulationTab(QWidget* parent, GUISimulation *sim, DM::Group* par
 	QGraphicsScene(parent), parentGroup(parentGroup)
 {
 	viewer = new QGraphicsView(this, parent);
+	// viewer->setViewport(new QGLWidget);
 	viewer->setRenderHints(QPainter::Antialiasing);
+	viewer->setCacheMode(QGraphicsView::CacheBackground);
 	viewer->setAcceptDrops(true);
-	if (!this->parentGroup)
-		viewer->setBackgroundBrush(QBrush(QColor(239,235,226)));
+	// if (!this->parentGroup)
+		viewer->setBackgroundBrush(QBrush(COLOR_TAB_BG));
 
 	this->sim = sim;
 	hoveredGroupNode = NULL;

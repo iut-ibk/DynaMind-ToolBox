@@ -31,31 +31,21 @@
 #include <QSettings>
 
 
-/*#define COLOR_RASTERPORT  QColor(11,72,107);
-#define COLOR_VECTORPORT  QColor(59,134,134);
-#define COLOR_DOUBLEPORT  QColor(121,189,154);
-#define COLOR_MODULESELECTED  QColor(168,219,168);
-#define COLOR_MODULE  QColor(207,240,158);*/
 
-/*
-#define COLOR_RASTERPORT  QColor(105,210,231)
-#define COLOR_VECTORPORT  QColor(243,134,48)
-#define COLOR_DOUBLEPORT  Qt::gray
-*/
-
-/*#define COLOR_MODULE_SELECTED_BORDER Qt::yellow
-#define COLOR_MODULE_FINISHED Qt::green
-#define COLOR_MODULE_EXE_ERROR Qt::red
-#define COLOR_MODULE_CHECK_ERROR QColor(255,150,0)
-#define COLOR_MODULE  Qt::cyan
-#define COLOR_DEBUG Qt::gray*/
-//#define COLOR_DOUBLEPORT  QColor(250,105,0);
 
 #define COLOR_TAB_BG QColor(255,255,255)	// QColor(239,235,226)
 
-
-
-#define COLOR_MODULEBORDER  Qt::black
+#define COLOR_MOD_UNTOUCHED QColor(244,141,2)
+#define COLOR_MOD_EXECUTING QColor(142,174,255)
+#define COLOR_MOD_EXECUTION_OK QColor(191,213,154)
+#define COLOR_MOD_EXECUTION_ERROR QColor(244,141,2)
+#define COLOR_MOD_CHECK_OK QColor(200,200,200)
+#define COLOR_MOD_BG_COLOR QColor(255,255,255)
+#define COLOR_MOD_CHECK_ERROR QColor(244,141,2)
+#define COLOR_MODLE_TEXT_COLOR QColor(0,0,0)
+#define COLOR_MODULE_COLOR QColor(244,141,2)
+#define COLOR_MODULE_COLOR_ERROR QColor(255,0,0)
+#define COLOR_MODULEBORDER QColor(0,0,0)
 
 class ColorSettings
 {
