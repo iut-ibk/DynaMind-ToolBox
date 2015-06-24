@@ -62,7 +62,10 @@ Sample Code for Python Simulation
 
     nodes = sim.add_module('GDALExtractNodes',
                            {'tolerance': 0.01,
-                            'is_downstream_upstream': False},
+                           'view_name': 'drainage',
+                           'node_name': 'junction',
+                            'is_downstream_upstream': False,
+                            'add_height': True},
                            pipe_network)
 
 ..

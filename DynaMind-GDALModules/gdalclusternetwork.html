@@ -308,6 +308,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="">Identify Clusters of Connected Lines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dm_direct_graph.html">Direct Graph</a><ul>
@@ -476,6 +477,15 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="sample-code-for-python-simulation">
+<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#calculate length of edges in network</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALClusterNetwork&#39;</span><span class="p">,</span>
+                         <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;drainage&#39;</span><span class="p">},</span>
+                         <span class="n">network</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -308,6 +308,7 @@
 <li class="toctree-l3"><a class="reference internal" href="gdalclusternetwork.html">Identify Clusters of Connected Lines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dm_direct_graph.html">Direct Graph</a><ul>
@@ -533,7 +534,10 @@ height (level_lo / level_up). It checks if for these coordinates a if node exist
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">nodes</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALExtractNodes&#39;</span><span class="p">,</span>
                        <span class="p">{</span><span class="s">&#39;tolerance&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
-                        <span class="s">&#39;is_downstream_upstream&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
+                       <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;drainage&#39;</span><span class="p">,</span>
+                       <span class="s">&#39;node_name&#39;</span><span class="p">:</span> <span class="s">&#39;junction&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;is_downstream_upstream&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+                        <span class="s">&#39;add_height&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
                        <span class="n">pipe_network</span><span class="p">)</span>
 </pre></div>
 </div>
