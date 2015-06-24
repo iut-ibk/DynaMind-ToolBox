@@ -107,6 +107,8 @@ void WaterDemandModel::initmodel()
 			nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		}  catch(...) {
 			Logger(Error) << "big fat error";
+			this->setStatus(DM::MOD_EXECUTION_ERROR);
+			return;
 
 		}
 
@@ -118,6 +120,8 @@ void WaterDemandModel::initmodel()
 	catch(...)
 	{
 		DM::Logger(DM::Error) << "Cannot start CD3 simulation";
+		this->setStatus(DM::MOD_EXECUTION_ERROR);
+		return;
 	}
 
 	DM::Logger(DM::Debug) << "CD3 simulation finished";
