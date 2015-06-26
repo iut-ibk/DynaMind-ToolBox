@@ -234,6 +234,10 @@ void GDALAttributeCalculator::run()
 		v->createIndex(it->second);
 	}
 
+	// Reset global features
+	global_features.clear();
+
+
 	DM::Attribute::AttributeType result_type = leading_view->getAttributeType(leading_attribute);
 
 	leading_view->resetReading();
@@ -335,6 +339,7 @@ void GDALAttributeCalculator::run()
 				l_feat->SetField(leading_attribute.c_str(), val.GetString().c_str());
 				continue;
 			}
+			DM::Logger(DM::Debug) << val.GetFloat();
 			l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
 		}
 		catch (mup::ParserError &e)
@@ -361,10 +366,24 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 		foreach (OGRFeature * f, features) {
 			solve_variable(f, link_chain_next, ress_vector, attr_type);
 		}
-	} else if (link_chain.size() == 2) {
+	} else if (link_chain.size() == 2) { // Get Values
+		DM::Logger(DM::Debug) << link_chain[0].toStdString();
 		DM::ViewContainer * v = helper_views_name[link_chain[0].toStdString()];
 		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
 		AttributeValue val;
+
+		if (link_chain[0].toStdString() != this->leading_view->getName()) {
+			DM::Logger(DM::Debug) << "global variable";
+			if (global_features.find(link_chain[0].toStdString()) == global_features.end()) { // Set global Feature
+				v->resetReading();
+				while (feat = v->getNextFeature()) { // Asume first feature is the right one
+					DM::Logger(DM::Debug) << "set variable";
+					global_features[link_chain[0].toStdString()] = feat;
+					break;
+				}
+			}
+			feat = global_features[link_chain[0].toStdString()];
+		}
 
 		if (attr_type == DM::Attribute::STRING) {
 			val.s_val = feat->GetFieldAsString(link_chain[1].toStdString().c_str());

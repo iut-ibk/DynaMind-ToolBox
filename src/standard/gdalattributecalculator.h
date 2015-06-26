@@ -67,6 +67,8 @@ private:
 
 	std::multimap<DM::ViewContainer * , std::string> index_map; //index _id for faster serach
 	DM::Attribute::AttributeType convertAttributeType(std::string type);
+
+	std::map<std::string, OGRFeature *> global_features;
 public:
 	GDALAttributeCalculator();
 	void init();
