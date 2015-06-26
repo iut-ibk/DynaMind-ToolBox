@@ -352,7 +352,7 @@ void GDALAttributeCalculator::run()
 }
 
 
-void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_chain, std::vector<AttributeValue> & ress_vector, DM::Attribute::AttributeType attr_type)
+void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_chain, std::vector<AttributeValue> & ress_vector, DM::Attribute::AttributeType attr_type, bool is_first)
 {
 	//Check if last in chain
 	//solve forward
@@ -364,7 +364,7 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 		link_chain_next.removeFirst();
 
 		foreach (OGRFeature * f, features) {
-			solve_variable(f, link_chain_next, ress_vector, attr_type);
+			solve_variable(f, link_chain_next, ress_vector, attr_type, false);
 		}
 	} else if (link_chain.size() == 2) { // Get Values
 		DM::Logger(DM::Debug) << link_chain[0].toStdString();
@@ -372,11 +372,11 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
 		AttributeValue val;
 
-		if (link_chain[0].toStdString() != this->leading_view->getName()) {
-			DM::Logger(DM::Debug) << "global variable";
+		if (is_first && link_chain[0].toStdString() != this->leading_view->getName()) {
 			if (global_features.find(link_chain[0].toStdString()) == global_features.end()) { // Set global Feature
+				DM::Logger(DM::Error) << "global variable " << link_chain[0].toStdString() << " " << this->leading_view->getName();
 				v->resetReading();
-				while (feat = v->getNextFeature()) { // Asume first feature is the right one
+				while (feat = v->getNextFeature()) { // Assume first feature is the right one
 					DM::Logger(DM::Debug) << "set variable";
 					global_features[link_chain[0].toStdString()] = feat;
 					break;

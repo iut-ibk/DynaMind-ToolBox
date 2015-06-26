@@ -59,7 +59,7 @@ private:
 
 	bool initViews();
 
-	void solve_variable(OGRFeature *feat, QStringList link_chain, std::vector<AttributeValue> & ress_vector, DM::Attribute::AttributeType attr_type);
+	void solve_variable(OGRFeature *feat, QStringList link_chain, std::vector<AttributeValue> & ress_vector, DM::Attribute::AttributeType attr_type, bool is_first = true);
 
 	bool oneToMany(DM::ViewContainer *lead, DM::ViewContainer *linked);
 
