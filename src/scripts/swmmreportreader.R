@@ -43,7 +43,7 @@ crosstotal<-function(tab,sectiontable,valcol)
 
 repfiles <- Sys.glob(file.path(reppath,"*.rep"))
 
-summarymatrixnames=c("name","numberSubcatchments","SUMtotRunoff[Ml]","nInflowNodes","SUMmaxtotInflow[lps]","SUMtotInflowVolume[Ml]","nSurchargedNodes","surcharged[h]","nFloodingNodes", "SUMtotFloodVolume[Ml]","numberStorages","SUMaverageVol[Ml]","SUMmaxVol[Ml]","SUMmaxPcnt","nOutfalls","SUMtotOutfallVolume[Ml]","SUMtotWWTPVolume[Ml]","NSurchargeConduits","SUMhourslimitedcapacity","nPumps","SUMtotPumpVolume[Ml]")
+summarymatrixnames=c("name","numberSubcatchments","SUMtotRunoff[Ml]","nInflowNodes","SUMmaxtotInflow[lps]","SUMtotInflowVolume[Ml]","nSurchargedNodes","surcharged[h]","nFloodingNodes","Sumhoursflooded","SUMtotFloodVolume[Ml]","numberStorages","SUMaverageVol[Ml]","SUMmaxVol[Ml]","SUMmaxPcnt","nOutfalls","SUMtotOutfallVolume[Ml]","SUMtotWWTPVolume[Ml]","NSurchargeConduits","SUMhourslimitedcapacity","nPumps","SUMtotPumpVolume[Ml]")
 
 summarymatrix<-matrix(nrow=length(repfiles),ncol=length(summarymatrixnames))
 colnames(summarymatrix) <- summarymatrixnames
@@ -185,13 +185,13 @@ for(filenr in 1:length(repfiles))
 	    if (section == "Subcatchment Runoff Summary")
 	    {
 	        summarymatrix[filenr,2]<-dim(sectiontable)[1] #numberSubcatchments
-	        summarymatrix[filenr,3]<-sum(as.numeric(sectiontable[,7])) #SUMtotRunoff[Ml]
+	        summarymatrix[filenr,3]<-sum(as.numeric(sectiontable[,6])) #SUMtotRunoff[Ml]
 	    }
         else if (section == "Node Inflow Summary")
         {
             summarymatrix[filenr,4]<-dim(sectiontable)[1] #numberInflowNodes
-            summarymatrix[filenr,5]<-sum(as.numeric(sectiontable[,3])) #SUMmaxtotInflow[lps]
-            summarymatrix[filenr,6]<-sum(as.numeric(sectiontable[,3])) #SUMtotInflowVolume[Ml]
+            summarymatrix[filenr,5]<-sum(as.numeric(sectiontable[,4])) #SUMmaxtotInflow[lps]
+            summarymatrix[filenr,6]<-sum(as.numeric(sectiontable[,8])) #SUMtotInflowVolume[Ml]
         }
         else if (section == "Node Surcharge Summary")
         {
@@ -201,32 +201,33 @@ for(filenr in 1:length(repfiles))
         else if (section == "Node Flooding Summary") # Count of Surcharge nodes through all Simulations
         {
             summarymatrix[filenr,9]<-dim(sectiontable)[1] #numberFloodingNodes
-            summarymatrix[filenr,10]<-sum(as.numeric(sectiontable[,7])) #SUMFloodVolume
+            summarymatrix[filenr,10]<-sum(as.numeric(sectiontable[,2])) #SUMhoursflooded
+            summarymatrix[filenr,11]<-sum(as.numeric(sectiontable[,6])) #SUMFloodVolume
             floodingsummary<-crosstotal(floodingsummary,sectiontable,6)
         }
         else if (section == "Storage Volume Summary")
         {
-            summarymatrix[filenr,11]<-dim(sectiontable)[1] #numberStorages
-            summarymatrix[filenr,12]<-sum(as.numeric(sectiontable[,3])) #SUMaverageVol[Ml]
-            summarymatrix[filenr,13]<-sum(as.numeric(sectiontable[,7])) #SUMmaxVol[Ml]
-            summarymatrix[filenr,14]<-sum(as.numeric(sectiontable[,8])) #SUMmaxPcnt
+            summarymatrix[filenr,12]<-dim(sectiontable)[1] #numberStorages
+            summarymatrix[filenr,13]<-sum(as.numeric(sectiontable[,2])) #SUMaverageVol[Ml]
+            summarymatrix[filenr,14]<-sum(as.numeric(sectiontable[,6])) #SUMmaxVol[Ml]
+            summarymatrix[filenr,15]<-sum(as.numeric(sectiontable[,7])) #SUMmaxPcnt
         }
         else if (section == "Outfall Loading Summary") # Count of Outfall events per node through all Simulations
         {
-            summarymatrix[filenr,15]<-(dim(sectiontable)[1] - length(wwtp)) #noutfalls
-            #summarymatrix[filenr,16]<-sum(as.numeric(sectiontable[which(!(sectiontable[,2] %in% wwtp)),6])) #SUMtotOutfallVolume[Ml] without WWTP
-            #summarymatrix[filenr,17]<-sum(as.numeric(sectiontable[which((sectiontable[,2] %in% wwtp)),6])) #SUMtotWWTPVolume[Ml]
+            summarymatrix[filenr,16]<-(dim(sectiontable)[1] - length(wwtp)) #noutfalls
+            summarymatrix[filenr,17]<-sum(as.numeric(sectiontable[which(!(sectiontable[,1] %in% wwtp)),5])) #SUMtotOutfallVolume[Ml] without WWTP
+            summarymatrix[filenr,18]<-sum(as.numeric(sectiontable[which((sectiontable[,1] %in% wwtp)),5])) #SUMtotWWTPVolume[Ml]
             outfallsummary<-crosstotal(outfallsummary,sectiontable,5)
         }
         else if (section == "Conduit Surcharge Summary")
         {
-            summarymatrix[filenr,18]<-dim(sectiontable)[1] #NSurchargeConduits
-            summarymatrix[filenr,19]<-sum(as.numeric(sectiontable[,7])) #SUMhourslimitedcapacity
+            summarymatrix[filenr,19]<-dim(sectiontable)[1] #NSurchargeConduits
+            summarymatrix[filenr,20]<-sum(as.numeric(sectiontable[,6])) #SUMhourslimitedcapacity
         }
         else if (section == "Pumping Summary")
         {
-            summarymatrix[n,20]<-dim(sectiontable)[1] #nPumps
-            summarymatrix[n,21]<-sum(as.numeric(sectiontable[,7])) #SUMtotPumpVolume[Ml]
+            summarymatrix[filenr,21]<-dim(sectiontable)[1] #nPumps
+            summarymatrix[filenr,22]<-sum(as.numeric(sectiontable[,7])) #SUMtotPumpVolume[Ml]
         }
 	}
 }
