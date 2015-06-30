@@ -30,6 +30,7 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/normal_distribution.hpp>
+#include <time.h>
 
 DM_DECLARE_NODE_NAME(DistributeNodes,Graph)
 
