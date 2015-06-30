@@ -27,12 +27,8 @@
 #ifndef GUICONTAINERGROUP_H
 #define GUICONTAINERGROUP_H
 
-#if QT_VERSION >= 0x050000
-#include <QtWidgets>
-#else
 #include <QDialog>
 #include <QLabel>
-#endif
 
 #include <dmcompilersettings.h>
 #include <map>

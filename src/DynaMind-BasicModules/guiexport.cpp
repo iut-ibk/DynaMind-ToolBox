@@ -2,14 +2,9 @@
 #include <ui_guiexport.h>
 #include "export.h"
 
-#if QT_VERSION >= 0x050000
-#include <QtWidgets>
-#else
 #include <QFileDialog>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 #include <QInputDialog>
-#include <QComboBox>
-#endif
 
 #include <dmcomponent.h>
 #include <dmlogger.h>

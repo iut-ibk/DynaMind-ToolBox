@@ -2,13 +2,9 @@
 #include <ui_guiimport.h>
 #include "import.h"
 
-#if QT_VERSION >= 0x050000
-#include <QtWidgets>
-#else
 #include <QFileDialog>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 #include <QInputDialog>
-#endif
 
 #define COL_CHECKBOX	0
 #define COL_ORGNAME		1
