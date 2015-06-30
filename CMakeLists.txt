@@ -43,14 +43,25 @@ FILE(GLOB UI_VIEWER_FILES *.ui src/*.ui)
 
 #TODO remove branch when build is reliable
 IF(QGL_FROM_SOURCE)
-    ExternalProject_Add(QGLViewer
-        DOWNLOAD_COMMAND "" # skip download
-        CONFIGURE_COMMAND qmake ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
-        INSTALL_COMMAND "" # skip installation
-        BUILD_COMMAND make
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    )
-    SET(QGLVIEWER_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libQGLViewer.a)
+    IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+        ExternalProject_Add(QGLViewer
+            DOWNLOAD_COMMAND "" # skip download
+            CONFIGURE_COMMAND "C:/Qt/Qt5.4.1/5.4/msvc2013_64_opengl/bin/qmake" ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
+            INSTALL_COMMAND "" # skip installation
+            BUILD_COMMAND nmake
+            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        SET(QGLVIEWER_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/release/QGLViewer.lib)
+    ELSE()
+        ExternalProject_Add(QGLViewer
+            DOWNLOAD_COMMAND "" # skip download
+            CONFIGURE_COMMAND qmake ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
+            INSTALL_COMMAND "" # skip installation
+            BUILD_COMMAND make
+            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        SET(QGLVIEWER_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libQGLViewer.a)
+    ENDIF()
     INCLUDE_DIRECTORIES(lib)
 ELSE()
     FIND_PACKAGE(QGLViewer REQUIRED)
