@@ -18,7 +18,7 @@ def create_argparser():
     parser.add_argument('-s', '--smtp', default='', dest='smtp',
     					help='smtp server to send the message, else the plain maildomain from the email provided will be used.')
     parser.add_argument('-r', '--readdir', default=os.getcwd(), dest='readdir',
-    					help='sets the ')
+    					help='sets the root directory for inpfiles and datfiles')
     parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
     					help='sets the simulation and report directory')
     parser.add_argument('-m', '--movedir', default=os.getcwd(), dest='movedir',
