@@ -30,6 +30,9 @@ void urbandevelPolygonLink::init() {
 
     blockview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
     blockview.addAttribute("type", DM::Attribute::STRING, DM::WRITE);
+    blockview.addAttribute("height_avg", DM::Attribute::STRING, DM::WRITE);
+    blockview.addAttribute("height_min", DM::Attribute::STRING, DM::WRITE);
+    blockview.addAttribute("height_max", DM::Attribute::STRING, DM::WRITE);
 
     std::vector<DM::View> data;
     data.push_back(blockview);
@@ -68,9 +71,15 @@ void urbandevelPolygonLink::run()
             if (TBVectorData::PointWithinFace((DM::Face*)block, (DM::Node*)centroid))
             {
                 std::string type = block->getAttribute("type")->getString();
+                std::string height_avg = block->getAttribute("height_avg")->getString();
+                std::string height_min = block->getAttribute("height_min")->getString();
+                std::string height_max = block->getAttribute("height_max")->getString();
                 block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
                 element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
                 element->changeAttribute("type", type);
+                element->changeAttribute("height_avg", height_avg);
+                element->changeAttribute("height_min", height_min);
+                element->changeAttribute("height_max", height_max);
                 DM::Logger(DM::Debug) << "Link created";
                 status = "populated";
             }

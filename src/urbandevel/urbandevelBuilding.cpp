@@ -53,6 +53,9 @@ void urbandevelBuilding::init()
     }
     parcelview = DM::View("PARCEL", DM::FACE, DM::MODIFY);
     parcelview.addAttribute("status", DM::Attribute::STRING, DM::MODIFY);
+    parcelview.addAttribute("height_avg", DM::Attribute::INT, DM::READ);
+    parcelview.addAttribute("height_min", DM::Attribute::INT, DM::READ);
+    parcelview.addAttribute("height_max", DM::Attribute::INT, DM::READ);
     parcelview.addAttribute("fail", DM::Attribute::DOUBLE, DM::WRITE);
     parcelview.addAttribute("BUILDING", buildingview.getName(), DM::WRITE);
 
@@ -115,6 +118,9 @@ void urbandevelBuilding::run()
         }
         std::string parcelstatus = currentparcel->getAttribute("status")->getString();
         std::string parceltype = currentparcel->getAttribute("type")->getString();
+        std::string parcelheight_avg = currentparcel->getAttribute("height_avg")->getString();
+        std::string parcelheight_min = currentparcel->getAttribute("height_min")->getString();
+        std::string parcelheight_max = currentparcel->getAttribute("height_max")->getString();
 
         std::string checkstatus = "process";
 
@@ -152,6 +158,8 @@ void urbandevelBuilding::run()
             double roof_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)building);
             double traffic_area = (parcel_area - roof_area)/3;
             double impervious_area = parcel_area - traffic_area - roof_area;
+            int stories = static_cast<int>(parcelheight_min + (rand() % (int)(parcelheight_max - parcelheight_min + 1)));
+            DM::Logger(DM::Warning) << "stories: " << stories;
 
             building->addAttribute("type", "residential");
             building->addAttribute("year", buildingyear);
