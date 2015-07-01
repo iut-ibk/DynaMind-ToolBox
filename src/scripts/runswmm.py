@@ -124,7 +124,7 @@ def cleansimdirs(simdirs):
 	
 	return 0
 
-def run_simpool(simulations,swmm5bin,max_procs,args.movedir):
+def run_simpool(simulations,swmm5bin,max_procs,movedir):
 	
 	pool = multiprocessing.Pool(processes=max_procs)
 	totaliterations=len(simulations)
@@ -133,7 +133,7 @@ def run_simpool(simulations,swmm5bin,max_procs,args.movedir):
 				
 	for index, params in enumerate(simulations):
 		perc = int(index/totaliterations*100)
-		params = [(swmm5bin, params[0], params[1], perc, args.movedir)]
+		params = [(swmm5bin, params[0], params[1], perc, movedir)]
 		res = pool.map_async(execswmm_parallel, params)
 			
 	if totaliterations == 0:
