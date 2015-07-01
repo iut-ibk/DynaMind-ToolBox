@@ -43,7 +43,7 @@ def execswmm(swmm5bin, simname, cursimdir, perc, movedir):
 	donefile = os.path.join(cursimdir,simname+".done")
 	open(donefile, 'x').close()
 
-	if movedirdir != '':
+	if movedir != '':
 		if os.path.exists(movedir):
 			repfile = os.path.join(cursimdir,simname+".rep")
 			shutil.move(repfile,movedir)
@@ -159,7 +159,7 @@ def main():
 
 	if args.clean == True:
 		cleansimdirs(simdirs)
-	
+
 	simulations = create_simulations(args.readdir, simdirs, swmm5bin, args.resume)
 	run_simpool(simulations,swmm5bin,args.max_procs,args.movedir)
 	
