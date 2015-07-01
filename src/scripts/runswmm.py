@@ -21,7 +21,8 @@ def create_argparser():
     					help='sets the ')
     parser.add_argument('-w', '--workdir', default=os.getcwd(), dest='workdir',
     					help='sets the simulation and report directory')
-
+    parser.add_argument('-m', '--movedir', default=os.getcwd(), dest='movedir',
+    					help='move away finished reports to the specified directory')
     parser.add_argument('--clean', dest='clean', action='store_true',
     					help='')
     parser.add_argument('--resume', dest='resume', action='store_true',
@@ -31,7 +32,7 @@ def create_argparser():
 
     return parser
 
-def execswmm(swmm5bin, simname, cursimdir, perc):
+def execswmm(swmm5bin, simname, cursimdir, perc, movedir):
 	binextender = "./"
 	if sys.platform == 'win32':
 		binextender == ""
@@ -41,6 +42,13 @@ def execswmm(swmm5bin, simname, cursimdir, perc):
 	sp = subprocess.call(cmd,cwd=cursimdir,stdout=subprocess.DEVNULL)
 	donefile = os.path.join(cursimdir,simname+".done")
 	open(donefile, 'x').close()
+
+	if movedirdir != '':
+		if os.path.exists(movedir):
+			repfile = os.path.join(cursimdir,simname+".rep")
+			shutil.move(repfile,movedir)
+		else:
+			print("%s does not exist, not moving the reportfile" % movedir)
 	return 0
 	
 def execswmm_parallel(params):
@@ -116,7 +124,7 @@ def cleansimdirs(simdirs):
 	
 	return 0
 
-def run_simpool(simulations,swmm5bin,max_procs):
+def run_simpool(simulations,swmm5bin,max_procs,args.movedir):
 	
 	pool = multiprocessing.Pool(processes=max_procs)
 	totaliterations=len(simulations)
@@ -125,7 +133,7 @@ def run_simpool(simulations,swmm5bin,max_procs):
 				
 	for index, params in enumerate(simulations):
 		perc = int(index/totaliterations*100)
-		params = [(swmm5bin, params[0], params[1], perc)]
+		params = [(swmm5bin, params[0], params[1], perc, args.movedir)]
 		res = pool.map_async(execswmm_parallel, params)
 			
 	if totaliterations == 0:
@@ -153,7 +161,7 @@ def main():
 		cleansimdirs(simdirs)
 	
 	simulations = create_simulations(args.readdir, simdirs, swmm5bin, args.resume)
-	run_simpool(simulations,swmm5bin,args.max_procs)
+	run_simpool(simulations,swmm5bin,args.max_procs,args.movedir)
 	
 	if args.email != '':
 		sendmessage(args.email, args.smtp)
