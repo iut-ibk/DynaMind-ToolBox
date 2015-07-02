@@ -23,6 +23,7 @@ private:
 
     std::string blockview_name;
     std::string elementview_name;
+    bool copyheight;
 };
 
 #endif // urbandevelPolygonLink_H

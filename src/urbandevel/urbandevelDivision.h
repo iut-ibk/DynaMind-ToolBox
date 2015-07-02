@@ -42,6 +42,7 @@ private:
     bool onSignal;
     bool sizefromSB;
     bool splitShortSide;
+    bool copyheight;
     std::string develtype;
 
     int currentyear;

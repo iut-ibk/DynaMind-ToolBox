@@ -24,6 +24,7 @@ urbandevelDivision::urbandevelDivision()
     combined_edges = false;
     splitShortSide = false;
     develtype = "res";
+    copyheight = false;
 
     this->addParameter("Input", DM::STRING, &this->blockview_name);
     this->addParameter("Output", DM::STRING, &this->elementview_name);
@@ -36,6 +37,7 @@ urbandevelDivision::urbandevelDivision()
     this->addParameter("combined_edges", DM::BOOL, &this->combined_edges);
     this->addParameter("splitShortSide", DM::BOOL, &this->splitShortSide);
     this->addParameter("develtype (ignore if empty)", DM::STRING, &this->develtype);
+    this->addParameter("copyheight", DM::BOOL, &this->copyheight);
 }
 
 urbandevelDivision::~urbandevelDivision()
@@ -56,7 +58,6 @@ void urbandevelDivision::init()
     elementview.addAttribute("status", DM::Attribute::STRING, DM::WRITE);
     elementview.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
-    elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute(blockview_name, elementview_name, DM::WRITE);
 
@@ -77,6 +78,15 @@ void urbandevelDivision::init()
         elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
         sb = DM::View("SUPERBLOCK", DM::FACE, DM::READ);
         sb.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::READ);
+    }
+
+    if (copyheight) {
+        elementview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::WRITE);
+        elementview.addAttribute("height_min", DM::Attribute::DOUBLE, DM::WRITE);
+        elementview.addAttribute("height_max", DM::Attribute::DOUBLE, DM::WRITE);
+        blockview.addAttribute("height_avg", DM::Attribute::DOUBLE, DM::READ);
+        blockview.addAttribute("height_min", DM::Attribute::DOUBLE, DM::READ);
+        blockview.addAttribute("height_max", DM::Attribute::DOUBLE, DM::READ);
     }
 
     std::vector<DM::View> data;
@@ -213,7 +223,14 @@ void urbandevelDivision::run()
                 element->addAttribute("year", currentyear);
                 element->addAttribute("status", "empty");
                 element->addAttribute("type",develtype);
-                element->addAttribute("height_avg", height_avg);
+                if (copyheight) {
+                    int height_avg = static_cast<int>(block->getAttribute("height_avg")->getDouble());
+                    int height_min = static_cast<int>(block->getAttribute("height_min")->getDouble());
+                    int height_max = static_cast<int>(block->getAttribute("height_max")->getDouble());
+                    element->changeAttribute("height_avg", height_avg);
+                    element->changeAttribute("height_min", height_min);
+                    element->changeAttribute("height_max", height_max);
+                }
 
                 block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
                 element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB

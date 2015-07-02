@@ -118,9 +118,9 @@ void urbandevelBuilding::run()
         }
         std::string parcelstatus = currentparcel->getAttribute("status")->getString();
         std::string parceltype = currentparcel->getAttribute("type")->getString();
-        std::string parcelheight_avg = currentparcel->getAttribute("height_avg")->getString();
-        std::string parcelheight_min = currentparcel->getAttribute("height_min")->getString();
-        std::string parcelheight_max = currentparcel->getAttribute("height_max")->getString();
+        int parcelheight_avg = static_cast<int>(currentparcel->getAttribute("height_avg")->getDouble());
+        int parcelheight_min = static_cast<int>(currentparcel->getAttribute("height_min")->getDouble());
+        int parcelheight_max = static_cast<int>(currentparcel->getAttribute("height_max")->getDouble());
 
         std::string checkstatus = "process";
 
@@ -159,7 +159,7 @@ void urbandevelBuilding::run()
             double traffic_area = (parcel_area - roof_area)/3;
             double impervious_area = parcel_area - traffic_area - roof_area;
             int stories = static_cast<int>(parcelheight_min + (rand() % (int)(parcelheight_max - parcelheight_min + 1)));
-            DM::Logger(DM::Warning) << "stories: " << stories;
+            DM::Logger(DM::Debug) << "stories - max: " << parcelheight_max << " min: " << parcelheight_min << " calculated: " << stories;
 
             building->addAttribute("type", "residential");
             building->addAttribute("year", buildingyear);
@@ -191,10 +191,10 @@ void urbandevelBuilding::run()
             building->addAttribute("type", buildingtype);
         }
 
-          DM::Logger(DM::Warning) << "added face(s)";
+          //DM::Logger(DM::Warning) << "added face(s)";
     }
 
-    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
+    //DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
 }
 
 std::vector<DM::Face *> urbandevelBuilding::createOffest(DM::System * sys, DM::Face *f, double offset)
