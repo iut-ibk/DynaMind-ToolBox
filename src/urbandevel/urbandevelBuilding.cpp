@@ -62,7 +62,7 @@ void urbandevelBuilding::init()
     buildingview = DM::View("BUILDING", DM::FACE, DM::WRITE);
     buildingview.addAttribute("centroid_x", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("centroid_y", DM::Attribute::DOUBLE, DM::WRITE);
-    buildingview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
+    buildingview.addAttribute("year", DM::Attribute::STRING, DM::WRITE);
     buildingview.addAttribute("stories", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("A_roof", DM::Attribute::DOUBLE, DM::WRITE);
     buildingview.addAttribute("Aeff_roof", DM::Attribute::DOUBLE, DM::WRITE);
@@ -161,8 +161,11 @@ void urbandevelBuilding::run()
             int stories = static_cast<int>(parcelheight_min + (rand() % (int)(parcelheight_max - parcelheight_min + 1)));
             DM::Logger(DM::Debug) << "stories - max: " << parcelheight_max << " min: " << parcelheight_min << " calculated: " << stories;
 
+            QString year = QString::number(currentyear) + QString("-1-1");
+            std::string stdyear = year.toUtf8().constData();
+
             building->addAttribute("type", "residential");
-            building->addAttribute("year", buildingyear);
+            building->addAttribute("year", stdyear);
             building->addAttribute("stories", stories);
 
             building->addAttribute("roofarea", roof_area);
