@@ -29,6 +29,7 @@
 #define GUISIMULATION_H
 #include <dmcompilersettings.h>
 #include <dmsimulation.h>
+#include <QFont>
 
 class ModelNode;
 class PortNode;
@@ -75,6 +76,8 @@ public:
 
 	ModelNode* getModelNode(DM::Module *m){return modelNodes[m];};
 	QString currentDocument;
+    QFont defaultBold10;
+    QFont defaultNormal10;
 private:
 	std::map<DM::Module*, ModelNode*> modelNodes;
 	QList<SimulationTab*> tabs;

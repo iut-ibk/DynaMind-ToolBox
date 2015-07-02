@@ -43,6 +43,8 @@
 
 GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulation()
 {
+	this->defaultBold10 = QFont(QFont().defaultFamily(), 10, QFont::Bold);
+	this->defaultNormal10 = QFont(QFont().defaultFamily(), 10, QFont::Normal);
 	this->parent = parent;
 	this->tabWidget = tabWidget;
 	currentDocument = "";
@@ -296,3 +298,4 @@ void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*>
 	dest->close();
 	DM::Logger(DM::Debug) << "finished GUI information";
 }
+

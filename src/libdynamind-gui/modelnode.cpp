@@ -277,7 +277,7 @@ double ModelNode::paint_datastream(QPainter *painter, double & pos)
 	}
 	pos = pos + 12;
 	int counter = 0;
-	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->setFont(simulation->defaultBold10);
 	painter->drawText(	10, pos + 13* counter,
 						"Data-stream");
 	counter++;
@@ -325,7 +325,7 @@ double ModelNode::paint_datastream(QPainter *painter, double & pos)
 			if (view_missing)
 				painter->setPen(COLOR_MODULE_COLOR_ERROR);
 
-			painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+			painter->setFont(simulation->defaultBold10);
 			painter->drawText(	12, pos + 13* counter,
 								textdata);
 			counter++;
@@ -374,7 +374,7 @@ double ModelNode::paint_datastream(QPainter *painter, double & pos)
 				painter->setPen(COLOR_MODLE_TEXT_COLOR);
 				if (attribute_missing)
 					painter->setPen(COLOR_MODULE_COLOR_ERROR);
-				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->setFont(simulation->defaultNormal10);
 				painter->drawText(	14, pos + 13* counter,
 									textdata);
 				counter++;
@@ -392,7 +392,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 	pos = pos + 12;
 	int counter = 0;
 
-	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->setFont(simulation->defaultBold10);
 	painter->drawText(	10, pos + 13* counter,
 						"Parameter");
 	counter++;
@@ -421,7 +421,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 		case DM::STRING_LIST:
 			{
 				QString textdata = QString::fromStdString(parameter.str());
-				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->setFont(simulation->defaultNormal10);
 				painter->drawText(	12, pos + 13* counter,
 									textdata);
 				counter++;
@@ -430,7 +430,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 					ss << " - ";
 					ss << s;
 					textdata = QString::fromStdString(ss.str());
-					painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+					painter->setFont(simulation->defaultNormal10);
 					painter->drawText(	14, pos + 13* counter,
 										textdata);
 					counter++;
@@ -443,7 +443,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 			{
 				std::map<std::string,std::string> var_map = *(std::map<std::string,std::string>*)p->data;
 				QString textdata = QString::fromStdString(parameter.str());
-				painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+				painter->setFont(simulation->defaultNormal10);
 				painter->drawText(	12, pos + 13* counter,
 									textdata);
 				counter++;
@@ -454,7 +454,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 					ss << "\t";
 					ss << it->second;
 					textdata = QString::fromStdString(ss.str());
-					painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+					painter->setFont(simulation->defaultNormal10);
 					painter->drawText(	14, pos + 13* counter,
 										textdata);
 					counter++;
@@ -468,7 +468,7 @@ double ModelNode::paint_parameter(QPainter *painter, double & pos)
 		QString textdata = QString::fromStdString(parameter.str());
 		painter->setPen(COLOR_MODLE_TEXT_COLOR);
 
-		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+		painter->setFont(simulation->defaultNormal10);
 		painter->drawText(	12, pos + 13* counter,
 							textdata);
 
@@ -489,7 +489,7 @@ double ModelNode::paint_filter(QPainter *painter, double & pos)
 	pos = pos + 12;
 	int counter = 0;
 
-	painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+	painter->setFont(simulation->defaultBold10);
 	painter->drawText(	10, pos + 13* counter,
 						"Filter");
 	counter++;
@@ -498,7 +498,7 @@ double ModelNode::paint_filter(QPainter *painter, double & pos)
 
 		std::stringstream filter;
 		//filter << f.getViewName();
-		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Bold));
+		painter->setFont(simulation->defaultBold10);
 		painter->drawText(	12, pos + 13* counter,
 							QString::fromStdString(f.getViewName()));
 		counter++;
@@ -510,7 +510,7 @@ double ModelNode::paint_filter(QPainter *painter, double & pos)
 		QString textdata = QString::fromStdString(filter.str());
 		painter->setPen(COLOR_MODLE_TEXT_COLOR);
 
-		painter->setFont(QFont(QFont().defaultFamily(), 10, QFont::Normal));
+		painter->setFont(simulation->defaultNormal10);
 		painter->drawText(	12, pos + 13* counter,
 							textdata);
 
