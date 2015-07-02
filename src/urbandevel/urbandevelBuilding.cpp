@@ -44,6 +44,8 @@ void urbandevelBuilding::init()
     if (this->genPopulation)
     {
         cityview.addAttribute("cyclepopdiff", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
     }
     if (this->paramfromCity)
     {
@@ -100,8 +102,40 @@ void urbandevelBuilding::run()
         offset = static_cast<int>(currentcity->getAttribute("ratio")->getDouble());
     }
 
-    int cyclepopdiff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
+    int cyclediff = -1;
+
+    if (genPopulation)
+    {
+        int cyclepopdiff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
+        int cyclecomdiff = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+        int cycleinddiff = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+
+        //DM::Logger(DM::Warning) << "pop " << cyclepopdiff << ";com " << cyclecomdiff << ";ind " << cycleinddiff;
+        if ( !buildingtype.empty() )
+        {
+            if ( buildingtype == "res") cyclediff = cyclepopdiff;
+            if ( buildingtype == "com") cyclediff = cyclecomdiff;
+            if ( buildingtype == "ind") cyclediff = cycleinddiff;
+        }
+    }
+
     int currentyear = static_cast<int>(currentcity->getAttribute("currentyear")->getDouble());
+    int startyear = static_cast<int>(currentcity->getAttribute("startyear")->getDouble());
+
+    if ( currentyear <= startyear+1 )
+    {
+        std::vector<DM::Component *> buildings = sys->getAllComponentsInView(buildingview);
+        for (int i = 0; i < buildings.size(); i++)
+        {
+            std::string bdyear = buildings[i]->getAttribute("year")->getString();
+            if ( bdyear.empty() )
+            {
+                QString year = QString::number(startyear) + QString("-1-1");
+                std::string stdyear = year.toUtf8().constData();
+                buildings[i]->changeAttribute("year", stdyear);
+            }
+        }
+    }
 
     int numberOfHouseBuild = 0;
     int numberOfPeople = 0;
@@ -127,21 +161,26 @@ void urbandevelBuilding::run()
         // do not generate houses if no population (if population should be generated) is available
         // OR no parcel status equals develop (if development should happen on signal)
 
-        if ( genPopulation && cyclepopdiff <= 0 )
+        //DM::Logger(DM::Warning) << "CYCLEDIFF = " << cyclediff << "TYPE = " << buildingtype << parceltype;
+
+        if ( genPopulation && cyclediff <= 0 )
             continue;
 
-        if ( onSignal ) {
+        if ( onSignal )
+        {
             if ( parcelstatus.compare(checkstatus) != 0 )
             {
-                DM::Logger(DM::Debug) << "BD: skipping parcel, status = " << parcelstatus;
+                DM::Logger(DM::Warning) << "BD: skipping parcel, status = " << parcelstatus;
                 continue;
             }
             if (parceltype.compare(buildingtype) != 0 )
             {
-                DM::Logger(DM::Debug) << "BD: skipping parcel, parceltype = " << parceltype;
+                DM::Logger(DM::Warning) << "BD: skipping parcel, parceltype = " << parceltype << "buidlingtype = " << buildingtype;
                 continue;
             }
         }
+
+        DM::Logger(DM::Warning) << "IN BUILDING";
 
         std::vector<DM::Face *> f_off = this->createOffest(sys, currentparcel, offset);
 
@@ -155,6 +194,8 @@ void urbandevelBuilding::run()
         {
             sys->addComponentToView(building, buildingview);
 
+
+
             double roof_area = TBVectorData::CalculateArea((DM::System*)sys, (DM::Face*)building);
             double traffic_area = (parcel_area - roof_area)/3;
             double impervious_area = parcel_area - traffic_area - roof_area;
@@ -164,7 +205,7 @@ void urbandevelBuilding::run()
             QString year = QString::number(currentyear) + QString("-1-1");
             std::string stdyear = year.toUtf8().constData();
 
-            building->addAttribute("type", "residential");
+            building->addAttribute("type", buildingtype);
             building->addAttribute("year", stdyear);
             building->addAttribute("stories", stories);
 
@@ -184,10 +225,30 @@ void urbandevelBuilding::run()
             if (genPopulation)
             {
                 int peopleinbuilding = static_cast<int>(roof_area * stories / spacepp);
-                cyclepopdiff = std::max(cyclepopdiff - peopleinbuilding,0);
+                cyclediff = std::max(cyclediff - peopleinbuilding,0);
                 building->addAttribute("POP", peopleinbuilding);
-                currentcity->addAttribute("cyclepopdiff", cyclepopdiff);
                 numberOfPeople = numberOfPeople + peopleinbuilding;
+
+                if ( !buildingtype.empty() )
+                {
+                    if ( buildingtype == "res")
+                    {
+                        currentcity->addAttribute("cyclepopdiff", cyclediff);
+                    }
+                    else if ( buildingtype == "com")
+                    {
+                        currentcity->addAttribute("cyclecomdiff", cyclediff);
+                    }
+                    else if ( buildingtype == "ind")
+                    {
+                        currentcity->addAttribute("cycleinddiff", cyclediff);
+                    }
+                    else
+                    {
+                        currentcity->addAttribute("cyclepopdiff", cyclediff);
+                    }
+                }
+
             }
             currentparcel->addAttribute("status", "populated");
             building->addAttribute("height", stories*4);
@@ -197,7 +258,7 @@ void urbandevelBuilding::run()
           //DM::Logger(DM::Warning) << "added face(s)";
     }
 
-    //DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
+    DM::Logger(DM::Warning) << "Created Houses " << numberOfHouseBuild << " of type " << buildingtype << " with a total population of " << numberOfPeople;
 }
 
 std::vector<DM::Face *> urbandevelBuilding::createOffest(DM::System * sys, DM::Face *f, double offset)

@@ -70,27 +70,33 @@ void urbandevelDevelopment::run()
     int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
     int cyclecomdiff  = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
     int cycleinddiff  = static_cast<int>(currentcity->getAttribute("cycleinddiff")->getDouble());
+    int cyclediff = 0;
+
+    for (int j = 0; j < type.size() ; ++j)
+    {
+        if (type[j] == "res" ) cyclediff = cyclepopdiff;
+        else if (type[j] == "com" ) cyclediff = cyclecomdiff;
+        else if (type[j] == "ind" ) cyclediff = cycleinddiff;
+    }
 
     bool found_empty = 0;
 
     cities[0]->changeAttribute("trigger",0);
-    if (cyclepopdiff > 0)
+    if (cyclediff > 0)
     {
         cities[0]->changeAttribute("trigger",1);
-        DM::Logger(DM::Warning) << "developing, population = " << cyclepopdiff;
 
         for (int j = 0; j < type.size() ; ++j)
         {
             //check empty parcels
-
-            DM::Logger(DM::Warning) << "checking for empty parcels, type: " << type[j];
+            DM::Logger(DM::Warning) << "developing, population = " << cyclediff << "type:" << type[j];
 
             for (int i = 0; i < prcl.size(); i++)
             {
                 std::string status = prcl[i]->getAttribute("status")->getString();
                 std::string prcltype = prcl[i]->getAttribute("type")->getString();
 
-                DM::Logger(DM::Debug) << "analyzing parcel, status: " << status << "; type: " << prcltype;
+                //DM::Logger(DM::Warning) << "analyzing parcel, status: " << status << "; type: " << prcltype;
 
                 if (prcltype != type[j] || status == "populated" ) continue;
 
@@ -111,7 +117,7 @@ void urbandevelDevelopment::run()
                 std::string status = cb[i]->getAttribute("status")->getString();
                 std::string cbtype = cb[i]->getAttribute("type")->getString();
 
-                DM::Logger(DM::Debug) << "analyzing cityblock, status: " << status << "; type: " << cbtype;
+                //DM::Logger(DM::Warning) << "analyzing cityblock, status: " << status << "; type: " << cbtype;
 
                 if (cbtype != type[j] || status == "populated" ) continue;
 
@@ -133,7 +139,7 @@ void urbandevelDevelopment::run()
                 std::string status = sb[i]->getAttribute("status")->getString();\
                 std::string sbtype = sb[i]->getAttribute("type")->getString();
 
-                DM::Logger(DM::Debug) << "analyzing superblock, status: " << status << "; type: " << sbtype;
+                //DM::Logger(DM::Warning) << "analyzing superblock, status: " << status << "; type: " << sbtype;
 
                 if (sbtype != type[j] || status == "populated" ) continue;
 
