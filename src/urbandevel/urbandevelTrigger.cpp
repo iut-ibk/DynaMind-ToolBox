@@ -40,18 +40,15 @@ void urbandevelTrigger::run()
 
     DM::Component * currentcity = cities[0];
     int cyclepopdiff  = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
+    int cyclecomdiff  = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+    int cycleinddiff  = static_cast<int>(currentcity->getAttribute("cycleinddiff")->getDouble());
 
-    DM::Logger(DM::Warning) << "[Trigger] popdiff = " << cyclepopdiff;
+    //DM::Logger(DM::Warning) << "[Trigger] popdiff = " << cyclepopdiff;
 
     cities[0]->changeAttribute("trigger",0);
-
-    if (cyclepopdiff > 0)
+    if (cyclepopdiff > 0 || cycleinddiff > 0 || cyclecomdiff > 0)
     {
         cities[0]->changeAttribute("trigger",1);
-        DM::Logger(DM::Warning) << "in development mode";
     }
-    else if (cyclepopdiff < 0)
-    {
-        cities[0]->changeAttribute("trigger",-1);
-    }
+    else cities[0]->changeAttribute("trigger",-1);
 }

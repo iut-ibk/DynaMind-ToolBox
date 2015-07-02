@@ -180,8 +180,6 @@ void urbandevelBuilding::run()
             }
         }
 
-        DM::Logger(DM::Warning) << "IN BUILDING";
-
         std::vector<DM::Face *> f_off = this->createOffest(sys, currentparcel, offset);
 
         if (f_off.size() == 0)

@@ -59,6 +59,7 @@ void urbandevelDivision::init()
     elementview.addAttribute("generation", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("year", DM::Attribute::DOUBLE, DM::WRITE);
     elementview.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
+    elementview.addAttribute("type", DM::Attribute::STRING, DM::WRITE);
     elementview.addAttribute(blockview_name, elementview_name, DM::WRITE);
 
     elementview_nodes.addAttribute("street_side", DM::Attribute::DOUBLE, DM::WRITE);

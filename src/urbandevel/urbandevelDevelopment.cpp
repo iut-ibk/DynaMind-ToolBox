@@ -89,20 +89,19 @@ void urbandevelDevelopment::run()
         for (int j = 0; j < type.size() ; ++j)
         {
             //check empty parcels
-            DM::Logger(DM::Warning) << "developing, population = " << cyclediff << "type:" << type[j];
+            DM::Logger(DM::Warning) << "[DEVELOPMENT] type: " << type[j] << "pop: " << cyclediff;
 
             for (int i = 0; i < prcl.size(); i++)
             {
                 std::string status = prcl[i]->getAttribute("status")->getString();
                 std::string prcltype = prcl[i]->getAttribute("type")->getString();
 
-                //DM::Logger(DM::Warning) << "analyzing parcel, status: " << status << "; type: " << prcltype;
+                DM::Logger(DM::Warning) << "analyzing parcel, status: " << status;
 
                 if (prcltype != type[j] || status == "populated" ) continue;
 
                 if (status == "empty") {
                     prcl[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting parcel to develop, , type: " << prcltype;
                     return;
                 }
 
