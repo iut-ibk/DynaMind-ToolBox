@@ -68,10 +68,12 @@ void urbandevelDivision::init()
     {
         cityview = DM::View("CITY", DM::NODE, DM::READ);
         cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("startyear", DM::Attribute::DOUBLE, DM::READ);
 
         blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
         blockview.addAttribute("type", DM::Attribute::STRING, DM::READ);
         blockview.addAttribute("noheight", DM::Attribute::DOUBLE, DM::WRITE);
+        elementview.addAttribute("year", DM::Attribute::STRING, DM::WRITE);
     }
 
     if (sizefromSB) {
@@ -111,6 +113,8 @@ void urbandevelDivision::run()
     DM::System * sys = this->getData("data");
     DM::SpatialNodeHashMap snhm(sys,100,false);
 
+    int startyear = 0;
+
     if (onSignal)
     {
 
@@ -125,6 +129,22 @@ void urbandevelDivision::run()
         DM::Component * currentcityview = cities[0];
 
         currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
+        startyear = static_cast<int>(currentcityview->getAttribute("startyear")->getDouble());
+    }
+
+    if ( currentyear <= startyear+1 )
+    {
+        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+        for (int i = 0; i < elements.size(); i++)
+        {
+            std::string eyear = elements[i]->getAttribute("year")->getString();
+            if ( eyear.empty() )
+            {
+                QString year = QString::number(startyear) + QString("-1-1");
+                std::string stdyear = year.toUtf8().constData();
+                elements[i]->changeAttribute("year", stdyear);
+            }
+        }
     }
 
     std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
@@ -231,6 +251,12 @@ void urbandevelDivision::run()
                     element->changeAttribute("height_avg", height_avg);
                     element->changeAttribute("height_min", height_min);
                     element->changeAttribute("height_max", height_max);
+                }
+                if (onSignal)
+                {
+                    QString year = QString::number(currentyear) + QString("-1-1");
+                    std::string stdyear = year.toUtf8().constData();
+                    element->changeAttribute("year", stdyear);
                 }
 
                 block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB

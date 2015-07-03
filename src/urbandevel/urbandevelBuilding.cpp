@@ -170,12 +170,12 @@ void urbandevelBuilding::run()
         {
             if ( parcelstatus.compare(checkstatus) != 0 )
             {
-                DM::Logger(DM::Warning) << "BD: skipping parcel, status = " << parcelstatus;
+                //DM::Logger(DM::Warning) << "BD: skipping parcel, status = " << parcelstatus;
                 continue;
             }
             if (parceltype.compare(buildingtype) != 0 )
             {
-                DM::Logger(DM::Warning) << "BD: skipping parcel, parceltype = " << parceltype << "buidlingtype = " << buildingtype;
+                //DM::Logger(DM::Warning) << "BD: skipping parcel, parceltype = " << parceltype << "buidlingtype = " << buildingtype;
                 continue;
             }
         }
