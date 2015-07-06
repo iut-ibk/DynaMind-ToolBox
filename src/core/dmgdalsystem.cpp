@@ -202,6 +202,11 @@ void GDALSystem::updateView(const View &v)
 			lyr->CreateField(&oField);
 			continue;
 		}
+		if (v.getAttributeType(attribute_name) == DM::Attribute::DATE){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTDate );
+			lyr->CreateField(&oField);
+			continue;
+		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
 			lyr->CreateField(&oField);

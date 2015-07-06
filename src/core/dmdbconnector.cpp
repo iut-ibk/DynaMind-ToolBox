@@ -416,10 +416,12 @@ QSqlQuery* DBWorker::getQuery(QString cmd)
 
 DBWorker::~DBWorker()
 {
-	selectMutex.unlock();
+
 	//getDatabase();
+	//selectMutex.unlock();
 	foreach(QueryList* it, queryLists)
 		delete it;
+	//
 }
 
 DBConnector::~DBConnector()

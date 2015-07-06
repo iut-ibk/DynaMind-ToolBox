@@ -86,7 +86,8 @@ public:
 		LINK,
 		DOUBLEVECTOR,
 		STRINGVECTOR,
-		INT
+		INT,
+		DATE,
 	};
 	class AttributeValue
 	{
