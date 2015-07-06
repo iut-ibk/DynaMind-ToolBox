@@ -6,9 +6,9 @@ library("tools")
 # options(error=traceback)
 ########################################################
 
-wrkpath <- ("~/Work/Current/reportreader")
-reppath <- (file.path(wrkpath,"repfiles"))
-outpath <- (file.path(wrkpath,"output"))
+wrkpath <- ("/srv/IUT/Datenaustausch/ChristianM/DynAlp/")
+reppath <- (file.path(wrkpath,"1D"))
+outpath <- (file.path(wrkpath,"output1D"))
 
 NODES <- 1 # node detail reports
 #JUNCTION <- 0
@@ -19,10 +19,10 @@ wwtp <- c("V020","ARA1") # wwtps are handled differently
 crosstotal<-function(tab,sectiontable,valcol)
 {
     for(k in 1:dim(sectiontable)[1])
+        
     {
         value <- as.numeric(sectiontable[k,valcol])
         if (!value > 0) next
-        
         nodename <- sectiontable[k,1]
         ni<-which(tab[,1]==nodename)
         
@@ -43,18 +43,15 @@ crosstotal<-function(tab,sectiontable,valcol)
 
 repfiles <- Sys.glob(file.path(reppath,"*.rep"))
 
-summarymatrixnames=c("name","numberSubcatchments","SUMtotRunoff[Ml]","nInflowNodes","SUMmaxtotInflow[lps]","SUMtotInflowVolume[Ml]","nSurchargedNodes","surcharged[h]","nFloodingNodes","Sumhoursflooded","SUMtotFloodVolume[Ml]","numberStorages","SUMaverageVol[Ml]","SUMmaxVol[Ml]","SUMmaxPcnt","nOutfalls","SUMtotOutfallVolume[Ml]","SUMtotWWTPVolume[Ml]","NSurchargeConduits","SUMhourslimitedcapacity","nPumps","SUMtotPumpVolume[Ml]")
-
-summarymatrix<-matrix(nrow=length(repfiles),ncol=length(summarymatrixnames))
-colnames(summarymatrix) <- summarymatrixnames
-
+summarymatrix<-matrix(nrow=length(repfiles),ncol=0)
 floodingsummary<-matrix(nrow=0,ncol=3)
 outfallsummary<-matrix(nrow=0,ncol=3)
 
 for(filenr in 1:length(repfiles))
 {
     print(repfiles[filenr])
-	summarymatrix[filenr,1] <- basename(file_path_sans_ext(repfiles[filenr]))
+    srow <- c(basename(file_path_sans_ext(repfiles[filenr])))
+    smn <- c("name")
 
 	rep <- read.table(repfiles[filenr],sep="\t")
 	
@@ -64,7 +61,7 @@ for(filenr in 1:length(repfiles))
 	
 	S<-list()
 	S[["Subcatchment Runoff Summary"]]<-c("Subcatchment","totPrec","totRunon","totEvap","totInfil","totRunoff","totRunoff2","PeakRunoff","RunoffCoeff")
-	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin")
+	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin","repDepth")
 	S[["Node Inflow Summary"]]<-c("Node","Type","MaxLatInflow","MaxTotInflow","tMaxOcc_d","t_MaxOcc_HrMin","LatInflowVol","TotInflowVol","FlowBalErr")
 	S[["Node Surcharge Summary"]]<-c("Node","Type","hSurch","MaxHabCrown","MinDbelRim")
 	S[["Node Flooding Summary"]]<-c("Node","hFlooded","MaxRate","tMaxOcc_d","t_MaxOcc_HrMin","TotFloodV","MaxPondD")
@@ -184,52 +181,59 @@ for(filenr in 1:length(repfiles))
         
 	    if (section == "Subcatchment Runoff Summary")
 	    {
-	        summarymatrix[filenr,2]<-dim(sectiontable)[1] #numberSubcatchments
-	        summarymatrix[filenr,3]<-sum(as.numeric(sectiontable[,6])) #SUMtotRunoff[Ml]
+	        srow <- cbind(srow, dim(sectiontable)[1]); smn <-c(smn,"Nsubcatchments")
+	        srow <- cbind(srow, sum(as.numeric(sectiontable[,6]))); smn<-c(smn,"SUMtotrunoff[Ml]")
 	    }
         else if (section == "Node Inflow Summary")
         {
-            summarymatrix[filenr,4]<-dim(sectiontable)[1] #numberInflowNodes
-            summarymatrix[filenr,5]<-sum(as.numeric(sectiontable[,4])) #SUMmaxtotInflow[lps]
-            summarymatrix[filenr,6]<-sum(as.numeric(sectiontable[,8])) #SUMtotInflowVolume[Ml]
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn,"Ninflownodes")
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,4]))); smn <- c(smn, "SUMmaxtotinflow[lps]")
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,8]))); smn <- c(smn, "SUMmaxtotinflowvolume[Ml]")
         }
         else if (section == "Node Surcharge Summary")
         {
-            summarymatrix[filenr,7]<-dim(sectiontable)[1] #numberSurchargeNodes
-            summarymatrix[filenr,8]<-sum(as.numeric(sectiontable[,3])) #hourssurcharged
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn, "Nsurchargenodes")#numberSurchargeNodes
+            srow <- cbind(srow, max(as.numeric(sectiontable[,3]))); smn <- c(smn, "MAXhourssurcharge")#MAXhourssurcharges
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,3]))); smn <- c(smn, "SUMhourssurcharge")#SUMhourssurcharged
         }
         else if (section == "Node Flooding Summary") # Count of Surcharge nodes through all Simulations
         {
-            summarymatrix[filenr,9]<-dim(sectiontable)[1] #numberFloodingNodes
-            summarymatrix[filenr,10]<-sum(as.numeric(sectiontable[,2])) #SUMhoursflooded
-            summarymatrix[filenr,11]<-sum(as.numeric(sectiontable[,6])) #SUMFloodVolume
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn, "Nfloodingnodes") #numberFloodingNodes
+            srow <- cbind(srow, max(as.numeric(sectiontable[,2]))); smn <- c(smn, "MAXhoursflooded") #MAXhoursflooded
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,2]))); smn <- c(smn, "SUMhoursflooded") #SUMhoursflooded
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,6]))); smn <- c(smn, "SUMfloodvolume[Ml]") #SUMFloodVolume
             floodingsummary<-crosstotal(floodingsummary,sectiontable,6)
         }
         else if (section == "Storage Volume Summary")
         {
-            summarymatrix[filenr,12]<-dim(sectiontable)[1] #numberStorages
-            summarymatrix[filenr,13]<-sum(as.numeric(sectiontable[,2])) #SUMaverageVol[Ml]
-            summarymatrix[filenr,14]<-sum(as.numeric(sectiontable[,6])) #SUMmaxVol[Ml]
-            summarymatrix[filenr,15]<-sum(as.numeric(sectiontable[,7])) #SUMmaxPcnt
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn, "Nstorages") #numberStorages
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,2]))); smn <- c(smn, "SUMaveragestoragevol[Ml]") #SUMaverageVol[Ml]
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,6]))); smn <- c(smn, "SUMmaxstoragevol[Ml]") #SUMmaxVol[Ml]
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,7]))); smn <- c(smn, "SUMmaxstoragepcnt") #SUMmaxPcnt
         }
         else if (section == "Outfall Loading Summary") # Count of Outfall events per node through all Simulations
         {
-            summarymatrix[filenr,16]<-(dim(sectiontable)[1] - length(wwtp)) #noutfalls
-            summarymatrix[filenr,17]<-sum(as.numeric(sectiontable[which(!(sectiontable[,1] %in% wwtp)),5])) #SUMtotOutfallVolume[Ml] without WWTP
-            summarymatrix[filenr,18]<-sum(as.numeric(sectiontable[which((sectiontable[,1] %in% wwtp)),5])) #SUMtotWWTPVolume[Ml]
+            srow <- cbind(srow, (dim(sectiontable)[1] - length(wwtp))); smn <- c(smn, "Noutfalls") #noutfalls
+            srow <- cbind(srow, sum(as.numeric(sectiontable[which(!(sectiontable[,1] %in% wwtp)),5]))); smn <- c(smn, "SUMcsovolume[Ml]") #SUMtotOutfallVolume[Ml] without WWTP
+            srow <- cbind(srow, sum(as.numeric(sectiontable[which((sectiontable[,1] %in% wwtp)),5]))); smn <- c(smn, "SUMwwtpvolume[Ml]") #SUMtotWWTPVolume[Ml]
             outfallsummary<-crosstotal(outfallsummary,sectiontable,5)
         }
         else if (section == "Conduit Surcharge Summary")
         {
-            summarymatrix[filenr,19]<-dim(sectiontable)[1] #NSurchargeConduits
-            summarymatrix[filenr,20]<-sum(as.numeric(sectiontable[,6])) #SUMhourslimitedcapacity
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn, "Nsurchargeconduits") #NSurchargeConduits
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,6]))); smn <- c(smn, "SUMhourslimcapconduits") #SUMhourslimitedcapacity
         }
         else if (section == "Pumping Summary")
         {
-            summarymatrix[filenr,21]<-dim(sectiontable)[1] #nPumps
-            summarymatrix[filenr,22]<-sum(as.numeric(sectiontable[,7])) #SUMtotPumpVolume[Ml]
+            srow <- cbind(srow, dim(sectiontable)[1]); smn <- c(smn, "Npumps") #nPumps
+            srow <- cbind(srow, sum(as.numeric(sectiontable[,7]))); smn <- c(smn, "SUMpumpvolume[Ml]") #SUMtotPumpVolume[Ml]
         }
 	}
+	
+	if (filenr == 1) summarymatrix <- matrix(ncol=dim(srow)[2],nrow=0)
+    
+	summarymatrix <- rbind(summarymatrix, srow)
+	colnames(summarymatrix) <- smn
 }
 
 write.csv2(summarymatrix,file.path(outpath, "summary.csv"),row.names=T)
