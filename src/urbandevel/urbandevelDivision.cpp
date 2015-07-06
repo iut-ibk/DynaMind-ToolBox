@@ -69,6 +69,7 @@ void urbandevelDivision::init()
         cityview = DM::View("CITY", DM::NODE, DM::READ);
         cityview.addAttribute("currentyear", DM::Attribute::DOUBLE, DM::READ);
         cityview.addAttribute("startyear", DM::Attribute::DOUBLE, DM::READ);
+        cityview.addAttribute("triggertype", DM::Attribute::STRING, DM::READ);
 
         blockview.addAttribute("status", DM::Attribute::STRING, DM::READ);
         blockview.addAttribute("type", DM::Attribute::STRING, DM::READ);
@@ -114,6 +115,7 @@ void urbandevelDivision::run()
     DM::SpatialNodeHashMap snhm(sys,100,false);
 
     int startyear = 0;
+    std::string triggertype = "";
 
     if (onSignal)
     {
@@ -130,142 +132,148 @@ void urbandevelDivision::run()
 
         currentyear = static_cast<int>(currentcityview->getAttribute("currentyear")->getDouble());
         startyear = static_cast<int>(currentcityview->getAttribute("startyear")->getDouble());
+        triggertype = currentcityview->getAttribute("triggertype")->getString();
     }
 
-    if ( currentyear <= startyear+1 )
+//if ( !develtype.empty() && triggertype.compare(develtype) == 0 )
     {
-        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
-        for (int i = 0; i < elements.size(); i++)
+        DM::Logger(DM::Warning) << "[DIVISION] triggertype: " << triggertype;
+        if ( currentyear <= startyear+1 )
         {
-            std::string eyear = elements[i]->getAttribute("year")->getString();
-            if ( eyear.empty() )
+            std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+            for (int i = 0; i < elements.size(); i++)
             {
-                QString year = QString::number(startyear) + QString("-1-1");
-                std::string stdyear = year.toUtf8().constData();
-                elements[i]->changeAttribute("year", stdyear);
+                std::string eyear = elements[i]->getAttribute("year")->getString();
+                if ( eyear.empty() )
+                {
+                    QString year = QString::number(startyear) + QString("-1-1");
+                    std::string stdyear = year.toUtf8().constData();
+                    elements[i]->changeAttribute("year", stdyear);
+                }
             }
         }
-    }
 
-    std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
+        std::vector<DM::Component *> blocks = sys->getAllComponentsInView(blockview);
 
-    for (int i = 0; i < blocks.size(); i++)
-    {
-        DM::System workingSys;
-        DM::Face * block = static_cast<DM::Face *> (blocks[i]);
-
-        height_avg = 0;
-        worklength = length;
-
-        // if development should happen on signal and the status is not "develop" skip the block
-
-        std::string inputtype = "notonsignal";
-        std::string inputstatus = "notonsignal";
-
-        if ( onSignal )
+        for (int i = 0; i < blocks.size(); i++)
         {
-            inputtype = block->getAttribute("type")->getString();
-            inputstatus = block->getAttribute("status")->getString();
+            DM::System workingSys;
+            DM::Face * block = static_cast<DM::Face *> (blocks[i]);
 
-            if ( inputstatus != "process" )
+            height_avg = 0;
+            worklength = length;
+
+            // if development should happen on signal and the status is not "develop" skip the block
+
+            std::string inputtype = "notonsignal";
+            std::string inputstatus = "notonsignal";
+
+            if ( onSignal )
             {
-                DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
+                inputtype = block->getAttribute("type")->getString();
+                inputstatus = block->getAttribute("status")->getString();
+
+                if ( inputstatus != "process" )
+                {
+                    DM::Logger(DM::Debug) << "not parceling as status = " << inputstatus;
+                    continue;
+                }
+
+
+            }
+
+            //DM::Logger(DM::Warning) << "block past signal check, status = " << inputstatus;
+            // if no develtype is set and does not match skip the block
+
+            if ( !develtype.empty() && develtype.compare(inputtype) != 0 )
+            {
+                DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
                 continue;
             }
 
+            //DM::Logger(DM::Warning) << "block past type check";
 
-        }
+            // if sizefromSB is true modify the length variable according to the height value
 
-        DM::Logger(DM::Warning) << "block past signal check, status = " << inputstatus;
-        // if no develtype is set and does not match skip the block
+            if (sizefromSB) {
 
-        if ( !develtype.empty() && develtype.compare(inputtype) != 0 )
-        {
-            DM::Logger(DM::Debug) << "not parceling as type = " << inputtype;
-            continue;
-        }
+                std::vector<DM::Component*> sblink = block->getAttribute("SUPERBLOCK")->getLinkedComponents();
 
-        DM::Logger(DM::Warning) << "block past type check";
+                block->addAttribute("noheight", 0);
 
-        // if sizefromSB is true modify the length variable according to the height value
-
-        if (sizefromSB) {
-
-            std::vector<DM::Component*> sblink = block->getAttribute("SUPERBLOCK")->getLinkedComponents();
-
-            block->addAttribute("noheight", 0);
-
-            if (sblink.size() != 1)
-            {
-                DM::Logger(DM::Warning) << "Superblocks mismatch (exactly one component needed). There are " << sblink.size();
-                height_avg = 1;
-                block->addAttribute("noheight",2);
-            }
-            else {
-                height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
-                block->addAttribute("noheight",1);
-            }
-
-            if (height_avg >=3) {
-                worklength = worklength*1.5;
-            }
-            else if (height_avg >=6) {
-                worklength = worklength*3;
-            }
-
-            DM::Logger(DM::Warning) << "Adjusting length " << height_avg << " from " << length << " to " << worklength;
-        }
-
-        DM::Logger(DM::Warning) << "begin parceling";
-
-        DM::Face * newblock = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
-        workingSys.addComponentToView(newblock, blockview);
-        this->createSubdivision(&workingSys, newblock, 0, inputtype);
-        createFinalFaces(&workingSys, sys, newblock, elementview, snhm);
-
-        DM::Logger(DM::Debug) << "end parceling";
-
-        std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
-
-        for (int j = 0; j < elements.size(); j++)
-        {
-            //DM::Logger(DM::Warning) << "status = " << status;
-
-            DM::Face * element = static_cast<DM::Face *> (elements[j]);
-            std::string status = element->getAttribute("status")->getString();
-
-
-            if (status == "new")
-            {
-                double area = DM::CGALGeometry::CalculateArea2D(element);
-                //element->addAttribute("centroid_x", a.getX());
-                //element->addAttribute("centroid_y", a.getY());
-                element->addAttribute("area", area);
-                element->addAttribute("year", currentyear);
-                element->addAttribute("status", "empty");
-                element->addAttribute("type",develtype);
-                if (copyheight) {
-                    int height_avg = static_cast<int>(block->getAttribute("height_avg")->getDouble());
-                    int height_min = static_cast<int>(block->getAttribute("height_min")->getDouble());
-                    int height_max = static_cast<int>(block->getAttribute("height_max")->getDouble());
-                    element->changeAttribute("height_avg", height_avg);
-                    element->changeAttribute("height_min", height_min);
-                    element->changeAttribute("height_max", height_max);
-                }
-                if (onSignal)
+                if (sblink.size() != 1)
                 {
-                    QString year = QString::number(currentyear) + QString("-1-1");
-                    std::string stdyear = year.toUtf8().constData();
-                    element->changeAttribute("year", stdyear);
+                    DM::Logger(DM::Warning) << "Superblocks mismatch (exactly one component needed). There are " << sblink.size();
+                    height_avg = 1;
+                    block->addAttribute("noheight",2);
+                }
+                else {
+                    height_avg = static_cast<int>(sblink[0]->getAttribute("height_avg")->getDouble());
+                    block->addAttribute("noheight",1);
                 }
 
-                block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
-                element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
+                if (height_avg >=3) {
+                    worklength = worklength*1.5;
+                }
+                else if (height_avg >=6) {
+                    worklength = worklength*3;
+                }
+
+                //DM::Logger(DM::Warning) << "Adjusting length " << height_avg << " from " << length << " to " << worklength;
             }
 
+            //DM::Logger(DM::Warning) << "begin parceling";
+
+            DM::Face * newblock = TBVectorData::CopyFaceGeometryToNewSystem(block, &workingSys);
+            workingSys.addComponentToView(newblock, blockview);
+            this->createSubdivision(&workingSys, newblock, 0, inputtype);
+            createFinalFaces(&workingSys, sys, newblock, elementview, snhm);
+
+            DM::Logger(DM::Debug) << "end parceling";
+
+            std::vector<DM::Component *> elements = sys->getAllComponentsInView(elementview);
+
+            for (int j = 0; j < elements.size(); j++)
+            {
+                //DM::Logger(DM::Warning) << "status = " << status;
+
+                DM::Face * element = static_cast<DM::Face *> (elements[j]);
+                std::string status = element->getAttribute("status")->getString();
+
+
+                if (status == "new")
+                {
+                    double area = DM::CGALGeometry::CalculateArea2D(element);
+                    //element->addAttribute("centroid_x", a.getX());
+                    //element->addAttribute("centroid_y", a.getY());
+                    element->addAttribute("area", area);
+                    element->addAttribute("year", currentyear);
+                    element->addAttribute("status", "empty");
+                    element->addAttribute("type",develtype);
+                    if (copyheight) {
+                        int height_avg = static_cast<int>(block->getAttribute("height_avg")->getDouble());
+                        int height_min = static_cast<int>(block->getAttribute("height_min")->getDouble());
+                        int height_max = static_cast<int>(block->getAttribute("height_max")->getDouble());
+                        element->changeAttribute("height_avg", height_avg);
+                        element->changeAttribute("height_min", height_min);
+                        element->changeAttribute("height_max", height_max);
+                    }
+                    if (onSignal)
+                    {
+                        QString year = QString::number(currentyear) + QString("-1-1");
+                        std::string stdyear = year.toUtf8().constData();
+                        element->changeAttribute("year", stdyear);
+                    }
+
+                    block->getAttribute(elementview.getName())->addLink(element, elementview.getName()); //Link SB->CB
+                    element->getAttribute(blockview.getName())->addLink(block, blockview.getName()); //Link CB->SB
+                }
+
+            }
+            block->addAttribute("status", "developed");
         }
-        block->addAttribute("status", "developed");
     }
+
 }
 
 string urbandevelDivision::getHelpUrl()

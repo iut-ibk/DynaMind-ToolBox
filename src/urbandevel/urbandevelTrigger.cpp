@@ -19,6 +19,7 @@ void urbandevelTrigger::init()
     city.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("trigger", DM::Attribute::INT, DM::WRITE);
+    city.addAttribute("triggertype", DM::Attribute::STRING, DM::WRITE);
 
     std::vector<DM::View> views;
     views.push_back(city);
@@ -51,4 +52,5 @@ void urbandevelTrigger::run()
         cities[0]->changeAttribute("trigger",1);
     }
     else cities[0]->changeAttribute("trigger",-1);
+    cities[0]->changeAttribute("triggertype","");
 }

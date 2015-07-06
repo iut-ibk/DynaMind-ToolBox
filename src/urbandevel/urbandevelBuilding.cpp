@@ -103,19 +103,21 @@ void urbandevelBuilding::run()
     }
 
     int cyclediff = -1;
+    std::string triggertype = "";
 
     if (genPopulation)
     {
-        int cyclepopdiff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
-        int cyclecomdiff = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
-        int cycleinddiff = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+        triggertype = currentcity->getAttribute("triggertype")->getString();
 
         //DM::Logger(DM::Warning) << "pop " << cyclepopdiff << ";com " << cyclecomdiff << ";ind " << cycleinddiff;
-        if ( !buildingtype.empty() )
+        if ( !buildingtype.empty() && !triggertype.empty() )
         {
-            if ( buildingtype == "res") cyclediff = cyclepopdiff;
-            if ( buildingtype == "com") cyclediff = cyclecomdiff;
-            if ( buildingtype == "ind") cyclediff = cycleinddiff;
+            if ( buildingtype.compare("res") == 0 && buildingtype.compare(triggertype ) == 0)
+            {
+                cyclediff = static_cast<int>(currentcity->getAttribute("cyclepopdiff")->getDouble());
+            }
+            else if ( buildingtype == "com" && buildingtype.compare(triggertype) == 0 ) cyclediff = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
+            else if ( buildingtype == "ind" && buildingtype.compare(triggertype) == 0 ) cyclediff = static_cast<int>(currentcity->getAttribute("cycleinddiff")->getDouble());
         }
     }
 
@@ -229,7 +231,7 @@ void urbandevelBuilding::run()
 
                 if ( !buildingtype.empty() )
                 {
-                    if ( buildingtype == "res")
+                    if ( buildingtype.compare("res") == 0)
                     {
                         currentcity->addAttribute("cyclepopdiff", cyclediff);
                     }

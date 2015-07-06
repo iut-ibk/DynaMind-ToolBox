@@ -22,6 +22,7 @@ void urbandevelDevelopment::init()
     city.addAttribute("cyclecomdiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("cycleinddiff", DM::Attribute::DOUBLE, DM::READ);
     city.addAttribute("trigger", DM::Attribute::INT, DM::MODIFY);
+    city.addAttribute("triggertype", DM::Attribute::STRING, DM::MODIFY);
 
     superblock.addAttribute("status", DM::Attribute::STRING, DM::READ);
     superblock.addAttribute("type", DM::Attribute::STRING, DM::READ);
@@ -71,12 +72,15 @@ void urbandevelDevelopment::run()
     int cyclecomdiff  = static_cast<int>(currentcity->getAttribute("cyclecomdiff")->getDouble());
     int cycleinddiff  = static_cast<int>(currentcity->getAttribute("cycleinddiff")->getDouble());
     int cyclediff = 0;
+    std::string triggertype = "";
 
     for (int j = 0; j < type.size() ; ++j)
     {
         if (type[j] == "res" ) cyclediff = cyclepopdiff;
         else if (type[j] == "com" ) cyclediff = cyclecomdiff;
         else if (type[j] == "ind" ) cyclediff = cycleinddiff;
+        triggertype = type[j];
+        if ( cyclediff > 0 ) break;
     }
 
     bool found_empty = 0;
@@ -85,69 +89,65 @@ void urbandevelDevelopment::run()
     if (cyclediff > 0)
     {
         cities[0]->changeAttribute("trigger",1);
+        cities[0]->changeAttribute("triggerype",triggertype);
 
-        for (int j = 0; j < type.size() ; ++j)
+        //check empty parcels
+        DM::Logger(DM::Warning) << "[DEVELOPMENT] type: " << triggertype << "pop: " << cyclediff;
+
+        for (int i = 0; i < prcl.size(); i++)
         {
-            //check empty parcels
-            DM::Logger(DM::Warning) << "[DEVELOPMENT] type: " << type[j] << "pop: " << cyclediff;
+            std::string status = prcl[i]->getAttribute("status")->getString();
+            std::string prcltype = prcl[i]->getAttribute("type")->getString();
 
-            for (int i = 0; i < prcl.size(); i++)
-            {
-                std::string status = prcl[i]->getAttribute("status")->getString();
-                std::string prcltype = prcl[i]->getAttribute("type")->getString();
+            if (prcltype.compare(triggertype) != 0 || status.compare("populated") == 0 ) continue;
 
-                DM::Logger(DM::Warning) << "analyzing parcel, status: " << status;
-
-                if (prcltype != type[j] || status == "populated" ) continue;
-
-                if (status == "empty") {
-                    prcl[i]->changeAttribute("status", "process");
-                    return;
-                }
-
+            if (status.compare("empty") == 0 ) {
+                prcl[i]->changeAttribute("status", "process");
+                return;
             }
 
-            //check empty cityblocks
+        }
 
-            DM::Logger(DM::Debug) << "no empty parcels found, checking for empty cityblocks, type: " << type[j];
+        //check empty cityblocks
 
-            for (int i = 0; i < cb.size(); i++)
-            {
-                std::string status = cb[i]->getAttribute("status")->getString();
-                std::string cbtype = cb[i]->getAttribute("type")->getString();
+        DM::Logger(DM::Debug) << "no empty parcels found, checking for empty cityblocks, type: " << triggertype;
 
-                //DM::Logger(DM::Warning) << "analyzing cityblock, status: " << status << "; type: " << cbtype;
+        for (int i = 0; i < cb.size(); i++)
+        {
+            std::string status = cb[i]->getAttribute("status")->getString();
+            std::string cbtype = cb[i]->getAttribute("type")->getString();
 
-                if (cbtype != type[j] || status == "populated" ) continue;
+            //DM::Logger(DM::Warning) << "analyzing cityblock, status: " << status << "; type: " << cbtype;
 
-                if (status == "empty") {
-                    cb[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting cityblock to develop, type: " << cbtype;
-                    return;
-                }
+            if (cbtype.compare(triggertype) != 0 || status.compare("populated") == 0 ) continue;
 
-
+            if (status == "empty") {
+                cb[i]->changeAttribute("status", "process");
+                DM::Logger(DM::Warning) << "setting cityblock to develop, type: " << cbtype;
+                return;
             }
 
-            //check empty superblocks
 
-            DM::Logger(DM::Debug) << "no empty parcels or cityblocks found, checking for empty superblocks, type: " << type[j];
+        }
 
-            for (int i = 0; i < sb.size(); i++)
-            {
-                std::string status = sb[i]->getAttribute("status")->getString();\
-                std::string sbtype = sb[i]->getAttribute("type")->getString();
+        //check empty superblocks
 
-                //DM::Logger(DM::Warning) << "analyzing superblock, status: " << status << "; type: " << sbtype;
+        DM::Logger(DM::Debug) << "no empty parcels or cityblocks found, checking for empty superblocks, type: " << triggertype;
 
-                if (sbtype != type[j] || status == "populated" ) continue;
+        for (int i = 0; i < sb.size(); i++)
+        {
+            std::string status = sb[i]->getAttribute("status")->getString();\
+            std::string sbtype = sb[i]->getAttribute("type")->getString();
 
-                if (status == "empty") {
-                    sb[i]->changeAttribute("status", "process");
-                    DM::Logger(DM::Warning) << "setting superblock to develop, type: " << sbtype;
+            //DM::Logger(DM::Warning) << "analyzing superblock, status: " << status << "; type: " << sbtype;
 
-                    return;
-                }
+            if (sbtype.compare(triggertype) != 0 || status.compare("populated") == 0 ) continue;
+
+            if (status == "empty") {
+                sb[i]->changeAttribute("status", "process");
+                DM::Logger(DM::Warning) << "setting superblock to develop, type: " << sbtype;
+
+                return;
             }
         }
     }
