@@ -74,6 +74,9 @@ DM::Attribute::AttributeType GDALUtilities::OGRToDMAttribute(OGRFieldDefn * fdef
 	case OFTString:
 		type = DM::Attribute::STRING;
 		break;
+	case OFTDate:
+		type = DM::Attribute::DATE;
+		break;
 	default:
 		DM::Logger(DM::Warning) << "Type not supported attributed " << fdef->GetNameRef() << " not loaded";
 		break;
