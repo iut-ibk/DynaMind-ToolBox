@@ -65,7 +65,7 @@ class DM_DirectGraph(Module):
             for pl in potential_leafs:
                 if pl in self.visited.keys():
                     continue
-                #Retrive node
+                # Retrieve node
                 edge = self.edge_list[pl]
                 if start_id == edge[0]:
                     end_id = edge[1]
