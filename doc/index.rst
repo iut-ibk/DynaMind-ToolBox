@@ -91,6 +91,10 @@ Data Preparation
 
 Network Analysis
 ----------------
+
+.. toctree::
+   :titlesonly:
+
    dm_strahler
 
 External Programs
