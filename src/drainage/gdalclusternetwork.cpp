@@ -30,6 +30,10 @@ void GDALClusterNetwork::init()
 
 void GDALClusterNetwork::walk_the_edge(std::map<long, std::pair<long, long> > & edge_list, std::map<long, std::vector<long> > & start_nodes, std::map<long, int> & edge_cluster, int & marker, int start_id, bool top)
 {
+	if (start_nodes.find(start_id) == start_nodes.end()) {
+		DM::Logger(DM::Error) << "No start node at " << start_id << " found ";
+		return;
+	}
 	std::vector<long> edges = start_nodes[start_id];
 	foreach(long e_id, edges) {
 		if (edge_cluster[e_id] != -1)

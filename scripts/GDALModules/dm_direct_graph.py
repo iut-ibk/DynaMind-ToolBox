@@ -30,23 +30,42 @@ class DM_DirectGraph(Module):
             self.edge_list = {}
             self.corrected_list = {}
             self.pipes.reset_reading()
-
+            log("start building search structure", Debug)
+            counter = 0
             for p in self.pipes:
+                counter+=1
+
                 f_id = p.GetFID()
+                if counter % 10000 == 0:
+                    log(str(f_id), Debug)
                 start_node = p.GetFieldAsInteger("start_id")
                 end_node = p.GetFieldAsInteger("end_id")
                 self.edge_list[f_id] = (start_node, end_node)
                 self.add_edge(start_node, f_id)
                 self.add_edge(end_node, f_id)
 
-            print "start leave search"
-            self.get_leafs(self.root_node)
+            log("start search", Debug)
 
-            print "write list"
+            leafs = [self.root_node]
+            counter = 0
+            self.visited_edges = set()
+            while len(leafs) > 0:
+                if counter % 1000 == 0:
+                    log(str(len(leafs)), Debug)
+
+                new_leafs = []
+                for l in leafs:
+                    self.get_leafs(l, new_leafs)
+                leafs = new_leafs
+
+
+            log("write result", Debug)
             #Write list
+
+            counter = 0
             for p in self.pipes:
                 f_id = p.GetFID()
-                if f_id in self.visited.keys():
+                if f_id in self.visited_edges:
                     edge = self.visited[f_id]
                     p.SetField("start_id", edge[0])
                     p.SetField("end_id", edge[1])
@@ -54,16 +73,20 @@ class DM_DirectGraph(Module):
             self.pipes.finalise()
 
         def add_edge(self, node_id, edge_id):
-            if node_id not in self.node_edge_list.keys():
+            #if node_id not in self.node_edge_list.keys():
+            #    self.node_edge_list[node_id] = []
+            try:
+                self.node_edge_list[node_id].append(edge_id)
+            except KeyError:
                 self.node_edge_list[node_id] = []
-            self.node_edge_list[node_id].append(edge_id)
+                self.node_edge_list[node_id].append(edge_id)
 
-        def get_leafs(self, start_id):
+        def get_leafs(self, start_id, new_leafs):
             potential_leafs = self.node_edge_list[start_id]
 
             leafs = []
             for pl in potential_leafs:
-                if pl in self.visited.keys():
+                if pl in self.visited_edges:
                     continue
                 # Retrieve node
                 edge = self.edge_list[pl]
@@ -72,11 +95,10 @@ class DM_DirectGraph(Module):
                 else:
                     end_id = edge[0]
 
-                leafs.append(end_id)
+                new_leafs.append(end_id)
+                self.visited_edges.add(pl)
                 self.visited[pl] = (start_id, end_id)
 
-            for l in leafs:
-                self.get_leafs(l)
 
 
 
