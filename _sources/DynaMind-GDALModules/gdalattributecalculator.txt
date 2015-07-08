@@ -3,7 +3,9 @@ Calculate Attributes
 ====================
 
 :index:`GDALAttributeCalculator <GDALModules; GDALAttributeCalculator | Calculate attributes>`  calculates a new or overwrites
-and existing attribute
+an existing attribute.
+
+
 
 Parameter
 ---------
@@ -11,11 +13,11 @@ Parameter
 +-----------------------+------------------------+------------------------------------------------------------------------+
 |        Name           |          Type          |       Description                                                      |
 +=======================+========================+========================================================================+
-|attribute              | STRING                 |                                                                        |
+|attribute              | STRING                 | view_name.attribute_name                                               |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|attributeType          | STRING                 |                                                                        |
+|attributeType          | STRING                 | INT, DOUBLE, STRING                                                    |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|variables              | STRING                 |                                                                        |
+|variables              | STRING_MAP             | variable name;  view_name.attribute_name                               |
 +-----------------------+------------------------+------------------------------------------------------------------------+
 |equation               | STRING                 |                                                                        |
 +-----------------------+------------------------+------------------------------------------------------------------------+
@@ -39,6 +41,9 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
 
+Detailed Description
+--------------------
 
+The module integrates the muparser library `GDAL/OGR <http://muparser.beltoforion.de/mup_features.html>`_
 
 

@@ -73,9 +73,9 @@ Groups
    loopgroup
 
 
-==============
-Urban Drainage
-==============
+=======================
+Infrastructure Networks
+=======================
 
 
 Data Preparation
@@ -89,6 +89,9 @@ Data Preparation
    dm_direct_graph
    dm_value_from_raster
 
+Network Analysis
+----------------
+   dm_strahler
 
 External Programs
 -----------------

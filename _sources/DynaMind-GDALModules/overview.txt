@@ -43,10 +43,10 @@ Groups
 - :doc:`LoopGroup </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
 
 
-Urban Drainage
-==============
+Infrastructure Networks
+=======================
 
-A range of modules to help with data cleaning to prepare integrate urban drainage networks into SWMM.
+A range of modules to help with data cleaning to prepare and analysis urban infrastructure networks. E.g. modules to integrate urban drainage networks into SWMM.
 
 Data Preparation
 ----------------
@@ -54,7 +54,11 @@ Data Preparation
 - :doc:`GDALExtractNodes </DynaMind-GDALModules/gdalextractnodes>` Creates start and end nodes for a given drainage network
 - :doc:`GDALClusterNetwork </DynaMind-GDALModules/gdalclusternetwork>` Identify clusters of connected lines
 - :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>` Direct graph
-- :doc:`DM_ValueFromRaster</DynaMind-GDALModules/dm_value_from_raster>` Copy raster data values onto nodes>
+- :doc:`DM_ValueFromRaster</DynaMind-GDALModules/dm_value_from_raster>` Copy raster data values onto nodes
+
+Network Analysis
+----------------
+- :doc:`DM_Strahler </DynaMind-GDALModules/dm_strahler>` Strahler ordering
 
 SWMM
 ----

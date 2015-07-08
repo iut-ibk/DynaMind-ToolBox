@@ -154,8 +154,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#groups">Groups</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#urban-drainage">Urban Drainage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#infrastructure-networks">Infrastructure Networks</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#data-preparation">Data Preparation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#network-analysis">Network Analysis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#swmm">SWMM</a></li>
 </ul>
 </li>
@@ -229,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#detailed-description">Detailed Description</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Area</a><ul>
@@ -296,7 +298,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="index.html#urban-drainage">Urban Drainage</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#infrastructure-networks">Infrastructure Networks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#parameter">Parameter</a></li>
@@ -324,6 +326,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#network-analysis">Network Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#external-programs">External Programs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdaldmswmm.html">SWMM Integration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdaldmswmm.html#data-stream">Data-stream</a></li>
@@ -455,16 +458,22 @@
 </ul>
 </div>
 </div>
-<div class="section" id="urban-drainage">
-<h1>Urban Drainage<a class="headerlink" href="#urban-drainage" title="Permalink to this headline">¶</a></h1>
-<p>A range of modules to help with data cleaning to prepare integrate urban drainage networks into SWMM.</p>
+<div class="section" id="infrastructure-networks">
+<h1>Infrastructure Networks<a class="headerlink" href="#infrastructure-networks" title="Permalink to this headline">¶</a></h1>
+<p>A range of modules to help with data cleaning to prepare and analysis urban infrastructure networks. E.g. modules to integrate urban drainage networks into SWMM.</p>
 <div class="section" id="data-preparation">
 <h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="gdalextractnodes.html"><em>GDALExtractNodes</em></a> Creates start and end nodes for a given drainage network</li>
 <li><a class="reference internal" href="gdalclusternetwork.html"><em>GDALClusterNetwork</em></a> Identify clusters of connected lines</li>
 <li><a class="reference internal" href="dm_direct_graph.html"><em>DM_DirectGraph</em></a> Direct graph</li>
-<li><a class="reference internal" href="dm_value_from_raster.html"><em>DM_ValueFromRaster</em></a> Copy raster data values onto nodes&gt;</li>
+<li><a class="reference internal" href="dm_value_from_raster.html"><em>DM_ValueFromRaster</em></a> Copy raster data values onto nodes</li>
+</ul>
+</div>
+<div class="section" id="network-analysis">
+<h2>Network Analysis<a class="headerlink" href="#network-analysis" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="dm_strahler.html"><em>DM_Strahler</em></a> Strahler ordering</li>
 </ul>
 </div>
 <div class="section" id="swmm">
