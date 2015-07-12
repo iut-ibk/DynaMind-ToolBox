@@ -28,45 +28,43 @@ void GDALClusterNetwork::init()
 	this->registerViewContainers(data_stream);
 }
 
-void GDALClusterNetwork::walk_the_edge(std::map<long, std::pair<long, long> > & edge_list, std::map<long, std::vector<long> > & start_nodes, std::map<long, int> & edge_cluster, int & marker, int start_id, bool top)
+std::vector<long> GDALClusterNetwork::walk_the_edge(std::vector<long> start_ids, int cluster_id)
 {
-	if (start_nodes.find(start_id) == start_nodes.end()) {
-		DM::Logger(DM::Error) << "No start node at " << start_id << " found ";
-		return;
-	}
-	std::vector<long> edges = start_nodes[start_id];
-	foreach(long e_id, edges) {
-		if (edge_cluster[e_id] != -1)
+	std::vector<long> next_nodes;
+
+	foreach(long start_id, start_ids) {
+		if (start_nodes.find(start_id) == start_nodes.end()) {
+			DM::Logger(DM::Error) << "No start node at " << start_id << " found ";
 			continue;
-		//Get Edge
-		if (top) {
-			marker++;
-			top = false;
 		}
-		edge_cluster[e_id] = marker;
-		std::pair<long, long> edge = edge_list[e_id];
-		long s_id = edge.first;
-		long end_id = edge.second;
-		long next_id = -1;
-		if (end_id != start_id)
-			next_id = end_id;
-		else
-			next_id = s_id;
-		walk_the_edge(edge_list, start_nodes,  edge_cluster,  marker, next_id);
+		std::vector<long> & edges = start_nodes[start_id];
+		foreach(long e_id, edges) {
+			if (edge_cluster[e_id] != -1)
+				continue;
+			edge_cluster[e_id] = cluster_id;
+			std::pair<long, long> edge = edge_list[e_id];
+			long s_id = edge.first;
+			long end_id = edge.second;
+			long next_id = -1;
+			if (end_id != start_id)
+				next_id = end_id;
+			else
+				next_id = s_id;
+			next_nodes.push_back(next_id);
+		}
 	}
+	return next_nodes;
 }
 
 void GDALClusterNetwork::run()
 {
-	double tolerance = 100;
 	network.resetReading();
 
 	OGRFeature * f;
 
-	//edge_id, cluster id
-	std::map<long, int> edge_cluster;
-	std::map<long, std::pair<long, long> > edge_list;
-	std::map<long, std::vector<long> > start_nodes;
+	edge_cluster.clear();
+	edge_list.clear();
+	start_nodes.clear();
 
 	//Init Node List
 	while (f = network.getNextFeature()) {
@@ -99,12 +97,23 @@ void GDALClusterNetwork::run()
 		}
 	}
 
-	int marker = 0;
+	int cluster_id = 1;
+	int next_cluster_id = 1;
 	for(int i = 0; i < start.size(); i++) {
 		int start_id = start[i];
-		walk_the_edge(edge_list, start_nodes, edge_cluster, marker, start_id, true);
-	}
+		std::vector<long> start_ids;
+		start_ids.push_back(start_id);
+		int recursion_depth = 0;
 
+		while (start_ids.size() > 0) {
+			start_ids = walk_the_edge(start_ids, cluster_id);
+			if (recursion_depth == 1) { //Create new cluster id for next run
+				next_cluster_id = cluster_id+1;
+			}
+			recursion_depth++;
+		}
+		cluster_id = next_cluster_id;
+	}
 	network.resetReading();
 	while (f = network.getNextFeature()) {
 		f->SetField("cluster_id", edge_cluster[f->GetFID()]);

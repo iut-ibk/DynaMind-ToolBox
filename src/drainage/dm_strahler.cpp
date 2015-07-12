@@ -27,10 +27,10 @@ void DM_Strahler::init()
 	this->registerViewContainers(data_stream);
 }
 
-void DM_Strahler::getNext(long node_id, long current_strahler)
+void DM_Strahler::getNext(long node_id, long current_strahler, std::set<long> & visted)
 {
 	// [end_id] -----> [start_id]
-	if (start_nodes.find(node_id) == start_nodes.end()) {
+	if (start_nodes.count(node_id) == 0) {
 		return;
 	}
 
@@ -70,8 +70,13 @@ void DM_Strahler::getNext(long node_id, long current_strahler)
 			//DM::Logger(DM::Error) << "Break";
 			continue;
 		}
-		getNext(next, current_strahler);
-
+		if (visted.find(edge) != visted.end()) {
+			DM::Logger(DM::Error) << "Break Loop";
+			continue;
+		}
+		visted.insert(edge);
+		getNext(next, current_strahler, visted);
+		break;
 	}
 }
 
@@ -85,7 +90,7 @@ void DM_Strahler::run()
 	while (f = network.getNextFeature()) {
 		counter++;
 		if (counter % 10000 == 0) {
-			DM::Logger(DM::Error) << counter;
+			DM::Logger(DM::Debug) << counter;
 		}
 		long start_id = f->GetFieldAsInteger("start_id"); // downstream
 		long end_id = f->GetFieldAsInteger("end_id"); //upstream
@@ -118,7 +123,7 @@ void DM_Strahler::run()
 		std::vector<long> & vec_start = end_nodes[start_id];
 		vec_start.push_back(f->GetFID());
 	}
-	DM::Logger(DM::Standard) << "Start search";
+	DM::Logger(DM::Debug) << "Start search";
 	int start_nodes = 0;
 	for (std::map<long, long >::const_iterator it = node_con_counter.begin();
 		 it != node_con_counter.end();
@@ -138,9 +143,10 @@ void DM_Strahler::run()
 			DM::Logger(DM::Debug) << counter << "/" << start_nodes;
 		}
 		// Get starting edge with inital strahler number 1
-		getNext(it->first, 1);
+		std::set<long> visted;
+		getNext(it->first, 1, visted);
 	}
-	DM::Logger(DM::Error) << counter << "/" << start_nodes;
+	DM::Logger(DM::Debug) << counter << "/" << start_nodes;
 	// Write Strahler
 	DM::Logger(DM::Debug) << "Write number";
 	network.resetReading();

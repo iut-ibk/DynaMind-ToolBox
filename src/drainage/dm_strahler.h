@@ -18,7 +18,7 @@ private:
 	std::map<long, std::vector<long> > start_nodes; // start_id <edge_id>
 	std::map<long, std::vector<long> > end_nodes; // end_id <edge_id>
 	std::map<long,long> node_con_counter;
-	void getNext(long node_id, long current_strahler);
+	void getNext(long node_id, long current_strahler, std::set<long> &visted);
 
 public:
 	DM_Strahler();

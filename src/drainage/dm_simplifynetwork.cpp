@@ -25,13 +25,13 @@ DM_SimplifyNetwork::DM_SimplifyNetwork()
 void DM_SimplifyNetwork::init()
 {
 	network = DM::ViewContainer(view_name, DM::EDGE, DM::READ);
-	network.addAttribute("strahler_number",  DM::Attribute::INT, DM::READ);
+	network.addAttribute("strahler_order",  DM::Attribute::INT, DM::READ);
 	network.addAttribute("start_id",  DM::Attribute::INT, DM::READ);
 	network.addAttribute("end_id",  DM::Attribute::INT, DM::READ);
 	out_network = DM::ViewContainer(out_name, DM::EDGE, DM::WRITE);
 	out_network.addAttribute("start_id",  DM::Attribute::INT, DM::WRITE);
 	out_network.addAttribute("end_id",  DM::Attribute::INT, DM::WRITE);
-	out_network.addAttribute("strahler_number",  DM::Attribute::INT, DM::WRITE);
+	out_network.addAttribute("strahler_order",  DM::Attribute::INT, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&network);
@@ -49,7 +49,7 @@ void DM_SimplifyNetwork::createEdge(long node_id, long start_node, long strahler
 	ls.addPoint(&end_point);
 
 	OGRFeature * feature = out_network.createFeature();
-	feature->SetField("strahler_number", (int)strahler);
+	feature->SetField("strahler_order", (int)strahler);
 	feature->SetGeometry(&ls);
 }
 
@@ -106,7 +106,7 @@ void DM_SimplifyNetwork::run()
 		node_point_map[end_id] = end_point;
 
 		edge_list[f->GetFID()] = std::pair<long, long>(start_id, end_id);
-		strahler_id[f->GetFID()] = f->GetFieldAsInteger("strahler_number");
+		strahler_id[f->GetFID()] = f->GetFieldAsInteger("strahler_order");
 		visited[f->GetFID()] = -1;
 	}
 

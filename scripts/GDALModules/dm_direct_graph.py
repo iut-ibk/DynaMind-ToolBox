@@ -58,7 +58,6 @@ class DM_DirectGraph(Module):
                     self.get_leafs(l, new_leafs)
                 leafs = new_leafs
 
-
             log("write result", Debug)
             #Write list
 
@@ -73,17 +72,15 @@ class DM_DirectGraph(Module):
             self.pipes.finalise()
 
         def add_edge(self, node_id, edge_id):
-            #if node_id not in self.node_edge_list.keys():
-            #    self.node_edge_list[node_id] = []
             try:
                 self.node_edge_list[node_id].append(edge_id)
             except KeyError:
                 self.node_edge_list[node_id] = []
                 self.node_edge_list[node_id].append(edge_id)
 
+        # start_id -----> end_id
         def get_leafs(self, start_id, new_leafs):
             potential_leafs = self.node_edge_list[start_id]
-
             leafs = []
             for pl in potential_leafs:
                 if pl in self.visited_edges:
