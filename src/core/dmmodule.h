@@ -305,6 +305,10 @@ public:
 	/** @brief sets the current status of the module */
 	void setStatus(ModuleStatus status);
 
+
+	/** @brief Returns true if GDAL module */
+	bool isGdalModule();
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -366,9 +370,6 @@ protected:
 
 	/** @brief Returns if module uses GDAL in Data stream */
 	void setIsGDALModule(bool b);
-
-	/** @brief Returns true if GDAL module */
-	bool isGdalModule();
 
 	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;
