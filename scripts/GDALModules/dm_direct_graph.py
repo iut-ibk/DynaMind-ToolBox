@@ -15,13 +15,22 @@ class DM_DirectGraph(Module):
             self.createParameter("root_node", INT)
             self.root_node = 0
 
+            self.createParameter("node_name", STRING)
+            self.node_name = ""
+
         def init(self):
             self.pipes = ViewContainer(self.view_name, EDGE, READ)
             self.pipes.addAttribute("start_id", Attribute.INT, MODIFY)
             self.pipes.addAttribute("end_id", Attribute.INT, MODIFY)
             self.pipes.addAttribute("visited", Attribute.INT, WRITE)
 
-            self.registerViewContainers([self.pipes])
+            containers = [self.pipes]
+            if self.node_name != "":
+                self.nodes = ViewContainer(self.node_name, NODE, READ)
+                self.nodes.addAttribute("node_id", Attribute.INT, READ)
+                containers.append(self.nodes)
+
+            self.registerViewContainers(containers)
 
         def run(self):
             #Go from end_node up to every leaf, every conduit can only be accessed once.
@@ -46,17 +55,29 @@ class DM_DirectGraph(Module):
 
             log("start search", Debug)
 
-            leafs = [self.root_node]
-            counter = 0
-            self.visited_edges = set()
-            while len(leafs) > 0:
-                if counter % 1000 == 0:
-                    log(str(len(leafs)), Debug)
+            start_nodes = []
+            if self.node_name == "":
+                start_nodes.append(self.root_node)
+            else:
+                self.nodes.reset_reading()
+                for n in self.nodes:
+                    node_id  = n.GetFieldAsInteger("node_id")
+                    start_nodes.append(node_id)
 
-                new_leafs = []
-                for l in leafs:
-                    self.get_leafs(l, new_leafs)
-                leafs = new_leafs
+            self.visited_edges = set() # That is global ... I guess
+            for s in start_nodes:
+                print s
+                leafs = [s]
+                counter = 0
+
+                while len(leafs) > 0:
+                    if counter % 1000 == 0:
+                        log(str(len(leafs)), Debug)
+
+                    new_leafs = []
+                    for l in leafs:
+                        self.get_leafs(l, new_leafs)
+                    leafs = new_leafs
 
             log("write result", Debug)
             #Write list
@@ -69,7 +90,10 @@ class DM_DirectGraph(Module):
                     p.SetField("start_id", edge[0])
                     p.SetField("end_id", edge[1])
                     p.SetField("visited", 1)
+
             self.pipes.finalise()
+            if self.node_name != "":
+                self.nodes.finalise()
 
         def add_edge(self, node_id, edge_id):
             try:

@@ -12,14 +12,14 @@ class Segmentation(Module):
             self.createParameter("view_name", STRING)
             self.view_name = "conduit"
 
-            self.createParameter("root_node", INT)
-            self.root_node = 0
+            self.createParameter("segmentation_parameter", STRING)
+            self.segmentation_parameter = "strahler_order"
 
         def init(self):
             self.network = ViewContainer(self.view_name , EDGE, READ)
             self.network.addAttribute("start_id", Attribute.INT, READ)
             self.network.addAttribute("end_id", Attribute.INT, READ)
-            self.network.addAttribute("strahler_order", Attribute.INT, READ)
+            self.network.addAttribute(self.segmentation_parameter, Attribute.INT, READ)
             self.network.addAttribute("segment_id", Attribute.INT, WRITE)
 
             self.registerViewContainers([self.network])
@@ -32,22 +32,31 @@ class Segmentation(Module):
             self.cluster_list = {}
             self.cluster_id = 0
             self.visited_edges = set()
+            end_node_list = set()
+            start_node_list = set()
 
             self.network.reset_reading()
-
-
-
             for n in self.network:
                 f_id = n.GetFID()
                 start_node = n.GetFieldAsInteger("start_id")
                 end_node = n.GetFieldAsInteger("end_id")
-                strahler_order = n.GetFieldAsInteger("strahler_order")
+                strahler_order = n.GetFieldAsInteger(self.segmentation_parameter)
 
                 self.edge_list[f_id] = (start_node, end_node, strahler_order, f_id)
                 self.add_edge(start_node, f_id)
 
+                start_node_list.add(start_node)
+                end_node_list.add(end_node)
+
+            start_nodes = []
+            for s in start_node_list:
+                if s not in end_node_list:
+                    start_nodes.append(s)
             # print "start leave search"
-            self.get_leafs(self.root_node)
+
+            for s in start_nodes:
+                log("Search for " + str(s), Standard)
+                self.get_leafs(s)
 
             for p in self.network:
                 f_id = p.GetFID()

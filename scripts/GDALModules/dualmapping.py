@@ -19,7 +19,6 @@ class Dualmapping(Module):
             self.network = ViewContainer(self.view_name, EDGE, READ)
             self.network.addAttribute("start_id", Attribute.INT, READ)
             self.network.addAttribute("end_id", Attribute.INT, READ)
-            self.network.addAttribute("strahler_order", Attribute.INT, READ)
             self.network.addAttribute("segment_id", Attribute.INT, READ)
 
             self.registerViewContainers([self.network])
