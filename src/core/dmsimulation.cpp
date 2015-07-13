@@ -1397,7 +1397,13 @@ std::string SimulationConfig::getWorkingDir() const
 
 void SimulationConfig::setWorkingDir(const std::string &value)
 {
+	QDir dir(QString::fromStdString(value));
+	if (!dir.exists()) {
+		DM::Logger(DM::Error) << "Failed to set working directory to " << value << " does not exist";
+		return;
+	}
 	workingDir = value;
+
 }
 bool SimulationConfig::getKeepSystems() const
 {
