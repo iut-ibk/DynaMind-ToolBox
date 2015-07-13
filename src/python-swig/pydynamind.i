@@ -908,15 +908,18 @@ class Sim:
 			if "parameter" in parameters:
 				self._set_module_parameter(m, parameters["parameter"])
 			if "filter" in parameters:
-				filter = parameters["filter"]
-				attribute_filter = ""
-				spatial_filter = ""
-				if "attribute" in filter:
-					attribute_filter = filter["attribute"]
-				if "spatial" in filter:
-					spatial_filter = filter["spatial"]
-				filters = [DM.Filter("", DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter)))]
-				m.setFilter(filters)
+				filters_list = []
+				filters =  parameters["filter"]
+				for f in filters.keys():
+					filter = filters[f]
+					attribute_filter = ""
+					spatial_filter = ""
+					if "attribute" in filter:
+						attribute_filter = filter["attribute"]
+					if "spatial" in filter:
+						spatial_filter = filter["spatial"]
+					filters_list.append(DM.Filter(f, DM.FilterArgument(str(attribute_filter)), DM.FilterArgument(str(spatial_filter))))
+				m.setFilter(filters_list)
 				m.init()
 
 		def _set_module_parameter(self, module, parameter={}):
