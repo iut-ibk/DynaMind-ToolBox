@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	Q_INIT_RESOURCE(icons);
 	Q_INIT_RESOURCE(splash);
 	QApplication::setWindowIcon(QIcon(":/ressources/dynamind-icon.png"));
-
+	//QApplication::setGraphicsSystem("native");
 	QCoreApplication::setOrganizationName("IUT");
 	QCoreApplication::setApplicationName("DYNAMIND");
 

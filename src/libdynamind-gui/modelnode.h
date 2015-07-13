@@ -94,6 +94,7 @@ public slots:
 	void editFilter();
 	void printData();
 	void viewOutportData(QString portName);
+	void exportData(QString portName);
 	void viewInportData(QString portName);
 	void showHelp();
 	void changeSuccessorMode();

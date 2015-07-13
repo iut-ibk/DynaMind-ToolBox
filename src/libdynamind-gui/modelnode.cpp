@@ -31,6 +31,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QInputDialog>
+#include <QFileDialog>
 
 #include "ColorPalette.h"
 #include <guimodelnode.h>
@@ -39,6 +40,8 @@
 #include <portnode.h>
 #include <guisimulation.h>
 #include <dmsystem.h>
+#include <dmgdalsystem.h>
+
 #include <dm.h>
 
 //#define QGLVIEWER
@@ -586,16 +589,26 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 	// out port viewer
 	QSignalMapper* signalMapper = new QSignalMapper(this);
+
+	QSignalMapper* signalMapper_export = new QSignalMapper(this);
 	foreach(string s, module->getOutPortNames())
 	{
 		QAction* action = menu.addAction(QString::fromStdString("view data at out port '"+s+"'"));
 		connect( action, SIGNAL(triggered() ), signalMapper, SLOT( map() ));
 		signalMapper->setMapping(action, QString::fromStdString(s));
 
-		if (!module->getOutPortData(s))
+		QAction* action_ex = menu.addAction(QString::fromStdString("export data at out port '"+s+"'"));
+		connect( action_ex, SIGNAL(triggered() ), signalMapper_export, SLOT( map() ));
+		signalMapper_export->setMapping(action_ex, QString::fromStdString(s));
+
+		if (!module->getOutPortData(s)) {
 			action->setDisabled(true);
+			action_ex->setDisabled(true);
+		}
 	}
+
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(viewOutportData(QString)));
+	connect(signalMapper_export, SIGNAL(mapped(QString)), this, SLOT(exportData(QString)));
 
 	// in port viewer
 	signalMapper = new QSignalMapper(this);
@@ -701,6 +714,28 @@ void ModelNode::viewOutportData(QString portName)
 	DM::ViewerWindow *viewer_window = new DM::ViewerWindow(sys, views);
 	viewer_window->show();
 #endif
+}
+
+void ModelNode::exportData(QString portName)
+{
+	if (!this->module->isGdalModule()) {
+		DM::Logger(DM::Error) << "Only supported for GDAL modules";
+		return;
+	}
+
+	QString fileName = QFileDialog::getSaveFileName(0, tr("Save File"),
+	"export.sqlite",
+	tr("SQLite (*.sqlite)"));
+
+	DM::GDALSystem * sys =  (DM::GDALSystem *)this->module->getOutPortData(portName.toStdString());
+	if(!sys)
+	{
+		DM::Logger(DM::Error) << "Something went wrong while getting the data";
+		return;
+	}
+	QFile::copy(QString::fromStdString(sys->getDBID()), fileName);
+
+	DM::Logger(DM::Standard) << "Exported database to " << fileName.toStdString();
 }
 
 void ModelNode::viewInportData(QString portName)
