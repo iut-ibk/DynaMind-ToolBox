@@ -21,14 +21,13 @@ The DyanMind-Toolbox comes with:
 Documentation can be found [here](http://iut-ibk.github.io/DynaMind-ToolBox)
 
 ## Windows Installer
-
-- [DynaMind 0.8dev](https://github.com/iut-ibk/DynaMind-ToolBox/releases/download/v0.8.1dev/DynaMind-Toolbox-0.8.dev-win32.exe)
+- [DynaMind 0.8.2.dev](https://www.dropbox.com/s/lg9akyvec6ufc16/DynaMind-Toolbox-0.8.2.dev-win32.exe?dl=0)
 
 ## Install on Mac using the Dynamind [tap](https://github.com/christianurich/homebrew-dynamind)
 
 ```
 brew tap christianurich/dynamind
-brew install dynamind
+brew install dynamind --HEAD
 ```
 
 ## Compile DynaMind
