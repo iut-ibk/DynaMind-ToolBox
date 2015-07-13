@@ -32,6 +32,7 @@
 #include "gdalextractnodes.h"
 #include "dm_strahler.h"
 #include "dm_simplifynetwork.h"
+#include "dm_gaphattributes.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -43,4 +44,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALExtractNodes>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_Strahler>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_SimplifyNetwork>());
+	registry->addNodeFactory(new DM::NodeFactory<DM_GaphAttributes>());
 }
