@@ -5,7 +5,7 @@
 #include <dmgdalsystem.h>
 
 
-DM_DECLARE_NODE_NAME(GDALHotStarter,GDALModules)
+DM_DECLARE_NODE_NAME(GDALHotStarter,Data Import and Export)
 
 DM::ViewContainer *GDALHotStarter::viewContainerFactory(OGRLayer *lyr)
 {
@@ -38,7 +38,7 @@ GDALHotStarter::GDALHotStarter()
 	OGRRegisterAll();
 
 	this->hotStartDatabase = "";
-	this->addParameter("hot_start_database", DM::STRING, &hotStartDatabase);
+	this->addParameter("hot_start_database", DM::FILENAME, &hotStartDatabase);
 }
 
 void GDALHotStarter::init()

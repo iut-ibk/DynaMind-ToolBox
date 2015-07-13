@@ -4,7 +4,7 @@
 #include <ogrsf_frmts.h>
 
 
-DM_DECLARE_NODE_NAME(GDALClusterNetwork, GDALModules)
+DM_DECLARE_NODE_NAME(GDALClusterNetwork, Network Analysis)
 
 
 GDALClusterNetwork::GDALClusterNetwork()

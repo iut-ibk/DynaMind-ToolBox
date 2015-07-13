@@ -8,7 +8,7 @@
 #include <map>
 
 
-DM_DECLARE_NODE_NAME(GDALClusterNeighbourhood, GDALModules)
+DM_DECLARE_NODE_NAME(GDALClusterNeighbourhood, Network Analysis)
 
 GDALClusterNeighbourhood::GDALClusterNeighbourhood()
 {

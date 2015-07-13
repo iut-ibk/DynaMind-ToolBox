@@ -5,7 +5,7 @@
 #include <ogrsf_frmts.h>
 
 
-DM_DECLARE_NODE_NAME(DM_SimplifyNetwork, NetworkAnalysis)
+DM_DECLARE_NODE_NAME(DM_SimplifyNetwork, Network Analysis)
 
 DM_SimplifyNetwork::DM_SimplifyNetwork()
 {

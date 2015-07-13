@@ -4,7 +4,7 @@
 #include <ogrsf_frmts.h>
 
 
-DM_DECLARE_NODE_NAME(DM_Strahler, NetworkAnalysis)
+DM_DECLARE_NODE_NAME(DM_Strahler, Network Analysis)
 
 DM_Strahler::DM_Strahler()
 {
@@ -154,7 +154,5 @@ void DM_Strahler::run()
 	while (f = network.getNextFeature()) {
 		f->SetField("strahler_order", strahler_id[f->GetFID()]);
 	}
-
-
 }
 
