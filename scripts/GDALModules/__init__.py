@@ -30,3 +30,5 @@ from simplify_abs_income import *
 from rwht_cost_model import *
 from dm_direct_graph import *
 from dm_value_from_raster import *
+from dualmapping import *
+from segmentation import *
