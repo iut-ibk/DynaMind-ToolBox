@@ -96,6 +96,8 @@ Network Analysis
    :titlesonly:
 
    dm_strahler
+   segmentation
+   dualmapping
 
 External Programs
 -----------------

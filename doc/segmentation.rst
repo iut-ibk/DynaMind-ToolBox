@@ -1,9 +1,9 @@
 ============
-Direct Graph
+Segmentation
 ============
 
-:index:`DM_DirectGraph <GDALModules; DM_DirectGraph | Direct graph>` directs a graph from the root node to the leafs.
-With ``start_id`` as downstream node and ``end_id`` as upstream node.
+:index:`Segmentation <GDALModules; Segmentation | Create segments of equal attributes>` creates segments of equal attributes
+indicated by the segment_id. The module requires a directed graph. (See :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>`.)
 
 Parameter
 ---------
@@ -13,10 +13,9 @@ Parameter
 +=======================+========================+========================================================================+
 |view_name              | STRING                 | lead view name                                                         |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|root_node              | INT                    | id of the root node                                                    |
+|segmentation_parameter | STRING                 | search parameter used for the segmentation                             |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|root_node              | INT                    | id of the root node                                                    |
-+-----------------------+------------------------+------------------------------------------------------------------------+
+
 
 Data-stream
 -----------
@@ -26,10 +25,12 @@ Data-stream
 +====================+===========================+==================+=======+==========================================+
 | view_name          |                           | EDGE             | read  |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | start_id                  | INT              | modify| downstream node                          |
+|                    | start_id                  | INT              | read  | downstream node                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | end_id                    | INT              | modify| upstream node                            |
+|                    | end_id                    | INT              | read  | upstream node                            |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | visited                   | INT              | write |                                          |
+|                    | segmentation_parameter    | INT              | read  | parameter for segmentation               |
++--------------------+---------------------------+------------------+-------+------------------------------------------+
+|                    | segment_id                | INT              | write | segment id                               |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 

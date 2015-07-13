@@ -59,6 +59,8 @@ Data Preparation
 Network Analysis
 ----------------
 - :doc:`DM_Strahler </DynaMind-GDALModules/dm_strahler>` Strahler ordering
+- :doc:`Segmentation </DynaMind-GDALModules/segmentation>` Create segments of equal attributes
+- :doc:`Dual Mapping </DynaMind-GDALModules/dualmapping>` Export dual mapped edge list
 
 SWMM
 ----

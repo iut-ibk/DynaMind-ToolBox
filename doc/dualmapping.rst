@@ -1,9 +1,8 @@
 ============
-Direct Graph
+Dual Mapping
 ============
 
-:index:`DM_DirectGraph <GDALModules; DM_DirectGraph | Direct graph>` directs a graph from the root node to the leafs.
-With ``start_id`` as downstream node and ``end_id`` as upstream node.
+:index:`<GDALModules; Dualmapping | Export dual mapped edge list>` Export dual mapped edge list of a graph into a .csv file. The dual mapping is based on the segment_id (See :doc:`Segmentation </DynaMind-GDALModules/segmentation>`)
 
 Parameter
 ---------
@@ -13,10 +12,9 @@ Parameter
 +=======================+========================+========================================================================+
 |view_name              | STRING                 | lead view name                                                         |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|root_node              | INT                    | id of the root node                                                    |
+|file_name              | STRING                 | file name                                                              |
 +-----------------------+------------------------+------------------------------------------------------------------------+
-|root_node              | INT                    | id of the root node                                                    |
-+-----------------------+------------------------+------------------------------------------------------------------------+
+
 
 Data-stream
 -----------
@@ -26,10 +24,10 @@ Data-stream
 +====================+===========================+==================+=======+==========================================+
 | view_name          |                           | EDGE             | read  |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | start_id                  | INT              | modify| downstream node                          |
+|                    | start_id                  | INT              | read  | downstream node                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | end_id                    | INT              | modify| upstream node                            |
+|                    | end_id                    | INT              | read  | upstream node                            |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
-|                    | visited                   | INT              | write |                                          |
+|                    | segment_id                | INT              | read  | segment id                               |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
