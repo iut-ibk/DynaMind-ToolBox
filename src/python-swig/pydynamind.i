@@ -653,6 +653,8 @@ class DM::ViewContainer {
 
 		"""
 		self.syncAlteredFeatures()
+		if not hasattr(self, '__features'):
+			return
 		for f in self.__features:
 			f.Destroy()
 		del self.__features[:]
