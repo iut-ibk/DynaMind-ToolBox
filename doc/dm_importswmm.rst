@@ -2,7 +2,7 @@
 Import SWMM File
 ================
 
-:index:`DM_ImportSWMM <GDALModules; DM_ImportSWMM | Import SWMM file>` calculates the `Strahler order <https://en.wikipedia.org/wiki/Strahler_number>`_ for each edge in a directed graph. It is recommended to direct the graph with :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>`.
+:index:`DM_ImportSWMM <GDALModules; DM_ImportSWMM | Import SWMM file>`
 
 
 .. warning:: SWMM import is currently under development and the import capabilities are limited.
