@@ -21,8 +21,7 @@ class Dualmapping(Module):
             self.network.addAttribute("end_id", Attribute.INT, READ)
             self.network.addAttribute("segment_id", Attribute.INT, READ)
 
-            self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
-            self.registerViewContainers([self.network, self.dummy])
+            self.registerViewContainers([self.network])
 
         def run(self):
             #Go from end_node up to every leaf, every conduit can only be accessed once.
