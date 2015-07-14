@@ -106,5 +106,6 @@ External Programs
    :titlesonly:
 
    gdaldmswmm
+   dm_importswmm
 
 

@@ -66,3 +66,4 @@ SWMM
 ----
 
 - :doc:`GDALDMSWMM </DynaMind-GDALModules/gdaldmswmm>` SWMM integration
+- :doc:`DM_ImportSWMM </DynaMind-GDALModules/dm_importswmm>` Import SWMM File
