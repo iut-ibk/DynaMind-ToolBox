@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Identify Clusters of Connected Lines &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Dual Mapping &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Direct Graph" href="dm_direct_graph.html"/>
-        <link rel="prev" title="Create Start and End Node from a Pipe Network" href="gdalextractnodes.html"/> 
+        <link rel="next" title="SWMM Integration" href="gdaldmswmm.html"/>
+        <link rel="prev" title="Segmentation" href="segmentation.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -307,7 +307,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#infrastructure-networks">Infrastructure Networks</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#data-stream">Data-stream</a></li>
@@ -315,10 +315,10 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Identify Clusters of Connected Lines</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalclusternetwork.html">Identify Clusters of Connected Lines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dm_direct_graph.html">Direct Graph</a><ul>
@@ -334,7 +334,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#network-analysis">Network Analysis</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#network-analysis">Network Analysis</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="dm_strahler.html">Strahler Ordering</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dm_strahler.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dm_strahler.html#data-stream">Data-stream</a></li>
@@ -345,9 +345,9 @@
 <li class="toctree-l4"><a class="reference internal" href="segmentation.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dualmapping.html">Dual Mapping</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dualmapping.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dualmapping.html#data-stream">Data-stream</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Dual Mapping</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 </ul>
 </li>
 </ul>
@@ -426,11 +426,11 @@
       
           <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
       
-    <li>Identify Clusters of Connected Lines</li>
+    <li>Dual Mapping</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalclusternetwork.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dualmapping.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -439,17 +439,16 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="identify-clusters-of-connected-lines">
-<h1>Identify Clusters of Connected Lines<a class="headerlink" href="#identify-clusters-of-connected-lines" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>GDALClusterNetwork Identifies clusters
-of connected lines in a view. This is useful to for data cleaning to see if a network is fully connected.</p>
+  <div class="section" id="dual-mapping">
+<h1>Dual Mapping<a class="headerlink" href="#dual-mapping" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>&lt;GDALModules; Dualmapping | Export dual mapped edge list&gt; Export dual mapped edge list of a graph into a .csv file. The dual mapping is based on the segment_id (See <a class="reference internal" href="segmentation.html"><em>Segmentation</em></a>)</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="16%" />
-<col width="63%" />
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -460,7 +459,11 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 <tbody valign="top">
 <tr class="row-even"><td>view_name</td>
 <td>STRING</td>
-<td>Name of network view</td>
+<td>lead view name</td>
+</tr>
+<tr class="row-odd"><td>file_name</td>
+<td>STRING</td>
+<td>file name</td>
 </tr>
 </tbody>
 </table>
@@ -469,11 +472,11 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 <h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="23%" />
-<col width="15%" />
+<col width="18%" />
+<col width="24%" />
+<col width="16%" />
 <col width="6%" />
-<col width="38%" />
+<col width="37%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">View</th>
@@ -494,31 +497,22 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 <td>start_id</td>
 <td>INT</td>
 <td>read</td>
-<td>&nbsp;</td>
+<td>downstream node</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
 <td>end_id</td>
 <td>INT</td>
 <td>read</td>
-<td>&nbsp;</td>
+<td>upstream node</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
-<td>cluster_id</td>
+<td>segment_id</td>
 <td>INT</td>
-<td>write</td>
-<td>&nbsp;</td>
+<td>read</td>
+<td>segment id</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="sample-code-for-python-simulation">
-<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#calculate length of edges in network</span>
-<span class="n">cluster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALClusterNetwork&#39;</span><span class="p">,</span>
-                         <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;drainage&#39;</span><span class="p">},</span>
-                         <span class="n">network</span><span class="p">)</span>
-</pre></div>
-</div>
 </div>
 </div>
 
@@ -528,10 +522,10 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dm_direct_graph.html" class="btn btn-neutral float-right" title="Direct Graph" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdaldmswmm.html" class="btn btn-neutral float-right" title="SWMM Integration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalextractnodes.html" class="btn btn-neutral" title="Create Start and End Node from a Pipe Network" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="segmentation.html" class="btn btn-neutral" title="Segmentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

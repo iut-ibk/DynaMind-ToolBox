@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Identify Clusters of Connected Lines &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Import SWMM File &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules (GDAL)" href="index.html"/>
-        <link rel="next" title="Direct Graph" href="dm_direct_graph.html"/>
-        <link rel="prev" title="Create Start and End Node from a Pipe Network" href="gdalextractnodes.html"/> 
+        <link rel="next" title="CityDrain3" href="../DynaMind-Performance-Assessment/index.html"/>
+        <link rel="prev" title="SWMM Integration" href="gdaldmswmm.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -307,7 +307,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#infrastructure-networks">Infrastructure Networks</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-preparation">Data Preparation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gdalextractnodes.html">Create Start and End Node from a Pipe Network</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#data-stream">Data-stream</a></li>
@@ -315,10 +315,10 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalextractnodes.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Identify Clusters of Connected Lines</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalclusternetwork.html">Identify Clusters of Connected Lines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalclusternetwork.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dm_direct_graph.html">Direct Graph</a><ul>
@@ -352,14 +352,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#external-programs">External Programs</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#external-programs">External Programs</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gdaldmswmm.html">SWMM Integration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdaldmswmm.html#data-stream">Data-stream</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dm_importswmm.html">Import SWMM File</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dm_importswmm.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_importswmm.html#data-stream">Data-stream</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Import SWMM File</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 </ul>
 </li>
 </ul>
@@ -426,11 +426,11 @@
       
           <li><a href="index.html">Standard Modules (GDAL)</a> &raquo;</li>
       
-    <li>Identify Clusters of Connected Lines</li>
+    <li>Import SWMM File</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalclusternetwork.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dm_importswmm.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -439,17 +439,20 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="identify-clusters-of-connected-lines">
-<h1>Identify Clusters of Connected Lines<a class="headerlink" href="#identify-clusters-of-connected-lines" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>GDALClusterNetwork Identifies clusters
-of connected lines in a view. This is useful to for data cleaning to see if a network is fully connected.</p>
+  <div class="section" id="import-swmm-file">
+<h1>Import SWMM File<a class="headerlink" href="#import-swmm-file" title="Permalink to this headline">¶</a></h1>
+<p><span class="target" id="index-0"></span>DM_ImportSWMM</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">SWMM import is currently under development and the import capabilities are limited.</p>
+</div>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="16%" />
-<col width="63%" />
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -458,9 +461,13 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>view_name</td>
+<tr class="row-even"><td>filename</td>
+<td>FILENAME</td>
+<td>swmm inpurt file</td>
+</tr>
+<tr class="row-odd"><td>name_outlet</td>
 <td>STRING</td>
-<td>Name of network view</td>
+<td>name of the outlet (optional)</td>
 </tr>
 </tbody>
 </table>
@@ -469,11 +476,11 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 <h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="23%" />
-<col width="15%" />
+<col width="18%" />
+<col width="24%" />
+<col width="16%" />
 <col width="6%" />
-<col width="38%" />
+<col width="37%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">View</th>
@@ -484,41 +491,104 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>view_name</td>
+<tr class="row-even"><td>node</td>
+<td>&nbsp;</td>
+<td>NODE</td>
+<td>write</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>conduit</td>
 <td>&nbsp;</td>
 <td>EDGE</td>
-<td>read</td>
+<td>write</td>
 <td>&nbsp;</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
 <td>start_id</td>
 <td>INT</td>
-<td>read</td>
-<td>&nbsp;</td>
+<td>write</td>
+<td>downstream node</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
 <td>end_id</td>
 <td>INT</td>
-<td>read</td>
-<td>&nbsp;</td>
+<td>write</td>
+<td>upstream node</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
-<td>cluster_id</td>
-<td>INT</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>pump</td>
+<td>&nbsp;</td>
+<td>EDGE</td>
 <td>write</td>
 <td>&nbsp;</td>
 </tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>start_id</td>
+<td>INT</td>
+<td>write</td>
+<td>downstream node</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>end_id</td>
+<td>INT</td>
+<td>write</td>
+<td>upstream node</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>weir</td>
+<td>&nbsp;</td>
+<td>EDGE</td>
+<td>write</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>start_id</td>
+<td>INT</td>
+<td>write</td>
+<td>downstream node</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>end_id</td>
+<td>INT</td>
+<td>write</td>
+<td>upstream node</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>node_id</td>
+<td>&nbsp;</td>
+<td>NODE</td>
+<td>write</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>node _id</td>
+<td>LINK</td>
+<td>write</td>
+<td>link to node id</td>
+</tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="sample-code-for-python-simulation">
-<h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#calculate length of edges in network</span>
-<span class="n">cluster</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALClusterNetwork&#39;</span><span class="p">,</span>
-                         <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;drainage&#39;</span><span class="p">},</span>
-                         <span class="n">network</span><span class="p">)</span>
-</pre></div>
-</div>
 </div>
 </div>
 
@@ -528,10 +598,10 @@ of connected lines in a view. This is useful to for data cleaning to see if a ne
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dm_direct_graph.html" class="btn btn-neutral float-right" title="Direct Graph" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../DynaMind-Performance-Assessment/index.html" class="btn btn-neutral float-right" title="CityDrain3" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalextractnodes.html" class="btn btn-neutral" title="Create Start and End Node from a Pipe Network" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdaldmswmm.html" class="btn btn-neutral" title="SWMM Integration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

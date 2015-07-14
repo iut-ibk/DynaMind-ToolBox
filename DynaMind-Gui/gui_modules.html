@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DynaMind Commandline &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Working with Modules &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -31,7 +31,9 @@
 
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
-        <link rel="prev" title="CityDrain3" href="../DynaMind-Performance-Assessment/citydrain_api.html"/> 
+        <link rel="up" title="DynaMind GUI" href="index.html"/>
+        <link rel="next" title="Standard Modules (GDAL)" href="../DynaMind-GDALModules/index.html"/>
+        <link rel="prev" title="DynaMind GUI" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -142,10 +144,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind/dynamind_sim_api.html#viewcontainer">ViewContainer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../DynaMind-Gui/index.html">DynaMind GUI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../DynaMind-Gui/gui_modules.html">Working with Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../DynaMind-Gui/gui_modules.html#set-successor-mode">Set Successor Mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../DynaMind-Gui/gui_modules.html#export-simulation-database">Export Simulation Database</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">DynaMind GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Working with Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-successor-mode">Set Successor Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export-simulation-database">Export Simulation Database</a></li>
 </ul>
 </li>
 </ul>
@@ -397,7 +399,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">DynaMind Commandline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../DynaMind-Executable/index.html">DynaMind Commandline</a></li>
 </ul>
 
           
@@ -422,11 +424,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>DynaMind Commandline</li>
+          <li><a href="index.html">DynaMind GUI</a> &raquo;</li>
+      
+    <li>Working with Modules</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-Executable/index.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-Gui/gui_modules.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -435,31 +439,24 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="dynamind-commandline">
-<h1>DynaMind Commandline<a class="headerlink" href="#dynamind-commandline" title="Permalink to this headline">¶</a></h1>
-<p>The DynaMind commandline supports following options:</p>
-<div class="highlight-none"><div class="highlight"><pre>--help                 produce help message
---input-file arg       set simulation file
---replace arg          replace string in input file: ([STRING],[STRING];)*
---repeat arg           repeat simulation
---cpfile arg           Copy generated files: ([SOURCEFILE],[TARGETPATH]DMITER
-                       ATION[FILENAME];)*
---verbose              verbose output
---sqlquerystack arg    sql query cache size
---blockwriting arg     sql write block size
---loglevel arg         logger level 0-3 (Debug-Standard-Warning-Error)
---logpath arg          Save path for log file
---ompthreads arg       number of threads used by omp
---settings arg         set an environment variable
---show-settings        show environment variables
---parameter arg        overwrites a parameter: ([modulename].[parametername]=
-                       [value];
---parameterlist        shows the available parameters for this file
---with-status-updates  print custom status updates
---version              shows the current version of the dynamind core
---license              shows used license of the dynamind core
---author               shows the names of the core programmers
-</pre></div>
+  <div class="section" id="working-with-modules">
+<h1>Working with Modules<a class="headerlink" href="#working-with-modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="set-successor-mode">
+<h2>Set Successor Mode<a class="headerlink" href="#set-successor-mode" title="Permalink to this headline">¶</a></h2>
+<p>The successor mode forces a split of the data stream. This means that a new data base is created for the down stream modules.
+To switch set the successor model right click on the module to open the context menu and select <code class="docutils literal"><span class="pre">force</span> <span class="pre">successor</span> <span class="pre">mode</span></code></p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Successor modes are useful to debug a simulation since it allows to export the database at this point in the simulation (see <a class="reference internal" href="#export-database"><span>Export Simulation Database</span></a> )</p>
+</div>
+</div>
+<div class="section" id="export-simulation-database">
+<span id="export-database"></span><h2>Export Simulation Database<a class="headerlink" href="#export-simulation-database" title="Permalink to this headline">¶</a></h2>
+<p>To export the simulation database right click on the module to open the context menu and select <code class="docutils literal"><span class="pre">export</span> <span class="pre">data</span> <span class="pre">at</span> <span class="pre">out</span> <span class="pre">port</span></code>.  The simulate database is exported as <a class="reference external" href="http://www.qgis.org/">SpatiaLite</a>  database and can open with standard GIS software e.g. <a class="reference external" href="http://www.qgis.org/">QGIS</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This option is only available for modules that use the GDAL database backend.</p>
+</div>
 </div>
 </div>
 
@@ -469,8 +466,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../DynaMind-GDALModules/index.html" class="btn btn-neutral float-right" title="Standard Modules (GDAL)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="../DynaMind-Performance-Assessment/citydrain_api.html" class="btn btn-neutral" title="CityDrain3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="index.html" class="btn btn-neutral" title="DynaMind GUI" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
