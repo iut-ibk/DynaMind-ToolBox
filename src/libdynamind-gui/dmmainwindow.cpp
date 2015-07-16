@@ -126,13 +126,15 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
+	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
+	connect(ui->actionShow_Help, SIGNAL(triggered()), this, SLOT(showHelp()), Qt::DirectConnection);
 
-    QStringList args = QCoreApplication::arguments();
-    if (args.size() == 2) {
+	QStringList args = QCoreApplication::arguments();
+	if (args.size() == 2) {
 		this->clearSimulation();
 		this->getSimulation()->currentDocument = args[1];
 		simulation->loadSimulation(args[1].toStdString());
-    }
+	}
 
 	ui->actionCancel->setEnabled(false);
 
@@ -158,6 +160,7 @@ void DMMainWindow::createModuleListView()
 	// load the module tree: first map element represents the group name as string
 	// second the names of the modules as string
 	std::map<std::string, std::vector<std::string> > mMap (this->simulation->getModuleRegistry()->getModuleMap());
+	std::map<std::string, std::string> mDisplayNames (this->simulation->getModuleRegistry()->getDisplayNames());
 	ui->treeWidget->setColumnCount(1);
 	// iterate through groups
 	for (std::map<std::string, std::vector<std::string> >::iterator it = mMap.begin(); it != mMap.end(); ++it) 
@@ -173,7 +176,8 @@ void DMMainWindow::createModuleListView()
 		{
 			QTreeWidgetItem * item;
 			item = new QTreeWidgetItem(items);
-			item->setText(0,QString::fromStdString(name));
+			item->setText(0,QString::fromStdString(mDisplayNames[name]));
+			item->setText(2,QString::fromStdString(name));
 			item->setText(1,"Module");
 		}
 	}
@@ -221,7 +225,7 @@ void DMMainWindow::createModuleListView()
 			itSim->setText(0, parent ? parsedFile[0].replace(".dyn","") : simPath);
 			itSim->setTextColor(0, Qt::blue);
 			itSim->setText(1, "Simulation");
-			itSim->setText(2, simDir + '//' + simPath);
+			itSim->setText(2, simDir + "//" + simPath);
 		}
 
 		if (itSimDir->childCount() == 0)
@@ -264,6 +268,13 @@ void DMMainWindow::cancelSimulation()
 {
 	simulation->cancel();
 	simulationFinished();
+}
+
+void DMMainWindow::showHelp()
+{
+	GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
+	ghv->showHelpForModule(0);
+	ghv->show();
 }
 
 void DMMainWindow::simulationFinished() 

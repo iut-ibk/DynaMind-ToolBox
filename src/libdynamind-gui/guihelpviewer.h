@@ -40,17 +40,15 @@ class DM_HELPER_DLL_EXPORT GUIHelpViewer : public QWidget
     Q_OBJECT
 
 public:
-	explicit GUIHelpViewer( GUISimulation * sim, QWidget *parent = 0);
+	explicit GUIHelpViewer(QWidget *parent = 0);
 	~GUIHelpViewer();
 
 private:
 	Ui::GUIHelpViewer *ui;
 	QUrl currentUrl;
 	QUrl url_view_not_avaiable;
-	GUISimulation * sim;
 
 public slots:
-	//void showHelpForModule(std::string className);
 	void showHelpForModule(DM::Module* m);
 	void on_commandBackToOvwerView_clicked();
 };

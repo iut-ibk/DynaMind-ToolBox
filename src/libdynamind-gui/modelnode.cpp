@@ -247,7 +247,7 @@ double ModelNode::paint_header(QPainter * painter, double & pos) {
 	painter->fillPath(rectPath, brush);
 	//painter->strokePath(rectPath, rectPen);
 
-	QString text =  QString::fromStdString(module->getClassName());
+	QString text =  QString::fromStdString(module->getDisplayName());
 	QRectF textSize_Name = QGraphicsSimpleTextItem(text).boundingRect();
 	QFont font = painter->font();
 	painter->setFont(font);
@@ -665,7 +665,7 @@ void ModelNode::editName()
 	bool ok;
 	QString text = QInputDialog::getText(0, "set name", "specify name of this module",
 										 QLineEdit::Normal, QString::fromStdString(module->getName()), &ok);
-	if (ok && !text.isEmpty())
+	if (ok)
 		module->setName(text.toStdString());
 	this->resize();
 }
@@ -759,7 +759,7 @@ void ModelNode::viewInportData(QString portName)
 
 void ModelNode::showHelp()
 {
-	GUIHelpViewer* ghv = new GUIHelpViewer(simulation);
+	GUIHelpViewer* ghv = new GUIHelpViewer();
 	ghv->showHelpForModule(module);
 	ghv->show();
 }

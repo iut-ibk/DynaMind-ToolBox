@@ -50,9 +50,7 @@ Preferences::Preferences(DM::Simulation * sim, QWidget *parent)
 	connect(pushButton_NativeModuleAdd, SIGNAL(clicked()),this, SLOT( add() ), Qt::DirectConnection );
 	connect(pushButton_NativeModuleRemove, SIGNAL(clicked()),this, SLOT( remove() ), Qt::DirectConnection );
 
-	connect(pushButton_urbansim, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
-	connect(pushButton_swmm, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
-	connect(pushButton_Editra, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
+	connect(pushButton_doc_url, SIGNAL(clicked()),this, SLOT( openFileDialog() ), Qt::DirectConnection );
 
 	this->setParent(parent, Qt::Dialog);
 	QSettings settings;
@@ -70,15 +68,6 @@ Preferences::Preferences(DM::Simulation * sim, QWidget *parent)
 	list = text.replace("\\","/").split(",");
 	foreach(QString s, list)
 		this->listWidget_NativeModule->addItem(new QListWidgetItem(s));
-
-	text = settings.value("UrbanSim").toString();
-	this->lineEdit_urbansim->setText(text);
-
-	text = settings.value("SWMM").toString();
-	this->lineEdit_swmm->setText(text);
-
-	text = settings.value("Editra").toString();
-	this->lineEdit_Editra->setText(text);
 
 	this->treeWidget_wfs_server->setColumnCount(4);
 	QTreeWidgetItem* headerItem = new QTreeWidgetItem();
@@ -102,11 +91,8 @@ Preferences::Preferences(DM::Simulation * sim, QWidget *parent)
 		item->setText(2, server_description[3]);
 		treeWidget_wfs_server->addTopLevelItem(item);
 	}
-	DM::DBConnectorConfig dbcfg = DM::DBConnector::getInstance()->getConfig();
-	this->spinBox_CacheBlockWritingSize->setValue(dbcfg.cacheBlockwritingSize);
-	this->spinBox_QueryStackSize->setValue(dbcfg.queryStackSize);
-	this->checkBox_PeterDatastream->setChecked(dbcfg.peterDatastream);
-
+	text = settings.value("doc_url").toString();
+	this->lineEdit_doc_url->setText(text);
 	this->spinBox_EPSG->setValue(sim->getSimulationConfig().getCoorindateSystem());
 }
 
@@ -126,19 +112,8 @@ void Preferences::writePreference()
 	settings.setValue("pythonModules", pythonModules.join(","));
 	settings.setValue("nativeModules", NativeModules.join(","));
 	settings.setValue("VIBeModules", VIBeModules.join(","));
-	settings.setValue("UrbanSim", this->lineEdit_urbansim->text());
-	settings.setValue("SWMM", this->lineEdit_swmm->text());
-	settings.setValue("Editra", this->lineEdit_Editra->text());
+	settings.setValue("doc_url", this->lineEdit_doc_url->text());
 
-	DM::DBConnectorConfig dbcfg = DM::DBConnector::getInstance()->getConfig();
-	dbcfg.cacheBlockwritingSize = this->spinBox_CacheBlockWritingSize->value();
-	dbcfg.queryStackSize = this->spinBox_QueryStackSize->value();
-	dbcfg.peterDatastream = this->checkBox_PeterDatastream->isChecked();
-	DM::DBConnector::getInstance()->setConfig(dbcfg);
-
-	settings.setValue("cacheBlockwritingSize", (qulonglong)dbcfg.cacheBlockwritingSize);
-	settings.setValue("queryStackSize", (qulonglong)dbcfg.queryStackSize);
-	settings.setValue("peterDatastream", (int)dbcfg.peterDatastream);
 
 	DM::SimulationConfig conf = sim->getSimulationConfig();
 	conf.setCoordinateSystem(this->spinBox_EPSG->value());
@@ -149,24 +124,14 @@ void Preferences::openFileDialog()
 	QString sender = QObject::sender()->objectName();
 	if (sender == "pushButton_NativeModule") 
 	{
-//#ifdef  __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-//		QString s = QFileDialog::getOpenFileName(this, tr("File to"), "", "",0,QFileDialog::DontUseNativeDialog);
-//#else
 		QString s = QFileDialog::getOpenFileName(this, tr("File to"), "");
-//#endif
 		this->lineEdit_NativeModule->setText(s);
 		return;
 	}
-//#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-//	QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "", QFileDialog::DontUseNativeDialog);
-//#else
 	QString s = QFileDialog::getExistingDirectory(this, tr("Path to"), "");
-//#endif
 	if(!s.isEmpty()) 
 	{
-		if (sender == "pushButton_urbansim")		this->lineEdit_urbansim->setText(s);
-		else if (sender == "pushButton_swmm")		this->lineEdit_swmm->setText(s);
-		else if (sender == "pushButton_Editra")		this->lineEdit_Editra->setText(s);
+		if (sender == "pushButton_doc_url")		this->lineEdit_doc_url->setText(s);
 		else if (sender == "pushButton_VIBePath")	this->lineEdit_VIBePath->setText(s);
 		else										this->lineEdit->setText(s);
 	}

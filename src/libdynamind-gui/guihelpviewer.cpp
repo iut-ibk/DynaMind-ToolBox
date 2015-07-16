@@ -31,32 +31,29 @@
 
 #include <sstream>
 #include <dmlogger.h>
-GUIHelpViewer::GUIHelpViewer(GUISimulation * sim, QWidget *parent) :
+GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::GUIHelpViewer)
 {
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
 		true);
 	ui->setupUi(this);
-	this->sim = sim;
-	stringstream filename;
-	filename << "file://"<< QApplication::applicationDirPath().toStdString() << "/" <<  "doc/modules/" << "nohelpavaiable" << ".html";
-	this->url_view_not_avaiable = QUrl(QString::fromStdString(filename.str()));
+	QSettings settings;
+	this->url_view_not_avaiable = QUrl(settings.value("doc_url").toString() + "/index.html");
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
-	this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
-
+	QSettings settings;
+	this->currentUrl = settings.value("doc_url").toString();
 	if (!m){
-		ui->webView->load(this->currentUrl);
+		ui->webView->load(settings.value("doc_url").toString() + "/index.html");
 		return;
 	}
 	if (!m->getHelpUrl().empty()) {
-		this->currentUrl = QUrl(QString::fromStdString(m->getHelpUrl()));
+		this->currentUrl = QUrl(settings.value("doc_url").toString() + "/" +QString::fromStdString(m->getHelpUrl()));
 		ui->webView->load(this->currentUrl);
 		return;
 	}
-
-	ui->webView->load(this->currentUrl);
+	ui->webView->load(settings.value("doc_url").toString() + "/index.html");
 }
 
 GUIHelpViewer::~GUIHelpViewer()
@@ -66,6 +63,7 @@ GUIHelpViewer::~GUIHelpViewer()
 
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
-	this->currentUrl = QString::fromStdString("https://docs.google.com/document/pub?id=1gTg8ebDhoZCq-p6xJP5icqu0xTHY6KU1WEHn8k_lyWM");
+	QSettings settings;
+	this->currentUrl = settings.value("doc_url").toString() + "/index.html";
 	ui->webView->load(this->currentUrl);
 }

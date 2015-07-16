@@ -52,19 +52,14 @@
 #include <QTextEdit>
 #include <QTableWidget>
 #include <QHeaderView>
+#include "guihelpviewer.h"
 #include <limits>
 
 #include <QDoubleSpinBox>
 
 void GUIModelNode::openFileDialog(QString label)
 {
-//#ifdef __APPLE__ // Fix for bug in Qt 4.8.5 that the file dialog freezes
-//	QString s = QFileDialog::getOpenFileName(this,
-//		tr("Open file"), "", tr("Files (*.*)"), 0, QFileDialog::DontUseNativeDialog);
-//#else
 	QString s = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Files (*.*)"));
-//#endif
-
 	if (!s.isEmpty())
 		((QLineEdit*)elements[label])->setText(s);
 }
@@ -255,13 +250,16 @@ void GUIModelNode::addMapRow()
 
 void GUIModelNode::help() 
 {
-	QWidget * helpWindow = new QWidget(this->parentWidget());
+	/*QWidget * helpWindow = new QWidget(this->parentWidget());
 	QTextEdit * text = new QTextEdit();
 	QVBoxLayout * vbox = new QVBoxLayout;
 
 	helpWindow->setLayout(vbox);
 	helpWindow->layout()->addWidget(text);
-	helpWindow->show();
+	helpWindow->show();*/
+	GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
+	ghv->showHelpForModule(modelnode->getModule());
+	ghv->show();
 }
 
 GUIModelNode::~GUIModelNode() 

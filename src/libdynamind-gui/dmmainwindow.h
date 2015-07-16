@@ -72,6 +72,7 @@ public slots:
 	void updateSimulation();
 	void resetSimulation();
 	void cancelSimulation();
+	void showHelp();
 	void newLogLine(QString line);
 private slots:
 	void on_actionZoomReset_triggered();

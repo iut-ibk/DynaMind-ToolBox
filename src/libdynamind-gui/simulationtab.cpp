@@ -288,12 +288,14 @@ void SimulationTab::dropEvent(QGraphicsSceneDragDropEvent *event)
 
 	QTreeWidgetItem* item = moduleTree->currentItem();
 	QString type = item->text(1);
-	QString moduleName = item->text(0);
-
+	QString moduleName = item->text(2);
+	QString displayName = item->text(0);
 	if(type == "Module")
 	{
-		if(DM::Module* m = sim->addModule(moduleName.toStdString(), parent))
+		if(DM::Module* m = sim->addModule(moduleName.toStdString(), parent)) {
+			m->setName("");
 			sim->getModelNode(m)->setPos(event->scenePos());	// move to cursor
+		}
 	}
 	else if(type == "Simulation")
 	{
