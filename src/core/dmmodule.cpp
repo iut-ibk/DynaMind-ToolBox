@@ -197,7 +197,7 @@ void Module::removeAllObservers()
 std::string Module::getName() const
 {
 	//return name.length()>0 ? name : std::string("<class: ") + getClassName() + ">";
-	return name.length()>0 ? name :  getClassName();
+	return name; //name.length()>0 ? name :  getClassName();
 }
 
 void Module::setName(std::string name)

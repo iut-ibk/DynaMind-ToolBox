@@ -40,6 +40,7 @@ public:
 	virtual Module *createNode() const = 0;
 	virtual std::string getNodeName() const = 0;
 	virtual std::string getFileName() const = 0;
+	virtual std::string getDisplayName() const = 0;
 };
 
 template <typename T>
@@ -50,6 +51,7 @@ public:
 	virtual Module *createNode() const;
 	virtual std::string getNodeName() const;
 	virtual std::string getFileName() const;
+	virtual std::string getDisplayName() const;
 };
 
 template <typename T>
@@ -68,6 +70,10 @@ std::string NodeFactory<T>::getNodeName() const {
 template <typename T>
 std::string NodeFactory<T>::getFileName() const {
 	return T::filename;
+}
+template <typename T>
+std::string NodeFactory<T>::getDisplayName() const {
+	return T::displayname;
 }
 }
 #endif // NODEFACTORY_H

@@ -50,10 +50,12 @@ public:
 	Module * createModule(const std::string & name) const;
 	std::list<std::string> getRegisteredModules() const;
 	bool contains(const std::string &name) const;
-	std::map<std::string, std::vector<std::string> >  getModuleMap() const {return this->moduleMap;}
+	std::map<std::string, std::vector<std::string> > getModuleMap() const {return this->moduleMap;}
+	std::map<std::string, std::string > getDisplayNames() const {return this->displayNames;}
 	void print();
 private:
 	std::map<std::string, std::vector<std::string> > moduleMap;
+	std::map<std::string, std::string> displayNames;
 	std::map<std::string, INodeFactory * > registry;
 
 };

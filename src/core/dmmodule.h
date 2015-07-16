@@ -159,6 +159,9 @@ public:
 	/** @brief returns the name of the class - for e.g. logging purposes */
 	virtual const char* getClassName() const = 0;
 
+	/** @brief returns the name of the class - for e.g. logging purposes */
+	virtual const char* getDisplayName() const = 0;
+
 	/** @brief Returns URL to the help of the module */
 	virtual std::string getHelpUrl(){return "";};
 
@@ -416,20 +419,26 @@ private:
 	public: \
 	static const char *classname; \
 	static const char *filename; \
+	static const char *displayname; \
 	virtual const char *getClassName() const; \
+	virtual const char *getDisplayName() const; \
 	virtual const char *getFileName() const; \
 	private:
 
 #define  DM_DECLARE_NODE_NAME(nodename, module) \
 	const char *nodename::classname = #nodename; \
+	const char *nodename::displayname = #nodename; \
 	const char *nodename::getClassName() const { return nodename::classname; } \
+	const char *nodename::getDisplayName() const { return nodename::displayname; } \
 	const char *nodename::filename = #module; \
 	const char *nodename::getFileName() const { return nodename::filename; }
 
-#define  DM_DECLARE_CUSTOM_NODE_NAME(nodename, customname ,module) \
-	const char *nodename::classname = customname; \
+#define  DM_DECLARE_CUSTOM_NODE_NAME(nodename, display_name ,module) \
+	const char *nodename::classname = #nodename; \
+	const char *nodename::displayname = #display_name; \
 	const char *nodename::getClassName() const { return nodename::classname; } \
-	const char *nodename::filename = module; \
+	const char *nodename::getDisplayName() const { return nodename::displayname; } \
+	const char *nodename::filename = #module; \
 	const char *nodename::getFileName() const { return nodename::filename; }
 
 #endif // MODULE_H

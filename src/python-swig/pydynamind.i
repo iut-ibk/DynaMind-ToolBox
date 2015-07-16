@@ -204,6 +204,7 @@ public:
 	 std::map<std::string,DM::View> getAccessedStdViews() const;
 
 	virtual const char* getClassName() const = 0;
+	virtual const char* getDisplayName() const = 0;
 	void addParameter(const std::string &name, const DataTypes type, void * ref, const std::string description = "");
 	virtual void setParameterValue(std::string name, std::string value);
 
@@ -301,7 +302,7 @@ protected:
 	_data = {'d':'Module'}
 	def getClassName(self):
 		"""
-		Returns class name. However if called in Python the it returns Module for C++ modules.
+		Returns class name. However if called in Python it returns the name the for C++ module.
 		To obtain the real class name please call :func:`~pydynamind.Module.get_class_name`
 
 		:type description: str
@@ -311,7 +312,14 @@ protected:
 		return self.__class__.__name__
 
 	def getFileName(self):
+		if hasattr(self.__class__, "group_name"):
+			return self.__class__.group_name
 		return self.__module__.split(".")[0]
+
+	def getDisplayName(self):
+		if hasattr(self.__class__, 'display_name'):
+			return self.__class__.display_name
+		return self.__class__.__name__
 
 	def __getattr__(self, name):
 		if name in self._data:
@@ -392,6 +400,7 @@ class INodeFactory
 		virtual DM::Module *createNode() const = 0;
 		virtual std::string getNodeName() const = 0;
 		virtual std::string getFileName() const = 0;
+		virtual std::string getDisplayName() const = 0;
 };
 
 class ModuleRegistry
@@ -703,7 +712,14 @@ class NodeFactory(INodeFactory):
 		return self.klass.__name__
 
 	def getFileName(self):
+		if hasattr(self.klass, "group_name"):
+			return self.klass.group_name
 		return self.klass.__module__.split(".")[0]
+
+	def getDisplayName(self):
+		if hasattr(self.klass, "display_name"):
+			return self.klass.display_name
+		return self.klass.__name__
 
 def registerNodes(registry):
 	for klass in Module.__subclasses__():
