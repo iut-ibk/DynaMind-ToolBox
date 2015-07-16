@@ -6,7 +6,7 @@ library("tools")
 # options(error=traceback)
 ########################################################
 
-wrkpath <- ("/home/gaelic/Work/Current/DynAlp/testrpt")
+wrkpath <- ("/srv/IUT/Datenaustausch/ChristianM/reportreader")
 reppath <- (file.path(wrkpath,"repfiles"))
 outpath <- (file.path(wrkpath,"output"))
 
@@ -61,7 +61,7 @@ for(filenr in 1:length(repfiles))
 	
 	S<-list()
 	S[["Subcatchment Runoff Summary"]]<-c("Subcatchment","totPrec","totRunon","totEvap","totInfil","totRunoff","totRunoff2","PeakRunoff","RunoffCoeff")
-	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin")
+	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin","MaxDRep")
 	S[["Node Inflow Summary"]]<-c("Node","Type","MaxLatInflow","MaxTotInflow","tMaxOcc_d","t_MaxOcc_HrMin","LatInflowVol","TotInflowVol","FlowBalErr")
 	S[["Node Surcharge Summary"]]<-c("Node","Type","hSurch","MaxHabCrown","MinDbelRim")
 	S[["Node Flooding Summary"]]<-c("Node","hFlooded","MaxRate","tMaxOcc_d","t_MaxOcc_HrMin","TotFloodV","MaxPondD")
