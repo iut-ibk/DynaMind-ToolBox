@@ -6,9 +6,9 @@ library("tools")
 # options(error=traceback)
 ########################################################
 
-wrkpath <- ("/srv/IUT/Datenaustausch/ChristianM/DynAlp/")
-reppath <- (file.path(wrkpath,"1D"))
-outpath <- (file.path(wrkpath,"output1D"))
+wrkpath <- ("/home/gaelic/Work/Current/DynAlp/testrpt")
+reppath <- (file.path(wrkpath,"repfiles"))
+outpath <- (file.path(wrkpath,"output"))
 
 NODES <- 1 # node detail reports
 #JUNCTION <- 0
@@ -61,7 +61,7 @@ for(filenr in 1:length(repfiles))
 	
 	S<-list()
 	S[["Subcatchment Runoff Summary"]]<-c("Subcatchment","totPrec","totRunon","totEvap","totInfil","totRunoff","totRunoff2","PeakRunoff","RunoffCoeff")
-	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin","repDepth")
+	S[["Node Depth Summary"]]<-c("Node","Type","AvgD","MaxD","MaxHGL","tMaxOcc_d","t_MaxOcc_HrMin")
 	S[["Node Inflow Summary"]]<-c("Node","Type","MaxLatInflow","MaxTotInflow","tMaxOcc_d","t_MaxOcc_HrMin","LatInflowVol","TotInflowVol","FlowBalErr")
 	S[["Node Surcharge Summary"]]<-c("Node","Type","hSurch","MaxHabCrown","MinDbelRim")
 	S[["Node Flooding Summary"]]<-c("Node","hFlooded","MaxRate","tMaxOcc_d","t_MaxOcc_HrMin","TotFloodV","MaxPondD")
@@ -131,18 +131,12 @@ for(filenr in 1:length(repfiles))
 		    {
 			    typestart <- min(which(types == ctypes[typenr]))
 			    typeend <- typestart+ntypes[[typenr]]-1
-			    typedata <- strsplit(as.character(data[typestart:typeend]),"\\s+")
-        
-			    typetable <- matrix(nrow=length(typedata),ncol=length(typedata[[1]]))
-			    for(j in 1:dim(typetable)[1]) {	typetable[j,]<-typedata[[j]][1:ncol(typetable)] }
-				
-				if (ctypes[typenr] == "PUMP") { colnames(typetable) <- S[[section]][-c(6,8)] }
-                else if (ctypes[typenr] == "ORIFICE" ) { colnames(typetable) <- S[[section]][-c(6,7)] }
-				else if (ctypes[typenr] == "WEIR" ) { colnames(typetable) <- S[[section]][-c(6,7)] }
-				else { colnames(typetable) <- S[[section]] }
+			    typetable <- sectiontable[typestart:typeend,]
+			    
+			    colnames(typetable) <- S[[section]]
+			    filename<-file.path(currentdir,paste(gsub("\\s","\\_",section),"-",ctypes[typenr],".csv",sep=""))
+			    write.csv2(typetable,filename,row.names=F)
 		    }
-		    filename<-file.path(currentdir,paste(gsub("\\s","\\_",section),".csv",sep=""))
-		    write.csv2(typetable,filename,row.names=F)
 	    }
 		
 		else if (section == "Node Results")
