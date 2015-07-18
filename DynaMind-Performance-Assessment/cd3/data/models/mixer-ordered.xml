@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE citydrain SYSTEM "model.dtd">
+
+<citydrain version="1.0">
+
+	<pluginpath path="nodes" />
+
+	<simulation class="OrderedPipeSimulation">
+		<time start="0" stop="7200" dt="300" />
+	</simulation>
+
+	<model>
+		<nodelist>
+			<node id="constsource1" class="ConstSource">
+				<parameter name="const_flow" kind="complex" type="Flow">
+					<flow>
+						<unit name="Q" kind="Flow" value="100.0" />
+						<unit name="C0" kind="Concentration" value="1.0" />
+						<unit name="C1" kind="Concentration" value="2.0" />
+						<unit name="C3" kind="Concentration" value="6.0" />
+					</flow>
+				</parameter>
+			</node>
+			
+			<node id="constsource2" class="ConstSource">
+				<parameter name="const_flow" kind="complex" type="Flow">
+					<flow>
+						<unit name="Q" kind="Flow" value="100.0" />
+						<unit name="C0" kind="Concentration" value="1.0" />
+						<unit name="C1" kind="Concentration" value="2.0" />
+					</flow>
+				</parameter>
+			</node>
+			
+			<node id="mixer" class="Mixer">
+				<parameter name="num_inputs" value="2" type="int" />
+			</node>
+			
+			<node id="fileout" class="FileOut">
+				<parameter name="out_file_name" type="string" value="tmp/mixer-ordered-out.txt" />
+			</node>
+		</nodelist>
+		
+		<connectionlist>
+			<connection id="con1-mixer">
+				<source node="constsource1" port="out" />
+				<sink	node="mixer" port="inputs[0]" />
+			</connection>
+			
+			<connection id="con2-mixer">
+				<source node="constsource2" port="out" />
+				<sink	node="mixer" port="inputs[1]" />
+			</connection>
+			
+			<connection id="mixer-fileout">
+				<source node="mixer" port="out" />
+				<sink	node="fileout" port="in" />
+			</connection>
+		</connectionlist>
+	</model>
+</citydrain>

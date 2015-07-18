@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE citydrain SYSTEM "../dtd/model.dtd">
+
+<citydrain version="1.0">
+
+	<pluginpath path="nodes" />
+
+	<simulation class="OrderedPipeSimulation">
+		<time start="0" stop="7200" dt="300" />
+		<flowdefinition>
+		    <flow name="Q"/>
+		    <concentration name="C0"/>
+		    <concentration name="C1"/>
+		</flowdefinition>
+	</simulation>
+
+	<model>
+		<nodelist>
+			<node id="constsource" class="ConstSource">
+				<parameter name="const_flow" kind="complex" type="Flow">
+					<flow>
+						<unit name="Q" value="12.0" />
+						<unit name="C0" value="0.1"/>
+						<unit name="C1" value="0.2"/>
+					</flow>
+				</parameter>
+			</node>
+			
+			
+			
+			<node id="cso-out" class="FileOut">
+				<parameter name="out_file_name" type="string" value="tmp/cso-out.txt" />
+			</node>
+			
+			<node id="cso-overflow" class="FileOut">
+				<parameter name="out_file_name" type="string" value="tmp/cso-overflow.txt" />
+			</node>
+			
+			<node id="cso" class="CSO">
+				<parameter name="Q_Max" type="double" value="10.0" />
+				<parameter name="V_Max" type="double" value="30.0" />
+			</node>
+			
+			<node id="sewer" class="Sewer" />
+			
+		</nodelist>
+		
+		<connectionlist>
+		
+			<connection id="con1">
+				<source node="constsource" port="out" />
+				<sink	node="cso" port="in" />
+			</connection>
+						
+			<connection id="con2">
+				<source node="sewer" port="out" />
+				<sink node="cso-out" port="in" />
+			</connection>
+			
+			<connection id="con4">
+				<source node="cso" port="out" />
+				<sink node="sewer" port="in" />
+			</connection>
+			
+			<connection id="con3">
+				<source node="cso" port="overflow" />
+				<sink node="cso-overflow" port="in" />
+			</connection>
+			
+		</connectionlist>
+	</model>
+</citydrain>
