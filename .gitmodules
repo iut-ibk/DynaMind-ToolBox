@@ -1,8 +1,0 @@
-[submodule "DynaVIBe"]
-	path = DynaVIBe
-	url = git://github.com/iut-ibk/DynaVIBe.git
-	branch = master
-[submodule "DynaMind-DynAlp"]
-	path = DynaMind-DynAlp
-	url = git://github.com/iut-ibk/DynaMind-DynAlp.git
-	branch = master
