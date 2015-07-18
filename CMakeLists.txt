@@ -74,14 +74,16 @@ IF(PYTHON_EMBEDDING)
     ADD_SUBDIRECTORY(src/python-swig)
 ENDIF()
 
-ADD_SUBDIRECTORY(src/DMTestModules)
+
 ADD_SUBDIRECTORY(src/DMToolboxes)
-ADD_SUBDIRECTORY(src/memory_test)
-ADD_SUBDIRECTORY(scripts)
+
 
 IF(WITH_UNIT_TESTS)
     enable_testing()
-    ADD_SUBDIRECTORY(src/unit-test)
+	ADD_SUBDIRECTORY(src/unit-test)
+	ADD_SUBDIRECTORY(src/DMTestModules)
+	ADD_SUBDIRECTORY(src/memory_test)
+	ADD_SUBDIRECTORY(scripts)
 ENDIF(WITH_UNIT_TESTS)
 
 
