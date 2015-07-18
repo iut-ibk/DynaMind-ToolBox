@@ -16,7 +16,7 @@
 #include <nodeconnection.h>
 #include <dmgdalhelper.h>
 
-DM_DECLARE_NODE_NAME(SimpleWaterBalance,Performance)
+DM_DECLARE_CUSTOM_NODE_NAME(SimpleWaterBalance,Simple Water Demand Model, Performance Assessment)
 
 std::vector<double> SimpleWaterBalance::create_montlhy_values(std::vector<double> daily)
 {

@@ -15,8 +15,7 @@
 #include <dmgdalhelper.h>
 #include <numeric>
 
-DM_DECLARE_NODE_NAME(WaterDemandModel,Performance)
-
+DM_DECLARE_CUSTOM_NODE_NAME(WaterDemandModel,Water Demand Model, Performance Assessment)
 
 WaterDemandModel::WaterDemandModel()
 {

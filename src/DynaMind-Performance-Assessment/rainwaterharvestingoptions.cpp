@@ -15,8 +15,7 @@
 #include <dmgdalhelper.h>
 #include <numeric>
 
-DM_DECLARE_NODE_NAME(RainWaterHarvestingOptions,Performance)
-
+DM_DECLARE_CUSTOM_NODE_NAME(RainWaterHarvestingOptions, Rainwater Harvesting Options, Performance Assessment)
 
 RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 {

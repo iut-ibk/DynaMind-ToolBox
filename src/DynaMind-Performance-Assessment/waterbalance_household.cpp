@@ -15,8 +15,8 @@
 #include <dmgdalhelper.h>
 #include <numeric>
 
-DM_DECLARE_NODE_NAME(WaterBalanceHouseHold,Performance)
 
+DM_DECLARE_CUSTOM_NODE_NAME(WaterBalanceHouseHold,Household Water Balance Model , Performance Assessment)
 
 WaterBalanceHouseHold::WaterBalanceHouseHold()
 {
