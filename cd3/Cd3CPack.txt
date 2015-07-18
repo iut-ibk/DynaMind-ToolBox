@@ -1,0 +1,49 @@
+
+INCLUDE(InstallRequiredSystemLibraries)
+SET(CPACK_GENERATOR "STGZ;DEB")
+
+SET(CPACK_NSIS_DISPLAY_NAME "CityDrain3")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CityDrain3 is a hydrological Simulaton framework.")
+SET(CPACK_PACKAGE_FILE_NAME "setup")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CityDrain3")
+SET(CPACK_PACKAGE_NAME "cd3")
+SET(CPACK_PACKAGE_VENDOR "University of Innsbruck")
+SET(CPACK_PACKAGE_VERSION "0.9.9")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "9")
+SET(CPACK_PACKAGE_VERSION_PATCH "9")
+SET(CPACK_RESOURCE_FILE_LICENSE "${cd3_SOURCE_DIR}/LICENSE")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Gregor Burger <gregor.burger@gmail.com>")
+IF(WIN32 AND NOT UNIX)
+  SET(CPACK_GENERATOR "NSIS")
+  #SET(CPACK_PACKAGE_ICON "${PROJECT_SOURCE_DIR}/data/resources/logo3.png")
+  #SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+  SET(CPACK_NSIS_DISPLAY_NAME "CityDrain3")
+  #SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.my-project-home-page.org")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.uibk.ac.at\\\\umwelttechnik")
+  SET(CPACK_NSIS_CONTACT "gregor.burger@uibk.ac.at")
+  file(GLOB DLLS 
+	${QT_BINARY_DIR}/QtCore4.dll
+	${QT_BINARY_DIR}/QtGui4.dll
+	${QT_BINARY_DIR}/QtXml4.dll
+	${QT_BINARY_DIR}/QtSvg4.dll
+	${QT_PLUINGS_DIR}/imageformats/qsvg4.dll
+	${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
+	${Boost_LIBRARY_DIRS}/boost_thread-*-mt-1_*.dll
+	${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll
+	${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
+	${Boost_LIBRARY_DIRS}/boost_system-*-mt-1_*.dll
+	${Boost_LIBRARY_DIRS}/boost_filesystem-*-mt-1_*.dll)
+  install(FILES ${DLLS} DESTINATION bin)
+  install(FILES ${CMAKE_BINARY_DIR}/pycd3.py DESTINATION bin)
+
+  file(GLOB RUMBA_FILES ${CMAKE_SOURCE_DIR}/data/rumba/*.txt)
+  install(FILES ${RUMBA_FILES} DESTINATION data/rumba)
+
+  #set(CPACK_NSIS_MENU_LINKS "bin/cd3-gui.exe" "Run CityDrain3 GUI")
+  #SET(CPACK_NSIS_MODIFY_PATH ON)
+  set(CPACK_PACKAGE_EXECUTABLES "cd3-gui;CityDrain3")
+ENDIF()
+INCLUDE(CPack)
+

@@ -1,0 +1,67 @@
+<!ELEMENT citydrain (pluginpath*, simulation, controller*, model) >
+<!ELEMENT model (nodelist, connectionlist) >
+<!ELEMENT nodelist (node*) >
+<!ELEMENT connectionlist (connection*) >
+<!ELEMENT simulation (time, flowdefinition) >
+<!ELEMENT flowdefinition (flow, concentration*) >
+<!ELEMENT flow EMPTY >
+<!ELEMENT concentration EMPTY >
+<!ELEMENT time EMPTY >
+<!ELEMENT pluginpath EMPTY >
+<!ELEMENT node (parameter*) >
+<!ELEMENT parameter ANY >
+<!ELEMENT connection (source, sink) >
+<!ELEMENT source EMPTY >
+<!ELEMENT sink EMPTY >
+<!ELEMENT unit EMPTY >
+<!ELEMENT controller EMPTY >
+
+<!ATTLIST citydrain 
+	version CDATA #REQUIRED >
+	
+<!ATTLIST simulation
+	class CDATA #REQUIRED >
+	
+<!ATTLIST node
+	id ID #REQUIRED
+	class CDATA #REQUIRED 
+	script CDATA #IMPLIED >
+	
+<!ATTLIST time
+	start CDATA #REQUIRED
+	stop CDATA  #REQUIRED
+	dt CDATA #REQUIRED >
+	
+<!ATTLIST concentration
+	name CDATA #REQUIRED>
+	
+<!ATTLIST flow
+	name CDATA #REQUIRED>
+	
+<!ATTLIST pluginpath
+	path CDATA #REQUIRED >
+
+<!ATTLIST controller
+	script CDATA #REQUIRED >
+
+<!ATTLIST parameter 
+	name CDATA #REQUIRED
+	type (string|bool|float|double|int|flow) #REQUIRED
+	value CDATA #IMPLIED >
+	
+<!ATTLIST connection
+	id ID #REQUIRED
+	cycle_break (true|false) #IMPLIED >
+	
+<!ATTLIST sink
+	node IDREF #REQUIRED
+	port CDATA #REQUIRED >
+	
+<!ATTLIST source
+	node IDREF #REQUIRED
+	port CDATA #REQUIRED >
+
+<!ATTLIST unit
+	name CDATA #REQUIRED
+	kind (Flow|Rain|Concentration|Volume) #REQUIRED
+	value CDATA #REQUIRED >
