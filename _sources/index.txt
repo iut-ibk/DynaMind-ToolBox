@@ -24,7 +24,6 @@ Packages
   DynaMind/index
   DynaMind-BasicModules/index
   DynaMind-Gui/index
-  DynaMind-Sewer/index
   DynaMind-GDALModules/index
   DynaMind-Performance-Assessment/index
   DynaMind-Executable/index
