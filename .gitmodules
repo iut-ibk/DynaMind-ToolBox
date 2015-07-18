@@ -18,10 +18,6 @@
 	path = DynaMind-Extensions
 	url = git://github.com/iut-ibk/DynaMind-Extensions.git
 	branch = master
-[submodule "DynaMind-Executable"]
-	path = DynaMind-Executable
-	url = git://github.com/iut-ibk/DynaMind-Executable.git
-	branch = master
 [submodule "DynaMind-DynAlp"]
 	path = DynaMind-DynAlp
 	url = git://github.com/iut-ibk/DynaMind-DynAlp.git
