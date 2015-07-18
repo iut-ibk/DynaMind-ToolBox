@@ -10,10 +10,6 @@
 	path = DynaMind-Performance-Assessment
 	url = git://github.com/iut-ibk/DynaMind-Performance-Assessment.git
 	branch = master
-[submodule "DynaMind-DAnCE4Water"]
-	path = DynaMind-DAnCE4Water
-	url = git://github.com/christianurich/DynaMind-DAnCE4Water.git
-	branch = master
 [submodule "DynaVIBe"]
 	path = DynaVIBe
 	url = git://github.com/iut-ibk/DynaVIBe.git
