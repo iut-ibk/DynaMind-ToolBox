@@ -1,0 +1,14 @@
+file(GLOB MODULE_CPPS *.cpp)
+
+include_directories(.)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(dynamind-testmodules SHARED ${MODULE_CPPS})
+
+target_link_libraries (dynamind-testmodules dynamindcore)
+
+INSTALL(TARGETS  dynamind-testmodules
+		DESTINATION "share/DynaMind/native_extensions"
+		PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+

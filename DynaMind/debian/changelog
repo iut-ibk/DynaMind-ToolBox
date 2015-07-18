@@ -1,0 +1,7 @@
+dynamind (0.1-2) unstable; urgency=low
+
+  * removed all boost includes
+  * included unit tests
+  * cleaned all Cmake files
+
+ -- Michael Mair <csae6550@uibk.ac.at>  Tue, 24 Apr 2012 14:31:54 +0200
