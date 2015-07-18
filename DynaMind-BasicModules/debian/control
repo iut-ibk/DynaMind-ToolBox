@@ -1,0 +1,15 @@
+Source: dynamind-basicmodules
+Section: science
+Priority: extra
+Maintainer: Christian Urich <christian.urich@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), cmake,  libqt4-dev(>=4.6.0~), dynamind
+Standards-Version: 3.9.2
+Homepage: https://github.com/iut-ibk/DynaMind-BasicModules
+#Vcs-Git: git://git.debian.org/collab-maint/dynamind.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/dynamind.git;a=summary
+
+Package: dynamind-basicmodules
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: DynaMind-BasicModules
+ Basic DynaMind Modules
