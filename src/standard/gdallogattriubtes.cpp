@@ -2,7 +2,7 @@
 #include "ogr_feature.h"
 #include <sstream>
 
-DM_DECLARE_NODE_NAME(GDALLogAttriubtes, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALLogAttriubtes, Log Attributes , Data Import and Export)
 
 GDALLogAttriubtes::GDALLogAttriubtes()
 {

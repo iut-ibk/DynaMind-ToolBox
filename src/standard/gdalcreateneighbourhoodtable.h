@@ -36,8 +36,7 @@ public:
 	GDALCreateNeighbourhoodTable();
 	void init();
 	void run();
-
-
+	std::string getHelpUrl();
 
 private:
 	std::string viewName;

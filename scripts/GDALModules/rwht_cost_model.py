@@ -27,6 +27,9 @@ from pydynamind import *
 
 
 class RWHTCostModel(Module):
+
+        display_name = "Rainwater Harvesting Tanks (AU)"
+        group_name = "Economic Evaluation"
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)

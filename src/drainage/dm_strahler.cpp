@@ -3,8 +3,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-
-DM_DECLARE_NODE_NAME(DM_Strahler, Network Analysis)
+DM_DECLARE_CUSTOM_NODE_NAME(DM_Strahler,Strahler Ordering, Network Generation)
 
 DM_Strahler::DM_Strahler()
 {

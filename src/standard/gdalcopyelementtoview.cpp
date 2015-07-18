@@ -1,7 +1,7 @@
 #include "gdalcopyelementtoview.h"
 #include <sstream>
-DM_DECLARE_NODE_NAME(GDALCopyElementToView, GDALModules)
 
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCopyElementToView, Copy Features, Data Handling)
 typedef std::map<std::string, DM::View> viewmap;
 
 GDALCopyElementToView::GDALCopyElementToView()
@@ -96,4 +96,9 @@ void GDALCopyElementToView::run()
 
 
 	}
+}
+
+string GDALCopyElementToView::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalcopyelementtoview.html";
 }

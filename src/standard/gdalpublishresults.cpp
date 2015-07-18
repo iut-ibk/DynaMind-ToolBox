@@ -10,7 +10,7 @@
 #include <dmgroup.h>
 #include <sstream>
 
-DM_DECLARE_NODE_NAME(GDALPublishResults, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALPublishResults, Export GIS Data , Data Import and Export)
 
 GDALPublishResults::GDALPublishResults()
 {
@@ -204,3 +204,9 @@ void GDALPublishResults::run()
 }
 
 
+
+
+std::string GDALPublishResults::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalpublishresults.html";
+}

@@ -4,7 +4,7 @@
 #include <ogrsf_frmts.h>
 #include <dmgdalsystem.h>
 
-DM_DECLARE_NODE_NAME(DM_CalculateDistance, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(DM_CalculateDistance,Calculate Distance, Data Handling)
 
 DM_CalculateDistance::DM_CalculateDistance()
 {
@@ -78,5 +78,10 @@ void DM_CalculateDistance::run()
 	OGRLayer * l = sys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
 
 	sys->getDataSource()->ReleaseResultSet(l);
+}
+
+string DM_CalculateDistance::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/dm_calculatedistance.html";
 }
 

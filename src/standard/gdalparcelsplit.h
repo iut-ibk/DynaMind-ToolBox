@@ -71,6 +71,7 @@ public:
 	GDALParcelSplit();
 	void run();
 	void init();
+	std::string getHelpUrl();
 
 	void splitePoly(Polygon_with_holes_2 &poly);
 

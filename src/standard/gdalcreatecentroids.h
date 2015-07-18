@@ -38,6 +38,7 @@ public:
 
 	void run();
 	void init();
+	std::string getHelpUrl();
 
 private:
 	std::string link_name;

@@ -42,6 +42,7 @@ public:
 	GDALCalculateLength();
 	void run();
 	void init();
+	std::string getHelpUrl();
 };
 
 #endif // GDALCALCULATELENGTH_H

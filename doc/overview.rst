@@ -33,14 +33,18 @@ Geometry Processing
 - :doc:`GDALCreateCentroids </DynaMind-GDALModules/gdalcalculatecentroids>` Create centroids
 - :doc:`GDALErase </DynaMind-GDALModules/gdalerase>` Subtract features
 - :doc:`GDALOffset </DynaMind-GDALModules/gdaloffset>` Offset faces
-- :doc:`GDALParceling </DynaMind-GDALModules/gdalparceling>` Parcel faces
-- :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
-- :doc:`GDALCreateBuilding </DynaMind-GDALModules/gdalcreatebuilding>` Generate simple buildings
 
 Groups
 ------
 
 - :doc:`LoopGroup </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
+
+Urban From
+----------
+
+- :doc:`GDALParceling </DynaMind-GDALModules/gdalparceling>` Parcel faces
+- :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
+- :doc:`GDALCreateBuilding </DynaMind-GDALModules/gdalcreatebuilding>` Generate simple buildings
 
 
 Infrastructure Networks

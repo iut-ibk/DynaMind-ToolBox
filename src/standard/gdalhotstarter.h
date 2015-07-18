@@ -49,7 +49,7 @@ public:
 	void init();
 	void run();
 
-
+	std::string getHelpUrl();
 };
 
 #endif // GDALHOTSTARTER_H

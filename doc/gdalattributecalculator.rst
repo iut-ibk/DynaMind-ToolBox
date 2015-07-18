@@ -2,7 +2,7 @@
 Calculate Attributes
 ====================
 
-:index:`GDALAttributeCalculator <GDALModules; GDALAttributeCalculator | Calculate attributes>`  calculates a new or overwrites
+Calculates a new or overwrites
 an existing attribute.
 
 
@@ -40,6 +40,10 @@ Data-stream
 |                    | variable                  |  any             | read  |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`GDALAttributeCalculator <GDALModules; GDALAttributeCalculator | Calculate Attributes>`
 
 Detailed Description
 --------------------

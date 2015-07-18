@@ -36,7 +36,7 @@ class DM_HELPER_DLL_EXPORT GDALErase : public DM::Module
 public:
 	GDALErase();
 
-
+	std::string getHelpUrl();
 	void run();
 	void init();
 

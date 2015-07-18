@@ -1,7 +1,7 @@
 #include "gdalerase.h"
 #include <ogr_feature.h>
 
-DM_DECLARE_NODE_NAME(GDALErase, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALErase, Subtract Features, Geometry Processing)
 
 GDALErase::GDALErase()
 {
@@ -18,6 +18,11 @@ GDALErase::GDALErase()
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 	this->addGDALData("city", data);
+}
+
+string GDALErase::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalerase.html";
 }
 
 void GDALErase::init()

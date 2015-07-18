@@ -5,8 +5,8 @@
 #include <geos_c.h>
 
 #include <dm.h>
-DM_DECLARE_NODE_NAME(GDALJoinCluster, GDALModules)
 
+DM_DECLARE_CUSTOM_NODE_NAME(GDALJoinCluster,Join Network Clusters, Network Generation)
 
 GDALJoinCluster::GDALJoinCluster()
 {

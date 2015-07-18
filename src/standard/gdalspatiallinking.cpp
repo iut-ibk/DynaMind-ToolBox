@@ -2,8 +2,7 @@
 #include <sstream>
 #include <ogr_feature.h>
 
-DM_DECLARE_NODE_NAME(GDALSpatialLinking, GDALModules)
-
+DM_DECLARE_CUSTOM_NODE_NAME(GDALSpatialLinking, Spatial Linking, Linking)
 
 GDALSpatialLinking::GDALSpatialLinking()
 {
@@ -135,4 +134,9 @@ void GDALSpatialLinking::run()
 			leadingView.syncReadFeatures();
 		}
 	}
+}
+
+std::string GDALSpatialLinking::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalspatiallinking.html";
 }

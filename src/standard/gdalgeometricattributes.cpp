@@ -21,7 +21,7 @@ typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
 typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
 
-DM_DECLARE_NODE_NAME(GDALGeometricAttributes, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALGeometricAttributes, Calculate Feature Area, Data Handling)
 
 GDALGeometricAttributes::GDALGeometricAttributes()
 {
@@ -57,6 +57,11 @@ void GDALGeometricAttributes::init()
 	data_stream.push_back(&vc);
 
 	this->registerViewContainers(data_stream);
+}
+
+string GDALGeometricAttributes::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalgeometricattributes.html";
 }
 
 void GDALGeometricAttributes::run()

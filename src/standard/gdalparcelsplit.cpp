@@ -11,10 +11,8 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/intersections.h>
 
+DM_DECLARE_CUSTOM_NODE_NAME(GDALParcelSplit,Subdivide Parcels, Urban Form)
 
-
-
-DM_DECLARE_NODE_NAME(GDALParcelSplit, GDALModules)
 
 GDALParcelSplit::GDALParcelSplit()
 {
@@ -61,6 +59,11 @@ void GDALParcelSplit::init()
 	views.push_back(&parcels);
 
 	this->registerViewContainers(views);
+}
+
+string GDALParcelSplit::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalparcelsplit.html";
 }
 
 

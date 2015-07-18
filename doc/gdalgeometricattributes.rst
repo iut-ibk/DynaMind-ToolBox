@@ -1,8 +1,8 @@
-==============
-Calculate Area
-==============
+======================
+Calculate Feature Area
+======================
 
-:index:`GDALGeometricAttributes <GDALModules; GDALGeometricAttributes | Calculate area>` Calculates the area of a face
+Calculates the area and related attributes of a face.
 
 Parameter
 ---------
@@ -34,6 +34,11 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 |                    | percentage_filled         | DOUBLE           | write |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
+
+Module Name
+-----------
+
+:index:`GDALGeometricAttributes <GDALModules; GDALGeometricAttributes | Calculate area>`
 
 
 Sample Code for Python Simulation

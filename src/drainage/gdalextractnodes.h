@@ -24,6 +24,8 @@ public:
 	GDALExtractNodes();
 	void run();
 	void init();
+	std::string getHelpUrl();
+
 	long getNodeID(OGRPoint &p1, std::map<std::pair<long, long>, std::pair<long, OGRFeature *> > &node_list, double elev = 0);
 
 };

@@ -37,6 +37,7 @@ public:
 	GDALSpatialLinking();
 	void init();
 	void run();
+	std::string getHelpUrl();
 	bool checkCentroid(OGRGeometry* geo, OGRGeometry *lead_geo);
 	bool checkIntersection(OGRGeometry* geo, OGRGeometry * lead_geo);
 private:

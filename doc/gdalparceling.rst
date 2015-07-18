@@ -2,7 +2,7 @@
 Parcel Faces
 ============
 
-:index:`GDALParceling <GDALModules; GDALParceling | Parcel faces>` splits a face into n parts with a defined width.
+Splits a face into n parts with a defined width.
 
 
 Parameter
@@ -34,8 +34,10 @@ Data-stream
 |   subdevisionName   |                          | FACE             | write | resulting faces                          |
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
 
-
+:index:`GDALParceling <GDALModules; GDALParceling | Parcel faces>`
 
 Detailed Description
 --------------------

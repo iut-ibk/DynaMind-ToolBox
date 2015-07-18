@@ -49,6 +49,7 @@ public:
 	GDALGeometricAttributes();
 	void run();
 	void init();
+	std::string getHelpUrl();
 };
 
 #endif // GDALGEOMETRICATTRIBUTES_H

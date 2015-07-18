@@ -59,6 +59,7 @@ private:
 public:
 	GDALCreateBuilding();
 	void run();
+	std::string getHelpUrl();
 
 
 };

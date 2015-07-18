@@ -8,7 +8,9 @@
 #include "gdalutilities.h"
 #include <ogr_api.h>
 
-DM_DECLARE_NODE_NAME(GDALImportData, GDALModules)
+
+
+DM_DECLARE_CUSTOM_NODE_NAME(GDALImportData, Import GIS Data , Data Import and Export)
 
 GDALImportData::GDALImportData()
 {
@@ -411,7 +413,7 @@ bool GDALImportData::checkIsFlat(int ogrType)
 
 string GDALImportData::getHelpUrl()
 {
-	return "http://iut-ibk.github.io/DynaMind-ToolBox/DynaMind-GDALModules/gdalimportdata.html";
+	return "/DynaMind-GDALModules/gdalimportdata.html";
 }
 
 

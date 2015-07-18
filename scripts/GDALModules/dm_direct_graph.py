@@ -5,6 +5,13 @@ from pydynamind import *
 import pdb
 
 class DM_DirectGraph(Module):
+
+        display_name = "Direct Graph"
+        group_name = "Network Generation"
+
+        def getHelpUrl(self):
+            return "/DynaMind-GDALModules/dm_value_from_raster.html"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)

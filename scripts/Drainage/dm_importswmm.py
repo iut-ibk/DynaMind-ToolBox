@@ -30,6 +30,14 @@ from pydynamind import *
 
 
 class DM_ImportSWMM(Module):
+
+
+    display_name = "Import SWMM File"
+    group_name = "Performance Assessment"
+
+    def getHelpUrl(self):
+        return "/DynaMind-GDALModules/dm_importswmm.html"
+
     def __init__(self):
         Module.__init__(self)
         self.setIsGDALModule(True)

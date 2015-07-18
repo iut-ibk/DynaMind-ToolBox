@@ -4,8 +4,7 @@
 #include "gdalutilities.h"
 #include <dmgdalsystem.h>
 
-
-DM_DECLARE_NODE_NAME(GDALHotStarter,Data Import and Export)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALHotStarter, Load Simulation DB , Data Import and Export)
 
 DM::ViewContainer *GDALHotStarter::viewContainerFactory(OGRLayer *lyr)
 {
@@ -43,10 +42,13 @@ GDALHotStarter::GDALHotStarter()
 
 void GDALHotStarter::init()
 {
-
+	if (this->hotStartDatabase.empty()) {
+		DM::Logger(DM::Warning) << "No database set";
+		return;
+	}
 	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->hotStartDatabase.c_str());
 	if (!poDS) {
-		DM::Logger(DM::Warning) << "Error loading " << this->hotStartDatabase;
+		DM::Logger(DM::Warning) << "Error loading database: " << this->hotStartDatabase;
 		return;
 	}
 
@@ -71,3 +73,9 @@ void GDALHotStarter::run()
 
 	sys->setGDALDatabase(this->hotStartDatabase);
 }
+
+string GDALHotStarter::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalhotstarter.html";
+}
+

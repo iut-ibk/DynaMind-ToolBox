@@ -11,7 +11,7 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/intersections.h>
 
-DM_DECLARE_NODE_NAME(GDALParceling, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALParceling,Parcel Faces, Urban Form)
 
 GDALParceling::GDALParceling()
 {
@@ -194,6 +194,11 @@ void GDALParceling::init()
 	views.push_back(&parcels);
 
 	this->registerViewContainers(views);
+}
+
+string GDALParceling::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalparceling.html";
 }
 
 void GDALParceling::splitePoly(Polygon_with_holes_2 &p)

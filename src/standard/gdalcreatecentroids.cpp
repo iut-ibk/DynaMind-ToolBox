@@ -2,7 +2,7 @@
 #include <sstream>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(GDALCreateCentroids, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateCentroids, Create Centroids, Geometry Processing)
 
 GDALCreateCentroids::GDALCreateCentroids()
 {
@@ -35,6 +35,11 @@ void GDALCreateCentroids::init()
 
 	this->registerViewContainers(data_stream);
 
+}
+
+string GDALCreateCentroids::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalcalculatecentroids.html";
 }
 
 

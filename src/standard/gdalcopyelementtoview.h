@@ -38,6 +38,7 @@ public:
 	GDALCopyElementToView();
 	void init();
 	void run();
+	std::string getHelpUrl();
 
 private:
 	DM::ViewContainer vc_from;

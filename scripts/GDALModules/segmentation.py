@@ -5,6 +5,10 @@ from pydynamind import *
 import pdb
 
 class Segmentation(Module):
+
+        display_name = "Segmentation"
+        group_name = "Network Analysis"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
@@ -14,6 +18,9 @@ class Segmentation(Module):
 
             self.createParameter("segmentation_parameter", STRING)
             self.segmentation_parameter = "strahler_order"
+
+        def getHelpUrl(self):
+            return "/DynaMind-GDALModules/segmentation.html"
 
         def init(self):
             self.network = ViewContainer(self.view_name , EDGE, READ)
@@ -40,6 +47,9 @@ class Segmentation(Module):
                 f_id = n.GetFID()
                 start_node = n.GetFieldAsInteger("start_id")
                 end_node = n.GetFieldAsInteger("end_id")
+
+                if start_node == end_node:
+                    continue
                 strahler_order = n.GetFieldAsInteger(self.segmentation_parameter)
 
                 self.edge_list[f_id] = (start_node, end_node, strahler_order, f_id)
@@ -48,6 +58,7 @@ class Segmentation(Module):
                 start_node_list.add(start_node)
                 end_node_list.add(end_node)
 
+            # start_node -> end_node
             start_nodes = []
             for s in start_node_list:
                 if s not in end_node_list:

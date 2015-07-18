@@ -38,6 +38,7 @@ public:
 	GDALRemoveComponets();
 	void init();
 	void run();
+	std::string getHelpUrl();
 
 private:
 	DM::ViewContainer vc;

@@ -71,6 +71,7 @@ public:
 	GDALOffset();
 	void run();
 	void init();
+	string getHelpUrl();
 
 	void addToSystem(SFCGAL::Polygon &poly);
 

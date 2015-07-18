@@ -7,8 +7,8 @@
 
 #include <iostream>
 
+DM_DECLARE_CUSTOM_NODE_NAME(GDALOffset, Offset Faces, Geometry Processing)
 
-DM_DECLARE_NODE_NAME(GDALOffset, GDALModules)
 
 GDALOffset::GDALOffset()
 {
@@ -174,5 +174,10 @@ void GDALOffset::init()
 	views.push_back(&parcels);
 
 	this->registerViewContainers(views);
+}
+
+std::string GDALOffset::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdaloffset.html";
 }
 

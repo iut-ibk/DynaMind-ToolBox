@@ -2,7 +2,7 @@
 SWMM Integration
 ================
 
-:index:`GDALDMSWMM <GDALModules; GDALDMSWMM | SWMM integration>`  exports a drainage network to `SWMM <http://www2.epa.gov/water-research/storm-water-management-model-swmm>`_., executes SWMM and imports the results into DynaMind.
+Exports a drainage network to `SWMM <http://www2.epa.gov/water-research/storm-water-management-model-swmm>`_., executes SWMM and imports the results into DynaMind.
 
 
 Data-stream
@@ -82,6 +82,11 @@ Data-stream
 +--------------------+---------------------------+------+--------------+-------+----------------------------------------------+
 |                    | invert_elevation          | double              | read  | invert elevation in m                        |
 +--------------------+---------------------------+---------------------+-------+----------------------------------------------+
+
+Module Name
+-----------
+
+:index:`GDALDMSWMM <GDALModules; GDALDMSWMM | SWMM integration>`
 
 .. [1] Their is a problem in SWMM that only up to 18 stations can be exported. If cscol has more that 18 stations only every
 other station is exported

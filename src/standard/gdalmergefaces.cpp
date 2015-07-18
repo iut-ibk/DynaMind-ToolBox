@@ -8,8 +8,7 @@
 #include <sstream>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(GDALMergeFaces, GDALModules)
-
+DM_DECLARE_CUSTOM_NODE_NAME(GDALMergeFaces,Merge Faces, Geometry Processing)
 
 GDALMergeFaces::GDALMergeFaces()
 {

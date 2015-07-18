@@ -40,6 +40,7 @@ public:
 	GDALPublishResults();
 	void run();
 	void init();
+	std::string getHelpUrl();
 private:
 	DM::ViewContainer components;
 	DM::ViewContainer dummy;

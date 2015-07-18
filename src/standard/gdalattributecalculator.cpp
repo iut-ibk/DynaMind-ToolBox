@@ -5,7 +5,7 @@
 #include "userdefinedfunctions.h"
 #include "dmgroup.h"
 
-DM_DECLARE_NODE_NAME(GDALAttributeCalculator, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALAttributeCalculator, Calculate Attributes, Data Handling)
 
 typedef std::map<std::string, std::string> varaible_map;
 typedef std::map<std::string, DM::ViewContainer *> helper_map;
@@ -349,6 +349,11 @@ void GDALAttributeCalculator::run()
 			return;
 		}
 	}
+}
+
+string GDALAttributeCalculator::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalattributecalculator.html";
 }
 
 

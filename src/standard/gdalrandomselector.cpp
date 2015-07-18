@@ -1,6 +1,6 @@
 #include "gdalrandomselector.h"
 
-DM_DECLARE_NODE_NAME(GDALRandomSelector, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALRandomSelector,Randomly Select Features, Data Handling)
 
 GDALRandomSelector::GDALRandomSelector()
 {

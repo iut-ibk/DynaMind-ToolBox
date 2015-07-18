@@ -4,8 +4,8 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
+DM_DECLARE_CUSTOM_NODE_NAME(GDALExtractNodes,Create Start and End Nodes, Network Generation)
 
-DM_DECLARE_NODE_NAME(GDALExtractNodes, GDALModules)
 
 
 GDALExtractNodes::GDALExtractNodes()
@@ -50,6 +50,11 @@ void GDALExtractNodes::init()
 	data_stream.push_back(&junctions);
 
 	registerViewContainers(data_stream);
+}
+
+string GDALExtractNodes::getHelpUrl()
+{
+	return "Create Start and End Node";
 }
 
 

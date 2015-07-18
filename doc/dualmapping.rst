@@ -2,7 +2,7 @@
 Dual Mapping
 ============
 
-:index:`<GDALModules; Dualmapping | Export dual mapped edge list>` Export dual mapped edge list of a graph into a .csv file. The dual mapping is based on the segment_id (See :doc:`Segmentation </DynaMind-GDALModules/segmentation>`)
+Export dual mapped edge list of a graph into a .csv file. The dual mapping is based on the segment_id (See :doc:`Segmentation </DynaMind-GDALModules/segmentation>`)
 
 Parameter
 ---------
@@ -31,3 +31,7 @@ Data-stream
 |                    | segment_id                | INT              | read  | segment id                               |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Model Name
+----------
+
+:index:`Dualmapping <GDALModules; Dualmapping | Export dual mapped edge list>`

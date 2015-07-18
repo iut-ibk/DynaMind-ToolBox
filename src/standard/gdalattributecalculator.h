@@ -73,6 +73,7 @@ public:
 	GDALAttributeCalculator();
 	void init();
 	void run();
+	std::string getHelpUrl();
 	void resetInit();
 };
 

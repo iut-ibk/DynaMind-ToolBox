@@ -3,7 +3,8 @@
 #include <ogr_feature.h>
 
 typedef std::map<std::string, DM::View> viewmap;
-DM_DECLARE_NODE_NAME(NonSpatialLinking, GDALModules)
+
+DM_DECLARE_CUSTOM_NODE_NAME(NonSpatialLinking, Link with Identifier, Linking)
 
 NonSpatialLinking::NonSpatialLinking()
 
@@ -60,6 +61,11 @@ void NonSpatialLinking::init()
 
 	this->registerViewContainers(data_stream);
 
+}
+
+string NonSpatialLinking::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/nonspatiallinking.html";
 }
 
 void NonSpatialLinking::run()

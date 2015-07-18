@@ -54,6 +54,7 @@ public:
 	NonSpatialLinking();
 	void run();
 	void init();
+	std::string getHelpUrl();
 };
 
 #endif // NONSPATIALLINKING_H

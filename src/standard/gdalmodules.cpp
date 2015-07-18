@@ -56,8 +56,8 @@ using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
 	registry->addNodeFactory(new DM::NodeFactory<GDALImportData>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALParceling>());
-	registry->addNodeFactory(new DM::NodeFactory<GDALCreateRectangle>());
-	registry->addNodeFactory(new DM::NodeFactory<LSystems>());
+	//registry->addNodeFactory(new DM::NodeFactory<GDALCreateRectangle>()); #Not really useful
+	//registry->addNodeFactory(new DM::NodeFactory<LSystems>()); #Not doing anything
 	registry->addNodeFactory(new DM::NodeFactory<NonSpatialLinking>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALSpatialLinking>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALAttributeCalculator>());

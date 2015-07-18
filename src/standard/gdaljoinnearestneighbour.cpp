@@ -3,8 +3,7 @@
 #include <ogr_feature.h>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(GDALJoinNearestNeighbour, GDALModules)
-
+DM_DECLARE_CUSTOM_NODE_NAME(GDALJoinNearestNeighbour, Link Nearest Neighbour, Linking)
 
 GDALJoinNearestNeighbour::GDALJoinNearestNeighbour()
 {
@@ -86,4 +85,9 @@ void GDALJoinNearestNeighbour::run()
 			continue;
 		lead_feat->SetField(link_name.c_str(), (int) f->GetFID());
 	}
+}
+
+string GDALJoinNearestNeighbour::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdaljoinnearestneighbour.html";
 }

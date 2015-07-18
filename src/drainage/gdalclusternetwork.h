@@ -23,6 +23,7 @@ public:
 	GDALClusterNetwork();
 	void run();
 	void init();
+	std::string getHelpUrl();
 
 	int getNodeID(long &node_id, OGRPoint &p1, std::map<std::pair<long, long>, long> &node_list, double tolerance, double elev = 0);
 	std::vector<long> walk_the_edge(std::vector<long> start_id, int cluster_id);

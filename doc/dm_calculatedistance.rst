@@ -2,7 +2,7 @@
 Calculate Distance
 ==================
 
-:index:`DM_CalculateDistance <GDALModules; DM_CalculateDistance | Calculate distance>` Module calculates
+Module calculates
 the distance form the lead view feature to every other feature in the distance view.
 
 Parameter
@@ -34,6 +34,10 @@ Data-stream
 | distance_view_name |                           | NODE, EDGE, FACE | read  |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`DM_CalculateDistance <GDALModules; DM_CalculateDistance | Calculate distance>`
 
 Sample Code for Python Simulation
 ---------------------------------

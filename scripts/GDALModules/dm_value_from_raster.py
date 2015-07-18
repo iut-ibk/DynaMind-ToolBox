@@ -6,6 +6,13 @@ from gdalconst import *
 import struct
 
 class DM_ValueFromRaster(Module):
+
+        display_name = "Value From Raster"
+        group_name = "Network Generation"
+
+        def getHelpUrl(self):
+            return "/DynaMind-GDALModules/dm_value_from_raster.html"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)

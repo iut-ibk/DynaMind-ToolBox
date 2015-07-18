@@ -3,7 +3,9 @@
 #include <sstream>
 //#include <random>
 
-DM_DECLARE_NODE_NAME(GDALCreateHouseholds, GDALModules)
+//DM_DECLARE_NODE_NAME(GDALCreateHouseholds, GDALModules)
+
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateHouseholds, Sample Housholds From Census Data, Urban Form)
 
 GDALCreateHouseholds::GDALCreateHouseholds()
 {

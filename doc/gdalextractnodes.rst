@@ -1,9 +1,9 @@
-=============================================
-Create Start and End Node from a Pipe Network
-=============================================
+=========================
+Create Start and End Node
+=========================
 
-:index:`GDALExtractNodes <GDALModules; GDALExtractNodes | Creates Start and End Node>` Creates start and end nodes from
-a pipe network. This modules is used to prepare drainage network data for the SWMM export.
+ Creates start and end nodes from
+a  network. This modules is used to prepare drainage network data for the SWMM export.
 
 Parameter
 ---------
@@ -48,6 +48,11 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+---------------------------------------------+
 |                    | height                    | DOUBLE           | write | if add_height is true                       |
 +--------------------+---------------------------+------------------+-------+---------------------------------------------+
+
+Module Name
+-----------
+
+:index:`GDALExtractNodes <GDALModules; GDALExtractNodes | Creates Start and End Node>`
 
 Detail Description
 ------------------

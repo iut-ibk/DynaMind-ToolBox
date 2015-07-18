@@ -2,7 +2,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(GDALCalculateLength, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCalculateLength, Calculate Feature Length, Data Handling)
 
 GDALCalculateLength::GDALCalculateLength()
 {
@@ -24,6 +24,11 @@ void GDALCalculateLength::init()
 	data_stream.push_back(&vc);
 
 	this->registerViewContainers(data_stream);
+}
+
+string GDALCalculateLength::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalcalculatelength.html";
 }
 
 void GDALCalculateLength::run()

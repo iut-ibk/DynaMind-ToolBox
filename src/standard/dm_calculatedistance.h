@@ -13,6 +13,8 @@ public:
 
 	void init();
 	void run();
+	std::string getHelpUrl();
+
 private:
 	bool properInit; // is true when init succeeded
 

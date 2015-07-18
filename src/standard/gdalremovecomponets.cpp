@@ -1,7 +1,6 @@
 #include "gdalremovecomponets.h"
 
-DM_DECLARE_NODE_NAME(GDALRemoveComponets, GDALModules)
-
+DM_DECLARE_CUSTOM_NODE_NAME(GDALRemoveComponets, Remove Component, Data Handling)
 GDALRemoveComponets::GDALRemoveComponets()
 {
 	GDALModule = true;
@@ -35,4 +34,9 @@ void GDALRemoveComponets::run()
 	while(f = vc.getNextFeature()) {
 		vc.deleteFeature(f->GetFID());
 	}
+}
+
+string GDALRemoveComponets::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalremovecomponents.html";
 }

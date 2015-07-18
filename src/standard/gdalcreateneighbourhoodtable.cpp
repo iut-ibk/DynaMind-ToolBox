@@ -6,7 +6,7 @@
 #include <sstream>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(GDALCreateNeighbourhoodTable, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateNeighbourhoodTable, Link Adjacent Faces, Linking)
 
 GDALCreateNeighbourhoodTable::GDALCreateNeighbourhoodTable()
 {
@@ -86,3 +86,10 @@ void GDALCreateNeighbourhoodTable::run()
 	}
 	sys->getDataSource()->ReleaseResultSet(l);
 }
+
+string GDALCreateNeighbourhoodTable::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalcreateneighbourhoodtable.html";
+}
+
+

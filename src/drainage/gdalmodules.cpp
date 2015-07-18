@@ -38,7 +38,7 @@ using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
 	registry->addNodeFactory(new DM::NodeFactory<GDALDMSWMM>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALClusterNetwork>());
-	registry->addNodeFactory(new DM::NodeFactory<GDALDirectNetwork>());
+	// registry->addNodeFactory(new DM::NodeFactory<GDALDirectNetwork>()); Replaced by Python module
 	registry->addNodeFactory(new DM::NodeFactory<GDALJoinCluster>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALExtractNodes>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALExtractNodes>());

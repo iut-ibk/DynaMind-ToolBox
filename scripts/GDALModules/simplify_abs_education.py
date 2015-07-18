@@ -27,6 +27,9 @@ from pydynamind import *
 
 
 class SimplifyABSEducation(Module):
+        display_name = "Categories Education from Census (AU)"
+        group_name = "Urban Form"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)

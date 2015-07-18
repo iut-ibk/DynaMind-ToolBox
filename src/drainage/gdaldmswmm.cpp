@@ -38,8 +38,10 @@
 #include "drainagehelper.h"
 #include "ogrsf_frmts.h"
 
+
+DM_DECLARE_CUSTOM_NODE_NAME(GDALDMSWMM, SWMM Integration, Performance Assessment)
+
 using namespace DM;
-DM_DECLARE_NODE_NAME(GDALDMSWMM, Sewer)
 GDALDMSWMM::GDALDMSWMM()
 {
 	GDALModule = true;
@@ -148,7 +150,7 @@ void GDALDMSWMM::init() {
 
 string GDALDMSWMM::getHelpUrl()
 {
-	return "https://github.com/iut-ibk/DynaMind-Sewer/blob/master/doc/DMSWMM.md";
+	return "/DynaMind-GDALModules/gdaldmswmm.html";
 }
 
 

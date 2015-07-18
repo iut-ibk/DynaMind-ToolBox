@@ -5,6 +5,10 @@ from pydynamind import *
 import pdb
 
 class Dualmapping(Module):
+
+        display_name = "Dual Mapping"
+        group_name = "Network Analysis"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
@@ -14,6 +18,9 @@ class Dualmapping(Module):
 
             self.createParameter("view_name", STRING)
             self.view_name = "conduit"
+
+        def getHelpUrl(self):
+            return "/DynaMind-GDALModules/dualmapping.html"
 
         def init(self):
             self.network = ViewContainer(self.view_name, EDGE, READ)

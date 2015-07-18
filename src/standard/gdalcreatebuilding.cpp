@@ -10,7 +10,7 @@ typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
 typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
 
-DM_DECLARE_NODE_NAME(GDALCreateBuilding, GDALModules)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateBuilding,Generate Simple Buildings, Urban Form)
 
 OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 {
@@ -141,4 +141,9 @@ void GDALCreateBuilding::run()
 		b->SetField("residential_units", this->residential_units);
 		OGRGeometryFactory::destroyGeometry(building_geo);
 	}
+}
+
+string GDALCreateBuilding::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalcreatebuilding.html";
 }

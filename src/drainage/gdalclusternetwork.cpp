@@ -3,9 +3,7 @@
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-
-DM_DECLARE_NODE_NAME(GDALClusterNetwork, Network Analysis)
-
+DM_DECLARE_CUSTOM_NODE_NAME(GDALClusterNetwork,Identify Clusters of Connected Lines, Network Generation)
 
 GDALClusterNetwork::GDALClusterNetwork()
 {
@@ -26,6 +24,11 @@ void GDALClusterNetwork::init()
 	data_stream.push_back(&network);
 
 	this->registerViewContainers(data_stream);
+}
+
+string GDALClusterNetwork::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalclusternetwork.html";
 }
 
 std::vector<long> GDALClusterNetwork::walk_the_edge(std::vector<long> start_ids, int cluster_id)

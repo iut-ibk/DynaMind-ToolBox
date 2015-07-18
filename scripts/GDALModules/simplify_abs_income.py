@@ -27,6 +27,9 @@ from pydynamind import *
 
 
 class SimplifyABSIncome(Module):
+        display_name = "Categories Income from Census (AU)"
+        group_name = "Urban Form"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
