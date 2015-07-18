@@ -1,7 +1,3 @@
-[submodule "DynaMind-Gui"]
-	path = DynaMind-Gui
-	url = git://github.com/iut-ibk/DynaMind-Gui.git
-	branch = master
 [submodule "DynaMind-Sewer"]
 	path = DynaMind-Sewer
 	url = git://github.com/iut-ibk/DynaMind-Sewer.git
