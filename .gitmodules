@@ -2,10 +2,6 @@
 	path = DynaMind-Sewer
 	url = git://github.com/iut-ibk/DynaMind-Sewer.git
 	branch = master
-[submodule "DynaMind-Performance-Assessment"]
-	path = DynaMind-Performance-Assessment
-	url = git://github.com/iut-ibk/DynaMind-Performance-Assessment.git
-	branch = master
 [submodule "DynaVIBe"]
 	path = DynaVIBe
 	url = git://github.com/iut-ibk/DynaVIBe.git
