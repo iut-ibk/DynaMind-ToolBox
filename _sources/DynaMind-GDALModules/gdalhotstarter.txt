@@ -1,10 +1,15 @@
-====================
-Hot Start Simulation
-====================
+========================
+Load Simulation Database
+========================
 
-:index:`GDALHotStarter <GDALModules; GDALHotStarter | Hot start simulation>` is used to hot start a simulation with a previous database.
+This module is used to hot start a simulation with a previous database.
 This is particularly useful for bigger simulation where the data preparation and linking of data takes a significant amount of time,
 but once established, can be used as basis for many simulations.
+
+Module name
+-----------
+
+:index:`GDALHotStarter <GDALModules; GDALHotStarter | Load Simulation Database>`
 
 Parameter
 ---------

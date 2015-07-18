@@ -2,7 +2,7 @@
 Segmentation
 ============
 
-:index:`Segmentation <GDALModules; Segmentation | Create segments of equal attributes>` creates segments of equal attributes
+Creates segments of equal attributes
 indicated by the segment_id. The module requires a directed graph. (See :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>`.)
 
 Parameter
@@ -34,3 +34,7 @@ Data-stream
 |                    | segment_id                | INT              | write | segment id                               |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`Segmentation <GDALModules; Segmentation | Create segments of equal attributes>`

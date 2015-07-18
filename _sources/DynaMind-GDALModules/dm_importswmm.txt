@@ -2,7 +2,7 @@
 Import SWMM File
 ================
 
-:index:`DM_ImportSWMM <GDALModules; DM_ImportSWMM | Import SWMM file>`
+
 
 
 .. warning:: SWMM import is currently under development and the import capabilities are limited.
@@ -57,3 +57,8 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 |                    | node _id                  | LINK             | write | link to node id                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
+
+Module Name
+-----------
+
+:index:`DM_ImportSWMM <GDALModules; DM_ImportSWMM | Import SWMM file>`

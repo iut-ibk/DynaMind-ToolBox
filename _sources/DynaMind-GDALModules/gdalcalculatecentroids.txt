@@ -2,7 +2,7 @@
 Create Centroids
 ================
 
-:index:`GDALCreateCentroids <GDALModules; GDALCreateCentroids | Create centroids>` creates a new node in the centroid of a face
+Creates a new node in the centroid of a face.
 
 Parameter
 ---------
@@ -28,4 +28,7 @@ Data-stream
 | leading_view        |                          | NODE                        | write |                                          |
 +---------------------+--------------------------+-----------------------------+-------+------------------------------------------+
 
+Module Name
+-----------
 
+:index:`GDALCreateCentroids <GDALModules; GDALCreateCentroids | Create centroids>`

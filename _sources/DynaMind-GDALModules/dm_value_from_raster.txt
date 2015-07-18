@@ -1,8 +1,8 @@
 ================
-Value From Rater
+Value From Raster
 ================
 
-:index:`DM_ValueFromRaster <GDALModules; DM_ValueFromRaster | Value from Raster>` adds the value from at the node
+adds the value from at the node
 location.
 
 Parameter
@@ -30,7 +30,10 @@ Data-stream
 |                    | attribute_name            | DOUBLE           | write |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
 
+:index:`DM_ValueFromRaster <GDALModules; DM_ValueFromRaster | Value from Raster>`
 
 
 Sample Code for Python Simulation

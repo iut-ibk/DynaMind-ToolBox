@@ -2,7 +2,7 @@
 Generate Simple Buildings
 =========================
 
-:index:`GDALCreateBuilding <GDALModules; GDALCreateBuilding | Generate Simple Buildings>` Generates simple
+ Generates simple
 buildings in the centre of the parcel
 
 
@@ -36,7 +36,10 @@ Data-stream
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
 
+Module Name
+-----------
 
+:index:`GDALCreateBuilding <GDALModules; GDALCreateBuilding | Generate Simple Buildings>`
 
 
 Detailed Description
