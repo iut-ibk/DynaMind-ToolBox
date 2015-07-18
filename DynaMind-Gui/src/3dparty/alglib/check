@@ -1,0 +1,2919 @@
+if [ "$1" == "" ] ; then
+cat _internal/check-bash-help
+exit 1
+fi
+if [ "$4" != "" ] ; then
+echo Too many parameters specified
+echo Did you enclose parameters to be passed to the compiler in double quotes?
+exit 1
+fi
+if [ "$2" == "all" ] ; then
+pushd . > /dev/null
+./check  "$1"  "dforest_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tsort_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "descriptivestatistics_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bdss_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "kmeans_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "blas_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lda_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "rotations_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tdevd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sblas_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "reflections_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tridiagonal_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sevd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cholesky_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdinverse_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "linreg_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gammafunc_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "normaldistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "igammaf_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bidiagonal_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "qr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lq_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bdsvd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "svd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "logit_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlpbase_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdsolve_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlpe_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trinverse_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lbfgs_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlptrain_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "pca_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fft_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ftbase_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fht_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "conv_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "corr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "correlationtests_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ibetaf_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "studenttdistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "correlation_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "jarquebera_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mannwhitneyu_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "stest_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "nearunityunit_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "binomialdistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "studentttests_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "variancetests_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fdistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "chisquaredistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "wsr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "poissondistr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hqrnd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gkq_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gq_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "autogk_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline2d_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline3_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "minlm_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lu_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trlinsolve_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "rcond_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "leastsquares_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lsfit_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline1d_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ratint_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ratinterpolation_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "polint_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "taskgen_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "airyf_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bessel_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "betaf_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "dawson_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "elliptic_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "expintegrals_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fresnel_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "jacobianelliptic_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "psif_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trigintegrals_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "chebyshev_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hermite_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "laguerre_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "legendre_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "odesolver_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hbisinv_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cblas_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "creflections_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hblas_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "htridiagonal_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tdbisinv_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hevd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "nsevd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hsschur_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hessenberg_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdgevd_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sbisinv_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cdet_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "clu_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cinverse_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ctrinverse_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cqr_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "crcond_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ctrlinsolve_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "det_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "inv_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "inverseupdate_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "schur_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hcholesky_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spddet_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sdet_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ldlt_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sinverse_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdrcond_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "estnorm_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "srcond_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ssolve_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "matgen_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "densesolver_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "xblas_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "csolve_short"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+exit 0
+fi
+if [ "$2" == "all_silent" ] ; then
+pushd . > /dev/null
+./check  "$1"  "dforest_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tsort_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "descriptivestatistics_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bdss_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "kmeans_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "blas_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lda_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "rotations_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tdevd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sblas_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "reflections_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tridiagonal_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sevd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cholesky_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdinverse_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "linreg_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gammafunc_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "normaldistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "igammaf_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bidiagonal_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "qr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lq_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bdsvd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "svd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "logit_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlpbase_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdsolve_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlpe_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trinverse_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lbfgs_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mlptrain_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "pca_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fft_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ftbase_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fht_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "conv_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "corr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "correlationtests_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ibetaf_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "studenttdistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "correlation_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "jarquebera_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "mannwhitneyu_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "stest_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "nearunityunit_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "binomialdistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "studentttests_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "variancetests_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fdistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "chisquaredistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "wsr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "poissondistr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hqrnd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gkq_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "gq_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "autogk_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline2d_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline3_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "minlm_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lu_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trlinsolve_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "rcond_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "leastsquares_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "lsfit_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spline1d_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ratint_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ratinterpolation_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "polint_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "taskgen_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "airyf_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "bessel_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "betaf_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "dawson_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "elliptic_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "expintegrals_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "fresnel_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "jacobianelliptic_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "psif_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "trigintegrals_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "chebyshev_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hermite_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "laguerre_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "legendre_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "odesolver_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hbisinv_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cblas_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "creflections_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hblas_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "htridiagonal_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "tdbisinv_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hevd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "nsevd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hsschur_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hessenberg_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdgevd_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sbisinv_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cdet_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "clu_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cinverse_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ctrinverse_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "cqr_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "crcond_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ctrlinsolve_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "det_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "inv_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "inverseupdate_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "schur_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "hcholesky_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spddet_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sdet_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ldlt_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "sinverse_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "spdrcond_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "estnorm_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "srcond_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "ssolve_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "matgen_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "densesolver_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "xblas_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+pushd . > /dev/null
+./check  "$1"  "csolve_silent"  "$3" 
+popd > /dev/null
+if [ $? -ne 0 ] ; then
+exit 1
+fi
+exit 0
+fi
+cd _tmp
+rm -f *
+cd ..
+case $1 in
+gcc)
+cp out/libalglib.a _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+cp out/*.h _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB source files.
+exit 1
+fi
+;;
+mingw)
+cp out/libalglib.a _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB library. Did you ran build?
+exit 1
+fi
+cp out/*.h _tmp >> log.txt 2>> log.txt
+if [ $? -ne 0 ] ; then
+echo Error copying ALGLIB source files.
+exit 1
+fi
+;;
+*)
+echo unknown compiler
+exit 1
+;;
+esac
+case $2 in
+dforest)
+cp _internal/_run_testforestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testforestunit.* _tmp >> log.txt 2>> log.txt
+;;
+dforest_short)
+cp _internal/_run_short_testforestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testforestunit.* _tmp >> log.txt 2>> log.txt
+;;
+dforest_silent)
+cp _internal/_run_silent_testforestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testforestunit.* _tmp >> log.txt 2>> log.txt
+;;
+tsort)
+cp _internal/_run_testtsortunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtsortunit.* _tmp >> log.txt 2>> log.txt
+;;
+tsort_short)
+cp _internal/_run_short_testtsortunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtsortunit.* _tmp >> log.txt 2>> log.txt
+;;
+tsort_silent)
+cp _internal/_run_silent_testtsortunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtsortunit.* _tmp >> log.txt 2>> log.txt
+;;
+descriptivestatistics)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+descriptivestatistics_short)
+exit 0
+;;
+descriptivestatistics_silent)
+exit 0
+;;
+bdss)
+cp _internal/_run_testbdssunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdssunit.* _tmp >> log.txt 2>> log.txt
+;;
+bdss_short)
+cp _internal/_run_short_testbdssunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdssunit.* _tmp >> log.txt 2>> log.txt
+;;
+bdss_silent)
+cp _internal/_run_silent_testbdssunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdssunit.* _tmp >> log.txt 2>> log.txt
+;;
+kmeans)
+cp _internal/_run_testkmeansunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testkmeansunit.* _tmp >> log.txt 2>> log.txt
+;;
+kmeans_short)
+cp _internal/_run_short_testkmeansunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testkmeansunit.* _tmp >> log.txt 2>> log.txt
+;;
+kmeans_silent)
+cp _internal/_run_silent_testkmeansunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testkmeansunit.* _tmp >> log.txt 2>> log.txt
+;;
+blas)
+cp _internal/_run_testblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+blas_short)
+cp _internal/_run_short_testblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+blas_silent)
+cp _internal/_run_silent_testblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+lda)
+cp _internal/_run_testldaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldaunit.* _tmp >> log.txt 2>> log.txt
+;;
+lda_short)
+cp _internal/_run_short_testldaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldaunit.* _tmp >> log.txt 2>> log.txt
+;;
+lda_silent)
+cp _internal/_run_silent_testldaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldaunit.* _tmp >> log.txt 2>> log.txt
+;;
+rotations)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+rotations_short)
+exit 0
+;;
+rotations_silent)
+exit 0
+;;
+tdevd)
+cp _internal/_run_testtdevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+tdevd_short)
+cp _internal/_run_short_testtdevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+tdevd_silent)
+cp _internal/_run_silent_testtdevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+sblas)
+cp _internal/_run_testsblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+sblas_short)
+cp _internal/_run_short_testsblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+sblas_silent)
+cp _internal/_run_silent_testsblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+reflections)
+cp _internal/_run_testreflectionsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testreflectionsunit.* _tmp >> log.txt 2>> log.txt
+;;
+reflections_short)
+cp _internal/_run_short_testreflectionsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testreflectionsunit.* _tmp >> log.txt 2>> log.txt
+;;
+reflections_silent)
+cp _internal/_run_silent_testreflectionsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testreflectionsunit.* _tmp >> log.txt 2>> log.txt
+;;
+tridiagonal)
+cp _internal/_run_testtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+tridiagonal_short)
+cp _internal/_run_short_testtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+tridiagonal_silent)
+cp _internal/_run_silent_testtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+sevd)
+cp _internal/_run_testsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+sevd_short)
+cp _internal/_run_short_testsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+sevd_silent)
+cp _internal/_run_silent_testsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+cholesky)
+cp _internal/_run_testcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+cholesky_short)
+cp _internal/_run_short_testcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+cholesky_silent)
+cp _internal/_run_silent_testcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdinverse)
+cp _internal/_run_testinvcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdinverse_short)
+cp _internal/_run_short_testinvcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdinverse_silent)
+cp _internal/_run_silent_testinvcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+linreg)
+cp _internal/_run_testregressunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testregressunit.* _tmp >> log.txt 2>> log.txt
+;;
+linreg_short)
+cp _internal/_run_short_testregressunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testregressunit.* _tmp >> log.txt 2>> log.txt
+;;
+linreg_silent)
+cp _internal/_run_silent_testregressunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testregressunit.* _tmp >> log.txt 2>> log.txt
+;;
+gammafunc)
+cp _internal/_run_testgammaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgammaunit.* _tmp >> log.txt 2>> log.txt
+;;
+gammafunc_short)
+cp _internal/_run_short_testgammaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgammaunit.* _tmp >> log.txt 2>> log.txt
+;;
+gammafunc_silent)
+cp _internal/_run_silent_testgammaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgammaunit.* _tmp >> log.txt 2>> log.txt
+;;
+normaldistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+normaldistr_short)
+exit 0
+;;
+normaldistr_silent)
+exit 0
+;;
+igammaf)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+igammaf_short)
+exit 0
+;;
+igammaf_silent)
+exit 0
+;;
+bidiagonal)
+cp _internal/_run_testbdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdunit.* _tmp >> log.txt 2>> log.txt
+;;
+bidiagonal_short)
+cp _internal/_run_short_testbdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdunit.* _tmp >> log.txt 2>> log.txt
+;;
+bidiagonal_silent)
+cp _internal/_run_silent_testbdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdunit.* _tmp >> log.txt 2>> log.txt
+;;
+qr)
+cp _internal/_run_testqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+qr_short)
+cp _internal/_run_short_testqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+qr_silent)
+cp _internal/_run_silent_testqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+lq)
+cp _internal/_run_testlqunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlqunit.* _tmp >> log.txt 2>> log.txt
+;;
+lq_short)
+cp _internal/_run_short_testlqunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlqunit.* _tmp >> log.txt 2>> log.txt
+;;
+lq_silent)
+cp _internal/_run_silent_testlqunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlqunit.* _tmp >> log.txt 2>> log.txt
+;;
+bdsvd)
+cp _internal/_run_testbdsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+bdsvd_short)
+cp _internal/_run_short_testbdsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+bdsvd_silent)
+cp _internal/_run_silent_testbdsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testbdsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+svd)
+cp _internal/_run_testsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+svd_short)
+cp _internal/_run_short_testsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+svd_silent)
+cp _internal/_run_silent_testsvdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsvdunit.* _tmp >> log.txt 2>> log.txt
+;;
+logit)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+logit_short)
+exit 0
+;;
+logit_silent)
+exit 0
+;;
+mlpbase)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+mlpbase_short)
+exit 0
+;;
+mlpbase_silent)
+exit 0
+;;
+spdsolve)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+spdsolve_short)
+exit 0
+;;
+spdsolve_silent)
+exit 0
+;;
+mlpe)
+cp _internal/_run_testmlpeunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpeunit.* _tmp >> log.txt 2>> log.txt
+;;
+mlpe_short)
+cp _internal/_run_short_testmlpeunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpeunit.* _tmp >> log.txt 2>> log.txt
+;;
+mlpe_silent)
+cp _internal/_run_silent_testmlpeunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpeunit.* _tmp >> log.txt 2>> log.txt
+;;
+trinverse)
+cp _internal/_run_testtrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+trinverse_short)
+cp _internal/_run_short_testtrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+trinverse_silent)
+cp _internal/_run_silent_testtrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+lbfgs)
+cp _internal/_run_testlbfgs.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlbfgs.* _tmp >> log.txt 2>> log.txt
+;;
+lbfgs_short)
+cp _internal/_run_short_testlbfgs.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlbfgs.* _tmp >> log.txt 2>> log.txt
+;;
+lbfgs_silent)
+cp _internal/_run_silent_testlbfgs.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlbfgs.* _tmp >> log.txt 2>> log.txt
+;;
+mlptrain)
+cp _internal/_run_testmlpunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpunit.* _tmp >> log.txt 2>> log.txt
+;;
+mlptrain_short)
+cp _internal/_run_short_testmlpunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpunit.* _tmp >> log.txt 2>> log.txt
+;;
+mlptrain_silent)
+cp _internal/_run_silent_testmlpunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmlpunit.* _tmp >> log.txt 2>> log.txt
+;;
+pca)
+cp _internal/_run_testpcaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpcaunit.* _tmp >> log.txt 2>> log.txt
+;;
+pca_short)
+cp _internal/_run_short_testpcaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpcaunit.* _tmp >> log.txt 2>> log.txt
+;;
+pca_silent)
+cp _internal/_run_silent_testpcaunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpcaunit.* _tmp >> log.txt 2>> log.txt
+;;
+fft)
+cp _internal/_run_testfftunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfftunit.* _tmp >> log.txt 2>> log.txt
+;;
+fft_short)
+cp _internal/_run_short_testfftunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfftunit.* _tmp >> log.txt 2>> log.txt
+;;
+fft_silent)
+cp _internal/_run_silent_testfftunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfftunit.* _tmp >> log.txt 2>> log.txt
+;;
+ftbase)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+ftbase_short)
+exit 0
+;;
+ftbase_silent)
+exit 0
+;;
+fht)
+cp _internal/_run_testfhtunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfhtunit.* _tmp >> log.txt 2>> log.txt
+;;
+fht_short)
+cp _internal/_run_short_testfhtunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfhtunit.* _tmp >> log.txt 2>> log.txt
+;;
+fht_silent)
+cp _internal/_run_silent_testfhtunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testfhtunit.* _tmp >> log.txt 2>> log.txt
+;;
+conv)
+cp _internal/_run_testconvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testconvunit.* _tmp >> log.txt 2>> log.txt
+;;
+conv_short)
+cp _internal/_run_short_testconvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testconvunit.* _tmp >> log.txt 2>> log.txt
+;;
+conv_silent)
+cp _internal/_run_silent_testconvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testconvunit.* _tmp >> log.txt 2>> log.txt
+;;
+corr)
+cp _internal/_run_testcorrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcorrunit.* _tmp >> log.txt 2>> log.txt
+;;
+corr_short)
+cp _internal/_run_short_testcorrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcorrunit.* _tmp >> log.txt 2>> log.txt
+;;
+corr_silent)
+cp _internal/_run_silent_testcorrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcorrunit.* _tmp >> log.txt 2>> log.txt
+;;
+correlationtests)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+correlationtests_short)
+exit 0
+;;
+correlationtests_silent)
+exit 0
+;;
+ibetaf)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+ibetaf_short)
+exit 0
+;;
+ibetaf_silent)
+exit 0
+;;
+studenttdistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+studenttdistr_short)
+exit 0
+;;
+studenttdistr_silent)
+exit 0
+;;
+correlation)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+correlation_short)
+exit 0
+;;
+correlation_silent)
+exit 0
+;;
+jarquebera)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+jarquebera_short)
+exit 0
+;;
+jarquebera_silent)
+exit 0
+;;
+mannwhitneyu)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+mannwhitneyu_short)
+exit 0
+;;
+mannwhitneyu_silent)
+exit 0
+;;
+stest)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+stest_short)
+exit 0
+;;
+stest_silent)
+exit 0
+;;
+nearunityunit)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+nearunityunit_short)
+exit 0
+;;
+nearunityunit_silent)
+exit 0
+;;
+binomialdistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+binomialdistr_short)
+exit 0
+;;
+binomialdistr_silent)
+exit 0
+;;
+studentttests)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+studentttests_short)
+exit 0
+;;
+studentttests_silent)
+exit 0
+;;
+variancetests)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+variancetests_short)
+exit 0
+;;
+variancetests_silent)
+exit 0
+;;
+fdistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+fdistr_short)
+exit 0
+;;
+fdistr_silent)
+exit 0
+;;
+chisquaredistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+chisquaredistr_short)
+exit 0
+;;
+chisquaredistr_silent)
+exit 0
+;;
+wsr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+wsr_short)
+exit 0
+;;
+wsr_silent)
+exit 0
+;;
+poissondistr)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+poissondistr_short)
+exit 0
+;;
+poissondistr_silent)
+exit 0
+;;
+hqrnd)
+cp _internal/_run_testhqrndunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhqrndunit.* _tmp >> log.txt 2>> log.txt
+;;
+hqrnd_short)
+cp _internal/_run_short_testhqrndunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhqrndunit.* _tmp >> log.txt 2>> log.txt
+;;
+hqrnd_silent)
+cp _internal/_run_silent_testhqrndunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhqrndunit.* _tmp >> log.txt 2>> log.txt
+;;
+gkq)
+cp _internal/_run_testgkq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgkq.* _tmp >> log.txt 2>> log.txt
+;;
+gkq_short)
+cp _internal/_run_short_testgkq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgkq.* _tmp >> log.txt 2>> log.txt
+;;
+gkq_silent)
+cp _internal/_run_silent_testgkq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgkq.* _tmp >> log.txt 2>> log.txt
+;;
+gq)
+cp _internal/_run_testgq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgq.* _tmp >> log.txt 2>> log.txt
+;;
+gq_short)
+cp _internal/_run_short_testgq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgq.* _tmp >> log.txt 2>> log.txt
+;;
+gq_silent)
+cp _internal/_run_silent_testgq.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testgq.* _tmp >> log.txt 2>> log.txt
+;;
+autogk)
+cp _internal/_run_testautogk.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testautogk.* _tmp >> log.txt 2>> log.txt
+;;
+autogk_short)
+cp _internal/_run_short_testautogk.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testautogk.* _tmp >> log.txt 2>> log.txt
+;;
+autogk_silent)
+cp _internal/_run_silent_testautogk.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testautogk.* _tmp >> log.txt 2>> log.txt
+;;
+spline2d)
+cp _internal/_run_testinterpolation2dunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinterpolation2dunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline2d_short)
+cp _internal/_run_short_testinterpolation2dunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinterpolation2dunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline2d_silent)
+cp _internal/_run_silent_testinterpolation2dunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinterpolation2dunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline3)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+spline3_short)
+exit 0
+;;
+spline3_silent)
+exit 0
+;;
+minlm)
+cp _internal/_run_testlm.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlm.* _tmp >> log.txt 2>> log.txt
+;;
+minlm_short)
+cp _internal/_run_short_testlm.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlm.* _tmp >> log.txt 2>> log.txt
+;;
+minlm_silent)
+cp _internal/_run_silent_testlm.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlm.* _tmp >> log.txt 2>> log.txt
+;;
+lu)
+cp _internal/_run_testluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testluunit.* _tmp >> log.txt 2>> log.txt
+;;
+lu_short)
+cp _internal/_run_short_testluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testluunit.* _tmp >> log.txt 2>> log.txt
+;;
+lu_silent)
+cp _internal/_run_silent_testluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testluunit.* _tmp >> log.txt 2>> log.txt
+;;
+trlinsolve)
+cp _internal/_run_testsstunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsstunit.* _tmp >> log.txt 2>> log.txt
+;;
+trlinsolve_short)
+cp _internal/_run_short_testsstunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsstunit.* _tmp >> log.txt 2>> log.txt
+;;
+trlinsolve_silent)
+cp _internal/_run_silent_testsstunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsstunit.* _tmp >> log.txt 2>> log.txt
+;;
+rcond)
+cp _internal/_run_testrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+rcond_short)
+cp _internal/_run_short_testrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+rcond_silent)
+cp _internal/_run_silent_testrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+leastsquares)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+leastsquares_short)
+exit 0
+;;
+leastsquares_silent)
+exit 0
+;;
+lsfit)
+cp _internal/_run_llstestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/llstestunit.* _tmp >> log.txt 2>> log.txt
+;;
+lsfit_short)
+cp _internal/_run_short_llstestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/llstestunit.* _tmp >> log.txt 2>> log.txt
+;;
+lsfit_silent)
+cp _internal/_run_silent_llstestunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/llstestunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline1d)
+cp _internal/_run_testsplineinterpolationunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsplineinterpolationunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline1d_short)
+cp _internal/_run_short_testsplineinterpolationunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsplineinterpolationunit.* _tmp >> log.txt 2>> log.txt
+;;
+spline1d_silent)
+cp _internal/_run_silent_testsplineinterpolationunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsplineinterpolationunit.* _tmp >> log.txt 2>> log.txt
+;;
+ratint)
+cp _internal/_run_testratinterpolation.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testratinterpolation.* _tmp >> log.txt 2>> log.txt
+;;
+ratint_short)
+cp _internal/_run_short_testratinterpolation.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testratinterpolation.* _tmp >> log.txt 2>> log.txt
+;;
+ratint_silent)
+cp _internal/_run_silent_testratinterpolation.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testratinterpolation.* _tmp >> log.txt 2>> log.txt
+;;
+ratinterpolation)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+ratinterpolation_short)
+exit 0
+;;
+ratinterpolation_silent)
+exit 0
+;;
+polint)
+cp _internal/_run_testpolintunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpolintunit.* _tmp >> log.txt 2>> log.txt
+;;
+polint_short)
+cp _internal/_run_short_testpolintunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpolintunit.* _tmp >> log.txt 2>> log.txt
+;;
+polint_silent)
+cp _internal/_run_silent_testpolintunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testpolintunit.* _tmp >> log.txt 2>> log.txt
+;;
+taskgen)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+taskgen_short)
+exit 0
+;;
+taskgen_silent)
+exit 0
+;;
+airyf)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+airyf_short)
+exit 0
+;;
+airyf_silent)
+exit 0
+;;
+bessel)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+bessel_short)
+exit 0
+;;
+bessel_silent)
+exit 0
+;;
+betaf)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+betaf_short)
+exit 0
+;;
+betaf_silent)
+exit 0
+;;
+dawson)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+dawson_short)
+exit 0
+;;
+dawson_silent)
+exit 0
+;;
+elliptic)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+elliptic_short)
+exit 0
+;;
+elliptic_silent)
+exit 0
+;;
+expintegrals)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+expintegrals_short)
+exit 0
+;;
+expintegrals_silent)
+exit 0
+;;
+fresnel)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+fresnel_short)
+exit 0
+;;
+fresnel_silent)
+exit 0
+;;
+jacobianelliptic)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+jacobianelliptic_short)
+exit 0
+;;
+jacobianelliptic_silent)
+exit 0
+;;
+psif)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+psif_short)
+exit 0
+;;
+psif_silent)
+exit 0
+;;
+trigintegrals)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+trigintegrals_short)
+exit 0
+;;
+trigintegrals_silent)
+exit 0
+;;
+chebyshev)
+cp _internal/_run_testchebyshevunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testchebyshevunit.* _tmp >> log.txt 2>> log.txt
+;;
+chebyshev_short)
+cp _internal/_run_short_testchebyshevunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testchebyshevunit.* _tmp >> log.txt 2>> log.txt
+;;
+chebyshev_silent)
+cp _internal/_run_silent_testchebyshevunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testchebyshevunit.* _tmp >> log.txt 2>> log.txt
+;;
+hermite)
+cp _internal/_run_testhermiteunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhermiteunit.* _tmp >> log.txt 2>> log.txt
+;;
+hermite_short)
+cp _internal/_run_short_testhermiteunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhermiteunit.* _tmp >> log.txt 2>> log.txt
+;;
+hermite_silent)
+cp _internal/_run_silent_testhermiteunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhermiteunit.* _tmp >> log.txt 2>> log.txt
+;;
+laguerre)
+cp _internal/_run_testlaguerreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlaguerreunit.* _tmp >> log.txt 2>> log.txt
+;;
+laguerre_short)
+cp _internal/_run_short_testlaguerreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlaguerreunit.* _tmp >> log.txt 2>> log.txt
+;;
+laguerre_silent)
+cp _internal/_run_silent_testlaguerreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlaguerreunit.* _tmp >> log.txt 2>> log.txt
+;;
+legendre)
+cp _internal/_run_testlegendreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlegendreunit.* _tmp >> log.txt 2>> log.txt
+;;
+legendre_short)
+cp _internal/_run_short_testlegendreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlegendreunit.* _tmp >> log.txt 2>> log.txt
+;;
+legendre_silent)
+cp _internal/_run_silent_testlegendreunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testlegendreunit.* _tmp >> log.txt 2>> log.txt
+;;
+odesolver)
+cp _internal/_run_testodesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testodesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+odesolver_short)
+cp _internal/_run_short_testodesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testodesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+odesolver_silent)
+cp _internal/_run_silent_testodesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testodesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+hbisinv)
+cp _internal/_run_testhevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+hbisinv_short)
+cp _internal/_run_short_testhevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+hbisinv_silent)
+cp _internal/_run_silent_testhevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+cblas)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+cblas_short)
+exit 0
+;;
+cblas_silent)
+exit 0
+;;
+creflections)
+cp _internal/_run_testcreflunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcreflunit.* _tmp >> log.txt 2>> log.txt
+;;
+creflections_short)
+cp _internal/_run_short_testcreflunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcreflunit.* _tmp >> log.txt 2>> log.txt
+;;
+creflections_silent)
+cp _internal/_run_silent_testcreflunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcreflunit.* _tmp >> log.txt 2>> log.txt
+;;
+hblas)
+cp _internal/_run_testhblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+hblas_short)
+cp _internal/_run_short_testhblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+hblas_silent)
+cp _internal/_run_silent_testhblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+htridiagonal)
+cp _internal/_run_testhtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+htridiagonal_short)
+cp _internal/_run_short_testhtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+htridiagonal_silent)
+cp _internal/_run_silent_testhtridiagonalunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhtridiagonalunit.* _tmp >> log.txt 2>> log.txt
+;;
+tdbisinv)
+cp _internal/_run_testtdevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+tdbisinv_short)
+cp _internal/_run_short_testtdevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+tdbisinv_silent)
+cp _internal/_run_silent_testtdevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testtdevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+hevd)
+cp _internal/_run_testhevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+hevd_short)
+cp _internal/_run_short_testhevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+hevd_silent)
+cp _internal/_run_silent_testhevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+nsevd)
+cp _internal/_run_testnsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testnsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+nsevd_short)
+cp _internal/_run_short_testnsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testnsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+nsevd_silent)
+cp _internal/_run_silent_testnsevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testnsevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+hsschur)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+hsschur_short)
+exit 0
+;;
+hsschur_silent)
+exit 0
+;;
+hessenberg)
+cp _internal/_run_testhsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhsunit.* _tmp >> log.txt 2>> log.txt
+;;
+hessenberg_short)
+cp _internal/_run_short_testhsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhsunit.* _tmp >> log.txt 2>> log.txt
+;;
+hessenberg_silent)
+cp _internal/_run_silent_testhsunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhsunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdgevd)
+cp _internal/_run_testspdgevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdgevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdgevd_short)
+cp _internal/_run_short_testspdgevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdgevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdgevd_silent)
+cp _internal/_run_silent_testspdgevdunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdgevdunit.* _tmp >> log.txt 2>> log.txt
+;;
+sbisinv)
+cp _internal/_run_testsevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+sbisinv_short)
+cp _internal/_run_short_testsevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+sbisinv_silent)
+cp _internal/_run_silent_testsevdbiunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testsevdbiunit.* _tmp >> log.txt 2>> log.txt
+;;
+cdet)
+cp _internal/_run_testcdetunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcdetunit.* _tmp >> log.txt 2>> log.txt
+;;
+cdet_short)
+cp _internal/_run_short_testcdetunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcdetunit.* _tmp >> log.txt 2>> log.txt
+;;
+cdet_silent)
+cp _internal/_run_silent_testcdetunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcdetunit.* _tmp >> log.txt 2>> log.txt
+;;
+clu)
+cp _internal/_run_testcluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcluunit.* _tmp >> log.txt 2>> log.txt
+;;
+clu_short)
+cp _internal/_run_short_testcluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcluunit.* _tmp >> log.txt 2>> log.txt
+;;
+clu_silent)
+cp _internal/_run_silent_testcluunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcluunit.* _tmp >> log.txt 2>> log.txt
+;;
+cinverse)
+cp _internal/_run_testcinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+cinverse_short)
+cp _internal/_run_short_testcinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+cinverse_silent)
+cp _internal/_run_silent_testcinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+ctrinverse)
+cp _internal/_run_testctrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testctrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+ctrinverse_short)
+cp _internal/_run_short_testctrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testctrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+ctrinverse_silent)
+cp _internal/_run_silent_testctrinverse.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testctrinverse.* _tmp >> log.txt 2>> log.txt
+;;
+cqr)
+cp _internal/_run_testcqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+cqr_short)
+cp _internal/_run_short_testcqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+cqr_silent)
+cp _internal/_run_silent_testcqrunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcqrunit.* _tmp >> log.txt 2>> log.txt
+;;
+crcond)
+cp _internal/_run_testcrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+crcond_short)
+cp _internal/_run_short_testcrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+crcond_silent)
+cp _internal/_run_silent_testcrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testcrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+ctrlinsolve)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+ctrlinsolve_short)
+exit 0
+;;
+ctrlinsolve_silent)
+exit 0
+;;
+det)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+det_short)
+exit 0
+;;
+det_silent)
+exit 0
+;;
+inv)
+cp _internal/_run_testinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+inv_short)
+cp _internal/_run_short_testinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+inv_silent)
+cp _internal/_run_silent_testinvunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvunit.* _tmp >> log.txt 2>> log.txt
+;;
+inverseupdate)
+cp _internal/_run_testinverseupdateunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinverseupdateunit.* _tmp >> log.txt 2>> log.txt
+;;
+inverseupdate_short)
+cp _internal/_run_short_testinverseupdateunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinverseupdateunit.* _tmp >> log.txt 2>> log.txt
+;;
+inverseupdate_silent)
+cp _internal/_run_silent_testinverseupdateunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinverseupdateunit.* _tmp >> log.txt 2>> log.txt
+;;
+schur)
+cp _internal/_run_testschurunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testschurunit.* _tmp >> log.txt 2>> log.txt
+;;
+schur_short)
+cp _internal/_run_short_testschurunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testschurunit.* _tmp >> log.txt 2>> log.txt
+;;
+schur_silent)
+cp _internal/_run_silent_testschurunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testschurunit.* _tmp >> log.txt 2>> log.txt
+;;
+hcholesky)
+cp _internal/_run_testhcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+hcholesky_short)
+cp _internal/_run_short_testhcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+hcholesky_silent)
+cp _internal/_run_silent_testhcholeskyunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testhcholeskyunit.* _tmp >> log.txt 2>> log.txt
+;;
+spddet)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+spddet_short)
+exit 0
+;;
+spddet_silent)
+exit 0
+;;
+sdet)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+sdet_short)
+exit 0
+;;
+sdet_silent)
+exit 0
+;;
+ldlt)
+cp _internal/_run_testldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+ldlt_short)
+cp _internal/_run_short_testldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+ldlt_silent)
+cp _internal/_run_silent_testldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+sinverse)
+cp _internal/_run_testinvldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+sinverse_short)
+cp _internal/_run_short_testinvldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+sinverse_silent)
+cp _internal/_run_silent_testinvldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testinvldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdrcond)
+cp _internal/_run_testspdrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdrcond_short)
+cp _internal/_run_short_testspdrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+spdrcond_silent)
+cp _internal/_run_silent_testspdrcondunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testspdrcondunit.* _tmp >> log.txt 2>> log.txt
+;;
+estnorm)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+estnorm_short)
+exit 0
+;;
+estnorm_silent)
+exit 0
+;;
+srcond)
+cp _internal/_run_testrcondldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+srcond_short)
+cp _internal/_run_short_testrcondldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+srcond_silent)
+cp _internal/_run_silent_testrcondldltunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testrcondldltunit.* _tmp >> log.txt 2>> log.txt
+;;
+ssolve)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+ssolve_short)
+exit 0
+;;
+ssolve_silent)
+exit 0
+;;
+matgen)
+cp _internal/_run_testmatgenunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmatgenunit.* _tmp >> log.txt 2>> log.txt
+;;
+matgen_short)
+cp _internal/_run_short_testmatgenunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmatgenunit.* _tmp >> log.txt 2>> log.txt
+;;
+matgen_silent)
+cp _internal/_run_silent_testmatgenunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testmatgenunit.* _tmp >> log.txt 2>> log.txt
+;;
+densesolver)
+cp _internal/_run_testdensesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testdensesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+densesolver_short)
+cp _internal/_run_short_testdensesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testdensesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+densesolver_silent)
+cp _internal/_run_silent_testdensesolverunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testdensesolverunit.* _tmp >> log.txt 2>> log.txt
+;;
+xblas)
+cp _internal/_run_testxblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testxblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+xblas_short)
+cp _internal/_run_short_testxblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testxblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+xblas_silent)
+cp _internal/_run_silent_testxblasunit.cpp _tmp/_test.cpp >> log.txt 2>> log.txt
+cp tests/testxblasunit.* _tmp >> log.txt 2>> log.txt
+;;
+csolve)
+echo No separate test file for this unit
+echo It is tested somewhere else
+exit 0
+;;
+csolve_short)
+exit 0
+;;
+csolve_silent)
+exit 0
+;;
+*)
+echo unknown unit
+exit 1
+;;
+esac
+case $1 in
+gcc)
+cd _tmp
+gcc -I. -L. -o _test *.cpp $3  -lalglib -lm -lstdc++ >> ../log.txt 2>> ../log.txt
+if [ $? -ne 0 ] ; then
+echo Error while compiling \(see ../log.txt for more info\)
+exit 1
+fi
+cd ..
+pushd _tmp > /dev/null
+./_test
+popd > /dev/null
+;;
+mingw)
+cd _tmp
+g++ -I. -o _test.exe $3 *.cpp  libalglib.a >> ../log.txt 2>> ../log.txt
+if [ $? -ne 0 ] ; then
+echo Error while compiling \(see ../log.txt for more info\)
+exit 1
+fi
+cd ..
+pushd _tmp > /dev/null
+./_test
+popd > /dev/null
+;;
+*)
+echo unknown compiler
+exit 1
+;;
+esac
+exit 0
