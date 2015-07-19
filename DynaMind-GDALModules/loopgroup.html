@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Loop Group &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>For Loop &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -280,10 +280,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#groups">Groups</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="">Loop Group</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#workflow-control">Workflow Control</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="">For Loop</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 </ul>
 </li>
 </ul>
@@ -443,7 +444,7 @@
       
           <li><a href="index.html">Standard Modules</a> &raquo;</li>
       
-    <li>Loop Group</li>
+    <li>For Loop</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -456,10 +457,9 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="loop-group">
-<h1>Loop Group<a class="headerlink" href="#loop-group" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>LoopGroup can be used to group modules
-and groups. Further it allows modules inside the group to be repeatedly executed and iteratively change data. The loop group itself does not manipulate any data.</p>
+  <div class="section" id="for-loop">
+<h1>For Loop<a class="headerlink" href="#for-loop" title="Permalink to this headline">¶</a></h1>
+<p>Can be used to group modules and groups. Further it allows modules inside the group to be repeatedly executed and iteratively change data. The loop group itself does not manipulate any data.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -498,6 +498,10 @@ The LoopGroup distinguishes between two modes, read and write.</p>
 <li>read mode: data are not iteratively processed and for the timestep t+1 the original data-stream is used.</li>
 <li>write mode: data processed by the group are used as input for the group at timestep t+1</li>
 </ul>
+</div>
+<div class="section" id="module-name">
+<h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
+<p><span class="target" id="index-0"></span>LoopGroup</p>
 </div>
 </div>
 
