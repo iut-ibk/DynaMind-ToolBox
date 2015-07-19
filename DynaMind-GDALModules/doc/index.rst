@@ -59,8 +59,8 @@ Geometry Processing
    gdaloffset
 
 
-Groups
-------
+Workflow Control
+----------------
 .. toctree::
    :titlesonly:
 
