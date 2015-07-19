@@ -52,6 +52,7 @@
 #include "gdalcalculatelength.h"
 #include "dm_calculatedistance.h"
 #include "dmloopgroup.h"
+#include "dmcontainergroup.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -82,4 +83,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALCalculateLength>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_CalculateDistance>());
 	registry->addNodeFactory(new DM::NodeFactory<DMLoopGroup>());
+	registry->addNodeFactory(new DM::NodeFactory<DMContainerGroup>());
 }
