@@ -1,6 +1,7 @@
 #include "gdallogattriubtes.h"
 #include "ogr_feature.h"
 #include <sstream>
+#include <fstream>
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALLogAttriubtes, Log Attributes , Data Import and Export)
 
@@ -11,7 +12,6 @@ GDALLogAttriubtes::GDALLogAttriubtes()
 	this->leadingViewName = "";
 	this->addParameter("leadingViewName", DM::STRING, &leadingViewName);
 
-
 	this->attributeNames.clear();
 	this->addParameter("attributeNames", DM::STRING_LIST, &attributeNames);
 
@@ -20,6 +20,9 @@ GDALLogAttriubtes::GDALLogAttriubtes()
 
 	this->excelFriendly = false;
 	this->addParameter("excelFriendly", DM::BOOL, &excelFriendly);
+
+	this->file_name = "";
+	this->addParameter("file_name", DM::FILENAME, &file_name);
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -58,6 +61,12 @@ void GDALLogAttriubtes::init()
 }
 void GDALLogAttriubtes::run()
 {
+	bool write_to_file = false;
+	std::ofstream outfile;
+	if (!this->file_name.empty()) {
+		write_to_file = true;
+		outfile.open(file_name, std::ios_base::app);
+	}
 	this->leadingView.resetReading();
 	OGRFeature * f;
 	while (f = this->leadingView.getNextFeature()) {
@@ -91,6 +100,8 @@ void GDALLogAttriubtes::run()
 		}
 		if (excelFriendly)
 			DM::Logger(DM::Error) << ss.str();
+		if (write_to_file)
+			outfile << ss.str() << "\n";
 	}
 }
 
