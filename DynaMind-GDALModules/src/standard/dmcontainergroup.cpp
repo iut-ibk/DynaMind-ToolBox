@@ -34,6 +34,7 @@ DM_DECLARE_CUSTOM_NODE_NAME(DMContainerGroup,Module Grouping, Workflow Control)
 	
 DMContainerGroup::DMContainerGroup()
 {
+	this->GDALModule = true;
 	this->addParameter("inStreams", DM::STRING_LIST, &inStreams);
 	this->addParameter("outStreams", DM::STRING_LIST, &outStreams);
 	this->addParameter("parameterConfig", DM::STRING_MAP, &parameterConfig);

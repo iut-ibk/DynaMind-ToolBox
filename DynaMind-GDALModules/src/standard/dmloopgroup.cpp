@@ -34,6 +34,7 @@ DM_DECLARE_CUSTOM_NODE_NAME(DMLoopGroup,For Loop, Workflow Control)
 
 DMLoopGroup::DMLoopGroup()
 {
+	this->GDALModule = true;
 	runs = 1;
 	currentRun = 0;
 
