@@ -65,7 +65,7 @@ void GDALLogAttriubtes::run()
 	std::ofstream outfile;
 	if (!this->file_name.empty()) {
 		write_to_file = true;
-		outfile.open(file_name, std::ios_base::app);
+		outfile.open(file_name.c_str(), std::ios_base::app);
 	}
 	this->leadingView.resetReading();
 	OGRFeature * f;
