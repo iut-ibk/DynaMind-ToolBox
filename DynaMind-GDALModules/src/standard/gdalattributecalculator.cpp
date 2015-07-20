@@ -379,7 +379,7 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 
 		if (is_first && link_chain[0].toStdString() != this->leading_view->getName()) {
 			if (global_features.find(link_chain[0].toStdString()) == global_features.end()) { // Set global Feature
-				DM::Logger(DM::Error) << "global variable " << link_chain[0].toStdString() << " " << this->leading_view->getName();
+				DM::Logger(DM::Debug) << "global variable " << link_chain[0].toStdString() << " " << this->leading_view->getName();
 				v->resetReading();
 				while (feat = v->getNextFeature()) { // Assume first feature is the right one
 					DM::Logger(DM::Debug) << "set variable";
