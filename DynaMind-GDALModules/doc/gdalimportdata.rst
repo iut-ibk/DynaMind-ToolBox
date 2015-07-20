@@ -22,9 +22,7 @@ Parameter
 +---------------------+------------------------+-----------------------------------------------------------------------+
 |append               | BOOL                   | true if append data to existing stream and creates additional inport  |
 +---------------------+------------------------+-----------------------------------------------------------------------+
-|epsg_to              | INT                    | epsg code used internally in the simulation                           |
-+---------------------+------------------------+-----------------------------------------------------------------------+
-|epsg_from            | INT                    | epsg code of the source                                               |
+|epsg_from            | INT                    | epsg code of the source; if set to -1 module attempts to autodetect   |
 +---------------------+------------------------+-----------------------------------------------------------------------+
 
 Module name

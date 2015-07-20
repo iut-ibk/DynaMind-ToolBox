@@ -308,6 +308,11 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 
 	OGRFeatureDefn * def = lyr->GetLayerDefn();
 
+	if (this->epsg_from == -1) {
+		this->epsg_from = lyr->GetSpatialRef()->GetEPSGGeogCS();
+		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << this->epsg_from;
+	}
+
 	int dm_geometry = DM::GDALUtilities::OGRtoDMGeometry(def);
 	translator.clear();
 	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, dm_geometry, DM::WRITE);
