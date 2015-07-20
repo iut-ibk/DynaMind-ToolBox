@@ -261,6 +261,11 @@ void Module::setIsGDALModule(bool b)
 	this->GDALModule = b;
 }
 
+Simulation *Module::getSimulation()
+{
+	return this->sim;
+}
+
 bool Module::isGdalModule()
 {
 	return this->GDALModule;

@@ -377,6 +377,9 @@ protected:
 	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;
 
+	/** @brief Returns simulation */
+	DM::Simulation *getSimulation();
+
 private:
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */
 	void setOwner(Module* owner);
