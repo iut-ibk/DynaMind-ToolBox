@@ -1,7 +1,8 @@
 language: cpp
 compiler:
   - gcc
-  - clang
+  
+
 # Change this to your needs
 before_install:
  - sudo apt-get update -qq
