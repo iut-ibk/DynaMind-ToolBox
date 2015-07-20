@@ -1,6 +1,7 @@
 #include "gdalimportdata.h"
 #include "dmgdalsystem.h"
 #include "ogr_geometry.h"
+#include "dmsimulation.h"
 
 #include <algorithm>
 #include <string>
@@ -29,9 +30,6 @@ GDALImportData::GDALImportData()
 
 	append = false;
 	this->addParameter("append", DM::BOOL, &append);
-
-	this->epsg_to = 0;
-	this->addParameter("epsg_to", DM::INT, &epsg_to);
 
 	this->epsg_from = -1;
 	this->addParameter("epsg_from", DM::INT, &epsg_from);
@@ -153,6 +151,7 @@ void GDALImportData::run()
 		return;
 	}
 
+
 	OGRFeature *poFeature;
 	OGRMultiPolygon spatialFilter;
 	vc->setCurrentGDALSystem(city);
@@ -165,8 +164,8 @@ void GDALImportData::run()
 		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << epsg_from_internal;
 	}
 
-	OGRCoordinateTransformation* forward_trans = this->getTrafo(epsg_from_internal, this->epsg_to);
-	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->epsg_to, epsg_from_internal);
+	OGRCoordinateTransformation* forward_trans = this->getTrafo(epsg_from_internal, this->getSimulation()->getSimulationConfig().getCoorindateSystem());
+	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->getSimulation()->getSimulationConfig().getCoorindateSystem(), epsg_from_internal);
 
 	if (!forward_trans || !backwards_trans) {
 		DM::Logger(DM::Warning) << "Unknown Transformation";

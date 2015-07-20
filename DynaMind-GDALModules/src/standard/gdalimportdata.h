@@ -57,7 +57,6 @@ private:
 
 	bool checkIsFlat(int ogrFlat);
 
-	int epsg_to;
 	int epsg_from; //Needed to set spatial filter
 
 
