@@ -1,8 +1,8 @@
-================
-Calculate Length
-================
+========================
+Calculate Feature Length
+========================
 
-:index:`GDALCalculateLength <GDALModules; GDALCalculateLength | Calculate length>` Calculates the length of and edge or linestring.
+Calculates the length of and edge or linestring.
 
 Parameter
 ---------
@@ -26,6 +26,10 @@ Data-stream
 |                    | length                    | DOUBLE           | write |                                          |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`GDALCalculateLength <GDALModules; GDALCalculateLength | Calculate length>`
 
 Sample Code for Python Simulation
 ---------------------------------

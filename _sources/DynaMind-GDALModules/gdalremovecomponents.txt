@@ -2,7 +2,7 @@
 Remove Component
 ================
 
-:index:`GDALRemoveComponets <GDALModules; GDALRemoveComponets | Remove components>` deletes all components within the defined view. To delete specific components please set a module filter.
+Deletes all components within the defined view. To delete specific components please set a module filter.
 
 Parameter
 ---------
@@ -23,6 +23,10 @@ Data-stream
 | blockName           |                          | any              | write | removes component                        |
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`GDALRemoveComponets <GDALModules; GDALRemoveComponets | Remove components>`
 
 Sample Code for Python Simulation
 ---------------------------------

@@ -2,7 +2,7 @@
 Strahler Ordering
 =================
 
-:index:`DM_Strahler <GDALModules; DM_Strahler | Strahler ordering>` calculates the `Strahler order <https://en.wikipedia.org/wiki/Strahler_number>`_ for each edge in a directed graph. It is recommended to direct the graph with :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>`.
+Calculates the `Strahler order <https://en.wikipedia.org/wiki/Strahler_number>`_ for each edge in a directed graph. It is recommended to direct the graph with :doc:`DM_DirectGraph </DynaMind-GDALModules/dm_direct_graph>`.
 
 Parameter
 ---------
@@ -31,3 +31,7 @@ Data-stream
 |                    | strahler_order            | INT              | write | strahler order                           |
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`DM_Strahler <GDALModules; DM_Strahler | Strahler ordering>`

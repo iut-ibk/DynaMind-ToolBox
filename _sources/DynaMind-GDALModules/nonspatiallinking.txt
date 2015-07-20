@@ -1,8 +1,8 @@
-==============
-Link Data Sets
-==============
+====================
+Link with Identifier
+====================
 
-:index:`NonSpatialLinking <GDALModules; GDALSpatialLinking | Spatially link data sets>`  links data using a identifier.
+Links data using a identifier.
 Data from the leading_view with the same leading_attribute as in the join_view join_attribute are linked together.
 If the parameter full_join is activated all attributes are copied to form the leading to the join view.
 
@@ -51,6 +51,8 @@ Data-stream
 +--------------------+---------------------------+------------------+-------+------------------------------------------+
 
 
+Module Name
+-----------
 
-
+:index:`NonSpatialLinking <GDALModules; GDALSpatialLinking | Spatially link data sets>`
 

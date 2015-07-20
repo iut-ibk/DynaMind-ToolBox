@@ -1,8 +1,7 @@
 ===================
 Link Adjacent Faces
 ===================
-
-:index:`GDALCreateNeighbourhoodTable <GDALModules; GDALCreateNeighbourhoodTable | Link Adjacent Faces>` creates a new
+Creates a new
 table that links a faces to all its adjacent faces.
 
 Parameter
@@ -32,6 +31,12 @@ Data-stream
 +---------------------+--------------------------+-----------------------------+-------+--------------------------------------------+
 |                     | view_name_id2            | INT                         | write |                                            |
 +---------------------+--------------------------+-----------------------------+-------+--------------------------------------------+
+
+Module Name
+-----------
+
+:index:`GDALCreateNeighbourhoodTable <GDALModules; GDALCreateNeighbourhoodTable | Link Adjacent Faces>`
+
 
 Sample Code for Python Simulation
 ---------------------------------

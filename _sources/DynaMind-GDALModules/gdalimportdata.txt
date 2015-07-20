@@ -2,7 +2,7 @@
 Import GIS Data
 ===============
 
-:index:`GDALImportData <GDALModules; GDALImportData | Import data>` imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
+Imports GIS data into DynaMind from common GIS sources supported by the `GDAL/OGR <http://www.gdal.org/ogr_formats.html>`_.
 
 Parameter
 ---------
@@ -27,6 +27,10 @@ Parameter
 |epsg_from            | INT                    | epsg code of the source                                               |
 +---------------------+------------------------+-----------------------------------------------------------------------+
 
+Module name
+-----------
+
+:index:`GDALImportData <GDALModules; GDALImportData | Import GIS Data>`
 
 Detailed Description
 --------------------

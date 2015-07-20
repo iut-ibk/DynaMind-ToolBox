@@ -2,7 +2,7 @@
 Subdivide Parcels
 =================
 
-:index:`GDALParcelSplit <GDALModules; GDALParcelSplit | Subdivide parcel>` splits a face into n parts with a defined width.
+Splits a face into n parts with a defined width.
 
 
 Parameter
@@ -35,6 +35,10 @@ Data-stream
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
 
+Module Name
+-----------
+
+:index:`GDALParcelSplit <GDALModules; GDALParcelSplit | Subdivide parcel>`
 
 
 Detailed Description

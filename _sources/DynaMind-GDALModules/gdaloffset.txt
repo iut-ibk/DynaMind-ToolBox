@@ -2,7 +2,7 @@
 Offset Faces
 ============
 
-:index:`GDALOffset <GDALModules; GDALOffset | Offset faces>` Inner offsets faces.
+Inner offsets faces.
 
 Parameter
 ---------
@@ -33,4 +33,7 @@ Data-stream
 +---------------------+--------------------------+------------------+-------+------------------------------------------+
 
 
+Module Name
+-----------
 
+:index:`GDALOffset <GDALModules; GDALOffset | Offset faces>`

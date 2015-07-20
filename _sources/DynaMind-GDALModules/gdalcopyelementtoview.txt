@@ -2,7 +2,7 @@
 Copy Features
 =============
 
-:index:`GDALCopyElementToView <GDALModules; GDALCopyElementToView | Copy features>` copies elements from one view to another.
+Copies elements from one view to another.
 Per default only the geometry is copied. To copy the attributes set ``copy_attributes`` to true. To add a reference to the original set the ``add_link`` parameter to true.
 
 Parameter
@@ -40,6 +40,10 @@ Data-stream
 |                     | all                      | any                         | write | if copy_attributes is set true           |
 +---------------------+--------------------------+-----------------------------+-------+------------------------------------------+
 
+Module Name
+-----------
+
+:index:`GDALCopyElementToView <GDALModules; GDALCopyElementToView | Copy features>`
 
 Sample Code for Python Simulation
 ---------------------------------
