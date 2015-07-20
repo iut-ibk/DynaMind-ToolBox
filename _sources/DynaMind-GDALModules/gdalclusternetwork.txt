@@ -2,7 +2,7 @@
 Identify Clusters of Connected Lines
 ====================================
 
-Identifies clusters
+:index:`GDALClusterNetwork <GDALModules; GDALClusterNetwork | Identify Clusters of Connected Lines>` Identifies clusters
 of connected lines in a view. This is useful to for data cleaning to see if a network is fully connected.
 
 Parameter
@@ -31,10 +31,7 @@ Data-stream
 |                    | cluster_id                | INT              | write |                                             |
 +--------------------+---------------------------+------------------+-------+---------------------------------------------+
 
-Model Name
-----------
 
-:index:`GDALClusterNetwork <GDALModules; GDALClusterNetwork | Identify Clusters of Connected Lines>`
 
 Sample Code for Python Simulation
 ---------------------------------

@@ -1,6 +1,6 @@
-================
-Standard Modules
-================
+=======================
+Standard Modules (GDAL)
+=======================
 
 Overview
 --------
@@ -8,6 +8,7 @@ Overview
 .. toctree::
    :titlesonly:
 
+   overview
    release_notes
 
 
@@ -57,31 +58,28 @@ Geometry Processing
    gdalcalculatecentroids
    gdalerase
    gdaloffset
-
-
-Workflow Control
-----------------
-.. toctree::
-   :titlesonly:
-
-   loopgroup
-
-============
-City Modules
-============
-
-Urban Form
-----------
-.. toctree::
-   :titlesonly:
-
    gdalparceling
    gdalparcelsplit
    gdalcreatebuilding
 
 
-Network Generation
-------------------
+
+
+Groups
+------
+.. toctree::
+   :titlesonly:
+
+   loopgroup
+
+
+=======================
+Infrastructure Networks
+=======================
+
+
+Data Preparation
+----------------
 
 .. toctree::
    :titlesonly:
@@ -98,16 +96,13 @@ Network Analysis
    :titlesonly:
 
    dm_strahler
-   segmentation
-   dualmapping
 
-Performance Assessment
-----------------------
+External Programs
+-----------------
 
 .. toctree::
    :titlesonly:
 
    gdaldmswmm
-   dm_importswmm
 
 

@@ -33,18 +33,14 @@ Geometry Processing
 - :doc:`GDALCreateCentroids </DynaMind-GDALModules/gdalcalculatecentroids>` Create centroids
 - :doc:`GDALErase </DynaMind-GDALModules/gdalerase>` Subtract features
 - :doc:`GDALOffset </DynaMind-GDALModules/gdaloffset>` Offset faces
+- :doc:`GDALParceling </DynaMind-GDALModules/gdalparceling>` Parcel faces
+- :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
+- :doc:`GDALCreateBuilding </DynaMind-GDALModules/gdalcreatebuilding>` Generate simple buildings
 
 Groups
 ------
 
 - :doc:`LoopGroup </DynaMind-GDALModules/loopgroup>` Repeatedly execute modules in the group to iteratively manipulate data
-
-Urban From
-----------
-
-- :doc:`GDALParceling </DynaMind-GDALModules/gdalparceling>` Parcel faces
-- :doc:`GDALParcelSplit </DynaMind-GDALModules/gdalparcelsplit>` Subdivide parcel
-- :doc:`GDALCreateBuilding </DynaMind-GDALModules/gdalcreatebuilding>` Generate simple buildings
 
 
 Infrastructure Networks
@@ -63,11 +59,8 @@ Data Preparation
 Network Analysis
 ----------------
 - :doc:`DM_Strahler </DynaMind-GDALModules/dm_strahler>` Strahler ordering
-- :doc:`Segmentation </DynaMind-GDALModules/segmentation>` Create segments of equal attributes
-- :doc:`Dual Mapping </DynaMind-GDALModules/dualmapping>` Export dual mapped edge list
 
 SWMM
 ----
 
 - :doc:`GDALDMSWMM </DynaMind-GDALModules/gdaldmswmm>` SWMM integration
-- :doc:`DM_ImportSWMM </DynaMind-GDALModules/dm_importswmm>` Import SWMM File

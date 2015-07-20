@@ -3,7 +3,7 @@
 Link Nearest Neighbour
 ======================
 
-Joins the closest link view component to a leading view component.
+:index:`GDALJoinNearestNeighbour <GDALModules; GDALJoinNearestNeighbour | Link Nearest Neighbour>` joins the closest link view component to a leading view component.
 
 Parameter
 ---------
@@ -32,12 +32,6 @@ Data-stream
 +---------------------+--------------------------+-----------------------------+-------+--------------------------------------------+
 |   linkViewName      |                          | NODE                        | read  |                                            |
 +---------------------+--------------------------+-----------------------------+-------+--------------------------------------------+
-
-Module Name
------------
-
-:index:`GDALJoinNearestNeighbour <GDALModules; GDALJoinNearestNeighbour | Link Nearest Neighbour>`
-
 
 Sample Code for Python Simulation
 ---------------------------------
