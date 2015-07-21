@@ -59,6 +59,11 @@ void GDALLogAttriubtes::init()
 	data_stream.push_back(&leadingView);
 	this->registerViewContainers(data_stream);
 }
+
+string GDALLogAttriubtes::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdallogattributes.html";
+}
 void GDALLogAttriubtes::run()
 {
 	bool write_to_file = false;

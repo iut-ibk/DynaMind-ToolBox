@@ -37,6 +37,7 @@ public:
 	GDALLogAttriubtes();
 	void run();
 	void init();
+	std::string getHelpUrl();
 
 private:
 	std::string leadingViewName;
