@@ -21,6 +21,7 @@ Data Import and Export
    gdalhotstarter
    gdalimportdata
    gdalpublishresults
+   gdallogattributes
 
 
 

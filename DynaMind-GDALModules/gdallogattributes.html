@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Load Simulation Database &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
+  <title>Log Attributes &mdash; DynaMind-ToolBox 0.8 dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.8 dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules" href="index.html"/>
-        <link rel="next" title="Import GIS Data" href="gdalimportdata.html"/>
-        <link rel="prev" title="Release Notes" href="release_notes.html"/> 
+        <link rel="next" title="Spatial Linking" href="gdalspatiallinking.html"/>
+        <link rel="prev" title="Export GIS Data" href="gdalpublishresults.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -162,10 +162,10 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#data-import-and-export">Data Import and Export</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="">Load Simulation Database</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-name">Module name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalhotstarter.html">Load Simulation Database</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalhotstarter.html#module-name">Module name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalhotstarter.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalhotstarter.html#detailed-description">Detailed Description</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a><ul>
@@ -182,10 +182,10 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalpublishresults.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gdallogattributes.html">Log Attributes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gdallogattributes.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gdallogattributes.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gdallogattributes.html#module-name">Module Name</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Log Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 </ul>
 </li>
 </ul>
@@ -450,11 +450,11 @@
       
           <li><a href="index.html">Standard Modules</a> &raquo;</li>
       
-    <li>Load Simulation Database</li>
+    <li>Log Attributes</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalhotstarter.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/gdallogattributes.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -463,22 +463,16 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="load-simulation-database">
-<h1>Load Simulation Database<a class="headerlink" href="#load-simulation-database" title="Permalink to this headline">¶</a></h1>
-<p>This module is used to hot start a simulation with a previous database.
-This is particularly useful for bigger simulation where the data preparation and linking of data takes a significant amount of time,
-but once established, can be used as basis for many simulations.</p>
-<div class="section" id="module-name">
-<h2>Module name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
-<p><span class="target" id="index-0"></span>GDALHotStarter</p>
-</div>
+  <div class="section" id="log-attributes">
+<h1>Log Attributes<a class="headerlink" href="#log-attributes" title="Permalink to this headline">¶</a></h1>
+<p>Write attributes to logger or into file.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="15%" />
-<col width="19%" />
-<col width="66%" />
+<col width="17%" />
+<col width="21%" />
+<col width="63%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -487,18 +481,66 @@ but once established, can be used as basis for many simulations.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>hot_start_database</td>
+<tr class="row-even"><td>leadingViewName</td>
 <td>STRING</td>
-<td>location of the hot start database file (usually a file from a previous simulation)</td>
+<td>view that should be logged</td>
+</tr>
+<tr class="row-odd"><td>attributeNames</td>
+<td>STRING_LIST</td>
+<td>list of attributes that should be logged</td>
+</tr>
+<tr class="row-even"><td>printFeatureID</td>
+<td>BOOL</td>
+<td>print feature id (default true)</td>
+</tr>
+<tr class="row-odd"><td>excelFriendly</td>
+<td>BOOL</td>
+<td>print excel friendly (default false)</td>
+</tr>
+<tr class="row-even"><td>file_name</td>
+<td>STRING</td>
+<td>If set log is written into file</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="detailed-description">
-<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>The simulation database from a previous simulation can be used to &#8220;hot start&#8221; a new simulation. This GDALHotStarter may
-be the first module in a simulation since it replaces the current simulation file with the <em>hot_start_database</em> defined in the
-parameter settings. The file is copied and therefore the original file stays untouched.</p>
+<div class="section" id="data-stream">
+<h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="23%" />
+<col width="16%" />
+<col width="6%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">View</th>
+<th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Access</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>leadingViewName</td>
+<td>&nbsp;</td>
+<td>COMPONENT</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>attributeNames</td>
+<td>&nbsp;</td>
+<td>ANY</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-name">
+<h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
+<p><span class="target" id="index-0"></span>GDALLogAttriubtes</p>
 </div>
 </div>
 
@@ -508,10 +550,10 @@ parameter settings. The file is copied and therefore the original file stays unt
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalimportdata.html" class="btn btn-neutral float-right" title="Import GIS Data" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalspatiallinking.html" class="btn btn-neutral float-right" title="Spatial Linking" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="release_notes.html" class="btn btn-neutral" title="Release Notes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="gdalpublishresults.html" class="btn btn-neutral" title="Export GIS Data" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
