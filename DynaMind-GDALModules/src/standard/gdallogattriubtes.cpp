@@ -105,8 +105,10 @@ void GDALLogAttriubtes::run()
 		}
 		if (excelFriendly)
 			DM::Logger(DM::Error) << ss.str();
-		if (write_to_file)
+		if (write_to_file) {
+			DM::Logger(DM::Error) << "Write to " << this->file_name;
 			outfile << ss.str() << "\n";
+		}
 	}
 }
 
