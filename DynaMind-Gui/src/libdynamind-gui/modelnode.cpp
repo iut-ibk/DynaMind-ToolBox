@@ -225,6 +225,8 @@ double ModelNode::paint_header(QPainter * painter, double & pos) {
 	//QPen rectPen(QColor(254,221,86), 1.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	float lineWidth = 1.0f;
 	QColor fillcolor;
+
+
 	switch(module->getStatus())
 	{
 	case DM::MOD_UNTOUCHED:			fillcolor = COLOR_MOD_UNTOUCHED;			break;
@@ -236,6 +238,9 @@ double ModelNode::paint_header(QPainter * painter, double & pos) {
 	case DM::MOD_CHECK_OK:			fillcolor = COLOR_MOD_CHECK_OK;				break;
 	case DM::MOD_CHECK_ERROR:		fillcolor = COLOR_MOD_CHECK_ERROR;			break;
 	}
+
+	if (module->isSuccessorMode() && module->getStatus() == DM::MOD_CHECK_OK)
+		fillcolor = COLOR_MOD_SPILTTER;
 
 	if(isSelected() || hovered)
 	{
