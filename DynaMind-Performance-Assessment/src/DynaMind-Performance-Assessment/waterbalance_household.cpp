@@ -35,7 +35,7 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
+	//parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
 
 	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("non_potable_demand", DM::Attribute::DOUBLE, DM::WRITE);
@@ -43,7 +43,7 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	parcels.addAttribute("run_off_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	parcels.addAttribute("non_potable_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
-	parcels.addAttribute("building_id", DM::Attribute::INT, DM::READ);
+	//parcels.addAttribute("building_id", DM::Attribute::INT, DM::READ);
 	buildings = DM::ViewContainer("building", DM::COMPONENT, DM::READ);
 	buildings.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
 	buildings.addAttribute("persons", DM::Attribute::INT, DM::READ);
@@ -76,6 +76,7 @@ void WaterBalanceHouseHold::run()
 	while(p = this->parcels.getNextFeature()) {
 		id++;
 		double roofarea = 0;
+
 		double persons = 0;
 		double parcel_area = p->GetFieldAsDouble("area");
 		std::string income;
@@ -90,6 +91,7 @@ void WaterBalanceHouseHold::run()
 		OGRFeature * b;
 		while (b = buildings.getNextFeature()) {
 			roofarea+=b->GetFieldAsDouble("area");
+			persons+=b->GetFieldAsDouble("persons");
 		}
 		DM::Logger(DM::Debug) << "Connected Roof Area " << roofarea;
 
