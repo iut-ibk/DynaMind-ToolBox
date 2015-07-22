@@ -22,6 +22,7 @@ Data Import and Export
    gdalimportdata
    gdalpublishresults
    gdallogattributes
+   dm_exportsimulationdb
 
 
 

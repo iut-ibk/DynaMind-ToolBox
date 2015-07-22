@@ -53,6 +53,7 @@
 #include "dm_calculatedistance.h"
 #include "dmloopgroup.h"
 #include "dmcontainergroup.h"
+#include "dm_exportsimulationdb.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -84,4 +85,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<DM_CalculateDistance>());
 	registry->addNodeFactory(new DM::NodeFactory<DMLoopGroup>());
 	registry->addNodeFactory(new DM::NodeFactory<DMContainerGroup>());
+	registry->addNodeFactory(new DM::NodeFactory<DM_ExportSimulationDB>());
 }
