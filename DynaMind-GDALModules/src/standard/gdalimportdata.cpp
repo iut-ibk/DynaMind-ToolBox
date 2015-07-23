@@ -91,8 +91,13 @@ void GDALImportData::init()
 
 	vc = this->initShapefile();
 
-	if (!vc)
+	if (!vc) {
+		if (poDS) {
+			OGRDataSource::DestroyDataSource(poDS);
+			poDS = 0;
+		}
 		return;
+	}
 
 	std::vector<DM::ViewContainer> views;
 	views.push_back((*vc));
@@ -117,6 +122,10 @@ void GDALImportData::init()
 		filterView = 0;
 	}
 	this->addGDALData("city", views);
+	if (poDS) {
+		OGRDataSource::DestroyDataSource(poDS);
+		poDS = 0;
+	}
 }
 
 GDALImportData::~GDALImportData()
@@ -288,6 +297,10 @@ void GDALImportData::run()
 	vc->syncAlteredFeatures();
 	if (filterView)
 		filterView->syncReadFeatures();
+	if (poDS) {
+		OGRDataSource::DestroyDataSource(poDS);
+		poDS = 0;
+	}
 }
 
 
