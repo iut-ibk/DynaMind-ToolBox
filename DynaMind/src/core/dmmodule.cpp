@@ -577,7 +577,7 @@ void Module::setSimulation(Simulation *sim)
 
 void Module::setSuccessorMode(bool value)
 {
-	Logger(Standard) << "changed successor mode state of module '"
+	Logger(Debug) << "changed successor mode state of module '"
 		<< getClassName() << "' to " << (value?"ON":"OFF");
 	this->successorMode = value;
 }
