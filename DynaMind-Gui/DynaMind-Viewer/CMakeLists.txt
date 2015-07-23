@@ -55,7 +55,7 @@ IF(QGL_FROM_SOURCE)
     ELSE()
         ExternalProject_Add(QGLViewer
             DOWNLOAD_COMMAND "" # skip download
-            CONFIGURE_COMMAND qmake ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
+            CONFIGURE_COMMAND qmake -qt=${QT_MAJOR_VERSION} ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
             INSTALL_COMMAND "" # skip installation
             BUILD_COMMAND make
             BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
