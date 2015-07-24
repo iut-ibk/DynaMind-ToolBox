@@ -39,21 +39,28 @@ GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 		true);
 	ui->setupUi(this);
 	QSettings settings;
+	QString doc_rul = settings.value("doc_url").toString();
+	if (doc_rul.isEmpty())
+		doc_rul = "file://" +  QCoreApplication::applicationDirPath() + "/doc";
 	this->url_view_not_avaiable = QUrl(settings.value("doc_url").toString() + "/index.html");
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
 	QSettings settings;
-	this->currentUrl = settings.value("doc_url").toString();
+	currentUrl = settings.value("doc_url").toString();
+	if (currentUrl.isEmpty())
+		currentUrl = "file://" + QCoreApplication::applicationDirPath() + "/doc";
+
 	if (!m){
 		ui->webView->load(settings.value("doc_url").toString() + "/index.html");
 		return;
 	}
 	if (!m->getHelpUrl().empty()) {
-		this->currentUrl = QUrl(settings.value("doc_url").toString() + "/" +QString::fromStdString(m->getHelpUrl()));
+		this->currentUrl = this->currentUrl.toString() + "/" +QString::fromStdString(m->getHelpUrl());
+		DM::Logger(DM::Error) << this->currentUrl.toString().toStdString();
 		ui->webView->load(this->currentUrl);
 		return;
 	}
-	ui->webView->load(settings.value("doc_url").toString() + "/index.html");
+	ui->webView->load(currentUrl.toString() + "/index.html");
 }
 
 GUIHelpViewer::~GUIHelpViewer()
@@ -64,6 +71,8 @@ GUIHelpViewer::~GUIHelpViewer()
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
 	QSettings settings;
-	this->currentUrl = settings.value("doc_url").toString() + "/index.html";
+	currentUrl = settings.value("doc_url").toString();
+	if (currentUrl.isEmpty())
+		currentUrl = "file://" + QCoreApplication::applicationDirPath() + "/doc/index.html";
 	ui->webView->load(this->currentUrl);
 }
