@@ -59,7 +59,7 @@ private:
 
 	std::string sampler(std::vector<std::string> & names, std::vector<double> & devec);
 
-	void fill_income_cdf(int id, std::string filtername, DM::ViewContainer & container,
+	void fill_cdf(int id, std::string filtername, DM::ViewContainer & container,
 						 std::vector<std::string> & names, std::vector<double> &return_vec);
 };
 

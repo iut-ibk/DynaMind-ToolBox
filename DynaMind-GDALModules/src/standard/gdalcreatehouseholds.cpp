@@ -83,11 +83,11 @@ void GDALCreateHouseholds::run()
 
 	district.resetReading();
 
-	OGRFeature * d = 0;
 	building.createIndex("district_id");
 	hh_income.createIndex("district_id");
 	education.createIndex("district_id");
 
+	OGRFeature * d = 0;
 	while (d = district.getNextFeature()) {
 		int d_id = d->GetFID();
 		int households = d->GetFieldAsInteger("hh");
@@ -96,8 +96,8 @@ void GDALCreateHouseholds::run()
 		filter << "district_id = " << d_id;
 		building.setAttributeFilter(filter.str());
 
-		fill_income_cdf(d->GetFID(), "district_id" ,education, this->education_names, this->education_v);
-		fill_income_cdf(d->GetFID(), "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
+		fill_cdf(d->GetFID(), "district_id" ,education, this->education_names, this->education_v);
+		fill_cdf(d->GetFID(), "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
 
 
 		OGRFeature * b = 0;
@@ -148,7 +148,7 @@ std::string GDALCreateHouseholds::sampler(std::vector<std::string> & names, std:
 	return names[l];
 }
 
-void GDALCreateHouseholds::fill_income_cdf(int id, std::string filtername, DM::ViewContainer & container,
+void GDALCreateHouseholds::fill_cdf(int id, std::string filtername, DM::ViewContainer & container,
 										   std::vector<std::string> & names, std::vector<double> &return_vec)
 {
 	container.resetReading();
