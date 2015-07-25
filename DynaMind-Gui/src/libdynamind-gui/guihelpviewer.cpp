@@ -58,7 +58,6 @@ void GUIHelpViewer::showHelpForModule(DM::Module* m) {
 	if (!m->getHelpUrl().empty()) {
 		this->currentUrl =getBaseUrl() + "/" +QString::fromStdString(m->getHelpUrl());
 		ui->webView->load(this->currentUrl);
-		DM::Logger(DM::Standard) << this->currentUrl.toString();
 		return;
 	}
 	ui->webView->load(getBaseUrl() + "/index.html");
