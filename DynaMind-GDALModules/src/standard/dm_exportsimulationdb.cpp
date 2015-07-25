@@ -37,7 +37,7 @@ void DM_ExportSimulationDB::run()
 	}
 	DM::Logger(DM::Debug) << interal_counter;
 
-	if (interal_counter % this->steps != 0 && interal_counter != -1) {
+	if ( (interal_counter - 1) % this->steps != 0 && interal_counter != -1 ) {
 		return;
 	}
 
