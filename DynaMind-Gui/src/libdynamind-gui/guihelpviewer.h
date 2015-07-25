@@ -43,11 +43,12 @@ public:
 	explicit GUIHelpViewer(QWidget *parent = 0);
 	~GUIHelpViewer();
 
+    void getBaseUrl(QSettings settings);
 private:
 	Ui::GUIHelpViewer *ui;
 	QUrl currentUrl;
 	QUrl url_view_not_avaiable;
-
+	QString getBaseUrl();
 public slots:
 	void showHelpForModule(DM::Module* m);
 	void on_commandBackToOvwerView_clicked();

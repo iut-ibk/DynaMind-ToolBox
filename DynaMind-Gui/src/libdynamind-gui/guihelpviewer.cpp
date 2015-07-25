@@ -31,6 +31,16 @@
 
 #include <sstream>
 #include <dmlogger.h>
+QString GUIHelpViewer::getBaseUrl()
+{
+	QSettings settings;
+	QString doc_rul = settings.value("doc_url").toString();
+	if (!doc_rul.isEmpty())
+		return doc_rul.replace(" ", "%20");
+
+	return "file:///" +  QCoreApplication::applicationDirPath().replace(" ", "%20") + "/doc";
+}
+
 GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::GUIHelpViewer)
@@ -38,29 +48,20 @@ GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
 		true);
 	ui->setupUi(this);
-	QSettings settings;
-	QString doc_rul = settings.value("doc_url").toString();
-	if (doc_rul.isEmpty())
-		doc_rul = "file://" +  QCoreApplication::applicationDirPath() + "/doc";
-	this->url_view_not_avaiable = QUrl(settings.value("doc_url").toString() + "/index.html");
+	this->url_view_not_avaiable = QUrl(getBaseUrl() + "/index.html");
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
-	QSettings settings;
-	currentUrl = settings.value("doc_url").toString();
-	if (currentUrl.isEmpty())
-		currentUrl = "file://" + QCoreApplication::applicationDirPath() + "/doc";
-
 	if (!m){
-		ui->webView->load(settings.value("doc_url").toString() + "/index.html");
+		ui->webView->load(getBaseUrl() + "/index.html");
 		return;
 	}
 	if (!m->getHelpUrl().empty()) {
-		this->currentUrl = this->currentUrl.toString() + "/" +QString::fromStdString(m->getHelpUrl());
-		DM::Logger(DM::Error) << this->currentUrl.toString().toStdString();
+		this->currentUrl =getBaseUrl() + "/" +QString::fromStdString(m->getHelpUrl());
 		ui->webView->load(this->currentUrl);
+		DM::Logger(DM::Standard) << this->currentUrl.toString();
 		return;
 	}
-	ui->webView->load(currentUrl.toString() + "/index.html");
+	ui->webView->load(getBaseUrl() + "/index.html");
 }
 
 GUIHelpViewer::~GUIHelpViewer()
@@ -70,9 +71,6 @@ GUIHelpViewer::~GUIHelpViewer()
 
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
-	QSettings settings;
-	currentUrl = settings.value("doc_url").toString();
-	if (currentUrl.isEmpty())
-		currentUrl = "file://" + QCoreApplication::applicationDirPath() + "/doc/index.html";
+	currentUrl = getBaseUrl() + "/index.html";
 	ui->webView->load(this->currentUrl);
 }
