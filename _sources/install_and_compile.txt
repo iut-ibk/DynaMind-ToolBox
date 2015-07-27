@@ -5,7 +5,7 @@ Install and Run
 Windows
 =======
 
-- `DynaMind-Toolbox-0.8.0-beta.4 (GDAL only) <https://www.dropbox.com/s/mnf934rb1v3rnxy/DynaMind-Toolbox-0.8.0-beta.4-win32.exe?dl=0>`_
+An installer for windows can be found `here <https://github.com/iut-ibk/DynaMind-ToolBox/releases/download/v0.8.1dev/DynaMind-Toolbox-0.8.dev-win32.exe>`_
 
 OSX
 ===
