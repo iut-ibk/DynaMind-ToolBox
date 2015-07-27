@@ -35,7 +35,7 @@ Detailed Description
 
 The import GDAL module us usually the fist module in a DynaMind Simulation. It builds on the GDAL library and
 therefore allows data to imported form multiple common GIS sources. An overview of supported formats can be
-found `here <http://www.gdal.org/ogr_formats.html>`_. Please ensure that the `epsg_to` and `epsg_from` parameters are set currently to
+found `here <http://www.gdal.org/ogr_formats.html>`_. Please ensure that the `epsg_to` and `epsg_from` parameters are set  to
 ensure that the simulation is executed correctly. `epsg_to` should be the same throughout the simulation.
 
 
@@ -48,6 +48,13 @@ also set the epsg_to and epsg_from parameter. These are used to transform the da
 If you are not sure about EPSG code of your source file have a look at `Prj2EPSG <http://prj2epsg.org/search>`_. This website
 allows you to identify your coordinate system based on the `.prj` file that comes with the shape file.
 
+
+Importing CSV
+-------------
+
+All CSV data are per default imported as string. To define the data types put a .csvt file with
+your csv files that defines the data types. e.g. "Integer","Real","String",
+The layer_name is the same as the name of the source file (without the directories and the `.csv` file ending)
 
 
 Import from PostGIS
