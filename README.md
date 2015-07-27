@@ -18,10 +18,10 @@ The DyanMind-Toolbox comes with:
 - a set of modules to import, edit, create and export data
 - an easy to use Python interface to create new simulation or build new modules.
 
-Documentation can be found [here](http://iut-ibk.github.io/DynaMind-ToolBox)
+## [Documentation](http://iut-ibk.github.io/DynaMind-ToolBox)
 
 ## Windows Installer
-- [DynaMind 0.8.2.dev](https://www.dropbox.com/s/lg9akyvec6ufc16/DynaMind-Toolbox-0.8.2.dev-win32.exe?dl=0)
+- [DynaMind-Toolbox-0.8.0-beta.4-win32 (GDAL only)] (https://www.dropbox.com/s/mnf934rb1v3rnxy/DynaMind-Toolbox-0.8.0-beta.4-win32.exe?dl=0)
 
 ## Install on Mac using the Dynamind [tap](https://github.com/christianurich/homebrew-dynamind)
 
@@ -30,9 +30,7 @@ brew tap christianurich/dynamind
 brew install dynamind --HEAD
 ```
 
-## Compile DynaMind
-- [Compiling-DynaMind-Toolbox-on-Windows](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Windows)
-- [Compiling-DynaMind-Toolbox-on-Linux](https://github.com/iut-ibk/DynaMind-ToolBox/wiki/Compiling-DynaMind-Toolbox-on-Linux)
+## [Compile DynaMind](http://iut-ibk.github.io/DynaMind-ToolBox/install_and_compile.html#windows)
 
 
 
