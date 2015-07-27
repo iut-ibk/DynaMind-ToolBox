@@ -931,13 +931,13 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 				double h = conduit->GetFieldAsDouble("diameter");
 				double w = conduit->GetFieldAsDouble("width");
 				inp << linkname << conduit->GetFID() << "\t" << "RECT_CLOSED" << "\t"<< h <<" \t" << w << "\t0\t0\n";
-			}else { //Everthing is is CIRCULAR
+			} else if (shape == "RECT_OPEN")  {
+				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("diameter") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+			} else { //Everthing is is CIRCULAR
 				double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
 				inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< d <<" \t0\t0\t0\n";
 			}
-			//			} else if (shape == "RECT_OPEN")  {
-			//inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
-			//			}
+
 			continue;
 			//			}
 
