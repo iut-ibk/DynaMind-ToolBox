@@ -33,6 +33,9 @@ int GDALUtilities::OGRtoDMGeometry(OGRFeatureDefn *def)
 	std::string strType = OGRGeometryTypeToName(ogrType);
 	switch(wkbFlatten(ogrType))
 	{
+	case wkbNone:
+		type = DM::COMPONENT;
+		break;
 	case wkbPoint:
 		type = DM::NODE;
 		break;
