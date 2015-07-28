@@ -49,7 +49,7 @@ outfallsummary<-matrix(nrow=0,ncol=3)
 
 for(filenr in 1:length(repfiles))
 {
-    print(repfiles[filenr])
+    print(paste(filenr," of ",length(repfiles)," - ",repfiles[filenr]))
     srow <- c(basename(file_path_sans_ext(repfiles[filenr])))
     smn <- c("name")
 
