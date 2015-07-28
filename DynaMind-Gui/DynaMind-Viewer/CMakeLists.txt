@@ -46,7 +46,7 @@ IF(QGL_FROM_SOURCE)
     IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         ExternalProject_Add(QGLViewer
             DOWNLOAD_COMMAND "" # skip download
-            CONFIGURE_COMMAND "C:/Qt/Qt5.4.1/5.4/msvc2013_64_opengl/bin/qmake" ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
+            CONFIGURE_COMMAND "C:/Qt/Qt5.4.2/5.4/msvc2013_64_opengl/bin/qmake" ${CMAKE_CURRENT_SOURCE_DIR}/lib/QGLViewer/QGLViewer.pro QGLVIEWER_STATIC=yes
             INSTALL_COMMAND "" # skip installation
             BUILD_COMMAND nmake
             BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}

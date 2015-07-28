@@ -168,13 +168,15 @@ void GDALImportData::run()
 	lyr->ResetReading();
 
 	int epsg_from_internal = this->epsg_from;
-	if (this->epsg_from == -1) {
-		epsg_from_internal = lyr->GetSpatialRef()->GetEPSGGeogCS();
-		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << epsg_from_internal;
-	}
 
-	OGRCoordinateTransformation* forward_trans = this->getTrafo(epsg_from_internal, this->getSimulation()->getSimulationConfig().getCoorindateSystem());
-	OGRCoordinateTransformation* backwards_trans = this->getTrafo(this->getSimulation()->getSimulationConfig().getCoorindateSystem(), epsg_from_internal);
+
+	OGRCoordinateTransformation* forward_trans = 0;
+	OGRCoordinateTransformation* backwards_trans = 0;
+
+	if (vc->getType() != DM::COMPONENT) {
+		forward_trans = this->getTrafo(epsg_from_internal, this->getSimulation()->getSimulationConfig().getCoorindateSystem());
+		backwards_trans = this->getTrafo(this->getSimulation()->getSimulationConfig().getCoorindateSystem(), epsg_from_internal);
+	}
 
 	if (!forward_trans || !backwards_trans) {
 		DM::Logger(DM::Warning) << "Unknown Transformation";
@@ -321,8 +323,10 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 
 	OGRFeatureDefn * def = lyr->GetLayerDefn();
 
-	if (this->epsg_from == -1) {
-		this->epsg_from = lyr->GetSpatialRef()->GetEPSGGeogCS();
+	if (this->epsg_from == -1 && this->driver_name != "CSV") {
+		OGRSpatialReference * sr  = lyr->GetSpatialRef();
+		if (!sr)
+			this->epsg_from = sr->GetEPSGGeogCS();
 		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << this->epsg_from;
 	}
 
@@ -346,8 +350,6 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 				continue;
 			translator[attribute_name] = fdef->GetNameRef();
 			view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
-
-
 		}
 	} else { //if attribute is set stick to list
 		for (std::map<std::string, std::string>::const_iterator it = import_attribute_as.begin();
@@ -370,11 +372,6 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 				view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
 		}
 	}
-
-
-
-
-
 	return view;
 }
 
@@ -384,11 +381,12 @@ OGRLayer *GDALImportData::initLayer()
 		OGRDataSource::DestroyDataSource(poDS);
 		poDS = 0;
 	}
-	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->source.c_str());
+	poDS = OGRSFDriverRegistrar::Open(this->source.c_str());
 	if (!poDS) {
 		DM::Logger(DM::Warning) << "Error loading " << this->source;
 		return 0;
 	}
+	this->driver_name = poDS->GetDriver()->GetName();
 	OGRLayer * lyr = poDS->GetLayerByName(this->layername.c_str());
 	if (!lyr) {
 		DM::Logger(DM::Warning) << "Error loading " << this->layername;
