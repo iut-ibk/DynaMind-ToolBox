@@ -24,8 +24,8 @@
 *
 */
 
-#ifndef LOOPGROUP_H
-#define LOOPGROUP_H
+#ifndef DMLOOPGROUP_H
+#define DMLOOPGROUP_H
 
 #include "dmcompilersettings.h"
 #include "dmgroup.h"

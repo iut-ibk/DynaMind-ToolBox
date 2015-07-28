@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef GUIGROUPTEST_H
-#define GUIGROUPTEST_H
+#ifndef DMGUIGROUPTEST_H
+#define DMGUIGROUPTEST_H
 
 #include <QDialog>
 #include <dmcompilersettings.h>

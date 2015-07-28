@@ -24,8 +24,8 @@
 *
 */
 
-#ifndef CONTAINERGROUP_H
-#define CONTAINERGROUP_H
+#ifndef DMCONTAINERGROUP_H
+#define DMCONTAINERGROUP_H
 
 #include "dmcompilersettings.h"
 #include "dmgroup.h"
