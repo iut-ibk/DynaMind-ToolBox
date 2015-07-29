@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef GUICONTAINERGROUP_H
-#define GUICONTAINERGROUP_H
+#ifndef DMGUICONTAINERGROUP_H
+#define DMGUICONTAINERGROUP_H
 
 #include <QDialog>
 #include <QLabel>

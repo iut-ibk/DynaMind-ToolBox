@@ -6,11 +6,11 @@ library("tools")
 # options(error=traceback)
 ########################################################
 
-wrkpath <- ("/srv/IUT/Datenaustausch/ChristianM/reportreader")
+wrkpath <- ("/home/gaelic/DynAlp-v11")
 reppath <- (file.path(wrkpath,"repfiles"))
 outpath <- (file.path(wrkpath,"output"))
 
-NODES <- 1 # node detail reports
+NODES <- 0 # node detail reports
 #JUNCTION <- 0
 #SUBCATCHMENT <- 0
 wwtp <- c("V020","ARA1") # wwtps are handled differently
@@ -49,7 +49,7 @@ outfallsummary<-matrix(nrow=0,ncol=3)
 
 for(filenr in 1:length(repfiles))
 {
-    print(repfiles[filenr])
+    print(paste(filenr," of ",length(repfiles)," - ",repfiles[filenr]))
     srow <- c(basename(file_path_sans_ext(repfiles[filenr])))
     smn <- c("name")
 
@@ -139,7 +139,7 @@ for(filenr in 1:length(repfiles))
 		    }
 	    }
 		
-		else if (section == "Node Results")
+		else if (section == "Node Results" & NODES == 1)
 		{
 			for (nodenr in 1:length(nodelines))
 			{
