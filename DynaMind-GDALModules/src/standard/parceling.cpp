@@ -225,7 +225,8 @@ void GDALParceling::splitePoly(Polygon_with_holes_2 &p)
 		CGAL::intersection(p, pwh,  std::back_inserter(split_ress));
 		foreach(Polygon_with_holes_2 pwh_split, split_ress) {
 			if (!pwh_split.outer_boundary().is_simple()) {
-				DM::Logger(DM::Error) << "NOT SIMPLE";
+				DM::Logger(DM::Error) << "Not simple polygon not split";
+				continue;
 			}
 			splitePoly(pwh_split);
 		}
