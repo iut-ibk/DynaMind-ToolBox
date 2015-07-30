@@ -43,8 +43,8 @@
 
 GUISimulation::GUISimulation(QWidget * parent, QTabWidget* tabWidget) : Simulation()
 {
-	this->defaultBold10 = QFont(QFont().defaultFamily(), 10, QFont::Bold);
-	this->defaultNormal10 = QFont(QFont().defaultFamily(), 10, QFont::Normal);
+	this->defaultBold10.setBold(true); //QFont(QFont().defaultFamily(), 10, QFont::Bold);
+	this->defaultNormal10;// = QFont(QFont().defaultFamily(), 10, QFont::Normal);
 	this->parent = parent;
 	this->tabWidget = tabWidget;
 	currentDocument = "";
