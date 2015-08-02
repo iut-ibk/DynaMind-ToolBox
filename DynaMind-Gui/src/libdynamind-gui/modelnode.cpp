@@ -41,6 +41,7 @@
 #include <guisimulation.h>
 #include <dmsystem.h>
 #include <dmgdalsystem.h>
+#include <dmosgearth.h>
 
 #include <dm.h>
 
@@ -704,6 +705,11 @@ void ModelNode::updateSimulation()
 
 void ModelNode::viewOutportData(QString portName)
 {
+	std::cout << "New Viewer" << std::endl;
+	DMOSGEarth * osg = new DMOSGEarth();
+	std::cout << "Created Viewer" << std::endl;
+
+	return;
 	std::map<std::string, DM::View> views;
 	std::map<std::string, std::map<std::string, DM::View> > stream = module->getViewsInOutStream();
 	map_contains(&stream, portName.toStdString(), views);
