@@ -37,6 +37,8 @@ QTreeWidgetItem* CreateAttributeItem(QString access, std::string name,
 	item_attribute->setText(0, QString::fromStdString(name));
 	switch(v.getAttributeType(name))
 	{
+	case DM::Attribute::INT:
+		item_attribute->setText(1, "int"); break;
 	case DM::Attribute::DOUBLE:
 		item_attribute->setText(1, "double"); break;
 	case DM::Attribute::DOUBLEVECTOR:

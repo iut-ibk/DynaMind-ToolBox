@@ -359,6 +359,8 @@ double ModelNode::paint_datastream(QPainter *painter, double & pos)
 
 				switch(v.getAttributeType(s))
 				{
+				case DM::Attribute::INT:
+					attribute_stream << "int"; break;
 				case DM::Attribute::DOUBLE:
 					attribute_stream << "double"; break;
 				case DM::Attribute::DOUBLEVECTOR:
