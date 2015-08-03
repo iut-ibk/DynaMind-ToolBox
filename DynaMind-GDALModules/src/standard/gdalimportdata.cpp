@@ -325,7 +325,7 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 
 	if (this->epsg_from == -1 && this->driver_name != "CSV") {
 		OGRSpatialReference * sr  = lyr->GetSpatialRef();
-		if (!sr)
+		if (sr)
 			this->epsg_from = sr->GetEPSGGeogCS();
 		DM::Logger(DM::Standard) << "Coordinate sytem identified as " << this->epsg_from;
 	}
