@@ -52,20 +52,22 @@ public:
 	~DMMainWindow();
 	GuiLogSink *log_updater;
 	GUISimulation * getSimulation() {return this->simulation;}
+
+	void clearSimulation();
 private:
 	Ui::DMMainWindow *ui;
 	GUISimulation * simulation;
 	QThread *simulationThread;
 	GuiSimulationObserver* simulationThreadWrapper;
 	std::ofstream* outputFile;
-
 	void createModuleListView();
+
 public slots:
 	void runSimulation();
 	void preferences();
 	void saveSimulation();
 	void loadSimulation(int id=0);
-	void clearSimulation();
+	void newSimulation();
 	void saveAsSimulation();
 	void simulationFinished();
 	void ReloadModules();
@@ -74,6 +76,7 @@ public slots:
 	void cancelSimulation();
 	void showHelp();
 	void newLogLine(QString line);
+
 private slots:
 	void on_actionZoomReset_triggered();
 	void on_actionZoomOut_triggered();
