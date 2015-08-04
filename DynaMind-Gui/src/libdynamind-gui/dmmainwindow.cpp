@@ -44,6 +44,8 @@
 #include "preferences.h"
 #include "guihelpviewer.h"
 #include "guiaboutdialog.h"
+#include "guicreateproject.h"
+#include "guiwelcome.h"
 
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
@@ -108,7 +110,8 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	env->addOverWriteStdCout();
 
 	// init simulation, we only use one instance
-	this->simulation = new GUISimulation(parent, ui->tabWidget_4);
+	this->simulation = new GUISimulation(parent, ui->tabWidget_modelview);
+
 	simulationThread = NULL;
 	simulationThreadWrapper = NULL;
 
@@ -121,11 +124,10 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionSave, SIGNAL(triggered()), this , SLOT(saveSimulation()), Qt::DirectConnection);
 	connect(ui->actionSaveAs, SIGNAL(triggered()), this , SLOT(saveAsSimulation()), Qt::DirectConnection);
 	connect(ui->actionOpen, SIGNAL(triggered()), this , SLOT(loadSimulation()), Qt::DirectConnection);
-	connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(clearSimulation()), Qt::DirectConnection);
+	connect(ui->actionNew, SIGNAL(triggered()), this , SLOT(newSimulation()), Qt::DirectConnection);
 	connect(ui->actionReload_Modules, SIGNAL(triggered()), this , SLOT(ReloadModules()), Qt::DirectConnection);
 	connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
-	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
 	connect(ui->actionShow_Help, SIGNAL(triggered()), this, SLOT(showHelp()), Qt::DirectConnection);
 
@@ -134,9 +136,15 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 		this->clearSimulation();
 		this->getSimulation()->currentDocument = args[1];
 		simulation->loadSimulation(args[1].toStdString());
+	} else {
+			GUIWelcome * welcome = new GUIWelcome(this->simulation);
+			welcome->show();
 	}
 
 	ui->actionCancel->setEnabled(false);
+
+
+
 
 	// load from qsettings
 	QSettings settings;
@@ -328,21 +336,27 @@ void DMMainWindow::saveSimulation()
 
 }
 
-void DMMainWindow::clearSimulation() 
+void DMMainWindow::newSimulation()
 {	
+	GUICreateProject * createProject = new GUICreateProject(this->simulation, this);
+	createProject->show();
+	this->clearSimulation();
+	//this->simulation->clearSimulation();
+	//this->getSimulation()->currentDocument.clear();
+
+}
+
+void DMMainWindow::clearSimulation()
+{
 	this->simulation->clearSimulation();
-    this->getSimulation()->currentDocument.clear();
+	this->getSimulation()->currentDocument.clear();
+
 }
 
 void DMMainWindow::loadSimulation(int id) 
 {
-//#ifdef __APPLE__ // Fix for annozing bug in Qt 4.8.5 that the file dialog freezes
-//	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"),
-//		"", tr("DynaMind Files (*.dyn)"), 0,QFileDialog::DontUseNativeDialog);
-//#else
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open DynaMind File"), 
 		"", tr("DynaMind Files (*.dyn)"));
-//#endif
 
 	if (!fileName.isEmpty()){
 		this->clearSimulation();
