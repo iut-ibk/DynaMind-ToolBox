@@ -213,13 +213,13 @@ void GDALImportData::run()
 			}
 			OGRGeometry * geo_ref = poFeature->GetGeometryRef();
 			if (geo_ref == 0) {
-				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, no geometry";
+				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, no geometry";
 				continue;
 			}
 			if (!geo_ref->IsValid()) {
 				OGRGeometry * buf =  geo_ref->Buffer(0);
 				if (!buf->IsValid()) {
-					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not importet, geometry is not valid";
+					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, geometry is not valid";
 					continue;
 				} else {
 					DM::Logger(DM::Warning) << "Try to use buffered feature for "<< poFeature->GetFID();
@@ -269,7 +269,7 @@ void GDALImportData::run()
 			if (wkbFlatten(geo_single->getGeometryType()) != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
 				DM::Logger(DM::Warning) << "Feature "
 										<< poFeature->GetFID()
-										<< " not importet, expected "
+										<< " not imported, expected "
 										<< (int) DM::GDALUtilities::DMToOGRGeometry(vc->getType())
 										<< " instead of " << (int) wkbFlatten(geo_single->getGeometryType())
 										<< " geometry type is different";
