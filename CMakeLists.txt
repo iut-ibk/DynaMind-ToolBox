@@ -5,7 +5,6 @@ IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	message(STATUS "Using Visual C compilers")
 	set(CMAKE_CXX_FLAGS "/EHsc /bigobj")
 	ADD_DEFINITIONS(-D_VARIADIC_MAX=9 -DCGAL_CFG_NO_CPP0X_ISFINITE)
-    SET(CMAKE_PREFIX_PATH "C:/Qt/Qt5.4.2/5.4/msvc2013_64_opengl/")
 ENDIF()
 
 OPTION(DYNAMIND_UPDATE "update before compile" OFF)
