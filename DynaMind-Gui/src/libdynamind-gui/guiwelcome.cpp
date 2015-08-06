@@ -1,5 +1,6 @@
 #include "guiwelcome.h"
 #include "ui_guiwelcome.h"
+#include <QDialog>
 #include <QFileDialog>
 #include "guicreateproject.h"
 
@@ -9,12 +10,12 @@ GUIWelcome::GUIWelcome(GUISimulation *sim, QWidget *parent) :
 	ui(new Ui::GUIWelcome)
 {
 	ui->setupUi(this);
-
-	setWindowFlags(Qt::CustomizeWindowHint);
+	setWindowFlags(Qt::Dialog);
 }
 
 GUIWelcome::~GUIWelcome()
 {
+	std::cout << "destroyed" << std::endl;
 	delete ui;
 }
 
