@@ -46,6 +46,8 @@ void NonSpatialLinking::init()
 		viewmap inViews = getViewsInStream()["city"];
 		if (inViews.find(leadingViewName) == inViews.end()) {
 			DM::Logger(DM::Warning) << leadingViewName << " not found in data stream";
+			//Dummy brew is added to avoid breaking links when init fails
+			joinView = DM::ViewContainer("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		} else {
 			DM::View v = inViews[leadingViewName];
 			foreach(std::string attr_name, v.getAllAttributes()) {
