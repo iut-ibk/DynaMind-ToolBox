@@ -46,7 +46,7 @@
          <string extracomment="Needed to run legecy modules such as DynaVIBe or DynAlp Modules. However, model are not compatible."/>
         </property>
         <property name="text">
-         <string>use legecy database backend</string>
+         <string>use legacy database backend</string>
         </property>
         <property name="autoExclusive">
          <bool>true</bool>
