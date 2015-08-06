@@ -241,8 +241,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="">Calculate Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Feature Area</a><ul>
@@ -467,15 +467,14 @@
             
   <div class="section" id="calculate-attributes">
 <h1>Calculate Attributes<a class="headerlink" href="#calculate-attributes" title="Permalink to this headline">¶</a></h1>
-<p>Calculates a new or overwrites
-an existing attribute.</p>
+<p>Calculates a new or overwrites an existing attribute.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="19%" />
-<col width="20%" />
-<col width="61%" />
+<col width="17%" />
+<col width="17%" />
+<col width="66%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -494,11 +493,13 @@ an existing attribute.</p>
 </tr>
 <tr class="row-even"><td>variables</td>
 <td>STRING_MAP</td>
-<td>variable name;  view_name.attribute_name</td>
+<td>variable name;  view_name.attribute_name or view_name.linked_view_name.attribute_name
+to resolve the links view_name.linked_view_name_id needs to exist</td>
 </tr>
 <tr class="row-odd"><td>equation</td>
 <td>STRING</td>
-<td>&nbsp;</td>
+<td>equation to solve e.g. variable_a + 5
+attributes used in equation need to be defined as variables</td>
 </tr>
 </tbody>
 </table>
@@ -547,7 +548,25 @@ an existing attribute.</p>
 <td>&nbsp;</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
-<td>variable</td>
+<td>attribute_name</td>
+<td>any</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>linked_view_id</td>
+<td>INT</td>
+<td>read</td>
+<td>(if linked attribute)</td>
+</tr>
+<tr class="row-even"><td>linked view</td>
+<td>&nbsp;</td>
+<td>COMPONENT</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>attribute_name</td>
 <td>any</td>
 <td>read</td>
 <td>&nbsp;</td>
@@ -555,13 +574,108 @@ an existing attribute.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>The module integrates the <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">muparser library</a>, a parser for mathematical equations and can access
+variables of linked components.</p>
+<div class="section" id="common-use-cases">
+<h3>Common use cases<a class="headerlink" href="#common-use-cases" title="Permalink to this headline">¶</a></h3>
+<p><em>Assign a constant</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>attribute:     building.construction_year
+attributeType: INT
+variables:
+    <span class="o">(</span>empty<span class="o">)</span>
+equation:      1990
+</pre></div>
+</div>
+<p><em>Assign a constant from global object</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>attribute:      building.construction_year
+attributeType:  INT
+variables:
+     y : city.year
+equation:       y
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When non - linked variables are defined the attribute of the first found feature is returned. Therefore only use in combination where it is guaranteed that
+only one feature exists within a view. (e.g. city or world)</p>
+</div>
+<p><em>Assign only to a subset</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>attribute:        building.construction_year
+attributeType:    INT
+variables:
+     y : city.year
+     c : building.construction_year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
+equation:         <span class="nv">y</span> <span class="o">==</span> <span class="m">0</span> ? y : c <span class="c"># If year is not defined (0) the year is set to city.year, otherwise building.construction_year is assigned</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For this use case setting a module filter is much more efficient. Use the  <em>Assign constant example</em> and set the module attribute filter to building: construction_year is null</p>
+</div>
+<p><em>Calculate Number of people in a city district</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>attribute:         district.population
+attributeType:     INT
+variables:
+    pop : district.parcel.building.household.persons
+equation:          pop <span class="c"># Assigns the number of people living in a district. The data is derived from the linked feature.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Links are resolved through a recursion and the sum of all the connected attributes is returned.</p>
+</div>
+<p><em>Increase increment in loop</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>attribute:          city.year
+attributeType:      INT
+variables:
+     y : city.year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
+equation: y + 1
+</pre></div>
+</div>
+<p>Further to the expression provided by  the  <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">muparser library</a> following
+expressions are supported:</p>
+</div>
+<div class="section" id="expressions">
+<h3>Expressions<a class="headerlink" href="#expressions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>rand(value)</td>
+<td>returns random number in range ]0-value]</td>
+</tr>
+<tr class="row-odd"><td>round(value)</td>
+<td>rounds value to nearest int value</td>
+</tr>
+<tr class="row-even"><td>counter</td>
+<td>current counter when used in loops</td>
+</tr>
+<tr class="row-odd"><td>num2str(value)</td>
+<td>number to string</td>
+</tr>
+<tr class="row-even"><td>str2num(value)</td>
+<td>string to number</td>
+</tr>
+<tr class="row-odd"><td>? then : else</td>
+<td>if clause e.g. a &gt; 5 ? variable_a : variable_b see
+for the operators <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">see</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="module-name">
 <h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
 <p><span class="target" id="index-0"></span>GDALAttributeCalculator</p>
-</div>
-<div class="section" id="detailed-description">
-<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>The module integrates the muparser library <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">GDAL/OGR</a></p>
 </div>
 </div>
 

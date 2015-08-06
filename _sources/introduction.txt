@@ -36,8 +36,8 @@ The  figure below gives an overview of the supported features and describes a ty
 In a typical simulation a series of modules are combined to define a workflow.
 
 - *Data Import:*  Firstly, a simulation requires data, often from multiple sources. The standard modules provide therefore a set of modules building on the GDAL library supporting a variety of standard GIS exchange formats (:doc:`see here </DynaMind-GDALModules/gdalimportdata>`) as well as non GIS data.
-- *Interlinked Data Set:* An interlinked data set provides the foundation for complex simulations. The :doc:`Standard Modules </DynaMind-GDALModules/overview>` provide several modules to :doc:`spatially </DynaMind-GDALModules/gdalspatiallinking>` or :doc:`non-spatially </DynaMind-GDALModules/nonspatiallinking>` link different data sets to an interlinked data model that reflects this interrelationships.
+- *Interlinked Data Set:* An interlinked data set provides the foundation for complex simulations. The Standard Modules provide several modules to :doc:`spatially </DynaMind-GDALModules/gdalspatiallinking>` or :doc:`non-spatially </DynaMind-GDALModules/nonspatiallinking>` link different data sets to an interlinked data model that reflects this interrelationships.
 - *Manipulate Data:* To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (:doc:`see here </DynaMind-GDALModules/gdalattributecalculator>`). Combining several of this modules allows complex processes to be described.
 - *Grouping of Modules:* Models can be combined to a module Group. Such a group can be executed repeatedly. Similar to a for loop, groups can be used to iteratively manipulate data to describe dynamic processes.
--  *Export and Publish Results* To publish the resulting data sets the :doc:`Standard Modules </DynaMind-GDALModules/overview>` provide modules to export data into common GIS exchange formats or GIS databases.
+-  *Export and Publish Results* To publish the resulting data sets the Standard Modules provide modules to export data into common GIS exchange formats or GIS databases.
 

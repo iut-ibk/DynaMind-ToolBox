@@ -240,8 +240,8 @@
 <li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html">Calculate Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html#module-name">Module Name</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="DynaMind-GDALModules/gdalgeometricattributes.html">Calculate Feature Area</a><ul>
@@ -480,7 +480,7 @@
 </div></blockquote>
 <p>To provide a ready to use environment the DynaMind-Toolbox combines several tools building on <a class="reference external" href="https://github.com/iut-ibk/DynaMind">DynaMind</a> including:</p>
 <ul class="simple">
-<li>Standard modules to import and export data from GIS databases and Shapefiles and do simple manipulations <a class="reference internal" href="DynaMind-GDALModules/overview.html"><em>module interface</em></a></li>
+<li>Standard modules to import and export data from GIS databases and Shapefiles and do simple manipulations <code class="xref doc docutils literal"><span class="pre">module</span> <span class="pre">interface</span></code></li>
 <li>Graphical user interface to build simulations <a class="reference internal" href="quick-intro-gui.html"><em>A Quick Introduction to the DynaMind GUI</em></a></li>
 <li><a class="reference internal" href="DynaMind-Executable/index.html"><em>Command line</em></a></li>
 <li><a class="reference internal" href="DynaMind/simulations_python.html"><em>Python interface</em></a> for setting up workflows</li>
@@ -493,10 +493,10 @@
 <p>In a typical simulation a series of modules are combined to define a workflow.</p>
 <ul class="simple">
 <li><em>Data Import:</em>  Firstly, a simulation requires data, often from multiple sources. The standard modules provide therefore a set of modules building on the GDAL library supporting a variety of standard GIS exchange formats (<a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html"><em>see here</em></a>) as well as non GIS data.</li>
-<li><em>Interlinked Data Set:</em> An interlinked data set provides the foundation for complex simulations. The <a class="reference internal" href="DynaMind-GDALModules/overview.html"><em>Standard Modules</em></a> provide several modules to <a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html"><em>spatially</em></a> or <a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html"><em>non-spatially</em></a> link different data sets to an interlinked data model that reflects this interrelationships.</li>
+<li><em>Interlinked Data Set:</em> An interlinked data set provides the foundation for complex simulations. The Standard Modules provide several modules to <a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html"><em>spatially</em></a> or <a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html"><em>non-spatially</em></a> link different data sets to an interlinked data model that reflects this interrelationships.</li>
 <li><em>Manipulate Data:</em> To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (<a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html"><em>see here</em></a>). Combining several of this modules allows complex processes to be described.</li>
 <li><em>Grouping of Modules:</em> Models can be combined to a module Group. Such a group can be executed repeatedly. Similar to a for loop, groups can be used to iteratively manipulate data to describe dynamic processes.</li>
-<li><em>Export and Publish Results</em> To publish the resulting data sets the <a class="reference internal" href="DynaMind-GDALModules/overview.html"><em>Standard Modules</em></a> provide modules to export data into common GIS exchange formats or GIS databases.</li>
+<li><em>Export and Publish Results</em> To publish the resulting data sets the Standard Modules provide modules to export data into common GIS exchange formats or GIS databases.</li>
 </ul>
 </div>
 </div>
