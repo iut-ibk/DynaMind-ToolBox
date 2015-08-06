@@ -212,19 +212,23 @@ void GDALImportData::run()
 				vc->syncAlteredFeatures();
 			}
 			OGRGeometry * geo_ref = poFeature->GetGeometryRef();
-			if (geo_ref == 0) {
+			if (!geo_ref) {
 				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, no geometry";
 				continue;
 			}
 			if (!geo_ref->IsValid()) {
 				OGRGeometry * buf =  geo_ref->Buffer(0);
+				if (!buf) {
+					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, geometry buffering failed";
+					continue;
+				}
 				if (!buf->IsValid()) {
 					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, geometry is not valid";
 					continue;
-				} else {
-					DM::Logger(DM::Warning) << "Try to use buffered feature for "<< poFeature->GetFID();
-					geo_ref = buf;
 				}
+				DM::Logger(DM::Warning) << "Try to use buffered feature for "<< poFeature->GetFID();
+				geo_ref = buf;
+
 			}
 			if (!this->checkIsFlat(geo_ref->getGeometryType())) {
 				if (vc->getType() == DM::FACE) {
