@@ -321,7 +321,7 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 	OGRLayer * lyr = initLayer();
 
 	if (!lyr) {
-		DM::Logger(DM::Error) << "Init failed";
+		DM::Logger(DM::Error) << "Failed to init gis layer";
 		return 0;
 	}
 
