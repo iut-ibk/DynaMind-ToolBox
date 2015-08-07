@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
 	Q_INIT_RESOURCE(icons);
 	Q_INIT_RESOURCE(splash);
 	QApplication::setWindowIcon(QIcon(":/ressources/dynamind-icon.png"));
-	//QApplication::setGraphicsSystem("native");
 	QCoreApplication::setOrganizationName("IUT");
 	QCoreApplication::setApplicationName("DYNAMIND");
 
@@ -52,10 +51,10 @@ int main(int argc, char *argv[])
 #endif
 
 	QPixmap pixmap(":/Splash/ressources/logo.png");
-	QSplashScreen splash1;
+	QSplashScreen splash1(pixmap);
 	splash1.show();
 	app.processEvents();
-	QThreadPool::globalInstance()->setMaxThreadCount(0);
+	//QThreadPool::globalInstance()->setMaxThreadCount(0);
 
 	DMMainWindow mw;
 	mw.show();
