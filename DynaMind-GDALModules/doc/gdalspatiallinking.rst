@@ -2,10 +2,9 @@
 Spatial Linking
 ===============
 
-Spatially links data. This means if a components of the leading view is joined to the link view by
-creating a id.
+Spatially links data. That means for each of the leading view's components the algorithm searches for link view components
+that are within its geometrical extend. To link the components the link_id attribute is set in at the link view component (one to many relationship).
 
-For example to join parcels with buildings, parcels is the leading view and buildings is the link view
 
 Parameter
 ---------
@@ -21,9 +20,7 @@ Parameter
 |withCentroid       | BOOL                   | links either when centroid is within the lead face (true), false if    |
 |                   |                        | link view component is within or intersects face                       |
 +-------------------+------------------------+------------------------------------------------------------------------+
-|experimental       | BOOL                   | uses experimental spatialite native interface which is much faster     |
-|                   |                        | default is currently false                                             |
-+-------------------+------------------------+------------------------------------------------------------------------+
+
 
 Data-stream
 -----------
@@ -40,15 +37,14 @@ Data-stream
 |                    |   leadingViewName_id     |    INT           | write | id of linked lead view component         |
 +--------------------+--------------------------+------------------+-------+------------------------------------------+
 
-Module Name
------------
 
-:index:`GDALSpatialLinking <GDALModules; GDALSpatialLinking | Spatially link data sets>`
 
 Detailed Description
 --------------------
-The algorithm builds on the gdal library. For each of the leading view's components. The algorithm searches for link view components
-that are within the component. It implements two different algorithms.
+For each of the leading view's components the algorithm searches for link view components
+that are within its geometrical extend. To link the components the link_id attribute is set in at the link view component (one to many relationship).
+
+To different approaches can be used:
 
 1. Centroids:
 
@@ -60,7 +56,10 @@ the node itself is within or on the face's edge (TODO check if this is actually 
 If *withCentroid* is set to false, the link view's component is within or intersects the face of a leading view using GDAL's
 intersect and within algorithms.
 
+Module Name
+-----------
 
+:index:`GDALSpatialLinking <GDALModules; GDALSpatialLinking | Spatially link data sets>`
 
 Sample Code for Python Simulation
 ---------------------------------

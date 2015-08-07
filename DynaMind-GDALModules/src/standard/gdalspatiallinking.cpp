@@ -1,6 +1,7 @@
 #include "gdalspatiallinking.h"
 #include <sstream>
 #include <ogr_feature.h>
+#include <dmsimulation.h>
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALSpatialLinking, Spatial Linking, Linking)
 
@@ -17,10 +18,6 @@ GDALSpatialLinking::GDALSpatialLinking()
 
 	this->withCentroid = true;
 	this->addParameter("withCentroid", DM::BOOL, &withCentroid);
-
-	this->experimental = false;
-	this->addParameter("experimental", DM::BOOL, &experimental);
-
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -83,18 +80,33 @@ void GDALSpatialLinking::run()
 		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
-	//Experimental spatilite interface
-	if (this->experimental) {
+	//Spatialte Backend
+	if (this->getSimulation()->getSimulationConfig().getCoorindateSystem() != 0) {
+		DM::Logger(DM::Debug) << "Use Spatialite Backend";
 		leadingView.createSpatialIndex();
 		std::stringstream query;
+
+		std::string lead_filter = leadingView.get_attribute_filter_sql_string();
+
 		query << "UPDATE " << this->linkViewName << " ";
 		query << "SET " << leadingViewName << "_id=(SELECT P.ogc_fid FROM " << leadingViewName << " as P ";
 		query << "WHERE ST_WITHIN( CENTROID(" << linkViewName <<".Geometry), P.Geometry) == 1 AND P.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name ='";
-		query << leadingViewName << "' AND search_frame = " << linkViewName << ".Geometry ORDER BY ROWID) )";
-		DM::Logger(DM::Debug) << query.str();
+		query << leadingViewName << "' AND search_frame = " << linkViewName << ".Geometry ORDER BY ROWID)"  ;
+		if (!lead_filter.empty())
+			query << " AND  P." << lead_filter;
+		query << ")";
+
+		std::string filter = linkView.get_attribute_filter_sql_string();
+
+		if (!filter.empty())
+			query << " WHERE " << filter;
+
+		DM::Logger(DM::Standard) << query.str();
 		leadingView.executeSQL(query.str().c_str());
 		return;
 	}
+	DM::Logger(DM::Standard) << "Use GDAL backend as fallback EPSG CODE to improve performace";
+	//GDAL Backend
 	leadingView.resetReading();
 
 	OGRFeature * lead_feat = 0;

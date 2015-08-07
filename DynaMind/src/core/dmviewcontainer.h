@@ -206,6 +206,12 @@ public:
 	 */
 	std::vector<OGRFeature *> getLinkedFeatures(OGRFeature *f, std::string link_name = "");
 
+	/**
+	 * @brief Return attribute filter as sql search string (WHERE statement is not inluded)
+	 * @param filter
+	 * @return
+	 */
+	std::string get_attribute_filter_sql_string(string filter = "");
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++

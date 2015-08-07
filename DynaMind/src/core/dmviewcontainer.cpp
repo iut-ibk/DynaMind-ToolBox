@@ -50,13 +50,8 @@ string ViewContainer::getDBID()
 	return this->_currentSys->getDBID();
 }
 
-void ViewContainer::setAttributeFilter(string filter)
+std::string ViewContainer::get_attribute_filter_sql_string(string filter)
 {
-	if (!_currentSys) {
-		Logger(Error) << "No GDALSystem registered";
-		return;
-	}
-
 	std::stringstream filter_string;
 	for (int i = 0; i < this->moduleLevelFilter.size(); i++) {
 		if (i < 0) {
@@ -69,11 +64,18 @@ void ViewContainer::setAttributeFilter(string filter)
 		filter_string << "AND ";
 	}
 
-	filter_string << filter;
+	return filter_string.str();
+}
+
+void ViewContainer::setAttributeFilter(string filter)
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return;
+	}
 
 	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
-	//Logger(Error) << "Filter " << filter_string.str().c_str();
-	lyr->SetAttributeFilter(filter_string.str().c_str());
+	lyr->SetAttributeFilter(get_attribute_filter_sql_string(filter).c_str());
 }
 
 void ViewContainer::setSpatialFilter(OGRGeometry *geo)
