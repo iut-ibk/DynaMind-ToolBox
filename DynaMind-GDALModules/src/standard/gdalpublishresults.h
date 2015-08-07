@@ -50,7 +50,6 @@ private:
 	std::string viewName;
 	std::string layerName;
 	int targetEPSG;
-	int sourceEPSG;
 	int steps;
 	int internal_counter;
 	bool overwrite;

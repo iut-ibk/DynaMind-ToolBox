@@ -20,11 +20,9 @@ Parameter
 +-------------------+------------------------+-----------------------------------------------------------------------+
 |steps              | INT                    | is used in loop data are exported every x step                        |
 +-------------------+------------------------+-----------------------------------------------------------------------+
-|targetEPSG         | INT                    | target EPSG code                                                      |
+|targetEPSG         | INT                    | target EPSG code; if 0 simulation EPSG is used                        |
 +-------------------+------------------------+-----------------------------------------------------------------------+
-|sourceEPSG         | INT                    | EPSG code used in the simulation                                      |
-+-------------------+------------------------+-----------------------------------------------------------------------+
-|overwrite          | BOOL                   | if true and existing datasource is overwriten, default is false       |
+|overwrite          | BOOL                   | if true and existing datasource is overwritten, default is false      |
 +-------------------+------------------------+-----------------------------------------------------------------------+
 
 Module Name

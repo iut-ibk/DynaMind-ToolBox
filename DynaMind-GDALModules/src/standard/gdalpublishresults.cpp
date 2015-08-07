@@ -1,7 +1,7 @@
 #include "gdalpublishresults.h"
 
 #include "ogr_geometry.h"
-
+#include <dmsimulation.h>
 
 #include <ogrsf_frmts.h>
 #include <ogr_api.h>
@@ -33,9 +33,6 @@ GDALPublishResults::GDALPublishResults()
 
 	this->targetEPSG = 0;
 	this->addParameter("targetEPSG", DM::INT, &targetEPSG);
-
-	this->sourceEPSG = 0;
-	this->addParameter("sourceEPSG", DM::INT, &sourceEPSG);
 
 	this->overwrite = false;
 	this->addParameter("overwrite", DM::BOOL, &overwrite);
@@ -135,10 +132,13 @@ void GDALPublishResults::run()
 	OGRSpatialReference* oSourceSRS;
 	OGRSpatialReference* oTargetSRS;
 	oSourceSRS = new OGRSpatialReference();
-	oSourceSRS->importFromEPSG(sourceEPSG);
+	oSourceSRS->importFromEPSG(this->getSimulation()->getSimulationConfig().getCoorindateSystem());
 
 	oTargetSRS = new OGRSpatialReference();
-	oTargetSRS->importFromEPSG(targetEPSG);
+	if (targetEPSG == 0)
+		oTargetSRS->importFromEPSG(this->getSimulation()->getSimulationConfig().getCoorindateSystem());
+	else
+			oTargetSRS->importFromEPSG(targetEPSG);
 	OGRCoordinateTransformation* trans = OGRCreateCoordinateTransformation(oSourceSRS, oTargetSRS);
 	if (!trans) {
 		DM::Logger(DM::Error) << "Init transformation failed, check EPSG codes";
