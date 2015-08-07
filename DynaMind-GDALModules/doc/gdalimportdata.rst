@@ -25,10 +25,6 @@ Parameter
 |epsg_from            | INT                    | epsg code of the source; if set to -1 module attempts to autodetect   |
 +---------------------+------------------------+-----------------------------------------------------------------------+
 
-Module name
------------
-
-:index:`GDALImportData <GDALModules; GDALImportData | Import GIS Data>`
 
 Detailed Description
 --------------------
@@ -48,6 +44,11 @@ also set the epsg_to and epsg_from parameter. These are used to transform the da
 If you are not sure about EPSG code of your source file have a look at `Prj2EPSG <http://prj2epsg.org/search>`_. This website
 allows you to identify your coordinate system based on the `.prj` file that comes with the shape file.
 
+
+Import from GEOJSON
+___________________
+
+Please point the source parameter to your file. The layer_name is *OGRGeoJSON*.
 
 Importing CSV
 -------------
@@ -71,6 +72,11 @@ _______________
 If you want to obtain data from a WFS server please set the source to following `WFS:hostname` and layer_name to the layer
 name to be imported.
 
+
+Module name
+-----------
+
+:index:`GDALImportData <GDALModules; GDALImportData | Import GIS Data>`
 
 Sample Code for Python Simulation
 ---------------------------------
