@@ -166,9 +166,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#module-name">Module name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#detailed-description">Detailed Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#importing-csv">Importing CSV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#module-name">Module name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
@@ -196,8 +196,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="">Spatial Linking</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
@@ -467,9 +467,8 @@
             
   <div class="section" id="spatial-linking">
 <h1>Spatial Linking<a class="headerlink" href="#spatial-linking" title="Permalink to this headline">¶</a></h1>
-<p>Spatially links data. This means if a components of the leading view is joined to the link view by
-creating a id.</p>
-<p>For example to join parcels with buildings, parcels is the leading view and buildings is the link view</p>
+<p>Spatially links data. That means for each of the leading view&#8217;s components the algorithm searches for link view components
+that are within its geometrical extend. To link the components the link_id attribute is set in at the link view component (one to many relationship).</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -498,11 +497,6 @@ view FACE are joined to the leading view.</td>
 <td>BOOL</td>
 <td>links either when centroid is within the lead face (true), false if
 link view component is within or intersects face</td>
-</tr>
-<tr class="row-odd"><td>experimental</td>
-<td>BOOL</td>
-<td>uses experimental spatialite native interface which is much faster
-default is currently false</td>
 </tr>
 </tbody>
 </table>
@@ -553,14 +547,11 @@ default is currently false</td>
 </tbody>
 </table>
 </div>
-<div class="section" id="module-name">
-<h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
-<p><span class="target" id="index-0"></span>GDALSpatialLinking</p>
-</div>
 <div class="section" id="detailed-description">
 <h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>The algorithm builds on the gdal library. For each of the leading view&#8217;s components. The algorithm searches for link view components
-that are within the component. It implements two different algorithms.</p>
+<p>For each of the leading view&#8217;s components the algorithm searches for link view components
+that are within its geometrical extend. To link the components the link_id attribute is set in at the link view component (one to many relationship).</p>
+<p>To different approaches can be used:</p>
 <ol class="arabic simple">
 <li>Centroids:</li>
 </ol>
@@ -571,6 +562,10 @@ the node itself is within or on the face&#8217;s edge (TODO check if this is act
 </ol>
 <p>If <em>withCentroid</em> is set to false, the link view&#8217;s component is within or intersects the face of a leading view using GDAL&#8217;s
 intersect and within algorithms.</p>
+</div>
+<div class="section" id="module-name">
+<h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
+<p><span class="target" id="index-0"></span>GDALSpatialLinking</p>
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>

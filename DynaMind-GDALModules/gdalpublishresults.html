@@ -166,9 +166,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#module-name">Module name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#detailed-description">Detailed Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#importing-csv">Importing CSV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#module-name">Module name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalimportdata.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
@@ -196,8 +196,8 @@
 <li class="toctree-l3"><a class="reference internal" href="gdalspatiallinking.html">Spatial Linking</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#module-name">Module Name</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gdalspatiallinking.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
@@ -505,15 +505,11 @@
 </tr>
 <tr class="row-odd"><td>targetEPSG</td>
 <td>INT</td>
-<td>target EPSG code</td>
+<td>target EPSG code; if 0 simulation EPSG is used</td>
 </tr>
-<tr class="row-even"><td>sourceEPSG</td>
-<td>INT</td>
-<td>EPSG code used in the simulation</td>
-</tr>
-<tr class="row-odd"><td>overwrite</td>
+<tr class="row-even"><td>overwrite</td>
 <td>BOOL</td>
-<td>if true and existing datasource is overwriten, default is false</td>
+<td>if true and existing datasource is overwritten, default is false</td>
 </tr>
 </tbody>
 </table>
