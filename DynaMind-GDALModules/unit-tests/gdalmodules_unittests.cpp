@@ -11,11 +11,12 @@
 #include <ogrsf_frmts.h>
 #include <dmsystem.h>
 
-//#define GDALPARCELSPLIT
-//#define GDALATTRIBUTECALCULATOR
-//#define GDALHOTSTARTSIMULATION
+#define GDALPARCELSPLIT
+#define GDALATTRIBUTECALCULATOR
+#define GDALHOTSTARTSIMULATION
 #define IMPORTWITHGDAL
-
+#define PARCELWIREDSHAPE
+#define FILTERINSPATIALLINKING
 
 #ifdef IMPORTWITHGDAL
 /**
@@ -23,7 +24,7 @@
  */
 TEST_F(GDALModules_Unittests, GDALSelfIntersect) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation * sim = new DM::Simulation();
@@ -33,7 +34,7 @@ TEST_F(GDALModules_Unittests, GDALSelfIntersect) {
 	sim->setSimulationConfig(simconf);
 	sim->registerModulesFromDirectory(dir);
 	DM::Module * rect = sim->addModule("GDALImportData");
-	rect->setParameterValue("source", "/Users/christianurich/Documents/DynaMind-ToolBox/DynaMind-GDALModules/test_data/self_itersect.shp");
+	rect->setParameterValue("source", "../test_data/self_itersect.shp");
 	rect->setParameterValue("layer_name", "self_itersect");
 	rect->setParameterValue("view_name", "test");
 	rect->setParameterValue("epsg_from", "32755");
@@ -51,7 +52,7 @@ TEST_F(GDALModules_Unittests, GDALSelfIntersect) {
  */
 TEST_F(GDALModules_Unittests, GDALHostStartSimulation) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation * sim = new DM::Simulation();
@@ -86,14 +87,24 @@ TEST_F(GDALModules_Unittests, GDALHostStartSimulation) {
 	attr_calc->setParameterValue("equation", "1");
 
 	sim->addLink(linking, "city",attr_calc, "city");
+
+	DM::Module * export_sim_db = sim->addModule("DM_ExportSimulationDB");
+
+	QString filename = QDir::tempPath() + "/" + QUuid::createUuid().toString();
+
+
+	export_sim_db->setParameterValue("file_name", filename.toStdString());
+
+
+	sim->addLink(attr_calc, "city",export_sim_db, "city");
+
+
 	attr_calc->init();
 
 	sim->run();
 
 	//Get database
 
-	DM::GDALSystem * sys = (DM::GDALSystem*) attr_calc->getOutPortData("city");
-	std::string db_name = sys->getDBID();
 
 	delete sim;
 
@@ -102,7 +113,8 @@ TEST_F(GDALModules_Unittests, GDALHostStartSimulation) {
 	sim = new DM::Simulation();
 	sim->registerModulesFromDirectory(dir);
 	DM::Module * hotstart = sim->addModule("GDALHotStarter");
-	hotstart->setParameterValue("hot_start_database", "/tmp/" + db_name + ".db");
+
+	hotstart->setParameterValue("hot_start_database", filename.toStdString() + ".sqlite");
 	hotstart->init();
 
 	DM::Module * attr_calc_counter = sim->addModule("GDALAttributeCalculator");
@@ -117,14 +129,13 @@ TEST_F(GDALModules_Unittests, GDALHostStartSimulation) {
 	sim->run();
 
 	//Check M2
-	sys = (DM::GDALSystem*) attr_calc_counter->getOutPortData("city");
+	DM::GDALSystem * sys = (DM::GDALSystem*) attr_calc_counter->getOutPortData("city");
 	DM::ViewContainer components("cityblock", DM::FACE, DM::READ);
 	components.setCurrentGDALSystem(sys);
 	OGRFeature * f;
 	components.resetReading();
 	while (f = components.getNextFeature() ) {
 		ASSERT_EQ(f->GetFieldAsDouble("sum"), 64);
-		delete sim;
 		return;
 	}
 	delete sim;
@@ -241,4 +252,156 @@ TEST_F(GDALModules_Unittests, GDALAttributeCaluclator) {
 }
 #endif
 
+// unit test to address issue #300
+// https://github.com/iut-ibk/DynaMind-ToolBox/issues/300
+#ifdef PARCELWIREDSHAPE
+TEST_F(GDALModules_Unittests, ParcelWiredShape) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
+	DM::Simulation sim;
+	DM::SimulationConfig sim_cfg = sim.getSimulationConfig();
+	sim_cfg.setCoordinateSystem(32755);
+	sim.setSimulationConfig(sim_cfg);
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * imp = sim.addModule("GDALImportData");
+	imp->setParameterValue("source", "../test_data/complex_polygon_1.geojson");
+	imp->setParameterValue("layer_name", "OGRGeoJSON");
+		imp->setParameterValue("view_name", "cityblock");
+	imp->setParameterValue("epsg_from", "32755");
+	imp->init();
+
+	DM::Module * parceling = sim.addModule("GDALParceling");
+	parceling->setParameterValue("blockName", "cityblock");
+	parceling->setParameterValue("width", "200");
+	parceling->setParameterValue("height", "70");
+
+	sim.addLink(imp, "city",parceling, "city");
+
+	sim.run();
+}
+#endif
+
+// test_filter_in_spatial_linking
+#ifdef FILTERINSPATIALLINKING
+TEST_F(GDALModules_Unittests, SetFilterInSpatialLinking) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
+
+	DM::Simulation sim;
+	DM::SimulationConfig sim_cfg = sim.getSimulationConfig();
+	sim_cfg.setCoordinateSystem(32755);
+	sim.setSimulationConfig(sim_cfg);
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * imp = sim.addModule("GDALImportData");
+	imp->setParameterValue("source", "../test_data/sa1_part.geojson");
+	imp->setParameterValue("layer_name", "OGRGeoJSON");
+		imp->setParameterValue("view_name", "sa1");
+	imp->setParameterValue("epsg_from", "4283");
+	imp->init();
+
+	DM::Module * nodes = sim.addModule("GDALImportData");
+	nodes->setParameterValue("source", "../test_data/sa1_part_nodes.geojson");
+	nodes->setParameterValue("layer_name", "OGRGeoJSON");
+	nodes->setParameterValue("view_name", "sa1_nodes");
+	nodes->setParameterValue("append", "1");
+	nodes->setParameterValue("epsg_from", "4283");
+	nodes->init();
+
+	sim.addLink(imp, "city",nodes, "city");
+
+	DM::Module * nodes1 = sim.addModule("GDALImportData");
+	nodes1->setParameterValue("source", "../test_data/sa1_part_nodes.geojson");
+	nodes1->setParameterValue("layer_name", "OGRGeoJSON");
+	nodes1->setParameterValue("view_name", "sa1_nodes_filter");
+	nodes1->setParameterValue("append", "1");
+	nodes1->setParameterValue("epsg_from", "4283");
+	nodes1->init();
+
+	sim.addLink(nodes, "city",nodes1, "city");
+
+	DM::Module * nodes2 = sim.addModule("GDALImportData");
+	nodes2->setParameterValue("source", "../test_data/sa1_part_nodes.geojson");
+	nodes2->setParameterValue("layer_name", "OGRGeoJSON");
+	nodes2->setParameterValue("view_name", "sa1_nodes_filter_2");
+	nodes2->setParameterValue("append", "1");
+	nodes2->setParameterValue("epsg_from", "4283");
+	nodes2->init();
+
+	sim.addLink(nodes1, "city",nodes2, "city");
+
+	DM::Module * no_filter = sim.addModule("GDALSpatialLinking");
+	no_filter->setParameterValue("leadingViewName", "sa1");
+	no_filter->setParameterValue("linkViewName", "sa1_nodes");
+	no_filter->setParameterValue("experimental", "1");
+
+	sim.addLink(nodes2, "city",no_filter, "city");
+
+	DM::Module * filter_2 = sim.addModule("GDALSpatialLinking");
+	filter_2->setParameterValue("leadingViewName", "sa1");
+	filter_2->setParameterValue("linkViewName", "sa1_nodes_filter_2");
+	filter_2->setParameterValue("experimental", "1");
+
+	sim.addLink(no_filter, "city",filter_2, "city");
+
+	DM::Module * with_filter = sim.addModule("GDALSpatialLinking");
+	with_filter->setParameterValue("leadingViewName", "sa1");
+	with_filter->setParameterValue("linkViewName", "sa1_nodes_filter");
+	with_filter->setParameterValue("experimental", "1");
+
+	std::vector<DM::Filter> filters;
+	DM::Filter attribute("sa1_nodes_filter", DM::FilterArgument("region_id = 2112218"));
+	filters.push_back(attribute);
+	with_filter->setFilter(filters);
+	sim.addLink(filter_2, "city",with_filter, "city");
+
+	DM::Module * with_filter_2 = sim.addModule("GDALSpatialLinking");
+	with_filter_2->setParameterValue("leadingViewName", "sa1");
+	with_filter_2->setParameterValue("linkViewName", "sa1_nodes_filter_2");
+	with_filter_2->setParameterValue("experimental", "1");
+
+
+	DM::Filter attribute_2("sa1", DM::FilterArgument("median_total_household_income_weekly = 1006"));
+	filters.clear();
+	filters.push_back(attribute_2);
+	with_filter_2->setFilter(filters);
+	sim.addLink(with_filter, "city",with_filter_2, "city");
+
+	sim.run();
+
+	DM::GDALSystem * sys = (DM::GDALSystem*) with_filter_2->getOutPortData("city");
+	DM::ViewContainer components("sa1_nodes", DM::NODE, DM::READ);
+	components.setCurrentGDALSystem(sys);
+	OGRFeature * f;
+	components.resetReading();
+	int linked_elements_no_filter = 0;
+	while (f = components.getNextFeature() ) {
+		if ( f->GetFieldAsInteger("sa1_id") > 0)
+			linked_elements_no_filter++;
+	}
+
+	int linked_elements_filter = 0;
+	DM::ViewContainer components_f("sa1_nodes_filter", DM::NODE, DM::READ);
+	components_f.setCurrentGDALSystem(sys);
+	components_f.resetReading();
+	while (f = components_f.getNextFeature() ) {
+		if ( f->GetFieldAsInteger("sa1_id") > 0)
+			linked_elements_filter++;
+	}
+
+	int linked_elements_filter_2 = 0;
+	DM::ViewContainer components_f_2("sa1_nodes_filter_2", DM::NODE, DM::READ);
+	components_f_2.setCurrentGDALSystem(sys);
+	components_f_2.resetReading();
+	while (f = components_f_2.getNextFeature() ) {
+		if ( f->GetFieldAsInteger("sa1_id") > 0)
+			linked_elements_filter_2++;
+	}
+	DM::Logger(DM::Error) << linked_elements_no_filter;
+	DM::Logger(DM::Error) << linked_elements_filter;
+	DM::Logger(DM::Error) << linked_elements_filter_2;
+}
+#endif
 
