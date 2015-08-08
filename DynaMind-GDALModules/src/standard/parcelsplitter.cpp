@@ -63,7 +63,7 @@ void ParcelSplitter::splitePoly( Polygon_with_holes_2 &p)
 void ParcelSplitter::run()
 {
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(poly_wkt));
-
+	OGRFree(poly_wkt); //Not needed after here
 	switch ( g->geometryTypeId() ) {
 	case SFCGAL::TYPE_POLYGON:
 		break;

@@ -21,12 +21,12 @@ typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
 typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
 
 GeometricAttributeWorker::GeometricAttributeWorker(GDALGeometricAttributes * callback,
-												   OGRFeature * f,
+												   std::vector<OGRFeature *> features,
 												   bool isCalculateArea,
 												   bool isAspectRationBB,
 												   bool isPercentageFilled):
 	callback(callback),
-	f(f),
+	features(features),
 	isCalculateArea(isCalculateArea),
 	isAspectRationBB(isAspectRationBB),
 	isPercentageFilled(isPercentageFilled)
@@ -44,7 +44,7 @@ double GeometricAttributeWorker::percentageFilled(OGRPolygon * ogr_poly) {
 
 	ogr_poly->exportToWkt(&geo);
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-
+	OGRFree(geo);
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
 	if (!poly.toPolygon_2(false).is_simple()) {
@@ -72,7 +72,7 @@ double GeometricAttributeWorker::aspectRationBB(OGRPolygon * ogr_poly) {
 
 	ogr_poly->exportToWkt(&geo);
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-
+	OGRFree(geo);
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
 	if (!poly.toPolygon_2(false).is_simple()) {
@@ -96,7 +96,7 @@ double GeometricAttributeWorker::aspectRationBB(OGRPolygon * ogr_poly) {
 	Point_2 p2 = p_m.vertex(1);
 
 	Point_2 p3 = p_m.vertex(2);
-	Point_2 p4 = p_m.vertex(3);
+	//Point_2 p4 = p_m.vertex(3);
 
 	Vector_2 v1 = (p2-p1);
 	Vector_2 v2 = (p3-p2);
@@ -116,17 +116,19 @@ double GeometricAttributeWorker::aspectRationBB(OGRPolygon * ogr_poly) {
 
 void GeometricAttributeWorker::run()
 {
-	OGRPolygon* geo = (OGRPolygon*)f->GetGeometryRef();
-	if (isCalculateArea)
-		f->SetField("area", this->calculateArea( geo ));
-	if (isAspectRationBB) {
-		double value = this->aspectRationBB( geo );
-		if (value > -0.1)
-			f->SetField("aspect_ratio_BB", value);
-	}
-	if (isPercentageFilled) {
-		double value = this->percentageFilled( geo );
-		if (value > -0.1)
-			f->SetField("percentage_filled", value);
+	foreach (OGRFeature *f, this->features) {
+		OGRPolygon* geo = (OGRPolygon*)f->GetGeometryRef();
+		if (isCalculateArea)
+			f->SetField("area", this->calculateArea( geo ));
+		if (isAspectRationBB) {
+			double value = this->aspectRationBB( geo );
+			if (value > -0.1)
+				f->SetField("aspect_ratio_BB", value);
+		}
+		if (isPercentageFilled) {
+			double value = this->percentageFilled( geo );
+			if (value > -0.1)
+				f->SetField("percentage_filled", value);
+		}
 	}
 }

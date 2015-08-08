@@ -81,7 +81,7 @@ void GDALOffset::run()
 	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
 		counter++;
 		char* geo;
-		poFeature->GetGeometryRef()->exportToWkt(&geo);
+		poFeature->GetGeometryRef()->exportToWkt(&geo); //geo destroyed by worker
 		OffsetWorker * ow = new OffsetWorker(this, geo, this->offset);
 		pool.start(ow);
 

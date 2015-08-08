@@ -85,7 +85,7 @@ void GDALParceling::addToSystem(QString poly)
 	OGRGeometry * ogr_poly;
 
 	OGRErr err = OGRGeometryFactory::createFromWkt(&writable_wr, 0, &ogr_poly);
-
+	//delete writable_wr;
 	if (!ogr_poly->IsValid()) {
 		DM::Logger(DM::Warning) << "Geometry is not valid!";
 		return;

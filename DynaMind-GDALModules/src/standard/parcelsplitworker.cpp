@@ -98,7 +98,7 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 void ParcelSplitWorker::run()
 {
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(poly_wkt));
-
+	OGRFree(poly_wkt); //Not needed after here
 	switch ( g->geometryTypeId() ) {
 	case SFCGAL::TYPE_POLYGON:
 		break;

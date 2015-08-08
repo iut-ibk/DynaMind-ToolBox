@@ -12,7 +12,7 @@ class GeometricAttributeWorker:  public  QRunnable
 {
 private:
 	int ogc_fid;
-	OGRFeature* f;
+	std::vector<OGRFeature*> features;
 	GDALGeometricAttributes * callback;
 	bool isCalculateArea;
 	bool isAspectRationBB;
@@ -23,7 +23,7 @@ private:
 public:
 	GeometricAttributeWorker() {}
 	GeometricAttributeWorker(GDALGeometricAttributes * callback,
-							OGRFeature * f,
+							std::vector<OGRFeature*>  features,
 							bool isCalculateArea,
 							bool isAspectRationBB,
 							bool isPercentageFilled);
