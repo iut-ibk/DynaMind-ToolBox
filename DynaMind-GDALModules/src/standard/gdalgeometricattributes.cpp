@@ -51,9 +51,15 @@ void GDALGeometricAttributes::run()
 
 	vc.resetReading();
 	QThreadPool pool;
+	std::vector<OGRFeature*> container;
+	int counter = 0;
 	while( f = vc.getNextFeature() ) {
-		GeometricAttributeWorker * gw = new GeometricAttributeWorker(this, f, isCalculateArea, isAspectRationBB , isPercentageFilled);
-		pool.start(gw);
+		container.push_back(f);
+		if (counter%10000 == 0){
+			GeometricAttributeWorker * gw = new GeometricAttributeWorker(this, container, isCalculateArea, isAspectRationBB , isPercentageFilled);
+			pool.start(gw);
+			container = std::vector<OGRFeature*>();
+		}
 	}
 	pool.waitForDone();
 }

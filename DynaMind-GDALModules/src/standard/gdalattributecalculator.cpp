@@ -278,7 +278,10 @@ void GDALAttributeCalculator::run()
 	}
 	p->SetExpr(this->equation);
 
+	int counter = 0;
 	while (l_feat = leading_view->getNextFeature()) {
+		counter++;
+
 		//set mpc
 		DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
 		if(lg) {
@@ -333,15 +336,25 @@ void GDALAttributeCalculator::run()
 			mup::Value val = p->Eval();
 			if (result_type == DM::Attribute::INT) {
 				l_feat->SetField(leading_attribute.c_str(), (int) val.GetFloat());
-				continue;
 			}
-			if (result_type == DM::Attribute::STRING) {
+			else if (result_type == DM::Attribute::STRING) {
 				l_feat->SetField(leading_attribute.c_str(), val.GetString().c_str());
-				continue;
+			} else {
+				DM::Logger(DM::Debug) << val.GetFloat();
+				l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
 			}
-			DM::Logger(DM::Debug) << val.GetFloat();
-			l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
+
+			if (counter%10000 == 0){
+				//DM::Logger(DM::Error) << "Sync Altered";
+				leading_view->syncAlteredFeatures();
+				for (std::map<std::string, DM::ViewContainer *>::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it ) {
+					it->second->syncAlteredFeatures();
+					it->second->syncReadFeatures();
+				}
+			}
 		}
+
+
 		catch (mup::ParserError &e)
 		{
 			DM::Logger(DM::Error) << "Error in equation "<< e.GetMsg();
