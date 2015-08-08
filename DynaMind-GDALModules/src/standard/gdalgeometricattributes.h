@@ -42,9 +42,7 @@ private:
 	bool isPercentageFilled;
 
 	DM::ViewContainer vc;
-	double calculateArea(OGRPolygon *poly);
-	double aspectRationBB(OGRPolygon *poly);
-	double percentageFilled(OGRPolygon *ogr_poly);
+
 public:
 	GDALGeometricAttributes();
 	void run();
