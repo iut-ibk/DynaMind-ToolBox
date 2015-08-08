@@ -11,12 +11,13 @@
 #include <ogrsf_frmts.h>
 #include <dmsystem.h>
 
-#define GDALPARCELSPLIT
-#define GDALATTRIBUTECALCULATOR
-#define GDALHOTSTARTSIMULATION
-#define IMPORTWITHGDAL
-#define PARCELWIREDSHAPE
-#define FILTERINSPATIALLINKING
+//#define GDALPARCELSPLIT
+//#define GDALATTRIBUTECALCULATOR
+//#define GDALHOTSTARTSIMULATION
+//#define IMPORTWITHGDAL
+//#define PARCELWIREDSHAPE
+//#define FILTERINSPATIALLINKING
+#define TESTMULTITHREADING
 
 #ifdef IMPORTWITHGDAL
 /**
@@ -183,7 +184,7 @@ TEST_F(GDALModules_Unittests, GDALParcelSplit) {
 	rect->init();
 
 
-	 parceling = sim.addModule("GDALParcelSplit");
+	parceling = sim.addModule("GDALParcelSplit");
 	sim.addLink(rect, "city",parceling, "city");
 
 
@@ -268,7 +269,7 @@ TEST_F(GDALModules_Unittests, ParcelWiredShape) {
 	DM::Module * imp = sim.addModule("GDALImportData");
 	imp->setParameterValue("source", "../test_data/complex_polygon_1.geojson");
 	imp->setParameterValue("layer_name", "OGRGeoJSON");
-		imp->setParameterValue("view_name", "cityblock");
+	imp->setParameterValue("view_name", "cityblock");
 	imp->setParameterValue("epsg_from", "32755");
 	imp->init();
 
@@ -298,7 +299,7 @@ TEST_F(GDALModules_Unittests, SetFilterInSpatialLinking) {
 	DM::Module * imp = sim.addModule("GDALImportData");
 	imp->setParameterValue("source", "../test_data/sa1_part.geojson");
 	imp->setParameterValue("layer_name", "OGRGeoJSON");
-		imp->setParameterValue("view_name", "sa1");
+	imp->setParameterValue("view_name", "sa1");
 	imp->setParameterValue("epsg_from", "4283");
 	imp->init();
 
@@ -402,6 +403,78 @@ TEST_F(GDALModules_Unittests, SetFilterInSpatialLinking) {
 	DM::Logger(DM::Error) << linked_elements_no_filter;
 	DM::Logger(DM::Error) << linked_elements_filter;
 	DM::Logger(DM::Error) << linked_elements_filter_2;
+}
+#endif
+
+//Currently faiels because the cooridnates are currently crap
+#ifdef TESTMULTITHREADING
+TEST_F(GDALModules_Unittests, Multithrading) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Debug);
+	DM::Logger(DM::Standard) << "Create System";
+
+	DM::Simulation sim;
+	QDir dir("./");
+	sim.registerModulesFromDirectory(dir);
+	DM::Module * rect = sim.addModule("GDALCreateRectangle");
+	rect->setParameterValue("width", "10000");
+	rect->setParameterValue("height", "10000");
+	rect->setParameterValue("view_name", "superblock");
+	rect->init();
+
+	//Create City Blocks
+	DM::Module * cityblock_tmp = sim.addModule("GDALParceling");
+	cityblock_tmp->setParameterValue("blockName", "superblock");
+	cityblock_tmp->setParameterValue("subdevisionName", "cityblock_tmp");
+	cityblock_tmp->setParameterValue("width", "1000");
+	cityblock_tmp->setParameterValue("height", "1000");
+
+	sim.addLink(rect, "city",cityblock_tmp, "city");
+
+	//Create City Blocks
+	DM::Module * cityblock = sim.addModule("GDALOffset");
+	cityblock->setParameterValue("blockName", "cityblock_tmp");
+	cityblock->setParameterValue("subdevisionName", "cityblock");
+	cityblock->setParameterValue("offset", "10");
+
+	sim.addLink(cityblock_tmp, "city",cityblock, "city");
+
+	//Create City Blocks
+	DM::Module * parcel_tmp = sim.addModule("GDALParceling");
+	parcel_tmp->setParameterValue("blockName", "cityblock_tmp");
+	parcel_tmp->setParameterValue("subdevisionName", "parcel_tmp");
+	parcel_tmp->setParameterValue("width", "100");
+	parcel_tmp->setParameterValue("height", "100");
+
+	sim.addLink(cityblock, "city",parcel_tmp, "city");
+
+	//Create City Blocks
+	DM::Module * parcel = sim.addModule("GDALParcelSplit");
+	parcel->setParameterValue("blockName", "parcel_tmp");
+	parcel->setParameterValue("subdevisionName", "parcel");
+	parcel->setParameterValue("width", "15");
+
+
+	sim.addLink(parcel_tmp, "city",parcel, "city");
+	parcel->init();
+	//Create City Blocks
+	DM::Module * parcel_area = sim.addModule("GDALGeometricAttributes");
+	parcel_area->setParameterValue("leading_view", "parcel");
+	parcel_area->setParameterValue("calculate_area", "1");
+	parcel_area->setParameterValue("aspect_ratio_BB", "1");
+	parcel_area->setParameterValue("percentage_filled", "1");
+	parcel_area->init();
+	sim.addLink(parcel, "city",parcel_area, "city");
+
+	for (int i = 0; i < 100 ; i++) {
+		sim.reset();
+		sim.run();
+		//Check M2
+		DM::GDALSystem * sys = (DM::GDALSystem*) parcel_area->getOutPortData("city");
+		DM::ViewContainer components = DM::ViewContainer("parcel", DM::FACE, DM::READ);
+		components.setCurrentGDALSystem(sys);
+		ASSERT_EQ(components.getFeatureCount(), 81920);
+	}
 }
 #endif
 

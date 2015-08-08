@@ -5,12 +5,8 @@
 
 #include <iostream>
 
-#include <CGAL/Boolean_set_operations_2.h>
-#include <SFCGAL/algorithm/intersection.h>
-
-#include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/intersections.h>
 #include <QThreadPool>
+
 
 #include "parcelsplitter.h"
 
@@ -59,35 +55,18 @@ void GDALParceling::run()
 	cityblocks.resetReading();
 	OGRFeature *poFeature;
 	int counter = 0;
-	QVector<SFCGAL::Polygon> splite_vector;
+	this->counter_added = 0;
+
 	QThreadPool pool;
 	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
-		std::cout << poFeature->GetFID() << std::endl;
 		counter++;
 		char* geo;
-
-
 		poFeature->GetGeometryRef()->exportToWkt(&geo);
-		std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 
-		switch ( g->geometryTypeId() ) {
-		case SFCGAL::TYPE_POLYGON:
-			break;
-		default:
-			continue;
-		}
-		SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
-
-		//Transfer to GDAL polygon
-		Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
-		ParcelSplitter * ps = new ParcelSplitter(this->width, this->length, p);
-		//ps->run();
-		connect(ps, SIGNAL(resultPolygon(QString)), this, SLOT(addToSystem(QString)));
+		ParcelSplitter * ps = new ParcelSplitter(this, this->width, this->length, geo);
 		pool.start(ps);
 	}
 	pool.waitForDone();
-//	foreach(SFCGAL::Polygon  poly, splite_vector)
-//		this->addToSystem(poly);
 
 	parcels.syncAlteredFeatures();
 	DM::Logger(DM::Debug) << this->counter_added;
@@ -96,7 +75,7 @@ void GDALParceling::run()
 void GDALParceling::addToSystem(QString poly)
 {
 	//DM::Logger(DM::Error) << "Hello";
-	 QMutexLocker ml(&mMutex);
+	QMutexLocker ml(&mMutex);
 	std::string wkt = poly.toStdString();
 
 	char * writable_wr = new char[wkt.size() + 1]; //Note not sure if memeory hole?

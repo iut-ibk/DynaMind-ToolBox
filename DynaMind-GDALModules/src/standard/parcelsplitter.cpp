@@ -3,7 +3,7 @@
 #include <dmgdalsystem.h>
 
 #include <ogrsf_frmts.h>
-
+#define CGAL_HAS_THREADS
 #include <iostream>
 
 #include <CGAL/Boolean_set_operations_2.h>
@@ -16,11 +16,11 @@ ParcelSplitter::ParcelSplitter() {
 
 }
 
-ParcelSplitter::ParcelSplitter(double width, double length, Polygon_with_holes_2 p):
+ParcelSplitter::ParcelSplitter(GDALParceling * module, double width, double length, char *poly_wkt):
+  module(module),
   width(width),
   length(length),
-  //results_vector(results_vector),
-  poly(p)
+  poly_wkt(poly_wkt)
 {
 }
 
@@ -40,11 +40,8 @@ void ParcelSplitter::splitePoly( Polygon_with_holes_2 &p)
 
 	if (splitters.size() == 0) {
 		SFCGAL::Polygon split_geo(p);
-		//results_vector->push_back(split_geo);
-		//DM::Logger(DM::Error) << "Emit";
 		QString wkt = QString::fromLatin1(split_geo.asText(9).c_str());
-		emit resultPolygon(wkt);
-		//addToSystem(split_geo);
+		module->addToSystem(wkt);
 		return;
 	}
 
@@ -65,7 +62,19 @@ void ParcelSplitter::splitePoly( Polygon_with_holes_2 &p)
 
 void ParcelSplitter::run()
 {
-	this->splitePoly(poly);
+	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(poly_wkt));
+
+	switch ( g->geometryTypeId() ) {
+	case SFCGAL::TYPE_POLYGON:
+		break;
+	default:
+		return;
+	}
+	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
+	//Transfer to GDAL polygon
+	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
+
+	this->splitePoly(p);
 }
 
 
