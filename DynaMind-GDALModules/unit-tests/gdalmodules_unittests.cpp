@@ -28,51 +28,48 @@
  * @brief Test self intersection warning in GDAL
  */
 
+int execute_sql_statement(sqlite3 *db, char *sql){
+	/* Execute SQL statement */
+	const char* data = "Callback function called";
+	char *zErrMsg = 0;
+
+	int rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		DM::Logger(DM::Error) <<" SQL statment: " << QString::fromLatin1(sql).toStdString();
+		DM::Logger(DM::Error) <<" SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
+	   EXPECT_TRUE( rc == SQLITE_OK );
+	   sqlite3_free(zErrMsg);
+	}
+
+	return rc;
+}
+
 TEST_F(GDALModules_Unittests, LoadSpatialiteExtension) {
 	ostream *out = &cout;
 	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+
+	// Create test container for DB to get DM connection
+	DM::ViewContainer * TestComponents = new DM::ViewContainer("TestComponents", DM::COMPONENT, DM::WRITE);
+	DM::GDALSystem sys;
+	sys.updateView(*TestComponents);
+	TestComponents->setCurrentGDALSystem(&sys);
+	delete TestComponents;
+
+
 	sqlite3 *db;
-	char *zErrMsg = 0;
-	int rc;
-	 char *sql;
-	const char* data = "Callback function called";
-	rc = sqlite3_open("test.db", &db);
+	int rc = sqlite3_open(sys.getDBID().c_str(), &db);
+	sqlite3_enable_load_extension(db,1);
 
 	if( rc ){
-	   fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-	   return;
-	}else{
-
-
-	   fprintf(stderr, "Opened database successfully\n");
-
+		EXPECT_TRUE( rc == SQLITE_OK );
+		DM::Logger(DM::Error) << "Failed to open database";
+		return;
 	}
 
-	sql = "SELECT load_extension('libmy_sqlite_plugin.dylib')";
-
-	/* Execute SQL statement */
-	sqlite3_enable_load_extension(db,1);
-	rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
-	if( rc != SQLITE_OK ){
-		DM::Logger(DM::Error) <<" SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
-	   fprintf(stderr, "SQL error: %s\n", zErrMsg);
-	   sqlite3_free(zErrMsg);
-	}else{
-		DM::Logger(DM::Error) <<"Successfully loaded extension";
-	}
-
-	sql = "select my_power_func(1,2)";
-
-	/* Execute SQL statement */
-	rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
-	if( rc != SQLITE_OK ){
-		DM::Logger(DM::Error) <<"SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
-	   //fprintf(stderr, "SQL error: %s\n", zErrMsg);
-	   sqlite3_free(zErrMsg);
-	}else{
-	   fprintf(stdout, "Operation done successfully\n");
-	}
-
+	//Load spatialite
+	//execute_sql_statement(db, "SELECT load_extension('mod_spatialite')");
+	execute_sql_statement(db, "SELECT load_extension('libdm_sqlite_plugin')");
+	execute_sql_statement(db, "select my_power_func(1,2)");
 
 	sqlite3_close(db);
 

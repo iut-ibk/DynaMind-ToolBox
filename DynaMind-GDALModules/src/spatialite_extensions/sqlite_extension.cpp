@@ -27,7 +27,7 @@ void sqlite_power(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	sqlite3_result_double(context, res);        // save the result
 }
 
-int sqlite3_mysqliteplugin_init(
+int sqlite3_dmsqliteplugin_init(
   sqlite3 *db,
   char **pzErrMsg,
   const sqlite3_api_routines *pApi
@@ -41,8 +41,7 @@ int sqlite3_mysqliteplugin_init(
   **     sqlite3_vfs_register()
   ** to register the new features that your extension adds.
   */
-//  sqlite3_create_function_v2(db, "huhu", 1, SQLITE_UTF8, 0,
-//							 sqlEvalFunc, 0, 0);
+
   sqlite3_create_function(db, "MY_POWER_FUNC", 2, SQLITE_UTF8, 0, &sqlite_power, 0, 0);
   return rc;
 }
