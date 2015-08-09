@@ -15,10 +15,11 @@ class GDALModules_Unittests : public ::testing::Test
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-   QCoreApplication app(argc, argv);
 
-	RUN_ALL_TESTS();
-   return app.exec();
+
+
+
+	return RUN_ALL_TESTS();
 }
 
 #endif // GDALMODULES_UNITTESTS_H

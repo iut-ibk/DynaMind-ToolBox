@@ -9,6 +9,7 @@
 #include <dmgdalsystem.h>
 #include <dmviewcontainer.h>
 #include <ogrsf_frmts.h>
+#include <sqlite3.h>
 #include <dmsystem.h>
 
 //#define GDALPARCELSPLIT
@@ -17,7 +18,71 @@
 //#define IMPORTWITHGDAL
 //#define PARCELWIREDSHAPE
 //#define FILTERINSPATIALLINKING
-#define TESTMULTITHREADING
+//#define TESTMULTITHREADING
+#define LOADEXTENSION
+
+#define ELEMENTS 1000
+
+#ifdef LOADEXTENSION
+/**
+ * @brief Test self intersection warning in GDAL
+ */
+
+TEST_F(GDALModules_Unittests, LoadSpatialiteExtension) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
+	 char *sql;
+	const char* data = "Callback function called";
+	rc = sqlite3_open("test.db", &db);
+
+	if( rc ){
+	   fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+	   return;
+	}else{
+
+
+	   fprintf(stderr, "Opened database successfully\n");
+
+	}
+
+	sql = "SELECT load_extension('libmy_sqlite_plugin.dylib')";
+
+	/* Execute SQL statement */
+	sqlite3_enable_load_extension(db,1);
+	rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		DM::Logger(DM::Error) <<" SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
+	   fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	   sqlite3_free(zErrMsg);
+	}else{
+		DM::Logger(DM::Error) <<"Successfully loaded extension";
+	}
+
+	sql = "select my_power_func(1,2)";
+
+	/* Execute SQL statement */
+	rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		DM::Logger(DM::Error) <<"SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
+	   //fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	   sqlite3_free(zErrMsg);
+	}else{
+	   fprintf(stdout, "Operation done successfully\n");
+	}
+
+
+	sqlite3_close(db);
+
+	return;
+
+}
+#endif
+
+
+
 
 #ifdef IMPORTWITHGDAL
 /**
