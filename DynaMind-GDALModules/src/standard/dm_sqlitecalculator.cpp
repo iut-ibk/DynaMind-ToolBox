@@ -32,6 +32,7 @@ DM_SQliteCalculator::DM_SQliteCalculator()
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
 	this->addGDALData("city", data);
 }
+
 DM::Attribute::AttributeType DM_SQliteCalculator::convertAttributeType(std::string type) {
 	if (type == "STRING") {
 		return DM::Attribute::STRING;
@@ -41,8 +42,6 @@ DM::Attribute::AttributeType DM_SQliteCalculator::convertAttributeType(std::stri
 	}
 	return DM::Attribute::DOUBLE;
 }
-
-
 
 void DM_SQliteCalculator::resetInit()
 {
@@ -176,7 +175,6 @@ void DM_SQliteCalculator::init()
 	if (this->attribute.empty())
 		return;
 	if (!initViews()) {
-
 		resetInit();
 		return;
 	}
@@ -202,7 +200,18 @@ void DM_SQliteCalculator::run()
 		v->createIndex(it->second);
 	}
 
-	this->leading_view->executeSQL(equation.c_str());
+	std::stringstream query;
+
+
+	query << this->equation;
+
+	std::string filter = leading_view->get_attribute_filter_sql_string();
+
+	if (!filter.empty())
+		query << " WHERE " << filter;
+
+	DM::Logger(DM::Standard) << query.str();
+	this->leading_view->executeSQL(query.str().c_str());
 
 }
 
