@@ -11,7 +11,7 @@ FILE(GLOB UNIT_CPP *.cpp)
 ADD_EXECUTABLE(unit-test_gdalmodules ${UNIT_CPP})
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-	SET_TARGET_PROPERTIES(unit-test_gdalmodules  PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
+	SET_TARGET_PROPERTIES(unit-test_gdalmodules PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
 ENDIF()
 
 IF(USEQT5)
