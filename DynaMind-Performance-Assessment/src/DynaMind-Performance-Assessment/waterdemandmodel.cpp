@@ -28,13 +28,11 @@ WaterDemandModel::WaterDemandModel()
 {
 	this->GDALModule = true;
 	this->rainfile = "";
-	this->addParameter("rainfile", DM::STRING, &this->rainfile);
+	this->addParameter("rainfile", DM::FILENAME, &this->rainfile);
 
 	this->evapofile = "";
-	this->addParameter("evapofile", DM::STRING, &this->evapofile);
+	this->addParameter("evapofile", DM::FILENAME, &this->evapofile);
 
-	this->cd3_dir = "";
-	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
@@ -247,17 +245,6 @@ Node *WaterDemandModel::createConsumer(int persons)
 	consumption->setParameter("const_flow_stormwater",createConstFlow(0));
 
 	return consumption;
-}
-
-
-std::string WaterDemandModel::getCd3_dir() const
-{
-	return cd3_dir;
-}
-
-void WaterDemandModel::setCd3_dir(const std::string &value)
-{
-	cd3_dir = value;
 }
 
 

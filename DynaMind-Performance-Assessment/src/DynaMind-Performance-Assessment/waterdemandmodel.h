@@ -30,7 +30,6 @@ class WaterDemandModel: public DM::Module
 
 		std::string rainfile;
 		std::string evapofile;
-		std::string cd3_dir;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
@@ -50,8 +49,6 @@ class WaterDemandModel: public DM::Module
 		void clear();
 		Node *createConsumer(int persons);
 		Flow createConstFlow(double const_flow);
-		std::string getCd3_dir() const;
-		void setCd3_dir(const std::string &value);
 		std::string getEvapofile() const;
 		void setEvapofile(const std::string &value);
 		std::string getRainfile() const;
