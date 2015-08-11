@@ -236,25 +236,28 @@ void Simulation::registerModulesFromDirectory(const QDir& dir)
 
 void Simulation::registerModulesFromDefaultLocation()
 {
+//	QVector<QDir> cpv;
+//	cpv.push_back(QDir::currentPath() + "/Modules");
+//	cpv.push_back(QDir::currentPath() + "/bin/Modules");
+//#if defined DEBUG || _DEBUG
+//	cpv.push_back(QDir::currentPath() + "/../Modules/Debug");
+//	cpv.push_back(QDir::currentPath() + "/../../../output/Debug");	// win32 unit-tests
+//	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Debug");
+//#else
+//	cpv.push_back(QDir::currentPath() + "/../Modules/Release");
+//	cpv.push_back(QDir::currentPath() + "/../Modules/RelWithDebInfo");
+//	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Release");
+//	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo");
+//#endif
+
+//#ifndef PYTHON_EMBEDDING_DISABLED
+//	cpv.push_back(QDir::currentPath() + "/bin/PythonModules/scripts");
+//	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
+//#endif
+
 	QVector<QDir> cpv;
-	cpv.push_back(QDir::currentPath() + "/Modules");
-	cpv.push_back(QDir::currentPath() + "/bin/Modules");
-#if defined DEBUG || _DEBUG
-	cpv.push_back(QDir::currentPath() + "/../Modules/Debug");
-	cpv.push_back(QDir::currentPath() + "/../../../output/Debug");	// win32 unit-tests
-	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Debug");
-#else
-	cpv.push_back(QDir::currentPath() + "/../Modules/Release");
-	cpv.push_back(QDir::currentPath() + "/../Modules/RelWithDebInfo");
-	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/Release");
-	cpv.push_back(QDir::currentPath() + "/../../../output/Modules/RelWithDebInfo");
-#endif
-
-#ifndef PYTHON_EMBEDDING_DISABLED
-	cpv.push_back(QDir::currentPath() + "/bin/PythonModules/scripts");
-	cpv.push_back(QDir::currentPath() + "/PythonModules/scripts");
-#endif
-
+	cpv.push_back( QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/PythonModules/scripts") ) );
+	cpv.push_back(  QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/Modules" ) ) );
 	foreach (QDir cp, cpv)
 		registerModulesFromDirectory(cp);
 }
@@ -1390,27 +1393,3 @@ void Simulation::removeObserver(SimulationObserver *obs)
 
 
 
-std::string SimulationConfig::getWorkingDir() const
-{
-	return workingDir;
-}
-
-void SimulationConfig::setWorkingDir(const std::string &value)
-{
-	QDir dir(QString::fromStdString(value));
-	if (!dir.exists()) {
-		DM::Logger(DM::Error) << "Failed to set working directory to " << value << " does not exist";
-		return;
-	}
-	workingDir = value;
-
-}
-bool SimulationConfig::getKeepSystems() const
-{
-	return keepSystems;
-}
-
-void SimulationConfig::setKeepSystems(bool value)
-{
-	keepSystems = value;
-}
