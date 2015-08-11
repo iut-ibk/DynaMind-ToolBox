@@ -36,7 +36,13 @@ int SqlitePlow::callback(void *plow, int argc, char **argv, char **azColName){
 }
 
 
-SqlitePlow::SqlitePlow(QObject *parent): junk_size(5000), QObject(parent)
+SqlitePlow::SqlitePlow(std::string extensionLocation, std::string databaseFile, std::string workQuery, std::string  mainTable, int junk_size, QObject *parent):
+	extensionLocation(extensionLocation),
+	main_table(mainTable),
+	workerQuery(workQuery),
+	database_file(databaseFile),
+	junk_size(junk_size),
+	QObject(parent)
 {
 
 }
@@ -90,6 +96,11 @@ void SqlitePlow::setJunkSize(int size)
 	this->junk_size = size;
 }
 
+std::string SqlitePlow::getExtensionLocation()
+{
+	return this->extensionLocation;
+}
+
 void SqlitePlow::setDatabaseFile(std::string database_file)
 {
 	this->database_file = database_file;
@@ -110,9 +121,10 @@ void SqlitePlow::plow() {
 	}
 	sqlite3_enable_load_extension(db,1);
 	this->execute_query(db,"SELECT load_extension('mod_spatialite')");
-	this->execute_query(db,"SELECT load_extension('/Users/christianurich/Documents/Dynamind-Toolbox/build/release/output/Modules/libdm_sqlite_plugin')");
 
-
+	std::stringstream query_ss;
+	query_ss <<"SELECT load_extension('" << extensionLocation << "')";
+	this->execute_query(db,query_ss.str().c_str());
 
 	QThreadPool qpool;
 	chunk_counter = 0;

@@ -44,7 +44,7 @@ class RWHTCostModel(Module):
 
 
         def init(self):
-            self.__rwht = ViewContainer("rwht", COMPONENT, WRITE)
+            self.__rwht = ViewContainer("rwht", COMPONENT, READ)
             self.__rwht.addAttribute("volume", Attribute.DOUBLE, READ)
             self.__rwht.addAttribute("annual_water_savings", Attribute.DOUBLE, READ)
             self.__rwht.addAttribute("non_potable_savings", Attribute.DOUBLE, READ)
@@ -173,13 +173,13 @@ class RWHTCostModel(Module):
 
 
 
-            self.__rwht.sync()
-            self.__parcel.sync()
+            # self.__rwht.sync()
+            # self.__parcel.sync()
 
-            print pv_2000 / float(counter_parcel)
-            print pv_1500 / float(counter_parcel)
-            print pv_750 / float(counter_parcel)
-            print counter
+            # print pv_2000 / float(counter_parcel)
+            # print pv_1500 / float(counter_parcel)
+            # print pv_750 / float(counter_parcel)
+            # print counter
 
 
             # for rwht in self.__rwht:

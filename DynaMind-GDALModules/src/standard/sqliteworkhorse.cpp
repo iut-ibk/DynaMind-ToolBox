@@ -66,7 +66,10 @@ void SqliteWorkHorse::initDatabase(){
 	}
 	sqlite3_enable_load_extension(db,1);
 	execute_query("SELECT load_extension('mod_spatialite')");
-	execute_query("SELECT load_extension('/Users/christianurich/Documents/Dynamind-Toolbox/build/release/output/Modules/libdm_sqlite_plugin')");
+	std::stringstream query_ss;
+	query_ss << "SELECT load_extension('" << this->plow->getExtensionLocation() << "')";
+	std::cout << query_ss.str() << std::endl;
+	execute_query(query_ss.str().c_str());
 }
 
 std::string SqliteWorkHorse::getMainTable()

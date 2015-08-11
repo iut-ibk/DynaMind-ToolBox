@@ -20,6 +20,7 @@ private:
 	std::string workerQuery;
 	std::string database_file;
 	std::string main_table;
+	std::string extensionLocation;
 
 	void execute_query(sqlite3 *db, const char *sql, bool cb = false);
 
@@ -28,7 +29,7 @@ private:
 	int junk_size;
 
 public:
-	SqlitePlow(QObject *parent = 0);
+	SqlitePlow(std::string extension_location, std::string databaseFile, std::string workQuery,  std::string mainTable, int junk_size = 5000, QObject *parent = 0);
 	void commit_result(std::string uq);
 	void setStillMore(bool v);
 	void setWorkerQuery(std::string query);
@@ -37,6 +38,8 @@ public:
 	std::string GetMainTable();
 	int getTotalChunks();
 	void setJunkSize(int size);
+
+	std::string getExtensionLocation();
 
 	void setDatabaseFile(std::string database_file);
 	std::string getDatabaseFile();

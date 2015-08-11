@@ -1,5 +1,6 @@
 #include "gdalgeometricattributes.h"
 #include "geometricattributeworker.h"
+#include "dmsimulation.h"
 #include "sqliteplow.h"
 
 #include <ogr_api.h>
@@ -76,9 +77,14 @@ void GDALGeometricAttributes::run_sql()
 
 	//Load spatialite
 	execute_sql_statement(db, "SELECT load_extension('mod_spatialite')");
-	execute_sql_statement(db, "SELECT load_extension('Modules/libdm_sqlite_plugin')");
 
 	std::stringstream query_stream;
+	query_stream << "SELECT load_extension('" << this->getSimulation()->getSimulationConfig().getDefaultModulePath() << '/SqliteExtension/libdm_sqlite_plugin' << "')";
+
+	execute_sql_statement(db, query_stream.str().c_str());
+
+	query_stream.str("");
+	query_stream.clear();
 	query_stream << "UPDATE " << this->leadingViewName <<  " set ";
 
 	if (isCalculateArea)
@@ -95,12 +101,24 @@ void GDALGeometricAttributes::run_sql()
 
 void GDALGeometricAttributes::run_sql_threaded()
 {
-	SqlitePlow plower;
 
+
+	std::stringstream query_stream;
+	query_stream << "SELECT ogc_fid ";
+	if (isCalculateArea)
+		query_stream << ", area(geometry)  as area ";
+	if (isAspectRationBB)
+		query_stream << ", dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb   ";
+	if (isPercentageFilled)
+		query_stream << ", dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled ";
+
+	query_stream << " from " << this->leadingViewName;
 	// "SELECT ogc_fid, area(geometry)  as area, dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled , dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb from parcel "
-	plower.setWorkerQuery("SELECT ogc_fid, area(geometry) as area, dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled , dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb from parcel");
-	plower.setMainTable("parcel");
-	plower.setDatabaseFile(this->vc.getDBID());
+
+	//QString location_plugins = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath())+ QString::fromStdString("/SqliteExtension/libdm_sqlite_plugin");
+
+	SqlitePlow plower(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin", this->vc.getDBID(),query_stream.str(),this->leadingViewName);
+
 	plower.plow();
 
 }

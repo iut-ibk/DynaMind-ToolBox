@@ -385,7 +385,7 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 			solve_variable(f, link_chain_next, ress_vector, attr_type, false);
 		}
 	} else if (link_chain.size() == 2) { // Get Values
-		DM::Logger(DM::Debug) << link_chain[0].toStdString();
+		//DM::Logger(DM::Debug) << link_chain[0].toStdString();
 		DM::ViewContainer * v = helper_views_name[link_chain[0].toStdString()];
 		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
 		AttributeValue val;
