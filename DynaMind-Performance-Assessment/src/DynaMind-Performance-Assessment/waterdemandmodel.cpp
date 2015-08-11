@@ -1,4 +1,5 @@
 #include "waterdemandmodel.h"
+//GDAL inlcudes
 #include "ogrsf_frmts.h"
 //CD3 includes
 #include <node.h>
@@ -10,10 +11,16 @@
 #include <logsink.h>
 #include <noderegistry.h>
 #include <simulationregistry.h>
-#include <dynamindlogsink.h>
 #include <nodeconnection.h>
+
+//DM includes
+#include <dynamindlogsink.h>
+#include <dmsimulation.h>
 #include <dmgdalhelper.h>
+
+//STD
 #include <numeric>
+
 
 DM_DECLARE_CUSTOM_NODE_NAME(WaterDemandModel,Water Demand Model, Performance Assessment)
 
@@ -99,13 +106,14 @@ void WaterDemandModel::initmodel()
 
 	Logger(Standard) << dir.absolutePath().toStdString();
 
+
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/libdance4water-nodes";
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
 		nodereg->addNativePlugin(dance_nodes.toStdString());
 		try{
-			nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+			nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		}  catch(...) {
-			Logger(Error) << "big fat error";
+			Logger(Error) << "Please point path to CD3 water balance modules";
 			this->setStatus(DM::MOD_EXECUTION_ERROR);
 			return;
 

@@ -1,0 +1,1386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<citydrain version="1.0">
+    <pluginpath path="nodes"/> 
+    <pythonmodule module="C:/Users/Acer/Documents/GitHub/CD3Waterbalance/Module/cd3waterbalancemodules.py"/>
+    <pythonmodule module="C:/Users/Acer/Documents/GitHub/CD3Waterbalance/Module/cd3waterbalancemodules.py"/>
+    <simulation class="DefaultSimulation">
+        <time start="2000-Jan-01 00:00:00" stop="2001-Jan-01 00:00:00" dt="3600">
+            <flowdefinition>
+                <flow name="Q"/>
+                <concentration name="BOD5"/>
+                <concentration name="COD"/>
+                <concentration name="Cu"/>
+                <concentration name="Ntot"/>
+            </flowdefinition>
+        </time>
+    </simulation>
+    <model>
+        <nodelist> 
+            <node id="File_Reader_0" class="File_Reader">
+                <parameter name="" type="string" value="C:/Users/Acer/Documents/GitHub/CD3Waterbalance/simulationwithpatterns/inputfiles/rain.ixx"/>
+                <parameter name="Type_H_for_height_[mm]_or_F_for_flow_[l/h]" type="string" value="H"/>
+            </node>
+            <node id="File_Reader_1" class="File_Reader">
+                <parameter name="" type="string" value="C:/Users/Acer/Documents/GitHub/CD3Waterbalance/simulationwithpatterns/inputfiles/evapo.ixx"/>
+                <parameter name="Type_H_for_height_[mm]_or_F_for_flow_[l/h]" type="string" value="H"/>
+            </node>
+            <node id="Pattern_Impl_0" class="Pattern_Impl">
+                <parameter name="Sun_Zenith_[0-23h]" type="double" value="13"/>
+                <parameter name="Sundown_[0-23h]" type="double" value="20.5"/>
+            </node> 
+ 			<node id="Catchment_w_Routing_0" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.2"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="400"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.9"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="800"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="700"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="500"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_1" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.2"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="400"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.9"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="800"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="700"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="500"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_2" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="380"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.8"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="10000"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="710"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="510"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_3" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.2"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="400"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.9"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="800"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="700"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="500"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_4" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.2"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="400"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.9"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="800"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="700"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="500"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_5" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.2"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="400"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.9"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.4"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="800"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="700"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="500"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Catchment_w_Routing_6" class="Catchment_w_Routing"> 
+				<parameter name="Number_of_Subareas_[-]" type="double" value="1"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]" type="double" value="0"/> 
+ 				<parameter name="Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Depression_Loss_[mm]" type="double" value="1.5"/> 
+ 				<parameter name="Runoff_Runtime_iAR_[s]" type="double" value="380"/> 
+ 				<parameter name="Weighting_Coefficient_iASD_[-]" type="double" value="0.05"/> 
+ 				<parameter name="Decay_Constant_[1/min]" type="double" value="1.8"/> 
+ 				<parameter name="Initial_Infiltration_Capacity_[m/h]" type="double" value="0.6"/> 
+ 				<parameter name="Weighting_Coefficient_iAR_[-]" type="double" value="0.04"/> 
+ 				<parameter name="Wetting_Loss_[mm]" type="double" value="0.4"/> 
+ 				<parameter name="Final_Infiltration_Capacity_[m/h]" type="double" value="0.21"/> 
+ 				<parameter name="Fraktion_of_Pervious_Area_pA_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_Area_[m^2]" type="double" value="10000"/> 
+ 				<parameter name="Weighting_Coefficient_pA_[-]" type="double" value="0.06"/> 
+ 				<parameter name="Runoff_Runtime_pA_[s]" type="double" value="710"/> 
+ 				<parameter name="Runoff_Runtime_iASD_[s]" type="double" value="510"/> 
+ 				<parameter name="Outdoor_Demand_Weighing_Factor_[-]" type="double" value="0.5"/> 
+ 				<parameter name="Catchment_with_or_without_Routing_(with_or_without)" type="string" value="without"/> 
+ 			</node> 
+ 			<node id="Building_0" class="Building"/> 
+			<node id="Building_1" class="Building"/> 
+			<node id="Building_2" class="Building"/> 
+			<node id="Building_3" class="Building"/> 
+			<node id="Building_4" class="Building"/> 
+			<node id="Stormwaterdrain_0" class="Stormwaterdrain"/> 
+			<node id="Sewer2_0" class="Sewer2"/> 
+			<node id="Potable_Water_Reservoir_0" class="Potable_Water_Reservoir"/> 
+			<node id="Raintank_0" class="Raintank"> 
+				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Raintank_1" class="Raintank"> 
+				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Raintank_2" class="Raintank"> 
+				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Raintank_3" class="Raintank"> 
+				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Raintank_4" class="Raintank"> 
+				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Greywatertank_0" class="Greywatertank"> 
+				<parameter name="Yield_of_Treatment_[-]" type="double" value="1"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Greywatertank_1" class="Greywatertank"> 
+				<parameter name="Yield_of_Treatment_[-]" type="double" value="1"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Greywatertank_2" class="Greywatertank"> 
+				<parameter name="Yield_of_Treatment_[-]" type="double" value="1"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Greywatertank_3" class="Greywatertank"> 
+				<parameter name="Yield_of_Treatment_[-]" type="double" value="1"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_0" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_1" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_2" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_3" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_4" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_5" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="4"/> 
+ 			</node> 
+ 			<node id="Collector_6" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_7" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_8" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_9" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_10" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_11" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_12" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_13" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_14" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_15" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_16" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="3"/> 
+ 			</node> 
+ 			<node id="Collector_17" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="13"/> 
+ 			</node> 
+ 			<node id="Collector_18" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_19" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="4"/> 
+ 			</node> 
+ 			<node id="Collector_20" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_21" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_22" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="2"/> 
+ 			</node> 
+ 			<node id="Collector_23" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="7"/> 
+ 			</node> 
+ 			<node id="Collector_24" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_25" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_26" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_27" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_28" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_29" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_30" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_31" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_32" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="5"/> 
+ 			</node> 
+ 			<node id="Collector_33" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="8"/> 
+ 			</node> 
+ 			<node id="Collector_34" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_35" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Collector_36" class="Collector"> 
+				<parameter name="Number_of_Inports" type="int" value="1"/> 
+ 			</node> 
+ 			<node id="Stormwaterreservoir_0" class="Stormwaterreservoir"> 
+				<parameter name="Yield_of_Treatment [-]" type="double" value="0.9"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="15"/> 
+ 			</node> 
+ 			<node id="FileOut_0" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Rain_Model.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_1" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Evapo_Model.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_2" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Gardenwateringstorage.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_3" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Greywatertanklevels.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_4" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Greywaterreservoirlevels.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_5" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Stormwaterreservoirlevels.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_6" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Rainwatertanklevels.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_7" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Actual_Infiltration.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_8" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Outdoor_Demand.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_9" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Indoor_Demand.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_10" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Sewer.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_11" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Stormwaterdrain.txt"/> 
+ 			</node> 
+ 			<node id="FileOut_12" class="FileOut"> 
+				<parameter name="out_file_name" type="string" value="Potable_Water_Demand.txt"/> 
+ 			</node> 
+ 			<node id="Distributor_0" class="Distributor"> 
+				<parameter name="Number_of_Outports" type="int" value="7"/> 
+ 			</node> 
+ 			<node id="Distributor_1" class="Distributor"> 
+				<parameter name="Number_of_Outports" type="int" value="7"/> 
+ 			</node> 
+ 			<node id="Demand_Model_0" class="Demand_Model"> 
+				<parameter name="Commercial_Vector" type="string" value="[5]"/> 
+ 				<parameter name="Residential_Vector" type="string" value="[5, 40]"/> 
+ 				<parameter name="Select_Model_(Simple_Model_or_Stochastic_Model)" type="string" value="Simple_Model"/> 
+ 			</node> 
+ 			<node id="Demand_Model_1" class="Demand_Model"> 
+				<parameter name="Commercial_Vector" type="string" value="[5]"/> 
+ 				<parameter name="Residential_Vector" type="string" value="[5, 40]"/> 
+ 				<parameter name="Select_Model_(Simple_Model_or_Stochastic_Model)" type="string" value="Simple_Model"/> 
+ 			</node> 
+ 			<node id="Demand_Model_2" class="Demand_Model"> 
+				<parameter name="Commercial_Vector" type="string" value="[5]"/> 
+ 				<parameter name="Residential_Vector" type="string" value="[5, 40]"/> 
+ 				<parameter name="Select_Model_(Simple_Model_or_Stochastic_Model)" type="string" value="Simple_Model"/> 
+ 			</node> 
+ 			<node id="Demand_Model_3" class="Demand_Model"> 
+				<parameter name="Commercial_Vector" type="string" value="[5]"/> 
+ 				<parameter name="Residential_Vector" type="string" value="[5, 40]"/> 
+ 				<parameter name="Select_Model_(Simple_Model_or_Stochastic_Model)" type="string" value="Simple_Model"/> 
+ 			</node> 
+ 			<node id="Demand_Model_4" class="Demand_Model"> 
+				<parameter name="Commercial_Vector" type="string" value="[5]"/> 
+ 				<parameter name="Residential_Vector" type="string" value="[5, 40]"/> 
+ 				<parameter name="Select_Model_(Simple_Model_or_Stochastic_Model)" type="string" value="Simple_Model"/> 
+ 			</node> 
+ 			<node id="GardenWateringModel_0" class="GardenWateringModel"> 
+				<parameter name="Average_Watering_Frequency_[d]" type="double" value="7"/> 
+ 				<parameter name="Deviation_of_Frequency_[d]" type="double" value="2"/> 
+ 				<parameter name="Maximal_Watering_Flow_Rate_[l/min]" type="double" value="22"/> 
+ 				<parameter name="Smart_Watering_Start_Time_End_Time_[hh,hh]" type="string" value="[18, 6]"/> 
+ 				<parameter name="Watering_Method_(Normal_Watering_or_Smart_Watering)" type="string" value="Smart_Watering"/> 
+ 			</node> 
+ 			<node id="GardenWateringModel_1" class="GardenWateringModel"> 
+				<parameter name="Average_Watering_Frequency_[d]" type="double" value="7"/> 
+ 				<parameter name="Deviation_of_Frequency_[d]" type="double" value="2"/> 
+ 				<parameter name="Maximal_Watering_Flow_Rate_[l/min]" type="double" value="22"/> 
+ 				<parameter name="Smart_Watering_Start_Time_End_Time_[hh,hh]" type="string" value="[18, 6]"/> 
+ 				<parameter name="Watering_Method_(Normal_Watering_or_Smart_Watering)" type="string" value="Smart_Watering"/> 
+ 			</node> 
+ 			<node id="GardenWateringModel_2" class="GardenWateringModel"> 
+				<parameter name="Average_Watering_Frequency_[d]" type="double" value="7"/> 
+ 				<parameter name="Deviation_of_Frequency_[d]" type="double" value="2"/> 
+ 				<parameter name="Maximal_Watering_Flow_Rate_[l/min]" type="double" value="22"/> 
+ 				<parameter name="Smart_Watering_Start_Time_End_Time_[hh,hh]" type="string" value="[18, 6]"/> 
+ 				<parameter name="Watering_Method_(Normal_Watering_or_Smart_Watering)" type="string" value="Smart_Watering"/> 
+ 			</node> 
+ 			<node id="GardenWateringModel_3" class="GardenWateringModel"> 
+				<parameter name="Average_Watering_Frequency_[d]" type="double" value="7"/> 
+ 				<parameter name="Deviation_of_Frequency_[d]" type="double" value="2"/> 
+ 				<parameter name="Maximal_Watering_Flow_Rate_[l/min]" type="double" value="22"/> 
+ 				<parameter name="Smart_Watering_Start_Time_End_Time_[hh,hh]" type="string" value="[18, 6]"/> 
+ 				<parameter name="Watering_Method_(Normal_Watering_or_Smart_Watering)" type="string" value="Smart_Watering"/> 
+ 			</node> 
+ 			<node id="GardenWateringModel_4" class="GardenWateringModel"> 
+				<parameter name="Average_Watering_Frequency_[d]" type="double" value="7"/> 
+ 				<parameter name="Deviation_of_Frequency_[d]" type="double" value="2"/> 
+ 				<parameter name="Maximal_Watering_Flow_Rate_[l/min]" type="double" value="22"/> 
+ 				<parameter name="Smart_Watering_Start_Time_End_Time_[hh,hh]" type="string" value="[18, 6]"/> 
+ 				<parameter name="Watering_Method_(Normal_Watering_or_Smart_Watering)" type="string" value="Smart_Watering"/> 
+ 			</node> 
+ 			<node id="Greywaterreservoir_0" class="Greywaterreservoir"> 
+				<parameter name="Yield_of_Treatment_[-]" type="double" value="0.9"/> 
+ 				<parameter name="Storage_Volume_[m^3]" type="double" value="15"/> 
+ 			</node> 
+ 		</nodelist>
+		<connectionlist>
+			<connection id="0">
+				<source node="Demand_Model_0" port="Outport_Bathtub"/>
+				<sink node="Building_0" port="Bathtub"/>
+			</connection>
+			<connection id="1">
+				<source node="Demand_Model_0" port="Outport_Shower"/>
+				<sink node="Building_0" port="Shower"/>
+			</connection>
+			<connection id="2">
+				<source node="Demand_Model_0" port="Outport_Toilet"/>
+				<sink node="Building_0" port="Toilet"/>
+			</connection>
+			<connection id="3">
+				<source node="Demand_Model_0" port="Outport_Kitchen_Tap"/>
+				<sink node="Building_0" port="Kitchen_Tap"/>
+			</connection>
+			<connection id="4">
+				<source node="Demand_Model_0" port="Outport_Washing_Machine"/>
+				<sink node="Building_0" port="Washing_Machine"/>
+			</connection>
+			<connection id="5">
+				<source node="Demand_Model_0" port="Outport_Dishwasher"/>
+				<sink node="Building_0" port="Dishwasher"/>
+			</connection>
+			<connection id="6">
+				<source node="Demand_Model_0" port="Outport_Handbasin_Tap"/>
+				<sink node="Building_0" port="Handbasin_Tap"/>
+			</connection>
+			<connection id="7">
+				<source node="Demand_Model_0" port="Outport_Evapcooler"/>
+				<sink node="Building_0" port="Evapcooler"/>
+			</connection>
+			<connection id="8">
+				<source node="Catchment_w_Routing_0" port="Collected_Water"/>
+				<sink node="Raintank_0" port="Collected_Water"/>
+			</connection>
+			<connection id="9">
+				<source node="Catchment_w_Routing_0" port="Outdoor_Demand"/>
+				<sink node="GardenWateringModel_0" port="Outdoor_Demand_In"/>
+			</connection>
+			<connection id="10">
+				<source node="GardenWateringModel_0" port="Outdoor_Demand_Out"/>
+				<sink node="Building_0" port="Outdoor_Demand"/>
+			</connection>
+			<connection id="11">
+				<source node="Building_0" port="Non_Potable_Demand"/>
+				<sink node="Raintank_0" port="Non_Potable_Demand"/>
+			</connection>
+			<connection id="12">
+				<source node="Demand_Model_1" port="Outport_Bathtub"/>
+				<sink node="Building_1" port="Bathtub"/>
+			</connection>
+			<connection id="13">
+				<source node="Demand_Model_1" port="Outport_Shower"/>
+				<sink node="Building_1" port="Shower"/>
+			</connection>
+			<connection id="14">
+				<source node="Demand_Model_1" port="Outport_Toilet"/>
+				<sink node="Building_1" port="Toilet"/>
+			</connection>
+			<connection id="15">
+				<source node="Demand_Model_1" port="Outport_Kitchen_Tap"/>
+				<sink node="Building_1" port="Kitchen_Tap"/>
+			</connection>
+			<connection id="16">
+				<source node="Demand_Model_1" port="Outport_Washing_Machine"/>
+				<sink node="Building_1" port="Washing_Machine"/>
+			</connection>
+			<connection id="17">
+				<source node="Demand_Model_1" port="Outport_Dishwasher"/>
+				<sink node="Building_1" port="Dishwasher"/>
+			</connection>
+			<connection id="18">
+				<source node="Demand_Model_1" port="Outport_Handbasin_Tap"/>
+				<sink node="Building_1" port="Handbasin_Tap"/>
+			</connection>
+			<connection id="19">
+				<source node="Demand_Model_1" port="Outport_Evapcooler"/>
+				<sink node="Building_1" port="Evapcooler"/>
+			</connection>
+			<connection id="20">
+				<source node="Catchment_w_Routing_1" port="Collected_Water"/>
+				<sink node="Raintank_1" port="Collected_Water"/>
+			</connection>
+			<connection id="21">
+				<source node="Catchment_w_Routing_1" port="Outdoor_Demand"/>
+				<sink node="GardenWateringModel_1" port="Outdoor_Demand_In"/>
+			</connection>
+			<connection id="22">
+				<source node="GardenWateringModel_1" port="Outdoor_Demand_Out"/>
+				<sink node="Building_1" port="Outdoor_Demand"/>
+			</connection>
+			<connection id="23">
+				<source node="Building_1" port="Non_Potable_Demand"/>
+				<sink node="Raintank_1" port="Non_Potable_Demand"/>
+			</connection>
+			<connection id="24">
+				<source node="Raintank_1" port="Additional_Demand"/>
+				<sink node="Greywatertank_0" port="Greywater_Out"/>
+			</connection>
+			<connection id="25">
+				<source node="Building_1" port="Greywater"/>
+				<sink node="Greywatertank_0" port="Greywater_In"/>
+			</connection>
+			<connection id="26">
+				<source node="Catchment_w_Routing_2" port="Runoff"/>
+				<sink node="Collector_0" port="Inport_1"/>
+			</connection>
+			<connection id="27">
+				<source node="Catchment_w_Routing_0" port="Runoff"/>
+				<sink node="Collector_0" port="Inport_2"/>
+			</connection>
+			<connection id="28">
+				<source node="Catchment_w_Routing_1" port="Runoff"/>
+				<sink node="Collector_0" port="Inport_3"/>
+			</connection>
+			<connection id="29">
+				<source node="Building_0" port="Greywater"/>
+				<sink node="Collector_1" port="Inport_1"/>
+			</connection>
+			<connection id="30">
+				<source node="Greywatertank_0" port="Greywater_Overflow"/>
+				<sink node="Collector_1" port="Inport_2"/>
+			</connection>
+			<connection id="31">
+				<source node="Raintank_0" port="Overflow"/>
+				<sink node="Collector_2" port="Inport_1"/>
+			</connection>
+			<connection id="32">
+				<source node="Raintank_1" port="Overflow"/>
+				<sink node="Collector_2" port="Inport_2"/>
+			</connection>
+			<connection id="33">
+				<source node="Raintank_0" port="Current_Volume"/>
+				<sink node="Collector_3" port="Inport_1"/>
+			</connection>
+			<connection id="34">
+				<source node="Raintank_1" port="Current_Volume"/>
+				<sink node="Collector_3" port="Inport_2"/>
+			</connection>
+			<connection id="35">
+				<source node="Raintank_0" port="Additional_Demand"/>
+				<sink node="Collector_4" port="Inport_1"/>
+			</connection>
+			<connection id="36">
+				<source node="Greywatertank_0" port="Additional_Demand"/>
+				<sink node="Collector_4" port="Inport_2"/>
+			</connection>
+			<connection id="37">
+				<source node="Demand_Model_2" port="Outport_Bathtub"/>
+				<sink node="Building_2" port="Bathtub"/>
+			</connection>
+			<connection id="38">
+				<source node="Demand_Model_2" port="Outport_Shower"/>
+				<sink node="Building_2" port="Shower"/>
+			</connection>
+			<connection id="39">
+				<source node="Demand_Model_2" port="Outport_Toilet"/>
+				<sink node="Building_2" port="Toilet"/>
+			</connection>
+			<connection id="40">
+				<source node="Demand_Model_2" port="Outport_Kitchen_Tap"/>
+				<sink node="Building_2" port="Kitchen_Tap"/>
+			</connection>
+			<connection id="41">
+				<source node="Demand_Model_2" port="Outport_Washing_Machine"/>
+				<sink node="Building_2" port="Washing_Machine"/>
+			</connection>
+			<connection id="42">
+				<source node="Demand_Model_2" port="Outport_Dishwasher"/>
+				<sink node="Building_2" port="Dishwasher"/>
+			</connection>
+			<connection id="43">
+				<source node="Demand_Model_2" port="Outport_Handbasin_Tap"/>
+				<sink node="Building_2" port="Handbasin_Tap"/>
+			</connection>
+			<connection id="44">
+				<source node="Demand_Model_2" port="Outport_Evapcooler"/>
+				<sink node="Building_2" port="Evapcooler"/>
+			</connection>
+			<connection id="45">
+				<source node="Catchment_w_Routing_3" port="Collected_Water"/>
+				<sink node="Raintank_2" port="Collected_Water"/>
+			</connection>
+			<connection id="46">
+				<source node="Catchment_w_Routing_3" port="Outdoor_Demand"/>
+				<sink node="GardenWateringModel_2" port="Outdoor_Demand_In"/>
+			</connection>
+			<connection id="47">
+				<source node="GardenWateringModel_2" port="Outdoor_Demand_Out"/>
+				<sink node="Building_2" port="Outdoor_Demand"/>
+			</connection>
+			<connection id="48">
+				<source node="Building_2" port="Non_Potable_Demand"/>
+				<sink node="Raintank_2" port="Non_Potable_Demand"/>
+			</connection>
+			<connection id="49">
+				<source node="Raintank_2" port="Additional_Demand"/>
+				<sink node="Greywatertank_1" port="Greywater_Out"/>
+			</connection>
+			<connection id="50">
+				<source node="Building_2" port="Greywater"/>
+				<sink node="Greywatertank_1" port="Greywater_In"/>
+			</connection>
+			<connection id="51">
+				<source node="Demand_Model_3" port="Outport_Bathtub"/>
+				<sink node="Building_3" port="Bathtub"/>
+			</connection>
+			<connection id="52">
+				<source node="Demand_Model_3" port="Outport_Shower"/>
+				<sink node="Building_3" port="Shower"/>
+			</connection>
+			<connection id="53">
+				<source node="Demand_Model_3" port="Outport_Toilet"/>
+				<sink node="Building_3" port="Toilet"/>
+			</connection>
+			<connection id="54">
+				<source node="Demand_Model_3" port="Outport_Kitchen_Tap"/>
+				<sink node="Building_3" port="Kitchen_Tap"/>
+			</connection>
+			<connection id="55">
+				<source node="Demand_Model_3" port="Outport_Washing_Machine"/>
+				<sink node="Building_3" port="Washing_Machine"/>
+			</connection>
+			<connection id="56">
+				<source node="Demand_Model_3" port="Outport_Dishwasher"/>
+				<sink node="Building_3" port="Dishwasher"/>
+			</connection>
+			<connection id="57">
+				<source node="Demand_Model_3" port="Outport_Handbasin_Tap"/>
+				<sink node="Building_3" port="Handbasin_Tap"/>
+			</connection>
+			<connection id="58">
+				<source node="Demand_Model_3" port="Outport_Evapcooler"/>
+				<sink node="Building_3" port="Evapcooler"/>
+			</connection>
+			<connection id="59">
+				<source node="Catchment_w_Routing_4" port="Collected_Water"/>
+				<sink node="Raintank_3" port="Collected_Water"/>
+			</connection>
+			<connection id="60">
+				<source node="Catchment_w_Routing_4" port="Outdoor_Demand"/>
+				<sink node="GardenWateringModel_3" port="Outdoor_Demand_In"/>
+			</connection>
+			<connection id="61">
+				<source node="GardenWateringModel_3" port="Outdoor_Demand_Out"/>
+				<sink node="Building_3" port="Outdoor_Demand"/>
+			</connection>
+			<connection id="62">
+				<source node="Building_3" port="Non_Potable_Demand"/>
+				<sink node="Raintank_3" port="Non_Potable_Demand"/>
+			</connection>
+			<connection id="63">
+				<source node="Raintank_3" port="Additional_Demand"/>
+				<sink node="Greywatertank_2" port="Greywater_Out"/>
+			</connection>
+			<connection id="64">
+				<source node="Building_3" port="Greywater"/>
+				<sink node="Greywatertank_2" port="Greywater_In"/>
+			</connection>
+			<connection id="65">
+				<source node="Demand_Model_4" port="Outport_Bathtub"/>
+				<sink node="Building_4" port="Bathtub"/>
+			</connection>
+			<connection id="66">
+				<source node="Demand_Model_4" port="Outport_Shower"/>
+				<sink node="Building_4" port="Shower"/>
+			</connection>
+			<connection id="67">
+				<source node="Demand_Model_4" port="Outport_Toilet"/>
+				<sink node="Building_4" port="Toilet"/>
+			</connection>
+			<connection id="68">
+				<source node="Demand_Model_4" port="Outport_Kitchen_Tap"/>
+				<sink node="Building_4" port="Kitchen_Tap"/>
+			</connection>
+			<connection id="69">
+				<source node="Demand_Model_4" port="Outport_Washing_Machine"/>
+				<sink node="Building_4" port="Washing_Machine"/>
+			</connection>
+			<connection id="70">
+				<source node="Demand_Model_4" port="Outport_Dishwasher"/>
+				<sink node="Building_4" port="Dishwasher"/>
+			</connection>
+			<connection id="71">
+				<source node="Demand_Model_4" port="Outport_Handbasin_Tap"/>
+				<sink node="Building_4" port="Handbasin_Tap"/>
+			</connection>
+			<connection id="72">
+				<source node="Demand_Model_4" port="Outport_Evapcooler"/>
+				<sink node="Building_4" port="Evapcooler"/>
+			</connection>
+			<connection id="73">
+				<source node="Catchment_w_Routing_5" port="Collected_Water"/>
+				<sink node="Raintank_4" port="Collected_Water"/>
+			</connection>
+			<connection id="74">
+				<source node="Catchment_w_Routing_5" port="Outdoor_Demand"/>
+				<sink node="GardenWateringModel_4" port="Outdoor_Demand_In"/>
+			</connection>
+			<connection id="75">
+				<source node="GardenWateringModel_4" port="Outdoor_Demand_Out"/>
+				<sink node="Building_4" port="Outdoor_Demand"/>
+			</connection>
+			<connection id="76">
+				<source node="Building_4" port="Non_Potable_Demand"/>
+				<sink node="Raintank_4" port="Non_Potable_Demand"/>
+			</connection>
+			<connection id="77">
+				<source node="Raintank_4" port="Additional_Demand"/>
+				<sink node="Greywatertank_3" port="Greywater_Out"/>
+			</connection>
+			<connection id="78">
+				<source node="Building_4" port="Greywater"/>
+				<sink node="Greywatertank_3" port="Greywater_In"/>
+			</connection>
+			<connection id="79">
+				<source node="Catchment_w_Routing_6" port="Runoff"/>
+				<sink node="Collector_5" port="Inport_1"/>
+			</connection>
+			<connection id="80">
+				<source node="Catchment_w_Routing_3" port="Runoff"/>
+				<sink node="Collector_5" port="Inport_2"/>
+			</connection>
+			<connection id="81">
+				<source node="Catchment_w_Routing_4" port="Runoff"/>
+				<sink node="Collector_5" port="Inport_3"/>
+			</connection>
+			<connection id="82">
+				<source node="Catchment_w_Routing_5" port="Runoff"/>
+				<sink node="Collector_5" port="Inport_4"/>
+			</connection>
+			<connection id="83">
+				<source node="Greywatertank_1" port="Greywater_Overflow"/>
+				<sink node="Collector_6" port="Inport_1"/>
+			</connection>
+			<connection id="84">
+				<source node="Greywatertank_2" port="Greywater_Overflow"/>
+				<sink node="Collector_6" port="Inport_2"/>
+			</connection>
+			<connection id="85">
+				<source node="Greywatertank_3" port="Greywater_Overflow"/>
+				<sink node="Collector_6" port="Inport_3"/>
+			</connection>
+			<connection id="86">
+				<source node="Raintank_2" port="Overflow"/>
+				<sink node="Collector_7" port="Inport_1"/>
+			</connection>
+			<connection id="87">
+				<source node="Raintank_3" port="Overflow"/>
+				<sink node="Collector_7" port="Inport_2"/>
+			</connection>
+			<connection id="88">
+				<source node="Raintank_4" port="Overflow"/>
+				<sink node="Collector_7" port="Inport_3"/>
+			</connection>
+			<connection id="89">
+				<source node="Raintank_2" port="Current_Volume"/>
+				<sink node="Collector_8" port="Inport_1"/>
+			</connection>
+			<connection id="90">
+				<source node="Raintank_3" port="Current_Volume"/>
+				<sink node="Collector_8" port="Inport_2"/>
+			</connection>
+			<connection id="91">
+				<source node="Raintank_4" port="Current_Volume"/>
+				<sink node="Collector_8" port="Inport_3"/>
+			</connection>
+			<connection id="92">
+				<source node="Greywatertank_1" port="Additional_Demand"/>
+				<sink node="Collector_9" port="Inport_1"/>
+			</connection>
+			<connection id="93">
+				<source node="Greywatertank_2" port="Additional_Demand"/>
+				<sink node="Collector_9" port="Inport_2"/>
+			</connection>
+			<connection id="94">
+				<source node="Greywatertank_3" port="Additional_Demand"/>
+				<sink node="Collector_9" port="Inport_3"/>
+			</connection>
+			<connection id="95">
+				<source node="Collector_9" port="Outport"/>
+				<sink node="Collector_10" port="Inport_1"/>
+			</connection>
+			<connection id="96">
+				<source node="Collector_4" port="Outport"/>
+				<sink node="Collector_10" port="Inport_2"/>
+			</connection>
+			<connection id="97">
+				<source node="Collector_6" port="Outport"/>
+				<sink node="Collector_11" port="Inport_1"/>
+			</connection>
+			<connection id="98">
+				<source node="Collector_10" port="Outport"/>
+				<sink node="Greywaterreservoir_0" port="Greywater_Out"/>
+			</connection>
+			<connection id="99">
+				<source node="Collector_11" port="Outport"/>
+				<sink node="Greywaterreservoir_0" port="Greywater_In"/>
+			</connection>
+			<connection id="100">
+				<source node="Collector_0" port="Outport"/>
+				<sink node="Collector_12" port="Inport_1"/>
+			</connection>
+			<connection id="101">
+				<source node="Collector_2" port="Outport"/>
+				<sink node="Collector_12" port="Inport_2"/>
+			</connection>
+			<connection id="102">
+				<source node="Greywaterreservoir_0" port="Additional_Demand"/>
+				<sink node="Collector_13" port="Inport_1"/>
+			</connection>
+			<connection id="103">
+				<source node="Collector_12" port="Outport"/>
+				<sink node="Stormwaterreservoir_0" port="Stormwater_In"/>
+			</connection>
+			<connection id="104">
+				<source node="Collector_13" port="Outport"/>
+				<sink node="Stormwaterreservoir_0" port="Stormwater_Out"/>
+			</connection>
+			<connection id="105">
+				<source node="Stormwaterreservoir_0" port="Additional_Demand"/>
+				<sink node="Collector_14" port="Inport_1"/>
+			</connection>
+			<connection id="106">
+				<source node="Collector_14" port="Outport"/>
+				<sink node="Potable_Water_Reservoir_0" port="Non_Potable_Water_Demand"/>
+			</connection>
+			<connection id="107">
+				<source node="Building_0" port="Potable_Demand"/>
+				<sink node="Collector_15" port="Inport_1"/>
+			</connection>
+			<connection id="108">
+				<source node="Building_1" port="Potable_Demand"/>
+				<sink node="Collector_15" port="Inport_2"/>
+			</connection>
+			<connection id="109">
+				<source node="Building_2" port="Potable_Demand"/>
+				<sink node="Collector_15" port="Inport_3"/>
+			</connection>
+			<connection id="110">
+				<source node="Building_3" port="Potable_Demand"/>
+				<sink node="Collector_15" port="Inport_4"/>
+			</connection>
+			<connection id="111">
+				<source node="Building_4" port="Potable_Demand"/>
+				<sink node="Collector_15" port="Inport_5"/>
+			</connection>
+			<connection id="112">
+				<source node="Collector_15" port="Outport"/>
+				<sink node="Potable_Water_Reservoir_0" port="Potable_Water_Demand"/>
+			</connection>
+			<connection id="113">
+				<source node="Stormwaterreservoir_0" port="Overflow"/>
+				<sink node="Collector_16" port="Inport_1"/>
+			</connection>
+			<connection id="114">
+				<source node="Collector_5" port="Outport"/>
+				<sink node="Collector_16" port="Inport_2"/>
+			</connection>
+			<connection id="115">
+				<source node="Collector_7" port="Outport"/>
+				<sink node="Collector_16" port="Inport_3"/>
+			</connection>
+			<connection id="116">
+				<source node="Collector_16" port="Outport"/>
+				<sink node="Stormwaterdrain_0" port="Runoff"/>
+			</connection>
+			<connection id="117">
+				<source node="Stormwaterreservoir_0" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_1"/>
+			</connection>
+			<connection id="118">
+				<source node="Greywaterreservoir_0" port="Greywater_Overflow"/>
+				<sink node="Collector_17" port="Inport_2"/>
+			</connection>
+			<connection id="119">
+				<source node="Greywatertank_0" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_3"/>
+			</connection>
+			<connection id="120">
+				<source node="Greywatertank_1" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_4"/>
+			</connection>
+			<connection id="121">
+				<source node="Greywatertank_2" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_5"/>
+			</connection>
+			<connection id="122">
+				<source node="Greywatertank_3" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_6"/>
+			</connection>
+			<connection id="123">
+				<source node="Greywaterreservoir_0" port="Wastewater"/>
+				<sink node="Collector_17" port="Inport_7"/>
+			</connection>
+			<connection id="124">
+				<source node="Collector_1" port="Outport"/>
+				<sink node="Collector_17" port="Inport_8"/>
+			</connection>
+			<connection id="125">
+				<source node="Building_0" port="Blackwater"/>
+				<sink node="Collector_17" port="Inport_9"/>
+			</connection>
+			<connection id="126">
+				<source node="Building_1" port="Blackwater"/>
+				<sink node="Collector_17" port="Inport_10"/>
+			</connection>
+			<connection id="127">
+				<source node="Building_2" port="Blackwater"/>
+				<sink node="Collector_17" port="Inport_11"/>
+			</connection>
+			<connection id="128">
+				<source node="Building_3" port="Blackwater"/>
+				<sink node="Collector_17" port="Inport_12"/>
+			</connection>
+			<connection id="129">
+				<source node="Building_4" port="Blackwater"/>
+				<sink node="Collector_17" port="Inport_13"/>
+			</connection>
+			<connection id="130">
+				<source node="Collector_17" port="Outport"/>
+				<sink node="Sewer2_0" port="Blackwater"/>
+			</connection>
+			<connection id="131">
+				<source node="File_Reader_0" port="Outport"/>
+				<sink node="FileOut_0" port="in"/>
+			</connection>
+			<connection id="132">
+				<source node="FileOut_0" port="out"/>
+				<sink node="Distributor_0" port="Inport"/>
+			</connection>
+			<connection id="133">
+				<source node="Distributor_0" port="Outport_1"/>
+				<sink node="Catchment_w_Routing_0" port="Rain"/>
+			</connection>
+			<connection id="134">
+				<source node="Distributor_0" port="Outport_2"/>
+				<sink node="Catchment_w_Routing_1" port="Rain"/>
+			</connection>
+			<connection id="135">
+				<source node="Distributor_0" port="Outport_3"/>
+				<sink node="Catchment_w_Routing_2" port="Rain"/>
+			</connection>
+			<connection id="136">
+				<source node="Distributor_0" port="Outport_4"/>
+				<sink node="Catchment_w_Routing_3" port="Rain"/>
+			</connection>
+			<connection id="137">
+				<source node="Distributor_0" port="Outport_5"/>
+				<sink node="Catchment_w_Routing_4" port="Rain"/>
+			</connection>
+			<connection id="138">
+				<source node="Distributor_0" port="Outport_6"/>
+				<sink node="Catchment_w_Routing_5" port="Rain"/>
+			</connection>
+			<connection id="139">
+				<source node="Distributor_0" port="Outport_7"/>
+				<sink node="Catchment_w_Routing_6" port="Rain"/>
+			</connection>
+			<connection id="140">
+				<source node="File_Reader_1" port="Outport"/>
+				<sink node="Pattern_Impl_0" port="Inport"/>
+			</connection>
+			<connection id="141">
+				<source node="Pattern_Impl_0" port="Outport"/>
+				<sink node="FileOut_1" port="in"/>
+			</connection>
+			<connection id="142">
+				<source node="FileOut_1" port="out"/>
+				<sink node="Distributor_1" port="Inport"/>
+			</connection>
+			<connection id="143">
+				<source node="Distributor_1" port="Outport_1"/>
+				<sink node="Catchment_w_Routing_0" port="Evapotranspiration"/>
+			</connection>
+			<connection id="144">
+				<source node="Distributor_1" port="Outport_2"/>
+				<sink node="Catchment_w_Routing_1" port="Evapotranspiration"/>
+			</connection>
+			<connection id="145">
+				<source node="Distributor_1" port="Outport_3"/>
+				<sink node="Catchment_w_Routing_2" port="Evapotranspiration"/>
+			</connection>
+			<connection id="146">
+				<source node="Distributor_1" port="Outport_4"/>
+				<sink node="Catchment_w_Routing_3" port="Evapotranspiration"/>
+			</connection>
+			<connection id="147">
+				<source node="Distributor_1" port="Outport_5"/>
+				<sink node="Catchment_w_Routing_4" port="Evapotranspiration"/>
+			</connection>
+			<connection id="148">
+				<source node="Distributor_1" port="Outport_6"/>
+				<sink node="Catchment_w_Routing_5" port="Evapotranspiration"/>
+			</connection>
+			<connection id="149">
+				<source node="Distributor_1" port="Outport_7"/>
+				<sink node="Catchment_w_Routing_6" port="Evapotranspiration"/>
+			</connection>
+			<connection id="150">
+				<source node="GardenWateringModel_0" port="Check_Storage"/>
+				<sink node="Collector_18" port="Inport_1"/>
+			</connection>
+			<connection id="151">
+				<source node="GardenWateringModel_1" port="Check_Storage"/>
+				<sink node="Collector_18" port="Inport_2"/>
+			</connection>
+			<connection id="152">
+				<source node="GardenWateringModel_2" port="Check_Storage"/>
+				<sink node="Collector_18" port="Inport_3"/>
+			</connection>
+			<connection id="153">
+				<source node="GardenWateringModel_3" port="Check_Storage"/>
+				<sink node="Collector_18" port="Inport_4"/>
+			</connection>
+			<connection id="154">
+				<source node="GardenWateringModel_4" port="Check_Storage"/>
+				<sink node="Collector_18" port="Inport_5"/>
+			</connection>
+			<connection id="155">
+				<source node="Greywatertank_0" port="Current_Volume"/>
+				<sink node="Collector_19" port="Inport_1"/>
+			</connection>
+			<connection id="156">
+				<source node="Greywatertank_1" port="Current_Volume"/>
+				<sink node="Collector_19" port="Inport_2"/>
+			</connection>
+			<connection id="157">
+				<source node="Greywatertank_2" port="Current_Volume"/>
+				<sink node="Collector_19" port="Inport_3"/>
+			</connection>
+			<connection id="158">
+				<source node="Greywatertank_3" port="Current_Volume"/>
+				<sink node="Collector_19" port="Inport_4"/>
+			</connection>
+			<connection id="159">
+				<source node="Greywaterreservoir_0" port="Current_Volume"/>
+				<sink node="Collector_20" port="Inport_1"/>
+			</connection>
+			<connection id="160">
+				<source node="Stormwaterreservoir_0" port="Current_Volume"/>
+				<sink node="Collector_21" port="Inport_1"/>
+			</connection>
+			<connection id="161">
+				<source node="Collector_3" port="Outport"/>
+				<sink node="Collector_22" port="Inport_1"/>
+			</connection>
+			<connection id="162">
+				<source node="Collector_8" port="Outport"/>
+				<sink node="Collector_22" port="Inport_2"/>
+			</connection>
+			<connection id="163">
+				<source node="Catchment_w_Routing_0" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_1"/>
+			</connection>
+			<connection id="164">
+				<source node="Catchment_w_Routing_1" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_2"/>
+			</connection>
+			<connection id="165">
+				<source node="Catchment_w_Routing_2" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_3"/>
+			</connection>
+			<connection id="166">
+				<source node="Catchment_w_Routing_3" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_4"/>
+			</connection>
+			<connection id="167">
+				<source node="Catchment_w_Routing_4" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_5"/>
+			</connection>
+			<connection id="168">
+				<source node="Catchment_w_Routing_5" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_6"/>
+			</connection>
+			<connection id="169">
+				<source node="Catchment_w_Routing_6" port="Actual_Infiltration"/>
+				<sink node="Collector_23" port="Inport_7"/>
+			</connection>
+			<connection id="170">
+				<source node="Catchment_w_Routing_0" port="Outdoor_Demand_Check"/>
+				<sink node="Collector_24" port="Inport_1"/>
+			</connection>
+			<connection id="171">
+				<source node="Catchment_w_Routing_1" port="Outdoor_Demand_Check"/>
+				<sink node="Collector_24" port="Inport_2"/>
+			</connection>
+			<connection id="172">
+				<source node="Catchment_w_Routing_3" port="Outdoor_Demand_Check"/>
+				<sink node="Collector_24" port="Inport_3"/>
+			</connection>
+			<connection id="173">
+				<source node="Catchment_w_Routing_4" port="Outdoor_Demand_Check"/>
+				<sink node="Collector_24" port="Inport_4"/>
+			</connection>
+			<connection id="174">
+				<source node="Catchment_w_Routing_5" port="Outdoor_Demand_Check"/>
+				<sink node="Collector_24" port="Inport_5"/>
+			</connection>
+			<connection id="175">
+				<source node="Demand_Model_0" port="Outport_Check_Bathtub"/>
+				<sink node="Collector_25" port="Inport_1"/>
+			</connection>
+			<connection id="176">
+				<source node="Demand_Model_1" port="Outport_Check_Bathtub"/>
+				<sink node="Collector_25" port="Inport_2"/>
+			</connection>
+			<connection id="177">
+				<source node="Demand_Model_2" port="Outport_Check_Bathtub"/>
+				<sink node="Collector_25" port="Inport_3"/>
+			</connection>
+			<connection id="178">
+				<source node="Demand_Model_3" port="Outport_Check_Bathtub"/>
+				<sink node="Collector_25" port="Inport_4"/>
+			</connection>
+			<connection id="179">
+				<source node="Demand_Model_4" port="Outport_Check_Bathtub"/>
+				<sink node="Collector_25" port="Inport_5"/>
+			</connection>
+			<connection id="180">
+				<source node="Demand_Model_0" port="Outport_Check_Shower"/>
+				<sink node="Collector_26" port="Inport_1"/>
+			</connection>
+			<connection id="181">
+				<source node="Demand_Model_1" port="Outport_Check_Shower"/>
+				<sink node="Collector_26" port="Inport_2"/>
+			</connection>
+			<connection id="182">
+				<source node="Demand_Model_2" port="Outport_Check_Shower"/>
+				<sink node="Collector_26" port="Inport_3"/>
+			</connection>
+			<connection id="183">
+				<source node="Demand_Model_3" port="Outport_Check_Shower"/>
+				<sink node="Collector_26" port="Inport_4"/>
+			</connection>
+			<connection id="184">
+				<source node="Demand_Model_4" port="Outport_Check_Shower"/>
+				<sink node="Collector_26" port="Inport_5"/>
+			</connection>
+			<connection id="185">
+				<source node="Demand_Model_0" port="Outport_Check_Kitchen_Tap"/>
+				<sink node="Collector_27" port="Inport_1"/>
+			</connection>
+			<connection id="186">
+				<source node="Demand_Model_1" port="Outport_Check_Kitchen_Tap"/>
+				<sink node="Collector_27" port="Inport_2"/>
+			</connection>
+			<connection id="187">
+				<source node="Demand_Model_2" port="Outport_Check_Kitchen_Tap"/>
+				<sink node="Collector_27" port="Inport_3"/>
+			</connection>
+			<connection id="188">
+				<source node="Demand_Model_3" port="Outport_Check_Kitchen_Tap"/>
+				<sink node="Collector_27" port="Inport_4"/>
+			</connection>
+			<connection id="189">
+				<source node="Demand_Model_4" port="Outport_Check_Kitchen_Tap"/>
+				<sink node="Collector_27" port="Inport_5"/>
+			</connection>
+			<connection id="190">
+				<source node="Demand_Model_0" port="Outport_Check_Handbasin_Tap"/>
+				<sink node="Collector_28" port="Inport_1"/>
+			</connection>
+			<connection id="191">
+				<source node="Demand_Model_1" port="Outport_Check_Handbasin_Tap"/>
+				<sink node="Collector_28" port="Inport_2"/>
+			</connection>
+			<connection id="192">
+				<source node="Demand_Model_2" port="Outport_Check_Handbasin_Tap"/>
+				<sink node="Collector_28" port="Inport_3"/>
+			</connection>
+			<connection id="193">
+				<source node="Demand_Model_3" port="Outport_Check_Handbasin_Tap"/>
+				<sink node="Collector_28" port="Inport_4"/>
+			</connection>
+			<connection id="194">
+				<source node="Demand_Model_4" port="Outport_Check_Handbasin_Tap"/>
+				<sink node="Collector_28" port="Inport_5"/>
+			</connection>
+			<connection id="195">
+				<source node="Demand_Model_0" port="Outport_Check_Toilet"/>
+				<sink node="Collector_29" port="Inport_1"/>
+			</connection>
+			<connection id="196">
+				<source node="Demand_Model_1" port="Outport_Check_Toilet"/>
+				<sink node="Collector_29" port="Inport_2"/>
+			</connection>
+			<connection id="197">
+				<source node="Demand_Model_2" port="Outport_Check_Toilet"/>
+				<sink node="Collector_29" port="Inport_3"/>
+			</connection>
+			<connection id="198">
+				<source node="Demand_Model_3" port="Outport_Check_Toilet"/>
+				<sink node="Collector_29" port="Inport_4"/>
+			</connection>
+			<connection id="199">
+				<source node="Demand_Model_4" port="Outport_Check_Toilet"/>
+				<sink node="Collector_29" port="Inport_5"/>
+			</connection>
+			<connection id="200">
+				<source node="Demand_Model_0" port="Outport_Check_Washing_Machine"/>
+				<sink node="Collector_30" port="Inport_1"/>
+			</connection>
+			<connection id="201">
+				<source node="Demand_Model_1" port="Outport_Check_Washing_Machine"/>
+				<sink node="Collector_30" port="Inport_2"/>
+			</connection>
+			<connection id="202">
+				<source node="Demand_Model_2" port="Outport_Check_Washing_Machine"/>
+				<sink node="Collector_30" port="Inport_3"/>
+			</connection>
+			<connection id="203">
+				<source node="Demand_Model_3" port="Outport_Check_Washing_Machine"/>
+				<sink node="Collector_30" port="Inport_4"/>
+			</connection>
+			<connection id="204">
+				<source node="Demand_Model_4" port="Outport_Check_Washing_Machine"/>
+				<sink node="Collector_30" port="Inport_5"/>
+			</connection>
+			<connection id="205">
+				<source node="Demand_Model_0" port="Outport_Check_Dishwasher"/>
+				<sink node="Collector_31" port="Inport_1"/>
+			</connection>
+			<connection id="206">
+				<source node="Demand_Model_1" port="Outport_Check_Dishwasher"/>
+				<sink node="Collector_31" port="Inport_2"/>
+			</connection>
+			<connection id="207">
+				<source node="Demand_Model_2" port="Outport_Check_Dishwasher"/>
+				<sink node="Collector_31" port="Inport_3"/>
+			</connection>
+			<connection id="208">
+				<source node="Demand_Model_3" port="Outport_Check_Dishwasher"/>
+				<sink node="Collector_31" port="Inport_4"/>
+			</connection>
+			<connection id="209">
+				<source node="Demand_Model_4" port="Outport_Check_Dishwasher"/>
+				<sink node="Collector_31" port="Inport_5"/>
+			</connection>
+			<connection id="210">
+				<source node="Demand_Model_0" port="Outport_Check_Evapcooler"/>
+				<sink node="Collector_32" port="Inport_1"/>
+			</connection>
+			<connection id="211">
+				<source node="Demand_Model_1" port="Outport_Check_Evapcooler"/>
+				<sink node="Collector_32" port="Inport_2"/>
+			</connection>
+			<connection id="212">
+				<source node="Demand_Model_2" port="Outport_Check_Evapcooler"/>
+				<sink node="Collector_32" port="Inport_3"/>
+			</connection>
+			<connection id="213">
+				<source node="Demand_Model_3" port="Outport_Check_Evapcooler"/>
+				<sink node="Collector_32" port="Inport_4"/>
+			</connection>
+			<connection id="214">
+				<source node="Demand_Model_4" port="Outport_Check_Evapcooler"/>
+				<sink node="Collector_32" port="Inport_5"/>
+			</connection>
+			<connection id="215">
+				<source node="Collector_25" port="Outport"/>
+				<sink node="Collector_33" port="Inport_1"/>
+			</connection>
+			<connection id="216">
+				<source node="Collector_26" port="Outport"/>
+				<sink node="Collector_33" port="Inport_2"/>
+			</connection>
+			<connection id="217">
+				<source node="Collector_27" port="Outport"/>
+				<sink node="Collector_33" port="Inport_3"/>
+			</connection>
+			<connection id="218">
+				<source node="Collector_28" port="Outport"/>
+				<sink node="Collector_33" port="Inport_4"/>
+			</connection>
+			<connection id="219">
+				<source node="Collector_29" port="Outport"/>
+				<sink node="Collector_33" port="Inport_5"/>
+			</connection>
+			<connection id="220">
+				<source node="Collector_30" port="Outport"/>
+				<sink node="Collector_33" port="Inport_6"/>
+			</connection>
+			<connection id="221">
+				<source node="Collector_31" port="Outport"/>
+				<sink node="Collector_33" port="Inport_7"/>
+			</connection>
+			<connection id="222">
+				<source node="Collector_32" port="Outport"/>
+				<sink node="Collector_33" port="Inport_8"/>
+			</connection>
+			<connection id="223">
+				<source node="Sewer2_0" port="Discharged_Volume"/>
+				<sink node="Collector_34" port="Inport_1"/>
+			</connection>
+			<connection id="224">
+				<source node="Stormwaterdrain_0" port="Discharged_Volume"/>
+				<sink node="Collector_35" port="Inport_1"/>
+			</connection>
+			<connection id="225">
+				<source node="Potable_Water_Reservoir_0" port="Demand"/>
+				<sink node="Collector_36" port="Inport_1"/>
+			</connection>
+			<connection id="226">
+				<source node="Collector_18" port="Outport"/>
+				<sink node="FileOut_2" port="in"/>
+			</connection>
+			<connection id="227">
+				<source node="Collector_19" port="Outport"/>
+				<sink node="FileOut_3" port="in"/>
+			</connection>
+			<connection id="228">
+				<source node="Collector_20" port="Outport"/>
+				<sink node="FileOut_4" port="in"/>
+			</connection>
+			<connection id="229">
+				<source node="Collector_21" port="Outport"/>
+				<sink node="FileOut_5" port="in"/>
+			</connection>
+			<connection id="230">
+				<source node="Collector_22" port="Outport"/>
+				<sink node="FileOut_6" port="in"/>
+			</connection>
+			<connection id="231">
+				<source node="Collector_23" port="Outport"/>
+				<sink node="FileOut_7" port="in"/>
+			</connection>
+			<connection id="232">
+				<source node="Collector_24" port="Outport"/>
+				<sink node="FileOut_8" port="in"/>
+			</connection>
+			<connection id="233">
+				<source node="Collector_33" port="Outport"/>
+				<sink node="FileOut_9" port="in"/>
+			</connection>
+			<connection id="234">
+				<source node="Collector_34" port="Outport"/>
+				<sink node="FileOut_10" port="in"/>
+			</connection>
+			<connection id="235">
+				<source node="Collector_35" port="Outport"/>
+				<sink node="FileOut_11" port="in"/>
+			</connection>
+			<connection id="236">
+				<source node="Collector_36" port="Outport"/>
+				<sink node="FileOut_12" port="in"/>
+			</connection>
+		</connectionlist>
+	</model>
+</citydrain>
