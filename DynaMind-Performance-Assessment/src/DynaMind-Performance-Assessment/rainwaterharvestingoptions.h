@@ -36,7 +36,6 @@ class RainWaterHarvestingOptions: public DM::Module
 		DM::ViewContainer parcels;
 		DM::ViewContainer rwhts;
 
-		std::string cd3_dir;
 		std::vector<string> storage_volume_tank;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
@@ -48,8 +47,7 @@ public:
 		void run();
 		bool initmodel();
 		void clear();
-		std::string getCd3_dir() const;
-		void setCd3_dir(const std::string &value);
+
 		double createTankOption(OGRFeature *rwht, double storage_volume, std::vector<double> & runoff, std::vector<double>  & out_doordemand, std::vector<double> &non_potable_demand);
 		Node * addRainTank(double storage_volume, Node* in_flow, Node* nonpot_before);
 		Node * addRainwaterTank(Node* flow_probe_runoff, Node* nonpot_before, double storage_volume);
