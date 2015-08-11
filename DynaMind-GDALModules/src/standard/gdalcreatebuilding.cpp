@@ -17,6 +17,7 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	char* geo;
 	ogr_poly->exportToWkt(&geo);
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+	OGRFree(geo);
 
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
