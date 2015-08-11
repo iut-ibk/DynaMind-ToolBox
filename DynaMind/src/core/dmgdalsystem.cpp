@@ -294,6 +294,11 @@ OGRFeature *GDALSystem::getNextFeature(const View &v)
 	return lyr->GetNextFeature();
 }
 
+void GDALSystem::setNextByIndex(const View &v, long index){
+	OGRLayer * lyr = viewLayer[v.getName()];
+	lyr->SetNextByIndex(index);
+}
+
 string GDALSystem::getCurrentStateID()
 {
 	return this->state_ids[state_ids.size()-1];

@@ -344,14 +344,16 @@ void GDALAttributeCalculator::run()
 				l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
 			}
 
-			/*if (counter%100000 == 0){
-				//DM::Logger(DM::Error) << "Sync Altered";
+			if (counter%10000 == 0){
+				DM::Logger(DM::Debug) << "Sync Altered" << l_feat->GetFID();
 				leading_view->syncAlteredFeatures();
 				for (std::map<std::string, DM::ViewContainer *>::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it ) {
 					it->second->syncAlteredFeatures();
 					it->second->syncReadFeatures();
 				}
-			}*/
+				leading_view->setNextByIndex(counter);
+			}
+
 		}
 
 

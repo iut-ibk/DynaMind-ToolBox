@@ -186,6 +186,7 @@ public:
 
 	virtual ~GDALSystem();
 
+	void setNextByIndex(const View &v, long index);
 private:
 	OGRDataSource						*poDS;
 	OGRSFDriver							*poDrive;
