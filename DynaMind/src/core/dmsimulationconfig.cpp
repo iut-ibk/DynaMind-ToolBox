@@ -31,6 +31,7 @@ std::string SimulationConfig::getDefaultModulePath()
 	}
 
 	// asume install in /usr/bin
+	std::cout << currentPath.toStdString() << "/../share/DynaMind" << std::endl;
 	return currentPath.toStdString() + "/../share/DynaMind";
 }
 
