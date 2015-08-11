@@ -1,7 +1,7 @@
 #include "dmsimulationconfig.h"
 
 #include "dmlogger.h"
-
+#include <QCoreApplication>
 #include <QDir>
 
 namespace DM {
@@ -24,7 +24,7 @@ void SimulationConfig::setWorkingDir(const std::string &value)
 
 std::string SimulationConfig::getDefaultModulePath()
 {
-	QString currentPath = QDir::currentPath();
+	QString currentPath = QCoreApplication::applicationDirPath();
 	// Default path if run form compiled version
 	if (currentPath.contains("/output")) {
 		return currentPath.toStdString();
