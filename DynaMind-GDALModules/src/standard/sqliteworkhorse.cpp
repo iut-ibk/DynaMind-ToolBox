@@ -23,7 +23,7 @@ int SqliteWorkHorse::callback(void *db_w, int argc, char **argv, char **azColNam
 	query << " SET ";
 
 	for (int i = 1; i < values.size(); i++) {
-		if (i > 2)
+		if (i > 1)
 			query << ",";
 		query << names[i]<< " = " << values[i];
 	}
@@ -59,7 +59,7 @@ void SqliteWorkHorse::execute_query(const char *sql, bool with_callback) {
 
 void SqliteWorkHorse::initDatabase(){
 
-	int rc = sqlite3_open_v2(this->plow->getDatabaseFile().c_str(), &db,  SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE,0);
+	int rc = sqlite3_open_v2(this->plow->getDatabaseFile().c_str(), &db,  SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READONLY,0);
 	if( rc ){
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		return;
@@ -71,7 +71,7 @@ void SqliteWorkHorse::initDatabase(){
 
 std::string SqliteWorkHorse::getMainTable()
 {
-	return this->main_table;
+	return this->plow->GetMainTable();
 }
 
 void SqliteWorkHorse::register_result(std::string r)

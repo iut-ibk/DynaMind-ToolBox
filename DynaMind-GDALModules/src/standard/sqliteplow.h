@@ -25,6 +25,7 @@ private:
 
 	int chunk_counter;
 	int done_counter;
+	int junk_size;
 
 public:
 	SqlitePlow(QObject *parent = 0);
@@ -35,6 +36,7 @@ public:
 	void setMainTable(std::string main_table);
 	std::string GetMainTable();
 	int getTotalChunks();
+	void setJunkSize(int size);
 
 	void setDatabaseFile(std::string database_file);
 	std::string getDatabaseFile();

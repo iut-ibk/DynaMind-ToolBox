@@ -36,7 +36,7 @@ int SqlitePlow::callback(void *plow, int argc, char **argv, char **azColName){
 }
 
 
-SqlitePlow::SqlitePlow(QObject *parent): QObject(parent)
+SqlitePlow::SqlitePlow(QObject *parent): junk_size(5000), QObject(parent)
 {
 
 }
@@ -85,6 +85,11 @@ int SqlitePlow::getTotalChunks()
 	return this->chunk_counter;
 }
 
+void SqlitePlow::setJunkSize(int size)
+{
+	this->junk_size = size;
+}
+
 void SqlitePlow::setDatabaseFile(std::string database_file)
 {
 	this->database_file = database_file;
@@ -110,7 +115,6 @@ void SqlitePlow::plow() {
 
 
 	QThreadPool qpool;
-	int chunck_size = 10000;
 	chunk_counter = 0;
 	done_counter= 0;
 	do {
@@ -118,10 +122,10 @@ void SqlitePlow::plow() {
 		this->stillMore = false;
 		// Check if chunck exists;
 		std::stringstream sql_stream;
-		sql_stream << "SELECT ogc_fid from parcel limit " << chunck_size*(chunk_counter+1) << "," <<  1;
+		sql_stream << "SELECT ogc_fid from parcel limit " << junk_size*(chunk_counter+1) << "," <<  1;
 
 		//std::cout << "Start Chunk" << sql_stream.str() << std::endl;
-		SqliteWorkHorse * worker = new SqliteWorkHorse(this, chunk_counter,(chunck_size*(chunk_counter)), chunck_size);
+		SqliteWorkHorse * worker = new SqliteWorkHorse(this, chunk_counter,(junk_size*(chunk_counter)), junk_size);
 		qpool.start(worker);
 
 		this->execute_query(db, sql_stream.str().c_str(), true);
@@ -144,7 +148,7 @@ void SqlitePlow::plow() {
 		query << "COMMIT;\n";
 	}
 
-
+	//std::cout << query.str() << std::endl;
 	execute_query(db,query.str().c_str());
 	DM::Logger(DM::Standard) << "End Syncronise DB";
 	sqlite3_close_v2(db);
