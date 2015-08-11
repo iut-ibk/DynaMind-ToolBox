@@ -212,6 +212,7 @@ public:
 	 * @return
 	 */
 	std::string get_attribute_filter_sql_string(string filter = "");
+	void setNextByIndex(long index);
 private:
 	GDALSystem * _currentSys;//Pointer to System, updated by simulation
 	std::vector<OGRFeature *> newFeatures_write; //Container for objects generated within C++

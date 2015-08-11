@@ -60,8 +60,10 @@ std::string ViewContainer::get_attribute_filter_sql_string(string filter)
 		filter_string << moduleLevelFilter[i] << " ";
 	}
 
-	if (this->moduleLevelFilter.size() > 0 && !filter.empty()) {
-		filter_string << "AND ";
+	if ( !filter.empty()) {
+		if (this->moduleLevelFilter.size() > 0 )
+			filter_string << "AND ";
+		filter_string << filter;
 	}
 
 	return filter_string.str();
@@ -75,6 +77,7 @@ void ViewContainer::setAttributeFilter(string filter)
 	}
 
 	OGRLayer * lyr = this->_currentSys->getOGRLayer((*this));
+
 	lyr->SetAttributeFilter(get_attribute_filter_sql_string(filter).c_str());
 }
 
@@ -297,6 +300,14 @@ OGRFeature *ViewContainer::getNextFeature()
 	OGRFeature * f =  this->_currentSys->getNextFeature(*this);
 	registerFeature(f);
 	return f;
+}
+
+void ViewContainer::setNextByIndex(long index){
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+	}
+
+	this->_currentSys->setNextByIndex(*this, index);
 }
 
 void ViewContainer::createIndex(string attribute)
