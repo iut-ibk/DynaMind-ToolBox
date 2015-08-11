@@ -302,14 +302,6 @@ OGRFeature *ViewContainer::getNextFeature()
 	return f;
 }
 
-void ViewContainer::setNextByIndex(long index){
-	if (!_currentSys) {
-		Logger(Error) << "No GDALSystem registered";
-	}
-
-	this->_currentSys->setNextByIndex(*this, index);
-}
-
 void ViewContainer::createIndex(string attribute)
 {
 	std::stringstream index_drop;
