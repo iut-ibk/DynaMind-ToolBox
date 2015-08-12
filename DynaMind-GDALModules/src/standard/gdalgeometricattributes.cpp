@@ -130,10 +130,11 @@ string GDALGeometricAttributes::getHelpUrl()
 
 void GDALGeometricAttributes::run()
 {
-	run_sql_threaded();
-	return;
+
+	//return;
 	if (useSQL) {
-		run_sql();
+		//run_sql();
+		run_sql_threaded();
 		return;
 	}
 
