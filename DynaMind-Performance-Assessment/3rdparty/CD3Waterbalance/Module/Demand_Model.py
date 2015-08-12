@@ -12,9 +12,9 @@ from matplotlib.dates import date2num
 import random
 from math import floor, ceil
 from numpy import add, around, asarray
-sys.path.append('/Users/christianurich/Documents/CD3Waterbalance/WaterDemandModel')
+#sys.path.append('/Users/christianurich/Documents/CD3Waterbalance/WaterDemandModel')
 from C_WaterDemandModel import WaterDemandModel
-import config
+#import config
 
 
 

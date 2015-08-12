@@ -8,10 +8,6 @@ Created on Mon Nov 10 13:02:58 2014
 import pycd3
 import sys
 
-sys.path.append("/Users/christianurich/Documents/CD3Waterbalance/Module")
-
-
-
 import Raintank
 import Building
 import Stormwaterdrain
