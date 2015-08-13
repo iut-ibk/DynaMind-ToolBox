@@ -138,7 +138,7 @@ class RWHTCostModel(Module):
     def run(self):
         # self.__building.create_index("parcel_id")
         # self.__household.create_index("building_id")
-        self.__rwht.create_index("parcel_id")
+        #self.__rwht.create_index("parcel_id")
 
         self.__parcel.reset_reading()
         counter = 0
@@ -146,7 +146,10 @@ class RWHTCostModel(Module):
         pv_2000 = 0
         pv_1500 = 0
         pv_750 = 0
+        parcel_values = {}
+        print "start_table"
         for p in self.__parcel:
+
             counter_parcel += 1
             pv_current = -1000000.
             annual_water_savings = 0
@@ -156,40 +159,44 @@ class RWHTCostModel(Module):
             outdoor_demand = p.GetFieldAsDouble("annual_outdoor_demand")
             non_potable_demand = p.GetFieldAsDouble("annual_non_potable_demand")
 
-            for r in self.__rwht.get_linked_features(p):
+            parcel_values[p.GetFID()] = [age, education, bedrooms, outdoor_demand, non_potable_demand]
+        print "end_table"
+        #
+        self.__rwht.reset_reading()
+        for r in self.__rwht:
+            p_values = parcel_values[r.GetFieldAsInteger("parcel_id")]
+            pv_total_costs = self.pv_total_costs("melbourne", r.GetFieldAsDouble("volume"))
+            pv_non_potable_saving = self.pv_non_potable_saving(r.GetFieldAsDouble("annual_water_savings"))
+            # pv_outdoor_savings = self.pv_outdoor_savings(31,1,4, 10,20)
+            # print age, education, bedrooms, outdoor_demand, non_potable_demand
+            pv_outdoor_savings = self.pv_outdoor_savings(p_values[0], p_values[1], p_values[2], p_values[3],
+                                                         p_values[4])
+            pv = pv_non_potable_saving + pv_outdoor_savings - pv_total_costs
+            r.SetField("pv_total_costs", pv_total_costs)
+            r.SetField("pv_outdoor_savings", pv_outdoor_savings)
+            r.SetField("pv_non_potable_saving", pv_non_potable_saving)
+            r.SetField("pv", pv)
+            counter += 1
 
-                pv_total_costs = self.pv_total_costs("melbourne", r.GetFieldAsDouble("volume"))
-                pv_non_potable_saving = self.pv_non_potable_saving(r.GetFieldAsDouble("annual_water_savings"))
-                # pv_outdoor_savings = self.pv_outdoor_savings(31,1,4, 10,20)
-                # print age, education, bedrooms, outdoor_demand, non_potable_demand
-                pv_outdoor_savings = self.pv_outdoor_savings(age, education, bedrooms, outdoor_demand,
-                                                             non_potable_demand)
-                pv = pv_non_potable_saving + pv_outdoor_savings - pv_total_costs
-                r.SetField("pv_total_costs", pv_total_costs)
-                r.SetField("pv_outdoor_savings", pv_outdoor_savings)
-                r.SetField("pv_non_potable_saving", pv_non_potable_saving)
-                r.SetField("pv", pv)
-                counter += 1
-
-                if pv > pv_current:
-                    pv_current = pv
-                    annual_water_savings = r.GetFieldAsDouble("annual_water_savings")
-            if counter_parcel % 100 == 0:
+            if pv > pv_current:
+                pv_current = pv
+                annual_water_savings = r.GetFieldAsDouble("annual_water_savings")
+            if counter_parcel % 1000 == 0:
                 print counter_parcel
 
 
 
-            if pv >= -1500.:
-                pv_1500 += 1
-            if pv >= -750.:
-                pv_750 += 1
-            if pv >= -2000.:
-                pv_2000 += 1
+            # if pv >= -1500.:
+            #     pv_1500 += 1
+            # if pv >= -750.:
+            #     pv_750 += 1
+            # if pv >= -2000.:
+            #     pv_2000 += 1
             # p.SetField("pv", pv)
             # p.SetField("annual_water_savings", annual_water_savings)
-
+        self.__rwht.sync()
         self.__parcel.finalise()
-        #self.__rwht.finalise()
+        self.__rwht.finalise()
 
 
 if __name__ == "__main__":
