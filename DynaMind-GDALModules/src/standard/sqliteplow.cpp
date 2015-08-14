@@ -21,7 +21,7 @@ void SqlitePlow::execute_query(sqlite3 *db, const char *sql, bool cb ) {
 		rc = sqlite3_exec(db, sql , 0, this, &zErrMsg);
 	}
 	if( rc != SQLITE_OK ){
-		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		std::cout <<  "SQL error: " << zErrMsg << std::endl;
 		sqlite3_free(zErrMsg);
 	}
 }
@@ -116,7 +116,8 @@ void SqlitePlow::plow() {
 	sqlite3 *db;
 	int rc = sqlite3_open_v2(this->database_file.c_str(), &db,  SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE,0);
 	if( rc ){
-		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		std::cout <<  "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+		//fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		return;
 	}
 	sqlite3_enable_load_extension(db,1);
