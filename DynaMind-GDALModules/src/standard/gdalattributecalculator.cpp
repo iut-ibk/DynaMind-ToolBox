@@ -446,7 +446,7 @@ void GDALAttributeCalculator::run()
 			default:
 			{
 				DM::Logger(DM::Debug) << val.GetFloat();
-				l_feat->SetField(leading_attribute.c_str(), (int) val.GetFloat());
+				l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
 				break;
 			}
 			}
