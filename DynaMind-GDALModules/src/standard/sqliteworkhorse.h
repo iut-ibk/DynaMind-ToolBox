@@ -1,6 +1,6 @@
 #ifndef SQLITEWORKHORSE_H
 #define SQLITEWORKHORSE_H
-
+#ifdef THREADING
 #include "sqliteplow.h"
 
 #include <vector>
@@ -38,4 +38,5 @@ public:
 
 };
 
+#endif
 #endif // SQLITEWORKHORSE_H

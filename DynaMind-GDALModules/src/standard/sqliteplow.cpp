@@ -1,3 +1,4 @@
+#ifdef THREADING
 #include "sqliteworkhorse.h"
 
 #include "sqliteplow.h"
@@ -168,3 +169,5 @@ void SqlitePlow::plow() {
 
 	//emit finished();
 }
+
+#endif

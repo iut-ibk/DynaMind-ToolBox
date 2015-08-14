@@ -1,9 +1,11 @@
 #ifndef SQLITEPLOW_H
 #define SQLITEPLOW_H
 
+#ifdef THREADING
 #include <sqlite3.h>
 #include <QObject>
 #include <QMutex>
+
 
 
 class SqlitePlow : public QObject
@@ -54,6 +56,6 @@ signals:
 	void finished();
 };
 
-
+#endif
 
 #endif // SQLITEWORKHORSE_H

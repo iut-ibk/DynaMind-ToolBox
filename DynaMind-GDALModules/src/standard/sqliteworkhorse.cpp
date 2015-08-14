@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <dmlogger.h>
-
+#ifdef THREADING
 SqliteWorkHorse::SqliteWorkHorse()
 {
 }
@@ -104,3 +104,4 @@ void SqliteWorkHorse::run()
 SqliteWorkHorse::~SqliteWorkHorse()
 {
 }
+#endif

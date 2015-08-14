@@ -116,10 +116,11 @@ void GDALGeometricAttributes::run_sql_threaded()
 	// "SELECT ogc_fid, area(geometry)  as area, dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled , dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb from parcel "
 
 	//QString location_plugins = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath())+ QString::fromStdString("/SqliteExtension/libdm_sqlite_plugin");
-
+#ifdef THREADING
 	SqlitePlow plower(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin", this->vc.getDBID(),query_stream.str(),this->leadingViewName);
 
 	plower.plow();
+#endif
 
 }
 
