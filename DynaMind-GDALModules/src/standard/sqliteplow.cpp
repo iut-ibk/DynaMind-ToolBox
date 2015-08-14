@@ -154,8 +154,8 @@ void SqlitePlow::plow() {
 
 	for(int i = 0; i < this->chunk_results.size(); i++) {
 		query << "BEGIN TRANSACTION;\n";
-		foreach(std::string r, this->chunk_results[i]){
-			query << r << ";\n";
+		for (int j = 0; j < this->chunk_results.size(); j++) {
+			query << this->chunk_results[i][j] << ";\n";
 		}
 		query << "COMMIT;\n";
 	}
