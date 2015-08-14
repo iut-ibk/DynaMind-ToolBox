@@ -30,6 +30,9 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	this->storage_volume_tank;
 	this->addParameter("storage_volume", DM::STRING_LIST, &this->storage_volume_tank);
 
+	this->rwht_view_name = "rwht";
+	this->addParameter("rwht_view_name", DM::STRING, &this->rwht_view_name);
+
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
@@ -37,25 +40,6 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("annual_outdoor_demand",DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("annual_non_potable_demand",DM::Attribute::DOUBLE, DM::WRITE);
-
-	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
-	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	//rwhts.addAttribute("provided_volume_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-
-	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
-
-
-	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
-
-	std::vector<DM::ViewContainer*> stream;
-	stream.push_back(&parcels);
-	stream.push_back(&rwhts);
-	this->registerViewContainers(stream);
-
 }
 
 std::vector<double> RainWaterHarvestingOptions::addVectors(std::vector<double> & vec1, std::vector<double> & vec2){
@@ -112,6 +96,24 @@ void RainWaterHarvestingOptions::run()
 		p->SetField("annual_outdoor_demand", outdoor_demand);
 		p->SetField("annual_non_potable_demand", non_potable_demand);
 	}
+}
+
+void RainWaterHarvestingOptions::init()
+{
+	rwhts = DM::ViewContainer(this->rwht_view_name, DM::COMPONENT, DM::WRITE);
+	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+
+	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
+
+	std::vector<DM::ViewContainer*> stream;
+	stream.push_back(&parcels);
+	stream.push_back(&rwhts);
+	this->registerViewContainers(stream);
 }
 
 bool RainWaterHarvestingOptions::initmodel()

@@ -33,6 +33,9 @@ class RWHTCostModel(Module):
         Module.__init__(self)
         self.setIsGDALModule(True)
 
+        self.createParameter("rwht_view_name", STRING)
+        self.rwht_view_name = "rwht"
+
         self.__construction_cost_db = {"melbourne": {2: 2525, 5: 2985, 10: 3560}}
         discount_rate = 0.05
         self.__years = []
@@ -49,7 +52,7 @@ class RWHTCostModel(Module):
         self.education_levels["tertiary"] = 4.
 
     def init(self):
-        self.__rwht = ViewContainer("rwht", COMPONENT, READ)
+        self.__rwht = ViewContainer(self.rwht_view_name, COMPONENT, READ)
         self.__rwht.addAttribute("volume", Attribute.DOUBLE, READ)
         self.__rwht.addAttribute("annual_water_savings", Attribute.DOUBLE, READ)
         self.__rwht.addAttribute("non_potable_savings", Attribute.DOUBLE, READ)

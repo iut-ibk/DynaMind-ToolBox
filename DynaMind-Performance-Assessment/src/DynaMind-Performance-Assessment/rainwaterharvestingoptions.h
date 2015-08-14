@@ -42,9 +42,12 @@ class RainWaterHarvestingOptions: public DM::Module
 
 		std::vector<double> addVectors(std::vector<double> &vec1, std::vector<double> &vec2);
 		std::vector<double> substractVectors(std::vector<double> &vec1, std::vector<double> &vec2);
+
+		std::string rwht_view_name;
 public:
 		RainWaterHarvestingOptions();
 		void run();
+		void init();
 		bool initmodel();
 		void clear();
 
