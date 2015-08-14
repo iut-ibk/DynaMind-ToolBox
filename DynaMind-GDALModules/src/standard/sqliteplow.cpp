@@ -166,5 +166,5 @@ void SqlitePlow::plow() {
 	DM::Logger(DM::Standard) << "End Syncronise DB";
 	sqlite3_close_v2(db);
 
-	emit finished();
+	//emit finished();
 }
