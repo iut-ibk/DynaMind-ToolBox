@@ -411,11 +411,6 @@ void GDALAttributeCalculator::run()
 				break;
 			case DM::Attribute::DOUBLEVECTOR:
 			{
-				//DM::Logger(DM::Error) << "Init " << it->first << " as double vector";
-				/*int size = 0;
-				if (ressult_vec.size() > 0) {
-					size = ressult_vec[0].v_val.size();
-				}*/
 				updateDoubleVector(it->first, ressult_vec, muVariables);
 				break;
 			}
