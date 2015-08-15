@@ -82,8 +82,6 @@ public:
 	void run();
 	std::string getHelpUrl();
 	void resetInit();
-
-	void test_vector_math();
 	void updateDoubleVector(std::string variable_name, std::vector<AttributeValue> & ressult_vec, std::map<std::string, mup::Value * > & muVariables);
 };
 

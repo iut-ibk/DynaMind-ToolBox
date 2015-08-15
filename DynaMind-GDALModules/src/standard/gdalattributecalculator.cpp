@@ -64,51 +64,6 @@ void GDALAttributeCalculator::resetInit()
 	helper_views_name.clear();
 }
 
-void GDALAttributeCalculator::test_vector_math()
-{
-	std::cout << "huhu" << std::endl;
-
-	mup::ParserX * p  = new mup::ParserX();
-
-
-
-	//mup::matrix_type m(5);
-	//m.At(0) = 6;
-	mup::Value mp_c(5,1);
-	//p->EnableAutoCreateVar(true);
-	p->DefineVar("a", &mp_c);
-
-	p->SetExpr("a");
-
-
-
-
-	try
-	{
-		mup::Value val = p->Eval();
-		//std::cout <<	m.GetRows() << std::endl;
-
-		for(int i = 0; i < val.GetArray().GetRows(); i++) {
-			std::cout <<val.GetArray().At(i) << std::endl;
-		}
-	}
-
-
-	catch (mup::ParserError &e)
-	{
-		DM::Logger(DM::Error) << "Error in equation "<< e.GetMsg();
-		this->setStatus(DM::MOD_CHECK_ERROR);
-		return;
-	}
-
-
-
-
-
-
-
-}
-
 bool GDALAttributeCalculator::initViews()
 {
 	resetInit();
@@ -287,10 +242,6 @@ void GDALAttributeCalculator::updateDoubleVector(std::string variable_name, std:
 			}
 		}
 	}
-	//Init first timer
-	/*if (muVariables[variable_name] == 0) {
-		*
-	}*/
 	mup::Value v = mup::Value(ress_vec.size(), 0);
 	for (int i = 0; i < ress_vec.size(); i++)
 		v.At(i) = ress_vec[i];
@@ -440,7 +391,6 @@ void GDALAttributeCalculator::run()
 					ress[i] = val.GetArray().At(i).GetFloat();
 				}
 				DM::DMFeature::SetDoubleList(l_feat, leading_attribute.c_str(), ress);
-				//l_feat->SetField(leading_attribute.c_str(), val.GetString().c_str());
 				break;
 			}
 			default:
