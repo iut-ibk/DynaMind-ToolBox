@@ -9,11 +9,13 @@ class GDALJoinCluster : public DM::Module
 
 		private:
 			double buffer;
+			std::string viewe_name;
 			DM::ViewContainer network;
 			DM::ViewContainer junctions;
 public:
 	GDALJoinCluster();
 	void run();
+	void init();
 };
 
 #endif // GDALJOINCLUSTER_H
