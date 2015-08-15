@@ -33,6 +33,14 @@ WaterDemandModel::WaterDemandModel()
 	this->evapofile = "";
 	this->addParameter("evapofile", DM::FILENAME, &this->evapofile);
 
+	this->start_date = "2000-Jan-01 00:00:00";
+	this->addParameter("start_date", DM::STRING, &this->start_date);
+
+	this->end_date = "2001-Jan-01 00:00:00";
+	this->addParameter("end_date", DM::STRING, &this->end_date);
+
+	this->timestep = "86400";
+	this->addParameter("timestep", DM::STRING, &this->timestep);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
@@ -60,8 +68,9 @@ void WaterDemandModel::run()
 	double imp_fraction = 0.2;
 	calculateRunoffAndDemand(500, imp_fraction, 0.8, 1);
 
-
+	int counter = 0;
 	while(p = this->parcels.getNextFeature()) {
+		counter++;
 		double persons = p->GetFieldAsDouble("persons");
 		double garden_area = p->GetFieldAsDouble("garden_area");
 		double roof_area = p->GetFieldAsDouble("roof_area");
@@ -83,6 +92,12 @@ void WaterDemandModel::run()
 		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily",  this->mutiplyVector(this->outdoor_demand,garden_area/400.));
 		//DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->outdoor_demand);
 		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff,roof_area/100.));
+
+		if (counter % 1000 == 0){
+			this->parcels.syncAlteredFeatures();
+			this->parcels.setNextByIndex(counter);
+		}
+
 	}
 }
 
@@ -120,9 +135,9 @@ void WaterDemandModel::initmodel()
 		}
 
 		p = new SimulationParameters();
-		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Jan-01 00:00:00");
-		p->stop = time_from_string("2001-Jan-01 00:00:00");
+		p->dt = lexical_cast<int>(this->timestep);
+		p->start = time_from_string(this->start_date);
+		p->stop = time_from_string(this->end_date);
 	}
 	catch(...)
 	{

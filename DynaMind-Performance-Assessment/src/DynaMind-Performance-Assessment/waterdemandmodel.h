@@ -38,6 +38,10 @@ class WaterDemandModel: public DM::Module
 		std::vector<double> potable_demand;
 		std::vector<double> outdoor_demand;
 
+		std::string start_date;
+		std::string end_date;
+		std::string timestep;
+
 	public:
 		WaterDemandModel();
 		void run();

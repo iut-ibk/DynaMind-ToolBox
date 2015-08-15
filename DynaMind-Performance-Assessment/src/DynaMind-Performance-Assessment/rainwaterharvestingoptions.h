@@ -44,6 +44,10 @@ class RainWaterHarvestingOptions: public DM::Module
 		std::vector<double> substractVectors(std::vector<double> &vec1, std::vector<double> &vec2);
 
 		std::string rwht_view_name;
+		std::string start_date;
+		std::string end_date;
+		std::string timestep;
+
 public:
 		RainWaterHarvestingOptions();
 		void run();

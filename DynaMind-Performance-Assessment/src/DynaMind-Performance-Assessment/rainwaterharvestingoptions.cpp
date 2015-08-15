@@ -33,6 +33,15 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	this->rwht_view_name = "rwht";
 	this->addParameter("rwht_view_name", DM::STRING, &this->rwht_view_name);
 
+	this->start_date = "2000-Jan-01 00:00:00";
+	this->addParameter("start_date", DM::STRING, &this->start_date);
+
+	this->end_date = "2001-Jan-01 00:00:00";
+	this->addParameter("end_date", DM::STRING, &this->end_date);
+
+	this->timestep = "86400";
+	this->addParameter("timestep", DM::STRING, &this->timestep);
+
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
@@ -69,7 +78,9 @@ void RainWaterHarvestingOptions::run()
 
 	OGRFeature * p;
 	this->parcels.resetReading();
+	int counter = 0;
 	while(p = this->parcels.getNextFeature()) {
+		counter++;
 		//Create Raintanks
 		//Input Vectors
 		std::vector<double> non_potable_demand_daily;
@@ -95,6 +106,12 @@ void RainWaterHarvestingOptions::run()
 		}
 		p->SetField("annual_outdoor_demand", outdoor_demand);
 		p->SetField("annual_non_potable_demand", non_potable_demand);
+
+		if (counter % 1000 == 0){
+			this->parcels.syncAlteredFeatures();
+			this->rwhts.syncAlteredFeatures();
+			this->parcels.setNextByIndex(counter);
+		}
 	}
 }
 
@@ -149,9 +166,9 @@ bool RainWaterHarvestingOptions::initmodel()
 		}
 
 		p = new SimulationParameters();
-		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Jan-01 00:00:00");
-		p->stop = time_from_string("2001-Jan-01 00:00:00");
+		p->dt = lexical_cast<int>(this->timestep);
+		p->start = time_from_string(this->start_date);
+		p->stop = time_from_string(this->end_date);
 	}
 	catch(...)
 	{
