@@ -20,6 +20,26 @@ class RainWaterHarvestingOptions: public DM::Module
 	DM_DECLARE_NODE(RainWaterHarvestingOptions)
 
 	private:
+		// Dynamind varaibels
+		std::string rwht_view_name;
+		std::string start_date;
+		std::string end_date;
+		std::string timestep;
+
+		bool start_date_from_global;
+		std::string global_viewe_name;
+		std::string start_date_name;
+		std::string end_date_name;
+
+		DM::ViewContainer parcels;
+		DM::ViewContainer rwhts;
+		DM::ViewContainer global_object;
+
+		// local cd3 varaibles
+		std::string varaibles;
+		std::string cd3_end_date;
+		std::string cd3_start_date;
+
 		SimulationRegistry *simreg;
 		NodeRegistry *nodereg;
 
@@ -32,21 +52,12 @@ class RainWaterHarvestingOptions: public DM::Module
 		Node * rwht;
 		ISimulation * s;
 
-
-		DM::ViewContainer parcels;
-		DM::ViewContainer rwhts;
-
 		std::vector<string> storage_volume_tank;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
 		std::vector<double> addVectors(std::vector<double> &vec1, std::vector<double> &vec2);
 		std::vector<double> substractVectors(std::vector<double> &vec1, std::vector<double> &vec2);
-
-		std::string rwht_view_name;
-		std::string start_date;
-		std::string end_date;
-		std::string timestep;
 
 public:
 		RainWaterHarvestingOptions();
