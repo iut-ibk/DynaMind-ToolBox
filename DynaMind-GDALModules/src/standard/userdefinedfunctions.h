@@ -68,6 +68,31 @@ public:
 	}
 };
 
+class VecSum : public mup::ICallback {
+public:
+	VecSum() : ICallback(mup::cmFUNC, "vecsum", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		mup::matrix_type m = a_pArg[0]->GetArray();
+		double sum = 0;
+		for (int i = 0; i < m.GetRows(); i++)
+			sum+= m.At(i).GetFloat();
+		// The return value is passed by writing it to the reference ret
+		*ret = sum;
+	}
+
+	const mup::char_type* GetDesc() const
+	{
+		return "num2str(x) - converting a number to string";
+	}
+	IToken* Clone() const
+	{
+		return new VecSum(*this);
+	}
+};
+
+
 class Str2Num : public mup::ICallback {
 public:
 	Str2Num() : ICallback(mup::cmFUNC, "str2num", 1)

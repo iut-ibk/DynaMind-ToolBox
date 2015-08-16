@@ -278,6 +278,7 @@ void GDALAttributeCalculator::run()
 	mup::ParserX * p  = new mup::ParserX();
 	mup::Value mp_c;
 
+	p->DefineFun(new dm::VecSum);
 	p->DefineFun(new dm::Random);
 	p->DefineFun(new dm::Round);
 	p->DefineFun(new dm::Num2Str);
