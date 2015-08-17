@@ -187,34 +187,26 @@ bool RainWaterHarvestingOptions::initmodel()
 	}
 
 	try{
-        // Register default simulation
-        this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+		// Register default simulation
+		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
 
-        // Register default modules
-        if (!nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core")) {
-            DM::Logger(DM::Error) << "Module not loaded";
-
-            return false;
-        }
+		// Register default modules
+		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
 
 
-        QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
-        if (!nodereg->addNativePlugin(dance_nodes.toStdString())) {
-            DM::Logger(DM::Error) << "Module not loaded";
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
+		nodereg->addNativePlugin(dance_nodes.toStdString());
 
-            return false;
-        }
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/WaterDemandModel");
+		try{
+			nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+		}  catch(...) {
+			Logger(Error) << "Please point path to CD3 water balance modules";
+			this->setStatus(DM::MOD_EXECUTION_ERROR);
+			return false;
 
-        nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");
-        nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/WaterDemandModel");
-        try{
-            nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
-        }  catch(...) {
-            Logger(Error) << "Please point path to CD3 water balance modules";
-            this->setStatus(DM::MOD_EXECUTION_ERROR);
-            return false;
-
-        }
+		}
 
 		p = new SimulationParameters();
 		p->dt = lexical_cast<int>(this->timestep);
