@@ -146,8 +146,24 @@ bool WaterDemandModel::initmodel()
 	DM::Logger(DM::Standard) << cd3_end_date;
 
 	try{
+        // Register default simulation
+        this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+
+        // Register default modules
+        if (!nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core")) {
+            DM::Logger(DM::Error) << "Module not loaded";
+
+            return false;
+        }
+
+
 		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
-		nodereg->addNativePlugin(dance_nodes.toStdString());
+        if (!nodereg->addNativePlugin(dance_nodes.toStdString())) {
+            DM::Logger(DM::Error) << "Module not loaded";
+
+            return false;
+        }
+
 		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");
 		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/WaterDemandModel");
 		try{
