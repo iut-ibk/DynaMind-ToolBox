@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; DynaMind-ToolBox 0.8.0-beta.4 documentation</title>
+  <title>Release Notes &mdash; DynaMind-ToolBox 0.8.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="DynaMind-ToolBox 0.8.0-beta.4 documentation" href="../index.html"/>
+    <link rel="top" title="DynaMind-ToolBox 0.8.0 documentation" href="../index.html"/>
         <link rel="up" title="DynaMind" href="index.html"/>
         <link rel="next" title="Sim" href="dynamind_sim_api.html"/>
         <link rel="prev" title="Interlinked Database" href="interlinked_datasets.html"/> 
@@ -128,16 +128,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#release-notes-v0-9">Release Notes v0.9</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#model-builder">Model Builder</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#release-notes-v0-8">Release Notes v0.8</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#core">Core</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Model Builder</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#modules">Modules</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#release-notes-v0-8-dev">Release Notes v0.8 dev</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#release-notes-v0-7">Release Notes v0.7</a></li>
 </ul>
 </li>
@@ -158,6 +149,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-GDALModules/index.html">Standard Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/release_notes.html">Release Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/release_notes.html#v0-2">v0.2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/release_notes.html#v0-1">v0.1</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../DynaMind-GDALModules/index.html#data-import-and-export">Data Import and Export</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../DynaMind-GDALModules/gdalhotstarter.html">Load Simulation Database</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../DynaMind-GDALModules/gdalhotstarter.html#module-name">Module name</a></li>
@@ -468,25 +467,8 @@
             
   <div class="section" id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="release-notes-v0-9">
-<h2>Release Notes v0.9<a class="headerlink" href="#release-notes-v0-9" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="model-builder">
-<h3>Model Builder<a class="headerlink" href="#model-builder" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Threading for
-- Parceling
-- Geometric Attributes</li>
-<li>New module to use SQL queries
-- DynaMind SQLite extensions</li>
-<li>Attribute Calculator
-- Enabling vector arithmetic</li>
-</ul>
-</div>
-</div>
-<div class="section" id="release-notes-v0-8">
-<h2>Release Notes v0.8<a class="headerlink" href="#release-notes-v0-8" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="core">
-<h3>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="release-notes-v0-8-dev">
+<h2>Release Notes v0.8 dev<a class="headerlink" href="#release-notes-v0-8-dev" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Increased OGC conformity</li>
 <li>Proper linking of tables</li>
@@ -495,39 +477,18 @@
 <li>Additional Simulation parameter to set epsg codes, working directories</li>
 </ul>
 </div>
-<div class="section" id="id1">
-<h3>Model Builder<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>export of simulation database directly from GUI</li>
-<li>improved model view</li>
-<li>start screen</li>
-<li>improved model tree and better naming</li>
-<li>proper help integration</li>
-</ul>
-</div>
-<div class="section" id="modules">
-<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>new modules to calculate length <a class="reference internal" href="../DynaMind-GDALModules/gdalcalculatelength.html"><em>GDALCalculateLength</em></a></li>
-<li>speed improvement for spatial linking (10 times and more) using native spatialite</li>
-<li>lots of bug fixes and stability</li>
-<li>doc, doc, doc</li>
-</ul>
-</div>
-</div>
 <div class="section" id="release-notes-v0-7">
 <h2>Release Notes v0.7<a class="headerlink" href="#release-notes-v0-7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Integration of data base backend enabling big simulation. Note: Modules using the GDAL based data stream are not compatible with older modules</li>
-<li>Support for spatial and attribute filters for modules <a class="footnote-reference" href="#id3" id="id2">[1]</a></li>
+<li>Support for spatial and attribute filters for modules <a class="footnote-reference" href="#id2" id="id1">[1]</a></li>
 <li>Python wrapper for simulation class</li>
 <li>And lots of bug fixes</li>
-<li>Initial set of modules working with the new GDAL data stream backend</li>
 </ul>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>only for modules using the GDAL data stream</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>only for modules using the GDAL data stream</td></tr>
 </tbody>
 </table>
 </div>
@@ -572,7 +533,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.8.0-beta.4',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -88,6 +88,10 @@ Following parameter types are supported:
 +---------------+-----------------------+
 |FILENAME       | location to file [1]_ |
 +---------------+-----------------------+
+|STRING_LIST    | list of strings  [2]_ |
++---------------+-----------------------+
+|STRING_MAP     | map of strings   [3]_ |
++---------------+-----------------------+
 
 Data Stream Definition Using Views (only recommended for advanced users)
 ------------------------------------------------------------------------
@@ -363,4 +367,5 @@ error.
 ..
 
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
-
+.. [2] A STRING_LIST is string. The strings a separated using ``*|*`` e.g. ``*|*text1*|*test2*|*``
+.. [3] A STRING_MAP is string. The strings a separated using ``*||*``for a new row and ``*|*`` for columns e.g. ``*||*key1*|*value1*||*key2*|*value2*||*``

@@ -2,27 +2,9 @@
 Release Notes
 =============
 
-Release Notes v0.9
-------------------
 
-Model Builder
-_____________
-
-- Threading for
-  - Parceling
-  - Geometric Attributes
-
-- New module to use SQL queries
-  - DynaMind SQLite extensions
-
-- Attribute Calculator
-  - Enabling vector arithmetic
-
-Release Notes v0.8
-------------------
-
-Core
-____
+Release Notes v0.8 dev
+----------------------
 
 - Increased OGC conformity
 - Proper linking of tables
@@ -30,22 +12,6 @@ ____
 - Improved installation (proper directories) and OSX build with homebrew
 - Additional Simulation parameter to set epsg codes, working directories
 
-Model Builder
-_____________
-
-- export of simulation database directly from GUI
-- improved model view
-- start screen
-- improved model tree and better naming
-- proper help integration
-
-Modules
-_______
-
-- new modules to calculate length :doc:`GDALCalculateLength </DynaMind-GDALModules/gdalcalculatelength>`
-- speed improvement for spatial linking (10 times and more) using native spatialite
-- lots of bug fixes and stability
-- doc, doc, doc
 
 Release Notes v0.7
 ------------------
@@ -54,7 +20,6 @@ Release Notes v0.7
 - Support for spatial and attribute filters for modules [1]_
 - Python wrapper for simulation class
 - And lots of bug fixes
-- Initial set of modules working with the new GDAL data stream backend
 
 
 .. [1] only for modules using the GDAL data stream
