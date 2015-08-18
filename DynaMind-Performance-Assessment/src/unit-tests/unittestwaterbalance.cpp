@@ -33,7 +33,6 @@ TEST_F(UnitTestWaterBalance,setParameterInModule)
 	ASSERT_TRUE(sim!=0);
 
 	WaterBalanceHouseHold wb;
-	wb.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/release/output/Modules");
 	wb.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain.ixx");
 	wb.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/Evapotranspiration.ixx");
 	wb.initmodel();
@@ -45,7 +44,6 @@ TEST_F(UnitTestWaterBalance,setParameterInModule)
 
 
 	WaterBalanceHouseHold wb1;
-	wb1.setCd3_dir("/Users/christianurich/Documents/DynaMind-ToolBox/build/release/output/Modules");
 	wb1.setEvapofile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_rain_24.ixx");
 	wb1.setRainfile("/Users/christianurich/Documents/DynaMind-ToolBox/Data/Raindata/melb_eva_24.ixx");
 	wb1.initmodel();

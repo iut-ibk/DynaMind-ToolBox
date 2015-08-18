@@ -15,8 +15,8 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 
 	GDALModule = true;
 
-	district = DM::ViewContainer("district", DM::COMPONENT, DM::READ);
-	district.addAttribute("hh", DM::Attribute::INT, DM::READ);
+	//district = DM::ViewContainer("district", DM::COMPONENT, DM::READ);
+	//district.addAttribute("hh", DM::Attribute::INT, DM::READ);
 
 	hh_income = DM::ViewContainer("hh_income", DM::COMPONENT, DM::READ);
 	hh_income.addAttribute("district_id", DM::Attribute::INT, DM::READ);
@@ -43,7 +43,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	household.addAttribute("income", DM::Attribute::STRING, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> datastream;
-	datastream.push_back(&district);
+	//datastream.push_back(&district);
 	datastream.push_back(&building);
 	datastream.push_back(&hh_income);
 	datastream.push_back(&education);
@@ -81,54 +81,50 @@ void GDALCreateHouseholds::run()
 		hh_income_v.push_back(0);
 	}
 
-	district.resetReading();
+	building.resetReading();
 
 	building.createIndex("district_id");
 	hh_income.createIndex("district_id");
 	education.createIndex("district_id");
 
-	OGRFeature * d = 0;
-	while (d = district.getNextFeature()) {
-		int d_id = d->GetFID();
-		int households = d->GetFieldAsInteger("hh");
-		building.resetReading();
+
+	OGRFeature * b = 0;
+	//while (d = district.getNextFeature()) {
+	while (b = building.getNextFeature()) {
+
+		int b_id = b->GetFID();
+		int district_id = b->GetFieldAsInteger("district_id");
+		int households = b->GetFieldAsInteger("residential_units"); //d->GetFieldAsInteger("hh");
+		//DM::Logger(DM::Standard) << households;
+
 		std::stringstream filter;
-		filter << "district_id = " << d_id;
-		building.setAttributeFilter(filter.str());
+		filter << "ogc_fid = " << district_id;
+		//building.setAttributeFilter(filter.str());
 
-		fill_cdf(d->GetFID(), "district_id" ,education, this->education_names, this->education_v);
-		fill_cdf(d->GetFID(), "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
+		fill_cdf(district_id, "district_id" ,education, this->education_names, this->education_v);
+		fill_cdf(district_id, "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
 
-
-		OGRFeature * b = 0;
-		std::vector<int> building_ids;
-		std::vector<OGRPoint> building_centroids;
-		while (b = building.getNextFeature()) {
-			int b_id = b->GetFID();
-			OGRGeometry * geo = b->GetGeometryRef();
-			if (!geo)
-				continue;
-			OGRPoint pt;
-			geo->Centroid(&pt);
-			building_centroids.push_back(pt);
-			building_ids.push_back(b_id);
-		}
-		//Assign Households
-		if(building_ids.size() == 0)
+		OGRGeometry * geo = b->GetGeometryRef();
+		if (!geo)
 			continue;
+		OGRPoint pt;
+		geo->Centroid(&pt);
+
 		int counter = 0;
-		int max_size = building_ids.size();
-		while(households > 0) {
-			if (counter == max_size)
-				counter = 0;
+		//int max_size = building_ids.size();
+		for (int i = 0; i < households ; i++) {
+			//DM::Logger(DM::Standard) << "create";
+
+			//if (counter == max_size)
+			//	counter = 0;
 			OGRFeature * h = household.createFeature();
-			h->SetField("building_id", building_ids[counter]);
+			h->SetField("building_id", b_id);
 			h->SetField("persons",rand() % 4 + 1 );
 			h->SetField("education", this->sampler(this->education_names_p, this->education_v).c_str());
 			h->SetField("income", this->sampler(this->hh_income_names_p, this->hh_income_v).c_str());
-			h->SetGeometry(&building_centroids[counter]);
+			h->SetGeometry(&pt);
 			counter++;
-			households--;
+			//households--;
 		}
 	}
 }
@@ -139,7 +135,7 @@ std::string GDALCreateHouseholds::sampler(std::vector<std::string> & names, std:
 	double number = distribution(generator);
 	//DM::Logger(DM::Error) << number;
 	int l = names.size()-1;
-//[0.1, 0.5, 0.8, 1.0]
+	//[0.1, 0.5, 0.8, 1.0]
 	for (int i = 0; i < l; i++) {
 		if (number >= devec[i] && number < devec[i+1]) {
 			return names[i];
@@ -149,7 +145,7 @@ std::string GDALCreateHouseholds::sampler(std::vector<std::string> & names, std:
 }
 
 void GDALCreateHouseholds::fill_cdf(int id, std::string filtername, DM::ViewContainer & container,
-										   std::vector<std::string> & names, std::vector<double> &return_vec)
+									std::vector<std::string> & names, std::vector<double> &return_vec)
 {
 	container.resetReading();
 	std::stringstream ss_filter;

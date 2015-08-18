@@ -14,6 +14,7 @@
 #include <nodeconnection.h>
 #include <dmgdalhelper.h>
 #include <numeric>
+#include <dmsimulation.h>
 
 
 DM_DECLARE_CUSTOM_NODE_NAME(WaterBalanceHouseHold,Household Water Balance Model , Performance Assessment)
@@ -27,8 +28,6 @@ WaterBalanceHouseHold::WaterBalanceHouseHold()
 	this->evapofile = "";
 	this->addParameter("evapofile", DM::STRING, &this->evapofile);
 
-	this->cd3_dir = "";
-	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
 
 	this->storage_volume_tank;
 	this->addParameter("storage_volume", DM::STRING_LIST, &this->storage_volume_tank);
@@ -147,10 +146,10 @@ void WaterBalanceHouseHold::initmodel()
 	Logger(Standard) << dir.absolutePath().toStdString();
 
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/libdance4water-nodes";
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
 		nodereg->addNativePlugin(dance_nodes.toStdString());
 		try{
-			nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+			nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		}  catch(...) {
 			Logger(Error) << "big fat error";
 
@@ -284,15 +283,6 @@ Node *WaterBalanceHouseHold::createConsumer(int persons)
 }
 
 
-std::string WaterBalanceHouseHold::getCd3_dir() const
-{
-	return cd3_dir;
-}
-
-void WaterBalanceHouseHold::setCd3_dir(const std::string &value)
-{
-	cd3_dir = value;
-}
 
 
 std::string WaterBalanceHouseHold::getEvapofile() const

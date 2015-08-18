@@ -33,6 +33,7 @@
 #include <dmrasterdata.h>
 #include "dmlogger.h"
 #include <dmsimulation.h>
+#include <dmgroup.h>
 
 using namespace std;
 using namespace DM;
@@ -264,6 +265,17 @@ void Module::setIsGDALModule(bool b)
 Simulation *Module::getSimulation()
 {
 	return this->sim;
+}
+
+int Module::getGroupCounter()
+{
+	DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
+	int interal_counter = -1;
+	if(lg) {
+		interal_counter = lg->getGroupCounter();
+	}
+
+	return interal_counter;
 }
 
 bool Module::isGdalModule()

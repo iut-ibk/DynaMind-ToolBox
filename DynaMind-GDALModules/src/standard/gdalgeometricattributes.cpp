@@ -1,25 +1,27 @@
 #include "gdalgeometricattributes.h"
+#include "geometricattributeworker.h"
+#include "dmsimulation.h"
+#include "sqliteplow.h"
+
 #include <ogr_api.h>
-#include <ogrsf_frmts.h>
+#include <sqlite3.h>
 
+#include <sstream>
 
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/min_quadrilateral_2.h>
-#include <CGAL/convex_hull_2.h>
+int execute_sql_statement(sqlite3 *db, const char *sql){
+	/* Execute SQL statement */
+	const char* data = "Callback function called";
+	char *zErrMsg = 0;
 
+	int rc = sqlite3_exec(db, sql, 0, (void*)data, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		DM::Logger(DM::Error) <<" SQL statment: " << QString::fromLatin1(sql).toStdString();
+		DM::Logger(DM::Error) <<" SQL error: " << QString::fromLatin1(zErrMsg).toStdString();
+	   sqlite3_free(zErrMsg);
+	}
 
-#include <SFCGAL/MultiPolygon.h>
-
-#include <SFCGAL/io/wkt.h>
-#include <SFCGAL/algorithm/offset.h>
-
-
-typedef CGAL::Point_2< SFCGAL::Kernel >              Point_2 ;
-typedef CGAL::Vector_2< SFCGAL::Kernel >             Vector_2 ;
-typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2 ;
-typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
-typedef std::list<Polygon_with_holes_2>              Pwh_list_2;
+	return rc;
+}
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALGeometricAttributes, Calculate Feature Area, Data Handling)
 
@@ -39,6 +41,9 @@ GDALGeometricAttributes::GDALGeometricAttributes()
 	this->isPercentageFilled = false;
 	this->addParameter("percentage_filled", DM::BOOL, &this->isPercentageFilled);
 
+	this->useSQL = false;
+	this->addParameter("useSQL", DM::BOOL, &this->useSQL);
+
 }
 
 void GDALGeometricAttributes::init()
@@ -50,13 +55,73 @@ void GDALGeometricAttributes::init()
 		vc.addAttribute("area", DM::Attribute::DOUBLE, DM::WRITE);
 	if (isAspectRationBB)
 		vc.addAttribute("aspect_ratio_BB", DM::Attribute::DOUBLE, DM::WRITE);
-	if (isAspectRationBB)
+	if (isPercentageFilled)
 		vc.addAttribute("percentage_filled", DM::Attribute::DOUBLE, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&vc);
 
 	this->registerViewContainers(data_stream);
+}
+
+void GDALGeometricAttributes::run_sql()
+{
+	sqlite3 *db;
+	int rc = sqlite3_open(vc.getDBID().c_str(), &db);
+	sqlite3_enable_load_extension(db,1);
+
+	if( rc ){
+		DM::Logger(DM::Error) << "Failed to open database";
+		return;
+	}
+
+	//Load spatialite
+	execute_sql_statement(db, "SELECT load_extension('mod_spatialite')");
+
+	std::stringstream query_stream;
+	query_stream << "SELECT load_extension('" << this->getSimulation()->getSimulationConfig().getDefaultModulePath() << '/SqliteExtension/libdm_sqlite_plugin' << "')";
+
+	execute_sql_statement(db, query_stream.str().c_str());
+
+	query_stream.str("");
+	query_stream.clear();
+	query_stream << "UPDATE " << this->leadingViewName <<  " set ";
+
+	if (isCalculateArea)
+		query_stream << "area = area(geometry), ";
+	if (isAspectRationBB)
+		query_stream << "aspect_ratio_BB = dm_poly_aspect_ratio(ASWKT(geometry)), ";
+	if (isPercentageFilled)
+		query_stream << "percentage_filled = dm_poly_percentage_filled(ASWKT(geometry)) ";
+	DM::Logger(DM::Standard) << query_stream.str();
+	execute_sql_statement(db, query_stream.str().c_str());
+
+	sqlite3_close(db);
+}
+
+void GDALGeometricAttributes::run_sql_threaded()
+{
+
+
+	std::stringstream query_stream;
+	query_stream << "SELECT ogc_fid ";
+	if (isCalculateArea)
+		query_stream << ", area(geometry)  as area ";
+	if (isAspectRationBB)
+		query_stream << ", dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb   ";
+	if (isPercentageFilled)
+		query_stream << ", dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled ";
+
+	query_stream << " from " << this->leadingViewName;
+	// "SELECT ogc_fid, area(geometry)  as area, dm_poly_percentage_filled(ASWKT(geometry)) as percentage_filled , dm_poly_aspect_ratio(ASWKT(geometry)) as aspect_ratio_bb from parcel "
+
+	//QString location_plugins = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath())+ QString::fromStdString("/SqliteExtension/libdm_sqlite_plugin");
+#ifdef THREADING
+	SqlitePlow plower(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin", this->vc.getDBID(),query_stream.str(),this->leadingViewName);
+
+	plower.plow();
+#endif
+
 }
 
 string GDALGeometricAttributes::getHelpUrl()
@@ -66,101 +131,28 @@ string GDALGeometricAttributes::getHelpUrl()
 
 void GDALGeometricAttributes::run()
 {
+
+	//return;
+	if (useSQL) {
+		//run_sql();
+		run_sql_threaded();
+		return;
+	}
+
 	OGRFeature * f;
 
 	vc.resetReading();
-
+	QThreadPool pool;
+	std::vector<OGRFeature*> container;
+	int counter = 0;
 	while( f = vc.getNextFeature() ) {
-		OGRPolygon* geo = (OGRPolygon*)f->GetGeometryRef();
-		if (isCalculateArea)
-			f->SetField("area", this->calculateArea( geo ));
-		if (isAspectRationBB) {
-			double value = this->aspectRationBB( geo );
-			if (value > -0.1)
-				f->SetField("aspect_ratio_BB", value);
-		}
-		if (isPercentageFilled) {
-			double value = this->percentageFilled( geo );
-			if (value > -0.1)
-				f->SetField("percentage_filled", value);
+		container.push_back(f);
+		if (counter%10000 == 0){
+			GeometricAttributeWorker * gw = new GeometricAttributeWorker(this, container, isCalculateArea, isAspectRationBB , isPercentageFilled);
+			pool.start(gw);
+			container = std::vector<OGRFeature*>();
 		}
 	}
+	pool.waitForDone();
 }
 
-double GDALGeometricAttributes::calculateArea(OGRPolygon * poly) {
-	return poly->get_Area();
-}
-
-double GDALGeometricAttributes::percentageFilled(OGRPolygon * ogr_poly) {
-	char* geo;
-
-	ogr_poly->exportToWkt(&geo);
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-	OGRFree(geo);
-	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
-
-	if (!poly.toPolygon_2(false).is_simple()) {
-		DM::Logger(DM::Warning) << "Polygon is not simple";
-		return -1;
-	}
-
-	//Transfer to GDAL polygon
-	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
-
-
-	Polygon_2 p_c;
-	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
-
-	//Cacluate Minimal Rect
-	Polygon_2 p_m;
-	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
-
-	return ogr_poly->get_Area() / CGAL::to_double(p_m.area());
-}
-
-
-double GDALGeometricAttributes::aspectRationBB(OGRPolygon * ogr_poly) {
-	char* geo;
-
-	ogr_poly->exportToWkt(&geo);
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-	OGRFree(geo);
-	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
-
-	if (!poly.toPolygon_2(false).is_simple()) {
-		DM::Logger(DM::Warning) << "Polygon is not simple";
-		return -1;
-	}
-
-	//Transfer to GDAL polygon
-	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
-
-
-	Polygon_2 p_c;
-	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
-
-	//Cacluate Minimal Rect
-	Polygon_2 p_m;
-	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
-
-
-	Point_2 p1 = p_m.vertex(0);
-	Point_2 p2 = p_m.vertex(1);
-
-	Point_2 p3 = p_m.vertex(2);
-	Point_2 p4 = p_m.vertex(3);
-
-	Vector_2 v1 = (p2-p1);
-	Vector_2 v2 = (p3-p2);
-
-	double l1 = sqrt(CGAL::to_double(v1.squared_length()));
-	double l2 = sqrt(CGAL::to_double(v2.squared_length()));
-
-	double aspect_ration = l1/l2;
-
-	if (aspect_ration < 1.0) {
-		aspect_ration = 1.0/aspect_ration;
-	}
-
-	return aspect_ration;
-}

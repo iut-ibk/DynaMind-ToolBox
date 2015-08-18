@@ -213,6 +213,7 @@ public:
 	std::vector<std::string> getOutPortNames() const;
 
 	void setStatus(DM::ModuleStatus status);
+	int getGroupCounter();
 
 protected:
 	void addData(std::string name, std::vector<DM::View> view);
@@ -296,6 +297,18 @@ protected:
 	") get_class_name;
 	std::string get_class_name() {
 		return $self->getClassName();
+	}
+	%feature("autodoc", "get_group_counter()
+
+	Returns the parent's group counter, or -1 if no group is set.
+
+	:return: group counter
+	:rtype: int
+
+	") get_group_counter;
+
+	int get_group_counter() {
+		return $self->getGroupCounter();
 	}
 
 	%pythoncode %{

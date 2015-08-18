@@ -1,3 +1,5 @@
+
+
 FILE(GLOB MODULE_CPPS *.cpp)
 
 FIND_PACKAGE(PythonLibs REQUIRED)
@@ -16,7 +18,7 @@ ELSE()
 ENDIF()
 
 INSTALL(TARGETS dynamind-performance-assessment
-		DESTINATION "share/DynaMind/native_extensions"
+		DESTINATION "share/DynaMind/Modules"
 		PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 
