@@ -13,7 +13,7 @@ Parameter
 +=======================+========================+============================================================================================+
 |attribute              | STRING                 | view_name.attribute_name                                                                   |
 +-----------------------+------------------------+--------------------------------------------------------------------------------------------+
-|attributeType          | STRING                 | INT, DOUBLE, STRING                                                                        |
+|attributeType          | STRING                 | INT, DOUBLE, STRING, DOUBLEVECTOR                                                          |
 +-----------------------+------------------------+--------------------------------------------------------------------------------------------+
 |variables              | STRING_MAP             | variable name;  view_name.attribute_name or view_name.linked_view_name.attribute_name      |
 |                       |                        | to resolve the links view_name.linked_view_name_id needs to exist                          |
@@ -144,6 +144,8 @@ ___________
 |  num2str(value)    | number to string                                                                            |
 +--------------------+---------------------------------------------------------------------------------------------+
 |  str2num(value)    | string to number                                                                            |
++--------------------+---------------------------------------------------------------------------------------------+
+|  vecsum(array)     | sum of a vector                                                                             |
 +--------------------+---------------------------------------------------------------------------------------------+
 |  ? then : else     | if clause e.g. a > 5 ? variable_a : variable_b see                                          |
 |                    | for the operators `see <http://muparser.beltoforion.de/mup_features.html>`_                 |

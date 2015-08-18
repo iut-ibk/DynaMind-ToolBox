@@ -2,15 +2,6 @@
 Standard Modules
 ================
 
-Overview
---------
-
-.. toctree::
-   :titlesonly:
-
-   release_notes
-
-
 
 Data Import and Export
 ----------------------
