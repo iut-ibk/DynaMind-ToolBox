@@ -40,16 +40,17 @@ private:
 	bool isCalculateArea;
 	bool isAspectRationBB;
 	bool isPercentageFilled;
+	bool useSQL;
 
 	DM::ViewContainer vc;
-	double calculateArea(OGRPolygon *poly);
-	double aspectRationBB(OGRPolygon *poly);
-	double percentageFilled(OGRPolygon *ogr_poly);
+
 public:
 	GDALGeometricAttributes();
 	void run();
 	void init();
+	void run_sql();
 	std::string getHelpUrl();
+	void run_sql_threaded();
 };
 
 #endif // GDALGEOMETRICATTRIBUTES_H

@@ -312,6 +312,9 @@ public:
 	/** @brief Returns true if GDAL module */
 	bool isGdalModule();
 
+	/** @brief Return current counter of parent group. If no parent group is set counter is -1 **/
+	int getGroupCounter();
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -379,6 +382,7 @@ protected:
 
 	/** @brief Returns simulation */
 	DM::Simulation *getSimulation();
+
 
 private:
 	/** @brief sets its owner, e.g. a group. this method is called by sim::addModule */

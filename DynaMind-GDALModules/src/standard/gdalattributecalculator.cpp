@@ -1,9 +1,11 @@
 #include "gdalattributecalculator.h"
+
 #include <sstream>
 #include <ogr_feature.h>
 #include "parser/mpParser.h"
 #include "userdefinedfunctions.h"
 #include "dmgroup.h"
+#include "dmgdalhelper.h"
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALAttributeCalculator, Calculate Attributes, Data Handling)
 
@@ -33,11 +35,15 @@ GDALAttributeCalculator::GDALAttributeCalculator()
 	this->addGDALData("city", data);
 }
 DM::Attribute::AttributeType GDALAttributeCalculator::convertAttributeType(std::string type) {
+
 	if (type == "STRING") {
 		return DM::Attribute::STRING;
 	}
 	if (type == "INT") {
 		return DM::Attribute::INT;
+	}
+	if (type == "DOUBLEVECTOR") {
+		return DM::Attribute::DOUBLEVECTOR;
 	}
 	return DM::Attribute::DOUBLE;
 }
@@ -221,6 +227,29 @@ void GDALAttributeCalculator::init()
 	this->registerViewContainers(data_stream);
 }
 
+void GDALAttributeCalculator::updateDoubleVector(std::string variable_name, std::vector<AttributeValue> & ressult_vec, std::map<std::string, mup::Value * > & muVariables)
+{
+	std::vector<double> ress_vec;
+
+	for (int i = 0; i < ressult_vec.size(); i++) {
+		if (ress_vec.size() == 0) {
+			for (int j = 0; j < ressult_vec[i].v_val.size(); j++) {
+				ress_vec.push_back(ressult_vec[i].v_val[j]);
+			}
+		} else {
+			for (int j = 0; j < ressult_vec[i].v_val.size(); j++) {
+				ress_vec[j] +=  ressult_vec[i].v_val[j];
+			}
+		}
+	}
+	mup::Value v = mup::Value(ress_vec.size(), 0);
+	for (int i = 0; i < ress_vec.size(); i++)
+		v.At(i) = ress_vec[i];
+	*muVariables[variable_name] = v;
+	return;
+
+}
+
 void GDALAttributeCalculator::run()
 {
 	if (this->init_failed) {
@@ -249,6 +278,7 @@ void GDALAttributeCalculator::run()
 	mup::ParserX * p  = new mup::ParserX();
 	mup::Value mp_c;
 
+	p->DefineFun(new dm::VecSum);
 	p->DefineFun(new dm::Random);
 	p->DefineFun(new dm::Round);
 	p->DefineFun(new dm::Num2Str);
@@ -268,17 +298,25 @@ void GDALAttributeCalculator::run()
 			v = new mup::Value(0);
 			DM::Logger(DM::Debug) << "Init " << it->first << " as int";
 			break;
+		case DM::Attribute::DOUBLEVECTOR:
+			v = new mup::Value(1,0);
+			DM::Logger(DM::Debug) << "Init " << it->first << " as double vector";
+			break;
 		default:
 			v = new mup::Value(0.0);
 			DM::Logger(DM::Debug) << "Init " << it->first << " as double";
 			break;
 		}
+
 		muVariables[it->first] = v;
 		p->DefineVar(it->first, v);
 	}
 	p->SetExpr(this->equation);
 
+	int counter = 0;
 	while (l_feat = leading_view->getNextFeature()) {
+		counter++;
+
 		//set mpc
 		DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
 		if(lg) {
@@ -323,6 +361,11 @@ void GDALAttributeCalculator::run()
 				}
 				*muVariables[it->first] = mup::Value(s_val);
 				break;
+			case DM::Attribute::DOUBLEVECTOR:
+			{
+				updateDoubleVector(it->first, ressult_vec, muVariables);
+				break;
+			}
 			default:
 				*muVariables[it->first] = mup::Value(d_val);
 				break;
@@ -331,16 +374,43 @@ void GDALAttributeCalculator::run()
 		try
 		{
 			mup::Value val = p->Eval();
-			if (result_type == DM::Attribute::INT) {
+			switch (result_type) {
+			case DM::Attribute::INT:
+			{
 				l_feat->SetField(leading_attribute.c_str(), (int) val.GetFloat());
-				continue;
+				break;
 			}
-			if (result_type == DM::Attribute::STRING) {
+			case DM::Attribute::STRING:
+			{
 				l_feat->SetField(leading_attribute.c_str(), val.GetString().c_str());
-				continue;
+				break;
 			}
-			DM::Logger(DM::Debug) << val.GetFloat();
-			l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
+			case DM::Attribute::DOUBLEVECTOR:
+			{
+				std::vector<double> ress(val.GetArray().GetRows());
+				for (int i = 0; i < val.GetArray().GetRows(); i++) {
+					ress[i] = val.GetArray().At(i).GetFloat();
+				}
+				DM::DMFeature::SetDoubleList(l_feat, leading_attribute.c_str(), ress);
+				break;
+			}
+			default:
+			{
+				DM::Logger(DM::Debug) << val.GetFloat();
+				l_feat->SetField(leading_attribute.c_str(), val.GetFloat());
+				break;
+			}
+			}
+
+			if (counter%10000 == 0){
+				DM::Logger(DM::Debug) << "Sync Altered" << l_feat->GetFID();
+				leading_view->syncAlteredFeatures();
+				for (std::map<std::string, DM::ViewContainer *>::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it ) {
+					it->second->syncAlteredFeatures();
+					it->second->syncReadFeatures();
+				}
+				leading_view->setNextByIndex(counter);
+			}
 		}
 		catch (mup::ParserError &e)
 		{
@@ -349,6 +419,8 @@ void GDALAttributeCalculator::run()
 			return;
 		}
 	}
+	//foreach (OGRFeature * f, this->gc_global_features)
+	//OGRFeature::DestroyFeature(f);
 }
 
 string GDALAttributeCalculator::getHelpUrl()
@@ -372,32 +444,46 @@ void GDALAttributeCalculator::solve_variable(OGRFeature *feat, QStringList link_
 			solve_variable(f, link_chain_next, ress_vector, attr_type, false);
 		}
 	} else if (link_chain.size() == 2) { // Get Values
-		DM::Logger(DM::Debug) << link_chain[0].toStdString();
+		//DM::Logger(DM::Debug) << link_chain[0].toStdString();
 		DM::ViewContainer * v = helper_views_name[link_chain[0].toStdString()];
 		DM::Attribute::AttributeType attr_type = v->getAttributeType(link_chain[1].toStdString());
 		AttributeValue val;
-
 		if (is_first && link_chain[0].toStdString() != this->leading_view->getName()) {
 			if (global_features.find(link_chain[0].toStdString()) == global_features.end()) { // Set global Feature
 				DM::Logger(DM::Debug) << "global variable " << link_chain[0].toStdString() << " " << this->leading_view->getName();
 				v->resetReading();
 				while (feat = v->getNextFeature()) { // Assume first feature is the right one
 					DM::Logger(DM::Debug) << "set variable";
-					global_features[link_chain[0].toStdString()] = feat;
+					OGRFeature * f  = feat->Clone();  // Needs to be checked if this is not causing a memeroy hole
+					global_features[link_chain[0].toStdString()] = f;
+					this->gc_global_features.push_back(f);
 					break;
 				}
 			}
 			feat = global_features[link_chain[0].toStdString()];
 		}
-
-		if (attr_type == DM::Attribute::STRING) {
+		switch (attr_type) {
+		case DM::Attribute::STRING:
+		{
 			val.s_val = feat->GetFieldAsString(link_chain[1].toStdString().c_str());
 			ress_vector.push_back(val);
 			return;
 		}
-		val.d_val = feat->GetFieldAsDouble(link_chain[1].toStdString().c_str());
-		ress_vector.push_back(val);
-		return;
+		case DM::Attribute::DOUBLEVECTOR:
+		{
+			std::vector<double> vec;
+			DM::DMFeature::GetDoubleList(feat, link_chain[1].toStdString().c_str(), vec);
+			val.v_val = vec;
+			ress_vector.push_back(val);
+			return;
+		}
+		default:
+		{
+			val.d_val = feat->GetFieldAsDouble(link_chain[1].toStdString().c_str());
+			ress_vector.push_back(val);
+			return;
+		}
+		}
 	} else {
 		DM::Logger(DM::Error) << "something is wrong with the varaible definitaion";
 		return;

@@ -26,8 +26,6 @@ class WaterBalanceHouseHold: public DM::Module
 
         DynaMindStreamLogSink *sink;
         SimulationParameters *p;
-//        ISimulation *s;
-//		MapBasedModel * m;
 
 		DM::ViewContainer buildings;
 		DM::ViewContainer parcels;
@@ -35,7 +33,6 @@ class WaterBalanceHouseHold: public DM::Module
 
 		std::string rainfile;
 		std::string evapofile;
-		std::string cd3_dir;
 		std::vector<string> storage_volume_tank;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
@@ -55,8 +52,6 @@ class WaterBalanceHouseHold: public DM::Module
         void clear();
         Node *createConsumer(int persons);
         Flow createConstFlow(double const_flow);
-		std::string getCd3_dir() const;
-		void setCd3_dir(const std::string &value);
 		std::string getEvapofile() const;
 		void setEvapofile(const std::string &value);
 		std::string getRainfile() const;

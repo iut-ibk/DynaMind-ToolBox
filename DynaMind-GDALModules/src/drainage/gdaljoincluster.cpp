@@ -13,22 +13,10 @@ GDALJoinCluster::GDALJoinCluster()
 	GDALModule = true;
 	buffer = 0.5;
 	this->addParameter("buffer", DM::DOUBLE, &buffer);
-	network = DM::ViewContainer("network", DM::EDGE, DM::MODIFY);
-	network.addAttribute("cluster_id",  DM::Attribute::INT, DM::READ);
-	network.addAttribute("start_id",  DM::Attribute::INT, DM::MODIFY);
-	network.addAttribute("end_id",  DM::Attribute::INT, DM::MODIFY);
-	network.addAttribute("intersect_id",  DM::Attribute::INT, DM::WRITE);
-	network.addAttribute("new",  DM::Attribute::INT, DM::WRITE);
 
-	junctions = DM::ViewContainer("node", DM::NODE, DM::READ);
-	junctions.addAttribute("node_id",  DM::Attribute::INT, DM::READ);
-	junctions.addAttribute("possible_endpoint",  DM::Attribute::INT, DM::READ);
-	junctions.addAttribute("intersects",  DM::Attribute::INT, DM::WRITE);
-	std::vector<DM::ViewContainer*> data_stream;
-	data_stream.push_back(&network);
-	data_stream.push_back(&junctions);
+	this->addParameter("viewer_name", DM::STRING, &viewe_name);
 
-	this->registerViewContainers(data_stream);
+
 }
 
 void GDALJoinCluster::run()
@@ -173,4 +161,24 @@ void GDALJoinCluster::run()
 			s_f->SetField("end_id", (int)segements_vec[i].first);
 		}
 	}
+}
+
+void GDALJoinCluster::init()
+{
+	network = DM::ViewContainer(this->viewe_name, DM::EDGE, DM::MODIFY);
+	network.addAttribute("cluster_id",  DM::Attribute::INT, DM::READ);
+	network.addAttribute("start_id",  DM::Attribute::INT, DM::MODIFY);
+	network.addAttribute("end_id",  DM::Attribute::INT, DM::MODIFY);
+	network.addAttribute("intersect_id",  DM::Attribute::INT, DM::WRITE);
+	network.addAttribute("new",  DM::Attribute::INT, DM::WRITE);
+
+	junctions = DM::ViewContainer("node", DM::NODE, DM::READ);
+	junctions.addAttribute("node_id",  DM::Attribute::INT, DM::READ);
+	//junctions.addAttribute("possible_endpoint",  DM::Attribute::INT, DM::READ);
+	junctions.addAttribute("intersects",  DM::Attribute::INT, DM::WRITE);
+	std::vector<DM::ViewContainer*> data_stream;
+	data_stream.push_back(&network);
+	data_stream.push_back(&junctions);
+
+	this->registerViewContainers(data_stream);
 }

@@ -224,7 +224,7 @@ int main(int argc, char *argv[], char *envp[])
 	QCoreApplication::setOrganizationName("IUT");
 	QCoreApplication::setApplicationName("DYNAMIND");
 
-	QThreadPool::globalInstance()->setMaxThreadCount(1);
+	//QThreadPool::globalInstance()->setMaxThreadCount(1);
 
 	po::positional_options_description p;
 	p.add("input-file", -1);

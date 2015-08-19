@@ -39,7 +39,7 @@ public:
 	GDALCreateHouseholds();
 	void run();
 private:
-	DM::ViewContainer district;
+	//DM::ViewContainer district;
 	DM::ViewContainer building;
 	DM::ViewContainer household;
 	DM::ViewContainer hh_income;

@@ -1,4 +1,5 @@
 #include "rainwaterharvestingoptions.h"
+//GDAL inlcudes
 #include "ogrsf_frmts.h"
 //CD3 includes
 #include <node.h>
@@ -10,9 +11,14 @@
 #include <logsink.h>
 #include <noderegistry.h>
 #include <simulationregistry.h>
-#include <dynamindlogsink.h>
 #include <nodeconnection.h>
+
+//DM includes
+#include <dynamindlogsink.h>
+#include <dmsimulation.h>
 #include <dmgdalhelper.h>
+
+//STD
 #include <numeric>
 
 DM_DECLARE_CUSTOM_NODE_NAME(RainWaterHarvestingOptions, Rainwater Harvesting Options, Performance Assessment)
@@ -21,11 +27,32 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 {
 	this->GDALModule = true;
 
-	this->cd3_dir = "";
-	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
-
 	this->storage_volume_tank;
 	this->addParameter("storage_volume", DM::STRING_LIST, &this->storage_volume_tank);
+
+	this->rwht_view_name = "rwht";
+	this->addParameter("rwht_view_name", DM::STRING, &this->rwht_view_name);
+
+	this->start_date = "2000-Jan-01 00:00:00";
+	this->addParameter("start_date", DM::STRING, &this->start_date);
+
+	this->end_date = "2001-Jan-01 00:00:00";
+	this->addParameter("end_date", DM::STRING, &this->end_date);
+
+	this->timestep = "86400";
+	this->addParameter("timestep", DM::STRING, &this->timestep);
+
+	start_date_from_global = false;
+	this->addParameter("date_from_global", DM::BOOL, &this->start_date_from_global);
+
+	global_viewe_name = "global_viewe_name";
+	this->addParameter("STRING", DM::STRING, &this->global_viewe_name);
+
+	start_date_name = "start_date";
+	this->addParameter("start_date_name", DM::STRING, &this->start_date_name);
+
+	end_date_name = "end_date";
+	this->addParameter("end_data_name", DM::STRING, &this->end_date_name);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
@@ -34,25 +61,6 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("annual_outdoor_demand",DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("annual_non_potable_demand",DM::Attribute::DOUBLE, DM::WRITE);
-
-	rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::WRITE);
-	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	//rwhts.addAttribute("provided_volume_monthly", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-
-	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
-
-
-	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
-
-	std::vector<DM::ViewContainer*> stream;
-	stream.push_back(&parcels);
-	stream.push_back(&rwhts);
-	this->registerViewContainers(stream);
-
 }
 
 std::vector<double> RainWaterHarvestingOptions::addVectors(std::vector<double> & vec1, std::vector<double> & vec2){
@@ -82,7 +90,9 @@ void RainWaterHarvestingOptions::run()
 
 	OGRFeature * p;
 	this->parcels.resetReading();
+	int counter = 0;
 	while(p = this->parcels.getNextFeature()) {
+		counter++;
 		//Create Raintanks
 		//Input Vectors
 		std::vector<double> non_potable_demand_daily;
@@ -108,7 +118,38 @@ void RainWaterHarvestingOptions::run()
 		}
 		p->SetField("annual_outdoor_demand", outdoor_demand);
 		p->SetField("annual_non_potable_demand", non_potable_demand);
+
+		if (counter % 1000 == 0){
+			this->parcels.syncAlteredFeatures();
+			this->rwhts.syncAlteredFeatures();
+			this->parcels.setNextByIndex(counter);
+		}
 	}
+}
+
+void RainWaterHarvestingOptions::init()
+{
+	std::vector<DM::ViewContainer*> stream;
+	rwhts = DM::ViewContainer(this->rwht_view_name, DM::COMPONENT, DM::WRITE);
+	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+
+	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
+	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
+
+	if (start_date_from_global) {
+		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
+		global_object.addAttribute(this->start_date_name, DM::Attribute::STRING, DM::READ);
+		global_object.addAttribute(this->end_date_name, DM::Attribute::STRING, DM::READ);
+		stream.push_back(&global_object);
+	}
+
+	stream.push_back(&parcels);
+	stream.push_back(&rwhts);
+	this->registerViewContainers(stream);
 }
 
 bool RainWaterHarvestingOptions::initmodel()
@@ -129,21 +170,48 @@ bool RainWaterHarvestingOptions::initmodel()
 
 	Logger(Standard) << dir.absolutePath().toStdString();
 
+	cd3_start_date = this->start_date;
+	cd3_end_date =this->end_date;
+
+	DM::Logger(DM::Standard) << cd3_start_date;
+	DM::Logger(DM::Standard) << cd3_end_date;
+
+	if (start_date_from_global) {
+		global_object.resetReading();
+		OGRFeature * f;
+		while (f = global_object.getNextFeature()) {
+			cd3_start_date = f->GetFieldAsString(start_date_name.c_str());
+			cd3_end_date = f->GetFieldAsString(end_date_name.c_str());
+			break; // we assume only one global feature
+		}
+	}
+
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/libdance4water-nodes";
+		// Register default simulation
+		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+
+		// Register default modules
+		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+
+
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
 		nodereg->addNativePlugin(dance_nodes.toStdString());
+
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/WaterDemandModel");
 		try{
-			nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+			nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		}  catch(...) {
-			Logger(Error) << "big fat error because citydrain modules can' t be loaded";
+			Logger(Error) << "Please point path to CD3 water balance modules";
 			this->setStatus(DM::MOD_EXECUTION_ERROR);
 			return false;
+
 		}
 
 		p = new SimulationParameters();
-		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Jan-01 00:00:00");
-		p->stop = time_from_string("2001-Jan-01 00:00:00");
+		p->dt = lexical_cast<int>(this->timestep);
+		p->start = time_from_string(this->cd3_start_date);
+		p->stop = time_from_string(this->cd3_end_date);
 	}
 	catch(...)
 	{
@@ -178,16 +246,6 @@ bool RainWaterHarvestingOptions::initmodel()
 	return true;
 }
 
-
-std::string RainWaterHarvestingOptions::getCd3_dir() const
-{
-	return cd3_dir;
-}
-
-void RainWaterHarvestingOptions::setCd3_dir(const std::string &value)
-{
-	cd3_dir = value;
-}
 
 std::vector<double> RainWaterHarvestingOptions::create_montlhy_values(std::vector<double> daily, int seconds)
 {

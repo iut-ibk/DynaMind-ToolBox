@@ -1,4 +1,5 @@
 #include "waterdemandmodel.h"
+//GDAL inlcudes
 #include "ogrsf_frmts.h"
 //CD3 includes
 #include <node.h>
@@ -10,10 +11,16 @@
 #include <logsink.h>
 #include <noderegistry.h>
 #include <simulationregistry.h>
-#include <dynamindlogsink.h>
 #include <nodeconnection.h>
+
+//DM includes
+#include <dynamindlogsink.h>
+#include <dmsimulation.h>
 #include <dmgdalhelper.h>
+
+//STD
 #include <numeric>
+
 
 DM_DECLARE_CUSTOM_NODE_NAME(WaterDemandModel,Water Demand Model, Performance Assessment)
 
@@ -21,13 +28,31 @@ WaterDemandModel::WaterDemandModel()
 {
 	this->GDALModule = true;
 	this->rainfile = "";
-	this->addParameter("rainfile", DM::STRING, &this->rainfile);
+	this->addParameter("rainfile", DM::FILENAME, &this->rainfile);
 
 	this->evapofile = "";
-	this->addParameter("evapofile", DM::STRING, &this->evapofile);
+	this->addParameter("evapofile", DM::FILENAME, &this->evapofile);
 
-	this->cd3_dir = "";
-	this->addParameter("cd3_dir", DM::STRING, &this->cd3_dir);
+	this->start_date = "2000-Jan-01 00:00:00";
+	this->addParameter("start_date", DM::STRING, &this->start_date);
+
+	this->end_date = "2001-Jan-01 00:00:00";
+	this->addParameter("end_date", DM::STRING, &this->end_date);
+
+	this->timestep = "86400";
+	this->addParameter("timestep", DM::STRING, &this->timestep);
+
+	start_date_from_global = false;
+	this->addParameter("date_from_global", DM::BOOL, &this->start_date_from_global);
+
+	global_viewe_name = "city";
+	this->addParameter("global_viewe_name", DM::STRING, &this->global_viewe_name);
+
+	start_date_name = "start_date";
+	this->addParameter("start_date_name", DM::STRING, &this->start_date_name);
+
+	end_date_name = "end_date";
+	this->addParameter("end_data_name", DM::STRING, &this->end_date_name);
 
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
@@ -39,15 +64,12 @@ WaterDemandModel::WaterDemandModel()
 	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
-	std::vector<DM::ViewContainer*> stream;
-	stream.push_back(&parcels);
-	this->registerViewContainers(stream);
-
 }
 
 void WaterDemandModel::run()
 {
-	initmodel();
+	if (!initmodel())
+		return;
 	OGRFeature * p;
 	this->parcels.resetReading();
 
@@ -55,33 +77,42 @@ void WaterDemandModel::run()
 	double imp_fraction = 0.2;
 	calculateRunoffAndDemand(500, imp_fraction, 0.8, 1);
 
-
+	int counter = 0;
 	while(p = this->parcels.getNextFeature()) {
+		counter++;
 		double persons = p->GetFieldAsDouble("persons");
 		double garden_area = p->GetFieldAsDouble("garden_area");
 		double roof_area = p->GetFieldAsDouble("roof_area");
 
-
-//		this->stormwater_runoff = *(flow_probe_runoff->getState<std::vector<double> >("Flow"));
-//		this->non_potable_demand = *(nonpot_before->getState<std::vector<double> >("Flow"));
-//		this->potable_demand = *(pot_before->getState<std::vector<double> >("Flow"));
-//		this->outdoor_demand = *(flow_probe_outdoor->getState<std::vector<double> >("Flow"));
-
-
-//		parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLE, DM::WRITE);
-//		parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-
 		DM::DMFeature::SetDoubleList( p, "potable_demand_daily", this->mutiplyVector(this->potable_demand, persons));
 		DM::DMFeature::SetDoubleList( p, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand, persons));
-		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily",  this->mutiplyVector(this->outdoor_demand,garden_area/400.));
-		//DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->outdoor_demand);
-		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff,roof_area/100.));
+		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand,garden_area/400.)); //Unit Area
+		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff,roof_area/100.)); //Unit area
+
+		if (counter % 1000 == 0){
+			this->parcels.syncAlteredFeatures();
+			this->parcels.setNextByIndex(counter);
+		}
+
 	}
 }
 
-void WaterDemandModel::initmodel()
+void WaterDemandModel::init()
+{
+	std::vector<DM::ViewContainer*> stream;
+
+	if (start_date_from_global) {
+		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
+		global_object.addAttribute(this->start_date_name, DM::Attribute::STRING, DM::READ);
+		global_object.addAttribute(this->end_date_name, DM::Attribute::STRING, DM::READ);
+		stream.push_back(&global_object);
+	}
+
+	stream.push_back(&parcels);
+	this->registerViewContainers(stream);
+}
+
+bool WaterDemandModel::initmodel()
 {
 	sink = new DynaMindStreamLogSink();
 	Log::init(sink, Error);
@@ -99,31 +130,56 @@ void WaterDemandModel::initmodel()
 
 	Logger(Standard) << dir.absolutePath().toStdString();
 
+	cd3_start_date = this->start_date;
+	cd3_end_date =this->end_date;
+
+	if (start_date_from_global) {
+		global_object.resetReading();
+		OGRFeature * f;
+		while (f = global_object.getNextFeature()) {
+			cd3_start_date = f->GetFieldAsString(start_date_name.c_str());
+			cd3_end_date = f->GetFieldAsString(end_date_name.c_str());
+			break; // we assume only one global feature
+		}
+	}
+	DM::Logger(DM::Standard) << cd3_start_date;
+	DM::Logger(DM::Standard) << cd3_end_date;
+
 	try{
-		QString dance_nodes = QString::fromStdString(this->cd3_dir) + "/libdance4water-nodes";
+        // Register default simulation
+        this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+
+        // Register default modules
+		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
 		nodereg->addNativePlugin(dance_nodes.toStdString());
+
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");
+		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/WaterDemandModel");
 		try{
-			nodereg->addPythonPlugin("/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py");
+			nodereg->addPythonPlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py");
 		}  catch(...) {
-			Logger(Error) << "big fat error";
+			Logger(Error) << "Please point path to CD3 water balance modules";
 			this->setStatus(DM::MOD_EXECUTION_ERROR);
-			return;
+			return false;
 
 		}
 
 		p = new SimulationParameters();
-		p->dt = lexical_cast<int>("86400");
-		p->start = time_from_string("2000-Jan-01 00:00:00");
-		p->stop = time_from_string("2001-Jan-01 00:00:00");
+		p->dt = lexical_cast<int>(this->timestep);
+		p->start = time_from_string(cd3_start_date);
+		p->stop = time_from_string(cd3_end_date);
 	}
 	catch(...)
 	{
 		DM::Logger(DM::Error) << "Cannot start CD3 simulation";
 		this->setStatus(DM::MOD_EXECUTION_ERROR);
-		return;
+		return false;
 	}
 
 	DM::Logger(DM::Debug) << "CD3 simulation finished";
+	return true;
 }
 
 bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
@@ -184,12 +240,12 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	Node * consumer = this->createConsumer(persons);
 	m.addNode("c_1", consumer);
 
-//	//non-potable_demand
+	//non-potable_demand
 	Node * nonpot_before = nodereg->createNode("FlowProbe");
 	m.addNode("non_pot", nonpot_before);
 	m.addConnection(new NodeConnection(consumer,"out_np",nonpot_before,"in" ));
 
-//	//potable_demand
+	//potable_demand
 	Node * pot_before = nodereg->createNode("FlowProbe");
 	m.addNode("pot", pot_before);
 	m.addConnection(new NodeConnection(consumer,"out_p",pot_before,"in" ));
@@ -239,17 +295,6 @@ Node *WaterDemandModel::createConsumer(int persons)
 	consumption->setParameter("const_flow_stormwater",createConstFlow(0));
 
 	return consumption;
-}
-
-
-std::string WaterDemandModel::getCd3_dir() const
-{
-	return cd3_dir;
-}
-
-void WaterDemandModel::setCd3_dir(const std::string &value)
-{
-	cd3_dir = value;
 }
 
 

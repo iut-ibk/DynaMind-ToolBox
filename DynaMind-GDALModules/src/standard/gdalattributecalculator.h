@@ -34,7 +34,12 @@ struct DM_HELPER_DLL_EXPORT AttributeValue {
 	AttributeValue() : s_val(""), d_val(0){}
 	std::string s_val;
 	double d_val;
+	std::vector<double> v_val;
 };
+
+namespace mup {
+	class Value;
+}
 
 class DM_HELPER_DLL_EXPORT GDALAttributeCalculator: public DM::Module
 {
@@ -52,6 +57,8 @@ private:
 	bool init_failed;
 
 	DM::ViewContainer * leading_view;
+
+	std::vector<OGRFeature *> gc_global_features;
 
 	std::map<std::string, DM::ViewContainer *> helper_views_name;
 
@@ -75,6 +82,7 @@ public:
 	void run();
 	std::string getHelpUrl();
 	void resetInit();
+	void updateDoubleVector(std::string variable_name, std::vector<AttributeValue> & ressult_vec, std::map<std::string, mup::Value * > & muVariables);
 };
 
 #endif // GDALATTRIBUTECALCULATOR_H

@@ -21,8 +21,8 @@ The DyanMind-Toolbox comes with:
 ## [Documentation](http://iut-ibk.github.io/DynaMind-ToolBox)
 
 ## Windows Installer
-- [DynaMind-Toolbox-0.8.0-beta.4-win32 (includes DynaVIBe)](https://www.dropbox.com/s/ae9a6vakc8re35w/DynaMind-Toolbox_legacy-0.8.0-beta.4_1-win32.exe?dl=0)
-- [DynaMind-Toolbox-0.8.0-beta.4-win32 (GDAL only)] (https://www.dropbox.com/s/frwnpwx2lae494j/DynaMind-Toolbox-0.8.0-beta.4_1-win32.exe?dl=0)
+- [DynaMind-Toolbox-0.8.0-win32 (includes DynaVIBe)](https://www.dropbox.com/s/1ccsb6sjr31ij2y/DynaMind-Toolbox_legacy-0.8.0-win32.exe?dl=0)
+- [DynaMind-Toolbox-0.8.0-win32 (GDAL only)] (https://www.dropbox.com/s/daq4tskt59ucvdm/DynaMind-Toolbox-0.8.0-win32.exe?dl=0)
 
 ## Install on Mac using the Dynamind [tap](https://github.com/christianurich/homebrew-dynamind)
 
