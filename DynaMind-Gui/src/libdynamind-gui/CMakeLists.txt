@@ -33,7 +33,12 @@ IF(USEQT5)
 		TARGET_LINK_LIBRARIES(dynamindgui Qt5::Gui Qt5::WebKitWidgets Qt5::Svg ${DYNAMIND_CORE_LIBRARY} )
 	ENDIF()
 ELSE()
+    if(WITH_VIEWER)
+        add_definitions( -DVIEWER )
 	TARGET_LINK_LIBRARIES(dynamindgui dynamind-viewer ${DYNAMIND_CORE_LIBRARY} ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES})
+       ELSE()
+        TARGET_LINK_LIBRARIES(dynamindgui ${DYNAMIND_CORE_LIBRARY} ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES})
+       ENDIF()
 ENDIF()
 
 
