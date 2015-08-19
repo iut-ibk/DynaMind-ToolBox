@@ -264,6 +264,17 @@ OGRFeature *ViewContainer::getFeature(long nFID)
 
 }
 
+OGRSpatialReference *ViewContainer::getSpatialReference()
+{
+	if (!_currentSys) {
+		Logger(Error) << "No GDALSystem registered";
+		return NULL;
+	}
+
+	return this->_currentSys->getOGRLayer(*this)->GetSpatialRef();
+
+}
+
 void ViewContainer::registerFeature(OGRFeature * f)
 {
 	if (!f)

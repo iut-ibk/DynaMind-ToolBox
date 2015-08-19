@@ -39,6 +39,7 @@ class DM_HELPER_DLL_EXPORT OGRFeatureDefnShadow;
 class DM_HELPER_DLL_EXPORT OGRGeometry;
 class DM_HELPER_DLL_EXPORT OGRPoint;
 class DM_HELPER_DLL_EXPORT OGRLayer;
+class DM_HELPER_DLL_EXPORT OGRSpatialReference;
 
 namespace DM {
 
@@ -115,6 +116,7 @@ public:
 	 */
 	OGRFeature *getFeature(long nFID);
 
+	OGRSpatialReference * getSpatialReference();
 
 	/**
 	 * @brief Retruns the pointer the the next feature.
