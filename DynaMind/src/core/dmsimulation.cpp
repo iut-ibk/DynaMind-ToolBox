@@ -222,7 +222,7 @@ bool Simulation::registerModule(const std::string& filepath)
 	return false;
 }
 
-void Simulation::registerModulesFromDirectory(const QDir& dir)
+bool Simulation::registerModulesFromDirectory(const QDir& dir)
 {
 	QStringList modulesToLoad = dir.entryList();
 	foreach (QString module, modulesToLoad)
@@ -230,11 +230,14 @@ void Simulation::registerModulesFromDirectory(const QDir& dir)
 		if (module == ".." || module == "." )
 			continue;
 		std::string modulepath = (dir.absolutePath() +"/" + module).toStdString();
-		registerModule(modulepath);
+		if (!registerModule(modulepath))
+            return false;
 	}
+
+    return true;
 }
 
-void Simulation::registerModulesFromDefaultLocation()
+bool Simulation::registerModulesFromDefaultLocation()
 {
 //	QVector<QDir> cpv;
 //	cpv.push_back(QDir::currentPath() + "/Modules");
@@ -259,7 +262,10 @@ void Simulation::registerModulesFromDefaultLocation()
 	cpv.push_back( QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/PythonModules/scripts") ) );
 	cpv.push_back(  QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/Modules" ) ) );
 	foreach (QDir cp, cpv)
-		registerModulesFromDirectory(cp);
+		if (!registerModulesFromDirectory(cp))
+            return false;
+
+    return true;
 }
 
 bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort,
@@ -1080,7 +1086,8 @@ bool Simulation::registerModulesFromSettings()
 	text = settings.value("pythonModules").toString();
 	list = text.replace("\\","/").split(",");
 	foreach (QString s, list)
-		registerModulesFromDirectory(s);
+        if (!registerModulesFromDirectory(s))
+            return false;
 #endif
 
 	// Native Modules
@@ -1089,7 +1096,8 @@ bool Simulation::registerModulesFromSettings()
 	foreach (QString s, list) {
 		if (s.isEmpty())
 			continue;
-		registerModule(s.toStdString());
+		if (!registerModule(s.toStdString()))
+            return false;
 	}
 
 	return true;
