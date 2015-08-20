@@ -134,7 +134,7 @@ public:
 	bool registerModule(const std::string& filepath);
 
 	/** @brief registers all acceptable modules in the provided directory*/
-	bool registerModulesFromDirectory(const QDir& dir);
+	void registerModulesFromDirectory(const QDir& dir);
 
 	/** @brief connects to ports via a link */
 	virtual bool addLink(Module* source, std::string outPort, 
@@ -163,7 +163,7 @@ public:
 	ModuleRegistry* getModuleRegistry(){return moduleRegistry;};
 
 	/** @brief loads modules from default locations */
-	bool registerModulesFromDefaultLocation();
+	void registerModulesFromDefaultLocation();
 
 	/** @brief Add the modules set in the QSetting **/
 	bool registerModulesFromSettings();

@@ -399,12 +399,8 @@ int main(int argc, char *argv[], char *envp[])
         s.installStatusUpdater(path.str());
     }
 
-	bool success = s.registerModulesFromDefaultLocation() && s.registerModulesFromSettings();
-    if (!success) {
-		DM::Logger(DM::Error) << "panic: some modules could not be registered";
-		return -1;
-    }
-
+	s.registerModulesFromDefaultLocation();
+	s.registerModulesFromSettings();
 	realsimulationfile = replacestrings(replace, simulationfile);
 
 	s.loadSimulation(realsimulationfile);
