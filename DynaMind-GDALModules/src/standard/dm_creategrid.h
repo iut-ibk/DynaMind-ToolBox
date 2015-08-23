@@ -22,7 +22,7 @@ private:
 
 	DM::ViewContainer lead_view;
 	DM::ViewContainer grid_view;
-
+	double grid_size;
 
 
 	void execute_query(const char *sql, bool cb );

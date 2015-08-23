@@ -47,6 +47,11 @@ DM_CreateGrid::DM_CreateGrid()
 	this->addParameter("grid_view_name", DM::STRING, &this->grid_view_name);
 	this->grid_view_name = "grid";
 
+	this->addParameter("grid_size", DM::DOUBLE, &this->grid_size);
+	this->grid_size = 100;
+
+
+
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
@@ -60,7 +65,7 @@ void DM_CreateGrid::run()
 
 	std::stringstream sql_stream;
 
-	sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, 100)) FROM " << this->lead_view_name;
+	sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, " << grid_size << ")) FROM " << this->lead_view_name;
 
 	std::cout << sql_stream.str().c_str() << std::endl;
 	this->execute_query(sql_stream.str().c_str(), true);
