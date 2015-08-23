@@ -29,7 +29,12 @@ IF(USEQT5)
 		TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui ${DYNAMIND_CORE_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
 	ENDIF()
 ELSE()
-    TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui dynamind-viewer ${DYNAMIND_CORE_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
+        if(WITH_VIEWER)
+                add_definitions( -DVIEWER )
+                TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui dynamind-viewer ${DYNAMIND_CORE_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
+        ELSE()
+                 TARGET_LINK_LIBRARIES(dynamind-gui dynamindgui ${DYNAMIND_CORE_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
+        ENDIF()
 ENDIF()
 
 INSTALL(TARGETS dynamind-gui
