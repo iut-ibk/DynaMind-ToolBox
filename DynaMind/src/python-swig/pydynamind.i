@@ -482,6 +482,21 @@ class DM::ViewContainer {
 
         ") addAttribute;
 		void addAttribute(std::string name, Attribute::AttributeType type, ACCESS access);
+
+		%feature("autodoc", "get_attribute_filter_sql_string(filter)
+
+		Returns set attribute filter as sql string (doesn't include WHERE)
+
+		:type name: str
+		:param name: attribute filter
+
+
+		:return: sql filter string
+		:rtype: str
+
+		") get_attribute_filter_sql_string;
+		std::string get_attribute_filter_sql_string(std::string filter);
+
 		void setAttributeFilter(std::string filter);
 		void setCurrentGDALSystem(DM::GDALSystem *sys);
 		OGRFeatureDefnShadow * getFeatureDef();
