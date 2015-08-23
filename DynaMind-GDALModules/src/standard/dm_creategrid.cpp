@@ -72,7 +72,7 @@ void DM_CreateGrid::run()
 
 
 
-	sqlite3_close_v2(db);
+	sqlite3_close(db);
 }
 
 void DM_CreateGrid::execute_query(const char *sql, bool cb ) {
@@ -92,7 +92,7 @@ void DM_CreateGrid::execute_query(const char *sql, bool cb ) {
 
 void DM_CreateGrid::initDatabase(){
 
-	int rc = sqlite3_open_v2(this->lead_view.getDBID().c_str(), &db,  SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READONLY,0);
+	int rc = sqlite3_open(this->lead_view.getDBID().c_str(), &db);
 	if( rc ){
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		return;
