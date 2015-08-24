@@ -20,16 +20,22 @@ class LoadDAnCETimeseries(Module):
             self.createParameter("password", STRING)
             self.password = ""
 
+            # date format
+            self.createParameter("start", STRING)
+            self.start = ""
+
+            self.createParameter("end", STRING)
+            self.end = ""
+
             self.createParameter("deltaT", INT)
             self.deltaT = 0
 
-
             self.view_name = "station"
+
 
         def init(self):
             self.node_station = ViewContainer(self.view_name, NODE, READ)
             self.node_station.addAttribute("station_id", Attribute.INT, READ)
-            self.node_station.addAttribute("values", Attribute.DOUBLEVECTOR, WRITE)
             self.node_station.addAttribute("values", Attribute.DOUBLEVECTOR, WRITE)
             self.node_station.addAttribute("start", Attribute.STRING, WRITE)
             self.node_station.addAttribute("end", Attribute.STRING, WRITE)
@@ -39,9 +45,22 @@ class LoadDAnCETimeseries(Module):
 
         def run(self):
             try:
-                conn = psycopg2.connect("dbname=" + str(self.database) +  " user='" + str(self.username) +  "' host='" + str(self.host) +  "' password='" + str(self.password) +  "'")
+                conn = psycopg2.connect("dbname=" + str(self.database) + " user='" + str(self.username) + "' host='" + str(self.host) +  "' password='" + str(self.password) + "'")
             except:
-                print "I am unable to connect to the database"
+                log("Unable to connect to database ", Error)
+                self.setStatus(MOD_CHECK_ERROR)
+                return
+
+            filter_query = ""
+            if self.node_station.get_attribute_filter_sql_string(""):
+                filter_query = " AND " + self.node_station.get_attribute_filter_sql_string("")
+
+            # 2010-1-1 00:00:00
+            if self.start:
+                filter_query += " AND date >= '" + self.start + "'"
+
+            if self.end:
+                filter_query += " AND date < '" + self.end + "'"
 
             cur = conn.cursor()
 
@@ -49,25 +68,25 @@ class LoadDAnCETimeseries(Module):
                 station_id = station.GetFieldAsInteger("station_id")
 
                 # Find start and end date
-                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + " ORDER BY date DESC LIMIT 1 ")
+                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + filter_query + " ORDER BY date DESC LIMIT 1 ")
                 rows = cur.fetchall()
                 for r in rows:
                     station.SetField("end", r[0].strftime('%d.%m.%Y %H:%M:%S'))
 
-                cur.execute("SELECT date  from measurment WHERE station_id = " + str(station_id) + " ORDER BY date ASC LIMIT 1 ")
+                cur.execute("SELECT date  from measurment WHERE station_id = " + str(station_id) + filter_query + " ORDER BY date ASC LIMIT 1 ")
 
                 rows = cur.fetchall()
                 for r in rows:
                     station.SetField("start", r[0].strftime('%d.%m.%Y %H:%M:%S'))
 
-                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + " ORDER BY date ASC LIMIT 2 ")
+                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + filter_query + " ORDER BY date ASC LIMIT 2 ")
                 rows = cur.fetchall()
                 times = []
                 for r in rows:
                     print r[0]
                     times.append(r[0])
 
-                db_timestep = (times[1] - times[0]).dt.total_seconds()
+                db_timestep = (times[1] - times[0]).total_seconds()
 
 
                 delta_t = self.deltaT
@@ -81,9 +100,9 @@ class LoadDAnCETimeseries(Module):
 
                 skipper = int(delta_t / db_timestep)
 
-                station.SetField("timestep",db_timestep * skipper)
+                station.SetField("timestep", db_timestep * skipper)
 
-                cur.execute("SELECT date, value from measurment WHERE station_id = " + str(station_id) +  " ORDER BY date ASC")
+                cur.execute("SELECT date, value from measurment WHERE station_id = " + str(station_id) + filter_query + " ORDER BY date ASC")
                 rows = cur.fetchall()
                 counter = 0
                 r = 0

@@ -20,7 +20,6 @@ class LoadDAnCEStations(Module):
             self.createParameter("password", STRING)
             self.password = ""
 
-
             self.view_name = "station"
 
         def init(self):
@@ -30,7 +29,7 @@ class LoadDAnCEStations(Module):
 
         def run(self):
             try:
-                conn = psycopg2.connect("dbname=" + str(self.database) +  " user='" + str(self.username) +  "' host='" + str(self.host) +  "' password='" + str(self.password) +  "'")
+                conn = psycopg2.connect("dbname=" + str(self.database) + " user='" + str(self.username) + "' host='" + str(self.host) + "' password='" + str(self.password) + "'")
             except:
                 print "I am unable to connect to the database"
 
@@ -43,12 +42,11 @@ class LoadDAnCEStations(Module):
 
             cur = conn.cursor()
 
-            filter = self.node_station.get_attribute_filter_sql_string("")
+            filter_query = ""
+            if self.node_station.get_attribute_filter_sql_string(""):
+                filter_query = "WHERE " + self.node_station.get_attribute_filter_sql_string("")
 
-            if not filter:
-                cur.execute("SELECT * from station")
-            else:
-                cur.execute("SELECT * from station WHERE " + filter)
+            cur.execute("SELECT * from station " + filter_query)
             rows = cur.fetchall()
             for r in rows:
                 station = self.node_station.create_feature()
@@ -56,7 +54,7 @@ class LoadDAnCEStations(Module):
                 station.SetField("station_id", r[0])
                 print r
                 pt = ogr.Geometry(ogr.wkbPoint)
-                pt.SetPoint_2D(0,r[4], r[5])
+                pt.SetPoint_2D(0, r[4], r[5])
                 pt.Transform(transformation)
                 station.SetGeometry(pt)
 
