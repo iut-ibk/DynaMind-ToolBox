@@ -120,30 +120,3 @@ class LoadDAnCETimeseries(Module):
                 station.SetField("values", ' '.join(str(d) for d in result_rain))
 
             self.node_station.finalise()
-
-
-#
-# import datetime
-#
-#
-
-#
-#
-# cur = conn.cursor()
-#
-#
-# cur.execute("""SELECT date  from measurment WHERE station_id = 5ORDER BY date DESC LIMIT 1 """)
-#
-# rows = cur.fetchall()
-# for r in rows:
-#      print r
-#
-# cur.execute("""SELECT date  from measurment WHERE station_id = 5ORDER BY date ASC LIMIT 1 """)
-#
-# rows = cur.fetchall()
-# for r in rows:
-#      print r
-#
-# cur.execute("""SELECT date,  value from measurment WHERE station_id = 5 and date >= '2000-1-1 00:00:00' and date < '2010-1-1 00:00:00'""")
-#
-# rows = cur.fetchall()
