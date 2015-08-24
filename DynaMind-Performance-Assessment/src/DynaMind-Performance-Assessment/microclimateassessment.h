@@ -11,7 +11,7 @@ class DM_HELPER_DLL_EXPORT MicroClimateAssessment : public DM::Module
 private:
 
 
-public:
+
 
 	int gridsize;
 	int percentile;
@@ -23,7 +23,7 @@ public:
 	std::string techFile;
 	QList<QList<double> > tec;
 
-
+public:
 	MicroClimateAssessment();
 	void init();
 	void run();
