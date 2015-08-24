@@ -67,7 +67,7 @@ class LoadDAnCETimeseries(Module):
                     print r[0]
                     times.append(r[0])
 
-                db_timestep = (times[1] - times[0]).seconds
+                db_timestep = (times[1] - times[0]).dt.total_seconds()
 
 
                 delta_t = self.deltaT
