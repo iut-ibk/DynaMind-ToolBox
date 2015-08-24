@@ -15,7 +15,7 @@ public:
 private:
 	DM::ViewContainer grid;
 	double getTempForSurface(int surface, int percentile);
-	int percentile = 80;
+	int percentile;
 };
 
 #endif // DM_MICROCLIMATE_H
