@@ -1,10 +1,20 @@
 #ifndef DM_CREATECOMPONENT_H
 #define DM_CREATECOMPONENT_H
 
-class DM_CreateComponent
+#include <dmmodule.h>
+#include <dm.h>
+
+class DM_HELPER_DLL_EXPORT DM_CreateComponent: public DM::Module
 {
+	DM_DECLARE_NODE(DM_CreateComponent)
 public:
 	DM_CreateComponent();
+	void run();
+	void init();
+
+	std::string lead_view_name;
+	DM::ViewContainer lead_view;
+
 };
 
 #endif // DM_CREATECOMPONENT_H
