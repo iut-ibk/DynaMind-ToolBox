@@ -79,8 +79,9 @@ void GDALJoinNearestNeighbour::run()
 			DM::Logger(DM::Warning) << "Lead feature geometry is null";
 			continue;
 		}
-
-		OGRFeature * f = linkView.findNearestPoint((OGRPoint*) lead_geo, max_distance);
+		OGRPoint p;
+		lead_geo->Centroid(&p);
+		OGRFeature * f = linkView.findNearestPoint(&p , max_distance);
 		if (!f)
 			continue;
 		lead_feat->SetField(link_name.c_str(), (int) f->GetFID());
