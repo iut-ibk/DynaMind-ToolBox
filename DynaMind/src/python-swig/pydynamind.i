@@ -566,24 +566,26 @@ class DM::ViewContainer {
 		return
 
 	def register_layer(self):
+		if str(self.getName()) == "dummy":
+			return
 		try:
 			self.__ogr_layer
 		except:
 			db_id = self.getDBID()
 			self.__features = []
 			if db_id not in self.__ds.keys():
-				#print "Register Datasource " + str(db_id)
+				log("Register Datasource " + str(db_id), Debug)
 				self.__ds[db_id] = ogr.Open(db_id)
 				self.__connection_counter[db_id] = 0
 			else:
-				print "Reuse connection"
+				log("Reuse connection " + str(db_id), Debug)
 			table_name = str(self.getName())
 			#print "Register Layer " + str(table_name)
 			self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
 			self.__connection_counter[db_id]+=1
 
 			if self.__ogr_layer == None:
-				#print "Layer registration failed"
+				log("Layer registration failed" + str(db_id), Debug)
 				raise
 
 
@@ -594,38 +596,38 @@ class DM::ViewContainer {
 	def get_ogr_layer(self):
 		"""
 
-        Returns the OGR layer. Only use if really really needed.
+		Returns the OGR layer. Only use if really really needed.
 
-        :return: OGR Layer
-        :rtype: OGRLayer
+		:return: OGR Layer
+		:rtype: OGRLayer
 
-        """
+		"""
 		self.register_layer()
 		return self.__ogr_layer
 
 	def get_ogr_ds(self):
 		"""
 
-        Returns OGR data source. Only use if really really needed.
+		Returns OGR data source. Only use if really really needed.
 
-        :return: OGR data source
-        :rtype: OGRDataSource
+		:return: OGR data source
+		:rtype: OGRDataSource
 
-        """
+		"""
 		self.register_layer()
 		return self.__ds[self.getDBID()]
 
 	def get_linked_features(self, feature, link_id = ""):
 		"""
 
-        Sets a filter to easy access linked features. May be used in combination with :func:`~pydynamind.ViewContainer.next`
-        For example: ``for feature in self.view_container.get_linked_features(feature_from_other_view):``
-        :type feature: OGRFeature
-        :param feature: OGRFeature linking to this view
-        :return: this ViewContainer set to only return linked features
-        :rtype: :class:`~pydynamind.ViewContainer`
+		Sets a filter to easy access linked features. May be used in combination with :func:`~pydynamind.ViewContainer.next`
+		For example: ``for feature in self.view_container.get_linked_features(feature_from_other_view):``
+		:type feature: OGRFeature
+		:param feature: OGRFeature linking to this view
+		:return: this ViewContainer set to only return linked features
+		:rtype: :class:`~pydynamind.ViewContainer`
 
-        """
+		"""
 		self.reset_reading()
 		link_name = feature.GetDefnRef().GetName()
 		if link_id:
@@ -706,10 +708,10 @@ class DM::ViewContainer {
 
 		"""
 		self.sync()
-		#print "Destroy Layer"
-		#print self.__connection_counter[self.getDBID()]
+		log("Destroy Layer", Debug)
+		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:
-			#print "Real Destroy Connection"
+			log("Really Destroy Connection", Debug)
 			del self.__ds[self.getDBID()]
 			self.__ds = {}
 
