@@ -55,6 +55,8 @@ void Module::preRun()
 		return;
 	GDALSystem * sys = this->getGDALData("city");
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
+		if (v->getName() == "dummy")
+			continue;
 		v->setCurrentGDALSystem(sys);
 		//Set Filter, currently only attribute filter
 		foreach (DM::Filter f, this->moduleFilter){
