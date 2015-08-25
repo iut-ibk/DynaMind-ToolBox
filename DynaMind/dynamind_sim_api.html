@@ -111,6 +111,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="module.html#advanced-api">Advanced API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="module.html#linked-data">Linked Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="module.html#working-with-vectors">Working with Vectors</a></li>
 </ul>
 </li>
 </ul>
@@ -1150,6 +1151,24 @@ dramatically.</p>
 <code class="descname">finalise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydynamind.ViewContainer.finalise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes the ViewContainer writing the data to the database and freeing the memory.
 May be used before the end of the run method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydynamind.ViewContainer.get_attribute_filter_sql_string">
+<code class="descname">get_attribute_filter_sql_string</code><span class="sig-paren">(</span><em>filter</em><span class="sig-paren">)</span><a class="headerlink" href="#pydynamind.ViewContainer.get_attribute_filter_sql_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns set attribute filter as sql string (doesn&#8217;t include WHERE)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; attribute filter</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sql filter string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

@@ -111,6 +111,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#advanced-api">Advanced API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#linked-data">Linked Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#working-with-vectors">Working with Vectors</a></li>
 </ul>
 </li>
 </ul>
@@ -797,6 +798,21 @@ error.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c"># Init index before doing anything else. Otherwise it causes an error.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">building</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s">&quot;component_id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="working-with-vectors">
+<h3>Working with Vectors<a class="headerlink" href="#working-with-vectors" title="Permalink to this headline">¶</a></h3>
+<p>Vectors in DynaMind are stored as a string because of limited support of vector data types in sqlite.
+Therefore a vector should be converted before stored into a feature. Following code block show an an example.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Write vector</span>
+<span class="n">my_vector</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">feat</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;my_vector&quot;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">my_vector</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Access vector</span>
+<span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">GetFieldAsString</span><span class="p">(</span><span class="s">&quot;my_vector&quot;</span><span class="p">))</span>
+<span class="n">floats</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
 </pre></div>
 </div>
 <table class="docutils footnote" frame="void" id="id2" rules="none">

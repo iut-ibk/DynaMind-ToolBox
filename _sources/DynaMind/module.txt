@@ -362,5 +362,33 @@ error.
 
 ..
 
+Working with Vectors
+--------------------
+
+
+Vectors in DynaMind are stored as a string because of limited support of vector data types in sqlite.
+Therefore a vector should be converted before stored into a feature. Following code block show an an example.
+
+
+.. code-block:: python
+
+        # Write vector
+        my_vector = [1, 2, 3]
+        feat.SetField("my_vector", ' '.join(str(d) for d in my_vector))
+
+
+..
+
+
+.. code-block:: python
+
+        # Access vector
+        s = str(feat.GetFieldAsString("my_vector"))
+        floats = map(float, s.split())
+
+
+..
+
+
 .. [1] DynaMind automatically translates an absolute file location into the relative location to simplify the file exchange
 
