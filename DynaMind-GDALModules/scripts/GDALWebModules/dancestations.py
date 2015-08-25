@@ -22,10 +22,21 @@ class LoadDAnCEStations(Module):
 
             self.view_name = "station"
 
+            self.createParameter("append", BOOL)
+            self.append = False
+
+
         def init(self):
+
+            viewvector = []
             self.node_station = ViewContainer(self.view_name, NODE, WRITE)
-            self.node_station.addAttribute("station_id", Attribute.INT, WRITE)
-            self.registerViewContainers([self.node_station])
+            self.node_station.addAttribute("dance_station_id", Attribute.INT, WRITE)
+            viewvector.append(self.node_station)
+            if self.append:
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+                viewvector.append(self.dummy)
+
+            self.registerViewContainers(viewvector)
 
         def run(self):
             try:
@@ -51,7 +62,7 @@ class LoadDAnCEStations(Module):
             for r in rows:
                 station = self.node_station.create_feature()
 
-                station.SetField("station_id", r[0])
+                station.SetField("dance_station_id", r[0])
                 print r
                 pt = ogr.Geometry(ogr.wkbPoint)
                 pt.SetPoint_2D(0, r[4], r[5])
