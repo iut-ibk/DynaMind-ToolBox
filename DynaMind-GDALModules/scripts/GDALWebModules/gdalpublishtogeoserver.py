@@ -28,10 +28,13 @@ from geoserverpublish import *
 
 
 class GDALPublishPostgisLayerInGeoserver(Module):
+    display_name = "Publish PostGis to Geoserver"
+    group_name = "Data Import and Export"
+
     def __init__(self):
         Module.__init__(self)
         self.setIsGDALModule(True)
-
+        
         ### Postgis configuration
         self.createParameter("postGisUrl", STRING, "Url of the PostGis")
         self.postGisUrl = "localhost"
@@ -73,6 +76,14 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             If the style is in a workspace use the following syntax: workspace:styleName ")
         self.styleUsed='standard'        
 
+        
+        self.dummy = ViewContainer("city", COMPONENT, MODIFY)
+        self.registerViewContainers([self.dummy])
+        
+        self.createParameter("step", INT)
+        self.step = 1 #export every x step
+        
+    
     def init(self):
         # self.__postgis = ViewContainer("__postgisSettings", COMPONENT, READ)
         # self.__postgis.addAttribute("url", Attribute.STRING, READ)
@@ -88,6 +99,9 @@ class GDALPublishPostgisLayerInGeoserver(Module):
                                          self.geoserverWorkSpace)
 
     def run(self):
+        #only exort on x step
+        if self.get_group_counter() != -1 and (self.get_group_counter() -  1) % self.step != 0:
+            return
 
         #indication of the postgis-connection is valid
         ret = True
@@ -104,7 +118,11 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             return
 
         try:
-            self.geoHelper.publishPostGISLayer(self.postGisTable, self.geoserverDataStoreName, self.EPSG)
+            #check for counter:  "_" + str(self.get_group_counter() for postGisTable #if self.counter is set
+            if self.get_group_counter() != -1:
+                self.geoHelper.publishPostGISLayer(self.postGisTable+"_"+str(self.get_group_counter()), self.geoserverDataStoreName, self.EPSG)
+            else:
+                self.geoHelper.publishPostGISLayer(self.postGisTable, self.geoserverDataStoreName, self.EPSG)
         except FailedRequestError as e:
             log(str(e),Error)
             self.setStatus(MOD_EXECUTION_ERROR)
