@@ -5,8 +5,8 @@ Release Notes
 Release Notes v0.9
 ------------------
 
-Model Builder
-_____________
+Modules
+_______
 
 - Threading for
   - Parceling
@@ -17,6 +17,12 @@ _____________
 
 - Attribute Calculator
   - Enabling vector arithmetic
+
+- New module to add a single component to a simulation
+
+- DAnCE platform integration
+
+
 
 Release Notes v0.8
 ------------------

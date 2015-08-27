@@ -40,6 +40,7 @@ Data Handling
    gdalgeometricattributes
    gdalcalculatelength
    dm_calculatedistance
+   dm_createcomponent.rst
 
 
 Geometry Processing

@@ -12,6 +12,8 @@ public:
 	void run();
 	void init();
 
+	std::string getHelpUrl();
+
 	std::string lead_view_name;
 	DM::ViewContainer lead_view;
 

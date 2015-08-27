@@ -28,6 +28,11 @@ void DM_CreateComponent::init()
 	this->registerViewContainers(data);
 }
 
+string DM_CreateComponent::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/dm_createcomponent.html";
+}
+
 void DM_CreateComponent::run()
 {
 	OGRFeature * f =lead_view.createFeature();
