@@ -59,15 +59,14 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	std::string FileName;
 	std::vector<DM::Node*> PointList;
 	bool isCombined;
-	bool use_linear_cf;
+
 	bool writeResultFile;
 	bool deleteSWMM;
 
-	bool use_euler;
-	double return_period;
 	double climateChangeFactor;
 	bool climateChangeFactorFromCity;
-	bool consider_built_time;
+	std::string rainfile_from_vector;
+
 	int calculationTimestep;
 	int internalTimestep;
 

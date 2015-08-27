@@ -24,6 +24,8 @@
  *
  */
 #include "gdaldmswmm.h"
+#include "dmgdalhelper.h"
+
 #include <fstream>
 
 #include <QDir>
@@ -48,6 +50,42 @@ GDALDMSWMM::GDALDMSWMM()
 
 	GLOBAL_Counter = 1;
 	internalTimestep = 0;
+
+
+	this->FileName = "/tmp/swmm";
+	this->climateChangeFactor = 1;
+	this->RainFile = "";
+
+	this->writeResultFile = false;
+	this->climateChangeFactorFromCity = false;
+	this->calculationTimestep = 1;
+	this->deleteSWMM = true;
+	this->rainfile_from_vector = "";
+	years = 0;
+
+	this->isCombined = false;
+	this->addParameter("Folder", DM::STRING, &this->FileName);
+	this->addParameter("RainFile", DM::FILENAME, &this->RainFile);
+	this->addParameter("ClimateChangeFactor", DM::DOUBLE, & this->climateChangeFactor);
+
+
+
+	this->addParameter("combined system", DM::BOOL, &this->isCombined);
+
+	this->addParameter("rainfile_from_vector", DM::STRING, & this->rainfile_from_vector);
+
+	this->addParameter("writeResultFile", DM::BOOL, &this->writeResultFile);
+	this->addParameter("climateChangeFactorFromCity", DM::BOOL, &this->climateChangeFactorFromCity);
+	this->addParameter("calculationTimestep", DM::INT, & this->calculationTimestep);
+	this->addParameter("deleteSWMM", DM::BOOL, & this->deleteSWMM);
+
+	counterRain = 0;
+
+	unique_name = QUuid::createUuid().toString().toStdString();
+
+}
+
+void GDALDMSWMM::init() {
 
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("start_id", "node", DM::READ);
@@ -90,34 +128,11 @@ GDALDMSWMM::GDALDMSWMM()
 	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
 	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
 
-	this->FileName = "/tmp/swmm";
-	this->climateChangeFactor = 1;
-	this->RainFile = "";
-	this->use_euler = true;
-	this->return_period = 1;
-	this->use_linear_cf = true;
-	this->writeResultFile = false;
-	this->climateChangeFactorFromCity = false;
-	this->calculationTimestep = 1;
-	this->consider_built_time = false;
-	this->deleteSWMM = true;
-	years = 0;
+	if (this->climateChangeFactorFromCity)
+		city.addAttribute("climate_change_factor",DM::Attribute::DOUBLE, DM::READ);
 
-	this->isCombined = false;
-	this->addParameter("Folder", DM::STRING, &this->FileName);
-	this->addParameter("RainFile", DM::FILENAME, &this->RainFile);
-	this->addParameter("ClimateChangeFactor", DM::DOUBLE, & this->climateChangeFactor);
-	this->addParameter("use euler", DM::BOOL, & this->use_euler);
-	this->addParameter("return period", DM::DOUBLE, &this->return_period);
-	this->addParameter("combined system", DM::BOOL, &this->isCombined);
-	this->addParameter("use_linear_cf", DM::BOOL, &this->use_linear_cf);
-	this->addParameter("writeResultFile", DM::BOOL, &this->writeResultFile);
-	this->addParameter("climateChangeFactorFromCity", DM::BOOL, &this->climateChangeFactorFromCity);
-	this->addParameter("calculationTimestep", DM::INT, & this->calculationTimestep);
-	this->addParameter("consider_build_time", DM::BOOL, & this->consider_built_time);
-	this->addParameter("deleteSWMM", DM::BOOL, & this->deleteSWMM);
-
-	counterRain = 0;
+	if (!this->rainfile_from_vector.empty())
+		city.addAttribute(this->rainfile_from_vector,DM::Attribute::DOUBLEVECTOR, DM::READ);
 
 	std::vector<DM::ViewContainer*> data_stream;
 
@@ -139,13 +154,6 @@ GDALDMSWMM::GDALDMSWMM()
 	data_map["node"]  = &this->nodes;
 	data_map["city"]  = &this->city;
 	this->registerViewContainers(data_stream);
-
-	unique_name = QUuid::createUuid().toString().toStdString();
-
-}
-
-void GDALDMSWMM::init() {
-
 }
 
 string GDALDMSWMM::getHelpUrl()
@@ -163,16 +171,19 @@ void GDALDMSWMM::run() {
 	}
 
 	double cf = this->climateChangeFactor;
+	std::vector<double> rainvec;
 
 	if (this->climateChangeFactorFromCity) {
 		this->city.resetReading();
 		OGRFeature * city_f;
 		while(city_f = this->city.getNextFeature()){
 			cf = city_f->GetFieldAsDouble("climate_change_factor");
+			if (!this->rainfile_from_vector.empty())
+				DM::DMFeature::GetDoubleList(city_f, this->rainfile_from_vector, rainvec);
 		}
 	}
 
-	if (this->use_linear_cf) cf = 1. + years / 20. * (this->climateChangeFactor - 1.);
+
 
 	this->years++;
 
@@ -185,17 +196,15 @@ void GDALDMSWMM::run() {
 	}
 
 	SWMMWriteAndRead * swmm;
-
-	if (!this->use_euler)
-		swmm = new SWMMWriteAndRead(data_map, this->RainFile, this->FileName);
-	else {
-		std::stringstream rfile;
-		rfile << "/tmp/rain_"<< QUuid::createUuid().toString().toStdString();
-		DrainageHelper::CreateEulerRainFile(60, 5, this->return_period, cf, rfile.str());
-		swmm = new SWMMWriteAndRead(data_map, rfile.str(), this->FileName);
-	}
+	swmm = new SWMMWriteAndRead(data_map, this->RainFile, this->FileName);
+		if (!this->rainfile_from_vector.empty())
+			swmm->setRainVec(rainvec);
 	swmm->setDeleteSWMMWhenDone(this->deleteSWMM);
-	swmm->setBuildYearConsidered(this->consider_built_time);
+
+	if (!this->rainfile_from_vector.empty())
+		city.addAttribute(this->rainfile_from_vector,DM::Attribute::DOUBLEVECTOR, DM::READ);
+
+	//swmm->setBuildYearConsidered(this->consider_built_time);
 
 	swmm->setClimateChangeFactor(cf);
 	swmm->setupSWMM();

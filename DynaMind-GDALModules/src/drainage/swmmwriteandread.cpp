@@ -31,6 +31,8 @@
 #include <QProcess>
 #include <QTextStream>
 #include <QSettings>
+#include <QDateTime>
+
 #include <math.h>
 #include <algorithm>
 #include <fstream>
@@ -1217,9 +1219,16 @@ void SWMMWriteAndRead::setupSWMM()
 	//			this->PointList.push_back(p2);
 	//		}
 	//	}
-
 	this->writeSWMMFile();
-	this->writeRainFile();
+	if (rainvec.size() == 0) {
+		DM::Logger(DM::Standard) << "use from file";
+		this->writeRainFile();
+	} else {
+		DM::Logger(DM::Standard) << "write rain vec";
+		this->writeRainFileFromVector();
+	}
+
+
 }
 
 string SWMMWriteAndRead::getSWMMUUIDPath()
@@ -1377,6 +1386,11 @@ void SWMMWriteAndRead::runSWMM()
 	}
 }
 
+void SWMMWriteAndRead::setRainVec(std::vector<double> rainvec)
+{
+	this->rainvec = rainvec;
+}
+
 void SWMMWriteAndRead::writeRainFile() {
 	QFile r_in;
 	r_in.setFileName(QString::fromStdString(this->rainfile));
@@ -1402,6 +1416,38 @@ void SWMMWriteAndRead::writeRainFile() {
 
 	r_in.close();
 	out.close();
+
+}
+
+void SWMMWriteAndRead::writeRainFileFromVector()
+{
+	QString fileName = this->SWMMPath.absolutePath()+ "/"+ "rain.dat";
+	std::fstream out;
+	out.open(fileName.toLatin1(),ios::out);
+
+	QDateTime date = QDateTime::fromString("2000-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+
+	foreach (double r, this->rainvec) {
+		date = date.addSecs(60*5);
+
+		out << "STA01 ";
+		out << date.toString("yyyy MM dd HH mm").toStdString() << " ";
+		out << r*(this->climateChangeFactor) << "\n";
+	}
+	out.close();
+//	do {
+//		line = in.readLine();
+//		QStringList splitline = line.split(QRegExp("\\s+"));
+//		if (splitline.size() > 2) {
+//			for(int i = 0; i < splitline.size() - 1;i++)
+//				out << QString(splitline[i]).toStdString() << " ";
+//			double r = QString(splitline[splitline.size()-1]).toDouble();
+//			out << r*(this->climateChangeFactor) << "\n";
+//		}
+
+//	} while (!line.isNull());
+
+
 
 }
 

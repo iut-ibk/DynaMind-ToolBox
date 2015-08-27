@@ -43,6 +43,7 @@ public:
 	std::string getSWMMUUIDPath();
 	void readInReportFile();
 	void runSWMM();
+	void setRainVec(std::vector<double> rainvec);
 
 	//Node ID
 	std::map<int, double> getFloodedNodes();
@@ -124,6 +125,7 @@ private:
 
 
 	void writeRainFile();
+	void writeRainFileFromVector();
 
 	void createViewDefinition();
 
@@ -152,6 +154,8 @@ private:
 	std::map<int, double> linkFlowSummery_capacity;
 
 	std::map<int, double> linkFlowSummery_velocity;
+
+	std::vector<double> rainvec;
 
 	//Water level in percent
 	double water_level_below_0;
