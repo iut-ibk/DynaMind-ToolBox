@@ -38,8 +38,9 @@ class DM_HELPER_DLL_EXPORT GDALCreateHouseholds : public DM::Module
 public:
 	GDALCreateHouseholds();
 	void run();
+	void placeHouseholds();
 private:
-	//DM::ViewContainer district;
+	DM::ViewContainer district;
 	DM::ViewContainer building;
 	DM::ViewContainer household;
 	DM::ViewContainer hh_income;
@@ -61,6 +62,8 @@ private:
 
 	void fill_cdf(int id, std::string filtername, DM::ViewContainer & container,
 						 std::vector<std::string> & names, std::vector<double> &return_vec);
+
+	bool firstplaceHouseholds;
 };
 
 #endif // GDALCREATEHOUSEHOLDS_H

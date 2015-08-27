@@ -252,6 +252,27 @@ void GDALAttributeCalculator::updateDoubleVector(std::string variable_name, std:
 
 void GDALAttributeCalculator::run()
 {
+	//Workaround to create arrays
+	QString qequation = QString::fromStdString(this->equation);
+	if (qequation.contains("{")) {
+		DM::Logger(DM::Standard) << "Define Array";
+		qequation = qequation.replace("{", "");
+		qequation = qequation.replace("}", "");
+
+		std::vector<double> array;
+		foreach(QString s, qequation.split(",")){
+			double d = s.toFloat();
+			array.push_back(d);
+		}
+		leading_view->resetReading();
+		OGRFeature * f;
+		while(f = leading_view->getNextFeature()){
+			DM::DMFeature::SetDoubleList(f, this->leading_attribute, array);
+		}
+		return;
+	}
+
+
 	if (this->init_failed) {
 		DM::Logger(DM::Error) << "Attribute Calculator Init Failed";
 		this->setStatus(DM::MOD_CHECK_ERROR);
@@ -276,6 +297,8 @@ void GDALAttributeCalculator::run()
 
 	std::map<std::string, mup::Value * > muVariables;
 	mup::ParserX * p  = new mup::ParserX();
+	//p->EnableAutoCreateVar(true);
+
 	mup::Value mp_c;
 
 	p->DefineFun(new dm::VecSum);
