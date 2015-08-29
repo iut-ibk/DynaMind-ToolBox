@@ -51,6 +51,7 @@ Geometry Processing
    gdalcalculatecentroids
    gdalerase
    gdaloffset
+   dm_creategrid
 
 
 Workflow Control

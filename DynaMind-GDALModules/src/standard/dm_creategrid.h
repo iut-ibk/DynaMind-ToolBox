@@ -24,9 +24,10 @@ private:
 	DM::ViewContainer grid_view;
 	double grid_size;
 
-
 	void execute_query(const char *sql, bool cb );
 	static int callback(void *db_worker, int argc, char **argv, char **azColName);
+
+	std::string getHelpUrl();
 
 	void initDatabase();
 };

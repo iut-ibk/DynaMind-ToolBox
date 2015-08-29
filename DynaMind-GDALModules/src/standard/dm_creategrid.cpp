@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-DM_DECLARE_CUSTOM_NODE_NAME(DM_CreateGrid, Create Grid, Data Handling)
+DM_DECLARE_CUSTOM_NODE_NAME(DM_CreateGrid, Create Grid, Geometry Processing)
 
 int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName){
 	if (argc == 0)
@@ -34,6 +34,11 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 	DM::Logger(DM::Standard) << polygons;
 
 	return 0;
+}
+
+string DM_CreateGrid::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/dm_creategrid.html";
 }
 
 
