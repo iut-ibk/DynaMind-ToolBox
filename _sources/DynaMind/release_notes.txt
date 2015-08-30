@@ -16,9 +16,11 @@ _______
   - DynaMind SQLite extensions
 
 - Attribute Calculator
-  - Enabling vector arithmetic
+  - :doc:`Enabling vector arithmetic </DynaMind-GDALModules/gdalattributecalculator>`
 
-- New module to add a single component to a simulation
+- New module to :doc:`generate grids </DynaMind-GDALModules/dm_creategrid>`
+
+- New module to :doc:`add a single component to a simulation </DynaMind-GDALModules/dm_createcomponent>`
 
 - DAnCE platform integration
 
