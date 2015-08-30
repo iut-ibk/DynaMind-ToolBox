@@ -65,6 +65,8 @@ public:
 	void run();
 	std::string getHelpUrl();
 	void resetInit();
+
+	void sqlite_backend();
 };
 
 #endif // GDALATTRIBUTECALCULATOR_H

@@ -30,6 +30,7 @@
 #include <dmmodule.h>
 #include <dm.h>
 
+class sqlite3;
 class DM_HELPER_DLL_EXPORT GDALSpatialLinking : public DM::Module
 {
 	DM_DECLARE_NODE(GDALSpatialLinking)
@@ -51,6 +52,7 @@ private:
 
 	std::string link_name;
 
+	void execute_query1(sqlite3 *db, const char *sql);
 };
 
 #endif // GDALSPATIALLINKING_H
