@@ -13,10 +13,16 @@ _______
   - Geometric Attributes
 
 - New module to use SQL queries
+
   - DynaMind SQLite extensions
 
-- Attribute Calculator
-  - :doc:`Enabling vector arithmetic </DynaMind-GDALModules/gdalattributecalculator>`
+- :doc:`Attribute Calculator </DynaMind-GDALModules/gdalattributecalculator>`
+
+  - Enabling vector arithmetic
+
+- :doc:`Export GIS data </DynaMind-GDALModules/gdalpublishresults>`
+
+  - Append data to existing layer
 
 - New module to :doc:`generate grids </DynaMind-GDALModules/dm_creategrid>`
 
