@@ -210,7 +210,7 @@ void GDALSystem::updateView(const View &v)
 		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
 			lyr->CreateField(&oField);
-// Not using real reference because it an not reproducable
+// Not using real reference because it causes a not reproducable
 // problems that the link attribute might not be written.
 // Going back to implement it as simeple integer.
 // Uncomment above line for another try later.
