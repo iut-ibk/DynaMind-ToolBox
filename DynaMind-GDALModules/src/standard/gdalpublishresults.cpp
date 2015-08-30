@@ -37,6 +37,9 @@ GDALPublishResults::GDALPublishResults()
 	this->overwrite = false;
 	this->addParameter("overwrite", DM::BOOL, &overwrite);
 
+	this->append = false;
+	this->addParameter("append", DM::BOOL, &append);
+
 	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::MODIFY);
 
 
@@ -64,6 +67,81 @@ void GDALPublishResults::init()
 	data_stream.push_back(&components);
 	data_stream.push_back(&dummy);
 	this->registerViewContainers(data_stream);
+}
+
+void GDALPublishResults::updateAttributes(OGRLayer* lyr)
+{
+	foreach(std::string attribute_name, components.getAllAttributes()) {
+		//Feature already in layer
+		if (lyr->GetLayerDefn()->GetFieldIndex(attribute_name.c_str()) >= 0)
+			continue;
+		if (components.getAttributeType(attribute_name) == DM::Attribute::INT){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
+			lyr->CreateField(&oField);
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::STRING){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
+			lyr->CreateField(&oField);
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::DOUBLE){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTReal );
+			lyr->CreateField(&oField);
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::STRINGVECTOR){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTStringList );
+			lyr->CreateField(&oField);
+			DM::Logger(DM::Error) << "Attribute typer STRINGVECTOR is currently not supported";
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::DOUBLEVECTOR){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
+			lyr->CreateField(&oField);
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::DATE){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTDate );
+			lyr->CreateField(&oField);
+			continue;
+		}
+		if (components.getAttributeType(attribute_name) == DM::Attribute::LINK){
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
+			lyr->CreateField(&oField);
+			continue;
+		}
+	}
+}
+
+OGRLayer * GDALPublishResults::openLayer(OGRDataSource *poDS, OGRSpatialReference* oTargetSRS, char** options, std::string layer_name)
+{
+	OGRLayer * lyr = NULL;
+
+	if (append && poDS->GetLayerByName(layer_name.c_str())){
+		// Append Layer
+
+		lyr = poDS->GetLayerByName(layer_name.c_str());
+		updateAttributes(lyr);
+		return lyr;
+	}
+
+	switch ( components.getType() ) {
+	case DM::COMPONENT:
+		lyr = poDS->CreateLayer(layer_name.c_str(), oTargetSRS, wkbNone, options );
+		break;
+	case DM::NODE:
+		lyr = poDS->CreateLayer(layer_name.c_str(), oTargetSRS, wkbPoint, options );
+		break;
+	case DM::EDGE:
+		lyr = poDS->CreateLayer(layer_name.c_str(), oTargetSRS, wkbLineString, options );
+		break;
+	case DM::FACE:
+		lyr = poDS->CreateLayer(layer_name.c_str(), oTargetSRS, wkbPolygon, options );
+		break;
+	}
+
+	return lyr;
 }
 
 void GDALPublishResults::run()
@@ -96,16 +174,21 @@ void GDALPublishResults::run()
 
 	//Extend string_stream with _xx;
 	std::stringstream sink_name;
-	if (!driverName.empty()) {
-		int pos = this->sink.find(".");
-		if (pos == -1) {
-			sink_name << sink;
-			sink_name << "_" << interal_counter;
-		} else {
-			sink_name<< sink.substr(0,pos);
-			sink_name << "_" << interal_counter;
-			sink_name<< sink.substr(pos, sink.size()-1);
+	if (!append) {
+		if (!driverName.empty()) {
+			int pos = this->sink.find(".");
+			if (pos == -1) {
+				sink_name << sink;
+				sink_name << "_" << interal_counter;
+			} else {
+				sink_name<< sink.substr(0,pos);
+				sink_name << "_" << interal_counter;
+				sink_name<< sink.substr(pos, sink.size()-1);
+			}
 		}
+
+	} else {
+		sink_name << sink;
 	}
 
 	if (!driverName.empty()) {
@@ -146,26 +229,13 @@ void GDALPublishResults::run()
 	}
 	std::stringstream layer_name;
 	layer_name << this->layerName;
-	if (interal_counter != -1) {
-		 layer_name << "_" << interal_counter;
+	if (!append) {
+		if (interal_counter != -1) {
+			 layer_name << "_" << interal_counter;
+		}
 	}
 
-	OGRLayer * lyr;
-
-	switch ( components.getType() ) {
-	case DM::COMPONENT:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbNone, options );
-		break;
-	case DM::NODE:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPoint, options );
-		break;
-	case DM::EDGE:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbLineString, options );
-		break;
-	case DM::FACE:
-		lyr = poDS->CreateLayer(layer_name.str().c_str(), oTargetSRS, wkbPolygon, options );
-		break;
-	}
+	OGRLayer* lyr = openLayer(poDS, oTargetSRS, options, layer_name.str());
 
 	if (!lyr) {
 		DM::Logger(DM::Error) << "Layer not created " << components.getType();

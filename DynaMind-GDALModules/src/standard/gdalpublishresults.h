@@ -41,10 +41,12 @@ public:
 	void run();
 	void init();
 	std::string getHelpUrl();
+
+	void updateAttributes(OGRLayer* lyr);
 private:
 	DM::ViewContainer components;
 	DM::ViewContainer dummy;
-
+	OGRLayer * openLayer(OGRDataSource *poDS, OGRSpatialReference* oTargetSRS, char** options, std::string layer_name);
 	std::string sink;
 	std::string driverName;
 	std::string viewName;
@@ -53,6 +55,7 @@ private:
 	int steps;
 	int internal_counter;
 	bool overwrite;
+	bool append;
 
 	void writeFeatures(OGRLayer *lyr, std::vector<OGRFeature *> &feats);
 };

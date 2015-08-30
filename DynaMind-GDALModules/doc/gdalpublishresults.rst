@@ -24,6 +24,9 @@ Parameter
 +-------------------+------------------------+-----------------------------------------------------------------------+
 |overwrite          | BOOL                   | if true and existing datasource is overwritten, default is false      |
 +-------------------+------------------------+-----------------------------------------------------------------------+
+|append             | BOOL                   | if true and data are append to existing layer at data source          |
++-------------------+------------------------+-----------------------------------------------------------------------+
+
 
 Module Name
 -----------
@@ -36,7 +39,6 @@ Detailed Description
 
 The module builds on the GDAL/OGR library and supports export of data from DynaMind into
 common GIS data formats. An overview of supported formats can be found `here <http://www.gdal.org/ogr_formats.html>`_.
-
 
 
 Export to PostGIS
