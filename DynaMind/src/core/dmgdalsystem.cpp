@@ -299,6 +299,25 @@ void GDALSystem::setNextByIndex(const View &v, long index){
 	lyr->SetNextByIndex(index);
 }
 
+void GDALSystem::closeConnection()
+{
+	if (poDS) {
+		OGRDataSource::DestroyDataSource(poDS);
+		poDS = NULL;
+	}
+}
+
+
+void GDALSystem::reConnect() {
+	poDS = poDrive->Open(this->getDBID().c_str(), true);
+	//RebuildViewLayer
+	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
+		 it != viewLayer.end(); ++it) {
+		std::string viewname = it->first;
+		viewLayer[it->first] = poDS->GetLayerByName(viewname.c_str());
+	}
+}
+
 string GDALSystem::getCurrentStateID()
 {
 	return this->state_ids[state_ids.size()-1];

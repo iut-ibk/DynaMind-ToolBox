@@ -380,6 +380,8 @@ protected:
 	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;
 
+	bool SQLExclusive;
+
 	/** @brief Returns simulation */
 	DM::Simulation *getSimulation();
 
@@ -415,6 +417,9 @@ private:
 	DM::Simulation *sim;
 	bool			forceUpdate;
 	std::vector<Filter> moduleFilter;
+
+	GDALSystem * reconnect_sys;
+
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;

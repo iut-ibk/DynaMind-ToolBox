@@ -187,6 +187,10 @@ public:
 	virtual ~GDALSystem();
 
 	void setNextByIndex(const View &v, long index);
+
+	void closeConnection();
+
+	void reConnect();
 private:
 	OGRDataSource						*poDS;
 	OGRSFDriver							*poDrive;
@@ -200,6 +204,7 @@ private:
 	std::string workingDir;
 	bool keepDatabaseFile;
 	int EPSG;
+
 };
 }
 
