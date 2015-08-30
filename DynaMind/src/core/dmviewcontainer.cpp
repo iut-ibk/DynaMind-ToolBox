@@ -325,11 +325,13 @@ void ViewContainer::createIndex(string attribute)
 {
 	std::stringstream index_drop;
 	index_drop << "DROP INDEX IF EXISTS "<< attribute <<"_index";
-	this->_currentSys->getDataSource()->ExecuteSQL(index_drop.str().c_str(), 0, "SQLITE");
+	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(index_drop.str().c_str(), 0, "SQLITE");
+	this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
 
 	std::stringstream index;
 	index << "CREATE INDEX "<< attribute <<"_index ON " << this->getName() << " (" << attribute << ")";
-	this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
+	lyr = this->_currentSys->getDataSource()->ExecuteSQL(index.str().c_str(), 0, "SQLITE");
+	this->_currentSys->getDataSource()->ReleaseResultSet(lyr);
 }
 
 int ViewContainer::getFeatureCount()
