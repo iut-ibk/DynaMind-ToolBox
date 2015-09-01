@@ -2,12 +2,14 @@
 #include <sstream>
 #include <ogr_feature.h>
 #include <dmsimulation.h>
+#include <sqlite3.h>
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALSpatialLinking, Spatial Linking, Linking)
 
 GDALSpatialLinking::GDALSpatialLinking()
 {
 	GDALModule = true;
+	SQLExclusive = true;
 	properInit = false;
 
 	this->leadingViewName = "";
@@ -73,6 +75,19 @@ bool GDALSpatialLinking::checkIntersection(OGRGeometry* geo, OGRGeometry * lead_
 	return (geo->Within(lead_geo) || geo->Intersects(lead_geo));
 }
 
+void GDALSpatialLinking::execute_query1(sqlite3 *db, const char *sql ) {
+	char *zErrMsg = 0;
+
+	int rc;
+		rc = sqlite3_exec(db, sql , 0, 0, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		std::cout <<  "SQL error: " << zErrMsg << std::endl;
+		sqlite3_free(zErrMsg);
+	}
+}
+
+
+
 void GDALSpatialLinking::run()
 {
 	if (!properInit) {
@@ -80,10 +95,11 @@ void GDALSpatialLinking::run()
 		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
+
 	//Spatialte Backend
 	if (this->getSimulation()->getSimulationConfig().getCoorindateSystem() != 0) {
 		DM::Logger(DM::Debug) << "Use Spatialite Backend";
-		leadingView.createSpatialIndex();
+		//// TODO: leadingView.createSpatialIndex();
 		std::stringstream query;
 
 		std::string lead_filter = leadingView.get_attribute_filter_sql_string();
@@ -101,8 +117,25 @@ void GDALSpatialLinking::run()
 		if (!filter.empty())
 			query << " WHERE " << filter;
 
+
+		sqlite3 *db;
+		int rc =  sqlite3_open(this->leadingView.getDBID().c_str(), &db);
+		if( rc ){
+			DM::Logger(DM::Error) <<  "Can't open database: " << sqlite3_errmsg(db);
+			return;
+		}
+		sqlite3_enable_load_extension(db,1);
+
+		execute_query1(db,"SELECT load_extension('mod_spatialite')");
+
 		DM::Logger(DM::Standard) << query.str();
-		leadingView.executeSQL(query.str().c_str());
+
+		execute_query1(db,query.str().c_str());
+		sqlite3_close(db);
+
+
+
+		DM::Logger(DM::Standard) << query.str();
 		return;
 	}
 	DM::Logger(DM::Standard) << "Use GDAL backend as fallback EPSG CODE to improve performace";

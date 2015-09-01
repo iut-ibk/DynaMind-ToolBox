@@ -5,18 +5,32 @@ Release Notes
 Release Notes v0.9
 ------------------
 
-Model Builder
-_____________
+Modules
+_______
 
 - Threading for
   - Parceling
   - Geometric Attributes
 
 - New module to use SQL queries
+
   - DynaMind SQLite extensions
 
-- Attribute Calculator
+- :doc:`Attribute Calculator </DynaMind-GDALModules/gdalattributecalculator>`
+
   - Enabling vector arithmetic
+
+- :doc:`Export GIS data </DynaMind-GDALModules/gdalpublishresults>`
+
+  - Append data to existing layer
+
+- New module to :doc:`generate grids </DynaMind-GDALModules/dm_creategrid>`
+
+- New module to :doc:`add a single component to a simulation </DynaMind-GDALModules/dm_createcomponent>`
+
+- DAnCE platform integration
+
+
 
 Release Notes v0.8
 ------------------

@@ -210,7 +210,7 @@ void GDALSystem::updateView(const View &v)
 		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
 			lyr->CreateField(&oField);
-// Not using real reference because it an not reproducable
+// Not using real reference because it causes a not reproducable
 // problems that the link attribute might not be written.
 // Going back to implement it as simeple integer.
 // Uncomment above line for another try later.
@@ -297,6 +297,25 @@ OGRFeature *GDALSystem::getNextFeature(const View &v)
 void GDALSystem::setNextByIndex(const View &v, long index){
 	OGRLayer * lyr = viewLayer[v.getName()];
 	lyr->SetNextByIndex(index);
+}
+
+void GDALSystem::closeConnection()
+{
+	if (poDS) {
+		OGRDataSource::DestroyDataSource(poDS);
+		poDS = NULL;
+	}
+}
+
+
+void GDALSystem::reConnect() {
+	poDS = poDrive->Open(this->getDBID().c_str(), true);
+	//RebuildViewLayer
+	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
+		 it != viewLayer.end(); ++it) {
+		std::string viewname = it->first;
+		viewLayer[it->first] = poDS->GetLayerByName(viewname.c_str());
+	}
 }
 
 string GDALSystem::getCurrentStateID()

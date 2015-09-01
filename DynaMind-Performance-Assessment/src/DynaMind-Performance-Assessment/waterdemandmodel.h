@@ -35,6 +35,8 @@ class WaterDemandModel: public DM::Module
 
 		DM::ViewContainer parcels;
 		DM::ViewContainer global_object;
+		DM::ViewContainer station;
+		DM::ViewContainer timeseries;
 
 		// local cd3 varaibles
 		std::string varaibles;
@@ -47,18 +49,23 @@ class WaterDemandModel: public DM::Module
 		DynaMindStreamLogSink *sink;
 		SimulationParameters *p;
 
+		bool from_rain_station;
+		void initRain();
 
+		std::set<int> station_ids;
+		std::map<int, std::vector<double> > rainfalls;
+		std::map<int, std::vector<double> > evaotranspirations;
 
-		std::vector<double> stormwater_runoff;
-		std::vector<double> non_potable_demand;
-		std::vector<double> potable_demand;
-		std::vector<double> outdoor_demand;
+		std::map<int, std::vector<double> > stormwater_runoff;
+		std::map<int, std::vector<double> > non_potable_demand;
+		std::map<int, std::vector<double> > potable_demand;
+		std::map<int, std::vector<double> > outdoor_demand;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
+		bool createRainInput(MapBasedModel *m);
 
-
-	public:
+public:
 		WaterDemandModel();
 		void run();
 		void init();
@@ -76,10 +83,6 @@ class WaterDemandModel: public DM::Module
 		void setRainfile(const std::string &value);
 		Node * addRainTank(double storage_volume, Node* in_flow, Node* nonpot_before);
 		Node * addRainwaterTank(Node* flow_probe_runoff, Node* nonpot_before, double storage_volume);
-		std::vector<double> getStormwater_runoff() const;
-		void setStormwater_runoff(const std::vector<double> &value);
-		std::vector<double> getNon_potable_demand() const;
-		void setNon_potable_demand(const std::vector<double> &value);
 
 		std::vector<double> mutiplyVector(std::vector<double> & vec, double multiplyer);
 };

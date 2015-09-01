@@ -40,6 +40,7 @@ Data Handling
    gdalgeometricattributes
    gdalcalculatelength
    dm_calculatedistance
+   dm_createcomponent.rst
 
 
 Geometry Processing
@@ -50,6 +51,7 @@ Geometry Processing
    gdalcalculatecentroids
    gdalerase
    gdaloffset
+   dm_creategrid
 
 
 Workflow Control

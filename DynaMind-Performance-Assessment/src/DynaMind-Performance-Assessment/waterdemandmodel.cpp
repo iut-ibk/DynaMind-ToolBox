@@ -54,26 +54,32 @@ WaterDemandModel::WaterDemandModel()
 	end_date_name = "end_date";
 	this->addParameter("end_data_name", DM::STRING, &this->end_date_name);
 
-	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
-	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("garden_area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	from_rain_station = false;
+	this->addParameter("from_rain_station", DM::BOOL, &this->from_rain_station);
 
 }
 
 void WaterDemandModel::run()
 {
+	station_ids = std::set<int>();
+	rainfalls = std::map<int, std::vector<double> >();
+	evaotranspirations = std::map<int, std::vector<double> >();
+
+	stormwater_runoff = std::map<int, std::vector<double> >();
+	non_potable_demand = std::map<int, std::vector<double> >();
+	potable_demand = std::map<int, std::vector<double> >();
+	outdoor_demand = std::map<int, std::vector<double> >();
+
 	if (!initmodel())
 		return;
 	OGRFeature * p;
 	this->parcels.resetReading();
 
-	//Calculate outdoor demand for standard unit (100m2 roof, 100m2 garden, 1 person)
+	// init rain
+	if (this->from_rain_station)
+		initRain();
+
+	// Calculate outdoor demand for standard unit (100m2 roof, 100m2 garden, 1 person)
 	double imp_fraction = 0.2;
 	calculateRunoffAndDemand(500, imp_fraction, 0.8, 1);
 
@@ -84,10 +90,14 @@ void WaterDemandModel::run()
 		double garden_area = p->GetFieldAsDouble("garden_area");
 		double roof_area = p->GetFieldAsDouble("roof_area");
 
-		DM::DMFeature::SetDoubleList( p, "potable_demand_daily", this->mutiplyVector(this->potable_demand, persons));
-		DM::DMFeature::SetDoubleList( p, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand, persons));
-		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand,garden_area/400.)); //Unit Area
-		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff,roof_area/100.)); //Unit area
+		int station_id = -1;
+		if (this->from_rain_station)
+			station_id= p->GetFieldAsInteger("station_id");
+
+		DM::DMFeature::SetDoubleList( p, "potable_demand_daily", this->mutiplyVector(this->potable_demand[station_id], persons));
+		DM::DMFeature::SetDoubleList( p, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand[station_id], persons));
+		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand[station_id], garden_area/400.)); //Unit Area
+		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[station_id], roof_area/100.)); //Unit area
 
 		if (counter % 1000 == 0){
 			this->parcels.syncAlteredFeatures();
@@ -101,11 +111,36 @@ void WaterDemandModel::init()
 {
 	std::vector<DM::ViewContainer*> stream;
 
+	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
+	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
+	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
+	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::READ);
+	parcels.addAttribute("garden_area", DM::Attribute::DOUBLE, DM::READ);
+
+	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+
+	if (this->from_rain_station)
+		parcels.addAttribute("station_id", "station", DM::READ);
+
+	station = DM::ViewContainer("station", DM::COMPONENT, DM::WRITE);
+
+	timeseries = DM::ViewContainer("timeseries", DM::COMPONENT, DM::READ);
+	timeseries.addAttribute("values", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	timeseries.addAttribute("station_id", "station", DM::READ);
+
 	if (start_date_from_global) {
 		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
 		global_object.addAttribute(this->start_date_name, DM::Attribute::STRING, DM::READ);
 		global_object.addAttribute(this->end_date_name, DM::Attribute::STRING, DM::READ);
 		stream.push_back(&global_object);
+	}
+
+	if (this->from_rain_station){
+		stream.push_back(&station);
+		stream.push_back(&timeseries);
 	}
 
 	stream.push_back(&parcels);
@@ -146,10 +181,10 @@ bool WaterDemandModel::initmodel()
 	DM::Logger(DM::Standard) << cd3_end_date;
 
 	try{
-        // Register default simulation
-        this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+		// Register default simulation
+		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
 
-        // Register default modules
+		// Register default modules
 		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
 
 		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
@@ -182,40 +217,69 @@ bool WaterDemandModel::initmodel()
 	return true;
 }
 
+bool WaterDemandModel::createRainInput(MapBasedModel * m) {
+	DM::Logger(DM::Debug) << "Start Raintank";
+	if (!this->from_rain_station) {
+		this->station_ids.insert(-1);
+
+		DM::Logger(DM::Standard) << "Init with rain file";
+		Node * rain = nodereg->createNode("IxxRainRead_v2");
+		if (!rain) {
+			DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
+			return false;
+		}
+
+		rain->setParameter("rain_file", this->rainfile);
+		std::string datetime("d.M.yyyy HH:mm:ss");
+		rain->setParameter("datestring", datetime);
+		m->addNode("r_1", rain);
+
+		//evapo
+		Node * evapo = nodereg->createNode("IxxRainRead_v2");
+		if (!evapo) {
+			DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
+			return false;
+		}
+		DM::Logger(DM::Debug) << this->evapofile;
+		evapo->setParameter("rain_file", this->evapofile);
+		evapo->setParameter("datestring", datetime);
+		m->addNode("e_1", evapo);
+
+		return true;
+	}
+	DM::Logger(DM::Standard) << "Init using stations";
+	Node *  rain = nodereg->createNode("SourceVector");
+	if (!rain)
+		return false;
+	//n_d->setParameter("source",sum_demand);
+	m->addNode("r_1", rain);
+
+	Node * evapo = nodereg->createNode("SourceVector");
+	if (!evapo)
+		return false;
+	//n_d->setParameter("source",sum_demand);
+	m->addNode("e_1", evapo);
+
+	return true;
+}
+
 bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
-													 double roof_imp_fra,
-													 double perv_area_fra,
-													 double persons)
+												double roof_imp_fra,
+												double perv_area_fra,
+												double persons)
 {
 
 	MapBasedModel m;
-	DM::Logger(DM::Debug) << "Start Raintank";
-	Node * rain = nodereg->createNode("IxxRainRead_v2");
-	if (!rain) {
-		DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
-		return false;
-	}
 
-	rain->setParameter("rain_file", this->rainfile);
-	std::string datetime("d.M.yyyy HH:mm:ss");
-	rain->setParameter("datestring", datetime);
-	m.addNode("r_1", rain);
+	createRainInput(&m);
 
-	//evapo
-	Node * evapo = nodereg->createNode("IxxRainRead_v2");
-	if (!evapo) {
-		DM::Logger(DM::Error) << "Couldn't create " << " IxxRainRead_v2";
-		return false;
-	}
-	std::cout <<  this->evapofile << std::endl;
-	evapo->setParameter("rain_file", this->evapofile);
-	evapo->setParameter("datestring", datetime);
-	m.addNode("e_1", evapo);
+	Node * rain = m.getNode("r_1");
+	Node * evapo = m.getNode("e_1");
 
 	//catchment
 	Node * catchment_w_routing = nodereg->createNode("Catchment_w_Routing");
-	if (!rain) {
-		DM::Logger(DM::Error) << "Couldn't create " << " Catchment_w_Routing";
+	if (!catchment_w_routing || !rain || !evapo) {
+		DM::Logger(DM::Error) << "Init Model failed";
 		return false;
 	}
 
@@ -253,17 +317,42 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	ISimulation *s = simreg->createSimulation("DefaultSimulation");
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
 	s->setModel(&m);
-	s->setSimulationParameters(*p);
-	ptime starttime = s->getSimulationParameters().start;
 
-	m.initNodes(s->getSimulationParameters());
+	for (std::set<int>::const_iterator it = this->station_ids.begin();
+		 it != this->station_ids.end();
+		 ++it) {
+		int station_id = *it;
 
-	s->start(starttime);
+		if (station_id != -1) {
+			DM::Logger(DM::Standard) << "Use rain station " << station_id;
+			if (this->rainfalls.find(station_id) == this->rainfalls.end()) {
+				DM::Logger(DM::Error) << "Rainfall vector for " << station_id << " not found";
+				return false;
+			}
+			if (this->evaotranspirations.find(station_id) == this->evaotranspirations.end()) {
+				DM::Logger(DM::Error) << "Evapotranspirations vector for " << station_id << " not found";
+				return false;
+			}
+			std::vector<double> rain = this->rainfalls[station_id];
+			std::vector<double> evaotranspiration = this->evaotranspirations[station_id];
+			m.getNode("r_1")->setParameter("source",rain);
+			m.getNode("e_1")->setParameter("source",evaotranspiration);
+		}
 
-	this->stormwater_runoff = *(flow_probe_runoff->getState<std::vector<double> >("Flow"));
-	this->non_potable_demand = *(nonpot_before->getState<std::vector<double> >("Flow"));
-	this->potable_demand = *(pot_before->getState<std::vector<double> >("Flow"));
-	this->outdoor_demand = *(flow_probe_outdoor->getState<std::vector<double> >("Flow"));
+		s->setSimulationParameters(*p);
+		ptime starttime = s->getSimulationParameters().start;
+
+		m.initNodes(s->getSimulationParameters());
+
+		s->start(starttime);
+
+		this->stormwater_runoff[station_id] = *(flow_probe_runoff->getState<std::vector<double> >("Flow"));
+		this->non_potable_demand[station_id] = *(nonpot_before->getState<std::vector<double> >("Flow"));
+		this->potable_demand[station_id] = *(pot_before->getState<std::vector<double> >("Flow"));
+		this->outdoor_demand[station_id] = *(flow_probe_outdoor->getState<std::vector<double> >("Flow"));
+
+
+	}
 	delete s;
 	return true;
 }
@@ -317,6 +406,27 @@ void WaterDemandModel::setRainfile(const std::string &value)
 {
 	rainfile = value;
 }
+
+void WaterDemandModel::initRain()
+{
+	//time series naming
+	this->timeseries.resetReading();
+	this->timeseries.setAttributeFilter("type = 'rainfall intensity' or type = 'evapotranspiration'");
+	OGRFeature * r;
+
+	while (r = this->timeseries.getNextFeature()) {
+		std::vector<double> vec;
+		DM::DMFeature::GetDoubleList(r, "values", vec);
+		std::string type = r->GetFieldAsString("type");
+		int station_id = r->GetFieldAsInteger("station_id");
+		if (type == "rainfall intensity")
+			rainfalls[station_id] = vec;
+		if (type == "evapotranspiration")
+			evaotranspirations[station_id] = vec;
+		station_ids.insert(station_id);
+	}
+}
+
 std::vector<double> WaterDemandModel::create_montlhy_values(std::vector<double> daily, int seconds)
 {
 	QDateTime start = QDateTime::fromString("00:00:00 01.01.2000", "hh:mm:ss dd.MM.yyyy");
@@ -337,15 +447,6 @@ std::vector<double> WaterDemandModel::create_montlhy_values(std::vector<double> 
 	monthly.push_back(sum);
 	return monthly;
 }
-std::vector<double> WaterDemandModel::getNon_potable_demand() const
-{
-	return non_potable_demand;
-}
-
-void WaterDemandModel::setNon_potable_demand(const std::vector<double> &value)
-{
-	non_potable_demand = value;
-}
 
 std::vector<double> WaterDemandModel::mutiplyVector(std::vector<double> &vec, double multiplyer)
 {
@@ -356,14 +457,4 @@ std::vector<double> WaterDemandModel::mutiplyVector(std::vector<double> &vec, do
 
 	return res_vec;
 
-}
-
-std::vector<double> WaterDemandModel::getStormwater_runoff() const
-{
-	return stormwater_runoff;
-}
-
-void WaterDemandModel::setStormwater_runoff(const std::vector<double> &value)
-{
-	stormwater_runoff = value;
 }

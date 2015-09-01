@@ -45,6 +45,7 @@ Module::Module()
 	successorMode = false;
 	GDALModule = false;
 	moduleFilter = std::vector<Filter>();
+	SQLExclusive = false;
 }
 
 void Module::preRun()
@@ -68,12 +69,23 @@ void Module::preRun()
 			v->addModuleAttributeFilter(attribute_filter);
 		}
 	}
+	if (this->SQLExclusive) {
+		DM::Logger(DM::Debug) << "close db connection";
+		sys->closeConnection();
+		reconnect_sys = sys;
+	}
 }
 
 void Module::afterRun()
 {
+
 	if (!this->GDALModule)
 		return;
+	if (this->SQLExclusive) {
+		DM::Logger(DM::Debug) << "reconnect db";
+		reconnect_sys->reConnect();
+		return;
+	}
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		//Clean Views
 		v->syncAlteredFeatures();

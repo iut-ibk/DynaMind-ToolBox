@@ -35,16 +35,22 @@ void DM_MicroClimate::run()
 
 	OGRFeature * f;
 	while (f = grid.getNextFeature()) {
-		double treeTemp = f->GetFieldAsDouble("tree_cover_fraction") * getTempForSurface(1,this->percentile);
-		double waterTemp = f->GetFieldAsDouble("water_fraction") * getTempForSurface(2,this->percentile);
-		double grassTemp = f->GetFieldAsDouble("grass_fraction") * getTempForSurface(3,this->percentile);
-		double irrGrassTemp = f->GetFieldAsDouble("irrigated_grass_fraction") * getTempForSurface(4,this->percentile);
-		double roofTemp = f->GetFieldAsDouble("roof_fraction") * getTempForSurface(5,this->percentile);
-		double roadTemp = f->GetFieldAsDouble("road_fraction") * getTempForSurface(6,this->percentile);
-		double concreteTemp  = f->GetFieldAsDouble("concrete_fraction") * getTempForSurface(7,this->percentile);
-
-
-		f->SetField("temperature", treeTemp + waterTemp + grassTemp + irrGrassTemp + roofTemp + roadTemp + concreteTemp);
+		double tree = f->GetFieldAsDouble("tree_cover_fraction") > 0 ? f->GetFieldAsDouble("tree_cover_fraction") : 0;
+		double water = f->GetFieldAsDouble("water_fraction") > 0 ? f->GetFieldAsDouble("water_fraction") : 0;
+		double grass = f->GetFieldAsDouble("grass_fraction") > 0 ? f->GetFieldAsDouble("grass_fraction") : 0;
+		double irrGrass = f->GetFieldAsDouble("irrigated_grass_fraction") > 0 ? f->GetFieldAsDouble("irrigated_grass_fraction") : 0;
+		double roof = f->GetFieldAsDouble("roof_fraction") > 0 ? f->GetFieldAsDouble("roof_fraction") : 0;
+		double road = f->GetFieldAsDouble("road_fraction") > 0 ? f->GetFieldAsDouble("road_fraction") : 0;
+		double concrete  = f->GetFieldAsDouble("concrete_fraction") > 0 ? f->GetFieldAsDouble("concrete_fraction") : 0;
+		double scale = tree + water + grass + irrGrass + roof + road + concrete;
+		f->SetField("temperature",
+					tree/scale * getTempForSurface(1,this->percentile) +
+					water/scale * getTempForSurface(2,this->percentile) +
+					grass/scale * getTempForSurface(3,this->percentile) +
+					irrGrass/scale * getTempForSurface(4,this->percentile) +
+					roof/scale * getTempForSurface(5,this->percentile) +
+					road/scale * getTempForSurface(6,this->percentile) +
+					concrete/scale * getTempForSurface(7,this->percentile) );
 	}
 }
 
