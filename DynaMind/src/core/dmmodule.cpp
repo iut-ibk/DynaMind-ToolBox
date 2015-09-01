@@ -281,6 +281,11 @@ Simulation *Module::getSimulation()
 	return this->sim;
 }
 
+DM::SimulationConfig Module::getSimulationConfig()
+{
+	return this->sim->getSimulationConfig();
+}
+
 int Module::getGroupCounter()
 {
 	DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());

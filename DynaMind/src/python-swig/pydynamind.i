@@ -53,6 +53,7 @@ import tempfile
 %include "../core/dmlogger.h"
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
+%include "../core/dmsimulationconfig.h"
 
 namespace std {
 	%template(stringvector) vector<string>;
@@ -214,6 +215,9 @@ public:
 
 	void setStatus(DM::ModuleStatus status);
 	int getGroupCounter();
+
+	DM::SimulationConfig getSimulationConfig();
+
 
 protected:
 	void addData(std::string name, std::vector<DM::View> view);

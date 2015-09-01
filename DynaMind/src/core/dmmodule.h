@@ -34,6 +34,7 @@
 #include <map>
 #include <dmview.h>
 #include <dmviewcontainer.h>
+#include <dmsimulationconfig.h>
 
 namespace DM {
 	
@@ -314,6 +315,9 @@ public:
 
 	/** @brief Return current counter of parent group. If no parent group is set counter is -1 **/
 	int getGroupCounter();
+
+	/** @brief Returns simulation config */
+	DM::SimulationConfig getSimulationConfig();
 
 protected:
 	/** @brief returns the data from the desired stream */
