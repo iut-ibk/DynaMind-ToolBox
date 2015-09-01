@@ -21,7 +21,7 @@ if (SWMM_LIB)
     ENDIF()
 
     message(STATUS "Compiling as library")
-    add_library(swmm5 STATIC ${SRCS})
+	add_library(swmm5 SHARED ${SRCS})
 else (SWMM_LIB)
     message(STATUS "Compiling as standalone CLI application")
     add_definitions(-DCLE)
