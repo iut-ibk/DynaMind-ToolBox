@@ -161,19 +161,30 @@ void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloa
 
 	foreach(const QString& overloading, overloadlist)
 	{
-		QStringList keyvalueList = overloading.split(QRegExp("\\="), QString::SkipEmptyParts);
+        QStringList keyvalueList = overloading.split(QRegExp("\\="), QString::SkipEmptyParts);
 		QStringList overloadingList;
 
-		if(keyvalueList.size() >= 2)
+        if(keyvalueList.size() == 2)
 		{
-			overloadingList = keyvalueList[0].split(QRegExp("\\."), QString::SkipEmptyParts);
+            overloadingList = keyvalueList[0].split(QRegExp("\\."), QString::SkipEmptyParts);
 
-			QString value = "";
-			for(int index=1; index < keyvalueList.size(); index++)
-				value+=keyvalueList.at(index);
+            QString value = "";
+            for(int index=1; index < keyvalueList.size(); index++)
+                value+=keyvalueList.at(index);
 
-			overloadingList.push_back(value);
-		}
+            overloadingList.push_back(value);
+        }
+
+        // used for modules with '=' in values e.g. "Export GIS data" with postGIS.sink=PG:dbname=dbName host=127.0.0.1 port=5432 user=postgre password=password)
+        //otherwise the '=' would be removed
+        if(keyvalueList.size() > 2)
+        {
+
+            QString key = overloading.section(QRegExp("\\="),0,0);
+            overloadingList = key.split(QRegExp("\\."), QString::SkipEmptyParts);
+            QString value = overloading.section(QRegExp("\\="),1);
+            overloadingList.push_back(value);
+        }
 
 		if (overloadingList.size() != 3)
 			DM::Logger(DM::Error) << "wrong format in parameterstring: " << overloading.toStdString() << overloadingList.size();
