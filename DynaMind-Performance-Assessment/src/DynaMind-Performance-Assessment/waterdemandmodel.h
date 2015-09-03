@@ -50,6 +50,7 @@ class WaterDemandModel: public DM::Module
 		SimulationParameters *p;
 
 		bool from_rain_station;
+		bool to_rain_station;
 		void initRain();
 
 		std::set<int> station_ids;
