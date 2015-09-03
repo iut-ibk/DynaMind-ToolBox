@@ -41,6 +41,7 @@ Data Handling
    gdalcalculatelength
    dm_calculatedistance
    dm_createcomponent.rst
+   dm_sqlcalculator.rst
 
 
 Geometry Processing
