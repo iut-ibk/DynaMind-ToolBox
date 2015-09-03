@@ -42,6 +42,9 @@ DM::Attribute::AttributeType DM_SQliteCalculator::convertAttributeType(std::stri
 	if (type == "INT") {
 		return DM::Attribute::INT;
 	}
+	if (type == "DOUBLEVECTOR") {
+		return DM::Attribute::DOUBLEVECTOR;
+	}
 	return DM::Attribute::DOUBLE;
 }
 
@@ -71,45 +74,13 @@ void execute_query(sqlite3 *db, const char *sql ) {
 }
 
 
-void DM_SQliteCalculator::sqlite_backend()
-{
-
-	sqlite3 *db;
-	int rc = sqlite3_open(this->leading_view->getDBID().c_str(), &db);
-	if( rc ){
-		std::cout <<  "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-		//fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-		return;
-	}
-	sqlite3_enable_load_extension(db,1);
-	execute_query(db,"SELECT load_extension('mod_spatialite')");
-
-//	std::stringstream query_ss;
-//	query_ss <<"SELECT load_extension('" << extensionLocation << "')";
-//	execute_query(db,query_ss.str().c_str());
+//void DM_SQliteCalculator::sqlite_backend()
+//{
 
 
 
 
-	std::stringstream query;
-
-
-	query << this->equation;
-
-	std::string filter = leading_view->get_attribute_filter_sql_string();
-
-	if (!filter.empty())
-		query << " WHERE " << filter;
-
-	DM::Logger(DM::Standard) << query.str();
-
-	execute_query(db,query.str().c_str());
-	DM::Logger(DM::Standard) << "End Syncronise DB";
-	sqlite3_close(db);
-
-
-
-}
+//}
 
 bool DM_SQliteCalculator::initViews()
 {
@@ -248,15 +219,49 @@ void DM_SQliteCalculator::run()
 		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
+
+	sqlite3 *db;
+	int rc = sqlite3_open(this->leading_view->getDBID().c_str(), &db);
+	if( rc ){
+		DM::Logger(DM::Error) << "Can't open database: " << sqlite3_errmsg(db);
+		this->setStatus(DM::MOD_EXECUTION_ERROR);
+		return;
+	}
+	sqlite3_enable_load_extension(db,1);
+	execute_query(db,"SELECT load_extension('mod_spatialite')");
+
+	std::stringstream query_ss;
+	query_ss << "SELECT load_extension('" << this->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin" << "')";
+	std::cout << query_ss.str() << std::endl;
+	execute_query(db,query_ss.str().c_str());
+
+	std::stringstream query;
+
+
 	//Create Index for faster lookup
 	for (std::multimap<DM::ViewContainer *, std::string>::const_iterator it = this->index_map.begin(); it != this->index_map.end(); ++it) {
 		DM::ViewContainer * v = it->first;
+		std::stringstream index_drop;
+		index_drop << "DROP INDEX IF EXISTS "<< it->second <<"_index";
+		execute_query(db,index_drop.str().c_str());
 
-		// TODO: v->createIndex(it->second);
+		std::stringstream index;
+		index << "CREATE INDEX "<< it->second <<"_index ON " << v->getName() << " (" << it->second << ")";
+		execute_query(db,index.str().c_str());
 	}
 
+	query << this->equation;
 
-	sqlite_backend();
+	std::string filter = leading_view->get_attribute_filter_sql_string();
+
+	if (!filter.empty())
+		query << " WHERE " << filter;
+
+	DM::Logger(DM::Standard) << query.str();
+
+	execute_query(db,query.str().c_str());
+	DM::Logger(DM::Standard) << "End Syncronise DB";
+	sqlite3_close(db);
 
 //	std::stringstream query;
 
