@@ -263,24 +263,12 @@ void DM_SQliteCalculator::run()
 	DM::Logger(DM::Standard) << "End Syncronise DB";
 	sqlite3_close(db);
 
-//	std::stringstream query;
-
-
-//	query << this->equation;
-
-//	std::string filter = leading_view->get_attribute_filter_sql_string();
-
-//	if (!filter.empty())
-//		query << " WHERE " << filter;
-
-//	DM::Logger(DM::Standard) << query.str();
-//	this->leading_view->executeSQL(query.str().c_str());
 
 }
 
 string DM_SQliteCalculator::getHelpUrl()
 {
-	return "/DynaMind-GDALModules/gdalattributecalculator.html";
+	return "/DynaMind-GDALModules/dm_sqlcalculator.html";
 }
 
 
