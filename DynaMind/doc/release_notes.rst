@@ -12,7 +12,7 @@ _______
   - Parceling
   - Geometric Attributes
 
-- New module to use SQL queries
+- New module  :doc:`SQL calculator </DynaMind-GDALModules/dm_sqlcalculator>`
 
   - DynaMind SQLite extensions
 
