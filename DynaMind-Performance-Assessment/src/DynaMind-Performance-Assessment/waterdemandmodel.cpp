@@ -57,6 +57,9 @@ WaterDemandModel::WaterDemandModel()
 	from_rain_station = false;
 	this->addParameter("from_rain_station", DM::BOOL, &this->from_rain_station);
 
+	to_rain_station = false;
+	this->addParameter("to_rain_station", DM::BOOL, &this->to_rain_station);
+
 }
 
 void WaterDemandModel::run()
@@ -72,8 +75,7 @@ void WaterDemandModel::run()
 
 	if (!initmodel())
 		return;
-	OGRFeature * p;
-	this->parcels.resetReading();
+
 
 	// init rain
 	if (this->from_rain_station)
@@ -83,7 +85,21 @@ void WaterDemandModel::run()
 	double imp_fraction = 0.2;
 	calculateRunoffAndDemand(500, imp_fraction, 0.8, 1);
 
-	int counter = 0;
+
+	if (this->to_rain_station) {
+		this->station.resetReading();
+		OGRFeature * st;
+		while (st = station.getNextFeature()) {
+			DM::DMFeature::SetDoubleList( st, "potable_demand_daily", this->mutiplyVector(this->potable_demand[st->GetFID()], 1));
+			DM::DMFeature::SetDoubleList( st, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand[st->GetFID()], 1));
+			DM::DMFeature::SetDoubleList( st, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand[st->GetFID()], 1./400.)); //Unit Area
+			DM::DMFeature::SetDoubleList( st, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[st->GetFID()], 1./100.)); //Unit area
+		}
+		return;
+	}
+		int counter = 0;
+	OGRFeature * p;
+	this->parcels.resetReading();
 	while(p = this->parcels.getNextFeature()) {
 		counter++;
 		double persons = p->GetFieldAsDouble("persons");
@@ -111,16 +127,7 @@ void WaterDemandModel::init()
 {
 	std::vector<DM::ViewContainer*> stream;
 
-	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
-	parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::READ);
-	parcels.addAttribute("garden_area", DM::Attribute::DOUBLE, DM::READ);
 
-	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 
 	if (this->from_rain_station)
 		parcels.addAttribute("station_id", "station", DM::READ);
@@ -130,6 +137,7 @@ void WaterDemandModel::init()
 	timeseries = DM::ViewContainer("timeseries", DM::COMPONENT, DM::READ);
 	timeseries.addAttribute("values", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	timeseries.addAttribute("station_id", "station", DM::READ);
+	timeseries.addAttribute("type", DM::Attribute::STRING, DM::READ);
 
 	if (start_date_from_global) {
 		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
@@ -143,7 +151,24 @@ void WaterDemandModel::init()
 		stream.push_back(&timeseries);
 	}
 
-	stream.push_back(&parcels);
+	if (!this->to_rain_station) {
+		parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
+		parcels.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
+		parcels.addAttribute("persons", DM::Attribute::DOUBLE, DM::READ);
+		parcels.addAttribute("roof_area", DM::Attribute::DOUBLE, DM::READ);
+		parcels.addAttribute("garden_area", DM::Attribute::DOUBLE, DM::READ);
+		parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		parcels.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		stream.push_back(&parcels);
+	} else {
+		station.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("outdoor_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	}
+
 	this->registerViewContainers(stream);
 }
 
