@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Calculate Attributes &mdash; DynaMind-ToolBox 0.9.0-dev documentation</title>
+  <title>SQL Calculator &mdash; DynaMind-ToolBox 0.9.0-dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.9.0-dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules" href="index.html"/>
-        <link rel="next" title="Calculate Feature Area" href="gdalgeometricattributes.html"/>
-        <link rel="prev" title="Remove Component" href="gdalremovecomponents.html"/> 
+        <link rel="next" title="Create Centroids" href="gdalcalculatecentroids.html"/>
+        <link rel="prev" title="Create Single Component" href="dm_createcomponent.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -243,11 +243,11 @@
 <li class="toctree-l4"><a class="reference internal" href="gdalremovecomponents.html#sample-code-for-python-simulation">Sample Code for Python Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Calculate Attributes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalattributecalculator.html">Calculate Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gdalattributecalculator.html#module-name">Module Name</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gdalgeometricattributes.html">Calculate Feature Area</a><ul>
@@ -277,11 +277,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dm_createcomponent.html#module-name">Module Name</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dm_sqlcalculator.html">SQL Calculator</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dm_sqlcalculator.html#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_sqlcalculator.html#data-stream">Data-stream</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_sqlcalculator.html#detailed-description">Detailed Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dm_sqlcalculator.html#module-name">Module Name</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">SQL Calculator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 </ul>
 </li>
 </ul>
@@ -476,11 +476,11 @@
       
           <li><a href="index.html">Standard Modules</a> &raquo;</li>
       
-    <li>Calculate Attributes</li>
+    <li>SQL Calculator</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalattributecalculator.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dm_sqlcalculator.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -489,9 +489,9 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="calculate-attributes">
-<h1>Calculate Attributes<a class="headerlink" href="#calculate-attributes" title="Permalink to this headline">¶</a></h1>
-<p>Calculates a new or overwrites an existing attribute.</p>
+  <div class="section" id="sql-calculator">
+<h1>SQL Calculator<a class="headerlink" href="#sql-calculator" title="Permalink to this headline">¶</a></h1>
+<p>Execute SQL query directly on the data set. Highly recommended when speed is critical.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -600,73 +600,14 @@ attributes used in equation need to be defined as variables</td>
 </div>
 <div class="section" id="detailed-description">
 <h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>The module integrates the <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">muparser library</a>, a parser for mathematical equations and can access
-variables of linked components.</p>
-<div class="section" id="common-use-cases">
-<h3>Common use cases<a class="headerlink" href="#common-use-cases" title="Permalink to this headline">¶</a></h3>
-<p><em>Assign a constant</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:     building.construction_year
-attributeType: INT
-variables:
-    <span class="o">(</span>empty<span class="o">)</span>
-equation:      1990
-</pre></div>
-</div>
-<p><em>Assign a constant from global object</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:      building.construction_year
-attributeType:  INT
-variables:
-     y : city.year
-equation:       y
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">When non - linked variables are defined the attribute of the first found feature is returned. Therefore only use in combination where it is guaranteed that
-only one feature exists within a view. (e.g. city or world)</p>
-</div>
-<p><em>Assign only to a subset</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:        building.construction_year
-attributeType:    INT
-variables:
-     y : city.year
-     c : building.construction_year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
-equation:         <span class="nv">y</span> <span class="o">==</span> <span class="m">0</span> ? y : c <span class="c"># If year is not defined (0) the year is set to city.year, otherwise building.construction_year is assigned</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For this use case setting a module filter is much more efficient. Use the  <em>Assign constant example</em> and set the module attribute filter to building: construction_year is null</p>
-</div>
-<p><em>Calculate Number of people in a city district</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:         district.population
-attributeType:     INT
-variables:
-    pop : district.parcel.building.household.persons
-equation:          pop <span class="c"># Assigns the number of people living in a district. The data is derived from the linked feature.</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Links are resolved through a recursion and the sum of all the connected attributes is returned.</p>
-</div>
-<p><em>Increase increment in loop</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:          city.year
-attributeType:      INT
-variables:
-     y : city.year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
-equation: y + 1
-</pre></div>
-</div>
-<p>Further to the expression provided by  the  <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">muparser library</a> following
-expressions are supported:</p>
-</div>
-<div class="section" id="expressions">
-<h3>Expressions<a class="headerlink" href="#expressions" title="Permalink to this headline">¶</a></h3>
+<p>The module executes SQL queries directly on the database. DynaMind extends the functionality of sqlite to work
+with vector data and some advanced geometry operations. Following functions are available.</p>
+<div class="section" id="dynamind-sql-extension">
+<h3>DynaMind SQL Extension<a class="headerlink" href="#dynamind-sql-extension" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="79%" />
+<col width="33%" />
+<col width="67%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -674,34 +615,17 @@ expressions are supported:</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>rand(value)</td>
-<td>returns random number in range ]0-value]</td>
+<tr class="row-even"><td>dm_multiply_vector(vector, multiplier)</td>
+<td>multiply a vector</td>
 </tr>
-<tr class="row-odd"><td>round(value)</td>
-<td>rounds value to nearest int value</td>
+<tr class="row-odd"><td>dm_vector_sum(vector)</td>
+<td>return sum of vector</td>
 </tr>
-<tr class="row-even"><td>counter</td>
-<td>current counter when used in loops</td>
+<tr class="row-even"><td>dm_vector_addition(vector)</td>
+<td>return vector addition</td>
 </tr>
-<tr class="row-odd"><td>num2str(value)</td>
-<td>number to string</td>
-</tr>
-<tr class="row-even"><td>str2num(value)</td>
-<td>string to number</td>
-</tr>
-<tr class="row-odd"><td>vecsum(array)</td>
-<td>sum of a vector</td>
-</tr>
-<tr class="row-even"><td>? then : else</td>
-<td>if clause e.g. a &gt; 5 ? variable_a : variable_b see
-for the operators <a class="reference external" href="http://muparser.beltoforion.de/mup_features.html">see</a></td>
-</tr>
-<tr class="row-odd"><td>{1,2,3}</td>
-<td>creates a vector. Note that this can only be used stand alone and not in combination any
-other expression</td>
-</tr>
-<tr class="row-even"><td>&#8216;string a&#8217; // &#8216;string b&#8217;</td>
-<td>combine strings</td>
+<tr class="row-odd"><td>dm_sum_vectors(vector)</td>
+<td>aggregate vector</td>
 </tr>
 </tbody>
 </table>
@@ -709,7 +633,7 @@ other expression</td>
 </div>
 <div class="section" id="module-name">
 <h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
-<p><span class="target" id="index-0"></span>GDALAttributeCalculator</p>
+<p><span class="target" id="index-0"></span>DM_SQliteCalculator</p>
 </div>
 </div>
 
@@ -719,10 +643,10 @@ other expression</td>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalgeometricattributes.html" class="btn btn-neutral float-right" title="Calculate Feature Area" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalcalculatecentroids.html" class="btn btn-neutral float-right" title="Create Centroids" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalremovecomponents.html" class="btn btn-neutral" title="Remove Component" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dm_createcomponent.html" class="btn btn-neutral" title="Create Single Component" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
