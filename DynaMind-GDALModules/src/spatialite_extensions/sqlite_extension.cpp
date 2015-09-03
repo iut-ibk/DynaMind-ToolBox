@@ -52,6 +52,16 @@ void multiply_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
 }
 
+/* addition vector */
+void addition_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	const unsigned char * vec1 = sqlite3_value_text(argv[0]);
+	const unsigned char * vec2 = sqlite3_value_text(argv[1]);
+
+
+	std::string ress = my_extension::addition_vector(vec1, vec2);
+	sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
+}
+
 /* vector sum */
 void vector_sum(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * vec = sqlite3_value_text(argv[0]);
@@ -102,6 +112,8 @@ int sqlite3_dmsqliteplugin_init(
 	sqlite3_create_function(db, "dm_poly_percentage_filled", 1, SQLITE_UTF8, 0, &poly_percentage_filled, 0, 0);
 	sqlite3_create_function(db, "dm_poly_aspect_ratio", 1, SQLITE_UTF8, 0, &polygon_aspect_ratio, 0, 0);
 	sqlite3_create_function(db, "dm_multiply_vector", 2, SQLITE_UTF8, 0, &multiply_vector, 0, 0);
+	sqlite3_create_function(db, "dm_vector_addition", 2, SQLITE_UTF8, 0, &multiply_vector, 0, 0);
+	sqlite3_create_function(db, "dm_vector_sum", 1, SQLITE_UTF8, 0, &vector_sum, 0, 0);
 	sqlite3_create_function(db, "dm_sum_vectors", 1, SQLITE_UTF8, 0, 0, &sumVecStep, &sumVecFinalize);
 
 	return rc;
