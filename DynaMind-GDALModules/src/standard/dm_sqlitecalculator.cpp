@@ -68,6 +68,7 @@ void execute_query(sqlite3 *db, const char *sql ) {
 	int rc;
 		rc = sqlite3_exec(db, sql , 0, 0, &zErrMsg);
 	if( rc != SQLITE_OK ){
+		DM::Logger(DM::Error) <<  "SQL error: " << zErrMsg;
 		std::cout <<  "SQL error: " << zErrMsg << std::endl;
 		sqlite3_free(zErrMsg);
 	}

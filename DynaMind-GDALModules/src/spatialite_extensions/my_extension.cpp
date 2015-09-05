@@ -44,22 +44,16 @@ std::string my_extension::addition_vector(const unsigned char * vec1, const unsi
 }
 
 void my_extension::vector_addition(std::vector<double> & dvec, const unsigned char * vec) {
-
 	QString qvec= QString::fromStdString(reinterpret_cast<const char*>(vec));
-
-	if (dvec.size() == 0) {
-		foreach (QString s, qvec.split(" ")) {
-			if (s.isEmpty())
-				continue;
-			dvec.push_back(s.toDouble());
-		}
-		return;
-	}
+	int size = dvec.size();
 	int counter = 0;
 	foreach (QString s, qvec.split(" ")) {
-		if (s.isEmpty())
+		if (s.isEmpty() || s == " ")
 			continue;
-		dvec[counter] = dvec[counter]+s.toDouble();
+		if (size <= counter) {
+			dvec.push_back(s.toDouble());
+		} else
+			dvec[counter] = dvec[counter]+s.toDouble();
 		counter++;
 	}
 }
@@ -67,7 +61,8 @@ void my_extension::vector_addition(std::vector<double> & dvec, const unsigned ch
 
 
 double my_extension::vector_sum(const unsigned char * vec) {
-
+	if (!vec)
+		return 0;
 	QString qvec= QString::fromStdString(reinterpret_cast<const char*>(vec));
 	double d = 0;
 	foreach (QString s, qvec.split(" ")) {

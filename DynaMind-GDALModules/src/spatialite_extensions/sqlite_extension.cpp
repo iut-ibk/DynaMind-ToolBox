@@ -81,13 +81,17 @@ static void sumVecStep(sqlite3_context *context, int argc, sqlite3_value **argv)
 
 	p = reinterpret_cast<SumCtx*>(sqlite3_aggregate_context(context, sizeof(*p)));
 	const unsigned char * vec = sqlite3_value_text(argv[0]);
-	my_extension::vector_addition(p->rSum, vec);
+	if (vec)
+		my_extension::vector_addition(p->rSum, vec);
 
 }
 
 static void sumVecFinalize(sqlite3_context *context){
 	SumCtx *p;
 	p = reinterpret_cast<SumCtx*>(sqlite3_aggregate_context(context, 0));
+	if (!p) {
+		return;
+	}
 	std::stringstream ss;
 	bool first = true;
 	foreach (double s, p->rSum) {
