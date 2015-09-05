@@ -33,7 +33,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 
 
 	building = DM::ViewContainer("building", DM::FACE, DM::READ);
-	building.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
+	building.addAttribute("residential_units", DM::Attribute::INT, DM::READ);
 	building.addAttribute("district_id", DM::Attribute::INT, DM::READ);
 
 	household = DM::ViewContainer("household", DM::NODE, DM::WRITE);
@@ -89,6 +89,9 @@ void GDALCreateHouseholds::run()
 
 
 	OGRFeature * b = 0;
+
+	//Assign residential units to buildings
+
 	//while (d = district.getNextFeature()) {
 	while (b = building.getNextFeature()) {
 
