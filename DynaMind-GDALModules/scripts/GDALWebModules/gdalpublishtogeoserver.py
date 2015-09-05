@@ -100,7 +100,7 @@ class GDALPublishPostgisLayerInGeoserver(Module):
 
     def run(self):
         #only exort on x step
-        if self.get_group_counter() != -1 and (self.get_group_counter() -  1) % self.step != 0:
+        if self.get_group_counter() != -1 and (self.get_group_counter()  % self.step != 0):
             return
 
         #indication of the postgis-connection is valid
