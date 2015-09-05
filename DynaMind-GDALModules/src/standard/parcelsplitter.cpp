@@ -16,7 +16,8 @@ ParcelSplitter::ParcelSplitter() {
 
 }
 
-ParcelSplitter::ParcelSplitter(GDALParceling * module, double width, double length, char *poly_wkt):
+ParcelSplitter::ParcelSplitter(int id, GDALParceling * module, double width, double length, char *poly_wkt):
+  id(id),
   module(module),
   width(width),
   length(length),

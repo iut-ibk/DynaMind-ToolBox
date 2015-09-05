@@ -61,9 +61,18 @@ void GDALParceling::run()
 	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
 		counter++;
 		char* geo;
-		poFeature->GetGeometryRef()->exportToWkt(&geo);
+		OGRGeometry * geo_ogr = poFeature->GetGeometryRef();
+		if (!geo_ogr) {
+			DM::Logger(DM::Warning) << "no geometry " << poFeature->GetFID();
+			continue;
+		}
+		if( !geo_ogr->IsValid() ) {
+			DM::Logger(DM::Warning) << "geometry not valid " << poFeature->GetFID();
+			continue;
+		}
+		geo_ogr->exportToWkt(&geo);
 
-		ParcelSplitter * ps = new ParcelSplitter(this, this->width, this->length, geo);
+		ParcelSplitter * ps = new ParcelSplitter(poFeature->GetFID(), this, this->width, this->length, geo);
 		pool.start(ps);
 	}
 	pool.waitForDone();
@@ -85,6 +94,13 @@ void GDALParceling::addToSystem(QString poly)
 	OGRGeometry * ogr_poly;
 
 	OGRErr err = OGRGeometryFactory::createFromWkt(&writable_wr, 0, &ogr_poly);
+
+	//delete writable_wr;
+	if (err != OGRERR_NONE) {
+		DM::Logger(DM::Warning) << "ogr error!";
+		return;
+	}
+
 	//delete writable_wr;
 	if (!ogr_poly->IsValid()) {
 		DM::Logger(DM::Warning) << "Geometry is not valid!";

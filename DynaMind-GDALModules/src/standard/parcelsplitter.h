@@ -39,13 +39,14 @@ private:
 	double width;
 	char * poly_wkt;
 	GDALParceling * module;
+	int id;
 	//QVector<SFCGAL::Polygon> * results_vector;
 
 
 public:
 	ParcelSplitter();
 
-	ParcelSplitter(GDALParceling * module, double width, double length, char * poly_wkt);
+	ParcelSplitter(int id, GDALParceling * module, double width, double length, char * poly_wkt);
 	void splitePoly( Polygon_with_holes_2 &p);
 	void run();
 	~ParcelSplitter(){}

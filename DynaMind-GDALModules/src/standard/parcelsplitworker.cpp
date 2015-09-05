@@ -16,7 +16,8 @@ ParcelSplitWorker::ParcelSplitWorker()
 {
 }
 
-ParcelSplitWorker::ParcelSplitWorker(GDALParcelSplit * module, double width, bool splitFirst, char *poly_wkt) :
+ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width, bool splitFirst, char *poly_wkt) :
+	id(id),
 	module(module),
 	width(width),
 	splitFirst(splitFirst),
@@ -97,6 +98,7 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 
 void ParcelSplitWorker::run()
 {
+	//DM::Logger(DM::Standard) << "start " << id;
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(poly_wkt));
 	OGRFree(poly_wkt); //Not needed after here
 	switch ( g->geometryTypeId() ) {
@@ -111,5 +113,6 @@ void ParcelSplitWorker::run()
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
 
 	this->splitePoly(p);
+	//DM::Logger(DM::Standard) << "end " << id;
 }
 

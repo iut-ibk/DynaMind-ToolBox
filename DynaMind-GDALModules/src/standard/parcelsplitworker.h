@@ -37,10 +37,11 @@ private:
 	bool splitFirst;
 	char * poly_wkt;
 	GDALParcelSplit * module;
+	int id;
 
 public:
 	ParcelSplitWorker();
-	ParcelSplitWorker(GDALParcelSplit * module, double width, bool splitFirst,char * poly_wkt);
+	ParcelSplitWorker(int id, GDALParcelSplit * module, double width, bool splitFirst, char * poly_wkt);
 	void splitePoly(Polygon_with_holes_2 &poly);
 	Pwh_list_2 splitter(Polygon_2 & rect);
 	void run();

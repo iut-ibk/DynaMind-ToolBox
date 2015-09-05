@@ -74,7 +74,7 @@ void GDALParcelSplit::run()
 		char* geo;
 
 		poFeature->GetGeometryRef()->exportToWkt(&geo); //Geo destroyed by worker
-		ParcelSplitWorker * ps = new ParcelSplitWorker(this, this->width, this->splitFirst, geo);
+		ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->splitFirst, geo);
 		pool.start(ps);
 	}
 	pool.waitForDone();
@@ -95,6 +95,13 @@ void GDALParcelSplit::addToSystem(QString poly)
 	OGRGeometry * ogr_poly;
 
 	OGRErr err = OGRGeometryFactory::createFromWkt(&writable_wr, 0, &ogr_poly);
+	//delete writable_wr;
+	if (err != OGRERR_NONE) {
+		DM::Logger(DM::Warning) << "Geometry is not valid!";
+		return;
+	}
+
+
 	//delete writable_wr;
 	if (!ogr_poly->IsValid()) {
 		DM::Logger(DM::Warning) << "Geometry is not valid!";
