@@ -5,7 +5,7 @@
 
 //DM_DECLARE_NODE_NAME(GDALCreateHouseholds, GDALModules)
 
-DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateHouseholds, Sample Housholds From Census Data, Urban Form)
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateHouseholds, Sample Housholds From AUST Census Data, Urban Form)
 
 GDALCreateHouseholds::GDALCreateHouseholds()
 {
@@ -81,7 +81,7 @@ void GDALCreateHouseholds::run()
 		hh_income_v.push_back(0);
 	}
 
-	building.resetReading();
+
 
 	building.createIndex("district_id");
 	hh_income.createIndex("district_id");
@@ -93,6 +93,8 @@ void GDALCreateHouseholds::run()
 	//Assign residential units to buildings
 
 	//while (d = district.getNextFeature()) {
+	int counter = 0;
+	building.resetReading();
 	while (b = building.getNextFeature()) {
 
 		int b_id = b->GetFID();
@@ -113,7 +115,7 @@ void GDALCreateHouseholds::run()
 		OGRPoint pt;
 		geo->Centroid(&pt);
 
-		int counter = 0;
+
 		//int max_size = building_ids.size();
 		for (int i = 0; i < households ; i++) {
 			//DM::Logger(DM::Standard) << "create";
@@ -130,6 +132,7 @@ void GDALCreateHouseholds::run()
 			//households--;
 		}
 	}
+	DM::Logger(DM::Standard) << "Create " << counter << " hoseholds";
 }
 
 std::string GDALCreateHouseholds::sampler(std::vector<std::string> & names, std::vector<double> & devec)
