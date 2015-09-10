@@ -1,10 +1,12 @@
 #ifndef MY_EXTENSION_H
 #define MY_EXTENSION_H
 
+#include <dmcompilersettings.h>
 #include <QString>
 #include <vector>
 
-class my_extension
+
+class DM_HELPER_DLL_EXPORT my_extension
 {
 public:
 	static  std::string  multiply_vector(const unsigned char *vec, double mutiplyer);

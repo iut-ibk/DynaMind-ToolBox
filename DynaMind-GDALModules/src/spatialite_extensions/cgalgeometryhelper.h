@@ -1,7 +1,9 @@
 #ifndef CGALGEOMETRYHELPER_H
 #define CGALGEOMETRYHELPER_H
 
-class CGALGeometryHelper
+#include <dmcompilersettings.h>
+
+class DM_HELPER_DLL_EXPORT CGALGeometryHelper
 {
 public:
 	//CGALGeometryHelper();
