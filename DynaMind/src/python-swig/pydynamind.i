@@ -575,23 +575,30 @@ class DM::ViewContainer {
 		try:
 			self.__ogr_layer
 		except:
-			db_id = self.getDBID()
-			self.__features = []
-			if db_id not in self.__ds.keys():
-				log("Register Datasource " + str(db_id), Debug)
-				self.__ds[db_id] = ogr.Open(db_id)
-				self.__connection_counter[db_id] = 0
-			else:
-				log("Reuse connection " + str(db_id), Debug)
-			table_name = str(self.getName())
-			#print "Register Layer " + str(table_name)
-			self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
-			self.__connection_counter[db_id]+=1
+			self.connect_database()
 
-			if self.__ogr_layer == None:
-				log("Layer registration failed" + str(db_id), Debug)
-				raise
+		if self.__ogr_layer == None:
+			self.connect_database()
 
+
+
+	def connect_database(self):
+		db_id = self.getDBID()
+		self.__features = []
+		if db_id not in self.__ds.keys():
+			log("Register Datasource " + str(db_id), Standard)
+			self.__ds[db_id] = ogr.Open(db_id)
+			self.__connection_counter[db_id] = 0
+		else:
+			log("Reuse connection " + str(db_id), Standard)
+		table_name = str(self.getName())
+		#print "Register Layer " + str(table_name)
+		self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
+		self.__connection_counter[db_id]+=1
+
+		if self.__ogr_layer == None:
+			log("Layer registration failed" + str(db_id), Debug)
+			raise
 
 	def __iter__(self):
 		return self
@@ -715,9 +722,10 @@ class DM::ViewContainer {
 		log("Destroy Layer", Debug)
 		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:
-			log("Really Destroy Connection", Debug)
+			log("Really Destroy Connection", Standard)
 			del self.__ds[self.getDBID()]
 			self.__ds = {}
+			self.__ogr_layer = None
 
 		self.__connection_counter[self.getDBID()]-=1
 
