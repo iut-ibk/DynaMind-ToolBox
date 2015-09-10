@@ -243,7 +243,6 @@ class DMSEI(Module):
                 0.4998, 0.5236, 0.8092, 0.4522, 0.2856, 0.238, 0.5474, 0.2142, 0.3094, 0.2618, 0.3332]
 
     def run(self):
-
         self.view_catchments.reset_reading()
         for c in self.view_catchments:
             area = c.GetFieldAsDouble("area") / 10000. # Convert area to ha for SWMM
@@ -269,3 +268,4 @@ class DMSEI(Module):
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 75}}, peak_flows)
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
+        self.view_catchments.finalise()
