@@ -122,7 +122,7 @@ OGRFeature * ViewContainer::findNearestPoint(OGRPoint * p, double radius)
 		  << "ST_Distance(Geometry, MakePoint("
 		  << p->getX() << "," << p->getY() <<")) AS distance FROM "<< this->getName()
 		  << " WHERE ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = '" << this->getName() << "'"
-		  << "AND search_frame = BuildCircleMbr("<< p->getX() << ","<< p->getY() << "," << radius << "))  ORDER BY distance ASC LIMIT 1";
+		  << " AND search_frame = BuildCircleMbr("<< p->getX() << ","<< p->getY() << "," << radius << ")) AND distance < " <<  radius <<  " ORDER BY distance ASC LIMIT 1";
 
 	//DM::Logger(DM::Error) << query.str();
 	OGRLayer * lyr = this->_currentSys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
