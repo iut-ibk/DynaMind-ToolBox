@@ -31,8 +31,13 @@ std::string SimulationConfig::getDefaultModulePath()
 	}
 
 	// asume install in /usr/bin
-	std::cout << currentPath.toStdString() << "/../share/DynaMind" << std::endl;
-	return currentPath.toStdString() + "/../share/DynaMind";
+	#if defined(_WIN32) || defined(__CYGWIN__)
+		std::cout << currentPath.toStdString() << std::endl;
+		return currentPath.toStdString();
+	#else
+		std::cout << currentPath.toStdString() << "/../share/DynaMind" << std::endl;
+		return currentPath.toStdString() + "/../share/DynaMind";
+	#endif
 }
 
 bool SimulationConfig::getKeepSystems() const
