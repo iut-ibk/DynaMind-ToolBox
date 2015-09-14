@@ -67,6 +67,7 @@ public:
 	void resetInit();
 
 //	void sqlite_backend();
+	std::string getSQLExtension();
 };
 
 #endif // GDALATTRIBUTECALCULATOR_H

@@ -213,6 +213,19 @@ void DM_SQliteCalculator::init()
 	this->registerViewContainers(data_stream);
 }
 
+std::string DM_SQliteCalculator::getSQLExtension()
+{
+	std::stringstream query_ss;
+	#if defined(_WIN32) || defined(__CYGWIN__)
+	query_ss << "SELECT load_extension('" << this->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/dm_sqlite_plugin" << "')";
+	std::cout << query_ss.str() << std::endl;
+	#else
+	query_ss << "SELECT load_extension('" << this->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin" << "')";
+	std::cout << query_ss.str() << std::endl;
+	#endif
+	return query_ss.str();
+}
+
 void DM_SQliteCalculator::run()
 {
 	if (this->init_failed) {
@@ -231,10 +244,7 @@ void DM_SQliteCalculator::run()
 	sqlite3_enable_load_extension(db,1);
 	execute_query(db,"SELECT load_extension('mod_spatialite')");
 
-	std::stringstream query_ss;
-	query_ss << "SELECT load_extension('" << this->getSimulationConfig().getDefaultModulePath() + "/SqliteExtension/libdm_sqlite_plugin" << "')";
-	std::cout << query_ss.str() << std::endl;
-	execute_query(db,query_ss.str().c_str());
+	execute_query(db,getSQLExtension().c_str());
 
 	std::stringstream query;
 
