@@ -38,12 +38,7 @@ double numberOfValues(const double* values, int index);
 double random(double value);
 double printValue(double value);
 double round(double vaule);
-static double ContUrbanFabric;
-static double DisContUrbanFabric;
-static double RoadRailNetwork;
-static double WaterBodies;
-static double AgriculturalAreas;
-static double ForestsSemiNatural;
+
 
 class Num2Str : public mup::ICallback {
 public:
@@ -68,6 +63,34 @@ public:
 	}
 };
 
+
+class VecTimes : public mup::ICallback {
+public:
+	VecTimes() : ICallback(mup::cmFUNC, "vectimes", 2)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		mup::matrix_type m = a_pArg[0]->GetArray();
+		mup::matrix_type n = a_pArg[1]->GetArray();
+
+		mup::matrix_type c(m.GetRows());
+
+		for (int i = 0; i < m.GetRows(); i++)
+			c.At(i) = m.At(i).GetFloat() * n.At(i).GetFloat();
+		// The return value is passed by writing it to the reference ret
+		*ret = c;
+	}
+
+	const mup::char_type* GetDesc() const
+	{
+		return "num2str(x) - converting a number to string";
+	}
+	IToken* Clone() const
+	{
+		return new VecTimes(*this);
+	}
+};
+
 class VecSum : public mup::ICallback {
 public:
 	VecSum() : ICallback(mup::cmFUNC, "vecsum", 1)
@@ -84,7 +107,7 @@ public:
 
 	const mup::char_type* GetDesc() const
 	{
-		return "num2str(x) - converting a number to string";
+		return "vectimes(x) - multiplying vector";
 	}
 	IToken* Clone() const
 	{
