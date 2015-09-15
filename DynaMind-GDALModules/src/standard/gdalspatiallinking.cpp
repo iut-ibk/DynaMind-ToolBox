@@ -2,7 +2,7 @@
 #include <sstream>
 #include <ogr_feature.h>
 #include <dmsimulation.h>
-#include <sqlite3.h>
+#include "../../3rdparty/sqlite3/sqlite3.h"
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALSpatialLinking, Spatial Linking, Linking)
 
