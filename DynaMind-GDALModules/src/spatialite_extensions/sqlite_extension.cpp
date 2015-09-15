@@ -1,6 +1,6 @@
 #include "my_extension.h"
 
-#include <sqlite3ext.h>
+#include "../standard/sqlite3ext.h"
 #include <QByteArray>
 #include <QString>
 #include <iostream>
@@ -10,17 +10,14 @@
 #include <vector>
 #include <sstream>
 
+#include <dmcompilersettings.h>
+
 extern "C"{
 
 SQLITE_EXTENSION_INIT1
 
-
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-
 /* calculate percentage filled */
-void poly_percentage_filled(sqlite3_context *context, int argc, sqlite3_value **argv) {
+void DM_HELPER_DLL_EXPORT poly_percentage_filled(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * geometry = sqlite3_value_text(argv[0]);
 	double res = CGALGeometryHelper::percentageFilled(geometry);
 	if (res < 0) {
@@ -31,7 +28,7 @@ void poly_percentage_filled(sqlite3_context *context, int argc, sqlite3_value **
 }
 
 /* calculate aspect ratio */
-void polygon_aspect_ratio(sqlite3_context *context, int argc, sqlite3_value **argv) {
+void DM_HELPER_DLL_EXPORT polygon_aspect_ratio(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * geometry = sqlite3_value_text(argv[0]);
 	double res = CGALGeometryHelper::aspectRationBB(geometry);
 	if (res < 0) {
@@ -43,7 +40,7 @@ void polygon_aspect_ratio(sqlite3_context *context, int argc, sqlite3_value **ar
 
 
 /* multiply vector */
-void multiply_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
+void DM_HELPER_DLL_EXPORT multiply_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * vec = sqlite3_value_text(argv[0]);
 	double value = sqlite3_value_double(argv[1]);
 
@@ -53,7 +50,7 @@ void multiply_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
 }
 
 /* addition vector */
-void addition_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
+void DM_HELPER_DLL_EXPORT addition_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * vec1 = sqlite3_value_text(argv[0]);
 	const unsigned char * vec2 = sqlite3_value_text(argv[1]);
 
@@ -63,7 +60,7 @@ void addition_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
 }
 
 /* vector sum */
-void vector_sum(sqlite3_context *context, int argc, sqlite3_value **argv) {
+void DM_HELPER_DLL_EXPORT vector_sum(sqlite3_context *context, int argc, sqlite3_value **argv) {
 	const unsigned char * vec = sqlite3_value_text(argv[0]);
 	double ress = my_extension::vector_sum(vec);
 	//sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
@@ -104,7 +101,7 @@ static void sumVecFinalize(sqlite3_context *context){
 	sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
 }
 
-int sqlite3_dmsqliteplugin_init(
+int DM_HELPER_DLL_EXPORT sqlite3_dmsqliteplugin_init(
 		sqlite3 *db,
 		char **pzErrMsg,
 		const sqlite3_api_routines *pApi
