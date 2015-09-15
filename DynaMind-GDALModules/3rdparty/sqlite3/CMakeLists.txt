@@ -5,7 +5,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 
 file(GLOB SRCS *.c *.h)
 
-
+	ADD_DEFINITIONS(-DSOL)
     message(STATUS "Compiling as library")
 
     IF(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
@@ -15,6 +15,8 @@ file(GLOB SRCS *.c *.h)
         ADD_DEFINITIONS(-Wno-format-security -Wno-format -fPIC)
         ADD_DEFINITIONS(-DSOL)
     ENDIF()
+
+	ADD_DEFINITIONS(-DSQLITE_ENABLE_RTREE=1)
 
     message(STATUS "Compiling as library")
 	add_library(sqlite3_dm STATIC ${SRCS})
