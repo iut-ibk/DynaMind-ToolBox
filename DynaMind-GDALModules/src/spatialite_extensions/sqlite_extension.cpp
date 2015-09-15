@@ -1,6 +1,6 @@
 #include "my_extension.h"
 
-#include "../standard/sqlite3ext.h"
+#include "../../3rdparty/sqlite3/sqlite3ext.h"
 #include <QByteArray>
 #include <QString>
 #include <iostream>

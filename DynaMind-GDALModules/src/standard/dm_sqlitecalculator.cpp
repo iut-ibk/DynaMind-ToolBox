@@ -4,7 +4,7 @@
 #include "parser/mpParser.h"
 #include "userdefinedfunctions.h"
 #include "dmgroup.h"
-#include <sqlite3.h>
+#include "../../3rdparty/sqlite3/sqlite3.h"
 
 DM_DECLARE_CUSTOM_NODE_NAME(DM_SQliteCalculator, SQlite Query, Data Handling)
 
