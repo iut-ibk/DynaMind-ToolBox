@@ -5,7 +5,8 @@
 #include <dmmodule.h>
 #include <dm.h>
 
-#include <sqlite3.h>
+#include "../../3rdparty/sqlite3/sqlite3.h"
+
 class DM_HELPER_DLL_EXPORT DM_CreateGrid : public DM::Module
 {
 DM_DECLARE_NODE(DM_CreateGrid)
