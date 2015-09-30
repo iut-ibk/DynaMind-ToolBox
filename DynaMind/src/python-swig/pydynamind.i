@@ -599,6 +599,9 @@ class DM::ViewContainer {
 		if self.__ogr_layer == None:
 			log("Layer registration failed" + str(db_id), Debug)
 			raise
+		# set filter
+		filter = self.get_attribute_filter_sql_string("")
+		self.set_attribute_filter(filter)
 
 	def __iter__(self):
 		return self
