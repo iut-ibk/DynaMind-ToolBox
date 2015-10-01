@@ -2,13 +2,16 @@
 //   treatmnt.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.0
-//   Date:     6/19/07   (Build 5.0.010)
-//             1/21/09   (Build 5.0.014)
-//             10/7/09   (Build 5.0.017)
+//   Version:  5.1
+//   Date:     03/20/14   (Build 5.1.001)
+//             03/19/15   (Build 5.1.008)
 //   Author:   L. Rossman
 //
-//   Pollutant treatment functions
+//   Pollutant treatment functions.
+//
+//   Build 5.1.008:
+//   - A bug in evaluating recursive calls to treatment functions was fixed. 
+//
 //-----------------------------------------------------------------------------
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -36,7 +39,7 @@ static double  Q;                      // node inflow (cfs)
 static double  V;                      // node volume (ft3)
 static double* R;                      // array of pollut. removals
 static double* Cin;                    // node inflow concentrations
-static TTreatment* Treatment;          // pointer to Treatment object
+//static TTreatment* Treatment; // defined locally in treatmnt_treat()         //(5.1.008)
 
 //-----------------------------------------------------------------------------
 //  External functions (declared in funcs.h)
@@ -45,7 +48,7 @@ static TTreatment* Treatment;          // pointer to Treatment object
 //  treatment_close         (called from routing_close)
 //  treatmnt_readExpression (called from parseLine in input.c)
 //  treatmnt_delete         (called from deleteObjects in project.c)
-//  treatmnt_setInflow      (called from qualrout_execute)                     //(5.0.014 - LR)
+//  treatmnt_setInflow      (called from qualrout_execute)
 //  treatmnt_treat          (called from findNodeQual in qualrout.c)
 
 //-----------------------------------------------------------------------------
@@ -107,7 +110,7 @@ int  treatmnt_readExpression(char* tok[], int ntoks)
     char  s[MAXLINE+1];
     char* expr;
     int   i, j, k, p;
-    MathExpr* equation;                // ptr. to a math. expression           //(5.0.010 - LR)
+    MathExpr* equation;                // ptr. to a math. expression
 
     // --- retrieve node & pollutant
     if ( ntoks < 3 ) return error_setInpError(ERR_ITEMS, "");
@@ -184,7 +187,7 @@ void  treatmnt_setInflow(double qIn, double wIn[])
 //
 {
     int    p;
-    if ( qIn > 0.0 )                                                           //(5.0.014 - LR)
+    if ( qIn > 0.0 )
         for (p = 0; p < Nobjects[POLLUT]; p++) Cin[p] = wIn[p]/qIn;
     else
         for (p = 0; p < Nobjects[POLLUT]; p++) Cin[p] = 0.0;
@@ -204,10 +207,10 @@ void  treatmnt_treat(int j, double q, double v, double tStep)
 {
     int    p;                          // pollutant index
     double cOut;                       // concentration after treatment
-//  double cLost;                      // concentration lost by treatment      //(5.0.017 - LR)
     double massLost;                   // mass lost by treatment per time step
+    TTreatment* treatment;             // pointer to treatment object          //(5.1.008)
 
-    // --- set global variables for node j
+    // --- set locally shared variables for node j
     if ( Node[j].treatment == NULL ) return;
     ErrCode = 0;
     J  = j;                            // current node
@@ -216,14 +219,17 @@ void  treatmnt_treat(int j, double q, double v, double tStep)
     V  = v;                            // current node volume
 
     // --- initialze each removal to indicate no value 
-    for ( p=0; p<Nobjects[POLLUT]; p++) R[p] = -1.0;
+    for ( p = 0; p < Nobjects[POLLUT]; p++) R[p] = -1.0;
 
     // --- determine removal of each pollutant
-    for ( p=0; p<Nobjects[POLLUT]; p++)
+    for ( p = 0; p < Nobjects[POLLUT]; p++)
     {
         // --- removal is zero if there is no treatment equation
-        Treatment = &Node[j].treatment[p];
-        if ( Treatment->equation == NULL ) R[p] = 0.0;
+        treatment = &Node[j].treatment[p];                                     //(5.1.008)
+        if ( treatment->equation == NULL ) R[p] = 0.0;                         //(5.1.008)
+
+        // --- no removal for removal-type expression when there is no inflow 
+	    else if ( treatment->treatType == REMOVAL && q <= ZERO ) R[p] = 0.0;   //(5.1.008)
 
         // --- otherwise evaluate the treatment expression to find R[p]
         else getRemoval(p);
@@ -236,12 +242,14 @@ void  treatmnt_treat(int j, double q, double v, double tStep)
     }
 
     // --- update nodal concentrations and mass balances
-    else for ( p=0; p<Nobjects[POLLUT]; p++ )
+    else for ( p = 0; p < Nobjects[POLLUT]; p++ )
     {
         if ( R[p] == 0.0 ) continue;
+        treatment = &Node[j].treatment[p];                                     //(5.1.008)
 
         // --- removal-type treatment equations get applied to inflow stream
-        if ( Treatment->treatType == REMOVAL )
+
+        if ( treatment->treatType == REMOVAL )                                 //(5.1.008)
         {
             // --- if no pollutant in inflow then cOut is current nodal concen.
             if ( Cin[p] == 0.0 ) cOut = Node[j].newQual[p];
@@ -260,10 +268,10 @@ void  treatmnt_treat(int j, double q, double v, double tStep)
             cOut = (1.0 - R[p]) * Node[j].newQual[p];
         }
 
-        // --- mass lost must account for any initial mass in storage          //(5.0.017 - LR)
-        massLost = (Cin[p]*q*tStep + Node[j].oldQual[p]*Node[j].oldVolume -    //(5.0.017 - LR)
-                   cOut*(q*tStep + Node[j].oldVolume)) / tStep;                //(5.0.017 - LR)
-        massLost = MAX(0.0, massLost);                                         //(5.0.017 - LR)
+        // --- mass lost must account for any initial mass in storage 
+        massLost = (Cin[p]*q*tStep + Node[j].oldQual[p]*Node[j].oldVolume - 
+                   cOut*(q*tStep + Node[j].oldVolume)) / tStep; 
+        massLost = MAX(0.0, massLost); 
 
         // --- add mass loss to mass balance totals and revise nodal concentration
         massbal_addReactedMass(p, massLost);
@@ -287,7 +295,7 @@ int  createTreatment(int j)
     {
         return FALSE;
     }
-    for (p=0; p<Nobjects[POLLUT]; p++)
+    for (p = 0; p < Nobjects[POLLUT]; p++)
     {
         Node[j].treatment[p].equation = NULL;
     }
@@ -336,6 +344,7 @@ double getVariableValue(int varCode)
 {
     int    p;
     double a1, a2, y;
+    TTreatment* treatment;                                                     //(5.1.008)
 
     // --- variable is a process variable
     if ( varCode < PVMAX )
@@ -372,7 +381,8 @@ double getVariableValue(int varCode)
     else if ( varCode < PVMAX + Nobjects[POLLUT] )
     {
         p = varCode - PVMAX;
-        if ( Treatment->treatType == REMOVAL ) return Cin[p];
+        treatment = &Node[J].treatment[p];                                     //(5.1.008)
+        if ( treatment->treatType == REMOVAL ) return Cin[p];                  //(5.1.008)
         return Node[J].newQual[p];
     }
 
@@ -396,6 +406,7 @@ double  getRemoval(int p)
 {
     double c0 = Node[J].newQual[p];    // initial node concentration
     double r;                          // removal value
+    TTreatment* treatment;                                                     //(5.1.008)
 
     // --- case where removal already being computed for another pollutant
     if ( R[p] > 1.0 || ErrCode )
@@ -420,11 +431,12 @@ double  getRemoval(int p)
     }
 
     // --- apply treatment eqn.
-    r = mathexpr_eval(Treatment->equation, getVariableValue);
+    treatment = &Node[J].treatment[p];                                         //(5.1.008)
+    r = mathexpr_eval(treatment->equation, getVariableValue);                  //(5.1.008)
     r = MAX(0.0, r);
 
     // --- case where treatment eqn. is for removal
-    if ( Treatment->treatType == REMOVAL )
+    if ( treatment->treatType == REMOVAL )                                     //(5.1.008)
     {
         r = MIN(1.0, r);
         R[p] = r;

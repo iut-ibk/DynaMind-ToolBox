@@ -2,13 +2,9 @@
 //   rain.c
 //
 //   Project: EPA SWMM5
-//   Version: 5.0
-//   Date:    6/19/07   (Build 5.0.010)
-//            7/16/07   (Build 5.0.011)
-//            4/10/09   (Build 5.0.015)
-//            6/22/09   (Build 5.0.016)
-//            07/30/10  (Build 5.0.019)
-//            04/20/11  (Build 5.0.022)
+//   Version: 5.1
+//   Date:    03/20/14  (Build 5.1.001)
+//            08/05/15  (Build 5.1.010)
 //   Author:  L. Rossman
 //
 //   Places rainfall data from external files into a SWMM rainfall
@@ -17,10 +13,12 @@
 //   The following types of external data files are supported:
 //   NWS_TAPE:            NCDC NWS TD 3240 or 3260 data in fixed field widths
 //   NWS_SPACE_DELIMITED: NCDC NWS TD (DSI) 3240 or 3260 data in space delimited
-//                        format, with or without header lines, with or without //(5.0.015 - LR)
-//                        station name                                          //(5.0.015 - LR)
+//                        format, with or without header lines, with or without
+//                        station name
 //   NWS_COMMA_DELIMITED: NCDC NWS TD (DSI) 3240 or 3260 data in comma delimited
 //                        format, with or without header lines
+//   NWS_ONLINE_60:       NCDC NWS hourly space delimited online format
+//   NWS_ONLINE_15:       NCDC NWS fifteen minute space delimited online format
 //   AES_HLY:             Canadian AES hourly data with 3-digit year
 //   CMC_HLY:             Canadian CMC hourly data in HLY03 or HLY21 format
 //   CMC_FIF:             Canadian CMC fifteen minute data in in FIF21 format
@@ -50,8 +48,8 @@
 //  Constants
 //-----------------------------------------------------------------------------
 enum RainFileFormat {UNKNOWN_FORMAT, NWS_TAPE, NWS_SPACE_DELIMITED,
-                     NWS_COMMA_DELIMITED, AES_HLY, CMC_HLY, CMC_FIF,
-                     STD_SPACE_DELIMITED};
+                     NWS_COMMA_DELIMITED, NWS_ONLINE_60, NWS_ONLINE_15,
+                     AES_HLY, CMC_HLY, CMC_FIF, STD_SPACE_DELIMITED};
 enum ConditionCodes {NO_CONDITION, ACCUMULATED_PERIOD, DELETED_PERIOD,
                      MISSING_PERIOD};
 
@@ -61,15 +59,17 @@ enum ConditionCodes {NO_CONDITION, ACCUMULATED_PERIOD, DELETED_PERIOD,
 TRainStats RainStats;                  // see objects.h for definition
 int        Condition;                  // rainfall condition code
 int        TimeOffset;                 // time offset of rainfall reading (sec)
+int        DataOffset;                 // start of data on line of input
+int        ValueOffset;                // start of rain value on input line
 int        RainType;                   // rain measurement type code
 int        Interval;                   // rain measurement interval (sec)
 double     UnitsFactor;                // units conversion factor
 float      RainAccum;                  // rainfall depth accumulation
 char       *StationID;                 // station ID appearing in rain file
-DateTime   AccumStartDate;             // date when accumulation begins        //(5.0.010 - LR)
-DateTime   PreviousDate;               // date of previous rainfall record     //(5.0.022 - LR)
-int        GageIndex;                  // index of rain gage analyzed          //(5.0.022 - LR)
-int        hasStationName;             // true if data contains station name   //(5.0.015 - LR)
+DateTime   AccumStartDate;             // date when accumulation begins
+DateTime   PreviousDate;               // date of previous rainfall record
+int        GageIndex;                  // index of rain gage analyzed
+int        hasStationName;             // true if data contains station name
 
 //-----------------------------------------------------------------------------
 //  External functions (declared in funcs.h)
@@ -81,11 +81,12 @@ int        hasStationName;             // true if data contains station name   /
 //  Local functions
 //-----------------------------------------------------------------------------
 static void createRainFile(int count);
-static int  rainFileConflict(int i);                                           //(5.0.019 - LR)              
+static int  rainFileConflict(int i);
 static void initRainFile(void);
 static int  findGageInFile(int i, int kount);
 static int  addGageToRainFile(int i);
 static int  findFileFormat(FILE *f, int i, int *hdrLines);
+static int  findNWSOnlineFormat(FILE *f, char *line);
 static void readFile(FILE *f, int fileFormat, int hdrLines, DateTime day1,
             DateTime day2);
 static int  readNWSLine(char *line, int fileFormat, DateTime day1,
@@ -93,7 +94,7 @@ static int  readNWSLine(char *line, int fileFormat, DateTime day1,
 static int  readCMCLine(char *line, int fileFormat, DateTime day1,
             DateTime day2);
 static int  readStdLine(char *line, DateTime day1, DateTime day2);
-static void saveAccumRainfall(DateTime date1, int hour, int minute, long v);   //(5.0.010 - LR)
+static void saveAccumRainfall(DateTime date1, int hour, int minute, long v);
 static void saveRainfall(DateTime date1, int hour, int minute, float x,
             char isMissing);
 static void setCondition(char flag);
@@ -129,7 +130,7 @@ void  rain_open(void)
     else switch ( Frain.mode )
     {
       case SCRATCH_FILE:
-        getTmpName(Frain.name);
+        getTempFileName(Frain.name);
         if ( (Frain.file = fopen(Frain.name, "w+b")) == NULL)
         {
             report_writeErrorMsg(ERR_RAIN_FILE_SCRATCH, "");
@@ -210,7 +211,7 @@ void createRainFile(int count)
     // --- write file stamp & # gages to file
     fwrite(fileStamp, sizeof(char), strlen(fileStamp), Frain.file);
     fwrite(&kount, sizeof(int), 1, Frain.file);
-    filePos1 = ftell(Frain.file); 
+    filePos1 = ftell(Frain.file);
 
     // --- write default fill-in header records to file for each gage
     //     (will be replaced later with actual records)
@@ -228,7 +229,7 @@ void createRainFile(int count)
     for ( i = 0; i < Nobjects[GAGE]; i++ )
     {
         if ( ErrorCode || Gage[i].dataSource != RAIN_FILE ) continue;
-        if ( rainFileConflict(i) ) break;                                      //(5.0.019 - LR)
+        if ( rainFileConflict(i) ) break;
 
         // --- position rain file to where data for gage will begin
         fseek(Frain.file, filePos2, SEEK_SET);
@@ -261,8 +262,6 @@ void createRainFile(int count)
 }
 
 //=============================================================================
-
-////  New function added to release 5.0.019  ////                              //(5.0.019 - LR)
 
 int rainFileConflict(int i)
 //
@@ -314,7 +313,7 @@ int addGageToRainFile(int i)
         }
         else
         {
-            GageIndex = i;                                                     //(5.0.022 - LR)
+            GageIndex = i;
             readFile(f, fileFormat, hdrLines, Gage[i].startFileDate,
                      Gage[i].endFileDate);
         }
@@ -348,7 +347,7 @@ void initRainFile(void)
     fread(fStamp, sizeof(char), strlen(fileStamp), Frain.file);
     if ( strcmp(fStamp, fileStamp) != 0 )
     {
-        report_writeErrorMsg(ERR_RAIN_FILE_FORMAT, "");
+        report_writeErrorMsg(ERR_RAIN_IFACE_FORMAT, "");
         return;
     }
     fread(&kount, sizeof(int), 1, Frain.file);
@@ -361,11 +360,10 @@ void initRainFile(void)
 
         // --- match station ID for gage with one in file
         fseek(Frain.file, filePos, SEEK_SET);
-        if ( !findGageInFile(i, (int)kount) ||                                 //(5.0.019 - LR)
-             Gage[i].startFilePos == Gage[i].endFilePos )                      //(5.0.019 - LR)
+        if ( !findGageInFile(i, (int)kount) ||
+             Gage[i].startFilePos == Gage[i].endFilePos )
         {
             report_writeErrorMsg(ERR_RAIN_FILE_GAGE, Gage[i].ID);
-            //return;                                                          //(5.0.019 - LR)
         }
     }
 }
@@ -423,15 +421,16 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
     int   div;
     long  sn2;
     char  recdType[4];
-    char  elemType[5];                                                         //(5.0.010 - RD)
+    char  elemType[5];
+    char  coopID[6];
     char  line[MAXLINE];
     int   year, month, day, hour, minute;
     int   elem;
     float x;
-    
+
     // --- check first few lines for known formats
     fileFormat = UNKNOWN_FORMAT;
-    hasStationName = FALSE;                                                    //(5.0.015 - LR)
+    hasStationName = FALSE;
     UnitsFactor = 1.0;
     Interval = 0;
     *hdrLines = 0;
@@ -440,7 +439,7 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
         if ( fgets(line, MAXLINE, f) == NULL ) return fileFormat;
 
         // --- check for NWS space delimited format
-        n = sscanf(line, "%6d %2d %4s", &sn2, &div, elemType);
+        n = sscanf(line, "%6ld %2d %4s", &sn2, &div, elemType);
         if ( n == 3 )
         {
             Interval = getNWSInterval(elemType);
@@ -452,7 +451,6 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
             }
         }
 
-////  Added for release 5.0.015  ////                                          //(5.0.015 - LR)
         // --- check for NWS space delimited format w/ station name
         n = sscanf(&line[37], "%2d %4s %2s %4d", &div, elemType, recdType, &year);
         if ( n == 4 )
@@ -468,7 +466,7 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
         }
 
         // --- check for NWS coma delimited format
-        n = sscanf(line, "%6d,%2d,%4s", &sn2, &div, elemType);
+        n = sscanf(line, "%6ld,%2d,%4s", &sn2, &div, elemType);
         if ( n == 3 )
         {
             Interval = getNWSInterval(elemType);
@@ -480,7 +478,6 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
             }
         }
 
-////  Added for release 5.0.016  ////                                          //(5.0.016 - LR)
         // --- check for NWS comma delimited format w/ station name
         n = sscanf(&line[37], "%2d,%4s,%2s,%4d", &div, elemType, recdType, &year);
         if ( n == 4 )
@@ -496,7 +493,7 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
         }
 
         // --- check for NWS TAPE format
-        n = sscanf(line, "%3s%6d%2d%4s", recdType, &sn2, &div, elemType);
+        n = sscanf(line, "%3s%6ld%2d%4s", recdType, &sn2, &div, elemType);
         if ( n == 4 )
         {
             Interval = getNWSInterval(elemType);
@@ -508,8 +505,16 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
             }
         }
 
+        // --- check for NWS Online Retrieval format
+        n = sscanf(line, "%5s%6ld", coopID, &sn2);
+        if ( n == 2 && strcmp(coopID, "COOP:") == 0 )
+        {
+            fileFormat = findNWSOnlineFormat(f, line);
+            break;
+        }
+
         // --- check for AES type
-        n = sscanf(line, "%7d%3d%2d%2d%3d", &sn2, &year, &month, &day, &elem);
+        n = sscanf(line, "%7ld%3d%2d%2d%3d", &sn2, &year, &month, &day, &elem);
         if ( n == 5 )
         {
             if ( elem == 123 && strlen(line) >= 185 )
@@ -523,7 +528,7 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
         }
 
         // --- check for CMC types
-        n = sscanf(line, "%7d%4d%2d%2d%3d", &sn2, &year, &month, &day, &elem);
+        n = sscanf(line, "%7ld%4d%2d%2d%3d", &sn2, &year, &month, &day, &elem);
         if ( n == 5 )
         {
             if ( elem == 159 && strlen(line) >= 691 )
@@ -553,13 +558,70 @@ int findFileFormat(FILE *f, int i, int *hdrLines)
             if ( Gage[i].rainUnits == SI ) UnitsFactor = 1.0/MMperINCH;
             TimeOffset = 0;
             StationID = Gage[i].staID;
-            break;         
+            break;
         }
         (*hdrLines)++;
 
     }
     if ( fileFormat != UNKNOWN_FORMAT ) Gage[i].rainInterval = Interval;
     return fileFormat;
+}
+
+//=============================================================================
+
+int findNWSOnlineFormat(FILE *f, char *line)
+//
+//  Input:   f = pointer to rainfall data file
+//           line = line read from rainfall data file
+//  Output:
+//  Purpose: determines the file format for an NWS Online Retrieval data file.
+//
+{
+    int n;
+    int fileFormat = UNKNOWN_FORMAT;
+    char* str;
+
+    // --- read in the first header line of the file
+    rewind(f);
+    fgets(line, MAXLINE, f);
+
+    // --- if 'HPCP' appears then file is for hourly data
+    if ( (str = strstr(line, "HPCP")) != NULL )
+    {
+        Interval = 3600;
+        TimeOffset = Interval;
+        ValueOffset = str - line;
+        fileFormat = NWS_ONLINE_60;
+    }
+
+    // --- if 'QPCP" appears then file is for 15 minute data
+    else if ( (str = strstr(line, "QPCP")) != NULL )
+    {
+        Interval = 900;
+        TimeOffset = Interval;
+        ValueOffset = str - line;
+        fileFormat = NWS_ONLINE_15;
+    }
+    else return UNKNOWN_FORMAT;
+
+    // --- find position in line where rainfall date begins
+    //     (11 characters before last occurrence of ':')
+    // --- read in first line of data
+    for (n = 1; n <= 5; n++)
+    {
+        if ( fgets(line, MAXLINE, f) == NULL ) return UNKNOWN_FORMAT;
+        if ( strstr(line, "COOP:") == NULL ) continue;
+
+        // --- find pointer to last occurrence of time separator character (':')
+        str = strrchr(line, ':');
+        if ( str == NULL ) return UNKNOWN_FORMAT;
+
+        // --- use pointer arithmetic to convert pointer to character position
+        n = str - line;
+        DataOffset = n - 11;
+        return fileFormat;
+    }
+    return UNKNOWN_FORMAT;
 }
 
 //=============================================================================
@@ -575,7 +637,7 @@ int getNWSInterval(char *elemType)
     else if ( strcmp(elemType, "QPCP") == 0 ) return 900;  // 15 min rainfall
     else if ( strcmp(elemType, "QGAG") == 0 ) return 900;  // 15 min rainfall
     else return 0;
-} 
+}
 
 //=============================================================================
 
@@ -601,8 +663,8 @@ void readFile(FILE *f, int fileFormat, int hdrLines, DateTime day1,
     RainStats.periodsMissing = 0;
     RainStats.periodsMalfunc = 0;
     RainAccum = 0.0;
-    AccumStartDate = NO_DATE;                                                  //(5.0.010 - LR)
-    PreviousDate = NO_DATE;                                                    //(5.0.022 - LR)
+    AccumStartDate = NO_DATE;
+    PreviousDate = NO_DATE;
 
     for (i = 1; i <= hdrLines; i++)
     {
@@ -619,6 +681,8 @@ void readFile(FILE *f, int fileFormat, int hdrLines, DateTime day1,
          case NWS_TAPE:
          case NWS_SPACE_DELIMITED:
          case NWS_COMMA_DELIMITED:
+         case NWS_ONLINE_60:
+         case NWS_ONLINE_15:
            n = readNWSLine(line, fileFormat, day1, day2);
            break;
 
@@ -658,7 +722,7 @@ int readNWSLine(char *line, int fileFormat, DateTime day1, DateTime day2)
     long     v;
     float    x;
     int      lineLength = strlen(line)-1;
-    int      nameLength = 0;                                                   //(5.0.015 - LR)
+    int      nameLength = 0;
 
     // --- get year, month, & day from line
     switch ( fileFormat )
@@ -670,17 +734,24 @@ int readNWSLine(char *line, int fileFormat, DateTime day1, DateTime day2)
         break;
 
       case NWS_SPACE_DELIMITED:
-        if ( hasStationName ) nameLength = 31;                                 //(5.0.015 - LR)
-        if ( lineLength <= 28 + nameLength ) return 0;                         //(5.0.015 - LR)
-        k = 18 + nameLength;                                                   //(5.0.015 - LR)
-        if (sscanf(&line[k], "%4d %2d %2d", &y, &m, &d) < 3) return 0;         //(5.0.015 - LR)
-        k = k + 10;                                                            //(5.0.015 - LR)
+        if ( hasStationName ) nameLength = 31;
+        if ( lineLength <= 28 + nameLength ) return 0;
+        k = 18 + nameLength;
+        if (sscanf(&line[k], "%4d %2d %2d", &y, &m, &d) < 3) return 0;
+        k = k + 10;
         break;
 
       case NWS_COMMA_DELIMITED:
         if ( lineLength <= 28 ) return 0;
         if ( sscanf(&line[18], "%4d,%2d,%2d", &y, &m, &d) < 3 ) return 0;
         k = 28;
+        break;
+
+      case NWS_ONLINE_60:
+      case NWS_ONLINE_15:
+        if ( lineLength <= DataOffset + 23 ) return 0;
+        if ( sscanf(&line[DataOffset], "%4d%2d%2d", &y, &m, &d) < 3 ) return 0;
+        k = DataOffset + 8;
         break;
 
       default: return 0;
@@ -695,64 +766,79 @@ int readNWSLine(char *line, int fileFormat, DateTime day1, DateTime day2)
     while ( k < lineLength )
     {
 		flag1 = 0;
-        flag2 = 0;                                                             //(5.0.016 - LR)
+        flag2 = 0;
 		v = 99999;
 		hour = 25;
 		minute = 0;
         switch ( fileFormat )
         {
           case NWS_TAPE:
-            n = sscanf(&line[k], "%2d%2d%6d%c%c",
+            n = sscanf(&line[k], "%2d%2d%6ld%c%c",
                        &hour, &minute, &v, &flag1, &flag2);
             k += 12;
             break;
 
           case NWS_SPACE_DELIMITED:
-            n = sscanf(&line[k], " %2d%2d %6d %c %c",
+            n = sscanf(&line[k], " %2d%2d %6ld %c %c",
                        &hour, &minute, &v, &flag1, &flag2);
             k += 16;
             break;
 
           case NWS_COMMA_DELIMITED:
-            n = sscanf(&line[k], ",%2d%2d,%6d,%c,%c",
+            n = sscanf(&line[k], ",%2d%2d,%6ld,%c,%c",
                        &hour, &minute, &v, &flag1, &flag2);
             k += 16;
             break;
 
-		  default: n = 0;
+          case NWS_ONLINE_60:
+          case NWS_ONLINE_15:
+              n = sscanf(&line[k], " %2d:%2d", &hour, &minute);
+              n += sscanf(&line[ValueOffset], "%8ld                %c",
+                          &v, &flag1);
+
+              // --- ending hour 0 is really hour 24 of previous day
+              if ( hour == 0 )
+              {
+                  hour = 24;
+                  date1 -= 1.0;
+              }
+              k += lineLength;
+              break;
+
+          default: n = 0;
         }
 
-        // --- check that we at least have an hour, minute & value             //(5.0.016 - LR)
-        //     (codes might be left off of the line)                           //(5.0.016 - LR)
-        if ( n < 3 || hour >= 25 ) break;                                      //(5.0.016 - LR)
+        // --- check that we at least have an hour, minute & value
+        //     (codes might be left off of the line)
+        if ( n < 3 || hour >= 25 ) break;
 
         // --- set special condition code & update daily & hourly counts
 
         setCondition(flag1);
-        if ( Condition == DELETED_PERIOD ||                                    //(5.0.011 - LR)
-             Condition == MISSING_PERIOD ||                                    //(5.0.011 - LR)
-             flag1 == 'M' ) isMissing = TRUE;                                  //(5.0.011 - LR)
-        else if ( v == 99999 ) isMissing = TRUE;
+        if ( Condition == DELETED_PERIOD ||
+             Condition == MISSING_PERIOD ||
+             flag1 == 'M' ) isMissing = TRUE;
+        else if ( v >= 9999 ) isMissing = TRUE;
         else isMissing = FALSE;
 
-        // --- handle accumulation codes                                       //(5.0.010 - LR)
-        if ( flag1 == 'a' )                                                    //(5.0.010 - LR)
-        {                                                                      //(5.0.010 - LR)
-            AccumStartDate = date1 + datetime_encodeTime(hour, minute, 0);     //(5.0.010 - LR)
-        }                                                                      //(5.0.010 - LR)
-        else if ( flag1 == 'A' )                                               //(5.0.010 - LR)
-        {                                                                      //(5.0.010 - LR)
-            saveAccumRainfall(date1, hour, minute, v);                         //(5.0.010 - LR)
-        }                                                                      //(5.0.010 - LR)
+        // --- handle accumulation codes
+        if ( flag1 == 'a' )
+        {
+            AccumStartDate = date1 + datetime_encodeTime(hour, minute, 0);
+        }
+        else if ( flag1 == 'A' )
+        {
+            saveAccumRainfall(date1, hour, minute, v);
+        }
 
-        // --- handle all other conditions                                     //(5.0.010 - LR)
-        else                                                                   //(5.0.010 - LR)
-        {                                                                      //(5.0.010 - LR)
-            // --- convert rain measurement to inches & save it                //(5.0.010 - LR)
-            x = (float)v / 100.0f; 
-            if ( x > 0 || isMissing )                                          //(5.0.011 - LR)
-                saveRainfall(date1, hour, minute, x, isMissing);               //(5.0.011 - LR)
-        }                                                                      //(5.0.010 - LR)
+        // --- handle all other conditions
+        else
+        {
+            // --- convert rain measurement to inches & save it
+            x = (float)v / 100.0f;
+            if ( x > 0 || isMissing )
+                saveRainfall(date1, hour, minute, x, isMissing);
+        }
 
         // --- reset condition code if special condition period ended
         if ( flag1 == 'A' || flag1 == '}' || flag1 == ']') Condition = 0;
@@ -766,7 +852,7 @@ void  setCondition(char flag)
 {
     switch ( flag )
     {
-      case 'a': 
+      case 'a':
       case 'A':
         Condition = ACCUMULATED_PERIOD;
         break;
@@ -806,7 +892,7 @@ int readCMCLine(char *line, int fileFormat, DateTime day1, DateTime day2)
     // --- get year, month, day & element code from line
     if ( fileFormat == AES_HLY )
     {
-        if ( sscanf(line, "%7d%3d%2d%2d%3d", &sn, &y, &m, &d, &elem) < 5 )
+        if ( sscanf(line, "%7ld%3d%2d%2d%3d", &sn, &y, &m, &d, &elem) < 5 )
             return 0;
         if ( y < 100 ) y = y + 2000;
         else           y = y + 1000;
@@ -814,7 +900,7 @@ int readCMCLine(char *line, int fileFormat, DateTime day1, DateTime day2)
     }
     else
     {
-        if ( sscanf(line, "%7d%4d%2d%2d%3d", &sn, &y, &m, &d, &elem) < 5 )
+        if ( sscanf(line, "%7ld%4d%2d%2d%3d", &sn, &y, &m, &d, &elem) < 5 )
             return 0;
         col = 18;
     }
@@ -836,7 +922,7 @@ int readCMCLine(char *line, int fileFormat, DateTime day1, DateTime day2)
     if ( fileFormat == CMC_FIF ) jMax = 96;
     for (j=1; j<=jMax; j++)
     {
-        if ( sscanf(&line[col], "%6d%c", &v, &flag) < 2 ) return 0;
+        if ( sscanf(&line[col], "%6ld%c", &v, &flag) < 2 ) return 0;
         col += 7;
         if ( v == -99999 ) isMissing = TRUE;
         else               isMissing = FALSE;
@@ -877,7 +963,7 @@ int readStdLine(char *line, DateTime day1, DateTime day2)
 //
 {
     DateTime date1;
-    DateTime date2;                                                            //(5.0.022 - LR)
+    DateTime date2;
     int      year, month, day, hour, minute;
     float    x;
 
@@ -889,20 +975,15 @@ int readStdLine(char *line, DateTime day1, DateTime day2)
     if ( day1 != NO_DATE && date1 < day1 ) return 0;
     if ( day2 != NO_DATE && date1 > day2 ) return -1;
 
-// Added for release 5.0.022  //////////////                                   //(5.0.022 - LR)
     // --- see if record is out of sequence
     date2 = date1 + datetime_encodeTime(hour, minute, 0);
     if ( date2 <= PreviousDate )
     {
-        report_writeLine(
-            "ERROR 318: the following line is out of sequence in rainfall file ");
-        report_writeLine(Gage[GageIndex].fname);
+        report_writeErrorMsg(ERR_RAIN_FILE_SEQUENCE, Gage[GageIndex].fname);   //(5.1.010)
         report_writeLine(line);
-        ErrorCode = ERR_RAIN_FILE_SEQUENCE;
         return -1;
     }
     PreviousDate = date2;
-////////////////////////////////////////////
 
     switch (RainType)
     {
@@ -928,8 +1009,6 @@ int readStdLine(char *line, DateTime day1, DateTime day2)
 
 //=============================================================================
 
-////  This function was re-written for release 5.0.022  ////                   //(5.0.022 - LR)
-
 int parseStdLine(char *line, int *year, int *month, int *day, int *hour,
                  int *minute, float *value)
 //
@@ -946,9 +1025,9 @@ int parseStdLine(char *line, int *year, int *month, int *day, int *hour,
 //
 {
     int n;
-    char token[256];
+    char token[MAXLINE];
 
-    n = sscanf(line, "%s%d%d%d%d%d%f", token, year, month, day, hour, minute, value);
+    n = sscanf(line, "%s %d %d %d %d %d %f", token, year, month, day, hour, minute, value);
     if ( n < 7 ) return 0;
     if ( StationID != NULL && !strcomp(token, StationID) ) return 0;
     return 1;
@@ -967,28 +1046,25 @@ void saveAccumRainfall(DateTime date1, int hour, int minute, long v)
 //           periods over the accumulation period and writes each period's
 //           rainfall to the binary rainfall file.
 //
-//  This function was added to Release 5.0.010.                                //(5.0.010 - LR)
-//
 {
     DateTime date2;
     int      n, j;
     float    x;
 
-    // --- return if accumulated start date is missing                         //(5.0.022 - LR)
+    // --- return if accumulated start date is missing
     if ( AccumStartDate == NO_DATE ) return;
-    //if ( v == -99999 ) return;                                               //(5.0.022 - LR)
 
     // --- find number of recording intervals over accumulation period
     date2 = date1 + datetime_encodeTime(hour, minute, 0);
     n = (datetime_timeDiff(date2, AccumStartDate) / Interval) + 1;
 
-    // --- update count of rain or missing periods                             //(5.0.022 - LR)
-    if ( v == 99999 )                                                          //(5.0.022 - LR)
-    {                                                                          //(5.0.022 - LR)
-        RainStats.periodsMissing += n;                                         //(5.0.022 - LR)
-        return;                                                                //(5.0.022 - LR)
-    }                                                                          //(5.0.022 - LR)
-    RainStats.periodsRain += n;                                                //(5.0.022 - LR)
+    // --- update count of rain or missing periods
+    if ( v == 99999 )
+    {
+        RainStats.periodsMissing += n;
+        return;
+    }
+    RainStats.periodsRain += n;
 
     // --- divide accumulated amount evenly into each period
     x = (float)v / (float)n / 100.0f;

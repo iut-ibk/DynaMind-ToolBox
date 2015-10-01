@@ -256,7 +256,7 @@ void SWMMWriteAndRead::readInReportFile() {
 					}
 				}
 				//Extract Node id
-				if (data.size() != 7) {
+				if (data.size() != 8) {
 					Logger(Error) << "Error in Extraction Flooded Nodes";
 
 				} else {
@@ -867,20 +867,27 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
 		std::stringstream coordinates;
 		coordinates << std::fixed;
 		coordinates << std::setprecision(8);
+		coordinates << "GR ";
 		int length = width.size();
 		int added_elements = 0;
 		for(int i = 0; i < width.size(); i++) {
+			if (i % 3 == 0 && i != 0)
+				coordinates << "\nGR ";
 			coordinates << depth[i] << " " << width[i] << " ";
 			added_elements++;
-			if (length > 18 && i < length-2)
+			/*if (length > 12 && i < length-4) {
 				i++;
+				i++;
+				i++;
+			}*/
+
 		}
 
 		inp << ";\n";
 		inp << "NC 0.01     0.01     0.01\n";
 
 		inp << "X1 "<< "trans"<<conduit->GetFID() << "\t" << added_elements << "\t1" << "\t" << added_elements <<"        0.0      0.0      0.0      0.0      0.0\n";
-		inp << "GR "<< coordinates.str() << "\n";
+		inp << coordinates.str() << "\n";
 	}
 }
 

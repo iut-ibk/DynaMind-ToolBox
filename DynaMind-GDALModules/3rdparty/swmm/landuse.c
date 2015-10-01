@@ -2,15 +2,19 @@
 //   landuse.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.0
-//   Date:     6/19/07   (Build 5.0.010)
-//             2/4/08    (Build 5.0.012)
-//             1/21/09   (Build 5.0.014)
-//             10/7/09   (Build 5.0.017)
-//             07/30/10  (Build 5.0.019)
+//   Version:  5.1
+//   Date:     03/20/14  (Build 5.1.001)
+//             03/19/15  (Build 5.1.008)
 //   Author:   L. Rossman
 //
 //   Pollutant buildup and washoff functions.
+//
+//   Build 5.1.008:
+//   - landuse_getWashoffMass() re-named to landuse_getWashoffQual() and
+//     modified to return concentration instead of mass load.
+//   - landuse_getRunoffLoad() re-named to landuse_getWashoffLoad() and
+//     modified to work with landuse_getWashoffQual().
+//
 //-----------------------------------------------------------------------------
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -25,8 +29,12 @@
 //  landuse_readPollutParams  (called by parseLine in input.c)
 //  landuse_readBuildupParams (called by parseLine in input.c)
 //  landuse_readWashoffParams (called by parseLine in input.c)
-//  landuse_getBuildup        (called by subcatch_getBuildup)
-//  landuse_getWashoff        (called by getWashoffLoads in subcatch.c)
+
+//  landuse_getInitBuildup    (called by subcatch_initState)
+//  landuse_getBuildup        (called by surfqual_getBuildup)
+//  landuse_getWashoffLoad    (called by surfqual_getWashoff)
+//  landuse_getCoPollutLoad   (called by surfqual_getwashoff));
+//  landuse_getAvgBMPEffic    (called by updatePondedQual in surfqual.c)
 
 //-----------------------------------------------------------------------------
 // Function declarations
@@ -35,9 +43,8 @@ static double landuse_getBuildupDays(int landuse, int pollut, double buildup);
 static double landuse_getBuildupMass(int landuse, int pollut, double days);
 static double landuse_getRunoffLoad(int landuse, int pollut, double area,
               TLandFactor landFactor[], double runoff, double tStep);
-static double landuse_getWashoffMass(int landuse, int pollut, double buildup,
+static double landuse_getWashoffQual(int landuse, int pollut, double buildup,  //(5.1.008)
               double runoff, double area);
-static double landuse_getCoPollutLoad(int pollut, double washoff[], double tStep);
 static double landuse_getExternalBuildup(int i, int p, double buildup,
               double tStep);
 
@@ -93,12 +100,11 @@ int  landuse_readPollutParams(int j, char* tok[], int ntoks)
 //  Purpose: reads pollutant parameters from a tokenized line of input.
 //
 //  Data format is:
-//    ID cUnits cRain cGW cRDII kDecay (snowOnly coPollut coFrac cDWF)         //(5.0.017 - LR)
+//    ID Units cRain cGW cRDII kDecay (snowOnly coPollut coFrac cDWF cInit)
 //
 {
     int    i, k, coPollut, snowFlag;
-    double x[4], coFrac;
-    double cDWF;                                                               //(5.0.017 - LR)
+    double x[4], coFrac, cDWF, cInit;
     char   *id;
 
     // --- extract pollutant name & units
@@ -108,18 +114,27 @@ int  landuse_readPollutParams(int j, char* tok[], int ntoks)
     k = findmatch(tok[1], QualUnitsWords);
     if ( k < 0 ) return error_setInpError(ERR_KEYWORD, tok[1]);
 
-    // --- extract concen. in rain, gwater, & I&I and decay coeff
-    for ( i = 2; i <= 5; i++ )
+    // --- extract concen. in rain, gwater, & I&I
+    for ( i = 2; i <= 4; i++ )
     {
-        if ( ! getDouble(tok[i], &x[i-2]) )
+        if ( ! getDouble(tok[i], &x[i-2]) || x[i-2] < 0.0 )
+        {
             return error_setInpError(ERR_NUMBER, tok[i]);
+        }
+    }
+
+    // --- extract decay coeff. (which can be negative for growth)
+    if ( ! getDouble(tok[5], &x[3]) )
+    {
+        return error_setInpError(ERR_NUMBER, tok[5]);
     }
 
     // --- set defaults for snow only flag & co-pollut. parameters
     snowFlag = 0;
     coPollut = -1;
     coFrac = 0.0;
-    cDWF = 0.0;                                                                //(5.0.017 - LR)
+    cDWF = 0.0;
+    cInit = 0.0;
 
     // --- check for snow only flag
     if ( ntoks >= 7 )
@@ -135,15 +150,24 @@ int  landuse_readPollutParams(int j, char* tok[], int ntoks)
         {
             coPollut = project_findObject(POLLUT, tok[7]);
             if ( coPollut < 0 ) return error_setInpError(ERR_NAME, tok[7]);
-            if ( ! getDouble(tok[8], &coFrac) )
+            if ( ! getDouble(tok[8], &coFrac) || coFrac < 0.0 )
                 return error_setInpError(ERR_NUMBER, tok[8]);
         }
     }
 
-    // --- check for DWF concen.                                               //(5.0.017 - LR)
-    if ( ntoks >= 10 )                                                         //(5.0.017 - LR)
-        if ( ! getDouble(tok[9], &cDWF) )                                      //(5.0.017 - LR)
-            return error_setInpError(ERR_NUMBER, tok[9]);                      //(5.0.017 - LR)
+    // --- check for DWF concen.
+    if ( ntoks >= 10 )
+    {
+        if ( ! getDouble(tok[9], &cDWF) || cDWF < 0.0)
+            return error_setInpError(ERR_NUMBER, tok[9]);
+    }
+
+    // --- check for initial concen.
+    if ( ntoks >= 11 ) 
+    {
+        if ( ! getDouble(tok[10], &cInit) || cInit < 0.0 )
+            return error_setInpError(ERR_NUMBER, tok[9]);
+    }
 
     // --- save values for pollutant object   
     Pollut[j].ID = id;
@@ -151,14 +175,15 @@ int  landuse_readPollutParams(int j, char* tok[], int ntoks)
     if      ( Pollut[j].units == MG ) Pollut[j].mcf = UCF(MASS);
     else if ( Pollut[j].units == UG ) Pollut[j].mcf = UCF(MASS) / 1000.0;
     else                              Pollut[j].mcf = 1.0;
-    Pollut[j].pptConcen = x[0];
-    Pollut[j].gwConcen  = x[1];
+    Pollut[j].pptConcen  = x[0];
+    Pollut[j].gwConcen   = x[1];
     Pollut[j].rdiiConcen = x[2];
-    Pollut[j].kDecay = x[3]/SECperDAY;
-    Pollut[j].snowOnly = snowFlag;
-    Pollut[j].coPollut = coPollut;
+    Pollut[j].kDecay     = x[3]/SECperDAY;
+    Pollut[j].snowOnly   = snowFlag;
+    Pollut[j].coPollut   = coPollut;
     Pollut[j].coFraction = coFrac;
-    Pollut[j].dwfConcen = cDWF;                                                //(5.0.017 - LR)
+    Pollut[j].dwfConcen  = cDWF;
+    Pollut[j].initConcen = cInit;
     return 0;
 }
 
@@ -189,17 +214,19 @@ int  landuse_readBuildupParams(char* tok[], int ntoks)
     if ( k > NO_BUILDUP )
     {
         if ( ntoks < 7 ) return error_setInpError(ERR_ITEMS, "");
-        if ( k != EXTERNAL_BUILDUP ) for (i=0; i<3; i++)                       //(5.0.019 - LR)
+        if ( k != EXTERNAL_BUILDUP ) for (i=0; i<3; i++)
         {
             if ( ! getDouble(tok[i+3], &c[i])  || c[i] < 0.0  )
-            return error_setInpError(ERR_NUMBER, tok[i+3]);
+            {
+                return error_setInpError(ERR_NUMBER, tok[i+3]);
+            }
         }
         n = findmatch(tok[6], NormalizerWords);
         if (n < 0 ) return error_setInpError(ERR_KEYWORD, tok[6]);
         Landuse[j].buildupFunc[p].normalizer = n;
     }
 
-    // Find time until max. buildup (or time series for external buildup)      //(5.0.019 - LR)
+    // Find time until max. buildup (or time series for external buildup)
     switch (Landuse[j].buildupFunc[p].funcType)
     {
       case POWER_BUILDUP:
@@ -227,7 +254,6 @@ int  landuse_readBuildupParams(char* tok[], int ntoks)
         tmax = 1000.0*c[2];
         break;
 
-////  The following code segment was added to release 5.0.019.  ////           //(5.0.019 - LR)
       case EXTERNAL_BUILDUP:
         if ( !getDouble(tok[3], &c[0]) || c[0] < 0.0 )     //max. buildup
             return error_setInpError(ERR_NUMBER, tok[3]);
@@ -239,7 +265,6 @@ int  landuse_readBuildupParams(char* tok[], int ntoks)
         c[2] = n;
         tmax = 0.0;
         break;
-////  End of new code segment  ////                                            //(5.0.019 - LR)
 
       default:
         tmax = 0.0;
@@ -329,6 +354,62 @@ int  landuse_readWashoffParams(char* tok[], int ntoks)
 
 //=============================================================================
 
+void  landuse_getInitBuildup(TLandFactor* landFactor,  double* initBuildup,
+		double area, double curb)
+//
+//  Input:   landFactor = array of land use factors
+//           initBuildup = total initial buildup of each pollutant
+//           area = subcatchment's area (ft2)
+//           curb = subcatchment's curb length (users units)
+//  Output:  modifies each land use factor's initial pollutant buildup 
+//  Purpose: determines the initial buildup of each pollutant on
+//           each land use for a given subcatchment.
+//
+//  Notes:   Contributions from co-pollutants to initial buildup are not
+//           included since the co-pollutant mechanism only applies to
+//           washoff.
+//
+{
+	int i, p;
+	double startDrySeconds;       // antecedent dry period (sec)
+	double f;                     // faction of total land area
+    double fArea;                 // area of land use (ft2)
+    double fCurb;                 // curb length of land use
+	double buildup;               // pollutant mass buildup
+
+    // --- convert antecedent dry days into seconds
+    startDrySeconds = StartDryDays*SECperDAY;
+
+    // --- examine each land use
+    for (i = 0; i < Nobjects[LANDUSE]; i++)
+    {
+        // --- initialize date when last swept
+        landFactor[i].lastSwept = StartDateTime - Landuse[i].sweepDays0;
+
+        // --- determine area and curb length covered by land use
+        f = landFactor[i].fraction;
+        fArea = f * area * UCF(LANDAREA);
+        fCurb = f * curb;
+
+        // --- determine buildup of each pollutant
+        for (p = 0; p < Nobjects[POLLUT]; p++)
+        {
+            // --- if an initial loading was supplied, then use it to
+            //     find the starting buildup over the land use
+            buildup = 0.0;
+            if ( initBuildup[p] > 0.0 ) buildup = initBuildup[p] * fArea;
+
+            // --- otherwise use the land use's buildup function to 
+            //     compute a buildup over the antecedent dry period
+            else buildup = landuse_getBuildup(i, p, fArea, fCurb, buildup,
+                           startDrySeconds);
+            landFactor[i].buildup[p] = buildup;
+        }
+    }
+}
+
+//=============================================================================
+
 double  landuse_getBuildup(int i, int p, double area, double curb, double buildup,
                            double tStep)
 //
@@ -346,10 +427,10 @@ double  landuse_getBuildup(int i, int p, double area, double curb, double buildu
     double  days;                      // accumulated days of buildup
     double  perUnit;                   // normalizer value (area or curb length)
 
-    // --- return current buildup if no buildup function or time increment     //(5.0.014 - LR)
+    // --- return current buildup if no buildup function or time increment
     if ( Landuse[i].buildupFunc[p].funcType == NO_BUILDUP || tStep == 0.0 )
     {
-        return buildup;                                                        //(5.0.014 - LR)
+        return buildup;
     }
 
     // --- see what buildup is normalized to
@@ -359,10 +440,12 @@ double  landuse_getBuildup(int i, int p, double area, double curb, double buildu
     if ( n == PER_CURB ) perUnit = curb;
     if ( perUnit == 0.0 ) return 0.0;
 
-    // --- buildup determined by loading time series                           //(5.0.019 - LR)
-    if ( Landuse[i].buildupFunc[p].funcType == EXTERNAL_BUILDUP )              //(5.0.019 - LR)
-        return landuse_getExternalBuildup(i, p, buildup/perUnit, tStep) *      //(5.0.019 - LR)
-               perUnit;                                                        //(5.0.019 - LR)
+    // --- buildup determined by loading time series
+    if ( Landuse[i].buildupFunc[p].funcType == EXTERNAL_BUILDUP )
+    {
+        return landuse_getExternalBuildup(i, p, buildup/perUnit, tStep) *
+               perUnit;
+    }
 
     // --- determine equivalent days of current buildup
     days = landuse_getBuildupDays(i, p, buildup/perUnit);
@@ -448,103 +531,91 @@ double landuse_getBuildupMass(int i, int p, double days)
 
 //=============================================================================
 
-void  landuse_getWashoff(int i, double area, TLandFactor landFactor[],
-                         double runoff, double tStep, double washoffLoad[])    //(5.0.012 - LR)
+double landuse_getAvgBmpEffic(int j, int p)
 //
-//  Input:   i            = land use index
-//           area         = subcatchment area (ft2)
-//           landFactor[] = array of land use data for subcatchment
-//           runoff       = runoff flow rate (ft/sec) over subcatchment
-//           tStep        = time step (sec)
-//  Output:  washoffLoad[] = pollutant load in surface washoff (mass/sec)
-//  Purpose: computes surface washoff load for all pollutants generated by a
-//           land use within a subcatchment.
+//  Input:   j = subcatchment index
+//           p = pollutant index
+//  Output:  returns a BMP removal fraction for pollutant p
+//  Purpose: finds the overall average BMP removal achieved for pollutant p
+//           treated in subcatchment j.
 //
 {
-    int    p;                          //pollutant index
-    double fArea;                      //area devoted to land use (ft2)
-
-    // --- find area devoted to land use
-    fArea = landFactor[i].fraction * area;
-
-    // --- initialize washoff loads from land use
-    for (p = 0; p < Nobjects[POLLUT]; p++) washoffLoad[p] = 0.0;
-
-    // --- compute contribution from direct runoff load
-    for (p = 0; p < Nobjects[POLLUT]; p++)
+    int    i;
+    double r = 0.0;
+    for (i = 0; i < Nobjects[LANDUSE]; i++)
     {
-        washoffLoad[p] +=
-            landuse_getRunoffLoad(i, p, fArea, landFactor, runoff, tStep);     //(5.0.012 - LR)
+        r += Subcatch[j].landFactor[i].fraction *
+             Landuse[i].washoffFunc[p].bmpEffic;
     }
-
-    // --- compute contribution from co-pollutant
-    for (p = 0; p < Nobjects[POLLUT]; p++)
-    {
-        washoffLoad[p] += landuse_getCoPollutLoad(p, washoffLoad, tStep);
-    }
+    return r;
 }
 
 //=============================================================================
 
-double landuse_getRunoffLoad(int i, int p, double area, TLandFactor landFactor[], 
-                             double runoff, double tStep)
+////  This function was re-named and modified for release 5.1.008.  ////       //(5.1.008)
+
+double landuse_getWashoffLoad(int i, int p, double area,
+    TLandFactor landFactor[], double runoff, double vOutflow)
 //
 //  Input:   i = land use index
 //           p = pollut. index
-//           area = area devoted to land use (ft2)
+//           area = sucatchment area (ft2)
 //           landFactor[] = array of land use data for subcatchment
-//           runoff = runoff flow on subcatchment (ft/sec)
-//           tStep = time step (sec)
-//  Output:  returns runoff load for pollutant (mass/sec)
-//  Purpose: computes pollutant load generated by a specific land use.
+//           runoff = runoff flow generated by subcatchment (ft/sec)
+//           vOutflow = runoff volume leaving the subcatchment (ft3)
+//  Output:  returns pollutant runoff load (mass)
+//  Purpose: computes pollutant load generated by a land use over a time step.
 //
 {
-    double buildup;
-    double washoff;
-    double bmpRemoval;                                                         //(5.0.014 - LR)
+    double landuseArea;      // area of current land use (ft2)
+    double buildup;          // current pollutant buildup (lb or kg)
+    double washoffQual;      // pollutant concentration in washoff (mass/ft3)
+    double washoffLoad;      // pollutant washoff load over time step (lb or kg)
+    double bmpRemoval;       // pollutant load removed by BMP treatment (lb or kg)
 
-    // --- compute washoff mass/sec for this pollutant
+    // --- compute concen. of pollutant in washoff (mass/ft3)
     buildup = landFactor[i].buildup[p];
-    washoff = landuse_getWashoffMass(i, p, buildup, runoff, area);
+    landuseArea = landFactor[i].fraction * area;
+    washoffQual = landuse_getWashoffQual(i, p, buildup, runoff, landuseArea);
 
-    // --- convert washoff to lbs (or kg) over time step so that
-    //     buildup and mass balances can be adjusted
-    //     (Pollut[].mcf converts from concentration mass units
-    //      to either lbs or kg)
-    washoff *= tStep * Pollut[p].mcf;
+    // --- compute washoff load exported (lbs or kg) from landuse
+    //     (Pollut[].mcf converts from mg (or ug) mass units to lbs (or kg)
+    washoffLoad = washoffQual * vOutflow * landuseArea / area * Pollut[p].mcf;
 
     // --- if buildup modelled, reduce it by amount of washoff
-    if ( Landuse[i].buildupFunc[p].funcType != NO_BUILDUP ||                   //(5.0.014 - LR)
-         buildup > washoff )                                                   //(5.0.014 - LR)
+    if ( Landuse[i].buildupFunc[p].funcType != NO_BUILDUP ||
+         buildup > washoffLoad )
     {
-        washoff = MIN(washoff, buildup);
-        buildup -= washoff;
+        washoffLoad = MIN(washoffLoad, buildup);
+        buildup -= washoffLoad;
         landFactor[i].buildup[p] = buildup;
     }
 
     // --- otherwise add washoff to buildup mass balance totals
     //     so that things will balance
-    else                                                                       //(5.0.014 - LR)
-    {                                                                          //(5.0.014 - LR)
-        massbal_updateLoadingTotals(BUILDUP_LOAD, p, washoff-buildup);         //(5.0.014 - LR)
-        landFactor[i].buildup[p] = 0.0;                                        //(5.0.014 - LR)
+    else
+    {
+        massbal_updateLoadingTotals(BUILDUP_LOAD, p, washoffLoad);
+        landFactor[i].buildup[p] = 0.0;
+    }
+	
+    // --- apply any BMP removal to washoff
+    bmpRemoval = Landuse[i].washoffFunc[p].bmpEffic * washoffLoad;
+    if ( bmpRemoval > 0.0 )
+    {
+        massbal_updateLoadingTotals(BMP_REMOVAL_LOAD, p, bmpRemoval);
+        washoffLoad -= bmpRemoval;
     }
 
-    // --- apply any BMP removal to washoff                                    //(5.0.014 - LR)
-    bmpRemoval = Landuse[i].washoffFunc[p].bmpEffic * washoff;                 //(5.0.014 - LR)
-    if ( bmpRemoval > 0.0 )                                                    //(5.0.014 - LR)
-    {                                                                          //(5.0.014 - LR)
-        massbal_updateLoadingTotals(BMP_REMOVAL_LOAD, p, bmpRemoval);          //(5.0.014 - LR)
-        washoff -= bmpRemoval;                                                 //(5.0.014 - LR)
-    }                                                                          //(5.0.014 - LR)
-
-    // --- return washoff converted back to mass/sec
-    return washoff / tStep / Pollut[p].mcf;
+    // --- return washoff load converted back to mass (mg or ug)
+    return washoffLoad / Pollut[p].mcf;
 }
 
 //=============================================================================
 
-double landuse_getWashoffMass(int i, int p, double buildup, double runoff,
+////  This function was re-named and modified for release 5.1.008.  ////       //(5.1.008)
+
+double landuse_getWashoffQual(int i, int p, double buildup, double runoff,
                               double area)
 //
 //  Input:   i = land use index
@@ -552,67 +623,61 @@ double landuse_getWashoffMass(int i, int p, double buildup, double runoff,
 //           buildup = current buildup over land use (lbs or kg)
 //           runoff = current runoff on subcatchment (ft/sec)
 //           area = area devoted to land use (ft2)
-//  Output:  returns pollutant washoff rate (mass/sec)
-//  Purpose: finds mass loading of pollutant washed off a land use.
+//  Output:  returns pollutant concentration in washoff (mass/ft3)
+//  Purpose: finds concentration of pollutant washed off a land use.
 //
 //  Notes:   "coeff" for each washoff function was previously adjusted to
 //           result in units of mass/sec
 //
 {
-    double washoff;
+    double cWashoff = 0.0;
     double coeff = Landuse[i].washoffFunc[p].coeff;
     double expon = Landuse[i].washoffFunc[p].expon;
     int    func  = Landuse[i].washoffFunc[p].funcType;
 
-    // --- if no washoff function, return 0
-    if ( func == NO_WASHOFF ) return 0.0;
+    // --- if no washoff function or no runoff, return 0
+    if ( func == NO_WASHOFF || runoff == 0.0 ) return 0.0;
     
     // --- if buildup function exists but no current buildup, return 0
     if ( Landuse[i].buildupFunc[p].funcType != NO_BUILDUP && buildup == 0.0 )
         return 0.0;
 
+    // --- Exponential Washoff function
     if ( func == EXPON_WASHOFF )
     {
-        // --- convert runoff to inches/hr (or mm/hr) and 
-        //     convert buildup from lbs (or kg) to concen. mass units
-        runoff = runoff * UCF(RAINFALL);
-        buildup /= Pollut[p].mcf;
-
-        // --- evaluate washoff eqn.
-        washoff = coeff * pow(runoff, expon) * buildup;
+        // --- evaluate washoff eqn. with runoff in in/hr (or mm/hr)
+        //     and buildup converted from lbs (or kg) to concen. mass units
+        cWashoff = coeff * pow(runoff * UCF(RAINFALL), expon) *
+                  buildup / Pollut[p].mcf;
+        cWashoff /= runoff * area;
     }
 
+    // --- Rating Curve Washoff function
     else if ( func == RATING_WASHOFF )
     {
-        runoff = runoff * area;             // runoff in cfs
-        if ( runoff == 0.0 ) washoff = 0.0;
-        else washoff = coeff * pow(runoff, expon);
+        cWashoff = coeff * pow(runoff * area, expon-1.0);
     }
 
+    // --- Event Mean Concentration Washoff
     else if ( func == EMC_WASHOFF )
     {
-        runoff = runoff * area;             // runoff in cfs
-        washoff = coeff * runoff;           // coeff includes LperFT3 factor
+        cWashoff = coeff;     // coeff includes LperFT3 factor
     }
-
-    else washoff = 0.0;
-    return washoff;
+    return cWashoff;
 }
 
 //=============================================================================
 
-double landuse_getCoPollutLoad(int p, double washoff[], double tStep)
+double landuse_getCoPollutLoad(int p, double washoff[])
 //
 //  Input:   p = pollutant index
 //           washoff = pollut. washoff rate (mass/sec)
-//           tStep = time step (sec)
-//  Output:  returns washoff mass added by co-pollutant relation (mass/sec)
+//  Output:  returns washoff mass added by co-pollutant relation (mass)
 //  Purpose: finds washoff mass added by a co-pollutant of a given pollutant.
 //
 {
     int    k;
     double w;
-    double load;
 
     // --- check if pollutant p has a co-pollutant k
     k = Pollut[p].coPollut;
@@ -621,17 +686,15 @@ double landuse_getCoPollutLoad(int p, double washoff[], double tStep)
         // --- compute addition to washoff from co-pollutant
         w = Pollut[p].coFraction * washoff[k];
 
-        // --- add to mass balance totals
-        load = w * tStep * Pollut[p].mcf;
-        massbal_updateLoadingTotals(BUILDUP_LOAD, p, load);
+        // --- add washoff to buildup mass balance totals
+        //     so that things will balance
+        massbal_updateLoadingTotals(BUILDUP_LOAD, p, w * Pollut[p].mcf);
         return w;
     }
     return 0.0;
 }
 
 //=============================================================================
-
-////  New function added to release 5.0.019  ////                              //(5.0.019 - LR)
 
 double landuse_getExternalBuildup(int i, int p, double buildup, double tStep)
 //

@@ -2,12 +2,16 @@
 //   infil.h
 //
 //   Project: EPA SWMM5
-//   Version: 5.0
-//   Date:    07/30/10   (Build 5.0.019)
-//            04/20/11   (Build 5.0.022)
+//   Version: 5.1
+//   Date:    03/20/14   (Build 5.1.001)
+//            09/15/14   (Build 5.1.007)
+//            08/05/15   (Build 5.1.010)
 //   Author:  L. Rossman (US EPA)
 //
 //   Public interface for infiltration functions.
+//
+//   Build 5.1.010:
+//   - New Modified Green Ampt infiltration option added.
 //-----------------------------------------------------------------------------
 
 #ifndef INFIL_H
@@ -18,7 +22,9 @@
 //---------------------
 enum InfilType {
      HORTON,                      // Horton infiltration
+     MOD_HORTON,                  // Modified Horton infiltration
      GREEN_AMPT,                  // Green-Ampt infiltration
+     MOD_GREEN_AMPT,              // Modified Green-Ampt infiltration          //(5.1.010)
      CURVE_NUMBER};               // SCS Curve Number infiltration
 
 //---------------------
@@ -26,31 +32,33 @@ enum InfilType {
 //---------------------
 typedef struct
 {
+   double        f0;              // initial infil. rate (ft/sec)
    double        fmin;            // minimum infil. rate (ft/sec)
    double        Fmax;            // maximum total infiltration (ft);
    double        decay;           // decay coeff. of infil. rate (1/sec)
    double        regen;           // regeneration coeff. of infil. rate (1/sec)
    //-----------------------------
    double        tp;              // present time on infiltration curve (sec)
-   double        f0;              // initial infil. rate (ft/sec)
+   double        Fe;              // cumulative infiltration (ft)
 }  THorton;
 
 
 //-------------------------
 // Green-Ampt Infiltration
 //-------------------------
+
+// ----  Some variable names changed for release 5.1.007  ----                 //(5.1.007)
 typedef struct
 {
    double        S;               // avg. capillary suction (ft)
    double        Ks;              // saturated conductivity (ft/sec)
    double        IMDmax;          // max. soil moisture deficit (ft/ft)
    //-----------------------------
-   double        IMD;             // current soil moisture deficit
-   double        F;               // current cumulative infiltration (ft)
-   double        T;               // time needed to drain upper zone (sec)
-   double        L;               // depth of upper soil zone (ft)
-   double        FU;              // current moisture content of upper zone (ft)
-   double        FUmax;           // saturated moisture content of upper zone (ft)
+   double        IMD;             // current initial soil moisture deficit
+   double        F;               // current cumulative infiltrated volume (ft)
+   double        Fu;              // current upper zone infiltrated volume (ft)
+   double        Lu;              // depth of upper soil zone (ft)
+   double        T;               // time until start of next rain event (sec)
    char          Sat;             // saturation flag
 }  TGrnAmpt;
 
@@ -87,12 +95,14 @@ void    infil_create(int subcatchCount, int model);
 void    infil_delete(void);
 int     infil_readParams(int model, char* tok[], int ntoks);
 void    infil_initState(int area, int model);
+void    infil_getState(int j, int m, double x[]);
+void    infil_setState(int j, int m, double x[]);
 double  infil_getInfil(int area, int model, double tstep, double rainfall,
-        double runon, double depth);                                           //(5.0.022 - LR)
+        double runon, double depth);
 
 int     grnampt_setParams(TGrnAmpt *infil, double p[]);
 void    grnampt_initState(TGrnAmpt *infil);
 double  grnampt_getInfil(TGrnAmpt *infil, double tstep, double irate,
-        double depth);
+        double depth, int modelType);                                          //(5.1.010)
 
 #endif
